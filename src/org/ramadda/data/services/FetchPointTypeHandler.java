@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -26,49 +25,21 @@ import java.util.Date;
 import java.util.List;
 
 
-/**
- *
- */
 public class FetchPointTypeHandler extends PointTypeHandler {
-
-    /** _more_ */
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     public static final int IDX_SOURCE_URL = IDX++;
-
-    /** _more_ */
     public static final int IDX_ENABLED = IDX++;
-
-    /** _more_ */
     public static final int IDX_HOURS = IDX++;
-
-    /** _more_ */
     public static final int IDX_LAST_UPDATE = IDX++;
-
-    /** _more_ */
     public static final int IDX_ADD_DATE = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception On badnes
-     */
     public FetchPointTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
         startMonitorThread();
     }
 
-    /**
-     * _more_
-     */
     private void startMonitorThread() {
         Runnable run = new Runnable() {
             public void run() {
@@ -78,9 +49,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         Misc.run(run);
     }
 
-    /**
-     * _more_
-     */
     private void doFetch() {
         int errorCnt = 0;
         while (errorCnt < 5) {
@@ -99,13 +67,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         System.err.println("FetchPointTypeHandler too many errors");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void doFetchInner() throws Exception {
         //System.err.println("doFetch");
         Request request = getRepository().getTmpRequest();
@@ -117,13 +78,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void fetchEntry(Request request,Entry entry) throws Exception {
         if ( !entry.getResource().isStoredFile()) {
             throw new IllegalArgumentException("Entry is not a stored file:"
@@ -180,17 +134,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         getEntryManager().updateEntry(getRepository().getTmpRequest(), entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String readContents(Request request, Entry entry) throws Exception {
         String url = (String) entry.getValue(request,IDX_SOURCE_URL);
         url = url.replace("points.json", "points.csv");

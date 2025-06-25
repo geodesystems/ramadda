@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
@@ -15,8 +14,6 @@ import org.ramadda.repository.*;
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
-
-
 
 /**
  * Is used when we are visiting point files. This counts the points that are visited
@@ -57,44 +54,19 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     /** For text output */
     PrintWriter pw;
 
-
     /** For binary output */
     private DataOutputStream dos;
 
-
-    /**
-     * Ctor
-     *
-     * @param handler The output handler
-     */
     public BridgeRecordVisitor(RecordOutputHandler handler) {
         this.handler = handler;
     }
 
-    /**
-     * ctor
-     *
-     *
-     * @param handler The output handler
-     * @param processId job id
-     */
     public BridgeRecordVisitor(RecordOutputHandler handler,
                                Object processId) {
         this.handler   = handler;
         this.processId = processId;
     }
 
-
-    /**
-     * ctor
-     *
-     *
-     * @param handler The output handler
-     * @param request http request
-     * @param processId job id
-     * @param mainEntry the entry
-     * @param suffix file suffix we're writing to
-     */
     public BridgeRecordVisitor(RecordOutputHandler handler, Request request,
                                Object processId, Entry mainEntry,
                                String suffix) {
@@ -105,26 +77,12 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
         this.suffix    = suffix;
     }
 
-
-    /**
-     * _more_
-     */
     public BridgeRecordVisitor() {}
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RecordOutputHandler getHandler() {
         return handler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Object getProcessId() {
         return processId;
     }
@@ -201,7 +159,6 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
         }
     }
 
-
     /**
      * Called when we're done visiting the ldiar records
      *
@@ -225,8 +182,6 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
             dos = null;
         }
     }
-
-
 
     /**
      * Gets called by the RecordFile when we are visiting a record file
@@ -287,8 +242,6 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
         return buffer;
     }
 
-
-
     /**
      * getter
      *
@@ -297,6 +250,5 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     public int getNumPoints() {
         return numPoints;
     }
-
 
 }

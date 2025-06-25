@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
@@ -21,16 +20,13 @@ import org.w3c.dom.*;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 import java.util.regex.*;
-
 
 /**
  * This class extends the RAMADDA file harvester to harvest Point data files.
@@ -45,10 +41,8 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public abstract class RecordCollectionHarvester extends PatternHarvester {
 
-    /** _more_ */
     private boolean makeRecordCollection = true;
 
-    /** _more_ */
     private static final String ATTR_MAKERECORDCOLLECTION =
         "makerecordcollection";
 
@@ -78,15 +72,6 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
         super(repository, element);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     protected void init(Element element) throws Exception {
         super.init(element);
 
@@ -94,36 +79,16 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
                 ATTR_MAKERECORDCOLLECTION, makeRecordCollection);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_MAKERECORDCOLLECTION,
                              "" + makeRecordCollection);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getMakeRecordCollection() {
         return makeRecordCollection;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
 
@@ -135,14 +100,6 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         super.createEditForm(request, sb);
@@ -182,15 +139,9 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
         return HtmlUtils.select(ARG_TYPE, tmp, selected);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Class getTypeHandlerClass() {
         return null;
     }
-
 
     /**
      * harvester description
@@ -200,7 +151,6 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
     public String getDescription() {
         return "Record Collection";
     }
-
 
     /**
      * Should this harvester harvest the given file
@@ -224,8 +174,6 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
 
         return super.harvestFile(fileInfo, f, matcher, entriesMap);
     }
-
-
 
     /**
      * Check for a .properties file that corresponds to the given data file.

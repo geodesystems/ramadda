@@ -5,7 +5,6 @@
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.PointRecord;
 import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.CsvVisitor;
@@ -56,7 +55,6 @@ import ucar.unidata.xml.XmlUtil;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
-
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -80,16 +78,11 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class PointOutputHandler extends RecordOutputHandler {
 
-
     /** The category for the all of the output types */
     public static final String OUTPUT_CATEGORY = "Point Data";
-
 
     /** This is used to create a product for a point collection or a point file. */
     public final OutputType OUTPUT_PRODUCT;
@@ -120,14 +113,12 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_GETPOINTINDEX;
 
-
     /** output type */
     public final OutputType OUTPUT_GETLATLON;
 
     /** output type */
     public final OutputType OUTPUT_IMAGE;
 
-    /** _more_ */
     public final OutputType OUTPUT_BOUNDS;
 
     /** output type */
@@ -142,10 +133,8 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_KML_TRACK;
 
-
     /** output type */
     public final OutputType OUTPUT_SUBSET;
-
 
     /** output type */
     public final OutputType OUTPUT_KML;
@@ -162,17 +151,13 @@ public class PointOutputHandler extends RecordOutputHandler {
     /**  */
     public final OutputType OUTPUT_IDVCSV;
 
-    /** _more_ */
     public final OutputType OUTPUT_JSON;
-
 
     /** output type */
     public final OutputType OUTPUT_ASC;
 
-
     /** output type */
     public final OutputType OUTPUT_WAVEFORM_CSV;
-
 
     /**
      * constructor. This gets called by the Repository via reflection
@@ -202,7 +187,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                          OutputType.TYPE_VIEW, "",
                                          ICON_METADATA, category);
 
-
         OUTPUT_GETPOINTINDEX = new OutputType("Point index query",
 					      base + ".getpointindex", OutputType.TYPE_OTHER, "",
 					      ICON_DATA, category);
@@ -211,8 +195,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                           base + ".getlatlon",
                                           OutputType.TYPE_OTHER, "",
                                           ICON_DATA, category);
-
-
 
         OUTPUT_IMAGE = new OutputType("Image", base + ".image",
                                       OutputType.TYPE_OTHER, "png",
@@ -239,16 +221,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                                           OutputType.TYPE_OTHER, "kml",
                                           ICON_KML, category);
 
-
         OUTPUT_SUBSET = new OutputType("Native format", base + ".subset",
                                        OutputType.TYPE_OTHER, "", ICON_DATA,
                                        category);
 
-
         OUTPUT_KML = new OutputType("Google Earth", base + ".kml",
                                     OutputType.TYPE_OTHER, "kml", ICON_KML,
                                     category);
-
 
         OUTPUT_LATLONALTBIN = new OutputType("Binary - Lat/Lon/Alt",
                                              base + ".latlonaltbin",
@@ -263,7 +242,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_CSV = new OutputType("CSV - all fields", base + ".csv",
                                     OutputType.TYPE_OTHER, "csv", ICON_CSV,
                                     category);
-
 
         OUTPUT_IDVCSV = new OutputType("CSV for IDV", base + ".idv.csv",
                                        OutputType.TYPE_OTHER, "csv",
@@ -280,7 +258,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_POINTCOUNT = new OutputType("Point Count", base + ".count",
                                            OutputType.TYPE_OTHER);
 
-
         OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
                                       OutputType.TYPE_OTHER
                                       | OutputType.TYPE_IMPORTANT, "",
@@ -293,7 +270,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 					 //                                         ICON_TOOLS, 
 					 category);
 
-
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
                                      OutputType.TYPE_OTHER
                                      | OutputType.TYPE_IMPORTANT, "",
@@ -303,21 +279,16 @@ public class PointOutputHandler extends RecordOutputHandler {
 						 base + ".timeseriesimage", OutputType.TYPE_OTHER, "",
 						 ICON_IMAGE, category);
 
-
         OUTPUT_WAVEFORM_CSV = new OutputType("Waveform CSV",
                                              base + ".waveformcsv",
                                              OutputType.TYPE_OTHER, "",
                                              ICON_DATA, category);
-
 
         setFormHandler(new PointFormHandler(this));
         setRecordJobManager(new PointJobManager(this));
         addDefaultOutputTypes();
     }
 
-    /**
-     * _more_
-     */
     protected void addDefaultOutputTypes() {
         //Add the output types
         addType(OUTPUT_RESULTS);
@@ -345,43 +316,18 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_KML_TRACK);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDomainName() {
         return "Points";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getOutputCategory() {
         return OUTPUT_CATEGORY;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDomainBase() {
         return "points";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
     public RecordEntry doMakeEntry(Request request, Entry entry) {
         RecordTypeHandler typeHandler =
@@ -391,7 +337,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 			      (PointOutputHandler) typeHandler.getRecordOutputHandler(),
 			      request, entry);
     }
-
 
     /**
      * Not implemented yet. This will get the point index of a given lat/lon
@@ -414,7 +359,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return new Result("", sb, "text/xml");
     }
 
-
     /**
      * Get the FormHandler property.
      *
@@ -423,8 +367,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     public PointFormHandler getPointFormHandler() {
         return (PointFormHandler) super.getFormHandler();
     }
-
-
 
     /**
      * Gets the approximate point count of the given record files. It figures out
@@ -511,7 +453,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             goodEntries = timeEntries;
         }
 
-
         SelectionRectangle theBbox = request.getSelectionBounds();
         if ( !theBbox.anyDefined()) {
             return goodEntries;
@@ -552,10 +493,8 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
         goodEntries = spaceEntries;
 
-
         return goodEntries;
     }
-
 
     /**
      * Finally, this does the real work of extracting data and generating products
@@ -592,7 +531,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 						   request,
 						   "Cannot have more than one product format selected when doing an aysnchronous request");
         }
-
 
         List<RecordVisitor> visitors = new ArrayList<RecordVisitor>();
         Result              result   = null;
@@ -662,7 +600,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 		    request.remove(ARG_RECORD_LAST);
 		    request.remove(ARG_MAX);
 		}
-				   
+
 		int max = -1;
                 if (request.defined(ARG_LIMIT)) {
                     max = request.get(ARG_LIMIT, 5000);
@@ -693,7 +631,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 		if (request.defined(ARG_STRIDE)) {
                     visitInfo.setSkip(request.get(ARG_STRIDE, 0));
                 }
-
 
 		//		System.err.println("date:" + visitInfo.getStartDate() +" " + visitInfo.getEndDate() +" " + visitInfo);
 
@@ -770,7 +707,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
     }
 
-
     /**
      * Main entry point for Point Files. This methods handles things like the point map, the lat/lon web services,
      * the product form and product requests.
@@ -796,7 +732,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 	    || request.getString(ARG_PRODUCT,
 				 "").equals(OUTPUT_POINTCOUNT.getId());
 
-
         if (doingPointCount) {
             List<PointEntry> pointEntries = new ArrayList<PointEntry>();
             pointEntries.add((PointEntry) doMakeEntry(request, entry));
@@ -805,7 +740,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             return makePointCountResult(request, pointCount);
 
         }
-
 
         if (outputType.equals(OUTPUT_BOUNDS)) {
             return outputEntryBounds(request, entry);
@@ -844,7 +778,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (outputType.equals(OUTPUT_CHART)) {
             return outputEntryChart(request, outputType, entry);
         }
-
 
         if (outputType.equals(OUTPUT_WAVEFORM_CSV)) {
             return getPointFormHandler().outputEntryWaveformCsv(request,
@@ -907,7 +840,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 							 outputType, pointEntries);
     }
 
-
     public String getCsvApiUrl(Request request, Entry entry) {
 	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
 				      ARG_OUTPUT,"points.product",
@@ -929,7 +861,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 	getPointFormHandler().getEntryFormCsv(request, entry,sb);
     }
 
-
     public Result outputEntryChart(Request request, OutputType outputType,
                                    Entry entry)
 	throws Exception {
@@ -946,7 +877,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
-
 
         List<RecordTypeHandler.Macro> macros = typeHandler.getMacros(entry);
         if (macros != null) {
@@ -1017,15 +947,12 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-
         String path = typeHandler.getResourcePath(request, entry);
         if ((path != null) && (path.indexOf("${latitude}") >= 0)) {
             extra += "&latitude=${latitude}&longitude=${longitude}";
         } else if(entry.getTypeHandler().getTypeProperty("data.url.addlaton",false)) {
             extra += "&latitude=${latitude}&longitude=${longitude}";
 	}
-
-
 
         if (props != null) {
 	    int last = Utils.getProperty(props,"lastRecords",-1);
@@ -1057,25 +984,12 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-
-
         String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry)
 	    + extra;
 
         return url;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param pointCount _more_
-     *
-     * @return _more_
-     */
     private Result makePointCountResult(Request request, long pointCount) {
         if (request.responseAsXml()) {
             return getRepository().makeOkResult(request,
@@ -1089,9 +1003,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                             "Estimated point count:"
                                             + pointCount);
     }
-
-
-
 
     /**
      * Main entry point for Collections. This shows the form for the collection or the job processing
@@ -1120,8 +1031,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             return outputEntry(request, outputType, group);
         }
 
-
-
         Result parentResult = super.outputGroup(request, outputType, group,
 						children);
         if (parentResult != null) {
@@ -1143,7 +1052,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             entries.add(group);
         }
 
-
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
 	    || request.getString(ARG_PRODUCT,
 				 "").equals(OUTPUT_POINTCOUNT.getId());
@@ -1157,7 +1065,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 													       "No products selected")));
             }
         }
-
 
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputGroupForm(request, group,
@@ -1182,7 +1089,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             return makePointCountResult(request, pointCount);
         }
 
-
         //Check if they've exceeded the threshold
         boolean tooManyPoints = false;
         if (request.getUser().getAnonymous()) {
@@ -1194,7 +1100,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                 tooManyPoints = true;
             }
         }
-
 
         if (tooManyPoints) {
             if (request.responseAsXml()) {
@@ -1209,7 +1114,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             return getPointFormHandler().outputGroupForm(request, group,
 							 children, sb);
         }
-
 
         boolean doingPublish = doingPublish(request);
 
@@ -1252,7 +1156,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return getRecordJobManager().handleAsynchRequest(request, group,
 							 outputType, pointEntries);
 
-
     }
 
     /**
@@ -1278,29 +1181,12 @@ public class PointOutputHandler extends RecordOutputHandler {
         return id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param asynch _more_
-     * @param pointEntries _more_
-     * @param jobInfo _more_
-     * @param formats _more_
-     * @param visitors _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result createVisitors(Request request, Entry entry,
                                  boolean asynch,
                                  List<? extends PointEntry> pointEntries,
                                  JobInfo jobInfo, HashSet<String> formats,
                                  List<RecordVisitor> visitors)
 	throws Exception {
-
 
 	String returnFileName = entry.getName();
         Result result = null;
@@ -1316,8 +1202,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
         }
-
-
 
         if (formats.contains(OUTPUT_IDVCSV.getId())) {
 	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
@@ -1415,7 +1299,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                          jobInfo.getJobId()));
         }
 
-
         if (request.get(ARG_GRID_BARNES, false)) {
             visitors.add(makeBarnesVisitor(request, pointEntries,
                                            getBounds(request, pointEntries)));
@@ -1429,7 +1312,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             visitors.add(makeLatLonAltBinVisitor(request, entry,
 						 pointEntries, jobInfo.getJobId(), null, true));
         }
-
 
         if (formats.contains(OUTPUT_NC.getId())) {
             //            result = outputEntryNc(request, entry,  pointEntries,
@@ -1455,7 +1337,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-
         //Check if we need to make a grid
         if (anyGriddedFormats(formats)) {
 	    System.err.println("Add grid");
@@ -1466,14 +1347,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param formats _more_
-     *
-     * @return _more_
-     */
     public boolean anyGriddedFormats(HashSet<String> formats) {
         if (formats.contains(OUTPUT_ASC.getId())
 	    || formats.contains(OUTPUT_IMAGE.getId())
@@ -1485,7 +1358,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return false;
     }
-
 
     /**
      * Make a record visitor that creates a CSV file
@@ -1534,7 +1406,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 			    csvVisitor.setExtraLine(mainEntry.getLatitude(request)+","+ mainEntry.getLongitude(request));
 			}
 
-
 			if (request.defined(ARG_HEADER)) {
 			    csvVisitor.setAltHeader(request.getString(ARG_HEADER, ""));
 			}
@@ -1565,19 +1436,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return visitor;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param pointEntries _more_
-     * @param jobId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RecordVisitor makeJsonVisitor(
 					 final Request request, final Entry mainEntry,
 					 List<? extends PointEntry> pointEntries, final Object jobId)
@@ -1585,19 +1443,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return new JsonVisitor(this, request, jobId, mainEntry, ".json");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param pointEntries _more_
-     * @param jobId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RecordVisitor makeNetcdfVisitor(
 					   final Request request, Entry mainEntry,
 					   List<? extends PointEntry> pointEntries, final Object jobId)
@@ -1631,20 +1476,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 	//        return new NetcdfVisitor(this, request, jobId, mainEntry);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param recordEntries _more_
-     * @param bounds _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public GridVisitor makeGridVisitor(
 				       Request request, List<? extends PointEntry> recordEntries,
 				       Rectangle2D.Double bounds)
@@ -1691,7 +1522,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
             }
 
-
         }
         if (llg.getCellIndexDelta() > 100) {
             System.err.println("POINT: bad grid neighborhood size: "
@@ -1707,18 +1537,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return visitor;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param recordEntries _more_
-     * @param bounds _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public BarnesVisitor makeBarnesVisitor(
 					   Request request, List<? extends PointEntry> recordEntries,
 					   Rectangle2D.Double bounds)
@@ -1735,10 +1553,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return new BarnesVisitor(this, request, imageWidth, imageHeight,
                                  bounds);
     }
-
-
-
-
 
     /**
      * make the visitor for latlonalt binary formats
@@ -1805,21 +1619,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return visitor;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param pointEntries _more_
-     * @param jobId _more_
-     * @param inputDos _more_
-     * @param doDouble _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RecordVisitor makeLatLonBinVisitor(Request request,
 					      Entry mainEntry, List<? extends PointEntry> pointEntries,
 					      final Object jobId, final DataOutputStream inputDos,
@@ -1868,11 +1667,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return visitor;
     }
-
-
-
-
-
 
     /**
      * Make a record visitor that creates a CSV file
@@ -1943,25 +1737,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return visitor;
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param mainEntry Either the Point Collection or File Entry
-     * @param llg latlongrid
-     * @param formats _more_
-     * @param jobId The job ID
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public Result outputEntryGrid(Request request, Entry mainEntry,
                                   IdwGrid llg, HashSet<String> formats,
                                   Object jobId)
@@ -2002,10 +1777,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             */
         }
 
-
         int     imageWidth      = llg.getWidth();
         int     imageHeight     = llg.getHeight();
-
 
         boolean anyGridsDefined = false;
         for (int i = 0; i < GRID_ARGS.length; i++) {
@@ -2140,7 +1913,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-
         if (doKmz) {
             request.getHttpServletResponse().setContentType(
 							    "application/vnd.google-earth.kmz");
@@ -2154,9 +1926,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return getDummyResult();
     }
-
-
-
 
     /**
      * Gets called from the main RAMADDA map view to add extra marking to the map
@@ -2181,21 +1950,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         getPointFormHandler().addToMap(request, entry, map);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param jobId The job ID
-     * @param mainEntry Either the  Collection or File Entry
-     * @param llg latlongrid
-     * @param grid _more_
-     * @param missingValue _more_
-     * @param fileSuffix _more_
-     *
-     * @throws Exception On badness
-     */
     public void writeAsciiArcGrid(Request request, Object jobId,
                                   Entry mainEntry, IdwGrid llg,
                                   double[][] grid, double missingValue,
@@ -2231,19 +1985,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         pw.close();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param imageFile _more_
-     * @param llg latlongrid
-     * @param grid _more_
-     * @param missingValue _more_
-     * @param threshold _more_
-     *
-     * @throws Exception On badness
-     */
     public void writeImage(Request request, File imageFile, LatLonGrid llg,
                            double[][] grid, double missingValue,
                            double threshold)
@@ -2263,7 +2004,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                    | defaultColor.getRed());
             }
         }
-
 
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
@@ -2311,7 +2051,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-
         Image newImage = Toolkit.getDefaultToolkit().createImage(
 								 new MemoryImageSource(
 										       imageWidth, imageHeight, pixels, 0,
@@ -2324,19 +2063,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         ImageUtils.writeImageToFile(newImage, imageFile);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param mainEntry Either the  Collection or File Entry
-     * @param entries entries to process
-     * @param jobId The job ID
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public Result outputEntryKmlTrack(Request request, Entry mainEntry,
                                       List<? extends PointEntry> entries,
                                       Object jobId)
@@ -2419,7 +2145,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     public Rectangle2D.Double getBounds(Request request,
                                         List<? extends PointEntry> entries) {
 
-
         SelectionRectangle theBbox = request.getSelectionBounds();
         theBbox.normalizeLongitude();
 
@@ -2430,7 +2155,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         double               east   = 0;
         double               west   = 0;
         SelectionRectangle   bbox   = bboxes[0];
-
 
         for (int i = 0; i < entries.size(); i++) {
             PointEntry pointEntry = entries.get(i);
@@ -2460,10 +2184,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         }
 
-
-
-
-
         //TODO: is this right?
         if (Math.abs(north - south) > Math.abs(east - west)) {
             //            east = west + Math.abs(north - south);
@@ -2475,10 +2195,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return new Rectangle2D.Double(west, north, east - west,
                                       south - north);
     }
-
-
-
-
 
     /**
      * This handles the ajax request for the geolocation of an index in the given point file
@@ -2507,13 +2223,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     */
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
         super.getServiceInfos(request, entry, services);
@@ -2538,9 +2247,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             { OUTPUT_KMZ.toString(), "Google Earth KMZ", ".kmz",
               getAbsoluteIconUrl(request, "/icons/kml.png") }
         };
-
-
-
 
         for (String[] tuple : values) {
             String product = tuple[0];
@@ -2572,7 +2278,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
     }
 
-
     /*
       public Result outputEntryNc(Request request, Entry mainEntry,
       OutputType outputType,
@@ -2586,13 +2291,11 @@ public class PointOutputHandler extends RecordOutputHandler {
       String    mimeType    = "application/x-netcdf";
       Rectangle2D.Double  bounds      = getBounds(request, pointEntries);
 
-
       GridVisitor gridVisitor  =  makeGridVisitor(request,
       pointEntries,
       bounds);
       getPointJobManager().visitConcurrent(request, pointEntries, gridVisitor, new VisitInfo(VisitInfo.QUICKSCAN_NO));
       IdwGrid latLonGrid = gridVisitor.getGrid();
-
 
       if(request.get(ARG_FILLMISSING, false)) {
       llg.fillMissing();
@@ -2651,27 +2354,10 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     */
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public int getSkip(Request request, int dflt) {
         return super.getSkip(request, dflt, ARG_RECORD_SKIP);
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public int getSkipZ(Request request, int dflt) {
         String skip = request.getString(ARG_RECORD_SKIPZ, "");
         if (skip.equals("${skipz}")) {
@@ -2681,16 +2367,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return request.get(ARG_RECORD_SKIPZ, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param recordFile _more_
-     * @param filters _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void getFilters(Request request, Entry entry,
                            RecordFile recordFile, List<RecordFilter> filters)
@@ -2699,14 +2375,12 @@ public class PointOutputHandler extends RecordOutputHandler {
         super.getFilters(request, entry, recordFile, filters);
         //      filters.add(new AltitudeFilter(0, Double.NaN));
 
-
         Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, "",
 						null);
 
         if ((dateRange[0] != null) || (dateRange[1] != null)) {
             filters.add(new TimeFilter(dateRange[0], dateRange[1]));
         }
-
 
         SelectionRectangle bbox = request.getSelectionBounds();
         if (bbox.anyDefined()) {
@@ -2791,11 +2465,9 @@ public class PointOutputHandler extends RecordOutputHandler {
 			HashSet enums =Utils.makeHashSet(lines);
 			filters.add(new EnumRecordFilter(field.getParamId(),enums));
 		    }
-		    
+
                     continue;
 		}
-		
-
 
                 if (request.defined(ARG_SEARCH_PREFIX + field.getName()
                                     + "_min")) {
@@ -2820,22 +2492,12 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean isEntryOk(Entry entry) {
         return entry.getTypeHandler().isType("type_point")
 	    || entry.getTypeHandler().isType("lidar") ||
 	    entry.getTypeHandler().isType("type_document_csv");
     }
-
-
 
     /**
      * This gets called to add links into the entry menus in the HTML views.
@@ -2862,11 +2524,9 @@ public class PointOutputHandler extends RecordOutputHandler {
             return;
         }
 
-
         if ( !isEntryOk(entry)) {
             return;
         }
-
 
         if (entry.getTypeHandler() instanceof RecordCollectionTypeHandler) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM_CSV));
@@ -2890,8 +2550,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         links.add(makeLink(request, state.getEntry(), OUTPUT_METADATA));
     }
 
-
-
     /**
      * make the file object
      *
@@ -2914,8 +2572,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (numRecords < 0) {
             numRecords = recordFile.getNumRecords();
         }
-
-
 
 	String format = request.getString(ARG_DATEFORMAT+"_custom",null);
 	if(!stringDefined(format)) {
@@ -2944,14 +2600,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         return recordFile;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param outputs _more_
-     * @param forCollection _more_
-     */
     public void getPointFormats(List<HtmlUtils.Selector> outputs,
                                 boolean forCollection) {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
@@ -2960,7 +2608,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 	outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
     }
-
 
     /**
      * return the csv for the given entry
@@ -2983,6 +2630,5 @@ public class PointOutputHandler extends RecordOutputHandler {
         IOUtil.close(bos);
         return csv;
     }
-
 
 }

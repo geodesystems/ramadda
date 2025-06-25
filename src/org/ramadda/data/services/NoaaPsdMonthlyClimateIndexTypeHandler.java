@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.data.point.text.MultiMonthFile;
 import org.ramadda.data.record.RecordFile;
@@ -23,25 +22,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Sat, Feb 28, '15
- * @author         Enter your name here...
- */
 public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     public NoaaPsdMonthlyClimateIndexTypeHandler(Repository repository,
             Element node)
             throws Exception {
@@ -49,16 +31,6 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
         // TODO Auto-generated constructor stub
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception On badness
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -80,13 +52,6 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param loc _more_
-     *
-     * @return _more_
-     */
     private String fixUrl(String loc) {
         if (loc.startsWith("http:")) {
             loc = loc.replace("http:", "https:");
@@ -95,19 +60,6 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
         return loc;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -142,15 +94,6 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
         return myRF;
     }
 
-    /**
-     * _more_
-     *
-     * @param loc _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private double readMissingValue(String loc) throws Exception {
         double           missing  = Double.NaN;
         String           contents = IOUtil.readContents(loc);
@@ -173,6 +116,5 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
 
         return missing;
     }
-
 
 }

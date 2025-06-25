@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.point.PointMetadataHarvester;
 import org.ramadda.data.record.RecordField;
@@ -44,18 +43,14 @@ import ucar.unidata.util.StringUtil;
 
 import java.awt.image.*;
 
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 
-
 import java.text.SimpleDateFormat;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +58,6 @@ import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  *
@@ -74,31 +68,13 @@ import java.util.Properties;
 @SuppressWarnings("unchecked")
 public class PointTypeHandler extends RecordTypeHandler {
 
-    /** _more_ */
     public static final String ARG_PROPERTIES_FILE = "properties.file";
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     * @param description _more_
-     */
     public PointTypeHandler(Repository repository, String type,
                             String description) {
         super(repository, type, description);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository ramadda
-     * @param node _more_
-     * @throws Exception On badness
-     */
     public PointTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -131,7 +107,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	String mappingText =  XmlUtil.getGrandChildText(node,"header_metadata",null);
 	if(mappingText==null) return;
 
-
 	for(String line:Utils.split(mappingText,"\n",true,true)) {
 	    if(line.startsWith("#")) continue;
 	    List<String> toks = StringUtil.splitUpTo(line,"=",2);
@@ -159,14 +134,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
         RecordOutputHandler poh =
             (RecordOutputHandler) getRepository().getOutputHandler(
@@ -178,21 +145,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         return poh;
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception On badness
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -212,7 +164,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	super.initializeNewEntry(request, entry, newType);
     }
 
-
     @Override
     public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
 	//only do this once
@@ -228,7 +179,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             //This finds any properties files next to the file
             initializeRecordEntry(entry, file, false);
         }
-
 
         PointOutputHandler outputHandler =
             (PointOutputHandler) getRecordOutputHandler();
@@ -267,15 +217,12 @@ public class PointTypeHandler extends RecordTypeHandler {
 									    metadataHarvester);
         log("initialize new entry: done");
 
-
     }
-
 
     public String getResourcePath(Request request, Entry entry) {
 	return entry.getResource().getPath();
 
     }
-
 
     /**
      *
@@ -311,21 +258,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param type _more_
-     * @param target _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
             throws Exception {
@@ -375,18 +307,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiEditorSidebar(Request request, Entry entry)
             throws Exception {
         //        PointOutputHandler outputHandler =
@@ -395,8 +315,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         return "";
 
     }
-
-
 
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
@@ -420,14 +338,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     */
     @Override
     public void doFinalEntryInitialization(Request request, Entry entry,
                                            boolean fromImport) {
@@ -445,13 +355,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param pointEntry _more_
-     *
-     * @return _more_
-     */
     public PointMetadataHarvester doMakeMetadataHarvester(
             RecordEntry pointEntry) {
         return new PointMetadataHarvester();
@@ -467,7 +370,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         super.addColumnToEntryForm(request, column, formBuffer, parentEntry,entry,
                                    values, state, formInfo, baseTypeHandler);
 
-
         if ((entry == null) && column.getName().equals("properties")) {
             if (column.getEditable()) {
                 if (baseTypeHandler.okToShowInForm(entry, "properties")) {
@@ -482,17 +384,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param filename _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
@@ -519,19 +410,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     */
     public int getDefaultMax(Request request, Entry entry, String tag,
                              Hashtable props) {
         try {
@@ -555,18 +433,9 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param recordEntry _more_
-     * @param metadata _more_
-     *
-     * @throws Exception _more_
-     */
     protected void handleHarvestedMetadata(Request request, RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
-
 
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
@@ -575,9 +444,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
 	boolean debug =getRepository().getProperty("debug.pointdata.new",entry.getTypeHandler().getTypeProperty("debug.pointdata.new",false));
-
-
-
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
 
@@ -636,7 +502,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             entry.setDescription(descriptionFromFile);
         }
 
-
         //All point types should have at least:
         //pointCount, properties
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
@@ -682,7 +547,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
-
         entry.setValues(values);
         if ( !Double.isNaN(metadata.getMaxLatitude())) {
             entry.setNorth(metadata.getMaxLatitude());
@@ -704,7 +568,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         } else {
             //            System.err.println("no time in metadata");
         }
-
 
 	List<Column> columns = getColumns();
 	if (columns != null) {
@@ -735,7 +598,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 		}
 	    }
 	}
-
 
         String header = pointEntry.getRecordFile().getTextHeader();
 	if(debug)
@@ -800,8 +662,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	    if(endDate!=null) entry.setEndDate(endDate.getTime());	    
 	}
 
-
-
 	if(getTypeProperty("point.initialize", true)) {
             String patterns = (String) getTypeProperty("record.patterns",
                                   (String) null);
@@ -827,7 +687,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
    }
-
 
     public void handleHeaderPatternValue(Request request, Entry entry,Hashtable state, String field, String value) throws Exception {
 	if (field.equals("latitude")) {
@@ -873,8 +732,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	}
     }
 
-    
-
     private double decode(String lls) {
 	lls = lls.trim();
         lls = lls.replace(" ", ":");
@@ -885,17 +742,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         return GeoUtils.decodeLatLon(lls);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getProperty(Entry entry, String name, String dflt) {
         try {
             if (name.equals("chart.wiki.map")) {
@@ -914,14 +760,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     *
-     */
     @Override
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
@@ -929,7 +767,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         String url;
         String dfltBbox = entry.getWest(request) + "," + entry.getSouth(request) + ","
                           + entry.getEast(request) + "," + entry.getNorth(request);
-
 
         RecordOutputHandler outputHandler = getRecordOutputHandler();
         //TODO: let the output handler add services
@@ -972,18 +809,6 @@ public class PointTypeHandler extends RecordTypeHandler {
          */
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
@@ -997,8 +822,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             throw new RuntimeException(exc);
         }
     }
-
-
 
     @Override
     public String getSimpleDisplay(Request request, Hashtable props,
@@ -1026,17 +849,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	return wiki;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getMapInfoBubble(Request request, Entry entry)
             throws Exception {
@@ -1052,7 +864,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	if(popup!=null) {
 	    return  getWikiManager().wikifyEntry(request,entry,popup);
 	}
-
 
         try {
             String chartType = getTypeProperty("map.chart.type", "linechart");
@@ -1124,8 +935,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 	return args;
     }
 
-
-
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -1143,7 +952,5 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         return sb.toString();
     }
-
-
 
 }

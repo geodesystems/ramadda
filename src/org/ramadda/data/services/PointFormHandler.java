@@ -5,19 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.repository.type.TypeHandler;
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.*;
-
 import org.ramadda.data.point.PointFile;
-
-
 import org.ramadda.data.record.*;
-
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -25,42 +17,29 @@ import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
-
-
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.grid.*;
-
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-
-
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
-
 import java.io.*;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 @SuppressWarnings("unchecked")
 public class PointFormHandler extends RecordFormHandler {
@@ -90,20 +69,10 @@ public class PointFormHandler extends RecordFormHandler {
         super(recordOutputHandler);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getOutputHandler();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSessionPrefix() {
         return "points.";
     }
@@ -123,8 +92,6 @@ public class PointFormHandler extends RecordFormHandler {
         //        outputs.add(getSelect(getPointOutputHandler().OUTPUT_NC));
     }
 
-
-
     /**
      * make the map lines for the given ldiar entry
      *
@@ -141,7 +108,6 @@ public class PointFormHandler extends RecordFormHandler {
         map.addLines(recordEntry.getEntry(), "",
                      getMapPolyline(request, recordEntry), null);
     }
-
 
     /**
      * add the lines to the map
@@ -160,7 +126,6 @@ public class PointFormHandler extends RecordFormHandler {
             throw new RuntimeException(exc);
         }
     }
-
 
     /**
      * create the polyline for the given entry. This will cache it in the RAMADDA entry
@@ -181,8 +146,6 @@ public class PointFormHandler extends RecordFormHandler {
         if (skipFactor == 0) {
             skipFactor = 1000;
         }
-
-
 
         String polylineProperty = "mapline" + skipFactor;
 
@@ -280,7 +243,6 @@ public class PointFormHandler extends RecordFormHandler {
                                new StringBuffer());
     }
 
-
     /**
      * Show the products form
      *
@@ -349,7 +311,6 @@ public class PointFormHandler extends RecordFormHandler {
             return new Result("", sb);
         }
 
-
         String files;
         if (recordEntries.size() == 1) {
             files = "<table width=100%><tr><td width=75%>"
@@ -369,7 +330,6 @@ public class PointFormHandler extends RecordFormHandler {
 
         addToGroupForm(request, group, sb, recordEntries, extra);
 
-
         sb.append("<p>");
         sb.append(HU.submit("Get Data", ARG_GETDATA));
         sb.append("<p>");
@@ -384,8 +344,6 @@ public class PointFormHandler extends RecordFormHandler {
 
         return new Result("", sb);
     }
-
-
 
     /**
      * make the product/subset form
@@ -407,8 +365,6 @@ public class PointFormHandler extends RecordFormHandler {
         return outputEntryFormCsv(request, entry, new StringBuffer());
     }    
 
-
-
     /**
      * make the form
      *
@@ -423,7 +379,6 @@ public class PointFormHandler extends RecordFormHandler {
     public Result outputEntryForm(Request request, Entry entry,
                                   Appendable msgSB)
             throws Exception {
-
 
         StringBuilder sb = new StringBuilder();
         request.getRepository().getPageHandler().entrySectionOpen(request,
@@ -452,7 +407,6 @@ public class PointFormHandler extends RecordFormHandler {
         return new Result("", sb);
     }
 
-
     public Result outputEntryFormCsv(Request request, Entry entry,
 				     Appendable msgSB)
             throws Exception {
@@ -466,7 +420,6 @@ public class PointFormHandler extends RecordFormHandler {
         request.getRepository().getPageHandler().entrySectionClose(request,
                 entry, sb);
 
-
         return new Result("", sb);
     }
 
@@ -478,7 +431,7 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,
                                    HU.id(formId)));
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	
+
         sb.append(
             HU.hidden(
                 ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
@@ -490,19 +443,7 @@ public class PointFormHandler extends RecordFormHandler {
                                         "[\".*OpenLayers_Control.*\"]");
         sb.append(HU.formClose());
     }
-    
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param recordEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToEntryForm(Request request, Entry entry, Appendable sb,
                                RecordEntry recordEntry,boolean csvForm)
             throws Exception {
@@ -523,18 +464,6 @@ public class PointFormHandler extends RecordFormHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param sb _more_
-     * @param recordEntries _more_
-     * @param extra _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToGroupForm(Request request, Entry group, Appendable sb,
                                List<? extends RecordEntry> recordEntries,
                                String extra)
@@ -550,9 +479,6 @@ public class PointFormHandler extends RecordFormHandler {
         addSubsetForm(request, group, sb, true, recordEntries.get(0), extra,false);
         addSettingsForm(request, group, sb, recordEntries.get(0));
     }
-
-
-
 
     /**
      * add the Settings
@@ -587,7 +513,6 @@ public class PointFormHandler extends RecordFormHandler {
             }
         }
 
-
         if (params.size() > 1) {
             String selectedParam =
                 request.getString(RecordOutputHandler.ARG_PARAMETER,
@@ -608,8 +533,6 @@ public class PointFormHandler extends RecordFormHandler {
                             new ArrayList<String>()), HU.arg(
                                 HU.ATTR_ROWS, "4") + " multiple ")));
         }
-
-
 
         gridding.append(
             HU.formEntry(
@@ -635,8 +558,6 @@ public class PointFormHandler extends RecordFormHandler {
                     RecordConstants.ARG_THRESHOLD,
                     request.getString(RecordConstants.ARG_THRESHOLD, ""),
                     5)));
-
-
 
         String initialDegrees = "" + getDefaultRadiusDegrees(request,
                                     entry.getBounds(request));
@@ -666,7 +587,6 @@ public class PointFormHandler extends RecordFormHandler {
                            "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
                            "More Information", "target=_help")));
 
-
         gridding.append(
             HU.formEntry(
                 msgLabel("Hill shading"),
@@ -679,8 +599,6 @@ public class PointFormHandler extends RecordFormHandler {
                            ARG_HILLSHADE_ANGLE,
                            request.getString(ARG_HILLSHADE_ANGLE, "45"), 4)));
 
-
-
         gridding.append(
             HU.formEntry(
                 msgLabel("Image Dimensions"),
@@ -691,7 +609,6 @@ public class PointFormHandler extends RecordFormHandler {
                            ARG_HEIGHT,
                            request.getString(ARG_HEIGHT, "" + DFLT_HEIGHT),
                            5)));
-
 
         gridding.append(
             HU.formEntry(
@@ -717,8 +634,6 @@ public class PointFormHandler extends RecordFormHandler {
                 gridding.toString(), showUrl));
     }
 
-
-
     /**
      *
      * @param request _more_
@@ -733,8 +648,6 @@ public class PointFormHandler extends RecordFormHandler {
             throws Exception {
 
         boolean       showUrl     = request.get(ARG_SHOWURL, false);
-
-
 
         String        paramWidget = null;
 
@@ -762,12 +675,9 @@ public class PointFormHandler extends RecordFormHandler {
                 HU.checkbox(ARG_POINTCOUNT, "true", false)
                 + " Just return the estimated point count"));
 
-
-
         getOutputHandler().addPublishWidget(
             request, entry, processSB,
             msg("Select a folder to publish the product to"));
-
 
         User user = request.getUser();
         if (getMailManager().isEmailEnabled()) {
@@ -791,24 +701,12 @@ public class PointFormHandler extends RecordFormHandler {
                 processSB.toString(), false));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param title _more_
-     * @param contents _more_
-     *
-     * @throws Exception _more_
-     */
     public static void formGroup(Request request, Appendable sb,
                                  String title, String contents)
             throws Exception {
         sb.append(formHeader(title));
         sb.append(HU.insetDiv(contents, 0, 20, 10, 0));
     }
-
 
     /**
      * add to form
@@ -833,7 +731,6 @@ public class PointFormHandler extends RecordFormHandler {
 
 	Entry theEntry  = recordEntry!=null?recordEntry.getEntry():null;
 
-	
         StringBuffer subsetSB   = new StringBuffer();
         subsetSB.append(HU.formTable());
         if (numRecords > 0) {
@@ -869,10 +766,8 @@ public class PointFormHandler extends RecordFormHandler {
 					  HU.b("Or custom:") + HU.space(1) +HU.input(ARG_DATEFORMAT+"_custom",
 										     request.getString(ARG_DATEFORMAT+"_custom",""),
 										     HU.attrs("placeholder","yyyyMMdd HH:mm:ss.SSSZ"))));
-	    
 
 	}
-
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
@@ -897,10 +792,6 @@ public class PointFormHandler extends RecordFormHandler {
                 + HU.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
                                   5,HU.attr("placeholder","e.g., 0.5")) + probHelpImg;
-
-
-
-
 
             if (recordEntry.isCapable(PointFile.ACTION_TIME) ||
 		theEntry.getTypeHandler().getTypeProperty("subset.date.show",
@@ -927,15 +818,13 @@ public class PointFormHandler extends RecordFormHandler {
             if (recordEntry.isCapable(PointFile.ACTION_DECIMATE)) {
 		List<String> skips = Utils.makeListFromValues(new TwoFacedObject("None",""),"1","2","3","4","5",
 						    "6","7","8","9","10","15","20","30","40","50","75","100","200","300","400","500","1000");
-						   
-						   
+
                 subsetSB.append(HU.formEntry(msgLabel("Decimate"),
                         msgLabel("Skip every") + " "
 						    + HU.select(ARG_RECORD_SKIP, skips,
 								       request.getString(ARG_RECORD_SKIP,
 											 "")) + prob));
             }
-
 
             if (recordEntry.isCapable(PointFile.ACTION_TRACKS)) {
                 subsetSB.append(
@@ -947,7 +836,6 @@ public class PointFormHandler extends RecordFormHandler {
                                 + msg("Comma separated list of track numbers")));
             }
         }
-
 
         // Look for searchable fields
         List<RecordField> allFields        = null;
@@ -969,9 +857,6 @@ public class PointFormHandler extends RecordFormHandler {
                 allFields = childEntry.getRecordFile().getFields();
             }
         }
-
-
-
 
         if (allFields != null) {
             StringBuffer paramSB = null;
@@ -1016,7 +901,7 @@ public class PointFormHandler extends RecordFormHandler {
 	    if(theEntry !=null && theEntry.isGeoreferenced(request)) {
 		subsetSB.append(HU.formEntry("",HU.labeledCheckbox(ARG_ADD_LATLON,"true",request.get(ARG_ADD_LATLON,false),
 								   "Add entry lat/lon")));
-		
+
 	    }
 	    /*
 	      if(entry.isGeoreferenced(request)) {
@@ -1024,9 +909,7 @@ public class PointFormHandler extends RecordFormHandler {
 			     HU.labeledCheckbox(ARG_ADD_LATLON, "true",false,"Add latitude/longitude"));
 			     }*/
 
-
         }
-
 
 	RecordTypeHandler typeHandler = (RecordTypeHandler) (theEntry!=null?theEntry.getTypeHandler():null);
 	Hashtable props = typeHandler!=null?typeHandler.getRecordProperties(entry):null;
@@ -1128,7 +1011,6 @@ public class PointFormHandler extends RecordFormHandler {
 		subsetSB.append(HU.formEntryTop(msgLabel("Search Values"),
 						HU.makeShowHideBlock(msg(""), paramSB.toString(), false)));
 
-
             }
         }
         subsetSB.append(extraSubset);
@@ -1218,8 +1100,6 @@ public class PointFormHandler extends RecordFormHandler {
             gridsCol.append(HU.p());
         }
 
-
-
         for (int i = 0; i < formatLists.size(); i++) {
             List<HtmlUtils.Selector> formatList = formatLists.get(i);
             formatCol = new StringBuffer();
@@ -1291,11 +1171,6 @@ public class PointFormHandler extends RecordFormHandler {
 
     }
 
-
-
-
-
-
     /**
      * Class description
      *
@@ -1305,46 +1180,27 @@ public class PointFormHandler extends RecordFormHandler {
      */
     public static class PlotInfo {
 
-        /** _more_ */
         public List<Double> alts;
 
-        /** _more_ */
         public int minX = Integer.MAX_VALUE;
 
-        /** _more_ */
         public int maxX = 0;
 
-        /** _more_ */
         public int minIndex = Integer.MAX_VALUE;
 
-        /** _more_ */
         public int maxIndex = 0;
 
-        /**
-         * _more_
-         *
-         * @param index _more_
-         */
         public void setIndex(int index) {
             minIndex = Math.min(minIndex, index);
             maxIndex = Math.max(maxIndex, index);
         }
 
-        /**
-         * _more_
-         *
-         * @param x _more_
-         */
         public void setX(int x) {
             minX = Math.min(minX, x);
             maxX = Math.max(maxX, x);
         }
 
-
     }
-
-
-
 
     /**
      * make the waveform image
@@ -1401,8 +1257,5 @@ public class PointFormHandler extends RecordFormHandler {
 
         return result;
     }
-
-
-
 
 }

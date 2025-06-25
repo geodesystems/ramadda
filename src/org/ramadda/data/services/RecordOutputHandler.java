@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordIO;
@@ -32,7 +31,6 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -46,34 +44,18 @@ import java.util.HashSet;
 import java.util.List;
 
 
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class RecordOutputHandler extends OutputHandler implements RecordConstants {
 
     /** output type */
     public OutputType OUTPUT_RESULTS;
-
-    /** _more_ */
     public static final String ARG_SKIP = "skip";
-
     public static final String ARG_STRIDE = "stride";
     public static final String ARG_LIMIT = "limit";
-
-    /** _more_ */
     public static final String ARG_PARAMETER = "parameter";
-
-    /** _more_ */
     public static final String ARG_DIVISOR = "divisor";
-
-    /** _more_ */
     public static final String ARG_FIELD_USE = "field_use";
-
-    /** _more_ */
     public static final String SESSION_PREFIX = "record.";
-
-    /** _more_ */
     public static final String PROP_TTL = "record.files.ttl";
 
     /** Max number of points an anonymous user is allowed to access */
@@ -85,14 +67,10 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     /** Where products get put */
     private TempDir productDir;
 
-
     /** This is a static so we can correctly handle mulitple output handlers (e.g., lidar) */
     private static RecordJobManager jobManager;
 
-
-    /** _more_ */
     private RecordFormHandler formHandler;
-
 
     /**
      * constructor. This gets called by the Repository via reflection
@@ -109,31 +87,15 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         getProductDir();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param jobManager _more_
-     */
     protected void setRecordJobManager(RecordJobManager jobManager) {
         if (this.jobManager == null) {
             this.jobManager = jobManager;
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public RecordEntry doMakeEntry(Request request, Entry entry) {
         return new RecordEntry(this, request, entry);
     }
-
 
     /**
      * This makes  a list of RecordEntry which is a wrapper around Entry.
@@ -169,7 +131,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return recordEntries;
     }
 
-
     /**
      * Is the given entry a point type or a point collection type
      *
@@ -184,17 +145,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param recordEntries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<RecordEntry> doSubsetEntries(
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
@@ -211,16 +161,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param recordFile _more_
-     * @param filters _more_
-     *
-     * @throws Exception _more_
-     */
     public void getFilters(Request request, Entry entry,
                            RecordFile recordFile, List<RecordFilter> filters)
             throws Exception {
@@ -239,39 +179,17 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getProductDirName() {
         return getDomainBase() + "_products";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDomainBase() {
         return "record";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getProductDirTTLHours() {
         return getRepository().getProperty(PROP_TTL, 7) * 24;
     }
-
 
     /**
      * Get the job manager
@@ -304,9 +222,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return formHandler;
     }
 
-
-
-
     /**
      * Wrapper around JobManager.jobOK
      *
@@ -321,9 +236,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
         return jobManager.jobOK(jobId);
     }
-
-
-
 
     /**
      * This gets called to add links into the entry menus in the HTML views.
@@ -356,12 +268,10 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             return;
         }
 
-
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 state.entry)) {
             return;
         }
-
 
         links.add(makeLink(request, state.getEntry(), OUTPUT_CHART));
         links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
@@ -379,7 +289,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                                path + ".png"));
             links.add(makeLink(request, state.getEntry(), OUTPUT_HILLSHADE,
                                path + ".png"));
-
 
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV,
                                path + ".csv"));
@@ -408,10 +317,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         //                links.add(makeLink(request, state.getEntry(), OUTPUT_WAVEFORM));
         */
     }
-
-
-
-
 
     /**
      *
@@ -453,7 +358,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
     }
 
-
     /**
      * @param request the request
      * @param outputType output type
@@ -469,7 +373,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                               final List<Entry> children)
             throws Exception {
 
-
         if (request.defined(JobInfo.ARG_JOB_ID)) {
             return jobManager.handleJobStatusRequest(request, group);
         }
@@ -477,36 +380,19 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return null;
     }
 
-
-
-    /** _more_ */
     private int callCnt = 0;
 
-
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void memoryCheck(String msg) {
         //        Runtime.getRuntime().gc();
         //        getLogManager().logInfoAndPrint(msg + ((int)(Misc.usedMemory()/1000000.0))+"MB");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     */
     public void storeSession(Request request) {
         request.putSessionIfDefined(ARG_AREA_NORTH, SESSION_PREFIX);
         request.putSessionIfDefined(ARG_AREA_WEST, SESSION_PREFIX);
         request.putSessionIfDefined(ARG_AREA_SOUTH, SESSION_PREFIX);
         request.putSessionIfDefined(ARG_AREA_EAST, SESSION_PREFIX);
     }
-
 
     /**
      * This gets the selected product formats.
@@ -526,16 +412,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return formats;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param fields _more_
-     *
-     * @return _more_
-     */
     public List<RecordField> getFields(Request request,
                                        List<RecordField> fields) {
         HashSet<String> selectedFields = new HashSet<String>();
@@ -558,8 +434,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             return fieldsToUse;
         }
     }
-
-
 
     /**
      * Create a record filter from the url args. This can make a spatial bounds filter,
@@ -588,9 +462,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return new CollectionRecordFilter(filters);
     }
 
-
-
-
     /**
      * Make if needed and return the directory to store products to for the given job id
      *
@@ -608,50 +479,16 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return theProductDir;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param ext _more_
-     *
-     * @return _more_
-     */
     public String getOutputFilename(Entry entry, String ext) {
         return IOUtil.stripExtension(entry.getName()) + ext;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntryBounds(Request request, Entry entry)
             throws Exception {
         return new Result(entry.getNorth(request) + "," + entry.getWest(request) + ","
                           + entry.getSouth(request) + "," + entry.getEast(request), "text");
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param jobId The job ID
-     * @param entry _more_
-     * @param ext _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public OutputStream getOutputStream(Request request, Object jobId,
                                         Entry entry, String ext)
             throws Exception {
@@ -667,19 +504,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             getStorageManager().getUncheckedFileOutputStream(file), 100000);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param jobId The job ID
-     * @param entry _more_
-     * @param ext _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     static boolean buffered = true;
 
     /**
@@ -705,18 +529,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return new PrintWriter(getOutputStream(request, jobId, entry, ext));
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param jobId The job ID
-     * @param entry _more_
-     * @param ext _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public DataOutputStream getDataOutputStream(Request request,
             Object jobId, Entry entry, String ext)
             throws Exception {
@@ -724,11 +536,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                 ext));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Result getDummyResult() {
         Result result = new Result();
         result.setMimeType("dummy");
@@ -737,16 +544,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return result;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param dflt _more_
-     * @param arg _more_
-     *
-     * @return _more_
-     */
     public int getSkip(Request request, int dflt, String arg) {
         String skip = request.getString(arg, "");
         if (skip.equals("${skip}")) {
@@ -831,29 +628,11 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return file;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     */
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {}
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param icon _more_
-     *
-     * @return _more_
-     */
     public String getAbsoluteIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
-
-
 
 }

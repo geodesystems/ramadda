@@ -5,10 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.services.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.MapInfo;
@@ -20,16 +18,13 @@ import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
 
 /**
  *
@@ -40,29 +35,19 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHandler implements RecordConstants {
 
-    /** _more_ */
     public static final String METADATA_URL = "nlas_url";
 
-    /** _more_ */
     public static final String TAG_FIELDS = "fields";
 
-    /** _more_ */
     public static final String TAG_FIELD = "field";
 
-    /** _more_ */
     public static final String TAG_ATTRIBUTE = "attribute";
 
-    /** _more_ */
     public static final String ATTR_DATATYPE = "datatype";
 
-    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_ */
     public static final String ATTR_VALUE = "value";
-
-
-
 
     /**
      * ctor
@@ -76,16 +61,8 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public abstract RecordOutputHandler getRecordOutputHandler();
 
-
-    /** _more_ */
     private HashSet entryChanged = new HashSet();
 
     /**
@@ -118,19 +95,6 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
         entryChanged.remove(entry.getId());
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param collectionEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RecordEntry getChildRecordEntry(Entry collectionEntry)
             throws Exception {
         Request tmpRequest = getRepository().getTmpRequest();
@@ -146,7 +110,6 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
 
         return null;
     }
-
 
     /**
      * This method gets called when we are creating some xml encoding of the entry.
@@ -166,7 +129,6 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
             throw new RuntimeException(exc);
         }
     }
-
 
     /**
      * add ATOM metadata for the given collectionEntry
@@ -240,11 +202,8 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
 
             }
 
-
         }
     }
-
-
 
     /**
      * utility to make a string macro
@@ -269,6 +228,5 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
     public String getAbsoluteIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
-
 
 }

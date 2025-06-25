@@ -5,13 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.util.grid.IdwGrid;
@@ -27,11 +25,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 */
 
-
-
-
-
-
 import ucar.unidata.util.Misc;
 
 import java.awt.*;
@@ -41,18 +34,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 /**
  * A BaseRecord visitor that holds the IdwGrid
- *
- *
  */
 @SuppressWarnings("unchecked")
 public class GridVisitor extends BridgeRecordVisitor {
-
-    /** the request */
     Request request;
 
     /** the grid that does the real work */
@@ -67,13 +53,10 @@ public class GridVisitor extends BridgeRecordVisitor {
     /** are we gridding another attribute instead of altitude */
     int valueAttr = -1;
 
-    /** _more_ */
     private List<Integer> divisors;
 
     /** are we using altitude as the gridded value */
     boolean usingAltitude;
-
-    /** _more_ */
     boolean usingPointcount;
 
     /** how big an image */
@@ -82,14 +65,6 @@ public class GridVisitor extends BridgeRecordVisitor {
     /** how big an image */
     int imageWidth;
 
-    /**
-     * ctor
-     *
-     *
-     * @param handler the output handler
-     * @param request the request
-     * @param llg the grid
-     */
     public GridVisitor(RecordOutputHandler handler, Request request,
                        IdwGrid llg) {
         super(handler);
@@ -122,11 +97,7 @@ public class GridVisitor extends BridgeRecordVisitor {
 
     }
 
-    /**
-     * get the grid
-     *
-     * @return the grid
-     */
+
     public IdwGrid getGrid() {
         return llg;
     }
@@ -142,15 +113,6 @@ public class GridVisitor extends BridgeRecordVisitor {
      */
     int cnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
                                  BaseRecord record) {
 
@@ -176,7 +138,6 @@ public class GridVisitor extends BridgeRecordVisitor {
             }
         }
 
-
         double lat = pointRecord.getLatitude();
         double lon = pointRecord.getLongitude();
         synchronized (MUTEX) {
@@ -190,7 +151,6 @@ public class GridVisitor extends BridgeRecordVisitor {
 
         return true;
     }
-
 
     /**
      * Done. Tell the llg to average its values

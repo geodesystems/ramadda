@@ -5,10 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.binary.*;
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
@@ -25,59 +23,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 
-
 /**
  * This is a wrapper around  ramadda Entry and a RecordFile
  *
- *
  */
 public class PointEntry extends RecordEntry {
-
-    /** _more_ */
     public static final String SUFFIX_BINARY_DOUBLE = ".dllb";
-
-    /** _more_ */
     public static final String SUFFIX_BINARY_FLOAT = ".fllb";
-
-    /** _more_ */
     public static final String FILE_BINARY_DOUBLE = "lightweight"
                                                     + SUFFIX_BINARY_DOUBLE;
 
-    /** _more_ */
     public static final String FILE_BINARY_FLOAT = "lightweight"
                                                    + SUFFIX_BINARY_FLOAT;
 
-    /** _more_ */
     public static final String FILE_BINARY_DEFAULT = FILE_BINARY_FLOAT;
-
-
 
     /** This points to the  short lat/lon/alt binary file ramadda creates on the fly */
     private PointFile binaryPointFile;
 
 
-
-    /**
-     * ctor
-     *
-     * @param outputHandler _more_
-     * @param request the request
-     * @param entry the entry
-     */
     public PointEntry(PointOutputHandler outputHandler, Request request,
                       Entry entry) {
         super(outputHandler, request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param l _more_
-     *
-     * @return _more_
-     */
     public static List<PointEntry> toPointEntryList(List l) {
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         for (Object o : l) {
@@ -87,34 +56,14 @@ public class PointEntry extends RecordEntry {
         return pointEntries;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getOutputHandler();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public PointFile getPointFile() throws Exception {
         return (PointFile) getRecordFile();
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile getRecordFile() throws Exception {
         RecordFile recordFile = (RecordFile) super.getRecordFile();
@@ -133,36 +82,14 @@ public class PointEntry extends RecordEntry {
         return recordFile;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     public static boolean isDoubleBinaryFile(File f) {
         return f.toString().endsWith(SUFFIX_BINARY_DOUBLE);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean isArealCoverage() throws Exception {
         return getRecordFile().isCapable(PointFile.ACTION_AREAL_COVERAGE);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public File getQuickScanFile() {
         File entryDir = getOutputHandler().getStorageManager().getEntryDir(
                             getEntry().getId(), true);
@@ -177,8 +104,6 @@ public class PointEntry extends RecordEntry {
 
         return new File(IOUtil.joinDir(entryDir, FILE_BINARY_DEFAULT));
     }
-
-
 
     /**
      * apply the visitor to the point file
@@ -201,8 +126,6 @@ public class PointEntry extends RecordEntry {
         }
         super.visit(visitor, visitInfo);
     }
-
-
 
     /**
      * get the Point File for the short lat/lon/alt binary file
@@ -248,16 +171,6 @@ public class PointEntry extends RecordEntry {
         return binaryPointFile;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param outputFile file to write to
-     * @param pointFile file to read from
-     * @param asDouble _more_
-     *
-     * @throws Exception On badness
-     */
     public void writeBinaryFile(File outputFile, PointFile pointFile,
                                 boolean asDouble)
             throws Exception {
@@ -274,7 +187,5 @@ public class PointEntry extends RecordEntry {
                     .getUncheckedFileOutputStream(outputFile), null);
         }
     }
-
-
 
 }

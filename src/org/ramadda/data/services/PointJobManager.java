@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -29,39 +27,17 @@ import java.util.HashSet;
 import java.util.List;
 
 
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class PointJobManager extends RecordJobManager {
 
-
-    /**
-     * ctor
-     *
-     * @param pointOutputHandler the output handler
-     */
     public PointJobManager(PointOutputHandler pointOutputHandler) {
         super(pointOutputHandler);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getRecordOutputHandler();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dummy _more_
-     *
-     * @return _more_
-     */
     public String makeJobUrl(Request dummy) {
         dummy.remove(ARG_GETDATA);
         dummy.remove(ARG_RECORDENTRY);
@@ -96,7 +72,5 @@ public class PointJobManager extends RecordJobManager {
 
         return super.makeJobUrl(dummy);
     }
-
-
 
 }

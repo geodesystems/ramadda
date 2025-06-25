@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.output.*;
 
 import java.awt.Color;
-
-
 
 /**
  */
@@ -34,60 +31,41 @@ public interface RecordConstants extends Constants {
 
     public static final String ARG_ADD_LATLON = "addlatlon";
 
-
-
-
-    /** _more_ */
     public static final String ARG_GEOREFERENCE = "georeference";
 
-    /** _more_ */
     public static final String ARG_FIELD_USE = "field_use";
 
-    /** _more_ */
     public static final String ARG_TRACKS = "tracks";
 
-    /** _more_ */
     public static final String ARG_BITFIELD = "bitfield";
 
-    /** _more_ */
     public static final String ARG_CSV = "true";
 
-    /** _more_ */
     public static final String ARG_ALL = "all";
 
     /** url argument */
     public static final String ARG_GETDATA = "getdata";
 
-    /** _more_ */
     public static final String ARG_INCLUDEWAVEFORM = "includewaveform";
-
 
     /** url argument */
     public static final String ARG_GRID_PREFIX = "grid.";
 
-
-    /** _more_ */
     public static final String ARG_FILLMISSING = "fillmissing";
 
-    /** _more_ */
     public static final String ARG_THRESHOLD = "threshold";
 
-    /** _more_ */
     public static final String ARG_GRID_POWER = ARG_GRID_PREFIX + "power";
 
-    /** _more_ */
     public static final String ARG_GRID_MINPOINTS = ARG_GRID_PREFIX
                                                     + "minpoints";
 
-    /** _more_ */
     public static final String ARG_GRID_RANGE_MIN = ARG_GRID_PREFIX
                                                     + "range_min";
 
-    /** _more_ */
     public static final String ARG_GRID_RANGE_MAX = ARG_GRID_PREFIX
                                                     + "range_max";
 
-    /** _more_ */
     public static final String ARG_GRID_SUM = ARG_GRID_PREFIX + "sum";
 
     /** url argument */
@@ -105,17 +83,12 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_GRID_IDW = ARG_GRID_PREFIX + "idw";
 
-
-    /** _more_ */
     public static final String ARG_GRID_BARNES = ARG_GRID_PREFIX + "barnes";
-
-
 
     /** url argument */
     public static final String ARG_GRID_RADIUS_DEGREES = ARG_GRID_PREFIX
                                                          + "radius.degrees";
 
-    /** _more_ */
     public static final String ARG_GRID_RADIUS_DEGREES_ORIG =
         ARG_GRID_RADIUS_DEGREES + ".orig";
 
@@ -123,21 +96,15 @@ public interface RecordConstants extends Constants {
     public static final String ARG_GRID_RADIUS_CELLS = ARG_GRID_PREFIX
                                                        + "radius.cells";
 
-    /** _more_ */
     public static final String ARG_REQUEST_CLIENT = "request.client";
 
-    /** _more_ */
     public static final String ARG_REQUEST_DOMAIN = "request.domain";
 
-    /** _more_ */
     public static final String ARG_REQUEST_EMAIL = "request.email";
 
-    /** _more_ */
     public static final String ARG_REQUEST_USER = "request.user";
 
-    /** _more_ */
     public static final String ARG_REQUEST_IP = "request.ip";
-
 
     /** url argument */
     public static final String ARG_JOB_EMAIL = "job.email";
@@ -160,8 +127,6 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_RECORDENTRY = "recordentry";
 
-
-
     /** url arg */
     public static final String ARG_CHART_WAVEFORM_COLORTABLE =
         "waveform.colortable";
@@ -172,11 +137,8 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_POINTCOUNT = "pointcount";
 
-
     /** url arg */
     public static final String ARG_SEARCH_PREFIX = "search_";
-
-
 
     /** url arg */
     public static final String ARG_AXIS_LOW = "axis.low";
@@ -193,13 +155,11 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_CHART_COLOR = "c.c.";
 
-
     /** url arg */
     public static final String ARG_SHOWURL = "showurl";
 
     /** url arg */
     public static final String ARG_KML_VISIBLE = "visible";
-
 
     /** url arg */
     public static final String ARG_HILLSHADE = "hillshade";
@@ -210,7 +170,6 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_HILLSHADE_ANGLE = "hillshade.angle";
 
-    /** _more_ */
     public static final String ARG_HEADER = "header";
 
     /** url arg */
@@ -225,17 +184,13 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_WAVEFORM_NAME = "waveform.name";
 
-
     /** url arg */
     public static final String ARG_MAP_SHOW = "map.show";
 
     /** url arg */
     public static final String ARG_POINTINDEX = "pointindex";
 
-    /** _more_ */
     public static final String JOB_TYPE_POINT = "point";
-
-
 
     /** defines the different gridding functions the user can choose */
     public static final String[] GRID_ARGS = {
@@ -253,25 +208,19 @@ public interface RecordConstants extends Constants {
         "Each grid cell holds the number of points within the cell",
     };
 
-
     /** corresponds toe the GRID_ARGS */
     public static final String[] GRID_LABELS = {
         "IDW average", "Sum of Values", "Minimum value", "Maximum value",
         "Average value", "Point count",
     };
 
-
-
-    /** _more_ */
     public static final int DFLT_WIDTH = 500;
 
-    /** _more_ */
     public static final int DFLT_HEIGHT = 500;
 
     /** constants */
     public static final int TIMESERIES_POINTS = 500;
 
-    /** _more_ */
     public static final int TIMESERIES_MAXPOINTS = 2000;
 
     /** constants */
@@ -283,23 +232,18 @@ public interface RecordConstants extends Constants {
     /** constants */
     public static final int TIMESERIES_WIDTH = 800;
 
-    /** _more_ */
     public static final int TIMESERIES_LEFT_WIDTH = 0;
 
-    /** _more_ */
     public static final int TIMESERIES_AXIS_WIDTHPER = 75;
 
     /** url argument */
     public static final String ARG_POINT_PRODUCT = "point.product";
 
-    /** _more_ */
     public static final String ARG_RECORD_PRODUCT = "record.product";
-
 
     /** property key for an icon */
     public static final String ICON_POINTS = "nlas.icon.points";
 
-    /** _more_ */
     public static final String ARG_RECORD_SKIPZ = "record.skipz";
 
     /** url arg */
@@ -307,7 +251,5 @@ public interface RecordConstants extends Constants {
 
     /** url arg */
     public static final String ARG_RECORD_LAST = "record.last";    
-
-
 
 }

@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.PointRecord;
-
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.BaseRecord;
@@ -22,72 +20,28 @@ import org.ramadda.util.Utils;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
-
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Thu, Jan 2, '14
- * @author         Enter your name here...
- */
 public class JsonVisitor extends BridgeRecordVisitor {
-
-
-    /** _more_ */
     private static final String COMMA_NL = ",\n";
     private static final String COMMA = ",";    
-
-    /** _more_ */
     private static final String QUOTE = "\"";
-
     private static final String VALUES_OPEN = JsonUtil.MAP_OPEN+ QUOTE+JsonUtil.FIELD_VALUES+"\":"+JsonUtil.LIST_OPEN;
-
     private static final String VALUES_CLOSE = JsonUtil.LIST_CLOSE+JsonUtil.MAP_CLOSE;
-
-
-    /** _more_ */
     private int rowCnt = 0;
-
-    /** _more_ */
     private List<RecordField> fields;
-
     private List<RecordField> fieldsToUse;
-
-    /** _more_ */
     private Appendable pw;
-
     private OutputStream os;
-    
-    /** _more_ */
     private boolean initParams = false;
-
-    /** _more_ */
     private boolean addElevation;
-
-    /** _more_ */
     private boolean addGeo;
-
-    /** _more_ */
     private boolean addTime;
 
-
-
-    /**
-     * _more_
-     *
-     * @param handler _more_
-     * @param request _more_
-     * @param processId _more_
-     * @param mainEntry _more_
-     * @param suffix _more_
-     */
     public JsonVisitor(RecordOutputHandler handler, Request request,
                        Object processId, Entry mainEntry, String suffix) {
         super(handler, request, processId, mainEntry, suffix);
@@ -97,17 +51,6 @@ public class JsonVisitor extends BridgeRecordVisitor {
 	pw.append(s);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
                                  BaseRecord record)
             throws Exception {
@@ -194,7 +137,6 @@ public class JsonVisitor extends BridgeRecordVisitor {
             }
         }
 
-
         if (addGeo) {
             write(COMMA);
             d = pointRecord.getLatitude();
@@ -231,14 +173,6 @@ public class JsonVisitor extends BridgeRecordVisitor {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void finished(RecordFile file, VisitInfo visitInfo)
             throws Exception {

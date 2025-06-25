@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
@@ -23,7 +22,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -34,7 +32,6 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -43,17 +40,12 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.zip.*;
 
-
-
 /**
  */
 @SuppressWarnings("unchecked")
 public class RecordJobManager extends JobManager implements RecordConstants {
 
-
-    /** _more_ */
     private RecordOutputHandler recordOutputHandler;
-
 
     /**
      * ctor
@@ -65,7 +57,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         super(recordOutputHandler.getRepository());
         this.recordOutputHandler = recordOutputHandler;
     }
-
 
     /**
      * get the url that lists the job status
@@ -88,26 +79,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         return actionUrl;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RecordOutputHandler getRecordOutputHandler() {
         return recordOutputHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RecordFormHandler getRecordFormHandler() {
         return recordOutputHandler.getFormHandler();
     }
-
 
     /**
      * Apply the visitor to each record file in turn
@@ -165,7 +143,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         invokeAndWait(callable);
     }
 
-
     public void visit(
             final Request request,
             final List<? extends RecordEntry> recordEntries,
@@ -182,9 +159,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 	visitor.close(visitInfo);
 	//                    System.err.println("POINT: processing done time:" + (t2 - t1));
     }
-
-
-
 
     /**
      * Apply the visitor to to the record file
@@ -203,7 +177,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         recordEntries.add(recordEntry);
         visitSequential(request, recordEntries, visitor, visitInfo);
     }
-
 
     /**
      * This applies the visitor to each of the RecordEntries concurrently (well, using the executor service)
@@ -348,7 +321,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     }
                 };
 
-
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
 								parent, null, name, "", request.getUser(),
                                      typeHandler, initializer);
@@ -395,7 +367,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             });
         }
 
-
         long   productSize = 0;
         File[] files       = productDir.listFiles();
         //TODO: Should zip them here.
@@ -409,7 +380,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         jobInfo.setProductSize(productSize);
         jobHasFinished(jobInfo);
     }
-
 
     /**
      * this shows either the html or xml listing of the job status
@@ -478,7 +448,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 getStorageManager().getFileInputStream(
                     IOUtil.joinDir(productDir, productId)), "");
         }
-
 
         boolean stillRunning = jobInfo.isRunning();
         long    startTime    = jobInfo.getStartDate().getTime();
@@ -579,8 +548,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 productSB.append("</td></tr>");
             }
 
-
-
             xml.append(XmlUtil.closeTag(TAG_PRODUCTS));
             if (fileCnt > 1) {
                 String getFileUrl =
@@ -595,7 +562,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 productSB.append("</td></tr>");
             }
 
-
             if (fileCnt > 0) {
                 productSB.append("</table>");
             } else {
@@ -609,8 +575,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                         productSB.toString()));
             }
         }
-
-
 
         sb.append(HtmlUtils.formEntry(msgLabel("Job ID"), jobId));
 
@@ -637,7 +601,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                       ((endTime - startTime) / 1000)
                                       + " seconds"));
 
-
         if (stillRunning) {
             StringBuffer statusSB = new StringBuffer();
             for (String statusItem : jobInfo.getStatusItems()) {
@@ -663,11 +626,8 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                         jobInfo.getNumPoints()) + " points"));
         }
 
-
-
         xml.append(XmlUtil.closeTag(TAG_JOB));
         sb.append(HtmlUtils.formTableClose());
-
 
         if (request.responseAsXml()) {
             return getRepository().makeOkResult(request, xml.toString());
@@ -679,28 +639,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public OutputType getOutputResults() {
         return getRecordOutputHandler().OUTPUT_RESULTS;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dummy _more_
-     *
-     * @return _more_
-     */
     public String makeJobUrl(Request dummy) {
         return dummy.getAbsoluteUrl();
     }
-
 
     /**
      * This does the product generation asynchronously. It creates a job id, spawns off a thread to actually
@@ -731,7 +676,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     "Error processing job: " + exc);
         }
     }
-
 
     /**
      * This does the real work of running the processing job
@@ -820,7 +764,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 jobInfo.getJobId().toString(), ARG_RESPONSE, RESPONSE_XML,
             });
 
-
             String cancelUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                  new String[] {
@@ -853,9 +796,5 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         return new Result(actionUrl);
     }
-
-
-
-
 
 }

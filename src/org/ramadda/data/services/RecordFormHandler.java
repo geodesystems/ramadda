@@ -5,16 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.record.*;
 
-
-
 import org.ramadda.data.record.*;
-
-
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -25,11 +19,8 @@ import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
@@ -47,13 +38,11 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * Creates most of the web interfaces - the subset/products form, map overview, etc.
@@ -63,10 +52,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class RecordFormHandler extends RepositoryManager implements RecordConstants {
 
-    /** _more_ */
     public static final String ARG_START = "start";
 
-    /** _more_ */
     public static final String ARG_NUMPOINTS = "numpoints";
 
     /** an array of colors */
@@ -74,9 +61,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         Color.blue, Color.black, Color.red, Color.green, Color.orange,
         Color.cyan, Color.magenta, Color.pink, Color.yellow
     };
-
-
-
 
     /** formats # points */
     private static DecimalFormat pointCountFormat =
@@ -91,9 +75,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
     /** the output handler */
     private RecordOutputHandler recordOutputHandler;
 
-    /** _more_ */
     public static final String UNIT_M = "m";
-
 
     /**
      * ctor
@@ -105,16 +87,9 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         this.recordOutputHandler = recordOutputHandler;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RecordOutputHandler getOutputHandler() {
         return recordOutputHandler;
     }
-
 
     /**
      * get the job manager
@@ -125,7 +100,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         return recordOutputHandler.getRecordJobManager();
     }
 
-
     /**
      * get the job manager
      *
@@ -134,7 +108,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
     public RecordJobManager getRecordJobManager() {
         return (RecordJobManager) recordOutputHandler.getRecordJobManager();
     }
-
 
     /**
      * format the file size
@@ -157,7 +130,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         return sizeFormat.format(bytes / 1000000000.0) + "&nbsp;GB";
     }
 
-
     /**
      * make the selector for the given format
      *
@@ -175,7 +147,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         return new HtmlUtils.Selector(t.getLabel(), t.getId(), null);
     }
 
-
     /**
      * format number of points
      *
@@ -189,7 +160,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
     }
 
-
     /**
      * format date
      *
@@ -202,9 +172,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             return sdf.format(date);
         }
     }
-
-
-
 
     /**
      * list the metadata for the given entry
@@ -229,8 +196,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
         return new Result("", sb);
     }
-
-
 
     /**
      * make a color object
@@ -258,17 +223,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         return c;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param recordEntry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryMetadata(Request request, RecordEntry recordEntry,
                                  StringBuffer sb)
             throws Exception {
@@ -281,15 +235,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param recordEntry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void getEntryMetadataInner(Request request,
                                        RecordEntry recordEntry,
                                        StringBuffer sb)
@@ -366,19 +311,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param recordEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntryView(Request request, OutputType outputType,
                                   final RecordEntry recordEntry)
             throws Exception {
@@ -495,7 +427,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                         continue;
                     }
 
-
                     sb.append("<td align=right>");
                     if (field.getArity() > 1) {
                         sb.append("...");
@@ -545,7 +476,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
     }
 
-
     /**
      * get the product formats selected in the request
      *
@@ -564,15 +494,6 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         return formats;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param bounds _more_
-     *
-     * @return _more_
-     */
     public double getDefaultRadiusDegrees(Request request,
                                           Rectangle2D.Double bounds) {
         int width = request.get(ARG_WIDTH, DFLT_WIDTH);
@@ -584,7 +505,5 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
         return 0;
     }
-
-
 
 }

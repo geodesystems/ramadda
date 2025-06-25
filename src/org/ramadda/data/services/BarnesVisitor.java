@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import au.gov.bom.aifs.osa.analysis.Barnes;
-
 
 import org.ramadda.data.point.*;
 
@@ -19,9 +17,7 @@ import org.ramadda.repository.*;
 import org.ramadda.util.grid.IdwGrid;
 import org.ramadda.util.grid.LatLonGrid;
 
-
 import ucar.unidata.util.Misc;
-
 
 import java.awt.*;
 
@@ -32,27 +28,16 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 /**
  * A BaseRecord visitor that holds the IdwGrid
- *
- *
  */
 @SuppressWarnings("unchecked")
 public class BarnesVisitor extends BridgeRecordVisitor {
-
-    /** the request */
     Request request;
 
     /** are we gridding another attribute instead of altitude */
     private int valueAttr = -1;
-
-    /** _more_ */
     private List<Integer> divisors;
-
-    /** _more_ */
     private List<String> divisorToks = new ArrayList<String>();
 
     /** how big an image */
@@ -60,38 +45,14 @@ public class BarnesVisitor extends BridgeRecordVisitor {
 
     /** how big an image */
     private int imageWidth;
-
-    /** _more_ */
     private Rectangle2D.Double bounds;
-
-    /** _more_ */
     private float minLat;
-
-    /** _more_ */
     private float maxLat;
-
-    /** _more_ */
     private float minLon;
-
-    /** _more_ */
     private float maxLon;
-
-    /** _more_ */
     private List<float[]> points;
-
-    /** _more_ */
     private IdwGrid grid;
 
-    /**
-     * ctor
-     *
-     *
-     * @param handler the output handler
-     * @param request the request
-     * @param width _more_
-     * @param height _more_
-     * @param bounds _more_
-     */
     public BarnesVisitor(RecordOutputHandler handler, Request request,
                          int width, int height, Rectangle2D.Double bounds) {
         super(handler);
@@ -109,35 +70,12 @@ public class BarnesVisitor extends BridgeRecordVisitor {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public IdwGrid getGrid() {
         return grid;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     */
     int cnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
                                  BaseRecord record) {
 
@@ -168,7 +106,6 @@ public class BarnesVisitor extends BridgeRecordVisitor {
             //            System.err.println("orig:" + o +" %:" + value +" total:" + values);
         }
 
-
         if (points == null) {
             points = new ArrayList<float[]>();
             minLat = maxLat = lat;
@@ -194,10 +131,8 @@ public class BarnesVisitor extends BridgeRecordVisitor {
         return true;
     }
 
-
     /**
      * Done. Tell the llg to average its values
-     *
      *
      * @throws Exception _more_
      */
@@ -221,7 +156,6 @@ public class BarnesVisitor extends BridgeRecordVisitor {
         float[][] faaGrid = Barnes.point2grid(lons, lats, data3D,
                                 (float) ap.getScaleLengthGU(), gain,
                                 numPasses);
-
 
         grid = new IdwGrid(faaGrid.length, faaGrid[0].length, maxLat, minLon,
                            minLat, maxLon);

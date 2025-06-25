@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.*;
@@ -21,9 +20,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.sql.Clause;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
@@ -34,8 +31,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TemporaryDir;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
-
-
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -52,7 +47,6 @@ import java.text.DecimalFormat;
 
 import java.text.DecimalFormat;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -61,8 +55,6 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import java.util.zip.*;
-
-
 
 /**
  * This implements a number of the top-level record api services.
@@ -75,7 +67,6 @@ import java.util.zip.*;
 
 public abstract class RecordApiHandler extends SpecialSearch implements RequestHandler,
         RecordConstants {
-
 
     /**
      * ctor
@@ -92,14 +83,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         super(repository, node, props);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public abstract RecordOutputHandler getRecordOutputHandler();
-
 
     /**
      * Utility to make the HTML header
@@ -111,7 +95,6 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
      */
     public void makeHeader(Request request, StringBuffer sb)
             throws Exception {}
-
 
     /**
      * Utility to make a Result object
@@ -130,7 +113,6 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         return getRepository().getEntryManager().addEntryHeader(request,
                 getRepository().getEntryManager().getRootEntry(), result);
     }
-
 
     /**
      * Handle the metrics API call
@@ -151,8 +133,6 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             //            sb.append(getPageHandler().showDialogError("You must be a site administrator to see metrics"));
             //            return makeResult(request, sb);
         }
-
-
 
         Hashtable<String, long[]> info = new Hashtable<String, long[]>();
         List<Entry>               entries        = new ArrayList<Entry>();
@@ -225,12 +205,10 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         sb.append(HtmlUtils.colRight(size));
         sb.append("</tr>");
 
-
         sb.append("</table>");
 
         return makeResult(request, sb);
     }
-
 
     /**
      * Handles the show all metrics API request
@@ -285,7 +263,6 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
                 return makeResult(request, sb);
             }
         }
-
 
         Clause  clause;
         boolean isAdmin = request.getUser().getAdmin();
@@ -377,6 +354,5 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
                           getRepository().getMimeTypeFromSuffix(".csv"));
 
     }
-
 
 }

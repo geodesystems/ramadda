@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordFileContext;
@@ -42,8 +41,6 @@ import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 
-
-
 @SuppressWarnings("unchecked")
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
 									   RecordFileContext {
@@ -60,7 +57,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         super(repository, type, description);
     }
 
-    
     public RecordTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -70,7 +66,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return getTypeProperty("record.namespace", "record");
     }
 
-    
     public String getFieldProperty(String field, String key) {
         key = getContextNamespace() + "." + field + "." + key;
         String v = getRepository().getProperty(key);
@@ -81,13 +76,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return null;
     }
 
-    
     public PropertyProvider getPropertyProvider() {
         return getRepository();
     }
 
-
-    
     public RecordOutputHandler getRecordOutputHandler() {
         if (recordOutputHandler == null) {
             try {
@@ -100,8 +92,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return recordOutputHandler;
     }
 
-
-    
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -120,28 +110,19 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                     tag, props);
     }
 
-
-
-    
     public RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
         return new RecordOutputHandler(getRepository(), null);
     }
 
-
-    
     public void addToProcessingForm(Request request, Entry entry,
                                     Appendable sb)
             throws Exception {}
 
-    
     public boolean includedInRequest(Request request, RecordEntry recordEntry)
             throws Exception {
         return true;
     }
 
-
-
-    
     @Override
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
@@ -168,9 +149,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
     }
 
-
-
-    
     public void initializeRecordEntry(Entry entry, File originalFile,
                                       boolean force)
             throws Exception {
@@ -189,7 +167,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             RecordFile.getPropertiesForFile(originalFile.toString(),
                                             PointFile.DFLT_PROPERTIES_FILE);
 
-
         //Make the properties string
         String   contents = makePropertiesString(properties);
         Object[] values   = entry.getTypeHandler().getEntryValues(entry);
@@ -206,7 +183,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
     }
 
-    
     public String makePropertiesString(Hashtable properties) {
         StringBuffer sb = new StringBuffer();
         for (java.util.Enumeration keys = properties.keys();
@@ -221,19 +197,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return sb.toString();
     }
 
-
-    
     public void log(String msg) {
         getRepository().getLogManager().logInfo("RecordTypeHandler:" + msg);
     }
 
-
-    
     public String getEntryCategory(Entry entry) {
         return getTypeProperty("entry.category", "");
     }
 
-    
     @Override
     public void initializeCopiedEntry(Entry entry, Entry originalEntry)
             throws Exception {
@@ -241,8 +212,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         initializeNewEntry(null, entry, NewType.COPY);
     }
 
-
-    
     public Hashtable getRecordProperties(Entry entry) throws Exception {
         Object[]  values = entry.getTypeHandler().getEntryValues(entry);
 	//Some of the types have an empty values array?
@@ -255,14 +224,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
         Hashtable p                = null;
 
-
         if (typeProperties != null) {
             if (p == null) {
                 p = new Hashtable();
             }
             p.putAll(Utils.getProperties(typeProperties,true));
         }
-
 
         if (propertiesString != null) {
             if (p == null) {
@@ -274,14 +241,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return p;
     }
 
-    
     public String getRecordPropertiesFromType(Request request,Entry entry) throws Exception {
 	String props = getTypeProperty("record.properties", (String) null);
 	if(props!=null) {
 	    StringBuilder sb = new StringBuilder();
 	    boolean continued = false;
 	    for(String line: Utils.split(props,"\n")) {
-		
+
 		if(!continued)  sb.append("\n");
 		continued=false;
 		String tline = line.trim();
@@ -296,14 +262,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return props;
     }
 
-
-    
     public boolean okToCacheRecordFile(Request request, Entry entry) {
         return getTypeProperty("record.file.cacheok", true);
     }
 
-
-    
     public String getCacheFileName(Request request, Entry entry)
             throws Exception {
         String      suffix = "";
@@ -329,8 +291,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return "record_" + entry.getChangeDate() + md5 + suffix.toLowerCase() + ".csv";
     }
 
-
-    
     public final RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
         Hashtable properties = getRecordProperties(entry);
@@ -352,8 +312,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return initRecordFile(request, entry, properties, recordFile);
     }
 
-
-    
     protected RecordFile initRecordFile(Request request, Entry entry,
                                         Hashtable properties,
                                         RecordFile recordFile)
@@ -373,8 +331,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return recordFile;
     }
 
-
-    
     public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
         String thePath = getPathForEntry(request, entry,true);
@@ -419,7 +375,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	    path.setRequestArgs(new String[]{toks.get(0),value});
 	}
 
-
         if (debug) {
             System.err.println(
                 "RecordTypeHandler.getPathForRecordEntry entry:" + entry
@@ -428,8 +383,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return path;
     }
 
-
-    
     public List<Macro> getMacros(Entry entry) throws Exception {
         List<Macro> macros = null;
         Hashtable   props  = getRecordProperties(entry);
@@ -446,7 +399,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return macros;
     }
 
-    
     public String convertPath(Request request, Entry entry, String path,
 			      Hashtable requestProperties)
             throws Exception {
@@ -536,9 +488,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return path;
     }
 
-
-
-    
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
@@ -556,8 +505,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             requestProperties);
     }
 
-
-    
     public RecordFile doMakeRecordFile(Entry entry, String className,
                                        Hashtable properties,
                                        Hashtable requestProperties)
@@ -586,16 +533,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                            + className);
     }
 
-
-
-
-
-    
     public void getFilters(Request request, Entry entry,
                            RecordFile recordFile,
                            List<RecordFilter> filters) {}
 
-    
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
@@ -610,9 +551,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return super.canHandleResource(path, filename);
     }
 
-
-
-    
     public RecordFileFactory getRecordFileFactory() {
         if (recordFileFactory == null) {
             recordFileFactory = doMakeRecordFileFactory();
@@ -621,26 +559,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return recordFileFactory;
     }
 
-
-    
     public RecordFileFactory doMakeRecordFileFactory() {
         return new RecordFileFactory();
     }
 
-
-    
     public boolean isRecordFile(String path) throws Exception {
         return getRecordFileFactory().canLoad(path);
     }
 
-
-
-    
     public String macro(String s) {
         return "${" + s + "}";
     }
 
-    
     @Override
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
@@ -648,65 +578,45 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         getRecordOutputHandler().getServiceInfos(request, entry, services);
     }
 
-
-
-    
     public boolean shouldProcessResource(Request request, Entry entry) {
 	if(entry.getResource().hasResource()) 
 	    return entry.getTypeHandler().getTypeProperty("record.processresource",true);
 	return entry.getTypeHandler().getTypeProperty("record.processresource",false);
     }
 
-
-
-    
     public String getAbsoluteIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
-    
     public String getChartProperty(Request request, Entry entry, String prop,
                                    String dflt) {
         return getTypeProperty(prop, dflt);
     }
 
-    
     public static class Macro {
 
-        
         String name;
 
-        
         String dflt;
 
-        
         String type;
 
-        
         String label;
 
-        
         String values;
 
-        
         boolean multiple = false;
 
-        
         String delimiter;
 
-        
         String template;
 
-        
         String multitemplate;
 
-        
         String nonetemplate;
 
-        
         String rows;
 
-        
         public Macro(String macro, Hashtable props) {
             this.name = macro;
             type = Utils.getProperty(props, "request." + macro + ".type",
@@ -735,7 +645,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                      null);
         }
 
-        
         public String toString() {
             return name;
         }

@@ -5,23 +5,19 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.services;
 
-
 import org.ramadda.data.record.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.util.geo.Bounds;
 
 import ucar.unidata.util.IOUtil;
 
-
 import java.io.File;
 
 import java.util.concurrent.*;
-
 
 /**
  * This is a wrapper around  ramadda Entry and a RecordFile
@@ -29,7 +25,6 @@ import java.util.concurrent.*;
  *
  */
 public class RecordEntry implements Runnable, Callable<Boolean> {
-
 
     /** the output handler */
     private RecordOutputHandler recordOutputHandler;
@@ -88,8 +83,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         return bounds;
     }
 
-
-
     public boolean isEnabled() throws Exception {
         return getRecordFile() != null;
     }
@@ -101,7 +94,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     public BaseRecord getRecord(int index) throws Exception {
         return getRecordFile().getRecord(index);
     }
-
 
     /**
      * create the record filter from the request
@@ -131,7 +123,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     public Object getProcessId() {
         return processId;
     }
-
 
     /**
      * How many records in the record file
@@ -213,7 +204,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         return Boolean.TRUE;
     }
 
-
     /**
      * apply the visitor to the record file
      */
@@ -254,6 +244,5 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     public Request getRequest() {
         return request;
     }
-
 
 }
