@@ -1075,13 +1075,15 @@ public class EntryManager extends RepositoryManager {
 		if(typeHandler!=null) theTypeHandlers.add(typeHandler);
 	    }
 	} else {
-	    for (TypeHandler typeHandler : theTypeHandlers) {
+	    for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
 		if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
 		    continue;
 		}
 		theTypeHandlers.add(typeHandler);
 	    }
 	}	    
+
+
 
         for (TypeHandler typeHandler : theTypeHandlers) {
             if (checkCnt) {
