@@ -51,7 +51,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	literal:display.getProperty("colorByLiteral"),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdBelow","blue"),
-	nullColor:display.getProperty("nullColor"),	
+	nullColor:display.getProperty("nullColor",null),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
@@ -610,7 +610,10 @@ ColorByInfo.prototype = {
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
 	    this.lastValue = value;
-	    return  this.getColor(value, record,checkHistory);
+	    if(isNaN(value)) {
+		if(this.nullColor) return this.nullColor;
+	    }
+	    return   this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
@@ -710,7 +713,11 @@ ColorByInfo.prototype = {
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
-//	console.log("v:" + value +" index:" + index +" colors:" + this.colors);
+	if(isNaN(index)) {
+//	    console.log("v:" + value +" index:" + index +" null color:" + this.nullColor);
+	    return this.nullColor;
+	}
+//	    console.log("v:" + value +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {

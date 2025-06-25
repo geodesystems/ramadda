@@ -990,6 +990,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'defaultShape',ex:shapes},
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
+	{p:'hideMissingColor',ex:true,tt:'hide points when no color by value'},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
@@ -4306,6 +4307,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let pointsToAdd = [];
 	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+	    let hideMissingColor = this.getHideMissingColor();
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    let hideNaN = this.getHideNaN();
 
@@ -5001,13 +5003,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
                 }
 
-		
 
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
+		
+
 		if(highlightRecords && !record.isHighlight(this)) {
 		    props.fillColor =  unhighlightFillColor;
 		    props.strokeColor =  unhighlightStrokeColor;
@@ -5015,6 +5018,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(unhighlightRadius>0)
 			props.pointRadius = unhighlightRadius;
 		}
+
 
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
@@ -5184,6 +5188,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			props.rotation = rotateScale*record.getValue(rotateField.getIndex());
 		    }
 		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
+		    if(props.fillColor==null) {
+			if(hideMissingColor)
+			    return
+		    }
 		    if(radius>0) {
 			if(haveTooltip) {
 			    props.cursor = 'pointer';
