@@ -1471,7 +1471,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    HU.cssLink(sb, getPageHandler().getCdnPath("/style.css"));
 	    String logo= getPageHandler().getLogoImage(null);
 	    getPageHandler().sectionOpen(request,sb,getRepositoryName(),false);
-	    if(Utils.stringDefined(logo)) sb.append(HU.center(HU.img(logo,"",HU.attrs("width","80px"))));
+	    if(Utils.stringDefined(logo)) sb.append(HU.center(HU.img(logo,"",HU.attrs("width","120px"))));
 	} else {
 	    getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
 	}
