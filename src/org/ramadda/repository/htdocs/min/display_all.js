@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 24 20:29:37 MDT 2025";
+var build_date="RAMADDA build date: Tue Jun 24 20:53:15 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34431,7 +34431,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(opts.addSimpleToggle) {
 		    w  = HU.toggleBlock(HU.b(label),widget);
 		} else {
-		    w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
+		    w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','100%','display',opts.toggleClose?'none':'inline-block')],widget);
 		}
 		return HU.div([ATTR_CLASS,"display-search-block"], w);
 	    }
@@ -35622,7 +35622,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 return;
             }
 
+
             this.entryTypes = newTypes;
+	    /*
+            this.entryTypes = newTypes.sort((type1,type2)=>{
+		return type2.entryCount-type1.entryCount;
+	    });*/
 
             if (this.getEntryTypes()) {
                 let showType = {};
@@ -35698,12 +35703,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let option = HU.tag(TAG_OPTION, optionAttrs, label);
                 let map = catMap[type.getCategory()];
                 if (map == null) {
-		    if(addTypeCategory) 
-			catMap[type.getCategory()] = HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
+		    if(true||addTypeCategory)  {
+			catMap[type.getCategory()] =
+			    HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
+		    }
                     cats.push(type.getCategory());
                 }
+//		select+= option;
                 catMap[type.getCategory()] += option;
-
             }
             for (let i in cats) {
                 select += catMap[cats[i]];
@@ -35715,11 +35722,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
-		this.writeHtml(ID_TYPE_DIV, this.addWidget(this.getProperty('typesLabel','Types'),select));
+		this.writeHtml(ID_TYPE_DIV,
+			       this.addWidget(this.getProperty('typesLabel','Types'),select));
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
 				 { autoWidth: false,  "max-height":"100px"});
+
+	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
+		icon:true,
+		after:true,
+		single:true,
+		hide:false,
+		label:$(this).attr('data-label')});	    
+
             this.addExtraForm();
 	    this.typesPending=false;
 	    this.submitSearchForm();
