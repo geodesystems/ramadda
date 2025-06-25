@@ -292,6 +292,13 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private Result processEntryActionInner(Request request, Entry entry)
 	throws Exception {
 	boolean debug = false;
+
+	if(!getAccessManager().canAccessFile(request, entry)) {
+	    return handleError(request,"Sorry, you don't have the correct permissions to call the LLM Assistant");
+	}
+	
+
+
         String action = request.getString("action", "");
 	if(action.equals(ACTION_UPLOAD)) {
 	    return processUpload(request, entry);
@@ -299,9 +306,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
 	if (!action.equals(ACTION_ASSISTANT)) {
 	    return super.processEntryAction(request,entry);
-	}
-	if(!getAccessManager().canAccessFile(request, entry)) {
-	    return handleError(request,"Sorry, you don't have the correct permissions to call the LLM Assistant");
 	}
 
 	String assistantId = entry.getStringValue(request,"assistant_id","");
