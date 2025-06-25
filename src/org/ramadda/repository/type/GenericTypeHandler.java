@@ -202,8 +202,6 @@ public class GenericTypeHandler extends TypeHandler {
 		}
 		lastGroup = null;
 	    }
-	    
-
 
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
@@ -834,9 +832,6 @@ public class GenericTypeHandler extends TypeHandler {
 	if(!entry.getTypeHandler().canShowColumn(column)) {
 	    return;
 	}
-
-
-
 
 	if (values != null) {
 	    formatColumnHtmlValue(request, entry, column, tmpSb, values);

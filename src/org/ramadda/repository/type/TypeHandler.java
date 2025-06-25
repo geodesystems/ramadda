@@ -1301,14 +1301,12 @@ public class TypeHandler extends RepositoryManager {
 		    s = value.toString();
 		}
 
-
 		if(!showMissing && value!=null) {
 		    if(value instanceof Double) {
 			double d = (Double) value;
 			if(Double.isNaN(d)) continue;
 		    }
 		}
-
 
 		if(decimals>=0) {
 		    if(value instanceof Double) {
@@ -1317,7 +1315,6 @@ public class TypeHandler extends RepositoryManager {
 			s = value.toString();
 		    }
 		}		
-
 
 		if(prefix!=null) tmp.append(prefix);
 
@@ -1382,8 +1379,6 @@ public class TypeHandler extends RepositoryManager {
 			tmp.append(unit);
 		    }
 		}
-		
-
 
 		if(suffix!=null) tmp.append(suffix);
 	    } else {
@@ -2625,7 +2620,6 @@ public class TypeHandler extends RepositoryManager {
 			 "Deep Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Include entries this entry links to");
             links.add(l);	    
-
 
         }
 
