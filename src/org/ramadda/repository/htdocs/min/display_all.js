@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 24 08:35:21 MDT 2025";
+var build_date="RAMADDA build date: Tue Jun 24 20:27:42 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -2608,7 +2608,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	literal:display.getProperty("colorByLiteral"),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdBelow","blue"),
-	nullColor:display.getProperty("nullColor"),	
+	nullColor:display.getProperty("nullColor",null),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
@@ -3167,7 +3167,10 @@ ColorByInfo.prototype = {
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
 	    this.lastValue = value;
-	    return  this.getColor(value, record,checkHistory);
+	    if(isNaN(value)) {
+		if(this.nullColor) return this.nullColor;
+	    }
+	    return   this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
@@ -3267,7 +3270,11 @@ ColorByInfo.prototype = {
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
-//	console.log("v:" + value +" index:" + index +" colors:" + this.colors);
+	if(isNaN(index)) {
+//	    console.log("v:" + value +" index:" + index +" null color:" + this.nullColor);
+	    return this.nullColor;
+	}
+//	    console.log("v:" + value +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {
@@ -39544,6 +39551,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'defaultShape',ex:shapes},
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
+	{p:'hideMissingColor',ex:true,tt:'hide points when no color by value'},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
@@ -42860,6 +42868,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let pointsToAdd = [];
 	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+	    let hideMissingColor = this.getHideMissingColor();
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    let hideNaN = this.getHideNaN();
 
@@ -43555,13 +43564,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
                 }
 
-		
 
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
+		
+
 		if(highlightRecords && !record.isHighlight(this)) {
 		    props.fillColor =  unhighlightFillColor;
 		    props.strokeColor =  unhighlightStrokeColor;
@@ -43569,6 +43579,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(unhighlightRadius>0)
 			props.pointRadius = unhighlightRadius;
 		}
+
 
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
@@ -43738,6 +43749,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			props.rotation = rotateScale*record.getValue(rotateField.getIndex());
 		    }
 		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
+		    if(props.fillColor==null) {
+			if(hideMissingColor)
+			    return
+		    }
 		    if(radius>0) {
 			if(haveTooltip) {
 			    props.cursor = 'pointer';
