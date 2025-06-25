@@ -1735,7 +1735,7 @@ public class AccessManager extends RepositoryManager {
 	HU.center(sb,getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append("<br>");
+        sb.append(getPageHandler().showDialogNote("For a given action enter what user or user type can have access. <b>Note: always end with a 'none' to ban other users"));
         sb.append(HU.submit("Change Permissions"));
         sb.append("<br>");
         if (dataPolicies.size() > 0) {
@@ -1778,6 +1778,9 @@ public class AccessManager extends RepositoryManager {
 					   "target", "_datapolicies"));
 	    HU.span(sb,HU.b("Data Policy") + " " + help +"<br>" + select,"");
         }
+
+	
+
 
         sb.append("<table id='accessform' style=''><tr valign=top>");
         sb.append("<td>");
