@@ -267,7 +267,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public Result processLLM(Request request)  throws Exception {
 	try {
 	    if(request.isAnonymous()) {
-		String json = JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
+		String json = JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote("You must be signed in to use the rewrite service")));
 		return new Result("", new StringBuilder(json), "text/json");
 	    }
 
@@ -673,7 +673,7 @@ public class LLMManager extends  AdminHandlerImpl {
     private Result processTranscribeInner(Request request)  throws Throwable {	
 	boolean debug = request.get("debug",this.debug);
 	if(request.isAnonymous()) {
-	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
+	    return makeJsonErrorResult("You must be signed in to use the rewrite service");
 	}
 
 	String openAIKey = getOpenAIKey();
@@ -930,13 +930,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	String title = entry.getName() +" - " +(document?"Document Chat":"LLM");
         if (request.isAnonymous()) {
 	    if(request.exists("question")) {
-		return makeJsonError("You must be logged in to use the document chat");
+		return makeJsonError("You must be signed in to use the document chat");
 	    } 
 
 	    getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
             sb.append(
 		      getPageHandler().showDialogError(
-						       "You must be logged in to do document chat"));
+						       "You must be signed in to do document chat"));
 	    getPageHandler().entrySectionClose(request, entry, sb);
 	    return getEntryManager().addEntryHeader(request, entry,
 						    new Result(title, sb));

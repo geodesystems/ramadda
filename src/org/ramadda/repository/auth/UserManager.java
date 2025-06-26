@@ -69,7 +69,7 @@ public class UserManager extends RepositoryManager {
     public static final String DEFAULT_QUESTION = "";
     public static final String DEFAULT_ANSWER = "";        
 
-    public static final String LABEL_LOGIN  ="Login";    
+    public static final String LABEL_LOGIN  ="Sign in";    
     public static final String LABEL_NEW_USER  ="New User";
 
     public static final int MIN_PASSWORD_LENGTH = 8;
@@ -2105,7 +2105,7 @@ public class UserManager extends RepositoryManager {
             FavoriteEntry.getEntries(getFavorites(request, user));
         if (user.getAnonymous()) {
             throw new IllegalArgumentException(
-					       "Need to be logged in to add favorites");
+					       "Need to be signed in to add favorites");
         }
         if ( !request.getUser().canEditFavorites()) {
             throw new IllegalArgumentException("Cannot add favorites");
@@ -2139,10 +2139,10 @@ public class UserManager extends RepositoryManager {
 					      XmlUtil.attr(ATTR_CODE, CODE_ERROR),
 					      "No user defined"), MIME_XML);
             }
-            String msg = msg("You are not logged in");
+            String msg = msg("You are not signed in");
             if (request.exists(ARG_FROMLOGIN)) {
                 msg = msg + HU.vspace()
-		    + msg("If you had logged in perhaps you have cookies turned off?");
+		    + msg("If you had signed in perhaps you have cookies turned off?");
             }
 
             sb.append(HU.center(messageWarning(msg)));
@@ -2563,7 +2563,7 @@ public class UserManager extends RepositoryManager {
                     String       destUrl;
                     String       destMsg;
                     StringBuffer response = new StringBuffer();
-                    response.append(messageNote(msg("You are logged in")));
+                    response.append(messageNote(msg("You are signed in")));
                     if (request.exists(ARG_REDIRECT)) {
                         destUrl = request.getBase64String(ARG_REDIRECT, "");
                         //Gack  - make sure we don't redirect to the logout page
@@ -3034,10 +3034,10 @@ public class UserManager extends RepositoryManager {
         request.setSessionId(getSessionManager().createSessionId());
 
         StringBuilder sb = new StringBuilder();
-        sb.append(HU.center(messageNote(msg("You are logged out"))));
+        sb.append(HU.center(messageNote(msg("You are signed out"))));
         sb.append(makeLoginForm(request));
 
-        return addHeader(request, sb, "Logout");
+        return addHeader(request, sb, "Sign out");
     }
 
     public void initOutputHandlers() throws Exception {
@@ -3362,7 +3362,7 @@ public class UserManager extends RepositoryManager {
         User user = request.getUser();
         if (user.getAnonymous()) {
             StringBuffer sb = new StringBuffer();
-            sb.append(HU.center(messageWarning(msg("You need to be logged in to change user settings"))));
+            sb.append(HU.center(messageWarning(msg("You need to be signed in to change user settings"))));
             sb.append(makeLoginForm(request));
 
             return addHeader(request, sb, "User Settings");

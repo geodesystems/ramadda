@@ -625,7 +625,7 @@ public class EntryManager extends RepositoryManager {
 
     public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
         if (request.isAnonymous()) {
-	    return makeSnapshotForm(request, entry,messageError("Have to be an logged in to create a file snapshot"));
+	    return makeSnapshotForm(request, entry,messageError("Have to be an signed in to create a file snapshot"));
 	}
 
 	if(request.defined(ARG_CANCEL)) {

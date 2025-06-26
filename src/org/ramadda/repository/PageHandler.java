@@ -1606,8 +1606,8 @@ public class PageHandler extends RepositoryManager {
         } else {
 	    _links.add(new Link(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT),
 				"",
-				HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"),
-				"Logout"));
+				HU.faIcon("fa-sign-out-alt") + " " + msg("Sign out"),
+				"Sign out"));
             String label = user.getLabel().replace(" ", "&nbsp;");
 	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25,
 							   HU.attrs("class","ramadda-user-menu-image","title","User Settings - "+
