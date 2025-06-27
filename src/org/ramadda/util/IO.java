@@ -1582,10 +1582,19 @@ public class IO {
 	throws Exception {
         PrintWriter writer    = new PrintWriter(out);
         String      delimiter = ",";
+	int sheetNumber = 1;
         for (int i = 0; i < files.size(); i++) {
-            BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 new FileInputStream(files.get(i).getPath())));
+	    IO.Path path = files.get(i);
+	    String file=path.toString();
+	    InputStream inputStream;
+	    if (file.toLowerCase().endsWith(".xls")) {
+		inputStream=  XlsUtil.xlsToCsv(path,-1,sheetNumber);
+	    } else if (file.toLowerCase().endsWith(".xlsx")) {
+		inputStream=  XlsUtil.xlsxToCsv(path,-1,sheetNumber);
+	    } else {
+		inputStream = new FileInputStream(path.getPath());
+	    } 
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             int skip = rowSkip;
             while (true) {
                 String line = br.readLine();
