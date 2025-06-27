@@ -80,6 +80,7 @@ public class Seesv implements SeesvCommands {
     private int rawLines = 0;
     private String delimiter;
     private List<String> changeTo = new ArrayList<String>();
+    private boolean doingScript = false;
 
     private StringBuilder js = new StringBuilder();
     private Dater inDater = new Dater();    
@@ -5474,20 +5475,35 @@ public class Seesv implements SeesvCommands {
 	List<String> newArgs = new ArrayList<String>();
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
+	    if(arg.equals(CMD_SCRIPT)) {
+		doingScript = true;
+		break;
+	    }
+	}
 
+
+	for (int i = 0; i < args.size(); i++) {
+	    String arg = args.get(i);
 	    if(arg.equals("-ignore")) {
 		int cnt = parseInt(args.get(++i));
 		i+=cnt;
 		continue;
 	    }
 	    if(arg.equals(CMD_VALUE)) {
-		macros.put(args.get(++i),args.get(++i));
+		String name =args.get(++i);
+		String value = args.get(++i);
+		value  = getText(value);
+		macros.put(name,value);
+		if(doingScript) {
+		    newArgs.add(arg);
+		    newArgs.add(name);		    
+		    newArgs.add(value);
+		} 
 		continue;
 	    }
 	    if(arg.equals(CMD_FILEPATTERN)) {
 		filePatternNames.add(args.get(++i));		
 		filePatterns.add(args.get(++i));
-
 		continue;
 	    }
 	    if(arg.equals("-commands")) {
@@ -5535,7 +5551,7 @@ public class Seesv implements SeesvCommands {
 
 	//	System.err.println("macros:" + macros);
 
-	if(macros.size()>0) {
+	if(!doingScript && macros.size()>0) {
 	    List<String> tmp = new ArrayList<String>();
 	    for(String s: newArgs) {
 		s=  getValue(s);
@@ -5609,6 +5625,11 @@ public class Seesv implements SeesvCommands {
 		    }
 		    if(gotOne) continue;
 		}
+		if(arg.equals(CMD_VALUE)) {
+		    i++;
+		    continue;
+		}
+
 
 		CsvFunctionHolder func = getFunction(arg);
 		if(func!=null) {
@@ -5650,6 +5671,7 @@ public class Seesv implements SeesvCommands {
 		    System.err.println("Seesv args:" + this.args);
 		    continue;
 		}
+
 
 		if (arg.startsWith("-") ||arg.length() == 0) {
 		    throw new IllegalArgumentException("Unknown argument: args[" + i+"]=" +
@@ -5699,15 +5721,29 @@ public class Seesv implements SeesvCommands {
     private void outputScript(List<String> args, TextReader ctx) throws Exception {
 	PrintWriter pw        = new PrintWriter(getOutputStream());
 	pw.println("#!/bin/sh");
-	pw.println("#the SEESV environment variable needs to point to the directory holding the seesv.sh script in RAMADDA's SeeSV  release");
+	pw.println("#the SEESV environment variable needs to be set to seesv.sh script from RAMADDA's SeeSV  release");
 	pw.println("#");
-	pw.print("sh ${SEESV}/seesv.sh ");	
+	pw.print("sh ${SEESV} ");	
 	boolean seenPrint = false;
+	int cnt = 0;
 	for (String arg: args) {
 	    if(arg.equals(CMD_SCRIPT)) continue;
 	    if(arg.equals(CMD_PRINT)) seenPrint = true;
 	    arg = arg.replaceAll("\\$","\\\\\\$");
-	    pw.print("\"" + arg+"\" ");
+	    arg = arg.replace("`","\\`'");
+	    arg = arg.replace("\n"," \\\n");	    
+	    if(arg.startsWith("-") && arg.indexOf(" ")<0) {
+		pw.print("\\\n\t");
+		pw.print(arg+" ");
+	    } else {
+		pw.print("\"" + arg+"\" ");
+	    }
+	    cnt++;
+	    if(cnt>5) {
+		cnt=0;
+		//		pw.println ("  \\");
+	    }
+
 	}
 	if(!seenPrint)   pw.print(" -print ");
 	pw.print(" \"$1\" ");
