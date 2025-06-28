@@ -5302,7 +5302,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(new String[]{CMD_TORECORD,"-record"},0,(ctx,args,i) -> {
 		ctx.addProcessor(
-				 new Processor.Prettifier(ctx));
+				 new Processor.Prettifier(ctx,interactive));
 		return i;
 	    });
 
@@ -5825,7 +5825,25 @@ public class Seesv implements SeesvCommands {
 						   "Error: Odd number of arguments:\n" + err +" string:" + s);
 	    }
 	    //	    System.err.println(toks.get(j)+"="+ toks.get(j + 1));
-	    props.put(toks.get(j), toks.get(j + 1));
+	    String key =toks.get(j);
+	    String value = toks.get(j + 1);
+	    if(key.indexOf(",")>=0) {
+		//look for the suffix
+		String suffix=null;
+		int firstDotIndex = key.indexOf(".");
+		int lastDotIndex = key.lastIndexOf(".");		
+		if(firstDotIndex>=0 && firstDotIndex==lastDotIndex) {
+		    suffix = key.substring(lastDotIndex);
+		    key = key.substring(0,lastDotIndex-2);
+		}
+		
+		for(String subkey: Utils.split(key,",",true,true)) {
+		    if(suffix!=null) subkey = subkey+suffix;
+		    props.put(subkey,value);
+		}
+	    } else {
+		props.put(key,value);
+	    }
 	    //	    System.err.println(toks.get(j) +" " + toks.get(j+1));
 
 	}
