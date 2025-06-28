@@ -158,7 +158,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
         makeConvertForm(request, entry, sb, new Hashtable());
         getPageHandler().entrySectionClose(request, entry, sb);
 
-        return new Result("", sb);
+        return new Result(entry.getName() +" - Seesv Form" , sb);
     }
 
 
