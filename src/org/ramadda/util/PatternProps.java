@@ -2,44 +2,20 @@
 Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
-// Copyright (c) 2008-2025 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
-
-
 import ucar.unidata.util.StringUtil;
-
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Dictionary;
 import java.util.List;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-/**
- */
-
 public class PatternProps {
-
-    /**  */
     private Dictionary<String, String> props;
-
-    /**  */
     private List<Pattern> patterns = new ArrayList<Pattern>();
-
-    /**  */
     private List<String> strings = new ArrayList<String>();
-
-
-    /**
-     *
-     *
-     * @param props _more_
-     */
     public PatternProps(Dictionary<String, String> props) {
         this.props = props;
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
