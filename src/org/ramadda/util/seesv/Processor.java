@@ -2446,23 +2446,29 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Prettifier extends Processor {
-
 	private boolean decorate= false;
         private List headerValues;
-
         private int cnt = 0;
-
         private int maxWidth = 0;
 	private boolean bold = false;
-
-        public Prettifier(TextReader ctx) {
+	private boolean interactive=false;
+	
+	public Prettifier(TextReader ctx) {
 	    bold = Misc.equals(ctx.getProperty("label.bold"),"true");
 	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
 	}
 
+
+        public Prettifier(TextReader ctx,boolean interactive) {
+	    this(ctx);
+	    this.interactive = interactive;
+	}
+	
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
+		if(interactive)
+		    ctx.println("<table>");
                 headerValues = new ArrayList();
                 for (Object obj : row.getValues()) {
                     String name = obj.toString();
@@ -2490,20 +2496,35 @@ public abstract class Processor extends SeesvOperator {
             }
             List values = row.getValues();
             cnt++;
-            ctx.println("#" + cnt);
+
+	    if(interactive) {
+		ctx.println("<tr><td colspan=2 class=seesv-record-header>"+"#" + cnt+"</td></tr>");
+	    } else {
+		ctx.println("#" + cnt);
+	    }
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
 		    ? headerValues.get(i).toString()
 		    : "NA";
-                label = StringUtil.padLeft(label, maxWidth);
+		Object value = values.get(i);
+		if(interactive) {
+		    ctx.println("<tr><td align=right data-id='" + label+"' class='seesv-record-id'>"+Utils.makeLabel(label)+":</td><td>"+value+"</td></tr>");
+		    continue;
+		}
+		label = StringUtil.padLeft(label, maxWidth);
 		if(bold || decorate)
 		    label = Utils.ansi(Utils.ANSI_BLACK_BOLD,label);
-		Object value = values.get(i);
 		if(decorate)
 		    value = Utils.ansi(Utils.getAnsiColor(i), value);
                 ctx.println(label + ": " + value);
             }
         }
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+	    if(interactive)
+		ctx.println("</table>");
+        }
+
     }
 
     public void toCsv(List<Row> rows, Appendable sb) throws Exception {
