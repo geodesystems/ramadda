@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun 25 10:46:48 MDT 2025";
+var build_date="RAMADDA build date: Sun Jun 29 07:10:47 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -2560,7 +2560,7 @@ function DisplayAnimation(display, enabled,attrs) {
    SPDX-License-Identifier: Apache-2.0
 */
 
-
+var debugColorBy = false;
 
 
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
@@ -3170,7 +3170,9 @@ ColorByInfo.prototype = {
 	    if(isNaN(value)) {
 		if(this.nullColor) return this.nullColor;
 	    }
-	    return   this.getColor(value, record,checkHistory);
+	    let color =   this.getColor(value, record,checkHistory);
+	    if(debugColorBy)	console.log(value,color)
+	    return color;
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
@@ -3210,6 +3212,7 @@ ColorByInfo.prototype = {
     },
 
     getColorInner: function(value, pointRecord,debug) {
+
 //	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();
 
@@ -3253,6 +3256,10 @@ ColorByInfo.prototype = {
             if (this.colorByFunc && v>0) {
                 v = this.colorByFunc(v);
             }
+	    if(isNaN(v)) {
+		//	    if(debugColorBy)console.log("value is nan:" + value);
+		return this.nullColor;
+	    }	    
             percent = this.range?(v - this.minValue) / this.range:0.5;
 //	    console.log(this.display.getName(),v,percent,this.range,this.minValue);
 //	    if(tmp>3 && tmp<6)
@@ -3271,7 +3278,8 @@ ColorByInfo.prototype = {
 	    index = parseInt(percent * this.colors.length);
 	}
 	if(isNaN(index)) {
-//	    console.log("v:" + value +" index:" + index +" null color:" + this.nullColor);
+	    if(debugColorBy)
+		console.log("v:" + value +" index:" + index +" null color:" + this.nullColor);
 	    return this.nullColor;
 	}
 //	    console.log("v:" + value +" index:" + index +" colors:" + this.colors);
