@@ -1606,8 +1606,14 @@ public class WikiManager extends RepositoryManager
     }
 
     public Result processWikify(Request request) throws Exception {
-        String wiki = request.getSanitizedString("wikitext", "");
-	wiki = Request.cleanXSS(wiki);
+        String wiki = request.getString("wikitext", "");
+	if(wiki.startsWith("base64:")) {
+	    wiki = new String(Utils.decodeBase64(wiki.substring("base64:".length())));
+	} else {
+	    wiki = HtmlUtils.sanitizeString(wiki);
+	    wiki = Request.cleanXSS(wiki);
+	}
+	System.err.println("**** after:" + wiki);
         if (request.defined(ARG_ENTRYID)) {
             if ( !request.get("doImports", true)) {
                 request.putExtraProperty("initchart", "added");
