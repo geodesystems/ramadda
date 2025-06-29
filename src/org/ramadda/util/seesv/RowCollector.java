@@ -1406,7 +1406,7 @@ public class RowCollector extends Processor {
                 return html;
 
             };
-            w.println("#rows:" + rowCnt);
+            w.println("# Rows:" + rowCnt);
             if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
 		StringBuilder summary = new StringBuilder();
