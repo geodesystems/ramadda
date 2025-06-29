@@ -226,8 +226,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	getRepository().getWikiManager().initWikiEditor(request, sb);
 	sb.append(getRepository().getMapManager().getHtmlImports(request));
         HtmlUtils.importJS(sb,
-                           getRepository().getUrlBase()
-                           + "/media/seesv.js");
+                           getRepository().getHtdocsUrl("/media/seesv.js"));
 
 
 	if(canEdit) {
