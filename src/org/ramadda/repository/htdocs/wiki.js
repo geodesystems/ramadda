@@ -2197,7 +2197,9 @@ WikiEditor.prototype = {
 		{p:'showTitle',ex:'true'},
 		{p:'showResource',ex:'true'},
 		{p:'showBase',ex:'true'},
-		{p:'showDetails',ex:'true'},],
+		{p:'showDetails',ex:'true'},
+		{p:'menus',ex:'file,edit,view,feeds,other,service'},
+		{p:'menusTitle',ex:'Services'}],
 	    description: [
 		{label:'Description Properties'},
 		{p:'wikify',ex:'true'},
