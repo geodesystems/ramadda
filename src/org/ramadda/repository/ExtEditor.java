@@ -2203,7 +2203,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 	id = Utils.makeID(id);
 	if(!id.startsWith("type_")) {
-	    return outputCreateType(request,  entry,getPageHandler().showDialogError("Bad format for type ID"));
+	    return outputCreateType(request,  entry,getPageHandler().showDialogError("Bad format for type ID. Needs to start with &quot;type_&quot;",false));
 	}
 
 	sb = new StringBuilder();
