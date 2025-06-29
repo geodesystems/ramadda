@@ -862,7 +862,7 @@ For example using this:
 </table><br>
 Note: you don't have to specify all of the example values.
 For example, using this:
-<seesv>seesv -synthetic "name,value" "example name,example value" 5</seesv>
+<seesv>seesv -synthetic "name,value" "" 5</seesv>
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td></tr>
@@ -4123,8 +4123,10 @@ You can specify the type as "value.*.type integer".
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
 <seesv>seesv -addheader "(value.*).*.label {Some label \$1}"</seesv>
 
-In the interactive SeeSV form pressing the Outputs-&gt;Print text output button will list the
-field names, e.g.
+<a name='addheader_interactive'></a>
+:heading2 Interactive form
+In the interactive SeeSV form pressing the <i>Outputs-&gt;Print text output</i>
+button will list the field names, e.g.
 <pre>
 location[label="Location"  type="enumeration" searchable="false" ] 
 parameter[label="Parameter"  type="enumeration" searchable="false" ] 

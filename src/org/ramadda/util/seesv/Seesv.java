@@ -5685,7 +5685,7 @@ public class Seesv implements SeesvCommands {
 		    files.add(new IO.Path(arg));
 		} else {
 		    //		    System.err.println("no files");
-		    //                    throw new IllegalArgumentException("Unknown arg:" + arg);
+		    throw new IllegalArgumentException("Unknown arg:" + arg);
 		}
 	    } catch (Exception exc) {
 		System.err.println("Error processing arg:" + arg);
