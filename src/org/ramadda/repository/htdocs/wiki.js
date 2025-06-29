@@ -1252,6 +1252,7 @@ WikiEditor.prototype = {
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
+	text  = 'base64:' +  window.btoa(text);
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
