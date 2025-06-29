@@ -17,11 +17,12 @@
   </type>
 
 
-<type  name="type_netcdf_t28" 
+<type  name="type_netcdf_ghcnd" 
        pattern="(?i).*ghcnd.*\.nc"
-       description="GHCND Data" 
+       description="GHCND Time Series" 
        super="type_point_netcdf" 
        >
+<property name="search.tabs" value="map,list"/>
 
 <!-- Wiki text-->
 <wiki><![CDATA[
@@ -49,17 +50,25 @@ displayStyle="font-size:80%;" numericOnly=true  showPopup=true  fieldsSelected.s
 ----
 
 :heading Information
-{{information  details="true"  showTitle="false"  }} 
-
++row
++col-8
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+{{map}}
+-col
+-row
 -section]]></wiki>
 </type>
 
+<type  name="type_netcdf_t28" foruser="false" super="type_netcdf_ghcnd"/>
 
 
   <type name="type_point_netcdf_t28"
 	pattern="(?i).*t28.*\.nc"
 	super="type_point_netcdf_trajectory"
 	description="T28 NetCDF Trajectory Data">
+    <property name="search.tabs" value="map,list"/>
     <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
     <wiki><![CDATA[
 +section title={{name}}
