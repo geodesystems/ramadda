@@ -708,10 +708,11 @@ public class CdmManager extends RepositoryManager implements CdmConstants {
      */
     public boolean canLoadAsCdm(Entry entry) {
 	boolean debug = false;
+	//	debug=true;
 	if(debug) System.err.println("canLoadAsCdm:" + entry);
 
 	if(isCdmGrid(entry)) {
-	    if(debug) System.err.println("\tisCdmGrid");
+	    if(debug) System.err.println("\tisCdmGrid=true");
 	    return true;
 	}
         if (entry.getTypeHandler().isType(

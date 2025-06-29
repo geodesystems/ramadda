@@ -1,4 +1,3 @@
-
 /**
 Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
@@ -6,16 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.cdmdata;
 
-
 import opendap.dap.DAP2Exception;
-
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
-
 import org.ramadda.repository.DateHandler;
-
-
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.PageHandler;
@@ -34,11 +27,9 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.geo.KmlUtil;
 
 import org.w3c.dom.Element;
-
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.opendap.GuardedDatasetImpl;
 
@@ -88,7 +79,6 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
@@ -105,8 +95,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-
-
 import java.util.function.DoubleFunction;
 import java.util.regex.Pattern;
 
@@ -114,19 +102,13 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * A class for handling CDM data output
  */
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstants {
-
-    /** _more_ */
     private static final boolean debug = false;
-
-    /**  */
     public static final boolean debugOpendap = false;
-
     public static final String ARG_GRIDFIELD="gridField";
 
     /** set of suffixes */
@@ -146,13 +128,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
-        new OutputType("File Metadata", "data.cdl",
+        new OutputType("NetCDF Metadata", "data.cdl",
 		       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT|OutputType.TYPE_SERVICE,
                        OutputType.SUFFIX_NONE,
                        "/cdmdata/page_white_text.png", GROUP_DATA);
 
-
-    /** _more_ */
     public static final OutputType OUTPUT_JSON = new OutputType("JSON",
                                                      "data.json",
                                                      OutputType.TYPE_OTHER,
@@ -176,7 +156,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_CSV, GROUP_DATA);
 
-
     /** Radar map Output Type */
     public static final OutputType OUTPUT_RADAR_MAP =
         new OutputType("Show radar on Map", "data.radar.map",
@@ -194,10 +173,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public static final OutputType OUTPUT_GRIDSUBSET =
         new OutputType("data.gridsubset", OutputType.TYPE_FEEDS);
 
-
     /** opendap counter */
     Counter opendapCounter = new Counter();
-
 
     /** the CDM manager */
     private static CdmManager cdmManager;
@@ -219,8 +196,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         return cdmManager;
     }
-
-
 
     /**
      * Create a new CdmDataOutputHandler
@@ -256,7 +231,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         addType(OUTPUT_GRIDSUBSET_FORM);
     }
 
-
     /**
      * Get the system stats
      *
@@ -267,7 +241,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         getCdmManager().getSystemStats(sb);
     }
 
-
     /**
      * clear the cache
      */
@@ -275,7 +248,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         super.clearCache();
         getCdmManager().clearCache();
     }
-
 
     /**
      * Add to an entry
@@ -303,7 +275,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     }
 
-
     /**
      * Get the Entry links
      *
@@ -317,13 +288,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             throws Exception {
 
         Entry entry = state.entry;
-
-
         if ((state.group != null)
                 && getCdmManager().isAggregation(state.group)) {
             entry = state.group;
         }
-
 
         if (entry == null) {
             return;
@@ -331,13 +299,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
-	    System.err.println("can't access file");
             return;
         }
 
         long    t1           = System.currentTimeMillis();
         boolean canLoadAsCdm = getCdmManager().canLoadAsCdm(entry);
-
         if ( !canLoadAsCdm) {
             return;
         }
@@ -362,7 +328,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                            OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
-
         Link cdlLink = makeLink(request, entry, OUTPUT_CDL);
         //        cdlLink.setLinkType(OutputType.TYPE_ACTION);
         links.add(cdlLink);
@@ -372,9 +337,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             //                               + entry.getName() + " time:" + (t2 - t1));
         }
     }
-
-
-
 
     /**
      * Get the OPeNDAP URL
@@ -386,7 +348,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public String getOpendapUrl(Entry entry) {
         return getOpendapHandler().getOpendapUrl(entry);
     }
-
 
     /**
      * Get the absolute OPeNDAP URL
@@ -400,7 +361,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public String getAbsoluteOpendapUrl(Request request, Entry entry) {
         return getOpendapHandler().getAbsoluteOpendapUrl(request, entry);
     }
-
 
     /**
      * Check if we can load the Entry
@@ -441,9 +401,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return true;
     }
 
-
-
-
     /**
      * Output the CDL for the Entry
      *
@@ -479,7 +436,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return result;
         }
 
-
         StringBuffer sb = new StringBuffer();
         if (request.get(ARG_METADATA_ADD, false)) {
             if (getRepository().getAccessManager().canDoEdit(request,
@@ -504,7 +460,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return makeLinksResult(request, "NetCDF File Metadata", sb,
                                    new State(entry));
         }
-
 
         getPageHandler().entrySectionOpen(request, entry, sb, "");
         sb.append("<center>");
@@ -591,9 +546,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     }
 
-
-
-
     /**
      * Output the Entry as a WCS result
      *
@@ -605,8 +557,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputWcs(Request request, Entry entry) {
         return new Result("", new StringBuffer("TBD"));
     }
-
-
 
     public GeoGrid getGrid(Request request,GridDataset gds) throws Exception {
         String field = request.getString(ARG_GRIDFIELD, (String) null);
@@ -625,7 +575,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	if(grid==null) System.err.println("Cannot find grid field:" + field);
 	return grid;
     }
-
 
     public void getWikiTagAttrs(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> displayProps)
@@ -737,7 +686,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             displayProps.add(JsonUtil.quote(field));
         }
 
-
         //      displayProps.add("request." + column.getName() + ".urlarg");
         //      displayProps.add(JsonUtil.quote(column.getSearchArg()));
 
@@ -747,9 +695,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         getCdmManager().returnGridDataset(path, gds);
 
     }
-
-
-
 
     /**
      * Get the grid dates
@@ -825,9 +770,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         boolean            haveOneVerticalCS = true;
         CoordinateAxis1D   compAxis          = null;
 
-
-
-
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
             String call =
@@ -869,8 +811,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	HU.div(varSB,HU.labeledCheckbox("", HU.VALUE_TRUE,
 					false,HU.attr("id",toggleAllId),
 					"Toggle all"),"");
-
-
 
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
@@ -919,8 +859,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return varSB;
     }
 
-
-
     /**
      * Handle a grid subset request
      *
@@ -956,16 +894,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	    return;
 	}
 
-
-
-
         String       formUrl =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
                           + "_subset.nc";
 
         String formId = HU.getUniqueId("form_");
-
 
         sb.append(HU.formPost(formUrl + "/" + fileName,
                                      HU.id(formId)));
@@ -1001,12 +935,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 		request.getString(ARG_AREA+"_south",""),
 		request.getString(ARG_AREA+"_east","")};
 
-
             for (int i = 0; i < points.length; i++) {
                 sb.append(HU.hidden(SPATIALARGS[i] + ".original",
                                            points[i]));
             }
-	    
+
             String llb = map.makeSelector(ARG_AREA, true, selected,points,"","");
             sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
@@ -1035,7 +968,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                           format)));
         */
 
-
         sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
 	sb.append(HU.beginInset(0,10,0,0));
         sb.append(varSB);
@@ -1049,7 +981,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	    sb.append(HU.formTableClose());
 	}
 
-
 	sb.append(HU.vspace("1em"));
         sb.append(HU.submit("Subset Grid"));
 	sb.append(HU.vspace("1em"));
@@ -1058,15 +989,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                           null, "includeCopyArgs","true");
         sb.append(HU.formClose());
 
-
-
         getCdmManager().returnGridDataset(path, dataset);
 
     }
-
-
-
-
 
     /**
      * Output the grid subset
@@ -1092,7 +1017,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         String format =
             request.getString(CdmConstants.ARG_FORMAT,
                               NetcdfFileWriter.Version.netcdf3.toString());
-
 
         // There's gotta be a better way to do this
         NetcdfFileWriter.Version ncVersion = NetcdfFileWriter.Version.netcdf3;
@@ -1273,7 +1197,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
              * writer.close();
              */
 
-
             NetcdfFileWriter ncFileWriter = null;
             try {
                 ncFileWriter = NetcdfFileWriter.createNew(ncVersion,
@@ -1281,7 +1204,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
             if (debug) {
                 System.err.println("CdmData.subset: " + " vars:" + varNames
@@ -1337,18 +1259,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return makeLinksResult(request, msg("Grid Subset"), sb,
                                new State(entry));
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processGridJsonRequest(Request request) throws Exception {
         String prefix = getRepository().getUrlBase() + "/grid/json";
         Entry  entry  = getCdmManager().findEntryFromPath(request, prefix);
@@ -1357,17 +1269,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return outputGridJson(request, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputGridCsv(final Request request, final Entry entry)
             throws Exception {
 
@@ -1381,9 +1282,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         final String field = grid.getName();
         List<CalendarDate> dates = getGridDates(gds);
 
-
-
-
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
@@ -1396,8 +1294,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 dates.add(date);
             }
         }
-
-
 
         CoordinateAxis1D zAxis = grid.getCoordinateSystem().getVerticalAxis();
         double[]         zVals = null;
@@ -1428,7 +1324,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
-
         if (zRange == null) {
             zRange = new Range(1, 1);
         }
@@ -1451,7 +1346,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                     toks.get(3))));
             }
         }
-
 
         Dimension timeDimension = grid.getTimeDimension();
         int       numTimes      = timeDimension.getLength();
@@ -1509,8 +1403,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 doX = !doX;
             }
         }
-
-
 
         GridCoordSystem         gcs    = grid.getCoordinateSystem();
         int                     lats   = (int) gcs.getYHorizAxis().getSize();
@@ -1585,7 +1477,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                 displayProps);
 		getDisplayProperties(request, field,displayProps);
 
-
                 writer.println(",\"properties\":");
                 writer.println(JsonUtil.map(displayProps));
                 writer.println(",\"data\":[");
@@ -1624,7 +1515,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     }
 
-
     private void getDisplayProperties(Request request, String field,List<String>displayProps) {
 	String colorTable = getProperty(field, "colortable", null);
 	if (colorTable != null) {
@@ -1658,16 +1548,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
@@ -1689,7 +1569,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	    dates = timeAxis.getCalendarDates();
 	}
 
-
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
@@ -1702,8 +1581,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 dates.add(date);
             }
         }
-
-
 
         CoordinateAxis1D zAxis = grid.getCoordinateSystem().getVerticalAxis();
         double[]         zVals = null;
@@ -1733,7 +1610,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
-
         if (zRange == null) {
             zRange = new Range(1, 1);
         }
@@ -1756,7 +1632,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                     toks.get(3))));
             }
         }
-
 
         Dimension timeDimension = grid.getTimeDimension();
         int       numTimes      = timeDimension.getLength();
@@ -1810,7 +1685,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 doX = !doX;
             }
         }
-
 
 	//Get the new GCS after we do the subset above
 	gcs      = grid.getCoordinateSystem();
@@ -1935,23 +1809,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param writer _more_
-     * @param cnt _more_
-     * @param max _more_
-     * @param a _more_
-     * @param dateString _more_
-     * @param points _more_
-     * @param zRange _more_
-     * @param scaler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private int writeJson(PrintWriter writer, int cnt, int max, Array a,
                           String dateString, List<LatLonPoint> points,
                           Range zRange, DoubleFunction<Float> scaler)
@@ -1994,9 +1851,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
     }
 
-
-
-
     /**
      * Sort the grids
      *
@@ -2023,7 +1877,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         return result;
     }
-
 
     /**
      * Get the PointFeatureIterator
@@ -2059,9 +1912,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return collection.getPointFeatureIterator(16384);
     }
 
-
-
-
     /**
      * Output a point map
      *
@@ -2074,7 +1924,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     public Result outputPointMap(Request request, Entry entry)
             throws Exception {
-
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, false, null);
@@ -2149,8 +1998,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                               el.getLongitude()), icon, "", info.toString());
         }
 
-
-
         List columnDefs  = new ArrayList();
         List columnNames = new ArrayList();
         for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
@@ -2162,7 +2009,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                            + "," + "sortable:true," + "label:"
                            + HU.quote(label) + "}");
         }
-
 
         if (total > max) {
             sb.append((skip + 1) + "-" + (skip + cnt) + " of " + total + " ");
@@ -2212,7 +2058,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return new Result(msg("Point Data Map"), sb);
     }
 
-
     /** Fixed var name for lat */
     public static final String VAR_LATITUDE = "Latitude";
 
@@ -2224,8 +2069,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     /** Fixed var name for time */
     public static final String VAR_TIME = "Time";
-
-
 
     /**
      * Get the 1D values for an array as floats.
@@ -2270,12 +2113,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
 
     }
-
-
-
-
-
-
 
     /**
      * Make the Point Subset form
@@ -2323,7 +2160,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return new Result("", sb);
     }
 
-
     /**
      * Get the services for the request
      *
@@ -2361,7 +2197,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 request.getAbsoluteUrl(getIconUrl(ICON_OPENDAP))));
     }
 
-
     /**
      * Output a point subset
      *
@@ -2392,7 +2227,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
         //        System.out.println("name: " + request);
 
-
         OutputStream os = request.getHttpServletResponse().getOutputStream();
         PrintWriter  pw = new PrintWriter(os);
 
@@ -2408,7 +2242,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         return result;
     }
-
 
     /**
      * Output the point data as CSV
@@ -2483,7 +2316,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     }
 
-
     /**
      * Output the points as KML
      *
@@ -2545,7 +2377,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         getCdmManager().returnPointDataset(path, pod);
     }
 
-
     /**
      * Get the Authorization method
      *
@@ -2561,9 +2392,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         return super.getAuthorizationMethod(request);
     }
-
-
-
 
     /**
      * Output a group of entries
@@ -2587,7 +2415,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         //        System.err.println("group:" + group + " " + group.getType());
         return super.outputGroup(request, outputType, group, children);
     }
-
 
     /**
      * Serve up the entry
@@ -2630,7 +2457,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return outputGridSubset(request, entry);
         }
 
-
         if (outputType.equals(OUTPUT_POINT_MAP)) {
             return outputPointMap(request, entry);
         }
@@ -2666,19 +2492,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             .getApiHandler(OpendapApiHandler.API_ID);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param type _more_
-     * @param target _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
             throws Exception {
@@ -2700,11 +2513,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             sb.append("<br>");
         }
     }
-
-
-
-
-
 
     /**
      * Output OPeNDAP
@@ -2847,13 +2655,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         return result;
     }
 
-
     /**
      * NcDODSServlet to wrap the OPeNDAP servelet
      *
      */
     public class NcDODSServlet extends opendap.servlet.AbstractServlet {
-
 
         /** repository request */
         Request repositoryRequest;
@@ -2913,9 +2719,5 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
 
     }
-
-
-
-
 
 }
