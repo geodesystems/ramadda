@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 30 08:34:10 MDT 2025";
+var build_date="RAMADDA build date: Mon Jun 30 08:46:32 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34232,7 +34232,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'fields',d: null},
         {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
-	{p:'displayTypes',ex:'"list,images,timeline,map,display,metadata"'},
+	{p:'displayTypes',d:'list,display',ex:'"list,images,timeline,map,display,metadata"'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
 	{p:'showColumns',tt:'Comma separated list of columns to show'},
 	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
@@ -36189,7 +36189,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',ATTR_STYLE,HU.css('position','relative')],html);
 	    }
 
-	    this.getDisplayTypes('list').split(',').forEach(type=>{
+	    this.getDisplayTypes().split(',').forEach(type=>{
 		if(type=='list') {
 		    titles.push('List');
 		    addContents(makeExpandable(this.getEntriesTree(entries)));
