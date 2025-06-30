@@ -485,7 +485,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'fields',d: null},
         {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
-	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
+	{p:'displayTypes',ex:'"list,images,timeline,map,display,metadata"'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
 	{p:'showColumns',tt:'Comma separated list of columns to show'},
 	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
@@ -1675,6 +1675,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return text;
 	},
 
+
         handleEventMapBoundsChanged: function(source, args) {
             if (this.areaWidgets) {
 		this.areaWidgets.forEach(areaWidget=>{
@@ -2473,7 +2474,11 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
 			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
 		    }
-
+		} else if(type=='display') {
+		    titles.push('Display');
+		    let id = HU.getUniqueId(type +'_');
+		    this.myDisplays.push({id:id,type:'entrywiki',entries:entries});
+		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
 		} else if(type=='metadata') {		    
 		    titles.push('Metadata');
 		    let mtd = HU.div([ATTR_STYLE,HU.css('width','800px','max-width','800px','overflow-x','auto')],this.getEntriesMetadata(entries));
@@ -2697,8 +2702,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    };
 		    let tooltip = this.getProperty("tooltip")??"${default}";
 		    let myTextGetter = null;
-
-
 		    if(info.type=='map' && entryType && entryType.mapwiki) {
 			myTextGetter = (display, records)=>{
 			    if(records.length>1) return null;
@@ -2710,6 +2713,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			};
 		    }
 		    let props = {centerOnMarkersAfterUpdate:true,
+				 entries:info.entries,
 				 dialogListener: dialogListener,
 				 highlightColor:"#436EEE",
 				 blockStyle:this.getProperty("blockStyle",""),
@@ -4341,34 +4345,88 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 	initDisplay: function() {
             this.createUI();
 	    let html = HU.div([ATTR_ID,this.domId(ID_WIKI),ATTR_STYLE,this.getWikiStyle()]);
-	    this.displayHtml(html);
-	    if(this.sourceEntry) {
-		let e = this.sourceEntry;
-		let wiki = this.getWiki();
-		wiki = wiki.replace(/\\n/g,"\n");
-		//Delete the old displays
-		if(this.addedDisplays) {
-		    this.addedDisplays.forEach(display=>{
-			if(display.getId)
-			    removeRamaddaDisplay(display.getId());
-		    });
-		}
-		this.addedDisplays = [];
-		this.wikify(wiki,e.getId(),html=>{
-		    addDisplayListener = display=>{
-			this.addedDisplays.push(display);
-			//			console.log("add display:" + display.type);
-		    };
-		    this.jq(ID_WIKI).html(html);
-		    addDisplayListener = null;
+	    let entryMap = {};
+	    if(properties.entries) {
+		this.sourceEntry=properties.entries[0];
+		let options = [];
+		properties.entries.forEach(entry=>{
+		    entryMap[entry.getId()] = entry;
+                    let icon = entry.getIconUrl();
+		    let label = entry.getName();
+		    let tt = label;
+		    let type = entry.getType();
+		    if(type) tt+=  ' - '+ type.getLabel();
+
+                    let optionAttrs = [ATTR_TITLE, tt, ATTR_VALUE, entry.getId(), "data-iconurl", icon];
+                    let option = HU.tag(TAG_OPTION, optionAttrs, label);
+		    options.push(option);
 		});
+		
+		let header = HU.select('',[ATTR_STYLE,'width:400px;',ATTR_ID,this.domId('entrymenu')],options);
+		header+=HU.div([ATTR_STYLE,HU.css('margin-top','4px'),
+				ATTR_ID,this.domId('entry_breadcrumbs'),
+				ATTR_CLASS,'display-entrylist-details-ancestors']);
+		html = HU.div([ATTR_STYLE,HU.css('margin-bottom','8px','border-bottom','var(--basic-border)')],header) +
+		    html;
+	    }
+	    this.displayHtml(html);
+	    if(properties.entries) {
+		let _this = this;
+		let menu = this.entryMenu = this.jq('entrymenu');
+		menu.change(function() {
+		    let entry = entryMap[$(this).val()];
+		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'));		    
+		    _this.loadEntry(entry);
+		});
+		HtmlUtils.initSelect(menu,{ autoWidth: true,  'max-height':'100px'});
+		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
+		if(this.sourceEntry)
+		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'));		    
+	    }
+
+	    if(this.sourceEntry) {
+		this.loadEntry(this.sourceEntry);
 	    }
         },
+	loadEntry:function(entry) {
+	    let wiki = this.getWiki();
+	    wiki = wiki.replace(/\\n/g,"\n");
+	    //Delete the old displays
+	    if(this.addedDisplays) {
+		this.addedDisplays.forEach(display=>{
+		    if(display.getId)
+			removeRamaddaDisplay(display.getId());
+		});
+	    }
+	    this.addedDisplays = [];
+	    this.wikify(wiki,entry.getId(),html=>{
+		addDisplayListener = display=>{
+		    this.addedDisplays.push(display);
+		    //			console.log("add display:" + display.type);
+		};
+		this.jq(ID_WIKI).html(html);
+		addDisplayListener = null;
+	    });
+	},
+
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this,source,args);
+	    if(!this.entryMenu) return;
+	    if(!args.record) return;
+	    let entryId = args.record.getValueFromField(ATTR_ID);	    
+	    if(entryId) {
+//		this.entryMenu.val(entryId);
+		this.entryMenu.data("selectBox-selectBoxIt").selectOption(entryId);
+	    }
+	},
+
+
 	setEntry: function(entry) {
 	    this.sourceEntry = entry;
 	    this.initDisplay();
 	},
         handleEventEntrySelection: function(source, args) {
+	    this.logMsg('entry select');
         },
     });
 }
