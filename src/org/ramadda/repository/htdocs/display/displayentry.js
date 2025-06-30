@@ -793,8 +793,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         initDisplay: function() {
             let theDisplay = this;
-
-            this.jq(ID_SEARCH).click(function(event) {
+            this.jq(ID_SEARCH).button().click(function(event) {
 		theDisplay.submitSearchForm();
                 event.preventDefault();
             });
@@ -1016,6 +1015,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return settings;
 	},
         submitSearchForm: function() {
+	    //Check for recursion
+	    if(ramaddaDoingWiki>0) {
+		return;
+	    }
             if (this.fixedEntries) {
                 return;
             }
@@ -1363,7 +1366,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div([ATTR_STYLE,'margin-bottom:4px;max-width:80%;',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
+            let searchButton = HU.div([ATTR_STYLE,'margin-bottom:4px;max-width:80%;',
+				       ATTR_ID, this.getDomId(ID_SEARCH),
+				       ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 
@@ -2980,7 +2985,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		});
 	    }
 
-            this.jq(ID_SEARCH).click(function(event) {
+            this.jq(ID_SEARCH).button().click(function(event) {
 		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
             });
