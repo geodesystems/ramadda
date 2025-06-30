@@ -6303,6 +6303,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         list.forEach(item=>{
 	    let attrs = [];
             let label = item;
+            if(typeof item =='string' && item.indexOf('<option')>=0) {
+		options+=item;
+		return;
+	    }
             if(Array.isArray(item)) {
                 label=item[1];
                 item = item[0];
@@ -6407,6 +6411,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initSelect: function(selector, args) {
         if(selector.length==0) return;
         let opts = {
+	    dynamicPositioning:false,
             showEffect: "fadeIn",
             showEffectSpeed: 400,
             hideEffect: "fadeOut",
