@@ -1,5 +1,5 @@
 
-const DISPLAY_CORE = "core";
+var DISPLAY_CORE = "core";
 addGlobalDisplayType({
     type: DISPLAY_CORE,
     label: "Core Visualizer",
