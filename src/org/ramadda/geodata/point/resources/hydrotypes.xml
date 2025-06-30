@@ -109,7 +109,7 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
       super="type_point_hydro"
       newfields="station_id,downloadfile,tags,resource,quit"
       handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
 <property name="map.popup">
 <![CDATA[
 +center
