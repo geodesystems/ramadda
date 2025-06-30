@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 30 08:46:32 MDT 2025";
+var build_date="RAMADDA build date: Mon Jun 30 08:54:56 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -9644,10 +9644,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.displayEntryBreadcrumbs(entry,this.domId(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix));
 	    }
         },
-	displayEntryBreadcrumbs:function(entry,id) {
+	displayEntryBreadcrumbs:function(entry,id,max) {
+	    if(!Utils.isDefined(max)) max = 100;
 	    let ancestorContent = "";
+	    let count =0;
 	    let handleAncestor = ancestor=>{
-		if(!ancestor) {
+		count++;
+		if(!ancestor || count>max) {
 		    jqid(id).html(ancestorContent);
 		} else {
 		    let href= ancestor.getLink(null, false,["target","_entries"]);
@@ -38122,13 +38125,13 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		let menu = this.entryMenu = this.jq('entrymenu');
 		menu.change(function() {
 		    let entry = entryMap[$(this).val()];
-		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'));		    
+		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'),4);		    
 		    _this.loadEntry(entry);
 		});
 		HtmlUtils.initSelect(menu,{ autoWidth: true,  'max-height':'100px'});
 		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
 		if(this.sourceEntry)
-		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'));		    
+		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'),4);		    
 	    }
 
 	    if(this.sourceEntry) {
