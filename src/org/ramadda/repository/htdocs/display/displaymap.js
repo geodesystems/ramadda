@@ -1567,6 +1567,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return feature.collisionInfo.dotSelected(feature);
 		}
 		if(record) {
+		    console.log('featureSelectHandler');
 		    this.propagateEventRecordSelection({record:record});
 		    this.propagateFilterFields(record);
 		    //		    didSomething= true;
@@ -2100,6 +2101,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},	    
 	doneLocation:false,
         handleClick: function(theMap, event, lon, lat) {
+	    let debug = false;
+	    if(debug)
+		this.logMsg('handleClick');
 	    if(event.shiftKey && event.metaKey) {
 		if(!this.doneLocation) {
 		    if(Utils.isAnonymous()) {
@@ -2130,9 +2134,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		return;
 	    }
-
-	    let debug = false;
-	    if(debug)   console.log("click");
 	    if(this.lastFeatureSelectTime) {
 		let diff = new Date().getTime()-this.lastFeatureSelectTime.getTime();
 		this.lastFeatureSelectTime = null;
@@ -2188,7 +2189,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    if(debug)    console.log("\tclick: handling")
-	    this.propagateEventRecordSelection({record: closest});
+
+	    //Not sure we want to do this here as we also get called from the featureSelectHandler
+	    //	    this.propagateEventRecordSelection({record: closest});
 
 	    //If we are highlighting a record then change the marker
 	    if(this.highlightMarkers) {
@@ -3284,6 +3287,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false,false,record);
 		    _this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
+		    _this.propagateEventRecordSelection({record:record});
 		    if(_this.getProperty("tocZoom")) {
 		    	_this.map.setZoom(_this.getProperty("tocZoom"));
 		    }
