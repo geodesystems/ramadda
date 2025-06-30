@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 30 08:56:20 MDT 2025";
+var build_date="RAMADDA build date: Mon Jun 30 09:19:49 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -4070,101 +4070,103 @@ var  displayDebug= {
 }
 
 
-const CATEGORY_CHARTS = "Basic Charts";
-const CATEGORY_TABLE = "Tables";
-const CATEGORY_MISC = "Misc Charts";
-const CATEGORY_MAPS = "Maps";
-const CATEGORY_IMAGES = "Images";
-const CATEGORY_RADIAL_ETC = "Trees, etc";
-const CATEGORY_TEXT = "Text";
-const CATEGORY_ENTRIES = "Entries";
-const CATEGORY_CONTROLS = "Controls";
-const DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS,CATEGORY_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
+var ramaddaDoingWiki = 0;
+
+var CATEGORY_CHARTS = "Basic Charts";
+var CATEGORY_TABLE = "Tables";
+var CATEGORY_MISC = "Misc Charts";
+var CATEGORY_MAPS = "Maps";
+var CATEGORY_IMAGES = "Images";
+var CATEGORY_RADIAL_ETC = "Trees, etc";
+var CATEGORY_TEXT = "Text";
+var CATEGORY_ENTRIES = "Entries";
+var CATEGORY_CONTROLS = "Controls";
+var DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS,CATEGORY_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
 
 
 
 //Ids of DOM components
-const ID_BOTTOM = "bottom";
-const ID_COLORTABLE = "colortable";
-const ID_LEGEND = "legend";
-const ID_FIELDS = "fields";
-const ID_HEADER = "header";
-const ID_HEADER0 = "header0";
-const ID_HEADER1 = "header1";
-const ID_HEADER2 = "header2";
-const ID_HEADER2_PREFIX = "header2prefix";
-const ID_HEADER2_PREPREFIX = "header2preprefix";
-const ID_HEADER2_PREPREPREFIX = "header2prepreprefix";
-const ID_HEADER2_SUFFIX = "header2suffix";
-const ID_FILTERBAR = "filterbar";
-const ID_TAGBAR = "tagbar";
-const ID_TITLE = ATTR_TITLE;
-const ID_TITLE_EDIT = "title_edit";
-const ID_LEFT = "left";
-const ID_RIGHT = "right";
-const ID_TITLE_FIELD="titlefield";
-const ID_TOP = "top";
-const ID_TOP_RIGHT = "topright";
-const ID_TOP_LEFT = "topleft";
-const ID_DETAILS = "details";
-const ID_DETAILS_SNIPPET = "snippet";
-const ID_DISPLAY_CONTENTS = "contents";
-const ID_DISPLAY_CONTAINER = "container";
-const ID_DISPLAY_TOP = "top";
-const ID_DISPLAY_BOTTOM = "bottom";
-const ID_GROUP_CONTENTS = "group_contents";
-const ID_DETAILS_MAIN = "detailsmain";
-const ID_GROUPBY_FIELDS= "groupdbyfields";
-const ID_TOOLBAR = "toolbar";
-const ID_TOOLBAR_INNER = "toolbarinner";
-const ID_LIST = "list";
-const ID_DISPLAY_MESSAGE = "displaymessage";
-const ID_DIALOG = "dialog";
-const ID_DIALOG_TABS = "dialog_tabs";
-const ID_FOOTER = "footer";
-const ID_FOOTER_LEFT = "footer_left";
-const ID_FOOTER_RIGHT = "footer_right";
-const ID_MENU_BUTTON = "menu_button";
-const ID_MENU_OUTER = "menu_outer";
-const ID_MENU_INNER = "menu_inner";
-const ID_DISPLAY_PROGRESS = "display_progress";
-const ID_REPOSITORY = "repository";
-const ID_REQUEST_PROPERTIES = "request_properties";
-const ID_PAGE_COUNT = "pagecount";
-const ID_PAGE_PREV = "pageprev";
-const ID_PAGE_NEXT = "pagenext";
-const ID_PAGE_LABEL = "pagelabel";
-const ID_PAGE_BUTTONS = "pagebuttons";
-const ID_FILTER_HIGHLIGHT = "filterhighlight";
-const ID_FILTER_DATE = "filterdate";
-const ID_FILTER_COUNT = "filtercount";
-const ID_ENTRIES_MENU = "entries_menu";
-const ID_ENTRIES_PREV = "entries_prev";
-const ID_ENTRIES_NEXT = "entries_next";
-const ID_NEXT = "next";
-const ID_PREV = "prev";
-const ID_PREVNEXT_LABEL = "prevnext_label";
+var ID_BOTTOM = "bottom";
+var ID_COLORTABLE = "colortable";
+var ID_LEGEND = "legend";
+var ID_FIELDS = "fields";
+var ID_HEADER = "header";
+var ID_HEADER0 = "header0";
+var ID_HEADER1 = "header1";
+var ID_HEADER2 = "header2";
+var ID_HEADER2_PREFIX = "header2prefix";
+var ID_HEADER2_PREPREFIX = "header2preprefix";
+var ID_HEADER2_PREPREPREFIX = "header2prepreprefix";
+var ID_HEADER2_SUFFIX = "header2suffix";
+var ID_FILTERBAR = "filterbar";
+var ID_TAGBAR = "tagbar";
+var ID_TITLE = ATTR_TITLE;
+var ID_TITLE_EDIT = "title_edit";
+var ID_LEFT = "left";
+var ID_RIGHT = "right";
+var ID_TITLE_FIELD="titlefield";
+var ID_TOP = "top";
+var ID_TOP_RIGHT = "topright";
+var ID_TOP_LEFT = "topleft";
+var ID_DETAILS = "details";
+var ID_DETAILS_SNIPPET = "snippet";
+var ID_DISPLAY_CONTENTS = "contents";
+var ID_DISPLAY_CONTAINER = "container";
+var ID_DISPLAY_TOP = "top";
+var ID_DISPLAY_BOTTOM = "bottom";
+var ID_GROUP_CONTENTS = "group_contents";
+var ID_DETAILS_MAIN = "detailsmain";
+var ID_GROUPBY_FIELDS= "groupdbyfields";
+var ID_TOOLBAR = "toolbar";
+var ID_TOOLBAR_INNER = "toolbarinner";
+var ID_LIST = "list";
+var ID_DISPLAY_MESSAGE = "displaymessage";
+var ID_DIALOG = "dialog";
+var ID_DIALOG_TABS = "dialog_tabs";
+var ID_FOOTER = "footer";
+var ID_FOOTER_LEFT = "footer_left";
+var ID_FOOTER_RIGHT = "footer_right";
+var ID_MENU_BUTTON = "menu_button";
+var ID_MENU_OUTER = "menu_outer";
+var ID_MENU_INNER = "menu_inner";
+var ID_DISPLAY_PROGRESS = "display_progress";
+var ID_REPOSITORY = "repository";
+var ID_REQUEST_PROPERTIES = "request_properties";
+var ID_PAGE_COUNT = "pagecount";
+var ID_PAGE_PREV = "pageprev";
+var ID_PAGE_NEXT = "pagenext";
+var ID_PAGE_LABEL = "pagelabel";
+var ID_PAGE_BUTTONS = "pagebuttons";
+var ID_FILTER_HIGHLIGHT = "filterhighlight";
+var ID_FILTER_DATE = "filterdate";
+var ID_FILTER_COUNT = "filtercount";
+var ID_ENTRIES_MENU = "entries_menu";
+var ID_ENTRIES_PREV = "entries_prev";
+var ID_ENTRIES_NEXT = "entries_next";
+var ID_NEXT = "next";
+var ID_PREV = "prev";
+var ID_PREVNEXT_LABEL = "prevnext_label";
 
-const PROP_DISPLAY_FILTER = "displayFilter";
-const PROP_EXCLUDE_ZERO = "excludeZero";
-const PROP_EXCLUDE_NAN = "excludeUndefined";
-const PROP_DIVID = "divid";
-const PROP_FIELDS = "fields";
-const PROP_LAYOUT_HERE = "layoutHere";
-const PROP_HEIGHT = "height";
-const PROP_WIDTH = "width";
+var PROP_DISPLAY_FILTER = "displayFilter";
+var PROP_EXCLUDE_ZERO = "excludeZero";
+var PROP_EXCLUDE_NAN = "excludeUndefined";
+var PROP_DIVID = "divid";
+var PROP_FIELDS = "fields";
+var PROP_LAYOUT_HERE = "layoutHere";
+var PROP_HEIGHT = "height";
+var PROP_WIDTH = "width";
 
-const RECORD_INDEX = "recordindex";
-const RECORD_ID = "recordid";
-const TEXT_HIGHLIGHT_COLOR = "yellow";
-const HIGHLIGHT_COLOR = "#436EEE";
+var RECORD_INDEX = "recordindex";
+var RECORD_ID = "recordid";
+var TEXT_HIGHLIGHT_COLOR = "yellow";
+var HIGHLIGHT_COLOR = "#436EEE";
 
-const VALUE_NONE = "--none--";
+var VALUE_NONE = "--none--";
 
 var CLASS_HEADER_SPAN = "display-header-span";
 var CLASS_HEADER_LABEL = "display-header-label";
 
-const DisplayEvent = {
+var DisplayEvent = {
 };
 
 function displayDefineEvent(event,dflt) {
@@ -6307,16 +6309,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	wikify:function(wiki,entryId,wikiCallback,wikiError,containerId) {
 	    if(containerId) {
-		wikiCallback = html=>{this.addWikiHtml(jqid(containerId),html);};
-		wikiError = html=>{jqid(containerId).html(html);};
+		wikiCallback = html=>{
+		    this.addWikiHtml(jqid(containerId),html);};
+		wikiError = html=>{
+		    jqid(containerId).html(html);};
 	    } 
-	    wikiError = wikiError ?? (error=>{this.handleError(error);});
+	    wikiError = wikiError ?? (error=>{
+		this.handleError(error);
+	    });
 	    let url = RamaddaUtil.getUrl("/wikify");
+	    ramaddaDoingWiki++;
+	    let handleResult = (data)=>{
+		wikiCallback(data);
+		ramaddaDoingWiki--;
+	    }
+	    let handleError = (data)=>{
+		console.log('handle error');
+		ramaddaDoingWiki--;
+		wikiError(data);
+	    }	    
 	    $.post(url,{
 		doImports:"false",
 		entryid:entryId??this.getProperty("entryId"),
 		wikitext:wiki},
-		   wikiCallback).fail(wikiError);
+		   handleResult).fail(handleError);
 	},
 
 
@@ -34543,8 +34559,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         initDisplay: function() {
             let theDisplay = this;
-
-            this.jq(ID_SEARCH).click(function(event) {
+            this.jq(ID_SEARCH).button().click(function(event) {
 		theDisplay.submitSearchForm();
                 event.preventDefault();
             });
@@ -34766,6 +34781,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return settings;
 	},
         submitSearchForm: function() {
+	    //Check for recursion
+	    if(ramaddaDoingWiki>0) {
+		return;
+	    }
             if (this.fixedEntries) {
                 return;
             }
@@ -35113,7 +35132,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div([ATTR_STYLE,'margin-bottom:4px;max-width:80%;',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
+            let searchButton = HU.div([ATTR_STYLE,'margin-bottom:4px;max-width:80%;',
+				       ATTR_ID, this.getDomId(ID_SEARCH),
+				       ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 
@@ -36730,7 +36751,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		});
 	    }
 
-            this.jq(ID_SEARCH).click(function(event) {
+            this.jq(ID_SEARCH).button().click(function(event) {
 		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
             });
