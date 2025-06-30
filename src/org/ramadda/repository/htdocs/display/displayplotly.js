@@ -134,7 +134,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	    if(!window.Plotly) {
 		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.24.1.min.js");
 		let callback = this.loadingJS?null:   ()=>{
-//		    Utils.loadScript('/repository/lib/d3/d3.js');
 		    this.updateUI(args);
 		};
 		Utils.loadScript(url,callback); 
