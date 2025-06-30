@@ -5603,10 +5603,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.displayEntryBreadcrumbs(entry,this.domId(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix));
 	    }
         },
-	displayEntryBreadcrumbs:function(entry,id) {
+	displayEntryBreadcrumbs:function(entry,id,max) {
+	    if(!Utils.isDefined(max)) max = 100;
 	    let ancestorContent = "";
+	    let count =0;
 	    let handleAncestor = ancestor=>{
-		if(!ancestor) {
+		count++;
+		if(!ancestor || count>max) {
 		    jqid(id).html(ancestorContent);
 		} else {
 		    let href= ancestor.getLink(null, false,["target","_entries"]);

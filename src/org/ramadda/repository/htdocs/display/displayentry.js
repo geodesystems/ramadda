@@ -4375,13 +4375,13 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		let menu = this.entryMenu = this.jq('entrymenu');
 		menu.change(function() {
 		    let entry = entryMap[$(this).val()];
-		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'));		    
+		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'),4);		    
 		    _this.loadEntry(entry);
 		});
 		HtmlUtils.initSelect(menu,{ autoWidth: true,  'max-height':'100px'});
 		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
 		if(this.sourceEntry)
-		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'));		    
+		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'),4);		    
 	    }
 
 	    if(this.sourceEntry) {
