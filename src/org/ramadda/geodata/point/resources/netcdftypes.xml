@@ -22,7 +22,7 @@
        description="GHCND Time Series" 
        super="type_point_netcdf" 
        >
-<property name="search.tabs" value="map,list"/>
+<property name="search.tabs" value="map,display,list"/>
 
 <!-- Wiki text-->
 <wiki><![CDATA[
@@ -68,7 +68,7 @@ displayStyle="font-size:80%;" numericOnly=true  showPopup=true  fieldsSelected.s
 	pattern="(?i).*t28.*\.nc"
 	super="type_point_netcdf_trajectory"
 	description="T28 NetCDF Trajectory Data">
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
     <wiki><![CDATA[
 +section title={{name}}

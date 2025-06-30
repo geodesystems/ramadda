@@ -14,7 +14,7 @@
 
 
   <type name="type_hydro_colorado"  super="type_point_hydro" description="Colorado DNR Stream Gage"  handler="org.ramadda.data.services.PointTypeHandler">
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="fbxxxixed_url" value="https://dwr.state.co.us/Rest/GET/api/v2/telemetrystations/telemetrytimeseriesday/?format=csv&amp;abbrev=${site_id}&amp;endDate=${date format=MM/dd/yy}&amp;parameter=GAGE_HT%2CDISCHRG&amp;startDate=${date offset=&quot;-1 week&quot; z=MST}&amp;START=${date format=MM/dd/yy}"/>
     <property name="fixed_url" value="https://dwr.state.co.us/Rest/GET/api/v2/telemetrystations/telemetrytimeseriesday/?format=csv&amp;abbrev=${site_id}&amp;endDate=${date format=MM/dd/yy}&amp;parameter=GAGE_HT%2CDISCHRG&amp;startDate=${date offset=&quot;-1 week&quot; z=MST}"/>    
      <property name="icon" value="/point/co.png"/>
@@ -49,7 +49,7 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
   <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"
 	handler="org.ramadda.geodata.point.RiseTypeHandler"
 	editfields="rise_id,_default">
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="form.header.new">
     <![CDATA[+callout-info\n
 * Find sites at <a href=https://data.usbr.gov/rise-map/ target=_usbr>USBR Map</a>
@@ -264,7 +264,7 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 <type name="type_usgs_gauge_file"  description="USGS File" super="type_point_hydro"
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/usgs.png"/>
   <property name="record.file.cacheok" value="true"/>
   <property name="form.area.show" value="false"/>
@@ -306,7 +306,7 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
       super="type_point_hydro"
       newfields="site,downloadfile,tags,resource,quit"
       handler="org.ramadda.geodata.point.NgwmTypeHandler">
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="icon" value="/point/ngwm.png"/>
   <property name="record.file.cacheok" value="true"/>

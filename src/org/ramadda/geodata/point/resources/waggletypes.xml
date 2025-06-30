@@ -4,7 +4,7 @@
 	editfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,_default"
     handler="org.ramadda.geodata.point.WaggleTypeHandler">
     
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="record.file.cacheok" value="true"/>    
     <property name="icon" value="/point/waggle.png"/>
     <property name="form.location.show" value="true"/>

@@ -387,7 +387,7 @@ lineWrap=true
       help="Provides access to the Daymet historic weather data provided by Oak Ridge National Labs"
       editfields="name,location,_default"      
 >
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
      <property name="form.header.new">
        <![CDATA[+note\nSpecify the latitude/longitude\n-note]]>
      </property>    

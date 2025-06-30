@@ -6,7 +6,7 @@
 	addbulkupload="true"	newfields="location_id,name,description,hours_offset,quit"
 >
 
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="icon" value="/point/openaq.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.properties.show" value="false"/>
@@ -107,7 +107,7 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
 	newfields="sensor_id,_default"	>
     <action name="gethistory" label="Download History" icon="fas fa-download"/>
     <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="icon" value="/point/purpleair/icon.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.date.show" value="false"/>

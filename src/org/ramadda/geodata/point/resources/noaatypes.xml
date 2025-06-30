@@ -90,7 +90,7 @@ picky=false
   <type name="type_point_snotel"  super="type_point" description="SNOTEL Snow Data"
 	newfields="site_number,name,quit,_default"
 	handler="org.ramadda.geodata.point.SnotelTypeHandler">
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="form.header.new">
        <![CDATA[+callout-info
 You just need to specify the Site  number.

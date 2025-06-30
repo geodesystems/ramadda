@@ -3,7 +3,7 @@
   <type name="type_point_cr1000"  description="CR1000 Data Logger File" super="type_point" 
 	handler="org.ramadda.data.services.PointTypeHandler"
 	pattern="(?i).*CR1000.*\.dat">
-    <property name="search.tabs" value="list,map"/>
+    <property name="search.tabs" value="list,display,map"/>
     <property name="icon" value="/point/campbell.png"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="form.area.show" value="false"/>

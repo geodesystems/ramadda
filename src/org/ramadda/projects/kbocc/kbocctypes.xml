@@ -5,7 +5,7 @@ super="type_point"
 category="Point Data"
 supercategory="Geoscience"  
 handler="org.ramadda.projects.kbocc.KboccTypeHandler">
-<property name="search.tabs" value="map,list"/>
+<property name="search.tabs" value="map,display,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="true"/>
@@ -83,7 +83,7 @@ description="KBOCC Merged Data"
 super="type_point" 
 pattern=".*kbocc_.*merged.*\.csv"
 handler="org.ramadda.projects.kbocc.KboccTypeHandler">
-<property name="search.tabs" value="map,list"/>
+<property name="search.tabs" value="map,display,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="false"/>

@@ -277,7 +277,7 @@ super="type_point"
 handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler"
 editfields="station,data_type,_default"	>
 
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/noaa.gif"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
@@ -471,7 +471,7 @@ indexField="depth" fields="salinity,density"
       super="type_point" 
       newfields="name,spotter_id,_default"	
       handler="org.ramadda.data.services.PointTypeHandler">
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/sofar.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="record.processresource" value="true"/>
@@ -574,7 +574,7 @@ template="${default}" }}
 description="Castaway CTD Data" 
 super="type_point" 
 handler="org.ramadda.data.services.PointTypeHandler">
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/sontek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.area.show" value="false"/>
@@ -655,7 +655,7 @@ indexField="depth" fields="salinity,density"
 description="NORTEK ADCP Buoy" 
 super="type_point" 
 handler="org.ramadda.data.services.PointTypeHandler">
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/nortek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.area.show" value="false"/>
@@ -734,7 +734,7 @@ indexField="depth" fields="temperature"
       pattern=".*sl_taskforce_scenarios.*xlsx"
       handler="org.ramadda.geodata.point.ISLRTypeHandler">
   <property name="icon" value="/point/nasa.png"/>
-  <property name="search.tabs" value="list,map"/>
+  <property name="search.tabs" value="list,display,map"/>
   <property name="form.properties.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="false"/>
@@ -809,7 +809,7 @@ Data is from the [https://sealevel.nasa.gov/task-force-scenario-tool/ Interagenc
 <type name="type_point_islr_obs" description="Interagency Sea Level Rise - Observations" super="type_point_ocean"  foruser="true"
       handler="org.ramadda.geodata.point.ISLRTypeHandler">
   <property name="icon" value="/point/nasa.png"/>
-  <property name="search.tabs" value="list,map"/>
+  <property name="search.tabs" value="list,display,map"/>
   <property name="form.properties.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="false"/>
@@ -973,7 +973,7 @@ super="type_point"
 handler="org.ramadda.geodata.point.NoaaTidesTypeHandler"
 editfields="station_id,_default"	>
 
-  <property name="search.tabs" value="map,list"/>
+  <property name="search.tabs" value="map,display,list"/>
   <property name="icon" value="/point/noaa.gif"/>
   <property name="form.bulkupload.show" value="false"/>
   <property name="form.area.show" value="false"/>

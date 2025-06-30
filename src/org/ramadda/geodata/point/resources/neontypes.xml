@@ -1,7 +1,7 @@
 <types supercategory="Geoscience">
   <type name="type_point_neon_any"  description="Any NEON Data" super="type_point" 
         handler="org.ramadda.geodata.point.BaseNeonTypeHandler">
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="record.file.cacheok" value="true"/>    
     <property name="icon" value="/point/neon.png"/>
@@ -55,7 +55,7 @@ request.productcode.values="property:neon.productcodes"
 	editfields="name,description,productcode,productyear,productmonth,maxpoints,filepattern,quit"      	
         handler="org.ramadda.geodata.point.NeonTypeHandler">
     <action name="getfile" label="Download NEON file" icon="/point/neon.png"/>
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="record.file.cacheok" value="true"/>    
     <property name="icon" value="/point/neon.png"/>

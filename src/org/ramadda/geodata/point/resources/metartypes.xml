@@ -4,7 +4,7 @@
 	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
 
 
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
     <property name="form.file.show" value="false"/>
     <property name="form.resource.show" value="false"/>
     <property name="record.processresource" value="true"/>
@@ -101,7 +101,7 @@ label,pady:10,pos:nw,dx:20,dy:-ch+80,font:36px sans-serif,label:Temp_colon_ ${te
 	newfields="site_id,name,quit,_default"
 	handler="org.ramadda.geodata.point.NwsObsTypeHandler">
     
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="map,display,list"/>
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="point.initialize" value="false"/>
