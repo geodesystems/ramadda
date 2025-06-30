@@ -1631,14 +1631,6 @@ public class WikiManager extends RepositoryManager
         }
         Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
-
-	/*
-	  if(true) {
-	  Result result2 = new Result("", new StringBuilder("XXXX"));
-	  result2.setShouldDecorate(false);
-	  return result2;
-	  }*/
-
         return result;
     }
 
