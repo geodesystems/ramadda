@@ -32,7 +32,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public static final String ARG_FIELDS = "fields";
     public static final String ARG_METADATA = "metadata";
     public static final String ATTR_TABS = "tabs";
-    public static final String TAB_LIST = "list";
+    public static final String TAB_LIST = "list,display";
     public static final String TAB_MAP = "map";
     public static final String TAB_TIMELINE = "timeline";
     private RequestUrl URL_SEARCH;
