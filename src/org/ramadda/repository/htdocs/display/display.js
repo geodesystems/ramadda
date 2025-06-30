@@ -5600,21 +5600,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    if(!entry.isSynth() && this.getProperty("showEntryBreadcrumbs",true)) {
-		let ancestorContent = "";
-		let handleAncestor = ancestor=>{
-		    if(!ancestor) {
-			this.jq(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix).html(ancestorContent);
-		    } else {
-			let href= ancestor.getLink(null, false,["target","_entries"]);
-			if(ancestorContent!="")
-			    href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
-			ancestorContent = href +  ancestorContent;
-			ancestor.getParentEntry(handleAncestor);
-		    }
-		};
-		entry.getParentEntry(handleAncestor);
+		this.displayEntryBreadcrumbs(entry,this.domId(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix));
 	    }
         },
+	displayEntryBreadcrumbs:function(entry,id) {
+	    let ancestorContent = "";
+	    let handleAncestor = ancestor=>{
+		if(!ancestor) {
+		    jqid(id).html(ancestorContent);
+		} else {
+		    let href= ancestor.getLink(null, false,["target","_entries"]);
+		    if(ancestorContent!="")
+			href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
+		    ancestorContent = href +  ancestorContent;
+		    ancestor.getParentEntry(handleAncestor);
+		}
+	    };
+	    entry.getParentEntry(handleAncestor);
+	},
+
 	addWikiHtml:function(container,html) {
 	    let debug = true;
 	    let js =[];
