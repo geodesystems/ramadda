@@ -1613,7 +1613,6 @@ public class WikiManager extends RepositoryManager
 	    wiki = HtmlUtils.sanitizeString(wiki);
 	    wiki = Request.cleanXSS(wiki);
 	}
-	System.err.println("**** after:" + wiki);
         if (request.defined(ARG_ENTRYID)) {
             if ( !request.get("doImports", true)) {
                 request.putExtraProperty("initchart", "added");
