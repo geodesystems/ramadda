@@ -190,16 +190,22 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(request.exists(ARG_OK)) {
 	    applyLLMToEntry(request, entry,sb);
 	} else {
-	    sb.append(HU.formPost(pageUrl,""));
-	    sb.append(getNewEntryExtract(request));
-	    sb.append("<br>");
-	    sb.append(HU.submit("Apply LLM", ARG_OK));
-	    sb.append(HU.formClose());
+	    makeApplyLLMForm(request, sb);
 	}
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return getEntryManager().addEntryHeader(request, entry,
 						new Result("Apply LLM", sb));
     }
+
+    private void makeApplyLLMForm(Request request, StringBuilder sb) {
+	String pageUrl =request.toString();
+	sb.append(HU.formPost(pageUrl,""));
+	sb.append(getNewEntryExtract(request));
+	sb.append("<br>");
+	sb.append(HU.submit("Apply LLM", ARG_OK));
+	sb.append(HU.formClose());
+    }
+
 
     public boolean applyLLMToEntry(Request request, Entry entry,StringBuilder sb) throws Exception {
 	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
@@ -207,9 +213,15 @@ public class LLMManager extends  AdminHandlerImpl {
 	    sb.append(getPageHandler().showDialogError("No text from file available."));
 	    return false;
 	} else {
-	    applyEntryExtract(request, entry, corpus);
-	    getEntryManager().updateEntry(request, entry);
-	    sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+	    if(!applyEntryExtract(request, entry, corpus)) {
+		sb.append(getPageHandler().showDialogError("An error has occurred."));
+		makeApplyLLMForm(request, sb);
+		return false;
+	    } else {
+		getEntryManager().updateEntry(request, entry);
+		sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+		makeApplyLLMForm(request, sb);
+	    }
 	    return true;
 	}
     }
@@ -251,10 +263,10 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
 	sb.append(space);
-	HU.labeledCheckbox(sb,ARG_EXTRACT_DATE, "true", request.get(ARG_EXTRACT_DATE,false),  "","Extract date");
-	sb.append(space);
 	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include date in title");
 	sb.append(space);	
+	HU.labeledCheckbox(sb,ARG_EXTRACT_DATE, "true", request.get(ARG_EXTRACT_DATE,false),  "","Extract date");
+	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
@@ -551,9 +563,6 @@ public class LLMManager extends  AdminHandlerImpl {
 			throw new CallException("Claude's API rate limit has been exceeded.");
 		    }
 
-		    System.err.println("code:"  + result.getCode());
-		    System.err.println("result:"  + result.getResult());
-		    System.err.println("headers:"  + result.getHeaders());
 		    if(result.getCode()==400) {
 			throw new CallException("The call to the Claude API is malformed.");
 		    }
@@ -602,7 +611,18 @@ public class LLMManager extends  AdminHandlerImpl {
 		    }
 
 		    if(!code.equals("context_length_exceeded")) {
-			System.err.println("\tLLMManager: Error calling LLM. Unknown error code:" + result.getResult());
+			String response = result.getResult();
+			try {
+			    JSONObject obj = new JSONObject(response);
+			    JSONObject errorObj = obj.optJSONObject("error");
+			    response="LLM Error";
+			    if(errorObj!=null) {
+				String message = errorObj.optString("message", null);
+				if(message!=null) response = message;
+			    }
+			} catch(Exception ignore) {}
+			getSessionManager().addSessionMessage(request,"An error has occurred:" + response);
+			System.err.println("\tLLMManager: Error calling LLM. Unknown error code:" + response);
 			return null;
 		    }
 		    info.tokenLimit-=1000;
