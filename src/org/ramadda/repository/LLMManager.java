@@ -153,8 +153,8 @@ public class LLMManager extends  AdminHandlerImpl {
     public void processArgs(Request request, String...args) {
 	for(String a:args) {
 	    if(a.equals("title")) request.put(LLMManager.ARG_EXTRACT_TITLE,"true");
-	    else if(a.equals("include_date"))
-		request.put(LLMManager.ARG_INCLUDE_DATE,"true");	    
+	    else if(a.equals("include_date"))request.put(LLMManager.ARG_INCLUDE_DATE,"true");
+	    else if(a.equals("extract_date"))	request.put(LLMManager.ARG_EXTRACT_DATE,"true");	    	    
 	    else if(a.equals("summary")) request.put(LLMManager.ARG_EXTRACT_SUMMARY,"true");
 	    else if(a.equals("authors")) request.put(LLMManager.ARG_EXTRACT_AUTHORS,"true");
 	    else if(a.equals("locations")) request.put(LLMManager.ARG_EXTRACT_LOCATIONS,"true");	    
@@ -560,7 +560,15 @@ public class LLMManager extends  AdminHandlerImpl {
 			throw new CallException("Claude' API is temporarily overloaded.");
 		    }
 		    if(result.getCode()==429) {
-			throw new CallException("Claude's API rate limit has been exceeded.");
+			long ms= Utils.secondsToMillis(60);
+			getLogManager().logSpecial("LLMManager: Claude rate limit exceeded."+
+						   " call cnt:"+ callCnt +
+						   " sleeping for:" +  ms+" ms");
+
+			Misc.sleep(ms);
+			info.tokenLimit-=1000;
+			continue;
+			//			throw new CallException("Claude's API rate limit has been exceeded.");
 		    }
 
 		    if(result.getCode()==400) {
@@ -588,7 +596,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 		    if(code.equals("rate_limit_exceeded")) {
 			//https://platform.openai.com/docs/guides/rate-limits/usage-tiers?context=tier-two
-			long ms= 1000*60;
+			long ms= Utils.secondsToMillis(60);
 			String delay = StringUtil.findPattern(result.getResult(),"Please try again in ([\\d\\.]+)s");
 			if(delay!=null) {
 			    try {ms = (int)(1000*1.5*Double.parseDouble(delay));} catch(Exception ignore){}
@@ -759,7 +767,10 @@ public class LLMManager extends  AdminHandlerImpl {
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
 	if(true) {
+	    String message="Applying LLM to: " +entry.getName();
+	    getSessionManager().addSessionMessage(request,message);
 	    try {
+		getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
 		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
@@ -768,6 +779,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
 	    } finally {
+		getSessionManager().clearSessionMessage(request,null,message);
 		getEntryManager().clearEntryState(entry,"message");
 	    }
 	}
