@@ -309,7 +309,7 @@ public class SessionManager extends RepositoryManager {
 		if(justErrors && message.error) {
 		    continue;
 		}
-		if(message.match(key)) {
+		if(key != null && message.match(key)) {
 		    if(msg==null) continue;
 		    if(Misc.equals(msg,message.message)) continue;
 		}
