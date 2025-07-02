@@ -5,7 +5,6 @@
 
 package org.ramadda.util;
 
-
 import org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.net.ftp.*;
@@ -44,7 +43,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
-
 /**
  * A collection of utilities for IO
  *
@@ -53,35 +51,21 @@ import javax.imageio.*;
 
 @SuppressWarnings("unchecked")
 public class IO {
-
     public static final String HTTP_METHOD_POST = "POST";
     public static final String HTTP_METHOD_GET = "GET";    
-
 
     /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
 
-    /** _more_ */
     public static final String ENTRY_ID_REGEX =
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
 
-
-    /** _more_ */
     private static List<File> okToWriteToDirs = new ArrayList<File>();
-
-    /** _more_ */
     private static List<File> okToReadFromDirs = new ArrayList<File>();
-
-
-
-    /** _more_ */
     private static File cacheDir;
-
-
     public static final String MIME_CSV = "text/csv";
     public static final String MIME_TEXT = "text/plain";
     public static final String MIME_DOWNLOAD = "application/forcedownload";
-
 
     /**
      * Set the cache location. This is used by PhoneUtils for ismobile lookup
@@ -101,12 +85,6 @@ public class IO {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @return _more_
-     */
     public static File getCacheDir() {
         if (cacheDir == null) {
             String env = System.getenv("RAMADDA_CACHE_DIR");
@@ -117,7 +95,6 @@ public class IO {
 
         return cacheDir;
     }
-
 
     /**
      *
@@ -132,12 +109,6 @@ public class IO {
         return new File(cacheDir, filename);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     */
     public static void addOkToWriteToDirs(List<File> files) {
         synchronized (okToWriteToDirs) {
             for (File f : files) {
@@ -148,11 +119,6 @@ public class IO {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     */
     public static void addOkToReadFromDirs(List<File> files) {
         synchronized (okToReadFromDirs) {
             for (File f : files) {
@@ -162,12 +128,6 @@ public class IO {
             }
         }
     }
-
-
-
-
-
-
 
     /**
      *  Check if this is an OK path to write to
@@ -193,13 +153,6 @@ public class IO {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public static boolean okToReadFrom(String file) {
 	return okToReadFrom(false,file);
     }
@@ -226,22 +179,10 @@ public class IO {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     * @throws FileNotFoundException _more_
-     */
     public static InputStream getInputStream(String filename)
 	throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class);
     }
-
 
     /**
      *
@@ -258,20 +199,6 @@ public class IO {
         return getInputStream(filename, IO.class, convertZipIfNeeded);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param origin _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     * @throws FileNotFoundException _more_
-     */
     public static InputStream getInputStream(String filename, Class origin)
 	throws FileNotFoundException, Exception {
         checkFile(filename);
@@ -280,7 +207,6 @@ public class IO {
             filename = filename.replace("https:/", "https://");
             //      System.err.println("BAD:" + filename);
         }
-
 
         File f = new File(filename);
         if (f.exists()) {
@@ -300,7 +226,6 @@ public class IO {
 	InputStream is =  origin.getResourceAsStream(path);
 	return readInputStream(is);
     }
-
 
     /**
      *
@@ -323,16 +248,6 @@ public class IO {
         return inputStream;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param is _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public static String readInputStream(InputStream is) throws IOException {
         return org.apache.commons.io.IOUtils.toString(is,
 						      StandardCharsets.UTF_8);
@@ -362,17 +277,6 @@ public class IO {
         return params;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param channel _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String readChannel(ReadableByteChannel channel)
 	throws Exception {
         ByteArrayOutputStream bos       = new ByteArrayOutputStream();
@@ -385,7 +289,6 @@ public class IO {
 
         return bos.toString();
     }
-
 
     /**
      *
@@ -403,20 +306,6 @@ public class IO {
         return f;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param buffered _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public static InputStream doMakeInputStream(String filename,
 						boolean buffered)
 	throws IOException {
@@ -428,25 +317,12 @@ public class IO {
         return doMakeInputStream(path, buffered, 0);
     }    
 
-
     private static InputStream doMakeInputStream(Path path, boolean buffered, int tries) throws IOException {
-	return doMakeInputStream(path, buffered, tries, null);
+	return doMakeInputStream(path, buffered, tries, null,true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param buffered _more_
-     * @param tries _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     private static InputStream doMakeInputStream(Path path, boolean buffered, int tries,
-						 HttpURLConnection[] connectionBuff)
+						 HttpURLConnection[] connectionBuff,boolean readError)
 	throws IOException {
         checkFile(path.getPath());
         int         size = 8000;
@@ -488,7 +364,6 @@ public class IO {
 			huc.getOutputStream().write(path.body.getBytes());
 		    }
 
-
                     int               response = huc.getResponseCode();
                     //Check for redirect
                     if ((response == HttpURLConnection
@@ -505,7 +380,7 @@ public class IO {
                         }
                         //call this method recursively with the new URL
                         handlingRedirect = true;
-                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1,connectionBuff);
+                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1,connectionBuff,readError);
                     }
                 }
                 //              System.err.println ("OK: " + url);
@@ -524,7 +399,8 @@ public class IO {
                         msg = "Access forbidden";
                     } else {
                         msg = "Code: " + code + " ";
-                        try {
+			if(!readError)                 throw new IOException(msg);
+			try {
                             InputStream err = huc.getErrorStream();
 			    if(err==null) {
 				System.err.println("Error: errorInputStream is null");
@@ -538,16 +414,16 @@ public class IO {
 
 				response = Utils.stripTags(response);
 				//cap the length
-				response = Utils.clip(response,100,"");
+				response = Utils.clip(response,200,"...");
 				msg += " " + response;
 			    }
                         } catch (Exception ignoreIt) {
 			    System.err.println("Error reading error response:" + ignoreIt);
 			}
                     }
-                }
+		}
                 throw new IOException(msg);
-            }
+	    }
         }
 
         try {
@@ -555,8 +431,6 @@ public class IO {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-
-
 
         if ( !buffered) {
             //            System.err.println("not buffered");
@@ -572,7 +446,6 @@ public class IO {
         return new BufferedInputStream(is, size);
 
     }
-
 
     /**
      *
@@ -611,16 +484,6 @@ public class IO {
         return is;
     }
 
-    /**
-     * _more_
-     *
-     * @param is _more_
-     * @param maxSize _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public static byte[] readBytes(InputStream is, int maxSize)
 	throws IOException {
         int    totalRead = 0;
@@ -657,17 +520,6 @@ public class IO {
         return results;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static FTPClient makeFTPClient(URL url) throws Exception {
         FTPClient ftpClient = new FTPClient();
         ftpClient.connect(url.getHost());
@@ -685,12 +537,6 @@ public class IO {
         return ftpClient;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param ftpClient _more_
-     */
     public static void closeConnection(FTPClient ftpClient) {
         try {
             ftpClient.logout();
@@ -700,18 +546,6 @@ public class IO {
         } catch (Exception exc) {}
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param os _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static boolean writeFile(URL url, OutputStream os)
 	throws Exception {
         if (url.getProtocol().equals("ftp")) {
@@ -738,32 +572,10 @@ public class IO {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param contentName _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String readContents(String contentName) throws Exception {
         return readContents(contentName, IO.class);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param contentName _more_
-     * @param clazz _more_
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public static String readContents(String contentName, Class clazz)
 	throws Exception {
         checkFile(contentName);
@@ -779,31 +591,12 @@ public class IO {
         return IOUtil.readContents(contentName, clazz);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public static String readContents(File file) throws IOException {
         checkFile(file.toString());
 
         return IOUtil.readContents(file);
     }
 
-    /**
-     * _more_
-     *
-     * @param contentName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public static String readContents(String contentName, String dflt)
 	throws Exception {
         checkFile(contentName);
@@ -819,7 +612,6 @@ public class IO {
         return IOUtil.readContents(contentName, dflt);
     }
 
-
     public static String stripExtension(String file) {
 	//IMPORTANT: for now call out to IOUtil 
 	return IOUtil.stripExtension(file);
@@ -833,17 +625,6 @@ public class IO {
 	//	return FilenameUtils.getExtension(file);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String readUrl(String url) throws Exception {
         checkFile(url);
         URL         u  = new URL(url);
@@ -853,15 +634,6 @@ public class IO {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String readUrl(URL url) throws Exception {
         String u = url.toString();
         if ( !u.startsWith("http:") && !u.startsWith("https:")) {
@@ -873,31 +645,10 @@ public class IO {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static InputStream getInputStream(URL url) throws Exception {
         return getInputStream(url, 0);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param tries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static InputStream getInputStream(URL url, int tries)
 	throws Exception {
         checkFile(url.toString());
@@ -932,40 +683,11 @@ public class IO {
         return connection.getInputStream();
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param body _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String doPost(URL url, String body, String... args)
 	throws Exception {
         return doHttpRequest(HTTP_METHOD_POST, url, body, args);
     }
 
-    /**
-     * _more_
-     *
-     * @param action _more_
-     * @param url _more_
-     * @param body _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String doHttpRequest(String action, URL url, String body,
                                        String... args)
 	throws Exception {
@@ -1009,14 +731,6 @@ public class IO {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param conn _more_
-     *
-     * @return _more_
-     */
     public static String readError(HttpURLConnection conn) {
         try {
             return readString(
@@ -1028,15 +742,6 @@ public class IO {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param input _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String readString(BufferedReader input) throws Exception {
         StringBuilder sb = new StringBuilder();
         String        line;
@@ -1048,19 +753,6 @@ public class IO {
         return sb.toString();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String doGet(URL url, String... args) throws Exception {
         Result result = doGetResult(url, args);
         if (result.error) {
@@ -1083,17 +775,15 @@ public class IO {
 	return getHttpResult(HTTP_METHOD_GET,url,null, args);
     }
 
-
     public static Result doPostResult(URL url, String body, String... args)
 	throws Exception {
 	return getHttpResult(HTTP_METHOD_POST,url,body, args);
     }
-    
+
     public static Result getHttpResult(String type, URL url, String body, String... args)
 	throws Exception {	
 	return getHttpResult(new Path(url.toString(),type,body,args));
     }
-
 
     public static Result getHttpResult(Path path) throws Exception {	
 	URL url = new URL(path.getPath());
@@ -1122,16 +812,8 @@ public class IO {
 */
 	HttpURLConnection[] connection=new HttpURLConnection[]{null};
         try {
-
-	    InputStream inputStream = doMakeInputStream(path, true, 0,connection);
+	    InputStream inputStream = doMakeInputStream(path, true, 0,connection,false);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-	    /*
-            BufferedReader in = new BufferedReader(
-						   new InputStreamReader(
-									 connection.getInputStream(),
-									 "UTF-8"));
-	    */
-
             StringBuilder sb = new StringBuilder();
             String        line;
             while ((line = in.readLine()) != null) {
@@ -1143,9 +825,10 @@ public class IO {
             return new Result(connection[0],sb.toString());
         } catch (Throwable exc) {
 	    //xxx
-	    System.err.println("Error fetching URL:" + path);
 	    exc.printStackTrace();
+	    System.err.println("reading error");
             String error = readError(connection[0]);
+	    System.err.println("error:" +error);
             return new Result(connection[0],error, connection[0].getResponseCode(), true, exc);
         }
     }
@@ -1165,7 +848,6 @@ public class IO {
 	}
     }
 
-
     /**
      * Class description
      *
@@ -1176,7 +858,7 @@ public class IO {
     public static class Result {
 
 	URLConnection connection;
-	
+
         /**  */
         int code;
 
@@ -1197,7 +879,7 @@ public class IO {
 	}
 
         /**
-         
+
          *
          * @param result _more_
          */
@@ -1207,7 +889,7 @@ public class IO {
         }
 
         /**
-         
+
          *
          * @param result _more_
          * @param code _more_
@@ -1223,7 +905,7 @@ public class IO {
         }
 
         /**
-         
+
          *
          * @param inputStream _more_
          */
@@ -1235,7 +917,6 @@ public class IO {
 	public String getHeader(String key) {
 	    return connection.getHeaderField(key);
 	}
-
 
 	public String getHeaders() {
 	    StringBuilder sb = new StringBuilder();
@@ -1324,10 +1005,7 @@ public class IO {
             return inputStream;
         }
 
-
-
     }
-
 
     /**
      *
@@ -1368,8 +1046,6 @@ public class IO {
         }
     }
 
-
-
     /**
      * This will prune out any leading &lt;unique id&gt;_file_&lt;actual file name&gt;
      *
@@ -1399,22 +1075,8 @@ public class IO {
 
         return tail;
 
-
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param from _more_
-     * @param file _more_
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public static long writeTo(URL from, File file) throws Exception {
         URLConnection    connection = from.openConnection();
         InputStream is = Utils.getInputStream(from.toString(), Utils.class);
@@ -1438,12 +1100,6 @@ public class IO {
         return numBytes;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param inputStream _more_
-     */
     public static void close(Closeable ...streams) {
 	for(Closeable c: streams) {
 	    if (c!=null) {
@@ -1454,12 +1110,9 @@ public class IO {
 	}
     }
 
-
-
     /**  */
     private static List<FileChecker> fileCheckers =
         new ArrayList<FileChecker>();
-
 
     /**
      *
@@ -1469,12 +1122,6 @@ public class IO {
         fileCheckers.add(checker);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     */
     public static void checkFile(URL url) {
         try {
             checkFile(url.toURI().toString());
@@ -1483,12 +1130,6 @@ public class IO {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
     public static void checkFile(String file) {
         if ( !okToReadFrom(file)) {
             throw new RuntimeException("Cannot read file:" + file);
@@ -1503,17 +1144,8 @@ public class IO {
      */
     public interface FileChecker {
 
-        /**
-         * _more_
-         *
-         * @param file _more_
-         * @return _more_
-         */
         public boolean canReadFile(boolean external, String file);
     }
-
-
-
 
     /**
      * Merge each row in the given files out. e.g., if file1 has
@@ -1566,7 +1198,6 @@ public class IO {
 
     }
 
-
     /**
      * Merge the CSV files
      *
@@ -1612,14 +1243,6 @@ public class IO {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public static List<File> getFilelessDirectories(File file) {
         List<File> files    = new ArrayList<File>();
         File[]     children = file.listFiles();
@@ -1633,14 +1256,6 @@ public class IO {
         return files;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param dirs _more_
-     *
-     * @return _more_
-     */
     public static boolean getFilelessDirectories(File file, List<File> dirs) {
         File[]  children            = file.listFiles();
         boolean haveDescendentFiles = false;
@@ -1661,7 +1276,6 @@ public class IO {
 
         return !haveDescendentFiles;
     }
-
 
     /**
      *
@@ -1706,15 +1320,8 @@ public class IO {
         return isADescendentNonCanonical(parent, newParent);
     }
 
-
-    /** _more_ */
     private static boolean debuggingStderr = false;
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public static void debugStderr() throws Exception {
         if (debuggingStderr) {
             return;
@@ -1773,21 +1380,11 @@ public class IO {
 		    oldErr.print(x);
 		}
 
-
-
 	    });
     }
 
-
-
-    /** _more_ */
     private static boolean debuggingStdout = false;
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public static void debugStdout() throws Exception {
         if (debuggingStdout) {
             return;
@@ -1812,15 +1409,6 @@ public class IO {
 	    });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public static File[] sortFilesOnName(File[] files, boolean descending) {
         List tuples = new ArrayList();
         for (int i = 0; i < files.length; i++) {
@@ -1837,18 +1425,6 @@ public class IO {
         return files;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     * @param ascending _more_
-     *
-     * @return _more_
-     */
     public static File[] sortFilesOnSize(File[] files,
                                          final boolean ascending) {
 
@@ -1861,14 +1437,12 @@ public class IO {
 
         Collections.sort(sorted, new FileSizeCompare(ascending));
 
-
         for (int i = 0; i < files.length; i++) {
             files[i] = sorted.get(i).getFile();
         }
 
         return files;
     }
-
 
     /**
      * Class description
@@ -1879,26 +1453,12 @@ public class IO {
      */
     private static class FileSizeCompare implements Comparator<IOUtil.FileWrapper> {
 
-        /** _more_ */
         private boolean ascending;
 
-        /**
-         * _more_
-         *
-         * @param ascending _more_
-         */
         public FileSizeCompare(boolean ascending) {
             this.ascending = ascending;
         }
 
-        /**
-         * _more_
-         *
-         * @param o1 _more_
-         * @param o2 _more_
-         *
-         * @return _more_
-         */
         public int compare(IOUtil.FileWrapper o1, IOUtil.FileWrapper o2) {
             int result;
             if (o1.length() < o2.length()) {
@@ -1925,8 +1485,6 @@ public class IO {
 	if(s==null) return dflt;
 	return Double.parseDouble(s);
     }
-
-
 
     /**
      *
@@ -1978,7 +1536,6 @@ public class IO {
 
         return files;
     }
-
 
     public static boolean exists(File f) {
 	if(f==null) return false;
@@ -2052,7 +1609,6 @@ public class IO {
         }
     }
 
-
     public static InputStream pipeIt(PipedThing runnable) throws Exception {
 	final PipedOutputStream pos = new PipedOutputStream();
 	final PipedInputStream  pis = new PipedInputStream(pos);
@@ -2069,16 +1625,6 @@ public class IO {
 	public void run(OutputStream os);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
 	if(true) {
 	    for(String s:args) {
@@ -2097,7 +1643,6 @@ public class IO {
 	    return;
 	}
 
-
 	if(true) {
 	    //	    args = new String[]{"Authorization"," Bearer openai key"};
 	    List postArgs   =new ArrayList();
@@ -2111,7 +1656,6 @@ public class IO {
 	    return;
 	}
 
-
         for (String f : args) {
             System.err.println("f:" + f);
             getInputStream(f);
@@ -2124,7 +1668,6 @@ public class IO {
         final PipedOutputStream pos       = new PipedOutputStream();
         final PipedInputStream  pis       = new PipedInputStream(pos);
         final boolean           running[] = { true };
-
 
         ucar.unidata.util.Misc.run(new Runnable() {
 		public void run() {
@@ -2164,7 +1707,6 @@ public class IO {
 		}
 	    });
 
-
         while (running[0]) {
             ucar.unidata.util.Misc.sleepSeconds(10);
         }
@@ -2177,21 +1719,17 @@ public class IO {
             return;
         }
 
-
-
         for (String f : args) {
             System.err.println("F:" + f + " childless:"
                                + getFilelessDirectories(new File(f)));
         }
     }
 
-
     public static class Path {
 	private String path;
 	private String method;
 	private String body;
 	private List<String> requestArgs = new ArrayList<String>();
-	
 
 	public Path(Path path) {
 	    this(path.method, path.body,path.getRequestArgs());
@@ -2254,7 +1792,7 @@ public class IO {
 	}
 
 	public String toString() {
-	    return path + (method!=null?" method:" + method:"") + (body!=null?" body:" + body:"");
+	    return path + (method!=null?" method:" + method:"") + (body!=null?" body:" + Utils.clip(body,100,"..."):"");
 	}
 
 	/**
@@ -2316,7 +1854,6 @@ public class IO {
 	   @param value The new value for RequestArgs
 	**/
 
-
 	/**
 	   Get the RequestArgs property.
 
@@ -2325,7 +1862,6 @@ public class IO {
 	public String[] getRequestArgs () {
 	    return Utils.toStringArray(requestArgs);
 	}
-
 
     }
 
