@@ -1252,7 +1252,14 @@ WikiEditor.prototype = {
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
-	text  = 'base64:' +  window.btoa(text);
+	try {
+	    //Don't ask - this odd duck character (from Windows) breaks the btoa
+	    text = text.replace(/’/g,"'");
+	    text  = 'base64:' +  window.btoa(text);
+	} catch(err) {
+	    alert('some error occurred converting the text: '+ err);
+	    return
+	}	    
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
