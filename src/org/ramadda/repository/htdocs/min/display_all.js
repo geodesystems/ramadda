@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 30 09:19:49 MDT 2025";
+var build_date="RAMADDA build date: Wed Jul  2 16:42:33 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -54430,9 +54430,13 @@ MapGlyph.prototype = {
 		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>\n';
 		}
 		lastProperty  = propOp;
-		let label = rule.value;
+		let value = rule.value;
+		if(Utils.stringDefined(rule.extvalue)) {
+		    value = rule.extvalue;
+		}		    
+		let label = value;
 		let info = this.getFeatureInfo(rule.property);
-		if(info) label = info.getValueLabel(rule.value);
+		if(info) label = info.getValueLabel(value);
 
 		label   = HU.span([ATTR_STYLE,'font-size:9pt;'],label);
 		let lineWidth;
@@ -55392,10 +55396,13 @@ MapGlyph.prototype = {
 	       !Utils.stringDefined(jqid('mapstyle_' + i).val())) {
 		continue;
 	    }
+	    let value =jqid('mapvalue_' + i).val();
+	    let extvalue =jqid('mapvalueext_' + i).val();	    
 	    let rule = {
 		property:jqid('mapproperty_' + i).val(),
 		type:jqid('maptype_' + i).val(),
-		value:jqid('mapvalue_' + i).val(),
+		value:value,
+		extvalue:extvalue,
 		style:jqid('mapstyle_' + i).val(),
 	    }
 	    rules.push(rule);
@@ -55707,6 +55714,7 @@ MapGlyph.prototype = {
 	    let index  = $(this).attr('mapproperty_index');	    
 	    let tt = "";
 	    let value = jqid('mapvalue_' + index).val();
+	    let extvalue = jqid('mapvalueext_' + index).val();	    
 	    let wrapper = jqid('mapvaluewrapper_' + index);
 	    if(info.isNumeric()) {
 		wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,'size','15']));
@@ -55714,12 +55722,15 @@ MapGlyph.prototype = {
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.getSamplesLabels(), ", ");
 		if(info.isEnumeration()) {
-		    wrapper.html(HU.select("",[ATTR_ID,'mapvalue_' + index],info.samples,value,20));
+		    let widget = HU.select("",[ATTR_ID,'mapvalue_' + index],info.samples,value,20);
+		    let extwidget = HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,'size','15',
+						       ATTR_PLACEHOLDER,'pattern']);
+		    wrapper.html(widget+HU.div([],'Or: '+extwidget));
 		} else {
 		    wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,'size','15']));
 		}
 	    }
-	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
+//	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
 	});
 
 	HU.initPageSearch(dialog.find('.dialog-feature'),
@@ -56127,6 +56138,7 @@ MapGlyph.prototype = {
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
 	    let value = rule.value??'';
+	    let extvalue = rule.extvalue??'';	    
 	    let info = this.featureInfoMap[rule.property];
 	    let title = sample;
 	    let valueInput;
@@ -56138,6 +56150,8 @@ MapGlyph.prototype = {
 	    }
 	    if(info?.isEnumeration()) {
 		valueInput = HU.select('',[ATTR_ID,'mapvalue_' + index],info.getSamplesForMenu(),value,20); 
+		valueInput+= HU.div([],HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,'size','15',
+							  ATTR_PLACEHOLDER,'pattern']));
 		
 	    } else {
 		valueInput = HU.input('',value,[ATTR_ID,'mapvalue_' + index,'size','15']);
@@ -57229,7 +57243,13 @@ MapGlyph.prototype = {
 		seen[key] = true;
 		return true;
 	    });
+	    uniqueRules =uniqueRules.map(rule=>{
+		rule =  $.extend({},rule);
+		if(Utils.stringDefined(rule.extvalue)) rule.value  = rule.extvalue;
+		return rule;
+	    });
 	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
+//	    console.dir(uniqueRules);
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.fidx=idx;
