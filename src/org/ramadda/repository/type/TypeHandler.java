@@ -1223,13 +1223,22 @@ public class TypeHandler extends RepositoryManager {
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
         String action = request.getString("action", "");
-	if (action.equals("entryllm") || action.equals("documentchat")) {
-	    return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
-	}
+	try {
+	    if (action.equals("entryllm") || action.equals("documentchat")) {
+		return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
+	    }
 
-        if (action.equals("applyllm")) {
-	    return getLLMManager().applyLLM(request,entry);
-	}	
+	    if (action.equals("applyllm")) {
+		return getLLMManager().applyLLM(request,entry);
+	    }
+	} catch(Exception exc) {
+	    StringBuilder sb = new StringBuilder();
+	    getPageHandler().entrySectionOpen(request, entry, sb, "Error applying LLM");
+	    sb.append(getPageHandler().showDialogError(exc.getMessage()));
+	    getLogManager().logError("Applying LLM:"+ entry,exc);
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return new Result("LLM Error", sb);
+	}
 
 	Action a = actionMap.get(action);
 	if(a!=null && a.wikiText!=null) {
