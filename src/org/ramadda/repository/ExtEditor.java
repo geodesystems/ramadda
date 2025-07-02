@@ -910,7 +910,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
 		    "\n//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
-		    "<span>entry.applyLLM(true,'title','summary','keywords','latlon','include_date','authors')</span>\n" +
+		    "<span>entry.applyLLM(true,'title','summary','keywords','latlon','extract_date','include_date','authors')</span>\n" +
 		    "\n//extract a metadata value using the LLM\n" +
 		    "//for multiples ask the LLM to delimit the results with a semi-colon\n" +
 		    "//true -&gt; *check if the entry has the metadata element already\n" +
