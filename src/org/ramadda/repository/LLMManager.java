@@ -384,17 +384,17 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(!isClaudeEnabled()) return null;
 	    /*
 	      '{
-    "model": "claude-3-opus-20240229",
-    "max_tokens": 1024,
-    "messages": [
-        {"role": "user", "content": "Hello, world"}
-    ]
-}'
+	      "model": "claude-3-opus-20240229",
+	      "max_tokens": 1024,
+	      "messages": [
+	      {"role": "user", "content": "Hello, world"}
+	      ]
+	      }'
 	    */
 	    /*
-	    gptText = gptText +"<document>" +
-		IO.readContents("/Users/jeffmc/test.csv")+"</document>";
-	    System.err.println(gptText);
+	      gptText = gptText +"<document>" +
+	      IO.readContents("/Users/jeffmc/test.csv")+"</document>";
+	      System.err.println(gptText);
 	    */
 
 	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
@@ -408,10 +408,10 @@ public class LLMManager extends  AdminHandlerImpl {
 				 "messages",messages);
 
 	    IO.Result  results = call(claudeJobManager,
-			new URL(URL_CLAUDE+"?key=" + claudeKey), body,
-			"x-api-key",claudeKey,
-			"anthropic-version","2023-06-01",
-			"Content-Type","application/json");
+				      new URL(URL_CLAUDE+"?key=" + claudeKey), body,
+				      "x-api-key",claudeKey,
+				      "anthropic-version","2023-06-01",
+				      "Content-Type","application/json");
 	    return results;
 	}
     }	
@@ -425,8 +425,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean useGpt4 = model.equals(MODEL_GPT_4);
 	if(useGpt4 && !isGPT4Enabled()) return null;
 	List<String> args =  Utils.makeListFromValues("temperature", "0",
-					    "max_tokens" ,""+ maxReturnTokens,
-					    "top_p", "1.0");
+						      "max_tokens" ,""+ maxReturnTokens,
+						      "top_p", "1.0");
 	for(int i=0;i<extraArgs.length;i+=2) {
 	    args.add(extraArgs[i]);
 	    args.add(extraArgs[i+1]);
@@ -438,8 +438,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	String body = JsonUtil.map(args);
 	String openAIKey = getOpenAIKey();
 	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
-		    "Content-Type","application/json",
-		    "Authorization","Bearer " +openAIKey);
+			      "Content-Type","application/json",
+			      "Authorization","Bearer " +openAIKey);
 	//	System.err.println(result.getHeaders());
 	if(result!=null) {
 	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
@@ -767,10 +767,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
 	if(true) {
-	    String message="Applying LLM to: " +entry.getName();
-	    getSessionManager().addSessionMessage(request,message);
 	    try {
-		getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
 		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
@@ -779,24 +776,23 @@ public class LLMManager extends  AdminHandlerImpl {
 		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
 	    } finally {
-		getSessionManager().clearSessionMessage(request,null,message);
 		getEntryManager().clearEntryState(entry,"message");
 	    }
 	}
 
 	//for testing:
 	/*
-	for(int i=0;i<40;i++) {
-	    Misc.run(new Runnable(){
-		    public void run() {
-			try {
-			    applyEntryExtractInner(request, entry,llmCorpus);
-			}catch(Throwable thr) {
-			    System.err.println("ERROR:" + thr);
-			}
-		    }
-		});
-		}*/
+	  for(int i=0;i<40;i++) {
+	  Misc.run(new Runnable(){
+	  public void run() {
+	  try {
+	  applyEntryExtractInner(request, entry,llmCorpus);
+	  }catch(Throwable thr) {
+	  System.err.println("ERROR:" + thr);
+	  }
+	  }
+	  });
+	  }*/
 	return true;
     }
 
@@ -813,180 +809,190 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon||extractDate)) return false;
-	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
-	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
-	if(typePrompt!=null) {
-	    jsonPrompt=typePrompt;
-	    jsonPrompt+="\n";
-	}
-	jsonPrompt+="The name of the original document file is: " +getStorageManager().getOriginalFilename(entry.getResource().getPathName())+".\n";
 
-	jsonPrompt+="The type of the document is: " + entry.getTypeHandler().getDescription()+".\n";
-
-	typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt.extra",(String) null);
-	if(typePrompt!=null) {
-	    jsonPrompt+=typePrompt+"\n";
-	}	
-	jsonPrompt+="The response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
-
-	List<String> schema =new ArrayList<String>();
-	if(extractTitle) {
-	    jsonPrompt+="You should include a title.";
-	    if(includeDate)
-		jsonPrompt+="If the document describes a meeting or a dated event then include the date of the meeting in the title in the form yyyy-mm-dd. ";
-	    schema.add("\"title\":\"<the title>\"");
-	}
-	if(extractSummary) {
-	    jsonPrompt+="You must include a paragraph summary of the text. The summary must not in any way be longer than four sentences. Each sentence should be short and to the point. The result in the JSON must, and I mean must, be a valid JSON string. ";
-	    schema.add("\"summary\":\"<the summary>\"");
-	}
-	if(extractKeywords) {
-	    jsonPrompt+="You must include a list of keywords extracted from the document. The keywords should not include anyone's name and should accurately capture the important details of the document. Furthermore, each keyword should not contain more than 3 separate words. The keywords must be returned as a valid JSON list of strings. There should be no more than 4 keywords in the list. ";
-	    schema.add("\"keywords\":[<keywords>]");
-	}
-	if(extractAuthors) {
-	    jsonPrompt+="You should include a list of authors of the text. The authors should be a valid JSON list of strings. ";
-	    schema.add("\"authors\":[<authors>]");
-	}
-	if(extractLocations) {
-	    jsonPrompt+="You should also include a list of geographic locations that the text mentions. This list should be a valid JSON list of strings. There should be no more than 4 geographic locations extracted ";
-	    schema.add("\"locations\":[<locations>]");
-	}
-	if(extractLatLon) {
-	    jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. If you cannot extract the location then do not return an error. "; 
-	    schema.add("\"latitude\":<latitude>,\"longitude\":<longitude>");
-	}
-
-	if(extractDate) {
-	    jsonPrompt+="Also, if you can, extract the date of this document. Only return the date in the form yyyy-MM-dd"; 
-	    schema.add("\"date\":<yyyy-MM-dd>");
-	}		
-
-	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
-	if(debug) System.err.println("Prompt:" + jsonPrompt);
-
-	if(!stringDefined(llmCorpus)) {
-	    String msg = "Unable to extract any text from the document:" + entry.getName();
-	    getSessionManager().addSessionMessage(request,msg);
-	    return false;
-	}
-	String sessionMessage = "Performing LLM extraction for: " + entry.getName();
-	getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
-	String json;
+	getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
+	String message="Applying LLM to: " +entry.getName();
+	getSessionManager().addSessionMessage(request,message);
 	try {
-	    json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
-	} finally {
-	    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
-	}
-	if(!stringDefined(json)) {
-	    String msg = "Failed to extract information for entry:" + entry.getName();
-	    getSessionManager().addSessionMessage(request,msg);
-	    return false;
-	}
 
-	//	    getLogManager().logSpecial("LLMManager:success:" + entry.getName());
-	json = json.replaceAll("^```json","").replaceAll("```$","").trim();
-	//	    System.err.println("JSON:" + json);
-	try {
-	    if(!json.startsWith("{")) {
-		int idx = json.indexOf("{");
-		if(idx>=0) {
-		    json = json.substring(idx);
-		}
-	    }
-	    JSONObject obj;
-	    try {
-		//		System.err.println(json);
-		obj = new JSONObject(json);
-	    } catch(Exception exc) {
-		//Try capping it
-		json+="\"\n}";
-		obj = new JSONObject(json);
-	    }
 
+	    String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
+	    String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
+	    if(typePrompt!=null) {
+		jsonPrompt=typePrompt;
+		jsonPrompt+="\n";
+	    }
+	    jsonPrompt+="The name of the original document file is: " +getStorageManager().getOriginalFilename(entry.getResource().getPathName())+".\n";
+
+	    jsonPrompt+="The type of the document is: " + entry.getTypeHandler().getDescription()+".\n";
+
+	    typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt.extra",(String) null);
+	    if(typePrompt!=null) {
+		jsonPrompt+=typePrompt+"\n";
+	    }	
+	    jsonPrompt+="The response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
+
+	    List<String> schema =new ArrayList<String>();
 	    if(extractTitle) {
-		String title = obj.optString("title",null);
-		title = title.trim().replaceAll("\"","").replaceAll("\"","");
-		entry.setName(title);
+		jsonPrompt+="You should include a title.";
+		if(includeDate)
+		    jsonPrompt+="If the document describes a meeting or a dated event then include the date of the meeting in the title in the form yyyy-mm-dd. ";
+		schema.add("\"title\":\"<the title>\"");
 	    }
 	    if(extractSummary) {
-		String summary = obj.optString("summary",null);
-		if(summary!=null) {
-		    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
-		    StringBuilder sb = new StringBuilder();
-		    for(String line:Utils.split(summary,"\n",true,true)) {
-			line = line.replaceAll("^-","");
-			sb.append(line);
-			sb.append("\n");
-		    }
-		    summary = "+toggleopen Summary\n+callout-info\n" + sb.toString().trim()+"\n-callout-info\n-toggle\n";
-		    entryChanged = true;
-		    entry.setDescription(summary+"\n"+entry.getDescription());
-		}
+		jsonPrompt+="You must include a paragraph summary of the text. The summary must not in any way be longer than four sentences. Each sentence should be short and to the point. The result in the JSON must, and I mean must, be a valid JSON string. ";
+		schema.add("\"summary\":\"<the summary>\"");
 	    }
 	    if(extractKeywords) {
-		JSONArray array = obj.optJSONArray("keywords");
-		//		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
-		if(array!=null) {
-		    for (int i = 0; i < array.length(); i++) {
-			if(i>=8) break;
-			getMetadataManager().addKeyword(request, entry, array.getString(i));
-		    }
-		}
+		jsonPrompt+="You must include a list of keywords extracted from the document. The keywords should not include anyone's name and should accurately capture the important details of the document. Furthermore, each keyword should not contain more than 3 separate words. The keywords must be returned as a valid JSON list of strings. There should be no more than 4 keywords in the list. ";
+		schema.add("\"keywords\":[<keywords>]");
 	    }
 	    if(extractAuthors) {
-		JSONArray array = obj.optJSONArray("authors");
-		if(array!=null) {
-		    for (int i = 0; i < array.length(); i++) {
-			if(i>=10) break;
-			getMetadataManager().addMetadata(request, entry,
-							 "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
-							 array.getString(i));
-		    }
-		}
+		jsonPrompt+="You should include a list of authors of the text. The authors should be a valid JSON list of strings. ";
+		schema.add("\"authors\":[<authors>]");
+	    }
+	    if(extractLocations) {
+		jsonPrompt+="You should also include a list of geographic locations that the text mentions. This list should be a valid JSON list of strings. There should be no more than 4 geographic locations extracted ";
+		schema.add("\"locations\":[<locations>]");
+	    }
+	    if(extractLatLon) {
+		jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. If you cannot extract the location then do not return an error. "; 
+		schema.add("\"latitude\":<latitude>,\"longitude\":<longitude>");
 	    }
 
 	    if(extractDate) {
-		String date = obj.optString("date",null);
-		if(stringDefined(date)) {
-		    try {
-			Date dttm  =Utils.parseDate(date);
-			//			System.err.println("LLM date:" + dttm);
-			entry.setStartAndEndDate(dttm.getTime());
-		    } catch(Exception exc) {
-			getLogManager().logError("Parsing LLM date:" + date,exc);
+		jsonPrompt+="Also, if you can, extract the date of this document. Only return the date in the form yyyy-MM-dd"; 
+		schema.add("\"date\":<yyyy-MM-dd>");
+	    }		
+
+	    jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
+	    if(debug) System.err.println("Prompt:" + jsonPrompt);
+
+	    if(!stringDefined(llmCorpus)) {
+		String msg = "Unable to extract any text from the document:" + entry.getName();
+		getSessionManager().addSessionMessage(request,msg);
+		return false;
+	    }
+	    String sessionMessage = "Performing LLM extraction for: " + entry.getName();
+	    getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+	    String json;
+	    try {
+		json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
+	    } finally {
+		getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
+	    }
+	    if(!stringDefined(json)) {
+		String msg = "Failed to extract information for entry:" + entry.getName();
+		getSessionManager().addSessionMessage(request,msg);
+		return false;
+	    }
+
+	    //	    getLogManager().logSpecial("LLMManager:success:" + entry.getName());
+	    json = json.replaceAll("^```json","").replaceAll("```$","").trim();
+	    //	    System.err.println("JSON:" + json);
+	    try {
+		if(!json.startsWith("{")) {
+		    int idx = json.indexOf("{");
+		    if(idx>=0) {
+			json = json.substring(idx);
+		    }
+		}
+		JSONObject obj;
+		try {
+		    //		System.err.println(json);
+		    obj = new JSONObject(json);
+		} catch(Exception exc) {
+		    //Try capping it
+		    json+="\"\n}";
+		    obj = new JSONObject(json);
+		}
+
+		if(extractTitle) {
+		    String title = obj.optString("title",null);
+		    title = title.trim().replaceAll("\"","").replaceAll("\"","");
+		    entry.setName(title);
+		}
+		if(extractSummary) {
+		    String summary = obj.optString("summary",null);
+		    if(summary!=null) {
+			summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
+			StringBuilder sb = new StringBuilder();
+			for(String line:Utils.split(summary,"\n",true,true)) {
+			    line = line.replaceAll("^-","");
+			    sb.append(line);
+			    sb.append("\n");
+			}
+			summary = "+toggleopen Summary\n+callout-info\n" + sb.toString().trim()+"\n-callout-info\n-toggle\n";
+			entryChanged = true;
+			entry.setDescription(summary+"\n"+entry.getDescription());
+		    }
+		}
+		if(extractKeywords) {
+		    JSONArray array = obj.optJSONArray("keywords");
+		    //		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
+		    if(array!=null) {
+			for (int i = 0; i < array.length(); i++) {
+			    if(i>=8) break;
+			    getMetadataManager().addKeyword(request, entry, array.getString(i));
+			}
+		    }
+		}
+		if(extractAuthors) {
+		    JSONArray array = obj.optJSONArray("authors");
+		    if(array!=null) {
+			for (int i = 0; i < array.length(); i++) {
+			    if(i>=10) break;
+			    getMetadataManager().addMetadata(request, entry,
+							     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
+							     array.getString(i));
+			}
 		    }
 		}
 
-	    }
+		if(extractDate) {
+		    String date = obj.optString("date",null);
+		    if(stringDefined(date)) {
+			try {
+			    Date dttm  =Utils.parseDate(date);
+			    //			System.err.println("LLM date:" + dttm);
+			    entry.setStartAndEndDate(dttm.getTime());
+			} catch(Exception exc) {
+			    getLogManager().logError("Parsing LLM date:" + date,exc);
+			}
+		    }
+
+		}
 
 
-	    if(extractLocations) {
-		JSONArray array = obj.optJSONArray("locations");
-		if(array!=null) {
-		    for (int i = 0; i < array.length(); i++) {
-			if(i>=10) break;
-			getMetadataManager().addMetadata(request, entry,
-							 "content.location", MetadataManager.CHECK_UNIQUE_TRUE,
-							 array.getString(i));
+		if(extractLocations) {
+		    JSONArray array = obj.optJSONArray("locations");
+		    if(array!=null) {
+			for (int i = 0; i < array.length(); i++) {
+			    if(i>=10) break;
+			    getMetadataManager().addMetadata(request, entry,
+							     "content.location", MetadataManager.CHECK_UNIQUE_TRUE,
+							     array.getString(i));
+			}
 		    }
 		}
-	    }
-	    if(extractLatLon) {
-		double latitude = obj.optDouble("latitude",Double.NaN);
-		double longitude = obj.optDouble("longitude",Double.NaN);		
-		if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
-		    entry.setLocation(latitude,longitude);
-		} else {
-		    getSessionManager().addSessionMessage(request,"Could not extract lat/lon");
+		if(extractLatLon) {
+		    double latitude = obj.optDouble("latitude",Double.NaN);
+		    double longitude = obj.optDouble("longitude",Double.NaN);		
+		    if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
+			entry.setLocation(latitude,longitude);
+		    } else {
+			getSessionManager().addSessionMessage(request,"Could not extract lat/lon");
+		    }
 		}
-	    }
 
-	    return true;
-	} catch(Exception exc) {
-	    getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
-	    getLogManager().logSpecial("LLMManager:Error parsing JSON:" + exc+" json:" + json);
-	    exc.printStackTrace();
+		return true;
+	    } catch(Exception exc) {
+		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
+		getLogManager().logSpecial("LLMManager:Error parsing JSON:" + exc+" json:" + json);
+		exc.printStackTrace();
+	    }
+	} finally {
+	    getSessionManager().clearSessionMessage(request,null,message);
 	}
 	return false;
 
@@ -1027,10 +1033,10 @@ public class LLMManager extends  AdminHandlerImpl {
 		    return makeJsonError("Could not process request");
 		} else {
 		    s =  JsonUtil.map(Utils.makeListFromValues("offset",info.offset,
-						     "corpusLength",info.corpusLength,
-						     "segmentLength",info.segmentLength,
-						     "tokenCount",info.tokenLimit,
-						     "response", JsonUtil.quote(r)));
+							       "corpusLength",info.corpusLength,
+							       "segmentLength",info.segmentLength,
+							       "tokenCount",info.tokenLimit,
+							       "response", JsonUtil.quote(r)));
 
 		}
 		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
