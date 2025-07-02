@@ -390,7 +390,7 @@ showHeading=true
 +if property=show_timeline
 +tab Timeline
 +inset left=10px
-{{display_timeline  addSnippets=true filterFields=_text_ doEntries=true titleField=title  imageField=image  urlField=source  textTemplate="${snippet}" }}
+{{display_timeline  addSnippets=true filterFields=_text_ doEntries=true titleField=title  imageField=image  urlField=entry_url  textTemplate="${snippet}" }}
 -inset
 -tab
 -if
