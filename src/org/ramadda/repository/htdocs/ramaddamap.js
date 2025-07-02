@@ -1186,6 +1186,7 @@ RepositoryMap.prototype = {
             return;
         }
 	if (layer.canSelect === false || layer.noHighlight) return;
+	if(feature.style==null) feature.hadNullStyle=true;
         if (!feature.isSelected) {
 	    this.highlightFeature(feature,extraStyle);
             if (this.params.displayDiv) {
@@ -1290,15 +1291,19 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
+
 	//Only reset to the original style if there is something there
 	if(feature.originalStyle && feature.originalStyle.fillColor) {
 	    MapUtils.setFeatureStyle(feature, feature.originalStyle);
 	}
 
 
-        if (!feature.isSelected) {
+        if(feature.hadNullStyle)  feature.style=null;
+	if (!feature.isSelected) {
 	    this.drawFeature(layer,feature, feature.style || "default");
         }
+
+
         this.dateFeatureOut(feature);
         if (!skipText && this.displayedFeature == feature && !this.fixedText) {
 	    if(!this.params.displayDivSticky) 
