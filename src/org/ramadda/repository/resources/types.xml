@@ -264,6 +264,8 @@ priority="2"       >
 	     label="Show Map"  showinhtml="false" default="false"/>
      <column name="show_table" type="boolean"
 	     label="Show List"  showinhtml="false" default="true"/>
+     <column name="show_timeline" type="boolean"
+	     label="Show Timeline"  showinhtml="false" default="false"/>
      <column name="show_information" type="boolean"
 	     label="Show Information"  showinhtml="false" default="true"/>
      <column name="show_new" type="boolean"
@@ -385,6 +387,14 @@ showHeading=true
 {{map width="100%" height="70vh"   message="" listentries="true"}}
 -tab
 -if
++if property=show_timeline
++tab Timeline
++inset left=10px
+{{display_timeline  addSnippets=true filterFields=_text_ doEntries=true titleField=title  imageField=image  urlField=source  textTemplate="${snippet}" }}
+-inset
+-tab
+-if
+
 -tabs
 +if property=show_information
 :vspace 1em
