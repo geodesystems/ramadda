@@ -2309,6 +2309,11 @@ MapGlyph.prototype = {
 		let label = value;
 		let info = this.getFeatureInfo(rule.property);
 		if(info) label = info.getValueLabel(value);
+		if(Utils.stringDefined(rule.extvalue)) {
+		    //remove any regexp
+		    label = label.replace(/[\[\]\(\*\)\*\.]/g,'');
+		    label=Utils.makeLabel(label);
+		}
 
 		label   = HU.span([ATTR_STYLE,'font-size:9pt;'],label);
 		let lineWidth;
@@ -4006,7 +4011,7 @@ MapGlyph.prototype = {
 	}
 	rulesTable+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],['Property','Operator','Value',ATTR_STYLE]));
 	let rules = this.getMapStyleRules(true);
-	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot';
+	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;<br>strokeColor:blue&#013;strokeWidth:1&#013;<br>strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot<br>fillPattern:dots-1|circles-1|crosshatch|dialog-stripe-1|etc';
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
 	    let value = rule.value??'';
@@ -4036,11 +4041,11 @@ MapGlyph.prototype = {
 	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	rulesTable += '</table>';
-	let table = HU.b('Style Rules')+HU.div([ATTR_CLASS,'imdv-properties-section'], rulesTable);
+	let table = HU.div([ATTR_CLASS,'formgroupheader'],'Style Rules')+HU.div([ATTR_CLASS,'imdv-properties-section'], rulesTable);
 	content.push({header:'Style Rules', contents:colorBy+table});
 
 
-	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('mapfiles.html#map_labels'));
 
@@ -5121,7 +5126,6 @@ MapGlyph.prototype = {
 		return rule;
 	    });
 	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
-//	    console.dir(uniqueRules);
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.fidx=idx;
@@ -6165,9 +6169,9 @@ MapGlyph.prototype = {
 	let divId   = HU.getUniqueId("display_");
 	let outerDivId   = HU.getUniqueId("outerdisplay_");	
 	let bottomDivId   = HU.getUniqueId("displaybottom_");	    
-	let headerDiv = HU.div([ATTR_ID,outerDivId],HU.div([ID,divId]));
+	let headerDiv = HU.div([ATTR_ID,outerDivId],HU.div([ATTR_ID,divId]));
 	this.display.jq(ID_HEADER1).append(headerDiv);
-	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
+	this.display.jq(ID_BOTTOM).append(HU.div([ATTR_ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
 		     "externalDisplay":this,
 		     "isContained":true,
