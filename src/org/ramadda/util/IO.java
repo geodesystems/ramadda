@@ -514,8 +514,7 @@ public class IO {
                 if (handlingRedirect) {
                     throw exc;
                 }
-                System.err.println("Error URL: " + path);
-		exc.printStackTrace();
+                System.err.println("Error URL: " + path.path);
                 String msg = "An error has occurred";
                 if ((connection != null)
 		    && (connection instanceof HttpURLConnection)) {
@@ -1002,11 +1001,8 @@ public class IO {
                                + "\nURL:" + url + "\nreturn code:"
                                + connection.getResponseCode() + "\nBody:"
                                + body);
+	    exc.printStackTrace();
             String error = readError(connection);
-            System.err.println(error);
-            System.err.println(connection.getHeaderFields());
-            exc.printStackTrace();
-
             throw new RuntimeException("Error reading URL:" + error);
             //            throw exc;
             //            System.err.println(connection.getContent());
@@ -1146,6 +1142,9 @@ public class IO {
 	    IO.close(inputStream);
             return new Result(connection[0],sb.toString());
         } catch (Throwable exc) {
+	    //xxx
+	    System.err.println("Error fetching URL:" + path);
+	    exc.printStackTrace();
             String error = readError(connection[0]);
             return new Result(connection[0],error, connection[0].getResponseCode(), true, exc);
         }
