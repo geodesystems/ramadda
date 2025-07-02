@@ -72,7 +72,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
     public static final String ARG_EXTRACT_TITLE = "extract_title";
-    public static final String ARG_INCLUDE_DATE = "include_date_in_title";	            
+    public static final String ARG_INCLUDE_DATE = "include_date_in_title";
+    public static final String ARG_EXTRACT_DATE = "extract_date";    
     public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
     public static final String ARG_EXTRACT_LATLON = "extract_latlon";
 
@@ -126,7 +127,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	}	    
 	openAIKeyIdx++;
 	if(openAIKeyIdx>=openAIKeys.size()) openAIKeyIdx=0;
-	return openAIKeys.get(openAIKeyIdx);
+	String key =  openAIKeys.get(openAIKeyIdx);
+	return key;
     }
 
     private boolean isGeminiEnabled() {
@@ -248,6 +250,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
+	sb.append(space);
+	HU.labeledCheckbox(sb,ARG_EXTRACT_DATE, "true", request.get(ARG_EXTRACT_DATE,false),  "","Extract date");
 	sb.append(space);
 	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include date in title");
 	sb.append(space);	
@@ -383,15 +387,20 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
 	    String messages = JU.list(JU.map("role",JU.quote("user"),"content",JU.quote(gptText)));
-	    String body = JU.map("model",JU.quote("claude-3-sonnet-20240229"),
-				 "max_tokens","1024",
+	    //
+	    //claude-3-7-sonnet-latest
+	    //claude-3-5-sonnet-latest
+	    //good one: claude-3-5-sonnet-20241022
+	    String body = JU.map("model",JU.quote("claude-3-7-sonnet-latest"),
+				 "max_tokens","1000",
 				 "messages",messages);
 
-	    return call(claudeJobManager,
+	    IO.Result  results = call(claudeJobManager,
 			new URL(URL_CLAUDE+"?key=" + claudeKey), body,
 			"x-api-key",claudeKey,
 			"anthropic-version","2023-06-01",
 			"Content-Type","application/json");
+	    return results;
 	}
     }	
 
@@ -442,6 +451,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			   PromptInfo info,
 			   String...extraArgs)
 	throws Throwable {
+
 	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
@@ -462,6 +472,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    else
 		info.tokenLimit = TOKEN_LIMIT_GPT3;
 	} 
+
+
 
 	int callCnt = 0;
 	int tokenLimit = info.tokenLimit;
@@ -496,6 +508,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
 	    String gptText =  gptCorpus.toString();
+	    //	    System.err.println("Token limit:" + info.tokenLimit +" text length:" + gptText.length());
+
 	    gptCorpus=null;
 	    if(debug) getLogManager().logSpecial("LLMManager: model:" + model +
 						 " init length:" + text.length() +
@@ -536,8 +550,12 @@ public class LLMManager extends  AdminHandlerImpl {
 		    if(result.getCode()==429) {
 			throw new CallException("Claude's API rate limit has been exceeded.");
 		    }
+
+		    System.err.println("code:"  + result.getCode());
+		    System.err.println("result:"  + result.getResult());
+		    System.err.println("headers:"  + result.getHeaders());
 		    if(result.getCode()==400) {
-			throw new CallException("The call to the Claude API as malformed.");
+			throw new CallException("The call to the Claude API is malformed.");
 		    }
 		    if(result.getCode()==401) {
 			throw new CallException("The call to the Claude API had an authentication error.");
@@ -757,11 +775,12 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
+	boolean extractDate = request.get(ARG_EXTRACT_DATE,false);	
 	boolean includeDate = request.get(ARG_INCLUDE_DATE,false);	
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
-	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon)) return false;
+	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon||extractDate)) return false;
 	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
@@ -804,7 +823,12 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(extractLatLon) {
 	    jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. If you cannot extract the location then do not return an error. "; 
 	    schema.add("\"latitude\":<latitude>,\"longitude\":<longitude>");
-	}	
+	}
+
+	if(extractDate) {
+	    jsonPrompt+="Also, if you can, extract the date of this document. Only return the date in the form yyyy-MM-dd"; 
+	    schema.add("\"date\":<yyyy-MM-dd>");
+	}		
 
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
 	if(debug) System.err.println("Prompt:" + jsonPrompt);
@@ -889,6 +913,22 @@ public class LLMManager extends  AdminHandlerImpl {
 		    }
 		}
 	    }
+
+	    if(extractDate) {
+		String date = obj.optString("date",null);
+		if(stringDefined(date)) {
+		    try {
+			Date dttm  =Utils.parseDate(date);
+			//			System.err.println("LLM date:" + dttm);
+			entry.setStartAndEndDate(dttm.getTime());
+		    } catch(Exception exc) {
+			getLogManager().logError("Parsing LLM date:" + date,exc);
+		    }
+		}
+
+	    }
+
+
 	    if(extractLocations) {
 		JSONArray array = obj.optJSONArray("locations");
 		if(array!=null) {
