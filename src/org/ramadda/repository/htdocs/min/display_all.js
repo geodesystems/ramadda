@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  2 17:48:21 MDT 2025";
+var build_date="RAMADDA build date: Wed Jul  2 18:19:23 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -57243,7 +57243,9 @@ MapGlyph.prototype = {
 	    this.mapLayer.style = null;
 	    let seen = {};
 	    let uniqueRules = rules.filter(rule=>{
-		let key = rule.property+'__'+rule.value;
+		let value = rule.value;
+		if(Utils.stringDefined(rule.extvalue)) value = rule.extvalue;
+		let key = rule.property+'__'+value;
 		if(seen[key]) return false;
 		seen[key] = true;
 		return true;
