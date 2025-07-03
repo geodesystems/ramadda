@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  2 18:21:33 MDT 2025";
+var build_date="RAMADDA build date: Wed Jul  2 19:12:49 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -58052,6 +58052,8 @@ MapGlyph.prototype = {
 	    this.getMapLayer().setVisibility(visible);
 	}
 	
+
+
 	if(this.imageLayers) {
 	    this.imageLayers.forEach(obj=>{
 		let imageVisible = visible && this.isImageLayerVisible(obj);
@@ -58077,7 +58079,7 @@ MapGlyph.prototype = {
 	    this.image.setVisibility(visible);
 	}	
 	if(this.isData()) { 
-	    this.checkDataDisplayVisibility();
+	    this.checkDataDisplayVisibility(visible);
 	}
 
 
@@ -58340,9 +58342,11 @@ MapGlyph.prototype = {
     externalDisplayReady:function(display) {
 	this.display.checkGlyphLayers();
     },
-    checkDataDisplayVisibility:function() {
+    checkDataDisplayVisibility:function(layerVisible) {
 	if(!this.displayInfo) return;
 	let visible = this.isVisible();
+	if(Utils.isDefined(layerVisible) && !layerVisible) visible = false;
+
 	if(this.displayInfo.display) {
 	    this.displayInfo.display.setVisible(visible);
 	}
