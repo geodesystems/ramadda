@@ -595,7 +595,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             getPageHandler().entrySectionOpen(request, entry, sb, "Database");
             sb.append(
                 getPageHandler().showDialogWarning(
-                    msg("You do not have permission to view database")));
+                    msg("You do not have permission to view the database")));
 	    sb.append(getUserManager().makeLoginForm(request,
 						     HU.hiddenBase64(ARG_REDIRECT, request.getUrl())));
             getPageHandler().entrySectionClose(request, entry, sb);
