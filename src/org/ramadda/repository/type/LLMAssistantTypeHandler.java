@@ -167,7 +167,12 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 
 	if(!getAccessManager().canAccessFile(request, entry)) {
-	    return getPageHandler().showDialogWarning("Sorry, you don't have the correct permissions to call the LLM Assistant");
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getPageHandler().showDialogWarning("Sorry, you don't have the correct permissions to call the LLM Assistant"));
+	    sb.append(getUserManager().makeLoginForm(request,
+						     HU.hiddenBase64(ARG_REDIRECT, request.getUrl())));
+
+	    return sb.toString();
 	}
 
 	String assistantId = entry.getStringValue(request,"assistant_id","");
