@@ -260,6 +260,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	}
 
+	boolean debug = false;
 	Entry child  = findCoreboxEntry(request,entry);
 	if(child!=null && isPrediktera(child)) {
 	    Image image = ImageUtils.readImage(entry.getResource().getPath());
@@ -274,22 +275,35 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    Element root = getRoot(child);
 	    List depths = XU.findChildren(root,"depth");
 	    double resolution  = entry.getDoubleValue(request,"resolution",Double.NaN);
+	    //Fix this
 	    double lastDepth = entry.getDoubleValue(request,"top_depth",Double.NaN);
 	    int lastPixel = 0;
 	    for (int depthIdx = 0; depthIdx < depths.size(); depthIdx++) {
 		Element depthNode = (Element) depths.get(depthIdx);
 		boolean vertical = XU.getAttribute(depthNode,"direction","Vertical").toLowerCase().equals("vertical");
+		double pixelsPerLine = imageHeight;
+		if(!vertical) pixelsPerLine = imageWidth;
 		double depthWidth = XU.getAttribute(depthNode,"width",-1.0);
 		double depthWidth2 = depthWidth/2.0;
 		List lines = XU.findChildren(depthNode,"line");
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-		    //		    if(lineIdx>=1) break;
+		    if(lineIdx>0) {
+			double pixelsToEnd=pixelsPerLine-lastPixel;
+			double depthToEnd = GU.mmToMeters(pixelsToEnd*resolution);
+			lastDepth = lastDepth+depthToEnd;
+			if(debug)
+			    System.err.println("pixels to end:" + pixelsToEnd +" delta depth:"  + formatDepth(depthToEnd)+" end depth:" + formatDepth(lastDepth));
+			lastPixel=0;
+//			continue;
+		    }
+			
 		    Element lineNode = (Element) lines.get(lineIdx);
 		    double linePosition = XU.getAttribute(lineNode,"position",Double.NaN);	
 		    if(Double.isNaN(linePosition)) continue;
 		    List areas = XU.findChildren(lineNode,"area");
 		    double lineDepth=Double.NaN;
 		    double lineDepthPixel= Double.NaN;
+
 		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
 			Element areaNode = (Element) areas.get(areaIdx);
 			int aposition = XU.getAttribute(areaNode,"position",-1);
@@ -308,7 +322,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				x = imageWidth-linePosition+depthWidth2;
 				y = aposition;
 			    }
-			    System.err.println("marker:" + GU.metersToFeet(d1));
+			    if(debug)
+				System.err.println("marker:" + " position:" + aposition +" depth:" + formatDepth(d1));
 			    lineDepth=d1;
 			    lineDepthPixel=x;
 			    Box box = new Box(label,x,y,5,10,d1,d1);
@@ -320,23 +335,14 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    int start = XU.getAttribute(areaNode,"start",-1);
 			    int end = XU.getAttribute(areaNode,"end",-1);			
 			    if(start<0 || end<0) continue;
-			    double d1=lastDepth+GU.mmToMeters((start-lastPixel)*resolution);
-			    double d2=d1+GU.mmToMeters((end-start)*resolution);
-			    /*			    System.err.println("start:" + start+ " end:" + end +
-					       " last depth:" + Utils.decimals(GU.metersToFeet(GU.mmToMeters(lastDepth)),2) +
-					       " depth:" + Utils.decimals(GU.metersToFeet(GU.mmToMeters(d1)),2) +" - " +
-					       Utils.decimals(GU.metersToFeet(GU.mmToMeters(d2)),2));
-			    */
+			    double startDepth=lastDepth+GU.mmToMeters((start-lastPixel)*resolution);
+			    double endDepth=startDepth+GU.mmToMeters((end-start)*resolution);
 			    lastPixel=end;
-			    lastDepth=d2;
-			    
-			    //			    d1 =d2 = Double.NaN;
-			    //			    d1=GU.mmToMeters(d1);
-			    //			    d2 = GU.mmToMeters(d2);
-			    System.err.println("box:" + GU.metersToFeet(d1) +" " +
-					       GU.metersToFeet(d2));
-			    //			    System.err.println(start+ " " + end +" " + GU.metersToFeet(d1) +" " +
-			    //					       GU.metersToFeet(d2));
+			    lastDepth=endDepth;
+			    if(debug)
+				System.err.println("box:" + " start:" + start + " end:" + end +
+						   " depth: "+ formatDepth(startDepth) +" -  " +
+						   formatDepth(endDepth));
 			    String type = XU.getAttribute(areaNode,"type","");
 			    double x=start;
 			    double y =linePosition-depthWidth2;
@@ -350,7 +356,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				height = end - start;
 				width = depthWidth;
 			    }
-			    Box box = new Box("",x,y,width,height,d1,d2);
+			    Box box = new Box("",x,y,width,height,startDepth,endDepth);
 			    if(type.equals("Ruble")) box.fill="rgba(0,255,255,0.3)";
 			    else if(type.equals("Core")) box.fill="rgba(255,255,0,0.3)";			    
 			    boxes.add(box);
@@ -369,6 +375,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	*/
 	return boxes;
     }
+
+    private String formatDepth(double d) {
+	return Utils.decimals(d,2) +"m";
+    }
+
 
     public void makeBoxesFromJson(Request request, Entry entry, Entry corebox, List<Box> boxes) throws Exception {
 	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
