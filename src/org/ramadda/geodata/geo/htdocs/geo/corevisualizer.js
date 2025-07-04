@@ -357,7 +357,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	top:0,
 	range: {
 	},
-
+	boxLabelStyle: {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL},
 	showLegend:true,
 	showLabels:true,
 	showAllDepths:false,
@@ -516,8 +516,10 @@ RamaddaCoreDisplay.prototype = {
     },
 
     formatDepth:function(n) {
+	n = parseFloat(n);
 	if(this.opts.asFeet)
 	    n = n*3.28084;
+	return n.toFixed(3);
 	let f =  Utils.formatNumber(n);
 	return f;
     },
@@ -784,7 +786,6 @@ RamaddaCoreDisplay.prototype = {
 	    if(key=='fields') value = value.split(',');
 	    props[key] = value; 
 	}
-	console.log(props);
 	return props;
     },
 
@@ -822,7 +823,7 @@ RamaddaCoreDisplay.prototype = {
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_ASFEET),
-				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.opts.asFeet,'As Feet'));
+				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.opts.asFeet,'Display Feet'));
 	
 
 	/*
@@ -832,7 +833,8 @@ RamaddaCoreDisplay.prototype = {
 		      */
 
 	html+= HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
-		      'Image Scale: ' + HU.span([ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
+		      'Image Width Scale: ' +
+		      HU.span([ATTR_STYLE,HU.css('display','inline-block','min-width','6em'),ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
 						this.getImageWidthScale()) +
 		      HU.div([ATTR_STYLE,HU.css('margin-top','0.5em')],HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
 									       ATTR_ID,this.domId(ID_CV_SCALE)])));
@@ -871,10 +873,12 @@ RamaddaCoreDisplay.prototype = {
 		_this.jq(ID_CV_SCALE_LABEL).html(_this.getImageWidthScale());
 		if(event?.originalEvent?.originalEvent?.shiftKey) {
 		    _this.drawCollections();
+		    _this.toggleBoxes();
 		}
 	    },
 	    stop: function(event,ui) {
 		_this.drawCollections();
+		_this.toggleBoxes();
 
 	    }
 	});
@@ -907,6 +911,7 @@ RamaddaCoreDisplay.prototype = {
 	this.jq(ID_CV_SHOWPIECES).change(function(){
 	    _this.setShowPieces($(this).is(':checked'));
 	    _this.drawCollections(true);
+	    _this.resetZoomAndPan();
 	});
 
 	this.jq(ID_CV_SHOWBOXES).change(function(){
@@ -1355,6 +1360,17 @@ RamaddaCoreDisplay.prototype = {
 	    x: _scale,
 	    y:_scale
 	};
+
+	let scaleLines = obj=>{
+//	    if(!obj.isScalable) return;
+	    const currentWidth = obj.strokeWidth();
+	    if(!Utils.isDefined(obj.originalStrokeWidth)) obj.originalStrokeWidth  = currentWidth;
+	    const scaledWidth = obj.originalStrokeWidth * _scale;
+	    obj.strokeWidth(scaledWidth);
+	}
+	this.stage.find('Rect').forEach(scaleLines);
+	this.stage.find('Line').forEach(scaleLines);	
+
 
 	textNodes.forEach(text=>{
 	    text.scale(s);
@@ -1882,6 +1898,10 @@ RamaddaCoreDisplay.prototype = {
 	if(isNaN(entry.topDepth)|| isNaN(entry.bottomDepth)) return;
 	entry.labels = [];
 	entry.boxShapes = [];
+	let addBoxShape =(shape)=> {
+	    shape.isScalable = true;
+	    entry.boxShapes.push(shape);
+	};
 
 	let showPieces= this.getShowPieces();
 	let maxWidth=+this.opts.maxColumnWidth;
@@ -1995,7 +2015,7 @@ RamaddaCoreDisplay.prototype = {
 			    strokeWidth: 2,
 			    closed: true,
 			});
-			entry.boxShapes.push(polygon);
+			addBoxShape(polygon);
 			group.add(polygon);
 		    } else {
 			let boxAttrs = {
@@ -2040,17 +2060,23 @@ RamaddaCoreDisplay.prototype = {
 			} else {
 			    mark = new Konva.Rect(boxAttrs);
 			}
-			entry.boxShapes.push(mark);
+			addBoxShape(mark);
 			group.add(mark);
 			let label = box.label;
 			if((this.opts.showAllDepths || box.marker) && !Utils.stringDefined(box.label)) {
 			    label = this.formatDepth(box.top);
 			}
 			if(label) {
-			    let styleObj = {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL};
-			    let l = this.makeText(group,label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
+			    let l = this.makeText(group,label,boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
 			    entry.boxShapes.push(l);
 			}
+			if(this.opts.showAllDepths && ! box.marker) {
+			    let l = this.makeText(group,this.formatDepth(box.bottom),
+						  boxAttrs.x+labelOffset+2,
+						  boxAttrs.y+boxAttrs.height,
+						  this.opts.boxLabelStyle);
+			    entry.boxShapes.push(l);
+			}			    
 		    }
 		});
 	    }
@@ -2092,14 +2118,18 @@ RamaddaCoreDisplay.prototype = {
 		    }
 		});
 		width = width*this.getImageWidthScale();
-		boxGroup.add(new Konva.Rect({
-		    stroke:CV_BOX_COLOR,
-		    strokeWidth:1,
-		    x: x,
-		    y: y,
-		    width: width,
-		    height:height,
-		}));
+		let imageRect = new Konva.Rect({
+			stroke:CV_BOX_COLOR,
+			strokeWidth:1,
+			x: x,
+			y: y,
+			width: width,
+			height:height,
+		});
+		addBoxShape(imageRect);
+//		entry.boxShapes.push(imageRect);
+		boxGroup.add(imageRect);
+
 
 		const croppedImageDataURL = boxImage.toDataURL();
 		let newImage = new Image();
