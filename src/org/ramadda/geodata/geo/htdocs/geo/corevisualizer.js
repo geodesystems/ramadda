@@ -799,12 +799,14 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.getShowLabels(),'Show Labels'));
 
 	html+=HU.div([],
-		     HU.checkbox(this.domId(ID_CV_SHOWALLDEPTHS),
-				 [ATTR_ID,this.domId(ID_CV_SHOWALLDEPTHS)],this.opts.showAllDepths,'Show All Depths'));
-	
-	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
 				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.opts.showBoxes,'Show Boxes'));    
+
+	html+=HU.div([],HU.space(2) +
+		     HU.checkbox(this.domId(ID_CV_SHOWALLDEPTHS),
+				 [ATTR_ID,this.domId(ID_CV_SHOWALLDEPTHS)],this.getShowAllDepths(),'Show All Depths'));
+	
+
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
 				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
@@ -906,6 +908,7 @@ RamaddaCoreDisplay.prototype = {
 	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
 	    _this.opts.showAllDepths = $(this).is(':checked');
 	    _this.drawCollections(true);
+	    _this.resetZoomAndPan();
 	});		
 
 	this.jq(ID_CV_SHOWPIECES).change(function(){
@@ -1263,6 +1266,9 @@ RamaddaCoreDisplay.prototype = {
     },
     toggle:function(obj,visible) {
 	if(!obj) return;
+	if(obj.isDepthLabel && visible) {
+	    visible =this.getShowAllDepths();
+	}
 	if(visible) {
 	    obj.show();
 	    if(obj.backgroundRect)
@@ -1297,6 +1303,9 @@ RamaddaCoreDisplay.prototype = {
     getShowLabels: function() {
 	return this.opts.showLabels;
     },
+    getShowAllDepths: function() {
+	return this.opts.showAllDepths;
+    },    
     toggleHighlight: function() {
 	let show = this.getShowHighlight();
 	this.entries.forEach(e=>{
@@ -2062,21 +2071,26 @@ RamaddaCoreDisplay.prototype = {
 			}
 			addBoxShape(mark);
 			group.add(mark);
-			let label = box.label;
-			if((this.opts.showAllDepths || box.marker) && !Utils.stringDefined(box.label)) {
-			    label = this.formatDepth(box.top);
-			}
-			if(label) {
+			if(Utils.stringDefined(box.label)) {
+			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
+			    entry.boxShapes.push(l);
+			} else	if(box.marker) {
+			    let label = this.formatDepth(box.top);
 			    let l = this.makeText(group,label,boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
 			    entry.boxShapes.push(l);
-			}
-			if(this.opts.showAllDepths && ! box.marker) {
-			    let l = this.makeText(group,this.formatDepth(box.bottom),
-						  boxAttrs.x+labelOffset+2,
-						  boxAttrs.y+boxAttrs.height,
-						  this.opts.boxLabelStyle);
+			} else {
+			    let l = this.makeText(group,this.formatDepth(box.top),boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
+			    l.isDepthLabel = true;
 			    entry.boxShapes.push(l);
-			}			    
+			    this.toggle(l,this.getShowAllDepths());
+			    l = this.makeText(group,this.formatDepth(box.bottom),
+					      boxAttrs.x+labelOffset+2,
+					      boxAttrs.y+boxAttrs.height,
+					      this.opts.boxLabelStyle);
+			    l.isDepthLabel = true;
+			    entry.boxShapes.push(l);
+			    this.toggle(l,this.getShowAllDepths())
+			}
 		    }
 		});
 	    }
