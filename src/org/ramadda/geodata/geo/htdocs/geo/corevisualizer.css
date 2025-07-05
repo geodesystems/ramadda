@@ -19,7 +19,11 @@
     flex-wrap:nowrap;
 }
 
-
+.cv-gallery-collection {
+    margin-top:5px;
+    border-top:var(--basic-border);
+    padding:10px;
+}
 
 .cv-displaysbar {
     padding:5px;

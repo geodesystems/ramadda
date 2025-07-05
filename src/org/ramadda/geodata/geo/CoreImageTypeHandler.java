@@ -157,6 +157,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 
 
 	for(CoreApiHandler.Box box: boxes) {
+	    if(box.marker) continue;
 	    StringBuilder inline = new StringBuilder();
 	    cnt++;
 	    BufferedImage subset =  bi.getSubimage((int)box.x,(int)box.y,(int)box.width,(int)box.height);
@@ -213,14 +214,15 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 		sb.append("\n:heading " + "Box #"+cnt+"\n");
 	    }
 	    sb.append("Width: " + info.width+" Height: " + info.height+"<br>");
-	    sb.append("Top: " + box.top+" Bottom: " + box.bottom+"<br>");	    
+	    sb.append("Top: " + CoreApiHandler.formatDepth(box.top)+" Bottom: " + CoreApiHandler.formatDepth(box.bottom)+"<br>");	    
 	    sb.append("Average: red: " + info.avgRed +" green: " + info.avgGreen +" blue: " + info.avgBlue);
-	    sb.append("<br>");
-	    sb.append(HU.image(dataUrl));
-	    sb.append("<p>");
+	    sb.append("<table width=100%><tr valign=top><td width=10%>");
+	    sb.append(HU.image(dataUrl,HU.attrs("width","50px")));
+	    sb.append("</td><td width=90%>");
 	    sb.append(inline);
 	    sb.append("{{display_download inlineDataSrc=inline_" + cnt +" }}\n");
-	    sb.append("{{display_linechart showMenu=true inlineDataSrc=inline_" + cnt +" vAxisMinValue=0 vAxisMaxValue=255 colors=red,green,blue fields=red,green,blue}}");
+	    sb.append("{{display_linechart height=300px showMenu=true inlineDataSrc=inline_" + cnt +" vAxisMinValue=0 vAxisMaxValue=255 colors=red,green,blue fields=red,green,blue}}");
+	    sb.append("</td></tr></table>");
 	    sb.append("\n----\n");
 	}
 	if(zos!=null)  {

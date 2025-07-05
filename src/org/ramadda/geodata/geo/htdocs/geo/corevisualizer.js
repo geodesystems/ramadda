@@ -48,7 +48,9 @@ var CV_FONT_SIZE_SMALL = 10;
 var CV_TICK_WIDTH = 8;
 
 
+
 function RamaddaCoreDisplay(displayManager, id, args) {
+
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_CORE, args);
     let myProps =[];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -133,39 +135,38 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	this.jq(ID_DISPLAY_CONTENTS).html(html);
 
-	let displaysBar = HU.div([ATTR_TITLE,'Add data display','action',ID_CV_DISPLAYS_ADD,
-				  ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,'ramadda-clickable'],
+	let displaysBar = HU.div([ATTR_TITLE,'Add data display',ATTR_ACTION,ID_CV_DISPLAYS_ADD,
+				  ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,CLASS_CLICKABLE],
 				 HU.getIconImage('fas fa-chart-line'));
 	this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
 	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
-				    ATTR_TITLE,'Add image collection','action','add',
-				    ATTR_CLASS,'ramadda-clickable'],
+				    ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
+				    ATTR_CLASS,CLASS_CLICKABLE],
 				   HU.getIconImage('fas fa-plus')));
 
 	menuItemsLeft.push(HU.space(1));
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',ATTR_ACTION,'home',ATTR_ID,'home',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fas fa-house')));
 
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')','action','zoomout',
-				    ATTR_CLASS,'ramadda-clickable'],
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,'zoomout',
+				    ATTR_CLASS,CLASS_CLICKABLE],
 				   HU.getIconImage('fas fa-magnifying-glass-minus')));
 
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in (\'+\')','action','zoomin',
-				    ATTR_CLASS,'ramadda-clickable'],
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,'zoomin',
+				    ATTR_CLASS,CLASS_CLICKABLE],
 				   HU.getIconImage('fas fa-magnifying-glass-plus')));
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
-				    ATTR_CLASS,'ramadda-clickable'],
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',ATTR_ACTION,'down',
+				    ATTR_CLASS,CLASS_CLICKABLE],
 				   HU.getIconImage('fas fa-arrow-down')));
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('up'),ATTR_TITLE,'Pan up','action','up',
-				    ATTR_CLASS,'ramadda-clickable'],
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',ATTR_ACTION,'up',
+				    ATTR_CLASS,CLASS_CLICKABLE],
 				   HU.getIconImage('fas fa-arrow-up')));
-
-	menuItemsRight.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
-				     ATTR_CLASS,'ramadda-clickable'],
+	menuItemsRight.push(HU.span([ATTR_TITLE,'Show Gallery',
+				     ATTR_ACTION,'gallery',
+				     ATTR_CLASS,CLASS_CLICKABLE],
 				    HU.getIconImage('fas fa-images')));
 
-	
 
 
 
@@ -173,11 +174,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
 	menuItemsLeft.push(HU.space(1));
 	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				   ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,'ramadda-clickable',
+				   ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,CLASS_CLICKABLE,
 				   ATTR_PLACEHOLDER,'Measure'],
 				  HU.getIconImage('fas fa-ruler-vertical')));
 	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				   ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,'ramadda-clickable',
+				   ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,CLASS_CLICKABLE,
 				   ATTR_PLACEHOLDER,'Sample data'],
 				  HU.getIconImage('fas fa-eye-dropper')));	
 	menuItemsLeft.push(HU.space(1));
@@ -188,8 +189,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 
 	menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
-				     ATTR_TITLE,'Settings','action','settings',
-				     ATTR_CLASS,'ramadda-clickable'],
+				     ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
+				     ATTR_CLASS,CLASS_CLICKABLE],
 				    HU.getIconImage('fas fa-cog')));
 	
 	let menuBar=Utils.join(menuItemsLeft,HU.space(1));
@@ -226,7 +227,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	});
 
 	this.jq(ID_DISPLAY_CONTENTS).find('.ramadda-clickable').click(function(event){
-	    let action = $(this).attr('action');
+	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='settings') {
 		_this.showSettings($(this));
 	    } else	if(action=='home') {
@@ -907,8 +908,9 @@ RamaddaCoreDisplay.prototype = {
 	});
 	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
 	    _this.opts.showAllDepths = $(this).is(':checked');
-	    _this.drawCollections(true);
-	    _this.resetZoomAndPan();
+	    _this.toggleBoxes();
+//	    _this.drawCollections(true);
+//	    _this.resetZoomAndPan();
 	});		
 
 	this.jq(ID_CV_SHOWPIECES).change(function(){
@@ -1045,25 +1047,24 @@ RamaddaCoreDisplay.prototype = {
 		let label = entry.label;
 		label+=' ' +this.formatDepth(entry.topDepth) +' - ' +this.formatDepth(entry.bottomDepth);
 		let url = RamaddaUtil.getEntryUrl(entry.entryId);
-		label = HU.href(url,label,['target','_entry']);
-
-		html+=HU.b(label);
-		html+='<br>';
-		html+=HU.href(url,HU.image(entry.url,[ATTR_WIDTH,'400px']),['target','_entry']);
-		html+='<br>';
+		label = HU.href(url,label,[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']);
+		html+=HU.div([],HU.b(label));
+		html+=HU.div([],HU.href(url,HU.image(entry.url,[ATTR_WIDTH,'400px']),[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']));
 	    });
-	    html = HU.div([ATTR_STYLE,HU.css('padding','10px','max-height','600px','overflow-y','auto')],html);
+	    html = HU.div([ATTR_STYLE,HU.css('max-height','600px','overflow-y','auto')],html);
 	    contents.push({label:c.name,contents:html});
 	});
-	if(this.collections.length==0)
+	if(this.collections.length==0) {
 	    contents.push({label:'',contents:'No collections are available'});
+	}
 	let gallery;
 	let tabs;
 	if(contents.length>1) {
 	    tabs = HU.makeTabs(contents);
 	    gallery = tabs.contents;
 	} else {
-	    gallery=HU.b(contents[0].label) +'<br>' + contents[0].contents;
+	    gallery=HU.b(contents[0].label)  +
+		HU.div([ATTR_CLASS,'cv-gallery-collection'],contents[0].contents);
 	}
 	gallery = HU.div([ATTR_STYLE,HU.css('margin','5px')], gallery);
 	let dialog =  HU.makeDialog({anchor:anchor,
@@ -1174,14 +1175,14 @@ RamaddaCoreDisplay.prototype = {
     showCollectionMenu:function(collection, target,args) {
 	let _this = this;
 	let html = '';
-	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-		      'action','view'],'View Entry');
-	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-		      'action','goto'],'Scroll To');	    
-	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-		      'action','toggle'],collection.visible?'Hide':'Show');
-	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-		      'action','delete'],'Delete');
+	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+		      ATTR_ACTION,'view'],'View Entry');
+	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+		      ATTR_ACTION,'goto'],'Scroll To');	    
+	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+		      ATTR_ACTION,'toggle'],collection.visible?'Hide':'Show');
+	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+		      ATTR_ACTION,'delete'],'Delete');
 	html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
 	let opts = {anchor:target,
 				     decorate:true,
@@ -1193,7 +1194,7 @@ RamaddaCoreDisplay.prototype = {
 	let dialog =  HU.makeDialog(opts);
 	
 	dialog.find('.ramadda-clickable').click(function() {
-	    let action = $(this).attr('action');
+	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='delete') {
 		_this.removeCollection(collection);
 	    } else if(action=='toggle') {
@@ -1764,8 +1765,8 @@ RamaddaCoreDisplay.prototype = {
 	html+=HU.formEntry('Bottom:',HU.input('',y2, [ATTR_ID,this.domId('editbottom')]));		
 	html+=HU.formTableClose();
 	let buttonList =[
-	    HU.div(['action','cancel','class','ramadda-button ' + CLASS_CLICKABLE],"Cancel"),
-	    HU.div(['action','apply','class','ramadda-button ' + CLASS_CLICKABLE],
+	    HU.div([ATTR_ACTION,'cancel','class','ramadda-button ' + CLASS_CLICKABLE],"Cancel"),
+	    HU.div([ATTR_ACTION,'apply','class','ramadda-button ' + CLASS_CLICKABLE],
 		   "Change Entry")];
 	html+=HU.buttons(buttonList);
 
@@ -1781,7 +1782,7 @@ RamaddaCoreDisplay.prototype = {
 				     content:html,
 				     draggable:true});
 	dialog.find('.ramadda-button').button().click(function(){
-	    let apply = $(this).attr('action')=='apply';
+	    let apply = $(this).attr(ATTR_ACTION)=='apply';
 	    if(apply) {
 		let name = _this.jq('editname').val();
 		let top = _this.jq('edittop').val();

@@ -376,7 +376,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	return boxes;
     }
 
-    private String formatDepth(double d) {
+    public static String formatDepth(double d) {
 	return Utils.decimals(d,2) +"m";
     }
 
