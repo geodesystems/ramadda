@@ -16,8 +16,6 @@ var ID_CV_MENUBAR = 'cv_menubar';
 var ID_CV_DISPLAYS = 'cv_displays';
 var ID_CV_DISPLAYSBAR = 'cv_displays_bar';
 var ID_CV_DISPLAYS_ADD='cv_displays_add';
-
-
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_SHOWALLDEPTHS= 'showalldepths';
 var ID_CV_MEASURE = 'measure';
@@ -41,16 +39,13 @@ var CV_STROKE_WIDTH = 0.4;
 var CV_AXIS_WIDTH=100;
 var CV_ANNOTATIONS_WIDTH=200;
 var CV_LEGEND_WIDTH=150;
-
 var CV_OFFSET_X=170;
 var CV_FONT_SIZE = 15;
 var CV_FONT_SIZE_SMALL = 10;
 var CV_TICK_WIDTH = 8;
 
 
-
 function RamaddaCoreDisplay(displayManager, id, args) {
-
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_CORE, args);
     let myProps =[];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -114,226 +109,226 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    }
 	},
 
-    updateUI:  function() {
-	if(this.haveDrawn) return;
-	this.haveDrawn = true;
-	let menuItemsLeft = [];
-	let menuItemsRight = [];    
-	let canvas =HU.div([ATTR_CLASS,'cv-canvas',ATTR_ID,this.domId(ID_CV_CANVAS)]);
-	let menuBarContainer =HU.div([ATTR_CLASS,"cv-menubar",ATTR_ID,this.domId(ID_CV_MENUBAR)]);	
-	let displaysBarContainer =HU.div([ATTR_CLASS,"cv-displaysbar",ATTR_ID,this.domId(ID_CV_DISPLAYSBAR)]);	
-	let displays =HU.div([ATTR_CLASS,'cv-displays',ATTR_ID,this.domId(ID_CV_DISPLAYS)]);
-	let main = HU.div([ATTR_CLASS,'cv-main'],canvas);	
-	let row1 = HU.tr([],HU.td([],displaysBarContainer)+
-			HU.td([],menuBarContainer));
+	updateUI:  function() {
+	    if(this.haveDrawn) return;
+	    this.haveDrawn = true;
+	    let menuItemsLeft = [];
+	    let menuItemsRight = [];    
+	    let canvas =HU.div([ATTR_CLASS,'cv-canvas',ATTR_ID,this.domId(ID_CV_CANVAS)]);
+	    let menuBarContainer =HU.div([ATTR_CLASS,"cv-menubar",ATTR_ID,this.domId(ID_CV_MENUBAR)]);	
+	    let displaysBarContainer =HU.div([ATTR_CLASS,"cv-displaysbar",ATTR_ID,this.domId(ID_CV_DISPLAYSBAR)]);	
+	    let displays =HU.div([ATTR_CLASS,'cv-displays',ATTR_ID,this.domId(ID_CV_DISPLAYS)]);
+	    let main = HU.div([ATTR_CLASS,'cv-main'],canvas);	
+	    let row1 = HU.tr([],HU.td([],displaysBarContainer)+
+			     HU.td([],menuBarContainer));
 
-	let row2 = HU.tr([ATTR_VALIGN,'top'],HU.td([],displays)+
-			HU.td([],main));
-
-
-	let html=HU.table(['cellpadding','0px','cellspacing','0px',ATTR_WIDTH,'100%'],row1+row2);
-
-	this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-	let displaysBar = HU.div([ATTR_TITLE,'Add data display',ATTR_ACTION,ID_CV_DISPLAYS_ADD,
-				  ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,CLASS_CLICKABLE],
-				 HU.getIconImage('fas fa-chart-line'));
-	this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
-				    ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
-				    ATTR_CLASS,CLASS_CLICKABLE],
-				   HU.getIconImage('fas fa-plus')));
-
-	menuItemsLeft.push(HU.space(1));
-
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',ATTR_ACTION,'home',ATTR_ID,'home',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fas fa-house')));
+	    let row2 = HU.tr([ATTR_VALIGN,'top'],HU.td([],displays)+
+			     HU.td([],main));
 
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,'zoomout',
-				    ATTR_CLASS,CLASS_CLICKABLE],
-				   HU.getIconImage('fas fa-magnifying-glass-minus')));
+	    let html=HU.table(['cellpadding','0px','cellspacing','0px',ATTR_WIDTH,'100%'],row1+row2);
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,'zoomin',
-				    ATTR_CLASS,CLASS_CLICKABLE],
-				   HU.getIconImage('fas fa-magnifying-glass-plus')));
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',ATTR_ACTION,'down',
-				    ATTR_CLASS,CLASS_CLICKABLE],
-				   HU.getIconImage('fas fa-arrow-down')));
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',ATTR_ACTION,'up',
-				    ATTR_CLASS,CLASS_CLICKABLE],
-				   HU.getIconImage('fas fa-arrow-up')));
-	menuItemsRight.push(HU.span([ATTR_TITLE,'Show Gallery',
-				     ATTR_ACTION,'gallery',
-				     ATTR_CLASS,CLASS_CLICKABLE],
-				    HU.getIconImage('fas fa-images')));
+	    this.jq(ID_DISPLAY_CONTENTS).html(html);
 
+	    let displaysBar = HU.div([ATTR_TITLE,'Add data display',ATTR_ACTION,ID_CV_DISPLAYS_ADD,
+				      ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,CLASS_CLICKABLE],
+				     HU.getIconImage('fas fa-chart-line'));
+	    this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
+	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
+					ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
+					ATTR_CLASS,CLASS_CLICKABLE],
+				       HU.getIconImage('fas fa-plus')));
+
+	    menuItemsLeft.push(HU.space(1));
+
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',ATTR_ACTION,'home',ATTR_ID,'home',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fas fa-house')));
 
 
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,'zoomout',
+					ATTR_CLASS,CLASS_CLICKABLE],
+				       HU.getIconImage('fas fa-magnifying-glass-minus')));
 
-	menuItemsLeft.push(HU.space(1));
-	menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
-	menuItemsLeft.push(HU.space(1));
-	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				   ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,CLASS_CLICKABLE,
-				   ATTR_PLACEHOLDER,'Measure'],
-				  HU.getIconImage('fas fa-ruler-vertical')));
-	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				   ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,CLASS_CLICKABLE,
-				   ATTR_PLACEHOLDER,'Sample data'],
-				  HU.getIconImage('fas fa-eye-dropper')));	
-	menuItemsLeft.push(HU.space(1));
-
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
-				    ATTR_STYLE,HU.css('margin-right','50px',
-						      'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,'zoomin',
+					ATTR_CLASS,CLASS_CLICKABLE],
+				       HU.getIconImage('fas fa-magnifying-glass-plus')));
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',ATTR_ACTION,'down',
+					ATTR_CLASS,CLASS_CLICKABLE],
+				       HU.getIconImage('fas fa-arrow-down')));
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',ATTR_ACTION,'up',
+					ATTR_CLASS,CLASS_CLICKABLE],
+				       HU.getIconImage('fas fa-arrow-up')));
+	    menuItemsRight.push(HU.span([ATTR_TITLE,'Show Gallery',
+					 ATTR_ACTION,'gallery',
+					 ATTR_CLASS,CLASS_CLICKABLE],
+					HU.getIconImage('fas fa-images')));
 
 
-	menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
-				     ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
-				     ATTR_CLASS,CLASS_CLICKABLE],
-				    HU.getIconImage('fas fa-cog')));
-	
-	let menuBar=Utils.join(menuItemsLeft,HU.space(1));
-	menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
-			 Utils.join(menuItemsRight,HU.space(2)));
-	this.mainDiv =jqid(this.opts.mainId);
-	if(!this.opts.showMenuBar)menuBar='';
-	this.jq(ID_CV_MENUBAR).html(menuBar);
 
-	addHandler({
-	    selectClick:function(type,id,entryId,value) {
-		_this.loadCollection(entryId);
-	    }
-	},this.domId('add'));
 
-	addHandler({
-	    selectClick:(type,id,entryId,value) =>{
-		this.addDisplayEntry(entryId);
-	    }
-	},this.domId(ID_CV_DISPLAYS_ADD));	
+	    menuItemsLeft.push(HU.space(1));
+	    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
+	    menuItemsLeft.push(HU.space(1));
+	    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
+				       ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,CLASS_CLICKABLE,
+				       ATTR_TITLE,'Measure'],
+				      HU.getIconImage('fas fa-ruler-vertical')));
+	    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
+				       ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,CLASS_CLICKABLE,
+				       ATTR_TITLE,'Sample @ depth'],
+				      HU.getIconImage('fas fa-eye-dropper')));	
+	    menuItemsLeft.push(HU.space(1));
 
-	$(document).on('keydown', (event) =>{
-	    if(event.key=='=') {
-		this.resetZoomAndPan();
-	    } else    if(event.key=='+') {
-		this.zoom(1.1);
-	    } else  if(event.key=='-') {
-		this.zoom(0.9);
-	    } else if (event.key === 'Escape' || event.keyCode === 27) {
-		this.clearRecordSelection();
-		this.toggleSampling(false);
-		this.toggleMeasure(false);
-	    }
-	});
+	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
+					ATTR_STYLE,HU.css('margin-right','50px',
+							  'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
 
-	this.jq(ID_DISPLAY_CONTENTS).find('.ramadda-clickable').click(function(event){
-	    let action = $(this).attr(ATTR_ACTION);
-	    if(action=='settings') {
-		_this.showSettings($(this));
-	    } else	if(action=='home') {
-		_this.resetZoomAndPan();
-	    } else if(action=='zoomin') {
-		_this.zoom(1.1);
-	    } else	if(action=='zoomout') {
-		_this.zoom(0.9);
-	    } else	if(action==ID_CV_DISPLAYS_ADD) {
-		let id = $(this).attr('id');
-		let localeId = _this.opts.mainEntry;
-		RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);	    
-	    } else	if(action=='add') {
-		let id = $(this).attr('id');
-		//selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
-		let localeId = _this.opts.mainEntry;
-		RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
-	    } else	if(action=='gallery') {
-		_this.showGallery($(this));
-	    } else	if(action=='down') {
-		let pos = _this.stage.position();
-		_this.stage.position({x:pos.x,y:pos.y-50});
-		_this.positionChanged();
-	    } else	if(action=='up') {
-		let pos = _this.stage.position();
-		_this.stage.position({x:pos.x,y:pos.y+50});
-		_this.positionChanged();
-	    }
+
+	    menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
+					 ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
+					 ATTR_CLASS,CLASS_CLICKABLE],
+					HU.getIconImage('fas fa-cog')));
 	    
-	})
+	    let menuBar=Utils.join(menuItemsLeft,HU.space(1));
+	    menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
+			     Utils.join(menuItemsRight,HU.space(2)));
+	    this.mainDiv =jqid(this.opts.mainId);
+	    if(!this.opts.showMenuBar)menuBar='';
+	    this.jq(ID_CV_MENUBAR).html(menuBar);
 
-	this.jq(ID_CV_MEASURE).click(function() {
-	    _this.toggleSampling(false);
-	    _this.toggleMeasure();
-	});
-	this.jq(ID_CV_SAMPLE).click(function() {
-	    _this.toggleMeasure(false);
-	    _this.toggleSampling();
-	});	
+	    addHandler({
+		selectClick:function(type,id,entryId,value) {
+		    _this.loadCollection(entryId);
+		}
+	    },this.domId('add'));
 
-	HU.onReturn(this.jq(ID_CV_GOTO),obj=>{
-	    let depth = obj.val().trim();
-	    _this.goToWorld(depth);
-	});
+	    addHandler({
+		selectClick:(type,id,entryId,value) =>{
+		    this.addDisplayEntry(entryId);
+		}
+	    },this.domId(ID_CV_DISPLAYS_ADD));	
 
-
-	let container = this.container = this.jq(ID_CV_CANVAS).get(0);
-
-	this.stage = new Konva.Stage({
-	    container: container,  
-	    width: container.offsetWidth,
-	    height: this.getScreenHeight(),
-	    draggable: true 
-	});
-	this.stage.on('dragmove',()=>{
-	    this.updateCollectionLabels();
-	});
-	this.stage.offsetY(this.opts.offsetY);
-
-	this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
-	this.layer = new Konva.Layer();
-	this.legendLayer = new Konva.Layer();    
-	this.drawLayer = new Konva.Layer();
-	this.stage.add(this.legendLayer);
-	this.stage.add(this.layer);
-	this.stage.add(this.drawLayer);
-	this.annotationLayer = new Konva.Layer();
-	this.stage.add(this.annotationLayer);
-
-	this.addEventListeners();
-	this.collections = [];
-	
-	this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
-
-	if(this.opts.collectionIds) {
-	    Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
-		this.loadCollection(entryId);
+	    $(document).on('keydown', (event) =>{
+		if(event.key=='=') {
+		    this.resetZoomAndPan();
+		} else    if(event.key=='+') {
+		    this.zoom(1.1);
+		} else  if(event.key=='-') {
+		    this.zoom(0.9);
+		} else if (event.key === 'Escape' || event.keyCode === 27) {
+		    this.clearRecordSelection();
+		    this.toggleSampling(false);
+		    this.toggleMeasure(false);
+		}
 	    });
-	}
+
+	    this.jq(ID_DISPLAY_CONTENTS).find('.ramadda-clickable').click(function(event){
+		let action = $(this).attr(ATTR_ACTION);
+		if(action=='settings') {
+		    _this.showSettings($(this));
+		} else	if(action=='home') {
+		    _this.resetZoomAndPan();
+		} else if(action=='zoomin') {
+		    _this.zoom(1.1);
+		} else	if(action=='zoomout') {
+		    _this.zoom(0.9);
+		} else	if(action==ID_CV_DISPLAYS_ADD) {
+		    let id = $(this).attr('id');
+		    let localeId = _this.opts.mainEntry;
+		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);	    
+		} else	if(action=='add') {
+		    let id = $(this).attr('id');
+		    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+		    let localeId = _this.opts.mainEntry;
+		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
+		} else	if(action=='gallery') {
+		    _this.showGallery($(this));
+		} else	if(action=='down') {
+		    let pos = _this.stage.position();
+		    _this.stage.position({x:pos.x,y:pos.y-50});
+		    _this.positionChanged();
+		} else	if(action=='up') {
+		    let pos = _this.stage.position();
+		    _this.stage.position({x:pos.x,y:pos.y+50});
+		    _this.positionChanged();
+		}
+		
+	    })
+
+	    this.jq(ID_CV_MEASURE).click(function() {
+		_this.toggleSampling(false);
+		_this.toggleMeasure();
+	    });
+	    this.jq(ID_CV_SAMPLE).click(function() {
+		_this.toggleMeasure(false);
+		_this.toggleSampling();
+	    });	
+
+	    HU.onReturn(this.jq(ID_CV_GOTO),obj=>{
+		let depth = obj.val().trim();
+		_this.goToWorld(depth);
+	    });
 
 
-	this.drawLegend();
-	this.layer.draw();
+	    let container = this.container = this.jq(ID_CV_CANVAS).get(0);
 
-	this.displayEntries = [];
-	if(this.opts.displayEntries) {
-	    Utils.split(this.opts.displayEntries,'\n',true,true).forEach((line,idx)=>{
-		let toks = Utils.split(line,',',true,true);
-		let entryId = toks[0];
-		toks.shift();
-		if(entryId.startsWith('#')) return;
-		this.displayEntries.push({
-		    display:null,
-		    entryId:entryId,
-		    props:this.parseDisplayProps(toks)
+	    this.stage = new Konva.Stage({
+		container: container,  
+		width: container.offsetWidth,
+		height: this.getScreenHeight(),
+		draggable: true 
+	    });
+	    this.stage.on('dragmove',()=>{
+		this.updateCollectionLabels();
+	    });
+	    this.stage.offsetY(this.opts.offsetY);
+
+	    this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
+	    this.layer = new Konva.Layer();
+	    this.legendLayer = new Konva.Layer();    
+	    this.drawLayer = new Konva.Layer();
+	    this.stage.add(this.legendLayer);
+	    this.stage.add(this.layer);
+	    this.stage.add(this.drawLayer);
+	    this.annotationLayer = new Konva.Layer();
+	    this.stage.add(this.annotationLayer);
+
+	    this.addEventListeners();
+	    this.collections = [];
+	    
+	    this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
+
+	    if(this.opts.collectionIds) {
+		Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
+		    this.loadCollection(entryId);
 		});
-	    });
-	}
-	this.loadDisplays();
+	    }
 
-    },
+
+	    this.drawLegend();
+	    this.layer.draw();
+
+	    this.displayEntries = [];
+	    if(this.opts.displayEntries) {
+		Utils.split(this.opts.displayEntries,'\n',true,true).forEach((line,idx)=>{
+		    let toks = Utils.split(line,',',true,true);
+		    let entryId = toks[0];
+		    toks.shift();
+		    if(entryId.startsWith('#')) return;
+		    this.displayEntries.push({
+			display:null,
+			entryId:entryId,
+			props:this.parseDisplayProps(toks)
+		    });
+		});
+	    }
+	    this.loadDisplays();
+
+	},
 
     });
 
 
-//function RamaddaCoreVisualizer(collection,container,args) {
+    //function RamaddaCoreVisualizer(collection,container,args) {
     if(!window['cv-base-id']) window['cv-base-id']=1;
     this.id = window['cv-base-id']++;
     let _this = this;
@@ -354,6 +349,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	showPieces:false,
 	showAnnotations:true,	
 	axisWidth:CV_AXIS_WIDTH,
+	measureStyle:{
+	    outline:'#aaa',
+	    fontSize: 12,
+	    background:'#efefef',
+	    fill: 'black'},
 	hadAxisWidth:Utils.isDefined(args.axisWidth),	
 	top:0,
 	range: {
@@ -448,13 +448,13 @@ RamaddaCoreDisplay.prototype = {
 	let h = this.getCanvasHeight();
 	let c =   h*(w/r);
 	if(debug) {
-//	    console.log('worldToCanvas',w,c);    console.log('canvasToWorld',this.canvasToWorld(c));
+	    //	    console.log('worldToCanvas',w,c);    console.log('canvasToWorld',this.canvasToWorld(c));
 	}
 	return c;
     },
     canvasToWorld:function(c) {
 	let scale = this.stage.scale().y;
-//	console.log('canvas',c,this.opts.offsetY,this.opts.scaleY,scale);
+	//	console.log('canvas',c,this.opts.offsetY,this.opts.scaleY,scale);
 	let range = this.opts.range;
 	let r = range.max - range.min;
 	let h=this.getCanvasHeight();
@@ -637,13 +637,14 @@ RamaddaCoreDisplay.prototype = {
 		lineCap: 'round',
 		lineJoin: 'round',
 	    });
+	    this.scaleLine(this.measureState.line);
 	    this.drawLayer.add(this.measureState.line);
 	    let world  =this.canvasToWorld(pos.y);	    
 	    this.measureState.text1 = this.makeText(this.drawLayer,
 						    this.formatDepth(world),
 						    this.measureState.start.x+5,
 						    pos.y,
-						    {fontSize: 12,	background:'#fff',fill: 'black',});
+						    $.extend({debug:true},this.opts.measureStyle));
 	    this.drawLayer.draw();
 	});
 
@@ -653,10 +654,10 @@ RamaddaCoreDisplay.prototype = {
 	    const pos = this.stage.getRelativePointerPosition();
 	    if(this.measureState.text2)this.destroy(this.measureState.text2);
 	    this.measureState.text2 = this.makeText(this.drawLayer,
-					       this.formatDepth(this.canvasToWorld(pos.y)),
-					       this.measureState.start.x+5,
-					       pos.y,
-					       {fontSize: 12,	background:'#fff',fill: 'black',});
+						    this.formatDepth(this.canvasToWorld(pos.y)),
+						    this.measureState.start.x+5,
+						    pos.y,
+						    this.opts.measureStyle);
 	    this.drawLayer.add(this.measureState.text2);
 	    this.measureState.line.points([this.measureState.start.x, this.measureState.start.y, this.measureState.start.x, pos.y]);
 	    this.drawLayer.draw();
@@ -813,9 +814,9 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
 	if(this.getHasBoxes()) {
 	    html+=HU.div([],
-		     HU.checkbox(this.domId(ID_CV_SHOWPIECES),
-				 [ATTR_ID,this.domId(ID_CV_SHOWPIECES)],
-				 this.getShowPieces(),'Show Pieces'));
+			 HU.checkbox(this.domId(ID_CV_SHOWPIECES),
+				     [ATTR_ID,this.domId(ID_CV_SHOWPIECES)],
+				     this.getShowPieces(),'Show Pieces'));
 
 	}
 
@@ -830,15 +831,15 @@ RamaddaCoreDisplay.prototype = {
 	
 
 	/*
-	html+= HU.div([],
-	'Image Scale: ' + HU.input('',this.getImageWidthScale(),
-		      [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));
-		      */
+	  html+= HU.div([],
+	  'Image Scale: ' + HU.input('',this.getImageWidthScale(),
+	  [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));
+	*/
 
 	html+= HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
 		      'Image Width Scale: ' +
 		      HU.span([ATTR_STYLE,HU.css('display','inline-block','min-width','6em'),ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
-						this.getImageWidthScale()) +
+			      this.getImageWidthScale()) +
 		      HU.div([ATTR_STYLE,HU.css('margin-top','0.5em')],HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
 									       ATTR_ID,this.domId(ID_CV_SCALE)])));
 
@@ -870,7 +871,6 @@ RamaddaCoreDisplay.prototype = {
 	    max: 10,
 	    step:0.1,
 	    value:this.getImageWidthScale(),
-//	    xvalues:[(this.range.low.min+1)*100,(this.range.low.max+1)*100],
 	    slide: function( event, ui ) {
 		_this.setImageWidthScale(+ui.value);
 		_this.jq(ID_CV_SCALE_LABEL).html(_this.getImageWidthScale());
@@ -887,36 +887,26 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 
-	/*
-	HU.onReturn(this.jq(ID_CV_SCALE),obj=>{
-	_this.setImageWidthScale(obj.val());
-	    _this.drawCollections();
-	});
-*/
-
 	this.jq(ID_CV_SHOWLABELS).change(function(){
 	    _this.opts.showLabels = $(this).is(':checked');
 	    _this.toggleLabels();
 	});
 	this.jq(ID_CV_DOROTATION).change(function(){
 	    _this.opts.doRotation = $(this).is(':checked');
-	    _this.drawCollections(true);
+	    _this.drawCollections({forceNewImages:true});
 	});	
 	this.jq(ID_CV_ASFEET).change(function(){
 	    _this.opts.asFeet = $(this).is(':checked');
-	    _this.drawCollections(true);
+	    _this.drawCollections({forceNewImages:true,resetZoom:true});
 	});
 	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
 	    _this.opts.showAllDepths = $(this).is(':checked');
 	    _this.toggleBoxes();
-//	    _this.drawCollections(true);
-//	    _this.resetZoomAndPan();
 	});		
 
 	this.jq(ID_CV_SHOWPIECES).change(function(){
 	    _this.setShowPieces($(this).is(':checked'));
-	    _this.drawCollections(true);
-	    _this.resetZoomAndPan();
+	    _this.drawCollections({forceNewImages:true	    ,resetZoom:true});
 	});
 
 	this.jq(ID_CV_SHOWBOXES).change(function(){
@@ -1132,8 +1122,10 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-    drawCollections:function(forceNewImages,args) {
+    drawCollections:function(args) {
 	let opts = {
+	    foreNewImages:false,
+	    resetZoom:false
 	}
 	if(args) $.extend(opts,args);
 	if(this.loadingMessage) {
@@ -1157,7 +1149,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.toggleAll(collection.legendObjects,collection.visible)	    
 	    if(collection.visible) {
 		collection.displayIndex=displayIndex++;
-		this.addEntries(collection,forceNewImages);
+		this.addEntries(collection,opts.forceNewImages);
 	    }
 	});
 	this.jq(ID_CV_COLLECTIONS).html(html);
@@ -1167,7 +1159,9 @@ RamaddaCoreDisplay.prototype = {
 	});
 	this.drawLegend();
 	this.updateCollectionLabels();
-
+	if(opts.resetZoom) {
+	    this.resetZoomAndPan();
+	}
 
 
 
@@ -1185,11 +1179,11 @@ RamaddaCoreDisplay.prototype = {
 		      ATTR_ACTION,'delete'],'Delete');
 	html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
 	let opts = {anchor:target,
-				     decorate:true,
-				     at:'left bottom',
-				     my:'left top',
-				     content:html,
-				     draggable:false}
+		    decorate:true,
+		    at:'left bottom',
+		    my:'left top',
+		    content:html,
+		    draggable:false}
 	if(args) $.extend(opts,args);
 	let dialog =  HU.makeDialog(opts);
 	
@@ -1249,7 +1243,7 @@ RamaddaCoreDisplay.prototype = {
 	});
 	this.checkRange();
 	let range =  this.opts.range;
-//	console.log(collection.name,'range',range.min,range.max,collection.data.length);
+	//	console.log(collection.name,'range',range.min,range.max,collection.data.length);
 	collection.data.forEach((entry,idx)=>{
 	    entry.collection = collection;
 	    entry.displayIndex = column;
@@ -1362,57 +1356,77 @@ RamaddaCoreDisplay.prototype = {
     positionChanged:function() {
 	this.updateCollectionLabels();
     },
-    scaleChanged:function() {
-	const textNodes = this.stage.find('Text');
+    scaleLine:function(obj) {
 	let scale = this.stage.scaleX();
 	let _scale = 1/scale;
-	let s = {
-	    x: _scale,
-	    y:_scale
+	//	    if(!obj.isScalable) return;
+	const currentWidth = obj.strokeWidth();
+	if(!Utils.isDefined(obj.originalStrokeWidth)) obj.originalStrokeWidth  = currentWidth;
+	const scaledWidth = obj.originalStrokeWidth * _scale;
+	obj.strokeWidth(scaledWidth);
+    },
+
+    scaleChanged:function() {
+	const textNodes = this.stage.find('Text');
+	let stageScale = this.stage.scaleX();
+	let inverseScale = 1/stageScale;
+	let newScale = {
+	    x: inverseScale,
+	    y:inverseScale
 	};
 
 	let scaleLines = obj=>{
-//	    if(!obj.isScalable) return;
-	    const currentWidth = obj.strokeWidth();
-	    if(!Utils.isDefined(obj.originalStrokeWidth)) obj.originalStrokeWidth  = currentWidth;
-	    const scaledWidth = obj.originalStrokeWidth * _scale;
-	    obj.strokeWidth(scaledWidth);
+	    this.scaleLine(obj);
 	}
 	this.stage.find('Rect').forEach(scaleLines);
 	this.stage.find('Line').forEach(scaleLines);	
 
 
 	textNodes.forEach(text=>{
-	    text.scale(s);
+	    if(!text.scaleInfo) {
+		text.scaleInfo = {
+		    x:text.x(),
+		    y:text.y(),
+		    width:text.width(),
+		    height:text.height()
+		};
+	    }
+	    let info  = text.scaleInfo;
+	    text.scale(newScale);
 	    if(text.backgroundRect) {
 		let rect= text.backgroundRect;
-		let paddingX=this.opts.bgPaddingX;
-		let paddingY=this.opts.bgPaddingY;		
-		rect.width(text.width()+paddingX*2);
-		rect.height(text.height()+paddingY*2);
-		rect.y(text.y()-text.offsetY()-paddingY);
-		rect.x(text.x()-text.offsetX()*_scale-paddingX);
-		rect.scale(s);
+		let doOffsetWidth = rect.doOffsetWidth;
+		let dim = this.getBackgroundRectDimensions(text,doOffsetWidth);
+		if(rect.debug) {
+		    const box = text.getClientRect();
+		    console.log(box);
+		}
+
+		rect.x(dim.x);
+		rect.y(dim.y);
+		rect.width(dim.width);		
+		rect.height(dim.height);
+		rect.scale(newScale);
 	    }
 	});
 
 	if(this.legendText) {
 	    let skip=1;
-	    if (scale < 0.005) skip= 100;
-	    else if (scale < 0.007) skip= 15;
-	    else if (scale < 0.01) skip= 13;
-	    else if (scale < 0.013) skip= 12;
-	    else if (scale < 0.018) skip= 9;
-	    else if (scale < 0.025) skip= 8;
-	    else if (scale < 0.04) skip= 7;
-	    else if (scale < 0.07) skip= 6;
-	    else if (scale < 0.1) skip= 5;
-	    else if (scale < 0.4) skip= 4;
-	    else if (scale < 0.6) skip= 3;
-	    else if (scale < 0.8) skip= 2;	    
-//	    console.log(scale,skip);
+	    if (stageScale < 0.005) skip= 100;
+	    else if (stageScale < 0.007) skip= 15;
+	    else if (stageScale < 0.01) skip= 13;
+	    else if (stageScale < 0.013) skip= 12;
+	    else if (stageScale < 0.018) skip= 9;
+	    else if (stageScale < 0.025) skip= 8;
+	    else if (stageScale < 0.04) skip= 7;
+	    else if (stageScale < 0.07) skip= 6;
+	    else if (stageScale < 0.1) skip= 5;
+	    else if (stageScale < 0.4) skip= 4;
+	    else if (stageScale < 0.6) skip= 3;
+	    else if (stageScale < 0.8) skip= 2;	    
+	    //	    console.log(stageScale,skip);
 	    this.legendText.forEach((text,idx)=>{
-		if(scale>0.9) text.setVisible(true);
+		if(stageScale>0.9) text.setVisible(true);
 		else text.visible(idx % skip === 0);
 	    });
 	}
@@ -1530,6 +1544,19 @@ RamaddaCoreDisplay.prototype = {
 	this.scaleChanged();
 	this.positionChanged();
     },
+    getBackgroundRectDimensions:function(text,doOffsetWidth){
+	let textX  = text.x();
+	if(doOffsetWidth) {
+	    textX-=text.width();
+	}
+	return {
+	    x: textX-this.opts.bgPaddingX,
+	    y: text.y()-this.opts.bgPaddingY,
+	    width: text.width()+this.opts.bgPaddingX*2,
+	    height: text.height()+this.opts.bgPaddingY*2
+	};
+    },
+
     makeText:function(layer,t,x,y,args) {
 	let opts = {
 	    doOffsetWidth:false,
@@ -1564,25 +1591,22 @@ RamaddaCoreDisplay.prototype = {
 	    textX-=text.width();
 	}
 	if(opts.background || opts.outline)  {
-	    let paddingX=this.opts.bgPaddingX;
-	    let paddingY=this.opts.bgPaddingY;	    
-	    let bg = new Konva.Rect({
-		x: textX-paddingX,
-		y: text.y()-paddingY,
-		width: text.width()+paddingX*2,
-		height: text.height()+paddingY*2,
+	    let dim = this.getBackgroundRectDimensions(text,opts.doOffsetWidth);
+	    let bgAttrs = {
 		fill: opts.background,
 		stroke:opts.outline,
 		strokeWidth: opts.strokeWidth,
 		cornerRadius: 0 
-	    });
-	    
-	    layer.add(bg);
+	    };
+	    $.extend(bgAttrs,dim);
+	    let bg = new Konva.Rect(bgAttrs);
+	    bg.debug = opts.debug;
+	    bg.doOffsetWidth=opts.doOffsetWidth;
 	    bg.scale({
 		x: 1 / scale,
 		y: 1 / scale,
 	    });
-
+	    layer.add(bg);
 	    text.backgroundRect = bg;
 	}
 
@@ -1635,7 +1659,7 @@ RamaddaCoreDisplay.prototype = {
 
 	    });
 	    collection.range = {min:cmin,max:cmax};
-//	    console.log(cmin,cmax);
+	    //	    console.log(cmin,cmax);
 	});
 
 	if(Utils.isDefined(min)) {
@@ -1650,7 +1674,7 @@ RamaddaCoreDisplay.prototype = {
 	    let distance = y2-y1;
 	    let canvasHeight = this.stage.height();
 	    let scaleFactor = canvasHeight / distance; 
-//	    this.stage.scale({ x: scaleFactor, y: scaleFactor });
+	    //	    this.stage.scale({ x: scaleFactor, y: scaleFactor });
 	    this.stage.position({ x: 0, y: -y1 });
 	}
 
@@ -1673,7 +1697,7 @@ RamaddaCoreDisplay.prototype = {
 
 
 
-//	console.log('legend:',haveLegend,this.opts.legendWidth,'axis:',haveAnnotation,this.opts.axisWidth);
+	//	console.log('legend:',haveLegend,this.opts.legendWidth,'axis:',haveAnnotation,this.opts.axisWidth);
     },
 
 
@@ -1775,12 +1799,12 @@ RamaddaCoreDisplay.prototype = {
 	    this.editDialog.remove();
 	}
 	let dialog = this.editDialog =  HU.makeDialog({anchor:this.mainDiv,
-				     decorate:true,
-				     at:'left top',
-				     my:'left top',
-				     header:true,
-				     content:html,
-				     draggable:true});
+						       decorate:true,
+						       at:'left top',
+						       my:'left top',
+						       header:true,
+						       content:html,
+						       draggable:true});
 	dialog.find('.ramadda-button').button().click(function(){
 	    let apply = $(this).attr(ATTR_ACTION)=='apply';
 	    if(apply) {
@@ -1793,10 +1817,10 @@ RamaddaCoreDisplay.prototype = {
 		let what = 'name';
 		let value = name;
 		let url = HU.url(ramaddaBaseUrl + '/entry/changefield',
-				    ['entryid',entry.entryId,
-				     'what1','name','value1',name,
-				     'what2','top_depth','value2',top,
-				     'what3','bottom_depth','value3',bottom]);			     				     
+				 ['entryid',entry.entryId,
+				  'what1','name','value1',name,
+				  'what2','top_depth','value2',top,
+				  'what3','bottom_depth','value3',bottom]);			     				     
 		$.getJSON(url, function(data) {
 		    if(data.error) {
 			alert('An error has occurred: '+data.error);
@@ -1832,7 +1856,7 @@ RamaddaCoreDisplay.prototype = {
 		this.applyToggle(entry);
 	    });
 	}
-				
+	
     },
     getCenter:function(shape) {
 	const angleRad = Utils.toRadians(shape.rotation || 0);
@@ -1935,7 +1959,7 @@ RamaddaCoreDisplay.prototype = {
 		width: 100+maxWidth,
 		height: 10000,
             },
-//	    draggable: this.opts.canEdit,
+	    //	    draggable: this.opts.canEdit,
 	    dragBoundFunc: function(pos) {
 		return {
 		    x: this.getAbsolutePosition().x,  
@@ -2000,7 +2024,7 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	    if(entry.boxes) {
 		entry.boxes.forEach(box=>{
-//		    if(!this.opts.showBoxes) return;
+		    //		    if(!this.opts.showBoxes) return;
 		    if(showPieces && this.isValidBox(box)) {
 			return;
 		    }
@@ -2044,7 +2068,7 @@ RamaddaCoreDisplay.prototype = {
 			    boxAttrs.x=boxAttrs.x - rotOffset.x;
 			    boxAttrs.y=boxAttrs.y - rotOffset.y;
 			}
-//			boxAttrs.x*=imageScale;
+			//			boxAttrs.x*=imageScale;
 			let mark;
 			let labelOffset=0;
 			if(box.marker) {
@@ -2113,17 +2137,17 @@ RamaddaCoreDisplay.prototype = {
 		if(box.marker) return;
 		let boxGroup = new Konva.Group({
 		    xclip: {
-		    x: imageX+scale(box.x),
-		    y: imageY+scale(box.y),
-		    width: scale(box.width),
-		    height:scale(box.height),
-		}});
+			x: imageX+scale(box.x),
+			y: imageY+scale(box.y),
+			width: scale(box.width),
+			height:scale(box.height),
+		    }});
 		group.add(boxGroup);
 		let x = imageX;
 		let y = this.worldToCanvas(box.top);
 		let width = scale(box.width);
 		let height=this.worldToCanvas(box.bottom)-y;
-//		console.log(box.top,box.bottom);
+		//		console.log(box.top,box.bottom);
 		let boxImage = entry.image.clone({
 		    crop:{
 			x: box.x,
@@ -2134,15 +2158,15 @@ RamaddaCoreDisplay.prototype = {
 		});
 		width = width*this.getImageWidthScale();
 		let imageRect = new Konva.Rect({
-			stroke:CV_BOX_COLOR,
-			strokeWidth:1,
-			x: x,
-			y: y,
-			width: width,
-			height:height,
+		    stroke:CV_BOX_COLOR,
+		    strokeWidth:1,
+		    x: x,
+		    y: y,
+		    width: width,
+		    height:height,
 		});
 		addBoxShape(imageRect);
-//		entry.boxShapes.push(imageRect);
+		//		entry.boxShapes.push(imageRect);
 		boxGroup.add(imageRect);
 
 
@@ -2175,50 +2199,48 @@ RamaddaCoreDisplay.prototype = {
 		};
 
 		/*
-		console.log('a',boxImage.getClientRect());
+		  console.log('a',boxImage.getClientRect());
 
-		if(doRtoation) {
-		    boxImage.rotate(90);
-		}
-		let bir = boxImage.getClientRect({relativeTo: this.layer});
-		let dx = imageX-bir.x;
-		let dy = bir.y-canvasY1;
-		boxImage.x(boxImage.x()+dx);
-		bir = boxImage.getClientRect({relativeTo: this.layer});
-		console.dir(bir)
-		this.makeTicks(entry,boxGroup,box.top,box.bottom,x,y,y+height);
-		boxGroup.add(boxImage);
-		group.add(boxGroup);
-		let br = new Konva.Rect({
-		    x:bir.x,
-		    y:bir.y,
-//		    rotation:boxImage.attrs.rotation,
-		    width: bir.width,
-		    height:bir.height,
-		    stroke: "red",
-		    strokeWidth: 1,
-		});
-		boxGroup.add(br);
-		if(Utils.stringDefined(box.label)) {
-		    this.definePopup(br,entry.label + ' - '+box.label,entry.text);
-		}
-*/
+		  if(doRtoation) {
+		  boxImage.rotate(90);
+		  }
+		  let bir = boxImage.getClientRect({relativeTo: this.layer});
+		  let dx = imageX-bir.x;
+		  let dy = bir.y-canvasY1;
+		  boxImage.x(boxImage.x()+dx);
+		  bir = boxImage.getClientRect({relativeTo: this.layer});
+		  console.dir(bir)
+		  this.makeTicks(entry,boxGroup,box.top,box.bottom,x,y,y+height);
+		  boxGroup.add(boxImage);
+		  group.add(boxGroup);
+		  let br = new Konva.Rect({
+		  x:bir.x,
+		  y:bir.y,
+		  //		    rotation:boxImage.attrs.rotation,
+		  width: bir.width,
+		  height:bir.height,
+		  stroke: "red",
+		  strokeWidth: 1,
+		  });
+		  boxGroup.add(br);
+		  if(Utils.stringDefined(box.label)) {
+		  this.definePopup(br,entry.label + ' - '+box.label,entry.text);
+		  }
+		*/
 	    });
 	}
 
 	let getPos = (obj)=>{
 	    let y1 = obj.getAbsolutePosition().y;
-	    console.log(y1,obj.getHeight());
 	    let scale = this.stage.scaleY();
 	    let y2 = y1+scale*obj.getHeight();
-	
+	    
 	    let top = this.canvasToWorld(y1);
 	    let bottom = this.canvasToWorld(y2);		
 	    return {top:top,bottom:bottom};
 	}
 	group.on('dragmove', (e)=> {
 	    let pos  = getPos(e.target);
-//	    console.log(pos.top,pos.bottom);
 	    group.ticks.l1.text(this.formatDepth(pos.top));
 	    group.ticks.l2.text(this.formatDepth(pos.bottom));	    
 	});
