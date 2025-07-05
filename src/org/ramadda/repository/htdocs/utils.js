@@ -92,6 +92,7 @@ var TAG_TR = "tr";
 var TAG_TD = "td";
 var TAG_UL = "ul";
 var TAG_OL = "ol";
+var ATTR_ACTION= "action";
 var ATTR_SRC = "src";
 var ATTR_TYPE = "type";
 var ATTR_WIDTH = "width";
