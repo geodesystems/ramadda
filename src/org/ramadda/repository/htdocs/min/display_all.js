@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul  4 22:06:23 MDT 2025";
+var build_date="RAMADDA build date: Sat Jul  5 07:56:22 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -45578,6 +45578,8 @@ var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
 
+var PROP_SHOWOPACITYSLIDER='showOpacitySlider';
+
 var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
 var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
 var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
@@ -45866,7 +45868,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_MESSAGE2  ='message2';    
     const ID_MESSAGE3  ='message3';
     const ID_GLYPH_LABELS  ='glyphlabels';
-    const ID_MAP_HEADER  ='mapheader';
+    const ID_MAP_HEADER  ='header';
     const ID_ADDRESS  ='address';
     const ID_ADDRESS_INPUT  ='address_input';
     const ID_ADDRESS_WAIT  ='address_wait';
@@ -46371,7 +46373,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(feature?.style?.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
-	    this.addGlyph(mapGlyph);
+	    let selected=this.getSelected();
+	    if(selected.length>0 && selected[0].isGroup()) {
+		console.log('tg');
+		selected[0].addChildGlyph(mapGlyph);
+		this.makeLegend();
+	    } else {
+		this.addGlyph(mapGlyph);
+	    }
+
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
 	    /*
@@ -46677,8 +46687,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	setCommand:function(command, args) {
+	    args= args??{};
+	    
 	    this.clearCommands();
-	    if(command!=ID_SELECTOR && command!=ID_MOVER) {
+	    if(!args.newGlyph && command!=ID_SELECTOR && command!=ID_MOVER) {
 		this.unselectAll();
 	    }
 	    this.command = command;
@@ -49455,7 +49467,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 	    let cbxs = [
 		HU.checkbox(this.domId('showopacityslider'),[],
-			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
+			    this.getMapProperty(PROP_SHOWOPACITYSLIDER,this.getShowOpacitySlider()),'Show Opacity Slider'),
 		HU.checkbox(this.domId('showgraticules'),[],
 			    this.getMapProperty('showGraticules',false),'Show Graticules'),
 		HU.checkbox(this.domId('showoverviewmap'),[],
@@ -49541,7 +49553,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    }
 	    let apply = ()=>{
 		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
-				    'showOpacitySlider', this.jq('showopacityslider').is(':checked'),
+				    PROP_SHOWOPACITYSLIDER, this.jq('showopacityslider').is(':checked'),
 				    'showGraticules',this.jq('showgraticules').is(':checked'),
 				    'showOverviewMap',this.jq('showoverviewmap').is(':checked'),				    
 				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
@@ -49679,12 +49691,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	},
 	checkOpacitySlider:function() {
 	    let visible;
-	    if(Utils.isDefined(this.getMapProperty('showOpacitySlider')))
-		visible = this.getMapProperty('showOpacitySlider');
+	    if(Utils.isDefined(this.getMapProperty(PROP_SHOWOPACITYSLIDER)))
+		visible = this.getMapProperty(PROP_SHOWOPACITYSLIDER);
 	    else
 		visible = this.getShowOpacitySlider(false);
 	    this.getMap().showOpacitySlider(visible);
-
 	},
 	showFileMenu: function(button) {
 	    let _this = this;
@@ -49996,7 +50007,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    this.glyphTypes.forEach(g=>{
 		this.jq('menunew_' + g.type).click(function(){
 		    HtmlUtils.hidePopupObject(null,true);
-		    _this.setCommand(g.type);
+		    _this.setCommand(g.type,{newGlyph:true});
 		});
 	    });
 
@@ -51357,8 +51368,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
 	    
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),ATTR_CLASS,'imdv-message']);
-	    let mapHeader = HU.div([ATTR_STYLE,HU.css('margin-left','10px'),
-				    ATTR_ID,this.domId(ID_MAP_HEADER)]);
+	    let mapHeader = HU.div([ATTR_STYLE,HU.css('margin-right','10px','margin-left','10px'),
+				    ATTR_ID,this.domId(ID_MAP+'_header')]);
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
 											 HU.td([ATTR_WIDTH,'50%'], message) +
