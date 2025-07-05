@@ -511,7 +511,7 @@ useAttachmentIfNeeded=true
 </type>
 
 <type name="type_borehole_coreimage"   description="Geo Core Image" isgroup="true"
-      childtypes="type_geo_corebox_prediktera_xml,type_geo_corebox_json"
+      childtypes="type_geo_corebox_breeze_xml,type_geo_corebox_json"
       pattern="(?i).*annotated-core-photo.*\.jpg"
       handler="org.ramadda.geodata.geo.CoreImageTypeHandler">      
   <action name="applyboxes"
@@ -776,7 +776,7 @@ csvcommands1=-tab,-skiplines,1
 </type>
 
 
-<type  name="type_geo_corebox_prediktera_xml"  description="Geo Prediktera XML"
+<type  name="type_geo_corebox_breeze_xml"  description="Geo Breeze XML"
        handler="org.ramadda.repository.type.TypeHandler"
        priority="50"
        pattern=".*measurement.xml"
@@ -798,6 +798,11 @@ style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }}
 -section
 ]]></wiki>
 </type>
+
+<type  name="type_geo_corebox_prediktera_xml"  super="type_geo_corebox_breeze_xml"
+       foruser="false" description="Geo Prediktera XML">
+</type>
+
 
 
 </types>

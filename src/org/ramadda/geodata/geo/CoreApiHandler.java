@@ -157,7 +157,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
     public Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
 	for(Entry child:  getEntryManager().getChildren(request, entry)) {
-	    if(isPrediktera(child)) return child;
+	    if(isBreezeXml(child)) return child;
 	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
 		return child;
 	    }
@@ -182,8 +182,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	//	System.out.println(annotations);
 	if(stringDefined(annotations)) {
 	    try {
-		System.out.println(annotations);
-
+		//		System.out.println(annotations);
 		JSONArray a = new JSONArray(annotations);
 		for(int i=0;i<a.length();i++) {
 		    JSONObject ann = a.getJSONObject(i);
@@ -262,7 +261,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	boolean debug = false;
 	Entry child  = findCoreboxEntry(request,entry);
-	if(child!=null && isPrediktera(child)) {
+	if(child!=null && isBreezeXml(child)) {
 	    Image image = ImageUtils.readImage(entry.getResource().getPath());
 	    if (image.getWidth(null) <0) {
                 ImageUtils.waitOnImage(image);
@@ -308,7 +307,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			Element areaNode = (Element) areas.get(areaIdx);
 			int aposition = XU.getAttribute(areaNode,"position",-1);
 			if(aposition>=0) {
-			    double d1=convertPrediktera(resolution, XU.getAttribute(areaNode,"depth",Double.NaN));
+			    double d1=convertBreeze(resolution, XU.getAttribute(areaNode,"depth",Double.NaN));
 			    String label = "";
 			    if(!Double.isNaN(d1)) {
 				//for now don't create a label
@@ -433,25 +432,25 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
     }
 
 
-    public boolean isPrediktera(Entry entry) {
-	return entry.getTypeHandler().isType("type_geo_corebox_prediktera_xml");
+    public boolean isBreezeXml(Entry entry) {
+	return entry.getTypeHandler().isType("type_geo_corebox_breeze_xml");
     }
 
     public void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {
 	if(corebox.isFile() && corebox.getFile().getName().endsWith("corebox.json")) {
 	    processCoreboxJson(request, entry,corebox);
 	}
-	if(isPrediktera(corebox)) {
-	    processCoreboxPrediktera(request, entry,corebox);
+	if(isBreezeXml(corebox)) {
+	    processCoreboxBreeze(request, entry,corebox);
 	}	
     }
 	
-    private double convertPrediktera(double resolution, double v) {
+    private double convertBreeze(double resolution, double v) {
 	//mm/pixel * pixel = mm
 	return  GU.mmToMeters(resolution*v);
     }
 
-    public void processCoreboxPrediktera(Request request, Entry entry, Entry corebox) throws Exception {
+    public void processCoreboxBreeze(Request request, Entry entry, Entry corebox) throws Exception {
 	boolean changed = false;
 	double min= Double.NaN;
 	double max= Double.NaN;	
@@ -489,11 +488,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}
 
 	if(!Double.isNaN(min) && !Double.isNaN(resolution)){
-	    min = convertPrediktera(resolution,min);
-	    max = convertPrediktera(resolution,max);
+	    min = convertBreeze(resolution,min);
+	    max = convertBreeze(resolution,max);
 	    entry.setValue("top_depth",new Double(min));
 	    entry.setValue("bottom_depth",new Double(max));	    
-	    System.err.println("top:" + min  +" bottom:" + max);
+	    //	    System.err.println("top:" + min  +" bottom:" + max);
 	    changed = true;
 	}
 
