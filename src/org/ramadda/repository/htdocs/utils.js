@@ -3871,9 +3871,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     hide:function(id) {
 	$('#' + id).hide();
     },
+    writeHtmlHere:function(html) {
+	document.currentScript.insertAdjacentHTML("afterend",  html);
+    },
     toggleAllInit:function() {
 	let id = Utils.getUniqueId('toggleall');
-	document.write(HU.div([ATTR_ID,id],'Toggle Details'));
+	HU.writeHtmlHere(HU.div([ATTR_ID,id],'Toggle Details'));
 	let visible = false;
 	jqid(id).button().click(function() {
 	    visible = !visible;
@@ -3964,7 +3967,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	    $(args.target).html(input);
 	} else {
-	    document.write(input);
+	    HU.writeHtmlHere(input);
 	}
 	if(args.buttons) {
 	    args.buttons.forEach(b=>{
