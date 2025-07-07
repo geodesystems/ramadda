@@ -481,8 +481,10 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
       description="3D Model" 
       handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
       >
+
   <action name="3dmodelembedtext" label="Embed Text" icon="/media/3dmodel.png"/>
   <action name="3dmodelembed" label="Embed Model" icon="/media/3dmodel.png"/>
+  <property name="search.tabs" value="list"/>
   <property name="form.description.iswiki" value="true"/>
   <wikimacro name="3dmodel" label="3D Model" properties="width=640px height=480px">
   <![CDATA[{{3dmodel width="${width}" height="${height}"}}]]></wikimacro>
@@ -533,6 +535,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
         description="3D Model Collection" 
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"
         >
+    <property name="search.tabs" value="list"/>
     <property name="icon" value="/media/3dmodel.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.area.show" value="false"/>
