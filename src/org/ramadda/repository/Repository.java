@@ -4210,11 +4210,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     	return path;
     }
 
-    public void addScriptPath(String path) {
-	if(Utils.stringDefined(path)) {
-	    if(!scriptPaths.contains(path)) {
-		scriptPaths.add(path);
-		getLogManager().logInfo("RAMADDA: adding script path: "+path);
+    public void addScriptPath(String ...paths) {
+	for(String path: paths) {
+	    if(Utils.stringDefined(path)) {
+		if(!scriptPaths.contains(path)) {
+		    scriptPaths.add(path);
+		    getLogManager().logInfo("RAMADDA: adding script path: "+path);
+		}
 	    }
 	}
     }
