@@ -336,7 +336,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	q += entry.getStringValue(request,"prompt_prefix","");
 	q += "\n"+request.getString("question","");
 	q += "\n" + entry.getStringValue(request,"prompt_suffix","");
-	q+="\nMake sure you include any links to the source documents";
+	q+="\nYou must include any links to the source documents in the results. I repeat, it is imperative that you include any links to the source documents if they exist.";
 	Utils.add(message,"role",JU.quote("user"), "content", JU.quote(q));
 
 	if(debug)
