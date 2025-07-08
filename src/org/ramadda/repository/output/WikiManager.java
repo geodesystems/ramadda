@@ -7993,7 +7993,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l.call("If block", "\\n+if #size=\"<10MB\" #isfile=true #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
@@ -8515,6 +8515,36 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    if(entry==null) return true;
+
+	    String size = (String) props.get("size");
+	    if(stringDefined(size)) {
+		boolean lessThan = true;
+		if(size.startsWith("<")) {
+		    lessThan  = true;
+		    size = size.substring(1);
+		} else if(size.startsWith(">")) {
+		    lessThan  = false;
+		    size = size.substring(1);
+		}
+		double s = Utils.parseSize(size);
+		long fileSize = entry.getResource().getFileSize();
+		if(lessThan) {
+		    if(fileSize>s) return false;
+		} else {
+		    if(fileSize<s) return false;
+		}
+	    }
+
+
+	    String isFile = (String) props.get("isfile");
+	    if(stringDefined(isFile)) {
+		if(isFile.equals("true")) {
+		    return entry.isFile();
+		} else {
+		    return !entry.isFile();
+		}
+	    }
+
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
