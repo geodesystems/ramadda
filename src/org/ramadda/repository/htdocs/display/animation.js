@@ -558,12 +558,13 @@ function DisplayAnimation(display, enabled,attrs) {
 	    return this.atBegin() && this.atEnd();
 	},
 	atEnd: function() {
-	    return this.end.getTime()>=this.dateMax.getTime();
+	    return this.end && this.end.getTime()>=this.dateMax.getTime();
 	},
 	atBegin: function() {
-	    return this.begin.getTime()<=this.dateMin.getTime();
+	    return this.begin && this.begin.getTime()<=this.dateMin.getTime();
 	},	
 	getDiff: function() {
+	    if(!this.end || !this.begin) return 0;
 	    return  this.end.getTime()-this.begin.getTime();
 	},
 	doPrev: function()  {
