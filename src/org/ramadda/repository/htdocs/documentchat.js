@@ -183,7 +183,7 @@ function DocumentChat(id,entryId,action,models,args) {
 		    this.opts.thread = result.thread;
 		    //		    console.log('got thread',this.opts.thread);
 		}
-		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
+		r  = 'https://ramadda.org ---- ' + r;
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 		r = r.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
 		r =r.replace(/<br>/g,'__br__');
@@ -192,6 +192,13 @@ function DocumentChat(id,entryId,action,models,args) {
 		r =r.replace(/<p>/g,'__p__');
 		r = r.replace(/</g,'&lt;');
 		r = r.replace(/>/g,'&gt;');		
+		r = r.replace(/\[([^\]]+)]\((https?:\/\/[^\)]+)\)/g, (m1,m2,m3)=>{
+		    m3=m3.replace(/http/,'_HIDEIT_');
+		    return HU.href(m3,m2,[ATTR_TARGET,'_link']);
+		});
+		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
+		r=r.replace(/_HIDEIT_/g,'http');
+
 		r  = r.replace(/__b__/g,'<b>');
 		r  = r.replace(/__nb__/g,'</b>');		
 		r  = r.replace(/__br__/g,'<br>');
