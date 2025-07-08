@@ -1282,22 +1282,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let datacube = HU.div([ATTR_ID,this.domId('datacube_contents')],'Loading...');
 //		contents.push({label:'Data Cubes',contents:datacube});
 
-		let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
-//		contents.push({label:'STAC',contents: stac});
+		let showStac = false;
+		let tabs;
+		if(showStac) {
+		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
+		    contents.push({label:'STAC',contents: stac});
 
-//		let tabs = HU.makeTabs(contents)
-		//For now just show the WMS
-		let tabs = HU.div([],HU.b(contents[0].label)) +
-		    contents[0].contents;
-//		html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
-		html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs);
+		    tabs = HU.makeTabs(contents)
+		    html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
+		} else {
+		    let tabs = HU.div([],HU.b(contents[0].label)) +    contents[0].contents;
+		    html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs);
+		}
 
 		let dialog = this.mapServerDialog = HU.makeDialog({remove:false,content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
 		dialog.remove= () =>{
 		    dialog.hide();
 		}
-//		tabs.init();
+		if(showStac) {
+		    tabs.init();
+		}
 		this.initDatacube(dialog);
 		this.initStac(dialog);
 		let cancel = ()=>{
