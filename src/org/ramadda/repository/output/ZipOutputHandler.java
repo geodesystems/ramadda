@@ -335,10 +335,12 @@ public class ZipOutputHandler extends OutputHandler {
 			    if(!getAccessManager().canDoFile(request, e)){
 				continue;
 			    }
-			    pw.println("********************");
-			    pw.println("entry: " + e.getName());
-			    pw.println("entry id: " + e.getId());			    
-			    pw.println("entry url: "+  request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId()));
+			    pw.println("Document: " + e.getName());
+			    if(e.isFile()) {
+				String tail = getStorageManager().getFileTail(e);
+				String url = request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId());
+				pw.println("["+ tail+"](" + url+")");
+			    }
 			    pw.println(e.getDescription());
 			    if(e.isFile()) {
 				String corpus =getSearchManager().extractCorpus(request,e,e.getResource().getPath(),null);
@@ -348,7 +350,7 @@ public class ZipOutputHandler extends OutputHandler {
 				    pw.println(corpus);
 				}
 			    }
-			    pw.println("********************");
+			    pw.println("\n\n");
 			}
 			//			    makeJson(request, allEntries, pw);
 			long t2 = System.currentTimeMillis();
