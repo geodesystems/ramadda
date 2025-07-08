@@ -4583,6 +4583,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let src = $("#"+ srcId).html();
             try {
                 var converter = new showdown.Converter();
+		src = src.replace(/```{r([^}]*)}/g, (match,t)=>{
+		    return     "```r\n##" + t});
                 var html = converter.makeHtml(src);
                 $("#" + targetId).html(html);
             } catch(e) {
