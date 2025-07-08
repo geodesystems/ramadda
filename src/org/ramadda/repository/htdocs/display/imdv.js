@@ -119,6 +119,8 @@ var CLASS_FILTER_STRINGS = 'imdv-filter-strings';
 var ID_GLYPH_ID='glyphid';
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
+var ID_MAPRESOURCE = 'mapresource';
+
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
 var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
 var ID_LEVEL_RANGE_CHANGED = 'level_range_changed';
@@ -1516,8 +1518,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		//Do this a bit later because the dialog doesn't get popped up
 		let initCallback = ()=>{
-		    this.jq('mapresource').change(()=>{
-			callback('',{},this.jq('mapresource').val());
+		    this.jq(ID_MAPRESOURCE).change(()=>{
+			callback('',{},this.jq(ID_MAPRESOURCE).val());
 			if(this.selector) this.selector.cancel();
 		    });
 		    this.jq('imageurl').keypress(function(e){
@@ -1534,12 +1536,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId('mapresource')],ids);
+		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
 		    extra = this.wrapDialog(extra + '<br>Or select entry:');
 		}
-
 
 
 		let props = {title:glyphType.isImage()?'Select Image':
