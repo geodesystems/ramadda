@@ -1406,7 +1406,8 @@ public class WikiManager extends RepositoryManager
                                             entry, tag, props,remainder);
 
         if (result == null) {
-	    System.err.println("WIKI ERROR:" + Utils.getStack(30));
+	    System.err.println("WikiManager:error processing tag:" + tag +" entry:" + entry);
+	    System.err.println("WIKI ERROR:" + Utils.getStack(20));
             result = getMessage(wikiUtil, props,
                                 HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
         }
