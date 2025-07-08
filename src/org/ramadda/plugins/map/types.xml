@@ -333,7 +333,8 @@ Hint: To use conversion services name your file .shz or .shp.zip
 	    label="Feature label property"
 	    help="When showing the default map this is the feature to use to show a label"
 	    showinhtml="false"/>        
-
+    <column name="show_map" label="Show Map"
+	    type="boolean" showinhtml="false" default="true"/>
 <property name="bubble">
 <![CDATA[
 +section  title={{name}}
@@ -345,6 +346,7 @@ Hint: To use conversion services name your file .shz or .shp.zip
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
++if property=show_map
 +row
 +col-md-8
 {{map width="100%" height="450" showSearch="property:show_search"
@@ -359,6 +361,7 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -row
 :vspace 0.5em
 ----
+-if
 :vspace 0.5em
 {{information  details="true"  showTitle="false"   menus="service" menusTitle="Services"}} `
 -section
