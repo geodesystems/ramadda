@@ -704,7 +704,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	     path.endsWith("docx"))) {
 	    //	    System.err.println("not doc:" + path);
 	    if(entry!=null)
-		return entry.getTypeHandler().getTypeProperty("canbeindexed",false);
+		return isTextFile(entry, entry.getResource().getPath()) ||
+		    entry.getTypeHandler().getTypeProperty("canbeindexed",false);
 
 	    return false;
 	}
