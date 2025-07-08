@@ -1829,8 +1829,8 @@ public class ExtEditor extends RepositoryManager {
 				       entryIcon,"target=_types");
 		return typeUrl+HU.space(1) +
 		    HU.href(visitor.getRepository().getEntryManager().getEntryURL(request, e),
-			       e.getName(),
-			       HU.attrs("target","_entry"));
+			    e.getName(),
+			    HU.attrs("target","_entry"));
 	    }
 	    if(msg instanceof Metadata) {
 		Metadata mtd = (Metadata)msg;
@@ -1890,6 +1890,8 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_TYPEID = "typeid";
     public static final String ARG_TYPENAME = "typename";    
     public static final String ARG_HANDLER = "handler";
+    public static final String ARG_CATEGORY = "category";
+    public static final String ARG_SUPERCATEGORY = "supercategory";    
     public static final String ARG_HANDLER_EXTRA = "handler_extra";    
     public static final String ARG_JSON_CONTENTS= "json_contents";
     public static final String ARG_FORIMPORT = "forimport";
@@ -1905,7 +1907,7 @@ public class ExtEditor extends RepositoryManager {
 
     /**
        this is the main entry point
-     */
+    */
     public Result outputCreateType(Request request, Entry entry) throws Exception {
 	if ( !createTypeOK(request)) {
 	    throw new AccessException("Create type not enabled", request);
@@ -1942,7 +1944,7 @@ public class ExtEditor extends RepositoryManager {
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
 	callout+="\n-note";
 	sb.append(getWikiManager().wikify(request,callout));
-		  //	getWikiManager().makeCallout(sb,request,callout);
+	//	getWikiManager().makeCallout(sb,request,callout);
 
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
 	if(msg!=null) sb.append(msg);
@@ -1968,9 +1970,20 @@ public class ExtEditor extends RepositoryManager {
 				 HU.input(ARG_TYPENAME,request.getString(ARG_TYPENAME,""),HU.attrs("size", "30")) +" e.g., My Type"));
 
 	String typeHelp=HU.href(getRepository().getUrlBase()+"/entry/types.html","View all types","target=_types");
+	String superType="";
+	TypeHandler typeHandler = entry.getTypeHandler();
+	if(request.defined("supertype")) {
+	    superType = request.getString("supertype","");
+	} else {
+	    TypeHandler parentTypeHandler = typeHandler.getParent();
+	    if(parentTypeHandler!=null) {
+		superType = parentTypeHandler.getType();
+	    }
+	}
         main.append(HU.formEntry(msgLabel("Super Type"),
-			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
-			       " Optional. e.g., type_point. "+typeHelp));
+				 HU.input("supertype",superType,
+					  HU.attrs("size","30")) +
+				 " Optional. e.g., type_point. "+typeHelp));
 	List typesSel = new ArrayList();
 	for(String tuple:Utils.split("Default:---,TypeHandler - for basic types:TypeHandler,GenericTypeHandler - For columns:GenericTypeHandler,ExtensibleGroupTypeHandler - for columns with groups:ExtensibleGroupTypeHandler,PointTypeHandler - for point data:PointTypeHandler",",")) {
 	    typesSel.add(new HtmlUtils.Selector(tuple));
@@ -1984,22 +1997,30 @@ public class ExtEditor extends RepositoryManager {
 					  HU.attrs("size","40","placeholder","Or enter custom, e.g. org.ramadda.YourType"))));
 
 	/*
-	main.append(HU.formEntry(msgLabel("Use"),
-				 "GenericTypeHandler if there are columns<br>ExtensibleGroupTypeHandler for columns that can also be a group<br>PointTypeHandler if this is CSV data"));
+	  main.append(HU.formEntry(msgLabel("Use"),
+	  "GenericTypeHandler if there are columns<br>ExtensibleGroupTypeHandler for columns that can also be a group<br>PointTypeHandler if this is CSV data"));
 	*/
 
 	String catHelp=HU.href(getRepository().getUrlBase()+"/search/type",
 			       "View all Categories","target=_cats");
+	
+	String superCategory = request.getString(ARG_SUPERCATEGORY,"");
+	if(!stringDefined(superCategory))
+	    superCategory = typeHandler.getSuperCategory();
+	String category = request.getString(ARG_CATEGORY,"");
+	if(!stringDefined(category))
+	    category = typeHandler.getCategory();	
         main.append(HU.formEntryTop(msgLabel("Super Category"),
-				    HU.input("supercategory",request.getString("supercategory",""),
+				    HU.input(ARG_SUPERCATEGORY,superCategory,
 					     HU.attrs("placeholder","e.g. Geoscience","size","30")) +
 				    HU.space(1) + catHelp));
         main.append(HU.formEntryTop(msgLabel("Category"),
-				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","30"))));
+				    HU.input(ARG_CATEGORY,category,
+					     HU.attrs("placeholder","e.g., Point Data","size","30"))));
 
         main.append(HU.formEntryTop(msgLabel("Icon"),
-				  HU.input("icon",request.getString("icon",""),
-					   HU.attrs("placeholder","/icons/chart.png","size","40"))));	
+				    HU.input("icon",request.getString("icon",""),
+					     HU.attrs("placeholder","/icons/chart.png","size","40"))));	
 
         main.append(HU.formTableClose());
 
@@ -2018,7 +2039,7 @@ public class ExtEditor extends RepositoryManager {
 	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
-				  HU.clazz("ramadda-form-help")));
+				     HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Extra XML:",
 		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
 
@@ -2208,12 +2229,18 @@ public class ExtEditor extends RepositoryManager {
 
 	sb = new StringBuilder();
 
+	String superType = request.getString("supertype","").trim();
 	String name = request.getString(ARG_TYPENAME,"");
 	if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
 	String handler = request.getString(ARG_HANDLER,"").trim();
 	String extraHandler = request.getString(ARG_HANDLER_EXTRA,"").trim();
 	if(stringDefined(extraHandler)) handler =extraHandler;
-	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.TypeHandler";
+	if(!Utils.stringDefined(handler) || handler.equals("---")) {
+	    if(superType.equals("type_point"))
+		handler="PointTypeHandler";
+	    else
+		handler="org.ramadda.repository.type.TypeHandler";
+	}
 	if(handler.equals("---")) handler="TypeHandler";
 	if(handler.equals("PointTypeHandler")) handler="org.ramadda.data.services." +handler;
 	else if(handler.matches("^(TypeHandler|GenericTypeHandler|ExtensibleGroupTypeHandler)$")) {
@@ -2303,17 +2330,17 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(XU.attrs("handler",handler));	
 	sb.append("\n");
 	if(request.defined("supertype")) {
-	    sb.append(XU.attr("super",request.getString("supertype","").trim()));
+	    sb.append(XU.attr("super",superType));
 	    sb.append("\n");
 	}
 
-	if(request.defined("supercategory")) {
-	    sb.append(XU.attr("supercategory",request.getString("supercategory","").trim()));
+	if(request.defined(ARG_SUPERCATEGORY)) {
+	    sb.append(XU.attr("supercategory",request.getString(ARG_SUPERCATEGORY,"").trim()));
 	    sb.append("\n");
 	}
 
-	if(request.defined("category")) {
-	    sb.append(XU.attr("category",request.getString("category","").trim()));
+	if(request.defined(ARG_CATEGORY)) {
+	    sb.append(XU.attr("category",request.getString(ARG_CATEGORY,"").trim()));
 	    sb.append("\n");
 	}
 
@@ -2428,15 +2455,15 @@ public class ExtEditor extends RepositoryManager {
 
 	String theMessage ="";
 	/*
-	if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
-	    try {
-		getRepository().loadTypeHandler(root,true);
-		theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be downloaded and installed in the RAMADDA plugins directory.");
-	    }  catch(Exception exc) {
-		return  outputCreateType(request, entry,
-					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
-	    }		
-	    }*/
+	  if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
+	  try {
+	  getRepository().loadTypeHandler(root,true);
+	  theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be downloaded and installed in the RAMADDA plugins directory.");
+	  }  catch(Exception exc) {
+	  return  outputCreateType(request, entry,
+	  getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
+	  }		
+	  }*/
 
 	TypeHandler typeHandler =getRepository().getTypeHandler(id);
 	if(typeHandler!=null && columnCnt>0) {
