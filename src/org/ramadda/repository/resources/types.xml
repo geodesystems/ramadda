@@ -448,8 +448,10 @@ showHeading=true
 	  help="Note: this is an optional API key to use"/>
   <column name="assistant_id" label="Assistant ID" type="string"/>
   <column name="vector_store_id" label="Vector Store ID" type="string"/>  
-  <column name="instructions" size="1000" label="Instructions" rows="5" type="string"/>
+  <column name="instructions" size="1000" label="Initial Instructions" rows="5" type="string"/>
   <column name="placeholder"  columns="80" label="Placeholder Text"  type="string" help="What to show in the input field"/>  
+  <column name="prompt_prefix" size="5000" label="Prompt Prefix" rows="5" type="string"/>
+  <column name="prompt_suffix" size="5000" label="Prompt Suffix" rows="5" type="string"/>  
   <wiki>
     <![CDATA[
 +section title={{name}}
