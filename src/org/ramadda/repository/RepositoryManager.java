@@ -513,6 +513,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
     public boolean isTextFile(Entry entry, String file) {
 	if(entry.getTypeHandler().isType("type_file_text")) return true;
+	if(entry.getTypeHandler().getTypeProperty("istextfile",false)) return true;	
 	return isTextFile(file);
     }
 
