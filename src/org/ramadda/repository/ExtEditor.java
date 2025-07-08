@@ -2394,7 +2394,7 @@ public class ExtEditor extends RepositoryManager {
 		getEntryManager().clearCache();
 		root.setAttribute("ignoreerrors","false");
 		try {
-		    getRepository().loadTypeHandler(root,true);
+		    TypeHandler typeHandler = getRepository().loadTypeHandler(root,true);
 		} catch(Exception exc) {
 		    Throwable thr = LogUtil.getInnerException(exc);
 		    String msg = thr.toString();
@@ -2427,6 +2427,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	String theMessage ="";
+	/*
 	if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
 	    try {
 		getRepository().loadTypeHandler(root,true);
@@ -2435,7 +2436,7 @@ public class ExtEditor extends RepositoryManager {
 		return  outputCreateType(request, entry,
 					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
 	    }		
-	}
+	    }*/
 
 	TypeHandler typeHandler =getRepository().getTypeHandler(id);
 	if(typeHandler!=null && columnCnt>0) {
