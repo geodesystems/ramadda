@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul  6 18:50:44 MDT 2025";
+var build_date="RAMADDA build date: Mon Jul  7 21:22:34 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -38109,7 +38109,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Entry Wiki'},
 	{p:'wiki',d:'{{import macro=forchild}}',ex:'wiki text'},
-	{p:'wikiStyle',d:'width:100%;max-width:95vw'}
+	{p:'wikiStyle',d:'width:100%;max-width:95vw;min-height:400px;'}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -38118,8 +38118,9 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 	    let html = HU.div([ATTR_ID,this.domId(ID_WIKI),ATTR_STYLE,this.getWikiStyle()]);
 	    let entryMap = {};
 	    if(properties.entries) {
-		this.sourceEntry=properties.entries[0];
+//		this.sourceEntry=properties.entries[0];
 		let options = [];
+               	options.push(HU.tag(TAG_OPTION, [], 'View Entry'));
 		properties.entries.forEach(entry=>{
 		    entryMap[entry.getId()] = entry;
                     let icon = entry.getIconUrl();
@@ -38137,7 +38138,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		header+=HU.div([ATTR_STYLE,HU.css('margin-top','4px'),
 				ATTR_ID,this.domId('entry_breadcrumbs'),
 				ATTR_CLASS,'display-entrylist-details-ancestors']);
-		html = HU.div([ATTR_STYLE,HU.css('margin-bottom','8px','border-bottom','var(--basic-border)')],header) +
+		html = HU.div([ATTR_STYLE,HU.css('margin-top','4px','margin-bottom','8px','border-bottom','var(--basic-border)')],header) +
 		    html;
 	    }
 	    this.displayHtml(html);
@@ -38146,6 +38147,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		let menu = this.entryMenu = this.jq('entrymenu');
 		menu.change(function() {
 		    let entry = entryMap[$(this).val()];
+		    if(!entry) return;
 		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'),4);		    
 		    _this.loadEntry(entry);
 		});
@@ -45639,6 +45641,8 @@ var CLASS_FILTER_STRINGS = 'imdv-filter-strings';
 var ID_GLYPH_ID='glyphid';
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
+var ID_MAPRESOURCE = 'mapresource';
+
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
 var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
 var ID_LEVEL_RANGE_CHANGED = 'level_range_changed';
@@ -47036,8 +47040,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		//Do this a bit later because the dialog doesn't get popped up
 		let initCallback = ()=>{
-		    this.jq('mapresource').change(()=>{
-			callback('',{},this.jq('mapresource').val());
+		    this.jq(ID_MAPRESOURCE).change(()=>{
+			callback('',{},this.jq(ID_MAPRESOURCE).val());
 			if(this.selector) this.selector.cancel();
 		    });
 		    this.jq('imageurl').keypress(function(e){
@@ -47054,12 +47058,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId('mapresource')],ids);
+		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
 		    extra = this.wrapDialog(extra + '<br>Or select entry:');
 		}
-
 
 
 		let props = {title:glyphType.isImage()?'Select Image':
