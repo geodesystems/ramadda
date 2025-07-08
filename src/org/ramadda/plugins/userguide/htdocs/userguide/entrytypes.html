@@ -137,9 +137,23 @@ The example file above has an example of this wiki text, e.g.:
 :heading Create Entry Type Form
 All entries have a Create Entry Type form available. 
 For example, let's say you have 100 CSV files of the same format and want to create a new entry type.
-Upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
-to data wrangle the CSV file, cleaning up the data, adding a header, etc. You can then edit the description
-of the CSV file and enter the appropriate <a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
+First, upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
+to data wrangle the CSV file, cleaning up the data, adding a header, etc.
+:p
+Then edit the description of the CSV file and enter the appropriate 
+<a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
+:p
+Note: Your wiki text will want to include the description with the <i>description</i> tag, e.g.:
++pre
+{<skip>{description wikify=true}}
+-pre
+However, if your description includes the description then the processing will fail (because of the recursive natue).
+To get around this you can include a "skip" in your description and RAMADDA will strip that out in the generation of the
+entry type definition.
++pre
+{skip{description wikify=true}}
+-pre
+  
 :p
 Once satisfied,  select "Create Entry Type" from the Entry popup menu.
 In this form you can specify a type ID, name, category, etc. If needed you can also specify
@@ -159,10 +173,10 @@ and go to the Create Entry Type form. Note: the type definitions are saved as a 
 associated with the entry. So, for example, you can copy the entry and the type specifications defined in this form
 will be copied over.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype1.png?version=336"><img  src="images/createtype1.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype1.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype1.png?version=585"><img  src="images/createtype1.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype1.png?version=585" ></a></div></div>
 
 :heading2 Entry Type  - Basic
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_basic.png?version=336"><img  src="images/createtype_basic.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_basic.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_basic.png?version=585"><img  src="images/createtype_basic.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_basic.png?version=585" ></a></div></div>
 
 The Basic  section allows you to define the basic entry type information-
 <ul>
@@ -191,7 +205,7 @@ Else leave is as Default.
 :heading2 Entry Type - Properties
 The Properties section provides a way to specify the myriad number of entry type properties.
 Examples of the available properties are listed in the right.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_properties.png?version=336"><img  src="images/createtype_properties.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_properties.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_properties.png?version=585"><img  src="images/createtype_properties.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_properties.png?version=585" ></a></div></div>
 
 There are 2 sets of properties - the XML Attributes and the more general purpose Properties.
 Please don't ask why these are separate, there are some legacy issues when dealing with
@@ -209,13 +223,13 @@ types.xml file. TBD - specify what kinds of things can go in here.
 :p
 The Map Popup is the snippet of wiki text used when displaying an entry in the map. 
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_advanced.png?version=336"><img  src="images/createtype_advanced.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_advanced.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_advanced.png?version=585"><img  src="images/createtype_advanced.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_advanced.png?version=585" ></a></div></div>
 
 :heading2 Entry Type - Columns
 The Columns section allows you to define the entry type columns.
 Each column consists of a column name, label, data type and any number
 of extra properties. 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_columns.png?version=336"><img  src="images/createtype_columns.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_columns.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_columns.png?version=585"><img  src="images/createtype_columns.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_columns.png?version=585" ></a></div></div>
 
 The column name must be a valid database column name - lowercase, no spaces, no punctuation, etc.
 You can entry these directly into the form or keep them in a separate text file
@@ -226,10 +240,10 @@ the many different properties that control the behavior of the Column.
 :p
 When editing you can right in any of the fields to insert, clear and delete rows.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_attributes.png?version=336"><img  src="images/createtype_attributes.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_attributes.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_attributes.png?version=585"><img  src="images/createtype_attributes.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_attributes.png?version=585" ></a></div></div>
 
 :heading2 Entry Type - Admin
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_admin.png?version=336"><img  src="images/createtype_admin.png?version=336"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_admin.png?version=336" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_admin.png?version=585"><img  src="images/createtype_admin.png?version=585"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_admin.png?version=585" ></a></div></div>
 The Admin section allows you to specify a comment which gets included in the generated type.xml
 file.
 :p

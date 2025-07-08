@@ -106,9 +106,23 @@ The example file above has an example of this wiki text, e.g.:
 :heading Create Entry Type Form
 All entries have a Create Entry Type form available. 
 For example, let's say you have 100 CSV files of the same format and want to create a new entry type.
-Upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
-to data wrangle the CSV file, cleaning up the data, adding a header, etc. You can then edit the description
-of the CSV file and enter the appropriate <a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
+First, upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
+to data wrangle the CSV file, cleaning up the data, adding a header, etc.
+:p
+Then edit the description of the CSV file and enter the appropriate 
+<a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
+:p
+Note: Your wiki text will want to include the description with the <i>description</i> tag, e.g.:
++pre
+{<skip>{description wikify=true}}
+-pre
+However, if your description includes the description then the processing will fail (because of the recursive natue).
+To get around this you can include a "skip" in your description and RAMADDA will strip that out in the generation of the
+entry type definition.
++pre
+{skip{description wikify=true}}
+-pre
+  
 :p
 Once satisfied,  select "Create Entry Type" from the Entry popup menu.
 In this form you can specify a type ID, name, category, etc. If needed you can also specify
