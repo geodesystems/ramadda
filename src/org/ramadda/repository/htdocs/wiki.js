@@ -83,7 +83,7 @@ if(!window.WikiUtil) {
 	    let dialog =HU.makeDialog({content:html,xanchor:null,title:"Select value for " + attr,
 				       header:true,sticky:true,draggable:true,modal:true});
 	    dialog.find('.ramadda-clickable').click(function(){
-		WikiUtil.insertText(id,$(this).attr('data-attr')+'='+$(this).attr('data-value'));
+		WikiUtil.insertText(id,$(this).attr('data-attr')+'=\"'+$(this).attr('data-value')+'\"');
 		dialog.remove();
 	    });
 	},
@@ -1542,14 +1542,14 @@ WikiEditor.prototype = {
 	    all+=items;
 	    all+="</div>";
 	});
-	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search',
+	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search - string 1,string 2',
 					ATTR_ID,_this.domId('allsearch'),'width','10'])) +
 	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
 		    ATTR_CLASS,'wikieditor-menu-popup',
 		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
 	all  = HU.div([ATTR_STYLE,'margin:5px;'], all);
-	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
-				    sticky:true,draggable:true,xmodal:modal});
+	let dialog = HU.makeDialog({content:all,anchor:anchor,title:'Attributes',header:true,
+				    sticky:true,draggable:true});
 
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
 	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
@@ -1557,14 +1557,31 @@ WikiEditor.prototype = {
 	jqid(_this.domId('allsearch')).keyup(function(event) {
 	    let text = $(this).val().trim().toLowerCase();
 	    let seen = {};
+	    if(text=='') text=[];
+	    else text = Utils.split(text,',',true,true);
 	    commands.each(function() {
-		if(text=='') {
+		if(text.length==0) {
 		    $(this).show();
 		} else {
 		    let corpus = $(this).attr('data-corpus');
 		    if(!corpus) return;
 		    corpus =  corpus.toLowerCase();
-		    if(corpus.indexOf(text)>=0) {
+		    let ok = true;
+		    text.every(t=>{
+			if(corpus.indexOf(t)<0) {
+			    ok = false;
+			    try {
+				if(corpus.match(t)) ok = true;
+			    } catch(err) {
+			    }
+
+
+			} 
+			return ok;
+		    });
+
+
+		    if(ok) {
 			$(this).show();
 			seen[$(this).attr('data-block-index')] = true;
 		    } else {
