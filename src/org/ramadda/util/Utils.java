@@ -241,6 +241,33 @@ public class Utils extends IO {
         return bytes + " MB";
     }
 
+    public static double parseSize(String s) {
+	s = s.trim();
+	String suffix = StringUtil.findPattern(s,"(?i)(kb|mb|gb|tb|pb)");
+	if(suffix==null) return Double.parseDouble(s);
+	s = s.replace(suffix,"").trim();
+	suffix=suffix.toLowerCase();
+	double mult=1;
+
+
+	if (suffix.equals("kb")) {
+	    mult=1_000.;
+	} else if (suffix.equals("mb")) {
+	    mult= 1_000_000.;
+	} else  if (suffix.equals("gb")) {
+	    mult= 1_000_000_000.;
+	} else if (suffix.equals("tb")) {
+	    mult= 1_000_000_000_000.;
+	} else if (suffix.equals("pb")) {
+	    mult= 1_000_000_000_000_000.;	    
+	} else {
+	    throw new IllegalArgumentException("Unknown numeric suffix:" + suffix);
+	}
+	double value = Double.parseDouble(s);
+	return value*mult;
+    }
+
+
     public static String format(Date date) {
 	//The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
 	return format(sdf, date)+"Z";
@@ -4732,6 +4759,11 @@ public class Utils extends IO {
     }
 
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for(String s: args)
+		System.err.println(s +" = " +      parseSize(s));
+	    return;
+	}
 
 	if(true) {
 	    String c = IO.readInputStream(new FileInputStream(args[0]));
