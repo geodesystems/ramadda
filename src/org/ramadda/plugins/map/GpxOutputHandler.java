@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
@@ -18,13 +17,11 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 /**
  *
@@ -32,16 +29,11 @@ import java.util.List;
  */
 public class GpxOutputHandler extends OutputHandler {
 
-
     /** Map output type */
     public static final OutputType OUTPUT_GPX =
         new OutputType("GPS GPX File", "gpx",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
-
-
-
-
 
     /**
      * Create a MapOutputHandler
@@ -56,8 +48,6 @@ public class GpxOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_GPX);
     }
-
-
 
     /**
      * Get the entry links
@@ -79,7 +69,6 @@ public class GpxOutputHandler extends OutputHandler {
         }
     }
 
-
     /**
      * Output the entry
      *
@@ -100,7 +89,6 @@ public class GpxOutputHandler extends OutputHandler {
         return outputGpx(request, entry, entriesToUse);
     }
 
-
     /**
      * Output a group
      *
@@ -120,17 +108,6 @@ public class GpxOutputHandler extends OutputHandler {
         return outputGpx(request, group, children);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputGpx(Request request, Entry entry, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -161,7 +138,5 @@ public class GpxOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
 
 }

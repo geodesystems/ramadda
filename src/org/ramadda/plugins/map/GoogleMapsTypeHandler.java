@@ -5,13 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-
 
 import org.w3c.dom.*;
 
@@ -20,12 +18,10 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.Date;
 import java.util.List;
-
 
 /**
  *
@@ -33,39 +29,19 @@ import java.util.List;
  */
 public class GoogleMapsTypeHandler extends GenericTypeHandler {
 
-    /** _more_ */
     public static final int IDX_WIDTH = 0;
 
-    /** _more_ */
     public static final int IDX_HEIGHT = 1;
 
-    /** _more_ */
     public static final int IDX_DISPLAY = 2;
 
-    /** _more_ */
     private int idCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public GoogleMapsTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public String getDefaultEntryName(String path) {
         String html  = IOUtil.readContents(path, "");
         String title = StringUtil.findPattern(html, "<title>(.*)</title>");
@@ -82,16 +58,6 @@ public class GoogleMapsTypeHandler extends GenericTypeHandler {
         return "Google Map URL";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
@@ -126,12 +92,6 @@ public class GoogleMapsTypeHandler extends GenericTypeHandler {
         return new Result(msg("Google Map"), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         String pattern = "^http://www.youtube.com/watch\\?v=.*";
         String url =

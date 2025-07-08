@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.type.GenericTypeHandler;
@@ -22,35 +21,16 @@ import java.io.*;
 import java.util.List;
 import java.util.zip.*;
 
-
 /**
  */
 @SuppressWarnings("unchecked")
 public class KmlTypeHandler extends GenericTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public KmlTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
@@ -60,16 +40,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
         initializeKmlEntry(request, entry, newEntry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public static void initializeKmlEntry(Request request, Entry entry,
                                           boolean newEntry)
             throws Exception {
@@ -92,10 +62,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
             setLon(nwse, Double.parseDouble(XmlUtil.getChildText(lonNode)));
         }
 
-
-
         initializeEntry(entry, kmlRoot, nwse);
-
 
         if (nwse[0] != Entry.NONGEO) {
             entry.setNorth(nwse[0]);
@@ -111,18 +78,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element readKml(Repository repository, Entry entry)
             throws Exception {
         Element kmlRoot = null;
@@ -151,7 +106,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
         return kmlRoot;
     }
 
-
     public static InputStream readDoc(Repository repository, Entry entry)
             throws Exception {
         String  path    = entry.getFile().toString();
@@ -174,15 +128,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
         }
 
     }
-    
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param node _more_
-     * @param nwse _more_
-     */
     private static void initializeEntry(Entry entry, Element node,
                                         double[] nwse) {
         String tagName = node.getTagName();
@@ -197,7 +143,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
 
             return;
         }
-
 
         if (tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
             Element llbox = XmlUtil.findChild(node, KmlUtil.TAG_LATLONBOX);
@@ -239,12 +184,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
         //        System.err.println("Unknown:" + tagName);
     }
 
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param coordString _more_
-     */
     private static void setBounds(double[] nwse, String coordString) {
         if (coordString != null) {
             double[][] coords = KmlUtil.parseCoordinates(coordString);
@@ -256,16 +195,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private static double convert(String value, double dflt) {
         if (value == null) {
             return dflt;
@@ -274,24 +203,11 @@ public class KmlTypeHandler extends GenericTypeHandler {
         return Double.parseDouble(value);
     }
 
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lat _more_
-     * @param lon _more_
-     */
     private static void setBounds(double[] nwse, double lat, double lon) {
         setLat(nwse, lat);
         setLon(nwse, lon);
     }
 
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lon _more_
-     */
     private static void setLon(double[] nwse, double lon) {
         nwse[1] = (nwse[1] == Entry.NONGEO)
                   ? lon
@@ -301,13 +217,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
                   : Math.max(nwse[3], lon);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lat _more_
-     */
     private static void setLat(double[] nwse, double lat) {
         nwse[0] = (nwse[0] == Entry.NONGEO)
                   ? lat
@@ -317,50 +226,24 @@ public class KmlTypeHandler extends GenericTypeHandler {
                   : Math.min(nwse[2], lat);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lat _more_
-     */
     private static void setNorth(double[] nwse, double lat) {
         nwse[0] = (nwse[0] == Entry.NONGEO)
                   ? lat
                   : Math.max(nwse[0], lat);
     }
 
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lat _more_
-     */
     private static void setSouth(double[] nwse, double lat) {
         nwse[2] = (nwse[2] == Entry.NONGEO)
                   ? lat
                   : Math.min(nwse[2], lat);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lon _more_
-     */
     private static void setWest(double[] nwse, double lon) {
         nwse[1] = (nwse[1] == Entry.NONGEO)
                   ? lon
                   : Math.min(nwse[1], lon);
     }
 
-    /**
-     * _more_
-     *
-     * @param nwse _more_
-     * @param lon _more_
-     */
     private static void setEast(double[] nwse, double lon) {
         nwse[3] = (nwse[3] == Entry.NONGEO)
                   ? lon
@@ -388,18 +271,11 @@ public class KmlTypeHandler extends GenericTypeHandler {
 	    url = getMapManager().getMapResourceUrl(request, entry);
 	}
 
-
-
-
-
         map.addKmlUrl(entry.getName(),
 		      url,
                       true, null);
 
         return false;
     }
-
-
-
 
 }

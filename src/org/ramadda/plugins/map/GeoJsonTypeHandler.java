@@ -5,7 +5,6 @@
 
 package org.ramadda.plugins.map;
 
-
 import org.json.*;
 
 import org.ramadda.data.point.text.*;
@@ -30,9 +29,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoJson;
 
-
 import org.w3c.dom.Element;
-
 
 import java.io.*;
 
@@ -40,45 +37,21 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  */
 public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     implements WikiConstants {
     private static final GeoJson GJ = null;
 
-
-    /** _more_ */
     private static int IDX = IDX_LAST+1;
 
-    /** _more_ */
     public static final int IDX_COLUMNS = IDX++;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public GeoJsonTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
@@ -95,16 +68,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	entry.setValue(IDX_COLUMNS,Utils.join(names,", "));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
@@ -114,16 +77,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         initializeEntryFromForm(request, entry, null, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param firstCall _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
@@ -134,15 +87,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void metadataChanged(Request request, Entry entry)
 	throws Exception {
@@ -161,8 +105,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	}
         return super.addToMapSelector(request, entry, forEntry, map);
     }
-
-
 
     /**
      *
@@ -185,11 +127,8 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 					    entry,styles);
         map.addGeoJsonUrl(entry.getName(), url, true,JU.map(styles));
 
-
         return false;
     }
-
-
 
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
@@ -209,29 +148,16 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
      */
     public static class GeoJsonRecordFile extends ConvertibleFile {
 
-        /** _more_ */
         private Repository repository;
 
 	private List<String> csvCommands;
-	    
-        /** _more_ */
+
         private String dataUrl;
 
-        /** _more_ */
         private Entry entry;
 
 	GeoJsonTypeHandler typeHandler;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param ctx _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
         public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,List<String> args, IO.Path path)
 	    throws IOException {
             super(request,  ctx, entry, args, path);
@@ -240,7 +166,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
             this.repository = repository;
             this.entry      = entry;
         }
-
 
 	/*
 	@Override
@@ -256,7 +181,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	}
 	*/
 
-
         @Override
 	public List<String> getCsvCommands() throws Exception {
 	    List<String> commands =super.getCsvCommands();
@@ -265,7 +189,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	    }
 	    return commands;
 	}
-
 
     }
 }

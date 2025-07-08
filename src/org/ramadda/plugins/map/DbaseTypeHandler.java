@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
 import org.ramadda.data.services.PointTypeHandler;
-
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -34,13 +32,11 @@ import ucar.unidata.gis.shapefile.DbaseFile;
 
 import ucar.unidata.io.BeLeDataInputStream;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * TODO: this seems to fail with a number of different dbase files
@@ -48,23 +44,12 @@ import java.util.List;
  */
 public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants {
 
-    /** _more_ */
     public static final String PROP_FIELDS = "fields";
 
-    /** _more_ */
     public static final String PROP_POINTFIELDS = "pointfields";
 
-
-    /** _more_ */
     private TTLCache<String, DbaseFile> cache;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public DbaseTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -73,30 +58,10 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
                              "Dbase File Cache");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean shouldProcessResource(Request request, Entry entry) {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -106,17 +71,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
                                    new IO.Path(entry.getResource().getPath()), null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
@@ -134,16 +88,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
         getEntryValues(entry)[IDX_PROPERTIES] = props;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private DbaseFile getDbf(Entry entry) throws Exception {
         synchronized (cache) {
             DbaseFile dbf = cache.get(entry.getId());
@@ -161,20 +105,10 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private ShapefileOutputHandler getOutputHandler() throws Exception {
         return (ShapefileOutputHandler) getRepository().getOutputHandler(
             ShapefileOutputHandler.class);
     }
-
-
 
     /**
      * Class description
@@ -185,33 +119,16 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
      */
     public class DbaseRecordFile extends CsvFile {
 
-        /** _more_ */
         Request request;
 
-        /** _more_ */
         Entry entry;
 
-        /** _more_ */
         DbaseFile dbf;
 
-        /** _more_ */
         Hashtable props;
 
-        /** _more_ */
         String fields;
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param request _more_
-         * @param entry _more_
-         * @param filename _more_
-         * @param dbf _more_
-         *
-         * @throws Exception _more_
-         */
         public DbaseRecordFile(Request request, Entry entry, IO.Path path,
                                DbaseFile dbf)
                 throws Exception {
@@ -227,16 +144,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
@@ -269,16 +176,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             return bais;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             putProperty(PROP_SKIPLINES, "0");
@@ -289,14 +186,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             return visitInfo;
         }
 
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         private String makeFields() throws Exception {
             List<String> fields = new ArrayList<String>();
             if (dbf == null) {
@@ -318,14 +207,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             return makeFields(fields);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param failureOk _more_
-         *
-         * @return _more_
-         */
         @Override
         public List<RecordField> doMakeFields(boolean failureOk) {
             try {
@@ -340,14 +221,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public String getEntryFieldsProperties() throws Exception {
             fields = makeFields();
 
@@ -356,6 +229,5 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
         }
 
     }
-
 
 }

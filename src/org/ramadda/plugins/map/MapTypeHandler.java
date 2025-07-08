@@ -5,18 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -26,42 +23,20 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.File;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  */
 public class MapTypeHandler extends ExtensibleGroupTypeHandler {
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public MapTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void childEntryChanged(Request request,Entry entry, boolean isNew)
             throws Exception {
@@ -75,15 +50,6 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
         getEntryManager().setBoundsOnEntry(request,parent, children);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     *
-     */
     @Override
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
@@ -101,7 +67,5 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
                                  getIconUrl(LidarOutputHandler.ICON_POINTS)));
         */
     }
-
-
 
 }

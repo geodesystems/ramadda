@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.metadata.Metadata;
@@ -15,8 +14,6 @@ import org.ramadda.service.Service;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
-
 
 import org.w3c.dom.*;
 
@@ -29,10 +26,8 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
 
-
 import java.util.Date;
 import java.util.List;
-
 
 /**
  *
@@ -42,18 +37,10 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class DemTypeHandler extends GdalTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception On badness
-     */
     public DemTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
-
 
     /**
      *
@@ -112,13 +99,6 @@ public class DemTypeHandler extends GdalTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private static double decodeLatLon(String s) {
         s = s.replace("d", ":");
         s = s.replace("'", ":");

@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
 import org.ramadda.data.services.PointTypeHandler;
-
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -25,9 +23,6 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.*;
 
-
-
-
 import org.w3c.dom.Element;
 
 import ucar.unidata.gis.GisPart;
@@ -38,7 +33,6 @@ import ucar.unidata.gis.shapefile.ProjFile;
 
 import ucar.unidata.util.IOUtil;
 
-
 import java.awt.geom.Rectangle2D;
 
 import java.io.*;
@@ -46,7 +40,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  */
@@ -226,7 +219,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         return false;
     }
 
-
     @Override
     public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
             throws Exception {
@@ -281,7 +273,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         return file;
     }
 
-
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -295,7 +286,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         return (ShapefileOutputHandler) getRepository().getOutputHandler(
             ShapefileOutputHandler.class);
     }
-
 
     public class ShapefileRecordFile extends CsvFile {
         Request request;
@@ -452,9 +442,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return fields;
         }
 
-
-
     }
-
 
 }

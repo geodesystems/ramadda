@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -19,56 +18,39 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 
 import org.w3c.dom.Element;
-
 import ucar.unidata.util.IOUtil;
-
 import java.io.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import java.util.zip.*;
 
-
-/**
- */
 @SuppressWarnings("unchecked")
-public class LatLonImageTypeHandler extends GenericTypeHandler {
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
+//public class LatLonImageTypeHandler extends GenericTypeHandler {
+public class LatLonImageTypeHandler extends GdalTypeHandler {
+    boolean addedScriptPaths = false;
     public LatLonImageTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
     @Override
     public void initializeNewEntry(Request request, Entry entry, NewType newType)
 	throws Exception {
-
         super.initializeNewEntry(request, entry, newType);
+	if(isType("geo_geotiff")) return;
         String  path  = entry.getResource().getPath();
         String  _path = path.toLowerCase();
         boolean isKmz = _path.endsWith(".kmz");
         if ( !(isKmz || _path.endsWith(".tif") || _path.endsWith(".tiff")
                 || _path.endsWith(".grd") || _path.endsWith(".asc")
                 || _path.endsWith(".adf"))) {
-
             return;
         }
         String gdal = getRepository().getScriptPath("service.gdal");
 
-        if (gdal == null) {
+        if (!stringDefined(gdal)) {
             System.err.println("no gdal");
-
             return;
         }
 
@@ -76,6 +58,11 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         String                    gdalInfo      = gdal + "/gdalinfo";
         String                    gdalTranslate = gdal + "/gdal_translate";
         String                    gdalDem       = gdal + "/gdaldem";
+	if(!addedScriptPaths) {
+	    getRepository().addScriptPath(gdalWarp, gdalInfo, gdalTranslate, gdalDem);
+	    addedScriptPaths = true;
+	}
+
         File work = getStorageManager().getScratchDir().getDir();
         File                      srcTiff       = entry.getFile();
         List<String>              commands;
@@ -153,21 +140,8 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         getStorageManager().deleteFile(entry.getFile());
         entry.getResource().setPath(newFile.toString());
 
-
-
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void getFileExtras(Request request, Entry entry, Appendable sb)
             throws Exception {
@@ -180,39 +154,27 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 	sb.append("<br>");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         try {
             if ((entry == null) || !entry.hasAreaDefined(request)) {
+		System.err.println(" no area");
                 return false;
             }
 
-            //Only set the width if the latlonentry is the main displayed entry
+	    String url=getImageUrl(request, entry);
+	    if(!stringDefined(url)) return false;
 
+            //Only set the width if the latlonentry is the main displayed entry
             if (entry.getId().equals(request.getString(ARG_ENTRYID, ""))) {
-                int width  = (int) entry.getIntValue(request,0, -1);
-                int height = (int) entry.getIntValue(request,1, -1);
+                int width  = (int) entry.getIntValue(request,"map_width", -1);
+                int height = (int) entry.getIntValue(request,"map_height", -1);
                 if ((width > 0) && (height > 0)) {
                     map.setWidth("" + width);
                     map.setHeight("" + height);
                 }
             }
-
-            String url =
-                getRepository().getHtmlOutputHandler().getImageUrl(request,
-                    entry);
 
             boolean visible = true;
             /*
@@ -245,19 +207,20 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         }
     }
 
+    private String getImageUrl(Request request, Entry entry) throws Exception {
+	String url=null;
+	if(isType("geo_geotiff")) {
+	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
+	    if(tuple!=null) url  = tuple[0];
+	} else {
+	    url =
+		getRepository().getHtmlOutputHandler().getImageUrl(request,
+								   entry);
 
+	}
+	return url;
+    }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
             throws Exception {
@@ -265,9 +228,8 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
             return false;
         }
         if (entry.hasAreaDefined(request)) {
-            String url =
-                getRepository().getHtmlOutputHandler().getImageUrl(request,
-                    entry);
+	    String url=getImageUrl(request, entry);
+	    if(!stringDefined(url)) return false;
 	    boolean mine = (entry!=null && forEntry!=null && entry.getId().equals(forEntry.getId()));
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,

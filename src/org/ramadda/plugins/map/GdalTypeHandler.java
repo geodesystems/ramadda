@@ -5,21 +5,16 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.*;
-
-
 
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
-
 
 import org.w3c.dom.*;
 
@@ -39,41 +34,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- *
- * @author Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public class GdalTypeHandler extends GenericTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception On badness
-     */
     public GdalTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -101,18 +69,6 @@ public class GdalTypeHandler extends GenericTypeHandler {
 	return getWikiManager().wikifyEntry(request, entry,wikiText);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param service _more_
-     * @param output _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
@@ -213,13 +169,6 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     private static double[] getLatLon(String line) {
         line = line.trim();
         line = StringUtil.findPattern(line, ".*\\(([^\\)]+)\\.*");
@@ -237,13 +186,6 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                               decodeLatLon(toks.get(1)) };
     }
 
-    /**
-     *
-     * @param request _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result returnNA(Request request) throws Exception {
         return new Result(
             BLANK,
@@ -252,14 +194,6 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                 GdalTypeHandler.class), "image/png");
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString("action", "");
@@ -277,7 +211,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         }
         String fileName = Utils.makeMD5(entry.getId()) + ".png";
         File cachedFile = getStorageManager().getCacheFile("geotiffs",
-                              fileName);
+							   fileName);
         if ( !cachedFile.exists()) {
             try {
 		/*
@@ -323,13 +257,6 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private static double decodeLatLon(String s) {
         s = s.replace("d", ":");
         s = s.replace("'", ":");
@@ -339,16 +266,4 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
     }
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String t =
-            "Upper Left  (-180.0000000,  90.0000000) (180d 0' 0.00\"W, 90d 0' 0.00\"N)";
-        getLatLon(t);
-    }
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  *
  *
@@ -38,13 +36,11 @@ import java.util.List;
 public class KmlEntryOutputHandler extends ZipFileOutputHandler {
     public static final KmlUtil KU=null;
 
-
     /** Map output type */
     public static final OutputType OUTPUT_KML_HTML =
         new OutputType("Display as HTML", "kml.html", OutputType.TYPE_VIEW,
                        "", ICON_KML);
 
-    /** _more_ */
     public static final OutputType OUTPUT_KMZ_IMAGE =
         new OutputType("Display as HTML", "kml.image", OutputType.TYPE_VIEW,
                        "", ICON_KML);
@@ -56,9 +52,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
     public static final OutputType OUTPUT_KML_DOC =
         new OutputType("Display as HTML", "kml.doc", OutputType.TYPE_ACTION,
                        "", ICON_KML);    
-
-
-
 
     /**
      * Create a MapOutputHandler
@@ -75,8 +68,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         addType(OUTPUT_KML_EXTRACT);
         addType(OUTPUT_KML_DOC);		
     }
-
-
 
     /**
      * Get the entry links
@@ -96,7 +87,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
             links.add(makeLink(request, state.entry, OUTPUT_KML_HTML));
         }
     }
-
 
     /**
      * Output the entry
@@ -119,7 +109,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         if (outputType.equals(OUTPUT_KML_DOC)) {
             return outputKmlDoc(request, entry);
 	}
-	
 
         if (outputType.equals(OUTPUT_KML_HTML)) {
             return outputKmlHtml(request, entry);
@@ -128,18 +117,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputKmlHtml(Request request, Entry entry)
             throws Exception {
 
@@ -162,17 +139,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         return result;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param node _more_
-     */
     private void walkTree(Request request, Entry entry, StringBuffer sb,
                           Element node) {
         String tagName = node.getTagName();
@@ -215,13 +181,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param sb _more_
-     * @param tagName _more_
-     */
     private void appendName(Node node, StringBuffer sb, String tagName) {
         sb.append(tagName + ": ");
         sb.append(XmlUtil.getGrandChildText(node, KU.TAG_NAME, tagName));
@@ -234,14 +193,6 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param node _more_
-     */
     private void walkChildren(Request request, Entry entry, StringBuffer sb,
                               Element node) {
         NodeList children = XmlUtil.getElements(node);
@@ -251,24 +202,11 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputKmlExtract(Request request, Entry entry)
             throws Exception {
 	String href=request.getString(ARG_FILE,"");
 	return fetchFile(request, entry, href);
     }
-
 
     private Result outputKmlDoc(Request request, Entry entry)
             throws Exception {
@@ -281,7 +219,7 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 	    kml = kml.replaceAll("<href>http","_DUMMYHTTP_");
 	    kml = kml.replaceAll(regex,
 				 "<href>" + url +"$1</href>");
-			      
+
 	    kml = kml.replace("_DUMMYHTTP_","<href>http");
 	    InputStream tmp = inputStream;
 	    inputStream = new ByteArrayInputStream(kml.getBytes());
@@ -289,9 +227,5 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 	}
 	return new Result(inputStream,"application/vnd.google-earth.kml+xml");
     }
-    
-
-
-
 
 }

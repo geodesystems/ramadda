@@ -12,7 +12,9 @@
      <service link="gdal_info"/>
   </type>
 
-  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(.*\.tif|.*\.tiff)" >
+  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(.*\.tif|.*\.tiff)"
+	handler="org.ramadda.plugins.map.LatLonImageTypeHandler"
+	>
      <property name="icon" value="/icons/image.gif"/>
      <property name="mimetype" value="image/tiff; application=geotiff"/>
     <wiki_inner><![CDATA[

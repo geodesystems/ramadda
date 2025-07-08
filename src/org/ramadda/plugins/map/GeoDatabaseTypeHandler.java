@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.*;
-
-
 
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceOutput;
@@ -19,7 +16,6 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.geo.Bounds;
-
 
 import org.w3c.dom.*;
 
@@ -38,8 +34,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
 @SuppressWarnings("unchecked")
 public class GeoDatabaseTypeHandler extends GenericTypeHandler {
 
@@ -47,7 +41,6 @@ public class GeoDatabaseTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
 
     @Override
     public void handleServiceResults(Request request, Entry entry,
@@ -91,11 +84,6 @@ public class GeoDatabaseTypeHandler extends GenericTypeHandler {
 		continue;
 	    }
 
-
-
-
-
-
 	    if(line.startsWith("Extent:")) {
 		//Extent: (-104.055600, 42.490360) - (-96.437901, 45.774391)
 		List<String> toks = Utils.splitUpTo(line,":",2);
@@ -124,7 +112,6 @@ public class GeoDatabaseTypeHandler extends GenericTypeHandler {
 	    entry.setBounds(bounds);
 	}
     }
-
 
     private static double[] getLatLon(String line) {
         line = line.trim();

@@ -22,7 +22,6 @@ import ucar.unidata.xml.XmlUtil;
 import org.json.*;
 import org.w3c.dom.*;
 
-
 import java.awt.Color;
 
 import java.io.*;
@@ -30,14 +29,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  *
  *
  */
 @SuppressWarnings("unchecked")
 public class GeoJsonOutputHandler extends OutputHandler {
-
 
     private static final GeoJson GJ = null;
 
@@ -71,7 +68,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
         new OutputType("Convert to KML", "editable.kml",
                        OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_KML);
 
-
     /**
      * Create a MapOutputHandler
      *
@@ -90,8 +86,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
         addType(OUTPUT_GEOJSONCSV);
         addType(OUTPUT_EDITABLE_TOKML);
     }
-
-
 
     /**
      * Get the entry links
@@ -126,7 +120,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
         }
 
     }
-
 
     /**
      *
@@ -171,7 +164,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
 			      OutputType outputType,
                               Entry entry)
             throws Exception {
-
 
         if (outputType.equals(OUTPUT_GEOJSON_FILTER)) {
             if ( !request.exists("geojson_filter")) {
@@ -248,7 +240,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
             return makeStream(request, entry,is);	    
         }
 
-
         if (outputType.equals(OUTPUT_GEOJSON_SUBSET)) {
             if ( !request.exists("geojson_subset")) {
                 StringBuilder sb = new StringBuilder();
@@ -287,8 +278,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
             return new Result("", new StringBuilder(obj.toString()), GJ.DOWNLOAD_MIMETYPE);
         }
 
-
-
         if (outputType.equals(OUTPUT_GEOJSON_REDUCE)) {
             String geoJson =
                 getStorageManager().readFile(entry.getResource().getPath());
@@ -304,7 +293,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
             return result;
 
         }
-
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream           pw  = new PrintStream(bos);
@@ -404,8 +392,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
             }
         }
 
-
-
         String xml = XmlUtil.toString(root, true);
         String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
@@ -417,8 +403,5 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
-
 
 }

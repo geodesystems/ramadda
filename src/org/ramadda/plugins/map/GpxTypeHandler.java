@@ -48,7 +48,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 @SuppressWarnings("unchecked")
 public class GpxTypeHandler extends PointTypeHandler {
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
@@ -80,7 +79,6 @@ public class GpxTypeHandler extends PointTypeHandler {
         return XmlUtil.getRoot(
 			       getStorageManager().readSystemResource(entry.getFile()));
     }
-
 
     private String digit(int t) {
         if (t < 10) {
@@ -517,7 +515,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 	if(elevations.size()>0)
 	    System.err.println("window:" + window +" size:" + elevations.size()+" " + GeoUtils.metersToFeet(elevationGain) +" " + GeoUtils.metersToFeet(elevationLoss));
 	return new double[]{elevationGain,elevationLoss};
-		
+
     }
 
     public static List<Double> movingAverage(List<Double> data, int windowSize) {
@@ -540,11 +538,6 @@ public class GpxTypeHandler extends PointTypeHandler {
 
         return smoothed;
     }
-
-
-
-
-
 
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -823,7 +816,6 @@ public class GpxTypeHandler extends PointTypeHandler {
         return new GpxRecordFile(this, entry, new IO.Path(entry.getResource().getPath()));
     }
 
-
     public static class GpxRecordFile extends CsvFile {
         GpxTypeHandler typeHandler;
         Entry entry;
@@ -972,7 +964,6 @@ public class GpxTypeHandler extends PointTypeHandler {
 
         }
 
-
         private List<String> getExtraTags(Entry entry) throws Exception {
             List<String> tags = extraTagsCache.get(entry.getId());
             if (tags == null) {
@@ -1077,7 +1068,6 @@ public class GpxTypeHandler extends PointTypeHandler {
         return "'" + s + "'";
     }
 
-
     public static class TrackInfo {
 	int cnt=0;
 	int elevationCnt=0;
@@ -1107,7 +1097,6 @@ public class GpxTypeHandler extends PointTypeHandler {
             speedWindow = new ArrayList<Double>();
             gradeWindow = new ArrayList<Double>();
         }
-
 
         void setPoint(double lat, double lon, double elevation, Date dttm,
                       String time, List<String> extra, StringBuilder s)
