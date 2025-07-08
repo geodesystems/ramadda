@@ -32,6 +32,30 @@
     <property name="icon" value="/files/r.png"/>
 </type>
 
+<type name="type_file_rmd"   super="type_file_code"
+      description="R Markdown File" pattern="(?i).*\.rmd" >
+    <property name="icon" value="/files/r.png"/>
+    <property name="istextfile" value="true"/>
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
++toggle Information
+{{information details=true}}
+-toggle
++tabs
++tab Markdown
+{{embed as=markdown  wikify=true  maxheight="600" maxSize="10000" }}
+-tab
++tab Raw
+{{code.view wikify=false}}
+-tab
+-tabs
+-section
+]]>
+</wiki>
+
+</type>
+
 <type name="type_file_matlab" foruser="false" includeInSearch="true"
       description="Matlab File">
      <property name="icon" value="/files/matlab.png"/>
