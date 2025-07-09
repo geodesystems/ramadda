@@ -2963,6 +2963,15 @@ public class TypeHandler extends RepositoryManager {
 		    + formatFileLength(entry.getResource().getFileSize());
 	    }
 	    addEntryProperty(request, sb, resourceLabel, resourceLink);
+	    if (!request.getUser().getAnonymous()) {
+		File corpus = getSearchManager().getCorpusFile(request, entry);
+		if(corpus.exists()) {
+		    String length =  formatFileLength(corpus.length());
+		    addEntryProperty(request, sb, "Text corpus size",length);
+		}
+	    }		
+
+
 
 	}
     }

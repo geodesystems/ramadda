@@ -257,6 +257,7 @@ public interface Constants {
 
     public static final String ARG_DOOCR = "doocr";
     public static final String ARG_DOOCR_CONDITIONAL = "doocr_conditional";    
+    public static final String ARG_CORPUS_FORCE = "corpus_force";
 
     public static final String ARG_RETURNFILENAME = "returnfilename";
 

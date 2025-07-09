@@ -114,7 +114,7 @@ import org.apache.pdfbox.multipdf.Splitter;
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
-    public static boolean debugCorpus = true;
+    public static boolean debugCorpus = false;
     public static boolean debugIndex = false;
     public static boolean debugSearch = false;
 
@@ -797,16 +797,30 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return corpus;
     }	
 
+    public File getCorpusFile(Request request,Entry entry) {
+	return getCorpusFile(request, entry,  entry.getResource().getPath());
+    }
+
+
+    public File getCorpusFile(Request request,Entry entry,String path) {
+	File f = new File(path);
+	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
+        File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
+										  true), corpusFileName));
+	return corpusFile;
+    }
+
+    public boolean corpusExists(Request request, Entry entry) {
+	return getCorpusFile(request,entry).exists();
+    }	
+
+
     public String extractCorpus(Request request, Entry entry,
 				String path,
 				List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	File f = new File(path);
-
-	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
-        File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
-										  true), corpusFileName));
-
-	if(corpusFile.exists()) {
+        File corpusFile = getCorpusFile(request, entry,path);
+	if(!request.get(ARG_CORPUS_FORCE,false) && corpusFile.exists()) {
 	    //check if the we are doing OCR and the corpus file is empty
 	    if(request.get(ARG_DOOCR,false) && corpusFile.length()==0) {
 	    } else {
@@ -816,9 +830,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	} 
 
-	if(debugCorpus)
+	if(debugCorpus) {
 	    System.err.println("corpus file:" + corpusFile + " exists:" +
 			       corpusFile.exists() +" length:" + corpusFile.length());
+	}
 
 	if(!f.exists() && path.startsWith("http")) {
 	    String url = path;
@@ -874,6 +889,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(debugCorpus)
 		System.err.println("\tcorpus:" + " time:" + (t2-t1)+" length:" +
 				   corpus.length() +" corpus:" + Utils.clip(corpus,50,"...").replace("\n"," "));
+
+
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
 	    return  corpus;
 	} catch(java.util.concurrent.CancellationException cancel) {

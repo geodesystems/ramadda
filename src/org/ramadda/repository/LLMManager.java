@@ -177,7 +177,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public Result applyLLM(final Request request, final Entry entry) throws Exception  {
         final StringBuilder sb      = new StringBuilder();
-	String pageUrl =request.toString();
+	
+	String pageUrl =entry.getTypeHandler().getEntryActionUrl(request,  entry,"applyllm");
 	String subLabel = HU.href(pageUrl,"Apply LLM",HU.cssClass("ramadda-clickable"));
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
 	if(!getAccessManager().canDoEdit(request, entry)) {
@@ -198,6 +199,7 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
     private void makeApplyLLMForm(Request request, Entry entry, StringBuilder sb) throws Exception {
+	request.setCurrentEntry(entry);
 	String pageUrl =request.toString();
 	sb.append(HU.formPost(pageUrl,""));
 	sb.append("<div style='margin-left:20px;'>");
@@ -209,6 +211,14 @@ public class LLMManager extends  AdminHandlerImpl {
 	    HU.formEntry(sb,"OCR:",ocr);
 	    sb.append(HU.formTableClose());
 	} 
+	File corpusFile = getSearchManager().getCorpusFile(request, entry);
+	if(corpusFile.exists()) {
+	    String length =  formatFileLength(corpusFile.length());
+	    sb.append(HU.formHelp("There is an existing text corpus file with length: " + length));
+	    sb.append(HU.div(HU.labeledCheckbox(ARG_CORPUS_FORCE, "true", request.get(ARG_CORPUS_FORCE,false),  "",
+						"Delete existing file and recreate")));
+
+	}
 	sb.append(HU.submit("Apply LLM", ARG_OK));
 	sb.append("</div>");
 	sb.append(HU.formClose());
@@ -216,7 +226,19 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
     private HashSet applyingLLM=new HashSet();
+
+    public boolean isApplyingLLM(Entry entry) {
+	return applyingLLM.contains(entry.getId());
+    }
+
+
     public synchronized boolean applyLLMToEntry(final Request request, final Entry entry,StringBuilder sb) throws Exception {
+	if(applyingLLM.contains(entry.getId())) {
+	    sb.append(getPageHandler().showDialogNote("LLM is currently being applied."));
+	    makeApplyLLMForm(request, entry, sb);
+	    return true;
+	}
+	applyingLLM.add(entry.getId());
 	Misc.run(new Runnable() {
 		public void run() {
 		    try {
@@ -227,6 +249,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			} 
 			applyEntryExtract(request, entry, corpus);
 			request.remove(ARG_DOOCR);
+			request.remove(ARG_CORPUS_FORCE);
 			getSessionManager().addSessionMessage(request,"LLM Apply is complete");
 			getEntryManager().updateEntry(request, entry);
 		    } catch(Exception exc) {
@@ -236,10 +259,6 @@ public class LLMManager extends  AdminHandlerImpl {
 			applyingLLM.remove(entry.getId());
 		    }
 		}});
-	if(applyingLLM.contains(entry.getId())) {
-	    sb.append(getPageHandler().showDialogWarning("LLM is currently being applied."));
-	}
-	applyingLLM.add(entry.getId());
     	sb.append(getPageHandler().showDialogNote("LLM is being applied."));
 	makeApplyLLMForm(request, entry, sb);
 	//Remove this since the updateEntry calls extractCorpus and we don't want to keep doing the OCR
@@ -802,25 +821,10 @@ public class LLMManager extends  AdminHandlerImpl {
 		getEntryManager().clearEntryState(entry,"message");
 	    }
 	}
-
-	//for testing:
-	/*
-	  for(int i=0;i<40;i++) {
-	  Misc.run(new Runnable(){
-	  public void run() {
-	  try {
-	  applyEntryExtractInner(request, entry,llmCorpus);
-	  }catch(Throwable thr) {
-	  System.err.println("ERROR:" + thr);
-	  }
-	  }
-	  });
-	  }*/
 	return true;
     }
 
     public boolean applyEntryExtractInner(final Request request, final Entry entry, final String llmCorpus) throws Throwable {	
-
 	boolean entryChanged = false;
 	PromptInfo info = new PromptInfo();
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
