@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul  7 21:58:46 MDT 2025";
+var build_date="RAMADDA build date: Wed Jul  9 02:31:08 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -2237,12 +2237,13 @@ function DisplayAnimation(display, enabled,attrs) {
 	    return this.atBegin() && this.atEnd();
 	},
 	atEnd: function() {
-	    return this.end.getTime()>=this.dateMax.getTime();
+	    return this.end && this.end.getTime()>=this.dateMax.getTime();
 	},
 	atBegin: function() {
-	    return this.begin.getTime()<=this.dateMin.getTime();
+	    return this.begin && this.begin.getTime()<=this.dateMin.getTime();
 	},	
 	getDiff: function() {
+	    if(!this.end || !this.begin) return 0;
 	    return  this.end.getTime()-this.begin.getTime();
 	},
 	doPrev: function()  {
@@ -6120,7 +6121,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
-	{p:'colorTableLabel',ex:'${field}'},
+	{p:'colorTableLabel',ex:'Colored by ${field}'},
 	{p:'colorTableDisplayId',tt:'Dom id to where to place the color table'},
 	{p:'colorTableDots',ex:true,tt:'Show as dots'},
 	{p:'colorTableDotsWidth',ex:'24px'},
@@ -6151,14 +6152,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationAcceptRecordSelection',ex:true,tt:'change the animation date on record select'},
 	{p:'acceptEventAnimationChange',ex:false},
 	{p:'acceptDateRangeChange',ex:true},
-	{p:'animationDateFormat',ex:'yyyy'},
+	{p:'animationDateFormat',
+	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'animationLabelTemplate'},
 	{p:'animationLabelSize',ex:'12pt'},
 	{p:'animationStyle'},				
 	{p:'animationTooltipShow',ex:'true'},
-	{p:'animationTooltipDateFormat',ex:'yyyymmddhhmm'},		
-	{p:'animationWindow',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
-	{p:'animationStep',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
+	{p:'animationTooltipDateFormat',
+	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
+
+	{p:'animationWindow',ex:'1 minute|1 hour|1 day|2 weeks|3 months|1 year|2 decades|etc',
+	 tt:'When in sliding mode this is the width of the window'},
+	{p:'animationStep',ex:'1 minute|1 hour|1 day|2 weeks|3 months|1 year|2 decades|etc',
+	 tt:'When in sliding or cumulative mode this is the step size'},
 	{p:'animationSpeed',ex:500},
 	{p:'animationLoop',ex:true},
 	{p:'animationDwell',ex:1000},
@@ -46804,22 +46810,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let datacube = HU.div([ATTR_ID,this.domId('datacube_contents')],'Loading...');
 //		contents.push({label:'Data Cubes',contents:datacube});
 
-		let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
-//		contents.push({label:'STAC',contents: stac});
+		let showStac = false;
+		let tabs;
+		if(showStac) {
+		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
+		    contents.push({label:'STAC',contents: stac});
 
-//		let tabs = HU.makeTabs(contents)
-		//For now just show the WMS
-		let tabs = HU.div([],HU.b(contents[0].label)) +
-		    contents[0].contents;
-//		html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
-		html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs);
+		    tabs = HU.makeTabs(contents)
+		    html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
+		} else {
+		    let tabs = HU.div([],HU.b(contents[0].label)) +    contents[0].contents;
+		    html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs);
+		}
 
 		let dialog = this.mapServerDialog = HU.makeDialog({remove:false,content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
 		dialog.remove= () =>{
 		    dialog.hide();
 		}
-//		tabs.init();
+		if(showStac) {
+		    tabs.init();
+		}
 		this.initDatacube(dialog);
 		this.initStac(dialog);
 		let cancel = ()=>{
