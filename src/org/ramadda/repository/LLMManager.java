@@ -175,8 +175,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	request.put(ARG_MODEL,model);
     }
 
-    public Result applyLLM(Request request, Entry entry) throws Exception  {
-        StringBuilder sb      = new StringBuilder();
+    public Result applyLLM(final Request request, final Entry entry) throws Exception  {
+        final StringBuilder sb      = new StringBuilder();
 	String pageUrl =request.toString();
 	String subLabel = HU.href(pageUrl,"Apply LLM",HU.cssClass("ramadda-clickable"));
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
@@ -215,22 +215,36 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    public boolean applyLLMToEntry(Request request, Entry entry,StringBuilder sb) throws Exception {
-	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
-	if(corpus==null) {
-	    sb.append(getPageHandler().showDialogError("No text from file available."));
-	    return false;
-	} 
-	if(!applyEntryExtract(request, entry, corpus)) {
-	    sb.append(getPageHandler().showDialogError("LLM was not applied."));
-	    makeApplyLLMForm(request, entry, sb);
-	    return false;
-	} 
-	sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+    private HashSet applyingLLM=new HashSet();
+    public synchronized boolean applyLLMToEntry(final Request request, final Entry entry,StringBuilder sb) throws Exception {
+	Misc.run(new Runnable() {
+		public void run() {
+		    try {
+			System.err.println("before");
+			String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+			System.err.println("after corpus");
+			if(!stringDefined(corpus)) {
+			    getSessionManager().addSessionMessage(request,"No text from file available.");
+			    return;
+			} 
+			applyEntryExtract(request, entry, corpus);
+			request.remove(ARG_DOOCR);
+			getSessionManager().addSessionMessage(request,"LLM Apply is complete");
+			getEntryManager().updateEntry(request, entry);
+		    } catch(Exception exc) {
+			getSessionManager().addSessionMessage(request,"Error applyin LLM:"+exc,null,true);
+			getLogManager().logError("Applying LLM to:" + entry,exc);
+		    }  finally {
+			applyingLLM.remove(entry.getId());
+		    }
+		}});
+	if(applyingLLM.contains(entry.getId())) {
+	    sb.append(getPageHandler().showDialogWarning("LLM is currently being applied."));
+	}
+	applyingLLM.add(entry.getId());
+    	sb.append(getPageHandler().showDialogNote("LLM is being applied."));
 	makeApplyLLMForm(request, entry, sb);
 	//Remove this since the updateEntry calls extractCorpus and we don't want to keep doing the OCR
-	request.remove(ARG_DOOCR);
-	getEntryManager().updateEntry(request, entry);
 	return true;
     }
 
