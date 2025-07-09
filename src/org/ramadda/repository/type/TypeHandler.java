@@ -4656,7 +4656,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public static void addExtra(Appendable extras, String label, String contents) {
-	if(contents.length()==0) return;
+	if(!Utils.stringDefined(contents)) return;
 	try {
 	    extras.append("<tr valign=top><td width=1% style='white-space:nowrap;' align=right>");
 	    extras.append(HU.b(label));
@@ -4689,8 +4689,8 @@ public class TypeHandler extends RepositoryManager {
             HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
 			       "Make folders from archive");
 
-	unzipWidget+=HU.space(1)+ HU.input(ARG_ZIP_PATTERN,"",
-					   HU.attrs("placeholder","Match pattern"));
+	unzipWidget+=HU.space(2)+ HU.input(ARG_ZIP_PATTERN,"",
+					   HU.attrs("placeholder","Match pattern","title","If set then only process files that match this pattern"));
         String addMetadata =
             HU.labeledCheckbox(ARG_METADATA_ADD, "true",
 			       Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),
@@ -4698,7 +4698,7 @@ public class TypeHandler extends RepositoryManager {
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
 			       "Just spatial/temporal properties");
 
-	String extract = getLLMManager().getNewEntryExtract(request);
+
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));
@@ -4733,10 +4733,25 @@ public class TypeHandler extends RepositoryManager {
 
 	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
 					       request.get(ARG_STRIPEXIF,false),
-					       "Strip metadata from images");
+					       "Strip metadata from images (e.g., lat/lon)");
 
+	HU.formEntry(extras,"",HU.formHelp("Image processing"));
 	addExtra(extras,"Images:",images);
+	String ocr = getOcrForm(request, entry);
+	if(stringDefined(ocr)) {
+	    addExtra(extras,"OCR:",ocr);
+	} 
 
+	String extract = getLLMManager().getNewEntryExtract(request);
+	if(stringDefined(extract))  {
+	    HU.formEntry(extras,"",getLLMManager().getLLMWarning());
+	    addExtra(extras,"Use LLM to:",extract);
+	}
+
+
+	HU.formEntry(extras,"",HU.formHelp("Metadata processing"));
+	addExtra(extras,"Metadata:",addMetadata);
+	addExtra(extras,"Entry name:",makeNameWidget);
 	if(GeoUtils.reverseGeocodeEnabled()) {
 	    String geocode = HU.labeledCheckbox(ARG_REVERSEGEOCODE, "true",
 						request.get(ARG_REVERSEGEOCODE,false),
@@ -4744,18 +4759,7 @@ public class TypeHandler extends RepositoryManager {
 	    addExtra(extras,"Geocode:",geocode);
 	}
 
-	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
-	    String ocr = "";
-	    ocr += HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from images");
-	    ocr += space + HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true", false,"Don't do OCR if there is any text in the document");
-	    addExtra(extras,"OCR:",ocr);
-	} 
-
-	if(stringDefined(extract)) 
-	    addExtra(extras,"Use LLM:",extract);
-
-	addExtra(extras,"Metadata:",addMetadata);
-	addExtra(extras,"Entry name:",makeNameWidget);
+	HU.formEntry(extras,"",HU.formHelp("Advanced"));
 	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
@@ -4765,6 +4769,18 @@ public class TypeHandler extends RepositoryManager {
 
 	extras.append("</table>");	
 
+    }
+
+    public String getOcrForm(Request request, Entry entry) throws Exception {
+	String ocr =  null;
+	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
+	    String space = HU.space(3);
+	    ocr =  HU.labeledCheckbox(ARG_DOOCR, "true", request.get(ARG_DOOCR,false),"Extract text from images if needed");
+	    ocr+="<br>";
+	    ocr += HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true",request.get(ARG_DOOCR_CONDITIONAL,false) ,
+					      "Don't do OCR if there is any text in the document");
+	}
+	return ocr;
     }
 
     public String getWikiEditorSidebar(Request request, Entry entry)

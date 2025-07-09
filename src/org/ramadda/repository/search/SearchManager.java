@@ -109,6 +109,7 @@ import org.apache.tika.parser.AutoDetectParser;
 
 import org.apache.tika.parser.pdf.PDFParser;
 import org.apache.tika.parser.pdf.PDFParserConfig;
+import org.apache.pdfbox.multipdf.Splitter;
 
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
@@ -731,11 +732,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return TikaUtil.getConfigNoImage();
     }
 
-    private String readContents(Request request, Entry entry,
+    public String readContents(Request request, Entry entry,
 				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	boolean isImage = Utils.isImage(f.getName());
 	if(isImage) {
-	    if(!request.get(ARG_DOOCR,false) || tesseractPath==null) {
+	    if(!request.get(ARG_DOOCR,false) || !isImageIndexingEnabled()) {
 		if(debugCorpus)
 		    System.err.println("SearchManager.readContents: Not indexing images:" + f.getName());
 		return null;
@@ -804,12 +805,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
         File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
 										  true), corpusFileName));
-	//	System.err.println("corpus:" + corpusFile.exists() +" " + corpusFile);
+	if(debugCorpus)
+	    System.err.println("corpus file:" + corpusFile.exists() +" " + corpusFile.length());
 
 	if(corpusFile.exists()) {
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
-	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
+	    //check if the we are doing OCR and the corpus file is empty
+	    if(request.get(ARG_DOOCR,false) && corpusFile.length()==0) {
+	    } else {
+		if(debugCorpus)
+		    System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
+		return  IO.readContents(corpusFile.toString(), SearchManager.class);
+	    }
 	} 
 
 	if(!f.exists() && path.startsWith("http")) {

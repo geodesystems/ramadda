@@ -190,19 +190,27 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(request.exists(ARG_OK)) {
 	    applyLLMToEntry(request, entry,sb);
 	} else {
-	    makeApplyLLMForm(request, sb);
+	    makeApplyLLMForm(request, entry, sb);
 	}
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return getEntryManager().addEntryHeader(request, entry,
 						new Result("Apply LLM", sb));
     }
 
-    private void makeApplyLLMForm(Request request, StringBuilder sb) {
+    private void makeApplyLLMForm(Request request, Entry entry, StringBuilder sb) throws Exception {
 	String pageUrl =request.toString();
 	sb.append(HU.formPost(pageUrl,""));
+	sb.append("<div style='margin-left:20px;'>");
+	sb.append(getLLMWarning());
 	sb.append(getNewEntryExtract(request));
-	sb.append("<br>");
+	String ocr = entry.getTypeHandler().getOcrForm(request, entry);
+	if(ocr!=null) {
+	    sb.append(HU.formTable());
+	    HU.formEntry(sb,"OCR:",ocr);
+	    sb.append(HU.formTableClose());
+	} 
 	sb.append(HU.submit("Apply LLM", ARG_OK));
+	sb.append("</div>");
 	sb.append(HU.formClose());
     }
 
@@ -212,18 +220,18 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(corpus==null) {
 	    sb.append(getPageHandler().showDialogError("No text from file available."));
 	    return false;
-	} else {
-	    if(!applyEntryExtract(request, entry, corpus)) {
-		sb.append(getPageHandler().showDialogError("An error has occurred."));
-		makeApplyLLMForm(request, sb);
-		return false;
-	    } else {
-		getEntryManager().updateEntry(request, entry);
-		sb.append(getPageHandler().showDialogNote("LLM has been applied."));
-		makeApplyLLMForm(request, sb);
-	    }
-	    return true;
-	}
+	} 
+	if(!applyEntryExtract(request, entry, corpus)) {
+	    sb.append(getPageHandler().showDialogError("LLM was not applied."));
+	    makeApplyLLMForm(request, entry, sb);
+	    return false;
+	} 
+	sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+	makeApplyLLMForm(request, entry, sb);
+	//Remove this since the updateEntry calls extractCorpus and we don't want to keep doing the OCR
+	request.remove(ARG_DOOCR);
+	getEntryManager().updateEntry(request, entry);
+	return true;
     }
 
     private List<HtmlUtils.Selector> getAvailableModels() {
@@ -244,29 +252,30 @@ public class LLMManager extends  AdminHandlerImpl {
 	return models;
     }
 
+    public String getLLMWarning() {
+	return HU.formHelp("Note: When applying an LLM the file text is sent to the selected LLM for processing");
+    }
+
     public String getNewEntryExtract(Request request) {
 	if(!isLLMEnabled()) return "";
 	String space = HU.space(3);
 	StringBuilder sb = new StringBuilder();
-	sb.append(HU.formHelp("Note: When applying an LLM the file text is sent to the selected LLM for processing"));
-	sb.append(HU.vspace("0.5em"));
 	List<HtmlUtils.Selector> models = getAvailableModels();
 	if(models.size()==0) return "";
+	//	sb.append(HU.formTable());
 	if(models.size()==1) {
 	    sb.append(HU.hidden(ARG_MODEL,models.get(0).getId()));
 	} else {
-	    sb.append(msgLabel("Model"));
-	    sb.append(HU.space(1));
-	    sb.append(HU.select(ARG_MODEL,models,""));
-	    sb.append("<br>");
+	    //	    HU.formEntry(sb,msgLabel("Model"),	 HU.select(ARG_MODEL,models,""));
+	    sb.append(HU.div(HU.select(ARG_MODEL,models,"")));
 	}
-
+	//	sb.append("<tr><td></td><td>");
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
 	sb.append(space);
 	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include date in title");
 	sb.append(space);	
 	HU.labeledCheckbox(sb,ARG_EXTRACT_DATE, "true", request.get(ARG_EXTRACT_DATE,false),  "","Extract date");
-	sb.append(space);
+	sb.append("<br>");
 	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
@@ -276,6 +285,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract named geographic locations");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_LATLON, "true", request.get(ARG_EXTRACT_LATLON,false),"","Extract latitude/longitude");	
+	//	sb.append("</td></tr>");
+	//	sb.append(HU.formTableClose());
 
 	return sb.toString();
     }
@@ -810,12 +821,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon||extractDate)) return false;
 
-	getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
+	//	getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
 	String message="Applying LLM to: " +entry.getName();
 	getSessionManager().addSessionMessage(request,message);
 	try {
-
-
 	    String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	    String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	    if(typePrompt!=null) {
