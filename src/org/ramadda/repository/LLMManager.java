@@ -220,9 +220,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	Misc.run(new Runnable() {
 		public void run() {
 		    try {
-			System.err.println("before");
 			String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
-			System.err.println("after corpus");
 			if(!stringDefined(corpus)) {
 			    getSessionManager().addSessionMessage(request,"No text from file available.");
 			    return;

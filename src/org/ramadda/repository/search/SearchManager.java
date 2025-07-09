@@ -114,7 +114,7 @@ import org.apache.pdfbox.multipdf.Splitter;
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
-    public static boolean debugCorpus = false;
+    public static boolean debugCorpus = true;
     public static boolean debugIndex = false;
     public static boolean debugSearch = false;
 
