@@ -805,18 +805,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
         File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
 										  true), corpusFileName));
-	if(debugCorpus)
-	    System.err.println("corpus file:" + corpusFile.exists() +" " + corpusFile.length());
 
 	if(corpusFile.exists()) {
 	    //check if the we are doing OCR and the corpus file is empty
 	    if(request.get(ARG_DOOCR,false) && corpusFile.length()==0) {
 	    } else {
 		if(debugCorpus)
-		    System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
+		    System.err.println("SearchManager.readContents: corpus file exists and is not empty: length:" + corpusFile.length()+" -- " + corpusFile);
 		return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	    }
 	} 
+
+	if(debugCorpus)
+	    System.err.println("corpus file:" + corpusFile + " exists:" +
+			       corpusFile.exists() +" length:" + corpusFile.length());
 
 	if(!f.exists() && path.startsWith("http")) {
 	    String url = path;
