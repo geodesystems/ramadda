@@ -215,6 +215,8 @@
     <property name="icon" value="/icons/image.png"/>
     <property name="file.accept" value="image/*"/>
     <property name="search.tabs" value="images,list"/>
+    <action name="applyllm" label="Apply LLM" canedit="true"
+             icon="fas fa-font" foruser="true" category="edit"/>
     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
     <column   name="filename" label="Alternate filename"  showinhtml="false" />
     <wikis tag="simple">
