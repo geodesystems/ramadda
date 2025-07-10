@@ -211,7 +211,11 @@ public class Oembed {
             }, false);
         try {
             URL    req  = new URL(rurl);
-            String json = IO.readUrl(req);
+	    IO.Result result = IO.doGetResult(req);
+	    if(result.getError()) {
+		return null;
+	    }
+            String json = result.getResult();
             if (json.startsWith("<")) {
                 return oembed.getFromXml(url, json);
             } else {

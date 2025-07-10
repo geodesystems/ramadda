@@ -366,13 +366,13 @@ public class IO {
 
                     int               response = huc.getResponseCode();
                     //Check for redirect
-                    if ((response == HttpURLConnection
-			 .HTTP_MOVED_TEMP) || (response == HttpURLConnection
-					       .HTTP_MOVED_PERM) || (response == HttpURLConnection
-								     .HTTP_SEE_OTHER)) {
-                        String newUrl = connection.getHeaderField("Location");
-			//                        System.err.println("redirect from:" + url);
-			//                        System.err.println("redirect to:" + newUrl);
+                    if (response == 308 ||
+			response == HttpURLConnection.HTTP_MOVED_TEMP ||
+			response == HttpURLConnection.HTTP_MOVED_PERM ||
+			response == HttpURLConnection.HTTP_SEE_OTHER) {
+                        URL newUrl = new URL(url, connection.getHeaderField("Location"));
+			//			System.err.println("redirect from:" + url);
+			//			System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
@@ -380,7 +380,7 @@ public class IO {
                         }
                         //call this method recursively with the new URL
                         handlingRedirect = true;
-                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1,connectionBuff,readError);
+                        return doMakeInputStream(new IO.Path(path,newUrl.toString()), buffered, tries + 1,connectionBuff,readError);
                     }
                 }
                 //              System.err.println ("OK: " + url);
@@ -820,7 +820,6 @@ public class IO {
                 sb.append(line);
                 sb.append("\n");
             }
-
 	    IO.close(inputStream);
             return new Result(connection[0],sb.toString());
         } catch (Throwable exc) {
