@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata category="Assets">
+  <handler category="Assets" 	searchable="true" browsable="true">
+    <type id="asset_maintenance" name="Asset Maintenance" tag="assets"> 
+      <element name="Maintenance Date" datatype="date"/>
+      <element name="Maintainer" datatype="enumerationplus"/>
+      <element id="note" name="Note" datatype="string" rows="5"/>
+    </type>
+  </handler>
+</metadata>
