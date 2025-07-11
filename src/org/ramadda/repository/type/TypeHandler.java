@@ -514,17 +514,21 @@ public class TypeHandler extends RepositoryManager {
                 canCache = Boolean.valueOf(tmpCanCache.equals("tmpCanCache"));
             }
 
+	    String dfltFields = getAttributeOrProperty(node, "fields");	    
 	    String fields = getAttributeOrProperty(node, "editfields");	    
+	    if(fields==null) fields=dfltFields;
 	    if(fields!=null) {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
 		editFields = Utils.toStringArray(Utils.split(fields,",",true,true));
 	    }
 	    fields = getAttributeOrProperty(node, "newfields");	    
+	    if(fields==null) fields=dfltFields;
 	    if(fields!=null) {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
 		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
 	    }
 	    fields = getAttributeOrProperty(node, "displayfields");	    
+	    if(fields==null) fields=dfltFields;
 	    if(fields!=null) {
 		displayFields = Utils.split(fields,",",true,true);
 	    }	    
@@ -2164,9 +2168,8 @@ public class TypeHandler extends RepositoryManager {
 				      boolean forOutput,
 				      Appendable buff)
 	throws Exception {
-	NamedBuffer sb = new NamedBuffer("");
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
-	contents.add(sb);
+	NamedBuffer sb =  NamedBuffer.append(contents,"",null);
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
@@ -2184,7 +2187,6 @@ public class TypeHandler extends RepositoryManager {
 	if(propFields!=null) fields=Utils.split(propFields,",",true,true);
 
 	if(fields!=null) {
-	    String group = null;
 	    TypeHandler typeHandler  =this;
 	    for(String field: fields) {
 		if(seen.contains(field)) continue;
@@ -2211,13 +2213,12 @@ public class TypeHandler extends RepositoryManager {
 		//		    addAltitudeToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("_columns")) {
 		    addColumnsToHtml(request,typeHandler, entry, contents,seen);
-		    sb=contents.get(contents.size()-1);
 		} else if(field.equals("_default")) {
 		    getInnerEntryContent(entry, request, null, output,
 					 showDescription, showResource, true,
 					 props,seen,forOutput,contents);
 		} else {
-		    group = addColumnToHtml(request, typeHandler,entry,field, sb, group);
+		    addColumnToHtml(request, typeHandler,entry,field, contents);
 		}
 	    }
 	} else {
@@ -2817,7 +2818,13 @@ public class TypeHandler extends RepositoryManager {
 	    return;
         }
 
+	String showDateS=Utils.getProperty(props,"showDate",null);
         if ((props != null) && Misc.equals(props.get("showBase"), "false")) {
+	    if(showDateS!=null && showDateS.equals("true")) {
+		if(contents.size()==0)  contents.add(new NamedBuffer(""));
+		Appendable sb = contents.get(contents.size()-1);
+		addDateToHtml(request,typeHandler,entry,sb);
+	    }
             return;
         }
 
@@ -3014,8 +3021,11 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    public String addColumnToHtml(Request request, TypeHandler typeHandler,Entry entry,String columnName, Appendable sb, String group) throws Exception {
-	return group;
+    public void addColumnToHtml(Request request,
+				  TypeHandler typeHandler,
+				  Entry entry,
+				  String columnName,
+				  List<NamedBuffer> contents) throws Exception {
     }
 
     public void addArkToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {

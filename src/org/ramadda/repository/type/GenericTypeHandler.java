@@ -766,7 +766,12 @@ public class GenericTypeHandler extends TypeHandler {
         super.getInnerEntryContent(entry, request,
 				   typeHandler, output, showDescription,
 				   showResource, linkToDownload, props,seen,forOutput,contents);
-        if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
+	boolean showColumns = Utils.getProperty(props,"showColumns",false);
+	if(showColumns) {
+	    addColumnsToHtml(request,typeHandler, entry, contents,seen);
+	    return;
+	}
+        if (!showColumns && (Misc.equals(props.get("showDetails"), "false") || justBasic)) {
             return;
         }
 
@@ -779,9 +784,6 @@ public class GenericTypeHandler extends TypeHandler {
 				 HashSet<String> seen) throws Exception {
 	Object[]      values = getEntryValues(entry);
 	if (values != null) {
-	    NamedBuffer buff=contents.size()>0?contents.get(0):null;
-	    String lastGroup = buff!=null?buff.getName():"";
-
 	    for (Column column : getMyColumns()) {
 		if ( !column.getCanShow()) {
 		    continue;
@@ -789,6 +791,11 @@ public class GenericTypeHandler extends TypeHandler {
 		if(seen.contains(column.getName())) {
 		    continue;
 		}
+		if(column.getAdminOnly() &&
+		   !(request.isAdmin() ||request.isOwner(entry))) {
+		    continue;
+		}
+		/*
 		if (column.getDisplayGroup() != null 
 		    && !Misc.equals(lastGroup, column.getDisplayGroup())) {
 		    if(!column.getAdminOnly() ||
@@ -798,9 +805,8 @@ public class GenericTypeHandler extends TypeHandler {
 			//			sb.append(HU.row(HU.col(HU.div(lastGroup," class=\"formgroupheader\" "), " colspan=2 ")));
 		    }
 		}
-		if(buff==null) {
-		    contents.add(buff=new NamedBuffer(""));
-		}
+		*/
+		NamedBuffer buff= NamedBuffer.append(contents,column.getDisplayGroup(),null);
 		addColumnToTable(request, entry,column,buff);
 	    }
 
@@ -809,17 +815,21 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
     @Override
-    public String addColumnToHtml(Request request, TypeHandler typeHandler,Entry entry,String columnName, Appendable sb, String group) throws Exception {
+    public void addColumnToHtml(Request request, TypeHandler typeHandler,
+				Entry entry,String columnName,
+				List<NamedBuffer> contents) throws Exception {
 	Column column =findColumn(columnName);
-	if(column==null) return group;
+	if(column==null) return;
 	Object[]      values = getEntryValues(entry);
+	NamedBuffer sb = NamedBuffer.append(contents,column.getDisplayGroup(),null);
+	/*
 	if ((column.getDisplayGroup() != null)
 	    && !Misc.equals(group, column.getDisplayGroup())) {
 	    group = column.getDisplayGroup();
 	    sb.append(HU.row(HU.col(HU.div(group," class=\"formgroupheader\" "), " colspan=2 ")));
 	}
+	*/
 	addColumnToTable(request, entry,column,sb);
-	return group;
     }
 
     public void addColumnToTable(Request request, Entry entry,Column column,Appendable sb,String...searchArgs) throws Exception {
