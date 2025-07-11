@@ -18,6 +18,7 @@ public class NamedBuffer implements Appendable {
     private StringBuilder buffer = new StringBuilder();
 
     public NamedBuffer(String name) {
+	if(name==null) name="";
         this.name = name;
     }
 
@@ -25,6 +26,25 @@ public class NamedBuffer implements Appendable {
         this(name);
         buffer.append(b);
     }
+
+    public static NamedBuffer append(List<NamedBuffer> list,
+				  String label, String contents) throws Exception {
+	NamedBuffer buffer =null;
+	if(list.size()==0) {
+	    list.add(buffer=new NamedBuffer(label));
+	} else {
+	    buffer = list.get(list.size()-1);
+	}
+	if(label!=null && label.length()>0 && !buffer.name.equals(label)) {
+	    list.add(buffer=new NamedBuffer(label));
+	}
+
+
+	if(contents!=null)
+	    buffer.append(contents);
+	return buffer;
+    }
+
 
     public void setName(String n) {
 	this.name = n;
