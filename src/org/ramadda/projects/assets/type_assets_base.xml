@@ -1,0 +1,84 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_base.xml"/>
+into some types.xml file
+Base entry type for Assets
+-->
+<type  name="type_assets_base" 
+ description="Base Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="General" 
+ category="Assets" 
+foruser="false"
+metadata="asset_maintenance"
+>
+
+<!-- Columns-->
+<column  name="asset_id"  label="Asset ID"  type="string"  xgroup="Base Asset"  size="400" />
+<column  name="barcode"  label="Bar Code"  type="string"  columns="30"  showinhtml="false" />
+<column  name="department"  label="Department"  type="enumerationplus"  xgroup="Ownership" />
+<column  name="assigned_to"  label="Assigned To"  type="enumerationplus" />
+<column  name="location"  label="Location"  type="enumerationplus" />
+<column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
+<column  name="acquisition_cost"  label="Acquisition Cost"  type="double" />
+<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none" />
+<column  name="status"  label="Status"  type="enumerationplus"  values="Active,In Repair,Disposed,Retired" subgroup="Equipment	Information" />
+<column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
+<column  name="model"  label="Model"  type="string"  size="400" />
+<column  name="manufacturer"  label="Manufacturer"  type="enumerationplus" />
+<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"          subgroup="Disposal" />
+<column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
+<column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.todate.show"  value="false" />
+<property  name="form.date.label"  value="Acquisition Date" />
+<property  name="form.time.show"  value="false" />
+<property  name="html.tabs"  value="true" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section  title="{{typename}}: {{name}}"
++center
+{{field  name="address"  fieldPrefix=""  fieldSuffix=""  message=""}} 
+-center
+{{description wikify=true}}
++macro prop1
+{{properties stripe=false   propertyToggleLimit=100 message=""
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }}                                                                                                                                  
+-macro
++row
++col-8
+:vspace 1em
+{{information  showDetails=false  showColumns="true" showTitle="false"  showDate=true showBase=false 
+macros="prop1" prop1.title="Properties" 
+}} 
+:vspace 1em
+-col
++col-4
+<div>
+{{typesearch_link  type=""   label="${icon} Search for ${type}" }} 
+</div>
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
++toggle Record Information
+{{information  showDetails=false  showTitle="false"  showBase=true showDate=false}} 
+-toggle
+{{barcode field=barcode}}
++center
+{{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
+-center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+
+{{tabletree  message=""  prefix="==Files==" simple="false"  #maxHeight="500px"  }} 
+-section]]></wiki>
+</type>

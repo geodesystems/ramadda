@@ -1,0 +1,27 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_building.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_building" 
+ description="Building Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_base" 
+ supercategory="General" 
+ category="Assets" 
+displayfields="name,address,_default"
+>
+
+<!-- Columns-->
+<column  name="address"  label="Address"  type="string"  size="1000" rows="5"  showinhtml="false" />
+<column  name="building_type"  label="Building Type"  type="enumerationplus"  values="" group="Building Information" />
+<column  name="square_feet"  label="Square Feet"  type="int" />
+<column  name="num_floors"  label="Number of Floors"  type="int" />
+<column  name="year_built"  label="Year Built"  type="date"  default="none" />
+<column  name="occupancy_status"  label="Occupancy Status"  type="enumerationplus"  values="Occupied,Fully Occupied,Partially Occupied,Temporarily Occupied,Vacant,Idle, Unoccupied,Under Construction,Under Renovation,Under Demolition,Pending Occupancy,Pending Inspection,Condemned,Decommissioned,Surplus" />
+<column  name="roof_condition"  label="Roof Condition"  type="enumerationplus"  values="Excellent,Good,Fair,Poor,Failing,Needs Repair,Replaced,Under Maintenance,.Unknown" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/building.png" />
+<property  name="date.nullok"  value="true" />
+</type>

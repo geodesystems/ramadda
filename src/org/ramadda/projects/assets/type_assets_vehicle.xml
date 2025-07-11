@@ -1,0 +1,30 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_vehicle.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_vehicle" 
+ description="Vehicle Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_base" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="make"  label="Make"  type="enumerationplus"  size="600" group="Vehicle Information" />
+<column  name="model"  label="Model"  type="string"  size="600" />
+<column  name="vehicle_year"  label="Vehicle Year"  type="int" />
+<column  name="vin"  label="Vin"  type="string"  size="600" />
+<column  name="license_plate"  label="License Plate"  type="string"  size="600" />
+<column  name="fuel_type"  label="Fuel Type"  type="enumerationplus"  values="regular:Regular,diesel:Diesel,premium:Premium" default="regular" />
+<column  name="mileage"  label="Mileage"  type="int" />
+<column  name="last_service_date"  label="Last Service Date"  type="date"  default="none" />
+<column  name="status"  label="Status"  type="enumerationplus"  values="inservice:In Service,outofservice:Out of Service,maintenance:Under Maintenance,intransit:In Transit,onloan:On Load" />
+<column  name="lifecycle_status"  label="Lifecycle Status"  type="enumerationplus"  values="active:Active,idle:Idle,reserved:Reserved,pendingdisposal:Pending Disposal,disposed:Disposed" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/vehicle.png" />
+<property  name="date.nullok"  value="true" />
+</type>

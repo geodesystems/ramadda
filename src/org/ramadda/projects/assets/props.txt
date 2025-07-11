@@ -1,0 +1,51 @@
+#base asset class
+asset_id,Asset ID,string,xgroup="Base Asset"  size="400"
+barcode,Bar Code,string, columns="30"  showinhtml="false"
+
+department,Department,enumerationplus,xgroup="Ownership"
+assigned_to,Assigned To,enumerationplus,
+location,Location,enumerationplus,
+
+acquisition_method,Acquisition Method,enumerationplus,values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
+acquisition_cost,Acquisition Cost, double,
+warranty_expiration,,date, default="none"	      
+
+status,Status,enumerationplus,values="Active\,In Repair\,Disposed\,Retired" subgroup="Equipment Information"
+serial_number,,string,size="400"
+model,,string,size="400"
+manufacturer,,enumerationplus,
+
+disposal_date,,date, default="none"	     subgroup="Disposal"
+disposal_method,,string,size="2000" rows="5"
+disposed_comment,,string, size="5000" rows="5"
+
+
+##Vehicles
+make,,enumerationplus,size="600" group="Vehicle Information"
+model,,string,size="600"
+vehicle_year,,int
+vin,,string,size="600"
+license_plate,,string,size="600"
+fuel_type,,enumerationplus,values="regular:Regular\,diesel:Diesel\,premium:Premium" default="regular"
+mileage,,int
+last_service_date,,date,default="none"	     
+status,,enumerationplus,values="inservice:In Service\,outofservice:Out of Service\,maintenance:Under Maintenance\,intransit:In Transit\,onloan:On Load"
+lifecycle_status,,enumerationplus, values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Disposal\,disposed:Disposed"
+condition,,enumerationplus,values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
+
+
+
+
+
+##Building
+address,,string,size="1000" rows="5" showinhtml="false"
+building_type,,enumerationplus, values="" group="Building Information"
+square_feet,,int,
+num_floors,Number of Floors,int,
+year_built,,date,default="none"	     
+occupancy_status,,enumerationplus, values="Occupied\,Fully Occupied\,Partially Occupied\,Temporarily Occupied\,Vacant\,Idle\,\
+Unoccupied\,Under Construction\,Under Renovation\,Under Demolition\,Pending Occupancy\,Pending Inspection\,Condemned\,Decommissioned\,Surplus"
+roof_condition,,enumerationplus, values="Excellent\,Good\,Fair\,Poor\,Failing\,Needs Repair\,Replaced\,Under Maintenance\,.Unknown"
+
+
+
