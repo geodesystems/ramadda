@@ -2070,7 +2070,7 @@ public class ExtEditor extends RepositoryManager {
 	String ex = "e.g. -  size=\"500\" values=\"v1,v2,v3\" ";
 	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
 			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
-			  +HU.td("<b id=colattrsheader>Extra</b> " + ex+" " + HU.href("javascript:showColumnAttrs()","Show properties"))));
+			  +HU.td("<b id=colattrsheader>Extra</b> " + ex+" " + HU.href("javascript:showColumnAttrs()","Select property"))));
 	String w1  =HU.attr("width","20%");
 	String w2  =HU.attr("width","50%");
 	String inputSize  =HU.style("width:98%;");
@@ -2139,6 +2139,8 @@ public class ExtEditor extends RepositoryManager {
 	Result result =  new Result("Create Type - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
+
+
 
     private StringBuilder addTypeProps(Request request, String resource, String arg,int rows) throws Exception {
 	StringBuilder dfltProps = processTypeProps(request, resource,arg,rows);
