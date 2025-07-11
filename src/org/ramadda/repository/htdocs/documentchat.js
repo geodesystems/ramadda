@@ -183,7 +183,6 @@ function DocumentChat(id,entryId,action,models,args) {
 		    this.opts.thread = result.thread;
 		    //		    console.log('got thread',this.opts.thread);
 		}
-		r  = 'https://ramadda.org ---- ' + r;
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 		r = r.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
 		r =r.replace(/<br>/g,'__br__');
