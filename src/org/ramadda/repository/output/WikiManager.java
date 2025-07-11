@@ -3087,8 +3087,9 @@ public class WikiManager extends RepositoryManager
 			fieldValue = fieldPrefix+fieldValue+fieldSuffix;
 		    }
                     return fieldValue;
-                }
-                return "Could not find field: " + name;
+		}
+		return getProperty(wikiUtil,props,"message",
+				   "Could not find field: " + name);
             } else {
                 return "No name=... specified in wiki tag";
             }
