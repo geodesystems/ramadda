@@ -3,6 +3,8 @@ var ID_ASSETS_NAME = 'name';
 var ID_ASSETS_CODE = 'barcode';
 var ID_ASSETS_ADDGEOLOCATION = 'addgeolocation';
 var ID_ASSETS_TYPE='assettype';
+var ASSET_TYPES=[['type_assets_building','Building'],
+		 ['type_assets_vehicle','Vehicle']];
 
 function BarcodeReader (videoId,callback,args) {
     let opts = {
@@ -53,8 +55,10 @@ function AssetCreator (id,args) {
     });
     this.opts = $.extend(this.opts,args);
     let callback = (code)=>{
+	if(!jqid(this.videoId).is(':visible')) return;
 	return this.handleBarcode(code);
     }
+
     this.barcodeReader = new BarcodeReader(this.opts.videoId,callback);
     if(this.opts.debug) {
 	setTimeout(()=>{this.handleBarcode('example-bar-code');},3000);
@@ -78,11 +82,9 @@ AssetCreator.prototype = {
 					      ATTR_PLACEHOLDER,'Enter bar code']));
 
 	if(!this.opts.defaultType) {
-	    let types = [['type_assets_building','Building'],
-			 ['type_assets_vehicle','Vehicle']];
 	    rows.push(HU.div([],HU.b('Asset Type: ') +
 			     HU.select('',[ATTR_ID,ID_ASSETS_TYPE],
-				       types)));
+				       ASSET_TYPES)));
 	    
 	}
 

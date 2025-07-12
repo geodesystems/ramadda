@@ -79,7 +79,7 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	sb.append(HU.center(HU.div("",HU.attrs("id",uid+"_header"))));
 	sb.append(HU.center("<video class=assets_barcode_video id='" + uid+"_video" + "'  autoplay muted playsinline></video>\n"));
 	List<String> args = new ArrayList<String>();
-	String type = Utils.getProperty(props,"type",null);
+	String type = Utils.getProperty(props,"type",entry.getStringValue(request,"asset_type",null));
 	if(Utils.stringDefined(type)) {
 	    Utils.add(args,"defaultType",JU.quote(type));
 	}

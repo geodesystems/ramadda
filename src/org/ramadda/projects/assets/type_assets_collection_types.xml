@@ -1,0 +1,53 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<type  name="type_assets_collection" 
+ description="Asset Collection" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="General" 
+ category="Assets" 
+childtypes="type_assets_building,type_assets_vehicle"
+>
+
+<!-- Columns-->
+<column  name="asset_type"  label="Asset Type"  type="enumeration"  values=":Select,type_assets_building:Building,type_assets_vehicle:Vehicle" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/collection.png" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+
++if canedit=true 
++toggle Scan bar code
+{{assets_barcode #type=type_assets_vehicle}}
+-toggle
+-if 
+
+
+:heading Search Assets
+{{display_entrylist    displayTypes="list,images,map,display" showName=true  
+toggleClose=true  ancestor=this entryTypes="super:type_assets_base" }} 
+
++if   haschildren=true
+:heading Asset List
++tabs
++tab List
+{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false  }} 
+-tab
++tab Grid
+{{grid  tag="card"  #innerHeight="200px"  #innerMinHeight="200px"  #innerMaxHeight="200px"  width="350px"  #boxHeight="180px" 
+ #imageHeight="150px"  showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage="true"  #useThumbnail="false"  #inherited="true"  #expand="true"  #childrenWiki="wiki text to display children, e.g. {{tree details=false}}" 
+ #weights="4,4,4"  }} 
+-tab
++tab Map
+{{map  width="100%"  height="80vh"  listEntries="true"  #entryIcon=""  #skipEntries="true"  #marker1="latitude:40,longitude:-105,color:red,radius:4,text:Some text" 
+ #entriesListInMap="true"  #entriesListHeader=""  #hideIfNoLocations="false"  #showCircles="true"  #mapProps="fillColor:red,strokeWidth:1,radius:6"  }} 
+-tab
+-tabs
+-if
+-section]]></wiki>
+</type>

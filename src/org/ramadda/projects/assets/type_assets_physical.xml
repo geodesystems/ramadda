@@ -1,0 +1,27 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_physical.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_physical" 
+ description="Physical Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_base" 
+ supercategory="General" 
+ category="Assets" 
+foruser="false"
+>
+
+<!-- Columns-->
+<column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"   values="Active,In Repair,Disposed,Retired"   subgroup="Equipment Information" />
+<column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
+<column  name="model"  label="Model"  type="string"  size="400" />
+<column  name="manufacturer"  label="Manufacturer"  type="enumerationplus" />
+<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"          subgroup="Disposal"  cansearch="true" />
+<column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
+<column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/physical.png" />
+<property  name="date.nullok"  value="true" />
+</type>
