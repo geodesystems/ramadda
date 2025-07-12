@@ -2342,6 +2342,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return showEnumerationPopup && size>5;
     }
 
+    private String getFormValue(Request request, String urlArg ) {
+	String value= request.getString(urlArg,null);
+	if(value==null) value = request.getString(getName(),null);
+	if(value==null)
+	    value = ((dflt != null)
+		     ? dflt
+		     : "");
+	
+	return value;
+    }
+
     /** method */
     public String getFormWidget(Request request, Entry entry,
 				TypeHandler sourceTypeHandler,
@@ -2556,6 +2567,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             String value = ((dflt != null)
                             ? dflt
                             : "");
+	    value =getFormValue(request, urlArg);
             if (values != null) {
                 value = toString(values, offset);
             } else if (request.defined(urlArg)) {
