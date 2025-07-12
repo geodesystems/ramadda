@@ -8006,7 +8006,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #size=\"<10MB\" #isfile=true #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l.call("If block", "\\n+if #haschildren=true #size=\"<10MB\" #isfile=true #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
@@ -8549,6 +8549,8 @@ public class WikiManager extends RepositoryManager
 	    }
 
 
+
+
 	    String isFile = (String) props.get("isfile");
 	    if(stringDefined(isFile)) {
 		if(isFile.equals("true")) {
@@ -8585,6 +8587,14 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 	    if(!ok) return false;
+
+	    String hasChildren = (String) props.get("haschildren");
+	    if(hasChildren!=null) {
+		List<Entry>children= getEntryManager().getChildren(request, entry);
+		if(hasChildren.equals("true")) return children.size()>0;
+		else return children.size()==0;
+	    }
+
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
