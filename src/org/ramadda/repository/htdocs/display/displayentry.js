@@ -2480,7 +2480,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
 		    }
 		} else if(type=='display') {
-		    titles.push('Display');
+		    titles.push('Details');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:'entrywiki',entries:entries});
 		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
