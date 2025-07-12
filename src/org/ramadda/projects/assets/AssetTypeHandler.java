@@ -74,11 +74,17 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	StringBuilder sb = new StringBuilder();
 	String uid = HU.getUniqueId("assets");
 	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
-	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js"));
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css")));
-	sb.append(HU.center("<video id='" + uid+"' width='700' height='400' autoplay muted playsinline></video>\n"));
+	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
+	sb.append(HU.center(HU.div("",HU.attrs("id",uid+"_header"))));
+	sb.append(HU.center("<video class=assets_barcode_video id='" + uid+"_video" + "'  autoplay muted playsinline></video>\n"));
 	List<String> args = new ArrayList<String>();
-	Utils.add(args,"entryid",JU.quote(entry.getId()));
+	String type = Utils.getProperty(props,"type",null);
+	if(Utils.stringDefined(type)) {
+	    Utils.add(args,"defaultType",JU.quote(type));
+	}
+	String entryId = Utils.getProperty(props,"parent",entry.getId());
+	Utils.add(args,"entryid",JU.quote(entryId));
 	StringBuilder js = new StringBuilder();
 	js.append(HU.call("new AssetCreator",HU.squote(uid),JU.map(args)));
 	HU.script(sb,js.toString());
