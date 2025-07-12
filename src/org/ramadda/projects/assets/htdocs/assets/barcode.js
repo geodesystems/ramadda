@@ -9,14 +9,13 @@ var ASSET_TYPES=[['type_assets_building','Building'],
 function BarcodeReader (videoId,callback,args) {
     let opts = {
     }
-    if(args) {
-    }
+    /*
     window.onerror = function (message, source, lineno, colno, error) {
 	const errBox = document.createElement('pre');
 	errBox.style.color = 'red';
 	errBox.textContent = `JS Error: ${message} at ${source}:${lineno}:${colno}`;
 	document.body.appendChild(errBox);
-    };
+    };*/
     let videoElement = this.videoElement = document.getElementById(videoId);
     // Force attributes for iOS Safari
     videoElement.setAttribute('autoplay', '');
@@ -38,34 +37,67 @@ function BarcodeReader (videoId,callback,args) {
 
 
 function AssetCreator (id,args) {
+    let _this = this;
     this.args = args;
-    this.id = id;
-    let videoId= this.id+'_video';
-    let headerId= this.id+'_header';    
     this.opts = {
 	defaultType:null,
-	videoId:videoId,
+	defaultTypeLabel:null
     }
+    this.opts = $.extend(this.opts,args??{});
+    this.id = id;
+    this.buttonId= this.id+'_open';
+    this.videoId= this.id+'_video';
+    this.contentsId= this.id+'_contents';    
+    this.headerId= this.id+'_header';    
+    jqid(this.id).append(HU.div([ATTR_ID,this.buttonId],"Scan bar code"));
+    this.videoOpen=false;
+    jqid(this.buttonId).button().click(()=>{
+	if(this.videoOpen) {
+	    jqid(this.buttonId).html("Scan bar code");
+	    jqid(this.contentsId).hide(500);
+	    if(this.dialog) this.dialog.remove();
+	    this.dialog=null;
+	} else {
+	    jqid(this.buttonId).html("Close");
+	    if(this.barcodeReader) {
+		jqid(this.contentsId).show(500);
+		this.showVideo();
+	    } else {
+		let html = HU.center(HU.div([ATTR_ID,this.headerId]));
+		html+=HU.center("<video class=assets_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
+		
+		jqid(this.id).append(HU.div([ATTR_ID,this.contentsId],html));
+		this.initVideo();
+	    }
+	}
+	this.videoOpen=!this.videoOpen;
+    })
 
-    let header = 'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
-						  ATTR_CLASS,'assets-create-link'],'create an asset');
-    jqid(headerId).html(header);
-    jqid('create').click(()=>{
-	return this.handleBarcode('');
-    });
-    this.opts = $.extend(this.opts,args);
-    let callback = (code)=>{
-	if(!jqid(this.videoId).is(':visible')) return;
-	return this.handleBarcode(code);
-    }
 
-    this.barcodeReader = new BarcodeReader(this.opts.videoId,callback);
-    if(this.opts.debug) {
-	setTimeout(()=>{this.handleBarcode('example-bar-code');},3000);
-    }
 }
 
 AssetCreator.prototype = {
+    initVideo:function() {
+	let title = 'create an asset';
+	if(this.opts.defaultTypeLabel)
+	    title = 'create a ' + this.opts.defaultTypeLabel;
+	let header = 'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
+							       ATTR_CLASS,'assets-create-link'],title);
+	jqid(this.headerId).html(header);
+	jqid('create').click(()=>{
+	    return this.handleBarcode('');
+	});
+	let callback = (code)=>{
+	    if(!jqid(this.videoId).is(':visible')) return;
+	    return this.handleBarcode(code);
+	}
+	this.barcodeReader = new BarcodeReader(this.videoId,callback);
+	if(this.opts.debug) {
+	    setTimeout(()=>{this.handleBarcode('example-bar-code');},3000);
+	}
+    },
+
+
     hideVideo:function() {
 	$(this.barcodeReader.videoElement).hide();
     },
@@ -95,14 +127,17 @@ AssetCreator.prototype = {
 	rows.push(HU.checkbox('',[ATTR_ID,ID_ASSETS_ADDGEOLOCATION],true,'Add map location'));
 	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Create Asset') + SPACE2 +
 	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
-	rows.push(buttons);
+	rows.push(HU.center(buttons));
 	let html = Utils.wrap(rows,'<div style="margin-bottom:8px;">','</div>');
         html=HU.div([ATTR_STYLE,HU.css('margin','8px')],html);
-	let anchor = jqid(this.opts.videoId);
+	let anchor = jqid(this.videoId);
+	let title = 'Create Asset';
+	if(this.opts.defaultTypeLabel)
+	    title = 'Create '+ this.opts.defaultTypeLabel;
 	let dialog = this.dialog = HU.makeDialog({content:html,
 						  anchor:anchor,at:'left top',
 						  showCloseIcon:false,
-						  title:'Create Asset',header:true});	
+						  title:title,header:true});	
 
 	const input = document.getElementById(ID_ASSETS_NAME);
 	setTimeout(() => {

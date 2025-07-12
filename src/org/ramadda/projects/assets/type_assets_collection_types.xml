@@ -19,13 +19,10 @@ childtypes="type_assets_building,type_assets_vehicle"
 <wiki><![CDATA[
 +section title={{name}}
 
-+if canedit=true 
-+toggle Scan bar code
++if candonew=true 
 {{assets_barcode #type=type_assets_vehicle}}
--toggle
 -if 
-
-
+----
 :heading Search Assets
 {{display_entrylist    displayTypes="list,images,map,display" showName=true  
 toggleClose=true  ancestor=this entryTypes="super:type_assets_base" }} 
