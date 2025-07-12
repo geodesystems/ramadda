@@ -22,16 +22,18 @@ disposed_comment,,string, size="5000" rows="5"
 
 
 ##Vehicles
-make,,enumerationplus,size="600" group="Vehicle Information"
-model,,string,size="600"
-vehicle_year,,int
-vin,,string,size="600"
+make,,enumerationplus,size="600" group="Vehicle Information" cansearch="true" 
+model,,string,size="600" cansearch="true" 
+vehicle_year,,int cansearch="true" 
+vin,,string,size="600" cansearch="true" 
 license_plate,,string,size="600"
 fuel_type,,enumerationplus,values="regular:Regular\,diesel:Diesel\,premium:Premium" default="regular"
 mileage,,int
 last_service_date,,date,default="none"	     
-status,,enumerationplus,values="inservice:In Service\,outofservice:Out of Service\,maintenance:Under Maintenance\,intransit:In Transit\,onloan:On Load"
-lifecycle_status,,enumerationplus, values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Disposal\,disposed:Disposed"
+status,,enumerationplus, cansearch="true"  \
+values="inservice:In Service\,outofservice:Out of Service\,maintenance:Under Maintenance\,intransit:In Transit\,onloan:On Load"
+lifecycle_status,,enumerationplus,  cansearch="true"  \
+values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Disposal\,disposed:Disposed"
 
 
 
