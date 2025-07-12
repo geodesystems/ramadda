@@ -7,6 +7,7 @@ package org.ramadda.repository.importer;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.util.HtmlUtils;
@@ -40,6 +41,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 import java.util.List;
@@ -74,6 +76,7 @@ public class CsvImporter extends ImportHandler {
             return null;
         }
 
+	HashSet seenMessage=new HashSet();
 	StringBuilder myMessage =new StringBuilder();
         final StringBuffer sb = new StringBuffer("<entries>\n");
 	Processor myProcessor = new Processor() {
@@ -87,8 +90,9 @@ public class CsvImporter extends ImportHandler {
 		int parentIdx=-1;
 		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> newIdx= new Hashtable<String,Integer>();
-		Hashtable<String,Integer> propertyIdx= new Hashtable<String,Integer>();		
+		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
 		String currentType="";
+		TypeHandler  currentTypeHandler=null;
 		int cnt=0;
 		@Override
 		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
@@ -129,9 +133,10 @@ public class CsvImporter extends ImportHandler {
 				    metadataIdx.put(mtd,i);				    
 				} else if(_field.startsWith("column:")) {
 				    String prop= _field.substring("column:".length()).trim();
-				    propertyIdx.put(prop,i);
+				    columnIdx.put(prop,i);
 				} else {
-				    myMessage.append(HU.div("Column: " + field));
+				    columnIdx.put(field,i);
+
 				}
 			    }
 			    if(typeIdx==-1) throw new IllegalArgumentException("input data must have a \"type\" column");
@@ -142,6 +147,7 @@ public class CsvImporter extends ImportHandler {
 			String tmpType = row.getString(typeIdx,"");
 			if(Utils.stringDefined(tmpType)) {
 			    currentType = tmpType;
+			    currentTypeHandler = getRepository().getTypeHandler(currentType);
 			}
 			if(!Utils.stringDefined(currentType)) {
 			    throw new IllegalArgumentException("No type defined");
@@ -177,8 +183,8 @@ public class CsvImporter extends ImportHandler {
 				sb.append(XU.closeTag("description"));
 			    }
 			}
-			for (String prop : propertyIdx.keySet()) {
-			    int idx = propertyIdx.get(prop);
+			for (String prop : columnIdx.keySet()) {
+			    int idx = columnIdx.get(prop);
 			    if(!row.indexOk(idx)) continue;
 			    if(prop.indexOf(".")>0) {
 				List<String>propToks = Utils.splitUpTo(prop,".",2);
@@ -187,6 +193,13 @@ public class CsvImporter extends ImportHandler {
 				prop = propToks.get(1);
 			    }
 
+			    if(currentTypeHandler!=null && currentTypeHandler.getColumn(prop)==null) {
+				if(!seenMessage.contains(prop)) {
+				    myMessage.append(HU.div("Column: " + prop));
+				    seenMessage.add(prop);
+				}
+				continue;
+			    }
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
 			    sb.append(XU.openTag(prop,""));
