@@ -1699,6 +1699,8 @@ public class EntryManager extends RepositoryManager {
 		sb    = new StringBuilder();
 		getPageHandler().entrySectionOpen(request, group, sb,"Entry Add");
 		sb.append(getPageHandler().showDialogError("You do not have permission to add a new entry"));
+		sb.append(getUserManager().makeLoginForm(request,
+							 HU.hiddenBase64(ARG_REDIRECT, request.getUrl())));
 		getPageHandler().entrySectionClose(request, entry, sb);
 	    }
             return addEntryHeader(request, group,
