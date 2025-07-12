@@ -8006,7 +8006,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #haschildren=true #size=\"<10MB\" #isfile=true #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l.call("If block", "\\n+if #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
@@ -8518,14 +8518,31 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
-	    if(props.get("canedit")!=null) {
-		boolean value = Utils.getProperty(props,"canedit",true);
+	    String canDoEdit = Utils.getProperty(props,"canedit",
+					       Utils.getProperty(props,"candoedit",null));
+	    if(canDoEdit !=null) {
 		props.remove("canedit");
+		props.remove("candoedit");		
 		if(entry==null) return false;
-		if(getAccessManager().canDoEdit(request, entry) !=value) {
-		    return false;
-		}
+		boolean doEdit = getAccessManager().canDoEdit(request, entry);
+		if(doEdit)
+		    return canDoEdit.equals("true");
+		else
+		    return canDoEdit.equals("false");
 	    }
+
+	    String canDoNew =  Utils.getProperty(props,"candonew",null);
+	    if(canDoNew!=null) {
+		props.remove("candonew");		
+		if(entry==null) return false;
+		boolean doNew = getAccessManager().canDoNew(request, entry);
+		if(doNew)
+		    return canDoNew.equals("true");
+		else
+		    return canDoNew.equals("false");
+	    }
+
+
 
 	    if(entry==null) return true;
 
