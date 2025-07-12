@@ -661,6 +661,27 @@ var Utils =  {
 	}
         temp.remove();
     },
+    getGeoLocation:function(callback,args) {
+	let options =  {
+	    enableHighAccuracy: true, 
+	    maximumAge        : 30000, 
+	    timeout           : 27000
+	};
+
+	if(args) $.extend(options,args);
+	if(!navigator.geolocation) {
+	    callback(null);
+	    return;
+	}
+	navigator.geolocation.getCurrentPosition(position=> {
+	    let lat = position.coords.latitude;
+	    let lon = position.coords.longitude;
+	    callback({latitude:lat,longitude:lon});
+	},error=>{
+	    console.error(error);
+	},options);	
+    },
+
     copyToClipboard:function(text) {
 	navigator.clipboard.writeText(text)
 	    .then(() => {
