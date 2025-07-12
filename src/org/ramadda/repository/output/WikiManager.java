@@ -4080,6 +4080,18 @@ public class WikiManager extends RepositoryManager
                 return message;
             }
 
+            if (children.size() >0) {
+		String heading = getProperty(wikiUtil,props,"contentsHeading",null);
+		if (heading != null) {
+		    //Convert ant _nl_, _qt_, etc
+		    heading = Utils.convertPattern(heading).replace("\\n","\n");
+		    heading = wikifyEntry(request, entry, wikiUtil, heading, false,
+					  wikiUtil.getNotTags(), true);
+		    sb.append(heading);
+		}
+	    }
+
+
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
 	    boolean decorate = getProperty(wikiUtil, props, "decorate",  true);
 	    boolean expand = getProperty(wikiUtil, props, "expand",  false);	    
