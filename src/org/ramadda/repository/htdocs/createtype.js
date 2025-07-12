@@ -1,7 +1,16 @@
 var COLUMNS_MAX_ROWS = 100;
+var ID_CT_BULKTEXT='bulktext';
+
 var CreateType  = {
+    domId:function(id) {
+	return this.baseDomId+id;
+    },
+    jq:function(id) {
+	return jqid(this.domId(id));
+    },
     init:function(formId,entryId,json) {
 	let _this = this;
+	this.baseDomId = Utils.getUniqueId('createtype_');
 	let storageKey=entryId+'_createtype';
 //	let formData = json ?? Utils.getLocalStorage(storageKey,true);
 	let formData = json ?? null;
@@ -61,21 +70,14 @@ var CreateType  = {
 		});
 	    });
 	});
-	jqid("clearcols").button().click(function(){
+	jqid("clearcols").button().click(()=>{
 	    if (!confirm("Are you sure you want to clear the columns?")) {
 		return;
 	    }
-	    for(let i=0;i<COLUMNS_MAX_ROWS;i++) {
-		let input =HU.jqname('column_name_' + i);
-		if(!input.length) break;
-		input.val('');
-		HU.jqname('column_label_' + i).val('');
-		HU.jqname('column_type_' + i).val('');
-		HU.jqname('column_extra_' + i).val('');						
-	    }
+	    this.clearColumns();
 	});
 	jqid("textdownload").button().click(function(){
-	    let text = '#name,label,type,extra\n'
+	    let text = ''
 	    for(let i=0;i<50;i++) {
 		let name = HU.jqname('column_name_' + i).val();
 		let label = HU.jqname('column_label_' + i).val();		
@@ -91,18 +93,20 @@ var CreateType  = {
 	    Utils.makeDownloadFile('columns.txt',text);
 	});
 	jqid("bulkupload").button().click(function(){
-	    let html = 'Enter columns, one per line.';
+	    let html = 'Enter columns, one per line. "name,label,type,extra"';
+	    html+=SPACE2+HU.checkbox('clearrows',[ATTR_ID,'clearrows'],true,'Clear all rows');
 	    if(_this.currentColumn) {
-		html+=SPACE2+HU.checkbox('insertabove',[ATTR_ID,'insertabove'],false,'Insert above selected row' +' ' + _this.currentColumn.name.val());
+		html+='<br>'+HU.checkbox('insertabove',[ATTR_ID,'insertabove'],false,'Insert above selected row' +' ' + _this.currentColumn.name.val());
 	    }
 
 	    html+='<br>';
-	    let buttonList = [HU.div(['action','ok',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],
+	    let buttonList = [HU.div([ATTR_ACTION,'ok',
+				      ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],
 				     "Load"),
 			      HU.div(['action','cancel',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],"Cancel")]
 
 	    let buttons = HU.buttons(buttonList);
-	    html+=HU.textarea('bulktext','#name,label,type,extra\n',[ATTR_ID,'bulktext','rows',10,'cols',60]);
+	    html+=HU.textarea(ID_CT_BULKTEXT,'',[ATTR_ID,ID_CT_BULKTEXT,'rows',10,'cols',60]);
 	    html+=buttons;
 	    html = HU.div([ATTR_STYLE,HU.css('min-width','600px'),
 			   ATTR_CLASS,'ramadda-license-dialog'], html);
@@ -113,9 +117,14 @@ var CreateType  = {
 					 title:'Bulk upload',
 					 header:true,
 					 draggable:true});
+	    jqid(ID_CT_BULKTEXT).focus();
 	    dialog.find('.ramadda-button').button().click(function() {
 		if($(this).attr('action')=='ok') {
-		    _this.handleBulkUpload(jqid('bulktext').val());
+		    if(jqid('clearrows').is(':checked')) {
+			_this.clearColumns();
+		    }
+		    _this.handleBulkUpload(jqid(ID_CT_BULKTEXT).val());
+
 
 		}
 		dialog.remove();
@@ -158,6 +167,16 @@ var CreateType  = {
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
+    },
+    clearColumns:function() {
+	for(let i=0;i<COLUMNS_MAX_ROWS;i++) {
+	    let input =HU.jqname('column_name_' + i);
+	    if(!input.length) break;
+	    input.val('');
+	    HU.jqname('column_label_' + i).val('');
+	    HU.jqname('column_type_' + i).val('');
+	    HU.jqname('column_extra_' + i).val('');						
+	}
     },
     applyFormData:function(form,formData) {
 	if(!formData) return;
