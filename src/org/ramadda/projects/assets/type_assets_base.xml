@@ -38,7 +38,9 @@ metadata="asset_maintenance"
 <wiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 +center
-{{field  name="address"  fieldPrefix=""  fieldSuffix=""  message=""}} 
+{{field  name="address"    message=""}} 
+{{field  name="make"   fieldSuffix=" - "  message=""}} 
+{{field  name="model"  message=""}} 
 -center
 {{description wikify=true}}
 +macro prop1
