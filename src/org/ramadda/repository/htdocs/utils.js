@@ -5034,6 +5034,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    resizable:false,
             decorate:true,
             header:false,
+	    showCloseIcon:true,
 	    headerRight:null,
             remove:true,
             my: "left top",
@@ -5107,6 +5108,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let closeImage = HtmlUtils.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
 					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ATTR_ID,id+'_close',
 											     ATTR_STYLE,HU.css('cursor','pointer')]));
+	    if(!opts.showCloseIcon) closeImage='';
             let title = HU.div([ATTR_CLASS,'ramadda-popup-title'],opts.title);
 	    if(opts.rightSideTitle)
 		title+=HU.div([ATTR_CLASS,'ramadda-popup-title-right'],opts.rightSideTitle);
