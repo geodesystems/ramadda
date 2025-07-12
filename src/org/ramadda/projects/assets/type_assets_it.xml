@@ -1,0 +1,21 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_it.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_it" 
+ description="IT Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_physical" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="equipment_type"  label="Type"  type="enumerationplus"  group="IT Asset Properties" values="desktop:Desktop Computer,laptop:Laptop Computer,server:Server, printer:Printer,scanner:Scanner,monitor:Monitor,tablet:Tablet,smartphone:Smartphone,  network_switch:Network Switch,router:Router,firewall:Firewall,access_point:Wireless Access Point,  phone:Desk Phone,projector:Projector,ups:Uninterruptible Power Supply,storage_device:External Storage Device,  workstation:Workstation,other:Other" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/network.png" />
+<property  name="date.nullok"  value="true" />
+<property  name="asset.type"  value="IT" />
+</type>

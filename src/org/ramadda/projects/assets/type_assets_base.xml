@@ -6,7 +6,7 @@ Base entry type for Assets
 -->
 <type  name="type_assets_base" 
  description="Base Asset" 
- handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ handler="org.ramadda.projects.assets.AssetTypeHandler" 
  supercategory="General" 
  category="Assets" 
 foruser="false"
@@ -14,21 +14,13 @@ metadata="asset_maintenance"
 >
 
 <!-- Columns-->
-<column  name="asset_id"  label="Asset ID"  type="string"  xgroup="Base Asset"  size="400" />
-<column  name="barcode"  label="Bar Code"  type="string"  columns="30"  showinhtml="false" />
-<column  name="department"  label="Department"  type="enumerationplus"  xgroup="Ownership" />
-<column  name="assigned_to"  label="Assigned To"  type="enumerationplus" />
-<column  name="location"  label="Location"  type="enumerationplus" />
-<column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
+<column  name="asset_id"  label="Asset ID"  type="string"  size="400" />
+<column  name="department"  label="Department"  type="enumerationplus"  cansearch="true" />
+<column  name="assigned_to"  label="Assigned To"  type="enumerationplus"  cansearch="true" />
+<column  name="location"  label="Location"  type="enumerationplus"  cansearch="true" />
+<column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
 <column  name="acquisition_cost"  label="Acquisition Cost"  type="double" />
-<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none" />
-<column  name="status"  label="Status"  type="enumerationplus"  values="Active,In Repair,Disposed,Retired" subgroup="Equipment	Information" />
-<column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
-<column  name="model"  label="Model"  type="string"  size="400" />
-<column  name="manufacturer"  label="Manufacturer"  type="enumerationplus" />
-<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"          subgroup="Disposal" />
-<column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
-<column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />
+<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="form.area.show"  value="false" />
@@ -37,7 +29,10 @@ metadata="asset_maintenance"
 <property  name="form.todate.show"  value="false" />
 <property  name="form.date.label"  value="Acquisition Date" />
 <property  name="form.time.show"  value="false" />
+<property  name="html.time.show"  value="false" />
+<property  name="date.format"  value="yyyy-MM-dd" />
 <property  name="html.tabs"  value="true" />
+<property  name="search.tabs"  value="list,map" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
@@ -67,7 +62,7 @@ macros="prop1" prop1.title="Properties"
 +toggle Record Information
 {{information  showDetails=false  showTitle="false"  showBase=true showDate=false}} 
 -toggle
-{{barcode field=barcode}}
+{{barcode field=asset_id}}
 +center
 {{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
@@ -79,6 +74,11 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 -col
 -row
 
-{{tabletree  message=""  prefix="==Files==" simple="false"  #maxHeight="500px"  }} 
+{{grid  contentsHeading="----\n:heading Documents" tag="card"  #innerHeight="200px"  #innerMinHeight="200px"  #innerMaxHeight="200px"  width="350px"  #boxHeight="180px" 
+ #imageHeight="150px"  showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage="true"  #useThumbnail="false"  #inherited="true"  #expand="true"  #childrenWiki="wiki text to display children, e.g. {{tree details=false}}" 
+ #weights="4,4,4"  }} 
+
 -section]]></wiki>
 </type>

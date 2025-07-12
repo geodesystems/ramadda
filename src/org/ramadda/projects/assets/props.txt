@@ -1,21 +1,22 @@
 #base asset class
-asset_id,Asset ID,string,xgroup="Base Asset"  size="400"
-barcode,Bar Code,string, columns="30"  showinhtml="false"
-
-department,Department,enumerationplus,xgroup="Ownership"
-assigned_to,Assigned To,enumerationplus,
-location,Location,enumerationplus,
-
-acquisition_method,Acquisition Method,enumerationplus,values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
+asset_id,Asset ID,string,  size="400"  cansearch="true" 
+department,Department,enumerationplus, cansearch="true" 
+assigned_to,Assigned To,enumerationplus,  cansearch="true" 
+location,Location,enumerationplus,  cansearch="true" 
+acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
+values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
 acquisition_cost,Acquisition Cost, double,
-warranty_expiration,,date, default="none"	      
+warranty_expiration,,date, default="none"  cansearch="true" 	      
 
-status,Status,enumerationplus,values="Active\,In Repair\,Disposed\,Retired" subgroup="Equipment Information"
+#physical asset
+status,Status,enumerationplus, cansearch="true"  \
+values="Active\,In Repair\,Disposed\,Retired" \
+condition,,enumerationplus,values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
+subgroup="Equipment Information"
 serial_number,,string,size="400"
 model,,string,size="400"
 manufacturer,,enumerationplus,
-
-disposal_date,,date, default="none"	     subgroup="Disposal"
+disposal_date,,date, default="none"	     subgroup="Disposal"  cansearch="true" 
 disposal_method,,string,size="2000" rows="5"
 disposed_comment,,string, size="5000" rows="5"
 
@@ -31,21 +32,44 @@ mileage,,int
 last_service_date,,date,default="none"	     
 status,,enumerationplus,values="inservice:In Service\,outofservice:Out of Service\,maintenance:Under Maintenance\,intransit:In Transit\,onloan:On Load"
 lifecycle_status,,enumerationplus, values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Disposal\,disposed:Disposed"
-condition,,enumerationplus,values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
 
+
+
+
+##IT asset
+equipment_type,Type,enumerationplus, group="IT Asset Properties" values="desktop:Desktop Computer\,laptop:Laptop Computer\,server:Server\,\
+printer:Printer\,scanner:Scanner\,monitor:Monitor\,tablet:Tablet\,smartphone:Smartphone\,\
+network_switch:Network Switch\,router:Router\,firewall:Firewall\,access_point:Wireless Access Point\,\
+phone:Desk Phone\,projector:Projector\,ups:Uninterruptible Power Supply\,storage_device:External Storage Device\,\
+workstation:Workstation\,other:Other"
 
 
 
 
 ##Building
-address,,string,size="1000" rows="5" showinhtml="false"
-building_type,,enumerationplus, values="" group="Building Information"
+address,,string,size="1000" rows="5" showinhtml="false"  cansearch="true" 
+building_type,,enumerationplus,  group="Building Information"  cansearch="true" \
+values="government:Government Facility\,healthcare:Healthcare Facility\,transportation:Transportation Hub\,\
+public_safety:Police/Fire Station\,\
+commercial:Commercial Building\,residential:Residential Building\,\
+educational:Educational Institution\,\
+recreational:Recreational Facility\,cultural:Cultural Center\,\
+utility:Utility Building\,industrial:Industrial Facility\,storage:Storage/Warehouse\,maintenance:Maintenance Facility\,\
+library:Library\,parking:Parking Structure\,community:Community Center\,courthouse:Courthouse\,\
+water_treatment:Water Treatment Plant\,waste_management:Waste Management Facility\,emergency_shelter:Emergency Shelter\,\
+transit_station:Transit Station\,historic:Historic Building\,vacant:Vacant Building\,other:Other"
 square_feet,,int,
 num_floors,Number of Floors,int,
 year_built,,date,default="none"	     
-occupancy_status,,enumerationplus, values="Occupied\,Fully Occupied\,Partially Occupied\,Temporarily Occupied\,Vacant\,Idle\,\
-Unoccupied\,Under Construction\,Under Renovation\,Under Demolition\,Pending Occupancy\,Pending Inspection\,Condemned\,Decommissioned\,Surplus"
-roof_condition,,enumerationplus, values="Excellent\,Good\,Fair\,Poor\,Failing\,Needs Repair\,Replaced\,Under Maintenance\,.Unknown"
+occupancy_status,,enumerationplus,  cansearch="true" values="\
+occupied:Occupied\, fully_occupied:Fully Occupied\, partially_occupied:Partially Occupied\, \
+temporarily_occupied:Temporarily Occupied\, vacant:Vacant\, idle:Idle\, unoccupied:Unoccupied\, \
+under_construction:Under Construction\, under_renovation:Under Renovation\, under_demolition:Under Demolition\, \
+pending_occupancy:Pending Occupancy\, pending_inspection:Pending Inspection\, condemned:Condemned\, \
+decommissioned:Decommissioned\, surplus:Surplus"
+
+
+
 
 
 

@@ -9,19 +9,18 @@ into some types.xml file
  super="type_assets_base" 
  supercategory="General" 
  category="Assets" 
-displayfields="name,address,_default"
 >
 
 <!-- Columns-->
-<column  name="address"  label="Address"  type="string"  size="1000" rows="5"  showinhtml="false" />
-<column  name="building_type"  label="Building Type"  type="enumerationplus"  values="" group="Building Information" />
+<column  name="address"  label="Address"  type="string"  size="1000" rows="5" showinhtml="false"  cansearch="true" />
+<column  name="building_type"  label="Building Type"  type="enumerationplus"  group="Building Information"  cansearch="true"  values="government:Government Facility,healthcare:Healthcare Facility,transportation:Transportation Hub,  public_safety:Police/Fire Station,  commercial:Commercial Building,residential:Residential Building,  educational:Educational Institution,  recreational:Recreational Facility,cultural:Cultural Center,  utility:Utility Building,industrial:Industrial Facility,storage:Storage/Warehouse,maintenance:Maintenance Facility,  library:Library,parking:Parking Structure,community:Community Center,courthouse:Courthouse,  water_treatment:Water Treatment Plant,waste_management:Waste Management Facility,emergency_shelter:Emergency Shelter,  transit_station:Transit Station,historic:Historic Building,vacant:Vacant Building,other:Other" />
 <column  name="square_feet"  label="Square Feet"  type="int" />
 <column  name="num_floors"  label="Number of Floors"  type="int" />
 <column  name="year_built"  label="Year Built"  type="date"  default="none" />
-<column  name="occupancy_status"  label="Occupancy Status"  type="enumerationplus"  values="Occupied,Fully Occupied,Partially Occupied,Temporarily Occupied,Vacant,Idle, Unoccupied,Under Construction,Under Renovation,Under Demolition,Pending Occupancy,Pending Inspection,Condemned,Decommissioned,Surplus" />
-<column  name="roof_condition"  label="Roof Condition"  type="enumerationplus"  values="Excellent,Good,Fair,Poor,Failing,Needs Repair,Replaced,Under Maintenance,.Unknown" />
+<column  name="occupancy_status"  label="Occupancy Status"  type="enumerationplus"  cansearch="true" values="  occupied:Occupied, fully_occupied:Fully Occupied, partially_occupied:Partially Occupied,   temporarily_occupied:Temporarily Occupied, vacant:Vacant, idle:Idle, unoccupied:Unoccupied,   under_construction:Under Construction, under_renovation:Under Renovation, under_demolition:Under Demolition,   pending_occupancy:Pending Occupancy, pending_inspection:Pending Inspection, condemned:Condemned,   decommissioned:Decommissioned, surplus:Surplus" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/building.png" />
 <property  name="date.nullok"  value="true" />
+<property  name="asset.type"  value="BLDG" />
 </type>

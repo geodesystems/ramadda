@@ -6,7 +6,7 @@ into some types.xml file
 <type  name="type_assets_vehicle" 
  description="Vehicle Asset" 
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
- super="type_assets_base" 
+ super="type_assets_physical" 
  supercategory="General" 
  category="Assets" 
 >
@@ -27,4 +27,5 @@ into some types.xml file
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/vehicle.png" />
 <property  name="date.nullok"  value="true" />
+<property  name="asset.type"  value="VEH" />
 </type>
