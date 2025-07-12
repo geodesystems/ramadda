@@ -3963,8 +3963,8 @@ public class TypeHandler extends RepositoryManager {
             (MapOutputHandler) getRepository().getOutputHandler(
 								MapOutputHandler.OUTPUT_MAP.getId());
         if (okToShowInForm(entry, ARG_LOCATION, false)) {
-            String lat = "";
-            String lon = "";
+            String lat = request.getString(ARG_LATITUDE,"");
+            String lon = request.getString(ARG_LONGITUDE,"");	    
             if (entry != null) {
                 if (entry.hasNorth()) {
                     lat = "" + entry.getNorth(request);
