@@ -3,7 +3,7 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
 -->
 <type  name="type_assets_collection" 
  description="Asset Collection" 
- handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ handler="org.ramadda.projects.assets.AssetCollectionTypeHandler" 
  supercategory="General" 
  category="Assets" 
 childtypes="type_assets_building,type_assets_vehicle"
@@ -11,6 +11,14 @@ childtypes="type_assets_building,type_assets_vehicle"
 
 <!-- Columns-->
 <column  name="asset_type"  label="Asset Type"  type="enumeration"  values=":Select,type_assets_building:Building,type_assets_vehicle:Vehicle" />
+<column  name="organization"  label="Organization Name"  type="enumerationplus" />
+<column  name="department"  label="Department"  type="enumerationplus" />
+<column  name="contact_person"  label="Contact Person"  type="enumerationplus" />
+<column  name="contact_email"  label="Contact Email"  type="email" />
+<column  name="contact_phone"  label="Contact Phone"  type="string" />
+<wikimacro foo="bar" name="assets_report" label="Asset Report" isoutput="true" icon="/icons/magnifier.png">
+<![CDATA[+section                                                                                                                                 {{assets_report}}                                                                                                                            
+-section]]></wikimacro>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/collection.png" />
@@ -19,15 +27,21 @@ childtypes="type_assets_building,type_assets_vehicle"
 <wiki><![CDATA[
 +section title={{name}}
 
+{{assets_report_link}}
 +if candonew=true 
 {{assets_barcode #type=type_assets_vehicle}}
 -if 
 ----
 :heading Search Assets
-{{display_entrylist     typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
-toggleClose=true  ancestor=this entryTypes="super:type_assets_base" }} 
+{{display_entrylist     orderByTypes="name,relevant,createdate,changedate,date,entryorder"  showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
+toggleClose=true  entryTypes="super:type_assets_base" }} 
 
-+if   haschildren=true
+----
+:heading Collection Information
+{{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
+ #menusTitle="Services"  }} 
+ 
++skip
 :heading Asset List
 +tabs
 +tab List
@@ -45,6 +59,7 @@ toggleClose=true  ancestor=this entryTypes="super:type_assets_base" }}
  #entriesListInMap="true"  #entriesListHeader=""  #hideIfNoLocations="false"  #showCircles="true"  #mapProps="fillColor:red,strokeWidth:1,radius:6"  }} 
 -tab
 -tabs
--if
+-skip
+
 -section]]></wiki>
 </type>
