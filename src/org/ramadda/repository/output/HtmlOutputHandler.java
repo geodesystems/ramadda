@@ -1587,6 +1587,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 	    int cnt = 0;
 	    tableSB.append("\n\n");
+	    boolean showBreadcrumbs = Utils.getProperty(props,"showBreadcrumbs",true);
             for (Entry entry : entries) {
 		boolean canEdit = getAccessManager().canDoEdit(request, entry);
 		typeHandler = entry.getTypeHandler();
@@ -1595,9 +1596,12 @@ public class HtmlOutputHandler extends OutputHandler {
 		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
 		StringBuilder toggle = new StringBuilder();
 		//Limit to 3 ancestors
-		HU.makeToggleInline(toggle,"",
-				    getPageHandler().getBreadCrumbs(request, entry.getParentEntry(),null,null,80,3)+
-				    HU.space(1),false,"title","Click to view ancestors");
+		
+		if(showBreadcrumbs) {
+		    HU.makeToggleInline(toggle,"",
+					getPageHandler().getBreadCrumbs(request, entry.getParentEntry(),null,null,80,3) + 
+					HU.space(1),false,"title","Click to view ancestors");
+		}
 
 		if(entryLink!=null) {
 		    HU.span(toggle,
@@ -1611,8 +1615,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 HU.open(tableSB, "tr",
 			HU.attrs(new String[] { "class", odd
-				? "odd"
-				: "even", "valign", "top" }));
+				? "odd ramadda-entry"
+				: "even ramadda-entry", "valign", "top" }));
 		if(displayColumns!=null) {
 		    for(String col: displayColumns) {
 			String value=null;
@@ -1784,7 +1788,17 @@ public class HtmlOutputHandler extends OutputHandler {
         if (types.size() == 1) {
             sb.append(contents.get(0));
         } else {
-            HU.makeAccordion(sb, titles, contents);
+	    String displayStyle = Utils.getProperty(props,"display","accordion");
+	    if(displayStyle.equals("tabs")) {
+		HU.makeTabs(sb, titles, contents);
+	    } else    if(displayStyle.equals("list")) {
+		for(int i=0;i<contents.size();i++) {
+		    sb.append(HU.h2(titles.get(i)));
+		    sb.append(contents.get(i));
+		}
+	    }  else {
+		HU.makeAccordion(sb, titles, contents);
+	    }
             /*            for(int i=0;i<titles.size();i++) {
                 String title = titles.get(i);
                 String content = contents.get(i);
