@@ -72,7 +72,12 @@ public class CsvImporter extends ImportHandler {
                                  String fileName, InputStream stream,
 				 StringBuilder message)
 	throws Exception {
-        if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV)) {
+	boolean isMine  = request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV);
+	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
+	    isMine = fileName.toLowerCase().endsWith(".csv");
+	}
+
+        if (!isMine){
             return null;
         }
 
@@ -88,7 +93,13 @@ public class CsvImporter extends ImportHandler {
 		int descIdx=-1;
 		int idIdx=-1;
 		int parentIdx=-1;
+		int dateIdx=-1;
+		int dateIdxFrom=-1;
+		int dateIdxTo=-1;		
+		int latitudeIdx=-1;
+		int longitudeIdx=-1;		
 		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
+		Hashtable<String,Integer> thumbnailIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> newIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
 		String currentType="";
@@ -113,6 +124,16 @@ public class CsvImporter extends ImportHandler {
 				    nameIdx=i;
 				} else if(_field.equals("type")) {
 				    typeIdx=i;
+				} else if(_field.equals("date")) {
+				    dateIdx = i;
+				} else if(_field.equals("fromdate")) {
+				    dateIdxFrom = i;
+				} else if(_field.equals("fromto")) {
+				    dateIdxTo = i;
+				} else if(_field.equals("latitude")) {
+				    latitudeIdx = i;
+				} else if(_field.equals("longitude")) {
+				    longitudeIdx = i;				    
 				} else if(_field.equals("private")) {
 				    privateIdx=i;				    
 				} else if(_field.equals("description")) {
@@ -128,6 +149,9 @@ public class CsvImporter extends ImportHandler {
 				} else if(_field.startsWith("metadata:")) {
 				    String mtd= _field.substring("metadata:".length()).trim();
 				    metadataIdx.put(mtd,i);
+				} else if(_field.startsWith("thumbnail:")) {
+				    String mtd= _field.substring("thumbnail:".length()).trim();
+				    thumbnailIdx.put(mtd,i);				    
 				} else if(_field.startsWith("property:")) {
 				    String mtd= _field.substring("property:".length()).trim();
 				    metadataIdx.put(mtd,i);				    
@@ -166,6 +190,31 @@ public class CsvImporter extends ImportHandler {
 			    id   = "entry_" + (entryCnt);
 			}
 			attrs+=XU.attrs("id",id);
+
+			if(dateIdx>=0) {
+			    String v = row.getString(dateIdx,"");
+			    attrs+=XU.attrs("fromdate",v);
+			    attrs+=XU.attrs("todate",v);			    
+			}
+			if(dateIdxFrom>=0) {
+			    String v = row.getString(dateIdxFrom,"");
+			    attrs+=XU.attrs("fromdate",v);
+			}
+			if(dateIdxTo>=0) {
+			    String v = row.getString(dateIdxTo,"");
+			    attrs+=XU.attrs("todate",v);
+			}						
+
+
+			if(latitudeIdx>=0) {
+			    String v = row.getString(latitudeIdx,"");
+			    attrs+=XU.attrs("latitude",v);
+			}
+			if(longitudeIdx>=0) {
+			    String v = row.getString(longitudeIdx,"");
+			    attrs+=XU.attrs("longitude",v);
+			}			
+
 
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
@@ -207,11 +256,21 @@ public class CsvImporter extends ImportHandler {
 			    sb.append(XU.closeTag(prop));
 			}
 
+
+
 			if(privateIdx>=0 && row.indexOk(privateIdx)) {
 			    String v = row.getString(privateIdx,"").toLowerCase();
 			    if(v.equals("true") || v.equals("yes")) {			    
 				sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n");
 			    }
+			}
+
+			//TODO
+			for (String thumb : thumbnailIdx.keySet()) {
+			    int idx = thumbnailIdx.get(thumb);
+			    if(!row.indexOk(idx)) continue;
+			    String v = row.getString(idx,"");
+			    if(!Utils.stringDefined(v)) continue;
 			}
 
 			for (String mtdType : metadataIdx.keySet()) {
