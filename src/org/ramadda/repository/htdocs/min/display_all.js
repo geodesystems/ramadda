@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 12 06:39:18 EDT 2025";
+var build_date="RAMADDA build date: Sat Jul 12 20:49:50 EDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34264,10 +34264,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showDetailsForGroup',d: false},
 	{p:'inputSize',d:'200px',tt:'Text input size'},
 	{p:'textInputSize',d:'20px',ex:'100%'},	
+	{p:'typesLabel'},
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},	
 	{p:'areaLabel'},
 	{p:'toggleClose',ex:true},
+	{p:'typesToggleClose',ex:true},
 	{p:'textToggleClose',ex:true},
 	{p:'dateToggleClose',ex:true},		
 	{p:'areaToggleClose',ex:true},
@@ -34448,6 +34450,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		toggleClose:this.getToggleClose()
 	    }
 	    if(args) $.extend(opts,args);
+	    if(Utils.isDefined(opts.toggleClose)) opts.toggleClose=Utils.getProperty(opts.toggleClose);
 	    if(!Utils.stringDefined(widget)) return '';
             let horizontal = this.isLayoutHorizontal();
 	    if(horizontal)  {
@@ -35765,8 +35768,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
+		let toggleClose = this.getProperty('typesToggleClose',this.getToggleClose());
 		this.writeHtml(ID_TYPE_DIV,
-			       this.addWidget(this.getProperty('typesLabel','Types'),select));
+			       this.addWidget(this.getProperty('typesLabel','Types'),select,{toggleClose:toggleClose}));
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
@@ -36252,7 +36256,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
 		    }
 		} else if(type=='display') {
-		    titles.push('Display');
+		    titles.push('Details');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:'entrywiki',entries:entries});
 		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));

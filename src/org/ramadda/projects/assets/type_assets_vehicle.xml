@@ -14,7 +14,7 @@ into some types.xml file
 <!-- Columns-->
 <column  name="make"  label="Make"  type="enumerationplus"  size="600" group="Vehicle Information" cansearch="true" />
 <column  name="model"  label="Model"  type="string"  size="600" cansearch="true" />
-<column  name="vehicle_year"  label="Vehicle Year"  type="string" />
+<column  name="vehicle_year"  label="Vehicle Year"  type="int"  cansearch="true" />
 <column  name="vin"  label="Vin"  type="string"  size="600" cansearch="true" />
 <column  name="license_plate"  label="License Plate"  type="string"  size="600" />
 <column  name="fuel_type"  label="Fuel Type"  type="enumerationplus"  values="regular:Regular,diesel:Diesel,premium:Premium" default="regular" />
