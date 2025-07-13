@@ -1,5 +1,7 @@
 <!-- 
-Copy this into your ramadda home/plugins directory and restart RAMADDA
+Since this is for import add a:
+<import resource="type_assets_collection.xml"/>
+into some types.xml file
 -->
 <type  name="type_assets_collection" 
  description="Asset Collection" 
@@ -16,8 +18,10 @@ childtypes="type_assets_building,type_assets_vehicle"
 <column  name="contact_person"  label="Contact Person"  type="enumerationplus" />
 <column  name="contact_email"  label="Contact Email"  type="email" />
 <column  name="contact_phone"  label="Contact Phone"  type="string" />
-<wikimacro foo="bar" name="assets_report" label="Asset Report" isoutput="true" icon="/icons/magnifier.png">
-<![CDATA[+section                                                                                                                                 {{assets_report}}                                                                                                                            
+ <wikimacro name="assets_report" label="Asset Report" isoutput="true" 
+icon="/icons/magnifier.png">
+<![CDATA[+section                                                                                                                                  
+{{assets_report}}                                                                                                                            
 -section]]></wikimacro>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -26,8 +30,6 @@ childtypes="type_assets_building,type_assets_vehicle"
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
-
-{{assets_report_link}}
 +if candonew=true 
 {{assets_barcode #type=type_assets_vehicle}}
 -if 
@@ -38,6 +40,7 @@ toggleClose=true  entryTypes="super:type_assets_base" }}
 
 ----
 :heading Collection Information
+{{assets_report_link}}
 {{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
  #menusTitle="Services"  }} 
  

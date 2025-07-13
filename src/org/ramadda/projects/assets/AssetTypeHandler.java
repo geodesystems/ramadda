@@ -10,6 +10,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.WikiUtil;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
@@ -34,6 +35,10 @@ import java.util.List;
 public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandler {
 
 
+    private TTLCache<String,String> seenId= new TTLCache<String,String>(Utils.minutesToMillis(2));
+
+
+
     public AssetTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -51,11 +56,12 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	String type = entry.getTypeHandler().getTypeProperty("asset.type","ASSET");
 	int cnt=0;
 	id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
-	while(getDatabaseManager().tableContains("TYPE_ASSETS_BASE", "ASSET_ID",id)) {
+	while(seenId.get(id)!=null || getDatabaseManager().tableContains("TYPE_ASSETS_BASE", "ASSET_ID",id)) {
 	    cnt++;
 	    id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	}
 
+	seenId.put(id,"");
 	entry.setValue("asset_id",id);
     }
 
