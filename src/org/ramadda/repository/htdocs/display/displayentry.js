@@ -888,7 +888,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    //Always show the next/prev because the results might be < max even though there
 	    //are more on the repository because some results might be hidden due to access control
 	    //            if (entries.length < DEFAULT_MAX) return entries.length+" result" +(entries.length>1?"s":"");
-            let left = "Showing " + (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
+            let left =  (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
 	    if(entries.length==0) left = SPACE3+SPACE3+SPACE3;
             let nextPrev = [];
             let lessMore = [];
