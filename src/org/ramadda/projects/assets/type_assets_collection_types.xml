@@ -24,7 +24,7 @@ childtypes="type_assets_building,type_assets_vehicle"
 -if 
 ----
 :heading Search Assets
-{{display_entrylist    displayTypes="list,images,map,display" showName=true  
+{{display_entrylist     typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
 toggleClose=true  ancestor=this entryTypes="super:type_assets_base" }} 
 
 +if   haschildren=true
