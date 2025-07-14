@@ -9,6 +9,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.IO;
@@ -74,16 +75,19 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
     public void addTagDefinition(List<String>  tags) {
     }
 
+    private void initJS(Request request, StringBuilder sb) throws Exception {
+	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
+	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
+    }
+
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	String uid = HU.getUniqueId("assets");
 	HU.div(sb,"",HU.attrs("id",uid));
-
-	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
-	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
+	initJS(request, sb);
 	List<String> args = new ArrayList<String>();
 	String type = Utils.getProperty(props,"type",entry.getStringValue(request,"asset_type",null));
 	if(Utils.stringDefined(type)) {
@@ -100,6 +104,36 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	return sb.toString();
 
     }
+
+    @Override
+    public void addColumnToEntryForm(Request request, Entry parentEntry, Entry entry,
+                                     Column column, Appendable formBuffer,
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo,
+                                     TypeHandler sourceTypeHandler)
+
+    /*    public void addColumnToEntryForm(Request request, Column column,
+                                     Appendable formBuffer, Entry parentEntry,Entry entry,
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo,
+                                     TypeHandler sourceTypeHandler)*/
+	throws Exception {
+	super.addColumnToEntryForm(request, parentEntry, entry,
+				   column,formBuffer,
+				   values, state, formInfo,
+				   sourceTypeHandler);
+	if(!column.getName().equals("asset_id")) return;
+	StringBuilder sb = new StringBuilder();
+	initJS(request, sb);
+	List<String> args = new ArrayList<String>();
+	Utils.add(args,"editMode","true");
+	StringBuilder js = new StringBuilder();
+	js.append(HU.call("new AssetCreator","null",JU.map(args)));
+	HU.script(sb,js.toString());
+
+	formBuffer.append(sb.toString());
+    }
+
 
 
 

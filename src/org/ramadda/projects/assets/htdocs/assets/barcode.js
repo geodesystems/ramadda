@@ -22,10 +22,10 @@ function BarcodeReader (videoId,callback,args) {
     videoElement.setAttribute('muted', '');
     videoElement.setAttribute('playsinline', '');
 
-    const codeReader = new ZXing.BrowserMultiFormatReader();
+    const codeReader = this.codeReader = new ZXing.BrowserMultiFormatReader();
     codeReader.decodeFromVideoDevice(null, videoElement, (result, error, controls) => {
 	if (result) {
-	    if(!callback(result.getText())) {
+	    if(!callback(result.getText(),controls)) {
 //		controls.stop();
 	    }
 	} else if(error) {
@@ -33,6 +33,9 @@ function BarcodeReader (videoId,callback,args) {
 	}
     });
 
+    this.cancel = ()=>{
+	this.codeReader.reset();
+    }
 }
 
 
@@ -41,9 +44,15 @@ function AssetCreator (id,args) {
     this.args = args;
     this.opts = {
 	defaultType:null,
-	defaultTypeLabel:null
+	defaultTypeLabel:null,
+	editMode:false
     }
     this.opts = $.extend(this.opts,args??{});
+    if(this.opts.editMode) {
+	this.initEditMode();
+	return;
+    }
+
     this.id = id;
     this.buttonId= this.id+'_open';
     this.videoId= this.id+'_video';
@@ -77,6 +86,40 @@ function AssetCreator (id,args) {
 }
 
 AssetCreator.prototype = {
+    initEditMode: function() {
+	let name = 'edit_type_assets_base_asset_id';
+        this.assetIdInput= HU.jqname(name);
+	let buttonId= HU.getUniqueId('editbutton');
+	this.id = HU.getUniqueId('editmode');
+	this.videoId= this.id+'_video';
+	this.assetIdInput.after(HU.space(2)+HU.span([ATTR_ID,buttonId],'Scan Bar Code'));
+	jqid(buttonId).button().click(()=>{
+	    let html='';
+	    html=HU.div([ATTR_STYLE,HU.css('text-align','center','margin','5px'),ATTR_ID,this.id+'_cancel'],'Cancel');
+	    html+=HU.center("<video class=assets_editmode_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
+	    let dialog = this.dialog = HU.makeDialog({content:html,
+						      anchor:jqid(buttonId),at:'left top',
+						      draggable:true,
+						      showCloseIcon:true,
+						      title:'Scan bar code',header:true});	
+
+	    let cancel = (controls)=> {
+		if(controls)
+		    controls.stop();
+		this.barcodeReader.cancel();		
+		this.barcodeReader = null;
+		dialog.remove();
+	    }
+	    jqid(this.id+'_cancel').button().click(()=>{
+		cancel();
+	    });
+	    let callback = (result,controls) =>{
+		cancel();
+		this.assetIdInput.val(result);
+	    };
+	    this.barcodeReader = new BarcodeReader(this.videoId,callback);
+	});
+    },
     initVideo:function() {
 	let title = 'create an asset';
 	if(this.opts.defaultTypeLabel)

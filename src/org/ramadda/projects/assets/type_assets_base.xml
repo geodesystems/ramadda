@@ -33,6 +33,7 @@ metadata="asset_maintenance"
 <property  name="date.format"  value="yyyy-MM-dd" />
 <property  name="html.tabs"  value="true" />
 <property  name="search.tabs"  value="list,map" />
+<property  name="enumerations.specific"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
