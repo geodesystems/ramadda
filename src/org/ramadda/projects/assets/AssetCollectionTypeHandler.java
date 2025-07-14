@@ -112,7 +112,12 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	Date endDate =DateHandler.checkDate(new Date(entry.getEndDate()));	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
-	sb.append(HU.center(sdf.format(now)));
+	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString());
+	String h2 = sdf.format(now);
+	h2+=HU.space(2);
+	h2+=HU.href(xlsUrl,"XLSX Download");
+	sb.append(HU.center(h2));
 	sb.append("<center>");
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-entry',null,'Search in page')");
 	sb.append("</center>");
@@ -125,6 +130,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	sb.append("<div class=assets-block>\n");
 	String contentsWiki = "{{table display=list showBreadcrumbs=false max=5000}}";
 	wikify(request, entry,sb,contentsWiki);
+	List<Entry> entries = getEntryManager().getChildren(request, entry);
 	//	makeReport(request, entry, sb);
 	sb.append("</div>\n");
 
