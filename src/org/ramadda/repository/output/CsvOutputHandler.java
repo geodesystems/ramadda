@@ -5,9 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointTypeHandler;
 
@@ -27,6 +29,11 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 
 import java.io.File;
@@ -60,6 +67,7 @@ public class CsvOutputHandler extends OutputHandler {
     public static final String ARG_WHAT = "what";
     public static final String WHAT_IDS = "ids";
     public static final String WHAT_WGET = "wget";
+    public static final String WHAT_XLSX = "xlsx";    
     public static final String WHAT_CSVAPI = "csvapi";
     public static final String WHAT_WRAPPER_R = "wrapper_r";
     public static final String WHAT_WRAPPER_PYTHON= "wrapper_python";
@@ -74,6 +82,14 @@ public class CsvOutputHandler extends OutputHandler {
                                                     "default.ids",
 							       OutputType.TYPE_FORSEARCH,
 							       "", ICON_CSV);    
+
+    public static final OutputType OUTPUT_XLSX = new OutputType("XLSX Export",
+                                                    "xlsx",
+                                                    OutputType.TYPE_OTHER|    OutputType.TYPE_FORSEARCH,
+                                                    "", ICON_CSV);
+
+
+
 
     public static final OutputType OUTPUT_ENTRYCSV =
         new OutputType("Entry CSV", "entry.csv", OutputType.TYPE_FEEDS, "",
@@ -97,6 +113,7 @@ public class CsvOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_CSV);
+        addType(OUTPUT_XLSX);
         addType(OUTPUT_IDS);
         addType(OUTPUT_ENTRYCSV);
 	addType(OUTPUT_WRAPPER_MATLAB);
@@ -108,6 +125,7 @@ public class CsvOutputHandler extends OutputHandler {
             throws Exception {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_XLSX));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYCSV));
 	    if(state.getEntry().getTypeHandler().isType("type_point")||
 	       state.getEntry().getTypeHandler() instanceof PointTypeHandler) {
@@ -273,6 +291,8 @@ public class CsvOutputHandler extends OutputHandler {
         return new Result("", sb, mime);
 
     }
+
+
 
     public Result listEntries(Request request, List<Entry> entries)
             throws Exception {
@@ -625,9 +645,342 @@ public class CsvOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_CSV)) {
             return repository.getMimeTypeFromSuffix(".csv");
         }
+        if (output.equals(OUTPUT_XLSX)) {
+            return repository.getMimeTypeFromSuffix(".xlsx");
+        }	
 
         return super.getMimeType(output);
     }
+
+    public Result listXlsx(final Request request, final List<Entry> entries)
+            throws Exception {
+	InputStream is =IO.pipeIt(new IO.PipedThing(){
+		public void run(OutputStream os) {
+		    try {
+			listXlsx(request, os,entries);
+		    } catch(Exception exc) {
+			getLogManager().logError("Making XLSX",exc);
+		    }
+		}});
+	return request.returnStream("entries.xlsx",  "application/excel",is);	    
+    }
+
+    public void listXlsx(final Request request, OutputStream outputStream,final List<Entry> allEntries)
+            throws Exception {
+	String NA = "";
+	Hashtable props = new Hashtable();
+
+        boolean showCategories = request.get(ARG_SHOWCATEGORIES,
+                                             Utils.getProperty(props,
+                                                 ARG_SHOWCATEGORIES, true));
+        boolean showAllTypes = request.get("showAllTypes",
+                                             Utils.getProperty(props,
+                                                 "showAllTypes", false));
+
+	if(showAllTypes) showCategories = true;
+
+        Hashtable<String, List<Entry>> map = new Hashtable<String,
+                                                 List<Entry>>();
+        List<String> displayColumns = null;
+	String tmpColumns = Utils.getProperty(props, "columns", null);
+	if(tmpColumns!=null) {
+	    displayColumns = new ArrayList<String>();
+	    for(String col: Utils.split(tmpColumns,",",true,true)) {
+		if(!col.startsWith("#")) displayColumns.add(col);
+
+	    }
+	}
+        boolean showColumns = Utils.getProperty(props, "showColumns", true);
+        boolean showDate = Utils.getProperty(props, "showDate", true);
+        boolean showCreateDate = Utils.getProperty(props, "showCreateDate", false);
+        boolean showChangeDate = Utils.getProperty(props, "showChangeDate", true);
+        boolean showFromDate = Utils.getProperty(props, "showFromDate", false);
+        boolean showToDate = Utils.getProperty(props, "showToDate", false);		
+        boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",  true);	
+        List<String> types = new ArrayList<String>();
+        for (Entry entry : allEntries) {
+            TypeHandler  typeHandler = entry.getTypeHandler();
+            String       type        = typeHandler.getType();
+            List<Column> columns     = typeHandler.getColumns();
+            boolean      hasFields   = false;
+            if (columns != null) {
+                for (Column column : columns) {
+                    if (column.getCanList() && column.getCanShow()
+                            && (column.getRows() <= 1)) {
+                        hasFields = true;
+                    }
+                }
+            }
+            if ( !hasFields) {
+                if (typeHandler.isGroup()) {
+                    type = "Folders";
+                } else if (entry.isFile()) {
+                    type = "Files";
+                }
+            }
+
+            if ( !showCategories) {
+                type = "entries";
+            }
+
+	    if(showAllTypes) type  =entry.getTypeHandler().getType();
+            List<Entry> entries = map.get(type);
+            if (entries == null) {
+                entries = new ArrayList<Entry>();
+                map.put(type, entries);
+                types.add(type);
+            }
+            entries.add(entry);
+        }
+        int          typeCnt  = 0;
+	Workbook workbook = new XSSFWorkbook(); 
+	CreationHelper creationHelper = workbook.getCreationHelper();
+	CellStyle dateStyle = workbook.createCellStyle();
+
+	dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
+
+        for (String type : types) {
+            List<Entry>  entries     = map.get(type);
+            TypeHandler  typeHandler = entries.get(0).getTypeHandler();
+	    Sheet sheet = workbook.createSheet(typeHandler.getLabel());
+
+
+	    int rowCnt=0;
+	    final Row[] row = {null};
+	    final int[] colCnt={0};
+
+    
+	    Consumer<String> add = (value)->{
+		Cell cell = row[0].createCell(colCnt[0]++);
+		cell.setCellValue(value);
+	    };
+
+
+	    BiConsumer<Entry,Long> fmt = (entry,date)->{
+		Date d =new Date(date);
+		Cell cell = row[0].createCell(colCnt[0]++);
+		if(getDateHandler().isNullDate(d)) {
+		    cell.setCellValue("");
+		} else  {
+		    cell.setCellValue(d);
+		    cell.setCellStyle(dateStyle);
+		}
+	    };
+
+	    List<Column> columns     = typeHandler.getColumns();
+	    List<MetadataType> showMetadata = null;
+	    String tmp = Utils.getProperty(props,"showMetadata",null);
+	    if(tmp!=null) {
+		showMetadata = new ArrayList<MetadataType>();
+		for(String mtdType:Utils.split(tmp,",",true,true)) {
+		    MetadataType mtd = getMetadataManager().findType(mtdType);
+		    if(mtd!=null) showMetadata.add(mtd);
+		}
+	    }
+            boolean haveFiles = false;
+	    List<String> headers = new ArrayList<String>();
+	    if(displayColumns!=null) {
+		for(String col: displayColumns) {
+		    String label=Utils.getProperty(props,col+"Label",null);
+		    if(label==null) {
+			label = typeHandler.getFieldLabel(col);
+		    }
+		    headers.add(label);
+		}
+	    } else {
+		headers.add(Utils.getProperty(props,"nameLabel","Name"));
+		if (showDate) {
+		    headers.add(Utils.getProperty(props,"dateLabel","Date"));
+		}
+		if (showCreateDate) {
+		    headers.add(Utils.getProperty(props,"createDateLabel","Create Date"));
+		}
+		if (showChangeDate) {
+		    headers.add(Utils.getProperty(props,"changeDateLabel","Change Date"));
+		}
+		if (showFromDate) {
+		    headers.add(Utils.getProperty(props,"fromDateLabel","From Date"));
+		}
+		if (showToDate) {
+		    headers.add(Utils.getProperty(props,"toDateLabel","To Date"));
+		}
+	    }
+	    if(displayColumns==null) {
+		for (Entry entry : entries) {
+		    if (entry.isFile()) {
+			haveFiles = true;
+			break;
+		    }
+		}
+		if (haveFiles) {
+		    headers.add("Size");
+		}
+
+		if (columns != null) {
+		    for (Column column : columns) {
+			if ((column.getRows() <= 1) && column.getCanShow()) {
+			    if (column.getCanList() && 
+				Utils.getProperty(props,
+						  "show" + column.getName(), showColumns)) {
+				headers.add(column.getLabel());
+			    }
+			}
+		    }
+		}
+	    }
+
+	    if(showMetadata!=null) {
+		for(MetadataType mtd: showMetadata) {
+		    headers.add(mtd.getName());
+		}
+	    }
+
+
+	    row[0] = sheet.createRow(rowCnt++);
+	    for(String header: headers) {
+		add.accept(header);
+	    }
+
+
+	    int numCols = headers.size();
+
+	    int cnt = 0;
+            for (Entry entry : entries) {
+		boolean canEdit = getAccessManager().canDoEdit(request, entry);
+		typeHandler = entry.getTypeHandler();
+		columns     = typeHandler.getColumns();
+		String name = getEntryDisplayName(entry);
+		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
+		colCnt[0]=0;
+		row[0] = sheet.createRow(rowCnt++);
+		if(displayColumns!=null) {
+		    for(String col: displayColumns) {
+			String value=null;
+			if(col.equals(TypeHandler.FIELD_NAME)) {
+			    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
+			    String url = getEntryManager().getEntryUrl(request, entry);
+			    continue;
+			} else if(col.equals(TypeHandler.FIELD_FILE)) {
+			    if (entry.isFile()) {
+				String downloadLink =
+				    HU.href(entry.getTypeHandler().getEntryResourceUrl(request, entry),
+					    HU.img(getIconUrl(ICON_DOWNLOAD), msg("Download"),""));
+				add.accept(entry.getResource().getFileSize()+"");
+			    } else {
+				add.accept(NA);
+			    }
+			    continue;
+			} else if(col.equals(TypeHandler.FIELD_CREATEDATE)) {
+			    fmt.accept(entry,entry.getCreateDate());
+			    continue;
+			} else if(col.equals(TypeHandler.FIELD_CHANGEDATE)) {
+			    fmt.accept(entry,entry.getChangeDate());
+			    continue;
+			} else if(col.equals(TypeHandler.FIELD_FROMDATE)) {
+			    fmt.accept(entry,entry.getStartDate());
+			    continue;
+			} else if(col.equals(TypeHandler.FIELD_TODATE)) {
+			    fmt.accept(entry,entry.getEndDate());
+			    continue;
+			} else {
+			    Column column = typeHandler.getColumn(col);
+			    if(column==null) {
+				add.accept(NA);
+				continue;
+			    }
+			    if(column.isDate()) {
+				Object o = entry.getValue(request, column);
+				if(o==null) {
+				    add.accept(NA);
+				} else {
+				    Date date = (Date)o;
+				    fmt.accept(entry,date.getTime());
+				}
+				continue;
+			    }
+			    String v = entry.getStringValue(request, column,"");
+			    String s = entry.getTypeHandler().decorateValue(request, entry, column, v);
+			    if (column.isNumeric()) {
+				add.accept(v);
+			    } else {
+				add.accept(v);
+			    }
+			}
+		    }
+		}  else {
+		    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
+		    String url = getEntryManager().getEntryUrl(request, entry);
+		    add.accept(name);
+		    if (showDate) {
+			fmt.accept(entry,entry.getStartDate());
+		    }
+
+		    if (showCreateDate) {
+			fmt.accept(entry,entry.getCreateDate());
+
+		    }
+		    if (showChangeDate) {
+			fmt.accept(entry,entry.getChangeDate());
+		    }
+		    if (showFromDate) {
+			fmt.accept(entry,entry.getStartDate());
+		    }
+		    if (showToDate) {
+			fmt.accept(entry,entry.getEndDate());
+		    }		
+		    if (haveFiles) {
+			String downloadLink =
+			    HU.href(
+				    entry.getTypeHandler().getEntryResourceUrl(
+									       request, entry), HU.img(
+												       getIconUrl(ICON_DOWNLOAD), msg("Download"),
+												       ""));
+
+			if (entry.isFile()) {
+			    add.accept(downloadLink);
+			} else {
+			    add.accept(NA);
+			}
+		    }
+
+		    if (columns != null) {
+			for (Column column : columns) {
+			    if (column.getCanShow() && (column.getRows() <= 1)) {
+				if (column.getCanList()
+				    && Utils.getProperty(props,
+							 "show" + column.getName(), showColumns)) {
+				    String s = entry.getStringValue(request, column,"");
+				    if (column.isNumeric()) {
+					add.accept(s);
+				    } else {
+					add.accept(s);
+				    }
+				}
+			    }
+			}
+		    }
+		}
+
+		if(showMetadata!=null) {
+		    List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
+		    for(MetadataType mtd: showMetadata) {
+			List<Metadata> byType = getMetadataManager().getMetadata(request,entry,metadataList, mtd.getId());
+			if(byType!=null && byType.size()>0) {
+			    add.accept(byType.get(0).getAttr1());
+			} else {
+			    add.accept(NA);
+			}
+		    }
+		}
+            }
+	}
+
+	workbook.write(outputStream);
+	workbook.close();
+    }
+
+
+
 
     @Override
     public Result outputEntry(Request request, OutputType outputType,
@@ -663,15 +1016,29 @@ public class CsvOutputHandler extends OutputHandler {
 	    request.put(ARG_WHAT, what);
 	}
 
-        if (!what.equals("csv") && OUTPUT_IDS.equals(outputType)) {
+        if (what.equals(WHAT_XLSX) || OUTPUT_XLSX.equals(outputType)) {
+	    if (group.isDummy()) {
+		request.setReturnFilename("results.xlsx");
+	    } else {
+		request.setReturnFilename(group.getName() + ".xlsx");
+	    }
+	    return listXlsx(request,children);
+	}
 
+
+        if (!what.equals("csv") && OUTPUT_IDS.equals(outputType)) {
             return listIds(request, group, children);
 	}
+
+
+
         if (group.isDummy()) {
             request.setReturnFilename("results.csv");
         } else {
             request.setReturnFilename(group.getName() + ".csv");
         }
+
+
         if (OUTPUT_ENTRYCSV.equals(outputType)) {
             List<Entry> tmp = new ArrayList<Entry>();
             tmp.add(group);
