@@ -132,10 +132,10 @@ public class Entry implements Cloneable {
     private TypeHandler masterTypeHandler;
 
     /** the start date */
-    private long startDate = 0L;
+    private long startDate = DateHandler.NULL_DATE;
 
     /** the end date */
-    private long endDate = 0L;
+    private long endDate = DateHandler.NULL_DATE;
 
     /** the south value */
     private double south = NONGEO;
