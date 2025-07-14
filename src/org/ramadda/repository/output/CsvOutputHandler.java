@@ -788,7 +788,8 @@ public class CsvOutputHandler extends OutputHandler {
 		    headers.add(label);
 		}
 	    } else {
-		headers.add(Utils.getProperty(props,"nameLabel","Name"));
+		headers.add("Name");
+		headers.add("Link");
 		if (showDate) {
 		    headers.add(Utils.getProperty(props,"dateLabel","Date"));
 		}
@@ -910,7 +911,9 @@ public class CsvOutputHandler extends OutputHandler {
 		}  else {
 		    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
 		    String url = getEntryManager().getEntryUrl(request, entry);
+		    url = request.getAbsoluteUrl(url);
 		    add.accept(name);
+		    add.accept(url);
 		    if (showDate) {
 			fmt.accept(entry,entry.getStartDate());
 		    }
