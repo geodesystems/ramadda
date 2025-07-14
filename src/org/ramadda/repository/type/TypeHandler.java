@@ -6437,7 +6437,7 @@ public class TypeHandler extends RepositoryManager {
 		return null;
 	    }
 	}
-	boolean enumerationsSpecific = getProperty(null,"enumerations.specific","true",false).equals("true");
+	boolean enumerationsSpecific = getProperty(null,"enumerations.specific","true",true).equals("true");
 	Clause entryTypeClause = enumerationsSpecific?Clause.eq(GenericTypeHandler.COL_ENTRY_TYPE,this.getType()):null;
 	if(!hasEnumValuesClause) {
 	    clause = entryTypeClause==null?clause:(clause==null?entryTypeClause:Clause.and(clause,entryTypeClause));
