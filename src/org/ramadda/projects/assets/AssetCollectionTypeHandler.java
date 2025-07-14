@@ -6,42 +6,29 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.projects.assets;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.NamedBuffer;
-import org.ramadda.util.TTLCache;
-import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.seesv.Seesv;
-
-import ucar.unidata.util.StringUtil;
-
 
 import org.w3c.dom.*;
 import org.json.*;
-import java.net.URL;
-import java.io.*;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.HashSet;
 import java.util.List;
 
 
 public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
-
-
-
     public AssetCollectionTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
-
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
 	sb.append(getWikiManager().wikifyEntry(request, entry,wiki));
@@ -51,14 +38,8 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	return "asset:" + entry;
     }
 
-
-
     private String getTypeName(Request request,Entry entry) {
-	if(entry.getTypeHandler().isType("type_archive_collection")) return "Collection";
-	if(entry.getTypeHandler().isType("type_archive_series")) return "Series";
-	if(entry.getTypeHandler().isType("type_archive_file")) return "File";
-	if(entry.getTypeHandler().isType("type_archive_item")) return "Item";
-	return "";
+	return entry.getTypeHandler().getLabel();
     }
 
     private void addThumbnails(Request request, StringBuilder sb,Entry entry) throws Exception {
@@ -81,7 +62,6 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 
     private static String propWiki =
 	"{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.attachment,!content.thumbnail,!content.license\" checkTextLength=\"true\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
-
 
 
     @Override

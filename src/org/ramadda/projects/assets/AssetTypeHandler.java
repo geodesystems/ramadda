@@ -1,31 +1,24 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.projects.assets;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.TTLCache;
-import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.seesv.Seesv;
-
 import ucar.unidata.util.StringUtil;
 
 
 import org.w3c.dom.*;
 import org.json.*;
-import java.net.URL;
-import java.io.*;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -34,24 +27,15 @@ import java.util.List;
 
 
 public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandler {
-
-
     private TTLCache<String,String> seenId= new TTLCache<String,String>(Utils.minutesToMillis(2));
-
-
-
     public AssetTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
 
-
-
-
     @Override
     public synchronized void initializeNewEntry(Request request, Entry entry,NewType newType)
-            throws Exception {
-	
+	throws Exception {
 	String id = entry.getStringValue(request,"asset_id",null);
 	if(stringDefined(id)) return;
 	String type = entry.getTypeHandler().getTypeProperty("asset.type","ASSET");
@@ -61,7 +45,6 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	    cnt++;
 	    id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	}
-
 	seenId.put(id,"");
 	entry.setValue("asset_id",id);
     }
@@ -81,6 +64,7 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
     }
 
+    @Override
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
@@ -111,12 +95,6 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
-
-    /*    public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry parentEntry,Entry entry,
-                                     Object[] values, Hashtable state,
-                                     FormInfo formInfo,
-                                     TypeHandler sourceTypeHandler)*/
 	throws Exception {
 	super.addColumnToEntryForm(request, parentEntry, entry,
 				   column,formBuffer,
@@ -130,11 +108,8 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	StringBuilder js = new StringBuilder();
 	js.append(HU.call("new AssetCreator","null",JU.map(args)));
 	HU.script(sb,js.toString());
-
 	formBuffer.append(sb.toString());
     }
-
-
 
 
 }
