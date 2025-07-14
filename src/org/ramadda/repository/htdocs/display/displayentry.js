@@ -2548,7 +2548,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let html = HU.formTable();
 		    html += HU.formEntry('Number of Records:',
 					 HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),ATTR_SIZE,'5']));
-		    let select= [['csv','CSV'],['json','JSON'], ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],
+		    let select= [['xlsx','XLSX'],
+				 ['csv','CSV'],
+				 ['json','JSON'],
+				 ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],
 				 ['wrapper_r','R Wrapper'],
 				 ['wrapper_python','Python Wrapper'],
 				 ['wrapper_matlab','Matlab Wrapper']];
