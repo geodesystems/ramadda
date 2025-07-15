@@ -2933,11 +2933,21 @@ public class WikiManager extends RepositoryManager
             boolean doUrl = getProperty(wikiUtil, props, "dourl",   false);
 	    if(doUrl) {
 	    } else {
-		if ( !entry.isFile()
-		     || ( !isTextFile(entry, entry.getResource().getPath())
+		if ( !entry.isFile()) {
+		    return getProperty(wikiUtil,props,"message","Entry is not a file");
+		}
+
+		String path = entry.getResource().getPath();
+		String _path  = path.toLowerCase();
+		if(_path.endsWith("pdf")) {
+		    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
+		    return HU.getPdfEmbed(url,props);
+		}
+
+		if (( !isTextFile(entry, entry.getResource().getPath())
 			  && !getProperty(wikiUtil, props, ATTR_FORCE,
 					  false))) {
-		    return "Entry isn't a text file";
+		    return getProperty(wikiUtil,props,"message","Entry is not a text file");
 		}
 	    }
             StringBuilder txt = new StringBuilder("");
