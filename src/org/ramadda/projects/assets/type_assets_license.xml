@@ -1,0 +1,38 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_license.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_license" 
+ description="Asset License" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_thing" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="license_type"  label="License Type"  type="enumerationplus"  values="perpetual:Perpetual,subscription:Subscription,open_source:Open Source,  trial:Trial,enterprise:Enterprise,volume:Volume,site:Site,  concurrent:Concurrent,user_based:User-Based,device_based:Device-Based,  core_based:Core-Based,cloud_based:Cloud-Based,freeware:Freeware,shareware:Shareware" />
+<column  name="issuing_authority"  label="Issuing Authority"  type="enumerationplus" />
+<column  name="status"  label="Status"  type="enumerationplus"  values="active:Active, expired:Expired, revoked:Revoked, pending:Pending" />
+<column  name="license_key"  label="License Key"  type="string"  isprivate="true" />
+<column  name="licensed_to_email"  label="Licensed To Email"  type="string" />
+<column  name="licensed_to_name"  label="Licensed To Name"  type="enumerationplus" />
+<column  name="number_of_seats"  label="Number Of Seats"  type="int" />
+<column  name="cost"  label="Cost"  type="double" />
+<column  name="expiration_date"  label="Expiration Date"  type="date"  default="none" />
+<column  name="terms_url"  label="Terms Url"  type="url" />
+<column  name="notes"  label="Notes"  type="string"  size="5000" rows="5" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/license.png" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="License: {{name}}"
+{{description wikify=true}}
+{{information}}
+{{embed  entry=""  skipLines="0"  maxLines="1000"  style=""  force="false"  maxheight="800"  #annotate="true"  raw="true"  #wikify="true" 
+ #convertTags="true"  }} 
+-section]]></wiki>
+</type>

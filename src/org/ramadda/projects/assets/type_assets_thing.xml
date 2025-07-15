@@ -1,0 +1,15 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_thing.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_thing" 
+ description="Asset Thing" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="General" 
+ category="Assets" 
+foruser="false"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+</type>
