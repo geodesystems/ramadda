@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 12 20:49:50 EDT 2025";
+var build_date="RAMADDA build date: Tue Jul 15 07:21:19 EDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -24839,6 +24839,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
 		HU.space(1);
 	    
+	    let anyNoImages= false;
 	    records.forEach((record,rowIdx)=>{
 
                 let row = this.getDataValues(record);
@@ -24873,7 +24874,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		else if(height) imgAttrs.push(HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
 
-		let img = (!Utils.stringDefined(image))?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
+		let hasImage = Utils.stringDefined(image);
+		if(!hasImage) {
+		    anyNoImages=true;
+		    if(this.hideNoImages) return;
+		}
+		let img = !hasImage?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
 		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
@@ -24938,7 +24944,20 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 
 	    contents  = HU.div([CLASS,"ramadda-grid"],contents);
+	    if(this.getShowPlaceholderImage() && anyNoImages) {
+		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
+				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
+					       this.hideNoImages,'Only show images')) +
+		    contents;
+	    }
+
             this.setContents(contents);
+	    if(anyNoImages) {
+		this.jq('onlyimages').change(function() {
+		    _this.hideNoImages = $(this).is(':checked');
+		    _this.forceUpdateUI();
+		});
+	    }
 	    let blocks = this.find(".display-images-block");
 	    let _this = this;
 	    blocks.mouseenter(function() {
@@ -34660,7 +34679,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    //Always show the next/prev because the results might be < max even though there
 	    //are more on the repository because some results might be hidden due to access control
 	    //            if (entries.length < DEFAULT_MAX) return entries.length+" result" +(entries.length>1?"s":"");
-            let left = "Showing " + (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
+            let left =  (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
 	    if(entries.length==0) left = SPACE3+SPACE3+SPACE3;
             let nextPrev = [];
             let lessMore = [];
@@ -36320,7 +36339,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let html = HU.formTable();
 		    html += HU.formEntry('Number of Records:',
 					 HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),ATTR_SIZE,'5']));
-		    let select= [['csv','CSV'],['json','JSON'], ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],
+		    let select= [['xlsx','XLSX'],
+				 ['csv','CSV'],
+				 ['json','JSON'],
+				 ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],
 				 ['wrapper_r','R Wrapper'],
 				 ['wrapper_python','Python Wrapper'],
 				 ['wrapper_matlab','Matlab Wrapper']];
