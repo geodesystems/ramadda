@@ -5281,9 +5281,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             console.log("err:" + e);
         }
     },
-    getUrlArgument: function(arg) {
+    getUrlArgument: function(arg,dflt) {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(arg);
+        let value =  urlParams.get(arg);
+	if(!Utils.isDefined(value)) return dflt;
+	return Utils.getProperty(value);
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
