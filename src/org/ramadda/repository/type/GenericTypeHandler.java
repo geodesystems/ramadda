@@ -697,7 +697,7 @@ public class GenericTypeHandler extends TypeHandler {
 	if(args.length>0 && !args[0]) return;
 	Request request = getAdminRequest();
         for (Column column : getMyColumns()) {
-            if (column.isPrivate()) {
+            if (column.isPrivate(request,entry)) {
                 continue;
             }
             if (column.isString()) {
@@ -727,7 +727,7 @@ public class GenericTypeHandler extends TypeHandler {
 		    continue;
 		}
                 if (column.isField(name)) {
-                    if (column.isPrivate()) {
+                    if (column.isPrivate(request,entry)) {
                         return null;
                     }
                     if (raw) {

@@ -56,6 +56,9 @@ import java.util.regex.Matcher;
 
 @SuppressWarnings("unchecked")
 public class Column implements DataTypes, Constants, Cloneable {
+    public static final XmlUtil XU = null;    
+
+
     static int xcnt;
     public String myid = "column-" + (xcnt++);
 
@@ -141,6 +144,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private SimpleDateFormat displayFormat = null;
     private SimpleDateFormat dateParser = null;
     private boolean importDateIsEpoch = false;
+    private boolean isPrivate = false;
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
     private DecimalFormat numberFormat;
     private DecimalFormat intFormat = new DecimalFormat("#0");
@@ -250,17 +254,17 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.xmlElement  = element;
         this.typeHandler = typeHandler;
         this.offset      = offset;
-        name             = XmlUtil.getAttribute(element, ATTR_NAME);
-	delimiter= XmlUtil.getAttribute(element, "delimiter",",");
-	addRawInput= XmlUtil.getAttribute(element, "addrawinput",false);
-	initPattern = Utils.compilePattern(XmlUtil.getAttribute(element, "initpattern",(String)null));
+        name             = XU.getAttribute(element, ATTR_NAME);
+	delimiter= XU.getAttribute(element, "delimiter",",");
+	addRawInput= XU.getAttribute(element, "addrawinput",false);
+	initPattern = Utils.compilePattern(XU.getAttribute(element, "initpattern",(String)null));
 
-        String group  = XmlUtil.getAttribute(element, "group",(String)null);
-        displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
-        searchGroup =  XmlUtil.getAttribute(element, ATTR_SEARCHGROUP, displayGroup);
-        editGroup = XmlUtil.getAttribute(element, "editgroup", group);
-        subGroup  = XmlUtil.getAttribute(element, "subgroup",(String)null);
-        oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
+        String group  = XU.getAttribute(element, "group",(String)null);
+        displayGroup =  XU.getAttribute(element, "displaygroup", group);
+        searchGroup =  XU.getAttribute(element, ATTR_SEARCHGROUP, displayGroup);
+        editGroup = XU.getAttribute(element, "editgroup", group);
+        subGroup  = XU.getAttribute(element, "subgroup",(String)null);
+        oldNames = Utils.split(XU.getAttribute(element, ATTR_OLDNAMES,
 						    ""), ",", true, true);
         displaySuffix = Utils.getAttributeOrTag(element, "displaysuffix", "");	
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, displaySuffix);
@@ -289,12 +293,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         label = Utils.getAttributeOrTag(element, ATTR_LABEL, name);
         searchLabel = Utils.getAttributeOrTag(element, "searchlabel",label);
 
-        searchType = XmlUtil.getAttribute(element, ATTR_SEARCHTYPE,
+        searchType = XU.getAttribute(element, ATTR_SEARCHTYPE,
                                           searchType);
-        propertiesFile = XmlUtil.getAttribute(element, ATTR_PROPERTIES,
+        propertiesFile = XU.getAttribute(element, ATTR_PROPERTIES,
 					      (String) null);
 
-        String dttmFormat = XmlUtil.getAttribute(element, ATTR_FORMAT,
+        String dttmFormat = XU.getAttribute(element, ATTR_FORMAT,
 						 (String) null);
         if (dttmFormat != null) {
             if (dttmFormat.equals("epoch")) {
@@ -304,20 +308,20 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         }
 
-        dttmFormat = XmlUtil.getAttribute(element, "displayFormat",
+        dttmFormat = XU.getAttribute(element, "displayFormat",
 					  (String) null);
         if (dttmFormat != null) {
 	    displayFormat = new SimpleDateFormat(dttmFormat);
         }
 
-        List propNodes = XmlUtil.findChildren(element, "property");
+        List propNodes = XU.findChildren(element, "property");
         for (int i = 0; i < propNodes.size(); i++) {
             Element propNode = (Element) propNodes.get(i);
-            properties.put(XmlUtil.getAttribute(propNode, "name"),
-                           XmlUtil.getAttribute(propNode, "value"));
+            properties.put(XU.getAttribute(propNode, "name"),
+                           XU.getAttribute(propNode, "value"));
         }
 
-        List displayNodes = XmlUtil.findChildren(element, "display");
+        List displayNodes = XU.findChildren(element, "display");
         for (int i = 0; i < displayNodes.size(); i++) {
             Element node = (Element) displayNodes.get(i);
             displays.add(new Display(node));
@@ -345,7 +349,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
-	dropColumnVersion = XmlUtil.getAttribute(element,"dropcolumnversion",(String)null);
+	dropColumnVersion = XU.getAttribute(element,"dropcolumnversion",(String)null);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
 
@@ -354,7 +358,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         addNot     = getAttributeOrTag(element, "addnot", isType(DATATYPE_LATLON));
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
-	adminOnly= XmlUtil.getAttribute(element, "adminonly", false);
+	adminOnly= XU.getAttribute(element, "adminonly", false);
 
 	isGeoAccess= getAttributeOrTag(element, "isgeoaccess", false);
         isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
@@ -410,6 +414,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	}
         lookupDB = getAttributeOrTag(element, ATTR_LOOKUPDB, (String) null);
 
+	isPrivate = XU.getAttribute(element,"isprivate","false").equals("true");
+
         String tmp = getAttributeOrTag(element, "numberFormat",
 				       getAttributeOrTag(element, "numberformat", null));
         if (tmp != null) {
@@ -417,13 +423,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         if (isEnumeration()) {
-            String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
+            String valueString = XU.getAttribute(element, ATTR_VALUES,
 						      (String) null);
 
             if (valueString != null) {
                 setEnums(valueString, ",");
             } else {
-                valueString = XmlUtil.getGrandChildText(element, ATTR_VALUES,
+                valueString = XU.getGrandChildText(element, ATTR_VALUES,
 							(String) null);
                 if (valueString != null) {
                     setEnums(valueString, "\n");
@@ -646,7 +652,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String getProperty(String key, String dflt) {
         String prop = properties.get(key);
         if ((prop == null) && (xmlElement != null)) {
-            prop = XmlUtil.getAttribute(xmlElement, key, (String) null);
+            prop = XU.getAttribute(xmlElement, key, (String) null);
         }
         if (prop == null) {
             return dflt;
@@ -761,8 +767,16 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_SYNTHETIC);
     }    
 
-    public boolean isPrivate() {
-        return isType(DATATYPE_PASSWORD);
+    public boolean isPrivate(Request request, Entry entry)  {
+	try {
+	    if(isType(DATATYPE_PASSWORD)) return true;
+	    if(isPrivate) {
+		return  getRepository().getAccessManager().canDoEdit(request, entry);
+	    }
+	    return false;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     public boolean isBoolean() {
@@ -816,7 +830,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     private boolean accessOk(Request request,Entry entry) {
-	if(isPrivate()) {
+	if(isPrivate(request, entry)) {
 	    return request.isAdmin() || request.isOwner(entry);
 	}
 	if(adminOnly) {
@@ -1554,10 +1568,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else {
             stringValue = values[offset].toString();
         }
-        Element valueNode = XmlUtil.create(node.getOwnerDocument(), name);
+        Element valueNode = XU.create(node.getOwnerDocument(), name);
         node.appendChild(valueNode);
         valueNode.setAttribute("encoded", encode?"true":"false");
-        valueNode.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
+        valueNode.appendChild(XU.makeCDataNode(node.getOwnerDocument(),
 						    stringValue, encode));
     }
 
@@ -3529,7 +3543,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         String attrValue = Utils.getAttributeOrTag(node, attrOrTag,
 						   (String) null);
         if (attrValue == null) {
-            attrValue = XmlUtil.getAttributeFromTree(node, attrOrTag);
+            attrValue = XU.getAttributeFromTree(node, attrOrTag);
         }
 
 	if(attrValue==null && typeHandler!=null) {
@@ -3725,17 +3739,17 @@ public class Column implements DataTypes, Constants, Cloneable {
         double max;
 
         public Display(Element element) {
-            value = XmlUtil.getAttribute(element, "value", "");
-            background = XmlUtil.getAttribute(element, "background",
+            value = XU.getAttribute(element, "value", "");
+            background = XU.getAttribute(element, "background",
 					      (String) null);
-            color = XmlUtil.getAttribute(element, "color", (String) null);
-            mapFillColor = XmlUtil.getAttribute(element, "mapFillColor",
+            color = XU.getAttribute(element, "color", (String) null);
+            mapFillColor = XU.getAttribute(element, "mapFillColor",
 						(String) null);
-            template = XmlUtil.getAttribute(element, "template",
+            template = XU.getAttribute(element, "template",
                                             (String) null);
-            icon = XmlUtil.getAttribute(element, "icon", (String) null);
-            min  = XmlUtil.getAttribute(element, "min", Double.NaN);
-            max  = XmlUtil.getAttribute(element, "max", Double.isNaN(min)
+            icon = XU.getAttribute(element, "icon", (String) null);
+            min  = XU.getAttribute(element, "min", Double.NaN);
+            max  = XU.getAttribute(element, "max", Double.isNaN(min)
 					? Double.NaN
 					: Double.MAX_VALUE);
         }
