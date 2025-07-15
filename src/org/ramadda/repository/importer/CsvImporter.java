@@ -119,7 +119,9 @@ public class CsvImporter extends ImportHandler {
 				String field = row.getString(i);
 				field = field.replace("\uFEFF", "");
 				String _field=field.toLowerCase().trim();
+				_field = _field.replace(":","_semicolon");
 				_field=Utils.makeID(_field);
+				_field = _field.replace("_semicolon",":");
 				//				System.err.println("FIELD:" + _field +" " + _field.length());
 				if(_field.equals("name")) {
 				    nameIdx=i;
