@@ -9,25 +9,31 @@ addGlobalDisplayType({
 });
 
 
-
 var ID_CV_CONTENTS = 'cv_contents';
 var ID_CV_CANVAS = 'cv_canvas';
 var ID_CV_MENUBAR = 'cv_menubar';
 var ID_CV_DISPLAYS = 'cv_displays';
 var ID_CV_DISPLAYSBAR = 'cv_displays_bar';
 var ID_CV_DISPLAYS_ADD='cv_displays_add';
-var ID_CV_SHOWLABELS = 'showlabels';
-var ID_CV_SHOWALLDEPTHS= 'showalldepths';
+
+
+
+
 var ID_CV_MEASURE = 'measure';
-var ID_CV_ASFEET = 'asfeet';
 var ID_CV_SAMPLE = 'sample';
-var ID_CV_DOROTATION = 'dorotation';
+var ID_CV_DOROTATION = 'doRotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
-var ID_CV_SCALE = 'scale';
+var ID_CV_IMAGEWIDTHSCALE = 'imageWidthScale';
 var ID_CV_SCALE_LABEL = 'scalelabel';
-var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
-var ID_CV_SHOWBOXES = 'showboxes';
-var ID_CV_SHOWPIECES='showpieces';
+
+//These sync up with the opts args and are used for the wiki props and url args
+var ID_CV_SHOWLABELS = 'showLabels';
+var ID_CV_SHOWALLDEPTHS= 'showAllDepths';
+var ID_CV_ASFEET = 'asFeet';
+var ID_CV_SHOWHIGHLIGHT = 'showHighlight';
+var ID_CV_SHOWBOXES = 'showBoxes';
+var ID_CV_SHOWPIECES='showPieces';
+
 var ID_CV_GOTO = 'goto';
 var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
@@ -346,7 +352,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	imageWidthScale:1.0,
 	legendWidth:0,
 	hadLegendWidth:Utils.isDefined(args.legendWidth),
-	showPieces:false,
+
 	showAnnotations:true,	
 	axisWidth:CV_AXIS_WIDTH,
 	measureStyle:{
@@ -359,30 +365,20 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	range: {
 	},
 	boxLabelStyle: {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL},
+
 	showLegend:true,
 	showLabels:true,
+	showPieces:false,
 	showAllDepths:false,
 	asFeet:false,
 	showBoxes:true,
 	showHighlight:false,
 	showMenuBar:true,
+
 	bgPaddingX:4,
 	bgPaddingY:2	
     }
 
-    Utils.split('showPieces,hasBoxes',',').forEach(prop=>{
-	let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
-	let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
-	let getFunc = (dflt)=>{
-	    let value =  this.getProperty(prop,dflt);
-	    return value;
-	};
-	let setFunc = (v)=>{
-	    this.setProperty(prop,v);
-	};
-	this[getName] = getFunc;
-	this[setName] = setFunc;	
-    });
     //check for numbers as strings
     for (const [key, value] of Object.entries(args)) {
 	if (typeof value === 'string') {
@@ -396,7 +392,32 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	}
     }
 
+
+
     $.extend(this.opts,args);
+
+    //define setters/getters & check for url override
+    [ID_CV_SHOWLABELS, ID_CV_SHOWALLDEPTHS, ID_CV_ASFEET, ID_CV_SHOWHIGHLIGHT, ID_CV_SHOWBOXES,
+     ID_CV_SHOWPIECES,ID_CV_DOROTATION,ID_CV_IMAGEWIDTHSCALE].forEach(prop=>{
+	let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
+	let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
+	let getFunc = (dflt)=>{
+	    return  this.getCoreProperty(prop,dflt);
+	};
+	let setFunc = (v)=>{
+	    this.setCoreProperty(prop,v);
+	};
+	if(!this[getName])
+	    this[getName] = getFunc;
+	if(!this[setName])
+	    this[setName] = setFunc;	
+
+	let value = HU.getUrlArgument(prop);
+	if(Utils.isDefined(value)) {
+	    this.setCoreProperty(prop,value);
+	}
+    });
+
     this.opts.top =+this.opts.top;
 
 }
@@ -408,21 +429,25 @@ RamaddaCoreDisplay.prototype = {
     },
 
 
-    getProperty:function(key,dflt) {
+    getHasBoxes:function() {
+	return this.getProperty('hasBoxes');
+    },
+    setHasBoxes:function(value) {
+	this.setProperty('hasBoxes',value);
+    },    
+    getCoreProperty:function(key,dflt,debug) {
 	let v = this.opts[key];
-	if(v===null) return dflt;
+	if(debug) console.log('getProperty:',key,v);
+	if(!Utils.isDefined(v)) return dflt;
 	return v;
     },
-    setProperty:function(key,v) {
+    setCoreProperty:function(key,v) {
 	this.opts[key] = v;
+	return this.propertyChanged(key,v);
     },    
-
-    getImageWidthScale:function() {
-	return this.opts.imageWidthScale;
-    },
-    setImageWidthScale:function(v) {
-	this.opts.imageWidthScale = +v;
-	return this.opts.imageWidthScale;
+    propertyChanged:function(prop,value) {
+	HU.addToDocumentUrl(prop,this.getCoreProperty(prop));
+	return value;
     },
     getXOffset:function(column) {
 	let max = +this.opts.maxColumnWidth*this.getImageWidthScale();
@@ -518,8 +543,9 @@ RamaddaCoreDisplay.prototype = {
 
     formatDepth:function(n) {
 	n = parseFloat(n);
-	if(this.opts.asFeet)
+	if(this.getCoreProperty(ID_CV_ASFEET)){
 	    n = n*3.28084;
+	}
 	return n.toFixed(3);
 	let f =  Utils.formatNumber(n);
 	return f;
@@ -798,11 +824,12 @@ RamaddaCoreDisplay.prototype = {
 	let html = '';
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWLABELS),
-				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.getShowLabels(),'Show Labels'));
+				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],
+				 this.getShowLabels(),'Show Labels'));
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
-				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.opts.showBoxes,'Show Boxes'));    
+				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.getCoreProperty(ID_CV_SHOWBOXES),'Show Boxes'));    
 
 	html+=HU.div([],HU.space(2) +
 		     HU.checkbox(this.domId(ID_CV_SHOWALLDEPTHS),
@@ -811,37 +838,35 @@ RamaddaCoreDisplay.prototype = {
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
-				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
+				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],
+				 this.getCoreProperty(ID_CV_SHOWHIGHLIGHT),
+				 'Show Highlight'));    
 	if(this.getHasBoxes()) {
 	    html+=HU.div([],
 			 HU.checkbox(this.domId(ID_CV_SHOWPIECES),
 				     [ATTR_ID,this.domId(ID_CV_SHOWPIECES)],
-				     this.getShowPieces(),'Show Pieces'));
+				     this.getCoreProperty(ID_CV_SHOWPIECES),'Show Pieces'));
 
 	}
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_DOROTATION),
-				 [ATTR_ID,this.domId(ID_CV_DOROTATION)],this.opts.doRotation,'Do Rotation'));
+				 [ATTR_ID,this.domId(ID_CV_DOROTATION)],this.getCoreProperty(ID_CV_DOROTATION),
+				 'Do Rotation'));
 
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_ASFEET),
-				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.opts.asFeet,'Display Feet'));
+				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.getCoreProperty(ID_CV_ASFEET),
+				 'Display Feet'));
 	
-
-	/*
-	  html+= HU.div([],
-	  'Image Scale: ' + HU.input('',this.getImageWidthScale(),
-	  [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));
-	*/
-
 	html+= HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
 		      'Image Width Scale: ' +
-		      HU.span([ATTR_STYLE,HU.css('display','inline-block','min-width','6em'),ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
+		      HU.span([ATTR_STYLE,HU.css('display','inline-block','min-width','6em'),
+			       ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
 			      this.getImageWidthScale()) +
 		      HU.div([ATTR_STYLE,HU.css('margin-top','0.5em')],HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
-									       ATTR_ID,this.domId(ID_CV_SCALE)])));
+									       ATTR_ID,this.domId(ID_CV_IMAGEWIDTHSCALE)])));
 
 	html+= HU.div([],
 		      'Column width: ' + HU.input('',this.opts.maxColumnWidth,
@@ -865,7 +890,7 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 
-	this.jq(ID_CV_SCALE).slider({
+	this.jq(ID_CV_IMAGEWIDTHSCALE).slider({
 	    //range: true,
 	    min: 0.1,
 	    max: 10,
@@ -886,40 +911,37 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	});
 
-
 	this.jq(ID_CV_SHOWLABELS).change(function(){
-	    _this.opts.showLabels = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_SHOWLABELS, $(this).is(':checked'));
 	    _this.toggleLabels();
 	});
 	this.jq(ID_CV_DOROTATION).change(function(){
-	    _this.opts.doRotation = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_DOROTATION, $(this).is(':checked'));
 	    _this.drawCollections({forceNewImages:true});
 	});	
 	this.jq(ID_CV_ASFEET).change(function(){
-	    _this.opts.asFeet = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_ASFEET, $(this).is(':checked'));
 	    _this.drawCollections({forceNewImages:true,resetZoom:true});
 	});
 	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
-	    _this.opts.showAllDepths = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_SHOWALLDEPTHS, $(this).is(':checked'));
 	    _this.toggleBoxes();
 	});		
-
 	this.jq(ID_CV_SHOWPIECES).change(function(){
-	    _this.setShowPieces($(this).is(':checked'));
-	    _this.drawCollections({forceNewImages:true	    ,resetZoom:true});
+	    _this.setCoreProperty(ID_CV_SHOWPIECES, $(this).is(':checked'));
+	    _this.drawCollections({forceNewImages:true,resetZoom:true});
 	});
-
 	this.jq(ID_CV_SHOWBOXES).change(function(){
-	    _this.opts.showBoxes = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_SHOWBOXES, $(this).is(':checked'));
 	    _this.toggleBoxes();
 	});
-
-
 	this.jq(ID_CV_SHOWHIGHLIGHT).change(function(){
-	    _this.opts.showHighlight = $(this).is(':checked');
+	    _this.setCoreProperty(ID_CV_SHOWHIGHLIGHT, $(this).is(':checked'));
 	    _this.toggleHighlight();
 	});
     },
+
+
     addAnnotations:function(collection) {
 	if(this.opts.showLegend && collection.legends && collection.legends.length>0) {
 	    if(!collection.legendObjects) {
@@ -1295,12 +1317,6 @@ RamaddaCoreDisplay.prototype = {
 	    this.toggleAll(e.labels,show);
 	});
     },
-    getShowLabels: function() {
-	return this.opts.showLabels;
-    },
-    getShowAllDepths: function() {
-	return this.opts.showAllDepths;
-    },    
     toggleHighlight: function() {
 	let show = this.getShowHighlight();
 	this.entries.forEach(e=>{
@@ -1312,12 +1328,6 @@ RamaddaCoreDisplay.prototype = {
 	    }		
 	});
     },
-    getShowHighlight: function() {
-	return this.opts.showHighlight;
-    },
-
-
-
     showPopup:function(label,text,obj,left) {
 	let _this = this;
 	if(!text) return;
