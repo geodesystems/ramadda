@@ -553,6 +553,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
 		HU.space(1);
 	    
+	    let anyNoImages= false;
 	    records.forEach((record,rowIdx)=>{
 
                 let row = this.getDataValues(record);
@@ -587,7 +588,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		else if(height) imgAttrs.push(HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
 
-		let img = (!Utils.stringDefined(image))?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
+		let hasImage = Utils.stringDefined(image);
+		if(!hasImage) {
+		    anyNoImages=true;
+		    if(this.hideNoImages) return;
+		}
+		let img = !hasImage?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
 		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
@@ -652,7 +658,20 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 
 	    contents  = HU.div([CLASS,"ramadda-grid"],contents);
+	    if(this.getShowPlaceholderImage() && anyNoImages) {
+		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
+				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
+					       this.hideNoImages,'Only show images')) +
+		    contents;
+	    }
+
             this.setContents(contents);
+	    if(anyNoImages) {
+		this.jq('onlyimages').change(function() {
+		    _this.hideNoImages = $(this).is(':checked');
+		    _this.forceUpdateUI();
+		});
+	    }
 	    let blocks = this.find(".display-images-block");
 	    let _this = this;
 	    blocks.mouseenter(function() {
