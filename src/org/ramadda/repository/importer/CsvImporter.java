@@ -119,6 +119,7 @@ public class CsvImporter extends ImportHandler {
 				String field = row.getString(i);
 				field = field.replace("\uFEFF", "");
 				String _field=field.toLowerCase().trim();
+				_field=Utils.makeID(_field);
 				//				System.err.println("FIELD:" + _field +" " + _field.length());
 				if(_field.equals("name")) {
 				    nameIdx=i;
@@ -159,7 +160,7 @@ public class CsvImporter extends ImportHandler {
 				    String prop= _field.substring("column:".length()).trim();
 				    columnIdx.put(prop,i);
 				} else {
-				    columnIdx.put(field,i);
+				    columnIdx.put(_field,i);
 
 				}
 			    }
