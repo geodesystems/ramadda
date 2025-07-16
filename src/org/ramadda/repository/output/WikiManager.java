@@ -1950,6 +1950,24 @@ public class WikiManager extends RepositoryManager
 	} else if(theTag.equals(WIKI_TAG_TYPECOUNT)) {
 	    final Request theRequest = request;
 	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
+	    final boolean doColor=getProperty(wikiUtil,props,"doColor",false);
+	    final String iconWidth = getProperty(wikiUtil,props,"iconWidth",ICON_WIDTH);
+	    final int[]cnt={0};
+
+	    String[] colors = {
+			   "#E6F4EA", // Soft Mint
+			   "#DCEEFF", // Powder Blue
+			   "#FFECEE", // Pale Blush
+			   "#EFEBFA", // Lavender Mist
+			   "#FFEFD6", // Apricot Cream
+			   "#F4F6F8", // Cool Fog
+			   "#FFF8D9", // Butter Cream
+			   "#DFF5F0", // Seafoam
+			   "#F3F0FA", // Cloud Lilac
+			   "#F8E6E0"  // Dusty Rose
+	    };
+	    
+
 	    Function<List<TypeHandler>,String> apply = (handlers)->{
 		try {
 		    int count=0;
@@ -1983,13 +2001,19 @@ public class WikiManager extends RepositoryManager
 			if (icon == null) {
 			    icon = ICON_BLANK;
 			}
-			String img = HU.img(lastHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, ICON_WIDTH));		
+			String img = HU.img(lastHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, iconWidth));		
 			html = html.replace("${icon}",img);
 		    }   else {
 			html = html.replace("${icon}","");
 		    }
 
-		    if(stringDefined(style)) html=HU.inlineBlock(html,HU.attrs("style",style,"class",clazz));
+		    if(stringDefined(style)) {
+			String _style = style;
+			if(cnt[0]>= colors.length) cnt[0]=0;
+			if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
+			cnt[0]++;
+			html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
+		    }
 		    if(typeCount == 1 && addSearch && lastHandler!=null) {
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"
@@ -2008,9 +2032,7 @@ public class WikiManager extends RepositoryManager
 		handlers=getRepository().getTypeHandlers();
 	    }  else {
 		handlers = new ArrayList<TypeHandler>();
-		for(String type: Utils.split(types,",",true,true)) {
-		    TypeHandler handler  =getRepository().getTypeHandler(type);
-		    if(handler == null) continue;
+		for(TypeHandler handler: getTypes(request, types)) {
 		    if(except.contains(handler.getType())) continue;
 		    handlers.add(handler);
 		}
@@ -5434,6 +5456,35 @@ public class WikiManager extends RepositoryManager
 		compAttrs+=HU.attr("component-tags",tags.toString());
 	}
 	return HU.div(contents,compAttrs);
+    }
+
+    public void getTypes(Request request, List<TypeHandler> handlers,
+			 TypeHandler typeHandler) throws Exception {
+	if(handlers.contains(typeHandler)) return;
+	if(typeHandler.getForUser()) {
+	    handlers.add(typeHandler);
+	}
+	for(TypeHandler child:typeHandler.getChildrenTypes()) {
+	    getTypes(request, handlers, child);
+	}
+    }
+
+    public List<TypeHandler> getTypes(Request request, String entryTypes) throws Exception {
+	List<TypeHandler> types =new ArrayList<TypeHandler>();
+	if(entryTypes==null) return types;
+	for(String type: Utils.split(entryTypes,",",true,true)) {
+	    if(type.startsWith("super:")) {
+		type = type.substring("super:".length()).trim();
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		getTypes(request,types,typeHandler);
+	    } else {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		if(typeHandler!=null) {
+		    types.add(typeHandler);
+		}
+	    }
+	}
+	return types;
     }
 
     public Result processGetDataUrl(Request request) throws Exception {
