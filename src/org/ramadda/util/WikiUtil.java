@@ -36,6 +36,9 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public class WikiUtil implements HtmlUtilsConstants {
     private static final HtmlUtils HU = null;
+    public static final JsonUtil JU = null;    
+
+
     public static final String NAVDELIM =  "&#9675;";
     public static final String ATTR_OPEN = "open";
     public static final String ATTR_VAR = "var";
@@ -2876,12 +2879,11 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String sel1 = Utils.getProperty(props,"selector",".search-component,.entry-list-row-data");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
-		    String hideAll = Utils.getProperty(props,"hideAll","false");
-		    String linkSelector = Utils.getProperty(props,"linkSelector",null);
-		    if(linkSelector!=null) 
-			Utils.add(opts,"linkSelector",JsonUtil.quote(linkSelector));
-
-		    Utils.add(opts,"hideAll",JsonUtil.quoteType(hideAll));
+		    for(String prop:new String[]{"linkSelector","focus","hideAll"}) {
+			String v = Utils.getProperty(props,prop,null);
+			if(v!=null) 
+			    Utils.add(opts,prop,JU.quoteType(v));
+		    }
 		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,opts);
 		    continue;
 		}
