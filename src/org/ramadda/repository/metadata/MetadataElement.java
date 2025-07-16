@@ -747,6 +747,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return theFile;
     }
 
+    private static String popupArgs = "{label:'Select page template',makeButtons:false,after:true,single:true,icon:true}";
+
     public String getForm(Request request, Entry entry, FormInfo formInfo,
                           Metadata metadata, String suffix, String value,
                           boolean forEdit)
@@ -849,7 +851,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return getDateHandler().makeDateInput(request, arg, "", date,
                     null, false);
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
-            return HU.select(arg, values, value);
+	    String select=  HU.select(arg, values, value);
+	    select +=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				       HU.squote("select[name=\"" + arg+"\"]"),
+				       popupArgs));
+
+	    return select;
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
 	    MetadataType mtdType = getMetadataManager().findType(metadata.getType(),true);
             String[] va = getMetadataManager().getDistinctValues(request,
@@ -867,11 +874,17 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    }
             boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
 
-            return HU.select(arg, valuesToUse, value) + HU.space(2)
+            String select=  HU.select(arg, valuesToUse, value) + HU.space(2)
                    + msgLabel("Or")
                    + HU.input(arg + "_input", (contains
                     ? ""
 					       : value), HU.attrs("size",""+columns));
+	    select +=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				       HU.squote("select[name=\"" + arg+"\"]"),
+				       popupArgs));
+
+	    return select;
+
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
