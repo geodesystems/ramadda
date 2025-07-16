@@ -23,6 +23,11 @@ into some types.xml file
 <column  name="expiration_date"  label="Expiration Date"  type="date"  default="none" />
 <column  name="terms_url"  label="Terms Url"  type="url" />
 <column  name="notes"  label="Notes"  type="string"  size="5000" rows="5" />
+<service link="media_gs_thumbnail" target="attachment"/>
+ <action name="applyllm" label="Apply LLM" canedit="true"
+             icon="fas fa-font" foruser="true" category="edit"/>
+<action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
+
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/license.png" />
@@ -31,8 +36,10 @@ into some types.xml file
 <wiki><![CDATA[
 +section title="License: {{name}}"
 {{description wikify=true}}
++toggleopen License Information
 {{information}}
-{{embed  entry=""  skipLines="0"  maxLines="1000"  style=""  force="false"  maxheight="800"  #annotate="true"  raw="true"  #wikify="true" 
- #convertTags="true"  }} 
+-toggle
+----
+{{embed message=""  }} 
 -section]]></wiki>
 </type>
