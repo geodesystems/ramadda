@@ -1985,7 +1985,7 @@ public class WikiManager extends RepositoryManager
 		    if(typeCount>1) label="Count";	
 		    label = getProperty(wikiUtil,props,"label",label);
 		    String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
-		    String style = getProperty(wikiUtil,props,"style","margin-bottom:5px;margin-right:10px;padding:5px;width:120px;text-align:center;border:1px solid #ccc;");
+		    String style = getProperty(wikiUtil,props,"style","");
 		    String scount  =""+count;
 		    if(getProperty(wikiUtil,props,"animated",true))  {
 			scount = wikiUtil.getHandler("odometer").handle(wikiUtil, "odometer","count="+scount);
@@ -1993,9 +1993,9 @@ public class WikiManager extends RepositoryManager
 		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
 
 		    String html =  template.replace("${count}",scount).replace("${label}",label);
-		    String clazz="";
+		    String clazz=" ramadda-typecount-block ";
 		    boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
-		    if(addSearch) clazz="ramadda-clickable  ramadda-hoverable";
+		    if(addSearch) clazz+=" ramadda-clickable  ramadda-hoverable ";
 		    if(typeCount==1 && lastHandler!=null) {
 			String icon = lastHandler.getIconProperty(null);
 			if (icon == null) {
@@ -2007,13 +2007,11 @@ public class WikiManager extends RepositoryManager
 			html = html.replace("${icon}","");
 		    }
 
-		    if(stringDefined(style)) {
-			String _style = style;
-			if(cnt[0]>= colors.length) cnt[0]=0;
-			if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
-			cnt[0]++;
-			html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
-		    }
+		    String _style = style;
+		    if(cnt[0]>= colors.length) cnt[0]=0;
+		    if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
+		    cnt[0]++;
+		    html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
 		    if(typeCount == 1 && addSearch && lastHandler!=null) {
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"

@@ -2952,6 +2952,9 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     vertical-align:bottom;
 }
 
+
+
+
 .entry-row .ramadda-metadata-display {
     margin-bottom:5px;
 }
@@ -6928,9 +6931,24 @@ a span i:hover, a:hover span i {
 }
 
 .ramadda-hoverable:hover {
-    background:var(--highlight-background);
+    background:var(--highlight-background) !important;
     /*transition: background-color .3s ease-in;*/
 }
+
+.ramadda-typecount-block {
+    vertical-align:top;
+    min-width:150px;
+    margin-right:10px;
+    min-height:3em;
+    padding:10px;
+    text-align:center;
+    border:var(--basic-border);
+}
+
+.ramadda-typecount-block:hover {
+    border:var(--highlight-border) !important;
+}
+
 
 .ramadda-highlighted {
     background: var(--color-mellow-yellow);
@@ -6977,6 +6995,9 @@ h3 a:visited {
 	page-break-after:always; 	
     } 
 }
+
+
+
 
 @media only screen and (max-device-width : 600px) {
     img { 
