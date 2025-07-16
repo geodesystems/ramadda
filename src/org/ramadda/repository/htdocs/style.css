@@ -55,6 +55,11 @@
    --heading-weight:400;
 }
 
+
+
+
+
+
 body {
     position:relative;
     font-family: var(--font-family);
@@ -1034,9 +1039,6 @@ a.ramadda-entry-nav-page {
     padding-bottom:0px;
 }
 
-.ramadda-menubar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and newer Edge */
-}
 
 
 .csv-header {
@@ -2258,6 +2260,29 @@ mapheader {
     overflow-y:auto;
     -ms-overflow-style: none;  
     scrollbar-width: none;  
+}
+
+/*
+::-webkit-scrollbar {
+    width: 12px;
+    background: transparent;
+}
+
+div:hover::-webkit-scrollbar {
+    width: 12px;
+    background: transparent;
+}
+
+
+div:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4);
+}
+*/
+
+
+.ramadda-breadcrumbs-list::-webkit-scrollbar,
+.ramadda-menubar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and newer Edge */
 }
 
 .ramadda-thumbnail::-webkit-scrollbar {
