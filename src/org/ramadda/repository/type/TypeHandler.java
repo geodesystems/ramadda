@@ -1040,6 +1040,10 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+    public List<TypeHandler> getChildrenTypes() {
+	return childrenTypes;
+    }
+
     public void addChildTypeHandler(TypeHandler child) {
         if ( !childrenTypes.contains(child)) {
             childrenTypes.add(child);
