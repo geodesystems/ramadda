@@ -1071,6 +1071,10 @@ public class UserManager extends RepositoryManager {
                             HU.select(ARG_USER_TEMPLATE, templates,
 				      request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,user.getTemplate()))));
 
+        String popupArgs = "{label:'Select page template',makeButtons:false,after:true,single:true,icon:true}";
+	sb.append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				    HU.squote("select[name=\"" + ARG_USER_TEMPLATE+"\"]"),
+				    popupArgs)));
         List languages = new ArrayList(getPageHandler().getLanguages());
         languages.add(0, new TwoFacedObject("-default-", ""));
         sb.append(formEntry(request, msgLabel("Language"),
