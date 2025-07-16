@@ -901,8 +901,8 @@ public class ExtEditor extends RepositoryManager {
 		    "</div>";
 
 		String image = 		    divOpen +
-		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400)</span>\n<span>entry.grayscaleImage()</span>\n" +
-		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
+		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400 /*width*/)</span>\n<span>entry.grayscaleImage()</span>\n" +
+		    "<span>entry.makeThumbnail(true /*true = delete existing*/)</span>\n" +
 		    "</div>";
 
 		String llm =    divOpen +
