@@ -1413,7 +1413,7 @@ public class MetadataManager extends RepositoryManager {
             cols.add("<ul>" + Utils.join(list, "") + "</ul>");
         }
 	sb.append("<center>");
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-type',null,'Find Metadata Type')");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-type',null,'Find Metadata Type',false,{focus:true})");
 	sb.append("</center>");
 
         HU.centerBlock(sb, HU.hrow(cols));
@@ -1426,7 +1426,7 @@ public class MetadataManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request, sb,"Metadata Types",false);
 	sb.append(HU.center("Click on a button to copy the metadata ID"));
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type','.ramadda-metadata-category','Find Type',true)");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type','.ramadda-metadata-category','Find Type',true,{focus:true})");
 	Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
         for (MetadataType type : metadataTypes) {
@@ -1754,7 +1754,7 @@ public class MetadataManager extends RepositoryManager {
 
 	if(!doJson && !doCloud) {
 	    sb.append("<center>");
-	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-item','.formtable','Find',true)");
+	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-item','.formtable','Find',true,{focus:true})");
 	    sb.append("</center>");
 	}
 
@@ -2178,7 +2178,7 @@ public class MetadataManager extends RepositoryManager {
         }
 	String uid =  HU.getUniqueId("types");
 	sb.append("<center>");
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-add','.ramadda-metadata-group','Find Property')");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-add','.ramadda-metadata-group','Find Property',false,{focus:true})");
 	sb.append("</center>");
 	sb.append(HU.open("div",HU.attr("id",uid)));
 	for(int i=0;i<titles.size();i++) {
