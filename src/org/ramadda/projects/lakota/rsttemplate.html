@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${root}/ocetisakowin/rosebud.ico"/>
+<properties>
+name=
+id=sicangudata
+</properties>
+${imports}
+<style type="text/css">
+  :root {
+      --sicangu-logo-width:90px;
+      --header-height:80px;
+ }
+
+.treatymap {
+    background:url(${root}/ocetisakowin/treatybg.png?version=3);
+    background-repeat: no-repeat;  
+    background-size: cover;   
+    background-position: center;
+    height: 100vh;
+  }
+  
+.ramadda-note {
+    background-color: #6C001B;
+    color:#fff;
+}
+
+.ramadda-note a {
+    color:#fff;
+}
+.ramadda-nav-left {
+     top:110px;
+}
+.sicangu-pageheader {
+    line-height:0.8em;
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size: min(2vw, 80%);
+    padding:0px;
+}
+
+.sicangu-title {
+    font-size: min(2vw, 120%);
+}
+.sicangu-title a {
+    color:#fff;
+}
+
+
+
+.ramadda-user-menu i {
+    color:#fff;
+}
+
+.ramadda-header-floating .ramadda-navbar, .sicangu-pageheader .ramadda-navbar {
+    padding:6px;
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    border:#000;
+    background:#fff;
+    opacity:1;
+    text-align:center;
+}
+
+.ramadda-logo-image {
+    width:var(--sicangu-logo-width);
+}
+.ramadda-header {
+    height:var(--header-height);
+    padding: 1px;padding-left: 6px;padding-right: 6px;
+    background:#6C0000;
+}
+.ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
+.ramadda-breadcrumbs {
+    padding-left: 4px;
+    padding-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height:0.5em;
+    vertical-align: top;
+    font-size: 100% !important;
+}
+
+
+
+.ramadda-breadcrumbs-list {
+    margin-left:4px;
+    max-width:90vw;    
+    overflow-x:hidden;
+
+}
+
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<div style="position:absolute;left:10px;top:20px;top:50%;    transform: translateY(-50%);">
+<a href="https://www.rosebudsiouxtribe-nsn.gov/" title="Rosebud Sioux Tribe">
+<img class="ramadda-logo-image"  src="${root}/ocetisakowin/rosebudflag.png" style="width:var(--sicangu-logo-width);">
+</a>
+</div>
+<div style="position:absolute;left:110px;top:20px;top:50%;    transform: translateY(-50%);">
+<a href="${root}" title="Sicangu Climate Data Hub">
+<img class="ramadda-logo-image"  src="${root}/scc/scclogo.png" style="width:var(--sicangu-logo-width);">
+</a>
+</div>
+
+<div class="sicangu-pageheader">${pageheader}</div>
+<div class="sicangu-title"
+     style="position:absolute;left: 50%;transform: translateX(-50%);xleft:var(--sicangu-logo-width);xmargin-left:20px;bottom:0px;">
+<a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
+Sicangu Climate Data Repository
+</a>
+</div>
+<div style="position:absolute;right:10px;bottom:0px;">${links}</div>
+</div>
+<div style="border-bottom:1px solid #ccc;">${entry.header}</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div>
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}
+</div>
+${bottom}
+</body>
+</html>
