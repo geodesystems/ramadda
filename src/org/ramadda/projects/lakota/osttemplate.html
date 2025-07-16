@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${root}/ocetisakowin/ost-32x32.png"/>
+<properties>
+name=Oglala Sioux Tribe
+id=ost
+</properties>
+${imports}
+<style type="text/css">
+  :root {
+      --ost-logo-width:180px;
+      --header-height:161px;
+  }
+
+.ost-title {
+  font-size:  120%;
+}
+
+.ost-title a {
+    color:#fff;
+}
+
+
+@media (max-width: 800px) {
+  :root {
+      --ost-logo-width: min(180px, 25vw);
+  }
+  .ost-title {
+      font-size: min(2vw, 120%);
+  }
+
+}
+
+.ramadda-nav-left {
+     top:110px;
+}
+.ost-pageheader {
+    line-height:0.8em;
+    position:absolute;
+    top:10px;
+    right:20px;
+    padding:0px;
+}
+
+
+
+.ramadda-user-menu i {
+    color:#fff;
+}
+
+
+
+
+.ramadda-header-floating .ramadda-navbar, .ost-pageheader .ramadda-navbar {
+    padding:6px;
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    border:#000;
+    background:#fff;
+    opacity:1;
+    text-align:center;
+}
+
+.ramadda-logo-image {
+    width:var(--ost-logo-width);
+}
+.ramadda-header {
+    height:var(--header-height);
+    padding: 1px;padding-left: 6px;padding-right: 6px;
+    background: URL(${root}/ocetisakowin/ostbg.webp);
+    background-size: cover;       /* Scale the image to cover the container */
+    background-position: center;  /* Center the image */
+    background-repeat: no-repeat; 
+}
+.ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
+.ramadda-breadcrumbs {
+    padding-left: 4px;
+    padding-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height:0.5em;
+    vertical-align: top;
+    font-size: 100% !important;
+}
+
+.ramadda-breadcrumbs-list {
+    margin-left:4px;
+    max-width:90vw;    
+    overflow-x:hidden;
+
+}
+
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<div style="padding-left:1.25rem;position:absolute;left:0px;top:20px;top:50%;    transform: translateY(-50%);">
+<a href="https://www.oglala.gov/" title="Oglala Sioux Tribe">
+<img class="ramadda-logo-image"  border="0" src="${root}/ocetisakowin/ostflag.webp" style="width:var(--ost-logo-width);">
+</a>
+</div>
+<div class="ost-pageheader">${pageheader}</div>
+<div class="ost-title"
+     style="top:50%;transform: translateY(-50%);xmax-width:150px;position:absolute;left: calc(var(--ost-logo-width) + 40px);xtop:20px;">
+<a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
+Oglala Sioux Tribe<br>Data Repository
+</a>
+</div>
+<div style="position:absolute;right:10px;bottom:10px;">${links}</div>
+</div>
+<div style="border-bottom:1px solid #ccc;">${entry.header}</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div>
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}
+</div>
+${bottom}
+</body>
+</html>
