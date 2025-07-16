@@ -8065,7 +8065,9 @@ public class WikiManager extends RepositoryManager
                         l2.call( "Xml", "Include XML","+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Code", "```_newline__newline_", "```"),
 			l2.call( "Property", "Name value properties",
-				 "{{property name=value", "}}"));
+				 "{{property name=value", "}}"),
+			l.call( "Page search", ":pagesearch focus=true #selector=\"\" #hideAll=true ", "")
+			);
 
         Utils.appendAll(misc1,
 			l.call( "Title", ":title {{name link=true}}", ""),
