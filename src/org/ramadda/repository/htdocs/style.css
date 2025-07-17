@@ -6938,10 +6938,10 @@ a span i:hover, a:hover span i {
 .ramadda-typecount-block {
     border-radius:var(--default-radius);
     vertical-align:top;
+    margin:5px;
     min-width:150px;
-    margin:10px;
     min-height:3em;
-    padding:10px;
+    padding:5px;
     text-align:center;
     border:var(--basic-border);
 }
