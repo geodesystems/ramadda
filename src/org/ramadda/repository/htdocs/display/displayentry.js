@@ -477,7 +477,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showToggle'},
 	{p:'showThumbnail'},
 	{p:'placeholderImage',ex:'/repository/image.png'},
-	{p:'showEntryType'},
+	{p:'showEntryType',ex:'true',tt:'Show entry type in list'},
 	{p:'tagPopupLimit',d: 10,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 	{p:'comparators',d:'<=,>=,=,between',tt:'comparators for numeric search'},

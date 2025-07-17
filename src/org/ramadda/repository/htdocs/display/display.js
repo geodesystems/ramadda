@@ -5107,7 +5107,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let main = entryMenuButton + " " + open + " " + extra + link;
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], main);
 		if(showEntryType) {
-		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,'font-style:italic;'],entry.getTypeName()));
+		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,HU.css('font-style','italic','margin-right','4px')],entry.getTypeName()));
 		}
 
 		if(mainMetadataDisplay && mainMetadataDisplay.length) {

@@ -661,7 +661,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
 		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
 				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
-					       this.hideNoImages,'Only show images')) +
+					       this.hideNoImages,'Show entries with images')) +
 		    contents;
 	    }
 
