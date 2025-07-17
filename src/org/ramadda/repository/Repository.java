@@ -4995,6 +4995,36 @@ public class Repository extends RepositoryBase implements RequestHandler,
         allTypeHandlers.remove(typeHandler);
     }
 
+    public List<TypeHandler> getTypes(String entryTypes) throws Exception {
+	List<TypeHandler> types =new ArrayList<TypeHandler>();
+	if(entryTypes==null) return types;
+	for(String type: Utils.split(entryTypes,",",true,true)) {
+	    if(type.startsWith("super:")) {
+		type = type.substring("super:".length()).trim();
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		getTypes(types,typeHandler);
+	    } else {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		if(typeHandler!=null) {
+		    types.add(typeHandler);
+		}
+	    }
+	}
+	return types;
+    }
+
+    public void getTypes(List<TypeHandler> handlers,
+			 TypeHandler typeHandler) throws Exception {
+	if(handlers.contains(typeHandler)) return;
+	if(typeHandler.getForUser()) {
+	    handlers.add(typeHandler);
+	}
+	for(TypeHandler child:typeHandler.getChildrenTypes()) {
+	    getTypes(handlers, child);
+	}
+    }
+
+
     public TypeHandler getTypeHandler(TypeHandler typeHandler)  {
 	try {
 	    if(typeHandler.getFlushedFromCache()) {
