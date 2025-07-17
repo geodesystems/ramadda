@@ -6936,6 +6936,7 @@ a span i:hover, a:hover span i {
 }
 
 .ramadda-typecount-block {
+    border-radius:var(--default-radius);
     vertical-align:top;
     min-width:150px;
     margin:10px;
