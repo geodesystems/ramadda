@@ -1,5 +1,10 @@
 var COLUMNS_MAX_ROWS = 100;
 var ID_CT_BULKTEXT='bulktext';
+var ID_CT_TYPEID ='typeid';
+var ID_CT_SUPER ='supertype';
+var ID_CT_TYPENAME ='typename';
+
+
 
 var CreateType  = {
     domId:function(id) {
@@ -219,8 +224,8 @@ var CreateType  = {
     },
     initLabel:function() {
 	let label = jqid('basic_tab_label');
-	let  type = HU.jqname('typeid').val();
-	let  name = HU.jqname('typename').val();	
+	let  type = HU.jqname(ID_CT_TYPEID).val();
+	let  name = HU.jqname(ID_CT_TYPENAME).val();	
 	let basicLabel = 'Basic Configuration'
 	if(Utils.stringDefined(name)) basicLabel +=" - " + name;	
 	else if(Utils.stringDefined(type)) basicLabel +=" - " + type;
@@ -302,7 +307,18 @@ var CreateType  = {
 	    }
 	}
 	v =v.replace(/\\\n/, " ");
-	let lines = 	Utils.split(v,'\n',true,true).filter(line=>{
+	let lines = Utils.split(v,'\n',true,true).filter(line=>{
+	    line = line.trim();
+	    let ok = true;
+	    [['type',ID_CT_TYPEID],['super',ID_CT_SUPER],['name',ID_CT_TYPENAME]].forEach(tuple=>{
+		if(line.startsWith(tuple[0]+':')) {
+		    if(!Utils.stringDefined(jqname(tuple[1]).val())) {
+			jqname(tuple[1]).val(line.substring((tuple[0]+':').length).trim());
+		    }
+		    ok= false;
+		}
+	    });
+	    if(!ok) return false;
 	    return !line.startsWith('#') && line.length>0;
 	});
 	if(above) {
