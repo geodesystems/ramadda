@@ -50,13 +50,15 @@ values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Dis
 
 
 ##IT asset
+type:type_assets_it
+super:type_assets_physical
+name:IT Asset
 equipment_type,Type,enumerationplus, group="IT Asset Properties" cansearch="true" \
 values="desktop:Desktop Computer\,laptop:Laptop Computer\,server:Server\,\
 printer:Printer\,scanner:Scanner\,monitor:Monitor\,tablet:Tablet\,smartphone:Smartphone\,\
 network_switch:Network Switch\,router:Router\,firewall:Firewall\,access_point:Wireless Access Point\,\
 phone:Desk Phone\,projector:Projector\,ups:Uninterruptible Power Supply\,storage_device:External Storage Device\,\
 workstation:Workstation\,other:Other"
-
 
 
 
