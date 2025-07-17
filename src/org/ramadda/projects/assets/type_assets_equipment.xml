@@ -1,0 +1,16 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_equipment.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_equipment" 
+ description="Equipment" 
+ handler="org.ramadda.repository.type.TypeHandler" 
+ super="type_assets_physical" 
+ supercategory="General" 
+ category="Assets" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/equipment.png" />
+</type>

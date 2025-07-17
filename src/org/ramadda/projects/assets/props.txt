@@ -32,7 +32,7 @@ disposal_method,,string,size="2000" rows="5"
 disposed_comment,,string, size="5000" rows="5"
 
 
-##Vehicles
+#Vehicles
 make,,enumerationplus,size="600" group="Vehicle Information" cansearch="true" 
 model,,enumerationplus,size="600" cansearch="true" 
 vehicle_year,,int, cansearch="true" 
@@ -49,7 +49,7 @@ values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Dis
 
 
 
-##IT asset
+#IT asset
 type:type_assets_it
 super:type_assets_physical
 name:IT Asset
@@ -62,7 +62,7 @@ workstation:Workstation\,other:Other"
 
 
 
-##Building
+#Building
 address,,string,size="1000" rows="5" showinhtml="false"  cansearch="true" 
 building_type,,enumerationplus,  group="Building Information"  cansearch="true" \
 values="government:Government Facility\,healthcare:Healthcare Facility\,transportation:Transportation Hub\,\
@@ -86,7 +86,14 @@ decommissioned:Decommissioned\, surplus:Surplus"
 
 
 
-##license type_assets_license
+#equipment
+type:type_assets_equipment
+super:type_assets_physical
+name:Equipment
+
+
+
+#license type_assets_license
 license_type,,enumerationplus, \
 values="perpetual:Perpetual\,subscription:Subscription\,open_source:Open Source\,\
 trial:Trial\,enterprise:Enterprise\,volume:Volume\,site:Site\,\

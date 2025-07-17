@@ -1,0 +1,12 @@
+<types>
+<!-- Important: These must be in the order of their entry type inheritance -->
+<import resource="type_assets_thing.xml"/>
+<import resource="type_assets_collection.xml"/>
+<import resource="type_assets_base.xml"/>
+<import resource="type_assets_physical.xml"/>
+<import resource="type_assets_vehicle.xml"/>
+<import resource="type_assets_building.xml"/>
+<import resource="type_assets_equipment.xml"/>
+<import resource="type_assets_it.xml"/>
+<import resource="type_assets_license.xml"/>
+</types>
