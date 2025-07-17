@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 16 21:31:12 EDT 2025";
+var build_date="RAMADDA build date: Thu Jul 17 09:06:28 EDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -9149,7 +9149,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let main = entryMenuButton + " " + open + " " + extra + link;
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], main);
 		if(showEntryType) {
-		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,'font-style:italic;'],entry.getTypeName()));
+		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,HU.css('font-style','italic','margin-right','4px')],entry.getTypeName()));
 		}
 
 		if(mainMetadataDisplay && mainMetadataDisplay.length) {
@@ -24947,7 +24947,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
 		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
 				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
-					       this.hideNoImages,'Only show images')) +
+					       this.hideNoImages,'Show entries with images')) +
 		    contents;
 	    }
 
@@ -34268,7 +34268,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showToggle'},
 	{p:'showThumbnail'},
 	{p:'placeholderImage',ex:'/repository/image.png'},
-	{p:'showEntryType'},
+	{p:'showEntryType',ex:'true',tt:'Show entry type in list'},
 	{p:'tagPopupLimit',d: 10,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 	{p:'comparators',d:'<=,>=,=,between',tt:'comparators for numeric search'},
