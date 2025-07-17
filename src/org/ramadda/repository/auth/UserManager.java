@@ -8,6 +8,7 @@ package org.ramadda.repository.auth;
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.MailManager;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.output.*;
@@ -856,11 +857,15 @@ public class UserManager extends RepositoryManager {
 	    }
 	}
 
+
         String phone = request.getReallyStrictSanitizedString("phone",
 							      (String) user.getProperty("phone"));
         if (phone != null) {
             user.putProperty("phone", phone);
         }
+
+	String nwse = getMapManager().getNWSE(request);
+	user.putProperty(ARG_AREA,nwse);
 
         if (doAdmin) {
             applyAdminState(request, user);
@@ -1080,6 +1085,20 @@ public class UserManager extends RepositoryManager {
         sb.append(formEntry(request, msgLabel("Language"),
                             HU.select(ARG_USER_LANGUAGE, languages,
 				      request.getReallyStrictSanitizedString(ARG_USER_LANGUAGE,user.getLanguage()))));
+	MapInfo selectMap =
+	    getRepository().getMapManager().createMap(request, null, true, null);
+	
+
+	String[] nwse = new String[] {"","","",""};
+	if(user!=null) {
+	    String area = (String)user.getProperty(ARG_AREA);
+	    if(area!=null)  {
+		nwse = Utils.toStringArray(Utils.split(area,","));
+	    }
+	}
+	String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
+	sb.append(HU.formEntryTop(msgLabel("AOI"),mapSelector));
+
         sb.append(HU.formTableClose());
     }
 
@@ -1753,15 +1772,12 @@ public class UserManager extends RepositoryManager {
         usersHtml.append(HU.submit("Apply to Selected Users:", ARG_USER_APPLY));
 	usersHtml.append(" ");
 	usersHtml.append(HU.select(ARG_USER_ACTION,actions,""));
-        usersHtml.append(
-			 HU.open(
-				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
+	usersHtml.append(HU.vspace("1em"));
 
-	usersHtml.append("<br>");
 	String searchButtons ="[{\"label\":\"Status:\"},{\"label\":\"Active\", \"value\":\"status:active\"},{\"label\":\"Inactive\", \"value\":\"status:inactive\"},{\"label\":\"Pending\", \"value\":\"status:pending\"},{\"label\":\"&nbsp;&nbsp;Type:\"},	{\"label\":\"Admin\", \"value\":\"admin\"},{\"label\":\"Guest\", \"value\":\"guest\"},{\"label\":\"&nbsp;&nbsp;\"},{\"label\":\"Show all\",\"clear\":true}]";
 	String args = JU.map("focus","true","buttons",searchButtons);
 
-	usersHtml.append(HU.vspace());
+	//	usersHtml.append(HU.vspace());
 	HU.script(usersHtml,
 		  HU.call("HtmlUtils.initPageSearch",
 			  "'.ramadda-user-row'",
@@ -1769,6 +1785,13 @@ public class UserManager extends RepositoryManager {
 			  //				 "'#" + uid +" .type-list-container'",
 			  "'Find user'",
 			  "false",args));
+
+
+
+	usersHtml.append("<hr>");
+        usersHtml.append(
+			 HU.open(
+				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
 
 	String idHeader = getUserSortLink(request, "id",ascending,"ID");
 	String statusHeader = getUserSortLink(request, "status",ascending,"Status");
@@ -2003,6 +2026,14 @@ public class UserManager extends RepositoryManager {
 
         return user;
     }
+
+    public String getUserNWSE(Request request) {
+	if(request.isAnonymous()) return null;
+	User user = request.getUser();
+	if(user==null) return null;
+	return (String)user.getProperty(ARG_AREA);
+    }
+
 
     public String getUserSearchLink(Request request, User user) {
 	String linkMsg ="Search for entries by this user";
