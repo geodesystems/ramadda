@@ -2030,7 +2030,7 @@ public class WikiManager extends RepositoryManager
 		handlers=getRepository().getTypeHandlers();
 	    }  else {
 		handlers = new ArrayList<TypeHandler>();
-		for(TypeHandler handler: getTypes(request, types)) {
+		for(TypeHandler handler: getRepository().getTypes(types)) {
 		    if(except.contains(handler.getType())) continue;
 		    handlers.add(handler);
 		}
@@ -5456,34 +5456,7 @@ public class WikiManager extends RepositoryManager
 	return HU.div(contents,compAttrs);
     }
 
-    public void getTypes(Request request, List<TypeHandler> handlers,
-			 TypeHandler typeHandler) throws Exception {
-	if(handlers.contains(typeHandler)) return;
-	if(typeHandler.getForUser()) {
-	    handlers.add(typeHandler);
-	}
-	for(TypeHandler child:typeHandler.getChildrenTypes()) {
-	    getTypes(request, handlers, child);
-	}
-    }
 
-    public List<TypeHandler> getTypes(Request request, String entryTypes) throws Exception {
-	List<TypeHandler> types =new ArrayList<TypeHandler>();
-	if(entryTypes==null) return types;
-	for(String type: Utils.split(entryTypes,",",true,true)) {
-	    if(type.startsWith("super:")) {
-		type = type.substring("super:".length()).trim();
-		TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		getTypes(request,types,typeHandler);
-	    } else {
-		TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		if(typeHandler!=null) {
-		    types.add(typeHandler);
-		}
-	    }
-	}
-	return types;
-    }
 
     public Result processGetDataUrl(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID, ""));
