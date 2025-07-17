@@ -181,6 +181,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	getRepository().getSessionManager().setLocation(request, lat,lon);
     }
 
+    public String getNWSE(Request request) {
+	return request.getString(ARG_AREA_NORTH,"")+","+
+	    request.getString(ARG_AREA_WEST,"")+","+	    
+	    request.getString(ARG_AREA_SOUTH,"")+","+
+	    request.getString(ARG_AREA_EAST,"");
+    }
+
+
     public String[] getSessionLocation(Request request, String[] latlon) throws Exception{
 	String userLoc =
 	    (String) getSessionManager().getSessionProperty(request,ARG_LOCATION_LATITUDE);
@@ -276,6 +284,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             String userLoc =
                 (String) getSessionManager().getSessionProperty(request,
 								ARG_AREA);
+            if (userLoc == null)
+		userLoc = getUserManager().getUserNWSE(request);
+
+
             if (userLoc != null) {
                 List<String> toks = Utils.split(userLoc, ";");
                 props.put(PROP_INITIAL_BOUNDS, JsonUtil.list(toks));
