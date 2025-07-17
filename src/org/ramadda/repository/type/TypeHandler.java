@@ -6419,27 +6419,30 @@ public class TypeHandler extends RepositoryManager {
 	boolean didClause= false;
         if (request != null) {
             List<Clause> ands = new ArrayList<Clause>();
-            for (Column otherCol : getColumns()) {
-                if ( !otherCol.getCanSearch() || !otherCol.isEnumeration()) {
-                    continue;
-                }
-                if (otherCol.equals(column)) {
-                    continue;
-                }
-                String urlId = otherCol.getFullName();
-                if (request.defined(urlId)) {
-                    ands.add(Clause.eq(otherCol.getName(),
-                                       request.getString(urlId, "")));
-                }
-            }
-            if (ands.size() > 0) {
-		didClause = true;
-                if (clause == null) {
-                    clause = Clause.and(ands);
-                } else {
-                    clause = Clause.and(clause, Clause.and(ands));
-                }
-                //                System.err.println("col:" + column + " Clause:" + clause);
+	    List<Column> columns = getColumns();
+	    if(columns!=null) {
+		for (Column otherCol : getColumns()) {
+		    if ( !otherCol.getCanSearch() || !otherCol.isEnumeration()) {
+			continue;
+		    }
+		    if (otherCol.equals(column)) {
+			continue;
+		    }
+		    String urlId = otherCol.getFullName();
+		    if (request.defined(urlId)) {
+			ands.add(Clause.eq(otherCol.getName(),
+					   request.getString(urlId, "")));
+		    }
+		}
+		if (ands.size() > 0) {
+		    didClause = true;
+		    if (clause == null) {
+			clause = Clause.and(ands);
+		    } else {
+			clause = Clause.and(clause, Clause.and(ands));
+		    }
+		    //                System.err.println("col:" + column + " Clause:" + clause);
+		}
             }
         }
 
