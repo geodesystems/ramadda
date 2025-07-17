@@ -264,8 +264,8 @@ public class TypeHandler extends RepositoryManager {
     private List<String> allMetadataTypes;
 
     /** The default child entry types to show in the File->New menu */
-    private List<String> childTypes;
-
+    private String defaultChildTypes;
+    private List<String> defaultChildTypeHandlers;    
     private List<String[]> requiredMetadata = new ArrayList<String[]>();
     private List<Service> services = new ArrayList<Service>();
     private Entry synthTopLevelEntry;
@@ -450,8 +450,7 @@ public class TypeHandler extends RepositoryManager {
 		    if(!metadataTypes.contains(dflt)) metadataTypes.add(dflt);
 		}
 	    }
-            childTypes = Utils.split(Utils.getAttributeOrTag(node,
-							     ATTR_CHILDTYPES, ""),",",true,true);
+            defaultChildTypes = Utils.getAttributeOrTag(node, ATTR_CHILDTYPES, "");
 
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true));
@@ -1027,8 +1026,16 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    public List<String> getDefaultChildrenTypes() {
-	return childTypes;
+
+    public List<String> getDefaultChildrenTypes() throws Exception {
+	if(defaultChildTypeHandlers==null) {
+	    List<String> tmp = new ArrayList<String>();
+	    for(TypeHandler typeHandler: getRepository().getTypes(defaultChildTypes)) {
+		tmp.add(typeHandler.getType());
+	    }
+	    defaultChildTypeHandlers = tmp;
+	}
+	return defaultChildTypeHandlers;
     }
 
     public void getChildTypes(List<String> types) {
@@ -1039,6 +1046,7 @@ public class TypeHandler extends RepositoryManager {
             child.getChildTypes(types);
         }
     }
+
 
     public List<TypeHandler> getChildrenTypes() {
 	return childrenTypes;
@@ -2448,7 +2456,7 @@ public class TypeHandler extends RepositoryManager {
                 (List<String>) getSessionManager().getSessionProperty(
 								      request, ARG_TYPE);
             HashSet seen   = new HashSet();
-            boolean didone = addTypes(request, entry, links, childTypes,
+            boolean didone = addTypes(request, entry, links, getDefaultChildrenTypes(),
                                       seen);
             didone |= addTypes(request, entry, links, pastTypes, seen);
             didone |= addTypesFromEntries(request, entry, links,
