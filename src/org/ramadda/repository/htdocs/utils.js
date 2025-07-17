@@ -7008,6 +7008,10 @@ function jqid(id) {
     return HtmlUtils.jqid(id);
 }
 
+function jqname(name) {
+    return $('[name="' + name+'"]')
+}
+
 
 
 // For convenience...
