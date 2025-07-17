@@ -3349,8 +3349,8 @@ RepositoryMap.prototype = {
 	    if(this.params.initialZoom<0) {
 		let width = this.defaultBounds.right-this.defaultBounds.left;
 		let zoom = -1;
-		//a hack for zoomed in boxes
-		zoom = this.map.getZoomForExtent(extent)+2;
+		//add 1 - a hack for zoomed in boxes
+		zoom = this.map.getZoomForExtent(extent)+1;
 		if(debugBounds)
 		    console.log("overriding initialZoom:",zoom);
 		this.params.initialZoom = zoom;
