@@ -874,6 +874,17 @@ public class Entry implements Cloneable {
 
     }
 
+    public String getEnumValue(Request request,String col,String dflt) {
+	return getEnumValue(request, getColumn(col),dflt);
+    }
+
+    public String getEnumValue(Request request,Column col,String dflt) {
+        Object  value = getValue(request, col);
+	if(value==null) return dflt;
+	return col.getEnumLabel(value.toString());
+
+    }
+
     public String getStringValue(Request request,String col,String dflt) {
 	return getStringValue(request, getColumn(col),dflt);
     }
