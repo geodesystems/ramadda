@@ -30,18 +30,26 @@ icon="/icons/magnifier.png">
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
+{{description wikify=true}}
++toggleopen Toggle
 +if candonew=true 
 {{assets_barcode #type=type_assets_vehicle}}
--if 
+:vspace 1em 
++center
+{{new_entry  xtype="entry type to create"  fromEntry="true"  #label=""  #message="Show when cannot new"  }}
+-center
+:vspace 1em
 ----
+-if 
+:vspace 0.5em
 +center
 {{typecount  types="super:type_assets_base,type_assets_license"  iconWidth=24px
-doColor=true
+doColor=true ancestor="${this}"
 #except="comma separated list of types to exclude"  addSearchLink=true  topCount=100
  hideWhenZero="false"  template="${icon} ${label}<br>${count}"  addSearchLink="true"  animated="true" 
   #label=""  #topCount="5"  #types="Use * if doing topCount"  }} 
  -center
- 
+ -toggle
 :heading Search Assets
 {{display_entrylist     showEntryType=true orderByTypes="name,relevant,createdate,changedate,date,entryorder"  
 showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  

@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.projects.assets;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.WikiUtil;
@@ -92,14 +93,18 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	Date endDate =DateHandler.checkDate(new Date(entry.getEndDate()));	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
+	String searchUrl = "/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000";
 	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString());
+					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
+					 ARG_SEARCH_URL,searchUrl);
+
+
 	String h2 = sdf.format(now);
 	h2+=HU.space(2);
 	h2+=HU.href(xlsUrl,"XLSX Download");
 	sb.append(HU.center(h2));
 	sb.append("<center>");
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-entry',null,'Search in page')");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-entry','.ramadda-entry-table','Search in page')");
 	sb.append("</center>");
 	sb.append("<div class=assets-entry>");
 	wikify(request, entry,sb,"----");
@@ -108,7 +113,10 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	}
 	sb.append("</div>");
 	sb.append("<div class=assets-block>\n");
-	String contentsWiki = "{{table display=list showBreadcrumbs=false max=5000}}";
+ 
+
+
+	String contentsWiki = "{{table 	showHeader=true entries=\"searchurl:/repository/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false xmax=5000}}";
 	wikify(request, entry,sb,contentsWiki);
 	List<Entry> entries = getEntryManager().getChildren(request, entry);
 	//	makeReport(request, entry, sb);

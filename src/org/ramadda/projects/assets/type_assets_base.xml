@@ -67,8 +67,8 @@ macros="prop1" prop1.title="Properties"
 +toggle Record Information
 {{information  showDetails=false  showTitle="false"  showBase=true showDate=false}} 
 -toggle
-{{barcode field=asset_id}}
 +center
+{{barcode field=asset_id}}
 {{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
 :vspace 1em
