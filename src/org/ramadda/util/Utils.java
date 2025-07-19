@@ -4138,6 +4138,17 @@ public class Utils extends IO {
         return sb.toString();
     }
 
+    public static List<String> wrapItems(List l, String prefix, String suffix) {
+	List<String> result = new ArrayList<String>();
+        for (int i = 0; i < l.size(); i++) {
+            String s = prefix + l.get(i) + suffix;
+            s = s.replace("${index}", i + "");
+	    result.add(s);
+        }
+	return result;
+    }
+    
+
     public static List<List> splitList(List list, int max, int... remainder) {
         List<List> lists = new ArrayList<List>();
         if (list.size() < max) {
