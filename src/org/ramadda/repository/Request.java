@@ -1076,6 +1076,10 @@ public class Request implements Constants, Cloneable {
         return cloned;
     }
 
+    public void setCloned(boolean c) {
+	this.cloned = c;
+    }
+
     /**
      *  Set the Embedded property.
      *
