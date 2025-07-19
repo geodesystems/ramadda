@@ -168,7 +168,7 @@ public class LocalRepositoryManager extends RepositoryManager {
                                     "storage")).exists();
 
         Repository childRepository = startLocalRepository(repositoryId,
-                                         properties);
+							  properties);
         childRepository.getAdmin().setInstallationComplete(true);
         childRepository.writeGlobal(
             PROP_HOSTNAME, getRepository().getProperty(PROP_HOSTNAME, ""));
@@ -204,6 +204,10 @@ public class LocalRepositoryManager extends RepositoryManager {
             msg.append(HtmlUtils.p());
             if ( !existedBefore) {
                 childRepository.getAdmin().addInitEntries(user);
+		Entry topEntry = childRepository.getEntryManager().getRootEntry();
+		String description =childRepository.getAdmin().getInitDescription(topEntry);
+		topEntry.setDescription(description);
+		childRepository.getEntryManager().updateEntry(request, topEntry);
             }
         }
 
@@ -319,6 +323,7 @@ public class LocalRepositoryManager extends RepositoryManager {
                     || childRepository.getUrlBase().equals(path)) {
                 Request originalRequest = request;
                 request = request.cloneMe(childRepository);
+		request.setCloned(false);
                 originalRequest.setSessionHasBeenHandled(true);
                 //                request.setRequestPath(suffix);
                 request.setUser(null);
