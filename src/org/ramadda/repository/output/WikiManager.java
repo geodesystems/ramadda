@@ -2684,7 +2684,8 @@ public class WikiManager extends RepositoryManager
 	    String link = getProperty(wikiUtil, props, "link","");
             String label =  getProperty(wikiUtil, props, ATTR_TITLE, link);
 
-            String url =  HU.url(getRepository().getUrlBase() +"/entry/show",
+	    String action = getProperty(wikiUtil,props,"action",null);
+            String url =  HU.url(getRepository().getUrlBase() +(action==null?"/entry/show":"/entry/action?action=" + action),
 				 ARG_ENTRYID, entry.getId(),
 				 ARG_OUTPUT,link);
 
@@ -2696,9 +2697,9 @@ public class WikiManager extends RepositoryManager
             }
 
             if (makeButton) {
-                return HU.div(HU.href(url, label,
-                                      HU.cssClass("ramadda-button")
-                                      + HU.attr("role", "button")));
+                return HU.href(url, label,
+			       HU.cssClass("ramadda-button")
+			       + HU.attr("role", "button"));
             }
             String extra = "";
             return HU.href(url, label, extra);
