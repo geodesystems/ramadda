@@ -1961,6 +1961,8 @@ public class WikiManager extends RepositoryManager
 	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
 	    final boolean doColor=getProperty(wikiUtil,props,"doColor",false);
 	    final String iconWidth = getProperty(wikiUtil,props,"iconWidth",ICON_WIDTH);
+	    String prefix = getProperty(wikiUtil,props,"typecountPrefix",null);
+	    String suffix = getProperty(wikiUtil,props,"typecountSuffix",null);	    
 	    final int[]cnt={0};
 
 	    String[] colors = {
@@ -2068,7 +2070,15 @@ public class WikiManager extends RepositoryManager
 			EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)sort.get(i).getObject();
 			List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
 			tmp.add(entryCount);
+			if(prefix!=null) {
+			    sb.append(wikify(request,prefix.replace("\\n","\n")));
+			    prefix=null;
+			}
 			sb.append(apply.apply(tmp));
+		    }
+		    if(sort.size()>0 && suffix!=null) {
+			sb.append(wikify(request,suffix.replace("\\n","\n")));
+			suffix=null;
 		    }
 		    return sb.toString();
 		}
@@ -2102,6 +2112,12 @@ public class WikiManager extends RepositoryManager
 		    List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
 		    tmp.add(entryCount);
 		    sb.append(apply.apply(tmp));
+		}
+		if(sort.size()>0) {
+		    if(suffix!=null) {
+			sb.append(wikify(request,suffix.replace("\\n","\n")));
+			suffix=null;
+		    }
 		}
 	    } else {
 //		sb.append(apply.apply(handlers));

@@ -649,6 +649,9 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     color:#000;
 }
 
+
+
+
 .ramadda-nav-left-extra li {
     margin:0px;
 }
@@ -657,6 +660,9 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     background:#eee;
     font-weight:500;
 }
+
+
+
 
 .ramadda-nav-link-0 {
     font-size:110%;
@@ -5182,9 +5188,41 @@ snippet-hide {
     color:rgb(59, 69, 78);
 }
 
-.ramadda-linksheader-links {
+.ramadda-separator-1 {
+    font-size:140% !important;
+}
+
+.ramadda-header-link a {
+    text-decoration:none;
+}
+
+
+.ramadda-header-link-1 {
     display:inline-block;
     font-size:140% !important;
+    padding-bottom: 2px;
+    padding-left:0.25em;
+    padding-right:0.25em;
+    /*font-weight:450;*/
+}
+
+
+.ramadda-separator-2 {
+    font-size:110% !important;
+}
+
+.ramadda-header-link-2 {
+    display:inline-block;
+    font-size:110% !important;
+    padding-bottom: 2px;
+    padding-left:0.25em;
+    padding-right:0.25em;
+    font-weight:400;
+}
+
+
+.ramadda-linksheader-links {
+    display:inline-block;
     padding-bottom: 2px;
 }
 
@@ -5192,8 +5230,6 @@ snippet-hide {
     padding: 0px;
     padding-left: 8px;
     padding-right: 8px;
-    margin-left: 6px;
-    margin-right: 6px;    
     display:inline-block;
 }
 

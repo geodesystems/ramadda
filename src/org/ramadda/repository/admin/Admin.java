@@ -766,7 +766,7 @@ public class Admin extends RepositoryManager {
 
     public Result adminDbTables(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");
+        getPageHandler().makeLinksHeader2(request, sb, sqlUrls, "");
 	//        sb.append(header("Database Tables"));
         sb.append(getDatabaseManager().getDbMetaData());
         return makeResult(request, "RAMADDA-Admin-DB", sb);
@@ -792,6 +792,7 @@ public class Admin extends RepositoryManager {
 	}
 
 	if(!doIt) {
+	    getPageHandler().makeLinksHeader2(request, sb, sqlUrls, "");	
 	    sb.append(request.formPost(URL_ADMIN_MAINTENANCE));
 	    sb.append(messageNote("You can write out the database for backup or transfer to a new database"));
 	    sb.append(HU.submit("Export the database", ACTION_DUMPDB));
@@ -1578,7 +1579,7 @@ public class Admin extends RepositoryManager {
         formSB.append(HU.formClose());
 
         StringBuffer sb = new StringBuffer();
-        getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");	
+        getPageHandler().makeLinksHeader2(request, sb, sqlUrls, "");	
 
         if (!stringDefined(query)) {
 	    sb.append(formSB);

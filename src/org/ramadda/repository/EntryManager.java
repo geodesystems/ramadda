@@ -677,6 +677,7 @@ public class EntryManager extends RepositoryManager {
 	sb.append(HU.submit(LABEL_CANCEL, ARG_CANCEL));
 	sb.append(HU.formClose());
 	getPageHandler().entrySectionClose(request, entry, sb);
+	
 	return makeEntryEditResult(request,  entry,"Snapshot", sb);
     }
 
@@ -4246,21 +4247,16 @@ public class EntryManager extends RepositoryManager {
     }
 
     public void addEntryEditHeader(Request request, Entry entry,Appendable sb, RequestUrl url) throws Exception {
-	List<String> links = new ArrayList<String>();
+	List links = new ArrayList();
 	for(RequestUrl rurl:new RequestUrl[]{getRepository().URL_ENTRY_FORM,
 						 getMetadataManager().URL_METADATA_FORM,
 						 getMetadataManager().URL_METADATA_ADDFORM}) {
-	    if(rurl.equals(url)) {
-		links.add(HU.span(rurl.getLabel(),
-				  HU.clazz("ramadda-linksheader-on")));
-	    } else {
-		links.add(HU.span(HU.href(request.entryUrl(rurl,entry),rurl.getLabel()),
-				  HU.clazz("ramadda-linksheader-off")));
-	    }
+	    links.add(new HtmlUtils.Href(request.entryUrl(rurl,entry),rurl.getLabel(),
+					 rurl.equals(url)?"ramadda-linksheader-on":
+					 "ramadda-linksheader-off"));
 	}
-
-	String header = Utils.join(links,"<span class=\"ramadda-separator\">" + WikiUtil.NAVDELIM+"</span>");
-	getPageHandler().entrySectionOpen(request, entry, sb, header);
+	getPageHandler().entrySectionOpen(request, entry, sb, "");
+	sb.append(HU.center(HU.makeHeader1(links)));
     }
 
     public Result processEntryLinks(Request request) throws Exception {

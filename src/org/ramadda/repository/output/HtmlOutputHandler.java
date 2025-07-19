@@ -1795,19 +1795,11 @@ public class HtmlOutputHandler extends OutputHandler {
 		HU.makeTabs(sb, titles, contents);
 	    } else    if(displayStyle.equals("list")) {
 		if(showHeader) {
-		    StringBuilder header  = new StringBuilder();
-		    List<String> items = new ArrayList<String>();
-		    String clazz = " ramadda-link ramadda-nav-link ";
+		    List<HtmlUtils.Href> items = new ArrayList<HtmlUtils.Href>();
 		    for(int i=0;i<titles.size();i++) {
-			items.add(HU.span(HU.href("#" + huid+"_"+i,titles.get(i)), HU.cssClass(clazz)));
+			items.add(new HtmlUtils.Href("#" + huid+"_"+i,titles.get(i)));
 		    }
-		    HU.div(header,
-			   StringUtil.join(
-					   "<span class=\"ramadda-separator\">&nbsp;" + WikiUtil.NAVDELIM+"&nbsp;</span>",
-					   items), HU.cssClass("ramadda-linksheader-links"));
-		    header.append("\n");
-		    sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
-				     header.toString()));
+		    sb.append(HU.center(HU.makeHeader2(items)));
 		}
 
 

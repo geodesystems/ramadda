@@ -1732,9 +1732,18 @@ public class PageHandler extends RepositoryManager {
     public void makeLinksHeader(Request request, Appendable sb,
                                 List<RequestUrl> urls, String arg)
             throws Exception {
-        List<String> links   = new ArrayList();
-        String       type    = request.getRequestPath();
-        String       onLabel = null;
+	sb.append(HU.center(HU.makeHeader1(makeHeaderLinks(request, urls,arg))));
+    }
+
+    public void makeLinksHeader2(Request request, Appendable sb,
+                                List<RequestUrl> urls, String arg)
+            throws Exception {
+	sb.append(HU.center(HU.makeHeader2(makeHeaderLinks(request, urls,arg))));
+    }
+
+    public List makeHeaderLinks(Request request,  List<RequestUrl> urls, String arg)
+	throws Exception {
+        List links   = new ArrayList();
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
             if (label != null) label = HU.span(label,HU.clazz("ramadda-nowrap"));
@@ -1744,23 +1753,15 @@ public class PageHandler extends RepositoryManager {
             }
             String url   = request.makeUrl(requestUrl) + arg;
             String clazz = "ramadda-highlightable ramadda-linksheader-off";
-            if (requestUrl.matches(request)) {
-                onLabel = label;
-                clazz   = "ramadda-highlightable ramadda-linksheader-on";
-            }
-            links.add(HU.span(HU.href(url, label), HU.cssClass(clazz)));
-            //            }
+	    links.add(new HtmlUtils.Href(url,label,requestUrl.matches(request)?
+					 "ramadda-linksheader-on":
+					 "ramadda-linksheader-off"));					 
         }
-        StringBuilder header = new StringBuilder();
-	//add a space after so the whole line can be broken
-        HU.div(header,
-               StringUtil.join(
-                   "<span class=\"ramadda-separator\">" + WikiUtil.NAVDELIM+"</span>",
-                   links), HU.cssClass("ramadda-linksheader-links"));
-        header.append("\n");
-        sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
-                         header.toString()));
+
+	return links;
     }
+
+
 
     public String showDialogNote(String h, String... extra) {
         return getDialog(h, extra, ICON_DIALOG_INFO, false);
