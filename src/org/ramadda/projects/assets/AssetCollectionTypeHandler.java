@@ -9,15 +9,17 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.*;
 import org.json.*;
 
-
+import java.util.LinkedHashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
@@ -61,8 +63,64 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 
     }
 
-    private static String propWiki =
-	"{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.attachment,!content.thumbnail,!content.license\" checkTextLength=\"true\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
+
+    public static final String ARG_REPORT="report";
+    public static final String ACTION_REPORT="assets_report";
+    public static final String REPORT_TABLE = "assets_report_table";
+    public static final String REPORT_SUMMARY = "assets_report_summary";    
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+	if(action.equals(ACTION_REPORT)) 
+	    return handleActionReport(request, entry);
+	return super.processEntryAction(request,entry);
+    }
+
+
+
+
+    public Result handleActionReport(Request request, Entry entry) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	String report = request.getString("report",REPORT_TABLE);
+	getPageHandler().entrySectionOpen(request, entry, sb, "");
+
+	String searchUrl = "/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
+
+	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
+					 ARG_SEARCH_URL,searchUrl);
+
+	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
+	headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
+						  ARG_REPORT,REPORT_TABLE),
+					   "Table",
+					   report.equals(REPORT_TABLE)?
+					   "ramadda-linksheader-on":
+					   "ramadda-linksheader-off"));
+	headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
+						  ARG_REPORT,REPORT_SUMMARY),
+					   "Summary",
+					   report.equals(REPORT_SUMMARY)?
+					   "ramadda-linksheader-on":
+					   "ramadda-linksheader-off"));	
+
+	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download XLSX"));
+	sb.append(HU.center(HU.makeHeader1(headerItems)));
+
+
+	if(report.equals(REPORT_TABLE))
+	    makeTableReport(request, entry,sb);
+	else if(report.equals(REPORT_SUMMARY))
+	    makeSummaryReport(request, entry,sb);	
+	else
+	    sb.append("Unknown report:" + report);
+
+	getPageHandler().entrySectionClose(request, entry, sb);
+	Result result = new Result("Assets Report - " + entry.getName(),sb);
+        return getEntryManager().addEntryHeader(request, entry, result);
+
+    }
 
 
     @Override
@@ -71,38 +129,17 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("assets_report_link")) {
-	    String url =
-		request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-				 ARG_OUTPUT,"assets_report");
-	    return HU.div(HU.href(url,"Generate Report"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
+	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
+	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
 	}
-        if ( !tag.equals("assets_report")) {
-            return super.getWikiInclude(wikiUtil, request, originalEntry,
-                                        entry, tag, props);
-	}
-	StringBuilder sb = new StringBuilder();
-	//title="{{name}} Finding Aid"
-	Entry section = getEntryManager().getAncestor(request,  entry, "type_archive_section");
-	String titleWiki = ":title Assets Report  - {{name}}";
-	if(section!=null) {
-	    wikify(request, section,sb,titleWiki);
-	}
-	sb.append(HU.cssBlock(".metadata-block {max-height:1000px;}\n.archive-findingaid-header {border-top-left-radius: var(--default-radius);border-top-right-radius: var(--default-radius);padding:4px;padding-left:12px;font-weight:bold;font-size:110%;background:var(--header-background);}\n.archive-findingaid-block {margin-top:1em;margin-left:40px;}\n"));
-	wikify(request, entry,sb,titleWiki);
-	Date startDate =DateHandler.checkDate(new Date(entry.getStartDate()));
-	Date endDate =DateHandler.checkDate(new Date(entry.getEndDate()));	
+	return super.getWikiInclude(wikiUtil, request, originalEntry,
+				    entry, tag, props);
+
+    }
+
+    private void makeTableReport(Request request, Entry entry, StringBuilder sb) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
-	String searchUrl = "/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000";
-	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
-					 ARG_SEARCH_URL,searchUrl);
-
-
-	String h2 = sdf.format(now);
-	h2+=HU.space(2);
-	h2+=HU.href(xlsUrl,"XLSX Download");
-	sb.append(HU.center(h2));
 	sb.append("<center>");
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-entry','.ramadda-entry-table','Search in page')");
 	sb.append("</center>");
@@ -113,46 +150,69 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	}
 	sb.append("</div>");
 	sb.append("<div class=assets-block>\n");
- 
-
-
 	String contentsWiki = "{{table 	showHeader=true entries=\"searchurl:/repository/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false xmax=5000}}";
 	wikify(request, entry,sb,contentsWiki);
-	List<Entry> entries = getEntryManager().getChildren(request, entry);
-	//	makeReport(request, entry, sb);
-	sb.append("</div>\n");
-
-	return sb.toString();
     }
 
-    private void makeReport(Request request, Entry entry, StringBuilder buff) throws Exception {
+
+
+    private void inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map) {
+	buff.append(HU.comment("inline data for " + id));
+	buff.append(HU.open("div",HU.attrs("style","display:none","id",id)));
+	buff.append(header);
+	buff.append("\n");
+	for (String key : map.keySet()) {
+	    Integer value = map.get(key);
+	    buff.append(Seesv.cleanColumnValue(key));
+	    buff.append(",");
+	    buff.append(value);
+	    buff.append("\n");
+	}
+	HU.close(buff,"div");
+	buff.append("\n");
+    }
+
+
+    private void addSummary(LinkedHashMap<String,Integer> map,String label) {
+	if(!stringDefined(label)) label="NA";
+	Integer typeCnt = map.get(label);
+	if(typeCnt==null) {
+	    map.put(label,typeCnt=new Integer(0));
+	}		 
+	map.put(label,new Integer(typeCnt+1));
+    }
+
+
+
+    private void makeSummaryReport(Request request, Entry entry, StringBuilder buff ) throws Exception {
 	 List<Entry> entries = getEntryManager().getChildren(request, entry);
-	 if(entries.size()==0) return;
+	 if(entries.size()==0) {
+	     buff.append(getPageHandler().showDialogNote("No assets available"));
+	     return;
+	 }
+
 	 List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
-	 Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
+	 LinkedHashMap<String,Integer> types = new LinkedHashMap<String,Integer>();
+	 LinkedHashMap<String,Integer> department = new LinkedHashMap<String,Integer>();
+	 LinkedHashMap<String,Integer> location = new LinkedHashMap<String,Integer>();
+	 LinkedHashMap<String,Integer> assignedto = new LinkedHashMap<String,Integer>();	 	 	 
 	 for(Entry child: entries) {
 	     if(!child.getTypeHandler().isType("type_assets_base")) {
 		 continue;
 	     }
-	     NamedBuffer sb = map.get(child.getTypeHandler().getType());
-	     if(sb == null) {
-		 sb = new NamedBuffer(child.getTypeHandler().getLabel());
-		 map.put(child.getTypeHandler().getType(),sb);
-		 contents.add(sb);
-	     }
+	     addSummary(types,child.getTypeHandler().getLabel());
+	     addSummary(department,child.getStringValue(request,"department",""));
+	     addSummary(location,child.getStringValue(request,"location",""));
+	     addSummary(assignedto,child.getStringValue(request,"assigned_to",""));	     	     
+	 }
 
-	     sb.append("<div class=assets-entry>");
-	     String label = getTypeName(request, child) +": "+child.getName();
-	     label = HU.href(getEntryManager().getEntryUrl(request, child),label);
-	     HU.div(sb,label,HU.attrs("class","assets-report-header"));
-	     sb.append(getInfo(request, child));
-	     wikify(request, child,sb.getBuffer(),propWiki);
-	     sb.append("</div>\n");
-	 }
-	 for(NamedBuffer nb:contents) {
-	     buff.append(HU.div(HU.b(nb.getName())));
-	     buff.append(nb.getBuffer());
-	 }
+	 inlineData(buff,"typesdata","type,count",types);
+	 inlineData(buff,"departmentdata","department,count",department);
+	 inlineData(buff,"locationdata","location,count",location);
+	 inlineData(buff,"assignedtodata","assigned to,count",assignedto);	 	 	 
+	 String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
+	 buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
+
     }
 
 

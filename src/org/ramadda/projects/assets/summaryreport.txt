@@ -1,0 +1,34 @@
++row
++col-6
+:heading Asset Type
+{{group inlineDataSrc=typesdata}}
+{{display_download}}
+{{display_piechart width=300px}} 
+{{display_table height=200px}}
+-col
++col-6
+:heading Department
+{{group inlineDataSrc=departmentdata}}
+{{display_download}}
+{{display_piechart width=300px}} 
+{{display_table height=200px}}
+-col
+-row
+
++row
++col-6
+:heading Location
+{{group inlineDataSrc=locationdata}}
+{{display_download}}
+{{display_piechart width=300px}} 
+{{display_table height=200px}}
+-col
++col-6
+:heading Assigned To
+{{group inlineDataSrc=assignedtodata}}
+{{display_download}}
+{{display_piechart width=300px}} 
+{{display_table height=200px}}
+-col
+-row
+

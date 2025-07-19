@@ -18,11 +18,10 @@ childtypes="super:type_assets_base,type_assets_license"
 <column  name="contact_person"  label="Contact Person"  type="enumerationplus" />
 <column  name="contact_email"  label="Contact Email"  type="email" />
 <column  name="contact_phone"  label="Contact Phone"  type="string" />
- <wikimacro name="assets_report" label="Asset Report" isoutput="true" 
-icon="/icons/magnifier.png">
-<![CDATA[+section                                                                                                                                  
-{{assets_report}}                                                                                                                            
--section]]></wikimacro>
+<action name="assets_report" label="Assets Report" 
+canedit="true" icon="/icons/magnifier.png" foruser="true" category="view"/>
+
+
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/collection.png" />
@@ -33,29 +32,28 @@ icon="/icons/magnifier.png">
 {{description wikify=true}}
 +toggleopen Toggle
 +if candonew=true 
+:heading Create
 {{assets_barcode #type=type_assets_vehicle}}
 :vspace 1em 
 +center
-{{new_entry  xtype="entry type to create"  fromEntry="true"  #label=""  #message="Show when cannot new"  }}
+{{new_entry   fromEntry="true"    message=""  }}
 -center
-:vspace 1em
-----
 -if 
 :vspace 0.5em
 +center
-{{typecount  types="super:type_assets_base,type_assets_license"  iconWidth=24px
+{{typecount  typecountPrefix=":heading Summary" 
+typecountSuffix="" types="super:type_assets_base,type_assets_license"  iconWidth=24px
 doColor=true ancestor="${this}"
-#except="comma separated list of types to exclude"  addSearchLink=true  topCount=100
- hideWhenZero="false"  template="${icon} ${label}<br>${count}"  addSearchLink="true"  animated="true" 
-  #label=""  #topCount="5"  #types="Use * if doing topCount"  }} 
- -center
- -toggle
+addSearchLink=true  topCount=100
+hero="false"  template="${icon} ${label}<br>${count}"  
+addSearchLink="true"  animated="true" }} 
+-center
+-toggle
 :heading Search Assets
 {{display_entrylist     showEntryType=true orderByTypes="name,relevant,createdate,changedate,date,entryorder"  
 showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
 toggleClose=true  entryTypes="super:type_assets_base,super:type_assets_thing" }} 
 
-----
 :heading Collection Information
 {{assets_report_link}}
 {{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
