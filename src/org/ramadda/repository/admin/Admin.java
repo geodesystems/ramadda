@@ -1,63 +1,43 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.admin;
 
-
 import org.ramadda.repository.*;
-
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-
 import org.ramadda.repository.harvester.*;
-
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.seesv.Seesv;
-
 import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
 import org.ramadda.util.sql.Clause;
-
 import org.ramadda.util.sql.SqlUtil;
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
-
-
-
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.lang.management.*;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import java.text.DecimalFormat;
-
 import java.text.SimpleDateFormat;
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -65,170 +45,80 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-
-
-/**
- * Class Admin
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class Admin extends RepositoryManager {
-
-    /**  */
     private static boolean debugInitialization = false;
-
-    /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
-
-    /**  */
     public static final String ACTION_LISTMISSING = "action.listmissing";
-
     public static final String ACTION_LISTORPHANS = "action.listorphans";
-
-
-    /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
-
-    /** _more_ */
     public static final String ACTION_NEWDB = "action.newdb";
-
-    /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
-
-
-    /**  */
     public static final String ACTION_REINDEX = "action.reindex";
-
-    /** _more_ */
     public static final String ACTION_CHANGEPATHS = "action.changepaths";
-
-    /** _more_ */
     public static final String ARG_CHANGEPATHS_CONFIRM = "changepathsconfirm";
-
-    /** _more_ */
     public static final String ARG_CHANGEPATHS_PATTERN = "changepathspattern";
-
-    /** _more_ */
     public static final String ARG_CHANGEPATHS_TO = "changepathsto";
-
-
-    /** _more_ */
     public static final String ARG_REPLACE_PATTERN = "replacepattern";
-
     public static final String ARG_DELETE_INDEX="deleteindex";
-
-    /** _more_ */
     public static final String ARG_REPLACE_WITH = "replacewith";
-
-
-    /** _more_ */
     public static final String ARG_ADMIN_ADMINCREATED = "admin.admincreated";
-
-
-    /** _more_ */
-    public static final String ARG_ADMIN_INSTALLCOMPLETE =
-        "admin.installcomplete";
-
-    /** _more_ */
-    public static final String ARG_ADMIN_INSTALLNOTICESHOWN =
-        "admin.installnoticeshown";
-
-    /** _more_ */
-    public static final String ARG_ADMIN_INSTALLPLUGIN =
-        "admin.installplugin";
-
-    /** _more_ */
+    public static final String ARG_ADMIN_INSTALLCOMPLETE = "admin.installcomplete";
+    public static final String ARG_ADMIN_INSTALLNOTICESHOWN =   "admin.installnoticeshown";
+    public static final String ARG_ADMIN_INSTALLPLUGIN =    "admin.installplugin";
     public static final String ARG_ADMIN_LICENSEREAD = "admin.licenseread";
 
-
-
-    /** _more_ */
     public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
-                                            "Local Repositories");
-
-
-    /** _more_ */
+						       "Local Repositories");
     public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql", "Database");
-
-
-
-    /** _more_ */
     public RequestUrl URL_ADMIN_MAINTENANCE = new RequestUrl(this,
-                                              "/admin/maintenance",
-                                              "Maintenance");
-
-    /** _more_ */
+							     "/admin/maintenance",
+							     "Maintenance");
     public RequestUrl URL_ADMIN_SNAPSHOTS = new RequestUrl(this,
-                                                "/admin/snapshots",
-                                                "Snapshots");
-
-
-
-    /** _more_ */
+							   "/admin/snapshots",
+							   "Snapshots");
     public RequestUrl URL_ADMIN_STARTSTOP = new RequestUrl(this,
-                                                "/admin/startstop",
-                                                "Start/Stop");
-
-
-    /** _more_ */
+							   "/admin/startstop",
+							   "Start/Stop");
     public RequestUrl URL_ADMIN_SETTINGS = new RequestUrl(this,
-                                               "/admin/settings", "Settings");
+							  "/admin/settings", "Settings");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_MONITORS = new RequestUrl(this,
-                                               "/admin/monitors", "Monitors");    
+							  "/admin/monitors", "Monitors");    
 
-
-    /** _more_ */
     public RequestUrl URL_ADMIN_PLUGIN_UPLOAD = new RequestUrl(this,
-                                                    "/admin/plugin/upload",
-                                                    "Upload Plugin");
+							       "/admin/plugin/upload",
+							       "Upload Plugin");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_SETTINGS_DO = new RequestUrl(this,
-                                                  "/admin/settings/do",
-                                                  "Settings");
+							     "/admin/settings/do",
+							     "Settings");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_TABLES = new RequestUrl(this,
-                                             "/admin/tables", "View Schema");
+							"/admin/tables", "View Schema");
 
-
-    /** _more_ */
     public RequestUrl URL_ADMIN_DUMPDB = new RequestUrl(this,
-                                             "/admin/dumpdb",
-                                             "Export Database");
+							"/admin/dumpdb",
+							"Export Database");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_STATS = new RequestUrl(this, "/admin/stats",
-                                            "System");
+						       "System");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_ACCESS = new RequestUrl(this,
-                                             "/admin/access", "Permissions");
+							"/admin/access", "Permissions");
 
-
-    /** _more_ */
     public RequestUrl URL_ADMIN_LOG = new RequestUrl(this, "/admin/log",
-                                          "Logs");
+						     "Logs");
 
-    /** _more_ */
     public RequestUrl URL_ADMIN_STACK = new RequestUrl(this, "/admin/stack",
-                                            "Stack");
+						       "Stack");
 
-
-    /** _more_ */
     private List<RequestUrl> adminUrls = RequestUrl.toList(new RequestUrl[] {
 	    URL_ADMIN_SETTINGS, getRepositoryBase().URL_USER_LIST,
 	    URL_ADMIN_STATS, URL_ADMIN_ACCESS,
@@ -244,65 +134,28 @@ public class Admin extends RepositoryManager {
 	    URL_ADMIN_SQL,URL_ADMIN_TABLES,URL_ADMIN_DUMPDB
 	});
 
-
-    /** _more_ */
     public static final String BLOCK_SITE = "block.site";
-
-    /** _more_ */
     public static final String BLOCK_ACCESS = "block.access";
-
-    /** _more_ */
     public static final String BLOCK_DISPLAY = "block.display";
 
-
-
-    /** _more_ */
     int cleanupTS = 0;
-
-    /** _more_ */
     boolean runningCleanup = false;
-
-    /** _more_ */
     StringBuffer cleanupStatus = new StringBuffer();
-
-    /** _more_ */
     private List<AdminHandler> adminHandlers = new ArrayList<AdminHandler>();
 
-    /** _more_ */
     private Hashtable<String, AdminHandler> adminHandlerMap =
         new Hashtable<String, AdminHandler>();
 
-    /** _more_ */
     private Boolean installationComplete;
-
-    /** _more_ */
     private boolean isRegistered = true;
-
-    /** _more_ */
     private int numberUsers = 5;
-
-    /** _more_ */
     private String orgType = "";
-
-    /** _more_ */
     private String regId = "";
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public Admin(Repository repository) {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void doFinalInitialization() throws Exception {
         getRepository().getInstallPassword();
 
@@ -317,61 +170,37 @@ public class Admin extends RepositoryManager {
         }
 
 	/*
-        Misc.run(new Runnable() {
-            public void run() {
-                while (true) {
-                    printMemory();
-                    Misc.sleepSeconds(5);
-                }
-            }
-        });
+	  Misc.run(new Runnable() {
+	  public void run() {
+	  while (true) {
+	  printMemory();
+	  Misc.sleepSeconds(5);
+	  }
+	  }
+	  });
 	*/
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getInstallationComplete() {
         if (installationComplete == null) {
             installationComplete = Boolean.valueOf(
-                getRepository().getDbProperty(
-                    ARG_ADMIN_INSTALLCOMPLETE, false));
+						   getRepository().getDbProperty(
+										 ARG_ADMIN_INSTALLCOMPLETE, false));
         }
 
         return installationComplete.booleanValue();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @throws Exception _more_
-     */
     public void setInstallationComplete(boolean v) throws Exception {
         installationComplete = Boolean.valueOf(v);
         getRepository().writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "" + v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isRegistered() {
         //        return true;
         return isRegistered;
     }
 
-
-    /**
-     * _more_
-     */
     public void checkRegistration() {
         isRegistered = false;
         numberUsers  = 5;
@@ -388,8 +217,8 @@ public class Admin extends RepositoryManager {
             //id:keyword:version:date:orgtype:users:                                                               
             if (toks.size() < 6) {
                 System.err.println(
-                    "Repository.checkRegistration: incorrect registration key:  "
-                    + registrationKey);
+				   "Repository.checkRegistration: incorrect registration key:  "
+				   + registrationKey);
 
                 return;
             }
@@ -403,7 +232,7 @@ public class Admin extends RepositoryManager {
             if (isRegistered) {
                 orgType = Utils.unobfuscate(toks.get(idx++), true);
                 numberUsers =  Integer.parseInt(Utils.unobfuscate(toks.get(idx++),
-                        true));
+								  true));
             }
         } catch (Exception exc) {
             System.err.println("Repository.checkRegistration: error:" + exc);
@@ -413,32 +242,14 @@ public class Admin extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public AdminHandler getAdminHandler(String id) {
         return adminHandlerMap.get(id);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<AdminHandler> getAdminHandlers() {
         return adminHandlers;
     }
 
-    /**
-     * _more_
-     *
-     * @param adminHandler _more_
-     */
     public void addAdminHandler(AdminHandler adminHandler) {
         if (adminHandlers.contains(adminHandler)) {
             return;
@@ -453,7 +264,6 @@ public class Admin extends RepositoryManager {
             adminUrls.addAll(urls);
         }
     }
-
 
     /**  */
     private StringBuilder debugSB = new StringBuilder();
@@ -474,15 +284,6 @@ public class Admin extends RepositoryManager {
      */
     private Hashtable installState = new Hashtable();
 
-    /**
-     * _more_
-     *
-     * @param what _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean haveDoneInstallStep(String what) throws Exception {
         Object tmp = installState.get(what);
         if (Misc.equals(tmp, "true")) {
@@ -494,26 +295,12 @@ public class Admin extends RepositoryManager {
         return haveDone;
     }
 
-    /**
-     * _more_
-     *
-     * @param what _more_
-     *
-     * @throws Exception _more_
-     */
     private void installStep(String what) throws Exception {
         debugInit("\tinstallStep:" + what);
         getRepository().writeGlobal(what, "true");
         installState.put(what, "true");
     }
 
-    /**
-     * _more_
-     *
-     * @param what _more_
-     *
-     * @throws Exception _more_
-     */
     private void undoInstallStep(String... what) throws Exception {
         for (String w : what) {
             debugInit("\tundo:" + w);
@@ -522,22 +309,11 @@ public class Admin extends RepositoryManager {
         }
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getLicenseForm() throws Exception {
         StringBuffer sb = new StringBuffer();
         String license =
             getStorageManager().readSystemResource(
-                "/org/ramadda/repository/resources/ramadda_license.txt");
+						   "/org/ramadda/repository/resources/ramadda_license.txt");
 
         license = license.replace("(C)", "&copy;");
         license = license.replace("(c)", "&copy;");
@@ -545,37 +321,26 @@ public class Admin extends RepositoryManager {
         sb.append(HU.br());
 
         sb.append(HU.open(HU.TAG_DIV,
-                                 HU.cssClass("registration-agree")));
+			  HU.cssClass("registration-agree")));
         sb.append(
-            HU.labeledCheckbox(
-                ARG_AGREE, "true", false,
-                "I agree to the above license and conditions of use for the RAMADDA software"));
+		  HU.labeledCheckbox(
+				     ARG_AGREE, "true", false,
+				     "I agree to the above license and conditions of use for the RAMADDA software"));
         sb.append(HU.close(HU.TAG_DIV));
 
         return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private String note(String s) {
         return "<div class='ramadda-box-outer'><div class='ramadda-block ramadda-box ramadda-box-yellow  '>"
-               + s + "</div></div>";
+	    + s + "</div></div>";
         //        return "<div class=\"ramadda-box-yellow\">" + s + "</div>\n";
     }
-
-
-
 
     /**
      *
      * @param plugin _more_
-      * @return _more_
+     * @return _more_
      */
     private String makePluginID(String plugin) {
         plugin = "plugin." + Utils.makeID(plugin);
@@ -585,34 +350,24 @@ public class Admin extends RepositoryManager {
         return plugin;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public synchronized Result doInstall(Request request) throws Exception {
 
         debugInit("doInitialization");
         String installPassword = getRepository().getInstallPassword();
         if ( !Utils.stringDefined(installPassword)) {
             return new Result(
-                "Install Error",
-                new StringBuffer(
-                    getPageHandler().showDialogError(
-                        "Error: No installation password has been specified.<br>You need to add a some_name.properties file to your RAMADDA home directory ("
-                        + getStorageManager().getRepositoryDir()
-                        + ") with the following set and then restart your server<br>&nbsp;<br><pre>\n"
-                        + PROP_INSTALL_PASSWORD
-                        + "=some password\n\n</pre>")));
+			      "Install Error",
+			      new StringBuffer(
+					       getPageHandler().showDialogError(
+										"Error: No installation password has been specified.<br>You need to add a some_name.properties file to your RAMADDA home directory ("
+										+ getStorageManager().getRepositoryDir()
+										+ ") with the following set and then restart your server<br>&nbsp;<br><pre>\n"
+										+ PROP_INSTALL_PASSWORD
+										+ "=some password\n\n</pre>")));
         }
 
         String givenPassword = request.getString(PROP_INSTALL_PASSWORD,
-                                   "").trim();
+						 "").trim();
         StringBuffer sb    = new StringBuffer();
         String       title = "";
 
@@ -627,7 +382,6 @@ public class Admin extends RepositoryManager {
         boolean firstTime =
             !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
 
-
         //Always check the password
         if ( !firstTime) {
             if ( !Utils.passwordOK(installPassword, givenPassword)) {
@@ -640,12 +394,12 @@ public class Admin extends RepositoryManager {
                                 ARG_ADMIN_INSTALLNOTICESHOWN,
                                 ARG_ADMIN_ADMINCREATED);
                 sb.append(
-                    getPageHandler().showDialogError(
-                        "Error: Incorrect installation password"));
+			  getPageHandler().showDialogError(
+							   "Error: Incorrect installation password"));
                 firstTime = true;
             } else {
                 sb.append(HU.hidden(PROP_INSTALL_PASSWORD,
-                                           givenPassword));
+				    givenPassword));
             }
         }
 
@@ -663,21 +417,21 @@ public class Admin extends RepositoryManager {
             sb.append(HU.formTable());
 
             sb.append(
-                HU.formEntry(
-                    "Home Directory:",
-                    getStorageManager().getRepositoryDir().toString()));
+		      HU.formEntry(
+				   "Home Directory:",
+				   getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
             sb.append(
-                HU.colspan(
-                    note("Since this configuration is web-based we use the install password to verify your identity."),
-                    2));
+		      HU.colspan(
+				 note("Since this configuration is web-based we use the install password to verify your identity."),
+				 2));
             sb.append(
-                HU.formEntry(
-                    msgLabel("Install Password"),
-                    HU.input(PROP_INSTALL_PASSWORD, "") + " "
-                    + "Specified in "
-                    + getStorageManager().getRepositoryDir().toString()
-                    + "/install.propertes"));
+		      HU.formEntry(
+				   msgLabel("Install Password"),
+				   HU.input(PROP_INSTALL_PASSWORD, "") + " "
+				   + "Specified in "
+				   + getStorageManager().getRepositoryDir().toString()
+				   + "/install.propertes"));
             sb.append(HU.formTableClose());
             sb.append(HU.submit("Next", ARG_ADMIN_INSTALLNOTICESHOWN));
         } else if ( !haveDoneInstallStep(ARG_ADMIN_LICENSEREAD)) {
@@ -712,13 +466,12 @@ public class Admin extends RepositoryManager {
                 }
 
                 if ((password1.length() == 0)
-                        || !password1.equals(password2)) {
+		    || !password1.equals(password2)) {
                     okToAdd = false;
                     errorBuffer.append(HU.space(2));
                     errorBuffer.append(msg("Invalid password"));
                     errorBuffer.append(HU.br());
                 }
-
 
                 if (okToAdd) {
                     User user = new User(id, User.STATUS_ACTIVE,name,
@@ -731,11 +484,9 @@ public class Admin extends RepositoryManager {
 					 "",
 					 getUserManager().hashPassword(
 								       password1), "", true, "", "",
-				    false, new Date(),null);
-		    
+					 false, new Date(),null);
+
                     getUserManager().makeOrUpdateUser(user, false);
-
-
 
                     installStep(ARG_ADMIN_ADMINCREATED);
                     installStep(ARG_ADMIN_INSTALLCOMPLETE);
@@ -745,36 +496,35 @@ public class Admin extends RepositoryManager {
                     String[] propArgs = new String[] {PROP_REPOSITORY_NAME,
 						      PROP_REPOSITORY_DESCRIPTION };
 
-
                     for (String propArg : propArgs) {
                         if (request.defined(propArg)) {
                             getRepository().writeGlobal(propArg,
-                                    request.getString(propArg, "").trim());
+							request.getString(propArg, "").trim());
                         }
                     }
 
                     if (request.defined(UserManager.ARG_USER_EMAIL)) {
                         getRepository().writeGlobal(PROP_ADMIN_EMAIL,
-                                request.getString(UserManager.ARG_USER_EMAIL,
-                                    ""));
+						    request.getString(UserManager.ARG_USER_EMAIL,
+								      ""));
                     }
 
                     //NOT NOW:
                     //                    getRegistryManager().applyInstallForm(request);
 
                     sb.append(
-                        note("Initial configuration process is complete. Please login."));
+			      note("Initial configuration process is complete. Please login."));
 
                     Entry topEntry = request.getRootEntry();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
-                            topEntry.getName()));
+						       topEntry.getName()));
                     //Make sure we do this now before we do the final init entries
                     boolean didPlugin = false;
                     for (String plugin : PluginManager.PLUGINS) {
                         if (request.get(makePluginID(plugin), false)) {
                             didPlugin = true;
                             getRepository().getPluginManager().installPlugin(
-                                plugin);
+									     plugin);
                         }
                     }
                     if (didPlugin) {
@@ -784,17 +534,12 @@ public class Admin extends RepositoryManager {
 		    //Load the metadata
 		    getMetadataManager().loadMetadataHandlers(getPluginManager());
 
-		    String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
-		    resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
-		    String description = Utils.replace(getRepository().getResource(resourcePath),
-						       "${topid}", topEntry.getId(),
-						       "${root}", getRepository().getUrlBase());
+		    String description =getInitDescription(topEntry);
                     topEntry.setDescription(description);
 
 		    getMetadataManager().addMetadata(request,topEntry,
 						     "content.alias",
 						     false, false,"rootentry");		    
-
 
 		    String header = "+skip\nThis is wiki text that shows up in the header.\nlinks is a comma separated list of entry aliases, entry IDs or URLs\nof the form: <URL>;<label>,alias,entryid,etc\n-skip\n{{navbar links=\"https://ramadda.org;ramadda.org,homepage\"}}\n";
 		    getMetadataManager().addMetadata(request,topEntry,
@@ -805,20 +550,18 @@ public class Admin extends RepositoryManager {
 						     "content.footer",
 						     true, false,footer);		    
 
-
-
                     getEntryManager().updateEntry(null, topEntry);
                     addInitEntries(user);
                     sb.append(getUserManager().makeLoginForm(request));
                     if (errorBuffer.length() > 0) {
                         sb.append(
-                            getPageHandler().showDialogError(
-                                msg("Error") + "<br>" + errorBuffer));
+				  getPageHandler().showDialogError(
+								   msg("Error") + "<br>" + errorBuffer));
                     }
 
                     StringBuilder html = new StringBuilder();
                     getPageHandler().sectionOpen(request, html,
-                            "RAMADDA Install", false);
+						 "RAMADDA Install", false);
                     html.append(sb);
                     getPageHandler().sectionClose(request, html);
 
@@ -828,65 +571,65 @@ public class Admin extends RepositoryManager {
 
             if (errorBuffer.length() > 0) {
                 sb.append(getPageHandler().showDialogError(msg("Error")
-                        + "<br>" + errorBuffer));
+							   + "<br>" + errorBuffer));
             }
             sb.append(
-                note("Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere."));
+		      note("Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere."));
             String required1 =
                 " <span class=\"ramadda-required-field\">* required</span>";
             String required2 =
                 " <span class=\"ramadda-required-field\">*</span>";
             sb.append(HU.formTable());
             sb.append(
-                HU.row(
-                    HU.colspan(msgHeader("Administrator Login"), 2)));
+		      HU.row(
+			     HU.colspan(msgHeader("Administrator Login"), 2)));
             sb.append(
-                HU.formEntry(
-                    msgLabel("ID"),
-                    HU.input(UserManager.ARG_USER_ID, id)
-                    + required1));
+		      HU.formEntry(
+				   msgLabel("ID"),
+				   HU.input(UserManager.ARG_USER_ID, id)
+				   + required1));
             sb.append(
-                HU.formEntry(
-                    msgLabel("Name"),
-                    HU.input(UserManager.ARG_USER_NAME, name)));
+		      HU.formEntry(
+				   msgLabel("Name"),
+				   HU.input(UserManager.ARG_USER_NAME, name)));
             sb.append(
-                HU.formEntry(
-                    msgLabel("Email"),
-                    HU.input(
-                        UserManager.ARG_USER_EMAIL,
-                        request.getString(UserManager.ARG_USER_EMAIL, ""))));
+		      HU.formEntry(
+				   msgLabel("Email"),
+				   HU.input(
+					    UserManager.ARG_USER_EMAIL,
+					    request.getString(UserManager.ARG_USER_EMAIL, ""))));
             sb.append(
-                HU.formEntry(
-                    msgLabel("Password"),
-                    HU.password(UserManager.ARG_USER_PASSWORD1)
-                    + required2));
+		      HU.formEntry(
+				   msgLabel("Password"),
+				   HU.password(UserManager.ARG_USER_PASSWORD1)
+				   + required2));
             sb.append(
-                HU.formEntry(
-                    msgLabel("Password Again"),
-                    HU.password(UserManager.ARG_USER_PASSWORD2)
-                    + required2));
+		      HU.formEntry(
+				   msgLabel("Password Again"),
+				   HU.password(UserManager.ARG_USER_PASSWORD2)
+				   + required2));
 
             sb.append(
-                HU.row(
-                    HU.colspan(msgHeader("Server Information"), 2)));
+		      HU.row(
+			     HU.colspan(msgHeader("Server Information"), 2)));
             String port     = "";
             port     = request.getString(PROP_PORT, port);
 
             sb.append(
-                HU.formEntry(
-                    msgLabel("Repository Name"),
-                    HU.input(
-                        PROP_REPOSITORY_NAME,
-                        request.getString(
-                            PROP_REPOSITORY_NAME,
-                            getRepository().getProperty(
-                                PROP_REPOSITORY_NAME,
-                                "RAMADDA Repository")), HU.SIZE_60)));
+		      HU.formEntry(
+				   msgLabel("Repository Name"),
+				   HU.input(
+					    PROP_REPOSITORY_NAME,
+					    request.getString(
+							      PROP_REPOSITORY_NAME,
+							      getRepository().getProperty(
+											  PROP_REPOSITORY_NAME,
+											  "RAMADDA Repository")), HU.SIZE_60)));
 
             sb.append(
-                HU.formEntry(
-                    "",
-                    "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
+		      HU.formEntry(
+				   "",
+				   "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
             sb.append(HU.hidden("hascbx", "true"));
@@ -897,11 +640,11 @@ public class Admin extends RepositoryManager {
                 String  cbxName = makePluginID(plugin);
                 boolean dflt    = !pluginName.equals("bioplugins");
                 boolean value   = request.get(cbxName, hascbx
-                        ? false
-                        : dflt);
+					      ? false
+					      : dflt);
                 sb.append(HU.formEntry("",
-                        HU.labeledCheckbox(cbxName, "true", value,
-                            "Install plugin: " + pluginName)));
+				       HU.labeledCheckbox(cbxName, "true", value,
+							  "Install plugin: " + pluginName)));
             }
             sb.append(HU.formTableClose());
             sb.append(HU.br());
@@ -910,9 +653,8 @@ public class Admin extends RepositoryManager {
             //Should never get here
             title = "Error";
             sb.append(
-                getPageHandler().showDialogError("Install is finished"));
+		      getPageHandler().showDialogError("Install is finished"));
         }
-
 
         StringBuffer finalSB = new StringBuffer();
         finalSB.append(request.formPost(getRepository().URL_INSTALL));
@@ -925,6 +667,16 @@ public class Admin extends RepositoryManager {
 
     }
 
+    public String getInitDescription(Entry topEntry) throws Exception {
+	String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
+	resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
+	String description = Utils.replace(getRepository().getResource(resourcePath),
+					   "${topid}", topEntry.getId(),
+					   "${root}", getRepository().getUrlBase());
+
+	return description;
+    }
+
     public void addInitEntries(User user) throws Exception {
 	Entry root = getEntryManager().getRootEntry();
 	String resourcePath = "/org/ramadda/repository/resources/install/initentries.zip";
@@ -933,8 +685,6 @@ public class Admin extends RepositoryManager {
 	getEntryManager().processEntryImportInner(tmpRequest, root,resourcePath,fis);
 	fis.close();
     }
-
-
 
     private Result processShutdown(Request request) throws Exception {
 	if ( !request.isAdmin()) {
@@ -945,43 +695,23 @@ public class Admin extends RepositoryManager {
         }
 
         Misc.runInABit(5000, new Runnable() {
-            public void run() {
-                getRepository().shutdown();
-                System.err.println("RAMADDA: exiting");
-                System.exit(0);
-            }
-        });
+		public void run() {
+		    getRepository().shutdown();
+		    System.err.println("RAMADDA: exiting");
+		    System.exit(0);
+		}
+	    });
 
 	return makeResult(request, "RAMADDA-Admin-Shutdown",
                           new StringBuffer("Shutting down in 5 seconds"));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminPluginUpload(Request request) throws Exception {
         getAuthManager().ensureAuthToken(request);
 
         return getRepository().getPluginManager().adminPluginUpload(request);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminDbStartStop(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(header("Database Administration"));
@@ -1018,15 +748,6 @@ public class Admin extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminActions(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         List<ApiMethod> apiMethods =
@@ -1035,25 +756,14 @@ public class Admin extends RepositoryManager {
         sb.append(HU.row(HU.cols("Name", "Admin", "Actions")));
         for (ApiMethod apiMethod : apiMethods) {
             sb.append(HU.row(HU.cols(apiMethod.getName(),
-                    "" + apiMethod.getMustBeAdmin(),
-                    StringUtil.join(",", apiMethod.getActions()))));
+				     "" + apiMethod.getMustBeAdmin(),
+				     StringUtil.join(",", apiMethod.getActions()))));
         }
         sb.append(HU.formTableClose());
 
         return makeResult(request, "RAMADDA-Admin-Actions", sb);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminDbTables(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");
@@ -1062,21 +772,11 @@ public class Admin extends RepositoryManager {
         return makeResult(request, "RAMADDA-Admin-DB", sb);
     }
 
-    /** _more_ */
     private boolean amDumpingDb = false;
 
     /**  */
     private boolean amReindexing = false;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminDbDump(Request request) throws Exception {
         //Only do one at a time
 	StringBuffer sb = new StringBuffer();
@@ -1100,17 +800,16 @@ public class Admin extends RepositoryManager {
             return makeResult(request, msg("RAMADDA-Admin-DB Export"), sb);
 	}	    
 
-
         ActionManager.Action action = new ActionManager.Action() {
-            public void run(Object actionId) throws Exception {
-                dumpDatabase(actionId);
-            }
-        };
+		public void run(Object actionId) throws Exception {
+		    dumpDatabase(actionId);
+		}
+	    };
         String href = HU.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
-                                     "Continue");
+			      "Continue");
 
         Result result = getActionManager().doAction(request, action,
-                            "Exporting database", href);
+						    "Exporting database", href);
 
         return result;
     }
@@ -1125,48 +824,38 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminReindex(final Request request)
-            throws Exception {
+	throws Exception {
         //Only do one at a time
         if (amReindexing) {
             StringBuffer sb = new StringBuffer(
-                                  getPageHandler().showDialogWarning(
-                                      "Currently reindexing"));
+					       getPageHandler().showDialogWarning(
+										  "Currently reindexing"));
 
             return makeResult(request, msg("RAMADDA-Admin-Reindex"), sb);
         }
 
-
         ActionManager.Action action = new ActionManager.Action() {
-            public void run(Object actionId) throws Exception {
-                try {
-                    getSearchManager().reindexLucene(request,actionId, request.getString(ARG_TYPE,null),
-						     request.get(ARG_DELETE_INDEX,false));
-                } catch (Exception exc) {
-                    System.err.println("Error reindexing:" + exc);
-                    throw exc;
-                } finally {
-                    amReindexing = false;
-                }
-            }
-        };
+		public void run(Object actionId) throws Exception {
+		    try {
+			getSearchManager().reindexLucene(request,actionId, request.getString(ARG_TYPE,null),
+							 request.get(ARG_DELETE_INDEX,false));
+		    } catch (Exception exc) {
+			System.err.println("Error reindexing:" + exc);
+			throw exc;
+		    } finally {
+			amReindexing = false;
+		    }
+		}
+	    };
         String href = HU.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
-                                     "Continue");
+			      "Continue");
 
         Result result = getActionManager().doAction(request, action,
-                            "Reindexing", href);
+						    "Reindexing", href);
 
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param actionId _more_
-     *
-     * @throws Exception _more_
-     */
     private void dumpDatabase(Object actionId) throws Exception {
         amDumpingDb = true;
         String msg = "";
@@ -1183,9 +872,9 @@ public class Admin extends RepositoryManager {
 
             msg = "Database has been exported to: " + tmp;
             StringBuffer sb = new StringBuffer(
-                                  getPageHandler().showDialogNote(
-                                      "Database has been exported to:<br>"
-                                      + tmp));
+					       getPageHandler().showDialogNote(
+									       "Database has been exported to:<br>"
+									       + tmp));
             //            return makeResult(request, msg("Database export"), sb);
         } finally {
             if (actionId != null) {
@@ -1195,20 +884,8 @@ public class Admin extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param title _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result makeResult(Request request, String title, Appendable sb)
-            throws Exception {
+	throws Exception {
         StringBuilder headerSB = new StringBuilder();
         getPageHandler().sectionOpen(request, headerSB, "Admin", false);
         getPageHandler().makeLinksHeader(request, headerSB, adminUrls, "");
@@ -1218,68 +895,34 @@ public class Admin extends RepositoryManager {
         return new Result(title, headerSB);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void xaddHeader(Request request, Appendable sb) throws Exception {}
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminHome(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(header("Repository Administration"));
         sb.append("<ul>\n");
         sb.append("<li> ");
         sb.append(HU.href(request.makeUrl(URL_ADMIN_STARTSTOP),
-                                 "Administer Database"));
+			  "Administer Database"));
         sb.append("<li> ");
         sb.append(HU.href(request.makeUrl(URL_ADMIN_TABLES),
-                                 "Show Tables"));
+			  "Show Tables"));
         sb.append("<li> ");
         sb.append(HU.href(request.makeUrl(URL_ADMIN_STATS), "System"));
         sb.append("<li> ");
         sb.append(HU.href(request.makeUrl(URL_ADMIN_SQL),
-                                 "Execute SQL"));
+			  "Execute SQL"));
         sb.append("</ul>");
 
         return makeResult(request, "RAMADDA-Admin-DB", sb);
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminSettings(Request request) throws Exception {
 	return adminSettings(request, "");
     }
 
-
     public Result adminSettings(Request request,String extraTop) throws Exception {
-
 
         StringBuilder sb = new StringBuilder();
 	sb.append(extraTop);
@@ -1298,59 +941,55 @@ public class Admin extends RepositoryManager {
         getRepository().getMapManager();
 	HU.row(csb, HU.colspan(msgHeader("Extra Properties"), 2));
         csb.append(
-            HU.formEntryTop(
-                msgLabel("Properties"),
-                HU.textArea(
-                    PROP_PROPERTIES,
-                    formPropValue(request,PROP_PROPERTIES,
-				 "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 10, 80)));
+		   HU.formEntryTop(
+				   msgLabel("Properties"),
+				   HU.textArea(
+					       PROP_PROPERTIES,
+					       formPropValue(request,PROP_PROPERTIES,
+							     "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 10, 80)));
 
         for (RepositoryManager manager :
-                getRepository().getRepositoryManagers()) {
+		 getRepository().getRepositoryManagers()) {
             manager.addAdminSettings(request, csb);
         }
-
-
-
 
         StringBuffer dsb = new StringBuffer();
 
         dsb.append(HU.formTable());
         dsb.append(
-            HU.formEntry(
-                msgLabel("Title"),
-                HU.input(
-                    PROP_REPOSITORY_NAME,
-                    formPropValue(request, PROP_REPOSITORY_NAME, "RAMADDA Repository"), size)));
+		   HU.formEntry(
+				msgLabel("Title"),
+				HU.input(
+					 PROP_REPOSITORY_NAME,
+					 formPropValue(request, PROP_REPOSITORY_NAME, "RAMADDA Repository"), size)));
         dsb.append(
-            HU.formEntry(
-                msgLabel("Slug"),
-                HU.input(
-                    PROP_REPOSITORY_SLUG,
-                    formPropValue(request, PROP_REPOSITORY_SLUG, ""), HU.SIZE_10) +HU.space(1) +
-		msg("i.e., short name")));
+		   HU.formEntry(
+				msgLabel("Slug"),
+				HU.input(
+					 PROP_REPOSITORY_SLUG,
+					 formPropValue(request, PROP_REPOSITORY_SLUG, ""), HU.SIZE_10) +HU.space(1) +
+				msg("i.e., short name")));
         dsb.append(
-            HU.formEntryTop(
-                msgLabel("Description"),
-                HU.textArea(
-                    PROP_REPOSITORY_DESCRIPTION,
-		    formPropValue(request,PROP_REPOSITORY_DESCRIPTION, ""), 5, 60)));
+		   HU.formEntryTop(
+				   msgLabel("Description"),
+				   HU.textArea(
+					       PROP_REPOSITORY_DESCRIPTION,
+					       formPropValue(request,PROP_REPOSITORY_DESCRIPTION, ""), 5, 60)));
 
         dsb.append(
-            HU.formEntryTop(
-                msgLabel("Footer"),
-                HU.textArea(
-                    PROP_HTML_FOOTER,
-		    formPropValue(request,PROP_HTML_FOOTER, ""), 5,
-                    60)));
+		   HU.formEntryTop(
+				   msgLabel("Footer"),
+				   HU.textArea(
+					       PROP_HTML_FOOTER,
+					       formPropValue(request,PROP_HTML_FOOTER, ""), 5,
+					       60)));
 
 	HU.formEntry(dsb, msgLabel("Logo Image Location"),
-                HU.input(PROP_LOGO_IMAGE,
-			 formPropValue(request,PROP_LOGO_IMAGE, ""), size));
+		     HU.input(PROP_LOGO_IMAGE,
+			      formPropValue(request,PROP_LOGO_IMAGE, ""), size));
 	HU.formEntry(dsb, msgLabel("Logo URL"),
 		     HU.input(PROP_LOGO_URL,
 			      formPropValue(request,PROP_LOGO_URL, ""), size));
-
 
         String systemMessage = getRepository().getSystemMessage();
 	if(systemMessage == null)systemMessage="";
@@ -1359,112 +998,94 @@ public class Admin extends RepositoryManager {
 		     HU.textArea(PROP_SYSTEM_MESSAGE, request.getString(PROP_SYSTEM_MESSAGE,systemMessage),
 				 5, 60));
 
-
+        dsb.append(
+		   HU.formEntryTop(
+				   msgLabel("Ignore Page Styles"),
+				   HU.checkbox(
+					       PROP_NOSTYLE, "true",
+					       formPropValue(request,PROP_NOSTYLE, false))));
 
         dsb.append(
-            HU.formEntryTop(
-                msgLabel("Ignore Page Styles"),
-                HU.checkbox(
-                    PROP_NOSTYLE, "true",
-                    formPropValue(request,PROP_NOSTYLE, false))));
-
-        dsb.append(
-            HU.formEntryTop(
-                msgLabel("Translations"),
-                HU.textArea(PROP_ADMIN_PHRASES,
-			    formPropValue(request, PROP_ADMIN_PHRASES,"#label=new label to use\n#e.g.: Foo=Bar"),
-			    5, 60)));
-
+		   HU.formEntryTop(
+				   msgLabel("Translations"),
+				   HU.textArea(PROP_ADMIN_PHRASES,
+					       formPropValue(request, PROP_ADMIN_PHRASES,"#label=new label to use\n#e.g.: Foo=Bar"),
+					       5, 60)));
 
 	/*** not needed
-        dsb.append(HU.formEntryTop(msgLabel("Google Maps Keys"), "<table><tr valign=top><td>"
-                + HU.textArea(PROP_GOOGLEAPIKEYS, getRepository().getProperty(PROP_GOOGLEAPIKEYS, ""), 5, 80)
-                + "</td><td>One per line:<br><i>host domain;apikey</i><br>e.g.:<i>www.yoursite.edu;google api key</i></table>"));
+	     dsb.append(HU.formEntryTop(msgLabel("Google Maps Keys"), "<table><tr valign=top><td>"
+	     + HU.textArea(PROP_GOOGLEAPIKEYS, getRepository().getProperty(PROP_GOOGLEAPIKEYS, ""), 5, 80)
+	     + "</td><td>One per line:<br><i>host domain;apikey</i><br>e.g.:<i>www.yoursite.edu;google api key</i></table>"));
 	****/
-
 
         StringBuffer asb = new StringBuffer();
         asb.append(HU.formTable());
 
-
         asb.append(HU.row(HU.colspan(msgHeader("Site Access"),
-                2)));
+				     2)));
         asb.append(
-            HU.formEntry(
-                "",
-                HU.labeledCheckbox(
-					  PROP_ACCESS_ADMINONLY, "true",
-					  formPropValue(request, PROP_ACCESS_ADMINONLY, false),
-					  "Only allows administrators to access the site")));
+		   HU.formEntry(
+				"",
+				HU.labeledCheckbox(
+						   PROP_ACCESS_ADMINONLY, "true",
+						   formPropValue(request, PROP_ACCESS_ADMINONLY, false),
+						   "Only allows administrators to access the site")));
         asb.append(
-            HU.formEntry(
-                "",
-                HU.labeledCheckbox(
-                    PROP_ACCESS_REQUIRELOGIN, "true",
-                    formPropValue(request,PROP_ACCESS_REQUIRELOGIN, false),
-		    "Require login to access the site")));
+		   HU.formEntry(
+				"",
+				HU.labeledCheckbox(
+						   PROP_ACCESS_REQUIRELOGIN, "true",
+						   formPropValue(request,PROP_ACCESS_REQUIRELOGIN, false),
+						   "Require login to access the site")));
 
         asb.append(
-            HU.formEntry(
-                "",
-                HU.labeledCheckbox(
-                    PROP_ACCESS_NOBOTS, "true",
-                    formPropValue(request,PROP_ACCESS_NOBOTS, false),
-		    "Disallow robots (except for Google)")));
+		   HU.formEntry(
+				"",
+				HU.labeledCheckbox(
+						   PROP_ACCESS_NOBOTS, "true",
+						   formPropValue(request,PROP_ACCESS_NOBOTS, false),
+						   "Disallow robots (except for Google)")));
 
         asb.append(
-            HU.formEntry(
-                "",
-                HU.labeledCheckbox(
-                    PROP_ACCESS_NOGOOGLEBOT, "true",
-                    formPropValue(request,PROP_ACCESS_NOGOOGLEBOT, false),
-		    "Disallow Googlebot")));
-	
-
+		   HU.formEntry(
+				"",
+				HU.labeledCheckbox(
+						   PROP_ACCESS_NOGOOGLEBOT, "true",
+						   formPropValue(request,PROP_ACCESS_NOGOOGLEBOT, false),
+						   "Disallow Googlebot")));
 
         asb.append(HU.colspan(msgHeader("Anonymous Uploads"), 2));
         asb.append(
-            HU.formEntry(
-                msgLabel("Max directory size"),
-                HU.input(
-                    PROP_UPLOAD_MAXSIZEGB,
-                    formPropValue(request,PROP_UPLOAD_MAXSIZEGB,"10.0"),
-		    HU.SIZE_10) + " (GBytes)"));
-
+		   HU.formEntry(
+				msgLabel("Max directory size"),
+				HU.input(
+					 PROP_UPLOAD_MAXSIZEGB,
+					 formPropValue(request,PROP_UPLOAD_MAXSIZEGB,"10.0"),
+					 HU.SIZE_10) + " (GBytes)"));
 
         asb.append(HU.colspan(msgHeader("Cache Size"), 2));
         asb.append(
-            HU.formEntry(
-                msgLabel("Size"),
-                HU.input(
-                    PROP_CACHE_MAXSIZEGB,
-                    formPropValue(request,PROP_CACHE_MAXSIZEGB,"10.0"),
-		    HU.SIZE_10) + " (GBytes)"));
-
-
+		   HU.formEntry(
+				msgLabel("Size"),
+				HU.input(
+					 PROP_CACHE_MAXSIZEGB,
+					 formPropValue(request,PROP_CACHE_MAXSIZEGB,"10.0"),
+					 HU.SIZE_10) + " (GBytes)"));
 
         asb.append(HU.colspan(msgHeader("File Access"), 2));
         String fileWidget = HU.textArea(
-                                PROP_LOCALFILEPATHS,
-                                formPropValue(request, PROP_LOCALFILEPATHS, ""), 5, 40);
+					PROP_LOCALFILEPATHS,
+					formPropValue(request, PROP_LOCALFILEPATHS, ""), 5, 40);
         String fileLabel =
             msg("Enter one server file system directory per line")
             + HU.br()
             + msg("Directories that RAMADDA is allowed to serve files from")
             + " " + "(e.g., from harvesters or the server file view entries)";
         asb.append(HU.formEntryTop(msgLabel("File system access"),
-                                          "<table><tr valign=top><td>"
-                                          + fileWidget + "</td><td>"
-                                          + fileLabel
-                                          + "</td></tr></table>"));
-
-
-
-
-
-
-
-
+				   "<table><tr valign=top><td>"
+				   + fileWidget + "</td><td>"
+				   + fileLabel
+				   + "</td></tr></table>"));
 
         for (AdminHandler adminHandler : adminHandlers) {
             adminHandler.addToAdminSettingsForm(BLOCK_SITE, csb);
@@ -1475,10 +1096,8 @@ public class Admin extends RepositoryManager {
         dsb.append(HU.formTableClose());
         asb.append(HU.formTableClose());
 
-
         StringBuffer osb = new StringBuffer();
         osb.append(HU.formTable());
-
 
         StringBuffer     outputSB         = new StringBuffer();
         List<OutputType> types            = getRepository().getOutputTypes();
@@ -1498,19 +1117,19 @@ public class Admin extends RepositoryManager {
                 lastCategoryName = type.getGroupName();
                 if (lastCategoryName != null) {
                     HU.div(outputSB, lastCategoryName,
-                                  HU.cssClass(CSS_CLASS_HEADING_2));
+			   HU.cssClass(CSS_CLASS_HEADING_2));
                 }
                 outputSB.append("\n<div style=\"margin-left:20px\">");
             }
             outputSB.append(HU.labeledCheckbox("outputtype." + type.getId(),
-						      "true", ok,type.getLabel()));
+					       "true", ok,type.getLabel()));
         }
         outputSB.append("</div>\n");
         String outputDiv = HU.div(outputSB.toString(),
-                                         HU.cssClass("scrollablediv"));
+				  HU.cssClass("scrollablediv"));
         osb.append("\n");
         String doAllOutput = HU.labeledCheckbox("outputtype.all", "true",
-						       false, "Use all");
+						false, "Use all");
         osb.append(HU.formEntryTop("", doAllOutput + outputDiv));
         osb.append("\n");
         StringBuffer handlerSB = new StringBuffer();
@@ -1529,7 +1148,6 @@ public class Admin extends RepositoryManager {
         osb.append(HU.formEntry("&nbsp;<p>", ""));
         osb.append(HU.formTableClose());
 
-
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
 
@@ -1543,122 +1161,56 @@ public class Admin extends RepositoryManager {
 	//        titles.add("Available Output Types");
 	//        tabs.add(osb.toString());
 
-
-
         HU.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
-                                null);
+			 null);
         sb.append(HU.formClose());
         sb.append(HU.sectionClose());
 
         return makeResult(request, msg("RAMADDA-Admin-Settings"), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void addInfo(Request request, Appendable sb) throws Exception {
         /*
-        if (isRegistered()) {
-            sb.append(HU.formEntry("Registered", regId));
-        }
+	  if (isRegistered()) {
+	  sb.append(HU.formEntry("Registered", regId));
+	  }
         */
     }
 
-
-    /**
-     * _more_
-     *
-     * @param title _more_
-     * @param contents _more_
-     *
-     * @return _more_
-     */
     private String makeConfigBlock(String title, String contents) {
         return HU.makeShowHideBlock(
-            msg(title),
-            HU.div(contents, HU.cssClass("admin-block-inner")),
-            false, HU.cssClass(CSS_CLASS_HEADING_2),
-            HU.cssClass("admin-block"));
+				    msg(title),
+				    HU.div(contents, HU.cssClass("admin-block-inner")),
+				    false, HU.cssClass(CSS_CLASS_HEADING_2),
+				    HU.cssClass("admin-block"));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param asHtml _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
-            throws Exception {
+	throws Exception {
         getRepository().getMailManager().sendEmail(to, subject, contents,
-                asHtml);
+						   asHtml);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param from _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param asHtml _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(String to, String from, String subject,
                           String contents, boolean asHtml)
-            throws Exception {
+	throws Exception {
         getRepository().getMailManager().sendEmail(to, from, subject,
-                contents, asHtml);
+						   contents, asHtml);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param from _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param bcc _more_
-     * @param asHtml _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(List<Address> to, InternetAddress from,
                           String subject, String contents, boolean bcc,
                           boolean asHtml)
-            throws Exception {
+	throws Exception {
         getRepository().getMailManager().sendEmail(to, from, subject,
-                contents, bcc, asHtml, null);
+						   contents, bcc, asHtml, null);
     }
 
     public Result processMonitors(Request request) throws Exception {
 	return getRepository().getMonitorManager().processMonitors(request);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminSettingsDo(Request request) throws Exception {
 
 	StringBuilder sb = new StringBuilder();
@@ -1667,7 +1219,7 @@ public class Admin extends RepositoryManager {
 	}
 
         for (RepositoryManager manager :
-                getRepository().getRepositoryManagers()) {
+		 getRepository().getRepositoryManagers()) {
             manager.applyAdminSettings(request);
         }
 
@@ -1681,35 +1233,29 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_ADMIN_PHRASES);
         getRepository().writeGlobal(request, PROP_HTML_FOOTER);
 
-
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
         getRepository().writeGlobal(PROP_NOSTYLE,
                                     "" + request.get(PROP_NOSTYLE, false));
-
 
         String ratings = "" + request.get(PROP_RATINGS_ENABLE, false);
         getRepository().writeGlobal(PROP_RATINGS_ENABLE, ratings);
         getRepository().writeGlobal(PROP_UPLOAD_MAXSIZEGB,
                                     request.getString(PROP_UPLOAD_MAXSIZEGB,
-                                        "10").trim());
-
+						      "10").trim());
 
         getRepository().writeGlobal(PROP_CACHE_MAXSIZEGB,
                                     request.getString(PROP_CACHE_MAXSIZEGB,
-                                        "10").trim());
+						      "10").trim());
 
         getRepository().writeGlobal(PROP_SYSTEM_MESSAGE,
                                     request.getString(PROP_SYSTEM_MESSAGE,
-                                        ""));
-
+						      ""));
 
         getRepository().writeGlobal(PROP_LOCALFILEPATHS,
                                     request.getString(PROP_LOCALFILEPATHS,
-                                        ""));
+						      ""));
 
         getRepository().writeGlobal(request, PROP_REGISTER_KEY);
-
-
 
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();
@@ -1725,17 +1271,17 @@ public class Admin extends RepositoryManager {
                 continue;
             }
             boolean ok = doAll
-                         || request.get("outputtype." + type.getId(), false);
+		|| request.get("outputtype." + type.getId(), false);
             //            if(!ok)System.err.println("TYPE:" + type + " " + ok);
             getRepository().setOutputTypeOK(type, ok);
         }
 
         getRepository().writeGlobal(PROP_ACCESS_ADMINONLY,
                                     request.get(PROP_ACCESS_ADMINONLY,
-                                        false));
+						false));
         getRepository().writeGlobal(PROP_ACCESS_REQUIRELOGIN,
                                     request.get(PROP_ACCESS_REQUIRELOGIN,
-                                        false));
+						false));
         getRepository().writeGlobal(PROP_ACCESS_NOBOTS,
                                     request.get(PROP_ACCESS_NOBOTS, false));
         getRepository().writeGlobal(PROP_ACCESS_NOGOOGLEBOT,
@@ -1745,7 +1291,6 @@ public class Admin extends RepositoryManager {
             adminHandler.applyAdminSettingsForm(request);
         }
 
-
         //Now re-read all of the globals so we pick up any deletes
         getRepository().readDatabaseProperties();
 
@@ -1753,10 +1298,9 @@ public class Admin extends RepositoryManager {
         getRepository().initAttributes();
         getRepository().clearCache();
 
-
         //Tell the other repositoryManagers that the settings changed
         for (RepositoryManager repositoryManager :
-                getRepository().getRepositoryManagers()) {
+		 getRepository().getRepositoryManagers()) {
             repositoryManager.adminSettingsChanged();
         }
 
@@ -1764,19 +1308,6 @@ public class Admin extends RepositoryManager {
 
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminAccess(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HU.sectionOpen(null, false));
@@ -1784,15 +1315,15 @@ public class Admin extends RepositoryManager {
 
         Statement statement =
             getDatabaseManager().execute(
-                "select "
-                + SqlUtil.comma(
-                    Tables.PERMISSIONS.COL_ENTRY_ID,
-                    Tables.PERMISSIONS.COL_ACTION,
-                    Tables.PERMISSIONS.COL_ROLE) + " from "
-                        + Tables.PERMISSIONS.NAME, 10000000, 0);
+					 "select "
+					 + SqlUtil.comma(
+							 Tables.PERMISSIONS.COL_ENTRY_ID,
+							 Tables.PERMISSIONS.COL_ACTION,
+							 Tables.PERMISSIONS.COL_ROLE) + " from "
+					 + Tables.PERMISSIONS.NAME, 10000000, 0);
 
         Hashtable<String, List> idToPermissions = new Hashtable<String,
-                                                      List>();
+	    List>();
 
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
@@ -1811,25 +1342,25 @@ public class Admin extends RepositoryManager {
 
         sb.append("<table cellspacing=\"0\" cellpadding=\"0\">");
         sb.append(HU.row(HU.cols(HU.space(10),
-                HU.b(msg("Action")) + HU.space(3),
-                HU.b(msg("Role")))));
+				 HU.b(msg("Action")) + HU.space(3),
+				 HU.b(msg("Role")))));
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 continue;
             }
             sb.append(
-                HU.row(
-                    HU.colspan(
-                        getPageHandler().getBreadCrumbs(
-                            request, entry, null,
-                            getRepository().URL_ACCESS_FORM, 80,-1), 3)));
+		      HU.row(
+			     HU.colspan(
+					getPageHandler().getBreadCrumbs(
+									request, entry, null,
+									getRepository().URL_ACCESS_FORM, 80,-1), 3)));
             List<Permission> permissions =
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {
                 Role role = permission.getRoles().get(0);
                 String row = HU.cols("", permission.getAction(),
-                                            role.getRole());
+				     role.getRole());
                 String clazz = role.getCssClass();
                 sb.append(HU.row(row, HU.cssClass(clazz)));
             }
@@ -1842,19 +1373,9 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("RAMADDA-Admin-Access Overview"), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminStats(Request request) throws Exception {
 
         DecimalFormat fmt     = new DecimalFormat("#0");
-
 
         StringBuffer  stateSB = new StringBuffer();
         stateSB.append(HU.formTable());
@@ -1862,23 +1383,20 @@ public class Admin extends RepositoryManager {
         getDatabaseManager().addInfo(stateSB);
         stateSB.append(HU.formTableClose());
 
-
-
         StringBuilder statusSB = new StringBuilder();
         statusSB.append(HU.formTable());
         statusSB.append(
-            HU.formEntry(
-                msgLabel("Version"),
-                getRepository().getProperty(PROP_VERSION, "1.0")));
+			HU.formEntry(
+				     msgLabel("Version"),
+				     getRepository().getProperty(PROP_VERSION, "1.0")));
         statusSB.append(
-            HU.formEntry(
-                msgLabel("Build Date"),
-                getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
+			HU.formEntry(
+				     msgLabel("Build Date"),
+				     getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
         statusSB.append(
-            HU.formEntry(
-                msgLabel("Java Version"),
-                getRepository().getProperty(PROP_JAVA_VERSION, "N/A")));
-
+			HU.formEntry(
+				     msgLabel("Java Version"),
+				     getRepository().getProperty(PROP_JAVA_VERSION, "N/A")));
 
         if (request.get("gc", false)) {
             Misc.gc();
@@ -1888,15 +1406,14 @@ public class Admin extends RepositoryManager {
 	getSearchManager().addStats(statusSB);
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         /*
-        statusSB.append(HU.formEntry(msgLabel("Up Time"),
-                                           fmt.format((double) (uptime / 1000
-                                               / 60)) + " "
-                                                   + msg("minutes")));
+	  statusSB.append(HU.formEntry(msgLabel("Up Time"),
+	  fmt.format((double) (uptime / 1000
+	  / 60)) + " "
+	  + msg("minutes")));
         */
         statusSB.append(HU.formEntry(msgLabel("Total # Requests"),
-                                            getLogManager().getRequestCount()
-                                            + ""));
-
+				     getLogManager().getRequestCount()
+				     + ""));
 
         StringBuilder tmp = new StringBuilder();
         TTLCache.getInfo(tmp);
@@ -1904,8 +1421,6 @@ public class Admin extends RepositoryManager {
         //        getEntryManager().addStatusInfo(statusSB);
 
         statusSB.append(HU.formTableClose());
-
-
 
         StringBuffer outputSB = new StringBuffer();
         outputSB.append(HU.formTable());
@@ -1922,39 +1437,34 @@ public class Admin extends RepositoryManager {
         }
         outputSB.append(HU.formTableClose());
 
-
         String         props  = getRepository().getPropertiesListing();
-
 
         StringBuffer   apiSB  = new StringBuffer();
         List<Object[]> tuples = new ArrayList<Object[]>();
         apiSB.append(HU.formTable());
         for (ApiMethod apiMethod :
-                getRepository().getApiManager().getApiMethods()) {
+		 getRepository().getApiManager().getApiMethods()) {
             if (apiMethod.getNumberOfCalls() < 1) {
                 continue;
             }
             tuples.add(new Object[] {
 		    Integer.valueOf(apiMethod.getNumberOfCalls()),
-                apiMethod });
+		    apiMethod });
 
         }
         tuples = (List<Object[]>) Misc.sortTuples(tuples, false);
         for (Object[] tuple : tuples) {
             ApiMethod apiMethod = (ApiMethod) tuple[1];
             apiSB.append(HU.formEntry(apiMethod.getName(),
-                                             "# " + msgLabel("Calls")
-                                             + apiMethod.getNumberOfCalls()));
+				      "# " + msgLabel("Calls")
+				      + apiMethod.getNumberOfCalls()));
         }
 
-
         apiSB.append(HU.formTableClose());
-
 
         StringBuffer dbSB = new StringBuffer();
 
         getDatabaseManager().addStatistics(request, dbSB,true);
-
 
         StringBuffer sb = new StringBuffer();
         sb.append(HU.sectionOpen(null, false));
@@ -1986,13 +1496,12 @@ public class Admin extends RepositoryManager {
         tabs.add(HU.section(dbSB.toString()));
 
         HU.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
-                                null);
+			 null);
 
         sb.append(HU.sectionClose());
 
         return makeResult(request, msg("RAMADDA-Admin-System"), sb);
     }
-
 
     /**
      *
@@ -2023,18 +1532,6 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("RAMADDA-Admin-Snapshots"), sb);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminSql(Request request) throws Exception {
 
         if ( !getRepository().getLocalProperty(PROP_ADMIN_INCLUDESQL, false)) {
@@ -2045,7 +1542,7 @@ public class Admin extends RepositoryManager {
         String  query    = null;
         String  sqlFile  = request.getUploadedFile(ARG_SQLFILE);
         if ((sqlFile != null) && (sqlFile.length() > 0)
-                && new File(sqlFile).exists()) {
+	    && new File(sqlFile).exists()) {
             query = getStorageManager().readSystemResource(sqlFile);
             if ((query != null) && (query.trim().length() > 0)) {
                 bulkLoad = true;
@@ -2053,14 +1550,13 @@ public class Admin extends RepositoryManager {
         }
         if ( !bulkLoad) {
             query = (String) request.getUnsafeString(ARG_QUERY,
-                    (String) null);
+						     (String) null);
             if ((query != null) && query.trim().startsWith("file:")) {
                 query = getStorageManager().readSystemResource(
-                    query.trim().substring(5));
+							       query.trim().substring(5));
                 bulkLoad = true;
             }
         }
-
 
         StringBuffer formSB = new StringBuffer();
         formSB.append(request.uploadForm(URL_ADMIN_SQL));
@@ -2069,10 +1565,10 @@ public class Admin extends RepositoryManager {
 						       "For verification enter your password. Be very careful what you do here! This evaluates arbitrary SQL and you can really screw up your RAMADDA if you do something wrong here.",true,false));
         formSB.append(HU.br());
         formSB.append(HU.textArea(ARG_QUERY, (bulkLoad
-                ? ""
-                : (query == null)
-                  ? BLANK
-                  : query), 5, 80));
+					      ? ""
+					      : (query == null)
+					      ? BLANK
+					      : query), 5, 80));
         formSB.append(HU.vspace());
         formSB.append(HU.labeledCheckbox("ascsv","true",false,"Download CSV"));
 	formSB.append("<br>");
@@ -2083,7 +1579,6 @@ public class Admin extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");	
-
 
         if (!stringDefined(query)) {
 	    sb.append(formSB);
@@ -2096,7 +1591,6 @@ public class Admin extends RepositoryManager {
 	    sb.append(formSB);
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
 	}
-
 
 	sb.append(formSB);
         long t1 = System.currentTimeMillis();
@@ -2160,8 +1654,8 @@ public class Admin extends RepositoryManager {
 			csv.append(",");
 		    }
                     if (rsmd.getColumnType(colcnt)
-	
-                            == java.sql.Types.TIMESTAMP) {
+
+			== java.sql.Types.TIMESTAMP) {
 			synchronized(Repository.calendar) {
 			    Date dttm = results.getTimestamp(colcnt,
 							     Repository.calendar);
@@ -2188,8 +1682,8 @@ public class Admin extends RepositoryManager {
 
                         if (s.length() > 100) {
                             table.append(
-                                HU.col(
-                                    HU.textArea("dummy", s, 5, 50)));
+					 HU.col(
+						HU.textArea("dummy", s, 5, 50)));
                         } else {
                             table.append(HU.col(HU.pre(s,HU.cssClass("ramadda-pre-undecorated"))));
                         }
@@ -2221,28 +1715,18 @@ public class Admin extends RepositoryManager {
 		return new Result("", csv, "text/csv");
 	    }
 
-
             return makeResult(request, msg("RAMADDA-Admin-SQL"),  sb);
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminScanForBadParents(Request request) throws Exception {
         boolean      delete = request.get("delete", false);
         StringBuffer sb     = new StringBuffer();
         Statement statement = getDatabaseManager().execute("select "
-                                  + Tables.ENTRIES.COL_ID + ","
-                                  + Tables.ENTRIES.COL_PARENT_GROUP_ID
-                                  + " from " + Tables.ENTRIES.NAME, 10000000,
-                                      0);
+							   + Tables.ENTRIES.COL_ID + ","
+							   + Tables.ENTRIES.COL_PARENT_GROUP_ID
+							   + " from " + Tables.ENTRIES.NAME, 10000000,
+							   0);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
         int              cnt        = 0;
@@ -2272,13 +1756,6 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("RAMADDA-Admin-Scan"), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void appendMemory(Appendable sb) throws Exception {
         Runtime.getRuntime().gc();
         DecimalFormat fmt        = new DecimalFormat("#0");
@@ -2288,17 +1765,17 @@ public class Admin extends RepositoryManager {
             (double) Runtime.getRuntime().totalMemory();
         double        usedMemory = (totalMemory - freeMemory);
         sb.append(HU.formEntry("Max Memory:",
-                                      fmt.format(maxMemory / 1000000)
-                                      + " (MB)"));
+			       fmt.format(maxMemory / 1000000)
+			       + " (MB)"));
         sb.append(HU.formEntry("Total Memory:",
-                                      fmt.format(totalMemory / 1000000)
-                                      + " (MB)"));
+			       fmt.format(totalMemory / 1000000)
+			       + " (MB)"));
         sb.append(HU.formEntry("Free Memory:",
-                                      fmt.format(freeMemory / 1000000)
-                                      + " (MB)"));
+			       fmt.format(freeMemory / 1000000)
+			       + " (MB)"));
         sb.append(HU.formEntry("Used Memory:",
-                                      fmt.format(usedMemory / 1000000)
-                                      + " (MB)"));
+			       fmt.format(usedMemory / 1000000)
+			       + " (MB)"));
 
     }
 
@@ -2328,7 +1805,7 @@ public class Admin extends RepositoryManager {
             double totalMemory = (double) Runtime.getRuntime().totalMemory();
             double        usedMemory = (totalMemory - freeMemory);
             String cache = " cache:"
-                           + getEntryManager().getEntryCache().size();
+		+ getEntryManager().getEntryCache().size();
             usedMemory = usedMemory / 1000000;
             if (usedMemory > 300) {
                 //              System.err.println("printMemory: Clearing cache");
@@ -2337,29 +1814,17 @@ public class Admin extends RepositoryManager {
             System.err.println("Used Memory:" + fmt.format(usedMemory)
                                + " (MB)" + cache);
 
-
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminPrintStack(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HU.formTable());
         appendMemory(sb);
         sb.append(HU.formEntry("Start Time:",
-                                      "" + getRepository().getStartTime()));
-
+			       "" + getRepository().getStartTime()));
 
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         //sb.append(HU.formEntry("Up Time:",
@@ -2369,7 +1834,7 @@ public class Admin extends RepositoryManager {
 
         sb.append(HU.formTableClose());
         sb.append(HU.makeShowHideBlock(msg("Stack"),
-                "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
+				       "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
 
         return makeResult(request, msg("RAMADDA-Admin-Stack Trace"), sb);
     }
@@ -2412,7 +1877,6 @@ public class Admin extends RepositoryManager {
         return buf.toString();
     }
 
-
     /**
      *
      * @param request _more_
@@ -2421,26 +1885,26 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public void listMissingFiles(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
         String pattern = request.getString("pattern", "");
         Statement statement =
             getDatabaseManager().select(
-                SqlUtil.comma(
-                    Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
-                    Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
-                        Clause.or(
-                            new Clause[] {
-                                Clause.eq(
-                                    Tables.ENTRIES.COL_RESOURCE_TYPE,
-                                    Resource.TYPE_LOCAL_FILE),
-                                Clause.eq(Tables.ENTRIES
-                                    .COL_RESOURCE_TYPE, Resource
-                                    .TYPE_FILE), Clause
-                                        .eq(Tables.ENTRIES
-                                            .COL_RESOURCE_TYPE, Resource
-                                            .TYPE_STOREDFILE) }), getDatabaseManager()
-                                                .makeOrderBy(Tables.ENTRIES
-                                                    .COL_CREATEDATE, true));
+					SqlUtil.comma(
+						      Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
+						      Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
+					Clause.or(
+						  new Clause[] {
+						      Clause.eq(
+								Tables.ENTRIES.COL_RESOURCE_TYPE,
+								Resource.TYPE_LOCAL_FILE),
+						      Clause.eq(Tables.ENTRIES
+								.COL_RESOURCE_TYPE, Resource
+								.TYPE_FILE), Clause
+								.eq(Tables.ENTRIES
+								    .COL_RESOURCE_TYPE, Resource
+								    .TYPE_STOREDFILE) }), getDatabaseManager()
+					.makeOrderBy(Tables.ENTRIES
+						     .COL_CREATEDATE, true));
 
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
@@ -2448,7 +1912,7 @@ public class Admin extends RepositoryManager {
         int              missingCnt = 0;
         StringBuilder    buff       = new StringBuilder();
         buff.append(
-            "<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
+		    "<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
 
         boolean even = true;
         while ((results = iter.getNext()) != null) {
@@ -2474,8 +1938,8 @@ public class Admin extends RepositoryManager {
             missingCnt++;
             Entry  entry = getEntryManager().getEntry(request, id);
             String clazz = even
-                           ? "ramadda-row-even"
-                           : "ramadda-row-odd";
+		? "ramadda-row-even"
+		: "ramadda-row-odd";
             if (entry == null) {
                 buff.append("<tr class=" + clazz
                             + "  valign=top><td>NULL Entry " + id
@@ -2483,7 +1947,7 @@ public class Admin extends RepositoryManager {
             } else {
                 buff.append("<tr class=" + clazz + " valign=top><td>"
                             + getEntryManager().getEntryLink(request, entry,
-                                true, "") + "</td><td>" + f + "</td></tr>");
+							     true, "") + "</td><td>" + f + "</td></tr>");
             }
         }
         buff.append("</table>");
@@ -2498,7 +1962,7 @@ public class Admin extends RepositoryManager {
     }
 
     public void listOrphans(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
         Statement statement =
             getDatabaseManager().select(
 					SqlUtil.comma(Tables.ENTRIES.COL_ID,
@@ -2534,17 +1998,7 @@ public class Admin extends RepositoryManager {
 	sb.append("Total orphan entries: #" + orphans.size() + "<br>");
 	sb.append(getWikiManager().makeTableTree(request, new WikiUtil(),new Hashtable(), orphans));
     }
-    
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminMaintenance(Request request) throws Exception {
 
         StringBuffer  sb         = new StringBuffer();
@@ -2562,7 +2016,6 @@ public class Admin extends RepositoryManager {
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
 	topSB.append(HU.submit("Clear all caches", ACTION_CLEARCACHE));
 	topSB.append(HU.formClose());
-	
 
 	header.accept(topSB, "Clear Passwords");
 	topSB.append(request.formPost(URL_ADMIN_MAINTENANCE, ""));
@@ -2572,7 +2025,6 @@ public class Admin extends RepositoryManager {
 	topSB.append(getAuthManager().getVerification(request,null,true));
 	topSB.append(HU.formClose());
 
-	
 	header.accept(topSB, "Export Database");
 	topSB.append(request.formPost(URL_ADMIN_MAINTENANCE));
 	topSB.append(messageNote("You can write out the database for backup or transfer to a new database"));
@@ -2594,29 +2046,26 @@ public class Admin extends RepositoryManager {
         topSB.append(HU.formTableClose());
 	topSB.append(HU.formClose());
 
-
-
         StringBuffer filePathSB = new StringBuffer();
 	header.accept(filePathSB,"Change file paths");
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
         filePathSB.append(messageNote("Change the stored file path for all entries that match the following pattern"));
         filePathSB.append(HU.formTable());
         filePathSB.append(HU.formEntry(msgLabel("File Pattern"),
-                HU.input(ARG_CHANGEPATHS_PATTERN,
-                                request.getString(ARG_CHANGEPATHS_PATTERN,
-                                    ""), HU.SIZE_50)));
+				       HU.input(ARG_CHANGEPATHS_PATTERN,
+						request.getString(ARG_CHANGEPATHS_PATTERN,
+								  ""), HU.SIZE_50)));
         filePathSB.append(HU.formEntry(msgLabel("Change to"),
-                HU.input(ARG_CHANGEPATHS_TO,
-                                request.getString(ARG_CHANGEPATHS_TO, ""),
-                                HU.SIZE_50)));
+				       HU.input(ARG_CHANGEPATHS_TO,
+						request.getString(ARG_CHANGEPATHS_TO, ""),
+						HU.SIZE_50)));
 
         filePathSB.append(HU.formTableClose());
         filePathSB.append(HU.submit("Change file paths", ACTION_CHANGEPATHS));
         filePathSB.append(HU.space(2));
         filePathSB.append(HU.labeledCheckbox(ARG_CHANGEPATHS_CONFIRM, "true",
-						    false,"Yes, really change all of the file paths"));
+					     false,"Yes, really change all of the file paths"));
         filePathSB.append(HU.formClose());
-
 
         StringBuffer missingSB = new StringBuffer();
 	header.accept(missingSB,"List missing files");
@@ -2624,8 +2073,8 @@ public class Admin extends RepositoryManager {
         missingSB.append(HU.formTable());
         HU.formEntry(missingSB,msgLabel("Skip pattern"),
 		     HU.input("pattern",
-				     request.getString("pattern", ""),
-				     HU.SIZE_50));
+			      request.getString("pattern", ""),
+			      HU.SIZE_50));
         missingSB.append(HU.formTableClose());
         missingSB.append(HU.submit("List missing files", ACTION_LISTMISSING));
         StringBuffer orphansSB = new StringBuffer();
@@ -2634,8 +2083,6 @@ public class Admin extends RepositoryManager {
         request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
 	orphansSB.append(HU.submit("List orphans", ACTION_LISTORPHANS));
         orphansSB.append(HU.formClose());
-
-
 
         if (request.defined(ACTION_STOP)) {
             runningCleanup = false;
@@ -2671,14 +2118,14 @@ public class Admin extends RepositoryManager {
             if (request.defined(ARG_CHANGEPATHS_PATTERN)) {
                 StringBuilder tmp = new StringBuilder();
                 getRepository().getEntryManager().changeResourcePaths(
-                    request, request.getString(ARG_CHANGEPATHS_PATTERN, ""),
-                    request.getString(ARG_CHANGEPATHS_TO, ""), tmp,
-                    request.get(ARG_CHANGEPATHS_CONFIRM, false));
+								      request, request.getString(ARG_CHANGEPATHS_PATTERN, ""),
+								      request.getString(ARG_CHANGEPATHS_TO, ""), tmp,
+								      request.get(ARG_CHANGEPATHS_CONFIRM, false));
                 sb.append(
-                    HU.div(
-                        tmp.toString(),
-                        HU.style(
-                            "max-height:300px; overflow-y: auto;")));
+			  HU.div(
+				 tmp.toString(),
+				 HU.style(
+					  "max-height:300px; overflow-y: auto;")));
             } else {
                 sb.append("Change paths fields required");
             }
@@ -2700,7 +2147,6 @@ public class Admin extends RepositoryManager {
             }
         }
 
-
         String status = cleanupStatus.toString();
         if (runningCleanup) {
             sb.append(msg("Database clean up is running"));
@@ -2721,7 +2167,6 @@ public class Admin extends RepositoryManager {
                 sb.append(HU.formClose());
             }
 
-
         }
         sb.append("</form>");
         if (status.length() > 0) {
@@ -2734,26 +2179,12 @@ public class Admin extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void clearAllPasswords() throws Exception {
         String sql = "update " + Tables.USERS.NAME + " set "
-                     + Tables.USERS.COL_NODOT_PASSWORD + " = ''";
+	    + Tables.USERS.COL_NODOT_PASSWORD + " = ''";
         Statement statement = getDatabaseManager().execute(sql, -1, 10000);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void runDatabaseCleanUp(Request request) throws Exception {
         if (runningCleanup) {
             return;
@@ -2764,12 +2195,12 @@ public class Admin extends RepositoryManager {
         try {
             Statement statement =
                 getDatabaseManager().select(
-                    SqlUtil.comma(
-                        Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
-                        Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
-                            Clause.eq(
-                                Tables.ENTRIES.COL_RESOURCE_TYPE,
-                                Resource.TYPE_FILE));
+					    SqlUtil.comma(
+							  Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
+							  Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
+					    Clause.eq(
+						      Tables.ENTRIES.COL_RESOURCE_TYPE,
+						      Resource.TYPE_FILE));
 
             SqlUtil.Iterator iter =
                 getDatabaseManager().getIterator(statement);
@@ -2787,9 +2218,9 @@ public class Admin extends RepositoryManager {
                 int    col = 1;
                 String id  = results.getString(col++);
                 String resource = getStorageManager().resourceFromDB(
-                                      results.getString(col++));
+								     results.getString(col++));
                 Entry entry = getRepository().getTypeHandler(
-                                  results.getString(col++)).createEntry(id);
+							     results.getString(col++)).createEntry(id);
                 File f = new File(resource);
                 if (f.exists()) {
                     continue;
@@ -2804,7 +2235,7 @@ public class Admin extends RepositoryManager {
                     entries   = new ArrayList<Entry>();
                     deleteCnt += 1000;
                     cleanupStatus = new StringBuffer("Removed " + deleteCnt
-                            + " entries from database");
+						     + " entries from database");
                 }
                 if ((cleanupTS != myTS) || !runningCleanup) {
                     runningCleanup = false;
@@ -2816,8 +2247,8 @@ public class Admin extends RepositoryManager {
                 getEntryManager().deleteEntries(request, entries, null);
                 deleteCnt += entries.size();
                 cleanupStatus = new StringBuffer(msg("Done running cleanup")
-                        + "<br>" + msg("Removed") + HU.space(1)
-                        + deleteCnt + " entries from database");
+						 + "<br>" + msg("Removed") + HU.space(1)
+						 + deleteCnt + " entries from database");
             }
         } catch (Exception exc) {
             logError("Running cleanup", exc);
@@ -2829,15 +2260,6 @@ public class Admin extends RepositoryManager {
         long t2 = System.currentTimeMillis();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void runDatabaseOrphanCheck(Request request) throws Exception {
         if (runningCleanup) {
             return;
@@ -2851,10 +2273,10 @@ public class Admin extends RepositoryManager {
         try {
             Statement statement =
                 getDatabaseManager()
-                    .select(SqlUtil
+		.select(SqlUtil
                         .comma(Tables.ENTRIES.COL_ID,
                                Tables.ENTRIES.COL_PARENT_GROUP_ID), Tables
-                                   .ENTRIES.NAME, (Clause) null);
+			.ENTRIES.NAME, (Clause) null);
             SqlUtil.Iterator iter =
                 getDatabaseManager().getIterator(statement);
             ResultSet results;
@@ -2885,7 +2307,6 @@ public class Admin extends RepositoryManager {
                 }
             }
 
-
             if (runningCleanup) {
                 cleanupStatus = new StringBuffer(msg("Done running cleanup"));
             }
@@ -2899,18 +2320,8 @@ public class Admin extends RepositoryManager {
         long t2 = System.currentTimeMillis();
     }
 
-
-
-    /** _more_ */
     int ccnt = 0;
 
-
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void checkMemory(String msg) {
         //        Misc.gc();
         Runtime.getRuntime().gc();
@@ -2921,7 +2332,5 @@ public class Admin extends RepositoryManager {
         System.err.println(msg + ((int) usedMemory));
 
     }
-
-
 
 }
