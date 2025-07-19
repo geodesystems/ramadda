@@ -13,6 +13,7 @@ import org.ramadda.util.LabeledObject;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.SortedCategoryList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.WikiUtil;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.SortableObject;
@@ -1408,9 +1409,7 @@ public class HtmlOutputHandler extends OutputHandler {
     public void makeTable(Request request, List<Entry> allEntries,
                           Appendable sb, Hashtable props)
             throws Exception {
-
 	boolean doInlineEdit = false;
-
 	String NA = "---";
 
         if (props == null) {
@@ -1436,6 +1435,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 	    }
 	}
+        boolean showHeader = Utils.getProperty(props, "showHeader", false);
         boolean showColumns = Utils.getProperty(props, "showColumns", true);
         boolean showDate = Utils.getProperty(props, "showDate", true);
         boolean showCreateDate = Utils.getProperty(props, "showCreateDate", false);
@@ -1482,7 +1482,9 @@ public class HtmlOutputHandler extends OutputHandler {
         List<String> titles   = new ArrayList<String>();
 
         int          typeCnt  = 0;
+	String huid = HU.getUniqueId("div_");
 	String guid = HU.getUniqueId("div_");
+
 	sb.append(HU.open("div",HU.attrs("id",guid)));
 
         for (String type : types) {
@@ -1776,7 +1778,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             tableSB.append("\n</tbody></table>\n");
             if (typeCnt > 1) {
-                sb.append("<p>");
+                tableSB.append("<p>");
             }
 
             tableSB.append("</div>");
@@ -1792,9 +1794,30 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(displayStyle.equals("tabs")) {
 		HU.makeTabs(sb, titles, contents);
 	    } else    if(displayStyle.equals("list")) {
+		if(showHeader) {
+		    StringBuilder header  = new StringBuilder();
+		    List<String> items = new ArrayList<String>();
+		    String clazz = " ramadda-link ramadda-nav-link ";
+		    for(int i=0;i<titles.size();i++) {
+			items.add(HU.span(HU.href("#" + huid+"_"+i,titles.get(i)), HU.cssClass(clazz)));
+		    }
+		    HU.div(header,
+			   StringUtil.join(
+					   "<span class=\"ramadda-separator\">&nbsp;" + WikiUtil.NAVDELIM+"&nbsp;</span>",
+					   items), HU.cssClass("ramadda-linksheader-links"));
+		    header.append("\n");
+		    sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
+				     header.toString()));
+		}
+
+
+
 		for(int i=0;i<contents.size();i++) {
-		    sb.append(HU.h2(titles.get(i)));
+		    sb.append(HU.tag("a",HU.attrs("name",huid+"_"+ i),""));
+		    HU.open(sb,"div",HU.attrs("class","ramadda-entry-table"));
+		    sb.append(HU.div(titles.get(i),HU.attrs("class","ramadda-lheading")));
 		    sb.append(contents.get(i));
+		    HU.close(sb,"div");
 		}
 	    }  else {
 		HU.makeAccordion(sb, titles, contents);
