@@ -896,6 +896,8 @@ public class ExtEditor extends RepositoryManager {
 		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.changeMetadata(metadataObject,'pattern','with')</span>\n" +		    		    
 		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.setMetadataPermission(metadataObject,\"admin\")</span>\n" +		    		    
 		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.deleteMetadata(metadataObject)</span>\n" +		    		    
+		    "<span>entry.indexEntry()</span>\n" +
+
 		    HU.href(getRepository().getUrlPath("/metadata/types.html"),"List metadata types",HU.attrs("target","_types")) +
 
 		    "</div>";
@@ -1514,6 +1516,21 @@ public class ExtEditor extends RepositoryManager {
 	    return value.indexOf(_match)>0;
 	}
 
+	public void indexEntry() throws Exception {
+	    List<Entry> entries = new ArrayList<Entry>();
+	    entries.add(entry);
+	    repository.getSearchManager().entriesModified(request,entries);
+	}
+
+	/*
+	public void indexEntry() {
+	    changed=true;
+	    request.put(ARG_DOOCR,true);
+	}
+	*/
+
+
+
 	public void addMetadata(String type,String...values) throws Exception {
 	    repository.getMetadataManager().addMetadata(request,entry,  type, true,values);
 	    ctx.print("Added metadata to:" + entry.getName());
@@ -1679,10 +1696,7 @@ public class ExtEditor extends RepositoryManager {
 	    return entry.hasLocationDefined(request);
 	}
 
-	public void indexEntry() {
-	    changed=true;
-	    request.put(ARG_DOOCR,true);
-	}
+
 
 	public void setLocation(double lat,double lon) {
 	    entry.setLocation(lat,lon);
