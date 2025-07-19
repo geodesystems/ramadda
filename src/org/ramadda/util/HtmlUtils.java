@@ -285,7 +285,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    
+    public static String makeHeader1(List links) {
+	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link ramadda-header-link-1'>","</span>");
+	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-1\">" + WikiUtil.NAVDELIM+"</span>");
+    }
+
+
+    public static String makeHeader2(List links) {
+	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link  ramadda-header-link-2'>","</span>");
+	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-2\">" + WikiUtil.NAVDELIM+"</span>");
+    }
+
+
     public static Appendable hidden(Appendable sb, String name, Object value,
                                     String extra) {
         tag(sb, TAG_INPUT,
@@ -2028,6 +2039,38 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     
+    public static class Href {
+	String url;
+	String label;
+	String clazz;
+	public Href(String url,String label) {
+	    this.url = url;
+	    this.label = label;
+	}
+	public Href(String url,String label,String clazz) {
+	    this(url,label);
+	    this.clazz=clazz;
+	}
+
+	public String getUrl(String url) {
+	    return url;
+	}
+
+	@Override
+	public String toString() {
+	    if(clazz!=null)
+		return href(url,label,cssClass(clazz));
+	    return href(url,label);
+	}
+	@Override
+	public boolean equals(Object o) {
+	    if(o instanceof String) return url.equals(o.toString());
+	    if(!(o instanceof Href)) return false;
+	    return this.url.equals(((Href)o).url);
+	}
+    }
+
+
     public static class Selector {
         int margin = 3;
         int padding = 20;
