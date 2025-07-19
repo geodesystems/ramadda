@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 19 10:54:50 MDT 2025";
+var build_date="RAMADDA build date: Sat Jul 19 15:26:39 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -18177,17 +18177,21 @@ RequestMacro.prototype = {
 
 
 function makeInlineData(display, src) {
-    let csv = $("#"+src).html().trim();
+    let div = $("#"+src);
+    if(div.length==0) throw new Error("No inline data available:" + src);
+    let html = div.html();
+    if(!Utils.stringDefined(html)) throw new Error("No inline data available:" + src);
+    let csv = html.trim();
     let lines = csv.split("\n");
     let fields = [];
-    let samples = lines[1].split(",");
+    let samples = lines[1]?lines[1].split(","):[];
     let latField  =null, lonField=null,dateField=null;
     lines[0].split(",").forEach((tok,idx)=>{
 	tok = tok.trim();
 	let id = Utils.makeId(tok);
 	let label = Utils.makeLabel(tok);
 	let type = "string";
-	let sample = samples[idx];
+	let sample = samples[idx]??'';
 	if(display.getProperty(id+".label")) {
 	    label =display.getProperty(id+".label");
 	}
@@ -18241,6 +18245,7 @@ function makeInlineData(display, src) {
 	//PointRecord(fields,lat, lon, elevation, time, data)
         records.push(new  PointRecord(fields,lat, lon, NaN, date, data));
     });
+    if(records.length==0) throw new Error("No data is available");
     return  new PointData(src, fields, records,"#" + src);
 }
 /**
