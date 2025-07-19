@@ -1,34 +1,81 @@
+:p
+----
+:p
 +row
-+col-6
-:heading Asset Type
++col-2
+:b Asset Type
 {{group inlineDataSrc=typesdata}}
-{{display_download}}
-{{display_piechart width=300px}} 
-{{display_table height=200px}}
++center
+{{display_piechart width=200px}} 
+-center
 -col
-+col-6
-:heading Department
++col-4
+{{display_download}}
+{{display_htmltable height=200px}}
+-col
++col-2
+:b Department
 {{group inlineDataSrc=departmentdata}}
++center
+{{display_piechart width=200px}}
+-center
+-col
++col-4
 {{display_download}}
-{{display_piechart width=300px}} 
-{{display_table height=200px}}
+{{display_htmltable height=200px}}
 -col
 -row
-
+:p
+----
+:p
 +row
-+col-6
-:heading Location
-{{group inlineDataSrc=locationdata}}
-{{display_download}}
-{{display_piechart width=300px}} 
-{{display_table height=200px}}
++col-2
+:b Status
+{{group inlineDataSrc=statusdata}}
++center
+{{display_piechart width=200px}} 
+-center
 -col
-+col-6
-:heading Assigned To
-{{group inlineDataSrc=assignedtodata}}
++col-4
 {{display_download}}
-{{display_piechart width=300px}} 
-{{display_table height=200px}}
+{{display_htmltable height=200px}}
+-col
++col-2
+:b Condition
+{{group inlineDataSrc=conditiondata}}
++center
+{{display_piechart width=200px}}
+-center
+-col
++col-4
+{{display_download}}
+{{display_htmltable height=200px}}
 -col
 -row
-
+:p
+----
+:p
++row
++col-2
+:b Location
+{{group inlineDataSrc=locationdata}}
++center
+{{display_piechart width=200px}} 
+-center
+-col
++col-4
+{{display_download}}
+{{display_htmltable height=200px}}
+-col
++col-2
+:b Assigned to
+{{group inlineDataSrc=assignedtodata}}
++center
+{{display_piechart width=200px}}
+-center
+-col
++col-4
+{{display_download}}
+{{display_htmltable height=200px}}
+-col
+-row

@@ -20,10 +20,9 @@ acquisition_cost,Acquisition Cost, double,
 warranty_expiration,,date, default="none"  cansearch="true" 	      
 
 #physical asset
-status,Status,enumerationplus, cansearch="true"  \
-values="Active\,In Repair\,Disposed\,Retired" \
-condition,,enumerationplus,values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
-subgroup="Equipment Information"
+status,Status,enumerationplus, cansearch="true"  subgroup="Equipment Information" \
+values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
+condition,,enumerationplus, values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
 serial_number,,string,size="400"
 model,,enumerationplus,size="400" cansearch="true"
 manufacturer,,enumerationplus,

@@ -20,6 +20,8 @@ childtypes="super:type_assets_base,type_assets_license"
 <column  name="contact_phone"  label="Contact Phone"  type="string" />
 <action name="assets_report" label="Assets Report" 
 canedit="true" icon="/icons/magnifier.png" foruser="true" category="view"/>
+<action name="assets_new" label="New Asset" 
+canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 
 
 <!-- Properties-->
@@ -30,15 +32,12 @@ canedit="true" icon="/icons/magnifier.png" foruser="true" category="view"/>
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-+toggleopen Toggle
 +if candonew=true 
-:heading Create
-{{assets_barcode #type=type_assets_vehicle}}
-:vspace 1em 
 +center
-{{new_entry   fromEntry="true"    message=""  }}
+{{entrylink  link=""  title="Assets Report"  makeButton=true showIcon="false"  action="assets_report"  }}
+{{entrylink  link=""  title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -center
--if 
+-if
 :vspace 0.5em
 +center
 {{typecount  typecountPrefix=":heading Summary" 
@@ -48,36 +47,18 @@ addSearchLink=true  topCount=100
 hero="false"  template="${icon} ${label}<br>${count}"  
 addSearchLink="true"  animated="true" }} 
 -center
--toggle
-:heading Search Assets
+:vspace 1em
+----
+:heading Search
 {{display_entrylist     showEntryType=true orderByTypes="name,relevant,createdate,changedate,date,entryorder"  
 showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
 toggleClose=true  entryTypes="super:type_assets_base,super:type_assets_thing" }} 
-
+:vspace 1em
+----
 :heading Collection Information
-{{assets_report_link}}
 {{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
  #menusTitle="Services"  }} 
- 
-+skip
-:heading Asset List
-+tabs
-+tab List
-{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false  }} 
--tab
-+tab Grid
-{{grid  tag="card"  #innerHeight="200px"  #innerMinHeight="200px"  #innerMaxHeight="200px"  width="350px"  #boxHeight="180px" 
- #imageHeight="150px"  showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
- captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
- showPlaceholderImage="true"  #useThumbnail="false"  #inherited="true"  #expand="true"  #childrenWiki="wiki text to display children, e.g. {{tree details=false}}" 
- #weights="4,4,4"  }} 
--tab
-+tab Map
-{{map  width="100%"  height="80vh"  listEntries="true"  #entryIcon=""  #skipEntries="true"  #marker1="latitude:40,longitude:-105,color:red,radius:4,text:Some text" 
- #entriesListInMap="true"  #entriesListHeader=""  #hideIfNoLocations="false"  #showCircles="true"  #mapProps="fillColor:red,strokeWidth:1,radius:6"  }} 
--tab
--tabs
--skip
+
 
 -section]]></wiki>
 </type>

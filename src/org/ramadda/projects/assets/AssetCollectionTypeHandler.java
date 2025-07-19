@@ -66,6 +66,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 
     public static final String ARG_REPORT="report";
     public static final String ACTION_REPORT="assets_report";
+    public static final String ACTION_NEW="assets_new";    
     public static final String REPORT_TABLE = "assets_report_table";
     public static final String REPORT_SUMMARY = "assets_report_summary";    
 
@@ -74,11 +75,27 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
         String action = request.getString("action", "");
 	if(action.equals(ACTION_REPORT)) 
 	    return handleActionReport(request, entry);
+	if(action.equals(ACTION_NEW))
+	    return handleActionNew(request, entry);
 	return super.processEntryAction(request,entry);
     }
 
 
 
+
+
+
+
+    public Result handleActionNew(Request request, Entry entry) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "Create New Asset");
+	String wiki = "+center\n{{new_entry   fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n";
+
+	wikify(request, entry,sb,wiki);
+	getPageHandler().entrySectionClose(request, entry, sb);
+	Result result = new Result("New Assets - " + entry.getName(),sb);
+        return getEntryManager().addEntryHeader(request, entry, result);
+    }
 
     public Result handleActionReport(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -195,21 +212,29 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	 LinkedHashMap<String,Integer> types = new LinkedHashMap<String,Integer>();
 	 LinkedHashMap<String,Integer> department = new LinkedHashMap<String,Integer>();
 	 LinkedHashMap<String,Integer> location = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> assignedto = new LinkedHashMap<String,Integer>();	 	 	 
+	 LinkedHashMap<String,Integer> assignedto = new LinkedHashMap<String,Integer>();
+	 LinkedHashMap<String,Integer> status = new LinkedHashMap<String,Integer>();
+	 LinkedHashMap<String,Integer> condition = new LinkedHashMap<String,Integer>();	 	 	 	 	 
 	 for(Entry child: entries) {
 	     if(!child.getTypeHandler().isType("type_assets_base")) {
 		 continue;
 	     }
 	     addSummary(types,child.getTypeHandler().getLabel());
-	     addSummary(department,child.getStringValue(request,"department",""));
-	     addSummary(location,child.getStringValue(request,"location",""));
-	     addSummary(assignedto,child.getStringValue(request,"assigned_to",""));	     	     
+	     addSummary(department,child.getEnumValue(request,"department",""));
+	     addSummary(location,child.getEnumValue(request,"location",""));
+	     addSummary(assignedto,child.getEnumValue(request,"assigned_to",""));
+	     if(child.getTypeHandler().isType("type_assets_physical")) {
+		 addSummary(status,child.getEnumValue(request,"status",""));	     	     	     
+		 addSummary(condition,child.getEnumValue(request,"condition",""));
+	     }
 	 }
 
 	 inlineData(buff,"typesdata","type,count",types);
 	 inlineData(buff,"departmentdata","department,count",department);
 	 inlineData(buff,"locationdata","location,count",location);
-	 inlineData(buff,"assignedtodata","assigned to,count",assignedto);	 	 	 
+	 inlineData(buff,"assignedtodata","assigned to,count",assignedto);
+	 inlineData(buff,"statusdata","status,count",status);
+	 inlineData(buff,"conditiondata","condition,count",condition);	 	 	 	 	 
 	 String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
 	 buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
 

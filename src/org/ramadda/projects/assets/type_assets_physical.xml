@@ -13,11 +13,12 @@ foruser="false"
 >
 
 <!-- Columns-->
-<column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"   values="Active,In Repair,Disposed,Retired"   subgroup="Equipment Information" />
+<column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"  subgroup="Equipment Information"  values="active:Active,inrepair:In Repair,disposed:Disposed,retired:Retired,lost:Lost" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
 <column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
-<column  name="model"  label="Model"  type="string"  size="400" />
+<column  name="model"  label="Model"  type="enumerationplus"  size="400" cansearch="true" />
 <column  name="manufacturer"  label="Manufacturer"  type="enumerationplus" />
-<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"          subgroup="Disposal"  cansearch="true" />
+<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"   subgroup="Disposal"  cansearch="true" />
 <column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
 <column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />
 <!-- Properties-->
