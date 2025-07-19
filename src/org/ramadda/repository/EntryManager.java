@@ -1495,10 +1495,6 @@ public class EntryManager extends RepositoryManager {
 
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
-
-	
-
-
         outputType.incrNumberOfCalls();
         boolean handleAsGroup = handleEntryAsGroup(entry);
 
@@ -1540,13 +1536,18 @@ public class EntryManager extends RepositoryManager {
         boolean      doLatest    = request.get(ARG_LATEST, false);
         List<Entry>  children     = new ArrayList<Entry>();
 
-	if(outputHandler.requiresChildrenEntries(request, outputType, group)) {
-	    try {
-		getChildrenEntries(request,outputHandler,group, children);
-	    } catch (Exception exc) {
-		exc.printStackTrace();
-		request.put(ARG_MESSAGE, "Error finding children" + ":"
-			    + exc.getMessage());
+	String searchUrl = request.getString(ARG_SEARCH_URL,null);
+	if(searchUrl!=null) {
+	    getSearchManager().processSearchUrl(request, children,searchUrl);
+	} else {
+	    if(outputHandler.requiresChildrenEntries(request, outputType, group)) {
+		try {
+		    getChildrenEntries(request,outputHandler,group, children);
+		} catch (Exception exc) {
+		    exc.printStackTrace();
+		    request.put(ARG_MESSAGE, "Error finding children" + ":"
+				+ exc.getMessage());
+		}
 	    }
 	}
         if (doLatest) {

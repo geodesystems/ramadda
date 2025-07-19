@@ -1022,6 +1022,27 @@ public class EntryUtil extends RepositoryManager {
 
     public static void main(String[] args) throws Exception {}
 
+    public static class EntryCount {
+	TypeHandler type;
+	int count;
+	public EntryCount(TypeHandler type,int count) {
+	    this.type = type;
+	    this.count=count;
+	}
+	@Override
+	public String toString() {
+	    return type+ " #" + count +" ";
+	}
+	public TypeHandler getTypeHandler() {
+	    return type;
+	}
+	public int getCount() {
+	    return count;
+	}
+    }
+
+
+
     public static class Excluder {
 	List<String> patterns;
 	long sizeLimit;

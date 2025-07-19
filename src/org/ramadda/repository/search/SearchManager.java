@@ -59,6 +59,8 @@ import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.document.SortedNumericDocValuesField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.facet.*;
+import org.apache.lucene.facet.sortedset.*;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.QueryBuilder;
@@ -158,9 +160,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					    URL_SEARCH_BROWSE,
 					    URL_SEARCH_ASSOCIATIONS_FORM });
 
-    private static final String  FIELD_ENTRYORDER ="entryorder";
-    private static final String  FIELD_SIZE ="size";
-    private static final String  FIELD_SUPERTYPE ="supertype";    
+    private static final String FIELD_ENTRYORDER ="entryorder";
+    private static final String FIELD_SIZE ="size";
+    private static final String FIELD_SUPERTYPE ="supertype";    
     private static final String FIELD_ENTRYID = "entryid";
     private static final String FIELD_PARENT = "parent";
     private static final String FIELD_ANCESTOR = "ancestor";    
@@ -441,7 +443,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
 	//        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
+
 	TypeHandler parentType = entry.getTypeHandler();
+	doc.add(new SortedSetDocValuesFacetField(FIELD_TYPE,parentType.getType()));
 	while(parentType!=null) {
 	    doc.add(new StringField(FIELD_SUPERTYPE, parentType.getType(), Field.Store.YES));	
 	    parentType = parentType.getParent();
@@ -681,7 +685,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
         doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
-        indexWriter.addDocument(doc);
+	FacetsConfig config = new FacetsConfig();
+	//        indexWriter.addDocument(doc);
+        indexWriter.addDocument(config.build(doc));
     }
 
     /**
@@ -1082,6 +1088,45 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return builder.build();
     }        
 
+
+
+    
+    public List<EntryUtil.EntryCount> getEntryCounts(Request request) throws Exception {
+	try {
+	    return getEntryCountsInner(request);
+	} catch(Exception ignore) {
+	    //for old index without any faceting
+	    if(ignore.toString().indexOf("$facets")<0) throw ignore;
+	    return new ArrayList<EntryUtil.EntryCount>();
+	}
+
+
+    }
+    private List<EntryUtil.EntryCount> getEntryCountsInner(Request request) throws Exception {
+	
+	IndexSearcher searcher = getLuceneSearcher();
+	IndexReader reader = searcher.getIndexReader();
+	FacetsConfig config = new FacetsConfig();
+	FacetsCollector fc = new FacetsCollector();
+	boolean[]hasArea={false};
+	Query query = makeQuery(request,hasArea);
+	//	System.err.println("Query:" + query);
+	searcher.search(query, fc);  
+	SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader);
+	Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+	int max = 100_000;
+	FacetResult result = facets.getTopChildren(max, FIELD_TYPE);
+	List<EntryUtil.EntryCount> counts = new ArrayList<EntryUtil.EntryCount>();
+	if(result==null) return counts;
+        for (LabelAndValue lv : result.labelValues) {
+	    TypeHandler typeHandler = getRepository().getTypeHandler(lv.label);
+	    if(typeHandler!=null) {
+		counts.add(new EntryUtil.EntryCount(typeHandler,lv.value.intValue()));
+	    }
+        }
+	return counts;
+    }
+
     public Result processEntryList(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	Entry entry = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID));
@@ -1139,10 +1184,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return makeAnd(ands);
     }
 
-    int scnt=0;
-    public void processLuceneSearch(Request request, List<Entry> entries)
+    public void processSearchUrl(Request request, List<Entry> entries, String url) throws Exception {
+	Request searchRequest = new Request(getRepository(),request.getUser());
+	List<String> args = IO.parseArgs(url);
+	for(int i=0;i<args.size();i+=2) {
+	    String key = args.get(i);
+	    String value = args.get(i+1);
+	    searchRequest.put(key,value,false);
+	}
+	processLuceneSearch(searchRequest,entries);
+    }
+
+    public Query makeQuery(Request request,boolean[]hasArea)
 	throws Exception {
-        StringBuffer sb = new StringBuffer();
+	List<Query> queries = new ArrayList<Query>();
+
 	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
@@ -1153,7 +1209,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-	List<Query> queries = new ArrayList<Query>();
 	text = text.trim();
 	if(text.length()>0) {
 	    Hashtable<String,List<String>>synonyms=null; 
@@ -1271,7 +1326,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
 	boolean contains = !(request.getString(ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS));
-	boolean hasArea = makeAreaQueries(rectangles, queries, contains,FIELD_NORTH,FIELD_WEST,FIELD_SOUTH,FIELD_EAST);
+	hasArea[0] = makeAreaQueries(rectangles, queries, contains,FIELD_NORTH,FIELD_WEST,FIELD_SOUTH,FIELD_EAST);
 
 	int sizeMin =  request.get(ARG_SIZE_MIN,-1);
 	int sizeMax =  request.get(ARG_SIZE_MAX,-1);	
@@ -1370,12 +1425,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
-	    for(String type: Utils.split(request.getUnsafeString(ARG_TYPE),",",true,true)) {
-		if(type.equals("isgroup")) {
-		    continue;
-		}
-		TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		if(typeHandler==null) continue;
+	    for(TypeHandler typeHandler: getRepository().getTypes(request.getUnsafeString(ARG_TYPE))) {
+		String type = typeHandler.getType();
 		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
 		typeQueries.add(new TermQuery(new Term(FIELD_SUPERTYPE, type)));
 		List<Column> columns = typeHandler.getColumns();
@@ -1550,7 +1601,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		builder.add(q,BooleanClause.Occur.MUST);
 	    query = builder.build();
 	}
+	return query;
+    }
 
+
+
+    int scnt=0;
+    public void processLuceneSearch(Request request, List<Entry> entries)
+	throws Exception {
+	boolean[]hasArea={false};
+	Query query = makeQuery(request,hasArea);
 	int max = Math.max(0,request.get(ARG_MAX,100));
 	int skip = Math.max(0,request.get(ARG_SKIP,0));
 	Sort sort;
@@ -1631,6 +1691,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	} else {
 	    sort = Sort.RELEVANCE;
 	}
+
         IndexSearcher searcher = getLuceneSearcher();
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
         ScoreDoc[]    docs     = hits.scoreDocs;
@@ -1657,7 +1718,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		getLogManager().logSpecial("SearchManager.processLuceneSearch - unable to find entry from id:" + id);
                 continue;
             }
-	    if(hasArea && !entry.isGeoreferenced(request)) {
+	    if(hasArea[0] && !entry.isGeoreferenced(request)) {
 		continue;
 	    }
 	    entries.add(entry);
