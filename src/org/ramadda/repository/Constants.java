@@ -812,6 +812,9 @@ public interface Constants {
 
     public static final String ARG_SEARCH_POLYGON = "search_polygon";
 
+
+    public static final String ARG_SEARCH_URL = "searchurl";
+
     public static final String ARG_NORTH = "north";
 
     public static final String ARG_OK = "ok";
