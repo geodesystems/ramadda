@@ -533,14 +533,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
         this(null, args, port);
     }
 
+    private static boolean disabledJNDI = false;
+
     public void init(String[] args, int port,int sslPort) throws Exception {
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
 
-	//In later java versions this disables serialization
-	//ObjectInputFilter.Config.setSerialFilter(info -> ObjectInputFilter.Status.REJECTED);
-	//this disables jndi
-	javax.naming.spi.NamingManager.setInitialContextFactoryBuilder(env -> { throw new javax.naming.NamingException("JNDI disabled"); });
+	if(!disabledJNDI) {
+	    //In later java versions this disables serialization
+	    //ObjectInputFilter.Config.setSerialFilter(info -> ObjectInputFilter.Status.REJECTED);
+	    //this disables jndi
+	    try {
+		javax.naming.spi.NamingManager.setInitialContextFactoryBuilder(env -> { throw new javax.naming.NamingException("JNDI disabled"); });
+	    } catch(Exception ignore) {
+	    }
+	    disabledJNDI = true;
+	}
 
         setPort(port);
 	if(sslPort>0) {
