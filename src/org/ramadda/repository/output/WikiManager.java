@@ -655,7 +655,6 @@ public class WikiManager extends RepositoryManager
 				  WikiUtil wikiUtil, Hashtable props,
 				  String entryId) throws Exception {
 
-
 	String url = HtmlUtils.url(server.getUrl() +"/wiki/findentryfromid");
 	String propString = Utils.encodeBase64(getRepository().encodeObject(props==null?new Hashtable():props));
 	//	System.err.println("url:" + url);
@@ -1720,7 +1719,15 @@ public class WikiManager extends RepositoryManager
 	}
 	if(Utils.getProperty(props,"showToggle",false)) {
 	    sb.append("<p>");
-	    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
+	    StringBuilder tmp = new StringBuilder();
+	    tmp.append("+toggle Add Property\n");
+	    tmp.append(sb);
+	    tmp.append("\n-toggle\n");
+	    return wikify(request, tmp.toString());
+
+	    //	    HU.makeAccordion(tmp,"Add Property", sb.toString(), true,null,null);
+	    //	    return tmp.toString();
+			     //	    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
 	}
 
 	return sb.toString();
@@ -1918,7 +1925,9 @@ public class WikiManager extends RepositoryManager
 
 	    return getProperty(wikiUtil,props,"message","");
 
-	} else if(theTag.equals(WIKI_TAG_NEWBUTTON) || theTag.equals(WIKI_TAG_NEW_TYPE) || theTag.equals(WIKI_TAG_NEW_ENTRY)) {
+	} else if(theTag.equals(WIKI_TAG_NEWBUTTON) ||
+		  theTag.equals(WIKI_TAG_NEW_TYPE) ||
+		  theTag.equals(WIKI_TAG_NEW_ENTRY)) {
 	    if(!getAccessManager().canDoNew(request, entry)) {
 		return "";
 	    }
@@ -1926,14 +1935,14 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"fromEntry",false)) {
 		types.addAll(entry.getTypeHandler().getDefaultChildrenTypes());
 	    }
-
 	    String clazz = getProperty(wikiUtil,props,"class","");
 	    String _type = getProperty(wikiUtil,props,"type",null);
 	    boolean showToggle = getProperty(wikiUtil,props,"showToggle",false);
 	    if(_type!=null) {
 		types.add(_type);
 	    }
-	    if(types.size()==0) return getProperty(wikiUtil,props,"message","No type specified in new entry tag");
+	    if(types.size()==0)
+		return getProperty(wikiUtil,props,"message","No type specified in new entry tag");
 	    for(String type: types) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		if(typeHandler==null) return "Not a valid entry type:" + type;
@@ -1957,28 +1966,27 @@ public class WikiManager extends RepositoryManager
 	    String[] colors = {
 			   "#E6F4EA", // Soft Mint
 			   "#DCEEFF", // Powder Blue
+			   "#FFEFD6", // Apricot Cream
+			   "#DFF5F0", // Seafoam
 			   "#FFECEE", // Pale Blush
 			   "#EFEBFA", // Lavender Mist
-			   "#FFEFD6", // Apricot Cream
-			   "#F4F6F8", // Cool Fog
 			   "#FFF8D9", // Butter Cream
-			   "#DFF5F0", // Seafoam
 			   "#F3F0FA", // Cloud Lilac
 			   "#F8E6E0"  // Dusty Rose
 	    };
-	    
 
-	    Function<List<TypeHandler>,String> apply = (handlers)->{
+
+	    Function<List<EntryUtil.EntryCount>,String> apply = (handlers)->{
 		try {
 		    int count=0;
 		    String label = "Count";
 		    int typeCount=0;
-		    TypeHandler lastHandler = null;
-		    for(TypeHandler handler: handlers) {
-			if(except.contains(handler.getType())) continue;
-			lastHandler = handler;
-			count += getEntryUtil().getEntryCount(handler);
-			label = handler.getLabel();
+		    EntryUtil.EntryCount lastCount= null;
+		    for(EntryUtil.EntryCount entryCount: handlers) {
+			if(except.contains(entryCount.getTypeHandler().getType())) continue;
+			lastCount=entryCount;
+			count += entryCount.getCount();
+			label = entryCount.getTypeHandler().getLabel();
 			typeCount++;
 		    }
 		    if(count==0 && getProperty(wikiUtil,props,"hideWhenZero",false)) return "";
@@ -1996,12 +2004,12 @@ public class WikiManager extends RepositoryManager
 		    String clazz=" ramadda-typecount-block ";
 		    boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
 		    if(addSearch) clazz+=" ramadda-clickable  ramadda-hoverable ";
-		    if(typeCount==1 && lastHandler!=null) {
-			String icon = lastHandler.getIconProperty(null);
+		    if(typeCount==1 && lastCount!=null) {
+			String icon = lastCount.getTypeHandler().getIconProperty(null);
 			if (icon == null) {
 			    icon = ICON_BLANK;
 			}
-			String img = HU.img(lastHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, iconWidth));		
+			String img = HU.img(lastCount.getTypeHandler().getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, iconWidth));		
 			html = html.replace("${icon}",img);
 		    }   else {
 			html = html.replace("${icon}","");
@@ -2012,10 +2020,10 @@ public class WikiManager extends RepositoryManager
 		    if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
 		    cnt[0]++;
 		    html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
-		    if(typeCount == 1 && addSearch && lastHandler!=null) {
+		    if(typeCount == 1 && addSearch && lastCount!=null) {
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"
-			    + lastHandler.getType();
+			    + lastCount.getTypeHandler().getType();
 			html = HU.href(url ,html,HU.title("Search"));
 		    }
 		    return html;
@@ -2024,8 +2032,50 @@ public class WikiManager extends RepositoryManager
 		}
 	    };
 
-	    List<TypeHandler> handlers=null;
 	    String types = getProperty(wikiUtil,props,"types","").trim();
+	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
+	    Request countRequest = new Request(getRepository(),request.getUser());
+	    boolean doNewWay = false;
+	    String ancestor = getProperty(wikiUtil,props,"ancestor",null);
+	    if(ancestor!=null) {
+		if(entry!=null) ancestor=ancestor.replace("${this}",entry.getId());
+		doNewWay = true;
+		countRequest.put(ARG_ANCESTOR,ancestor);
+	    }
+
+
+
+	    if(!types.equals("*")) {
+		List<String> tmp = new ArrayList<String>();
+		for(TypeHandler handler: getRepository().getTypes(types)) {
+		    if(except.contains(handler.getType())) continue;
+		    tmp.add(handler.getType());
+		}
+		countRequest.put(ARG_TYPE,Utils.join(tmp,","));
+	    }
+	    
+	    if(doNewWay) {
+		List<EntryUtil.EntryCount> counts = getSearchManager().getEntryCounts(countRequest);
+		if(topCount>0) {
+		    List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
+		    List<EntryUtil.EntryCount>entryCounts = new ArrayList<EntryUtil.EntryCount>();
+		    for(EntryUtil.EntryCount count: counts) {
+			if(except.contains(count.getTypeHandler().getType())) continue;
+			sort.add(new Utils.ObjectSorter(count,count.getCount(),false));
+		    }
+		    Collections.sort(sort);
+		    for(int i=0;i<topCount && i<sort.size();i++) {
+			EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)sort.get(i).getObject();
+			List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
+			tmp.add(entryCount);
+			sb.append(apply.apply(tmp));
+		    }
+		    return sb.toString();
+		}
+	    }
+
+	    List<TypeHandler> handlers = null;
+	    //	    List<EntryUtil.EntryCount> entryCounts=null;
 	    if(types.equals("*")) {
 		handlers=getRepository().getTypeHandlers();
 	    }  else {
@@ -2035,23 +2085,26 @@ public class WikiManager extends RepositoryManager
 		    handlers.add(handler);
 		}
 	    }
-	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
 	    if(topCount>0) {
 		List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
+		List<EntryUtil.EntryCount>entryCounts = new ArrayList<EntryUtil.EntryCount>();
 		for(TypeHandler handler: handlers) {
 		    if(except.contains(handler.getType())) continue;
 		    int count = getEntryUtil().getEntryCount(handler);
-		    if(count>0) 
-			sort.add(new Utils.ObjectSorter(handler,count,false));
+		    if(count>0) {
+			EntryUtil.EntryCount entryCount = new EntryUtil.EntryCount(handler,count);
+			sort.add(new Utils.ObjectSorter(entryCount,count,false));
+		    }
 		}
 		Collections.sort(sort);
 		for(int i=0;i<topCount && i<sort.size();i++) {
-		    handlers = new ArrayList<TypeHandler>();
-		    handlers.add((TypeHandler)sort.get(i).getObject());
-		    sb.append(apply.apply(handlers).trim());
+		    EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)sort.get(i).getObject();
+		    List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
+		    tmp.add(entryCount);
+		    sb.append(apply.apply(tmp));
 		}
 	    } else {
-		sb.append(apply.apply(handlers));
+//		sb.append(apply.apply(handlers));
 	    }
 	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LINK)) {
@@ -4121,7 +4174,6 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
-
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
 	    boolean decorate = getProperty(wikiUtil, props, "decorate",  true);
 	    boolean expand = getProperty(wikiUtil, props, "expand",  false);	    
@@ -5456,8 +5508,6 @@ public class WikiManager extends RepositoryManager
 	return HU.div(contents,compAttrs);
     }
 
-
-
     public Result processGetDataUrl(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID, ""));
 	if(entry==null) {
@@ -6596,19 +6646,6 @@ public class WikiManager extends RepositoryManager
 	return s;
     }
 
-    /**
-     * Get the entries for the request
-     *
-     * @param request The request
-     * @param wikiUtil _more_
-     * @param originalEntry _more_
-     * @param entry  the parent entry
-     * @param props  properties
-     *
-     * @return the list of entries
-     *
-     * @throws Exception problems
-     */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props)
@@ -6618,20 +6655,6 @@ public class WikiManager extends RepositoryManager
                           false, "");
     }
 
-    /**
-     * Get the entries for the request
-     *
-     * @param request  the request
-     * @param wikiUtil _more_
-     * @param originalEntry _more_
-     * @param entry    the entry
-     * @param props    properties
-     * @param onlyImages  true to only show images
-     *
-     * @return the list of Entry's
-     *
-     * @throws Exception  problems making list
-     */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props, boolean onlyImages)
@@ -6657,21 +6680,6 @@ public class WikiManager extends RepositoryManager
 	return new Result("", sb, JU.MIMETYPE);
     }
 
-    /**
-     * Get the entries for the request
-     *
-     * @param request  the request
-     * @param wikiUtil _more_
-     * @param originalEntry _more_
-     * @param entry    the entry
-     * @param props    properties
-     * @param onlyImages  true to only show images
-     * @param attrPrefix _more_
-     *
-     * @return the list of Entry's
-     *
-     * @throws Exception  problems making list
-     */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props, boolean onlyImages,
@@ -6699,22 +6707,6 @@ public class WikiManager extends RepositoryManager
                           userDefinedEntries, props, onlyImages, attrPrefix);
     }
 
-    /**
-     * main getEntries method
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param userDefinedEntries _more_
-     * @param props _more_
-     * @param onlyImages _more_
-     * @param attrPrefix _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   String userDefinedEntries, Hashtable props,
@@ -6980,20 +6972,8 @@ public class WikiManager extends RepositoryManager
 	};
     }
 
-    /**
-     * Get the entries corresponding to the ids
-     *
-     * @param request the Request
-     * @param wikiUtil _more_
-     * @param baseEntry _more_
-     * @param ids  list of comma separated ids
-     * @param props _more_
-     *
-     * @return List of Entrys
-     *
-     * @throws Exception problem getting entries
-     */
-    public List<Entry> getEntries(Request initRequest, WikiUtil wikiUtil,
+    public List<Entry> getEntries(Request initRequest,
+				  WikiUtil wikiUtil,
                                   Entry baseEntry, String ids,
                                   Hashtable theProps)
 	throws Exception {
@@ -7160,19 +7140,8 @@ public class WikiManager extends RepositoryManager
 
 	    if (entryId.startsWith("searchurl:")) {
 		entryId = entryId.substring("searchurl:".length());
-		Request searchRequest = new Request(getRepository(),myRequest.getUser());
-		List<String> args = IO.parseArgs(entryId);
-		for(int i=0;i<args.size();i+=2) {
-		    String key = args.get(i);
-		    String value = args.get(i+1);
-		    searchRequest.put(key,value,false);
-		}
-		getSearchManager().processLuceneSearch(searchRequest,entries);
-		for(Entry entry:entries) {
-		    //		    System.err.println("E:" + entry.getName() +" " + new Date(entry.getStartDate()));
-		}
+		getSearchManager().processSearchUrl(myRequest,entries,entryId);
 		continue;
-
 	    }
 
 	    if (entryId.startsWith(ID_SEARCH + ".")) {
@@ -8576,8 +8545,6 @@ public class WikiManager extends RepositoryManager
 		    return canDoNew.equals("false");
 	    }
 
-
-
 	    if(entry==null) return true;
 
 	    String size = (String) props.get("size");
@@ -8599,9 +8566,6 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
-
-
-
 	    String isFile = (String) props.get("isfile");
 	    if(stringDefined(isFile)) {
 		if(isFile.equals("true")) {
@@ -8610,7 +8574,6 @@ public class WikiManager extends RepositoryManager
 		    return !entry.isFile();
 		}
 	    }
-
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
@@ -8645,7 +8608,6 @@ public class WikiManager extends RepositoryManager
 		if(hasChildren.equals("true")) return children.size()>0;
 		else return children.size()==0;
 	    }
-
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
