@@ -1617,7 +1617,8 @@ public class HtmlOutputHandler extends OutputHandler {
 		}
 
                 HU.open(tableSB, "tr",
-			HU.attrs(new String[] { "class", odd
+			HU.attrs(new String[] { "data-corpus",entry.getTypeHandler().getLabel(),
+				"class", odd
 				? "odd ramadda-entry " + entryRowClass
 				: "even ramadda-entry "+ entryRowClass, "valign", "top" }));
 		if(displayColumns!=null) {
