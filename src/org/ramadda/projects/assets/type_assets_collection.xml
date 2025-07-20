@@ -19,7 +19,7 @@ childtypes="super:type_assets_base,type_assets_license"
 <column  name="contact_email"  label="Contact Email"  type="email" />
 <column  name="contact_phone"  label="Contact Phone"  type="string" />
 <action name="assets_report" label="Assets Report" 
-canedit="true" icon="/icons/magnifier.png" foruser="true" category="view"/>
+canedit="true" icon="fas fa-file-lines" foruser="true" category="view"/>
 <action name="assets_new" label="New Asset" 
 canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 

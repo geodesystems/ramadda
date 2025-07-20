@@ -27,11 +27,28 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
+public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
+    public static final String ARG_REPORT="report";
+    public static final String ACTION_REPORT="assets_report";
+    public static final String ACTION_NEW="assets_new";    
+    public static final String REPORT_TABLE = "assets_report_table";
+    public static final String REPORT_SUMMARY = "assets_report_summary";    
+
+
+
     public AssetCollectionTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
+
+    @Override
+    public void getWikiTags(List<String[]> tags, Entry entry) {
+	super.getWikiTags(tags, entry);
+        tags.add(new String[]{"Assets Report Table","assets_report_table #types=\"\" showHeader=true"});
+        tags.add(new String[]{"Assets Report Summary","assets_report_summary"});	
+    }
+
+
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
 	sb.append(getWikiManager().wikifyEntry(request, entry,wiki));
@@ -64,11 +81,6 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
     }
 
 
-    public static final String ARG_REPORT="report";
-    public static final String ACTION_REPORT="assets_report";
-    public static final String ACTION_NEW="assets_new";    
-    public static final String REPORT_TABLE = "assets_report_table";
-    public static final String REPORT_SUMMARY = "assets_report_summary";    
 
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
@@ -127,9 +139,9 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 
 
 	if(report.equals(REPORT_TABLE))
-	    makeTableReport(request, entry,sb);
+	    makeReportTable(request, entry,sb, new Hashtable());
 	else if(report.equals(REPORT_SUMMARY))
-	    makeSummaryReport(request, entry,sb);	
+	    makeReportSummary(request, entry,sb,new Hashtable());	
 	else
 	    sb.append("Unknown report:" + report);
 
@@ -149,12 +161,24 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
 	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
 	}
+        if (tag.equals("assets_report_table")) {
+	    StringBuilder sb = new StringBuilder();
+	    makeReportTable(request, entry,sb,props);
+	    return sb.toString();
+	}
+        if (tag.equals("assets_report_summary")) {
+	    StringBuilder sb = new StringBuilder();
+	    makeReportSummary(request, entry,sb,props);
+	    return sb.toString();
+	}	
+
+
 	return super.getWikiInclude(wikiUtil, request, originalEntry,
 				    entry, tag, props);
 
     }
 
-    private void makeTableReport(Request request, Entry entry, StringBuilder sb) throws Exception {
+    private void makeReportTable(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
 	sb.append("<center>");
@@ -167,8 +191,12 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 	}
 	sb.append("</div>");
 	sb.append("<div class=assets-block>\n");
-	String contentsWiki = "{{table 	showHeader=true entries=\"searchurl:/repository/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false xmax=5000}}";
+	String types = Utils.getProperty(props,"types","super:type_assets_base,type_assets_license");
+	types = HU.urlEncode(types);
+	boolean showHeader   = Utils.getProperty(props,"showHeader",true);
+	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false}}";
 	wikify(request, entry,sb,contentsWiki);
+	sb.append("</div>");
     }
 
 
@@ -201,7 +229,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler  {
 
 
 
-    private void makeSummaryReport(Request request, Entry entry, StringBuilder buff ) throws Exception {
+    private void makeReportSummary(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	 List<Entry> entries = getEntryManager().getChildren(request, entry);
 	 if(entries.size()==0) {
 	     buff.append(getPageHandler().showDialogNote("No assets available"));
