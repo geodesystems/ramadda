@@ -646,7 +646,20 @@ public class WikiManager extends RepositoryManager
 				    "macro",JU.quote(macro.getWikiText())));
 		}
 	    }
+	    List<String[]> fromType = new ArrayList<String[]>();
+	    entry.getTypeHandler().getWikiTags(fromType,entry);
+	    for(String[]tuple:fromType) {
+		String tag = "{{"+tuple[1] +" entry=" + entry.getId()+ " }}";
+		json.add(JU.map("label",
+				JU.quote(tuple[0]),
+				"tag",JU.quote(tag)));
+					 
+	    }
+
 	}
+
+
+
 
 	return new Result("", new StringBuilder(JU.list(json)), JU.MIMETYPE);
     }
