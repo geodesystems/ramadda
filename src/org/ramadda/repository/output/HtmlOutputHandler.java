@@ -1435,6 +1435,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 	    }
 	}
+        String entryRowClass = Utils.getProperty(props, "entryRowClass", "");
         boolean showHeader = Utils.getProperty(props, "showHeader", false);
         boolean showColumns = Utils.getProperty(props, "showColumns", true);
         boolean showDate = Utils.getProperty(props, "showDate", true);
@@ -1500,7 +1501,7 @@ public class HtmlOutputHandler extends OutputHandler {
             tableSB.append("<div class=\"entry-table-wrapper\">");
             String tableId = HU.getUniqueId("entrytable_");
             tableSB.append(HU.open(HU.TAG_TABLE, HU.attrs(new String[] {
-                "class", "ramadda-table entry-table", "width", "100%", "cellspacing", "0",
+                "class", "ramadda-table ramadda-entry-table entry-table", "width", "100%", "cellspacing", "0",
 		"table-ordering",Utils.getProperty(props,"tableOrdering","false"),
                 "cellpadding", "0", "border", "0", HU.ATTR_ID, tableId
             })));
@@ -1617,8 +1618,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 HU.open(tableSB, "tr",
 			HU.attrs(new String[] { "class", odd
-				? "odd ramadda-entry"
-				: "even ramadda-entry", "valign", "top" }));
+				? "odd ramadda-entry " + entryRowClass
+				: "even ramadda-entry "+ entryRowClass, "valign", "top" }));
 		if(displayColumns!=null) {
 		    for(String col: displayColumns) {
 			String value=null;
