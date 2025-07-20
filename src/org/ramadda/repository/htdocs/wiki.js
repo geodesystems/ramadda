@@ -406,6 +406,12 @@ WikiEditor.prototype = {
         $.getJSON(RamaddaUtil.getUrl('/wiki/getmacros?entryid=' + entryId), data=>{
 	    let extra = [];
 	    data.forEach(macro=>{
+		if(!macro.macro && macro.tag) {
+		    extra.push({label:macro.label,
+				value:macro.tag});
+		    return;
+		}
+
 		extra.push({label:macro.label+ ' - macro',
 			    value:'{{macro name=\"' + macro.name+'\" ' +
 			    (macro.properties??'')+'  entry=\"${entryid}\"}}'});
