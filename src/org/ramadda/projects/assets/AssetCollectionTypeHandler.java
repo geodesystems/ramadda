@@ -8,6 +8,7 @@ package org.ramadda.projects.assets;
 import org.ramadda.repository.*;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
@@ -32,7 +33,9 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String ACTION_REPORT="assets_report";
     public static final String ACTION_NEW="assets_new";    
     public static final String REPORT_TABLE = "assets_report_table";
-    public static final String REPORT_SUMMARY = "assets_report_summary";    
+    public static final String REPORT_SUMMARY = "assets_report_summary";
+    public static final String REPORT_MAINTENANCE = "assets_report_maintenance";
+    public static final String REPORT_WARRANTY = "assets_report_warranty";            
 
 
 
@@ -44,8 +47,10 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     @Override
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
-        tags.add(new String[]{"Assets Report Table","assets_report_table #types=\"\" showHeader=true"});
-        tags.add(new String[]{"Assets Report Summary","assets_report_summary"});	
+        tags.add(new String[]{"Assets Report Table",REPORT_TABLE+" #types=\"\" showHeader=true"});
+        tags.add(new String[]{"Assets Report Summary",REPORT_SUMMARY +" "});
+        tags.add(new String[]{"Assets Report Maintenance",REPORT_MAINTENANCE+" "});
+        tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" "});			
     }
 
 
@@ -121,18 +126,17 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 					 ARG_SEARCH_URL,searchUrl);
 
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
-	headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
-						  ARG_REPORT,REPORT_TABLE),
-					   "Table",
-					   report.equals(REPORT_TABLE)?
-					   "ramadda-linksheader-on":
-					   "ramadda-linksheader-off"));
-	headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
-						  ARG_REPORT,REPORT_SUMMARY),
-					   "Summary",
-					   report.equals(REPORT_SUMMARY)?
-					   "ramadda-linksheader-on":
-					   "ramadda-linksheader-off"));	
+	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},{REPORT_SUMMARY,"Summary"},
+					 {REPORT_MAINTENANCE,"Maintenance"},
+					 {REPORT_WARRANTY,"Warranty"}
+	    }) {
+	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
+						      ARG_REPORT,tuple[0]),
+					       tuple[1],
+					       report.equals(tuple[0])?
+					       "ramadda-linksheader-on":
+					       "ramadda-linksheader-off"));
+	}
 
 	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download XLSX"));
 	sb.append(HU.center(HU.makeHeader1(headerItems)));
@@ -140,6 +144,10 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 	if(report.equals(REPORT_TABLE))
 	    makeReportTable(request, entry,sb, new Hashtable());
+	else if(report.equals(REPORT_MAINTENANCE))
+	    makeReportMaintenance(request, entry,sb, new Hashtable());
+	else if(report.equals(REPORT_WARRANTY))
+	    makeReportWarranty(request, entry,sb, new Hashtable());		
 	else if(report.equals(REPORT_SUMMARY))
 	    makeReportSummary(request, entry,sb,new Hashtable());	
 	else
@@ -161,14 +169,25 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
 	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
 	}
-        if (tag.equals("assets_report_table")) {
+        if (tag.equals(REPORT_TABLE)) {
 	    StringBuilder sb = new StringBuilder();
 	    makeReportTable(request, entry,sb,props);
 	    return sb.toString();
 	}
-        if (tag.equals("assets_report_summary")) {
+        if (tag.equals(REPORT_SUMMARY)) {
 	    StringBuilder sb = new StringBuilder();
 	    makeReportSummary(request, entry,sb,props);
+	    return sb.toString();
+	}
+        if (tag.equals(REPORT_WARRANTY)) {
+	    StringBuilder sb = new StringBuilder();
+	    makeReportWarranty(request, entry,sb,props);
+	    return sb.toString();
+	}		
+
+        if (tag.equals(REPORT_MAINTENANCE)) {
+	    StringBuilder sb = new StringBuilder();
+	    makeReportMaintenance(request, entry,sb,props);
 	    return sb.toString();
 	}	
 
@@ -226,6 +245,58 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	}		 
 	map.put(label,new Integer(typeCnt+1));
     }
+
+
+
+    private void makeReportMaintenance(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
+	 List<Entry> entries = getEntryManager().getChildren(request, entry);
+	 if(entries.size()==0) {
+	     buff.append(getPageHandler().showDialogNote("No assets available"));
+	     return;
+	 }
+	 boolean didOne = false;
+	 String guid = HU.getUniqueId("assets");
+	 HU.open(buff,"div",HU.attrs("id",guid));
+	 for(Entry child:entries) {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, child,
+                    "asset_maintenance", true);
+            if (metadataList == null || metadataList.size() == 0) continue;
+	    if(!didOne) {
+		buff.append("<br><center>");
+		HU.script(buff,"HtmlUtils.initPageSearch('#" +guid+" .ramadda-entry',null,'Search in page')");
+		buff.append("</center>");
+	    }
+	    buff.append("<div class=ramadda-entry>");
+	    if(didOne)
+		buff.append("<div class=ramadda-hr></div>\n");
+	    didOne=true;
+	    buff.append(getEntryManager().getEntryLink(request,child,true,""));
+	    buff.append("<div style='margin-left:20px;'>");
+	    buff.append(HU.formTable());
+	    buff.append("<tr><td>&nbsp;<b>Date</b>&nbsp;</td><td>&nbsp;<b>Maintainer</b>&nbsp;</td><td>&nbsp;<b>Note</b>&nbsp;</td></tr>");	    
+	    for(Metadata mtd:metadataList) {
+		HU.row(buff,HU.td(mtd.getAttr1())+
+		       HU.td(mtd.getAttr2())+
+		       HU.td(mtd.getAttr3()));		       
+	    }
+	    buff.append(HU.formTableClose());
+	    HU.close(buff,"div","div");
+	 }
+	 buff.append("</div>");
+	 if(!didOne) {
+	     buff.append(getPageHandler().showDialogNote("No maintenance records available"));
+	 }
+    }
+
+    private void makeReportWarranty(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
+	 List<Entry> entries = getEntryManager().getChildren(request, entry);
+	 if(entries.size()==0) {
+	     buff.append(getPageHandler().showDialogNote("No assets available"));
+	     return;
+	 }
+	 buff.append("TBD");
+    }    
 
 
 
