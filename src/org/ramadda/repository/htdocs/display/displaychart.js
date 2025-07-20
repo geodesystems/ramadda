@@ -2920,7 +2920,9 @@ function PiechartDisplay(displayManager, id, properties) {
 	{p:'binMin',ex:''},
 	{p:'binMax',ex:'max'},
 	{p:'sumFields',ex:'true'},
+	{p:'legendPosition',ex:'none|top|right|left|bottom'},
 	{p:'sliceVisibilityThreshold',ex:'0.01'},
+	{p:'pieSliceText',d:'percentage',ex:'value|percentage|label|none'},
 	{p:'pieSliceTextColor',ex:'black'},
 	{p:'pieSliceBorderColor',d:'white',ex:'black'}
     ];
@@ -3010,7 +3012,9 @@ function PiechartDisplay(displayManager, id, properties) {
 		//		isHtml: true,
 		//		ignoreBounds: true,
             };
-	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
+	    this.chartOptions.legend = {
+		'position':this.getLegendPosition('right'),
+		'alignment':'center'};
             if (this.getBins()) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
 	    } else if(this.getSumFields()) {
@@ -3019,6 +3023,8 @@ function PiechartDisplay(displayManager, id, properties) {
                 chartOptions.title = this.getDataValues(dataList[0])[0] + " - " + this.getDataValues(dataList[0])[1];
             }
 
+
+	    
             if (this.getIs3D()) {
                 chartOptions.is3D = true;
             }
@@ -3030,6 +3036,9 @@ function PiechartDisplay(displayManager, id, properties) {
             }
 
 	    chartOptions.pieSliceBorderColor = this.getPieSliceBorderColor();
+	    chartOptions.pieSliceText = this.getPieSliceText();
+
+
 	    chartOptions.pieSliceTextStyle  = {
 		color: this.getPieSliceTextColor()
             };
