@@ -1086,12 +1086,15 @@ public class EntryManager extends RepositoryManager {
 	}	    
 
         for (TypeHandler typeHandler : theTypeHandlers) {
+	    int cnt=-1;
             if (checkCnt) {
-                int cnt = getEntryUtil().getEntryCount(request, typeHandler,request.getString(ARG_ANCESTOR,null));
-                if (!typeHandler.getIncludeInSearch() && cnt == 0) {
-                    continue;
+                cnt = getEntryUtil().getEntryCount(request, typeHandler,request.getString(ARG_ANCESTOR,null));
+		if(cnt==0) {
+		    //                if (!typeHandler.getIncludeInSearch() && cnt == 0) {
+		    continue;
                 }
             }
+	    //	    System.err.println("TYPE:" + typeHandler +" count:" + cnt);
             types.add(typeHandler.getJson(request));
         }
 
