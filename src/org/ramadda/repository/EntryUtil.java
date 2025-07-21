@@ -940,7 +940,7 @@ public class EntryUtil extends RepositoryManager {
         Hashtable<String, Integer> typesWeHave = typeCache.get(ancestor);
         if (typesWeHave == null) {
             typesWeHave = new Hashtable<String, Integer>();
-	    if(ancestorArray.length==0) {
+	    if(ancestor.length()==0) {
 		for (String type :
 			 getRepository().getDatabaseManager().selectDistinct(
 									     Tables.ENTRIES.NAME, Tables.ENTRIES.COL_TYPE, null)) {
