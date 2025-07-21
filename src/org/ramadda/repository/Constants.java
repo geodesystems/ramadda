@@ -964,6 +964,7 @@ public interface Constants {
     public static final String ARG_TOPLEVEL = "toplevel";
 
     public static final String ARG_TYPE = "type";
+    public static final String ARG_TYPES = "types";    
 
     public static final String ARG_TYPEPATTERNS = "typepatterns";
 
