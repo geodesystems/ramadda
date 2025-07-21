@@ -2003,19 +2003,46 @@ public class Admin extends RepositoryManager {
     public Result adminMaintenance(Request request) throws Exception {
 
         StringBuffer  sb         = new StringBuffer();
+	List<HtmlUtils.Href> links = new ArrayList<HtmlUtils.Href>();
 
 	int[] cnt = {0};
 	BiConsumer<StringBuffer, String> header= (buff,label) -> {
 	    if(cnt[0]>0) buff.append("<hr>");
 	    cnt[0]++;
+	    String id = Utils.makeID(label);
+	    links.add(new HtmlUtils.Href("#" + id,label));
+	    buff.append(HU.anchorName(id));
 	    buff.append(HU.center(HU.div(label,HU.cssClass("ramadda-heading"))));
 	};
 
         StringBuffer  topSB         = new StringBuffer();
 
+	header.accept(topSB, "Reindex Lucene Index");
+	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
+	topSB.append(messageNote("Run through all the entries and rebuild the search index. This may take a minute or two."));
+        topSB.append(HU.formTable());
+	List types= Utils.makeListFromValues(new TwoFacedObject("All Entry Types",""));
+	String widgetId = HU.getUniqueId("types");
+	HU.formEntry(topSB,
+		     msgLabel("Type"),
+		     getRepository().makeTypeSelect(types, request, ARG_TYPE,HU.attrs("id",widgetId),false,null,false,null,false));
+	String popupArgs = "{icon:true,makeButtons:false,after:true,single:true}";
+	topSB.append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				       HU.quote("#"+widgetId),
+				       popupArgs)));
+
+	HU.formEntry(topSB,"",HU.labeledCheckbox(ARG_DELETE_INDEX,"true",false,"Delete entire index"));
+	HU.formEntry(topSB,"",
+		     HU.submit("Reindex", ACTION_REINDEX));
+        topSB.append(HU.formTableClose());
+	topSB.append(HU.formClose());
+
+
+
 	header.accept(topSB, "Caches");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(HU.submit("Clear all caches", ACTION_CLEARCACHE));
+	topSB.append(messageNote("Clear the in-memory caches"));
+	topSB.append(HU.submit("Clear caches", ACTION_CLEARCACHE));
 	topSB.append(HU.formClose());
 
 	header.accept(topSB, "Clear Passwords");
@@ -2033,24 +2060,11 @@ public class Admin extends RepositoryManager {
 	topSB.append(getAuthManager().getVerification(request,null,true));
 	topSB.append(HU.formClose());
 
-	header.accept(topSB, "Reindex Lucene Index");
-	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(messageNote("This runs through all of entries of the selected type and reindexes them"));
-        topSB.append(HU.formTable());
-	List types= Utils.makeListFromValues(new TwoFacedObject("All Entry Types",""));
-	HU.formEntry(topSB,
-		     msgLabel("Type"),
-		     getRepository().makeTypeSelect(types, request, ARG_TYPE,"",false,null,false,null,false));
-	HU.formEntry(topSB,"",HU.labeledCheckbox(ARG_DELETE_INDEX,"true",false,"Delete entire index"));
-	HU.formEntry(topSB,"",
-		     HU.submit("Reindex", ACTION_REINDEX));
-        topSB.append(HU.formTableClose());
-	topSB.append(HU.formClose());
 
         StringBuffer filePathSB = new StringBuffer();
 	header.accept(filePathSB,"Change file paths");
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
-        filePathSB.append(messageNote("Change the stored file path for all entries that match the following pattern"));
+        filePathSB.append(messageNote("Change the stored file path for all entries that match the following pattern.<br>Be careful here!"));
         filePathSB.append(HU.formTable());
         filePathSB.append(HU.formEntry(msgLabel("File Pattern"),
 				       HU.input(ARG_CHANGEPATHS_PATTERN,
@@ -2084,6 +2098,9 @@ public class Admin extends RepositoryManager {
         request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
 	orphansSB.append(HU.submit("List orphans", ACTION_LISTORPHANS));
         orphansSB.append(HU.formClose());
+
+	sb.append(HU.center(HU.makeHeader2(links)));
+
 
         if (request.defined(ACTION_STOP)) {
             runningCleanup = false;
