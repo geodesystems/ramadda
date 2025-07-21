@@ -52,7 +52,10 @@ addSearchLink="true"  animated="true" }}
 :heading Search
 {{display_entrylist     showEntryType=true orderByTypes="name,relevant,createdate,changedate,date,entryorder"  
 showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
-toggleClose=true  entryTypes="super:type_assets_base,super:type_assets_thing" }} 
+toggleClose=true  
+entryTypes="super:type_assets_base,super:type_assets_thing" 
+excludeTypes="type_assets_thing,type_assets_physical"
+}} 
 :vspace 1em
 ----
 :heading Collection Information

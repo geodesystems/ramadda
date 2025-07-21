@@ -5,7 +5,7 @@ into some types.xml file
 -->
 <type  name="type_assets_equipment" 
  description="Equipment" 
- handler="org.ramadda.repository.type.TypeHandler" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
  super="type_assets_physical" 
  supercategory="General" 
  category="Assets" 

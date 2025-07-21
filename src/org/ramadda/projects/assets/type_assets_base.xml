@@ -24,6 +24,7 @@ childtypes="type_assets_license"
 <column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/asset.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
 <property  name="form.resource.show"  value="false" />
