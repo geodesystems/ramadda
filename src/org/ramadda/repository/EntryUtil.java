@@ -959,12 +959,18 @@ public class EntryUtil extends RepositoryManager {
 	    }
 	    typeCache.put(ancestor,typesWeHave);
         }
-        Integer cnt = typesWeHave.get(typeHandler.getType());
-        if (cnt == null) {
-            return 0;
-        }
-
-        return cnt.intValue();
+	int cnt =0;
+        Integer cntObj = typesWeHave.get(typeHandler.getType());
+        if (cntObj != null) {
+	    cnt = cntObj.intValue();
+	}
+	List<TypeHandler> childTypes = typeHandler.getChildrenTypes();
+	if(childTypes.size()>0) {
+	    for(TypeHandler childType: childTypes) {
+		cnt+= getEntryCount(request, childType,ancestorArray);
+	    }
+	}
+	return cnt;
     }
 
     public List<Entry> getEntriesOfType(List<Entry> entries, String type) {
