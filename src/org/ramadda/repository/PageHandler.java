@@ -539,8 +539,8 @@ public class PageHandler extends RepositoryManager {
 
         //make the request to base.js be unique every time so the browser does not cache it
         HU.script(head, getRepository().getBaseJs(request));
-	//	head.append(webImports);
-	head.append(webImports.replace("${timestamp}",new Date().getTime()+""));	
+	head.append(webImports);
+	//	head.append(webImports.replace("${timestamp}",new Date().getTime()+""));	
         String head2 = request.getHead();
         if (head2 != null) {
             head.append(head2);
