@@ -5815,6 +5815,9 @@ public class EntryManager extends RepositoryManager {
 						   parentEntry, filesMap, entryMap, checkAccess,
 						   isTemplate,internal,msg);
 	addImportedEntries(node,entryMap,entryList);
+
+	//Clear the entry counts
+	getEntryUtil().clearCache();
 	return entryList;
     }
 
