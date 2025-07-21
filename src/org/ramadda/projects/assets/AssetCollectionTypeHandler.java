@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.projects.assets;
@@ -40,7 +40,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
     public AssetCollectionTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
 
@@ -54,6 +54,9 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     }
 
 
+    private List<Entry> getEntries(Request request, Entry entry, Hashtable props) throws Exception {
+	return  getEntryManager().getChildren(request, entry);
+    }
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
 	sb.append(getWikiManager().wikifyEntry(request, entry,wiki));
@@ -88,7 +91,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
     public Result processEntryAction(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         String action = request.getString("action", "");
 	if(action.equals(ACTION_REPORT)) 
 	    return handleActionReport(request, entry);
@@ -138,7 +141,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 					       "ramadda-linksheader-off"));
 	}
 
-	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download XLSX"));
+	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download Data"));
 	sb.append(HU.center(HU.makeHeader1(headerItems)));
 
 
@@ -164,7 +167,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         if (tag.equals("assets_report_link")) {
 	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
 	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
@@ -200,22 +203,22 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     private void makeReportTable(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
-	sb.append("<center>");
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-entry','.ramadda-entry-table','Search in page')");
-	sb.append("</center>");
-	sb.append("<div class=assets-entry>");
-	wikify(request, entry,sb,"----");
-	if(stringDefined(entry.getDescription())) {
-	    wikify(request, entry,sb,entry.getDescription());
-	}
-	sb.append("</div>");
-	sb.append("<div class=assets-block>\n");
 	String types = Utils.getProperty(props,"types","super:type_assets_base,type_assets_license");
 	types = HU.urlEncode(types);
 	boolean showHeader   = Utils.getProperty(props,"showHeader",true);
-	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false}}";
+	String guid = HU.getUniqueId("assets");
+	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
+
+
+	sb.append("<center>");
+	HU.script(sb,"HtmlUtils.initPageSearch('." + guid+"','.ramadda-entry-table','Search in page')");
+	sb.append("</center>");
+	sb.append("\n");
+	//	HU.open(sb,"div",HU.attrs("id",guid,"class","assets-block"));
+	sb.append("\n");
 	wikify(request, entry,sb,contentsWiki);
-	sb.append("</div>");
+	//	HU.close(sb,"div");
+	sb.append("\n");
     }
 
 
@@ -248,19 +251,23 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
 
+
+
+
     private void makeReportMaintenance(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
-	 List<Entry> entries = getEntryManager().getChildren(request, entry);
-	 if(entries.size()==0) {
-	     buff.append(getPageHandler().showDialogNote("No assets available"));
-	     return;
-	 }
-	 boolean didOne = false;
-	 String guid = HU.getUniqueId("assets");
-	 HU.open(buff,"div",HU.attrs("id",guid));
-	 for(Entry child:entries) {
+	List<Entry> entries = getEntries(request, entry,props);
+	if(entries.size()==0) {
+	    buff.append(getPageHandler().showDialogNote("No assets available"));
+	    return;
+	}
+	boolean didOne = false;
+	String guid = HU.getUniqueId("assets");
+	HU.open(buff,"div",HU.attrs("id",guid));
+	for(Entry child:entries) {
+	    //TODO - sort the metadata on date
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, child,
-                    "asset_maintenance", true);
+						  "asset_maintenance", true);
             if (metadataList == null || metadataList.size() == 0) continue;
 	    if(!didOne) {
 		buff.append("<br><center>");
@@ -282,60 +289,97 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    }
 	    buff.append(HU.formTableClose());
 	    HU.close(buff,"div","div");
-	 }
-	 buff.append("</div>");
-	 if(!didOne) {
-	     buff.append(getPageHandler().showDialogNote("No maintenance records available"));
-	 }
+	}
+	buff.append("</div>");
+	if(!didOne) {
+	    buff.append(getPageHandler().showDialogNote("No maintenance records available"));
+	}
     }
 
     private void makeReportWarranty(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
-	 List<Entry> entries = getEntryManager().getChildren(request, entry);
-	 if(entries.size()==0) {
-	     buff.append(getPageHandler().showDialogNote("No assets available"));
-	     return;
-	 }
-	 buff.append("TBD");
+	List<Entry> entries = getEntries(request, entry,props);
+	if(entries.size()==0) {
+	    buff.append(getPageHandler().showDialogNote("No assets available"));
+	    return;
+	}
+	boolean didOne = false;
+	Date now = new Date();
+	StringBuilder pastDueSB = new StringBuilder();
+	StringBuilder postDueSB = new StringBuilder();
+	int pastDueCnt =0;
+	int postDueCnt =0;	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	for(Entry asset: entries) {
+	    Date warrantyDate = (Date) asset.getValue(request, "warranty_expiration");
+	    if(warrantyDate==null) continue;
+	    didOne = true;
+	    String link = getEntryManager().getEntryLink(request,asset,true,"");
+	    boolean pastDue = warrantyDate.getTime()< now.getTime();
+	    StringBuilder tmp = pastDue?pastDueSB:postDueSB;
+	    if(tmp.length()==0) {
+		tmp.append(HU.formTable());
+		tmp.append("<tr><td>&nbsp;<b>Asset</b>&nbsp;</td><td>&nbsp;<b>Warranty Expiration Date</b>&nbsp;</td></tr>");	    
+	    }
+	    HU.row(tmp,HU.td(link)+
+		   HU.td(sdf.format(warrantyDate)));
+	}
+
+	if(pastDueSB.length()>0) {
+	    pastDueSB.append(HU.formTableClose());
+	    buff.append("<h3>Expired Warranties</h3>");
+	    buff.append(pastDueSB);
+	}
+	if(postDueSB.length()>0) {
+	    postDueSB.append(HU.formTableClose());
+	    buff.append("<h3>Not Expired Warranties</h3>");
+	    buff.append(postDueSB);
+	}	
+
+	if(!didOne) {
+	    buff.append(getPageHandler().showDialogNote("No asset have a warranty expiration date"));
+	    return;
+	}
+
     }    
 
 
 
     private void makeReportSummary(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
-	 List<Entry> entries = getEntryManager().getChildren(request, entry);
-	 if(entries.size()==0) {
-	     buff.append(getPageHandler().showDialogNote("No assets available"));
-	     return;
-	 }
+	List<Entry> entries = getEntries(request, entry,props);
+	if(entries.size()==0) {
+	    buff.append(getPageHandler().showDialogNote("No assets available"));
+	    return;
+	}
 
-	 List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
-	 LinkedHashMap<String,Integer> types = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> department = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> location = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> assignedto = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> status = new LinkedHashMap<String,Integer>();
-	 LinkedHashMap<String,Integer> condition = new LinkedHashMap<String,Integer>();	 	 	 	 	 
-	 for(Entry child: entries) {
-	     if(!child.getTypeHandler().isType("type_assets_base")) {
-		 continue;
-	     }
-	     addSummary(types,child.getTypeHandler().getLabel());
-	     addSummary(department,child.getEnumValue(request,"department",""));
-	     addSummary(location,child.getEnumValue(request,"location",""));
-	     addSummary(assignedto,child.getEnumValue(request,"assigned_to",""));
-	     if(child.getTypeHandler().isType("type_assets_physical")) {
-		 addSummary(status,child.getEnumValue(request,"status",""));	     	     	     
-		 addSummary(condition,child.getEnumValue(request,"condition",""));
-	     }
-	 }
+	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
+	LinkedHashMap<String,Integer> types = new LinkedHashMap<String,Integer>();
+	LinkedHashMap<String,Integer> department = new LinkedHashMap<String,Integer>();
+	LinkedHashMap<String,Integer> location = new LinkedHashMap<String,Integer>();
+	LinkedHashMap<String,Integer> assignedto = new LinkedHashMap<String,Integer>();
+	LinkedHashMap<String,Integer> status = new LinkedHashMap<String,Integer>();
+	LinkedHashMap<String,Integer> condition = new LinkedHashMap<String,Integer>();	 	 	 	 	 
+	for(Entry child: entries) {
+	    if(!child.getTypeHandler().isType("type_assets_base")) {
+		continue;
+	    }
+	    addSummary(types,child.getTypeHandler().getLabel());
+	    addSummary(department,child.getEnumValue(request,"department",""));
+	    addSummary(location,child.getEnumValue(request,"location",""));
+	    addSummary(assignedto,child.getEnumValue(request,"assigned_to",""));
+	    if(child.getTypeHandler().isType("type_assets_physical")) {
+		addSummary(status,child.getEnumValue(request,"status",""));	     	     	     
+		addSummary(condition,child.getEnumValue(request,"condition",""));
+	    }
+	}
 
-	 inlineData(buff,"typesdata","type,count",types);
-	 inlineData(buff,"departmentdata","department,count",department);
-	 inlineData(buff,"locationdata","location,count",location);
-	 inlineData(buff,"assignedtodata","assigned to,count",assignedto);
-	 inlineData(buff,"statusdata","status,count",status);
-	 inlineData(buff,"conditiondata","condition,count",condition);	 	 	 	 	 
-	 String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
-	 buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
+	inlineData(buff,"typesdata","type,count",types);
+	inlineData(buff,"departmentdata","department,count",department);
+	inlineData(buff,"locationdata","location,count",location);
+	inlineData(buff,"assignedtodata","assigned to,count",assignedto);
+	inlineData(buff,"statusdata","status,count",status);
+	inlineData(buff,"conditiondata","condition,count",condition);	 	 	 	 	 
+	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
+	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
 
     }
 
