@@ -586,7 +586,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(isLong) {
 		    html = HU.div([ATTR_STYLE,'word-break: break-all;'],html);
 		}
-		console.log(html);
 		typeInfo.contents.push(html);
 	    });
 	});
