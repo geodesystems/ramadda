@@ -799,21 +799,16 @@ public class TypeHandler extends RepositoryManager {
 
     public String getJson(Request request) throws Exception {
         List<String> items = new ArrayList<String>();
-        items.add("id");
-        items.add(JsonUtil.quote(getType()));
+	Utils.add(items,"id",JsonUtil.quote(getType()));
         items.add("entryCount");
-        int cnt = getEntryUtil().getEntryCount(this);
+        int cnt = getEntryUtil().getEntryCount(request,this,request.getString(ARG_ANCESTOR,null));
         items.add("" + cnt);
-        items.add("label");
-        items.add(JsonUtil.quote(getLabel()));
-        items.add("includeInSearch");
-        items.add(JsonUtil.quote("" + getIncludeInSearch()));
-        items.add("isgroup");
-        items.add("" + isGroup());
+	Utils.add(items,"label",JsonUtil.quote(getLabel()));
+	Utils.add(items,"includeInSearch", JsonUtil.quote("" + getIncludeInSearch()));
+	Utils.add(items,"isgroup","" + isGroup());
 	String bubble = getBubbleTemplate(request, null);
 	if(bubble!=null) {
-	    items.add("mapwiki");
-	    items.add(JU.quote(bubble));
+	    Utils.add(items,"mapwiki",JU.quote(bubble));
 	}
 
         List<String> cols    = new ArrayList<String>();

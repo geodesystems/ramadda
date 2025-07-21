@@ -1092,16 +1092,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     
     public List<EntryUtil.EntryCount> getEntryCounts(Request request) throws Exception {
+	long t1 = System.currentTimeMillis();
 	try {
-	    return getEntryCountsInner(request);
+	    List<EntryUtil.EntryCount> counts =  getEntryCountsInner(request);
+	    long t2 = System.currentTimeMillis();
+	    Utils.printTimes("getEntryCounts: #" + counts.size() +" time:" ,t1,t2);
+	    return counts;
+
 	} catch(Exception ignore) {
 	    //for old index without any faceting
 	    if(ignore.toString().indexOf("$facets")<0) throw ignore;
 	    return new ArrayList<EntryUtil.EntryCount>();
 	}
-
-
     }
+
     private List<EntryUtil.EntryCount> getEntryCountsInner(Request request) throws Exception {
 	
 	IndexSearcher searcher = getLuceneSearcher();
@@ -2288,7 +2292,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 boolean didSub = false;
                 for (TypeHandler typeHandler : typeList.getList()) {
 		    if(types!=null && !types.contains(typeHandler.getType())) continue;
-                    int cnt = getEntryUtil().getEntryCount(typeHandler);
+                    int cnt = getEntryUtil().getEntryCount(request,typeHandler);
                     if (cnt == 0) {
                         continue;
                     }

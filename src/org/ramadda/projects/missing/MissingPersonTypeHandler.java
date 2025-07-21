@@ -34,7 +34,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	if(!isNew(newType)) return;
 	String caseNumber = (String) entry.getValue(request,"case_number",null);
 	if(stringDefined(caseNumber)) return;
-	int cnt = getEntryUtil().getEntryCount(this);
+	int cnt = getEntryUtil().getEntryCount(request, this);
 	int base = 10;
 	cnt=cnt=base+1;
         int random = new Random().nextInt(900) + 100;

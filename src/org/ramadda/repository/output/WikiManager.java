@@ -2049,16 +2049,15 @@ public class WikiManager extends RepositoryManager
 
 	    String types = getProperty(wikiUtil,props,"types","").trim();
 	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
-	    Request countRequest = new Request(getRepository(),request.getUser());
+	    Request countRequest = null;
 	    boolean doNewWay = false;
 	    String ancestor = getProperty(wikiUtil,props,"ancestor",null);
 	    if(ancestor!=null) {
 		if(entry!=null) ancestor=ancestor.replace("${this}",entry.getId());
 		doNewWay = true;
+		countRequest = new Request(getRepository(),request.getUser());
 		countRequest.put(ARG_ANCESTOR,ancestor);
 	    }
-
-
 
 	    if(!types.equals("*")) {
 		List<String> tmp = new ArrayList<String>();
@@ -2066,7 +2065,8 @@ public class WikiManager extends RepositoryManager
 		    if(except.contains(handler.getType())) continue;
 		    tmp.add(handler.getType());
 		}
-		countRequest.put(ARG_TYPE,Utils.join(tmp,","));
+		if(countRequest!=null)
+		    countRequest.put(ARG_TYPE,Utils.join(tmp,","));
 	    }
 	    
 	    if(doNewWay) {
@@ -2113,7 +2113,7 @@ public class WikiManager extends RepositoryManager
 		List<EntryUtil.EntryCount>entryCounts = new ArrayList<EntryUtil.EntryCount>();
 		for(TypeHandler handler: handlers) {
 		    if(except.contains(handler.getType())) continue;
-		    int count = getEntryUtil().getEntryCount(handler);
+		    int count = getEntryUtil().getEntryCount(request,handler);
 		    if(count>0) {
 			EntryUtil.EntryCount entryCount = new EntryUtil.EntryCount(handler,count);
 			sort.add(new Utils.ObjectSorter(entryCount,count,false));

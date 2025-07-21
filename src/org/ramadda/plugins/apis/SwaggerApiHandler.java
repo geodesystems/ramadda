@@ -155,7 +155,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
             if ( !typeHandler.getForUser()) {
                 continue;
             }
-            int entryCnt = getEntryUtil().getEntryCount(typeHandler);
+            int entryCnt = getEntryUtil().getEntryCount(request,typeHandler);
 
             //Only show the types we have ??
             if (entryCnt == 0) {

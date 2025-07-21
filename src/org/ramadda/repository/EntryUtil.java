@@ -52,9 +52,15 @@ public class EntryUtil extends RepositoryManager {
 
     //Cache for 1 hour
 
+    /*
     private TTLObject<Hashtable<String, Integer>> typeCache =
-        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,
+        new TTLObject<Hashtable<String, Integer>>(Utils.hoursToMillis(1),
                       "Entry Type Count Cache");
+    */
+
+    private TTLCache<String,Hashtable<String, Integer>> typeCache =
+        new TTLCache<String,Hashtable<String, Integer>>(Utils.hoursToMillis(1),
+							"Entry Type Count Cache");    
 
     private EntryUtil(Repository repository) {
         super(repository);
@@ -928,19 +934,30 @@ public class EntryUtil extends RepositoryManager {
         return results;
     }
 
-    public int getEntryCount(TypeHandler typeHandler) throws Exception {
-        Hashtable<String, Integer> typesWeHave = typeCache.get();
+    public int getEntryCount(Request request, TypeHandler typeHandler,String...ancestorArray) throws Exception {
+	String ancestor = ancestorArray.length==0?"":ancestorArray[0];
+	if(ancestor==null) ancestor="";
+        Hashtable<String, Integer> typesWeHave = typeCache.get(ancestor);
         if (typesWeHave == null) {
             typesWeHave = new Hashtable<String, Integer>();
-            for (String type :
-                    getRepository().getDatabaseManager().selectDistinct(
-                        Tables.ENTRIES.NAME, Tables.ENTRIES.COL_TYPE, null)) {
-                int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
-                              Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-
-                typesWeHave.put(type, Integer.valueOf(cnt));
-            }
-            typeCache.put(typesWeHave);
+	    if(ancestorArray.length==0) {
+		for (String type :
+			 getRepository().getDatabaseManager().selectDistinct(
+									     Tables.ENTRIES.NAME, Tables.ENTRIES.COL_TYPE, null)) {
+		    int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
+							    Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+		    typesWeHave.put(type, Integer.valueOf(cnt));
+		}
+	    } else {
+		//		System.err.println("Doing ancestor count:" + ancestor);
+		Request countRequest = new Request(getRepository(),request.getUser());
+		countRequest.put(ARG_ANCESTOR,ancestor);
+		List<EntryCount> counts = getSearchManager().getEntryCounts(countRequest);
+		for(EntryCount count: counts) {
+		    typesWeHave.put(count.getTypeHandler().getType(), Integer.valueOf(count.getCount()));
+		}
+	    }
+	    typeCache.put(ancestor,typesWeHave);
         }
         Integer cnt = typesWeHave.get(typeHandler.getType());
         if (cnt == null) {

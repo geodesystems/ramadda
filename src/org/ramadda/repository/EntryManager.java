@@ -1016,7 +1016,7 @@ public class EntryManager extends RepositoryManager {
 	    getRepository().getTypeHandlersForDisplay(false);
 	if(asHtml) {
 	    StringBuilder sb = new StringBuilder();
-	    String type = request.getString("type",null);
+	    String type = request.getString(ARG_TYPE,null);
 	    if(type!=null) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		getPageHandler().sectionOpen(request, sb,"Entry Type  - " + typeHandler.getLabel(),false);
@@ -1069,7 +1069,8 @@ public class EntryManager extends RepositoryManager {
         List<String>      types        = new ArrayList<String>();
         boolean           checkCnt     = request.get("checkcount", true);
         List<TypeHandler>    theTypeHandlers = new ArrayList<TypeHandler>();
-	String typesList = request.getString("types",null);
+	String typesList = request.getString(ARG_TYPES,null);
+        String            ancestor       = request.getString(ARG_ANCESTOR,null);
 	if(typesList!=null) {
 	    for(String type: Utils.split(typesList,",")) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -1084,11 +1085,9 @@ public class EntryManager extends RepositoryManager {
 	    }
 	}	    
 
-
-
         for (TypeHandler typeHandler : theTypeHandlers) {
             if (checkCnt) {
-                int cnt = getEntryUtil().getEntryCount(typeHandler);
+                int cnt = getEntryUtil().getEntryCount(request, typeHandler,request.getString(ARG_ANCESTOR,null));
                 if (!typeHandler.getIncludeInSearch() && cnt == 0) {
                     continue;
                 }
