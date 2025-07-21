@@ -1884,9 +1884,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         addTypes: function(newTypes) {
             if (newTypes == null) {
+		let ancestor = this.getProperty('ancestor');
+		let extraArgs=null;
+		if(ancestor) extraArgs='ancestor='+ ancestor;
                 newTypes = this.getRamadda().getEntryTypes((ramadda, types) =>{
                     this.addTypes(types);
-                },this.getEntryTypes());
+                },this.getEntryTypes(),extraArgs);
 		if(newTypes==null) {
 		    this.typesPending=true;
 		}
