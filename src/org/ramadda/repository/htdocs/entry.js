@@ -268,9 +268,11 @@ function RamaddaRepository(repositoryRoot) {
         },
         entryTypeCallPending: false,
         entryTypeCallbacks: null,
-        getEntryTypes: function(callback, types) {
-            if (this.entryTypes != null) {
-                return this.entryTypes;
+	entryTypesMap:{},
+        getEntryTypes: function(callback, types,extraArgs) {
+	    if(!extraArgs) extraArgs='';
+            if (this.entryTypesMap[extraArgs] != null) {
+                return this.entryTypesMap[extraArgs];
             }
             if (this.entryTypeCallPending) {
                 let callbacks = this.entryTypeCallbacks;
@@ -279,25 +281,26 @@ function RamaddaRepository(repositoryRoot) {
                 }
                 callbacks.push(callback);
                 this.entryTypeCallbacks = callbacks;
-                return this.entryTypes;
+                return this.entryTypesMap[extraArgs];
             }
             let theRamadda = this;
             let url = this.repositoryRoot + "/entry/types?forsearch=true";
 	    if(types) url= url +"&types=" + types;
+	    if(Utils.stringDefined(extraArgs)) url= url +"&" + extraArgs;
             this.entryTypeCallPending = true;
             this.entryTypeCallbacks = null;
             let jqxhr = $.getJSON(url, function(data) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
                 }
-                theRamadda.entryTypes = [];
+                theRamadda.entryTypesMap[extraArgs] = [];
                 for (let i = 0; i < data.length; i++) {
                     let type = new EntryType(data[i]);
                     theRamadda.entryTypeMap[type.getId()] = type;
-                    theRamadda.entryTypes.push(type);
+                    theRamadda.entryTypesMap[extraArgs].push(type);
                 }
                 if (callback != null) {
-                    callback(theRamadda, theRamadda.entryTypes);
+                    callback(theRamadda, theRamadda.entryTypesMap[extraArgs]);
                 }
                 let callbacks = theRamadda.entryTypeCallbacks;
                 theRamadda.entryTypeCallPending = false;
@@ -305,7 +308,7 @@ function RamaddaRepository(repositoryRoot) {
                 if (callbacks) {
                     //                            console.log("getEntryTypes - have extra callbacks");
                     for (let i = 0; i < callbacks.length; i++) {
-                        callbacks[i](theRamadda, theRamadda.entryTypes);
+                        callbacks[i](theRamadda, theRamadda.entryTypesMap[extraArgs]);
                     }
                 }
             }).done(function(jqxhr, textStatus, error) {
@@ -324,7 +327,7 @@ function RamaddaRepository(repositoryRoot) {
                 GuiUtils.handleError("An error has occurred reading entry types" + err, "URL: " + url, false);
             });
 
-            return this.entryTypes;
+            return this.entryTypesMap[extraArgs];
         },
         metadataCache: {},
         metadataCachePending: {},
