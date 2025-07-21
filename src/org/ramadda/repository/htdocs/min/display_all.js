@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 21 05:51:22 MDT 2025";
+var build_date="RAMADDA build date: Mon Jul 21 14:14:50 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34244,6 +34244,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showType',d: true},
 
         {p:'entryTypes',ex:'comma separated list of types - use "any" for any type'},
+	{p:'excludeEmptyTypes',ex:'true',tt:'Some types in the type list might have zero entry count'},
+	{p:'excludeTypes',ex:'type1,type2',tt:'Exclude these types'},	
         {p:'typesLabel',tt: 'Label to use for the type section'},		
 	{p:'addAllTypes',ex:'true',tt:'Add the All types to the type list'},
 	{p:'addAnyType',ex:'true',tt:'Add the Any of these types to the type list'},
@@ -35761,8 +35763,22 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		return !anySelected;
 	    });
 
+	    let seen = {};
+	    let excludeEmptyTypes = this.getExcludeEmptyTypes();
+	    let excludeTypes = this.getExcludeTypes();	    
+	    let excludeMap=null;
+	    if(excludeTypes) {
+		excludeMap={}
+		Utils.split(excludeTypes,',',true,true).forEach(t=>{
+		    excludeMap[t] = true;
+		});
+	    }		
             for (let i = 0; i < this.entryTypes.length; i++) {
                 let type = this.entryTypes[i];
+		if(seen[type.getId()]) continue;
+		seen[type.getId()] = true;
+		if(excludeEmptyTypes && type.getEntryCount()==0) continue;
+		if(excludeMap && excludeMap[type.getId()]) continue;
                 let icon = type.getIcon();
                 let optionAttrs = [ATTR_TITLE, type.getLabel(), ATTR_VALUE, type.getId(), ATTR_CLASS, "display-typelist-type",
 				   "data-iconurl", icon
