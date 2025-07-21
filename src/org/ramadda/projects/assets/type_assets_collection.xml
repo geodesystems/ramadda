@@ -34,7 +34,7 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 {{description wikify=true}}
 +if candonew=true 
 +center
-{{entrylink  link=""  title="Assets Report"  makeButton=true showIcon="false"  action="assets_report"  }}
+{{entrylink  link=""  title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
 {{entrylink  link=""  title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -center
 -if
