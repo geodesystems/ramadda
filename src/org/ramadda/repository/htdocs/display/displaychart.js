@@ -284,6 +284,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'vAxisTitle'},	
 	{p:'hAxisHideTicks'},
 	{p:'vAxisHideTicks'},	
+	{p:'vAxisFixedRange'},
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
