@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 21 14:14:50 MDT 2025";
+var build_date="RAMADDA build date: Tue Jul 22 08:25:44 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5506,8 +5506,10 @@ function DisplayThing(argId, argProperties) {
 	    return null;
         },
         getPropertyFromUrl: function(key, dflt,checkKey) {
-	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,
-					    'display'+ this.displayCount+'.' + key);
+	    /*Huh? not sure why I was passing in the  2nd dflt arg
+	      let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,  'display'+ this.displayCount+'.' + key);
+	      */
+	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key);
 	    if(Utils.stringDefined(fromUrl)) {
 //		console.log('from url full key:' + key + ' value:' + fromUrl);
 		return fromUrl;
