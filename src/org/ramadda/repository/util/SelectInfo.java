@@ -79,6 +79,13 @@ public class SelectInfo implements Constants {
         this.entry   = entry;
     }
 
+    public SelectInfo(Request request, int max) {
+        this(request);
+	this.max=max;
+    }
+
+
+
     /**
      *
      *
@@ -92,7 +99,7 @@ public class SelectInfo implements Constants {
     public SelectInfo(Request request, Entry entry, int max, String orderBy,
                       boolean ascending) {
         this(request, entry);
-        this.max       = max;
+	this.max = max;
         this.orderBy   = orderBy;
         this.ascending = Boolean.valueOf(ascending);
 	hadOrderBy = orderBy!=null;
