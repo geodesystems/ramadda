@@ -110,6 +110,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     private static final boolean debug = false;
     public static final boolean debugOpendap = false;
     public static final String ARG_GRIDFIELD="gridField";
+    public static final String ARG_ALLVARS = "allvars";
 
     /** set of suffixes */
     private HashSet<String> suffixSet;
@@ -970,6 +971,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
 	sb.append(HU.beginInset(0,10,0,0));
+	sb.append(HU.labeledCheckbox(ARG_ALLVARS,"true",
+					 request.get(ARG_ALLVARS,false),
+					 "Use all variables"));
+	sb.append("<br>");
         sb.append(varSB);
 	sb.append(HU.endInset());
 
@@ -1028,7 +1033,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
         List<String> varNames = new ArrayList<String>();
         Hashtable    args     = request.getArgs();
-	boolean allVars = request.get("allvars",false);
+	boolean allVars = request.get(ARG_ALLVARS,false);
 	if(allVars) {
 	} else {
 	    for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
@@ -1126,7 +1131,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	    if(internal) {
 		throw new IllegalArgumentException("From date is after to date");
 	    }
-        } else if (varNames.size() == 0) {
+        } else if (!allVars && varNames.size() == 0) {
 	    if(internal) {
 		throw new IllegalArgumentException("No variables specified");
 	    }
