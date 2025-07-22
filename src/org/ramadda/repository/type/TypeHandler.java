@@ -4770,7 +4770,7 @@ public class TypeHandler extends RepositoryManager {
 	    addExtra(extras,"OCR:",ocr);
 	} 
 
-	String extract = getLLMManager().getNewEntryExtract(request);
+	String extract = getLLMManager().getNewEntryExtract(request,this);
 	if(stringDefined(extract))  {
 	    HU.formEntry(extras,"",getLLMManager().getLLMWarning());
 	    addExtra(extras,"Use LLM to:",extract);
@@ -4803,7 +4803,7 @@ public class TypeHandler extends RepositoryManager {
 	String ocr =  null;
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    String space = HU.space(3);
-	    ocr =  HU.labeledCheckbox(ARG_DOOCR, "true", request.get(ARG_DOOCR,false),"Extract text from images if needed");
+	    ocr =  HU.labeledCheckbox(ARG_DOOCR, "true", request.get(ARG_DOOCR,false),"Extract text from images");
 	    ocr+="<br>";
 	    ocr += HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true",request.get(ARG_DOOCR_CONDITIONAL,false) ,
 					      "Don't do OCR if there is any text in the document");
