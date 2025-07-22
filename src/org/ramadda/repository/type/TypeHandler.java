@@ -4770,7 +4770,7 @@ public class TypeHandler extends RepositoryManager {
 	    addExtra(extras,"OCR:",ocr);
 	} 
 
-	String extract = getLLMManager().getNewEntryExtract(request,this);
+	String extract = getLLMManager().getNewEntryExtract(request);
 	if(stringDefined(extract))  {
 	    HU.formEntry(extras,"",getLLMManager().getLLMWarning());
 	    addExtra(extras,"Use LLM to:",extract);
