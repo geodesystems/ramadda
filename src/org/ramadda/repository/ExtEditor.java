@@ -919,7 +919,7 @@ public class ExtEditor extends RepositoryManager {
 		    HU.formEntry(buff[0],"Select Monitor:",
 				 HU.select(ARG_EXTEDIT_MONITOR,monitorOptions,request.getString(ARG_EXTEDIT_MONITOR,"")));
 		    buff[0].append(HU.formTableClose());		    
-		    closer.accept(form,"Send to monitors");
+		    closer.accept(form,"Apply monitor");
 		}
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
