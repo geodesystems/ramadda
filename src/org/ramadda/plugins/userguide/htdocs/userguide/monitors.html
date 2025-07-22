@@ -50,7 +50,7 @@ Select one of the monitor types to create. For example, here we have created a C
 This checks if a new entry meets the given search criteria and if so will copy that entry
 into another folder.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor1.png?version=607"><img  src="images/monitor1.png?version=607" border=0 width=50% alt="images/monitor1.png?version=607" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor1.png?version=688"><img  src="images/monitor1.png?version=688" border=0 width=50% alt="images/monitor1.png?version=688" ></a></div></div>
 
 Specify a name, whether the action is enabled and a valid date range for when the action can run.
 :p
@@ -58,7 +58,7 @@ Next, specify the set of search criteria. For example, here we are only running 
 when a new entry is created with name that matches the pattern "testit", of type Folder that is under
 the Top/source folder.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor2.png?version=607"><img  src="images/monitor2.png?version=607" border=0 width=50% alt="images/monitor2.png?version=607" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor2.png?version=688"><img  src="images/monitor2.png?version=688" border=0 width=50% alt="images/monitor2.png?version=688" ></a></div></div>
 
 
 
@@ -125,6 +125,50 @@ The Publish Monitor will automatically publish a new entry in a source RAMADDA i
 
 <a name="gridsubset"></a>
 :heading Grid Subset Action
+The Grid Subset Action allows you to automatically apply a grid subset to a newly added gridded data file.
+First, go the Grid Subset form for one of the source grids and select the subsetting parameters, e.g.-
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/subsetform1.png?version=688"><img  src="images/monitor/subsetform1.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/subsetform1.png?version=688" ></a></div></div>
+
+Next, scroll down to the bottom of the form and click on the globe icon- <i class="fas fa-earth-americas"></i>.
+This copies the set of form arguments to the clipboard.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/subsetform2.png?version=688"><img  src="images/monitor/subsetform2.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/subsetform2.png?version=688" ></a></div></div>
+
+Next go to the Admin-&gt;Monitors page and create a new Grid Subset Action.
+Give it a name, select Gridded Data File for a type and choose an Ancestor folder. This is the
+folder entry where the source grids are located.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/gridmonitor1.png?version=688"><img  src="images/monitor/gridmonitor1.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/gridmonitor1.png?version=688" ></a></div></div>
+
+Next, open the Actions section. Select a destination folder. This is where the newly subsetted grids will be added.
+Then paste the Grid Subset arguments that you copied from step 1 into the Grid Subset Arguments field.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/gridmonitor2.png?version=688"><img  src="images/monitor/gridmonitor2.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/gridmonitor2.png?version=688" ></a></div></div>
+
+Then save off the monitor. You can test it by adding a new Gridded Data file to the Source folder. The monitor should be applied.
+You can check the results from the Admin-&gt;Logs-&gt;Monitor page
+
+<a name="extendededit"></a>
+:heading Applying Monitors through Extended Edit
+RAMADDA provides a facility that a selected monitor can be applied to one or more entries in a folder using the Extended Edit facility.
+:p
+Let's say you have a large number of gridded data files in GRIB format on some Source Folder. And you want to apply a subsetting to each file
+and have a number of converted NetCDF files.
+:p
+First - set up a Grid Subset monitor as described above. But - do not specify an ancestor folder!.
+:p
+Next - go to the Source folder entry that contains the source grids and, under the Entry Popup menu choose "Extended Edit".
+This provides a number of ways to edit in bulk one or more entries.
+:p
+Open the "Send to monitors" section and choose your Grid Subset monitor then press the "Apply Monitor" button
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/extedit1.png?version=688"><img  src="images/monitor/extedit1.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/extedit1.png?version=688" ></a></div></div>
+
+You will get a status page that shows the progress. This can be cancelled.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/monitor/extedit2.png?version=688"><img  src="images/monitor/extedit2.png?version=688"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/monitor/extedit2.png?version=688" ></a></div></div>
+
+
+
+
+
+
+
 
 
 </div>
