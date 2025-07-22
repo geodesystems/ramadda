@@ -1098,7 +1098,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let debug = extraMap[id] !=null;
 		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
-		    if(a=='pointSize') dflt = this.getPointSize();
+		    if(a=='pointSize') {
+			dflt = this.getPointSize();
+		    }
 		    let value = this.getProperty(id+"." + a,null);
 //		    if(debug)console.log('extra:' + id+ ' ' +a +'=' + value);
 		    
@@ -4526,6 +4528,10 @@ function ScatterplotDisplay(displayManager, id, properties) {
         trendLineEnabled: function() {
             return true;
         },
+	//override the default
+	getPointSize:function() {
+	    return this.getProperty('pointSize',10);
+	},
 	setAxisRanges: function(chartOptions, selectedFields, records) {
 	    if(this.getProperty("hAxisFixedRange")) {
 		let x = this.getColumnValues(records, selectedFields[0]);
@@ -4621,8 +4627,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
-
+//	    console.log(JSON.stringify(chartOptions,null,2));
             return chartOptions;
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
