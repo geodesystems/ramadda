@@ -31,40 +31,23 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class MonitorManager extends RepositoryManager implements EntryChecker {
-
     public static final String ARG_MONITOR_CHANGE = "monitorchange";
-
     public static final String ARG_MONITOR_ONLYNEW = "onlynew";
-
     public static final String ARG_MONITOR_CREATE = "monitorcreate";
-
     public static final String ARG_MONITOR_DELETE = "monitordelete";
-
     public static final String ARG_MONITOR_DELETE_CONFIRM =
         "monitordeletefconfirm";
-
     public static final String ARG_MONITOR_ENABLED = "monitor_enabled";
-
     public static final String ARG_MONITOR_FROMDATE = "monitor_fromdate";
-
     public static final String ARG_MONITOR_ID = "monitorid";
-
     public static final String ARG_MONITOR_NAME = "monitor_name";
-
     public static final String ARG_MONITOR_TODATE = "monitor_todate";
-
     public static final String ARG_MONITOR_TYPE = "monitortype";
 
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
-
     private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
     public MonitorManager(Repository repository) {
@@ -172,6 +155,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 	return getEntryMonitors(false);
 
     }
+
     public List<EntryMonitor> getEntryMonitors(boolean clone) {	
 	if(clone) {
 	    List<EntryMonitor> l = new ArrayList<EntryMonitor>(monitors);
@@ -230,6 +214,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private void handleEntriesChangedInner(List<Entry> entries,
                                            boolean isNew) {
 	boolean debug = false;
+	debug = true;
         try {
             List<EntryMonitor> tmpMonitors;
             synchronized (monitors) {

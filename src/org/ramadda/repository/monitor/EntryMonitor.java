@@ -455,10 +455,16 @@ public class EntryMonitor implements Constants {
                 tmp.add(new TwoFacedObject(typeHandler.getLabel(),
                                            typeHandler.getType()));
             }
+	    String guid = HU.getUniqueId("type");
             String typeSelect = HU.select(ARG_TYPE, tmp, types,
-					  " MULTIPLE SIZE=4 ");
+					  " MULTIPLE " + HU.attrs("SIZE","4","id",guid));
+	    String popupArgs = "{label:'Select entry type',makeButtons:true,after:true,single:false}";
             sb.append(HU.formEntry(getRepository().msgLabel("Type"),
+
 				   typeSelect + notCbx));
+	    sb.append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+					HU.quote("#"+guid),
+					popupArgs)));
         }
     }
 
@@ -574,13 +580,14 @@ public class EntryMonitor implements Constants {
         return true;
     }
 
-    public boolean checkEntry(Entry entry, boolean isNew) throws Exception {
+    public boolean checkEntry(Entry entry, boolean isNew,boolean ...forceArray) throws Exception {
+	boolean force = forceArray.length>0?forceArray[0]:false;
         boolean debug = false;
         if (debug) {
             System.err.println("EntryMonitor.checkEntry:" + name + " entry:"
                                + entry);
         }
-        if ( !isActive()) {
+        if (!force &&  !isActive()) {
             if (debug) {
                 System.err.println("\tnot active");
             }
@@ -588,11 +595,10 @@ public class EntryMonitor implements Constants {
             return false;
         }
 
-        if (filters.size() == 0) {
+        if (!force && filters.size() == 0) {
             if (debug) {
                 System.err.println("\tno filters");
             }
-
             return false;
         }
 
@@ -602,8 +608,6 @@ public class EntryMonitor implements Constants {
             if (debug) {
                 System.err.println("\t!ok to view");
             }
-
-            //            System.err.println("can't view");
             return false;
         }
 
@@ -770,6 +774,24 @@ public class EntryMonitor implements Constants {
             action.entryMatched(this, entry, isNew);
         }
     }
+
+    public void applyActions(Request request, List<Entry> entries, boolean isNew,Object actionId) {
+
+	int cnt =0;
+	for(Entry entry: entries) {
+	    cnt++;
+	    if(!getRepository().getActionManager().getActionOk(actionId)) {
+		logInfo(null,getName() +" monitor cancelled:"  + this);
+		return;
+	    }
+            getRepository().getActionManager().setActionMessage(actionId,getName()+" monitor processed " + cnt +" of "+ entries.size()+
+								  " entry: " +entry.getName());
+	    for (MonitorAction action : actions) {
+		action.entryMatched(this, entry, isNew);
+	    }
+        }
+	getRepository().getActionManager().setContinueHtml(actionId,getName()+" monitor processing finished. Processed " + cnt +" entries");
+    }    
 
     public void addAction(MonitorAction action) {
         actions.add(action);

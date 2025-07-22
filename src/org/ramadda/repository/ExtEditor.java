@@ -10,7 +10,9 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 
+import org.ramadda.repository.monitor.*;
 import org.ramadda.repository.metadata.*;
+
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -78,6 +80,8 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_EXCLUDE = "excludeentries";
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit_thumbnail";    
     public static final String ARG_EXTEDIT_TYPE= "extedit_type";
+    public static final String ARG_EXTEDIT_APPLYMONITOR= "extedit_applymonitor";
+    public static final String ARG_EXTEDIT_MONITOR= "extedit_monitor";    
     public static final String ARG_EXTEDIT_THISONE= "extedit_thisone";
     public static final String ARG_EXTEDIT_CHILDREN= "extedit_children";        
     public static final String ARG_EXTEDIT_URL_TO = "extedit_url_to";
@@ -139,12 +143,14 @@ public class ExtEditor extends RepositoryManager {
     public Result processEntryExtEdit(final Request request,Entry entry,final List<Entry> extEntries)
 	throws Exception {
 
+
 	final boolean dummy = entry.isDummy();
 	String[] what = new String[]{
 	    ARG_EXTEDIT_EDIT,
 	    //	    ARG_EXTEDIT_REINDEX,
 	    ARG_EXTEDIT_CHANGETYPE,
 	    ARG_EXTEDIT_CHANGETYPE_RECURSE,
+	    ARG_EXTEDIT_APPLYMONITOR,
 	    ARG_EXTEDIT_JS,
 	    ARG_EXTEDIT_URL_CHANGE,
 	    ARG_EXTEDIT_ADDALIAS,	    
@@ -170,6 +176,15 @@ public class ExtEditor extends RepositoryManager {
         final StringBuilder prefix = new StringBuilder();
         final StringBuilder suffix = new StringBuilder();
         final StringBuilder formSuffix = new StringBuilder();
+	String cancelAction = request.getString(ARG_CANCEL,null);
+	if(cancelAction!=null) {
+	    request.put(ARG_ACTION_ID,cancelAction);
+	    getActionManager().processStatus(request);
+	    prefix.append(getPageHandler().showDialogNote("Action cancelled"));
+	}
+
+
+
 
 	Object actionId=null;
 	boolean canCancel = false;
@@ -257,6 +272,46 @@ public class ExtEditor extends RepositoryManager {
 	    actionId = getActionManager().runAction(action,"Change Metadata","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_EDIT};
 	    //            return getActionManager().doAction(request, action, "Walking the tree", "", entry);
+	} else  if (request.exists(ARG_EXTEDIT_APPLYMONITOR)) {
+	    List<EntryMonitor> monitors = getRepository().getMonitorManager().getEntryMonitors(false);
+	    String id = request.getString(ARG_EXTEDIT_MONITOR,"");
+	    EntryMonitor monitor = null;
+	    for(EntryMonitor m: monitors) {
+		if(m.getId().equals(id)) {
+		    monitor=m;
+		    break;
+		}
+	    }
+	    if(monitor==null) {
+		prefix.append(getPageHandler().showDialogError("Could not find selected monitor"));
+	    } else {
+		final EntryMonitor theMonitor = monitor;
+		final List<Entry> children = new ArrayList<Entry>();
+		for(Entry child:getEntryManager().getChildren(request, entry,new SelectInfo(request, 5000))) {
+		    //true->force
+		    if(theMonitor.checkEntry(child,false,true)) {
+			children.add(child);
+		    }
+		}
+		if(children.size()==0) {
+		    prefix.append(getPageHandler().showDialogError("No entries passed the monitor filter"));
+		} else {
+		    prefix.append(getPageHandler().showDialogNote(msg(children.size()+" entries have been sent to the monitors. Check the Admin-&gt;Logs-&gt;Monitors")));
+		    canCancel = true;
+		    ActionManager.Action action = new ActionManager.Action() {
+			    public void run(final Object actionId) throws Exception {
+				try {
+				    theMonitor.applyActions(request,children,false,actionId);
+				} catch(Exception exc) {
+				    getLogManager().logMonitorError("Error processing monitor:" +theMonitor,exc);
+				}
+			    }};
+
+		    String link = HU.href(request.entryUrl(getRepository().URL_ENTRY_EXTEDIT,entry),entry.getName()+ " extended edit");
+		    actionId = getActionManager().runAction(action,"Process Monitor",link);
+		}
+	    }
+	    what = new String[]{ARG_EXTEDIT_APPLYMONITOR};
 	} else  if (request.exists(ARG_EXTEDIT_REINDEX)) {
 	    //	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
 	    /* not implemented yet
@@ -697,7 +752,9 @@ public class ExtEditor extends RepositoryManager {
 	String help = HU.href(getRepository().getUrlBase()+
 			      "/userguide/extendededit.html", "Help",
 			      HU.attrs("target","_help","class","ramadda-clickable"));
-        getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit - " + help);
+	String extEditUrl = request.entryUrl(getRepository().URL_ENTRY_EXTEDIT,entry);
+	String link = HU.href(extEditUrl,"Extended Edit");
+        getPageHandler().entrySectionOpen(request, entry, sb, link+" - " + help);
 
 	sb.append(prefix);
 	if(actionId!=null) {
@@ -705,7 +762,8 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append(HU.b("Results"));
 	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
 	    if(canCancel) {
-		String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
+		//		String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
+		String cancelUrl = HU.url(extEditUrl,ARG_CANCEL,actionId.toString());
 		sb.append(HU.button(HU.href(cancelUrl,LABEL_CANCEL)));
 	    }
 	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
@@ -848,6 +906,21 @@ public class ExtEditor extends RepositoryManager {
 		HU.formEntry(buff[0],msgLabel("To"),  HU.input(ARG_EXTEDIT_URL_TO, request.getString(ARG_EXTEDIT_URL_TO,"")));
 		buff[0].append(HU.formTableClose());
 		closer.accept(form,"Change URLs");
+	    } else if(form.equals(ARG_EXTEDIT_APPLYMONITOR)){
+		List<EntryMonitor> monitors = getRepository().getMonitorManager().getEntryMonitors(false);
+		if(monitors.size()>0) {
+		    opener.accept("Send to monitors");
+		    List<HtmlUtils.Selector> monitorOptions = new ArrayList<HtmlUtils.Selector>();
+		    for(EntryMonitor monitor: monitors) {
+			monitorOptions.add(new HtmlUtils.Selector(monitor.getName(),monitor.getId()));
+		    }
+		    //		buff[0].append(HU.submit("Send to monitors",form));
+		    buff[0].append(HU.formTable());
+		    HU.formEntry(buff[0],"Select Monitor:",
+				 HU.select(ARG_EXTEDIT_MONITOR,monitorOptions,request.getString(ARG_EXTEDIT_MONITOR,"")));
+		    buff[0].append(HU.formTableClose());		    
+		    closer.accept(form,"Send to monitors");
+		}
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		String saveCbx = request.addCheckbox(buff[0],ARG_EXTEDIT_JS_CONFIRM,"Save changes to entries",true);		
