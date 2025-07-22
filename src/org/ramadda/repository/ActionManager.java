@@ -88,7 +88,7 @@ public class ActionManager extends RepositoryManager {
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
             actions.remove(id);
-            sb.append("Action canceled");
+            sb.append("Action cancelled");
             status = "canceled";
             JobManager.getManager().stopLoad(id);
 	    String url = action.getRedirectUrl();
