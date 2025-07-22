@@ -181,11 +181,17 @@ public class GridSubsetAction extends MonitorAction {
             }
 
             if ( !Utils.stringDefined(args)) {
+		args = "allvars=true";
+	    }
+
+	    /*
+            if ( !Utils.stringDefined(args)) {
                 monitor.logError(this,
 				 "Grid Subset Action:" + " no args specified");
 
                 return;
             }
+	    */
 
             Request   request = monitor.getRepository().getAdminRequest();
 	    for(String line:Utils.split(args,"\n",true,true)) {
