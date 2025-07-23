@@ -2850,11 +2850,15 @@ public class TypeHandler extends RepositoryManager {
                 showImage = true;
             }
         }
-
+	showImage = getTypeProperty("show.image",showImage);
 	if(props!=null && !Utils.getProperty(props,"showImage",true)) {
 	    showImage = false;
+	}
+
+	if(!showImage) {
 	    entryIsImage = false;
 	}
+
 
 	if(contents.size()==0)  contents.add(new NamedBuffer(""));
 	Appendable sb = contents.get(contents.size()-1);
