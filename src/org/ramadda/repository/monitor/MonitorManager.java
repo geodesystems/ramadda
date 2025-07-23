@@ -214,7 +214,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private void handleEntriesChangedInner(List<Entry> entries,
                                            boolean isNew) {
 	boolean debug = false;
-	debug = true;
+	//	debug = true;
         try {
             List<EntryMonitor> tmpMonitors;
             synchronized (monitors) {
