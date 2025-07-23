@@ -139,7 +139,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 	    getLogManager().logSpecial("JpegMedataHandler:skipping metadata extraction for large image:" +entry.getName());
 	    return;
 	}
-
+	if(!entry.getTypeHandler().getTypeProperty("show.image",true)) return;
 	com.drew.metadata.Metadata []mtd ={null};
         try {
 	    if(request.get(ATTR_MAKETHUMBNAILS,true)) {
