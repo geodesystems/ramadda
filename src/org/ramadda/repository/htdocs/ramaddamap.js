@@ -1730,6 +1730,8 @@ RepositoryMap.prototype = {
         else
             layer.isBaseLayer = false;
         layer.visibility = false;
+	//layer.visibility = true;
+
         layer.reproject = true;
         this.addLayer(layer);
         if (isDefault) {
@@ -2777,7 +2779,10 @@ RepositoryMap.prototype = {
 	}
     },
 
-    createXYZLayer:  function(name, url, attribution,notBaseLayer,visible) {
+    createXYZLayer:  function(name, url, attribution,notBaseLayer,visible,addLayer) {
+	if(typeof url=='string') {
+	    url = url.replace(/\$\{timestamp\}/,new Date().getTime());
+	}
 	visible=  Utils.getBoolean(visible);
         let options = {
             sphericalMercator: MapUtils.defaults.doSphericalMercator,
@@ -2788,7 +2793,10 @@ RepositoryMap.prototype = {
         };
         if (attribution)
             options.attribution = attribution;
-        return MapUtils.createLayerXYZ(name, url, options);
+        let layer =  MapUtils.createLayerXYZ(name, url, options);
+	if(addLayer)
+	    this.addLayer(layer,true);
+	return layer;
     },
 
     addBaseLayers:  function() {
