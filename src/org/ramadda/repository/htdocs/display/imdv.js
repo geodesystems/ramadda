@@ -5963,24 +5963,30 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let _this = this;
 	    this.jq(ID_LEGEND_MAP_WRAPPER).remove();
 	    let legendPosition = this.getMapProperty('mapLegendPosition',{left:'50px',top:'20px'});
+	    console.log(legendPosition);
+
 	    let legendStyle = '';
 	    //	    ['left','top','right','bottom'].forEach(pos=>{
 	    ['left','top'].forEach(pos=>{
 		if(legendPosition[pos]) {
+		    if(String(legendPosition[pos]).startsWith('-'))
+			legendPosition[pos] = '5px';
 		    legendStyle+=HU.css(pos,legendPosition[pos]);
 		}
 	    });
 	    if(legendStyle=='') legendStyle='left:50px;top:20px;'
+	    console.log(legendStyle);
 
 	    //gotta have this here or else the draggable sets it to relative
 	    legendStyle+=HU.css('position','absolute');
-	    let innerDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP_WRAPPER),ATTR_CLASS,'imdv-legend-map-wrapper',ATTR_STYLE,legendStyle]);
+	    let innerDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP_WRAPPER),
+				   ATTR_CLASS,'imdv-legend-map-wrapper',ATTR_STYLE,legendStyle]);
 	    let inner = $(innerDiv);
 
 	    this.jq(ID_MAP_CONTAINER).append(inner);
 	    let haveCleared = false;
 	    inner.draggable({
-		containment:this.jq(ID_MAP_CONTAINER),
+		xcontainment:this.jq(ID_MAP_CONTAINER),
 		//A bit tricky - we clear all the style when we start dragging
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
@@ -5989,7 +5995,17 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		},
 		stop:function() {
 		    let top = inner.position().top;
+		    if(top<0) {
+			inner.css('top','0');
+			top=0;
+		    }
+
 		    let left = inner.position().left;		    
+		    if(left<0) {
+			inner.css('left','0');
+			left = 0;
+		    }
+
 		    let bottom = top+inner.height();
 		    let right = left+inner.width();		    
 		    let pw = inner.parent().width();
@@ -5997,7 +6013,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    let pos = _this.mapProperties.mapLegendPosition = {};
 		    pos.left = inner.css('left');		    
 		    pos.top = inner.css('top');
-
 		    return
 		    /* TODO?
 		    let set = (which,v) =>{
