@@ -12,6 +12,7 @@
     <property name="subset.date.show" value="true"/>     
 <property name="record.properties">
 <![CDATA[
+picky=false
 record.type.timestamp=date
 record.type.default=double
 record.searchable.default=true
