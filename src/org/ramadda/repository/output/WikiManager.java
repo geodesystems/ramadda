@@ -6168,7 +6168,8 @@ public class WikiManager extends RepositoryManager
         if (snippet == null) {
             return dflt;
         }
-        return HU.div(snippet, HU.cssClass("ramadda-snippet"));
+	return snippet;
+	//        return HU.div(snippet, HU.cssClass("ramadda-snippet"));
     }
 
     public String getRawSnippet(Request request, Entry child, boolean wikify)
