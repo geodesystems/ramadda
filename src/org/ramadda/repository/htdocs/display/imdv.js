@@ -44,7 +44,7 @@ var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROU
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
-var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
+var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_layer','type_wms_layer'];
 
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
@@ -1357,6 +1357,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			alert('Please enter a map server');
 			return;
 		    }
+		    
 		    loadLayer({
 			name:this.jq('servername').val(),
 			url:url,
@@ -1413,6 +1414,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 
 			$.extend(mapOptions,attrs);
+			if(mapOptions.entryType=='type_wmts_layer') {
+			    this.loadWmtsEntry(attrs);
+			    return
+			}
+			if(mapOptions.entryType=='type_wms_layer') {
+			    this.loadWmsEntry(attrs);
+			    return
+			}			
+
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer(true);
 //			this.clearCommands();
@@ -1632,6 +1642,58 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	loadWmtsEntry:function(attrs) {
+	    getRamadda().getEntry(attrs.entryId, entry=>{
+//		console.dir(entry);
+		let glyphType = this.getGlyphType(GLYPH_MAPSERVER);
+		let style = Utils.clone({},glyphType.getStyle());
+		let options = {
+		    name:entry.getName(),
+		    type:GLYPH_MAPSERVER
+		}
+		let snippet = entry.getSnippet();
+		if(snippet) {
+		    options.legendText = snippet.trim();
+		}
+		let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, options, null,style);
+		mapGlyph.setMapServerUrl(entry.url,null,entry.getThumbnail(),null);
+		mapGlyph.checkMapServer();
+		this.addGlyph(mapGlyph);
+	    });
+
+
+
+	},
+	loadWmsEntry:function(attrs) {
+	    getRamadda().getEntry(attrs.entryId, entry=>{
+		let baseUrl = entry.getAttribute('base_url');
+		let layer = entry.getAttribute('layer_name');		
+		if(!Utils.stringDefined(baseUrl?.value) || !Utils.stringDefined(layer?.value)) {
+		    alert('No url or layer defined');
+		    return;
+		}
+
+		let glyphType = this.getGlyphType(GLYPH_MAPSERVER);
+		let style = Utils.clone({},glyphType.getStyle());
+		let options = {
+		    name:entry.getName(),
+		    type:GLYPH_MAPSERVER
+		}
+		let snippet = entry.getSnippet();
+		if(snippet) {
+		    options.legendText = snippet.trim();
+		}
+		let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, options, null,style);
+		//setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
+		mapGlyph.setMapServerUrl(baseUrl.value,layer.value,entry.getThumbnail(),null);
+		mapGlyph.checkMapServer();
+		this.addGlyph(mapGlyph);
+	    });
+
+
+
+	},
+
 	setZoomOptions:function(mapOptions) {
 	    mapOptions.zoomLevel = this.getCurrentLevel();
 	    mapOptions.mapCenter = this.getMap().getMapCenterLatLon();
@@ -4778,6 +4840,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback2,andZoom,errorCallback);
 		return layer;
+	    case 		'type_wmts_layer':
+		return null;
+
 	    default:
 		this.showMessage('Unknown map type:' + opts.entryType,4000);
 		return null;

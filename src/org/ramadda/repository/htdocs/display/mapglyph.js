@@ -2983,7 +2983,10 @@ MapGlyph.prototype = {
 	this.attrs[ID_SHOWDATAICONS] = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
-//	console.log('xxx',url);
+	//check for wmts
+	if(Utils.stringDefined(url)) {
+	    url = url.replace(/[0-9]+\/[0-9]+\/[0-9]+/,'${z}/${x}/${y}');
+	}
 	this.style.legendUrl = legendUrl;
 	this.attrs.mapServerUrl = url;
 	this.attrs.wmsLayer = wmsLayer;
