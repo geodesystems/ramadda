@@ -3,54 +3,29 @@ Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-
 package org.ramadda.util;
-
-
 import org.apache.commons.net.ftp.*;
-
-
 import org.apache.commons.text.StringEscapeUtils;
-
-
 import ucar.unidata.util.IOUtil;
-
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
-
 import ucar.unidata.xml.XmlUtil;
-
 import java.awt.Color;
-
 import java.io.IOException;
 import java.io.StringWriter;
-
 import java.lang.reflect.*;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-
 import java.util.regex.*;
-
-
-
 
 @SuppressWarnings("unchecked")
 public class HtmlUtils implements HtmlUtilsConstants {
-
-
-
-
     public static final String NL = "&#013;";
     public static final String SPACE = "&nbsp;";
     public static final String SPACE2 = "&nbsp;&nbsp;";
@@ -63,8 +38,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String comma(String... s) {
         return StringUtil.join(",", s);
     }
-    
-    
+
     public static void comma(Appendable sb, String... s) {
         try {
             for (int i = 0; i < s.length; i++) {
@@ -78,10 +52,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-
-    
     public static String open(String comp) {
         StringBuilder sb = new StringBuilder();
         sb.append("<");
@@ -91,10 +61,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
-
-    
     public static String open(String comp, String... attrs) {
         StringBuilder sb = new StringBuilder();
         open(sb, comp, attrs);
@@ -102,7 +68,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable open(Appendable sb, String tag,
                                   String... attrs) {
         try {
@@ -123,7 +88,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static void dangleOpen(Appendable sb, String comp) {
         try {
             sb.append("<");
@@ -134,7 +98,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    
     public static void dangleClose(Appendable sb) {
         try {
             sb.append(">");
@@ -144,7 +107,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    
     public static String close(String... args) {
         StringBuilder sb = new StringBuilder();
         for (String comp : args) {
@@ -154,7 +116,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable close(Appendable sb, String... args) {
         try {
             for (String comp : args) {
@@ -173,8 +134,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static String tag(String comp) {
         StringBuilder sb = new StringBuilder();
         tag(sb, comp);
@@ -182,8 +141,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static Appendable tag(Appendable sb, String tag) {
         try {
             sb.append("<");
@@ -196,8 +153,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static String tag(String comp, String attrs) {
         StringBuilder sb = new StringBuilder();
         tag(sb, comp, attrs);
@@ -205,7 +160,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable tag(Appendable sb, String comp, String attrs) {
         try {
             sb.append("<");
@@ -219,9 +173,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-
-    
     public static String tag(String tag, String attrs, String inner) {
         StringBuilder sb = new StringBuilder();
         tag(sb, tag, attrs, inner);
@@ -229,7 +180,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable tag(Appendable sb, String tag, String attrs,
                                  String inner) {
         try {
@@ -247,8 +197,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static Appendable makeTag(Appendable sb, String tag, String inner,
                                      String... attrs) {
         try {
@@ -262,21 +210,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static String hiddenBase64(String name, Object value) {
         String s = value.toString();
 
         return hidden(name, Utils.encodeBase64(s), "");
     }
 
-
-    
     public static String hidden(String name, Object value) {
         return hidden(name, value, "");
     }
 
-    
     public static String hidden(String name, Object value, String extra) {
         StringBuilder sb = new StringBuilder();
         hidden(sb, name, value, extra);
@@ -284,18 +227,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
     public static String makeHeader1(List links) {
 	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link ramadda-header-link-1'>","</span>");
 	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-1\">" + WikiUtil.NAVDELIM+"</span>");
     }
 
-
     public static String makeHeader2(List links) {
 	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link  ramadda-header-link-2'>","</span>");
 	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-2\">" + WikiUtil.NAVDELIM+"</span>");
     }
-
 
     public static Appendable hidden(Appendable sb, String name, Object value,
                                     String extra) {
@@ -307,9 +247,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-
-    
     public static String hbox(Object... args) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table><tr valign=top>");
@@ -321,28 +258,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void br(Appendable sb) throws Exception {
         sb.append("<br>");
     }
 
-
-    
     public static String br() {
         return "<br>";
     }
 
-    
     public static String br(String line) {
         return line + open(TAG_BR);
     }
 
-    
     public static String hr() {
         return open(TAG_HR,clazz("ramadda-hr"));
     }
 
-    
     public static String p() {
         return "<p>";
     }
@@ -355,37 +286,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return div("",style("margin-top:" + space));
     }    
 
-
-
-    
     public static String nobr(String inner) {
         return tag(TAG_NOBR, "", inner);
     }
 
-
-    
     public static void b(Appendable sb, String inner) throws Exception {
         tag(sb, TAG_B, inner);
     }
 
-
-    
     public static String b(String inner) {
         return tag(TAG_B, "", inner);
     }
 
-    
     public static String italics(String inner) {
         return tag(TAG_I, "", inner);
     }
 
-    
     public static String li(String inner, String extra) {
         return tag(TAG_LI, extra, inner);
     }
 
-
-    
     public static Appendable centerBlock(Appendable sb, String inner)
             throws Exception {
         sb.append(
@@ -396,7 +316,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
     public static String centerDiv(String contents) {
 	return open(TAG_DIV,
 		    style("text-align:center;")) +
@@ -406,20 +325,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    close(TAG_DIV);
     }
 
-
-    
     public static String center(String inner) {
         return tag(TAG_CENTER, "", inner);
     }
 
-    
     public static void center(Appendable sb, String inner) throws Exception {
         tag(sb, TAG_CENTER, "", inner);
     }
 
-
-
-    
     public static String pad(String s) {
         StringBuilder sb = new StringBuilder();
         pad(sb, s);
@@ -427,7 +340,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable pad(Appendable sb, String s) {
         try {
             String space = space(1);
@@ -441,7 +353,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String padLeft(String s) {
         StringBuilder sb = new StringBuilder();
         padLeft(sb, s);
@@ -449,7 +360,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable padLeft(Appendable sb, String s) {
         try {
             sb.append(space(1));
@@ -461,7 +371,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String padRight(String s) {
         StringBuilder sb = new StringBuilder();
         padRight(sb, s);
@@ -469,9 +378,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
-    
     public static Appendable padRight(Appendable sb, String s) {
         try {
             sb.append(s);
@@ -483,8 +389,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static String backButton(String label) {
         String link = href("javascript:history.back()", (label != null)
                 ? label
@@ -493,13 +397,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return button(link);
     }
 
-
-    
     public static String button(String html) {
         return span(html, cssClass("ramadda-button"));
     }
 
-    
     public static String buttons(String... args) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
@@ -513,7 +414,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static String buttons(List<String> args) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.size(); i++) {
@@ -528,13 +428,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static String buttonSpace() {
         return space(2);
     }
 
-    
     public static String space(int cnt) {
         if (cnt == 1) {
             return " ";
@@ -556,7 +453,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return s;
     }
 
-    
     public static String quote(String s) {
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
@@ -564,8 +460,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static Appendable quote(Appendable sb, String s) {
         try {
             sb.append("\"");
@@ -580,7 +474,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String squote(Object s) {
         StringBuilder sb = new StringBuilder();
         squote(sb, s);
@@ -588,7 +481,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static Appendable squote(Appendable sb, Object o) {
         try {
 	    String s = o.toString();
@@ -605,30 +497,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String img(String path) {
         return img(path, "");
     }
 
-    
     public static String img(String path, String title) {
         return img(path, title, "");
     }
 
-    
     public static String image(String path, String... args) {
         return img(path, null, attrs(args));
     }
 
-
-    
     public static String img(String path, String title, String extra) {
         return image(path, title, extra, null);
     }
 
-
-
-    
     public static String image(String path, String title, String extra,
                                String inner) {
         if (Utils.stringDefined(title)) {
@@ -650,7 +534,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return img;
     }
 
-    
     public static boolean isFontAwesome(String icon) {
         if (icon == null) {
             return false;
@@ -660,9 +543,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                || icon.startsWith("fab ");
     }
 
-
-
-    
     public static String faIcon(String icon, String... args) {
         String clazz = (icon.trim().indexOf(" ") >= 0)
                        ? icon
@@ -672,7 +552,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                     "");
     }
 
-    
     public static String faIconClass(String icon, String extraClass,
                                      String... args) {
         String clazz = (icon.trim().indexOf(" ") >= 0)
@@ -684,9 +563,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                         + attrs(args), ""), "");
     }
 
-
-
-    
     public static String getIconImage(String url, String... args) {
         if (isFontAwesome(url)) {
             return faIcon(url, args);
@@ -695,49 +571,38 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static String cssClass(String c) {
         return attr(ATTR_CLASS, c);
     }
 
-    
     public static String clazz(String c) {
         return attr(ATTR_CLASS, c);
     }
 
-    
     public static void clazz(Appendable sb, String c) {
         attr(sb, ATTR_CLASS, c);
     }
 
-    
     public static Appendable cssClass(Appendable sb, String c) {
         attr(sb, ATTR_CLASS, c);
 
         return sb;
     }
 
-    
     public static String title(String c) {
         return attr(ATTR_TITLE, c);
     }
 
-    
     public static String id(String c) {
         return attr(ATTR_ID, c);
     }
 
-
-    
     public static Appendable id(Appendable sb, String c) {
         attr(sb, ATTR_ID, c);
 
         return sb;
     }
 
-    
     public static String style(String... args) {
         if (args.length == 1) {
             return attr(ATTR_STYLE, args[0]);
@@ -746,7 +611,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return attr(ATTR_STYLE, css(args));
     }
 
-    
     public static String css(String... s) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length; i += 2) {
@@ -762,57 +626,42 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static String bold(String v1) {
         return tag(TAG_B, "", v1);
     }
 
-    
     public static String col(String v1) {
         return col(v1, "");
     }
 
-
-    
     public static Appendable col(Appendable sb, String v1) {
         col(sb, v1, "");
 
         return sb;
     }
 
-    
     public static String col(String v1, String attr) {
         return tag(TAG_TD, " " + attr + " ", v1);
     }
 
-    
     public static Appendable col(Appendable sb, String v1, String attr) {
         tag(sb, TAG_TD, " " + attr + " ", v1);
 
         return sb;
     }
 
-
-
-
-    
     public static String colRight(String v1) {
         return tag(TAG_TD, " " + attr(ATTR_ALIGN, "right") + " ", v1);
     }
 
-
-    
     public static String highlightable(String c) {
         return span(c, cssClass("ramadda-highlightable"));
     }
 
-
-    
     public static String span(String content, String extra) {
         return tag(TAG_SPAN, extra, content);
     }
 
-    
     public static Appendable span(Appendable sb, String content,
                                   String extra) {
         tag(sb, TAG_SPAN, extra, content);
@@ -820,16 +669,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
     public static boolean debug = false;
 
-    
     public static boolean debug1 = false;
 
-    
     public static boolean debug2 = false;
 
-    
     public static Hashtable parseHtmlProperties(String s) {
 
         Hashtable properties = new Hashtable();
@@ -972,7 +817,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 continue;
             }
 
-
         }
         String name = nb.toString();
         if (name.length() > 0) {
@@ -985,21 +829,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
             //            System.err.println("props:" + properties);
         }
 
-
         return properties;
 
     }
 
-
-
-
-    
     public static String section(String content) {
         return section(content, null);
     }
 
-
-    
     public static String section(String content, String title) {
         if (title != null) {
             StringBuilder sb = new StringBuilder();
@@ -1015,17 +852,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    
     public static String sectionOpen() {
         return open(TAG_DIV, "class", "ramadda-section");
     }
 
-    
     public static String sectionOpen(String label) {
         return sectionOpen(label, false);
     }
 
-    
     public static Appendable titleSectionOpen(Appendable sb, String label)
             throws Exception {
         sectionOpen(sb, null, false);
@@ -1034,7 +868,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String sectionOpen(String label, boolean line) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -1046,7 +879,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-    
     public static String hrow(List cols) throws Exception {
         Appendable sb = new StringBuilder();
         hrow(sb, cols);
@@ -1054,8 +886,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static Appendable hrow(Appendable sb, List cols) throws Exception {
         for (Object o : cols) {
             sb.append(div(o.toString(),
@@ -1066,7 +896,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static Appendable hrow(Appendable sb, String... cols)
             throws Exception {
         for (String o : cols) {
@@ -1078,7 +907,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    
     public static String hrow(String... cols) throws Exception {
         StringBuilder sb = new StringBuilder();
         hrow(sb, cols);
@@ -1086,8 +914,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static Appendable sectionOpen(Appendable sb, String label,
                                          boolean line)
             throws Exception {
@@ -1099,9 +925,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-
-    
     public static Appendable sectionHeader(Appendable sb, String label)
             throws Exception {
         if (Utils.stringDefined(label)) {
@@ -1111,8 +934,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static Appendable sectionTitle(Appendable sb, String label)
             throws Exception {
         if (Utils.stringDefined(label)) {
@@ -1122,27 +943,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-
-    
     public static String sectionClose() {
         return close(TAG_DIV);
     }
 
-
-    
     public static String note(String s) {
         return div(div(s, cssClass("ramadda-note")),
                    cssClass("ramadda-note-outer"));
     }
 
-
-    
     public static String div(String content) {
         return div(content, "");
     }
 
-    
     public static String div(String content, String extra) {
         return tag(TAG_DIV, extra, content);
     }
@@ -1156,18 +969,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_INLINE_BLOCK, extra, content);
     }    
 
-
-
-    
     public static Appendable div(Appendable sb, String content,
                                  String extra) {
         tag(sb, TAG_DIV, extra, content);
 
         return sb;
     }
-
-
-    
 
     public static String tds(List content,String...attrs) {
 	StringBuilder sb = new StringBuilder();
@@ -1183,7 +990,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return td(content, "");
     }
 
-    
     public static String td(String content, String extra) {
         return tag(TAG_TD, extra, content);
     }
@@ -1196,112 +1002,80 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_TR, extra, content);
     }
 
-    
     public static Appendable td(Appendable sb, String content) {
         return td(sb, content, "");
     }
 
-    
     public static Appendable td(Appendable sb, String content, String extra) {
         tag(sb, TAG_TD, extra, content);
 
         return sb;
     }
 
-
-
-    
     public static String th(String content) {
         return th(content, "");
     }
 
-    
     public static String th(String content, String extra) {
         return tag(TAG_TH, extra, content);
     }
 
-    
     public static Appendable th(Appendable sb, String content) {
         return th(sb, content, "");
     }
 
-    
     public static Appendable th(Appendable sb, String content, String extra) {
         tag(sb, TAG_TH, extra, content);
 
         return sb;
     }
 
-
-
-    
     public static String h1(String content) {
         return tag(TAG_H1, "", content);
     }
 
-    
     public static String h2(String content) {
         return tag(TAG_H2, "", content);
     }
 
-    
     public static String h3(String content) {
         return tag(TAG_H3, "", content);
     }
 
-
-    
     public static String ul() {
         return open(TAG_UL, "");
     }
 
-
-
-    
     public static String p(String content) {
         return tag(TAG_P, "", content);
     }
 
-
-
-    
     public static String pre(String content) {
         return pre(content, "");
     }
 
-    
     public static void pre(Appendable sb, String content) throws IOException {
         tag(sb, TAG_PRE, "", content);
     }
 
-
-    
     public static String pre(String content, String attrs) {
         return tag(TAG_PRE, attrs, content);
     }
 
-
-
-    
     public static String url(String path, List args) {
         return url(path, Utils.toStringArray(args));
     }
 
-
-    
     public static String url(String path, String... args) {
         return url(path, args, true);
     }
 
-
-    
     public static Appendable url(Appendable sb, String path, String... args) {
         url(sb, path, args, true);
 
         return sb;
     }
 
-    
     public static String url(String path, String[] args, boolean encodeArgs) {
         if (args.length == 0) {
             return path;
@@ -1312,7 +1086,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static String makeDim(String size, String...dflt) {
         if (size == null) {
             return null;
@@ -1327,8 +1100,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return size + "px";
     }
 
-
-    
     public static void url(Appendable sb, String path, String[] args,
                            boolean encodeArgs) {
         try {
@@ -1367,13 +1138,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static String args(String... args) {
         return args(args, true);
     }
 
-    
     public static String args(String[] args, boolean encodeArgs) {
         List<String> a = new ArrayList<String>();
         for (int i = 0; i < args.length; i += 2) {
@@ -1383,8 +1151,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return StringUtil.join("&", a);
     }
 
-
-    
     public static String args(List<String> args, boolean encodeArgs) {
         List<String> a = new ArrayList<String>();
         for (int i = 0; i < args.size(); i += 2) {
@@ -1394,8 +1160,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return StringUtil.join("&", a);
     }
 
-
-    
     public static String args(Hashtable args) {
         List<String> a = new ArrayList<String>();
         for (java.util.Enumeration keys =
@@ -1414,13 +1178,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return StringUtil.join("&", a);
     }
 
-
-    
     public static String arg(String name, String value) {
         return arg(name, value, true);
     }
 
-    
     public static String arg(Object name, Object value, boolean encodeArg) {
         Appendable sb = new StringBuilder();
         arg(sb, name, value, encodeArg);
@@ -1428,8 +1189,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static void arg(Appendable sb, Object name, Object value,
                            boolean encodeArg) {
         try {
@@ -1444,43 +1203,30 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-
-    
     public static String row(String row) {
         return tag(TAG_TR, "", row);
     }
 
-    
     public static void row(Appendable sb, String row) {
         tag(sb, TAG_TR, "", row);
     }
 
-    
     public static void row(Appendable sb, String row, String extra) {
         tag(sb, TAG_TR, extra, row);
     }
 
-
-
-    
     public static String row(String row, String extra) {
         return tag(TAG_TR, extra, row);
     }
 
-    
     public static String rowTop(String row) {
         return tag(TAG_TR, attr(ATTR_VALIGN, VALUE_TOP), row);
     }
 
-    
     public static String rowBottom(String row) {
         return tag(TAG_TR, attr(ATTR_VALIGN, VALUE_BOTTOM), row);
     }
 
-
-    
     public static String cols(String... cols) {
         StringBuilder sb = new StringBuilder();
         cols(sb, cols);
@@ -1488,8 +1234,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static void cols(Appendable sb, String... cols) {
         try {
             for (int i = 0; i < cols.length; i++) {
@@ -1500,8 +1244,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static void thead(Appendable sb, Object... cols) throws Exception {
         sb.append("<thead>");
         sb.append("<tr>");
@@ -1512,10 +1254,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         sb.append("</thead>");
     }
 
-
-
-
-    
     public static String headerCols(Object[] columns) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < columns.length; i++) {
@@ -1525,9 +1263,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
-    
     public static String cols(Object[] columns) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < columns.length; i++) {
@@ -1537,16 +1272,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
-    
     public static String makeLatLonInput(String id, String arg,
                                          String value) {
         return makeLatLonInput(id, arg, value, null, "");
     }
 
-
-    
     public static String makeLatLonInput(String id, String arg, String value,
                                          String tip, String extra) {
         return input(arg, value,
@@ -1556,12 +1286,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                           : ""));
     }
 
-
-    
     public static String makeLatLonBox(String baseId, String baseName,
                                        String southValue, String northValue,
                                        String eastValue, String westValue) {
-
 
         return makeLatLonBox(baseId, baseName + SUFFIX_SOUTH,
                              baseName + SUFFIX_NORTH, baseName + SUFFIX_EAST,
@@ -1569,7 +1296,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                              eastValue, westValue);
     }
 
-    
     public static String makeLatLonBox(String baseId, String southArg,
                                        String northArg, String eastArg,
                                        String westArg, String southValue,
@@ -1589,7 +1315,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                                        + SUFFIX_SOUTH, southArg, southValue, "South", " data-dir=south ") + "</table>";
     }
 
-    
     public static String makeLatLonBox(String baseId, String baseName,
                                        double south, double north,
                                        double east, double west) {
@@ -1597,7 +1322,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                              toString(north), toString(east), toString(west));
     }
 
-    
     private static String toString(double v) {
         if (v == v) {
             return "" + v;
@@ -1606,7 +1330,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return "";
     }
 
-    
     public static String makeAreaLabel(double south, double north,
                                        double east, double west) {
         return table("<tr><td colspan=\"2\" align=\"center\">"
@@ -1616,23 +1339,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
                      + toString(south));
     }
 
-
-    
     public static String checkbox(String name) {
         return checkbox(name, VALUE_TRUE, false);
     }
 
-    
     public static String checkbox(String name, String value) {
         return checkbox(name, value, false);
     }
 
-    
     public static String radio(String name, String value, boolean checked) {
         return radio(name, value, checked, "");
     }
 
-    
     public static String radio(String name, String value, boolean checked,
                                String attrs) {
         return tag(TAG_INPUT,
@@ -1644,7 +1362,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                  : ""));
     }
 
-    
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
 	String radio = tag(TAG_INPUT, attrs(ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
@@ -1654,20 +1371,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag("label","",radio+ "&nbsp;"+ label);
     }
 
-
-    
     public static String checkbox(String name, String value,
                                   boolean checked) {
         return checkbox(name, value, checked, "");
     }
 
-
-    
     public static String labeledCheckbox(String name, String value,
                                          boolean checked, String label) {
         return labeledCheckbox(name, value, checked, "", label);
     }
-
 
     public static String labeledCheckbox(String name, String value,
                                          boolean checked, String attrs,
@@ -1677,8 +1389,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return sb.toString();
     }
 
-
-    
     public static void labeledCheckbox(StringBuilder sb, String name, String value,
 				       boolean checked, String attrs,
 				       String label) {
@@ -1705,7 +1415,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    + attr("for", id), label);
     }
 
-    
     public static String checkbox(String name, String value, boolean checked,
                                   String extra) {
         StringBuilder sb = new StringBuilder();
@@ -1714,8 +1423,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static void checkbox(Appendable sb, String name, String value,
                                 boolean checked, String extra) {
         try {
@@ -1737,7 +1444,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    
     public static String formHelp(String html) {
 	return span(html,clazz("ramadda-form-help"));
 
@@ -1748,37 +1454,29 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return html;
     }
 
-
     public static String form(String url) {
         return form(url, "");
     }
 
-    
     public static String form(String url, String extra) {
         return open(TAG_FORM, attr(ATTR_ACTION, url) + " " + extra);
     }
 
-
-    
     public static void form(Appendable sb, String url) throws Exception {
         open(sb, TAG_FORM, attr(ATTR_ACTION, url));
     }
 
-    
     public static String formPost(String url) {
         return open(TAG_FORM,
                     attrs(ATTR_METHOD, VALUE_POST, ATTR_ACTION, url));
     }
 
-    
     public static String formPost(String url, String extra) {
         return open(TAG_FORM,
                     attrs(ATTR_METHOD, VALUE_POST, ATTR_ACTION, url) + " "
                     + extra);
     }
 
-
-    
     public static String uploadForm(String url, String extra) {
         return open(TAG_FORM,
                     " accept-charset=\"UTF-8\" "
@@ -1786,44 +1484,33 @@ public class HtmlUtils implements HtmlUtilsConstants {
                             ATTR_ENCTYPE, VALUE_MULTIPART) + " " + extra);
     }
 
-
     public static String href(String url) {
 	return open("a",attrs("href",url));
     }
 
-
-    
     public static String href(String url, String label) {
         return tag(TAG_A, attrs(ATTR_HREF, url), label);
     }
 
-    
     public static void href(Appendable sb, String url, String label) {
         tag(sb, TAG_A, attrs(ATTR_HREF, url), label);
     }
 
-    
     public static String href(String url, String label, String extra) {
         return tag(TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra),
                    label);
     }
 
-
-    
     public static void href(Appendable sb, String url, String label,
                             String extra) {
         tag(sb, TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra),
             label);
     }
 
-
-    
     public static String submitImage(String img, String name) {
         return submitImage(img, name, "", "");
     }
 
-
-    
     public static String submitImage(String img, String name, String alt,
                                      String extra) {
         if (isFontAwesome(img)) {
@@ -1841,50 +1528,40 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                alt, ATTR_TYPE, TYPE_IMAGE));
     }
 
-
-
-    
     public static String submit(String label, String name) {
         return tag(TAG_INPUT,
                    attrs(ATTR_NAME, name, ATTR_TYPE, TYPE_SUBMIT, ATTR_VALUE,
                          label, ATTR_CLASS, CLASS_SUBMIT));
     }
 
-
     public static String submitClass(String label, String name,String clazz) {
         return tag(TAG_INPUT,
                    attrs(ATTR_NAME, name, ATTR_TYPE, TYPE_SUBMIT, ATTR_VALUE,
                          label, ATTR_CLASS, CLASS_SUBMIT+" " + clazz));
     }
-    
-    
+
     public static String submit(String label, String name, String extra) {
         return tag(TAG_INPUT,
                    attrs(ATTR_NAME, name, ATTR_TYPE, TYPE_SUBMIT, ATTR_VALUE,
                          label, ATTR_CLASS, CLASS_SUBMIT) + extra);
     }
 
-    
     public static String submit(String label) {
         return tag(TAG_INPUT,
                    attrs(ATTR_CLASS, CLASS_SUBMIT, ATTR_TYPE, TYPE_SUBMIT,
                          ATTR_VALUE, label));
     }
 
-    
     public static String textArea(String name, String value, int rows,
                                   int columns) {
         return textArea(name, value, rows, columns, "");
     }
 
-    
     public static String textArea(String name, String value, int rows,
                                   String attr) {
         return textArea(name, value, rows, 0, attr);
     }
 
-
-    
     public static String textArea(String name, String value, int rows,
                                   int columns, String extra) {
         String width = (columns > 0)
@@ -1898,14 +1575,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
                    + attrs(ATTR_ROWS, "" + rows) + width + extra, value);
     }
 
-    
     public static String password(String name) {
         return tag(TAG_INPUT,
                    attrs(ATTR_CLASS, CLASS_PASSWORD, ATTR_TYPE,
                          TYPE_PASSWORD, ATTR_NAME, name));
     }
 
-    
     public static String password(String name, String value, String extra) {
         return tag(TAG_INPUT,
                    extra
@@ -1913,31 +1588,23 @@ public class HtmlUtils implements HtmlUtilsConstants {
                            ATTR_TYPE, TYPE_PASSWORD, ATTR_NAME, name));
     }
 
-
-
-
-    
     public static String input(String name) {
         return input(name, null, "");
     }
 
-    
     public static String input(String name, Object value) {
         return input(name, value, "");
     }
 
-    
     public static String input(String name, Object value, int size) {
         return input(name, value, attrs(ATTR_SIZE, "" + size));
     }
 
-    
     public static String input(String name, Object value, int size,
                                String extra) {
         return input(name, value, attrs(ATTR_SIZE, "" + size) + " " + extra);
     }
 
-    
     public static String input(String name, Object value, String extra) {
         if ((extra == null) || (extra.length() == 0)) {
             return tag(TAG_INPUT,
@@ -1961,8 +1628,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                       : value.toString())) + " " + extra);
     }
 
-
-    
     public static String disabledInput(String name, Object value,
                                        String extra) {
         String classAttr = "";
@@ -1977,56 +1642,61 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 : value.toString())) + " " + extra + classAttr);
     }
 
+    public static String makeDndFileInput(String arg,boolean multiples) {
+	String inputId   = getUniqueId("fileinput");
+	String size = SIZE_70;
+	String fileAttrs = HtmlUtils.id(inputId) + size;
+	//String accept = getTypeProperty("file.accept",(String) null);
+	//if (accept != null) {
+	//fileAttrs += HU.attr("accept", accept);
+	//}
+	String formContent = fileInput(arg, fileAttrs);
+	String icon = img("fas fa-upload");
+	formContent += div(div(icon + " " + "Or drag files here",
+			       cssClass("ramadda-file-dnd-label")),
+			   cssClass("ramadda-file-dnd-target") +
+			   id(inputId + "_dnd"));
+	formContent +=script(call("Ramadda.initFormUpload",
+				  squote(arg),
+				  squote(inputId),
+				  squote(inputId + "_dnd"),""+multiples));
+	return formContent;
+    }
 
-    
     public static String fileInput(String name, String extra) {
         return tag(TAG_INPUT,
                    attrs(ATTR_CLASS, CLASS_FILEINPUT, ATTR_TYPE, TYPE_FILE,
                          ATTR_NAME, name) + " " + extra + " " + SIZE_70);
     }
 
-    
     public static String select(String name, List values) {
         return select(name, values, null);
     }
 
-    
     public static String select(String name, List values, String selected) {
         return select(name, values, selected, Integer.MAX_VALUE);
     }
 
-    
     public static String select(String name, List values, String selected,
                                 String extra) {
         return select(name, values, selected, extra, Integer.MAX_VALUE);
     }
 
-
-    
     public static String select(String name, List values,
                                 List<String> selected, String extra) {
         return select(name, values, selected, extra, Integer.MAX_VALUE);
     }
 
-
-
-
-
-    
     public static String select(String name, Object[] values,
                                 String selected, int maxLength) {
         return select(name, Misc.toList(values), selected, maxLength);
     }
 
-
-    
     public static String select(String name, List values, String selected,
                                 int maxLength) {
         return select(name, values, selected, "", maxLength);
     }
 
-
-    
     public static String select(String name, List values, String selected,
                                 String extra, int maxLength) {
         List selectedList = null;
@@ -2038,7 +1708,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return select(name, values, selectedList, extra, maxLength);
     }
 
-    
     public static class Href {
 	String url;
 	String label;
@@ -2069,7 +1738,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    return this.url.equals(((Href)o).url);
 	}
     }
-
 
     public static class Selector {
         int margin = 3;
@@ -2102,7 +1770,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             this(label, id, icon, margin, 20, isHeader);
         }
 
-
         public Selector(String label, String id, String icon, int margin, int padding, boolean isHeader) {
             this(label, id, null, icon, margin, padding, isHeader);
         }
@@ -2117,7 +1784,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             this.padding  = padding;
             this.isHeader = isHeader;
         }
-
 
 	public static Selector findId(Object id, List l) {
 	    for (int i = 0; i < l.size(); i++) {
@@ -2141,39 +1807,33 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    }
 	    return false;
 	}
-        
+
         public void setTooltip(String tooltip) {
             this.tooltip = tooltip;
         }
 
-        
         public String toString() {
             return "id:" + id +" label:"+this.label+":";
         }
 
-        
         public void setAttr(String s) {
             attr = s;
         }
 
-        
         public String getId() {
             return id;
         }
 
-        
         public String getLabel() {
             return label;
         }
 
-        
         public String getIcon() {
             return icon;
         }
 
     }
 
-    
     public static String select(String name, List values, List selected,
                                 String extra, int maxLength) {
         try {
@@ -2185,7 +1845,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-    
     public static void select(Appendable sb, String name, List values,
                               List selected, String extra, int maxLength)
             throws Exception {
@@ -2299,7 +1958,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         sb.append("\n");
     }
 
-    
     public static String checkboxSelect(String name, List values,
                                         List selected, String boxStyle,
                                         String extra)
@@ -2314,9 +1972,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static void checkboxSelect(Appendable sb, String name,
                                       List values, List selected,
                                       String boxStyle, String extra)
@@ -2368,7 +2023,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 continue;
             }
 
-
             boolean isSelected = false;
             if ((selected != null)
                     && (selected.contains(value) || selected.contains(obj))) {
@@ -2387,10 +2041,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         sb.append("\n");
     }
 
-
-
-
-    
     public static String colorSelect(String name, String selected) {
         StringBuilder sb = new StringBuilder();
         sb.append(open(TAG_SELECT,
@@ -2425,27 +2075,20 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static String inset(Object html, int top, int left, int bottom,
                                int right) {
         return span(html.toString(), style(insetStyle(top, left, bottom, right)));
     }
 
-
-    
     public static String insetDiv(Object html, int top, int left, int bottom,
                                   int right) {
         return div(html.toString(), style(insetStyle(top, left, bottom, right)));
     }
 
-    
     public static String openInset(int top, int left, int bottom, int right) {
         return open("div", style(insetStyle(top, left, bottom, right)));
     }
 
-
-    
     public static String insetStyle(int top, int left, int bottom,
                                     int right) {
         return ((top == 0)
@@ -2459,8 +2102,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 : "margin-right:" + right + "px;");
     }
 
-
-    
     public static String beginInset(int top, int left, int bottom,
                                     int right) {
         return open(TAG_DIV, style(((top == 0)
@@ -2475,30 +2116,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 : "margin-right:" + right + "px;")));
     }
 
-    
     public static String endInset() {
         return close(TAG_DIV);
     }
 
-
-    
     public static String inset(String html, int space) {
         return div(html, style("margin:" + space + "px;"));
     }
 
-
-
-    
     public static String insetLeft(String html, int space) {
         return div(html, style("margin-left:" + space + "px;"));
     }
 
-    
     public static String colspan(String s, int cols) {
         return tag(TAG_TD, attr(ATTR_COLSPAN, "" + cols), s);
     }
 
-    
     public static String formTableTop(String[] cols) {
         StringBuilder sb = new StringBuilder();
         sb.append(formTable());
@@ -2511,7 +2144,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static String formTable(String[] cols) {
         StringBuilder sb = new StringBuilder();
         sb.append(formTable());
@@ -2523,8 +2155,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static String formEntryTop(String[] cols) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.length; i += 2) {
@@ -2534,13 +2164,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-    
     public static String leftRight(String left, String right) {
         return leftRight(left, right, "");
     }
 
-    
     public static String leftRight(String left, String right, String attrs) {
         return tag(TAG_TABLE,
                    attrs(ATTR_CLASS, "left_right_table", ATTR_WIDTH, "100%",
@@ -2552,8 +2179,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                         VALUE_TOP)));
     }
 
-
-    
     public static String leftRightBottom(String left, String right,
                                          String attrs) {
         return tag(TAG_TABLE,
@@ -2566,43 +2191,33 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                         VALUE_BOTTOM)));
     }
 
-    
     public static String table(String contents) {
         return table(contents, 0, 0);
     }
 
-    
     public static String table(String contents, int padding, int spacing) {
         return table(contents,
                      attrs(ATTR_CELLPADDING, "" + padding, ATTR_CELLSPACING,
                            "" + spacing));
     }
 
-    
     public static String table(String contents, String attrs) {
         return tag(TAG_TABLE, attrs, contents);
     }
 
-    
     public static String table(Object[] columns) {
         return table(columns, "");
     }
 
-
-    
     public static String table(Object[] columns, String attrs) {
         return table(row(cols(columns), ""), attrs);
     }
 
-
-    
     public static String table(Object[] columns, int spacing) {
         return table(row(cols(columns), "" /*attr(ATTR_VALIGN, VALUE_TOP)*/),
                      attrs(ATTR_CELLSPACING, "" + spacing));
     }
 
-
-    
     public static StringBuilder table(List columns, int numCols,
                                       String attributes) {
         if (attributes == null) {
@@ -2631,35 +2246,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-
-    
     public static String openInset() {
         return open(TAG_DIV, cssClass("inset"));
     }
 
-    
     public static String closeInset() {
         return close(TAG_DIV);
     }
 
-
-
-    
     public static String formTable() {
         return formTable((String) null);
     }
 
-    
     public static String formTable(boolean fullWidth) {
         return formTable((String) null, fullWidth);
     }
 
-    
     public static String formTable(String clazz) {
         return formTable(clazz, false);
     }
 
-    
     public static String formTable(String clazz, boolean fullWidth) {
         return open(TAG_TABLE, (fullWidth
                                 ? (style("width", "100%")
@@ -2673,26 +2279,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                             "0", ATTR_CELLSPACING, "0"));
     }
 
-
-
-
-    
     public static String formTableClose() {
         return close(TAG_TABLE);
     }
 
-    
     public static void formTableClose(Appendable sb) {
         close(sb, TAG_TABLE);
     }
 
-    
     public static String formClose() {
         return close(TAG_FORM);
     }
 
-
-    
     public static String formEntry(String left, String right) {
         StringBuilder sb = new StringBuilder();
         formEntry(sb, left, right);
@@ -2700,7 +2298,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void formEntry(Appendable sb, String left, String right) {
         try {
             sb.append(tag(TAG_TR, "",
@@ -2713,10 +2310,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
             throw new RuntimeException(exc);
         }
 
-
     }
 
-    
     public static void formEntry(Appendable sb, String left) {
         try {
             sb.append(tag(TAG_TR, "",
@@ -2728,8 +2323,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static void formEntries(Appendable sb, Object... args)
             throws Exception {
         for (int i = 0; i < args.length; i += 2) {
@@ -2738,9 +2331,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-
-    
     public static String formEntry(String left, String right,
                                    int rightColSpan) {
         return tag(TAG_TR, "",
@@ -2751,8 +2341,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-    
     public static String formEntryTop(String left, String right,
                                       int rightColSpan) {
         return tag(TAG_TR, "",
@@ -2763,7 +2351,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    
     public static String formEntry(String left, String[] cols) {
         StringBuilder sb = new StringBuilder();
         sb.append(tag(TAG_TD,
@@ -2790,14 +2377,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_TR, "valign=top", sb.toString());
     }
 
-
-    
     public static String formEntryTop(String left, String right) {
         return formEntryTop(left, right, "", true);
     }
 
-
-    
     public static String formEntryTop(String left, String right,
                                       String trExtra, boolean dummy) {
         left = div(left, cssClass(CLASS_FORMLABEL_TOP));
@@ -2809,7 +2392,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_TR, trExtra, label + tag(TAG_TD, "", right));
     }
 
-    
     public static String formEntryTop(String label, String col1,
                                       String col2) {
         return tag(
@@ -2822,8 +2404,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                         "" /*attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS, CLASS_FORMLABEL_TOP)*/) + "\n" + col(col2));
     }
 
-
-    
     public static String attr(String name, String value) {
         StringBuilder sb = new StringBuilder();
         attr(sb, name, value);
@@ -2831,7 +2411,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void attr(Appendable sb, String name, String value) {
         try {
             if (value == null) {
@@ -2847,8 +2426,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static String attrs(String... args) {
         StringBuilder sb = new StringBuilder();
         attrs(sb, args);
@@ -2856,7 +2433,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void attrs(Appendable sb, String... args) {
         if (args.length == 1) {
             try {
@@ -2874,59 +2450,42 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static String onMouseOver(String call) {
         return attrs(ATTR_ONMOUSEOVER, call);
     }
 
-    
     public static String onMouseMove(String call) {
         return attrs(ATTR_ONMOUSEMOVE, call);
     }
 
-
-    
     public static String onMouseOut(String call) {
         return attrs(ATTR_ONMOUSEOUT, call);
     }
 
-    
     public static String onMouseUp(String call) {
         return attrs(ATTR_ONMOUSEUP, call);
     }
 
-    
     public static String onMouseDown(String call) {
         return attrs(ATTR_ONMOUSEDOWN, call);
     }
 
-
-    
     public static void onMouseOut(StringBuilder sb, String call) {
         attrs(sb, ATTR_ONMOUSEOUT, call);
     }
 
-
-    
     public static void onMouseDown(StringBuilder sb, String call) {
         attrs(sb, ATTR_ONMOUSEDOWN, call);
     }
 
-
-    
     public static void onMouseUp(StringBuilder sb, String call) {
         attrs(sb, ATTR_ONMOUSEUP, call);
     }
 
-
-    
     public static void onMouseOver(StringBuilder sb, String call) {
         attrs(sb, ATTR_ONMOUSEOVER, call);
     }
 
-
-    
     public static void onMouseClick(Appendable sb, String call) {
         try {
             call = call.replaceAll("\"", "&quot;").replaceAll("\n", " ");
@@ -2936,22 +2495,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static String onMouseClick(String call) {
         call = call.replaceAll("\"", "&quot;").replaceAll("\n", " ");
 
         return attrs(ATTR_ONCLICK, call);
     }
 
-
-
-    
     public static String mouseClickHref(String call, String label) {
         return mouseClickHref(call, label, "");
     }
 
-    
     public static String mouseClickHref(String call, String label,
                                         String extra) {
         String result = tag(TAG_A,
@@ -2960,8 +2513,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return result;
     }
 
-
-    
     public static void mouseClickHref(Appendable sb, String call,
                                       String label, String extra)
             throws Exception {
@@ -2971,36 +2522,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
             + extra, label);
     }
 
-
-
-    
     public static String jsLink(String events, String content) {
         return jsLink(events, content, "");
     }
 
-
-    
     public static String jsLink(String events, String content, String extra) {
         return tag(TAG_A,
                    attrs(ATTR_HREF, "javascript:noop();") + " " + events
                    + " " + extra, content);
     }
 
-
-    
     public static String anchorName(String name) {
         return tag(TAG_A, attrs(ATTR_NAME, name), "");
     }
 
-
-    
     public static String script(String s) {
         StringBuilder js = new StringBuilder();
         script(js, s);
         return js.toString();
     }
 
-    
     public static void script(Appendable js, String s) {
         s = s.trim();
         if (s.length() == 0) {
@@ -3016,8 +2557,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-    
     public static void commentJS(Appendable js, String... args) {
         try {
             js.append("\n");
@@ -3037,19 +2576,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-
-
-
-
-    
     public static String call(String function, String... args) {
         StringBuilder sb = new StringBuilder(function);
         call(sb, function, args);
         return sb.toString();
     }
 
-    
     public static String call(Appendable sb, String function,
                               String... args) {
         try {
@@ -3068,20 +2600,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static String callln(String function, String args) {
         return Utils.concatString(function, "(", args, ");\n");
     }
 
-
-    
     public static void callln(Appendable sb, String function, String args) {
         Utils.concatBuff(sb, function, "(", args, ");\n");
     }
 
-    
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
@@ -3089,7 +2615,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void importJS(Appendable sb, String ...urls) {
 	for(String jsUrl: urls) {
 	    tag(sb, TAG_SCRIPT,
@@ -3097,7 +2622,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	}
     }
 
-    
     public static void importJS(Appendable sb, String jsUrl,
                                 String integrity) {
         if (integrity == null) {
@@ -3111,15 +2635,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
                   "crossorigin", "anonymous"), "");
     }
 
-
-    
     public static String cssLink(String url) {
         return tag(TAG_LINK,
                    attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
                          "text/css"));
     }
 
-    
     public static void cssLink(Appendable sb, String ...urls) throws IOException {
 	for(String url:urls) {
 	    tag(sb, TAG_LINK,
@@ -3128,8 +2649,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	}
     }
 
-
-    
     public static void cssPreloadLink(Appendable sb, String url)
             throws IOException {
         String template =
@@ -3138,33 +2657,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
         sb.append(template.replace("file.css", url));
     }
 
-
-
-    
     public static String cssBlock(String css) {
         return importCss(css);
     }
 
-    
     public static String importCss(String css) {
         return tag(TAG_STYLE, " type='text/css' ", css);
     }
 
-
-    
     private static String blockHideImageUrl;
 
-    
     private static String blockShowImageUrl;
 
-
-    
     private static String inlineHideImageUrl;
 
-    
     private static String inlineShowImageUrl;
 
-    
     public static void setBlockHideShowImage(String hideImg, String showImg) {
         if (blockHideImageUrl == null) {
             blockHideImageUrl = hideImg;
@@ -3172,9 +2680,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static void setInlineHideShowImage(String hideImg,
             String showImg) {
         if (inlineHideImageUrl == null) {
@@ -3183,17 +2688,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-
-    
     public static String makeShowHideBlock(String label, String content, boolean visible) {
         return makeShowHideBlock(
             label, content, visible,
             cssClass("toggleblocklabel ramadda-clickable"));
     }
 
-    
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible,
                                            String headerExtra) {
@@ -3204,11 +2704,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                            blockShowImageUrl);
     }
 
-
-
-
-
-    
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible,
                                            String headerExtra,
@@ -3219,23 +2714,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                            blockShowImageUrl);
     }
 
-
-
-
-
-    
     public static int blockCnt = 10000;
 
-
-    
     public static String getUniqueId(String prefix) {
 	blockCnt++;
 	if(blockCnt<0) blockCnt=10000;
         return prefix + blockCnt;
     }
 
-
-    
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible,
                                            String headerExtra,
@@ -3294,16 +2780,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-    
     public static String[] getToggle(String label, boolean visible) {
         return getToggle(label, visible, blockHideImageUrl,
                          blockShowImageUrl);
     }
 
-
-
-    
     public static String[] getToggle(String label, boolean visible,
                                      String hideImg, String showImg) {
         //TODO
@@ -3334,9 +2815,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return new String[] { id, link, initJS };
     }
 
-
-    
-
     public static void addFormChangeListener(Appendable sb,String formId)  throws Exception {
 	script(sb,call("HtmlUtils.checkInputChange", quote(formId)));
     }
@@ -3350,7 +2828,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void makeToggleInline(Appendable sb, String label,
                                         String content, boolean visible,String...extraAttrs) {
 
@@ -3401,10 +2878,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-
-
-
-    
     public static String makeShowHideBlock(String clickHtml, String label,
                                            String content, boolean visible) {
 	StringBuilder contents = new StringBuilder();
@@ -3434,8 +2907,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return link;
     }
 
-
-    
     public static String jsMakeArgs(boolean andSquote, String... args) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
@@ -3453,34 +2924,20 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
-
-
-
-    
     public static String getString(boolean v) {
         return "" + v;
     }
 
-
-    
     public static String getString2(boolean v) {
         return Boolean.toString(v);
     }
 
-
-    
     public static void main(String[] args) throws Exception {
         System.err.println(sanitizeString("https://10000cities.org/repository/entry/show?entryid=abefb1bc-e8f5-468c-abba-2985b38cc877&output=streetview&heading=0 Hello there and another one https://10000cities.org/repository/entry/show?entryid=abefb1bc-e8f5-468c-abba-2985b38cc877&output=streetview&heading=0", true));
-	
-
 
         if (true) {
             return;
         }
-
-
 
         debug1 = true;
         parseHtmlProperties("multi=2  \n   z= \"1\" template=\"x\ny\"");
@@ -3498,7 +2955,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         if (true) {
             return;
         }
-
 
         List<HtmlUtils.Link> links = HtmlUtils.extractLinks(new URL(args[0]),
                                          (args.length > 1)
@@ -3527,13 +2983,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-    
     public static final String sizeAttr(int size) {
         return attr("size", "" + size);
     }
 
-
-    
     public static void makeAccordion(Appendable sb, String title,
                                      String contents)
             throws Exception {
@@ -3541,7 +2994,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         makeAccordion(sb, title, contents, null, null);
     }
 
-    
     public static void makeAccordion(Appendable sb, String title,
                                      String contents, String wrapperClass,
                                      String headerClass)
@@ -3549,12 +3001,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         makeAccordion(sb, title, contents, true, wrapperClass, headerClass);
     }
 
-    
     public static void makeAccordion(Appendable sb, String title,
                                      String contents, boolean collapse,
                                      String wrapperClass, String headerClass)
             throws Exception {
-
 
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
@@ -3563,7 +3013,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         makeAccordion(sb, titles, tabs, collapse, wrapperClass, headerClass);
     }
 
-    
     public static void makeAccordion(Appendable sb, List titles, List contents)
             throws Exception {
         makeAccordion(sb, titles, contents, false, null, null);
@@ -3573,17 +3022,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
             throws Exception {
         makeAccordion(sb, Utils.arrayToList(titles), Utils.arrayToList(contents), false, null, null);
     }
-    
-    
+
     public static void makeAccordion(Appendable sb, List titles,
                                      List contents, boolean collapse)
             throws Exception {
         makeAccordion(sb, titles, contents, collapse, null, null);
     }
 
-
-
-    
     public static void makeAccordion(Appendable sb, List titles,
                                      List contents, boolean collapse,
                                      String wrapperClass, String headerClass)
@@ -3625,7 +3070,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                          + "," + args + ");\n");
     }
 
-
     public static void makeTabs(Appendable sb, List<NamedBuffer>buffers) throws Exception {
 	List<String> titles = new ArrayList<String>();
 	List<StringBuilder> contents = new ArrayList<StringBuilder>();
@@ -3635,7 +3079,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	}
 	makeTabs(sb,titles, contents);
     }
-
 
     public static void makeTabs(Appendable sb, List titles,
                                      List contents)
@@ -3660,8 +3103,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	sb.append(script(js));
     }
 
-
-    
     public static void tooltip(Appendable sb, String icon, String msg)
             throws Exception {
         String id     = getUniqueId("tooltipblock_");
@@ -3677,8 +3118,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                         HtmlUtils.squote(id)));
     }
 
-
-    
     public static String comment(String s) {
         Appendable sb = Utils.makeAppendable();
         comment(sb, s);
@@ -3686,7 +3125,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static void comment(Appendable sb, String s) {
         try {
             s = s.replaceAll("\n", " ");
@@ -3696,8 +3134,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static Color decodeColor(String value, Color dflt) {
         if (value == null) {
             return dflt;
@@ -3744,8 +3180,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static List<Link> extractLinks(URL url, String linkPattern)
             throws Exception {
         if ( !Utils.stringDefined(linkPattern)) {
@@ -3759,15 +3193,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return extractLinks(url, html, linkPattern);
     }
 
-    
     public static List<Link> extractLinks(URL url, String html,
                                           String linkPattern)
             throws Exception {
         return extractLinks(url, html, linkPattern, false);
     }
 
-
-    
     public static List<Link> extractLinks(URL url, String html,
                                           String linkPattern, boolean images)
             throws Exception {
@@ -3820,8 +3251,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return links;
     }
 
-
-    
     public static List<Link> extractLinksFtp(URL url, String linkPattern)
             throws Exception {
         FTPClient ftpClient = null;
@@ -3854,22 +3283,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-
-
-    
     public static class Link {
         private String link;
         private URL url;
         private String label;
         private long size = -1;
-        
+
         public Link(String link, URL url, String label, long size) {
             this(link, url, label);
             this.size = size;
         }
-        
+
         public Link(String link, URL url, String label) {
             this.link  = link;
             this.url   = url;
@@ -3888,7 +3312,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             return false;
         }
 
-        
         public void setUrl(URL value) {
             url = value;
         }
@@ -3896,17 +3319,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
         public String getLink() {
             return link;
         }
-        
+
         public URL getUrl() {
             return url;
         }
-        
+
         @Override
         public int hashCode() {
             return url.hashCode();
         }
 
-        
         @Override
         public boolean equals(Object o) {
             if ( !(o instanceof Link)) {
@@ -3920,17 +3342,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
             return url.equals(that.getUrl());
         }
 
-        
         public void setLabel(String value) {
             label = value;
         }
 
-        
         public String getLabel() {
             return label;
         }
 
-        
         public String getHref() {
 	    return getHref(false);
 	}
@@ -3940,17 +3359,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    return HtmlUtils.href(this.url.toString(), this.label,attrs("target","link"));
         }
 
-        
         public void setSize(long value) {
             size = value;
         }
 
-        
         public long getSize() {
             return size;
         }
 
-        
         public String toString() {
             return url + " " + label;
         }
@@ -3989,8 +3405,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return false;
     }
 
-
-
     public static String getAudioEmbed(String url) {
         String html =
             "<audio controls preload=\"none\" style=\"width:480px;\">\n <source src=\"${url}\" type=\"${mime}\" />\n <p>Your browser does not support HTML5 audio.</p>\n </audio>";
@@ -4016,7 +3430,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         return html;
     }
-
 
     public static String getMediaEmbed(String mediaUrl, String width, String height) {
 	String _mediaUrl = mediaUrl.toLowerCase();
@@ -4073,7 +3486,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return player;
     }				       
 
-
     public static String getPdfEmbed(String url,Hashtable props) {
 
         StringBuilder sb = new StringBuilder();
@@ -4102,11 +3514,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-
-
     //unescape
 
-    
     public static final String unescapeHtml3(final String input) {
         StringWriter writer = null;
         int          len    = input.length();
@@ -4199,7 +3608,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return input;
     }
 
-    
     private static final String[][] ESCAPES = {
         { "\"", "quot" }, { "&", "amp" }, { "<", "lt" }, { ">", "gt" },
         { "\u00A0", "nbsp" }, { "\u00A1", "iexcl" }, { "\u00A2", "cent" },
@@ -4237,13 +3645,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         { "\u00FD", "yacute" }, { "\u00FE", "thorn" }, { "\u00FF", "yuml" },
     };
 
-    
     private static final int MIN_ESCAPE = 2;
 
-    
     private static final int MAX_ESCAPE = 6;
 
-    
     private static final HashMap<String, CharSequence> lookupMap;
     static {
         lookupMap = new HashMap<String, CharSequence>();
@@ -4252,7 +3657,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
     public static String[] strictSanitizeStrings(String...strings) {
 	String[] result = new String[strings.length];
 	for(int i=0;i<strings.length;i++)
@@ -4260,8 +3664,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return result;
     }
 
-
-    
     public static String strictSanitizeString(String s) {    
 	if(s==null) return s;
 	s = sanitizeString(s);
@@ -4274,15 +3676,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return s;
     }    
 
-
-
-    
     public static String sanitizeString(String s) {
 	return sanitizeString(s,false);
     }
 
     public static String sanitizeString(String s, boolean removeUrlArgs) {	
-
 
         if (s == null) {
             return null;
@@ -4305,8 +3703,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return s;
     }
 
-
-    
     public static String urlEncode(String s) {
         try {
             return java.net.URLEncoder.encode(urlEncodeSpace(s), "UTF-8");
@@ -4318,8 +3714,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-    
     public static String urlDecode(String s) {
         try {
             return java.net.URLDecoder.decode(s, "UTF-8");
@@ -4331,15 +3725,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static String urlEncodeSpace(String s) {
         return s.replaceAll(" ", "+");
     }
 
-
-    
     public static String urlEncodeExceptSpace(String s) {
         try {
             s = s.replace(" ", "_SPACE_");
@@ -4355,9 +3744,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
-    
     public static String entityEncode(String input) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < input.length(); ++i) {
@@ -4373,13 +3759,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
-    
     public static String entityDecode(String input) {
         return StringEscapeUtils.unescapeHtml3(input);
     }
 
-
-    
     public static String sanitizeArg(String s) {
         if (s == null) {
             return null;
@@ -4388,8 +3771,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sanitizeString(s).replaceAll("\"", "_");
     }
 
-
-    
     public static String[] makePopupLink(String link, NamedValue... args) {
         String compId         = "menu_" + HtmlUtils.blockCnt++;
         String linkId         = "menulink_" + HtmlUtils.blockCnt++;
@@ -4446,8 +3827,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return new String[] { compId, href };
     }
 
-
-    
     public static String makePopup(Appendable popup, String link,
                                    String menuContents, NamedValue... args) {
         try {
@@ -4477,8 +3856,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
-
     public static String makeCssClass(String s) {
 	if(s==null) return s;
 	String delim = "-";
@@ -4487,7 +3864,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return s;
     }
 
-    
     public static String makePopupDiv(String contents, String compId,
                                       boolean makeClose, String header) {
         StringBuilder menu = new StringBuilder();
@@ -4513,13 +3889,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 + HtmlUtils.attr("style", "display:none;")
                 + HtmlUtils.cssClass(CSS_CLASS_POPUP_CONTENTS)));
 
-
         return menu.toString();
     }
 
-
-
-    
     public static String makeFlipCard(String front, String back,
                                       String flipCardAttrs,
                                       String frontAttrs, String backAttrs) {
@@ -4529,11 +3901,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
                + front + "</div><div class='ramadda-flip-card-back' "
                + backAttrs + ">" + back + "</div></div></div>";
     }
-    
+
     public static void addPageSearch(Appendable buff, String sel1, String sel2, String label) {
 	addPageSearch(buff,sel1,sel2,label,null);
     }
-
 
     public static void addPageSearch(Appendable buff, String sel1, String sel2, String label,List<String>args) {
 	String opts = args==null?"{}":JsonUtil.map(args);
@@ -4544,7 +3915,5 @@ public class HtmlUtils implements HtmlUtilsConstants {
 					     "false",
 					     opts));
     }
-
-
 
 }
