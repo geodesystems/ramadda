@@ -1270,7 +1270,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
     },
-    initFormUpload:function(fileInputId, targetId,multiple) {
+    initFormUpload:function(argPrefix,fileInputId, targetId,multiple) {
+	if(!argPrefix) argPrefix = 'upload';
 	let input = $("#"+ fileInputId);
 	if(multiple)
 	    input.attr('multiple','');
@@ -1347,8 +1348,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				      let listId = fileInputId +"_list" + fileDrop.cnt;
 				      let inputId = fileInputId +"_file" + fileDrop.cnt;
 				      let nameInputId = fileInputId +"_file_name" + fileDrop.cnt;
-				      let fileName = "upload_file_" + fileDrop.cnt;
-				      let nameName = "upload_name_" + fileDrop.cnt;				  				  
+				      let fileName = argPrefix+"_file_" + fileDrop.cnt;
+				      let nameName = argPrefix+"_name_" + fileDrop.cnt;				  				  
 				      fileDrop.files[inputId] = result;
 				      let del =HU.span([ATTR_CLASS,"ramadda-clickable",ID,listId+"_trash"],HU.getIconImage(icon_trash));
 				      let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):"";
