@@ -32,12 +32,17 @@
     <description>
       Run gdal_translate to make an image from a geotiff
     </description>
+    <arg value="-b"/>
+    <arg value="1"/>
     <arg value="-of"/>
-    <arg value="GIF"/>
+    <arg value="PNG"/>
     <arg value="-scale"/>
+    <arg value="-outsize"/>
+    <arg value="1200"/>
+    <arg value="0"/>
     <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_gdal_raster" xentryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
-    <arg value="${file}" file="${entry.file.base}.gif"></arg>
-    <output pattern=".*\.gif" type="type_image"/>
+    <arg value="${file}" file="${entry.file.base}.png"></arg>
+    <output pattern=".*\.png" type="type_image"/>
   </service>
 
   <service label="Create XYZ from GeoTIFF/NITF" id="gdal_tiff2xyz" command="${service.gdal.gdal_translate}" outputToStderr="true">
@@ -52,7 +57,8 @@
   </service>
   
 
-  <service label="Create thumbnail image" id="gdal_makethumb" command="${service.gdal.gdal_translate}" outputToStderr="true">
+  <service label="Create thumbnail image"
+	   id="gdal_makethumb" command="${service.gdal.gdal_translate}" outputToStderr="true">
     <description>
       Run gdal_translate to make an image from a geotiff
     </description>
