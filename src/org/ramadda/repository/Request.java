@@ -1673,6 +1673,19 @@ public class Request implements Constants, Cloneable {
 	return sb.toString();
     }
 
+    public String getArgsSample() {
+	StringBuilder sb = new StringBuilder();
+        for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+	    String key = (String) keys.nextElement();
+	    sb.append(key+"=");
+	    String value = parameters.get(key).toString();
+	    sb.append(Utils.clip(value,50,"..."));
+	    sb.append("\n");
+	}
+	return sb.toString();
+    }
+
+
     public String toString() {
         String args = getUrlArgs();
         if (args.trim().length() > 0) {
