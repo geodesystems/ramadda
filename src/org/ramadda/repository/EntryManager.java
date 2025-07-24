@@ -2482,10 +2482,11 @@ public class EntryManager extends RepositoryManager {
             }
 
 	    for(int i=0;i<100;i++) {
-		if(!request.defined("upload_file_"+i)) continue;
+		String prefix = ARG_FILE;
+		if(!request.defined(prefix+"_file_"+i)) continue;
 		hasUpload  = true;
-		String name = request.getString("upload_name_"+i);
-		String contents = request.getString("upload_file_"+i);
+		String name = request.getString(prefix+"_name_"+i);
+		String contents = request.getString(prefix+"_file_"+i);
 		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
 		if(request.get(ARG_FILE_UNZIP, false) && tmpFile.toString().endsWith(".zip")) {
 		    unzipResource(request, parentEntry, user, infos,tmpFile.toString(), datePattern, testNew,  testLog);
