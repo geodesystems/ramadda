@@ -1565,11 +1565,11 @@ public class PageHandler extends RepositoryManager {
     }
 
     public static String makeOkCancelForm(Request request, RequestUrl url,
-                                          String okArg, String extra) {
+                                          String okArg, String extra,String...label) {
         StringBuilder fb = new StringBuilder();
         fb.append(request.form(url));
         fb.append(extra);
-        String okButton     = HU.submit("OK", okArg);
+        String okButton     = HU.submit(label.length>0?label[0]:"OK", okArg);
         String cancelButton = HU.submit(LABEL_CANCEL, Constants.ARG_CANCEL);
         String buttons      = HU.buttons(okButton, cancelButton);
         fb.append(buttons);
@@ -1789,6 +1789,12 @@ public class PageHandler extends RepositoryManager {
                          Constants.ICON_DIALOG_QUESTION, false);
     }
 
+    public String showDialogImportantQuestion(String h, String buttons) {
+        return getDialog(h, new String[] { buttons },
+			 Constants.ICON_DIALOG_IMPORTANTQUESTION,
+                         false,"color:#dc3545 !important;",true);
+    }    
+
     public String showDialogError(String h, String... extra) {
         return showDialogError(h, true, extra);
     }
@@ -1824,8 +1830,20 @@ public class PageHandler extends RepositoryManager {
         return s;
     }
 
-    public String getDialog(String msg, String[] extra, String icon,
+    public String getDialog(String msg,
+			    String[] extra,
+			    String icon,
                             boolean showClose) {
+	return getDialog(msg,extra,icon,showClose,null, false);
+    }
+
+
+    public String getDialog(String msg,
+			    String[] extra,
+			    String icon,
+                            boolean showClose,
+			    String style,
+			    Boolean  pairedIcons) {
         msg = msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
 
         if ((extra != null) && (extra.length > 0)) {
@@ -1846,7 +1864,9 @@ public class PageHandler extends RepositoryManager {
 						 Constants.ICON_DIALOG_ERROR,
 						 "ramadda-message-error",
 						 Constants.ICON_DIALOG_QUESTION,
-						 "ramadda-message-question",						 
+						 "ramadda-message-question",
+						 Constants.ICON_DIALOG_IMPORTANTQUESTION,
+						 "ramadda-message-importantquestion",
 						 Constants.ICON_DIALOG_WARNING,
 						 "ramadda-message-warning");
         String faClazz = (String)Utils.multiEquals(icon,"text-primary",
@@ -1862,13 +1882,20 @@ public class PageHandler extends RepositoryManager {
         sb.append("<table width=100%><tr valign=top>");
         if (icon != null) {
             sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
-            sb.append(getIconImage(icon + " " + faClazz, "style",
-                                   "xfont-size:24pt;"));
+            sb.append(getIconImage(icon + " " + faClazz, "style", (style==null?"":style)));
             sb.append("</div></td>");
         }
         sb.append("<td><div class=\"ramadda-message-inner\">");
         sb.append(msg);
         sb.append("</div></td>");
+        if (pairedIcons && icon != null) {
+            sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
+            sb.append(getIconImage(icon + " " + faClazz, "style", (style==null?"":style)));
+            sb.append("</div></td>");
+        }
+
+
+
         if (showClose) {
             sb.append("<td><div class=\"ramadda-message-link\">");
             sb.append(html);

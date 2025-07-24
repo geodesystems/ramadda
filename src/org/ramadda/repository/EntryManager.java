@@ -1189,9 +1189,9 @@ public class EntryManager extends RepositoryManager {
 		sb.append("Events deleted<br>");
 	    } else {
 		sb.append(HU.hidden(ARG_DELETE,request.getString(ARG_DELETE,"")));
-		sb.append(getPageHandler().showDialogQuestion("Are you sure you want to clear the " + request.getString(ARG_DELETE,"")+" activity?",
-							      HU.submit("Yes",  ARG_CONFIRM) +" " +
-							      HU.submit(LABEL_CANCEL, ARG_CANCEL)));
+		sb.append(getPageHandler().showDialogImportantQuestion("Are you sure you want to clear the " + request.getString(ARG_DELETE,"")+" activity?",
+								       HU.submit("Yes",  ARG_CONFIRM) +" " +
+								       HU.submit(LABEL_CANCEL, ARG_CANCEL)));
 	    }
 	}
 
@@ -3549,6 +3549,7 @@ public class EntryManager extends RepositoryManager {
         String breadcrumbs = getPageHandler().getConfirmBreadCrumbs(request,
 								    entry);
         StringBuilder inner = new StringBuilder();
+	String label = "Yes, delete this entry";
         if (entry.isGroup()) {
             inner.append(
 			 msg("Are you sure you want to delete the following folder?"));
@@ -3572,14 +3573,14 @@ public class EntryManager extends RepositoryManager {
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
         getAuthManager().addAuthToken(request, fb);
-        fb.append(HU.buttons(HU.submit("OK",
+        fb.append(HU.buttons(HU.submit(label,
 				       ARG_DELETE_CONFIRM), HU.submit(LABEL_CANCEL,
 								      ARG_CANCEL)));
         fb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         fb.append(HU.formClose());
         getPageHandler().entrySectionOpen(request, entry, sb, "Delete Entry");
-        sb.append(getPageHandler().showDialogQuestion(inner.toString(),
-						      fb.toString()));
+        sb.append(getPageHandler().showDialogImportantQuestion(inner.toString(),
+							       fb.toString()));
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -3678,6 +3679,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+	String label= "Yes, delete this entry";
         if (entries.size() == 1) {
             msgSB.append(
 			 msg("Are you sure you want to delete the following entry?"));
@@ -3685,6 +3687,7 @@ public class EntryManager extends RepositoryManager {
             msgSB.append(
 			 msg(
 			     "Are you sure you want to delete all of the following entries?"));
+	    label= "Yes, delete these  entries";
         }
         if (anyFolders) {
             msgSB.append(HU.div(HU.b(
@@ -3705,9 +3708,9 @@ public class EntryManager extends RepositoryManager {
 					idBuffer.toString()));
         String form = PageHandler.makeOkCancelForm(request,
 						   getRepository().URL_ENTRY_DELETELIST,
-						   ARG_DELETE_CONFIRM, hidden.toString());
+						   ARG_DELETE_CONFIRM, hidden.toString(),label);
 	sb.append(getPageHandler().makeEntryPage(request, parent,"Entry Delete",
-						 getPageHandler().showDialogQuestion(msgSB.toString(),  form)));
+						 getPageHandler().showDialogImportantQuestion(msgSB.toString(),  form)));
 
         return new Result("Delete Confirm", sb);
     }

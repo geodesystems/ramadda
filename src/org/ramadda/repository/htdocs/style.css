@@ -2009,15 +2009,19 @@ mapheader {
     background-color : #f9f9f9;
 }
 
-
 .ramadda-message-plain {
-    background-color : #fff;
     background-color:#f8f8f8;    
 }
 
-.ramadda-message-info, .ramadda-message-question {
+.ramadda-message-info, .ramadda-message-question, .ramadda-message-importantquestion {
     background-color:#f8f8f8;    
 }
+
+.ramadda-message-importantquestion {
+    border:2px solid #dc3545;
+
+}
+
 
 .ramadda-message-error {
     z-index: 1000;

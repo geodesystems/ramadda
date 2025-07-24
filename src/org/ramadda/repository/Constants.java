@@ -36,197 +36,104 @@ public interface Constants {
     public static final String ICON_ARROW = "fas fa-arrow-right";
 
     public static final String ICON_GOOGLEEARTH = "/icons/googleearth.gif";
-
     public static final String ICON_ASSOCIATION = "fas fa-arrow-right";
-
     public static final String ICON_BLANK = "/icons/blank.gif";
-
     public static final String ICON_CALENDAR = "fas fa-calendar-alt";
-
     public static final String ICON_CART = "/icons/cart.png";
-
     public static final String ICON_CART_ADD = "fas fa-cart-plus";
-
     public static final String ICON_CART_DELETE = "/icons/cart_delete.png";
-
     public static final String ICON_CHAT = "fas fa-comments";
-
     public static final String ICON_TIMELINE = "/icons/timeline_marker.png";
-
     public static final String ICON_CLOSE = "fas fa-window-close";
-
     public static final String ICON_CLOUD = "fas fa-cloud";
-
     public static final String ICON_COMMENTS = "fas fa-comments";
-
     public static final String ICON_FTP = "/icons/server_go.png";
-
     public static final String ICON_CSV = "fas fa-file-csv";
-
     public static final String ICON_DATA = "fas fa-table";
-
     public static final String ICON_DIF = "fas fa-info-circle";
-
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
-
     public static final String ICON_DELETE = "fas fa-cut";
-
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
-
     public static final String ICON_DOWNLOAD = "fas fa-download";
-
     public static final String ICON_DOWNDART = "/icons/downdart.gif";
-
     public static final String ICON_EDIT = "fas fa-edit";
-
     public static final String ICON_ENTRY = "fas fa-info-circle";
-
     public static final String ICON_ENTRY_ADD = "fas fa-file-medical";
-
     public static final String ICON_PUBLISH = "/icons/flag_green.png";
-
     public static final String ICON_PLANVIEW = "/icons/planviewcontour.png";
-
     public static final String ICON_ENTRY_UPLOAD = "/icons/flaggedentry.png";
-
     public static final String ICON_FAVORITE = "fas fa-star";
-
     public static final String ICON_FETCH = "fas fa-download";
-
     public static final String ICON_FILE = "/icons/page.png";
-
     public static final String ICON_FILELISTING = "fas fa-list-alt";
-
     public static final String ICON_FOLDER = "/icons/folder.png";
-
     public static final String ICON_FOLDER_ADD = "fas fa-folder-plus";
-
     public static final String ICON_FOLDER_CLOSED = "/icons/folderclosed.png";
-
     public static final String ICON_FOLDER_CLOSED_LOCKED =
         "/icons/folder_key.png";
 
     public static final String ICON_FOLDER_OPEN = "/icons/folderopen.png";
-
     public static final String ICON_GRAPH = "/icons/vector.png";
-
     public static final String ICON_TABLE = "fas fa-table";
-
     public static final String ICON_GRAYRECT = "/icons/grayrect.gif";
-
     public static final String ICON_GRAYRECTARROW = "";
-
     public static final String ICON_HOME = "fas fa-home";
-
     public static final String ICON_HEADER = "/images/header.jpg";
-
     public static final String ICON_HELP = "/icons/help.png";
-
     public static final String ICON_IMAGE = "fas fa-image";
-
     public static final String ICON_MOVIE = "fas fa-film";
-
     public static final String ICON_IMPORT = "fas fa-file-import";
-
     public static final String ICON_EXPORT = "fas fa-file-export";
-
     public static final String ICON_IMAGES = "fas fa-images";
-
     public static final String ICON_INFORMATION = ICON_ENTRY;
-
     public static final String ICON_TREE = ICON_ENTRY;
-
     public static final String ICON_KML = "fas fa-globe";
-
     public static final String ICON_LCURVE = "/icons/blc.gif";
-
     public static final String ICON_SYNTH_FILE = "/icons/server_database.png";
-
     public static final String ICON_LEFT = "/icons/resultset_previous.png";
-
     public static final String ICON_LINK = "/icons/link.png";
-
     public static final String ICON_USERLINKS = "/icons/cog.png";
-
     public static final String ICON_LIST = "/icons/list.gif";
-
     public static final String ICON_LOG = "fas fa-scroll";
-
     public static final String ICON_MAP = "fas fa-map";
-
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
-
     public static final String ICON_METADATA = "fas fa-info";
-
     public static final String ICON_METADATA_ADD = "fas fa-database";
-
     public static final String ICON_METADATA_EDIT = "fas fa-database";
-
     public static final String ICON_MOVE = "fas fa-copy";
-
     public static final String ICON_NEW = "fas fa-plus";
 
     //    public static final String ICON_PLUS = "fas fa-plus-square";
     public static final String ICON_PLUS = "fa-regular fa-square-plus" ;    
-
     public static final String ICON_MINUS = "fa-regular fa-square-minus";
-
     public static final String ICON_PROGRESS = "/icons/progress.gif";
-
     public static final String ICON_QUESTION = "/icons/question.png";
-
     public static final String ICON_RANGE = "fas fa-arrow-right";
-
     public static final String ICON_RCURVE = "/icons/brc.gif";
-
     public static final String ICON_RIGHT = "/icons/resultset_next.png";
-
     public static final String ICON_RIGHTARROW = "fas fa-arrow-right";
-
     public static final String ICON_ATOM = "fas fa-rss";
-
     public static final String ICON_RSS = "fas fa-rss";
-
     public static final String ICON_SEARCH = "fas fa-binoculars";
-
     public static final String ICON_SEARCH_SMALL = "fas fa-search";
-
     public static final String ICON_TEXT = "fas fa-align-left";
-
     public static final String ICON_TOGGLEARROWDOWN = "fas fa-caret-down";
-
     public static final String ICON_TOGGLEARROWRIGHT = "fas fa-caret-right";
-
     public static final String ICON_TOOLS = "fas fa-tools";
-
     public static final String ICON_UPARROW = "/icons/uparrow.gif";
-
     public static final String ICON_UPDART = "/icons/updart.gif";
-
     public static final String ICON_UPLOAD = "/icons/add.png";
-
-    /**  */
     public static final String ICON_DIALOG_QUESTION = "fas fa-question";
-
-    /**  */
+    public static final String ICON_DIALOG_IMPORTANTQUESTION =  "fa-regular fa-circle-question";
     public static final String ICON_DIALOG_INFO = "fas fa-info-circle";
-
     public static final String ICON_DIALOG_ERROR = "fas fa-exclamation-triangle";
-
     public static final String ICON_DIALOG_WARNING = "fas fa-triangle-exclamation";
-
     public static final String ICON_WIDTH = "18px";
-
     public static final String ICON_WIKI = "/icons/wiki.png";
-
     public static final String ICON_XML = "/icons/xml.png";
-
     public static final String ICON_JSON = "/icons/json.png";
-
     public static final String ICON_GEOJSON = "/icons/geojson.png";
-
     public static final String ICON_ZIP = "fas fa-file-archive";
-
     public static final String ICON_ZIPTREE = "fas fa-file-archive";
 
     //j++
