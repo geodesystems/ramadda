@@ -156,16 +156,16 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 			   " lr:" +lrLat +"," + lrLon);
 	*/
         if ( !Double.isNaN(north)) {
-            entry.setNorth(north);
+            entry.setNorth(Utils.decimals(north,5));
         }
         if ( !Double.isNaN(south)) {
-            entry.setSouth(south);
+            entry.setSouth(Utils.decimals(south,5));
         }
         if ( !Double.isNaN(east)) {
-            entry.setEast(east);
+            entry.setEast(Utils.decimals(east,5));
         }
         if ( !Double.isNaN(west)) {
-            entry.setWest(west);
+            entry.setWest(Utils.decimals(west,5));
         }
     }
 

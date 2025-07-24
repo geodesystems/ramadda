@@ -1,5 +1,4 @@
 <types  supercategory="Geoscience" category="GIS Data">
-
   <type name="geo_gdal" foruser="false" handler="org.ramadda.plugins.map.GdalTypeHandler" >
      <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info"/>
@@ -17,13 +16,21 @@
 	>
      <property name="icon" value="/icons/image.gif"/>
      <property name="mimetype" value="image/tiff; application=geotiff"/>
+    <column name="show_map" label="Show Map"
+	    type="boolean" showinhtml="false" default="false"/>
     <wiki_inner><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
++if property=show_map
+:vspace 1em
 +center
-{{geotiffproxy maxSize="50000000" message="" useThumbnail="true"}}
+{{map detailed=true width=80% showOpacitySlider=true}}
 -center
+-if
++skip
+{{geotiffproxy maxSize="50000000" message="" useThumbnail="true"}}
+-skip
 -section
 ]]>
 </wiki_inner>
