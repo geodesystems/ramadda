@@ -2303,6 +2303,7 @@ WikiEditor.prototype = {
 		{p:'inner-height',ex:'100'},
 		{p:'showIcon',ex:'true'},
 		{p:'weights',ex:'4,4,4'},
+		{p:'randomCount',ex:6,tt:'Only show a random selection of entries'},
 		{p:'showSnippet',ex:'false'},
 		{p:'showSnippetHover',ex:'true'},
 		{p:'showLink',ex:'false'},
