@@ -719,12 +719,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else {
             //          String name = request.getString("upload_name_"+i);
             //          String contents = request.getString("upload_file_"+i);
-
-            String fileArg = request.getUploadedFile(arg);
-            if (fileArg == null) {
-                return oldValue;
-            }
-            theFile = fileArg;
+	    int i=1;
+	    if(request.defined(arg+"_file_"+i)) {
+		String name = request.getString(arg+"_name_"+i);
+		String contents = request.getString(arg+"_file_"+i);
+		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
+		theFile = tmpFile.toString();
+	    } else {
+		String fileArg = request.getUploadedFile(arg);
+		if (fileArg == null) {
+		    return oldValue;
+		}
+		theFile = fileArg;
+	    }
         }
 
         if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
@@ -912,14 +919,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             sb.append(image);
 	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
 	    if(Utils.stringDefined(image)) sb.append(space);
-	    sb.append(HU.fileInput(arg, HU.SIZE_70 + HU.id(inputId)) 
-		      +space +
+	    String fileInput =HU.makeDndFileInput(arg,false);
+	    //HU.fileInput(arg, HU.SIZE_70 + HU.id(inputId))
+
+
+	    sb.append(fileInput      +space +
 		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
 	    sb.append(HU.br());
 	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_DELETE, "true",false,"Delete file"));
-            HU.script(sb,
-                             "Ramadda.initFormUpload("
-                             + HU.comma(HU.squote(inputId)) + ");");
+	    //            HU.script(sb,    "Ramadda.initFormUpload("
+	    //		      + HU.comma(HU.squote(inputId)) + ");");
 
             //+"','" + formInfo.getId()+"_dnd"+"');"));
             return sb.toString();
