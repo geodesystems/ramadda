@@ -4454,6 +4454,7 @@ public class TypeHandler extends RepositoryManager {
 			}
 
 			formContent +=HU.script(HU.call("Ramadda.initFormUpload",
+							HU.squote(ARG_FILE),
 							HU.squote(inputId),
 							(entry != null)
 							? "null"
