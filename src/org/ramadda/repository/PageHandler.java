@@ -677,7 +677,8 @@ public class PageHandler extends RepositoryManager {
 
 	    if(messages!=null && messages.size()>0) {
 		getSessionManager().clearSessionMessages(request);
-		HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
+		HU.div(theFooter,Utils.wrap(messages,"<div class='ramadda-session-message'>","</div>"),
+		       HU.clazz("ramadda-header-floating ramadda-session-error"));
 	    }
 	}
 
