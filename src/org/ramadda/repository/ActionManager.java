@@ -19,6 +19,9 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+import java.util.concurrent.Future;
+
+
 import java.io.File;
 
 import java.util.ArrayList;
@@ -209,6 +212,7 @@ public class ActionManager extends RepositoryManager {
     }
 
     public void removeAction(Object actionId) {
+	if(actionId==null) return;
 	actions.remove(actionId);
     }
 
@@ -230,6 +234,12 @@ public class ActionManager extends RepositoryManager {
         return new Result(request.makeUrl(URL_STATUS, ARG_ACTION_ID,
                                           "" + actionId));
     }
+
+
+    public String getCancelUrl(Request request, Object actionId) {
+	return request.makeUrl(URL_STATUS, ARG_ACTION_ID,actionId.toString(),ARG_CANCEL,"true");
+    }
+
 
     public Result doJsonAction(Request request, final Action runnable,
                                String name, String continueHtml,
@@ -267,18 +277,41 @@ public class ActionManager extends RepositoryManager {
         return actionId;
     }
 
-    public abstract static class Action {
+    public  static class Action {
         boolean returnJson = false;
+	protected Entry entry;
+	protected Future future;
         public Action() {}
+
+        public Action(Entry entry) {
+	    this.entry = entry;
+	}
 
         public Action(boolean returnJson) {
             this.returnJson = returnJson;
         }
 
-        public abstract void run(Object actionId) throws Exception;
+        public  void run(Object actionId) throws Exception {
+	}
+	public void setRunning(boolean running) {
+	    if(!running) {
+		if(future!=null) {
+		    try {
+			future.cancel(true);
+			future = null;
+		    } catch (Exception exc) {
+			System.err.println("ActionManager: error cancelling future " + exc);
+		    }
+		}
+	    }
+	}
+	public void setFuture(Future future) {
+	    this.future = future;
+	}
 
-	public void setRunning(boolean value) {}
-	public String getRedirectUrl() {return null;}
+	public String getRedirectUrl() {
+	    return null;
+	}
     }
 
     public class ActionInfo {

@@ -6,6 +6,7 @@
 package org.ramadda.repository;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
+import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.MetadataManager;
 import static org.ramadda.repository.type.TypeHandler.CorpusType;
 
@@ -241,21 +242,27 @@ public class LLMManager extends  AdminHandlerImpl {
 	applyingLLM.add(entry.getId());
 	Misc.run(new Runnable() {
 		public void run() {
+		    SessionMessage message =getSessionManager().addStickySessionMessage(request,entry.getId(),
+											"Extracting text from: "+ getLink(request, entry));
+
+		    request.putExtraProperty("reindexing","true");
 		    try {
 			String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
 			if(!stringDefined(corpus)) {
-			    getSessionManager().addSessionMessage(request,"No text from file available.");
+			    getSessionManager().addRawSessionMessage(request,"No text available: " + getLink(request,entry));
 			    return;
 			} 
-			applyEntryExtract(request, entry, corpus);
+			message.setMessage("Applying LLM to: "+ getLink(request, entry));
+			applyEntryExtract(request, entry, corpus,message);
 			request.remove(ARG_DOOCR);
 			request.remove(ARG_CORPUS_FORCE);
-			getSessionManager().addSessionMessage(request,"LLM Apply is complete");
+			getSessionManager().addRawSessionMessage(request,"LLM Apply is complete: "+ getLink(request, entry));
 			getEntryManager().updateEntry(request, entry);
 		    } catch(Exception exc) {
-			getSessionManager().addSessionMessage(request,"Error applyin LLM:"+exc,null,true);
+			getSessionManager().addSessionMessage(request,"Error applying LLM: "+ entry.getName() +" error:" + exc);
 			getLogManager().logError("Applying LLM to:" + entry,exc);
 		    }  finally {
+			getSessionManager().clearSessionMessage(request,message);
 			applyingLLM.remove(entry.getId());
 		    }
 		}});
@@ -806,16 +813,16 @@ public class LLMManager extends  AdminHandlerImpl {
 	return makeJsonErrorResult("An error occurred:" + results);
     }
 
-    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
+    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus,SessionMessage...sessionMessage)
 	throws Exception {
 	if(true) {
 	    try {
-		return applyEntryExtractInner(request, entry,llmCorpus);
+		return applyEntryExtractInner(request, entry,llmCorpus,sessionMessage.length>0?sessionMessage[0]:null);
 	    } catch(CallException exc) {
-		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
+		getSessionManager().addSessionMessage(request,"Error doing LLM extraction: " + entry.getName()+" error: " + exc.getMessage());
 		return false;
 	    } catch(Throwable thr) {
-		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
+		getSessionManager().addSessionMessage(request,"Error doing LLM extraction: " + entry.getName()+" error: " + thr.getMessage());
 		throw new RuntimeException(thr);
 	    } finally {
 		getEntryManager().clearEntryState(entry,"message");
@@ -824,7 +831,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	return true;
     }
 
-    public boolean applyEntryExtractInner(final Request request, final Entry entry, final String llmCorpus) throws Throwable {	
+    private boolean applyEntryExtractInner(final Request request, final Entry entry, final String llmCorpus, SessionMessage sessionMessage) throws Throwable {	
 	boolean entryChanged = false;
 	PromptInfo info = new PromptInfo();
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
@@ -836,10 +843,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon||extractDate)) return false;
-
 	//	getLogManager().logSpecial("LLMManager.applyEntryExtract:" + entry.getName());
-	String message="Applying LLM to: " +entry.getName();
-	getSessionManager().addSessionMessage(request,message);
 	try {
 	    String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	    String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
@@ -894,21 +898,21 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(debug) System.err.println("Prompt:" + jsonPrompt);
 
 	    if(!stringDefined(llmCorpus)) {
-		String msg = "Unable to extract any text from the document:" + entry.getName();
-		getSessionManager().addSessionMessage(request,msg);
+		getSessionManager().addSessionMessage(request,"Unable to extract any text from the entry: " + entry.getName());
 		return false;
 	    }
-	    String sessionMessage = "Performing LLM extraction for: " + entry.getName();
-	    getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+	    String message = "Performing LLM extraction for: " + entry.getName();
+	    if(sessionMessage==null) 
+		getSessionManager().addSessionMessage(request,message,entry.getId());
 	    String json;
 	    try {
 		json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
 	    } finally {
-		getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
+		if(sessionMessage==null) 
+		    getSessionManager().clearSessionMessage(request,entry.getId(),message);
 	    }
 	    if(!stringDefined(json)) {
-		String msg = "Failed to extract information for entry:" + entry.getName();
-		getSessionManager().addSessionMessage(request,msg);
+		getSessionManager().addSessionMessage(request,"Failed to extract information for entry: " + entry.getName());
 		return false;
 	    }
 
@@ -1006,7 +1010,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
 			entry.setLocation(latitude,longitude);
 		    } else {
-			getSessionManager().addSessionMessage(request,"Could not extract lat/lon");
+			getSessionManager().addSessionMessage(request,entry.getId(),"Could not extract lat/lon");
 		    }
 		}
 
@@ -1017,7 +1021,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		exc.printStackTrace();
 	    }
 	} finally {
-	    getSessionManager().clearSessionMessage(request,null,message);
+	    //	    getSessionManager().clearSessionMessage(request,null,message);
 	}
 	return false;
 

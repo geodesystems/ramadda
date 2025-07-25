@@ -279,45 +279,80 @@ public class SessionManager extends RepositoryManager {
     }
 
     public List<SessionMessage> getSessionMessages(Request request,Object key) throws Exception {
+	boolean debug  =false;
 	List<SessionMessage> messages=(List<SessionMessage>)
 	    getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	if(messages==null) return null;
 	List<SessionMessage> tmp = new ArrayList<SessionMessage>();
+	if(debug)System.err.println("#messages:" + messages.size());
 	for(SessionMessage message: messages) {
-	    if(message.error) {
+	    if(message.key==null) {
+		if(debug)System.err.println("\tno message key");
 		tmp.add(message);
 		continue;
 	    }
 	    if(key==null) {
-		if(message.key==null)
-		    tmp.add(message);
-	    } else if(message.match(key)) {
+		if(debug)System.err.println("\tno arg key");
+		tmp.add(message);
+		continue;		
+	    }
+	    if(message.match(key)) {
+		if(debug)System.err.println("\tmatch key");
 		tmp.add(message);
 	    }
 	}
 	return tmp;
     }
 
-    private void clearSessionMessages(Request request, boolean justErrors,
-				      Object key, String msg)  {
+
+
+
+    private void clearSessionMessages(Request request, Object key, String msg)  {
 	try {
+	    boolean debug  =false;
 	    List<SessionMessage> messages=(List<SessionMessage>)
 		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	    if(messages==null) return;
 	    List<SessionMessage> tmp = new ArrayList<SessionMessage>();
+	    if(debug) System.err.println("clear:" + " key:" + key +" msg:" + msg);
 	    for(SessionMessage message: messages) {
-		if(justErrors && message.error) {
+		if(message.sticky) {
+		    //always keep sticky messages
+		    tmp.add(message);
 		    continue;
 		}
-		if(key != null && message.match(key)) {
-		    if(msg==null) continue;
-		    if(Misc.equals(msg,message.message)) continue;
+	
+		if(key==null && msg ==null) {
+		    //clear all
+		    continue;
+		}
+
+		if(key!=null && msg !=null) {
+		    if(message.match(key) && message.message.equals(msg)) {
+			continue;
+		    }
+		    tmp.add(message);
+		    continue;
+		}
+		if(key!=null) {
+		    if(message.match(key)) {
+			continue;
+		    }
+		    tmp.add(message);
+		    continue;		    
+		}
+
+		if(msg!=null) {
+		    if(message.message.equals(msg)) {
+			continue;
+		    }
 		}
 		tmp.add(message);
 	    }
 	    if(tmp.size()==0) {
 		removeSessionProperty(request, SESSION_PROPERTY_MESSAGES);
 	    } else {
+		if(debug)		System.err.println("# messages:" + tmp.size());
 		putSessionProperty(request, SESSION_PROPERTY_MESSAGES,tmp);
 	    }
 	} catch(Exception exc) {
@@ -325,47 +360,56 @@ public class SessionManager extends RepositoryManager {
 	}
     }
 
+    public synchronized void clearSessionMessage(Request request, SessionMessage sessionMessage) {
+	try {
+	    List<SessionMessage> messages=(List<SessionMessage>)
+		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
+	    if(messages==null) return;
+	    messages.remove(sessionMessage);
+	} catch(Exception ignore) {
+	}
+    }
+
+
     public void clearSessionMessage(Request request, Object key,String msg)   {
-	clearSessionMessages(request, false,key,msg);
+	clearSessionMessages(request, key,msg);
     }
 
     public void clearSessionMessages(Request request) {
-	clearSessionMessages(request, true,null,null);
+	clearSessionMessages(request, null,null);
     }
 
-    public static class SessionMessage {
-	boolean error = true;
-	Object key;
-	String message;
-	public SessionMessage(String message,Object key, boolean error) {
-	    this.message = message;
-	    this.key = key;
-	    this.error=error;
-	}
 
-	public boolean match(Object k) {
-	    return Misc.equals(k,key);
-	}
-
-	public String toString() {
-	    return message;
-	}
+    public SessionMessage addSessionMessage(Request request, String message) {
+	return addSessionMessage(request, message, null,false,false);
     }
 
-    public void addRawSessionMessage(Request request, String message,Object key) {
-	addSessionMessage(request, message, key,false,true);
+    public SessionMessage addSessionMessage(Request request, String message,Object key) {
+	return addSessionMessage(request, message, key,false,false);
+    }    
+
+    public SessionMessage addRawSessionMessage(Request request, String message) {
+	return addSessionMessage(request, message, null,true,false);
     }
 
-    public void addSessionMessage(Request request, String message) {
-	addSessionMessage(request, message, null,true);
+
+    public SessionMessage addRawSessionMessage(Request request, String message,Object key) {
+	return addSessionMessage(request, message, key,true,false);
     }
 
-    public synchronized void addSessionMessage(Request request, String message,Object key,boolean error,boolean...raw)  {
+    public SessionMessage addStickySessionMessage(Request request, String message) {
+	return addSessionMessage(request, message, null,true,true);
+    }    
+
+    public SessionMessage addStickySessionMessage(Request request, Object key,String message) {
+	return addSessionMessage(request, message, key,true,true);
+    }    
+
+    public synchronized SessionMessage addSessionMessage(Request request, String message,Object key,boolean raw,boolean sticky)  {
 	try {
-	    if(raw.length==0 || !raw[0]) {
+	    if(!raw) {
 		message = HU.strictSanitizeString(message);
 	    }
-
 	    List<SessionMessage> messages=(List<SessionMessage>)
 		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	    if(messages==null) {
@@ -373,9 +417,13 @@ public class SessionManager extends RepositoryManager {
 		putSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES,
 				   messages);
 	    }
-	    messages.add(new SessionMessage(message,key,error));
+	    SessionMessage sessionMessage = new SessionMessage(message,key);
+	    sessionMessage.sticky = sticky;
+	    messages.add(sessionMessage);
+	    return sessionMessage;
 	} catch(Exception ignore) {
 	    getLogManager().logError("Error putting session error message:" + message,ignore);
+	    return null;
 	}
     }
 

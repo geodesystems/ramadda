@@ -116,6 +116,8 @@ import org.apache.pdfbox.multipdf.Splitter;
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
+    public static final String PROP_INDEX_ACTION = "indexaction";
+
     public static boolean debugCorpus = false;
     public static boolean debugIndex = false;
     public static boolean debugSearch = false;
@@ -415,23 +417,63 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return FIELD_PROPERTY+"_"+ handler.getType()+"_"+type;
     }    
 
-    private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
+    private  void indexEntries(List<Entry> entries, final Request request, boolean isNewCall)
 	throws Exception {
-	//	synchronized(LUCENE_MUTEX) {
-	    IndexWriter indexWriter = getLuceneWriter();
-	    try {
-		for (Entry entry : entries) {
-		    long t1= System.currentTimeMillis();
-		    indexEntry(indexWriter, entry, request,isNew);
-		    long t2= System.currentTimeMillis();
-		    //		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
+	if(entries.size()==0) return;
+	IndexWriter indexWriter = getLuceneWriter();
+	final SessionMessage message[]={null};
+	Object actionId = null;
+	String cancel = null;
+	if(isNewCall) {
+	    ActionManager.Action action = new ActionManager.Action(entries.get(0)) {
+		    @Override
+		    public String getRedirectUrl() {
+			return getEntryManager().getEntryUrl(request, entry);
+		    }
+		    @Override
+		    public void setRunning(boolean state) {
+			//call super because there might be a future that needs cancelling
+			super.setRunning(state);
+			if(!state && message[0]!=null) {
+			    getSessionManager().clearSessionMessage(request,message[0]);
+			}
+		    }
+		};
+	    actionId = getActionManager().addAction("","",null,action);
+	    request.putExtraProperty(PROP_INDEX_ACTION, action);
+	    cancel = HU.href(getActionManager().getCancelUrl(request, actionId),
+			     HU.span(HU.image(ICON_CANCEL),HU.attrs("class","ramadda-clickable","style","margin-right:5px;")),
+			     HU.attrs("title","Cancel processing"));
+	    message[0] =  getSessionManager().addStickySessionMessage(request,
+								      (entries.size()==1?
+								       cancel+"Processing " + getLink(request,entries.get(0)):
+								       cancel +"Processing " + entries.size() +" entries"));
+	}
+	try {
+	    int cnt = 0;
+	    for (Entry entry : entries) {
+		if(actionId!=null && !getActionManager().getActionOk(actionId)) break;
+		cnt++;
+		long t1= System.currentTimeMillis();
+		if(message[0]!=null) {
+		    if(entries.size()>1)
+			message[0].setMessage(cancel+"Processing " + cnt +" of " + entries.size() +" entries: " + getLink(request,entry));
 		}
-		//        indexWriter.optimize();
-		commit(indexWriter);
-	    } finally {
-		//	    indexWriter.close();
+		indexEntry(indexWriter, entry, request,isNewCall);
+		long t2= System.currentTimeMillis();
+		//		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 	    }
-	    //	}
+	    //        indexWriter.optimize();
+	    commit(indexWriter);
+	} finally {
+	    if(actionId!=null)
+		getActionManager().removeAction(actionId);		    
+		   
+	    if(message[0]!=null) {
+		getSessionManager().clearSessionMessage(request,message[0]);
+	    }
+	    //	    indexWriter.close();
+	}
     }
 
     int rcnt=0;
@@ -601,7 +643,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    } catch(Throwable thr) {
 			//log the error and carry on
 			getSessionManager().addSessionMessage(request,
-
 								   "An error occurred doing the LLM extraction for the entry: " + entry.getName()+
 								   "<br><b>Error</b>: " + thr.getMessage());
 
@@ -810,8 +851,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public File getCorpusFile(Request request,Entry entry,String path) {
 	File f = new File(path);
 	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
-        File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
-										  true), corpusFileName));
+	File entryDir = getStorageManager().getEntryDir(entry.getId(), true);
+	if(!entryDir.exists()) {
+	    System.err.println("ENTRY DIR DOES NOT EXIST:" + entryDir);
+	}
+        File corpusFile = new File(IOUtil.joinDir(entryDir, corpusFileName));
 	return corpusFile;
     }
 
@@ -851,10 +895,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return null;
 	}
 	boolean reIndexing =   request.getExtraProperty("reindexing")!=null;
-	String sessionMessage = "Extracting text from: " + entry.getName();
+	String sessionMessage = "Extracting text from: " + getLink(request,entry);
 	try {
 	    if(!reIndexing) {
-		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+		getSessionManager().addRawSessionMessage(request,sessionMessage,entry.getId());
 	    }
 
 	    long t1 = System.currentTimeMillis();
@@ -895,7 +939,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		System.err.println("\tcorpus:" + " time:" + (t2-t1)+" length:" +
 				   corpus.length() +" corpus:" + Utils.clip(corpus,50,"...").replace("\n"," "));
 
-
+	    //	    System.err.println("CORPUS FILE:" + corpusFile);
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
 	    return  corpus;
 	} catch(java.util.concurrent.CancellationException cancel) {
@@ -903,7 +947,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return null;
 	}  catch(Throwable exc) {
 	    getLogManager().logError("Error extracting text corpus for entry:" + entry +" file:" + f.getName() +" error:" + exc,exc);
-	    getSessionManager().addSessionMessage(request,"There was an error extracting text from the document: " + exc.getMessage());
+	    getSessionManager().addRawSessionMessage(request,"There was an error extracting text from the entry: " + getLink(request,entry) +
+						  " error: " + exc.getMessage());
 	    return null;
 	} finally {
 	    if(!reIndexing) {
@@ -956,9 +1001,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    });
 
 	final boolean[] running = {true};
-	ActionManager.Action action = new ActionManager.Action() {
-		public void run(final Object actionId) throws Exception {
-		}
+	ActionManager.Action action = (ActionManager.Action) request.getExtraProperty(PROP_INDEX_ACTION);
+	Object actionId = null;
+	SessionMessage sessionMessage = null;
+	if(action==null) {
+	    action = new ActionManager.Action(entry) {
 		@Override
 		public String getRedirectUrl() {
 		    return getEntryManager().getEntryUrl(request, entry);
@@ -966,21 +1013,31 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		@Override
 		public void setRunning(boolean state) {
-		    if(!state && running[0]) {
-			future.cancel(true);
+		    if(!state && running[0] && this.future!=null) {
+			this.future.cancel(true);
 		    }
 		}
 	    };
-
-	Object actionId = getActionManager().addAction("","",null,action);
-	String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
-	getSessionManager().addRawSessionMessage(request,HU.href(cancelUrl,"Cancel"),entry.getId());
+	    actionId = getActionManager().addAction("","",null,action);
+	    String cancelUrl = getActionManager().getCancelUrl(request, actionId);
+	    sessionMessage = getSessionManager().addStickySessionMessage(request,entry.getId(),
+											HU.href(cancelUrl,"Cancel text extraction"));
+	}
+	
+	action.setFuture(future);
 	try {
 	    String contents =  future.get();
+	    action.setFuture(null);
 	    return contents;
 	} finally {
 	    running[0] = false;
-	    getActionManager().removeAction(actionId);
+	    if(sessionMessage!=null)
+		getSessionManager().clearSessionMessage(request,sessionMessage);
+	    //if this was our action then we remove it
+	    if(actionId!=null) {
+		getActionManager().removeAction(actionId);
+	    }
+		
 	}
 
     }
@@ -1386,7 +1443,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 continue;
             }
 
-	    //xxxx
 	    List<String> values = (List<String>) request.get(arg,new ArrayList());
             arg = arg.substring(metadataPrefix.length());
 	    List<String> toks = Utils.splitUpTo(arg,"_",2);
