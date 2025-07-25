@@ -48,6 +48,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -331,6 +332,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                                  "_eq_").replaceAll("\\.",
                                                      "_dot_") + filename;
         }
+	long millis = new Date().getTime();
+	long fiveMinutes = 5 * 60 * 1000;
+        long roundedMillis = Math.round((double) millis / fiveMinutes) * fiveMinutes;
+	filename = roundedMillis +"_"+filename;
         File file = getEntryManager().getCacheFile(entry, filename);
         Rectangle2D.Double bounds = null;
         if (boundsArg != null) {
