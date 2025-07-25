@@ -52,6 +52,8 @@ public interface Constants {
     public static final String ICON_DATA = "fas fa-table";
     public static final String ICON_DIF = "fas fa-info-circle";
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
+    public static final String ICON_CANCEL = "fas fa-square-xmark";
+    //    public static final String ICON_CANCEL = "fas fa-window-close";    
     public static final String ICON_DELETE = "fas fa-cut";
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
     public static final String ICON_DOWNLOAD = "fas fa-download";
