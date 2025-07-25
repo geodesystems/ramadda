@@ -71,6 +71,11 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         this.repository = repository;
     }
 
+    public String getLink(Request request, Entry entry) {
+	return getEntryManager().getEntryLink(request, entry,"");
+    }
+
+
     public void linkJS(Request request, StringBuilder sb, String js) {
         if (request.getExtraProperty(js) == null) {
             request.putExtraProperty(js, "true");
