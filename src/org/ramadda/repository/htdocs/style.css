@@ -377,6 +377,15 @@ ramadda-heading, .ramadda-page-heading {
 }
 
 .ramadda-session-error  {
+    padding:4px;
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    border:1px solid #aaa;
+    background:var(--color-mellow-yellow);
+}
+
+
+.ramadda-session-error  {
     min-width:400px;
     max-height:200px;
     overflow-y:auto;
