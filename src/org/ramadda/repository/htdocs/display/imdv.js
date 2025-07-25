@@ -1423,9 +1423,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    return
 			}			
 
-			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
-			mapGlyph.checkMapLayer(true);
-//			this.clearCommands();
+			getRamadda().getEntry(attrs.entryId, entry=>{
+			    let snippet = entry.getSnippet();
+			    if(snippet) {
+				mapOptions.legendText = snippet.trim();
+			    }
+			    let mapGlyph = this.handleNewFeature(null,style,mapOptions);
+			    mapGlyph.checkMapLayer(true);
+			});
 			return;
 		    } 
 
@@ -5963,7 +5968,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let _this = this;
 	    this.jq(ID_LEGEND_MAP_WRAPPER).remove();
 	    let legendPosition = this.getMapProperty('mapLegendPosition',{left:'50px',top:'20px'});
-	    console.log(legendPosition);
 
 	    let legendStyle = '';
 	    //	    ['left','top','right','bottom'].forEach(pos=>{
@@ -5975,7 +5979,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		}
 	    });
 	    if(legendStyle=='') legendStyle='left:50px;top:20px;'
-	    console.log(legendStyle);
+
 
 	    //gotta have this here or else the draggable sets it to relative
 	    legendStyle+=HU.css('position','absolute');
