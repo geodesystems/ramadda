@@ -376,6 +376,18 @@ ramadda-heading, .ramadda-page-heading {
     overflow-x:overlay;
 }
 
+.ramadda-session-error  {
+    min-width:400px;
+    max-height:200px;
+    overflow-y:auto;
+}
+
+.ramadda-session-message  {
+    white-space:nowrap;
+    max-width:500px;
+    overflow-x:auto;
+}
+
 .seesv-table-cell {
     overflow-x:hidden;
 }
@@ -3186,7 +3198,7 @@ table.dataTable tbody td {
     padding-top: 4px;
     padding-left: 8px;    
     border-top-left-radius:var(--default-radius);
-/*border-top-right-radius:var(--default-radius);    */
+    border-top-right-radius:var(--default-radius);   
     border-collapse:unset;
 }
 
