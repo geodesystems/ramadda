@@ -771,7 +771,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	try {
 	    if(isType(DATATYPE_PASSWORD)) return true;
 	    if(isPrivate) {
-		return  getRepository().getAccessManager().canDoEdit(request, entry);
+		return  !getRepository().getAccessManager().canDoEdit(request, entry);
 	    }
 	    return false;
 	} catch(Exception exc) {
