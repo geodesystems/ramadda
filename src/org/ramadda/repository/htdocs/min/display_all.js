@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 25 13:29:33 MDT 2025";
+var build_date="RAMADDA build date: Sat Jul 26 05:22:36 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -56022,9 +56022,10 @@ MapGlyph.prototype = {
 	let columns  =this.getFeatureInfoList().filter(info=>{
 	    return info.showTable();
 	});
+
+
 	let table;
 	this.featureTableMap = {};
-
 	let featureInfo = this.getFeatureInfoList();
 	let rowCnt=0;
 	let stats;
@@ -56128,6 +56129,7 @@ MapGlyph.prototype = {
 	let tableId = HU.getUniqueId("table");
 	let table =this.getFeaturesTable(tableId);
 	let html='';
+
 	if(!table) {
 	    html += HU.div([ATTR_STYLE,'width:200px;margin:10px;'],'No data');
 	} else {
@@ -56736,9 +56738,8 @@ MapGlyph.prototype = {
 	    this.filterInfo[info.getId()] = info;	    
 	    if(!filters[info.property]) filters[info.property]= {};
 	    let filter = filters[info.property];
-
-	    if(!Utils.isDefined(filter.min) || isNaN(filter.min)) filter.min = info.min;
-	    if(!Utils.isDefined(filter.max) || isNaN(filter.max)) filter.max = info.max;	    
+//	    if(!Utils.isDefined(filter.min) || isNaN(filter.min)) filter.min = info.min;
+//	    if(!Utils.isDefined(filter.max) || isNaN(filter.max)) filter.max = info.max;	    
 	    filter.property =  info.property;
 	    let id = info.getId();
 	    let label = HU.span([ATTR_TITLE,info.property],HU.b(info.getLabel()));
@@ -56763,7 +56764,6 @@ MapGlyph.prototype = {
 	    } 
 	    if(info.isEnumeration())  {
 		filter.type="enum";
-
 		if(info.samples.length>1) {
 		    let sorted;
 		    if(this.getProperty('filter.sortOnCount',false)) {
@@ -56793,22 +56793,23 @@ MapGlyph.prototype = {
 		return;
 	    }
 
-	    if((info.isNumeric() || info.isInt()) && (info.min<info.max)) {
+	    if((info.isNumeric() || info.isInt()) && (info.min<info.max || true)) {
 		let min = info.getProperty('filter.min',info.min);
 		let max = info.getProperty('filter.max',info.max);		
 		filter.minValue = min;
 		filter.maxValue = max;
-		if(isNaN(filter.min)||filter.min<min) filter.min = min;
-		if(isNaN(filter.max) || filter.max>max) filter.max = max;
+//		if(isNaN(filter.min)||filter.min<min) filter.min = min;
+//		if(isNaN(filter.max) || filter.max>max) filter.max = max;
 		filter.type="range";
 		let line =
 		    HU.leftRightTable(HU.div([ATTR_ID,this.domId('slider_min_'+ id),
-					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.min??min)),
+					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.min,min))),
 				      HU.div([ATTR_ID,this.domId('slider_max_'+ id),
-					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.max??max)));
+					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.max,max))));
 		if(showTop) line = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,'120px')], line);
 		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
-				      'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
+				      'slider-value-min',Utils.getDefined(filter.min,info.min),
+				      'slider-value-max',Utils.getDefined(filter.max,info.max),
 				      'filter-property',info.property,'feature-id',info.id,
 				      ATTR_CLASS,CLASS_FILTER_SLIDER,
 				      ATTR_STYLE,HU.css("display","inline-block","width","100%")],"");
@@ -56883,6 +56884,7 @@ MapGlyph.prototype = {
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
+
 
 	    if(this.getProperty('filter.toggle.show',true)) {
 		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
@@ -56959,10 +56961,10 @@ MapGlyph.prototype = {
 			else
 			    filter.max = ui.value;
 		    }
-
 		    filter.property=id;
-		    _this.jq('slider_min_'+ featureInfo.getId()).html(Utils.formatNumber(filter.min));
-		    _this.jq('slider_max_'+ featureInfo.getId()).html(Utils.formatNumber(filter.max));			    
+		    _this.jq('slider_min_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.min,filter.minValue)));
+		    _this.jq('slider_max_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.max,filter.maxValue)));
+		    
 		    if(force ||_this.getProperty('filter.live') ||  _this.getProperty(featureInfo.getId()+'.filter.live')) {
 			update();
 			return
@@ -57673,7 +57675,6 @@ MapGlyph.prototype = {
     },
     applyFeatureFilters:function(features) {
 	let debug = false;
-//	debug = true;
 	let redraw = false;
 	if(!features)  {
 	    features=this.mapLayer?.features;
@@ -57709,19 +57710,19 @@ MapGlyph.prototype = {
 
 
 	let redrawFeatures = false;
-	let max =-1;
 	let text = this.getProperty('showTextSearch',null,true)?this.getProperty('searchtext',null,true):null;
 //	debug = true;
 	if(!Utils.stringDefined(text)) { text=null;}
 	else text = text.toLowerCase();
+//	debug=true;
 	features.forEach((f,idx)=>{
 	    let visible = true;
 	    if(debug && idx<5) console.log("feature check filter:");
 	    rangeFilters.every(filter=>{
 		let value=this.getFeatureValue(f,filter.property);
 		if(Utils.isDefined(value)) {
-		    max = Math.max(max,value);
-		    visible = value>=filter.min && value<=filter.max;
+		    if(Utils.isDefined(filter.min) && value <filter.min) visible=false;
+		    if(Utils.isDefined(filter.max) && value >filter.min) visible=false;		    
 		    if(debug && idx<5) console.log("\trange:",filter,value,visible);
 		}
 		return visible;
