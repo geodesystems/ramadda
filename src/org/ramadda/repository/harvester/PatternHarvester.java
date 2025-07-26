@@ -1086,6 +1086,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                Hashtable<String, Entry> entriesMap)
 	throws Exception {
         Request request = getRequest();
+	Hashtable<String, String> idMap = new Hashtable<String, String>();
         //        if(dirToks.size()==0) return parentFile.toString();
         List names = new ArrayList();
         for (int i = 0; i < dirToks.size(); i++) {
@@ -1098,7 +1099,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             Entry template =
                 getEntryManager().getTemplateEntry(file.getFile(),
-						   entriesMap,getFilesMap(file.getFile()));
+						   entriesMap,idMap,getFilesMap(file.getFile()));
             String name = ((template != null)
                            ? template.getName()
                            : filename);
@@ -1266,14 +1267,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         boolean     isEntryXml       = isEntryXml(filePath);
         Entry       templateEntry    = null;
 	Hashtable<String,File> filesMap = getFilesMap(fileWrapper.getFile());
+	Hashtable<String, String> idMap = new Hashtable<String, String>();
 
         if (isEntryXml) {
             templateEntry = getEntryManager().parseEntryXml(fileWrapper.getFile(),
 							    EntryManager.INTERNAL.YES,
 							    EntryManager.TEMPLATE.NO,
-							    entriesMap,filesMap).get(0);
+							    entriesMap,idMap,filesMap).get(0);
         } else {
-            templateEntry = getEntryManager().getTemplateEntry(fileWrapper.getFile(), entriesMap,filesMap);
+            templateEntry = getEntryManager().getTemplateEntry(fileWrapper.getFile(), entriesMap,idMap,filesMap);
         }
 
         if (templateEntry != null) {
@@ -1302,7 +1304,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	File theFile= new File(dirPath);
 	filesMap = getFilesMap(theFile);
         Entry dirTemplateEntry =
-            getEntryManager().getTemplateEntry(theFile, entriesMap,filesMap);
+            getEntryManager().getTemplateEntry(theFile, entriesMap,idMap,filesMap);
 
 	if(debug)    System.err.println("\tdirPath 1:" + dirPath);
         dirPath =

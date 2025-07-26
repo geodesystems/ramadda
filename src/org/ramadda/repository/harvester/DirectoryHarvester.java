@@ -119,8 +119,9 @@ public class DirectoryHarvester extends Harvester {
                            "." + name + ".ramadda"));
 	Hashtable<String,File> filesMap = new Hashtable<String,File>();
 
+	Hashtable<String, String> idMap = new Hashtable<String, String>();
         Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir.getFile(),
-								 entriesMap,filesMap);
+								 entriesMap,idMap,filesMap);
         Entry group = getEntryManager().findEntryFromName(getRequest(), null,
 							  parentGroup.getFullName() + "/" + name);
         if (group == null) {

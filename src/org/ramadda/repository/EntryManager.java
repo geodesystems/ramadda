@@ -5607,9 +5607,10 @@ public class EntryManager extends RepositoryManager {
                                        Hashtable<String,File> origFileToStorage,
 				       StringBuilder msg)
 	throws Exception {
-        Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
+        Hashtable<String, String> idMap = new Hashtable<String, String>();
+        Hashtable<String, Entry> entryMap = new Hashtable<String, Entry>();
         if (parent != null) {
-            entries.put("", parent);
+            entryMap.put("", parent);
         }
 
         List<Entry>   newEntries       = new ArrayList<Entry>();
@@ -5639,7 +5640,7 @@ public class EntryManager extends RepositoryManager {
         List<String[]> idList = new ArrayList<String[]>();
         for (Element node : entryNodes) {
             List<Entry> entryList = createEntryFromXml(request, node,
-						       entries, origFileToStorage, true,
+						       entryMap, idMap,origFileToStorage, true,
 						       TEMPLATE.NO,
 						       INTERNAL.YES,msg);
 
@@ -5663,18 +5664,29 @@ public class EntryManager extends RepositoryManager {
         for (Element node : associationNodes) {
             String id =
                 getAssociationManager().processAssociationXml(request, node,
-							      entries, origFileToStorage);
+							      entryMap,  origFileToStorage);
         }
 
-	for (Enumeration keys = entries.keys();
+	for (Enumeration keys = entryMap.keys();
 	     keys.hasMoreElements(); ) {
 	    Object key = keys.nextElement();
-	    Entry value = entries.get(key);
+	    Entry value = entryMap.get(key);
 	    idList.add(new String[] {
 		    key.toString(),
 		    value.getId() });
 
 	}
+
+	for (Enumeration keys = idMap.keys();
+	     keys.hasMoreElements(); ) {
+	    Object key = keys.nextElement();
+	    Object value = idMap.get(key);
+	    idList.add(new String[] {
+		    key.toString(),
+		    value.toString()});
+
+	}
+
 
 	//Sort the idList so the longest strings are first
         Comparator comp = new Comparator() {
@@ -5750,11 +5762,13 @@ public class EntryManager extends RepositoryManager {
 		System.err.println("Unknown remote entry xml:"+entriesXml);
 	    }
 
+	    Hashtable<String, String> idMap = new Hashtable<String, String>();
 	    for (Element node:elements) {
 		List<Entry> entryList =
 		    createEntryFromXml(request, node,
 				       parentEntry, new Hashtable(),
 				       new Hashtable<String,Entry>(),
+				       idMap,
 				       false, TEMPLATE.YES,INTERNAL.NO,msg,serverInfo);
 
 		if(entryList.size()==0) continue;
@@ -5795,6 +5809,7 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> createEntryFromXml(Request request, Element node,
                                           Hashtable<String, Entry> entryMap,
+					  Hashtable<String, String> idMap,					  
                                           Hashtable<String, File> filesMap,
                                           boolean checkAccess,TEMPLATE isTemplate,
 					  INTERNAL  internal,StringBuilder msg)
@@ -5819,7 +5834,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
-						   parentEntry, filesMap, entryMap, checkAccess,
+						   parentEntry, filesMap, entryMap, idMap,checkAccess,
 						   isTemplate,internal,msg);
 	addImportedEntries(node,entryMap,entryList);
 
@@ -5831,6 +5846,7 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> createEntryFromXml(Request request, Element node, Entry parentEntry,
                                           Hashtable<String, File> filesMap,
 					  Hashtable<String, Entry> entryMap,
+					  Hashtable<String, String> idMap,
                                           boolean checkAccess, TEMPLATE isTemplate,
                                           INTERNAL isInternal,StringBuilder msg,ServerInfo...remoteServers)
 	throws Exception {
@@ -6155,7 +6171,7 @@ public class EntryManager extends RepositoryManager {
 
                 } else if (tag.equals(TAG_METADATA)) {
                     getMetadataManager().processMetadataXml(request,entry,
-							    entryChild, filesMap, isInternal);
+							    entryChild, idMap,filesMap, isInternal);
                 } else if (tag.equals(TAG_DESCRIPTION)) {}
                 else {
                     //                throw new IllegalArgumentException("Unknown tag:"
@@ -8475,6 +8491,7 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> parseEntryXml(File xmlFile, INTERNAL isInternal, TEMPLATE isTemplate,
 				     Hashtable<String,Entry> entriesMap,
+				     Hashtable<String, String> idMap,
 				     Hashtable<String,File> filesMap)
 	throws Exception {
 
@@ -8505,7 +8522,7 @@ public class EntryManager extends RepositoryManager {
 			       new Request(
 					   getRepository(),
 					   getUserManager().getDefaultUser()), root,
-			       entriesMap, filesMap, false, isTemplate,isInternal,msg);
+			       entriesMap, idMap,filesMap, false, isTemplate,isInternal,msg);
 
         if (isInternal == INTERNAL.YES) {
             for (Element assNode : associationNodes) {
@@ -8553,10 +8570,11 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap,
+				  Hashtable<String, String> idMap,
 				  Hashtable<String,File> filesMap) throws Exception {
         try {
 	    if(file==null) return null;
-            Entry entry = getTemplateEntryInner(file, entriesMap,filesMap);
+            Entry entry = getTemplateEntryInner(file, entriesMap,idMap,filesMap);
 
             return entry;
         } catch (Exception exc) {
@@ -8567,7 +8585,7 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap,Hashtable<String,File> filesMap)
+    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap,Hashtable<String, String> idMap,Hashtable<String,File> filesMap)
 	throws Exception {
         File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
@@ -8581,14 +8599,14 @@ public class EntryManager extends RepositoryManager {
         for (String name : names) {
             File f = new File(IOUtil.joinDir(parent, name));
             if (f.exists()) {
-                return parseEntryXml(f, INTERNAL.NO, TEMPLATE.YES,entriesMap,filesMap).get(0);
+                return parseEntryXml(f, INTERNAL.NO, TEMPLATE.YES,entriesMap,idMap,filesMap).get(0);
             }
         }
 
         if (isDirectory) {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
-                Entry entry = parseEntryXml(f, INTERNAL.NO,TEMPLATE.YES,entriesMap,filesMap).get(0);
+                Entry entry = parseEntryXml(f, INTERNAL.NO,TEMPLATE.YES,entriesMap,idMap,filesMap).get(0);
                 return entry;
             }
 

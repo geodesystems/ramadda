@@ -88,7 +88,7 @@ public class MetadataHandler extends RepositoryManager {
     }
 
     public void processMetadataXml(Request request,Entry entry, Element node,
-                                   Hashtable filesMap, EntryManager.INTERNAL isInternal)
+                                   Hashtable<String, String> idMap,Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
         forUser = XmlUtil.getAttribute(node, ATTR_FORUSER, true);
 
@@ -97,9 +97,14 @@ public class MetadataHandler extends RepositoryManager {
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
         String id = getRepository().getGUID();
+	idMap.put(XmlUtil.getAttribute(node, "id","NA"),id);
+
+
         if (isInternal==EntryManager.INTERNAL.NO) {
             id = XmlUtil.getAttribute(node, "id", id);
         }
+
+
         Metadata metadata = new Metadata(id, entry.getId(), getMetadataManager().findType(type,true),
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));

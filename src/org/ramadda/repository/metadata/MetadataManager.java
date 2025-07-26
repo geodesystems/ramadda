@@ -1454,11 +1454,11 @@ public class MetadataManager extends RepositoryManager {
     }
 
     public void processMetadataXml(Request request,Entry entry, Element entryChild,
-                                   Hashtable filesMap, EntryManager.INTERNAL isInternal)
+				   Hashtable<String, String> idMap,Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
         String          type    = XmlUtil.getAttribute(entryChild, ATTR_TYPE);
         MetadataHandler handler = findMetadataHandler(type);
-        handler.processMetadataXml(request,entry, entryChild, filesMap, isInternal);
+        handler.processMetadataXml(request,entry, entryChild, idMap,filesMap, isInternal);
     }
 
     public void initNewEntry(Request request,Entry entry, EntryInitializer initializer)
