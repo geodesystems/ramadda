@@ -1,17 +1,18 @@
 :p
 ----
 :p
+{{property sortFields="count" sortAscending="false"}}
 +row
 +col-2
 :b Asset Type
 {{group inlineDataSrc=typesdata}}
 +center
-{{display_piechart width=200px}} 
+{{display_piechart width=200px }} 
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;" }}
 -col
 +col-2
 :b Department
@@ -22,7 +23,7 @@
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;"}}
 -col
 -row
 :p
@@ -38,7 +39,7 @@
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;"}}
 -col
 +col-2
 :b Condition
@@ -49,7 +50,7 @@
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;"}}
 -col
 -row
 :p
@@ -65,7 +66,7 @@
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;"}}
 -col
 +col-2
 :b Assigned to
@@ -76,6 +77,6 @@
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px}}
+{{display_htmltable height=200px displayStyle="background:#fff;"}}
 -col
 -row

@@ -36,6 +36,7 @@ childtypes="type_assets_license"
 <property  name="html.tabs"  value="true" />
 <property  name="search.tabs"  value="list,map" />
 <property  name="enumerations.specific"  value="false" />
+<property  name="form.tags.show"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[

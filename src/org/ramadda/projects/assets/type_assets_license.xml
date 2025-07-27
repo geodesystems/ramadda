@@ -12,9 +12,9 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="license_type"  label="License Type"  type="enumerationplus"  values="perpetual:Perpetual,subscription:Subscription,open_source:Open Source,  trial:Trial,enterprise:Enterprise,volume:Volume,site:Site,  concurrent:Concurrent,user_based:User-Based,device_based:Device-Based,  core_based:Core-Based,cloud_based:Cloud-Based,freeware:Freeware,shareware:Shareware" />
+<column  name="license_type"  label="License Type"  type="enumerationplus"  default="perpetual"  values="perpetual:Perpetual,subscription:Subscription,open_source:Open Source,  trial:Trial,enterprise:Enterprise,volume:Volume,site:Site,  concurrent:Concurrent,user_based:User-Based,device_based:Device-Based,  core_based:Core-Based,cloud_based:Cloud-Based,freeware:Freeware,shareware:Shareware" />
 <column  name="issuing_authority"  label="Issuing Authority"  type="enumerationplus" />
-<column  name="status"  label="Status"  type="enumerationplus"  values="active:Active, expired:Expired, revoked:Revoked, pending:Pending" />
+<column  name="status"  label="Status"  type="enumerationplus"  default="active"   values="active:Active, expired:Expired, revoked:Revoked, pending:Pending" />
 <column  name="license_key"  label="License Key"  type="string"  isprivate="true" />
 <column  name="licensed_to_email"  label="Licensed To Email"  type="string" />
 <column  name="licensed_to_name"  label="Licensed To Name"  type="enumerationplus" />
@@ -22,7 +22,6 @@ into some types.xml file
 <column  name="cost"  label="Cost"  type="double" />
 <column  name="expiration_date"  label="Expiration Date"  type="date"  default="none" />
 <column  name="terms_url"  label="Terms Url"  type="url" />
-<column  name="notes"  label="Notes"  type="string"  size="5000" rows="5" />
 <service link="media_gs_thumbnail" target="attachment"/>
  <action name="applyllm" label="Apply LLM" canedit="true"
              icon="fas fa-font" foruser="true" category="edit"/>
@@ -31,15 +30,35 @@ into some types.xml file
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/license.png" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.label"  value="License File" />
+<property  name="form.file.label"  value="License File" />
+<property  name="form.filesonserver.show"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title="License: {{name}}"
 {{description wikify=true}}
 +toggleopen License Information
-{{information}}
++row
++col-8
+{{information  showBase=false}}
+-col
++col-4
+{{information   showDetails=false}}
+-col
+-row
 -toggle
+:vspace 1em
 ----
+:vspace 1em
 {{embed message=""  }} 
+
+
+{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
+showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage=true}} 
 -section]]></wiki>
 </type>

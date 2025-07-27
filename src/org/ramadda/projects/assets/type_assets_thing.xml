@@ -12,4 +12,5 @@ foruser="false"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="form.tags.show"  value="false" />
 </type>

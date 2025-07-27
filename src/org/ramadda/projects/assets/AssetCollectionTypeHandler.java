@@ -54,8 +54,21 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     }
 
 
+    private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
+	List<Entry> entries = new ArrayList<Entry>();
+	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
+	String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
+	return searchUrl;
+    }
+
+
     private List<Entry> getEntries(Request request, Entry entry, Hashtable props) throws Exception {
-	return  getEntryManager().getChildren(request, entry);
+	List<Entry> entries = new ArrayList<Entry>();
+	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
+	getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
+	return entries;
+
+	//	return  getEntryManager().getChildren(request, entry);
     }
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
@@ -122,8 +135,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	String report = request.getString("report",REPORT_TABLE);
 	getPageHandler().entrySectionOpen(request, entry, sb, "");
 
-	String searchUrl = "/search/do?forsearch=true&type=super:type_assets_base%2Ctype_assets_license&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
-
+	String searchUrl = getSearchUrl(request,entry,null);
 	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
 					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
 					 ARG_SEARCH_URL,searchUrl);
@@ -306,37 +318,54 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	Date now = new Date();
 	StringBuilder pastDueSB = new StringBuilder();
 	StringBuilder postDueSB = new StringBuilder();
+	StringBuilder licensePastDueSB = new StringBuilder();
+	StringBuilder licensePostDueSB = new StringBuilder();		
 	int pastDueCnt =0;
 	int postDueCnt =0;	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	for(Entry asset: entries) {
-	    Date warrantyDate = (Date) asset.getValue(request, "warranty_expiration");
-	    if(warrantyDate==null) continue;
+	    Date date=null;
+	    boolean isLicense=asset.getTypeHandler().isType("type_assets_license");
+
+	    if(isLicense) {
+		date = (Date) asset.getValue(request, "expiration_date");
+	    } else {
+		date = (Date) asset.getValue(request, "warranty_expiration");
+	    }
+	    if(date==null) continue;
 	    didOne = true;
 	    String link = getEntryManager().getEntryLink(request,asset,true,"");
-	    boolean pastDue = warrantyDate.getTime()< now.getTime();
-	    StringBuilder tmp = pastDue?pastDueSB:postDueSB;
-	    if(tmp.length()==0) {
-		tmp.append(HU.formTable());
-		tmp.append("<tr><td>&nbsp;<b>Asset</b>&nbsp;</td><td>&nbsp;<b>Warranty Expiration Date</b>&nbsp;</td></tr>");	    
-	    }
-	    HU.row(tmp,HU.td(link)+
-		   HU.td(sdf.format(warrantyDate)));
+	    boolean expired = date.getTime()< now.getTime();
+	    StringBuilder tmp = isLicense?(expired?licensePastDueSB:licensePostDueSB):
+		(expired?pastDueSB:postDueSB);
+	    HU.row(tmp,HU.td(link)+  HU.td(sdf.format(date),"align=right")+HU.td(expired?"Yes":"No"),
+		   HU.attrs("class",expired?"assets-expired":""));
 	}
 
-	if(pastDueSB.length()>0) {
-	    pastDueSB.append(HU.formTableClose());
-	    buff.append("<h3>Expired Warranties</h3>");
-	    buff.append(pastDueSB);
+	buff.append(HU.importCss(".assets-expired {background:#f8d7da;}\n"));
+	if(pastDueSB.length()>0 || postDueSB.length()>0) {
+	    buff.append(HU.formTable());
+	    buff.append("<h3>Warranties</h3>");
+	    buff.append("<tr><td>&nbsp;<b>Asset</b>&nbsp;</td><td>&nbsp;<b>Warranty Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
+	    if(pastDueSB.length()>0) 
+		buff.append(pastDueSB);
+	    if(postDueSB.length()>0) 
+		buff.append(postDueSB);	    
+	    buff.append(HU.formTableClose());
 	}
-	if(postDueSB.length()>0) {
-	    postDueSB.append(HU.formTableClose());
-	    buff.append("<h3>Not Expired Warranties</h3>");
-	    buff.append(postDueSB);
-	}	
+
+	if(licensePastDueSB.length()>0 || licensePostDueSB.length()>0) {
+	    buff.append(HU.formTable());
+	    buff.append("<h3>Licenses</h3>");
+	    buff.append("<tr><td>&nbsp;<b>License</b>&nbsp;</td><td>&nbsp;<b>License Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
+	    buff.append(licensePastDueSB);
+	    buff.append(licensePostDueSB);	    
+	    buff.append(HU.formTableClose());
+	}
+
 
 	if(!didOne) {
-	    buff.append(getPageHandler().showDialogNote("No asset have a warranty expiration date"));
+	    buff.append(getPageHandler().showDialogNote("No assets or licenses have a warranty expiration date"));
 	    return;
 	}
 

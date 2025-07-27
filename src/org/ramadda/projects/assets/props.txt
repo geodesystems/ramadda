@@ -93,13 +93,13 @@ name:Equipment
 
 
 #license type_assets_license
-license_type,,enumerationplus, \
+license_type,,enumerationplus, default="perpetual" \
 values="perpetual:Perpetual\,subscription:Subscription\,open_source:Open Source\,\
 trial:Trial\,enterprise:Enterprise\,volume:Volume\,site:Site\,\
 concurrent:Concurrent\,user_based:User-Based\,device_based:Device-Based\,\
 core_based:Core-Based\,cloud_based:Cloud-Based\,freeware:Freeware\,shareware:Shareware"
 issuing_authority,,enumerationplus,
-status,,enumerationplus,\
+status,,enumerationplus, default="active" \
 values="active:Active\, expired:Expired\, revoked:Revoked\, pending:Pending"
 license_key,,string,isprivate="true"
 licensed_to_email,,enumerationpluse,
@@ -108,7 +108,6 @@ number_of_seats,,int,
 cost,,double
 expiration_date,,date,default="none"
 terms_url,,url,
-notes,,string, size="5000" rows="5"
 
 
 
