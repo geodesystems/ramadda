@@ -5,7 +5,6 @@
 
 package org.ramadda.service;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.job.JobManager;
@@ -13,7 +12,6 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
@@ -42,10 +40,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
 import java.util.regex.*;
 import java.util.zip.*;
-
 
 @SuppressWarnings("unchecked")
 public class Service extends RepositoryManager {
@@ -130,43 +126,31 @@ public class Service extends RepositoryManager {
         init(null, element, null);
     }
 
-    
     public Service(Repository repository, Entry entry) {
         this(repository, entry.getId(), entry.getName());
     }
 
-
-    
     public Service(Repository repository, String id, String label) {
         super(repository);
         this.id    = id;
         this.label = label;
     }
 
-
-
-
-    
     public Service(Repository repository, Service parent, Element element,
                    int index)
-            throws Exception {
+	throws Exception {
         super(repository);
         init(parent, element, "service_" + index);
     }
 
-
-
-
-    
     private static void debug(String msg) {
         if (debug) {
             System.out.println(msg);
         }
     }
 
-    
     private void init(Service parent, Element element, String dfltId)
-            throws Exception {
+	throws Exception {
 
         if (element == null) {
             return;
@@ -180,46 +164,40 @@ public class Service extends RepositoryManager {
         }
 
         String tmp = XmlUtil.getAttribute(element, ATTR_ENTRY_TYPE,
-                                         (String) null);
+					  (String) null);
 	if(tmp!=null) 
 	    entryTypes=Utils.split(tmp,",",true,true);
 
-
         maxFileSize = Double.parseDouble(XmlUtil.getAttributeFromTree(element,
-                ATTR_MAXFILESIZE, "-1.0"));
-
-
+								      ATTR_MAXFILESIZE, "-1.0"));
 
         String ignoreString  = XmlUtil.getGrandChildText(element, "ignoreerrors",null);
 	if(Utils.stringDefined(ignoreString)) {
 	    ignore = Utils.split(ignoreString,"\n",true,true);
 	}
         errorPattern = XmlUtil.getAttributeFromTree(element, "errorPattern",
-                (String) null);
-
-
+						    (String) null);
 
         icon = XmlUtil.getAttributeFromTree(element, ATTR_ICON,
                                             (String) null);
         outputToStderr = XmlUtil.getAttributeFromTree(element,
-                "outputToStderr", outputToStderr);
+						      "outputToStderr", outputToStderr);
         asynch = XmlUtil.getAttributeFromTree(element,
 					      "asynchronous", asynch);	
 
         immediate = XmlUtil.getAttributeFromTree(element, "immediate", false);
 
         ignoreStderr = XmlUtil.getAttributeFromTree(element, "ignoreStderr",
-                ignoreStderr);
-
+						    ignoreStderr);
 
         target = XmlUtil.getAttributeFromTree(element, ATTR_TARGET,
-                (String) null);
+					      (String) null);
         targetType = XmlUtil.getAttributeFromTree(element, ATTR_TARGET_TYPE,
-                (String) null);
+						  (String) null);
         namePattern = XmlUtil.getAttributeFromTree(element, "namePattern",
-                (String) null);
+						   (String) null);
         descriptionPattern = XmlUtil.getAttributeFromTree(element,
-                "descriptionPattern", (String) null);
+							  "descriptionPattern", (String) null);
         if (namePattern != null) {
             namePattern = namePattern.replaceAll("\\n", "\n");
             namePattern = namePattern.replaceAll("\\r", "\r");
@@ -230,16 +208,17 @@ public class Service extends RepositoryManager {
         }
         cleanup = XmlUtil.getAttributeFromTree(element, ATTR_CLEANUP, true);
         category = XmlUtil.getAttributeFromTree(element, "category",
-                (String) null);
-	
+						(String) null);
+
         optional = XmlUtil.getAttribute(element, "optional",false);
 
         linkId = XmlUtil.getAttribute(element, ATTR_LINK, (String) null);
         description = XmlUtil.getGrandChildText(element, ATTR_DESCRIPTION,
-                XmlUtil.getGrandChildText(element, ATTR_HELP, ""));
+						XmlUtil.getGrandChildText(element, ATTR_HELP, ""));
 
         processDesc = XmlUtil.getGrandChildText(element, "process_description", "");
         label  = XmlUtil.getAttribute(element, ATTR_LABEL, (String) null);
+
         serial = XmlUtil.getAttribute(element, ATTR_SERIAL, true);
 	actionPattern = XmlUtil.getAttributeFromTree(element,"action_pattern",null);
         NodeList nodes;
@@ -256,27 +235,25 @@ public class Service extends RepositoryManager {
             }
         }
 
-
         nodes = XmlUtil.getElements(element, TAG_SERVICE);
         for (int i = 0; i < nodes.getLength(); i++) {
             Element node = (Element) nodes.item(i);
             addChild(new Service(getRepository(), this, node, i));
         }
 
-
         if ((linkId == null) && !haveChildren()) {
             command = XmlUtil.getAttributeFromTree(element, ATTR_COMMAND,
-                    (String) null);
+						   (String) null);
 
             pathProperty = XmlUtil.getAttribute(element, ATTR_PATHPROPERTY,
-                    (String) null);
+						(String) null);
 
             //Extract it from the command
             if ((pathProperty == null) && (command != null)) {
                 int index = command.indexOf("${");
                 if (index >= 0) {
                     pathProperty = command.substring(index + 2,
-                            command.indexOf("}"));
+						     command.indexOf("}"));
                 }
             }
             if (pathProperty != null) {
@@ -296,12 +273,12 @@ public class Service extends RepositoryManager {
 
             if ((command == null) || (command.indexOf("${") >= 0)) {
                 /*
-                getLogManager().logError("Service: no command defined:"
-                                         + ((command != null)
-                                            ? command
-                                            : XmlUtil.toString(
-                                            element)) + " property:"
-                                                + pathProperty);
+		  getLogManager().logError("Service: no command defined:"
+		  + ((command != null)
+		  ? command
+		  : XmlUtil.toString(
+		  element)) + " property:"
+		  + pathProperty);
 
                 */
                 return;
@@ -322,7 +299,7 @@ public class Service extends RepositoryManager {
             }
             Class c = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
-                                   new Class[] { Repository.class });
+						    new Class[] { Repository.class });
 
             if (ctor != null) {
                 commandObject = ctor.newInstance(new Object[] { repository });
@@ -330,7 +307,7 @@ public class Service extends RepositoryManager {
                 commandObject = c.getDeclaredConstructor().newInstance();
             }
             Class[] paramTypes = new Class[] { Request.class, Service.class,
-                    ServiceInput.class, List.class };
+		ServiceInput.class, List.class };
             commandMethod = Misc.findMethod(commandObject.getClass(),
                                             toks.get(2), paramTypes);
             command = null;
@@ -339,13 +316,12 @@ public class Service extends RepositoryManager {
         if (command != null) {
             if ( !new File(command).exists()) {
                 getLogManager().logError(
-                    "Service: command file does not exist:" + command);
+					 "Service: command file does not exist:" + command);
 
                 return;
             }
 	    getRepository().addScriptPath(command);
         }
-
 
         nodes = XmlUtil.getElements(element, TAG_ARG);
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -357,7 +333,6 @@ public class Service extends RepositoryManager {
             }
         }
 
-
         nodes = XmlUtil.getElements(element, TAG_OUTPUT);
         for (int i = 0; i < nodes.getLength(); i++) {
             Element          node   = (Element) nodes.item(i);
@@ -365,14 +340,10 @@ public class Service extends RepositoryManager {
             outputs.add(output);
         }
 
-
-
         enabled = true;
 
     }
 
-
-    
     public void toXml(Appendable xml, ServiceInput input) throws Exception {
         StringBuilder attrs = new StringBuilder();
         attr(attrs, ATTR_ENTRY_TYPE, Utils.join(entryTypes,","));
@@ -406,7 +377,6 @@ public class Service extends RepositoryManager {
             arg.toXml(xml);
         }
 
-
         for (OutputDefinition output : outputs) {
             output.toXml(xml);
         }
@@ -418,28 +388,23 @@ public class Service extends RepositoryManager {
         xml.append(XmlUtil.closeTag(TAG_SERVICE));
     }
 
-
-    
     public static void attr(Appendable xml, String name, boolean value)
-            throws Exception {
+	throws Exception {
         attr(xml, name, value + "");
     }
 
-    
     public static void attr(Appendable xml, String name, int value)
-            throws Exception {
+	throws Exception {
         attr(xml, name, value + "");
     }
 
-    
     public static void attr(Appendable xml, String name, String value)
-            throws Exception {
+	throws Exception {
         if (Utils.stringDefined(value)) {
             xml.append(XmlUtil.attr(name, value));
         }
     }
 
-    
     public void putParamValue(String name, Object value) {
         Object v = paramValues.get(name);
         if (v == null) {
@@ -454,7 +419,6 @@ public class Service extends RepositoryManager {
         }
     }
 
-    
     public Request makeRequest(Request request) {
         //        System.err.println ("request:" + paramValues);
         if (paramValues.size() == 0) {
@@ -462,7 +426,7 @@ public class Service extends RepositoryManager {
         }
         request = request.cloneMe();
         for (Enumeration keys =
-                paramValues.keys(); keys.hasMoreElements(); ) {
+		 paramValues.keys(); keys.hasMoreElements(); ) {
             String id    = (String) keys.nextElement();
             Object value = paramValues.get(id);
             if ( !request.defined(id)) {
@@ -473,8 +437,6 @@ public class Service extends RepositoryManager {
         return request;
     }
 
-
-    
     public boolean getRequestValue(Request request, ServiceInput input,
                                    String argPrefix, String argName,
                                    boolean dflt) {
@@ -487,21 +449,16 @@ public class Service extends RepositoryManager {
         return v.equals("true");
     }
 
-
-    
     public boolean getRequestValue(Request request, String argPrefix,
                                    String argName, boolean dflt) {
         return getRequestValue(request, null, argPrefix, argName, dflt);
     }
 
-    
     public String getRequestValue(Request request, String argPrefix,
                                   String argName, String dflt) {
         return getRequestValue(request, null, argPrefix, argName, dflt);
     }
 
-
-    
     public String getRequestValue(Request request, ServiceInput input,
                                   String argPrefix, String argName,
                                   String dflt) {
@@ -531,8 +488,6 @@ public class Service extends RepositoryManager {
         return dflt;
     }
 
-
-    
     public List<String> getRequestValue(Request request, ServiceInput input,
                                         String argPrefix, String argName,
                                         List<String> dflt) {
@@ -564,8 +519,6 @@ public class Service extends RepositoryManager {
         return dflt;
     }
 
-
-    
     public void addChild(Service service) {
         if (children == null) {
             children = new ArrayList<Service>();
@@ -574,12 +527,10 @@ public class Service extends RepositoryManager {
         service.setParent(this);
     }
 
-    
     public boolean haveChildren() {
         return (children != null) && (children.size() > 0);
     }
 
-    
     private void initLinkedService() {
         if (link != null) {
             return;
@@ -599,28 +550,17 @@ public class Service extends RepositoryManager {
         }
     }
 
-
-
-    
     public void setLinkId(String link) {
         linkId = link;
         initLinkedService();
     }
 
-
-    
     public String getUrlArg(String prefix, String tail) {
         return ((prefix == null)
                 ? tail
                 : prefix + ARG_DELIMITER + tail);
     }
 
-
-
-
-
-
-    
     public boolean haveLink() {
         initLinkedService();
 
@@ -628,26 +568,22 @@ public class Service extends RepositoryManager {
 
     }
 
-    
     public Service getLink() {
         initLinkedService();
 
         return link;
     }
 
-    
     public boolean getImmediate() {
         return immediate;
     }
 
-    
     private HashSet<String> addArgs(Request request, String argPrefix,
-                                   ServiceInput input, List<String> commands,
-                                   List<File> filesToDelete,
-                                   List<Entry> allEntries,
+				    ServiceInput input, List<String> commands,
+				    List<File> filesToDelete,
+				    List<Entry> allEntries,
 				    Hashtable<String, String> valueMap, boolean optional)
-            throws Exception {
-
+	throws Exception {
 
         if (haveLink()) {
             return link.addArgs(request, argPrefix, input, commands,
@@ -674,19 +610,14 @@ public class Service extends RepositoryManager {
             }
         }
 
-
-
         Hashtable<String, List<Entry>> entryMap = new Hashtable<String,
-                                                      List<Entry>>();
+	    List<Entry>>();
 
         boolean haveSeenAnEntry = false;
-
 
         for (ServiceArg arg : getArgs()) {
             valueMap.put(arg.getName(), "");
         }
-
-
 
         for (ServiceArg arg : getArgs()) {
             if ( !arg.isEntry()) {
@@ -695,16 +626,16 @@ public class Service extends RepositoryManager {
             String      argName = arg.getName() + "_hidden";
             List<Entry> entries = new ArrayList<Entry>();
             List<String> entryIds = getRequestValue(request, input,
-                                        argPrefix, argName,
-                                        new ArrayList<String>());
+						    argPrefix, argName,
+						    new ArrayList<String>());
             for (String entryId : entryIds) {
                 Entry entry = getEntryManager().getEntry(request, entryId);
                 if (entry == null) {
                     System.err.println("Bad entry:" + entryId);
 
                     throw new IllegalArgumentException(
-                        "Could not find entry for arg:" + arg.getLabel()
-                        + " entry id:" + entryId);
+						       "Could not find entry for arg:" + arg.getLabel()
+						       + " entry id:" + entryId);
                 }
                 entries.add(entry);
             }
@@ -728,7 +659,6 @@ public class Service extends RepositoryManager {
             haveSeenAnEntry = true;
         }
 
-
         if (inputEntries.size() == 0) {
             inputEntries = allEntries;
             input.setEntries(allEntries);
@@ -743,8 +673,6 @@ public class Service extends RepositoryManager {
             commands.add(cmd);
         }
         addExtraArgs(request, input, commands, true);
-
-
 
         for (ServiceArg arg : getArgs()) {
             if (arg.getDepends() != null) {
@@ -764,18 +692,18 @@ public class Service extends RepositoryManager {
             } else if (arg.isDate()) {
                 //TODO: add time
                 String dateString = getRequestValue(request, input,
-                                        argPrefix, arg.getName(),
-                                        (String) null);
+						    argPrefix, arg.getName(),
+						    (String) null);
                 if (Utils.stringDefined(dateString)) {
                     Date date = getRepository().getDateHandler().parseDate(
-                                    dateString);
+									   dateString);
                     argValue = arg.getDateFormat().format(date);
                 }
             } else if (arg.isFlag()) {
                 if (arg.getGroup() != null) {
                     if ( !seenGroup.contains(arg.getGroup())) {
                         argValue = getRequestValue(request, input, argPrefix,
-                                arg.getGroup(), (String) null);
+						   arg.getGroup(), (String) null);
                         if (Utils.stringDefined(argValue)) {
                             seenGroup.add(arg.getGroup());
                         } else {
@@ -795,16 +723,15 @@ public class Service extends RepositoryManager {
                 List<Entry> entries = entryMap.get(arg.getName());
                 if ( !arg.isMultiple() && (entries.size() > 1)) {
                     throw new IllegalArgumentException(
-                        "Too many entries specified for arg:"
-                        + arg.getLabel() + " entries:" + entries);
+						       "Too many entries specified for arg:"
+						       + arg.getLabel() + " entries:" + entries);
                 } else if ( !arg.isRequired() && (entries.size() == 0)) {
 		    if(optional) return null;
                     System.err.println("service arg:" + arg.getName());
                     System.err.println("service entryMap:" + entryMap);
                     throw new IllegalArgumentException(
-                        "No entry specified for arg:" + arg.getLabel());
+						       "No entry specified for arg:" + arg.getLabel());
                 }
-
 
                 values = new ArrayList<String>();
                 for (Entry entry : entries) {
@@ -813,10 +740,10 @@ public class Service extends RepositoryManager {
                     if (arg.getCopy()) {
                         File newFile =
                             new File(
-                                IOUtil.joinDir(
-					       input.getProcessDir(),
-                                    getStorageManager().getFileTail(
-                                        currentEntry)));
+				     IOUtil.joinDir(
+						    input.getProcessDir(),
+						    getStorageManager().getFileTail(
+										    currentEntry)));
                         if ( !newFile.exists()) {
                             IOUtil.copyFile(currentEntry.getFile(), newFile);
                             filesToDelete.add(newFile);
@@ -842,7 +769,6 @@ public class Service extends RepositoryManager {
                 if (argValue != null) {}
             }
 
-
             if (arg.isMultiple() && (values != null)) {
                 if (arg.getMultipleJoin() != null) {
                     argValue = StringUtil.join(arg.getMultipleJoin(), values);
@@ -850,12 +776,10 @@ public class Service extends RepositoryManager {
                 }
             }
 
-
             if ((values == null) && (argValue != null)) {
                 values = new ArrayList<String>();
                 values.add(argValue);
             }
-
 
             int argCnt = 0;
             if (values != null) {
@@ -868,7 +792,7 @@ public class Service extends RepositoryManager {
                     }
                     argCnt++;
                     if ( !arg.isEntry()
-                            && Utils.stringDefined(arg.getValue())) {
+			 && Utils.stringDefined(arg.getValue())) {
                         value = arg.getValue().replace("${value}", value);
                     }
 
@@ -881,57 +805,55 @@ public class Service extends RepositoryManager {
                     if (arg.getFile() != null) {
                         //                            System.err.println ("file:" + arg.getFile() + " " + arg.filePattern);
                         String fileName = applyMacros(request,currentEntry, entryMap,
-                                              valueMap, workDir,
-                                              arg.getFile(),
-                                              input.getForDisplay(),
-                                              arg.getMap());
-
+						      valueMap, workDir,
+						      arg.getFile(),
+						      input.getForDisplay(),
+						      arg.getMap());
 
 			fileName = fileName.replace(" ","_");
                         fileName = fileName.replace("${value}",
-                                originalValue);
+						    originalValue);
                         File destFile = new File(IOUtil.joinDir(workDir,
-                                            fileName));
+								fileName));
                         int cnt = 0;
 
                         //                            System.err.println("dest file:" + destFile+" " + destFile.exists());
                         while (destFile.exists()) {
                             cnt++;
                             destFile = new File(IOUtil.joinDir(workDir,
-                                    cnt + "_" + fileName));
+							       cnt + "_" + fileName));
                         }
 
                         if (arg.getFilePattern() != null) {
                             String basePattern = applyMacros(request,currentEntry,
-                                                     entryMap, valueMap,
-                                                     workDir,
-                                                     arg.getFilePattern(),
-                                                     input.getForDisplay(),
-                                                     arg.getMap());
-
+							     entryMap, valueMap,
+							     workDir,
+							     arg.getFilePattern(),
+							     input.getForDisplay(),
+							     arg.getMap());
 
                             basePattern = basePattern.replace("${value}",
-                                    originalValue);
+							      originalValue);
 
                             String pattern = basePattern.replace("${unique}",
-                                                 "");
+								 "");
                             File[] files =
                                 workDir.listFiles(
-                                    (FileFilter) new PatternFileFilter(
-                                        pattern));
+						  (FileFilter) new PatternFileFilter(
+										     pattern));
                             //                                System.err.println("pattern:"+ pattern + " " + files.length);
                             destFile = new File(IOUtil.joinDir(workDir,
-                                    fileName));
+							       fileName));
                             while (files.length > 0) {
                                 cnt++;
                                 pattern = basePattern.replace("${unique}",
-                                        cnt + "");
+							      cnt + "");
                                 files = workDir.listFiles(
-                                    (FileFilter) new PatternFileFilter(
-                                        pattern));
+							  (FileFilter) new PatternFileFilter(
+											     pattern));
                                 //                                    System.err.println("pattern:"+ pattern + " " + files.length);
                                 destFile = new File(IOUtil.joinDir(workDir,
-                                        cnt + "_" + fileName));
+								   cnt + "_" + fileName));
                             }
                         }
 
@@ -939,7 +861,7 @@ public class Service extends RepositoryManager {
                         value = arg.getValue().replace("${value}", value);
                         value = value.replace("${file}", destFile.getName());
                         value = value.replace("${file.base}",
-                                IOUtil.stripExtension(destFile.getName()));
+					      IOUtil.stripExtension(destFile.getName()));
                         value = value.replace("${value}", originalValue);
                         //                            System.err.println("new value:" + value);
 		    }
@@ -961,28 +883,23 @@ public class Service extends RepositoryManager {
             }
             if ((argCnt == 0) && arg.isRequired()) {
                 throw new IllegalArgumentException("No entry  specified for:"
-                        + arg.getLabel());
+						   + arg.getLabel());
             }
         }
-
 
         addExtraArgs(request, input, commands, false);
 
         return definedArgs;
     }
 
-    
     public void addExtraArgs(Request request, ServiceInput input,
                              List<String> args, boolean start)
-            throws Exception {}
+	throws Exception {}
 
-
-    
     public String getLinkXml(ServiceInput input) throws Exception {
         if (haveLink()) {
             return link.getLinkXml(input);
         }
-
 
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.openTag(TAG_SERVICES));
@@ -998,10 +915,8 @@ public class Service extends RepositoryManager {
         return sb.toString();
     }
 
-
-    
     public void writeParamsXml(ServiceInput input, Appendable sb)
-            throws Exception {
+	throws Exception {
         sb.append("\n");
         sb.append(XmlUtil.openTag(TAG_PARAMS));
         sb.append("\n");
@@ -1016,8 +931,6 @@ public class Service extends RepositoryManager {
 
     }
 
-
-    
     public String getCategory() {
         if (category != null) {
             return category;
@@ -1029,27 +942,18 @@ public class Service extends RepositoryManager {
         return "Services";
     }
 
-
-    
     public String getHelp() {
         return null;
     }
 
-
-    
     public void setParent(Service value) {
         parent = value;
     }
 
-    
     public Service getParent() {
         return parent;
     }
 
-
-
-
-    
     public String getIcon() {
         if (icon != null) {
             return icon;
@@ -1064,46 +968,41 @@ public class Service extends RepositoryManager {
         return "fa-cog";
     }
 
-    
+    public boolean isService(String _id) {
+	if(id!=null && id.equals(_id)) return true;
+	if(linkId!=null && linkId.equals(_id)) return true;	
+	return false;
+
+    }
+
     public String getId() {
         /*
-        if (haveLink()) {
-            return link.getId();
-            }*/
+	  if (haveLink()) {
+	  return link.getId();
+	  }*/
 
         return id;
     }
 
-    
     public String getTarget() {
         return target;
     }
 
-
-    
     public String getNamePattern() {
         return namePattern;
     }
 
-
-    
     public String getDescriptionPattern() {
         return descriptionPattern;
     }
 
-    
     public String getTargetType() {
         return targetType;
     }
 
-
-    
     public void initFormJS(Request request, Appendable js, String formVar)
-            throws Exception {}
+	throws Exception {}
 
-
-
-    
     public String getPrefix(String prefix) {
         if ( !Utils.stringDefined(prefix)) {
             return this.id;
@@ -1114,13 +1013,9 @@ public class Service extends RepositoryManager {
         return prefix + ARG_DELIMITER + this.id;
     }
 
-
-
-    
     public void addToForm(Request request, ServiceInput input, Appendable sb,
                           String argPrefix, String label)
-            throws Exception {
-
+	throws Exception {
 
         boolean comingFromForm = request.get(ARG_SERVICEFORM, false);
         if ( !comingFromForm) {
@@ -1161,12 +1056,10 @@ public class Service extends RepositoryManager {
         addToFormInner(request, myPrefix, input, sb, label);
     }
 
-    
     private void addToFormInner(Request request, String prefix,
                                 ServiceInput input, Appendable sb,
                                 String label)
-            throws Exception {
-
+	throws Exception {
 
         StringBuilder formSB      = new StringBuilder();
         int           blockCnt    = 0;
@@ -1217,35 +1110,32 @@ public class Service extends RepositoryManager {
         }
         if (anyRequired) {
             formSB.append(
-                "<span class=ramadda-required-label>* required</span>");
+			  "<span class=ramadda-required-label>* required</span>");
         }
 
-
         sb.append(HU.open(HU.TAG_DIV,
-                                 HU.cssClass("service-form")));
-
+			  HU.cssClass("service-form")));
 
         String rightSide = HU.href(
-                               getRepository().getJobManager().getServiceUrl(
-                                   request, this), HU.img(
-                                   getIconUrl("/icons/application_form.png"),
-                                   "View top-level form"));
+				   getRepository().getJobManager().getServiceUrl(
+										 request, this), HU.img(
+													getIconUrl("/icons/application_form.png"),
+													"View top-level form"));
 
         rightSide =
             HU.div(rightSide,
-                          HU.cssClass("service-form-header-links"));
+		   HU.cssClass("service-form-header-links"));
         sb.append(
-            HU.div(
-                HU.leftRight(
-			     HU.img(getIconUrl(getIcon()),"",HU.attr(HU.ATTR_WIDTH,ICON_WIDTH)) + " " + label,
-				    rightSide), HU.cssClass("service-form-header")));
-
+		  HU.div(
+			 HU.leftRight(
+				      HU.img(getIconUrl(getIcon()),"",HU.attr(HU.ATTR_WIDTH,ICON_WIDTH)) + " " + label,
+				      rightSide), HU.cssClass("service-form-header")));
 
         if (Utils.stringDefined(getDescription())) {
             sb.append(
-                HU.div(
-                    getDescription(),
-                    HU.cssClass("service-form-description")));
+		      HU.div(
+			     getDescription(),
+			     HU.cssClass("service-form-description")));
         }
         List<Entry> entries = input.getEntries();
         if (false && (entries.size() > 1)) {
@@ -1255,36 +1145,31 @@ public class Service extends RepositoryManager {
                     continue;
                 }
                 entriesSB.append(
-                    HU.href(
-                        getEntryManager().getEntryURL(request, entry),
-                        entry.getName(), " target=\"_help\" "));
+				 HU.href(
+					 getEntryManager().getEntryURL(request, entry),
+					 entry.getName(), " target=\"_help\" "));
                 entriesSB.append(HU.br());
             }
             sb.append(
-                HU.div(
-                    entriesSB.toString(),
-                    HU.cssClass("service-form-entries")));
+		      HU.div(
+			     entriesSB.toString(),
+			     HU.cssClass("service-form-entries")));
         }
-
 
         if (formSB.length() > 0) {
             sb.append(
-                HU.div(
-                    formSB.toString(),
-                    HU.cssClass("service-form-contents")));
+		      HU.div(
+			     formSB.toString(),
+			     HU.cssClass("service-form-contents")));
         }
         sb.append(HU.close(HU.TAG_DIV));
 
     }
 
-
-
-    
     public void addArgToForm(Request request, String argPrefix,
                              ServiceInput input, CatBuff catBuff,
                              ServiceArg arg)
-            throws Exception {
-
+	throws Exception {
 
         String        tooltip    = arg.getPrefix();
         StringBuilder inputHtml  = new StringBuilder();
@@ -1293,11 +1178,11 @@ public class Service extends RepositoryManager {
             List<TwoFacedObject> values = arg.getValues();
             if ((values.size() == 0) && (arg.getValuesProperty() != null)) {
                 values = (List<TwoFacedObject>) input.getProperty(
-                    arg.getValuesProperty(), values);
+								  arg.getValuesProperty(), values);
             }
             if (values.size() == 0) {
                 values = (List<TwoFacedObject>) input.getProperty(argUrlName
-                        + ".values", values);
+								  + ".values", values);
             }
 
             if (arg.getAddAll()) {
@@ -1323,18 +1208,18 @@ public class Service extends RepositoryManager {
             //            System.err.println("selected:" + selected);
             //            System.err.println("request:" + request);
             inputHtml.append(HU.select(argUrlName, values, selected,
-                    extra, 100));
+				       extra, 100));
         } else if (arg.isFlag()) {
             if (arg.getGroup() != null) {
                 boolean selected =
                     getRequestValue(request, argPrefix, arg.getGroup(),
                                     arg.getDefault()).equals(arg.getValue());
                 inputHtml.append(HU.radio(getUrlArg(argPrefix,
-                        arg.getGroup()), arg.getValue(), selected));
+						    arg.getGroup()), arg.getValue(), selected));
             } else {
                 inputHtml.append(HU.checkbox(argUrlName, "true",
-                        getRequestValue(request, argPrefix, arg.getName(),
-                                        arg.getDefault().equals("true"))));
+					     getRequestValue(request, argPrefix, arg.getName(),
+							     arg.getDefault().equals("true"))));
             }
 
             inputHtml.append(HU.space(2));
@@ -1353,12 +1238,12 @@ public class Service extends RepositoryManager {
             if (arg.getValuesProperty() != null) {
                 dates =
                     (List<Date>) input.getProperty(arg.getValuesProperty(),
-                        dates);
+						   dates);
             }
             inputHtml.append(
-                getRepository().getDateHandler().makeDateInput(
-                    request, argUrlName, "searchform", null, null, false,
-                    dates));
+			     getRepository().getDateHandler().makeDateInput(
+									    request, argUrlName, "searchform", null, null, false,
+									    dates));
         } else if (arg.isFile()) {
             //noop
         } else if (arg.isEntry()) {
@@ -1368,7 +1253,7 @@ public class Service extends RepositoryManager {
                                         : entries.get(0));
 
             if ((input.getSourceService() != null)
-                    && (input.getSourceService().getOutputs().size() > 0)) {
+		&& (input.getSourceService().getOutputs().size() > 0)) {
                 return;
             }
             if ((primaryEntry != null) && arg.isPrimaryEntry()) {
@@ -1394,10 +1279,10 @@ public class Service extends RepositoryManager {
             }
 
             inputHtml.append(HU.hidden(getUrlArg(argPrefix, argName),
-                    entryId, HU.id(elementId + "_hidden")));
+				       entryId, HU.id(elementId + "_hidden")));
             inputHtml.append(HU.space(1));
             inputHtml.append(HU.disabledInput(argUrlName, entryLabel,
-                    HU.SIZE_60 + HU.id(elementId)));
+					      HU.SIZE_60 + HU.id(elementId)));
             //                inputHtml.append(HU.disabledInput(argUrlName,
             //                                                         getRequestValue(request, argPrefix, arg.getName(), ""),
             //                                                         HU.SIZE_60 + HU.id(elementId)));
@@ -1405,16 +1290,16 @@ public class Service extends RepositoryManager {
 
         } else {
             String extra = HU.attr(HU.ATTR_SIZE,
-                                          "" + arg.getSize());
+				   "" + arg.getSize());
             if (arg.getPlaceHolder() != null) {
                 extra += HU.attr("placeholder", arg.getPlaceHolder());
             }
             inputHtml.append(
-                HU.input(
-                    argUrlName,
-                    getRequestValue(
-                        request, argPrefix, arg.getName(),
-                        arg.getDefault()), extra));
+			     HU.input(
+				      argUrlName,
+				      getRequestValue(
+						      request, argPrefix, arg.getName(),
+						      arg.getDefault()), extra));
         }
         if (inputHtml.length() == 0) {
             return;
@@ -1435,13 +1320,10 @@ public class Service extends RepositoryManager {
         }
         //        makeFormEntry(catBuff, arg.getLabel(), inputHtml.toString(), arg.getHelp());
 
-
     }
 
-
-    
     public Entry getEntry(Request request, String argPrefix, ServiceArg arg)
-            throws Exception {
+	throws Exception {
         String argName = arg.getName() + "_hidden";
         String entryId = getRequestValue(request, argPrefix, argName, "");
         if (Utils.stringDefined(entryId)) {
@@ -1451,40 +1333,36 @@ public class Service extends RepositoryManager {
         return null;
     }
 
-
-    
     private void makeFormEntry(Appendable sb, String label, String col1,
                                String help)
-            throws Exception {
+	throws Exception {
         if (help != null) {
             help = HU.div(help,
-                                 HU.cssClass("service-form-help"));
+			  HU.cssClass("service-form-help"));
             sb.append(HU.formEntryTop(Utils.stringDefined(label)
-                                             ? msgLabel(label)
-                                             : "", col1, help));
+				      ? msgLabel(label)
+				      : "", col1, help));
 
         } else {
             sb.append(HU.formEntryTop(Utils.stringDefined(label)
-                                             ? msgLabel(label)
-                                             : "", col1, 2));
+				      ? msgLabel(label)
+				      : "", col1, 2));
         }
 
     }
 
-
-    
     private void processCatBuff(Request request, Appendable sb,
                                 ServiceArg catArg, CatBuff catBuff,
                                 int blockCnt)
-            throws Exception {
+	throws Exception {
         if (catArg != null) {
             String html = header(catArg.getCategory());
             /*
-            String desc = catArg.getValue();
-            if (Utils.stringDefined(desc)) {
-                html += desc;
-                html += HU.br();
-            }
+	      String desc = catArg.getValue();
+	      if (Utils.stringDefined(desc)) {
+	      html += desc;
+	      html += HU.br();
+	      }
             */
             sb.append(html);
         }
@@ -1495,13 +1373,10 @@ public class Service extends RepositoryManager {
             sb.append(formSB);
         } else {
             sb.append(HU.makeShowHideBlock("", formSB.toString(),
-                    true || (blockCnt == 1)));
+					   true || (blockCnt == 1)));
         }
     }
 
-
-
-    
     public boolean isEnabled() {
         if (haveLink()) {
             return link.isEnabled();
@@ -1519,8 +1394,6 @@ public class Service extends RepositoryManager {
         return enabled;
     }
 
-
-    
     public boolean requiresMultipleEntries() {
         if (requiresMultipleEntries != null) {
             return requiresMultipleEntries;
@@ -1557,9 +1430,6 @@ public class Service extends RepositoryManager {
         return requiresMultipleEntries;
     }
 
-
-
-    
     public void collectArgs(List<ServiceArg> args) {
         if (haveLink()) {
             link.collectArgs(args);
@@ -1575,9 +1445,6 @@ public class Service extends RepositoryManager {
         args.addAll(this.args);
     }
 
-
-
-    
     public boolean getOutputToStderr() {
         if (haveLink()) {
             return link.getOutputToStderr();
@@ -1586,7 +1453,6 @@ public class Service extends RepositoryManager {
         return outputToStderr;
     }
 
-    
     public boolean getIgnoreStderr() {
         if (haveLink()) {
             return link.getIgnoreStderr();
@@ -1595,12 +1461,10 @@ public class Service extends RepositoryManager {
         return ignoreStderr;
     }
 
-    
     public List<ServiceArg> getArgs() {
         return args;
     }
 
-    
     public List<OutputDefinition> getOutputs() {
         if (haveLink()) {
             return link.getOutputs();
@@ -1609,14 +1473,10 @@ public class Service extends RepositoryManager {
         return outputs;
     }
 
-
-    
     public List<ServiceArg> getInputs() {
         return inputs;
     }
 
-
-    
     public boolean canHandle(ServiceInput dpi) {
         List<Entry> entries = dpi.getEntries();
         if (entries.size() == 0) {
@@ -1626,8 +1486,6 @@ public class Service extends RepositoryManager {
         return isApplicable(entries.get(0));
     }
 
-
-    
     public boolean isApplicable(List<Entry> entries) {
         if ( !requiresMultipleEntries()) {
             return false;
@@ -1648,8 +1506,6 @@ public class Service extends RepositoryManager {
         return false;
     }
 
-
-    
     public boolean isApplicable(Entry entry) {
         if (requiresMultipleEntries()) {
             return false;
@@ -1658,8 +1514,6 @@ public class Service extends RepositoryManager {
         return isApplicableInner(entry);
     }
 
-
-    
     private boolean isApplicableInner(Entry entry) {
         if (haveLink()) {
             return link.isApplicable(entry);
@@ -1673,7 +1527,6 @@ public class Service extends RepositoryManager {
         if (debug) {
             System.err.println("isApplicable:" + getLabel() + " " + command);
         }
-
 
         for (ServiceArg input : inputs) {
             //            boolean debug = true;
@@ -1694,8 +1547,6 @@ public class Service extends RepositoryManager {
         return false;
     }
 
-
-    
     public String getCommand() {
         if (haveLink()) {
             return link.getCommand();
@@ -1704,7 +1555,6 @@ public class Service extends RepositoryManager {
         return command;
     }
 
-    
     public String getDescription() {
         if (haveLink()) {
             link.getDescription();
@@ -1713,7 +1563,6 @@ public class Service extends RepositoryManager {
         return description;
     }
 
-    
     public String getProcessDescription() {
         if (Utils.stringDefined(processDesc)) {
             return processDesc;
@@ -1725,7 +1574,6 @@ public class Service extends RepositoryManager {
         return null;
     }
 
-    
     public String getLabel() {
         if (Utils.stringDefined(label)) {
             return label;
@@ -1741,8 +1589,6 @@ public class Service extends RepositoryManager {
         return "Service";
     }
 
-
-    
     public void setLabel(String l) {
         label = l;
     }
@@ -1754,19 +1600,16 @@ public class Service extends RepositoryManager {
 	return null;
     }
 
-
-    
     public ServiceOutput evaluate(Request request, Object actionID,ServiceInput input,
                                   String argPrefix)
-            throws Exception {
+	throws Exception {
 	return evaluate(request, actionID,input,argPrefix,optional);
     }
 
-    
     public ServiceOutput evaluate(Request request, Object actionID,
 				  ServiceInput input,
                                   String argPrefix,boolean optional)
-            throws Exception {	
+	throws Exception {	
 
         String  myPrefix       = getPrefix(argPrefix);
 
@@ -1820,11 +1663,9 @@ public class Service extends RepositoryManager {
                 myOutput.append(childOutput.getResults());
             }
 
-
             for (Entry newEntry : myOutput.getEntries()) {
                 newFiles.add(newEntry.getFile());
             }
-
 
             if (cleanup) {
                 for (File f : input.getProcessDir().listFiles()) {
@@ -1845,13 +1686,12 @@ public class Service extends RepositoryManager {
             return myOutput;
         }
 
-
         List<String>              commands   = new ArrayList<String>();
         List<Entry>               allEntries = new ArrayList<Entry>();
         Hashtable<String, String> valueMap   = new Hashtable<String,
-                                                   String>();
+	    String>();
         HashSet<String> definedArgs = this.addArgs(request, myPrefix, input,
-                                          commands, filesToDelete,
+						   commands, filesToDelete,
 						   allEntries, valueMap,optional);
 
 	if(definedArgs==null) {
@@ -1862,7 +1702,6 @@ public class Service extends RepositoryManager {
         }
 
         Entry currentEntry = (Entry) Utils.safeGet(entries, 0);
-
 
         if (input.getForDisplay()) {
             commands.set(0, IOUtil.getFileTail(commands.get(0)));
@@ -1875,17 +1714,15 @@ public class Service extends RepositoryManager {
         String errMsg = "";
         String outMsg = "";
         File stdoutFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                              "." + getId() + ".stdout"));
+						  "." + getId() + ".stdout"));
         File stderrFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                              "." + getId() + ".stderr"));
+						  "." + getId() + ".stderr"));
 
-
-	
 	//	System.err.println("commands:" + commands);
         //        System.out.println(getLinkXml(input));
         if (commandObject != null) {
             commandMethod.invoke(commandObject, new Object[] { request, this,
-                    input, commands });
+							       input, commands });
         } else {
 	    try {
 		PrintWriter stdOutWriter = new PrintWriter(stdoutFile);
@@ -1962,7 +1799,7 @@ public class Service extends RepositoryManager {
                         } else {
                             System.err.println("Skipping stderr:" + errMsg);
                             getLogManager().logInfo(
-                                "Service: ignoring stderr:" + errMsg);
+						    "Service: ignoring stderr:" + errMsg);
                         }
                     } else {
                         //If there is an error then
@@ -1983,9 +1820,6 @@ public class Service extends RepositoryManager {
 
 	if(debug)
 	    System.err.println("Service.evaluate");
-
-
-	
 
         for (OutputDefinition output : getOutputs()) {
             String depends = output.getDepends();
@@ -2014,52 +1848,48 @@ public class Service extends RepositoryManager {
                 continue;
             }
 
-
             File[] files = null;
             if (output.getUseStdout()) {
                 setResultsFromStdout = false;
                 String filename = applyMacros(request,currentEntry, null, valueMap,
-                                      input.getProcessDir(),
-                                      output.getFilename(),
-                                      input.getForDisplay(), output.getMap());
+					      input.getProcessDir(),
+					      output.getFilename(),
+					      input.getForDisplay(), output.getMap());
                 File destFile =
                     new File(IOUtil.joinDir(input.getProcessDir(), filename));
                 IOUtil.moveFile(stdoutFile, destFile);
                 files = new File[] { destFile };
             }
             final String thePattern = applyMacros(request,currentEntry, null, null,
-                                          input.getProcessDir(),
-                                          output.getPattern(),
-                                          input.getForDisplay(),
-                                          output.getMap());
-
+						  input.getProcessDir(),
+						  output.getPattern(),
+						  input.getForDisplay(),
+						  output.getMap());
 
             if (files == null) {
 		if(debug) System.err.println("Service:" + this +" process dir:" +input.getProcessDir());
                 files = input.getProcessDir().listFiles(new FileFilter() {
-                    public boolean accept(File f) {
-                        String name = f.getName();
-			if(debug) System.err.println("Service: file:" + f);
-                        if (name.startsWith(".")) {
-                            return false;
-                        }
-                        if (thePattern == null) {
-                            return true;
-                        }
-                        if (name.toLowerCase().matches(thePattern)) {
-                            return true;
-                        }
+			public boolean accept(File f) {
+			    String name = f.getName();
+			    if(debug) System.err.println("Service: file:" + f);
+			    if (name.startsWith(".")) {
+				return false;
+			    }
+			    if (thePattern == null) {
+				return true;
+			    }
+			    if (name.toLowerCase().matches(thePattern)) {
+				return true;
+			    }
 
-                        return false;
-                    }
-                });
+			    return false;
+			}
+		    });
             }
-
 
 	    IOUtil.FileWrapper[] _files =
 		IOUtil.sortFilesOnAge(IOUtil.FileWrapper.toArray(files,
 								 false));
-
 
 	    Date now  = new Date();
 	    int cnt=0;
@@ -2075,11 +1905,11 @@ public class Service extends RepositoryManager {
                 StringBuilder entryXml = new StringBuilder();
                 entryXml.append(XmlUtil.tag("entry",
                                             XmlUtil.attrs("name",
-                                                file.getName(), "type",
-                                                    (output.getEntryType()
-                                                        != null)
-                        ? output.getEntryType()
-                        : TypeHandler.TYPE_FILE)));
+							  file.getName(), "type",
+							  (output.getEntryType()
+							   != null)
+							  ? output.getEntryType()
+							  : TypeHandler.TYPE_FILE)));
                 IOUtil.writeFile(getEntryManager().getEntryXmlFile(file),
                                  entryXml.toString());
 
@@ -2095,16 +1925,16 @@ public class Service extends RepositoryManager {
 		    if(debug)
 			System.err.println("publish:" + newEntry +" current:" + currentEntry);
                     getEntryManager().processEntryPublish(request, file,
-                            newEntry, currentEntry, "derived from");
+							  newEntry, currentEntry, "derived from");
 
                 } else {
 		    if(debug)
 			System.err.println("Service: no publish:" + newEntry);
                     newEntry
                         .setId(getEntryManager().getProcessFileTypeHandler()
-                            .getSynthId(getEntryManager().getProcessEntry(),
-                                        input.getProcessDir().toString(),
-                                        file));
+			       .getSynthId(getEntryManager().getProcessEntry(),
+					   input.getProcessDir().toString(),
+					   file));
                 }
                 myOutput.addEntry(newEntry);
             }
@@ -2117,12 +1947,9 @@ public class Service extends RepositoryManager {
         return myOutput;
     }
 
-
-
-    
     public void addOutput(Request request, ServiceInput input,
                           ServiceOutput output, Appendable sb)
-            throws Exception {
+	throws Exception {
         if (haveLink()) {
             link.addOutput(request, input, output, sb);
 
@@ -2133,14 +1960,14 @@ public class Service extends RepositoryManager {
         for (Entry entry : input.getEntries()) {
             if (cnt++ == 0) {
                 sb.append(
-                    HU.open(
-                        HU.TAG_DIV,
-                        HU.cssClass("service-output-header")));
+			  HU.open(
+				  HU.TAG_DIV,
+				  HU.cssClass("service-output-header")));
             } else {
                 sb.append(HU.br());
             }
             sb.append(HU.href(getEntryManager().getEntryURL(request,
-                    entry), entry.getName()));
+							    entry), entry.getName()));
         }
         if (cnt > 0) {
             sb.append(HU.close(HU.TAG_DIV));
@@ -2152,12 +1979,10 @@ public class Service extends RepositoryManager {
         sb.append("</div>");
     }
 
-
-    
     public void ensureSafeServices() {
         if (command != null) {
             throw new IllegalArgumentException(
-                "Service cannot have a command:" + command);
+					       "Service cannot have a command:" + command);
         }
         if (haveChildren()) {
             for (Service child : children) {
@@ -2166,26 +1991,18 @@ public class Service extends RepositoryManager {
         }
     }
 
-    
     public void setDescription(String d) {
         description = d;
     }
 
-
-    
     public void setSerial(boolean value) {
         serial = value;
     }
 
-    
     public boolean getSerial() {
         return serial;
     }
 
-
-
-
-    
     public void getAllOutputs(List<OutputDefinition> outputs) {
         if (haveChildren()) {
             for (Service child : children) {
@@ -2195,14 +2012,10 @@ public class Service extends RepositoryManager {
         outputs.addAll(this.getOutputs());
     }
 
-
-
-    
     public String macro(String s) {
         return "${" + s + "}";
     }
 
-    
     public String applyMacros(Request request,Entry entry,
                               Hashtable<String, List<Entry>> entryMap,
                               Hashtable<String, String> valuesSoFar,
@@ -2213,14 +2026,13 @@ public class Service extends RepositoryManager {
             return null;
         }
 
-
         value = value.replace("${workdir}", forDisplay
-                                            ? "&lt;working directory&gt;"
-                                            : workDir.toString());
+			      ? "&lt;working directory&gt;"
+			      : workDir.toString());
 
         if (valuesSoFar != null) {
             for (Enumeration keys = valuesSoFar.keys();
-                    keys.hasMoreElements(); ) {
+		 keys.hasMoreElements(); ) {
                 String id = (String) keys.nextElement();
                 String v  = valuesSoFar.get(id);
                 value = value.replace("${" + id + "}", v);
@@ -2228,7 +2040,7 @@ public class Service extends RepositoryManager {
         }
         if (entryMap != null) {
             for (Enumeration keys =
-                    entryMap.keys(); keys.hasMoreElements(); ) {
+		     entryMap.keys(); keys.hasMoreElements(); ) {
                 String id = (String) keys.nextElement();
                 for (Entry otherEntry : entryMap.get(id)) {
                     value = applyMacros(request, otherEntry, id, value, forDisplay);
@@ -2238,14 +2050,13 @@ public class Service extends RepositoryManager {
 
         if (extraMap != null) {
             for (Enumeration keys =
-                    extraMap.keys(); keys.hasMoreElements(); ) {
+		     extraMap.keys(); keys.hasMoreElements(); ) {
                 String id = (String) keys.nextElement();
                 String v  = extraMap.get(id);
                 value = value.replace(id, v);
             }
 
         }
-
 
         //        System.err.println("Apply macros:" +entry);
         if (entry != null) {
@@ -2255,8 +2066,6 @@ public class Service extends RepositoryManager {
         return value;
     }
 
-
-    
     private String applyMacros(Request request, Entry entry, String id, String value,
                                boolean forDisplay) throws Exception {
         List<Column> columns = entry.getTypeHandler().getColumns();
@@ -2267,14 +2076,13 @@ public class Service extends RepositoryManager {
                 if (columnValue != null) {
                     value = value.replace("${" + id + ".attr."
                                           + column.getName() + "}", ""
-                                              + columnValue);
+					  + columnValue);
                 } else {
                     value = value.replace("${" + id + ".attr."
                                           + column.getName() + "}", "");
                 }
             }
         }
-
 
         String fileTail = getStorageManager().getFileTail(entry);
         value = value.replace("${" + id + ".id}", entry.getId());
@@ -2288,19 +2096,15 @@ public class Service extends RepositoryManager {
                               IOUtil.stripExtension(fileTail));
         value = value.replace("${" + id + ".file.suffix}",
                               IOUtil.getFileExtension(fileTail).replace(".",
-                                  ""));
+									""));
 
         return value;
     }
 
-
-    
     private class CatBuff {
 
-        
         List<List<StringBuilder>> rows = new ArrayList<List<StringBuilder>>();
 
-        
         public List<StringBuilder> addRow(String label, String value,
                                           String value2) {
             List<StringBuilder> row = new ArrayList<StringBuilder>();
@@ -2314,25 +2118,19 @@ public class Service extends RepositoryManager {
             return row;
         }
 
-        
         public int length() {
             return rows.size();
         }
 
-        
         public void addRow(List<StringBuilder> row) {
             rows.add(row);
         }
 
-        
         public void appendToCurrentRow(String v) {
             List<StringBuilder> row = rows.get(rows.size() - 1);
             row.get(1).append(v);
         }
 
-
-
-        
         public void addToForm(Appendable sb) throws Exception {
             for (List<StringBuilder> row : rows) {
                 String label  = row.get(0).toString();
@@ -2344,35 +2142,24 @@ public class Service extends RepositoryManager {
             }
         }
 
-
     }
 
-
-
-    
     public Element getElement() {
         return element;
     }
 
-
-    
     public void setServiceEntry(Entry value) {
         serviceEntry = value;
     }
 
-    
     public Entry getServiceEntry() {
         return serviceEntry;
     }
 
-
-    
     public String toString() {
-        return getLabel() + " " + id +" " + command;
+        return getLabel() + " " + (id!=null?id:(linkId!=null?"link:" + linkId:"")) +" " + command;
     }
 
-
-    
     public double getMaxFileSize() {
         return maxFileSize;
     }
