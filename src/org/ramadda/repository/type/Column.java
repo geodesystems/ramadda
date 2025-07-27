@@ -66,6 +66,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final boolean DEBUG_TIME=false;
     public static final boolean DEBUG=false;
 
+    public static final String HIDDEN_VALUE =  "************";
+
     public static final String ARG_EDIT_PREFIX = "edit_";
     public static final String ARG_SEARCH_PREFIX = "search.";
     public static final String OUTPUT_HTML = "html";
@@ -932,6 +934,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     public Object getValue(Request request, Entry entry) {
 	if(!accessOk(request, entry)) {
+	    if(isPrivate) return HIDDEN_VALUE;
 	    return null;
 
 	}
@@ -1029,7 +1032,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 			       String output, Object[] values,
 			       SimpleDateFormat sdf, boolean raw,boolean...notMacros)
 	throws Exception {
-	if(!accessOk(request, entry)) return false;
+	if(!accessOk(request, entry)) {
+	    if(isPrivate) {
+		result.append(HIDDEN_VALUE);
+	    }
+	    return false;
+	}
 	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
         boolean    csv = Misc.equals(output, OUTPUT_CSV);
