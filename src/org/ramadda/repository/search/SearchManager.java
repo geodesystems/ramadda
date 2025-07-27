@@ -1721,7 +1721,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    if(column!=null) {
 			//property_type_missing_person_biological_sex
 			//property_type_missing_person_biological_sex
-			field = getPropertyField(typeHandler,by)+"_sort";
+			field = getPropertyField(typeHandler,column)+"_sort";
 			if(column.isString() || column.isEnumeration())
 			    sortType = SortField.Type.STRING;
 			else if(column.isDouble()) 
