@@ -603,6 +603,20 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+	if(entry.isFile()) {
+	    for (Service service : services) {
+		//hacky hard coded
+		if(service.isService("media_gs_thumbnail")) {
+		    applyService(request, entry,service);
+		    return true;
+		}
+	    }
+	}
+
+
+
+
+
 	if(!entry.isImage()) return false;
 	return getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
     }
@@ -3460,6 +3474,7 @@ public class TypeHandler extends RepositoryManager {
 
     public void applyService(Request request, Entry entry, Service service) {
 	if ( !service.isEnabled()) {
+	    //	    System.err.println("not enabled");
 	    return;
 	}
 	try {
@@ -3487,7 +3502,7 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
 	    //Defer to the entry's type handler
-	    //                    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
+	    //	    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
 	    entry.getTypeHandler().handleServiceResults(request,
 							entry, service, output);
 	} catch (Exception exc) {
@@ -3542,6 +3557,7 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 	//	getLogManager().logSpecial("Service: " + target);
+
         if (target.equals(TARGET_ATTACHMENT)) {
 
             for (Entry serviceEntry : entries) {
@@ -4429,6 +4445,7 @@ public class TypeHandler extends RepositoryManager {
                     List<String> tabContent = new ArrayList<String>();
                     String urlLabel = getFormLabel(parentEntry,entry, ARG_URL, "URL");
                     String fileLabel = getFormLabel(parentEntry,entry, ARG_FILE, "File");
+                    String resourceLabel = getFormLabel(parentEntry,entry, "resource","Resource");
                     if (showFile) {
                         String inputId   = formInfo.getId() + "_fileinput";
                         String fileAttrs = HU.id(inputId) + size;
@@ -4552,18 +4569,10 @@ public class TypeHandler extends RepositoryManager {
                             HU.formEntry(sb,msgLabel("Resource"), resource);
 			    sb.append(HU.formTableClose());
 			    sb.append(HU.formTable());
-
-                            /*
-                              sb.append(
-                              formEntry(
-                              request, msgLabel("Resource"),
-                              getStorageManager().getFileTail(
-                              entry)));
-                            */
 			}
                         if (tabTitles.size() > 1) {
                             HU.formEntry(sb,
-                                         HU.b("New Resource:<br>")
+                                         HU.b(resourceLabel+"<br>")
                                          + OutputHandler.makeTabs(tabTitles,
 								  tabContent, true) + extra);
                         } else if (tabTitles.size() == 1) {
