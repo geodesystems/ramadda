@@ -567,10 +567,14 @@ public class ExtEditor extends RepositoryManager {
 					if(!holder[0].okToRun) {
 					    return false;
 					}
-				    } catch(Exception exc) {
+				    } catch(Throwable exc) {
+					if(exc instanceof org.mozilla.javascript.WrappedException) {
+					    exc = ((org.mozilla.javascript.WrappedException) exc).getWrappedException();
+					}
 					holder[0].cancel = true;
 					append("<div class=ramadda-action-result-error>An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc+"</div>");
 					System.err.println("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+					exc.printStackTrace();
 					//Always exit on the first error
 					if(true) return false;
 					if(errorCount++>100) {
