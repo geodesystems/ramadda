@@ -814,7 +814,8 @@ public class CsvOutputHandler extends OutputHandler {
 		    }
 		}
 		if (haveFiles) {
-		    headers.add("Size");
+		    headers.add("File Size");
+		    headers.add("File Download");
 		}
 
 		if (columns != null) {
@@ -932,16 +933,13 @@ public class CsvOutputHandler extends OutputHandler {
 			fmt.accept(entry,entry.getEndDate());
 		    }		
 		    if (haveFiles) {
-			String downloadLink =
-			    HU.href(
-				    entry.getTypeHandler().getEntryResourceUrl(
-									       request, entry), HU.img(
-												       getIconUrl(ICON_DOWNLOAD), msg("Download"),
-												       ""));
+			String downloadUrl=request.getAbsoluteUrl(entry.getTypeHandler().getEntryResourceUrl(request, entry));
 
 			if (entry.isFile()) {
-			    add.accept(downloadLink);
+			    add.accept(""+entry.getResource().getFileSize());
+			    add.accept(downloadUrl);
 			} else {
+			    add.accept(NA);
 			    add.accept(NA);
 			}
 		    }
