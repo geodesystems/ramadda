@@ -16,7 +16,7 @@ assigned_to,Assigned To,enumerationplus,  cansearch="true"
 location,Location,enumerationplus,  cansearch="true" 
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
 values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
-acquisition_cost,Acquisition Cost, double,
+acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"
 warranty_expiration,,date, default="none"  cansearch="true" 	      
 
 #physical asset

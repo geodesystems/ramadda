@@ -15,12 +15,12 @@ childtypes="type_assets_license"
 >
 
 <!-- Columns-->
-<column  name="asset_id"  label="Asset ID"  type="string"  size="400" />
+<column  name="asset_id"  label="Asset ID"  type="string"  size="400"  cansearch="true" />
 <column  name="department"  label="Department"  type="enumerationplus"  cansearch="true" />
 <column  name="assigned_to"  label="Assigned To"  type="enumerationplus"  cansearch="true" />
 <column  name="location"  label="Location"  type="enumerationplus"  cansearch="true" />
 <column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
-<column  name="acquisition_cost"  label="Acquisition Cost"  type="double" />
+<column  name="acquisition_cost"  label="Acquisition Cost"  type="double"  cansearch="true"  cansort="true" />
 <column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>

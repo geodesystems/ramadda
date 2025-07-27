@@ -50,7 +50,7 @@ addSearchLink="true"  animated="true" }}
 :vspace 1em
 ----
 :heading Search
-{{display_entrylist     showEntryType=true orderByTypes="name,relevant,createdate,changedate,date,entryorder"  
+{{display_entrylist     showEntryType=true orderByTypes="name,acquisition_cost,relevant,date,createdate,changedate"  
 showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
 toggleClose=true  
 entryTypes="super:type_assets_base,super:type_assets_thing" 
