@@ -588,10 +588,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
 		    }
 		    else if(column.isDouble())  {
-			doc.add(new DoublePoint(field, (Double)v));
-			if(column.getCanSort())
-			    doc.add(new SortedNumericDocValuesField(field+"_sort",
-								    Double.doubleToRawLongBits(Utils.getDouble(v))));
+			double value = (Double)v;
+			if(!Double.isNaN(value)) {
+			    doc.add(new DoublePoint(field, (Double)v));
+			    if(column.getCanSort())
+				doc.add(new SortedNumericDocValuesField(field+"_sort",
+									Double.doubleToRawLongBits(Utils.getDouble(v))));
+			}
 
 		    }   else if(column.isInteger())  {
 			doc.add(new IntPoint(field, (Integer)v));		    
