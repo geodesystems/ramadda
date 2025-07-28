@@ -92,10 +92,9 @@ This data is provided by <a href="https://openaq.org/">OpenAQ</a><br>
 
 <property name="mapglyphs">
   <![CDATA[
-props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2_5,
+props:fontSize:0px,iconSize:14,canvasWidth:100,canvasHeight:100,font:24px sans-serif,defaultField:pm25,
 circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
-#image,pos:c,dx:cw2,dy:-ch2,width:60,height:60,url:${icon},imageAlpha:0.5
-label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field} #suffix=" pm2.5" decimals=1}
 ]]></property>
 
 

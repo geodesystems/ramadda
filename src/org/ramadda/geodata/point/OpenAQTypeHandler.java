@@ -115,15 +115,20 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
 	List<String>ss=new ArrayList<String>();
 	JSONArray sensors = location.getJSONArray("sensors");
+	int index = 0;
 	for(int i=0;i<sensors.length();i++)  {
 	    JSONObject sensor = sensors.getJSONObject(i);
 	    JSONObject parameter = sensor.getJSONObject("parameter");
+	    String name = parameter.getString("name");
+	    if(name.equals("pm25")) index = i;
 	    ss.add(sensor.getInt("id")+
-		   ";"+parameter.getString("name")+
+		   ";"+name+
 		   ";"+parameter.getString("units")+
 		   ";"+parameter.getString("displayName"));
 													     
 	}
+	//default to pm25 if it is there
+	entry.setValue("sensorindex",new Integer(index));
 	entry.setValue(IDX_SENSORS,Utils.join(ss,","));
     }
 
