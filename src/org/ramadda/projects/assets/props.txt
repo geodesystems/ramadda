@@ -16,6 +16,9 @@ assigned_to,Assigned To,enumerationplus,  cansearch="true"
 location,Location,enumerationplus,  cansearch="true" 
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
 values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
+vendor,Vendor,entry, entrytype="type_assets_vendor" 
+purchase_order,,string
+check_number,,string
 acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"
 warranty_expiration,,date, default="none"  cansearch="true" 	      
 
@@ -93,21 +96,54 @@ name:Equipment
 
 
 #license type_assets_license
-license_type,,enumerationplus, default="perpetual" \
+license_type,,enumerationplus,  cansearch="true" default="perpetual" \
 values="perpetual:Perpetual\,subscription:Subscription\,open_source:Open Source\,\
 trial:Trial\,enterprise:Enterprise\,volume:Volume\,site:Site\,\
 concurrent:Concurrent\,user_based:User-Based\,device_based:Device-Based\,\
 core_based:Core-Based\,cloud_based:Cloud-Based\,freeware:Freeware\,shareware:Shareware"
-issuing_authority,,enumerationplus,
-status,,enumerationplus, default="active" \
+issuing_authority,,enumerationplus,  cansearch="true"
+status,,enumerationplus,  cansearch="true" default="active" \
 values="active:Active\, expired:Expired\, revoked:Revoked\, pending:Pending"
 license_key,,string,isprivate="true"
-licensed_to_email,,enumerationpluse,
+licensed_to_email,,enumerationplus,  cansearch="true"
 licensed_to_name,,enumerationplus,
 number_of_seats,,int,
 cost,,double
-expiration_date,,date,default="none"
+expiration_date,,date,default="none"  cansearch="true"
 terms_url,,url,
+
+
+
+
+#vendor
+vendor_id,Vendor ID,string,
+vendor_type,,enumerationplus, group="Vendor Information" cansearch="true"  \
+values="manufacturer:Manufacturer\,reseller:Reseller\,service_provider:Service provider"
+contact_name,Primary Contact Name,string,
+phone_number,Phone Number,string
+email,Email Address,email
+website,Website,url
+mailing_address,Mailing Address,string, size="1000" rows="5"
+billing_address,Billing Address,string, size="1000" rows="5"
+tax_id,Tax ID / EIN,string
+duns_number,DUNS Number,string
+business_license_number,Business License Number,string
+#naics_code,NAICS Code,string
+#contract_number,Contract Number
+#contract_start_date,Contract Start Date
+#contract_end_date,Contract End Date
+#preferred_vendor,Preferred Vendor
+payment_terms,Payment Terms,enumerationplus, values="\
+Net 15\,Net 30\,Net 45\,Net 60\,Due on Receipt\,COD\,CIA\,EOM\,2/10 Net 30\,1/10 Net 30\,50% Upfront / 50% on Delivery\,Milestone-Based\,Prepaid\,Installments\,Progress Billing"
+
+
+
+
+
+
+
+
+
 
 
 

@@ -20,6 +20,9 @@ childtypes="type_assets_license"
 <column  name="assigned_to"  label="Assigned To"  type="enumerationplus"  cansearch="true" />
 <column  name="location"  label="Location"  type="enumerationplus"  cansearch="true" />
 <column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
+<column  name="vendor"  label="Vendor"  type="entry"  entrytype="type_assets_vendor" />
+<column  name="purchase_order"  label="Purchase Order"  type="string" />
+<column  name="check_number"  label="Check Number"  type="string" />
 <column  name="acquisition_cost"  label="Acquisition Cost"  type="double"  cansearch="true"  cansort="true" />
 <column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
 <!-- Properties-->

@@ -1,0 +1,59 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_vendor.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_vendor" 
+ description="Vendor" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_thing" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="vendor_id"  label="Vendor ID"  type="string" />
+<column  name="vendor_type"  label="Vendor Type"  type="enumerationplus"  group="Vendor Information" cansearch="true"   values="manufacturer:Manufacturer,reseller:Reseller,service_provider:Service provider" />
+<column  name="contact_name"  label="Primary Contact Name"  type="string" />
+<column  name="phone_number"  label="Phone Number"  type="string" />
+<column  name="email"  label="Email Address"  type="email" />
+<column  name="website"  label="Website"  type="url" />
+<column  name="mailing_address"  label="Mailing Address"  type="string"  size="1000" rows="5" />
+<column  name="billing_address"  label="Billing Address"  type="string"  size="1000" rows="5" />
+<column  name="tax_id"  label="Tax ID / EIN"  type="string" />
+<column  name="duns_number"  label="DUNS Number"  type="string" />
+<column  name="business_license_number"  label="Business License Number"  type="string" />
+<column  name="payment_terms"  label="Payment Terms"  type="enumerationplus"  values="  Net 15,Net 30,Net 45,Net 60,Due on Receipt,COD,CIA,EOM,2/10 Net 30,1/10 Net 30,50% Upfront / 50% on Delivery,Mil  estone-Based,Prepaid,Installments,Progress Billing" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/vendor.png" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="License: {{name}}"
+{{description wikify=true}}
++toggleopen Vendor Information
++row
++col-8
+{{information  showBase=false}}
+-col
++col-4
+{{information   showDetails=false}}
+-col
+-row
+-toggle
+:vspace 1em
+----
+:vspace 1em
+{{embed message=""  }} 
+
+
+{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
+showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage=true}} 
+-section]]></wiki>
+</type>
