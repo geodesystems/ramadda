@@ -2167,7 +2167,7 @@ public class ExtEditor extends RepositoryManager {
 	String inputSize  =HU.style("width:98%;");
 
 	List<String> types =
-	    Utils.split("string,enumeration,enumerationplus,multienumeration,double,int,boolean,datetime,date,list,password,clob,url,latlon,email",",");
+	    Utils.split("string,enumeration,enumerationplus,multienumeration,double,int,boolean,datetime,date,list,password,clob,url,latlon,email,entry,entrylist",",");
 
 	types.add(0,"");
 	for(int i=0;i<50;i++) {
