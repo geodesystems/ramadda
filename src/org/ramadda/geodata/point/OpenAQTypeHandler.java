@@ -196,7 +196,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	    if(sb.length()>0) sb.append(",");
 	    sb.append(sensor.id+":" + sensor.name);
 	}
-	System.err.println(sb);
 	return sb.toString();
     }
 
