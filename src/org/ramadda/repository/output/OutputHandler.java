@@ -1005,6 +1005,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         if (seen.contains(entry.getId())) {
             return "";
         }
+	String entryType = request.getString(ARG_ENTRYTYPE,null);
         seen.add(entry.getId());
         String        target     = args[0];
         String        namePrefix = (args.length > 1)
@@ -1015,7 +1016,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                     ? namePrefix
                                     : "") + getEntryDisplayName(entry);
         StringBuilder sb         = new StringBuilder();
-        HU.open(sb, "span", HU.attrs("class","ramadda-highlightable","title","Type: " + entry.getTypeHandler().getLabel()));
+        HU.open(sb, "span", HU.attrs("class","xxramadda-highlightable","title","Type: " + entry.getTypeHandler().getLabel()));
         String entryId = entry.getId();
         String entryIconImage    = getPageHandler().getEntryIconImage(request, entry);
         String event;
@@ -1104,13 +1105,18 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    //"base64:" + Utils.encodeBase64(mapGlyphs));		      
 	}
 
-        sb.append(HU.mouseClickHref(HU.call(
-					    "RamaddaUtils.selectClick",
-					    HU.comma(
-                        HU.squote(target), HU.squote(entry.getId()),
-                        HU.squote(name),
-                        JsonUtil.map(attrs), HU.squote(
-                                    type))), linkText));
+	if(entryType==null || entry.getTypeHandler().isType(entryType)) {
+	    String click = HU.mouseClickHref(HU.call(
+						     "RamaddaUtils.selectClick",
+						     HU.comma(
+							      HU.squote(target), HU.squote(entry.getId()),
+							      HU.squote(name),
+							      JsonUtil.map(attrs), HU.squote(
+											     type))), linkText);
+	    sb.append(HU.span(click,HU.attrs("class","ramadda-clickable")));
+	} else {
+	    sb.append(linkText);
+	}
 
         HU.close(sb, "span");
         sb.append(HU.br());
