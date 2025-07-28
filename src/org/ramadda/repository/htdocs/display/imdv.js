@@ -464,7 +464,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return Object.keys(this.markers);
 	},
 
-
+	displayedColorTables:{},
+	//TODO: handle multiple different color tables & removal upon mapglyph delete
+	applyMapGlyphColorTable:function(mapGlyph,  colorByInfo) {
+	    let id = colorByInfo.getId();
+	    if(id && !this.displayedColorTables[id]) {
+		this.displayedColorTables[id]=true;
+		colorByInfo.displayColorTable();
+	    }
+	},
 	makeLabel:function(l) {
 	    let _l = l.toLowerCase();
 	    let v = this.getMapProperty(_l+'.label');
