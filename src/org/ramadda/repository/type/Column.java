@@ -402,7 +402,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
 	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:	isType(DATATYPE_ENTRY_LIST)?5000:size);
-	entryType = getAttributeOrTag(element,"entryType",null);
+	entryType = getAttributeOrTag(element,"entryType",
+				      getAttributeOrTag(element,"entrytype",null));
 
         min            = getAttributeOrTag(element, ATTR_MIN, min);
         max            = getAttributeOrTag(element, ATTR_MAX, max);
@@ -2575,7 +2576,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             widget =
                 getRepository().getEntryManager().getEntryFormSelect(request,
-								     entry, urlArg, value);
+								     entry, urlArg, value,entryType);
         } else if (isType(DATATYPE_ENTRY_LIST)) {
 	    //TODO
             String value = "";
