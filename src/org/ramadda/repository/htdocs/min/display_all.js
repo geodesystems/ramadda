@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul 27 18:30:13 MDT 2025";
+var build_date="RAMADDA build date: Mon Jul 28 05:00:26 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -68,14 +68,15 @@ $.extend(Utils,{
                 html += HU.tr([],HU.td(['colspan','3'],'<br>' + HU.h3(ct.category)));
 		return
             }
+	    let colors = ct.colors??[];
             code +='new ColorTable(\'' + ct.id +'\',\'' + ct.id +'\', new String[]{\n';
-            for(var i=0;i<ct.colors.length;i++) {
-                code +='\'' + ct.colors[i]+'\',';
-            }
+	    for(var i=0;i<colors.length;i++) {
+                code +='\'' + colors[i]+'\',';
+	    }
             code += '});\n';
             html += HU.tr([],
 			  HU.td(['width','10%'],HU.b(HU.span([ATTR_CLASS,'colortable-id'],ct.id))) +
-			  HU.td(['align','right'],HU.space(2)+ct.colors.length+'&nbsp;') +
+			  HU.td(['align','right'],HU.space(2)+colors.length+'&nbsp;') +
 			  HU.td([], HU.div(['id', domId + '_' + cnt, ATTR_STYLE, 'overflow-x:hidden;max-width:500px;width:100%;'], '')) );
             cnt++;
 	    html+='\n';
@@ -480,6 +481,15 @@ var defaultColorTables=[
 {"id":"precipitation","colors":["rgba(255,255,255,0)","rgb(6,13,255)","rgb(13,26,255)","rgb(20,40,255)","rgb(26,53,255)","rgb(33,67,255)","rgb(40,80,255)","rgb(46,93,255)","rgb(53,107,255)","rgb(60,120,255)","rgb(67,134,255)","rgb(73,147,255)","rgb(80,161,255)","rgb(87,174,255)","rgb(93,187,255)","rgb(100,201,255)","rgb(107,214,255)","rgb(114,228,255)","rgb(120,241,255)","rgb(127,255,255)","rgb(127,255,229)","rgb(129,253,223)","rgb(130,251,216)","rgb(132,249,210)","rgb(133,247,203)","rgb(135,245,197)","rgb(137,243,190)","rgb(138,241,184)","rgb(140,239,177)","rgb(142,237,171)","rgb(143,235,164)","rgb(145,233,158)","rgb(146,231,152)","rgb(148,229,145)","rgb(150,227,139)","rgb(151,225,132)","rgb(153,224,126)","rgb(154,222,119)","rgb(156,220,113)","rgb(158,218,106)","rgb(159,216,100)","rgb(161,214,93)","rgb(163,212,87)","rgb(164,210,81)","rgb(166,208,74)","rgb(167,206,68)","rgb(169,204,61)","rgb(171,202,55)","rgb(172,200,48)","rgb(174,198,42)","rgb(175,196,35)","rgb(177,194,29)","rgb(179,193,22)","rgb(180,191,16)","rgb(182,189,10)","rgb(183,187,3)","rgb(185,185,0)","rgb(187,183,0)","rgb(188,181,0)","rgb(190,179,0)","rgb(192,177,0)","rgb(193,175,0)","rgb(195,173,0)","rgb(196,171,0)","rgb(198,169,0)","rgb(200,167,0)","rgb(201,165,0)","rgb(203,163,0)","rgb(204,162,0)","rgb(206,160,0)","rgb(208,158,0)","rgb(209,156,0)","rgb(211,154,0)","rgb(213,152,0)","rgb(214,150,0)","rgb(216,148,0)","rgb(217,146,0)","rgb(219,144,0)","rgb(221,142,0)","rgb(222,140,0)","rgb(224,138,0)","rgb(225,136,0)","rgb(227,134,0)","rgb(229,132,0)","rgb(230,131,0)","rgb(232,129,0)","rgb(234,127,0)","rgb(235,125,0)","rgb(237,123,0)","rgb(238,121,0)","rgb(240,119,0)","rgb(242,117,0)","rgb(243,115,0)","rgb(245,113,0)","rgb(246,111,0)","rgb(248,109,0)","rgb(250,107,0)","rgb(251,105,0)","rgb(253,103,0)","rgb(255,101,0)"]},
 {"id":"humidity","colors":["rgb(255,255,0)","rgb(228,255,0)","rgb(201,255,0)","rgb(174,255,0)","rgb(147,255,0)","rgb(120,255,0)","rgb(93,255,0)","rgb(67,255,0)","rgb(40,255,0)","rgb(13,255,0)","rgb(0,248,13)","rgb(0,234,40)","rgb(0,221,67)","rgb(0,208,93)","rgb(0,194,120)","rgb(0,181,147)","rgb(0,167,174)","rgb(0,154,201)","rgb(0,140,228)","rgb(0,127,255)"]},
 {"id":"airquality","min":0,"max":300,"colors":["rgb(140,223,91)","rgb(139,224,92)","rgb(141,225,90)","rgb(144,224,90)","rgb(145,226,90)","rgb(146,226,89)","rgb(149,227,90)","rgb(151,226,88)","rgb(153,227,88)","rgb(153,228,88)","rgb(156,228,88)","rgb(157,228,86)","rgb(158,229,87)","rgb(161,230,86)","rgb(162,229,86)","rgb(164,230,85)","rgb(165,231,85)","rgb(167,231,85)","rgb(168,232,85)","rgb(172,233,84)","rgb(173,233,84)","rgb(175,234,83)","rgb(176,234,84)","rgb(179,235,83)","rgb(179,235,83)","rgb(182,235,83)","rgb(183,236,83)","rgb(186,236,83)","rgb(187,237,83)","rgb(189,238,82)","rgb(191,238,83)","rgb(193,238,82)","rgb(196,240,81)","rgb(197,240,82)","rgb(198,241,82)","rgb(202,240,82)","rgb(203,242,82)","rgb(204,242,82)","rgb(208,243,83)","rgb(209,242,81)","rgb(211,244,82)","rgb(213,245,82)","rgb(215,244,82)","rgb(217,245,81)","rgb(218,246,82)","rgb(221,247,82)","rgb(223,245,82)","rgb(224,247,81)","rgb(226,247,82)","rgb(228,248,82)","rgb(230,249,82)","rgb(232,250,82)","rgb(234,250,83)","rgb(237,251,82)","rgb(238,251,83)","rgb(241,252,83)","rgb(241,252,83)","rgb(245,253,84)","rgb(246,253,84)","rgb(249,254,84)","rgb(251,254,85)","rgb(252,255,84)","rgb(255,254,85)","rgb(255,252,83)","rgb(255,250,82)","rgb(254,249,83)","rgb(253,247,81)","rgb(254,244,81)","rgb(253,243,80)","rgb(252,241,80)","rgb(253,239,80)","rgb(253,236,78)","rgb(252,235,78)","rgb(251,234,78)","rgb(252,231,77)","rgb(251,228,76)","rgb(250,227,76)","rgb(251,225,76)","rgb(249,222,75)","rgb(249,221,73)","rgb(250,220,73)","rgb(248,217,73)","rgb(248,216,73)","rgb(248,213,71)","rgb(247,212,71)","rgb(248,209,70)","rgb(247,207,70)","rgb(248,205,69)","rgb(246,203,69)","rgb(247,201,69)","rgb(245,199,68)","rgb(246,197,67)","rgb(245,195,67)","rgb(245,194,66)","rgb(245,191,66)","rgb(245,190,65)","rgb(245,188,64)","rgb(244,187,64)","rgb(243,184,63)","rgb(245,182,63)","rgb(243,181,62)","rgb(243,179,62)","rgb(244,177,62)","rgb(244,174,60)","rgb(243,173,61)","rgb(242,172,60)","rgb(243,169,60)","rgb(242,166,58)","rgb(241,166,59)","rgb(242,164,58)","rgb(241,161,58)","rgb(241,159,56)","rgb(242,158,56)","rgb(240,156,56)","rgb(240,154,56)","rgb(241,153,55)","rgb(240,151,55)","rgb(241,149,53)","rgb(240,147,54)","rgb(240,146,53)","rgb(239,143,52)","rgb(240,141,52)","rgb(238,138,52)","rgb(239,136,51)","rgb(238,135,51)","rgb(238,133,50)","rgb(238,130,50)","rgb(238,128,49)","rgb(239,127,48)","rgb(237,126,49)","rgb(237,124,48)","rgb(238,121,47)","rgb(237,120,47)","rgb(237,119,47)","rgb(238,116,47)","rgb(237,114,45)","rgb(237,113,46)","rgb(236,112,45)","rgb(237,110,45)","rgb(237,107,44)","rgb(236,107,44)","rgb(237,104,44)","rgb(236,102,44)","rgb(236,101,42)","rgb(236,99,43)","rgb(235,97,42)","rgb(235,96,42)","rgb(236,95,42)","rgb(235,94,42)","rgb(236,92,41)","rgb(235,91,41)","rgb(236,89,41)","rgb(235,88,40)","rgb(235,85,41)","rgb(234,84,40)","rgb(235,83,40)","rgb(235,81,40)","rgb(235,81,39)","rgb(235,78,40)","rgb(235,77,39)","rgb(236,76,38)","rgb(234,75,39)","rgb(234,73,38)","rgb(235,71,38)","rgb(234,71,38)","rgb(234,70,38)","rgb(235,68,38)","rgb(235,66,37)","rgb(235,66,37)","rgb(234,65,37)","rgb(235,64,37)","rgb(235,62,36)","rgb(234,62,37)","rgb(235,61,36)","rgb(234,59,37)","rgb(234,58,35)","rgb(234,58,36)","rgb(233,57,36)","rgb(233,57,36)","rgb(234,56,36)","rgb(234,55,36)","rgb(235,55,35)","rgb(233,54,36)","rgb(235,54,35)","rgb(233,54,35)","rgb(234,53,36)","rgb(233,52,36)","rgb(233,51,36)","rgb(231,50,37)","rgb(230,51,36)","rgb(228,50,38)","rgb(227,50,37)","rgb(226,50,37)","rgb(223,51,39)","rgb(221,50,39)","rgb(221,49,40)","rgb(218,50,41)","rgb(217,50,43)","rgb(216,49,44)","rgb(215,48,44)","rgb(213,49,46)","rgb(211,50,47)","rgb(210,49,49)","rgb(208,48,49)","rgb(205,49,51)","rgb(204,49,53)","rgb(203,48,55)","rgb(201,48,56)","rgb(199,49,58)","rgb(197,48,59)","rgb(196,49,62)","rgb(195,49,63)","rgb(192,49,65)","rgb(192,49,67)","rgb(190,50,69)","rgb(189,50,71)","rgb(186,50,73)","rgb(185,50,75)","rgb(183,50,78)","rgb(182,51,79)","rgb(180,51,81)","rgb(178,52,83)","rgb(178,51,86)","rgb(176,52,87)","rgb(174,52,89)","rgb(171,53,92)","rgb(170,54,94)","rgb(170,53,95)","rgb(167,55,97)","rgb(165,55,100)","rgb(166,55,103)","rgb(163,55,104)","rgb(161,56,107)","rgb(159,57,109)","rgb(159,57,111)","rgb(157,57,112)","rgb(155,59,115)","rgb(154,59,117)","rgb(151,59,120)","rgb(150,60,121)","rgb(150,61,124)","rgb(146,61,126)","rgb(144,62,128)","rgb(145,63,130)","rgb(142,64,133)","rgb(142,64,134)","rgb(138,65,137)","rgb(139,66,138)","rgb(136,66,142)","rgb(135,67,144)","rgb(132,67,146)","rgb(133,67,144)","rgb(132,65,143)","rgb(132,66,141)","rgb(132,64,140)","rgb(132,63,137)","rgb(131,62,134)","rgb(130,62,133)","rgb(130,61,132)","rgb(130,59,130)","rgb(129,59,128)","rgb(129,58,127)","rgb(130,57,125)","rgb(129,55,122)","rgb(129,55,122)","rgb(128,55,120)","rgb(129,54,118)","rgb(128,52,115)","rgb(127,52,114)","rgb(128,51,113)","rgb(127,49,111)","rgb(126,49,108)","rgb(127,48,107)","rgb(125,47,106)","rgb(125,47,103)","rgb(125,46,102)","rgb(125,45,101)","rgb(126,44,98)","rgb(124,43,97)","rgb(125,43,95)","rgb(123,42,93)","rgb(124,41,92)","rgb(122,40,90)","rgb(123,39,88)","rgb(123,38,87)","rgb(123,38,84)","rgb(122,37,84)","rgb(122,36,81)","rgb(123,35,79)","rgb(121,36,79)","rgb(120,34,76)","rgb(122,33,74)","rgb(121,33,73)","rgb(119,33,71)","rgb(121,31,70)","rgb(120,30,67)","rgb(120,30,66)","rgb(119,30,65)","rgb(120,29,63)","rgb(119,28,60)","rgb(119,28,59)","rgb(119,27,57)","rgb(118,26,56)","rgb(118,26,54)","rgb(119,26,52)","rgb(116,24,51)","rgb(116,24,49)","rgb(117,24,47)","rgb(116,23,47)","rgb(117,23,44)","rgb(116,22,43)","rgb(117,22,41)","rgb(114,21,39)","rgb(115,20,38)","rgb(114,20,38)","rgb(115,20,38)","rgb(115,20,38)","rgb(115,21,37)","rgb(115,20,38)","rgb(115,20,37)","rgb(116,20,37)","rgb(114,21,38)","rgb(114,20,37)","rgb(116,20,37)","rgb(115,21,37)","rgb(114,21,38)","rgb(116,20,38)","rgb(115,19,37)","rgb(115,20,38)","rgb(115,21,38)","rgb(116,20,38)","rgb(115,20,37)","rgb(115,20,38)","rgb(116,20,37)","rgb(115,19,38)","rgb(115,20,37)","rgb(116,20,37)","rgb(114,20,37)","rgb(114,20,38)","rgb(115,20,37)","rgb(115,20,38)","rgb(116,20,37)","rgb(115,20,38)","rgb(116,20,37)","rgb(114,20,37)","rgb(115,20,38)","rgb(114,20,38)","rgb(115,20,38)","rgb(115,20,38)","rgb(115,21,37)","rgb(115,20,38)","rgb(115,20,37)","rgb(116,20,37)","rgb(114,21,38)","rgb(114,20,37)","rgb(116,20,37)","rgb(115,21,37)","rgb(114,21,38)","rgb(116,20,38)","rgb(115,19,37)","rgb(115,20,38)","rgb(115,21,38)","rgb(116,20,38)","rgb(115,20,37)","rgb(115,20,38)","rgb(116,20,37)","rgb(115,19,38)","rgb(115,20,37)","rgb(116,20,37)","rgb(114,20,37)","rgb(114,20,38)","rgb(115,20,37)","rgb(115,20,38)"]},
+    {"id":"airquality_stepped","steps":[
+	{label:'Good',min:0.0,max:12.0,color:"rgb(0, 228, 0)"},
+	{label:'Moderate',min:12.1,max:35.4,color:"rgb(255, 255, 0)"},
+	{label:'Unhealthy for sensitive groups',min:35.5,max:55.4,color:"rgb(255, 126, 0)"},
+	{label:'Unhealthy',min:55.5,max:150.4,color:"rgb(255, 0, 0)"},
+	{label:'Very Unhealthy',min:150.5,max:250.4,color:"rgb(143, 63, 151)"},
+	{label:'Hazardous',min:250.5,max:500.4,color:"rgb(126, 0, 35)"},
+    ]},
+
 {"id":"temperature","min":-90,"max":45,"colors":["rgb(0,0,250)","rgb(0,2,250)","rgb(0,5,250)","rgb(0,8,250)","rgb(0,11,250)","rgb(0,14,250)","rgb(0,16,250)","rgb(0,19,250)","rgb(0,22,250)","rgb(0,25,250)","rgb(0,28,250)","rgb(0,30,250)","rgb(0,33,250)","rgb(0,36,250)","rgb(0,39,250)","rgb(0,42,250)","rgb(0,44,250)","rgb(0,47,250)","rgb(0,50,250)","rgb(0,53,250)","rgb(0,56,250)","rgb(0,58,250)","rgb(0,61,250)","rgb(0,64,250)","rgb(0,67,250)","rgb(0,70,250)","rgb(0,73,250)","rgb(0,75,250)","rgb(0,78,250)","rgb(0,81,250)","rgb(0,84,250)","rgb(0,87,250)","rgb(0,89,250)","rgb(0,92,250)","rgb(0,95,250)","rgb(0,98,250)","rgb(0,101,250)","rgb(0,103,250)","rgb(0,106,250)","rgb(0,109,250)","rgb(0,112,250)","rgb(0,115,250)","rgb(0,117,250)","rgb(0,120,250)","rgb(0,123,250)","rgb(0,126,250)","rgb(0,129,250)","rgb(0,132,250)","rgb(0,134,250)","rgb(0,137,250)","rgb(0,140,250)","rgb(0,143,250)","rgb(0,146,250)","rgb(0,148,250)","rgb(0,151,250)","rgb(0,154,250)","rgb(0,157,250)","rgb(0,160,250)","rgb(0,162,250)","rgb(0,165,250)","rgb(0,168,250)","rgb(0,171,250)","rgb(0,174,250)","rgb(0,176,250)","rgb(0,179,250)","rgb(0,182,250)","rgb(0,185,250)","rgb(0,188,250)","rgb(0,191,250)","rgb(0,193,250)","rgb(0,196,250)","rgb(0,199,250)","rgb(0,202,250)","rgb(0,205,250)","rgb(0,207,250)","rgb(0,210,250)","rgb(0,213,250)","rgb(0,216,250)","rgb(0,219,250)","rgb(0,221,250)","rgb(0,224,250)","rgb(0,227,250)","rgb(0,230,250)","rgb(0,233,250)","rgb(0,235,250)","rgb(0,238,250)","rgb(0,241,250)","rgb(0,244,250)","rgb(0,247,250)","rgb(0,255,255)","rgb(0,255,203)","rgb(0,255,152)","rgb(0,255,101)","rgb(0,255,50)","rgb(0,255,0)","rgb(22,255,0)","rgb(45,255,0)","rgb(68,255,0)","rgb(91,255,0)","rgb(113,255,0)","rgb(136,255,0)","rgb(159,255,0)","rgb(182,255,0)","rgb(205,255,0)","rgb(255,255,0)","rgb(255,247,0)","rgb(255,240,0)","rgb(255,232,0)","rgb(255,225,0)","rgb(255,217,0)","rgb(255,210,0)","rgb(255,202,0)","rgb(255,195,0)","rgb(255,187,0)","rgb(255,180,0)","rgb(255,172,0)","rgb(255,165,0)","rgb(255,157,0)","rgb(255,150,0)","rgb(255,142,0)","rgb(255,135,0)","rgb(255,127,0)","rgb(255,120,0)","rgb(255,112,0)","rgb(255,105,0)","rgb(255,97,0)","rgb(255,90,0)","rgb(255,82,0)","rgb(255,75,0)","rgb(255,67,0)","rgb(255,60,0)","rgb(255,52,0)","rgb(255,45,0)","rgb(255,37,0)","rgb(255,30,0)"]},
 {"id":"wind_comps","colors":["rgb(0,0,179)","rgb(10,24,187)","rgb(20,48,194)","rgb(31,73,202)","rgb(41,97,210)","rgb(52,122,218)","rgb(62,146,226)","rgb(73,170,234)","rgb(83,195,242)","rgb(94,219,249)","rgb(64,207,243)","rgb(64,212,222)","rgb(64,218,201)","rgb(64,223,180)","rgb(64,228,159)","rgb(64,233,138)","rgb(64,238,117)","rgb(64,243,96)","rgb(64,248,75)","rgb(64,254,54)"]},
 {"id":"windspeed","colors":["rgb(0,0,250)","rgb(0,12,250)","rgb(0,25,250)","rgb(0,37,250)","rgb(0,50,250)","rgb(0,62,250)","rgb(0,75,250)","rgb(0,87,250)","rgb(0,100,250)","rgb(0,112,250)","rgb(0,125,250)","rgb(0,137,250)","rgb(0,150,250)","rgb(0,162,250)","rgb(0,175,250)","rgb(0,187,250)","rgb(0,200,250)","rgb(0,212,250)","rgb(0,225,250)","rgb(0,237,250)","rgb(0,255,255)","rgb(0,255,234)","rgb(0,255,214)","rgb(0,255,193)","rgb(0,255,173)","rgb(0,255,152)","rgb(0,255,132)","rgb(0,255,111)","rgb(0,255,91)","rgb(0,255,70)","rgb(0,255,0)","rgb(20,255,0)","rgb(41,255,0)","rgb(61,255,0)","rgb(82,255,0)","rgb(102,255,0)","rgb(123,255,0)","rgb(143,255,0)","rgb(164,255,0)","rgb(184,255,0)","rgb(255,255,0)","rgb(255,247,0)","rgb(255,240,0)","rgb(255,232,0)","rgb(255,225,0)","rgb(255,217,0)","rgb(255,210,0)","rgb(255,202,0)","rgb(255,195,0)","rgb(255,187,0)","rgb(255,180,0)","rgb(255,172,0)","rgb(255,165,0)","rgb(255,157,0)","rgb(255,150,0)","rgb(255,142,0)","rgb(255,135,0)","rgb(255,127,0)","rgb(255,120,0)","rgb(255,112,0)","rgb(255,105,0)","rgb(255,97,0)","rgb(255,90,0)","rgb(255,82,0)","rgb(255,75,0)","rgb(255,67,0)","rgb(255,60,0)","rgb(255,52,0)","rgb(255,45,0)","rgb(255,37,0)"]},
@@ -2564,7 +2574,8 @@ function DisplayAnimation(display, enabled,attrs) {
 var debugColorBy = false;
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable,
+		     propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
@@ -2722,17 +2733,40 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
     let colors = null;
+    let colorTabelSteps = null;
     if(colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
     }
 
+    if(defaultColorTable) {
+	this.id = defaultColorTable.id;
+    }
 
+    if(!colors) {
+	if(defaultColorTable) {
+	    if(Array.isArray(defaultColorTable)) {
+		colors = defaultColorTable;
+	    } else {
+		if(!defaultColorTable.steps) {
+		    colors = defaultColorTable.colors;
+		}
+	    }
+	} else {
+	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
+						       colorByAttr +".colorTable",
+						       "colorTable"]);
+	}
 
-    if(!colors){
-	colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
-								       colorByAttr +".colorTable",
-								       "colorTable"]);
+    }
+    if(!colors) {
+	let colorTableObject  = defaultColorTable??
+	    this.display.getColorTable(false,[this.properties.colorTableProperty,
+					      colorByAttr +".colorTable",
+					      "colorTable"]);
+
+	if(colorTableObject)
+	    this.colorTableSteps = colorTableObject.steps;
     }
 
     
@@ -2751,7 +2785,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     }
     this.colors = colors;
-
 
     if(this.hasField() && !colors) {
 //	this.index = -1;
@@ -2918,6 +2951,9 @@ ColorByInfo.prototype = {
 	this.filterHighlight = this.display.getFilterHighlight();
 	this.initDisplayCalled = true;
     },
+    getId:function() {
+	return this.id;
+    },
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
 	if(this.debug) console.log("getProperty:" + prop);
@@ -2945,11 +2981,11 @@ ColorByInfo.prototype = {
 	if(this.compareFields.length>0) {
 	    let legend = "";
 	    this.compareFields.forEach((f,idx)=>{
-		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
+		legend += HtmlUtils.div([ATTR_STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId);
-	    dom.html(HtmlUtils.div([STYLE,HU.css('text-align','center','margin-top','5px')], legend));
+	    dom.html(HtmlUtils.div([ATTR_STYLE,HU.css('text-align','center','margin-top','5px')], legend));
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
@@ -2988,16 +3024,27 @@ ColorByInfo.prototype = {
 		stringValues: this.colorByValues});
 	} else {
 	    let colors = this.colors;
+	    let cbs = null;
+	    if(this.colorTableSteps) {
+		colors = [];
+		cbs=[];
+		this.colorTableSteps.forEach(step=>{
+		    colors.push(step.color);
+		    cbs.push({value:step.label??(step.min+ ' - '+ step.max),color:step.color});
+		});
+	    }
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 		    tmp.push(this.colors[i]);
 		colors = tmp;
 	    }
-	    let cbs = this.colorByValues.map(v=>{return v;});
-	    cbs.sort((a,b)=>{
-		return a.value.toString().localeCompare(b.value.toString());
-	    });
+	    if(cbs==null) {
+		cbs = this.colorByValues.map(v=>{return v;});
+		cbs.sort((a,b)=>{
+		    return a.value.toString().localeCompare(b.value.toString());
+		});
+	    }
 	    let getValue = v=>{
 		if(this.doingDates) return new Date(v);
 		return v;
@@ -3213,6 +3260,17 @@ ColorByInfo.prototype = {
     },
 
     getColorInner: function(value, pointRecord,debug) {
+	if(this.colorTableSteps) {
+	    for(let i=0;i<this.colorTableSteps.length;i++) {
+		let step = this.colorTableSteps[i];
+		if(value>=step.min && value<=step.max) return step.color;
+	    }
+	    if(value<=this.colorTableSteps[0].min) return this.colorTableSteps[0].color;
+	    if(value>=this.colorTableSteps[this.colorTableSteps.length-1].max)
+		return this.colorTableSteps[this.colorTableSteps.length-1].color;	    
+
+	}
+
 
 //	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();
@@ -3610,7 +3668,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
     };
     props.width = cvrt(props.width);
     props.height = cvrt(props.height);
-
     props.dx = cvrt(props.dx);
     props.dy = cvrt(props.dy);    
     props.baseWidth = +props.baseWidth;
@@ -3627,7 +3684,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 		Min:props.sizeByMin,
 		Max:props.sizeByMax,
 	    };
-	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,colorProps);
+	    props.sizeByInfo =  new ColorByInfo(display, fields, records,
+						props.sizeBy,props.sizeBy,
+						null, props.sizeBy,props.sizeByField,colorProps);
 	}
     }
 
@@ -3635,9 +3694,14 @@ function Glyph(display, scale, fields, records, args, attrs) {
     props.dontShow =false;
     if(!props.colorByInfo && props.colorBy) {
 	props.colorByField=display.getFieldById(fields,props.colorBy);
-	let ct = props.colorTable?display.getColorTableInner(true, props.colorTable):null;
+	let colorTable = props.colorTable?display.getColorTableInner(false, props.colorTable):null;
 	if(!props.colorByField) {
-	    console.log("Could not find colorBy field:" + props.colorBy);
+	    let msg = "Could not find colorBy field:" + props.colorBy;
+	    if(this.properties.mapGlyph) {
+		msg += ' for: ' + this.properties.mapGlyph.getName();
+
+	    }
+	    console.log(msg);
 	    console.log("Fields:" + fields);
 	    props.dontShow =true;
 	} else {
@@ -3645,7 +3709,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 		Min:props.colorByMin,
 		Max:props.colorByMax,
 	    };	    
-	    props.colorByInfo =  new ColorByInfo(display, fields, records, props.colorBy,props.colorBy+".colorByMap", ct, props.colorBy,props.colorByField, colorByProps);
+	    props.colorByInfo =  new ColorByInfo(display, fields, records,
+						 props.colorBy,props.colorBy+".colorByMap",
+						 colorTable, props.colorBy,props.colorByField, colorByProps);
 	}
     }
 
@@ -46062,7 +46128,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return Object.keys(this.markers);
 	},
 
-
+	displayedColorTables:{},
+	//TODO: handle multiple different color tables & removal upon mapglyph delete
+	applyMapGlyphColorTable:function(mapGlyph,  colorByInfo) {
+	    let id = colorByInfo.getId();
+	    if(id && !this.displayedColorTables[id]) {
+		this.displayedColorTables[id]=true;
+		colorByInfo.displayColorTable();
+	    }
+	},
 	makeLabel:function(l) {
 	    let _l = l.toLowerCase();
 	    let v = this.getMapProperty(_l+'.label');
@@ -53495,6 +53569,7 @@ MapGlyph.prototype = {
 				},attrs);
 	    if(debugDataIcons)
 		console.log('line:'+ line);
+	    props.mapGlyph = this;
 	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
@@ -53522,7 +53597,12 @@ MapGlyph.prototype = {
 	let records = data.getRecords();
 	let numberCount = 0;
 	let missingCount = 0;	
+	let colorByInfo;
 	markers.forEach(marker=>{
+	    colorByInfo = marker.getColorByInfo();
+	    if(colorByInfo) {
+		this.display.applyMapGlyphColorTable(this,  colorByInfo);
+	    }
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
 	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{
@@ -55927,8 +56007,11 @@ MapGlyph.prototype = {
 //	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
 	});
 
-	HU.initPageSearch(dialog.find('.dialog-feature'),
-			  null,null,null,{target:this.jq('dialog_features_top')});
+	let featuresTop = this.jq('dialog_features_top');
+	if(featuresTop.length) {
+	    HU.initPageSearch(dialog.find('.dialog-feature'),
+			      null,null,null,{target:this.jq('dialog_features_top')});
+	}
 
 	dialog.find('.feature-name').click(function() {
 	    let feature = getFeature($(this));
