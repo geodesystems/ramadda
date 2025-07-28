@@ -117,7 +117,7 @@ terms_url,,url,
 
 #vendor
 vendor_id,Vendor ID,string,
-vendor_type,,enumerationplus, group="Vendor Information" cansearch="true"  \
+vendor_type,,enumerationplus, group="Vendor Information" cansearch="true"  default="manufacturer" \
 values="manufacturer:Manufacturer\,reseller:Reseller\,service_provider:Service provider"
 contact_name,Primary Contact Name,string,
 phone_number,Phone Number,string
