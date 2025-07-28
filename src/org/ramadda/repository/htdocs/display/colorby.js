@@ -6,7 +6,8 @@
 var debugColorBy = false;
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable,
+		     propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
@@ -164,17 +165,40 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
     let colors = null;
+    let colorTabelSteps = null;
     if(colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
     }
 
+    if(defaultColorTable) {
+	this.id = defaultColorTable.id;
+    }
 
+    if(!colors) {
+	if(defaultColorTable) {
+	    if(Array.isArray(defaultColorTable)) {
+		colors = defaultColorTable;
+	    } else {
+		if(!defaultColorTable.steps) {
+		    colors = defaultColorTable.colors;
+		}
+	    }
+	} else {
+	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
+						       colorByAttr +".colorTable",
+						       "colorTable"]);
+	}
 
-    if(!colors){
-	colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
-								       colorByAttr +".colorTable",
-								       "colorTable"]);
+    }
+    if(!colors) {
+	let colorTableObject  = defaultColorTable??
+	    this.display.getColorTable(false,[this.properties.colorTableProperty,
+					      colorByAttr +".colorTable",
+					      "colorTable"]);
+
+	if(colorTableObject)
+	    this.colorTableSteps = colorTableObject.steps;
     }
 
     
@@ -193,7 +217,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     }
     this.colors = colors;
-
 
     if(this.hasField() && !colors) {
 //	this.index = -1;
@@ -360,6 +383,9 @@ ColorByInfo.prototype = {
 	this.filterHighlight = this.display.getFilterHighlight();
 	this.initDisplayCalled = true;
     },
+    getId:function() {
+	return this.id;
+    },
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
 	if(this.debug) console.log("getProperty:" + prop);
@@ -387,11 +413,11 @@ ColorByInfo.prototype = {
 	if(this.compareFields.length>0) {
 	    let legend = "";
 	    this.compareFields.forEach((f,idx)=>{
-		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
+		legend += HtmlUtils.div([ATTR_STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId);
-	    dom.html(HtmlUtils.div([STYLE,HU.css('text-align','center','margin-top','5px')], legend));
+	    dom.html(HtmlUtils.div([ATTR_STYLE,HU.css('text-align','center','margin-top','5px')], legend));
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
@@ -430,16 +456,27 @@ ColorByInfo.prototype = {
 		stringValues: this.colorByValues});
 	} else {
 	    let colors = this.colors;
+	    let cbs = null;
+	    if(this.colorTableSteps) {
+		colors = [];
+		cbs=[];
+		this.colorTableSteps.forEach(step=>{
+		    colors.push(step.color);
+		    cbs.push({value:step.label??(step.min+ ' - '+ step.max),color:step.color});
+		});
+	    }
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 		    tmp.push(this.colors[i]);
 		colors = tmp;
 	    }
-	    let cbs = this.colorByValues.map(v=>{return v;});
-	    cbs.sort((a,b)=>{
-		return a.value.toString().localeCompare(b.value.toString());
-	    });
+	    if(cbs==null) {
+		cbs = this.colorByValues.map(v=>{return v;});
+		cbs.sort((a,b)=>{
+		    return a.value.toString().localeCompare(b.value.toString());
+		});
+	    }
 	    let getValue = v=>{
 		if(this.doingDates) return new Date(v);
 		return v;
@@ -655,6 +692,17 @@ ColorByInfo.prototype = {
     },
 
     getColorInner: function(value, pointRecord,debug) {
+	if(this.colorTableSteps) {
+	    for(let i=0;i<this.colorTableSteps.length;i++) {
+		let step = this.colorTableSteps[i];
+		if(value>=step.min && value<=step.max) return step.color;
+	    }
+	    if(value<=this.colorTableSteps[0].min) return this.colorTableSteps[0].color;
+	    if(value>=this.colorTableSteps[this.colorTableSteps.length-1].max)
+		return this.colorTableSteps[this.colorTableSteps.length-1].color;	    
+
+	}
+
 
 //	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();

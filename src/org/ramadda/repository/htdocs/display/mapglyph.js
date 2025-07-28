@@ -1188,6 +1188,7 @@ MapGlyph.prototype = {
 				},attrs);
 	    if(debugDataIcons)
 		console.log('line:'+ line);
+	    props.mapGlyph = this;
 	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
@@ -1215,7 +1216,12 @@ MapGlyph.prototype = {
 	let records = data.getRecords();
 	let numberCount = 0;
 	let missingCount = 0;	
+	let colorByInfo;
 	markers.forEach(marker=>{
+	    colorByInfo = marker.getColorByInfo();
+	    if(colorByInfo) {
+		this.display.applyMapGlyphColorTable(this,  colorByInfo);
+	    }
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
 	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{
@@ -3620,8 +3626,11 @@ MapGlyph.prototype = {
 //	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
 	});
 
-	HU.initPageSearch(dialog.find('.dialog-feature'),
-			  null,null,null,{target:this.jq('dialog_features_top')});
+	let featuresTop = this.jq('dialog_features_top');
+	if(featuresTop.length) {
+	    HU.initPageSearch(dialog.find('.dialog-feature'),
+			      null,null,null,{target:this.jq('dialog_features_top')});
+	}
 
 	dialog.find('.feature-name').click(function() {
 	    let feature = getFeature($(this));

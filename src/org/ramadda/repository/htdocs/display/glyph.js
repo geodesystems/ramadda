@@ -111,7 +111,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
     };
     props.width = cvrt(props.width);
     props.height = cvrt(props.height);
-
     props.dx = cvrt(props.dx);
     props.dy = cvrt(props.dy);    
     props.baseWidth = +props.baseWidth;
@@ -128,7 +127,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 		Min:props.sizeByMin,
 		Max:props.sizeByMax,
 	    };
-	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,colorProps);
+	    props.sizeByInfo =  new ColorByInfo(display, fields, records,
+						props.sizeBy,props.sizeBy,
+						null, props.sizeBy,props.sizeByField,colorProps);
 	}
     }
 
@@ -136,9 +137,14 @@ function Glyph(display, scale, fields, records, args, attrs) {
     props.dontShow =false;
     if(!props.colorByInfo && props.colorBy) {
 	props.colorByField=display.getFieldById(fields,props.colorBy);
-	let ct = props.colorTable?display.getColorTableInner(true, props.colorTable):null;
+	let colorTable = props.colorTable?display.getColorTableInner(false, props.colorTable):null;
 	if(!props.colorByField) {
-	    console.log("Could not find colorBy field:" + props.colorBy);
+	    let msg = "Could not find colorBy field:" + props.colorBy;
+	    if(this.properties.mapGlyph) {
+		msg += ' for: ' + this.properties.mapGlyph.getName();
+
+	    }
+	    console.log(msg);
 	    console.log("Fields:" + fields);
 	    props.dontShow =true;
 	} else {
@@ -146,7 +152,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 		Min:props.colorByMin,
 		Max:props.colorByMax,
 	    };	    
-	    props.colorByInfo =  new ColorByInfo(display, fields, records, props.colorBy,props.colorBy+".colorByMap", ct, props.colorBy,props.colorByField, colorByProps);
+	    props.colorByInfo =  new ColorByInfo(display, fields, records,
+						 props.colorBy,props.colorBy+".colorByMap",
+						 colorTable, props.colorBy,props.colorByField, colorByProps);
 	}
     }
 
