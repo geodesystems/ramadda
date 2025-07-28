@@ -230,7 +230,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 
 	    if(!this.isEnabled()) {
-		console.log('not enabled');
 		return;
 	    }
 	    let value=null;

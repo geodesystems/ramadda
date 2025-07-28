@@ -263,8 +263,6 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
 
-
-
             let options = {
                 autoResize: true,
             };
@@ -316,7 +314,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     }
                 };
 
-		    
+		
 		for(word in wordToWeight) {
 		    info.push({
 			text: word,
@@ -326,7 +324,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		    });
 
 		}
-                this.setContents(HU.div([ATTR_ID, this.domId("words"), ATTR_STYLE, HU.css('height','300px')], ""));
+                this.setContents(HU.div([ATTR_ID, this.domId("words"),
+					 ATTR_STYLE, HU.css('height','300px')], ""));
                 $("#" + this.domId("words")).jQCloud(info, options);
 		return
 	    }
@@ -407,7 +406,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 
             this.setContents("");
             if (this.getProperty("combined", false)) {
-                this.setContents(HU.div([ATTR_ID, this.domId("words"), ATTR_STYLE, HU.css('height','300px')], ""));
+                this.setContents(HU.div([ATTR_ID, this.domId("words"),
+					 ATTR_STYLE, HU.css('height','300px')], ""));
                 $("#" + this.domId("words")).jQCloud(words, options);
             } else {
                 this.setContents(divs);
@@ -518,7 +518,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
-//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+    //    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
@@ -866,19 +866,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			value = value.trim();
 			if(value==FILTER_ALL) {
 			    let regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
-//			    attrs[fid] = "";
+			    //			    attrs[fid] = "";
 			    replace(regexp,"");
 			} else {
 			    /*
-			    let regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
+			      let regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
 
-			    replace(regexp,"$1" + value +"$2");
-			    regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
-			    replace(regexp,"$1" + value);
-			    regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
-			    replace(regexp,value +"$1");
-			    regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
-			    replace(regexp,value);
+			      replace(regexp,"$1" + value +"$2");
+			      regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
+			      replace(regexp,"$1" + value);
+			      regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
+			      replace(regexp,value +"$1");
+			      regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
+			      replace(regexp,value);
 			    */
 			    attrs[fid] = value;
 			}
@@ -970,8 +970,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			rowAttrs["color"] = color;
 		    }
-		    if(!handleSelectOnClick)			recordStyle+=HU.css("cursor","default");
-		    let tag = HU.openTag("div",[ATTR_CLASS,noWrapper?'':'display-template-record',ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+		    if(!handleSelectOnClick)
+			recordStyle+=HU.css("cursor","default");
+		    let tag = HU.openTag("div",[ATTR_CLASS,noWrapper?'':'display-template-record',ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
+						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
@@ -980,7 +982,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
 			s = s.replace(/<\/td>/g,"</div></td>");
 		    }  else {
-			s = tag +s +HU.close(DIV);
+			s = tag +s +HU.close(TAG_DIV);
 		    }
 		    if(toggleTemplate) {
 			let t =this.applyRecordTemplate(record, row,fields,toggleTemplate,props); 
@@ -1003,7 +1005,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 		    if(cols>0) {
-			contents+=HU.close(DIV);
+			contents+=HU.close(TAG_DIV);
 		    }
 		}
 		if (groupByField) {
@@ -1014,7 +1016,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    });
 		}
 		if(cols>0) {
-		    contents += HU.close(DIV);
+		    contents += HU.close(TAG_DIV);
 		}
 	    }
 
@@ -1103,7 +1105,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		this.unhighlightElement(this.highlightedElement);
 		this.highlightedElement = null;
 	    }
-//	    console.log(this.type+ " handleEventRecordHighlight " + args.highlight); 
+	    //	    console.log(this.type+ " handleEventRecordHighlight " + args.highlight); 
 	    if(args.highlight) {
 		if(args.immediate) {
 		    this.highlightElement(args);
@@ -1214,7 +1216,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
             var fields = this.getData().getNonGeoFields();
 	    var labelField = this.getFieldById(fields,this.getProperty("labelField"));
 	    if(labelField==null) {
-		labelField = this.getFieldById(fields, TITLE);
+		labelField = this.getFieldById(fields, ATTR_TITLE);
 	    }
 	    if(labelField==null) {
 		labelField = this.getFieldById(fields, "name");
@@ -1264,7 +1266,8 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		    var fontSize = 6+Math.round(percent*24)+"pt";
 		    if(!scaleFont) fontSize = "100%";
 		    var field = data[j].field;
-		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(), TITLE,"Value: " + value, ATTR_CLASS,"display-topfields-row",ATTR_STYLE,"font-size:" + fontSize+";"], field.getLabel());
+		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(),
+					ATTR_TITLE,"Value: " + value, ATTR_CLASS,"display-topfields-row",ATTR_STYLE,"font-size:" + fontSize+";"], field.getLabel());
 		}
 		div += HU.div([ATTR_CLASS,"display-topfields-header",RECORD_INDEX,i],header);
 		div += HU.div([ATTR_CLASS,"display-topfields-values"], contents);
@@ -1464,7 +1467,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		let icon = iconProp?HU.getIconImage(iconProp, null, [ATTR_STYLE, iconStyle]):"";
 		let cnt = this.counts2[i]/divider;
 		for(let j=0;j<10000 && j<cnt;j++) {
-		    contents += HU.div([ATTR_CLASS,clazz,ATTR_STYLE,style,TITLE,label],icon);
+		    contents += HU.div([ATTR_CLASS,clazz,ATTR_STYLE,style,ATTR_TITLE,label],icon);
 		}
 		blockCnt++;
 	    }
@@ -1842,7 +1845,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		html += HU.openTag("table", ["cellpadding","3",ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag("thead", []);
-		    let label =  HU.span([TITLE,"Click to reset",ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
+		    let label =  HU.span([ATTR_TITLE,"Click to reset",ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
 		    label = HU.div([ATTR_STYLE,"max-width:500px;overflow-x:auto;"], label);
@@ -1882,7 +1885,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    maxPercent = Math.max(maxPercent, perc);
 		}
 
-//		let csv = '';
+		//		let csv = '';
 		for(let i=0;i<s.values.length;i++) {
 		    let value = s.values[i].value;
 		    let label = value;
@@ -1896,21 +1899,21 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(!color) color = dfltColor;
 
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
-//		    csv+=value+','+perc+'\n';
+		    //		    csv+=value+','+perc+'\n';
 
-		    bannerHtml += HU.div([TITLE,"Click to select",ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
+		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
 		    let tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
-		    let tdb = showBars?HU.td(["valign","center","width",barWidth], HU.div([TITLE,Math.round(perc*100)+"%",ATTR_STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
+		    let tdb = showBars?HU.td(["valign","center","width",barWidth], HU.div([ATTR_TITLE,Math.round(perc*100)+"%",ATTR_STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HU.tr([], 
-					 tdv + tdc + tdp + tdb
-					);
+				  tdv + tdc + tdp + tdb
+				 );
 		}
-//		Utils.makeDownloadFile('percents.csv',csv);
+		//		Utils.makeDownloadFile('percents.csv',csv);
 
-		html += HU.close(TBODY,TABLE,DIV);
+		html += HU.close(TBODY,TABLE,TAG_DIV);
 		bannerHtml += HU.close(TD);
 	    }
 
@@ -2210,7 +2213,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    let t1 = new Date();
             this.showText();
 	    let t2 = new Date();
-//	    Utils.displayTimes("T",[t1,t2]);
+	    //	    Utils.displayTimes("T",[t1,t2]);
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "pattern") {
@@ -2272,7 +2275,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
             var corpus = HU.openTag("div", [ATTR_STYLE,"position:relative;"]);
 	    corpus+=HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,"position:absolute;top:0;left:0;"],
-				  HU.tag("table",[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
+			   HU.tag("table",[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
@@ -2380,7 +2383,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = patternMatch.highlight(line);
                 displayedLineCnt++;
                 if (displayedLineCnt > maxLines) break;
-		let lineAttrs = [TITLE," ",ATTR_CLASS, " display-raw-line ",RECORD_INDEX,rowIdx]
+		let lineAttrs = [ATTR_TITLE," ",ATTR_CLASS, " display-raw-line ",RECORD_INDEX,rowIdx]
 		if(bubble) line = HU.div([ATTR_CLASS,"ramadda-bubble"],line);
 		if(fromField) line+=HU.div([ATTR_CLASS,"ramadda-bubble-from"],  ""+row[fromField.getIndex()]);
 
@@ -2407,7 +2410,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			r+= HU.td([WIDTH, "5px",ATTR_STYLE,HU.css('background','#ccc')],  HU.getIconImage("fa-caret-right",null, [ATTR_STYLE,"line-height:0px;"]));
 		    }
 		    r+= HU.td([WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
-				     "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
+			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
 			HU.td([], line);
 		    corpus += HU.tr(rowAttrs, r);
                 } else {
@@ -2427,7 +2430,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (addLineNumbers) {
                 corpus += HU.close(TABLE);
             }
-            corpus+= HU.close(DIV);
+            corpus+= HU.close(TAG_DIV);
 
             if (!asHtml)
                 corpus = HU.tag(PRE, [], corpus);
@@ -2539,7 +2542,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		attrs.date = "";
 	    }
 	    if(!annotation) {
-//		this.setContents("");
+		//		this.setContents("");
 		return;
 	    }
 	    attrs.description = annotation.description;
@@ -2646,7 +2649,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 		header += HU.div([ATTR_CLASS,clazz,"letter",_letter], _letter);
 		if(this.searchLetter && this.searchLetter!=_letter) return;
 		let group =  HU.div([ATTR_CLASS,"display-glossary-group-header"],  _letter) +
-		    HU.openTag(DIV,[ATTR_CLASS,"display-glossary-group-inner"]);
+		    HU.openTag(TAG_DIV,[ATTR_CLASS,"display-glossary-group-inner"]);
 		letters[letter].sort((a,b)=>{
 		    return a.word.localeCompare(b.word);
 		}).forEach(info=>{
@@ -2656,14 +2659,15 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 		    });
 
 		    let entry  = HU.div([ATTR_CLASS,"display-glossary-word"], info.word) + HU.div([ATTR_CLASS,"display-glossary-definition"], def); 
-		    group+=HU.div([TITLE,"",ATTR_CLASS,"display-glossary-entry",RECORD_ID,info.record.getId()],entry);
+		    group+=HU.div([ATTR_TITLE,"",ATTR_CLASS,"display-glossary-entry",RECORD_ID,info.record.getId()],entry);
 		});
-		group += HU.closeTag(DIV);
+		group += HU.closeTag(TAG_DIV);
 		html+=group;
 	    });
 
 	    let height = this.getProperty("glossaryHeight","600px");
-	    header = HU.div([ATTR_ID,this.domId(ID_GLOSSARY_HEADER), ATTR_CLASS,"display-glossary-header"], header);
+	    header = HU.div([ATTR_ID,this.domId(ID_GLOSSARY_HEADER),
+			     ATTR_CLASS,"display-glossary-header"], header);
 	    html = HU.div([ATTR_STYLE,HU.css("max-height",HU.getDimension(height),"overflow-y","auto")], html);
 	    this.setContents(header  + html);
 	    let _this = this;

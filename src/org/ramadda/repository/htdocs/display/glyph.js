@@ -139,7 +139,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	let ct = props.colorTable?display.getColorTableInner(true, props.colorTable):null;
 	if(!props.colorByField) {
 	    console.log("Could not find colorBy field:" + props.colorBy);
-//	    console.log("Fields:" + fields);
+	    console.log("Fields:" + fields);
 	    props.dontShow =true;
 	} else {
 	    let colorByProps = {

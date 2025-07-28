@@ -617,11 +617,14 @@ MapGlyph.prototype = {
 
 
 
-	    let buttonList = [HU.span([ATTR_ID,this.domId('dataicon_add_default'),ATTR_TITLE,'Set example values'],'Apply Defaults')];
+	    let buttonList = [HU.span([ATTR_ID,this.domId('dataicon_add_default'),
+				       ATTR_TITLE,'Set example values'],'Apply Defaults')];
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
-		buttonList.push(HU.span([ID_GLYPH_ID,this.getId(),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Apply settings from entry',ATTR_ID,this.domId('applyentrydataicon')],'Apply from Entry'));
+		buttonList.push(HU.span([ID_GLYPH_ID,this.getId(),ATTR_CLASS,CLASS_CLICKABLE,
+					 ATTR_TITLE,'Apply settings from entry',ATTR_ID,this.domId('applyentrydataicon')],'Apply from Entry'));
 	    }
-	    buttonList.push(HU.span([ATTR_ID,this.domId('dataicon_clear_default'),ATTR_TITLE,'Clear properties'],'Clear'));
+	    buttonList.push(HU.span([ATTR_ID,this.domId('dataicon_clear_default'),
+				     ATTR_TITLE,'Clear properties'],'Clear'));
 
 	    let dataIconInfo  =this.getDataIconInfo();
 	    contents+=  HU.buttons(buttonList,
@@ -1374,14 +1377,18 @@ MapGlyph.prototype = {
 	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,['target','_entry']);
-	    link = HU.div([ATTR_STYLE,'white-space:nowrap;max-width:180px;overflow-x:hidden;',ATTR_TITLE,entry.getName()], link);
+	    link = HU.div([ATTR_STYLE,'white-space:nowrap;max-width:180px;overflow-x:hidden;',
+			   ATTR_TITLE,entry.getName()], link);
 	    let add = '';
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
-		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			       ATTR_TITLE,'add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isPoint) {
-		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			       ATTR_TITLE,'add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isGroup) {
-		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			       ATTR_TITLE,'add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
 	    } else {
 	    }		
 	    if(add!='') {
@@ -1885,7 +1892,7 @@ MapGlyph.prototype = {
 		right+=SPACE+
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
 			     ID_GLYPH_ID,this.getId(),
-			     TITLE,'Click:Move to; Shift-click:Zoom in',],
+			     ATTR_TITLE,'Click:Move to; Shift-click:Zoom in',],
 //<i class="fa-regular fa-eye"></i>
 			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
@@ -3310,9 +3317,9 @@ MapGlyph.prototype = {
 	    showRange:showRange,
 	    showLabels:showLabels
         });
-	let attrs = [TITLE,id,ATTR_STYLE,'margin-right:4px;',"colortable",id]
+	let attrs = [ATTR_TITLE,id,ATTR_STYLE,'margin-right:4px;',"colortable",id]
 	//	if(ct.colors.length>20)   attrs.push(STYLE,HU.css(ATTR_WIDTH,'400px'));
-        return  HtmlUtils.div(attrs,display);
+        return  HU.div(attrs,display);
     },
     initColorTables: function(currentColorbar) {
 	if(!currentColorbar)
