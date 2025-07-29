@@ -10,7 +10,7 @@ contact_phone,Contact Phone,string
 
 
 #base asset class
-asset_id,Asset ID,string,  size="400"  cansearch="true" 
+asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
 department,Department,enumerationplus, cansearch="true" 
 assigned_to,Assigned To,enumerationplus,  cansearch="true" 
 location,Location,enumerationplus,  cansearch="true" 

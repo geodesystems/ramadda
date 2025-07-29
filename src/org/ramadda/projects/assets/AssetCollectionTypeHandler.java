@@ -32,7 +32,8 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String ARG_REPORT="report";
     public static final String ACTION_SEARCH="assets_search";
     public static final String ACTION_REPORT="assets_report";
-    public static final String ACTION_NEW="assets_new";    
+    public static final String ACTION_NEW="assets_new";
+    public static final String ACTION_SCAN="assets_scan";    
     public static final String REPORT_TABLE = "assets_report_table";
     public static final String REPORT_SUMMARY = "assets_report_summary";
     public static final String REPORT_MAINTENANCE = "assets_report_maintenance";
@@ -113,6 +114,8 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    return handleActionReport(request, entry);
 	if(action.equals(ACTION_NEW))
 	    return handleActionNew(request, entry);
+	if(action.equals(ACTION_SCAN))
+	    return handleActionScan(request, entry);	
 	return super.processEntryAction(request,entry);
     }
 
@@ -144,6 +147,17 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	Result result = new Result("New Assets - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
+
+    public Result handleActionScan(Request request, Entry entry) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "Scan for Asset");
+	String wiki = "+center\n{{assets_barcode doScan=true}}\n";
+	wikify(request, entry,sb,wiki);
+	getPageHandler().entrySectionClose(request, entry, sb);
+	Result result = new Result("Scan Asset - " + entry.getName(),sb);
+        return getEntryManager().addEntryHeader(request, entry, result);
+    }
+
 
     public Result handleActionReport(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();

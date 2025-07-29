@@ -80,10 +80,14 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 		Utils.add(args,"defaultType",JU.quote(type),"defaultTypeLabel",JU.quote(assetType.getLabel()));
 	    }
 	}
+	if(Utils.getProperty(props,"doScan",false)) {
+	    Utils.add(args,"scanMode","true");
+	}
+
 	String entryId = Utils.getProperty(props,"parent",entry.getId());
 	Utils.add(args,"entryid",JU.quote(entryId));
 	StringBuilder js = new StringBuilder();
-	js.append(HU.call("new AssetCreator",HU.squote(uid),JU.map(args)));
+	js.append(HU.call("new AssetHandler",HU.squote(uid),JU.map(args)));
 	HU.script(sb,js.toString());
 	return sb.toString();
 
@@ -106,7 +110,7 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	List<String> args = new ArrayList<String>();
 	Utils.add(args,"editMode","true");
 	StringBuilder js = new StringBuilder();
-	js.append(HU.call("new AssetCreator","null",JU.map(args)));
+	js.append(HU.call("new AssetHandler","null",JU.map(args)));
 	HU.script(sb,js.toString());
 	formBuffer.append(sb.toString());
     }

@@ -34,8 +34,9 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 {{description wikify=true}}
 +center
 {{entrylink  link=""  title="Asset Search"  makeButton=true showIcon="false"  action="assets_search"  }}
-+if candonew=true 
+{{entrylink  link=""  title="Scan Asset"  makeButton=true showIcon="false"  action="assets_scan"  }}
 {{entrylink  link=""  title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
++if candonew=true 
 {{entrylink  link=""  title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -if
 -center
