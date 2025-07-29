@@ -2018,6 +2018,7 @@ public class WikiManager extends RepositoryManager
 		    String html =  template.replace("${count}",scount).replace("${label}",label);
 		    String clazz=" ramadda-typecount-block ";
 		    boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
+		    boolean addAncestor = getProperty(wikiUtil,props,"addAncestor",false);		    
 		    if(addSearch) clazz+=" ramadda-clickable  ramadda-hoverable ";
 		    if(typeCount==1 && lastCount!=null) {
 			String icon = lastCount.getTypeHandler().getIconProperty(null);
@@ -2039,6 +2040,7 @@ public class WikiManager extends RepositoryManager
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"
 			    + lastCount.getTypeHandler().getType();
+			if(addAncestor) url = HU.url(url,"ancestor",entry.getId());
 			html = HU.href(url ,html,HU.title("Search"));
 		    }
 		    return html;
