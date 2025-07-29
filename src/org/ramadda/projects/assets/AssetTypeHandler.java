@@ -38,7 +38,13 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	throws Exception {
 	String id = entry.getStringValue(request,"asset_id",null);
 	if(stringDefined(id)) return;
-	String type = entry.getTypeHandler().getTypeProperty("asset.type","ASSET");
+	String type = entry.getTypeHandler().getTypeProperty("asset.type",null);
+	if(type==null) {
+	    type = entry.getTypeHandler().getType();
+	    type = type.replace("type_assets_","");
+	    type = type.toUpperCase();
+	}
+
 	int cnt=0;
 	id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	while(seenId.get(id)!=null || getDatabaseManager().tableContains("TYPE_ASSETS_BASE", "ASSET_ID",id)) {
@@ -59,7 +65,8 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
     }
 
     private void initJS(Request request, StringBuilder sb) throws Exception {
-	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
+	HU.importJS(sb,getRepository().getHtdocsUrl("/lib/zxing/zxing.min.js"));
+	//	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
 	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
 	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
     }

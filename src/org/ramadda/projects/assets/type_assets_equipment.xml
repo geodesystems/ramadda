@@ -13,4 +13,5 @@ into some types.xml file
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/equipment.png" />
+<property  name="asset.type"  value="EQUIP" />
 </type>
