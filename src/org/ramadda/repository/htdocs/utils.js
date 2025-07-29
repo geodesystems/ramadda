@@ -105,6 +105,7 @@ var ATTR_TITLE = "title";
 var ATTR_ALT = "alt";
 var ATTR_ID = "id";
 var ATTR_CLASS = "class";
+var ATTR_NAME = "name";
 var ATTR_SIZE = "size";
 var ATTR_STYLE = "style";
 var ATTR_TARGET = "target";
