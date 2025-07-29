@@ -444,9 +444,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "outputs",
 					 "searchOutputs"}) {
 		String v=Utils.getProperty(props,prop,null);
-		if(stringDefined(v))
+		//Check the url args
+		if(v==null) v=request.getString(prop,null);
+		if(stringDefined(v)) {
 		    addAttr(sb, prop,v);
+		}
 	    }
+
 
 	    addAttr(sb,"entryTypes",typeHandler.getType());
 	    addAttr(sb, "showAncestor",  Utils.getProperty(props,"showAncestor",
