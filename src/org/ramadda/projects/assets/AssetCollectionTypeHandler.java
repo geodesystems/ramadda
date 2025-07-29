@@ -125,11 +125,11 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
     public Result handleActionSearch(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	//	getPageHandler().entrySectionOpen(request, entry, sb, "Asset Search");
-	String wiki = "+section title={{name}}\n{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n";
+	getPageHandler().entrySectionOpen(request, entry, sb, "Asset Search");
+	String wiki = "{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n";
 
 	wikify(request, entry,sb,wiki);
-	//	getPageHandler().entrySectionClose(request, entry, sb);
+	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result = new Result("Asset Search - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
