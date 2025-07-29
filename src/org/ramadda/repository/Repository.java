@@ -1500,7 +1500,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
 	}
 
-	sb.append(HU.formPost(request.getRequestPath()));
+	sb.append(HU.form(request.getRequestPath()));
 	sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
 	request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
@@ -2652,6 +2652,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     //    @Override
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
+	    if(request.getSecure()) {
+		return getUrlBase() + requestUrl.getPath();
+	    }
             return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
 
