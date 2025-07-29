@@ -963,6 +963,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		settings.entryType = this.getEntryTypes();
 	    }
 
+
             settings.clearAndAddType(settings.entryType);
 	    let ancestor = this.jq(ID_ANCESTOR+"_hidden").val();
 	    if(Utils.stringDefined(ancestor)) {
@@ -976,6 +977,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.addToDocumentUrl(ID_ANCESTOR,null);
 		this.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
 	    }
+
+
             if (this.areaWidgets) {
 		this.areaWidgets.forEach(areaWidget=>{
                     areaWidget.setSearchSettings(settings);
@@ -988,6 +991,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 this.createdateRangeWidget.setSearchSettings(settings);
             }	    
 	    
+
+
             settings.metadata = [];
 	    if(!this.getShowTags()) {
 		this.metadataTypeList.forEach(metadataType=>{
@@ -1262,6 +1267,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    } else {
 			tag.remove();
 		    }
+		} else if(col.isDate()) {
+		    //this gets handled below with the date widgets
 		} else {
                     let value = this.jq(id).val();
                     if (value == null || value==VALUE_NONE) {
@@ -1311,6 +1318,19 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    });
 		}
             }
+	    this.dateWidgets.forEach(widget=>{
+		let col = widget.column;
+		let arg = col.getSearchArg();
+		let startEnd = widget.widget.getStartEnd();
+		if(Utils.stringDefined(startEnd.start)) {
+		    extra += "&" + arg +'_from'+ "=" + encodeURIComponent(startEnd.start);
+		}
+		if(Utils.stringDefined(startEnd.end)) {
+		    extra += "&" + arg +'_to'+ "=" + encodeURIComponent(startEnd.end);
+		}		
+	    });
+
+
 	    let settings = this.getSearchSettings();
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
@@ -1536,12 +1556,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
 		let aid = this.domId(ID_ANCESTOR);
-		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",
-											     ATTR_TITLE,"Clear selection"]);
-		let input = HU.input("",name||"",["READONLY",null,ATTR_PLACEHOLDER,'Select', ATTR_STYLE,HU.css('cursor','pointer','width','100%'),ATTR_ID,aid,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
+		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"),
+				    ['onClick',"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",
+				     ATTR_TITLE,"Clear selection"]);
+		let input = HU.input("",name||"",["READONLY",null,ATTR_PLACEHOLDER,'Select',
+						  ATTR_STYLE,HU.css('cursor','pointer','width','100%'),
+						  ATTR_ID,aid,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
-		extra += HU.hidden("",ancestor||"",[ATTR_ID,aid+"_hidden"]);
-		extra+=this.addWidget('Search Under',HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")),{toggleClose:true});
+		extra += HU.hidden("",ancestor??"",[ATTR_ID,aid+"_hidden"]);
+		extra+=this.addWidget('Search Under',
+				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
+					     HU.leftRightTable(clear,input,"5%", "95%")),{toggleClose:!Utils.stringDefined(ancestor)});
 	    }
 
 
@@ -1571,7 +1596,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    let dateWidget='';
             if (this.getShowDate()) {
-                this.dateRangeWidget = new DateRangeWidget(this);
+                this.dateRangeWidget = new DateRangeWidget(this,'date');
 		let label=this.getLabel(this.getStartDateLabel());
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_RANGE)], this.dateRangeWidget.getHtml()));
@@ -1580,7 +1605,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
             if (this.getShowCreateDate(true)) {
 		let label=this.getLabel(this.getCreateDateLabel());
-                this.createdateRangeWidget = new DateRangeWidget(this,"createdate");
+                this.createdateRangeWidget = new DateRangeWidget(this,'createdate');
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
 		else 
@@ -1904,9 +1929,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             this.entryTypes = newTypes;
 	    /*
-            this.entryTypes = newTypes.sort((type1,type2)=>{
-		return type2.entryCount-type1.entryCount;
-	    });*/
+              this.entryTypes = newTypes.sort((type1,type2)=>{
+	      return type2.entryCount-type1.entryCount;
+	      });*/
 
             if (this.getEntryTypes()) {
                 let showType = {};
@@ -2002,7 +2027,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
                     cats.push(type.getCategory());
                 }
-//		select+= option;
+		//		select+= option;
                 catMap[type.getCategory()] += option;
             }
             for (let i in cats) {
@@ -2101,6 +2126,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         addExtraForm: function() {
+	    this.dateWidgets = [];
 	    let popupLimit = this.getTagPopupLimit();
 	    let toggleClose = this.getColumnsToggleClose(this.getProperty('toggleClose',!this.getSearchOpen(true)));
             if (this.savedValues == null) this.savedValues = {};
@@ -2223,6 +2249,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 } else if(col.getType()=='string') {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget =  field + " " + help;
+		} else if(col.isDate()) {
+		    label = col.getSearchLabel();
+                    let dateWidget =  new DateRangeWidget(this,col.getName(),label+' start',
+							  label+' end');
+		    this.dateWidgets.push({widget:dateWidget,column:col});
+		    widget=dateWidget.getHtml();
+
+		} else {
+		    console.log('unknown column type:',col.getName(),col.getType());
 		}
 		let close = !inGroup;
 		let toggleCloseProperty = this.getProperty(col.getName()+'.toggleClose',this.getToggleClose());
@@ -2240,6 +2275,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    if(inGroup) extra+='</div></div>';
             this.writeHtml(ID_TYPEFIELDS, extra);
+	    this.dateWidgets.forEach(widget=>{
+		widget.widget.initHtml();
+	    });
+
+
+
 	    this.jq(ID_TYPEFIELDS).find('.display-metadatalist').each(function() {
 		let opts = $(this).find(TAG_OPTION);
 		if(opts.length<popupLimit) return;
@@ -2330,6 +2371,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.setContents(this.getDefaultHtml());
 	    this.initHtml();
             this.providerChanged(true);
+
+
             if (this.dateRangeWidget) {
                 this.dateRangeWidget.initHtml();
             }
@@ -2422,7 +2465,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
-            let textField = HU.input("", text, [ATTR_PLACEHOLDER, eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+            let textField = HU.input("", text, [ATTR_PLACEHOLDER, eg,
+						ATTR_CLASS, "display-search-input",
+						ATTR_SIZE, "30",
+						ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
             this.getDisplayManager().createDisplay(DISPLAY_ENTRY_GALLERY, props);
         },
         handleEventEntrySelection: function(source, args) {
@@ -2467,7 +2513,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let makeExpandable= (html) =>{
 		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px','background','#fff','overflow-y','auto')],html);
-		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',ATTR_STYLE,HU.css('position','relative')],html);
+		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
+			       ATTR_STYLE,HU.css('position','relative')],html);
 	    }
 
 	    this.getDisplayTypes().split(',').forEach(type=>{
@@ -2484,7 +2531,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			titles.push('Images');
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type});
-			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',ATTR_STYLE,HU.css('width','100%')]);
+			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',
+					    ATTR_STYLE,HU.css('width','100%')]);
 			addContents(makeExpandable(images));
 		    }
 		} else if(type=='timeline') {
@@ -2803,7 +2851,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    if(entry.isImage()) {
 			text = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "400", ATTR_ID,
 								 this.getDomId("entry_" + entry.getIdForDom()),
-								 ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
+								 ATTR_ENTRYID, entry.getId(),
+								 ATTR_CLASS, "display-entrygallery-entry"
 								]) +"<br>" + link;
 
 
@@ -2924,7 +2973,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    if(ele.attr('data-image-url')) {
 			let title = ele.attr(ATTR_TITLE)+HU.getTitleBr()??'';
 			title+='Click to filter';
-			group.contents+=HU.image(ele.attr('data-image-url'),[ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,ATTR_TITLE,title]);
+			group.contents+=HU.image(ele.attr('data-image-url'),[ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,
+									     ATTR_TITLE,title]);
 		    } else {
 			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
 			style = ele.attr(ATTR_STYLE);
@@ -3040,7 +3090,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		}
 		let entries = HU.div([ATTR_ID,this.domId(ID_ENTRIES),ATTR_CLASS,"display-simplesearch-entries",ATTR_STYLE,style]);
 		if (this.getShowHeader(true)) {
-		    html+=  HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
+		    html+=  HU.div([ATTR_CLASS, "display-entries-results",
+				    ATTR_ID, this.getDomId(ID_RESULTS)]);
 		}
 		html+=entries;
 	    }
@@ -3061,7 +3112,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 
 	    let size = HU.getDimension(this.getPropertyInputSize());
-            let textField = HU.input("", text, [ATTR_STYLE, HU.css("width", size), ATTR_PLACEHOLDER, eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+            let textField = HU.input("", text, [ATTR_STYLE, HU.css("width", size), ATTR_PLACEHOLDER, eg,
+						ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
             form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
@@ -3790,19 +3842,22 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
             html += HU.openDiv([ATTR_CLASS, "display-grid", ATTR_ID, this.getDomId(ID_GRID)]);
             html += HU.div([ATTR_CLASS, "display-grid-popup ramadda-popup"], "");
-            html += HU.openTag(TAG_TABLE, ["border", "0", ATTR_CLASS, "", "cellspacing", "0", "cellspacing", "0", "width", "100%", ATTR_STYLE, "height:100%;"]);
+            html += HU.openTag(TAG_TABLE, ["border", "0",
+					   ATTR_CLASS, "", "cellspacing", "0", "cellspacing", "0", "width", "100%", ATTR_STYLE, "height:100%;"]);
             html += HU.openTag(TAG_TR, ["valign", "bottom"]);
             html += HU.tag(TAG_TD);
             html += HU.tag(TAG_TD, [], HU.div([ATTR_ID, this.getDomId(ID_LINKS)], ""));
             html += HU.closeTag(TAG_TR);
             html += HU.openTag(TAG_TR, [ATTR_STYLE, "height:100%;"]);
             html += HU.openTag(TAG_TD, [ATTR_STYLE, "height:100%;"]);
-            html += HU.openDiv([ATTR_CLASS, "display-grid-axis-left ramadda-noselect", ATTR_ID, this.getDomId(ID_AXIS_LEFT)]);
+            html += HU.openDiv([ATTR_CLASS, "display-grid-axis-left ramadda-noselect",
+				ATTR_ID, this.getDomId(ID_AXIS_LEFT)]);
             html += HU.closeDiv();
             html += HU.closeDiv();
             html += HU.closeTag(TAG_TD);
             html += HU.openTag(TAG_TD, [ATTR_STYLE, "height:" + this.getProperty("height", "400") + "px"]);
-            html += HU.openDiv([ATTR_CLASS, "display-grid-canvas ramadda-noselect", ATTR_ID, this.getDomId(ID_CANVAS)]);
+            html += HU.openDiv([ATTR_CLASS, "display-grid-canvas ramadda-noselect",
+				ATTR_ID, this.getDomId(ID_CANVAS)]);
             html += HU.closeDiv();
             html += HU.closeDiv();
             html += HU.closeTag(TAG_TD);
@@ -3810,7 +3865,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             html += HU.openTag(TAG_TR, []);
             html += HU.tag(TAG_TD, ["width", "100"], "&nbsp;");
             html += HU.openTag(TAG_TD, []);
-            html += HU.div([ATTR_CLASS, "display-grid-axis-bottom ramadda-noselect", ATTR_TITLE, mouseInfo, ATTR_ID, this.getDomId(ID_AXIS_BOTTOM)], "");
+            html += HU.div([ATTR_CLASS, "display-grid-axis-bottom ramadda-noselect",
+			    ATTR_TITLE, mouseInfo, ATTR_ID, this.getDomId(ID_AXIS_BOTTOM)], "");
             html += HU.closeTag(TAG_TABLE);
             html += HU.closeTag(TAG_TD);
             return html;
@@ -3917,7 +3973,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 let style = "bottom:" + tick.percent + "%;";
                 let lineClass = tick.major ? "display-grid-hline-major" : "display-grid-hline";
                 axis.Y.lines += HU.div([ATTR_STYLE, style, ATTR_CLASS, lineClass], " ");
-                axis.Y.html += HU.div([ATTR_STYLE, style, ATTR_CLASS, "display-grid-axis-left-tick"], tick.label + " " + HU.div([ATTR_CLASS, "display-grid-htick"], ""));
+                axis.Y.html += HU.div([ATTR_STYLE, style,
+				       ATTR_CLASS, "display-grid-axis-left-tick"], tick.label + " " + HU.div([ATTR_CLASS, "display-grid-htick"], ""));
             }
 
             if (axis.X.axisType == "size") {
@@ -3933,7 +3990,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     let lineClass = tick.major ? "display-grid-vline-major" : "display-grid-vline";
                     axis.X.lines += HU.div([ATTR_STYLE, "left:" + tick.percent + "%;", ATTR_CLASS, lineClass], " ");
                 }
-                axis.X.html += HU.div([ATTR_STYLE, "left:" + tick.percent + "%;", ATTR_CLASS, "display-grid-axis-bottom-tick"], HU.div([ATTR_CLASS, "display-grid-vtick"], "") + " " + tick.label);
+                axis.X.html += HU.div([ATTR_STYLE, "left:" + tick.percent + "%;",
+				       ATTR_CLASS, "display-grid-axis-bottom-tick"], HU.div([ATTR_CLASS, "display-grid-vtick"], "") + " " + tick.label);
             }
 
             let items = "";
@@ -3993,16 +4051,19 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     console.log("pos:" + namePos);
                 }
                 if (showIcon) {
-                    items += HU.div([ATTR_CLASS, "display-grid-entry-icon display-grid-entry", "entryid", entry.getId(), "index", i, ATTR_STYLE, pos], entry.getIconImage());
+                    items += HU.div([ATTR_CLASS, "display-grid-entry-icon display-grid-entry", "entryid", entry.getId(), "index", i,
+				     ATTR_STYLE, pos], entry.getIconImage());
                 }
                 let key = Math.round(xInfo.p1) + "---" + Math.round(vInfo.p1);
                 if (showName && !seen[key]) {
                     seen[key] = true;
                     let name = entry.getName().replace(/ /g, "&nbsp;");
-                    items += HU.div([ATTR_CLASS, "display-grid-entry-text display-grid-entry", "entryid", entry.getId(), "index", i, ATTR_STYLE, namePos], name);
+                    items += HU.div([ATTR_CLASS, "display-grid-entry-text display-grid-entry", "entryid", entry.getId(), "index", i,
+				     ATTR_STYLE, namePos], name);
                 }
                 let boxStyle = style + "background:" + this.getProperty(ID_COLOR, "lightblue");
-                items += HU.div([ATTR_CLASS, "display-grid-entry-box display-grid-entry", "itemtype", "box", "entryid", entry.getId(), ATTR_STYLE, boxStyle, "index", i], "");
+                items += HU.div([ATTR_CLASS, "display-grid-entry-box display-grid-entry", "itemtype", "box", "entryid", entry.getId(),
+				 ATTR_STYLE, boxStyle, "index", i], "");
             }
             this.jq(ID_AXIS_LEFT).html(axis.Y.html);
             this.jq(ID_CANVAS).html(axis.Y.lines + axis.X.lines + items);
@@ -4283,7 +4344,8 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             });
             let height = this.getProperty("height", "400px");
             if (!height.endsWith("px")) height += "px";
-            this.setContents(HU.div([ATTR_CLASS, "display-entry-description", ATTR_STYLE, "height:" + height + ";"],
+            this.setContents(HU.div([ATTR_CLASS, "display-entry-description",
+				     ATTR_STYLE, "height:" + height + ";"],
 				    html));
             this.entryHtmlHasBeenDisplayed(entry);
         },
@@ -4378,7 +4440,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 	    let html = HU.div([ATTR_ID,this.domId(ID_WIKI),ATTR_STYLE,this.getWikiStyle()]);
 	    let entryMap = {};
 	    if(properties.entries) {
-//		this.sourceEntry=properties.entries[0];
+		//		this.sourceEntry=properties.entries[0];
 		let options = [];
                	options.push(HU.tag(TAG_OPTION, [], 'View Entry'));
 		properties.entries.forEach(entry=>{
@@ -4448,7 +4510,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 	    if(!args.record) return;
 	    let entryId = args.record.getValueFromField(ATTR_ID);	    
 	    if(entryId) {
-//		this.entryMenu.val(entryId);
+		//		this.entryMenu.val(entryId);
 		this.entryMenu.data("selectBox-selectBoxIt").selectOption(entryId);
 	    }
 	},
@@ -4528,7 +4590,8 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
 
             html += HU.closeTag(TAG_TABLE);
             html += "<p>";
-            html += HU.tag(TAG_DIV, [ATTR_CLASS, "display-button", ATTR_ID, this.getDomId(ID_NEWDISPLAY)], "New Chart");
+            html += HU.tag(TAG_DIV, [ATTR_CLASS, "display-button",
+				     ATTR_ID, this.getDomId(ID_NEWDISPLAY)], "New Chart");
             html += "<p>";
             html += "</form>";
             this.writeEntries(html);
@@ -4609,7 +4672,8 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             let typeMap = {};
             let allTypes = [];
             let html = "";
-            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table", ATTR_WIDTH, "100%", ATTR_BORDER, "1", "cellspacing", "0", "cellpadding", "5"]);
+            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table",
+					   ATTR_WIDTH, "100%", ATTR_BORDER, "1", "cellspacing", "0", "cellpadding", "5"]);
             for (let i = 0; i < this.ramaddas.length; i++) {
                 let ramadda = this.ramaddas[i];
                 let types = ramadda.getEntryTypes();
@@ -4655,7 +4719,8 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                         let label =
                             HU.tag(TAG_A, ["href", ramadda.getRoot() + "/search/type/" + repoType.getId(), "target", "_blank"],
                                    repoType.getEntryCount());
-                        row += HU.td([ATTR_ALIGN, "right", ATTR_CLASS, "display-repositories-table-type-has"], label);
+                        row += HU.td([ATTR_ALIGN, "right",
+				      ATTR_CLASS, "display-repositories-table-type-has"], label);
                     }
 
                 }
@@ -4761,9 +4826,10 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 	},
 	makeInput:function() {
 	    this.inputId = this.display.getMetadataFieldId(this.metadata.getType())+'_element_' + this.getIndex()+'_input';
-	    let input = HU.input('','',[ATTR_CLASS,
-					'display-simplesearch-input',
-					ATTR_ID,this.inputId,ATTR_STYLE,HU.css('width','100%'),ATTR_PLACEHOLDER,this.getName()]);
+	    let input = HU.input('','',[ATTR_CLASS,'display-simplesearch-input',
+					ATTR_ID,this.inputId,
+					ATTR_STYLE,HU.css('width','100%'),
+					ATTR_PLACEHOLDER,this.getName()]);
 	    return input;
 	},
 	cbxState:{},
@@ -4827,7 +4893,8 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		let cbx = HU.checkbox("",[ATTR_ID,cbxId,
 					  "metadata-type",type,
 					  "metadata-index",this.getIndex(),
-					  "metadata-value",value],selected) +" " + HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
+					  "metadata-value",value],selected) +" " +
+		    HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
 		if(this.getValues().length>popupLimit) {
 		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label], cbx);
 		}

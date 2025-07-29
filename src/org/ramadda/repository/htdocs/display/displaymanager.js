@@ -306,7 +306,8 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
 
 
-            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup",
+			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
 			      HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
@@ -547,7 +548,8 @@ function DisplayManager(argId, argProperties) {
     html +=  this.getEntriesMenu(argProperties);
 
     if(this.getShowMenu()) {
-        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
+        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button",
+			       ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
     }
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;

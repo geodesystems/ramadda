@@ -3610,7 +3610,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 		let addValue=(v,label) =>{
 		    if(label && !showTableHeader)
 			v = HU.b(label)+': '+ v;
-		    values.push(HU.div(['style','white-space:nowrap;'],v));
+		    values.push(HU.div([ATTR_STYLE,'white-space:nowrap;'],v));
 		}
 
 

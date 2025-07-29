@@ -972,7 +972,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    let tag = HU.openTag("div",[ATTR_CLASS,noWrapper?'':'display-template-record',ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
+		    let tag = HU.openTag("div",[ATTR_CLASS,noWrapper?'':'display-template-record',
+						ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
 						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
@@ -1267,7 +1268,8 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		    if(!scaleFont) fontSize = "100%";
 		    var field = data[j].field;
 		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(),
-					ATTR_TITLE,"Value: " + value, ATTR_CLASS,"display-topfields-row",ATTR_STYLE,"font-size:" + fontSize+";"], field.getLabel());
+					ATTR_TITLE,"Value: " + value, ATTR_CLASS,"display-topfields-row",
+					ATTR_STYLE,"font-size:" + fontSize+";"], field.getLabel());
 		}
 		div += HU.div([ATTR_CLASS,"display-topfields-header",RECORD_INDEX,i],header);
 		div += HU.div([ATTR_CLASS,"display-topfields-values"], contents);
@@ -1842,10 +1844,13 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    hor = this.getProperty("floatTable")==true;
 		}
 		html += HU.openTag("div", [ATTR_CLASS,"display-frequency-table",ATTR_STYLE,hor?"":"display:block;"]);
-		html += HU.openTag("table", ["cellpadding","3",ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
+		html += HU.openTag("table", ["cellpadding","3",
+					     ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
+					     ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag("thead", []);
-		    let label =  HU.span([ATTR_TITLE,"Click to reset",ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
+		    let label =  HU.span([ATTR_TITLE,"Click to reset",
+					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
 		    label = HU.div([ATTR_STYLE,"max-width:500px;overflow-x:auto;"], label);
@@ -1901,7 +1906,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
 		    //		    csv+=value+','+perc+'\n';
 
-		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
+		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",
+					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
 		    let tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";

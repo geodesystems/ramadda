@@ -194,18 +194,18 @@ function AreaWidget(display,arg) {
 
 
 
-function DateRangeWidget(display, what) {
+function DateRangeWidget(display, what,startLabel,endLabel) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
-    let startLabel, endLabel;
-    this.what = what||"date";
-    if(what == "createdate") {
-	startLabel = "Create start";
-	endLabel = "Create end";	
-    } else {
-	startLabel = "Start date";
-	endLabel = "End date";	
+    this.what = what??'date';
+    if(this.what == 'createdate') {
+	startLabel = 'Create start';
+	endLabel = 'Create end';	
+    } else if(this.what=='date' || startLabel==null) {
+	startLabel = 'Start date';
+	endLabel = 'End date';	
     }
+
 
     this.baseId = this.what;
     RamaddaUtil.inherit(this, {
@@ -215,15 +215,22 @@ function DateRangeWidget(display, what) {
             $("#" + this.baseId +ID_DATE_START).datepicker(args);
             $("#" + this.baseId +ID_DATE_END).datepicker(args);
         },
+	getStartEnd: function() {
+            let start = $("#"+ this.baseId +ID_DATE_START).val();
+            let end =  $("#"+ this.baseId +ID_DATE_END).val();
+	    return {start:start,end:end};
+	},
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();
             let end =  $("#"+ this.baseId +ID_DATE_END).val();
 	    HU.addToDocumentUrl(this.baseId+ID_DATE_START,Utils.stringDefined(start)?start:null);
 	    HU.addToDocumentUrl(this.baseId+ID_DATE_END,Utils.stringDefined(end)?end:null);		    	    
-	    if(this.what=="createdate")
+	    if(this.what=="createdate") {
 		settings.setCreateDateRange(start, end);
-	    else
+	    } else    if(this.what=="date") {
 		settings.setDateRange(start, end);
+	    } else {
+	    }
         },
         getHtml: function() {
 	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);

@@ -34,7 +34,9 @@ function BoundsFilter(display, properties) {
 	enabled:true,
 	getWidget: function() {
 	    let id = this.display.getDomId("boundsfilter");
-	    return HtmlUtils.span([ATTR_STYLE,HU.css("margin-left","4px","margin-right","4px"), ID,id,CLASS,"ramadda-clickable", TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
+	    return HtmlUtils.span([ATTR_STYLE,HU.css("margin-left","4px","margin-right","4px"),
+				   ATTR_ID,id,ATTR_CLASS,"ramadda-clickable",
+				   ATTR_TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
 	},
 	initWidget: function(inputFunc) {
 	    this.inputFunc = inputFunc;
@@ -465,11 +467,14 @@ function RecordFilter(display,filterFieldId, properties) {
 			bar= $("#"+this.display.getProperty("tagDiv"));
 		    else
 			bar= this.display.jq(ID_TAGBAR);
-		    tagGroup = $(HU.div([ATTR_STYLE,HU.css("display","inline-block"), ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
+		    tagGroup = $(HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+					 ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
 		}
 		
 		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,value,
-				    ATTR_STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+				    ATTR_STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),
+				    ATTR_CLASS,"display-search-tag",
+				    ATTR_ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 		tag.click(function(){
 		    _this.selectedTags = Utils.removeElement(_this.selectedTags,value);
 		    if(cbx)
@@ -769,10 +774,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
-		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(this.isFieldBoolean()) {
-		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,"fieldId",this.getId()];
 		let filterValues = this.getProperty(this.getId()+".filterValues");
                 let enums = [];
 		let allName = this.getProperty(this.getId() +".allName","-");
@@ -867,23 +872,28 @@ function RecordFilter(display,filterFieldId, properties) {
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style, "data-value",v,ATTR_TITLE,label],
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,
+							ATTR_STYLE,style, "data-value",v,ATTR_TITLE,label],
 						       HtmlUtils.image(image,imageAttrs));
 			    } else {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style,"data-value",v,ATTR_TITLE,label],label);
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,
+							ATTR_STYLE,style,"data-value",v,ATTR_TITLE,label],label);
 			    }
 			} else {
-			    buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz, ATTR_STYLE,style,"data-value",v],label);
+			    buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,
+						    ATTR_STYLE,style,"data-value",v],label);
 			}
 			buttons+="\n";
 		    }
 
 
 		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
-			buttons+=HtmlUtils.div([ATTR_CLASS,"display-filter-item-label",ATTR_ID,this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
+			buttons+=HtmlUtils.div([ATTR_CLASS,"display-filter-item-label",
+						ATTR_ID,this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= this.prefix + 
-			HtmlUtils.div(["data-value",dfltValue,ATTR_CLASS,"display-filter-items",ATTR_ID,widgetId,"isButton","true", "fieldId",
+			HtmlUtils.div(["data-value",dfltValue,ATTR_CLASS,"display-filter-items",
+				       ATTR_ID,widgetId,"isButton","true", "fieldId",
 				       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
@@ -924,8 +934,9 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(count) label = label +(showCount?" (" + count+")":"");
 			let cbxId = this.getFilterId() +"_cbx_" + idx;
 			this.tagToCbx[value] = cbxId;
-			let cbx = HU.checkbox("",[CLASS,"metadata-cbx",ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
-			cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId()))], cbx);
+			let cbx = HU.checkbox("",[ATTR_CLASS,"metadata-cbx",
+						  ATTR_ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
+			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId()))], cbx);
 			cbxs.push(cbx);
 		    }); 
 		    this.tagCbxs  = cbxs;
@@ -937,7 +948,9 @@ function RecordFilter(display,filterFieldId, properties) {
 			style+=HU.css("border","1px solid #ccc","background", Utils.getEnumColor(this.getFieldId()));
 		    else
 			style+=HU.css();
-		    widget= HU.div([STYLE, style, TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fa-solid fa-plus","font-size:8pt;") +label);   
+		    widget= HU.div([ATTR_STYLE, style, ATTR_TITLE,"Click to select tag",
+				    ATTR_ID,clickId,ATTR_CLASS,"ramadda-clickable entry-toggleblock-label"],
+				   HU.makeToggleImage("fa-solid fa-plus","font-size:8pt;") +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
@@ -991,12 +1004,20 @@ function RecordFilter(display,filterFieldId, properties) {
 					    this.getProperty('filterWidgetSize', '60px'));
 		minStyle+=HU.css('width',size);
 		maxStyle+=HU.css('width',size);
-                widget = HtmlUtils.input('',dfltValueMin,[STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,ATTR_CLASS,'display-filter-range display-filter-input', ATTR_ID,widgetId+'_min','xsize',3,'fieldId',this.getId()]);
+                widget = HtmlUtils.input('',dfltValueMin,[ATTR_STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,
+							  ATTR_CLASS,'display-filter-range display-filter-input',
+							  ATTR_ID,widgetId+'_min','xsize',3,'fieldId',this.getId()]);
 		widget += '-';
-                widget += HtmlUtils.input('',dfltValueMax,[STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,ATTR_CLASS,'display-filter-range display-filter-input', ATTR_ID,widgetId+'_max','xsize',3,'fieldId',this.getId()]);
+                widget += HtmlUtils.input('',dfltValueMax,[ATTR_STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,
+							   ATTR_CLASS,'display-filter-range display-filter-input',
+							   ATTR_ID,widgetId+'_max','xsize',3,'fieldId',this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
-                widget =HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',ATTR_STYLE,widgetStyle, ATTR_ID,widgetId+'_date_from','fieldId',this.getId()]) +'-' +
-		    HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',ATTR_STYLE,widgetStyle, ATTR_ID,widgetId+'_date_to','fieldId',this.getId()]);
+                widget =HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',
+						    ATTR_STYLE,widgetStyle,
+						    ATTR_ID,widgetId+'_date_from','fieldId',this.getId()]) +'-' +
+		    HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',
+						ATTR_STYLE,widgetStyle,
+						ATTR_ID,widgetId+'_date_to','fieldId',this.getId()]);
 		this.dateIds.push(widgetId+'_date_from');
 		this.dateIds.push(widgetId+'_date_to');
 
@@ -1032,7 +1053,8 @@ function RecordFilter(display,filterFieldId, properties) {
             } else {
 		let dfltValue = this.getPropertyFromUrl('fv',"");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
+		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width),
+			    ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push("width");
 		attrs.push(width);

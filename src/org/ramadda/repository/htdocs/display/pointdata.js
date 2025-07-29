@@ -872,7 +872,8 @@ function RecordField(props, source) {
                 type="fa-list";
             }
             let tt = this.getType();
-            return  HtmlUtils.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,ATTR_STYLE,"color:rgb(169, 169, 169);font-size:12pt;"]);
+            return  HtmlUtils.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,
+				    ATTR_STYLE,"color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
             return this.getLabel() + this.getUnitSuffix();
@@ -3534,7 +3535,8 @@ RequestMacro.prototype = {
 	let title = this.getProperty('request.' + this.name+'.title',null);
 	if(debug)console.log(this.getId() +'.getWidget:' + label +' type:' + this.type);
 	if(this.type=='bounds') {
-	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, 'In bounds');
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[ATTR_TITLE,title??'Reload with current bounds',
+								      ATTR_ID,this.display.getDomId(this.getId())], false, 'In bounds');
 	    label = null;
 	} else if(this.isSkip()) {
 	    widget = '';
@@ -3592,30 +3594,37 @@ RequestMacro.prototype = {
 	} else if(this.type=='numeric' || this.type=='number') {
 	    let minId = this.display.getDomId(this.getId()+'_min');
 	    let maxId = this.display.getDomId(this.getId()+'_max');			    
-	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
+	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, ATTR_STYLE, style, ATTR_ID,minId,ATTR_SIZE,4,
+				     ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
-		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
+		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, ATTR_STYLE, style, ATTR_ID,maxId,'size',4,
+				ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
 	} else if(this.type=='daterange') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]) +
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
+						      ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,fromId]) +
 		' - ' +
-		HU.datePicker('',this.dflt_to,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
+		HU.datePicker('',this.dflt_to,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
+					       ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,toId])
 	    label = label+' range';
 	} else if(this.type=='date') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    dateIds.push(fromId);
-	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]);
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
+						      ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,fromId]);
 	} else {
 	    let size = '10';
 	    if(this.type=='number')
 		size = '4';
 	    size = this.getProperty("request." +this.name+".size",size),
 
-	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',ATTR_STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
+	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',ATTR_STYLE, style,
+					    ATTR_ID,this.display.getDomId(this.getId()),'size',size,
+					    ATTR_CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
