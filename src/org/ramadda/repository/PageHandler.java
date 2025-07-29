@@ -600,11 +600,9 @@ public class PageHandler extends RepositoryManager {
         }
 
         StringBuilder extra = new StringBuilder();
-	String userLinkTemplate =HU.div("${label}",HU.attrs("onClick","document.location=\'${url}\'",
-						    "class","ramadda-user-link"));
+	String userLinkTemplate =HU.div(HU.href("${url}","${label}"),HU.attrs("class","ramadda-user-link"));
         List<String> allLinks = new ArrayList<String>();
         List<String> navLinks = null;
-
         try {
 	    navLinks = getNavLinks(request, userLinkTemplate);
 	} catch(Exception exc) {
@@ -1597,7 +1595,6 @@ public class PageHandler extends RepositoryManager {
                     url = request.makeUrl(getRepositoryBase().URL_USER_LOGIN,
                                           ARG_REDIRECT, redirect);
                 }
-
                 _links.add(new Link(url,  "",
 				    HU.faIcon("fa-sign-in-alt") + " " + msg("Sign in"),"Sign in"));
 		if(getUserManager().isRegistrationEnabled()) {
@@ -1631,6 +1628,9 @@ public class PageHandler extends RepositoryManager {
 				    label,"Go to user settings"));
             }
         }
+
+
+
     }
 
     /**
@@ -1719,6 +1719,7 @@ public class PageHandler extends RepositoryManager {
             if (icon != null) {
                 label = getIconImage(icon) + " " + label;
             }
+
 
             html = html.replace("${tooltip}", apiMethod.getName());
             html = html.replace("${url}", url);
