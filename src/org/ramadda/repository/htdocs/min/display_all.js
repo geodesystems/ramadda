@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 29 07:54:01 MDT 2025";
+var build_date="RAMADDA build date: Tue Jul 29 11:09:02 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -555,12 +555,17 @@ function AreaWidget(display,arg) {
         showSettings: function() {
 	    let _this = this;
 	    let html = "";
-	    html+= HU.div([CLASS,"ramadda-clickable",TITLE, "Use my location",ID,this.domId(ID_SET_LOCATION)],
+	    html+= HU.div([ATTR_CLASS,"ramadda-clickable",
+			   ATTR_TITLE, "Use my location",
+			   ATTR_ID,this.domId(ID_SET_LOCATION)],
 			  HU.getIconImage("fas fa-compass") + SPACE + "Use my location");
-            html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.domId(ID_CLEAR)],
+            html += HU.div([ATTR_CLASS,"ramadda-clickable",
+			    ATTR_TITLE, "Clear form",
+			    ATTR_ID,this.domId(ID_CLEAR)],
 			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
-	    html+= HU.div([TITLE, "Search mode: checked - contains, unchecked - overlaps"],
-			  HtmlUtils.checkbox("",[ID, this.domId(ID_CONTAINS)], this.areaContains) +HU.tag("label",[CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
+	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
+			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
+			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([STYLE,"margin:5px;"], html);
 	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
@@ -582,12 +587,16 @@ function AreaWidget(display,arg) {
 		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
-            let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
-	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
+            let settings = HU.div([ATTR_TITLE,"Settings",ATTR_CLASS,"ramadda-clickable",
+				   ATTR_ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
+	    let showMap = HU.div([ATTR_CLASS,"ramadda-clickable",
+				  ATTR_ID,this.domId(ID_MAP_SHOW),
+				  ATTR_TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
 	    let input = (id,place,title,v)=>{
-		return HtmlUtils.input(id, v, ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
-						this.domId(id), ATTR_TITLE, title]);
+		return HtmlUtils.input(id, v, ["placeholder", place,
+					       ATTR_CLASS, "input display-area-input", "size", "5",
+					       ATTR_ID,this.domId(id), ATTR_TITLE, title]);
 	    };
             let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
@@ -700,7 +709,6 @@ function AreaWidget(display,arg) {
 }
 
 
-
 function DateRangeWidget(display, what,startLabel,endLabel) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
@@ -709,8 +717,8 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
 	startLabel = 'Create start';
 	endLabel = 'Create end';	
     } else if(this.what=='date' || startLabel==null) {
-	startLabel = 'Start date';
-	endLabel = 'End date';	
+	startLabel = display.getProperty("date.start.label","Start date");
+	endLabel = display.getProperty("date.end.label","End date");	
     }
 
 
@@ -742,12 +750,17 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
         getHtml: function() {
 	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
 	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
-									this.baseId +ID_DATE_START, 
-							  ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, end||"", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
-							       this.baseId +ID_DATE_END, 
-						 ]);
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"",
+				       [ATTR_CLASS, "display-date-input",
+					ATTR_PLACEHOLDER, " " +startLabel,
+					ATTR_TITLE, startLabel, ATTR_ID,
+					this.baseId +ID_DATE_START, 
+				       ]) + " - " +
+                HtmlUtils.input(this.baseId +ID_DATE_END, end||"",
+				[ATTR_CLASS, "display-date-input",
+				 ATTR_PLACEHOLDER,  " " +endLabel,
+				 ATTR_TITLE,endLabel,ATTR_ID, this.baseId +ID_DATE_END, 
+				]);
             return html;
         }
     });
@@ -782,7 +795,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
     let tt = d3.select("body").append("div")	
-	.attr(CLASS, "sparkline-tooltip")				
+	.attr(ATTR_CLASS, "sparkline-tooltip")				
 	.style("opacity", 0);
 
     const svg = d3.select(dom).append('svg')
@@ -948,7 +961,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append("div").attr(CLASS, "sparkline-tooltip").style("opacity", 0);
+    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style("opacity", 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
@@ -35543,7 +35556,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra+=this.addWidget('Date',dateWidget,{toggleClose:this.getProperty('dateToggleClose',toggleClose)});
 	    }
             if (this.getShowArea()) {
-		let label=this.getLabel(this.getAreaLabel('Location'));
+		let label=this.getLabel(this.getAreaLabel('Geographic Location'));
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
                 extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()),
@@ -36095,6 +36108,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    help = HU.span([ATTR_STYLE,HU.css('cursor','help','margin-left','10px'), ATTR_TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
 		}		
 		
+
                 if (col.isEnumeration()) {
 		    let showCheckboxes=col.showCheckboxes()
 		    let prop = this.getProperty(col.getName()+'.showCheckboxes');
@@ -36176,6 +36190,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
+		    label = col.getSearchLabel();
                     widget =  field + " " + help;
 		} else if(col.isDate()) {
 		    label = col.getSearchLabel();
