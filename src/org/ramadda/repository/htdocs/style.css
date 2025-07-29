@@ -248,6 +248,8 @@ h6 {
 .ramadda-page-title  {
     font-size:200%;
     text-align:center;
+    line-height:30px;
+    padding:10px;
 }
 
 .ramadda-page-title  a:hover {
@@ -270,7 +272,7 @@ h6 {
 
 .ramadda-heading-outer  {
     text-align:center;
-    margin-top:0.5em;
+    margin-top:0.0em;
 }
 
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
