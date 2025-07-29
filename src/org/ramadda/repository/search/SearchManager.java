@@ -1648,8 +1648,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String v = s.toLowerCase();
 			List<Query> ors = new ArrayList<Query>();
 			if(column.getTokenizeSearch()) {
-			    ors.add(new TermQuery(new Term(field+"_exact", s)),
-					BooleanClause.Occur.MUST);
+			    ors.add(new TermQuery(new Term(field+"_exact", s)));
 			}			    
 			v = v.toLowerCase();
 			if(v.indexOf(" ")>=0) {
