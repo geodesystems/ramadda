@@ -351,6 +351,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"hideWhenZero","false",
 					"template","${icon} ${label}<br>${count}",
 					"addSearchLink","true",
+					"#addAncestor","true",
 					"animated","true",
 					"#doColor","true",
 					"#iconWidth","32px",
