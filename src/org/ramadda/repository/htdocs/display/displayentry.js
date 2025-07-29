@@ -1615,7 +1615,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra+=this.addWidget('Date',dateWidget,{toggleClose:this.getProperty('dateToggleClose',toggleClose)});
 	    }
             if (this.getShowArea()) {
-		let label=this.getLabel(this.getAreaLabel('Location'));
+		let label=this.getLabel(this.getAreaLabel('Geographic Location'));
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
                 extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()),
@@ -2167,6 +2167,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    help = HU.span([ATTR_STYLE,HU.css('cursor','help','margin-left','10px'), ATTR_TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
 		}		
 		
+
                 if (col.isEnumeration()) {
 		    let showCheckboxes=col.showCheckboxes()
 		    let prop = this.getProperty(col.getName()+'.showCheckboxes');
@@ -2248,6 +2249,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
+		    label = col.getSearchLabel();
                     widget =  field + " " + help;
 		} else if(col.isDate()) {
 		    label = col.getSearchLabel();

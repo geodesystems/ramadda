@@ -48,12 +48,17 @@ function AreaWidget(display,arg) {
         showSettings: function() {
 	    let _this = this;
 	    let html = "";
-	    html+= HU.div([CLASS,"ramadda-clickable",TITLE, "Use my location",ID,this.domId(ID_SET_LOCATION)],
+	    html+= HU.div([ATTR_CLASS,"ramadda-clickable",
+			   ATTR_TITLE, "Use my location",
+			   ATTR_ID,this.domId(ID_SET_LOCATION)],
 			  HU.getIconImage("fas fa-compass") + SPACE + "Use my location");
-            html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.domId(ID_CLEAR)],
+            html += HU.div([ATTR_CLASS,"ramadda-clickable",
+			    ATTR_TITLE, "Clear form",
+			    ATTR_ID,this.domId(ID_CLEAR)],
 			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
-	    html+= HU.div([TITLE, "Search mode: checked - contains, unchecked - overlaps"],
-			  HtmlUtils.checkbox("",[ID, this.domId(ID_CONTAINS)], this.areaContains) +HU.tag("label",[CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
+	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
+			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
+			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([STYLE,"margin:5px;"], html);
 	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
@@ -75,12 +80,16 @@ function AreaWidget(display,arg) {
 		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
-            let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
-	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
+            let settings = HU.div([ATTR_TITLE,"Settings",ATTR_CLASS,"ramadda-clickable",
+				   ATTR_ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
+	    let showMap = HU.div([ATTR_CLASS,"ramadda-clickable",
+				  ATTR_ID,this.domId(ID_MAP_SHOW),
+				  ATTR_TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
 	    let input = (id,place,title,v)=>{
-		return HtmlUtils.input(id, v, ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
-						this.domId(id), ATTR_TITLE, title]);
+		return HtmlUtils.input(id, v, ["placeholder", place,
+					       ATTR_CLASS, "input display-area-input", "size", "5",
+					       ATTR_ID,this.domId(id), ATTR_TITLE, title]);
 	    };
             let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
@@ -193,7 +202,6 @@ function AreaWidget(display,arg) {
 }
 
 
-
 function DateRangeWidget(display, what,startLabel,endLabel) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
@@ -202,8 +210,8 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
 	startLabel = 'Create start';
 	endLabel = 'Create end';	
     } else if(this.what=='date' || startLabel==null) {
-	startLabel = 'Start date';
-	endLabel = 'End date';	
+	startLabel = display.getProperty("date.start.label","Start date");
+	endLabel = display.getProperty("date.end.label","End date");	
     }
 
 
@@ -235,12 +243,17 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
         getHtml: function() {
 	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
 	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
-									this.baseId +ID_DATE_START, 
-							  ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, end||"", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
-							       this.baseId +ID_DATE_END, 
-						 ]);
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"",
+				       [ATTR_CLASS, "display-date-input",
+					ATTR_PLACEHOLDER, " " +startLabel,
+					ATTR_TITLE, startLabel, ATTR_ID,
+					this.baseId +ID_DATE_START, 
+				       ]) + " - " +
+                HtmlUtils.input(this.baseId +ID_DATE_END, end||"",
+				[ATTR_CLASS, "display-date-input",
+				 ATTR_PLACEHOLDER,  " " +endLabel,
+				 ATTR_TITLE,endLabel,ATTR_ID, this.baseId +ID_DATE_END, 
+				]);
             return html;
         }
     });
@@ -275,7 +288,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
     let tt = d3.select("body").append("div")	
-	.attr(CLASS, "sparkline-tooltip")				
+	.attr(ATTR_CLASS, "sparkline-tooltip")				
 	.style("opacity", 0);
 
     const svg = d3.select(dom).append('svg')
@@ -441,7 +454,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append("div").attr(CLASS, "sparkline-tooltip").style("opacity", 0);
+    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style("opacity", 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
