@@ -191,6 +191,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
     private Object LUCENE_MUTEX = new Object();
+    public static final int FIELD_MAX_LENGTH = 32000;
     public static final int LUCENE_MAX_LENGTH = 25_000_000;
     private Directory luceneDirectory;
     private IndexWriter luceneWriter;
@@ -602,12 +603,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    doc.add(new SortedNumericDocValuesField(field+"_sort", (Integer)v));
 			}
 		    } else {
-			String s = v.toString().toLowerCase();
+			String s = v.toString();
+			if(column.getTokenizeSearch()) {
+			    doc.add(new TextField(field+"_exact", s,Field.Store.NO));
+			}			    
+
+			s = s.toLowerCase();
 			corpus.append(s);
 			corpus.append(" ");
-			doc.add(new TextField(field, s,Field.Store.NO));
-			if(column.getCanSort())
+
+			if(s.length()>FIELD_MAX_LENGTH) {
+			    s = s.substring(0,FIELD_MAX_LENGTH-1);
+			}
+			doc.add(new StringField(field, s,Field.Store.NO));
+
+			if(column.getCanSort()) {
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
+			}
 		    }
 		}
 	    }
@@ -1631,19 +1643,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 			continue;
 		    } else {
-			String v = request.getUnsafeString(searchArg,null);
-			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			String s = request.getUnsafeString(searchArg,null);
+			if(!Utils.stringDefined(s)||s.equals(TypeHandler.ALL)) continue;
+			String v = s.toLowerCase();
+			List<Query> ors = new ArrayList<Query>();
+			if(column.getTokenizeSearch()) {
+			    ors.add(new TermQuery(new Term(field+"_exact", s)),
+					BooleanClause.Occur.MUST);
+			}			    
 			v = v.toLowerCase();
 			if(v.indexOf(" ")>=0) {
 			    PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
 			    for(String tok: Utils.split(v," ",true,true)) {
 				phraseBuilder.add(makeTerm(field, tok));
 			    }
-			    term =  phraseBuilder.build();
+			    ors.add(phraseBuilder.build());
 			} else {
-			    term = new WildcardQuery(makeTerm(field, v));
+			    ors.add(new WildcardQuery(makeTerm(field, v)));
 			}
-			//			System.err.println("query field:" + field +" value:" + v);
+			if(ors.size()==1) 
+			    term = ors.get(0);
+			else if(ors.size()>1)
+			    term =  makeOr(ors);
 		    }
 		    cnt++;
 		    if(term!=null) {
