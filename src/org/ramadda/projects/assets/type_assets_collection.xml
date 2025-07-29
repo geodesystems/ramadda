@@ -8,7 +8,7 @@ into some types.xml file
  handler="org.ramadda.projects.assets.AssetCollectionTypeHandler" 
  supercategory="General" 
  category="Assets" 
-childtypes="super:type_assets_base,type_assets_license"
+childtypes="super:type_assets_base,type_assets_license,super:type_assets_thing"
 >
 
 <!-- Columns-->
@@ -32,30 +32,40 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-+if candonew=true 
 +center
+{{entrylink  link=""  title="Asset Search"  makeButton=true showIcon="false"  action="assets_search"  }}
++if candonew=true 
 {{entrylink  link=""  title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
 {{entrylink  link=""  title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
--center
 -if
+-center
 :vspace 0.5em
 +center
 {{typecount  typecountPrefix=":heading Summary" 
 typecountSuffix="" types="super:type_assets_base,type_assets_license"  iconWidth=24px
-doColor=true ancestor="${this}"
+doColor=true ancestor="${this}" addAncestor=true
 addSearchLink=true  topCount=100
 hero="false"  template="${icon} ${label}<br>${count}"  
 addSearchLink="true"  animated="true" }} 
 -center
 :vspace 1em
 ----
-:heading Search
-{{display_entrylist     showEntryType=true orderByTypes="name,acquisition_cost,relevant,date,createdate,changedate"  
-showAncestor=false ancestor=this  typesLabel="Asset Type"  typesToggleClose=false displayTypes="list,images,map,display" showName=true  
-toggleClose=true  
-entryTypes="super:type_assets_base,super:type_assets_thing" 
-excludeTypes="type_assets_thing,type_assets_physical"
+:heading List
++center
+{{display_simplesearch width=310px                                                                            
+ancestor=this                                                                                                
+toggle=true                                                                                                  
+inputSize=300 doPageSearch=false #doTagSearch=true                                                             
+placeholder="Search Assets"                                                                                 
+orderBy=name                                                                                 
+#pageSearchParent=.ramadda-grid-container                                                                     
 }} 
+-center
+{{tabletree    typeWidth=300px
+message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
++skip
+{{assets_report_table}}
+-skip
 :vspace 1em
 ----
 :heading Collection Information
