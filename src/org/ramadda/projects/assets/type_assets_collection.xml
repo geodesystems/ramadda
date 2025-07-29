@@ -42,7 +42,7 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 :vspace 0.5em
 +center
 {{typecount  typecountPrefix=":heading Summary" 
-typecountSuffix="" types="super:type_assets_base,type_assets_license"  iconWidth=24px
+typecountSuffix="" types="super:type_assets_base,super:type_assets_thing"  iconWidth=24px
 doColor=true ancestor="${this}" addAncestor=true
 addSearchLink=true  topCount=100
 hero="false"  template="${icon} ${label}<br>${count}"  
