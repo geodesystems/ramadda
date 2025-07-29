@@ -174,6 +174,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean addRawInput;
     private boolean changeType = false;
     private String dropColumnVersion;
+    private boolean tokenizeSearch = true;
     private boolean showEmpty = true;
     private boolean addNot = false;
     private boolean doPolygonSearch  = false;
@@ -353,6 +354,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 	dropColumnVersion = XU.getAttribute(element,"dropcolumnversion",(String)null);
 
+        tokenizeSearch  = getAttributeOrTag(element, "tokenizesearch", true);
         showEmpty  = getAttributeOrTag(element, "showempty", true);
 
         doPolygonSearch     = getAttributeOrTag(element, "dopolygonsearch", false);
@@ -642,6 +644,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     public boolean isType(String t) {
         return type.equals(t);
+    }
+
+    public boolean getTokenizeSearch() {
+	return tokenizeSearch;
     }
 
     public boolean getDoInlineEdit() {
