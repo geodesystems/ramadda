@@ -1343,10 +1343,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(stringDefined(description)) {
 	    queries.add(makeTextQuery(FIELD_DESCRIPTION,description));
 	}	
+	long dateMin = Long.MIN_VALUE;
+	long dateMax = Long.MAX_VALUE;
+
+
 
 	for (DateArgument arg : DateArgument.SEARCH_ARGS) {
-	    long min = Long.MIN_VALUE;
-	    long max = Long.MAX_VALUE;
             Date[] dateRange = request.getDateRange(arg.getFrom(),
 						    arg.getTo(), arg.getRelative(),
 						    new Date());
@@ -1359,13 +1361,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    ? FIELD_DATE_CREATED
 		    : FIELD_DATE_CHANGED;
 		if(date1!=null || date2!=null) {
-		    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():min,
-									      date2!=null?date2.getTime():max));
+		    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():dateMin,
+									      date2!=null?date2.getTime():dateMax));
 		}
 		continue;
 	    }
-	    long t1 = date1==null?min:date1.getTime();
-	    long t2 = date2==null?max:date2.getTime();	    
+	    long t1 = date1==null?dateMin:date1.getTime();
+	    long t2 = date2==null?dateMax:date2.getTime();	    
 	    if (date1 == null) {
 		//		date1 = date2;
 	    }
@@ -1618,8 +1620,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					field+SUFFIX_LONGITUDE,
 					null,null);
 			continue;
+		    } else if(column.isDate()) {
+			Date[] dateRange = request.getDateRange(searchArg+"_from",   searchArg+"_to", null);
+			Date date1 = dateRange[0];
+			Date date2 = dateRange[1];
+			if(date1!=null || date2!=null) {
+			    System.err.println("date:" + date1 +" d2:" + date2);
+			    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():dateMin,
+										      date2!=null?date2.getTime():dateMax));
+			}
+			continue;
 		    } else {
-
 			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			v = v.toLowerCase();
