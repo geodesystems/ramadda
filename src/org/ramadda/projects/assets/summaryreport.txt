@@ -5,78 +5,81 @@
 +row
 +col-2
 :b Asset Type
-{{group inlineDataSrc=typesdata}}
+{{group inlineDataSrc=typesdata loadingMessage=""}}
 +center
 {{display_piechart width=200px }} 
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;" }}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;" }}
 -col
 +col-2
 :b Department
-{{group inlineDataSrc=departmentdata}}
+{{group inlineDataSrc=departmentdata loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;"}}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 -row
+
+<status>
 :p
 ----
 :p
 +row
 +col-2
 :b Status
-{{group inlineDataSrc=statusdata}}
+{{group inlineDataSrc=statusdata loadingMessage=""}}
 +center
 {{display_piechart width=200px}} 
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;"}}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 +col-2
 :b Condition
-{{group inlineDataSrc=conditiondata}}
+{{group inlineDataSrc=conditiondata loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;"}}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 -row
+</status>
 :p
 ----
 :p
 +row
 +col-2
 :b Location
-{{group inlineDataSrc=locationdata}}
+{{group inlineDataSrc=locationdata loadingMessage=""}}
 +center
 {{display_piechart width=200px}} 
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;"}}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 +col-2
 :b Assigned to
-{{group inlineDataSrc=assignedtodata}}
+{{group inlineDataSrc=assignedtodata loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center
 -col
 +col-4
 {{display_download}}
-{{display_htmltable height=200px displayStyle="background:#fff;"}}
+{{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 -row

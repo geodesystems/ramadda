@@ -38,7 +38,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String REPORT_SUMMARY = "assets_report_summary";
     public static final String REPORT_MAINTENANCE = "assets_report_maintenance";
     public static final String REPORT_WARRANTY = "assets_report_warranty";            
-
+    public static final String REPORT_COSTS = "assets_report_costs";
 
 
     public AssetCollectionTypeHandler(Repository repository, Element node)
@@ -52,7 +52,8 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
         tags.add(new String[]{"Assets Report Table",REPORT_TABLE+" #types=\"\" showHeader=true"});
         tags.add(new String[]{"Assets Report Summary",REPORT_SUMMARY +" "});
         tags.add(new String[]{"Assets Report Maintenance",REPORT_MAINTENANCE+" "});
-        tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" "});			
+        tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" "});
+        tags.add(new String[]{"Assets Report Costs",REPORT_COSTS+" "});				
     }
 
 
@@ -170,9 +171,11 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 					 ARG_SEARCH_URL,searchUrl);
 
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
-	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},{REPORT_SUMMARY,"Summary"},
-					 {REPORT_MAINTENANCE,"Maintenance"},
-					 {REPORT_WARRANTY,"Warranty"}
+	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},
+					 {REPORT_SUMMARY,"Summary"},
+					 {REPORT_COSTS,"Costs"},
+					 {REPORT_WARRANTY,"Warranty"},
+					 {REPORT_MAINTENANCE,"Maintenance"},					 
 	    }) {
 	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
 						      ARG_REPORT,tuple[0]),
@@ -193,7 +196,9 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	else if(report.equals(REPORT_WARRANTY))
 	    makeReportWarranty(request, entry,sb, new Hashtable());		
 	else if(report.equals(REPORT_SUMMARY))
-	    makeReportSummary(request, entry,sb,new Hashtable());	
+	    makeReportSummary(request, entry,sb,new Hashtable());
+	else if(report.equals(REPORT_COSTS))
+	    makeReportCosts(request, entry,sb,new Hashtable());		
 	else
 	    sb.append("Unknown report:" + report);
 
@@ -223,6 +228,11 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    makeReportSummary(request, entry,sb,props);
 	    return sb.toString();
 	}
+        if (tag.equals(REPORT_COSTS)) {
+	    StringBuilder sb = new StringBuilder();
+	    makeReportCosts(request, entry,sb,props);
+	    return sb.toString();
+	}	
         if (tag.equals(REPORT_WARRANTY)) {
 	    StringBuilder sb = new StringBuilder();
 	    makeReportWarranty(request, entry,sb,props);
@@ -281,6 +291,14 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	buff.append("\n");
     }
 
+    private void inlineData(StringBuilder buff,String id,String csv) {
+	buff.append(HU.comment("inline data for "));
+	buff.append(HU.open("div",HU.attrs("style","display:none","id",id)));
+	buff.append(csv);
+	HU.close(buff,"div");
+	buff.append("\n");
+    }
+    
 
     private void addSummary(LinkedHashMap<String,Integer> map,String label) {
 	if(!stringDefined(label)) label="NA";
@@ -350,8 +368,10 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	StringBuilder postDueSB = new StringBuilder();
 	StringBuilder licensePastDueSB = new StringBuilder();
 	StringBuilder licensePostDueSB = new StringBuilder();		
-	int pastDueCnt =0;
-	int postDueCnt =0;	
+	int warrantyPastDueCnt =0;
+	int warrantyPostDueCnt =0;
+	int licensePastDueCnt =0;
+	int licensePostDueCnt =0;		
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	for(Entry asset: entries) {
 	    Date date=null;
@@ -366,6 +386,15 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    didOne = true;
 	    String link = getEntryManager().getEntryLink(request,asset,true,"");
 	    boolean expired = date.getTime()< now.getTime();
+	    if(expired) {
+		if(isLicense) licensePastDueCnt++;
+		else warrantyPastDueCnt++;
+	    } else {
+		if(isLicense) licensePostDueCnt++;
+		else warrantyPostDueCnt++;
+	    }
+
+
 	    StringBuilder tmp = isLicense?(expired?licensePastDueSB:licensePostDueSB):
 		(expired?pastDueSB:postDueSB);
 	    HU.row(tmp,HU.td(link)+  HU.td(sdf.format(date),"align=right")+HU.td(expired?"Yes":"No"),
@@ -373,25 +402,49 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	}
 
 	buff.append(HU.importCss(".assets-expired {background:#f8d7da;}\n"));
+	buff.append("<div  class='row wiki-row'  >");
+	String cw = "6";
+	if(licensePastDueSB.length()==0 && licensePostDueSB.length()==0)  cw = "12";
+	else if(pastDueSB.length()==0 && postDueSB.length()==0)  cw = "12";	
 	if(pastDueSB.length()>0 || postDueSB.length()>0) {
+	    buff.append("<div  class='col-md-" + cw+" ramadda-col wiki-col'>");
 	    buff.append(HU.formTable());
 	    buff.append("<h3>Warranties</h3>");
+	    if(warrantyPastDueCnt+warrantyPostDueCnt==1)
+		buff.append((warrantyPastDueCnt+warrantyPostDueCnt) +" asset with a warranty<br>");
+	    else
+		buff.append((warrantyPastDueCnt+warrantyPostDueCnt) +" assets with warranties<br>");	    
+	    if(warrantyPastDueCnt>0)
+		buff.append(warrantyPastDueCnt +(warrantyPastDueCnt==1?" warrany past due<br>":" warranties past due<br>"));
+	    if(warrantyPostDueCnt>0)
+		buff.append(warrantyPostDueCnt +(warrantyPostDueCnt==1?" warranty current<br>":" warranties current<br>"));	    
+	    
 	    buff.append("<tr><td>&nbsp;<b>Asset</b>&nbsp;</td><td>&nbsp;<b>Warranty Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
 	    if(pastDueSB.length()>0) 
 		buff.append(pastDueSB);
 	    if(postDueSB.length()>0) 
 		buff.append(postDueSB);	    
 	    buff.append(HU.formTableClose());
+	    buff.append("</div>");
 	}
 
+
 	if(licensePastDueSB.length()>0 || licensePostDueSB.length()>0) {
+	    buff.append("<div  class='col-md-" + cw+" ramadda-col wiki-col'>");
 	    buff.append(HU.formTable());
 	    buff.append("<h3>Licenses</h3>");
+	    buff.append((licensePastDueCnt+licensePostDueCnt) +" " + Utils.plural(licensePastDueCnt+licensePostDueCnt,"license") +" with expiration dates<br>");
+	    if(licensePastDueCnt>0)
+		buff.append(licensePastDueCnt +Utils.plural(licensePastDueCnt,"license")+" expired<br>");
+	    if(licensePostDueCnt>0)
+		buff.append(licensePostDueCnt +Utils.plural(licensePostDueCnt,"license")+" current<br>");	    
 	    buff.append("<tr><td>&nbsp;<b>License</b>&nbsp;</td><td>&nbsp;<b>License Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
 	    buff.append(licensePastDueSB);
 	    buff.append(licensePostDueSB);	    
 	    buff.append(HU.formTableClose());
+	    buff.append("</div>");
 	}
+	buff.append("</div>");
 
 
 	if(!didOne) {
@@ -442,5 +495,52 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
     }
 
+
+
+    private void makeReportCosts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
+	List<Entry> entries = getEntries(request, entry,props);
+	if(entries.size()==0) {
+	    buff.append(getPageHandler().showDialogNote("No assets available"));
+	    return;
+	}
+
+
+	StringBuilder csv = new StringBuilder();
+	csv.append("Name,Cost,Asset Type,Url,Icon\n");
+	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
+	LinkedHashMap<String,Double> costs = new LinkedHashMap<String,Double>();
+	int cnt =0;
+	for(Entry child: entries) {
+	    if(!child.getTypeHandler().isType("type_assets_base")) {
+		continue;
+	    }
+	    Double cost=(Double) child.getValue(request,"acquisition_cost");
+	    if(cost==null || Double.isNaN(cost) || cost==0) continue;
+
+	    String url = getEntryManager().getEntryURL(request,child);
+	    String        entryIcon = getPageHandler().getIconUrl(request, child);
+	    csv.append(Seesv.cleanColumnValue(child.getName()));
+	    csv.append(",");	    
+	    csv.append(cost);
+	    csv.append(",");
+	    csv.append(Seesv.cleanColumnValue(child.getTypeHandler().getLabel()));
+	    csv.append(",");
+	    csv.append(Seesv.cleanColumnValue(url));
+	    csv.append(",");
+	    csv.append(Seesv.cleanColumnValue(entryIcon));
+	    csv.append("\n");
+	    cnt++;
+	}
+
+	//	System.out.println(csv);
+	if(cnt==0) {
+	    buff.append(getPageHandler().showDialogNote("No assets available"));
+	    return;
+	}
+	inlineData(buff,"costdata",csv.toString());
+	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/costreport.txt");
+	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
+    }
+    
 
 }

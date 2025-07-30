@@ -1,0 +1,9 @@
+:vspace 1em
+{{group inlineDataSrc=costdata filterFields="name,asset_type,cost"
+name.filterLive=true  hideFilterWidget=true asset_type.type=enumeration}}
+{{display_filter inlineDataSrc=costdata}}
+{{display_download fields=name,asset_type,cost}}
+{{display_htmltable sortAscending="false" sortFields=cost  fields=name,asset_type,cost 
+name.template="<a href=${url}><img src='${icon}' width=18px> ${value}</a>"
+cost.template="$${value}"
+}}
