@@ -5985,6 +5985,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} 
 		if(this.getInlineDataSrc()) {
 		    this.addData(makeInlineData(this,this.getInlineDataSrc()));
+		    this.checkSearchBar();
 		} else {
 		    return null;
 		}
@@ -6566,7 +6567,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.haveCalledUpdateUI = false;
 		this.updateUI(args);
 	    } catch(err) {
-		this.handleError("Error:" + err,err);
+		this.handleError("" + err,err);
 	    }
 	},
         updateUI: function(args) {
@@ -6902,8 +6903,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
 		return
 	    }
-
-
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -7161,6 +7160,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    }
 	    
+
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
 	    let fieldMap = {};
@@ -8236,8 +8236,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             this.dataCollection.addData(pointData);
 	    try {
-		if(!skipUpdateUI)
+		if(!skipUpdateUI) {
 		    this.updateUI();
+		}
 	    } catch(err) {}
             let entry = pointData.entry;
             if (entry == null && pointData.entryId) {
@@ -8295,7 +8296,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    try {
 		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 	    } catch(exc) {
-		this.handleError("Error:" + exc, exc);
+		this.handleError("" + exc, exc);
 		return null;
 	    }
 	    return pointData;
