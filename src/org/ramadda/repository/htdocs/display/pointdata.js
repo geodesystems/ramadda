@@ -3785,7 +3785,7 @@ function makeInlineData(display, src) {
 	    }
 	}
 	let field = new RecordField({
-            id:tok,
+            id:id,
 	    index:idx,
             label:label,
             type:type,
@@ -3823,6 +3823,8 @@ function makeInlineData(display, src) {
 	//PointRecord(fields,lat, lon, elevation, time, data)
         records.push(new  PointRecord(fields,lat, lon, NaN, date, data));
     });
-    if(records.length==0) throw new Error("No data is available");
+    if(records.length==0) {
+	throw new Error("No data is available");
+    }
     return  new PointData(src, fields, records,"#" + src);
 }
