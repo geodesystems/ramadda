@@ -2967,13 +2967,14 @@ function PiechartDisplay(displayManager, id, properties) {
 	getDragToZoom:function(){return false;},
 	getDragToPan:function(){return false;},	
         getGroupBy: function() {
-            if (!this.groupBy && this.groupBy != "") {
+	    let groupBy =  this.getProperty('groupBy');
+            if (!Utils.stringDefined(groupBy)) {
                 let stringField = this.getFieldByType(this.getFields(), "string");
                 if (stringField) {
-                    this.groupBy = stringField.getId();
+                    groupBy = stringField.getId();
                 }
             }
-            return this.groupBy;
+            return groupBy;
         },
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
