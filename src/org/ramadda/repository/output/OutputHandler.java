@@ -1105,7 +1105,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    //"base64:" + Utils.encodeBase64(mapGlyphs));		      
 	}
 
-	if(entryType==null || entry.getTypeHandler().isType(entryType)) {
+	if(!stringDefined(entryType) || entry.getTypeHandler().isType(entryType)) {
 	    String click = HU.mouseClickHref(HU.call(
 						     "RamaddaUtils.selectClick",
 						     HU.comma(
