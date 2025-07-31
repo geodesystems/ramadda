@@ -4912,7 +4912,30 @@ public class Utils extends IO {
     }
 
 
+    /*
+      if given string starts with regexp: then this does a regexp match.
+      else is does a indexOf match
+     */
+    public static class StringPattern {
+        Pattern pattern;
+	String string;
+	public StringPattern(String s) {
+	    if(s.startsWith("regexp:")) {
+		pattern = Pattern.compile(s.substring("regexp:".length()));
+	    } else {
+		this.string = s;
+	    }
+	}
+	
+	public boolean matches(String text) {
+	    if(pattern!=null) {
+		Matcher m = pattern.matcher(text);
+		return m.find();
+	    }
+	    return text.indexOf(string)>=0;
+	}
 
+    }
 
 
 }
