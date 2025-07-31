@@ -1699,7 +1699,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_INPUTNOTCONTAINS, "Filter out input lines that contain any of the strings",
 		ARG_LABEL,"Filter input lines",
                 new Arg("filters",
-                        "Comma separated list of strings to filter on")),
+                        "Comma separated list of strings to filter on. either regexp:pattern or just a string")),
         new Cmd(CMD_MIN,
 		"Only pass thorough lines that have at least this number of columns. Specify blank to use the number of columns in the header",
 		new Arg("min # columns", "", ATTR_TYPE, TYPE_NUMBER)),

@@ -76,7 +76,7 @@ public class TextReader implements Cloneable {
     private List<String> comments = new ArrayList<String>();
     private String outputPrefix;
     private String outputDelimiter = ",";
-    private List<String> lineFilters;
+    private List<Utils.StringPattern> lineFilters;
     private String _startPattern;
     private Pattern startPattern;
     private boolean seenStartPattern  =false;
@@ -490,8 +490,10 @@ public class TextReader implements Cloneable {
     }
 
     public void setLineFilters(List<String> f) {
-        lineFilters = f;
+	lineFilters = new ArrayList<Utils.StringPattern>();
+	for(String s:f) lineFilters.add(new Utils.StringPattern(s));
     }
+
     public void setStartPattern(String start) {
 	start=start.replace("\\t","\t").replace("_tab_","\t");
 	if(StringUtil.containsRegExp(start)) {
@@ -518,9 +520,10 @@ public class TextReader implements Cloneable {
 	    seenStartPattern = true;
 	}
 
+
         if (lineFilters != null) {
-            for (String f : lineFilters) {
-                if (line.indexOf(f) >= 0) {
+            for (Utils.StringPattern f : lineFilters) {
+                if (f.matches(line)) {
 		    addHeaderLine(line);
                     return false;
                 }

@@ -139,6 +139,14 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) {
 		List<Integer> indices = getIndices(ctx);
+		if(indices.size()==0) {
+		    row = new Row();
+		    for(int i=0;i<names.size();i++) {
+			row.add(names.get(i));
+		    }
+		    return row;
+		}
+
 		for(int i=0;i<indices.size();i++) {
 		    int index = indices.get(i);
 		    if(row.indexOk(i)) {
