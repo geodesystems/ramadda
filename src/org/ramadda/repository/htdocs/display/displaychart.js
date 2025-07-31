@@ -874,6 +874,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+
             if (dataList.length == 0) {
 		this.setContents(this.getMessage(this.getNoDataMessage()));
 		//                this.setDisplayMessage(this.getNoDataMessage());
@@ -1264,7 +1265,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-//	    debug=true
+	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
@@ -2943,6 +2944,15 @@ function PiechartDisplay(displayManager, id, properties) {
 	makeGoogleChart: function(dataList, props, selectedFields) {
 	    this.uniqueValues = [];
 	    this.uniqueValuesMap = {};
+	    try {
+		const total = dataList.slice(1).reduce((sum, row) => sum + row[1], 0);
+		if(total==0) {
+		    this.writeHtml(ID_DISPLAY_CONTENTS, 'No data available');
+		    return;
+		}
+	    } catch(err) {
+		console.log('pie chart error',err);
+	    }
 	    SUPER.makeGoogleChart.call(this, dataList, props, selectedFields);
 	    if(!this.getShowTopLegend()) return;
 	    let legend = "";
