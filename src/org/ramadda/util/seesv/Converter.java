@@ -3840,7 +3840,9 @@ public abstract class Converter extends Processor {
             for (int index : indices) {
 		if(row.indexOk(index)) {
 		    String s = row.getString(index);
-		    s = s.replaceAll(",","").replaceAll("\\s","");
+		    s = s.replaceAll("[^\\d\\.]+","");
+		    //		    s = s.replaceAll(",","").replaceAll("\\s","").replace("$","");
+		    //		    s = s.trim();
 		    try {
 			double d = Double.parseDouble(s);
 			if(d == (int)d) {
