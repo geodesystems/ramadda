@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 30 06:01:39 MDT 2025";
+var build_date="RAMADDA build date: Wed Jul 30 20:44:17 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -22660,13 +22660,14 @@ function PiechartDisplay(displayManager, id, properties) {
 	getDragToZoom:function(){return false;},
 	getDragToPan:function(){return false;},	
         getGroupBy: function() {
-            if (!this.groupBy && this.groupBy != "") {
+	    let groupBy =  this.getProperty('groupBy');
+            if (!Utils.stringDefined(groupBy)) {
                 let stringField = this.getFieldByType(this.getFields(), "string");
                 if (stringField) {
-                    this.groupBy = stringField.getId();
+                    groupBy = stringField.getId();
                 }
             }
-            return this.groupBy;
+            return groupBy;
         },
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
