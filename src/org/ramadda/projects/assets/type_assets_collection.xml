@@ -33,11 +33,11 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 +section title={{name}}
 {{description wikify=true}}
 +center
-{{entrylink  link=""  title="Asset Search"  makeButton=true showIcon="false"  action="assets_search"  }}
-{{entrylink  link=""  title="Scan Asset"  makeButton=true showIcon="false"  action="assets_scan"  }}
-{{entrylink  link=""  title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
+{{entrylink  link=""  icon="fas fa-search" title="Asset Search"  makeButton=true showIcon="false"  action="assets_search"  }}
+{{entrylink  link=""  icon="fas fa-camera" title="Scan Asset"  makeButton=true showIcon="false"  action="assets_scan"  }}
+{{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
 +if candonew=true 
-{{entrylink  link=""  title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
+{{entrylink  link=""  icon="fas fa-plus" title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -if
 -center
 :vspace 0.5em
@@ -68,7 +68,6 @@ message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=fal
 {{assets_report_table}}
 -skip
 :vspace 1em
-----
 :heading Collection Information
 {{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
  #menusTitle="Services"  }} 
