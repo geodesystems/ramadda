@@ -2697,8 +2697,10 @@ public class WikiManager extends RepositoryManager
             return HU.href(url, label, extra);
         } else if (theTag.equals(WIKI_TAG_ENTRYLINK)) {
 	    String link = getProperty(wikiUtil, props, "link","");
+	    String icon = getProperty(wikiUtil, props, "icon",null);
             String label =  getProperty(wikiUtil, props, ATTR_TITLE, link);
 
+	    if(icon!=null) label = getIconImage(icon) +"&nbsp;" + label;
 	    String action = getProperty(wikiUtil,props,"action",null);
             String url =  HU.url(getRepository().getUrlBase() +(action==null?"/entry/show":"/entry/action?action=" + action),
 				 ARG_ENTRYID, entry.getId(),
