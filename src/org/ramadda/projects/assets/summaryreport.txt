@@ -5,7 +5,7 @@
 +row
 +col-2
 :b Asset Type
-{{group inlineDataSrc=typesdata loadingMessage=""}}
+{{group inlineDataSrc="${typesdata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px }} 
 -center
@@ -16,7 +16,7 @@
 -col
 +col-2
 :b Department
-{{group inlineDataSrc=departmentdata loadingMessage=""}}
+{{group inlineDataSrc="${departmentdata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center
@@ -34,7 +34,7 @@
 +row
 +col-2
 :b Status
-{{group inlineDataSrc=statusdata loadingMessage=""}}
+{{group inlineDataSrc="${statusdata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px}} 
 -center
@@ -45,7 +45,7 @@
 -col
 +col-2
 :b Condition
-{{group inlineDataSrc=conditiondata loadingMessage=""}}
+{{group inlineDataSrc="${conditiondata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center
@@ -62,7 +62,7 @@
 +row
 +col-2
 :b Location
-{{group inlineDataSrc=locationdata loadingMessage=""}}
+{{group inlineDataSrc="${locationdata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px}} 
 -center
@@ -73,7 +73,7 @@
 -col
 +col-2
 :b Assigned to
-{{group inlineDataSrc=assignedtodata loadingMessage=""}}
+{{group inlineDataSrc="${assignedtodata}" loadingMessage=""}}
 +center
 {{display_piechart width=200px}}
 -center

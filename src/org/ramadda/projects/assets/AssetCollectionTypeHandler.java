@@ -53,7 +53,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
         tags.add(new String[]{"Assets Report Summary",REPORT_SUMMARY +" "});
         tags.add(new String[]{"Assets Report Maintenance",REPORT_MAINTENANCE+" "});
         tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" "});
-        tags.add(new String[]{"Assets Report Costs",REPORT_COSTS+" "});				
+        tags.add(new String[]{"Assets Report Costs",REPORT_COSTS+" #types=\"type_assets_it,type_assets_equipment\" #showSummary=false #showTable=false #summaryTitle=\"\"  #tableTitle=\"\" "});				
     }
 
 
@@ -201,7 +201,6 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    makeReportCosts(request, entry,sb,new Hashtable());		
 	else
 	    sb.append("Unknown report:" + report);
-
 	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result = new Result("Assets Report - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
@@ -284,9 +283,10 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
     }
 
 
-    private void inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map) {
+    private String inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map,String wiki) {
+	String guid = HU.getUniqueId(id);
 	buff.append(HU.comment("inline data for " + id));
-	buff.append(HU.open("div",HU.attrs("style","display:none","id",id)));
+	buff.append(HU.open("div",HU.attrs("style","display:none","id",guid)));
 	buff.append(header);
 	buff.append("\n");
 	for (String key : map.keySet()) {
@@ -298,14 +298,19 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	}
 	HU.close(buff,"div");
 	buff.append("\n");
+	wiki=wiki.replace("${" + id+"}",guid);
+	return wiki;
     }
 
-    private void inlineData(StringBuilder buff,String id,String csv) {
-	buff.append(HU.comment("inline data for "));
-	buff.append(HU.open("div",HU.attrs("style","display:none","id",id)));
+    private String inlineData(StringBuilder buff,String id,String csv,String wiki) {
+	String guid = HU.getUniqueId(id);
+	buff.append(HU.comment("inline data for "+ id));
+	buff.append(HU.open("div",HU.attrs("style","display:none","id",guid)));
 	buff.append(csv);
 	HU.close(buff,"div");
 	buff.append("\n");
+	wiki=wiki.replace("${" + id+"}",guid);
+	return wiki;
     }
     
 
@@ -493,13 +498,13 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    }
 	}
 
-	inlineData(buff,"typesdata","type,count",types);
-	inlineData(buff,"departmentdata","department,count",department);
-	inlineData(buff,"locationdata","location,count",location);
-	inlineData(buff,"assignedtodata","assigned to,count",assignedto);
-	inlineData(buff,"statusdata","status,count",status);
-	inlineData(buff,"conditiondata","condition,count",condition);	 	 	 	 	 
 	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
+	wiki = inlineData(buff,"typesdata","type,count",types,wiki);
+	wiki = 	inlineData(buff,"departmentdata","department,count",department,wiki);
+	wiki = 	inlineData(buff,"locationdata","location,count",location,wiki);
+	wiki = 	inlineData(buff,"assignedtodata","assigned to,count",assignedto,wiki);
+	wiki = 	inlineData(buff,"statusdata","status,count",status,wiki);
+	wiki = 	inlineData(buff,"conditiondata","condition,count",condition,wiki);	 	 	 	 	 
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
 
     }
@@ -520,7 +525,6 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    return;
 	}
 
-
 	StringBuilder csv = new StringBuilder();
 	csv.append("Name,Cost,Asset Type,Department,Vendor,Url,Icon\n");
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
@@ -530,7 +534,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 		continue;
 	    }
 	    Double cost=(Double) child.getValue(request,"acquisition_cost");
-	    if(cost==null || Double.isNaN(cost) || cost==0) continue;
+	    if(cost==null || Double.isNaN(cost)) continue;
 
 	    String url = getEntryManager().getEntryURL(request,child);
 	    String        entryIcon = getPageHandler().getIconUrl(request, child);
@@ -557,9 +561,16 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    buff.append(getPageHandler().showDialogNote("No assets available"));
 	    return;
 	}
-	System.out.println(csv);
-	inlineData(buff,"costdata",csv.toString());
 	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/costreport.txt");
+	wiki = wiki.replace("${summary_title}",Utils.getProperty(props,"summaryTitle","Summary"));
+	wiki = wiki.replace("${table_title}",Utils.getProperty(props,"tableTitle","Table"));	
+	if(!Utils.getProperty(props,"showSummary",true)) {
+	    wiki = wiki.replaceAll("(?s)<costs_summary>.*</costs_summary>","");
+	}
+	if(!Utils.getProperty(props,"showTable",true)) {
+	    wiki = wiki.replaceAll("(?s)<costs_table>.*</costs_table>","");
+	}	
+	wiki = inlineData(buff,"costdata",csv.toString(),wiki);
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
     }
     
