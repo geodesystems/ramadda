@@ -275,6 +275,15 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
 
+    private String cleanColumnValue(String v) {
+	if(v==null) return v;
+	v = v.replace("\"","_qt_");
+	v = v.replace("\n","_nl_");
+	v = v.replace(",","_comma_");
+	return v;
+    }
+
+
     private void inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map) {
 	buff.append(HU.comment("inline data for " + id));
 	buff.append(HU.open("div",HU.attrs("style","display:none","id",id)));
@@ -282,7 +291,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	buff.append("\n");
 	for (String key : map.keySet()) {
 	    Integer value = map.get(key);
-	    buff.append(Seesv.cleanColumnValue(key));
+	    buff.append(cleanColumnValue(key));
 	    buff.append(",");
 	    buff.append(value);
 	    buff.append("\n");
@@ -497,6 +506,13 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
 
+    private Entry getVendor(Request request, Entry entry) throws Exception {
+	String id = entry.getStringValue(request, "vendor",null);
+	if(!stringDefined(id)) return null;
+	return getEntryManager().getEntry(request, id,true);
+    }
+
+
     private void makeReportCosts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	List<Entry> entries = getEntries(request, entry,props);
 	if(entries.size()==0) {
@@ -506,9 +522,8 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
 	StringBuilder csv = new StringBuilder();
-	csv.append("Name,Cost,Asset Type,Url,Icon\n");
+	csv.append("Name,Cost,Asset Type,Department,Vendor,Url,Icon\n");
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
-	LinkedHashMap<String,Double> costs = new LinkedHashMap<String,Double>();
 	int cnt =0;
 	for(Entry child: entries) {
 	    if(!child.getTypeHandler().isType("type_assets_base")) {
@@ -519,15 +534,20 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 	    String url = getEntryManager().getEntryURL(request,child);
 	    String        entryIcon = getPageHandler().getIconUrl(request, child);
-	    csv.append(Seesv.cleanColumnValue(child.getName()));
+	    Entry vendor = getVendor(request, child);
+	    csv.append(cleanColumnValue(child.getName()));
 	    csv.append(",");	    
 	    csv.append(cost);
 	    csv.append(",");
-	    csv.append(Seesv.cleanColumnValue(child.getTypeHandler().getLabel()));
+	    csv.append(cleanColumnValue(child.getTypeHandler().getLabel()));
 	    csv.append(",");
-	    csv.append(Seesv.cleanColumnValue(url));
+	    csv.append(cleanColumnValue(child.getStringValue(request,"department","")));
+	    csv.append(",");	    
+	    csv.append(cleanColumnValue(vendor==null?"NA":vendor.getName()));
+	    csv.append(",");	    
+	    csv.append(cleanColumnValue(url));
 	    csv.append(",");
-	    csv.append(Seesv.cleanColumnValue(entryIcon));
+	    csv.append(cleanColumnValue(entryIcon));
 	    csv.append("\n");
 	    cnt++;
 	}
@@ -537,6 +557,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 	    buff.append(getPageHandler().showDialogNote("No assets available"));
 	    return;
 	}
+	System.out.println(csv);
 	inlineData(buff,"costdata",csv.toString());
 	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/costreport.txt");
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));

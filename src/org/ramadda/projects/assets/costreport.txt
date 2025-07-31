@@ -1,9 +1,39 @@
 :vspace 1em
-{{group inlineDataSrc=costdata filterFields="name,asset_type,cost"
-name.filterLive=true  hideFilterWidget=true asset_type.type=enumeration}}
+{{group inlineDataSrc=costdata filterFields="name,department,vendor,asset_type,cost"
+department.filterMultiple=true
+name.filterLive=true  hideFilterWidget=true
+department.type=enumeration asset_type.type=enumeration vendor.type=enumeration}}
+
+:heading Summary
++row
++col-4
+:heading2 By Department
++center
+{{display_piechart  displayStyle="display:inline-block;" chartWidth="250"   groupBy="department" }} 
+-center
+-col
++col-4
+:heading2 By Asset Type
++center
+{{display_piechart  displayStyle="display:inline-block;" chartWidth="250" groupBy="asset_type" }} 
+-center
+-col
++col-4
+:heading2 By Vendor
++center
+{{display_piechart  displayStyle="display:inline-block;" chartWidth="250" groupBy="vendor" }} 
+-center
+-col
+-row
+:vspace 1em
+----
+:vspace 1em
+:heading Table
+
 {{display_filter inlineDataSrc=costdata}}
-{{display_download fields=name,asset_type,cost}}
-{{display_htmltable sortAscending="false" sortFields=cost  fields=name,asset_type,cost 
+{{display_download fields=name,department,vendor,asset_type,cost}}
+{{display_htmltable showSummaryTotal=true  showSummaryAverage=true
+sortAscending="false" sortFields=cost  fields=name,department,vendor,asset_type,cost 
 name.template="<a href=${url}><img src='${icon}' width=18px> ${value}</a>"
 cost.template="$${value}"
 }}
