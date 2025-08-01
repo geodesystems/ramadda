@@ -649,7 +649,13 @@ public class WikiManager extends RepositoryManager
 	    List<String[]> fromType = new ArrayList<String[]>();
 	    entry.getTypeHandler().getWikiTags(fromType,entry);
 	    for(String[]tuple:fromType) {
-		String tag = "{{"+tuple[1] +" entry=" + entry.getId()+ " }}";
+		String tag = tuple[1];
+		if(tag.startsWith("raw:")) {
+		    tag = tag.substring("raw:".length());
+		}  else {
+		    tag = "{{"+tuple[1] +" entry=" + entry.getId()+ " }}";
+		}
+		tag = tag.replace("${entryid}",entry.getId());
 		json.add(JU.map("label",
 				JU.quote(tuple[0]),
 				"tag",JU.quote(tag)));
@@ -5560,7 +5566,16 @@ public class WikiManager extends RepositoryManager
     }
 
     public String getDataUrl(Request request, Entry entry, WikiUtil wikiUtil, String theTag, Hashtable props, List<String> displayProps) throws Exception {
-	String jsonUrl = null;
+	if (theTag.startsWith("display_")) {
+	    String newType = theTag.substring(8);
+	    props.put(ATTR_TYPE, newType);
+	    theTag = theTag.substring(0, 7);
+	}
+
+
+
+	String jsonUrl =  getProperty(wikiUtil, props,"dataUrl",null);
+	if(jsonUrl!=null) return jsonUrl;
 	String remote = getProperty(wikiUtil,props,ARG_REMOTE,null);
 	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
 	boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
@@ -5647,11 +5662,6 @@ public class WikiManager extends RepositoryManager
 	    if (getProperty(wikiUtil, props, "addSnippets", false)) {
 		jsonUrl += "&addSnippets=true";
 	    }
-	}
-	if (theTag.startsWith("display_")) {
-	    String newType = theTag.substring(8);
-	    props.put(ATTR_TYPE, newType);
-	    theTag = theTag.substring(0, 7);
 	}
 
 	if (jsonUrl == null) {
