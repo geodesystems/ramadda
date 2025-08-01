@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 30 20:44:17 MDT 2025";
+var build_date="RAMADDA build date: Fri Aug  1 08:48:46 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5916,6 +5916,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'selectUniqueFields',ex:'',tt:'Show list of fields to make data unique'},
+	{p:'dataUrl',tt:'Fixed URL to the JSON data'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
@@ -14995,79 +14996,8 @@ function PointData(name, recordFields, records, url, properties) {
                     return;
 		}
 	    }
-            let fail = function(jqxhr, textStatus, error) {
-                let err = textStatus;
-		if(err) {
-		    if(error)
-			err += ": " + error;
-		} else {
-		    err = error;
-		}
-
-		//Check if the response is json
-		if(jqxhr.responseText) {
-		    try {
-			let tmp = JSON.parse(jqxhr.responseText);
-			if(tmp.error) err = tmp.error;
-		    } catch(ignore) {
-			//The response might be malformed JSON so check for the error line
-			//"error":"..."}
-			let match = jqxhr.responseText.match(/"error":"([^"]+)"/);
-			if(match) {
-			    err = match[1];
-			}
-		    }
-		}
-		console.log("Point data load error:" + url+" " + (err?err:""));
-		cacheObject.pending.map(display=>{
-                    display.pointDataLoadFailed(err);
-		});
-		cacheObject.pending=[];
-		delete getPointDataCache()[url];
-                pointData.stopLoading();
-            }
-
-            let success=function(data) {
-		if(typeof data == "string") {
-		    try {
-			if(debug) console.log("parsing point data");
-			data = JSON.parse(data);
-		    } catch(exc) {
-			console.log("Error:" + exc);
-			if(data.length>1000) data = data.substring(0,999);
-			console.log("data:" + data);
-			display.displayError("Error loading data:" + exc+"<br>URL:"+ url);
-			return;
-		    }
-		}
-		if(debug) console.log("pointDataLoaded");
-                if (GuiUtils.isJsonError(data)) {
-		    if(debug)
-			console.log("\tloadPointData failed");
-		    console.log("loadPointData failed:" + url);
-                    display.pointDataLoadFailed(data);
-                    return;
-                }
-		if(data.errorcode == "nodata" || !data.fields) {
-		    if(debug)
-			console.log("\tno data:" + url);
-		    let dummy = new PointData("", [],[]);
-                    let pending = cacheObject.pending;
-                    cacheObject.pending = [];
-		    pending.forEach(d=>{
-			d.handleNoData(dummy);
-		    });
-		    return;
-		}
-//		if(debug)  console.log("\tmaking point data");
-		let t1 = new Date();
-                let newData = makePointData(data, _this.derived, display,_this.url,callback);
-		let t2 = new Date();
-		if(debug)   Utils.displayTimes("makePointData #records: " + newData.getRecords().length,[t1,t2],true);
+	    let handleData=(newData) =>{
                 let pointData = cacheObject.pointData = newData;
-		if(data.properties) {
-		    display.applyRequestProperties(data.properties);
-		}
                 let tmpPending = cacheObject.pending;
 		if(debug) {
 		    console.log("\tcalling pointDataLoaded on  " + tmpPending.length + " pending displays");
@@ -15107,6 +15037,94 @@ function PointData(name, recordFields, records, url, properties) {
 		    });
 		}
                 pointData.stopLoading();
+	    }
+
+
+
+
+            let fail = function(jqxhr, textStatus, error) {
+                let err = textStatus;
+		if(err) {
+		    if(error)
+			err += ": " + error;
+		} else {
+		    err = error;
+		}
+
+		//Check if the response is json
+		if(jqxhr.responseText) {
+		    try {
+			try {
+			    let pointDataFromCsv =  makeCsvData(display, jqxhr.responseText);
+			    if(pointDataFromCsv) {
+				handleData(pointDataFromCsv);
+				return;
+			    }
+			} catch(err) {
+			}
+			let tmp = JSON.parse(jqxhr.responseText);
+			if(tmp.error) err = tmp.error;
+		    } catch(ignore) {
+			//The response might be malformed JSON so check for the error line
+			//"error":"..."}
+			let match = jqxhr.responseText.match(/"error":"([^"]+)"/);
+			if(match) {
+			    err = match[1];
+			}
+		    }
+		}
+		console.log("Point data load error:" + url+" " + (err?err:""));
+		cacheObject.pending.map(display=>{
+                    display.pointDataLoadFailed(err);
+		});
+		cacheObject.pending=[];
+		delete getPointDataCache()[url];
+                pointData.stopLoading();
+            }
+
+
+
+            let success=function(data) {
+		if(typeof data == "string") {
+		    try {
+			if(debug) console.log("parsing point data");
+			data = JSON.parse(data);
+		    } catch(exc) {
+			console.log("Error:" + exc);
+			if(data.length>1000) data = data.substring(0,999);
+			console.log("data:" + data);
+			display.displayError("Error loading data:" + exc+"<br>URL:"+ url);
+			return;
+		    }
+		}
+		if(debug) console.log("pointDataLoaded");
+                if (GuiUtils.isJsonError(data)) {
+		    if(debug)
+			console.log("\tloadPointData failed");
+		    console.log("loadPointData failed:" + url);
+                    display.pointDataLoadFailed(data);
+                    return;
+                }
+		if(data.errorcode == "nodata" || !data.fields) {
+		    if(debug)
+			console.log("\tno data:" + url);
+		    let dummy = new PointData("", [],[]);
+                    let pending = cacheObject.pending;
+                    cacheObject.pending = [];
+		    pending.forEach(d=>{
+			d.handleNoData(dummy);
+		    });
+		    return;
+		}
+
+		let t1 = new Date();
+                let newData = makePointData(data, _this.derived, display,_this.url,callback);
+		let t2 = new Date();
+		if(debug)   Utils.displayTimes("makePointData #records: " + newData.getRecords().length,[t1,t2],true);
+		if(data.properties) {
+		    display.applyRequestProperties(data.properties);
+		}
+		handleData(newData);
 	    }
 	    let fullUrl = url;
 	    if(!fullUrl.startsWith("http")) {
@@ -18282,6 +18300,11 @@ function makeInlineData(display, src) {
     let html = div.html();
     if(!Utils.stringDefined(html)) throw new Error("No inline data available:" + src);
     let csv = html.trim();
+    return makeCsvData(display, csv,src);
+}
+
+function makeCsvData(display, csv,src) {    
+    src = src ?? HU.getUniqueId('data');
     let lines = csv.split("\n");
     let fields = [];
     let samples = lines[1]?lines[1].split(","):[];
@@ -20567,6 +20590,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+
             if (dataList.length == 0) {
 		this.setContents(this.getMessage(this.getNoDataMessage()));
 		//                this.setDisplayMessage(this.getNoDataMessage());
@@ -22636,6 +22660,15 @@ function PiechartDisplay(displayManager, id, properties) {
 	makeGoogleChart: function(dataList, props, selectedFields) {
 	    this.uniqueValues = [];
 	    this.uniqueValuesMap = {};
+	    try {
+		const total = dataList.slice(1).reduce((sum, row) => sum + row[1], 0);
+		if(total==0) {
+		    this.writeHtml(ID_DISPLAY_CONTENTS, 'No data available');
+		    return;
+		}
+	    } catch(err) {
+		console.log('pie chart error',err);
+	    }
 	    SUPER.makeGoogleChart.call(this, dataList, props, selectedFields);
 	    if(!this.getShowTopLegend()) return;
 	    let legend = "";
