@@ -1788,6 +1788,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'selectUniqueFields',ex:'',tt:'Show list of fields to make data unique'},
+	{p:'dataUrl',tt:'Fixed URL to the JSON data'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
