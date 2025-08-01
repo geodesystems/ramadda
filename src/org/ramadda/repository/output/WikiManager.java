@@ -798,7 +798,6 @@ public class WikiManager extends RepositoryManager
     public Entry findEntryFromId(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
-
 	try {
 	    Entry theEntry = findEntryFromIdInner(request, entry, wikiUtil,  props, entryId);
 	    if(theEntry!=null &&
@@ -857,6 +856,7 @@ public class WikiManager extends RepositoryManager
             }
 	    return null;
 	}
+
 
 	if((select = matches.call(entryId,ID_GRANDCHILD,PREFIX_GRANDCHILD))!=null) { 
 	    SelectInfo select2 = new SelectInfo(request);
@@ -6691,23 +6691,6 @@ public class WikiManager extends RepositoryManager
 	return s;
     }
 
-    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
-                                  Entry originalEntry, Entry entry,
-                                  Hashtable props)
-	throws Exception {
-
-        return getEntries(request, wikiUtil, originalEntry, entry, props,
-                          false, "");
-    }
-
-    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
-                                  Entry originalEntry, Entry entry,
-                                  Hashtable props, boolean onlyImages)
-	throws Exception {
-        return getEntries(request, wikiUtil, originalEntry, entry, props,
-                          onlyImages, "");
-    }
-
     public Result processWikiUrl(Request request) throws Exception {
         Entry         entry = getEntryManager().getEntry(request);
 	StringBuilder sb = new StringBuilder();
@@ -6724,6 +6707,24 @@ public class WikiManager extends RepositoryManager
 	sb.append(JU.map(Utils.makeListFromValues("url", JU.quote(jsonUrl))));
 	return new Result("", sb, JU.MIMETYPE);
     }
+
+
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props)
+	throws Exception {
+        return getEntries(request, wikiUtil, originalEntry, entry, props,
+                          false, "");
+    }
+
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props, boolean onlyImages)
+	throws Exception {
+        return getEntries(request, wikiUtil, originalEntry, entry, props,
+                          onlyImages, "");
+    }
+
 
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
@@ -6758,7 +6759,6 @@ public class WikiManager extends RepositoryManager
                                   boolean onlyImages, String attrPrefix,
 				  boolean...debug)
 	throws Exception {
-
         if (props == null) {
             props = new Hashtable();
         }
@@ -7034,6 +7034,7 @@ public class WikiManager extends RepositoryManager
 	//        initRequest = myRequest;
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
+	String types=null;
         String      orderBy     =  getProperty(wikiUtil, props, "sort");
 
 	if (orderBy == null) {
@@ -7096,7 +7097,9 @@ public class WikiManager extends RepositoryManager
 	if(debugGetEntries)
 	    System.err.println("Ids:" + ids);
 
+	ids = ids.replace("\\,","_comma_");
         for (String entryId : Utils.split(ids, ",", true, true)) {
+	    entryId = entryId.replace("_comma_",",");
             if (entryId.startsWith("quit")) {
 		break;
 	    }
@@ -7109,14 +7112,38 @@ public class WikiManager extends RepositoryManager
                 continue;
             }
 
+            if (entryId.startsWith("types:")) {
+                types= entryId.substring("types:".length()).replace("_comma_",",");
+                continue;
+            }
+
+            if (entryId.startsWith("type:")) {
+                types= entryId.substring("type:".length()).replace("_comma_",",");
+                continue;
+            }	    
+
+
             if (entryId.startsWith("entries.max:")) {
                 max = Integer.parseInt(entryId.substring("entries.max:".length()));
                 continue;
             }
+            if (entryId.startsWith("max:")) {
+                max = Integer.parseInt(entryId.substring("max:".length()));
+                continue;
+            }	    
             if (entryId.startsWith("entries.orderby:")) {
                 orderBy = entryId.substring("entries.orderby:".length());
                 continue;
             }
+            if (entryId.startsWith("orderby:")) {
+                orderBy = entryId.substring("orderby:".length());
+                continue;
+            }	    
+            if (entryId.startsWith("ascending:")) {
+                descending=  entryId.substring("ascending:".length()).equals("false");
+                continue;
+            }
+
             if (entryId.startsWith("entries.ascending:")) {
                 descending=  entryId.substring("entries.ascending:".length()).equals("false");
                 continue;
@@ -7170,7 +7197,7 @@ public class WikiManager extends RepositoryManager
 		  System.err.println("XML URL:" + xmlUrl);
 		*/
 		String entriesXml = IO.readUrl(new URL(xmlUrl));
-		System.err.println(Utils.clip(entriesXml,200,"").trim().replace("\n"," "));
+
 		//		System.err.println(entriesXml);
 		ServerInfo serverInfo =    new ServerInfo(new URL(baseUrl),"","");
 		List<Entry> remoteEntries =  getEntryManager().createRemoteEntries(initRequest, serverInfo,
@@ -7178,6 +7205,18 @@ public class WikiManager extends RepositoryManager
 		entries.addAll(remoteEntries);
 		continue;
 	    }
+
+	    if (entryId.startsWith("ancestor:")) {
+		entryId = entryId.substring("ancestor:".length()).trim();
+		if(entryId.length()==0) entryId=baseEntry.getId();
+		String searchUrl = HU.url("/search/do?forsearch=true",
+					  ARG_ANCESTOR,entryId);
+		searchUrl=HU.url(searchUrl,ARG_ORDERBY,orderBy);
+		if(types!=null) searchUrl=HU.url(searchUrl,ARG_TYPE,types);
+		if(max>0) searchUrl=HU.url(searchUrl,ARG_MAX,""+max);
+		entryId = "searchurl:" + searchUrl;
+	    }
+
 
 	    if (entryId.startsWith(getRepository().getUrlPath("/search/do"))) {
 		entryId = "searchurl:" + entryId;
@@ -7229,6 +7268,7 @@ public class WikiManager extends RepositoryManager
 		searchProps = new Hashtable();
 		continue;
 	    }
+
 
 	    if((select = matches.call(entryId,ID_CHILDREN,PREFIX_CHILDREN))!=null) { 
                 List<Entry> children = getEntryManager().getChildren(select.getRequest(),
