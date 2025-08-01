@@ -6543,6 +6543,29 @@ a.wiki-link-noexist {
 }
 
 
+.ramadda-dashboard {
+    background: #f8fafc;
+    padding-bottom:10em;
+}
+
+.ramadda-dashboard .display-container,.ramadda-dashboard .dashboard-component {
+    display:inline-block;
+    margin:0.75em;
+}
+
+
+.ramadda-dashboard .display-contents,.ramadda-dashboard .dashboard-component {
+    display:inline-block;
+    padding: 5px;
+    background:#fff;
+    border:var(--basic-border);
+    border-radius: var(--default-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin: 0 auto;
+}
+
+
+
 .display-animation-slider .ui-slider-handle {
     width:1em !important;
     margin-left: -.2em !important;
