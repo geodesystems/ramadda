@@ -4,24 +4,21 @@ name.filterLive=true  hideFilterWidget=true
 department.type=enumeration asset_type.type=enumeration vendor.type=enumeration}}
 <costs_summary>
 :vspace 1em
-:heading ${summary_title}
+${summary_title}
 +row
 +col-4
-:heading2 By Department
 +center
-{{display_piechart  displayStyle="display:inline-block;" chartWidth="250"   groupBy="department" }} 
+{{display_piechart  title="By Department" showTitle=true displayStyle="display:inline-block;" chartWidth="250"   groupBy="department" }} 
 -center
 -col
 +col-4
-:heading2 By Asset Type
 +center
-{{display_piechart  displayStyle="display:inline-block;" chartWidth="250" groupBy="asset_type" }} 
+{{display_piechart  title="By Asset Type" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="asset_type" }} 
 -center
 -col
 +col-4
-:heading2 By Vendor
 +center
-{{display_piechart  displayStyle="display:inline-block;" chartWidth="250" groupBy="vendor" }} 
+{{display_piechart  title="By Vendor" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="vendor" }} 
 -center
 -col
 -row
