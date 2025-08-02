@@ -3166,6 +3166,9 @@ table.dataTable.no-footer {
     border-bottom:var(--basic-border);
 }
 
+
+
+
 .dataTables_wrapper.no-footer .dataTables_scrollBody {
     border-bottom:var(--basic-border);
 }
@@ -3173,6 +3176,18 @@ table.dataTable.no-footer {
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
     vertical-align: top !important;
 }        
+
+.dataTables_scrollBody, .dataTables_scrollHead {
+    xborder: var(--basic-border);
+}
+
+.dataTables_scrollBody {
+    border:0px solid #fff !important;
+}
+
+.dataTables_scroll {
+    border: var(--basic-border);
+}
 
 .dataTables_filter input {
     padding:0px !important;
