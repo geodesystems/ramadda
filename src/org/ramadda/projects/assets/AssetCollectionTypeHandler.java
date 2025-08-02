@@ -489,6 +489,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 		       HU.attrs("class","assets-ok"));    
 	    
 	    if(showDetails) {
+		buff.append("<br>");
 		HU.open(buff,"table",
 			"table-height", tableHeight,"table-searching","true",
 			"table-ordering","true",
@@ -522,6 +523,7 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 		       HU.attrs("class","assets-none"));
 
 	    if(showDetails) {	    
+		buff.append("<br>");
 		HU.open(buff,"table",
 			"table-height", tableHeight,"table-searching","true",
 			"table-ordering","true",
