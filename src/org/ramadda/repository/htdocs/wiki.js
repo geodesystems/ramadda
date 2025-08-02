@@ -436,6 +436,7 @@ WikiEditor.prototype = {
 	let what = [];
 	const what_id = "ID";
 	const what_commaid = ",ID";	
+	const what_import = "Import";	
 	const what_entry_id = "entry=ID" ;	    
 	const what_link = "Link";
 	const what_wiki_text = "Wiki Text";	    
@@ -446,7 +447,6 @@ WikiEditor.prototype = {
 	const what_tree = "Tree";
 	const what_grid = "Grid";
 	const what_gallery = "Gallery";	    
-	const what_import = "Import";	    
 	const what_children_ids = "Children IDS";
 	const what_children_links = "Children Links";
 	const what_nothing="nothing";
@@ -545,7 +545,7 @@ WikiEditor.prototype = {
 	    } else  if(what==what_gallery) {
 		text = "{{gallery entry=" + entryId+" }}";
 	    } else  if(what==what_import) {
-		text = "{{import entry=" + entryId+" }}";		
+		text = "{{import entry=" + entryId+" showTitle=false}}";		
 	    } else  if(what==what_grid) {
 		text = "{{grid entry=" + entryId+" }}";			
 	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
@@ -2652,7 +2652,8 @@ Transcriber.prototype = {
 
 
 	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),
-			      HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
+			      HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,
+				       ATTR_ID,this.domId("cancel")],"Cancel")]);
 	    html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 	    let closeCallback =()=>{
 		this.transcribeClear();
