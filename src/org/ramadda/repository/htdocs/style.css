@@ -3174,6 +3174,15 @@ table.dataTable.no-footer {
     vertical-align: top !important;
 }        
 
+.dataTables_filter input {
+    padding:0px !important;
+}
+
+.dataTables_filter label {
+    font-weight:bold;
+}
+
+
 table.dataTable tbody td {
     vertical-align: top;
 }
@@ -6550,7 +6559,8 @@ a.wiki-link-noexist {
 
 .ramadda-dashboard .display-container,.ramadda-dashboard .dashboard-component {
     display:inline-block;
-    margin:0.75em;
+    margin-left:0.75em;
+    margin-right:0.75em;    
 }
 
 
