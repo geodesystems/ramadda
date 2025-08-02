@@ -408,92 +408,133 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 	boolean didOne = false;
 	Date now = new Date();
-	StringBuilder pastDueSB = new StringBuilder();
-	StringBuilder postDueSB = new StringBuilder();
-	StringBuilder licensePastDueSB = new StringBuilder();
-	StringBuilder licensePostDueSB = new StringBuilder();		
-	int warrantyPastDueCnt =0;
-	int warrantyPostDueCnt =0;
-	int licensePastDueCnt =0;
-	int licensePostDueCnt =0;		
+	Date near = new Date(now.getTime()+Utils.daysToMillis(30));
+	List<String>  warrantyExpired=new ArrayList<String>();
+	List<String>  warrantyClose=new ArrayList<String>();	
+	List<String>  warrantyOk=new ArrayList<String>();
+	List<String>  licenseExpired=new ArrayList<String>();
+	List<String>  licenseClose=new ArrayList<String>();	
+	List<String>  licenseOk=new ArrayList<String>();	
+	List<String>  licenseNone=new ArrayList<String>();	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	for(Entry asset: entries) {
 	    Date date=null;
 	    boolean isLicense=asset.getTypeHandler().isType("type_assets_license");
+	    if(isLicense && !showLicenses) continue;
+	    if(!isLicense && !showWarranties) continue;	    
 
 	    if(isLicense) {
 		date = (Date) asset.getValue(request, "expiration_date");
 	    } else {
 		date = (Date) asset.getValue(request, "warranty_expiration");
 	    }
-	    if(date==null) continue;
+
+	    if(date==null && !isLicense) continue;
 	    String link = getEntryManager().getEntryLink(request,asset,true,"");
-	    boolean expired = date.getTime()< now.getTime();
-	    if(expired) {
-		if(isLicense) licensePastDueCnt++;
-		else warrantyPastDueCnt++;
+	    boolean expired = false;
+	    boolean close = false;
+	    boolean none=false;
+	    if(date==null) {
+		none = true;
+	    }  else {
+		expired = date.getTime()< now.getTime();
+		if(!expired)
+		    close  = date.getTime()<near.getTime();
+	    }
+	    didOne = true;
+	    List<String> list=null;
+	    if(isLicense) {
+		if(expired) list = licenseExpired;
+		else if (close) list = licenseClose;
+		else if (none) list = licenseNone;		
+		else list = licenseOk;
 	    } else {
-		if(isLicense) licensePostDueCnt++;
-		else warrantyPostDueCnt++;
+		if(expired) list = warrantyExpired;
+		else if(close) list = warrantyClose;		
+		else list = warrantyOk;
 	    }
 
-
-	    if(isLicense && !showLicenses) continue;
-	    if(!isLicense && !showWarranties) continue;	    
-	    didOne = true;
-
-	    StringBuilder tmp = isLicense?(expired?licensePastDueSB:licensePostDueSB):
-		(expired?pastDueSB:postDueSB);
-	    HU.row(tmp,HU.td(link)+  HU.td(sdf.format(date),"align=right")+HU.td(expired?"Yes":"No"),
-		   HU.attrs("class",expired?"assets-expired":""));
+	    list.add(HU.row(HU.td(link)+  HU.td(date==null?"NA":sdf.format(date),"align=right")+HU.td(expired?"Yes":(close?"1 month":(none?"NA":"No"))),
+			    HU.attrs("class",expired?"assets-expired":(close?"assets-close":(none?"assets-none":"assets-ok")))));
 	}
 
-	buff.append(HU.importCss(".assets-expired {background:#f8d7da;}\n"));
+	buff.append(HU.importCss(".assets-expired {background:#fddcdc !important;}\n.assets-close {background: #fff3cd !important}\n.assets-ok {background:#d4edda !important;}\n"));
 	buff.append("<div class=dashboard-component>");
 	buff.append("<div  class='row wiki-row'  >");
 	String cw = "6";
-	if(licensePastDueSB.length()==0 && licensePostDueSB.length()==0)  cw = "12";
-	else if(pastDueSB.length()==0 && postDueSB.length()==0)  cw = "12";	
-	if(pastDueSB.length()>0 || postDueSB.length()>0) {
+	String tableHeight="300px";
+	String bullet = "&nbsp;&bull;&nbsp;";
+	int warrantyTotal = warrantyExpired.size() +  warrantyClose.size()+warrantyOk.size();
+	int licenseTotal = licenseExpired.size() +  licenseClose.size() + licenseOk.size() + licenseNone.size();	
+
+	if(licenseTotal==0)  cw = "12";
+	else if(warrantyTotal==0)  cw = "12";	
+	if(warrantyTotal>0) {
 	    buff.append("<div  class='col-md-" + cw+" ramadda-col wiki-col'>");
 	    buff.append("<h3>Warranties</h3>");
-	    if(warrantyPastDueCnt+warrantyPostDueCnt==1)
-		buff.append((warrantyPastDueCnt+warrantyPostDueCnt) +" asset with a warranty<br>");
+	    if(warrantyTotal==1) 
+		HU.div(buff,bullet  +" 1 asset with a warranty date","");
 	    else
-		buff.append((warrantyPastDueCnt+warrantyPostDueCnt) +" assets with warranties<br>");	    
-	    if(warrantyPastDueCnt>0)
-		HU.div(buff,warrantyPastDueCnt +(warrantyPastDueCnt==1?" warrany past due<br>":" warranties past due"),HU.attrs("class","assets-expired"));
-	    if(warrantyPostDueCnt>0)
-		buff.append(warrantyPostDueCnt +(warrantyPostDueCnt==1?" warranty current<br>":" warranties current<br>"));	    
+		HU.div(buff,bullet+ (warrantyTotal) +" assets with warranty dates","");	    
+
+	    if(warrantyExpired.size()>0)
+		HU.div(buff,bullet+ warrantyExpired.size() +
+		       (warrantyExpired.size()==1?" warranty past due":" warranties past due"),HU.attrs("class","assets-expired"));
+	    if(warrantyClose.size()>0)
+		HU.div(buff,bullet+ warrantyClose.size() +
+		       (warrantyClose.size()==1?" warranty near due (1 month)":" warranties near due (1 month)"),
+		       HU.attrs("class","assets-close"));	    
+	    if(warrantyOk.size()>0)
+		HU.div(buff,bullet+ warrantyOk.size() +(warrantyOk.size()==1?" warranty current":" warranties current"),
+		       HU.attrs("class","assets-ok"));    
 	    
 	    if(showDetails) {
-		buff.append(HU.formTable());
-		buff.append("<tr><td>&nbsp;<b>Asset</b>&nbsp;</td><td>&nbsp;<b>Warranty Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
-		if(pastDueSB.length()>0) 
-		    buff.append(pastDueSB);
-		if(postDueSB.length()>0) 
-		    buff.append(postDueSB);	    
-		buff.append(HU.formTableClose());
+		HU.open(buff,"table",
+			"table-height", tableHeight,"table-searching","true",
+			"table-ordering","true",
+			"table-ordering-init","none",
+			"class","ramadda-table");
+		HU.tag(buff,"thead","",HU.tag("tr","","<th>Asset</th><th>Warranty Expiration</th><th>Expired</th>"));
+		HU.open(buff,"tbody","");
+		buff.append(Utils.join(warrantyExpired,""));
+		buff.append(Utils.join(warrantyClose,""));		
+		buff.append(Utils.join(warrantyOk,""));		
+		HU.close(buff,"tbody","table");
 	    }
 	    HU.close(buff,"div");
 	}
 
 
-	if(licensePastDueSB.length()>0 || licensePostDueSB.length()>0) {
+	if(licenseTotal>0) {
 	    buff.append("<div  class='col-md-" + cw+" ramadda-col wiki-col'>");
 	    buff.append("<h3>Licenses</h3>");
-	    buff.append((licensePastDueCnt+licensePostDueCnt) +" " + Utils.plural(licensePastDueCnt+licensePostDueCnt,"license") +" with expiration dates<br>");
-	    if(licensePastDueCnt>0)
-		HU.div(buff,licensePastDueCnt +Utils.plural(licensePastDueCnt,"license")+" expired",HU.attrs("class","assets-expired"));
-	    if(licensePostDueCnt>0)
-		buff.append(licensePostDueCnt +Utils.plural(licensePostDueCnt,"license")+" current<br>");	    
+	    HU.div(buff,bullet+ (licenseTotal) +" " + Utils.plural(licenseTotal,"license"),"");
+	    if(licenseExpired.size()>0)
+		HU.div(buff,bullet+ licenseExpired.size() +" " + Utils.plural(licenseExpired.size(),"license")+" expired",HU.attrs("class","assets-expired"));
+	    if(licenseClose.size()>0)
+		HU.div(buff,bullet+ licenseClose.size() +" " + Utils.plural(licenseClose.size(),"license")+" near due (1 month)",
+		       HU.attrs("class","assets-close"));	    
+	    if(licenseOk.size()>0)
+		HU.div(buff, bullet+ licenseOk.size() +" " + Utils.plural(licenseOk.size(),"license")+" current",
+		       HU.attrs("class","assets-ok"));
+	    if(licenseNone.size()>0)
+		HU.div(buff, bullet+ licenseNone.size() +" " +Utils.plural(licenseNone.size(),"license")+" with no expiration date",
+		       HU.attrs("class","assets-none"));
 
 	    if(showDetails) {	    
-		buff.append(HU.formTable());
-		buff.append("<tr><td>&nbsp;<b>License</b>&nbsp;</td><td>&nbsp;<b>License Expiration Date</b>&nbsp;</td><td>&nbsp;<b>Expired</b>&nbsp;</tr>");
-		buff.append(licensePastDueSB);
-		buff.append(licensePostDueSB);	    
-		buff.append(HU.formTableClose());
+		HU.open(buff,"table",
+			"table-height", tableHeight,"table-searching","true",
+			"table-ordering","true",
+			"table-ordering-init","none",
+			"class","ramadda-table");
+
+		HU.tag(buff,"thead","",HU.tag("tr","","<th>License</th><th>Expiration Date</th><th>Expired?</th>"));
+		HU.open(buff,"tbody","");
+		buff.append(Utils.join(licenseExpired,""));
+		buff.append(Utils.join(licenseClose,""));		
+		buff.append(Utils.join(licenseOk,""));
+		buff.append(Utils.join(licenseNone,""));				
+		HU.close(buff,"tbody","table");
 	    }
 	    HU.close(buff,"div");
 	}
