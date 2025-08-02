@@ -19,6 +19,19 @@ a.display-container {
     vertical-align:top;
 }
 
+.ramadda-dashboard .display-filter-contents,
+.ramadda-dashboard .display-download-contents
+{
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    display:block;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+
 
 .display-gauge svg g text {
     font-size: 12px;
