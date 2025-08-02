@@ -2143,7 +2143,10 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             height = parseInt(height);
             //            height-=30;
             let details = HU.div([ATTR_STYLE, HU.css('height', height + 'px','max-height', height + "px"), ATTR_CLASS, "display-tnse-details", ATTR_ID, this.domId(ID_DETAILS)], "");
-            let canvas = HU.div([ATTR_CLASS, "display-tnse-canvas-outer", ATTR_STYLE, HU.css('height', height + 'px')], HU.div([ATTR_CLASS, "display-tnse-canvas", ID, this.domId(ID_CANVAS)], ""));
+            let canvas = HU.div([ATTR_CLASS, "display-tnse-canvas-outer",
+				 ATTR_STYLE, HU.css('height', height + 'px')],
+				HU.div([ATTR_CLASS, "display-tnse-canvas",
+					ATTR_ID, this.domId(ID_CANVAS)], ""));
             let buttons = HU.div([ATTR_ID, this.domId(ID_RUN), ATTR_CLASS, "ramadda-button", "what", "run"], "Stop") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_STEP), ATTR_CLASS, "ramadda-button", "what", "step"], "Step") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_RESET), ATTR_CLASS, "ramadda-button", "what", "reset"], "Reset") + SPACE +
