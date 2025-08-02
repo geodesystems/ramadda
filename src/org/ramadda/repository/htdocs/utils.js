@@ -5423,6 +5423,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let ordering = table.attr("table-ordering");
         if (ordering)
             options.ordering = (ordering == "true");
+        let initOrder = table.attr("table-ordering-init");
+	if (initOrder) {
+	    if(initOrder=='none')
+		options.order = [];
+	    else 
+		options.order = initOrder.split(",");
+	}
         let searching = table.attr("table-searching");
         if (searching)
             options.searching = (searching == "true");
