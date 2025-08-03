@@ -5336,7 +5336,8 @@ public class EntryManager extends RepositoryManager {
 			       HU.fileInput(ARG_FILE,
 					    HU.id(inputId) + HU.SIZE_70)));
 
-	HtmlUtils.script(sb, "Ramadda.initFormUpload(" + HU.comma(HU.squote(inputId),HU.squote(""))+");");
+	HtmlUtils.script(sb,
+			 HU.call("Ramadda.initFormUpload",HU.squote(ARG_FILE),HU.squote(inputId)));
         sb.append(HU.formEntry(msgLabel("Or URL"),
 			       HU.input(ARG_URL, "",
 					HU.SIZE_70)));
