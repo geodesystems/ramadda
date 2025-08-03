@@ -1,13 +1,15 @@
 <types>
 <!-- Copy this into your ramadda home/plugins directory and restart RAMADDA-->
-<type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point" 
- supercategory="Geoscience" 
- category="Borehole Data" 
- pattern="(?i).*mscl.*csv" 
+<type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"
+       handler="org.ramadda.data.services.PointTypeHandler"  super="type_point" 
+       supercategory="Geoscience" 
+       category="Borehole Data" 
+       pattern="(?i).*mscl.*csv" 
 >
 
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="inheritlocationfromtype" value="type_geo_site"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="false" />
@@ -76,20 +78,9 @@ The group tag keeps the scatter plots separate from the above filters
 {{display_scatterplot   showMenu=true fields="#3,#6"}} 
 -col
 -row
-
 ----
 :heading Information
 {{information}}
-
-----
-----
-:heading Wiki Text
-:note This would normally not be in here but I added it so you can see the wiki text used
-{{wikitext}}
-
-:heading SeeSV Convert Commands
-:note Likewise this wouldn't normally be here
-{{seesv}}
 -section]]></wiki>
 </type>
 </types>
