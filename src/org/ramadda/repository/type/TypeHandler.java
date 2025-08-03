@@ -598,6 +598,22 @@ public class TypeHandler extends RepositoryManager {
 	return value;
     }
 
+    public void addToEntryTypePage(Request request, StringBuilder sb) throws Exception {
+        if(this.parent!=null) {
+	    this.parent.addToEntryTypePage(request,sb);
+	}
+	String help = getHelp();
+	if(stringDefined(help)) {
+	    HU.div(sb,
+		   getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))),"");
+	}
+
+	if(filePattern!=null) {
+	    sb.append(HU.b("File pattern: "));
+	    sb.append(filePattern);
+	}
+    }
+
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
 	return false;
     }
@@ -2943,7 +2959,7 @@ public class TypeHandler extends RepositoryManager {
 	    getFileTypeDescription(request,  entry);
 	String typeLink="";
 	if(request.getExtraProperty("isinfo")!=null) 
-	    typeLink = HU.href(getRepository().getUrlPath("/entry/types.html?type=" + getType()),
+	    typeLink = HU.href(getRepository().getUrlPath("/entry/types.html?type=" + entry.getTypeHandler().getType()),
 			       HU.getIconImage("fas fa-database"),HU.attrs("title","View data type"));
 
 	label+=HU.space(2) + typeLink;

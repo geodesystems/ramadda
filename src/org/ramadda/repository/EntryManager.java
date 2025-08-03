@@ -1021,14 +1021,11 @@ public class EntryManager extends RepositoryManager {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		getPageHandler().sectionOpen(request, sb,"Entry Type  - " + typeHandler.getLabel(),false);
 		sb.append(HU.center(HU.href(getRepository().getUrlPath("/entry/types.html"),"Entry type list")));
-		String help = typeHandler.getHelp();
-		if(stringDefined(help)) {
-		    sb.append(getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
-		}
-		sb.append(HU.b("Type ID:"));
-		sb.append(HU.space(1));
-		sb.append(typeHandler.getType());
+		HU.div(sb,HU.b("Type ID: ") + typeHandler.getType(),"");
+		typeHandler.addToEntryTypePage(request, sb);
 		sb.append("<br>");
+
+
 		List<Column> columns = typeHandler.getColumns();
 		if (columns != null && columns.size()>0) {
 		    sb.append(HU.b("Columns:"));
