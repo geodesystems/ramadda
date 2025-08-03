@@ -1,0 +1,76 @@
+<html>
+<title>Core Visualizer</title>
+<body>
++section title="Core Visualizer"
+:navtop
+
++callout-info
+RAMADDA provides a Core Visualizer  facility that displays one or more
+core images and their associated depths.
+-callout
+
+:heading Geo Image Collection
+Multiple core images can be displayed under a Geo Image Collection. To create:
+* Navigate to some area on your RAMADDA repository.
+* From the Entry popup menu choose "Pick a type..."
+* From the big list of entry types search for "Geo Image" and select the "Geo Image Collection" entry type
+* Create the new entry
+
+The Geo Image Collection acts as a Folder under which the Geo Core Image files can be added.
+
+
+:heading Core Images
+Any image can be uploaded as a Geo Core Image entry.
+* From the Geo Image Collection entry popup menu choose "Geo Core Image".
+* Note - you can upload a Core Image anywhere. Just choose "Pick a type..." and search for "Geo Core Image"
+* Upload the image. Optionally you can manually specify a top and bottom depth.
+* By default the Core Visualizer will be displayed. You can not display it by setting the  Show Visualizer setting to No
+
+
+:heading  Breeze Core Images
+RAMADDA provides special support for importing a collection of Core images and ancillary metadata
+from the Prediktera Breeze analysis package. There are two ways to do this - single files and
+importing a .zip file.
+
+:heading2 Adding Single Files
+* From the Geo Image Collection entry go to the Entry popup menu and select "Geo Core Image".
+* From the new Geo Core Image form upload your core image. You can change the name of the entry, etc.
+* From the new Core Image entry popup menu choose "Geo Breeze XML" and upload the metadata.xml file
+* The depth and resolution metadata should be extracted from the XML file and added to the Core Image entry
+
+:heading2 Adding Multiple Files 
+To upload multiple image files along with their respective XML files
+create a .zip file (e.g. core.zip) of the images and metadata. The .zip file
+should be of the form:
++pre
+228/
+228/measurement.jpg
+228/measurement.xml
+229/
+229/measurement.jpg
+229/measurement.xml
+230/
+230/measurement.jpg
+230/measurement.xml
+...
+-pre
+
+From the Geo Image Collection entry go to the Entry Import menu and specify the .zip file.
+:br
+Under "Type" select Borehole Core Images:
+:br
+<img src=docs/importcoreimages.png width=500px>
+:br
+
+This results in the following entry structure. Each of the image files will be
+added as a  Geo Core Image  entry and renamed with its
+zip directory name. Each of the measurement.xml files will be added as a Geo Breeze XML  file.
+When viewing the core image entry the depth registration from the XML file should be shown.
+:br
+<img src=docs/coreimagesimport.png width=500px>
+:br
+
+-section
+</body>
+</html>
+
