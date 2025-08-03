@@ -3,6 +3,7 @@
 
   <type name="type_geo_project"  description="Geo Project" 
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	
 	metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
 	>
     <property name="icon" value="/geo/project.png"/>
@@ -72,6 +73,7 @@ includeNonImages=false
 
 <type name="type_geo_site"  description="Geo Site" 
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+      childtypes="type_geo_borehole_images,type_point_collection"
       >
     <property name="icon" value="/geo/site.png"/>
     <property name="form.area.show" value="false"/>

@@ -9,12 +9,108 @@ RAMADDA provides a number of entry types in support of borehole geology.
 -callout
 
 :heading Geo Project
+The Geo Project entry type serves as a container of Geo Sites and other data and content
+(e.g. documents) and provides a default web display of this material.
+Here is an example Geo Project for the 
+<a href=https://ramadda.org/repository/a/borehole_southern_newark>Newark Basin Coring Project</a>
+:p
+{{image screenshot=true align=center src=/geo/docs/geoproject.png bordercolor=#ccc}}
+:p
+
+To create a Geo Project:
+* Navigate to some folder on your RAMADDA repository
+* Under the Entry popup menu choose "Pick a type..."
+* Search for "Geo Project" and select the Geo Project entry type
+* Enter a name and optionally a  description and a date range
+
+By default a number of children entries will be added to a Geo  Project-
+* Sites  - a Map Folder entry to hold project sites
+* Documents - a Document Collection to hold documents
+* Private - a folder that has been configured to restrict access to its data and contents.
+
+
+To add images (like above):
+* Go to the Entry popup menu of the Geo Project
+* Under Edit select Add Thumbnail Image
+
+Under the entry popup menu you can also add one or more metadata properties for:
+* Principal Investigator
+* Funding Information
+* Project Personnnel
+* Use Constraints
+* Citation
+* A RAMADDA alias
+
+Once added any of these metadata properties can be edited from the Edit-&gt;Edit Properties page.
+
 
 :heading Geo Site
+The Geo Project can contain one or more Geo Sites. These are also special purpose folders
+and are meant to hold site specific data collections. e.g.-
+:p
+{{image screenshot=true align=center src=/geo/docs/geosite.png bordercolor=#ccc}}
+:p
+
+A Geo Site entry can be added anywhere but to keep your content organized you should add the
+sites under the Geo Project's "Sites" Map Folder entry.
+* From the Sites entry choose "Pick a type..." from the Entry popup File menu 
+* Search for Geo Site (note: once a Geo Site has been added then the entry type will show up in the File menu)
+* A Geo Site has a name, description and a latitude/longitude
+
++callout-info
+Note: Many of the Borehole data types will automatically inherit the geolocation of a Geo Site.
+-callout
+
+
+You can add any data files, folder entries, etc to the Geo Site. If you have  collections of
+data it is recommended that you create the appropriate entry types-
+* Folder - for a general collection that does not require special purpose display
+* Point Data Collection - This provides an interactive display for entries which charts, etc., e.g. Borehole Log Files
+* Geo Image Collection - for borehole images. See <a href=boreholeimages.html>boreholeimages.html</a> for more information.
 
 
 :heading Borehole Images
 See <a href=boreholeimages.html>boreholeimages.html</a>
+
+:heading Log ASCII Standard
+RAMADDA supports the
+<a href=https://en.wikipedia.org/wiki/Log_ASCII_standard>Log ASCII Standard</a>
+borehole log file format.
+To create an LAS entry go to the folder you want to add to (e.g., a Point Data Collection):
+* From the Entry popup menu choose "Pick a type..."
+* Search for "log ascii" and select the Log ASCII Standard entry type
+* Upload your file
+
+When created metadata will be extracted from the file and a default data display will be shown as below. If the LAS entry is added somewhere under a Geo Site and the Geo Site has a geolocation
+then the latitude/longitude of the Geo Site will be applied to the LAS entry type and a map will
+be shown.
+:p
+{{image screenshot=true align=center src=/geo/docs/las.png bordercolor=#ccc}}
+:p
+
+
+To do a bulk upload of LAS files just create a .zip file and upload the zip file instead of
+the indindividual file  as described above.
+
+
+
+:heading Borehole Log Files
+The RAMADDA "Borehole Log File" entry type supports text borehole log files of the form:
++pre
+SITE:	Martinsville
+PROJECT:	Newark Basin
+TOP:	2.000
+BOTTOM:	4002.000
+
+DEPTH	TEMP2	TEMP1
+ft	degC	degC
+2.000	6.046	19.360
+4.000	5.995	19.104
+...
+-pre
+
+
+
 
 -section
 </body>
