@@ -3482,7 +3482,7 @@ public class WikiManager extends RepositoryManager
 	    return sb.toString();
 	}else if(theTag.equals(WIKI_TAG_ZOOMIFY)) {
 	    String id = getWikiManager().makeZoomifyLayout(request, entry,sb,props);
-	    List<String> jsonProps =  getWikiManager().getZoomifyProperties(request, entry,props);	
+	    List<String> jsonProps =  getZoomifyProperties(request, entry,props);	
 	    Utils.add(jsonProps, "id", JsonUtil.quote(id));
 	    HU.script(sb, "new RamaddaZoomableImage(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
 	    return sb.toString();
@@ -9915,7 +9915,8 @@ public class WikiManager extends RepositoryManager
 	return id;
     }
 
-    public List<String> getZoomifyProperties(Request request, Entry entry,Hashtable props) throws Exception {
+    public List<String> getZoomifyProperties(Request request, Entry entry,Hashtable props)
+	throws Exception {
 	List<String> jsonProps = new ArrayList<String>();
         List<String> tiles     = new ArrayList<String>();
 	String field = (String) props.get("annotationsField");
@@ -9940,6 +9941,7 @@ public class WikiManager extends RepositoryManager
 		    if(tuple!=null) url  = tuple[0];
 		}
 		if(url==null)url= entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		url = HU.url(url,"timestamp",""+entry.getChangeDate());
 		Utils.add(jsonProps,"tileSources",
 			  JU.map("type",JU.quote("image"),"buildPyramid","false",
 				 "url",JU.quote(url)));
