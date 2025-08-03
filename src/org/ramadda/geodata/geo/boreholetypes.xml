@@ -244,8 +244,13 @@ inherited="false"  }}
 
 <type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" 
       pattern=".*\.las"
+      
       metadata="geo_stratigraphy,geo_measurement"
       handler="org.ramadda.geodata.geo.LasTypeHandler">      
+  <help><![CDATA[
+Provides support for the 
+<a target=_help href=https://en.wikipedia.org/wiki/Log_ASCII_standard>Log ASCII Standard</a> file format.
+]]></help>
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
