@@ -226,35 +226,36 @@ public class ImageOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-        if (state.entry != null) {
-            if (state.entry.isFile()) {
-                //                if (state.entry.isImage()) {
-                //                    links.add(makeLink(request, state.getEntry(), OUTPUT_CAPTION));
+	Entry entry = state.getEntry();
+        if (entry != null) {
+            if (entry.isFile()) {
+                //                if (entry.isImage()) {
+                //                    links.add(makeLink(request, entry, OUTPUT_CAPTION));
                 //                }
                 String extension =
                     IO.getFileExtension(
-                        state.entry.getResource().getPath()).toLowerCase();
+					entry.getResource().getPath()).toLowerCase();
                 if (extension.equals(".mp3") || extension.equals(".mp4")
                         || extension.equals(".mpg")) {
-                    links.add(makeLink(request, state.getEntry(),
+                    links.add(makeLink(request, entry,
                                        OUTPUT_VIDEO));
                 }
             }
-	    if (state.entry.getResource().isEditableImage() &&
-		getAccessManager().canDoEdit(request, state.entry)) {		
-                File f = state.entry.getFile();
+	    if (entry.getResource().isEditableImage() &&
+		getAccessManager().canDoEdit(request, entry)) {		
+                File f = entry.getFile();
                 if ((f != null) && f.canWrite()) {
 		    Link hr = new Link(true);
                     hr.setLinkType(OutputType.TYPE_EDIT);		    
 		    links.add(hr);
                     Link link = new Link(repository.getUrlBase()
                                          + "/lib/tui/tui?entryid="
-                                         + state.entry.getId(), ICON_IMAGES,
+                                         + entry.getId(), ICON_IMAGES,
                                              "Edit Image");
                     link.setLinkType(OutputType.TYPE_EDIT);
                     links.add(link);
 
-                    links.add(makeLink(request, state.getEntry(),
+                    links.add(makeLink(request, entry,
                                        OUTPUT_CHANGE));
                 }
             }
@@ -267,8 +268,8 @@ public class ImageOutputHandler extends OutputHandler {
 
         boolean ok = false;
         if (entries.size() > 0) {
-            for (Entry entry : entries) {
-                if (entry.isImage()) {
+            for (Entry child : entries) { 
+               if (child.isImage()) {
                     ok = true;
 
                     break;
@@ -749,6 +750,11 @@ public class ImageOutputHandler extends OutputHandler {
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
             throws Exception {
+	if(group.getResource().isEditableImage()) {
+	    return outputEntry(request, outputType, group);
+	}
+
+
         Result result = makeResult(request, group, children);
         addLinks(request, result, new State(group, children));
 
