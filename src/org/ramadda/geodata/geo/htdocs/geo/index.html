@@ -8,20 +8,21 @@
 RAMADDA provides a number of entry types in support of borehole geology.
 -callout
 
-:heading Types
+:heading Data Types
 RAMADDA provides support for the following entry types-
- Geo Project
- Geo Site
- Geo Image Collection
- Geo Core Image
- Borehole Lithology
- Borehole Log File
- Core XRF File
- Digital Log Interchange Standard (DLIS)
- Log ASCII Standard (LAS)
- Multi-Sensor Core Logging
- WellCAD Log File
- Geo Breeze XML  
+* <a href="#geo_project">Geo Project</a> - Defines project metadata
+* <a href="#geo_site">Geo Site</a> - A site location
+* <a href="boreholeimages.html">Geo Image Collection</a> - A collection of borehole images. Provides an interactive visual display and integrated chart displays.
+* <a href="boreholeimages.html#core_images">Geo Core Image</a> - A core image. Can be depth referenced and displayed in an image collection
+* <a href="#log_ascii_standard">Log ASCII Standard (LAS)</a>  - Standard text log file
+* <a href="#borehole_log_files">Borehole Log File</a> - Standard text log file
+* <a href="#digital_log_interchange_standard_dlis">Digital Log Interchange Standard (DLIS)</a> - A binary format. 
+* Multi-Sensor Core Logging - USGS <a href=https://cmgds.marine.usgs.gov/data/geotech/logger.html>file format</a>
+* WellCAD Log File - A binary format. 
+* Core XRF File - 
+* Borehole Lithology  - A semi-custom CSV format for lithology at depths
+* <a href=boreholeimages.html#breeze_core_images>Geo Breeze XML</a>   - This is the XML metadata file from  Prediktera Breeze Software
+
 
 :heading Geo Project
 The Geo Project entry type serves as a container of Geo Sites and other data and content
@@ -123,6 +124,32 @@ ft	degC	degC
 4.000	5.995	19.104
 ...
 -pre
+
+:heading Digital Log Interchange Standard (DLIS)
+This is a  binary file format. RAMADDA provides no services other than basic metadata and
+file access. (<a href=https://dlisio.readthedocs.io/en/stable/dlis/specification.html>Specification</a>).
+
+
+:heading Multi-Sensor Core Logging
+A USGS <a href=https://cmgds.marine.usgs.gov/data/geotech/logger.html>file format</a>.
+
+
+:heading Borehole Lithology
+This is a custom CSV file format for defining lithology - color, grain size and depth description.
+It takes the form:
++pre
+depth,color,grain size,depth rank
+309,0,1,0
+311.6,0,1,0
+312.2,0,1,0
+322,0,1,0
+...
+-pre
+
+The display is:
+:p
+{{image width=400px align=center src=/geo/docs/lithology.png bordercolor=#ccc}}
+:p
 
 
 

@@ -1,0 +1,30 @@
+<types>
+<!--  This gets imported by the boreholetypes.xml-->
+
+<type  name="type_geo_corebox_breeze_xml"  description="Geo Breeze XML"
+       handler="org.ramadda.repository.type.TypeHandler"
+       priority="50"
+       pattern=".*measurement.xml"
+       supercategory="Geoscience"  category="Borehole Data" >
+
+<!-- Properties-->
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading XML Metadata
+{{embed  entry=""  skipLines="0"  maxLines="10000" highlight="true" as="xml"
+style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }} 
+:heading Information
+{{information  showBase="true"  showDetails="true"  showTitle="false"  }} 
+-section
+]]></wiki>
+</type>
+
+<type  name="type_geo_corebox_prediktera_xml"  super="type_geo_corebox_breeze_xml"
+       foruser="false" description="Geo Prediktera XML">
+</type>
+</types>

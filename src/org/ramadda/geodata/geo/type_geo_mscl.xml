@@ -1,5 +1,5 @@
 <types>
-<!-- Copy this into your ramadda home/plugins directory and restart RAMADDA-->
+<!--  This gets imported by the boreholetypes.xml-->
 <type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"
        handler="org.ramadda.data.services.PointTypeHandler"  super="type_point" 
        supercategory="Geoscience" 
