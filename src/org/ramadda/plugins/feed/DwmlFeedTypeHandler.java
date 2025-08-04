@@ -808,33 +808,19 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
         private class Time implements Comparable {
             Date date;
-
             String label;
-
-            String icon;
-
+	    String icon;
             String words = "";
-
             String weather;
-
-
             String max;
-
             String min;
-
             String apparent;
-
             String dewpoint;
-
             String precip;
             String humidity;
-
             String direction;
-
             String pressure;
-
             String gust;
-
             String sustained;
 
             public Time(Date date, String label) {
@@ -847,10 +833,13 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	    public String getFieldsTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(HU.formTable());
-		if (this.humidity != null) {
+		boolean anyDefined = false;
+		if (defined(this.humidity)) {
+		    anyDefined=true;
 		    HU.formEntry(sb,"Humidity:", this.humidity + "%");
 		}
 		if (defined(this.sustained)) {
+		    anyDefined=true;
 		    String gust = "";
 		    if (defined(this.gust)) {
 			gust = "&nbsp;Gust:&nbsp;" + this.gust;
@@ -858,14 +847,19 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		    HU.formEntry(sb,"Wind&nbsp;Speed:",  this.sustained + gust + "&nbsp;" + msg("MPH"));
 		}
 
-		if (this.pressure != null) {
+		if (defined(this.pressure)){
+		    anyDefined=true;
 		    HU.formEntry(sb,"Barometer:", this.pressure + "&nbsp;in");
 		}
 
-		if (this.dewpoint != null) {
+		if (defined(this.dewpoint)) {
+		    anyDefined=true;
 		    HU.formEntry(sb, "Dew&nbsp;Point:", this.dewpoint);
 		}
 
+		if(!anyDefined) {
+		    HU.formEntry(sb,"","No current measurements");
+		}
 		sb.append(HU.formTableClose());
 		return sb.toString();
 	    }
