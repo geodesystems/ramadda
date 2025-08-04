@@ -858,9 +858,11 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		}
 
 		if(!anyDefined) {
-		    HU.formEntry(sb,"","No current measurements");
+		    sb.append(HU.formTableClose());
+		    HU.div(sb,"No current measurements","");
+		    return sb.toString();
 		}
-		sb.append(HU.formTableClose());
+
 		return sb.toString();
 	    }
 
