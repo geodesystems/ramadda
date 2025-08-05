@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Image Thumbnails</title>
+</head>
+<body>
+
+:navtop
+
+
+:heading Thumbnail Property
+Image thumbnails are automatically created when an image is added. These can then be changed and/or deleted through the Entry-&gt;Edit Properties page. 
+The Edit properties  page also allows you to
+specify whether the image should be scaled down. 
+Any entry, not just images,
+can also have a thumbnail associated with through the Entry-&gt;Add Properties form.
+
+[ht::screenshot images/thumbnail_properties.png]
+
+
+:heading Changing Images
+Image entries support a set of Image Change functions through the Entry-&gt;Edit-&gt;Change Image
+menu. One can resize the image, convert it to gray scale or create or regenerate the thumbnail
+image at  a certain width.
+[ht::screenshot images/thumbnail_change.png]
+
+
+
+:heading Extended Edit
+Thumbnails can be created for any number of Image entries through the
+Entry-&gt;Edit-&gt;Extended Edit facilities.
+* Go to an image entry or a folder that contains image entries.
+* From the Extended Edit page open the Process with Javascript section.
+* Under the "Image" tab on the right select the "entry.makeThumbnail". This adds the command into the command list
+* The first argument says to delete any existing thumbnail image
+* The second argument is the width
+* Note - You can optionally select an entry type (e.g. Image)
+* Press Apply Javascript
+[ht::screenshot  images/thumbnail_extedit.png]
+
+This will run through each entry in turn and create a new thumbnail image.
+:br
+Note: this will also work with PDF entries.
+
+:heading Default Thumbnail Width
+The default width of a thumbnail image is 600.
+This can be changed by setting the below property in
+a .properties file, e.g.:
+
++pre addCopy=true
+ramadda.thumbnail.width=800
+-pre
+
+This can also be set directly through the Admin interface:
+[ht::screenshot images/thumbnail_admin.png]
+
+
+
+</body>
+</html>
