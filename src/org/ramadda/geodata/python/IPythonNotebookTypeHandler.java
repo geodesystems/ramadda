@@ -161,13 +161,13 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 	List<String> urls = new ArrayList<String>();
 	getMetadataManager().getThumbnailUrls(request, entry, urls);
 	if (urls.size() > 0) return false;
-	addThumbnail(request, entry,true);
+	addThumbnail(request, entry,true,-1);
 	return true;
     }
 
     @Override
-    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
-	getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
+    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting, int width) throws Exception {
+	getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting,width);
 	return extractThumbnail(request,entry);
     }
 

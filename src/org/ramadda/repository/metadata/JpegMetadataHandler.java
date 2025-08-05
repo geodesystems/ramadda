@@ -64,7 +64,7 @@ public class JpegMetadataHandler extends MetadataHandler {
      *
      * @throws Exception _more_
      */
-    public Metadata getThumbnail(Request request, Entry entry,com.drew.metadata.Metadata[]mtd)
+    public Metadata getThumbnail(Request request, Entry entry,com.drew.metadata.Metadata[]mtd,int width)
             throws Exception {
 
         if ( !entry.getResource().isImage()) {
@@ -85,7 +85,8 @@ public class JpegMetadataHandler extends MetadataHandler {
 	image = ImageUtils.orientImage(path,  image,mtd);
 
 	long t3= System.currentTimeMillis();
-	int newWidth = 300;
+	int newWidth = width>0?width:getDefaultThumbnailWidth();
+	System.err.println("Thumbnail width:" + newWidth);
         Image scaledImage = image.getScaledInstance(newWidth, -1, Image.SCALE_FAST);
  	long t4= System.currentTimeMillis();
         ImageUtils.waitOnImage(scaledImage);
@@ -144,7 +145,7 @@ public class JpegMetadataHandler extends MetadataHandler {
         try {
 	    if(request.get(ATTR_MAKETHUMBNAILS,true)) {
 		long t1= System.currentTimeMillis();
-		Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
+		Metadata thumbnailMetadata = getThumbnail(request, entry,mtd,-1);
 		long t2= System.currentTimeMillis();
 		//		System.err.println("getThumbnail:" + (t2-t1));
 		if (thumbnailMetadata != null) {

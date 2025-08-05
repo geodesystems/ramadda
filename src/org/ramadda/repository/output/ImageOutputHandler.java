@@ -80,6 +80,8 @@ import javax.imageio.stream.ImageOutputStream;
 @SuppressWarnings("unchecked")
 public class ImageOutputHandler extends OutputHandler {
 
+    public static final String ARG_THUMBNAILWIDTH = "thumbnailwidth";
+
     public static final String ARG_IMAGE_STYLE = "image.style";
 
     public static final String ARG_IMAGE_EDIT = "image.edit";
@@ -388,7 +390,7 @@ public class ImageOutputHandler extends OutputHandler {
             throw new AccessException("Cannot edit image", null);
         }
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "Image Resize");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Change Image");
 
 	String theFile = entry.getResource().getPath();
 	Image image = ImageUtils.readImage(theFile);
@@ -407,34 +409,46 @@ public class ImageOutputHandler extends OutputHandler {
 	    getEntryManager().entryFileChanged(request, entry);
 	} else if(request.exists(CHANGE_THUMBNAIL)) {
 	    sb.append(messageNote("Thumbnail made"));
-	    getMetadataManager().addThumbnail(request,entry,request.get("deletethumbnail",false));
+	    getMetadataManager().addThumbnail(request,entry,request.get("deletethumbnail",false),request.get(ARG_THUMBNAILWIDTH,-1));
 	} 
 	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	sb.append(HU.p());
+	sb.append(heading2("Resize Image"));
 	sb.append(HU.formTable());
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
 	sb.append(HU.formEntry(msgLabel("Width"),
-			       HU.input("imagewidth","600",HU.SIZE_5) +
+			       HU.input("imagewidth",request.getString("imagewidth","600"),HU.SIZE_5) +
 			       HU.space(2) +
 			       HU.submit("Resize",CHANGE_RESIZE)));
 	sb.append(HU.formTableClose());
 	sb.append(HtmlUtils.formClose());
-	sb.append("<p>");
+
+
+	sb.append(HU.br());
+	sb.append(heading2("Image Thumbnail"));
+	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+	sb.append(HU.formTable());
+	HU.formEntry(sb,msgLabel("Thumbnail Width"),
+		     HU.input(ARG_THUMBNAILWIDTH,request.getString(ARG_THUMBNAILWIDTH,""+getDefaultThumbnailWidth()),HU.SIZE_5));
+	sb.append(HU.formEntry("",HU.labeledCheckbox("deletethumbnail","true",true,
+						     "Delete any existing thumbnails")));
+	HU.formEntry(sb,"",HU.submit("Make Thumbnail",CHANGE_THUMBNAIL));
+	sb.append(HU.formTableClose());
+	sb.append(HtmlUtils.formClose());
+
+
+	sb.append(HU.br());
+	sb.append(heading2("Gray Scale Image"));
 	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
 	sb.append(HU.submit("Convert to gray scale",CHANGE_GRAYSCALE));
 	sb.append(HtmlUtils.formClose());
-	sb.append("<p>");
-	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
-	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
 
-	sb.append(HU.submit("Make Thumbnail",CHANGE_THUMBNAIL));
-	sb.append(HU.space(1));
-	sb.append(HU.labeledCheckbox("deletethumbnail","true",true,
-				     "Delete any existing thumbnails"));
-	sb.append(HtmlUtils.formClose());
+
 	sb.append("<hr>");
 	sb.append("Image width: ");
 	sb.append(image.getWidth(null));

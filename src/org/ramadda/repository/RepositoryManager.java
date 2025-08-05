@@ -67,6 +67,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return repository;
     }
 
+    public int getDefaultThumbnailWidth() {
+	return getRepository().getProperty("ramadda.thumbnail.width",400);
+    }
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -278,6 +282,17 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     public static String msgLabel(String msg) {
         return Repository.msgLabel(msg);
     }
+
+    public static String heading2(String h) {
+	return HU.div(h,HU.attrs("class","ramadda-heading2"));
+
+    }
+
+    public static String heading2BG(String h) {
+	    return HU.div(h,HU.attrs("class","ramadda-heading2 ramadda-heading2-bg"));
+
+    }
+
 
     public static String msgHeader(String h) {
         return Repository.msgHeader(h);

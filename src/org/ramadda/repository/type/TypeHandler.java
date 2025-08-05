@@ -618,7 +618,7 @@ public class TypeHandler extends RepositoryManager {
 	return false;
     }
 
-    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting,int width) throws Exception {
 	if(entry.isFile()) {
 	    for (Service service : services) {
 		//hacky hard coded
@@ -629,12 +629,8 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	}
 
-
-
-
-
 	if(!entry.isImage()) return false;
-	return getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
+	return getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting,width);
     }
 
     public void addAction(Action action) {

@@ -49,7 +49,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
-    public static final int THUMBNAIL_WIDTH = 600;
 
     public static final String ARG_THUMBNAIL_SCALEDOWN =
         "metadata_thumbnail_scaledown";
@@ -739,7 +738,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    if(image==null) {
 		getSessionManager().addSessionMessage(request,"Error processing image:" + entry);
 	    } else {
-		int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
+		int   width = request.get(ARG_THUMBNAIL_WIDTH,
+					  getMetadataManager().getDefaultThumbnailWidth());
 		if (image.getWidth(null) > width) {
 		    image = ImageUtils.resize(image, width, -1);
 		    ImageUtils.waitOnImage(image);
@@ -774,7 +774,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (dataType.equals(DATATYPE_WIKI)) {
                 /*
                 String buttons =
-                    getRepository().getWikiManager().makeWikiEditBar(request,
+		getRepository().getWikiManager().makeWikiEditBar(request,
                         entry, arg) + HU.br();
                 return buttons
                        + HU.textArea(arg, value, rows, columns,
@@ -910,7 +910,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                   + msg("Scale down image")
                                   + HU.space(2) + "Width: "
                                   + HU.input(
-                                      ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH,
+                                      ARG_THUMBNAIL_WIDTH,
+				      getMetadataManager().getDefaultThumbnailWidth(),
                                       HU.SIZE_5);
             }
 

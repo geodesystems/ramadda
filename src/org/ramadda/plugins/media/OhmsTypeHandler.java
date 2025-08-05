@@ -206,7 +206,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         entry.setValue(IDX_MEDIA_TYPE, host);
         if (host.equals("YouTube")) {
             String youTubeId = YouTubeVideoTypeHandler.getYouTubeId(mediaUrl);
-            YouTubeVideoTypeHandler.addThumbnail(getRepository(), request,
+            YouTubeVideoTypeHandler.addYoutubeThumbnail(getRepository(), request,
                     entry, youTubeId);
         } else if (host.equals("Vimeo")) {
             String embed = XmlUtil.getGrandChildText(record, "kembed", null);

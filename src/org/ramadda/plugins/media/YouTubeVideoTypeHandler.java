@@ -199,7 +199,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
 	}
 
         if (id != null) {
-            addThumbnail(getRepository(), request, entry, id);
+            addYoutubeThumbnail(getRepository(), request, entry, id);
         }
     }
 
@@ -210,7 +210,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
      * @param entry _more_
      * @param id _more_
      */
-    public static void addThumbnail(Repository repository, Request request,
+    public static void addYoutubeThumbnail(Repository repository, Request request,
                                     Entry entry, String id) {
         //      String thumbUrl = "https://i.ytimg.com/vi/" + id + "/default.jpg";
         String thumbUrl = "https://i.ytimg.com/vi/" + id + "/hq3.jpg";

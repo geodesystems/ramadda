@@ -668,9 +668,9 @@ public class MetadataManager extends RepositoryManager {
         }
     }
 
-    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting, int width) throws Exception {
 	JpegMetadataHandler jpegMetadataHandler = (JpegMetadataHandler) getHandler(JpegMetadataHandler.class);
-	Metadata thumb = jpegMetadataHandler.getThumbnail(request, entry,null);
+	Metadata thumb = jpegMetadataHandler.getThumbnail(request, entry,null,width);
 	if(thumb==null) return false;
 	if(deleteExisting) {
 	    List<Metadata> thumbs = findMetadata(request,entry,ContentMetadataHandler.TYPE_THUMBNAIL,false);

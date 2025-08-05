@@ -219,7 +219,7 @@ public class ExtEditor extends RepositoryManager {
 					getMetadataManager().getThumbnailUrls(request, entry, urls);
 					//Only add a thumbnail if there isn't one
 					if(urls.size()==0 && entry.isImage()) {
-					    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry,null);
+					    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry,null,-1);
 					    if(thumbnailMetadata!=null) {
 						getMetadataManager().addMetadata(request,entry,thumbnailMetadata);
 						changed = true;
@@ -981,7 +981,7 @@ public class ExtEditor extends RepositoryManager {
 
 		String image = 		    divOpen +
 		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400 /*width*/)</span>\n<span>entry.grayscaleImage()</span>\n" +
-		    "<span>entry.makeThumbnail(true /*true = delete existing*/)</span>\n" +
+		    "<span>entry.makeThumbnail(true /*true = delete existing*/,600 /*width*/)</span>\n" +
 		    "</div>";
 
 		String llm =    divOpen +
@@ -1524,8 +1524,9 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-	public void makeThumbnail(boolean deleteExisting) throws Exception {
-	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting)) {
+	public void makeThumbnail(boolean deleteExisting,int...widthArray) throws Exception {
+	    int width = widthArray.length>0?widthArray[0]:-1;
+	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting,width)) {
 		changed=true;
 		ctx.print("Thumbnail added:" + entry.getName());
 	    } else {
