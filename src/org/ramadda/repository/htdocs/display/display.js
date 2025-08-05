@@ -1758,7 +1758,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:ATTR_TITLE,ex:''},
 	{p:'titleTemplate',ex:'${title} - ${field1} Date range: ${recordDate_first format=yyyymmdd} - ${recordDate_last format=yyyymmdd}',
 	 tt:'Template for title. Use ${title} for the default title. Use ${field} for field values of first record. Use ${field_first} for first record value. Use ${field_ast} for last record value '},	
-	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
 	{p:'labelColumnAttrs',canCache:true,ex:'align,right',tt:'Attributes of the label column in the record templates'},
 	{p:'labelWidth',canCache:true,ex:'10',tt:'Width of labels the record templates'},	
 	{p:'displayStyle',ex:'css styles',tt:'Specify styles for display'},
@@ -1814,6 +1813,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
 	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
+	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
 	{p:'showMapInTooltip',ex:true,tt:'Include a map inside the tooltip or map popup'},
 	{p:'tooltipMapLayer',d:'osm',tt:'The map layer to use in the popup'},
 
