@@ -6888,6 +6888,13 @@ public class WikiManager extends RepositoryManager
                 dir = getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_DIR,
 				  getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_ORDER, null));
             }
+            if (dir == null) {
+		String ascending =  getProperty(wikiUtil, props,  attrPrefix + "ascending",null);
+		if(ascending!=null) {
+		    if(ascending.equals("true")) dir="up";
+		    else dir="down";
+		}
+            }
             //If no dir specified then do ascending if we are sorting by name else do descending
             if (dir == null) {
                 if ((sort.indexOf(ORDERBY_NAME) >= 0)
