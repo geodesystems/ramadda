@@ -1908,6 +1908,14 @@ public class TypeHandler extends RepositoryManager {
         this.type = value;
     }
 
+    public boolean isType(List<String> types) {
+	for(String type: types) {
+	    if(isType(type)) return true;
+	}
+	return false;
+    }
+
+
     public boolean isType(String type) {
         if (this.type.equals(type)) {
             return true;
