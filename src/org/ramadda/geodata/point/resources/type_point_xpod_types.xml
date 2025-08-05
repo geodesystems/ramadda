@@ -1,0 +1,48 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<type  name="type_point_xpod" 
+ description="XPOD Air Quality" 
+ handler="org.ramadda.data.services.PointTypeHandler" 
+ super="type_point" 
+ supercategory="Geoscience" 
+ category="Point Data" 
+pattern="(?i).*xpod.*xlsx"
+>
+<property name="record.properties">
+xls.sheet=5
+</property>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-sheet,5,-skiplines,1,-notcolumns
+csvcommands2=0,-notcolumns,Quad.*,-firstcolumns,date_time\,pm_2_5\,co_carbon_monoxide\,co2_carbon_dioxide\,no_nitric_oxide\,no2_nitrogen_dioxide\,nitrogen_oxides_nox
+csvcommands3=-makenumber,1-100
+
+xls.sheet=5
+
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+{{property max=15000}}
+{{group  itemsPerColumn=20 inherit.showMenu=true}} 
+{{display_linechart fields=pm_2_5 }} 
+{{display_linechart fields=co }}
+{{display_linechart fields=co2 }}
+
+:heading Table
+{{group showMenu=false}}
+{{display_download}}
+{{display_table }} 
+
+----
+
+:heading Information
+{{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
+ #menusTitle="Services"  }} 
+-section]]></wiki>
+</type>
