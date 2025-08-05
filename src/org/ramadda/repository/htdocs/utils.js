@@ -4287,11 +4287,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(debug) console.log('\tdone calling callback');
     },
     createFancyBox: function(selector, args) {
-        args = args||{};
+        args = args??{};
+	let items = $(selector);
+	//sort on data-order attribute
+	if(items.length>0 && Utils.isDefined(items.attr('data-order'))) {
+	    items = items.sort((a, b) => $(a).data('order') - $(b).data('order'));
+	}
         HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
                                 [ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
                                 selector,()=>{
-                                    $(selector).fancybox(args);
+				    $(items).fancybox(args);
                                 });
     },
     checkToHidePopup:function() {
