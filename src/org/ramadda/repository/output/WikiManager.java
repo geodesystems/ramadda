@@ -7644,7 +7644,7 @@ public class WikiManager extends RepositoryManager
 		thePopupCaption = thePopupCaption.replace("${name}", child.getLabel());
 		thePopupCaption = thePopupCaption.replace("${description}",
 							  child.getDescription());
-                String popupExtras = HU.cssClass("popup_image")
+                String popupExtras = HU.attrs("class","popup_image","data-order",""+num)
 		    + HU.attr("width", "100%");
 		//                if ( !captionPos.equals("none")) {
 		if(theCaption!=null)
