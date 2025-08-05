@@ -1006,6 +1006,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             return "";
         }
 	String entryType = request.getString(ARG_ENTRYTYPE,null);
+	List<String> entryTypes=null;
+	if(stringDefined(entryType)) {
+	    entryTypes = Utils.split(entryType,",",true,true);
+	}
         seen.add(entry.getId());
         String        target     = args[0];
         String        namePrefix = (args.length > 1)
@@ -1105,7 +1109,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    //"base64:" + Utils.encodeBase64(mapGlyphs));		      
 	}
 
-	if(!stringDefined(entryType) || entry.getTypeHandler().isType(entryType)) {
+	if(entryTypes==null ||  entry.getTypeHandler().isType(entryTypes)) {
 	    String click = HU.mouseClickHref(HU.call(
 						     "RamaddaUtils.selectClick",
 						     HU.comma(
