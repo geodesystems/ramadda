@@ -2486,8 +2486,12 @@ public class ExtEditor extends RepositoryManager {
 	    String csvCommands = Seesv.makeCsvCommands(lines);
 	    if(Utils.stringDefined(csvCommands)) {
 		sb.append("\n");
+		String extraProps="";
+		String sheet = StringUtil.findPattern(csvCommands, "-sheet,([^,]+)");
+		if(sheet!=null) extraProps+="\nxls.sheet=" + sheet+"\n";
+		//Check for sheet
 		sb.append(XU.comment("SeeSV commands"));
-		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n")));
+		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n"+extraProps+"\n")));
 
 	    }
 	}
