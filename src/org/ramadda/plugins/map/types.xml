@@ -171,9 +171,9 @@ mapVar="gpxMap${entryid}" }}
 propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  chartRight=75}}
 
 ----
-{{gallery message=""}}
+{{gallery message="" orderby=date ascending=true}}
 {{tabs message="" entries="children:type:media_video_quicktime_comma_media_audiofile"}}
-{{tabletree message=""}}
+{{tabletree message="" orderby=date ascending=true}}
 ----
 +row
 +col-6
