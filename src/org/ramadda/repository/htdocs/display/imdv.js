@@ -3226,7 +3226,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let menuBar = "";
 		if(menuAttrs) {
 		    blocks = getWikiEditorMenuBlocks(menuAttrs,true);
-		    let ctItems =  Utils.getColorTablePopup(null, true);
+		    let ctItems =  Utils.getColorTablePopup({itemize:true});
 		    blocks.push({title:"Color table",items:ctItems});
 		    //		    menuBar =getWikiEditorMenuBar(blocks,this.domId("displayattrsmenubar"));
 		    let cnt = 0
@@ -3403,7 +3403,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
 		sub = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'], sub);
-		let dialog = HU.makeDialog({content:sub,anchor:$(this)});
+		
+		let dialog = HU.makeDialog({content:sub,anchor:$(this),
+					    title:block.title,
+					  header:true,sticky:false,
+					  draggable:true,modal:false});						    
 		let insert = line=>{
 		    if(!line) return
 		    line = line.trim()+"\n";

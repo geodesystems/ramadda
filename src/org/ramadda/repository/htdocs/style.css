@@ -6778,13 +6778,22 @@ a.wiki-link-noexist {
     display:inline-block;
 }
 
-.wiki-editor-popup-items {
+.wiki-editor-popup-colortable, .wiki-editor-popup-items {
     margin-left:10px;
     max-width:400px;
     overflow-x:overlay;
-    max-height:200px;
     overflow-y:auto;
 }
+
+.wiki-editor-popup-items {
+    max-height:200px;
+}
+
+
+.wiki-editor-popup-colortable {
+    max-height:400px;
+}
+
 
 .wiki-editor-editor {
     background:#efefef;

@@ -1274,6 +1274,7 @@ WikiEditor.prototype = {
     },
 
     getAttributeBlocks:function(tagInfo, forPopup, finalCallback) {
+	let _this = this;
 	if(!tagInfo) {
 	    return null;
 	}
@@ -1293,8 +1294,31 @@ WikiEditor.prototype = {
 	if(!attrs) return null;
 	let blocks  = getWikiEditorMenuBlocks(attrs,forPopup,this.getId());
 	//	if(display) {
-	let ctItems =  Utils.getColorTablePopup(this, true);
-	blocks.push({title:"Color table",items:ctItems});
+	let ctItems =  Utils.getColorTablePopup({xxxwikiEditor:this, itemize:false,showToggle:false,clazz:''});
+	let popupColorTable=(dialog,source,block)=>{
+	    let contents = block.items;
+	    contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items wiki-editor-popup-colortable'],contents);
+	    let guid = HU.getUniqueId('find');
+	    contents = HU.center(HU.div([ATTR_ID,guid,ATTR_STYLE,HU.css('min-width','400px','margin','5px')])) + contents;
+
+	    let ctDialog = HU.makeDialog({content:contents,
+					  anchor:$(window),
+					  xhidePopup:false,
+					  my: 'right top',
+					  at: 'left+' +event.x +' top+' + (event.y),
+					  title:'Color Tables',
+					  header:true,sticky:false,
+					  draggable:true,modal:false});	
+	    HU.initPageSearch('.ramadda-colortable-select',
+			      '.ramadda-colortable-category','Find colortable',false,{target:jqid(guid)});
+
+	    ctDialog.find('.ramadda-colortable-select').click(function() {
+		let colorTable =$(this).attr('colortable');
+                WikiUtil.insertText(_this.getId()," colorTable=" + colorTable);
+		ctDialog.remove();
+	    });
+	}
+	blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
 	//	}
 
 
@@ -1375,25 +1399,47 @@ WikiEditor.prototype = {
 	}	
 
 
+	
+	let blockMap = {};
+	let blockCnt = 0;
 	Utils.splitList(blocks,5).forEach(blocks=>{
 	    menu += HU.open('div',[ATTR_CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
+		blockCnt++;
+		blockMap[blockCnt] = block;
 		if(typeof block=='string') {
 		    menu+=block;
 		    return;
 		}
 		let title = block.title;
-		title = HU.div([ATTR_CLASS,'wiki-editor-popup-header'], title)
+		if(block.callback) {
+		    title = HU.div(['data-block',blockCnt,
+				    ATTR_CLASS,'ramadda-hoverable ramadda-clickable wiki-editor-popup-header'], title)
+
+		    menu +=title;
+		    return;
+		}
+		title = HU.div(['data-block',blockCnt,
+				ATTR_CLASS,'wiki-editor-popup-header'], title)
+
 		let contents  = block.items.join('');
 		contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items'],contents);
 		menu +=HU.toggleBlock(block.title, contents);
 	    });
 	    menu += HU.close('div');
 	});
-	menu += '</div>';
+	menu += HU.close('div');
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
 				    my: 'left top',     at: 'left+' +event.x +' top+' + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
+	dialog.find('.ramadda-clickable').click(function() {
+	    let block = blockMap[$(this).attr('data-block')];
+	    if(!block) {
+		alert('Could not find block');
+		return;
+	    }
+	    block.callback(dialog, $(this),block);
+	});
 	HtmlUtils.setPopupObject(dialog);
 
 	jqid(this.domId('edittag')).click(()=>{

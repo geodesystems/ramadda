@@ -5029,8 +5029,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
     makeDialog: function(args) {
-        HtmlUtils.hidePopupObject(null,true);
         let opts  = {
+	    hidePopup:true,
             modal:false,
 	    modalStrict:false,
             modalContentsCss:"",
@@ -5062,6 +5062,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $.extend(opts, args);
         }
 
+	if(opts.hidePopup) {
+            HtmlUtils.hidePopupObject(null,true);
+	}
 
 	//Check if there is a toggleid and the popup is visible
 	if(opts.toggleid && this.toggleDialogs[opts.toggleid]) {

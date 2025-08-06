@@ -2378,7 +2378,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
-		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
+		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +
+				Utils.getColorTablePopup({showToggle:false})]);
 		html =HU.div([ATTR_STYLE,HU.css('padding','8px')], html);
 		if(_this.colorTableDialog) _this.colorTableDialog.remove();
 		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),

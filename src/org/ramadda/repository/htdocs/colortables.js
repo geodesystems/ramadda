@@ -97,15 +97,32 @@ $.extend(Utils,{
         });
 	Utils.initCopyable('.colortable-id',{title:'Click to copy color table ID',ack:'Color table ID copied to clipboard'});
     },
-    getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
-        let popup = "<div class=wiki-editor-popup-items>"
+    //wikiEditor, itemize,label,showToggle,attr,value
+    getColorTablePopup: function(args) {
+	let opts = {
+	    wikiEditor:null,
+	    itemize:false,
+	    label:null,
+	    showToggle:true,
+	    attr:null,
+	    value:null,
+	    clazz:'wiki-editor-popup-items',
+	}
+	if(args) $.extend(opts,args);
+        let popup = HU.open('div',[ATTR_CLASS,opts.clazz]);
         let items = [];
         let item;
-	showToggle = Utils.isDefined(showToggle)?showToggle:true;
+	showToggle = opts.showToggle;
+	let category = '';
+	
 	Utils.AllColorTables.forEach(colortable=>{
             if(colortable.category) {
-                item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
-                popup+=item;
+		if(category!='') {
+		    popup+='</div>';
+		}
+		category  =colortable.category;
+		item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
+                popup+=HU.open('div',[ATTR_CLASS,'ramadda-colortable-category'])+item;
                 items.push(item);
 		return;
             }
@@ -113,11 +130,14 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),TITLE,colortable.id,CLASS, "ramadda-colortable-select","colortable",colortable.id];
-	    if(attr) attrs.push(attr,value);
+	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),
+			 ATTR_TITLE,colortable.id,
+			 'data-corpus',colortable.id +' '+ category,
+			 ATTR_CLASS, "ramadda-colortable-select","colortable",colortable.id];
+	    if(opts.attr) attrs.push(opts.attr,opts.value);
             ct = HU.div(attrs,ct);
-            if(wikiEditor) {
-                let call = "WikiUtil.insertText(" + HU.squote(wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
+            if(opts.wikiEditor) {
+                let call = "WikiUtil.insertText(" + HU.squote(opts.wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
                 item = HU.onClick(call,ct);
                 popup+=item;
                 items.push(item);
@@ -126,10 +146,10 @@ $.extend(Utils,{
                 popup+=ct;
             }
         });
-        popup+="</div>";
+        popup+="</div></div>";
 	if(showToggle)
-            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], label??"Color Table"),popup);
-        if(itemize) return items;
+            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+        if(opts.itemize) return items;
         return popup;
     },
 
@@ -175,6 +195,7 @@ $.extend(Utils,{
 		let info = colorInfo[v.color];
                 let value = v.value;
                 if(value=="") value = "&lt;blank&gt;";
+
                 info.label+=HU.div([ATTR_TITLE,v.value,ATTR_STYLE,style],value);
 		info.titles.push(value);
             });
@@ -296,7 +317,7 @@ $.extend(Utils,{
             }
             if(options.horizontal) {
                 html += HU.td(["data-value",val,
-			       ATTR_TITLE,title??'',
+			       title?ATTR_TITLE:'nulltitle',title??'',
 			       ATTR_CLASS, "display-colortable-slice",	
 			       ATTR_STYLE, HU.css('min-width','1px','height','1.5em','background', ct[i],"color",fg),
 			       ATTR_WIDTH, tdw], '');
