@@ -1567,7 +1567,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return feature.collisionInfo.dotSelected(feature);
 		}
 		if(record) {
-		    console.log('featureSelectHandler');
 		    this.propagateEventRecordSelection({record:record});
 		    this.propagateFilterFields(record);
 		    //		    didSomething= true;
