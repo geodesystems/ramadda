@@ -56,7 +56,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 327 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 328 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide linkSelector=.command-link
 
@@ -899,7 +899,15 @@ converting punctuation, etc to "_".
 <li> <i>sheet</i>:
 Sheet number<br>
 </ul>
-</div></div><div class=seesv-item>
+Note: if the SeeSV commands are used for a CSV point data entry type then the -sheet command
+has no effect. Instead add a record property to the type definition of the  form:
++pre
+&lt;property name="record.properties"&gt;
+  xls.sheet= sheet number
+&lt;/property&gt;
+-pre
+
+<p></div></div><div class=seesv-item>
 <a class=command-link name='-cat'></a><div class=command> <i><a href='#-cat'>-cat</a></i>  &lt;*.csv&gt; </div><div class=command-block>Concat the columns in one or more csv files<br class=seesv-hide>
 <ul>
 <li> <i>*.csv</i>:
@@ -1037,7 +1045,7 @@ Pass through and print out rawlines unprocesed<br>
 <a class=command-link name='-inputnotcontains'></a><div class=command> <i><a href='#-inputnotcontains'>-inputnotcontains</a></i>  &lt;filters&gt; </div><div class=command-block>Filter out input lines that contain any of the strings<br class=seesv-hide>
 <ul>
 <li> <i>filters</i>:
-Comma separated list of strings to filter on<br>
+Comma separated list of strings to filter on. either regexp:pattern or just a string<br>
 </ul>
 These patterns are applied to the raw lines that are read in before they
 are tokenized into columns.
@@ -3283,7 +3291,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 How strict values:strict,ramadda <br>
 </ul>
 </div></div></ul><br class='seesv-hide seesv-item'><div class='seesv-hide seesv-item'><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-geocode'><i>-geocode</i>: Geocode using given columns</a><li> <a href='#-geocodeifneeded'><i>-geocodeifneeded</i>: Geocode if needed</a><li> <a href='#-geocodeaddressdb'><i>-geocodeaddressdb</i>: Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column</a><li> <a href='#-geocodejoin'><i>-geocodejoin</i>: Geocode with file</a><li> <a href='#-bounds'><i>-bounds</i>: Geocode within bounds</a><li> <a href='#-inbounds'><i>-inbounds</i>: Subset lat/lon bounds</a><li> <a href='#-decodelatlon'><i>-decodelatlon</i>: Decode latlon</a><li> <a href='#-getaddress'><i>-getaddress</i>: Get address from lat/lon</a><li> <a href='#-statename'><i>-statename</i>: Add state name from state ID</a><li> <a href='#-geoname'><i>-geoname</i>: Look up location name</a><li> <a href='#-geocontains'><i>-geocontains</i>: Check for containment</a><li> <a href='#-elevation'><i>-elevation</i>: Look up elevation(using 1/3 arc-second DEM)</a><li> <a href='#-latlontoutm'><i>-latlontoutm</i>: Convert lat/lon to UTM</a><li> <a href='#-utmtolatlon'><i>-utmtolatlon</i>: Convert UTMto lat/lon</a><li> <a href='#-mercator'><i>-mercator</i>: Convert x/y to lon/lat</a><li> <a href='#-region'><i>-region</i>: Add the state's region</a><li> <a href='#-population'><i>-population</i>: Add in population from address</a><li> <a href='#-neighborhood'><i>-neighborhood</i>: Look up neighborhood for a given location</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-geocode'><i>-geocode</i>: Geocode using given columns</a><li> <a href='#-geocodeifneeded'><i>-geocodeifneeded</i>: Geocode if needed</a><li> <a href='#-geocodeaddressdb'><i>-geocodeaddressdb</i>: Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column</a><li> <a href='#-geocodejoin'><i>-geocodejoin</i>: Geocode with file</a><li> <a href='#-distance'><i>-distance</i>: Create a distance from a  lat/lon</a><li> <a href='#-bounds'><i>-bounds</i>: Geocode within bounds</a><li> <a href='#-inbounds'><i>-inbounds</i>: Subset lat/lon bounds</a><li> <a href='#-decodelatlon'><i>-decodelatlon</i>: Decode latlon</a><li> <a href='#-getaddress'><i>-getaddress</i>: Get address from lat/lon</a><li> <a href='#-statename'><i>-statename</i>: Add state name from state ID</a><li> <a href='#-geoname'><i>-geoname</i>: Look up location name</a><li> <a href='#-geocontains'><i>-geocontains</i>: Check for containment</a><li> <a href='#-elevation'><i>-elevation</i>: Look up elevation(using 1/3 arc-second DEM)</a><li> <a href='#-latlontoutm'><i>-latlontoutm</i>: Convert lat/lon to UTM</a><li> <a href='#-utmtolatlon'><i>-utmtolatlon</i>: Convert UTMto lat/lon</a><li> <a href='#-mercator'><i>-mercator</i>: Convert x/y to lon/lat</a><li> <a href='#-region'><i>-region</i>: Add the state's region</a><li> <a href='#-population'><i>-population</i>: Add in population from address</a><li> <a href='#-neighborhood'><i>-neighborhood</i>: Look up neighborhood for a given location</a></ul></div></div><div class=seesv-item>
 <a class=command-link name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -3400,6 +3408,18 @@ To add the lat/lon:
 
 
 <p></div></div><div class=seesv-item>
+<a class=command-link name='-distance'></a><div class=command> <i><a href='#-distance'>-distance</a></i>  &lt;fromlat&gt;  &lt;fromlon&gt;  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Create a distance from a  lat/lon<br class=seesv-hide>
+<ul>
+<li> <i>fromlat</i>:
+from latitude<br>
+<li> <i>fromlon</i>:
+from longitude<br>
+<li> <i>latitude</i>:
+latitude column<br>
+<li> <i>longitude</i>:
+longitude column<br>
+</ul>
+</div></div><div class=seesv-item>
 <a class=command-link name='-bounds'></a><div class=command> <i><a href='#-bounds'>-bounds</a></i>  &lt;north&gt;  &lt;west&gt;  &lt;south&gt;  &lt;east&gt; </div><div class=command-block>Geocode within bounds<br class=seesv-hide>
 <ul>
 <li> <i>north</i>:
