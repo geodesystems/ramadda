@@ -2564,6 +2564,11 @@ public class Seesv implements SeesvCommands {
                 new Arg("csv file", "File to get lat/lon from", ATTR_TYPE,
                         "file"),
 		new Arg("key idx"), new Arg("lat idx"), new Arg("lon idx")),
+        new Cmd(CMD_DISTANCE, "Create a distance from a  lat/lon",
+                new Arg("from_lat", "from latitude",ATTR_TYPE,TYPE_NUMBER),
+                new Arg("from_lon", "from longitude",ATTR_TYPE,TYPE_NUMBER),		
+                new Arg(ARG_LATITUDE, "latitude column",ATTR_TYPE,TYPE_COLUMN),
+                new Arg(ARG_LONGITUDE, "longitude column",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_BOUNDS, 
 		"Geocode within bounds", 
 		new Arg("north"),
@@ -4014,6 +4019,13 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
+	defineFunction(CMD_DISTANCE,4,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.Distance(parseDouble(args.get(++i)),
+						  parseDouble(args.get(++i)),
+						  args.get(++i),args.get(++i)));
+		return i;
+	    });	
+
 	defineFunction(CMD_BOUNDS,4,(ctx,args,i) -> {
 		ctx.setBounds(new Bounds(parseDouble(args.get(++i)),
 					 parseDouble(args.get(++i)),

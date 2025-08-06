@@ -294,6 +294,7 @@ public interface SeesvCommands {
     public static final String CMD_COLUMN_NOT="-column_not";
     public static final String CMD_CHECK="-check";
     public static final String CMD_GEOCODE="-geocode";
+    public static final String CMD_DISTANCE="-distance";
     public static final String CMD_GEOCODEIFNEEDED="-geocodeifneeded";
     public static final String CMD_GEOCODEADDRESSDB="-geocodeaddressdb";
     public static final String CMD_GEOCODEJOIN="-geocodejoin";

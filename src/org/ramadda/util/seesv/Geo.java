@@ -246,6 +246,51 @@ public abstract class Geo extends Processor {
 
     }
 
+    public static class Distance extends Geo {
+	private double fromLat;
+	private double fromLon;	
+	private String latCol;
+	private String lonCol;	
+	private int latIndex;
+	private int lonIndex;	
+
+        public Distance(double fromLat,double fromLon,String latCol,String lonCol) {
+            this.fromLat = fromLat;
+            this.fromLon = fromLon;	    
+	    this.latCol= latCol;
+	    this.lonCol= lonCol;	    
+        }
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		row.add("Distance");
+		latIndex= getIndex(ctx,latCol);
+		lonIndex= getIndex(ctx,lonCol);
+		return row;
+	    }
+
+	    if(!row.indexOk(latIndex) || !row.indexOk(lonIndex)) {
+		row.add(Double.NaN);
+		return row;
+	    }
+	    double lat = row.getDouble(latIndex);
+	    double lon = row.getDouble(lonIndex);	    
+	    if(Double.isNaN(lat) || Double.isNaN(lon)) {
+		row.add(Double.NaN);
+		return row;
+	    }
+	    double distance =GeoUtils.haversineDistance(fromLat,fromLon,lat,lon);
+	    row.add(distance);
+            return row;
+
+        }
+
+    }
+
+
+
     public static class StateNamer extends Geo {
 
         private int col = -1;
