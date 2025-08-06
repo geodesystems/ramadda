@@ -1606,8 +1606,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if ((entriesToUse.size() == 1)
 	    && !entriesToUse.get(0).hasAreaDefined(request)) {
-	    String zoomLevel=  mapProps==null?"12":
-		Utils.getProperty(mapProps, "zoomLevel", "12");		
+	    String zoomLevel=  mapProps==null?"14":
+		Utils.getProperty(mapProps, "zoomLevel", "14");		
 	    if(zoomLevel!=null && !zoomLevel.equals("default")) 
 		map.getMapProps().put("zoomLevel",zoomLevel);
 
