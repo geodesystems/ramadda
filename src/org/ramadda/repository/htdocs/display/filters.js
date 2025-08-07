@@ -389,9 +389,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 
-
 		if(!ok && !startsWith) {
-		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
+		    for(let ri=0;ri<this.mySearch.matchers.length;ri++) {
 			let matcher = this.mySearch.matchers[ri];
 			if(matcher.matches(rowValue.toString())) {
 			    ok = true;
@@ -1051,7 +1050,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
             } else {
-		let dfltValue = this.getPropertyFromUrl('fv',"");
+		let filterValues = this.getProperty(this.getId()+".filterValues");
+		let dfltValue = this.getPropertyFromUrl('fv',filterValues);
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
 		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width),
 			    ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
@@ -1308,7 +1308,8 @@ function TextMatcher (pattern,myId) {
 		    //check if the string has a regep fragment
 		    if(p.includes('(') || p.includes(')')) {
 		    } else {
-			this.regexps.push(new RegExp("(" + p + ")","ig"));
+			p="(" + p + ")";
+			this.regexps.push(new RegExp(p,"ig"));
 		    }
 		} catch(err) {
 		    console.log('Error creating pattern matcher:' + err,p);
