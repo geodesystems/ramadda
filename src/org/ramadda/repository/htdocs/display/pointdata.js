@@ -1089,7 +1089,12 @@ PointRecord.prototype =  {
 	return this.getDate()!=null;
     },
     hasLocation: function() {
-        return this.latitude !=null && !isNaN(this.latitude);
+
+	if(this.latitude=='') {
+	    return false;
+	}
+	let has =  this.latitude !=null && !isNaN(+this.latitude);
+	return has;
     },
     hasElevation: function() {
         return this.elevation !=null && !isNaN(this.elevation);
