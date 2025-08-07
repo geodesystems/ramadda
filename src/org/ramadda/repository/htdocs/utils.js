@@ -3875,6 +3875,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     initTypeMenu: function(selectId, textAreaId) {
+	HtmlUtils.makeSelectTagPopup('#'+selectId,{after:true});
 	jqid(selectId).change(function() {
 	    let v = $(this).val();
 	    if(!Utils.stringDefined(v)) {
