@@ -1414,7 +1414,7 @@ WikiEditor.prototype = {
 		let title = block.title;
 		if(block.callback) {
 		    title = HU.div(['data-block',blockCnt,
-				    ATTR_CLASS,'ramadda-hoverable ramadda-clickable wiki-editor-popup-header'], title)
+				    ATTR_CLASS,'ramadda-hoverable ramadda-block-link ramadda-clickable wiki-editor-popup-header'], title)
 
 		    menu +=title;
 		    return;
@@ -1432,7 +1432,7 @@ WikiEditor.prototype = {
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
 				    my: 'left top',     at: 'left+' +event.x +' top+' + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
-	dialog.find('.ramadda-clickable').click(function() {
+	dialog.find('.ramadda-block-link').click(function() {
 	    let block = blockMap[$(this).attr('data-block')];
 	    if(!block) {
 		alert('Could not find block');
