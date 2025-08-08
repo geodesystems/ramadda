@@ -5929,15 +5929,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                        content,extra);
 
     },
-    url:function(path,args) {
+    url:function(path,...varargs) {
+	let args=[];
 	let url = path;
+	varargs.forEach(arg=>{
+            if(!Array.isArray(arg)) {
+		args.push(arg);
+	    } else {
+		args.push(...arg);
+	    }
+	});
 	for(let i=0;i<args.length;i+=2) {
 	    if(i==0 && url.indexOf("?")<0) url+="?";
 	    else url+="&";
 	    let name = args[i];
-	    let value=args[i+1];
+	    let value = args[i+1];
 	    url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
-	}	
+	}
 	return url;
     },
     href: function(url, label, attrs) {
