@@ -16,7 +16,8 @@ var ID_CV_DISPLAYS = 'cv_displays';
 var ID_CV_DISPLAYSBAR = 'cv_displays_bar';
 var ID_CV_DISPLAYS_ADD='cv_displays_add';
 
-
+var ACTION_CV_ZOOMOUT='zoomout';
+var ACTION_CV_ZOOMIN='zoomin';
 
 
 var ID_CV_MEASURE = 'measure';
@@ -150,11 +151,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',ATTR_ACTION,'home',ATTR_ID,'home',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fas fa-house')));
 
 
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,'zoomout',
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,ACTION_CV_ZOOMOUT,
 					ATTR_CLASS,CLASS_CLICKABLE],
 				       HU.getIconImage('fas fa-magnifying-glass-minus')));
 
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,'zoomin',
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,ACTION_CV_ZOOMIN,
 					ATTR_CLASS,CLASS_CLICKABLE],
 				       HU.getIconImage('fas fa-magnifying-glass-plus')));
 	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',ATTR_ACTION,'down',
@@ -233,9 +234,9 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		    _this.showSettings($(this));
 		} else	if(action=='home') {
 		    _this.resetZoomAndPan();
-		} else if(action=='zoomin') {
+		} else if(action==ACTION_CV_ZOOMIN) {
 		    _this.zoom(1.1);
-		} else	if(action=='zoomout') {
+		} else	if(action==ACTION_CV_ZOOMOUT) {
 		    _this.zoom(0.9);
 		} else	if(action==ID_CV_DISPLAYS_ADD) {
 		    let id = $(this).attr('id');
@@ -245,7 +246,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		    let id = $(this).attr('id');
 		    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 		    let localeId = _this.opts.mainEntry;
-		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
+		    let types = 'type_borehole_coreimage,type_geo_borehole_images,isgroup';
+		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null);	    
 		} else	if(action=='gallery') {
 		    _this.showGallery($(this));
 		} else	if(action=='down') {
@@ -466,9 +468,12 @@ RamaddaCoreDisplay.prototype = {
 	this.positionChanged();
     },
 
+    getRange:function() {
+	return this.opts.range;
+    },
     worldToCanvas:function(w,debug) {
 	w = w*this.opts.scaleY;
-	let range = this.opts.range;
+	let range = this.getRange();
 	let r = range.max-range.min;
 	let h = this.getCanvasHeight();
 	let c =   h*(w/r);
@@ -480,7 +485,7 @@ RamaddaCoreDisplay.prototype = {
     canvasToWorld:function(c) {
 	let scale = this.stage.scale().y;
 	//	console.log('canvas',c,this.opts.offsetY,this.opts.scaleY,scale);
-	let range = this.opts.range;
+	let range = this.getRange();
 	let r = range.max - range.min;
 	let h=this.getCanvasHeight();
 	let world =  (r*c)/h;
@@ -1264,7 +1269,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.showCollectionMenu(collection, canvas,args);
 	});
 	this.checkRange();
-	let range =  this.opts.range;
+	let range =  this.getRange();
 	//	console.log(collection.name,'range',range.min,range.max,collection.data.length);
 	collection.data.forEach((entry,idx)=>{
 	    entry.collection = collection;
@@ -1673,6 +1678,8 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 	if(Utils.isDefined(min)) {
+	    //check for no depth range
+	    if(min==max) max = min+1;
 	    this.opts.range={
 		min:min,
 		max:max,
@@ -1729,7 +1736,7 @@ RamaddaCoreDisplay.prototype = {
 	}
 	let y1 = 0;
 	let y2 = 0;	
-	let range = this.opts.range;
+	let range = this.getRange();
 	let bottom = range.max+(0.5*(range.max-range.min));
 	step = (range.max-range.min)/6;
 	this.legendText = [];
