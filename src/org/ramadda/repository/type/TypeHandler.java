@@ -1916,6 +1916,9 @@ public class TypeHandler extends RepositoryManager {
         if (this.type.equals(type)) {
             return true;
         }
+	if(type.equals("isgroup")) {
+	    return isGroup();
+	}
         if (parent != null) {
             return parent.isType(type);
         }
@@ -1949,6 +1952,14 @@ public class TypeHandler extends RepositoryManager {
             this.parent.initializeEntryFromHarvester(request, entry, false);
         }
     }
+
+    public void harvestComplete(Request request, Entry entry) 
+	throws Exception {
+	if(this.parent!=null) {
+	    this.parent.harvestComplete(request, entry);
+	}
+    }
+
 
     public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
 	if(this.parent!=null) {
