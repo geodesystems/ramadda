@@ -425,7 +425,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    children = new ArrayList<Entry>();
 	    children.add(entry);
 	} else {
-	    children = getEntryManager().getChildren(request, entry);
+	    children = new ArrayList<Entry>();
+	    String types ="type_borehole_coreimage";
+	    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
+	    getSearchManager().processSearchUrl(request, children,searchUrl);
+	    //	    children = getEntryManager().getChildren(request, entry);
 	}
 	sb.append(makeEntriesJson(request, entry,children));
 	return new Result("", sb, JU.MIMETYPE);
