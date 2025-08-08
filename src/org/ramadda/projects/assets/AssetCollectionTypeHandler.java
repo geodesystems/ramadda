@@ -64,7 +64,6 @@ public class AssetCollectionTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
     private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
-	List<Entry> entries = new ArrayList<Entry>();
 	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
 	String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
 	return searchUrl;
