@@ -377,7 +377,8 @@ function  SeesvForm(inputId, entry,params) {
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.div([ATTR_STYLE,'font-size:80%;text-align:center;margin:5px;'],
 			       HU.input("","",['autofocus',null,
-					       ATTR_STYLE,HU.css("width","150px"), 'placeholder','Search Commands',
+					       ATTR_STYLE,HU.css("width","150px"),
+					       ATTR_PLACEHOLDER,'Search Commands',
 					       ATTR_ID,inputId]));
 	    menu = input+menu;
 	    
@@ -1420,8 +1421,8 @@ function  SeesvForm(inputId, entry,params) {
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
-			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage(ICON_HELP),
-					    ['target','_help','title','Columns Help']);
+			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HU.getIconImage(ICON_HELP),
+					    [ATTR_TARGET,'_help',ATTR_TITLE,'Columns Help']);
 		    desc+=help;
 		    return   HU.div([ATTR_STYLE,HU.css('max-width','300px','vertical-align','top','max-height','200px','overflow-y','auto')],desc);
 		}
@@ -1518,12 +1519,20 @@ function  SeesvForm(inputId, entry,params) {
 	    dialog.find(".seesv-column-button").click(function() {
 		if(_this.allColumnIds.length==0) return;
 		let inputId = $(this).attr('inputid');
+		let contentDiv = HU.getUniqueId('content');
+		let searchDiv = HU.getUniqueId('search');
 		let html = "";
+		html+=HU.div([ATTR_ID,searchDiv]);
+		let inner =HU.open('div',[ATTR_ID,contentDiv]);
 		_this.allColumnIds.forEach(id=>{
-		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","columnid",id],id);
+		    inner+=HU.div([ATTR_CLASS,"ramadda-clickable","columnid",id],id);
 		});
-		html = HU.div([ATTR_STYLE,HU.css('max-height:200px;overflow-y:auto;margin','5px')], html);
+		inner +=HU.close('div');
+		inner = HU.div([ATTR_STYLE,HU.css('min-height','2em','max-height','200px','overflow-y','auto')], inner);
+		html+=inner;
+		html = HU.div([ATTR_STYLE,HU.css('min-width','400px','margin','5px')], html);
 		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
+		HU.initPageSearch('#'+contentDiv+' .ramadda-clickable',null,'Search',null,{target:jqid(searchDiv)});
 		popup.find(".ramadda-clickable").click(function() {
 		    let id = $(this).attr("columnid");
 		    _this.insertColumnIndex(id,true,inputId);
