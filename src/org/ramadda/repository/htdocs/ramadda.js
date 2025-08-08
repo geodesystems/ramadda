@@ -1974,7 +1974,10 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	};
 
 
-        let url =  "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
+        let url =  HU.url('/entry/show',['output','selectxml','noredirect','true','firstclick',true]);
+	if(this.selecttype) 
+	    url = HU.url(url,['selecttype',this.selecttype]);
+	url= HU.url(url,'allentries', this.allEntries,'target', this.id);
 
 	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith("/")) {
 	    let pathname = new URL(this.ramaddaUrl).pathname
