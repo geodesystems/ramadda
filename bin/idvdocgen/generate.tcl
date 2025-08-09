@@ -1059,7 +1059,12 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
         set ::inpageToc [list]
 	if {![regexp {<notcl>} $content]} {
                if {[catch {set content [subst -novariables $content]} err]} {
-		      puts "Error evaluating $path\n$::errorInfo"
+		      puts "\033\[41;97mError evaluating $path\n$::errorInfo\033\[0m"
+		      if {[catch {exec osascript -e "beep"}]} {
+			     puts "\a"
+			 }
+
+		      flush stdout
 		  }
 	   }
 
