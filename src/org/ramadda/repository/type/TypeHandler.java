@@ -131,7 +131,7 @@ public class TypeHandler extends RepositoryManager {
     public static final String FIELD_DOWNLOADFILE ="downloadfile";
 
     private String DEFAULT_EDIT_FIELDS  =
-        ARG_NAME+"," +  ARG_DESCRIPTION+"," +  ARG_RESOURCE+"," +  ARG_TAGS+"," +  ARG_DATE+"," +  ARG_LOCATION+"," + FIELD_COLUMNS+"," + FIELD_HR+","+FIELD_ORDER;
+        ARG_NAME+"," +  ARG_DESCRIPTION+"," +  ARG_RESOURCE+"," +  ARG_TAGS+"," +  ARG_DATE+"," +  ARG_LOCATION+"," + FIELD_COLUMNS/*+"," + FIELD_HR+","+FIELD_ORDER*/;
 
     private String[] FIELDS_ENTRY = {
         ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
@@ -3839,11 +3839,20 @@ public class TypeHandler extends RepositoryManager {
 		addSpecialToEntryForm(request, buffers, parentEntry, entry, formInfo,this, seen);
 	    }
 
+	    //	    if(okToShowInForm(entry, FIELD_ORDER)) {
+	    buffers.setGroup("Admin");
+	    buffers.append(formEntry(request, msgLabel("Order"),
+				HU.input(ARG_ENTRYORDER,
+					 ((entry != null)
+					  ? entry.getEntryOrder()
+					  : 999), HU.SIZE_5) + " 1-N"));
+		//	    }
+
+
             if ((entry != null) && request.getUser().getAdmin()
 		&& okToShowInForm(entry, "owner", true)) {
                 String ownerInputId = Utils.getGuid();
-		buffers.setGroup("Admin");
-                buffers.append(formEntry(request, msgLabel("Owner"),
+		buffers.append(formEntry(request, msgLabel("Owner"),
 					 HU.input(ARG_USER_ID,
 						  ((entry != null)
 						   ? entry.getUser().getId()
@@ -4239,7 +4248,6 @@ public class TypeHandler extends RepositoryManager {
         String[] whatList = entry==null?newFields:editFields;
 	if(whatList==null) whatList = editFields;
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
-
         for (String what : whatList) {
             if (what.equals("quit")) {
 		seen.add(FIELD_COLUMNS);
@@ -4273,6 +4281,7 @@ public class TypeHandler extends RepositoryManager {
 		continue;
 	    }
 
+	    /*
 	    if(what.equals(FIELD_ORDER)) {
 		if(!okToShowInForm(entry, what)) continue;
 		sb.append(formEntry(request, msgLabel("Order"),
@@ -4281,7 +4290,7 @@ public class TypeHandler extends RepositoryManager {
 					      ? entry.getEntryOrder()
 					      : 999), HU.SIZE_5) + " 1-N"));
 		continue;
-	    }		
+		}		*/
 
             if (what.equals(ARG_TAGS)) {
                 if ( !getTypeProperty("form.tags.show", true)) {
