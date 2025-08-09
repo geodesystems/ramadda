@@ -433,7 +433,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:'userCanChange',tt:'Set to false to not show menubar, etc for all users'},
 	{p:'showLegendShapes',d:true,canCache:true},	
 	{p:'showMapLegend',d:false,canCache:true},
-
+	{p:'glyphid.visible',ex:true,tt:'Get the glyph id from its properties popup'},
+	{p:'glyphid.legendVisible',ex:true,tt:'Get the glyph id from its properties popup'},	
     ];
     
     displayDefineMembers(this, myProps, {
