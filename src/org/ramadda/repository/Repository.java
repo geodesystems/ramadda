@@ -5965,7 +5965,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    tmp.addAll(items);
 	    items = tmp;
 	}
-        return HU.select(arg, items, selected,attrs);
+	String guid = HU.getUniqueId("select_");
+	attrs+=HU.attr("id",guid);
+        String select= HU.select(arg, items, selected,attrs);
+	String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:true}";
+	select+=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				  HU.quote("#"+guid),
+				  popupArgs));
+	return select;
+
     }
 
     public List<TypeHandler> getTypeHandlers(Request request)
