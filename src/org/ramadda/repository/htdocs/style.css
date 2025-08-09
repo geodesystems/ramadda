@@ -288,6 +288,7 @@ ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-headi
 ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
+    margin-top:0.5em;
     text-align: center;
 }
 
