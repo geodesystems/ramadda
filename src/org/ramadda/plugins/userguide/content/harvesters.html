@@ -70,12 +70,23 @@ you might want to use an &quot;Hourly&quot; setting to get the image at some fix
 
 
 <subhead  id="files" intoc="false">Files Settings</subhead>
-Under &quot;Look for files&quot; you specify a directory on the server file system to scan and a regular expression to
-match on the file name.
-The repository will recursively scan the directory tree and any files it finds that matches the pattern it will
-add to the repository. 
-<p>
-The regular expressions used are somewhat extended in that you can specify subsets of the regular expression
+Under &quot;Look for files&quot; you specify one or more directories on the server file system to scan.
+These directories must be in the list of accessible directories in the 
+<a href=admin.html#filesystemaccess>Admin settings</a>.
+The harvester will recursively scan the directory tree and any files that meet the following criteria 
+will be added as entries to the repository. 
+
+
+
+:h4 Top directory pattern
+You can specify a <a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression pattern</a> to match what files or directores under the directory list should be checked.
+
+
+:h4 File Patterns
+You can specify one or more
+<a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression patterns</a>
+that are used to match on the descendent files.
+The regular expressions used are extended in that you can specify subsets of the regular expression
 and use the result text for metadata and other information when creating the entry in the repository.
 For example, a very common case is to have a date/time embedded in the filename. So, you could have in your regular 
 expression something of the form:
@@ -83,7 +94,8 @@ expression something of the form:
 .*data(fromdate:\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d)\\.nc
 </pre>
 
-This would  match any files of the form:<pre>
+This would  match any files of the form:
+<pre>
 data_yyyymmdd_hhmm.nc
 </pre>
 The &quot;(&quot; and &quot;)&quot; define the sub-expression (just like normal regular expression). But the
@@ -109,18 +121,45 @@ This says that attr1 is any number of characters except the slash ("/"). The sla
 used to exclude the file path as the full file path is used when matching patterns.
 The value for attr2 follows the "_" and is any number of characters except a slash.
 
+:p
+Other fields that can be specified include &quot;todate:&quote and any of the columns of the
+target entry type.
+
+:h4 Exclude files that match
+This is one or more <a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression</a>
+that, if matched, exclude the file from the harvest.
+
+:h4 Skip file time check
+Normally, the harvester won't harvest a file that has been changed within the last 30 seconds.
+This is done to handle data files that are being streamed in in real-time.
+Set this to true to not check the file time.
+
+:h4 Size limit
+Set this to exclude files over a certain size (MB)
+
+:h4 Max level
+Set this to 0 if you just want to harvest the files directly under the directory being scanned.
+:br
+Set this to some other value to limit the depth of the scan
+
+:h4 Uniqueness
+When running the harvester multiple times the existing entries are checked for uniqueness.
+* By entry name - is there an entry under the parent entry with the same name
+* By entry  name - is there an entry under the parent entry with the same name
+* Global - if checked then the entires repository is checked, not just the parent entry
+
+:h4 Ignore errors
+Should the harvest continue if there is an error harvesting a particular file
 
 
 <subhead  id="entry" intoc="false">Entry Creation</subhead>
+:h4 Base Group
+This is the destination entry where the harvested entries are added to
 
-
-When creating an entry we need to know the folder to put it under, its name and description.
-You specify templates for these that can contain a set of macros (see below).
-Note: this is where the Test mode described above is useful. Sometimes it takes a while to figure
-just what you want in terms of folder structure and entry names.
-
-<p>
-
+:h4 Folder template
+As the file system directories are recursed a folder entry is created for each file system directory.
+The folder entry is created through the use of the Folder template which can contain a set of macros (see below).
+:p
 To define the folder you need to select an existing base folder and then optionally specify 
 a folder template. The folder template is used to automatically create a new folder if needed.
 So for example, if your base folder was: <i>Top/Data</i> and your Folder Template was: <i>Ingested/Satellite</i>
@@ -130,7 +169,7 @@ then the result folder would be:<pre>
 
 The Harvester would create the <i>Ingested</i> and the <i>Satellite</i> folders as needed.
 
-<p>
+:p
 
 The name, description and folder templates all can contain the following macros.
 Note: The different date fields (e.g., create_, from_ and to) refer to
@@ -155,7 +194,7 @@ unless specified in the pattern) and the to data time.
 <p>
 
 
-The dirgroup macro  is the parent directories of the
+The <i>dirgroup</i> macro  is the parent directories of the
 data file up to but not including the main directory path we are searching under.
 For example, if you are looking under a directory called "/data/idd" and that directory held sub-dirs:<pre>
 /data/idd/dir1/data1.nc
@@ -186,25 +225,107 @@ Would result in folders like:
 </pre>
 
 
+:h4 Last Folder Type
+This is the entry type of the folder entry that contains any file entries.
+For example, you may have a directory structure like:
+<pre>
+top directory
+&nbsp;&nbsp;&nbsp;&nbsp;sub directory
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;images
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image1.jpg
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image2.jpg
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+</pre>
+In this case the a normal folder entry is created to the "sub directory".
+However, the for the "images" directory we would want to specify a "Photo Album" entry type
+as the last folder type.
 
-You can also name the entrys using the macros. So, using the above date based folder template you could then have a Name template that incorporates the formatted date:<pre>
+
+
+:h4 Name template
+You can also name the entries using the macros.
+So, using the above date based folder template you could then have a Name template that incorporates the formatted date:<pre>
 Gridded data - ${from_date}
 </pre>
 
 
+:h4 Description template
+This is the entry description to use 
+
+:h4 Default entry type
+RAMADDA tries to determine the entry type to create for a file based on the file name.
+For example, when RAMADDA sees a file with the suffix ".geojson" it creates a GeoJSON map entry type
+base on a pattern that matches on ".geojson".
+However, not all entry types have patterns to match files on. The Default entry type
+allows you to specify what type of entry to create for all of the harvested files.
+
+:h4 Type Patterns
+For the case where there are multiple file types that are being harvested the Type Patterns
+field allows you to specify one or more mappings (one per line) of the entry type to a
+<a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression</a>
+that matches on the file name.
+:p
+This would be of the form:
++pre
+some_entry_type: some pattern
+some_other_entry_type: some other pattern
+-pre
+
+For example, if you are harvesting a set of images and you want to use the "Borehole Core Image" entry type
+for any images with the name "measurement.jpg" you would specify:
++pre
+type_borehole_coreimage:measurement.jpg
+-pre
+
+:h4 Date format
+This is a pattern that can be used on the file name that, if matched, corresponds to a date/time that is used for the entry
 
 
+:h4 Move file to storage
+This  allows you to determine whether the file is to be moved from its initial location
+to the RAMADDA storage area. Normally, when harvesting a directory tree the files
+are left in place. 
+
+:h4 Delete matching entry and re-add
+If you run the harvester multiple times this flag allows you to delete any existing entry
+and reharvest if the file size has changed. This allows for essentially updating the
+entry with new metadata, etc.
+
+:h4 Metadata
+These flags determine whether metadata should be harvested from the files
+
+:h4 Images
+These determine whether OCR is run on the images (if OCR is installed on your server).
+
+:h4 Clean name
+Should the name of the entry be cleaned up based on the file name. e.g., turning:
++pre
+some_image.jpg
+-pre
+To the entry name:
++pre
+Some Image
+-pre
+
+:h4 Aliases
+When determining the name of the entry this converts file name substrings to longer names, e.g. change
++pre
+co_some_file.jpg
+-pre
+
+To the entry name
++pre
+Colorado Some File
+-pre
+
+With the alias:
++pre
+co:Colorado
+-pre
 
 
-<p>
-The <i>Move file to storage</i> checkbox allows you to determine whether the file is to be moved from its initial location
-to the RAMADDA storage area.
-<br>
-<b>Note: If the file is not moved to the storage area than one of the data directories the file lies under needs to be added
-to the list of file system directories in the Admin-&gt;Access area</b>
-
-
-
+:h4 Owner
+Specify the user ID of the owner
 
 <subhead  id="web"  intoc="false">Web Harvesters</subhead>
 The Web Harvesters work the same way as the File Harvesters but they fetch a URL (e.g., an image) every time they
