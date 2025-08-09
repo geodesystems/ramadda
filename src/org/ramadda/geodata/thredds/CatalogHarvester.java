@@ -278,7 +278,7 @@ public class CatalogHarvester extends Harvester {
         seenCatalog = new HashSet();
         importCatalog(topUrl, getBaseGroup(), 0, timestamp);
         if ((entries.size() > 0) && !getTestMode()) {
-            getEntryManager().processEntries(this, null, entries, false);
+            getEntryManager().processHarvesterEntries(this, null, entries, false);
         }
         entries = new ArrayList<Entry>();
     }
@@ -292,7 +292,7 @@ public class CatalogHarvester extends Harvester {
     private void checkToAddEntries() throws Exception {
         if (entries.size() > 100) {
             if ( !getTestMode()) {
-                getEntryManager().processEntries(this, null, entries, false);
+                getEntryManager().processHarvesterEntries(this, null, entries, false);
             }
             entries = new ArrayList<Entry>();
         }
