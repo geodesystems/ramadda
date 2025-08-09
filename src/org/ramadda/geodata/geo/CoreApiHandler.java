@@ -156,12 +156,22 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
     }
 
     public Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
+	return findCoreboxEntry(request,entry,true);
+    }
+
+    public Entry findCoreboxEntry(Request request, Entry entry, boolean checkParent) throws Exception {
+	
 	for(Entry child:  getEntryManager().getChildren(request, entry)) {
 	    if(isBreezeXml(child)) return child;
 	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
 		return child;
 	    }
 	}
+	if(checkParent) {
+	    return findCoreboxEntry(request, entry.getParentEntry(), false);
+	}
+
+
 	return null;
     }
 

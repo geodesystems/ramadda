@@ -59,31 +59,23 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
     public void harvestComplete(Request request, Entry imageEntry) 
 	throws Exception {
 	super.harvestComplete(request, imageEntry);
-	Entry parent = imageEntry.getParentEntry();
-	//Look for the metadata.xml
-	for(Entry child: getEntryManager().getChildren(request, parent)) {
-	    if(child.getTypeHandler().isType("type_geo_corebox_breeze_xml")) {
-		if(IOUtil.stripExtension(imageEntry.getName()).equals(IOUtil.stripExtension(child.getName()))) {
-		    //		    System.err.println("\tfound metadata.xml");
-		    if(child.getName().equals("measurement.xml")) {
-			child.setName(parent.getName() +" - " + child.getName());
-		    }
-		    child.setParentEntry(imageEntry);
-		    getEntryManager().updateEntry(request, child);
-		    getEntryManager().parentageChanged(imageEntry,true);		    
-		    break;
-		}
-	    }
-	}
 
 	//Add the parent name if it is just measurement.jpg
 	if(imageEntry.getName().equals("measurement.jpg")) {
-	    imageEntry.setName(parent.getName() +" - " + imageEntry.getName());
+	    imageEntry.setName(imageEntry.getParentEntry().getName() +" - " + imageEntry.getName());
 	    getEntryManager().updateEntry(request, imageEntry);
+	}	
+
+	Entry corebox = coreApi.findCoreboxEntry(request,imageEntry);
+	System.err.println("corebox:" + corebox);
+	if(corebox==null) {
+	    return;
 	}
-	
-
-
+	coreApi.processCorebox(request, imageEntry, corebox);
+	if(corebox.getName().equals("measurement.xml")) {
+	    corebox.setName(corebox.getParentEntry().getName() +" - " + corebox.getName());
+	    getEntryManager().updateEntry(request, corebox);
+	}
     }
 
 
