@@ -7225,23 +7225,6 @@ public class EntryManager extends RepositoryManager {
 	    + TypeHandler.ID_DELIMITER + subId;
     }
 
-    public void clearSeenResources() {
-        seenResources = new HashSet();
-    }
-
-    private HashSet seenResources = new HashSet();
-
-    public boolean processEntries(Harvester harvester,
-                                  TypeHandler typeHandler,
-                                  List<Entry> entries, boolean makeThemUnique)
-	throws Exception {
-        if (makeThemUnique) {
-            entries = getUniqueEntries(entries);
-        }
-        addNewEntries(null, entries);
-
-        return true;
-    }
 
     public Entry addFileEntry(Request request, File newFile, Entry group,String pathTemplate,
                               String name, String desc, User user)
@@ -7760,19 +7743,36 @@ public class EntryManager extends RepositoryManager {
     }
 
     long totalTime = 0;
-
     int totalEntries = 0;
 
-    public List<Entry> getUniqueEntries(List<Entry> entries)
+    public void clearSeenResources() {
+        seenResources = new HashSet();
+    }
+
+    private HashSet seenResources = new HashSet();
+
+    public static final String UNIQUE_NAME="name";
+    public static final String UNIQUE_FILE="file";
+    public static final String UNIQUE_GLOBAL="global";        
+
+
+    public boolean processHarvesterEntries(Harvester harvester,
+                                  TypeHandler typeHandler,
+                                  List<Entry> entries, boolean makeThemUnique)
 	throws Exception {
-        return getUniqueEntries(entries, new ArrayList<Entry>());
+        if (makeThemUnique) {
+            entries = getUniqueEntries(entries,null,null);
+        }
+        addNewEntries(null, entries);
+
+        return true;
     }
 
     public List<Entry> getUniqueEntries(List<Entry> entries,
-                                        List<Entry> nonUniqueOnes)
+                                        List<Entry> nonUniqueOnes,
+					String uniques)
 	throws Exception {
         List<Entry> needToAdd = new ArrayList();
-        String      query     = BLANK;
         try {
             if (entries.size() == 0) {
                 return needToAdd;
@@ -7780,45 +7780,70 @@ public class EntryManager extends RepositoryManager {
             if (seenResources.size() > 10000) {
                 seenResources = new HashSet();
             }
-            Connection connection = getDatabaseManager().getConnection();
-            //FOR NOW:  Try using the name for uniqueness instead of the resource
-            PreparedStatement selectbak =
-                SqlUtil.getSelectStatement(
-					   connection, "count(" + Tables.ENTRIES.COL_ID + ")",
-					   Misc.newList(Tables.ENTRIES.NAME), Clause.and(
-											 //                        Clause.eq(Tables.ENTRIES.COL_RESOURCE, ""),
-											 Clause.eq(Tables.ENTRIES.COL_NAME,
-												   ""), Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
-														  "?")), "");
+	    boolean checkResource = false;
+	    boolean checkName = false;
+	    boolean checkParent=true;
+	    boolean checkGlobal = false;
+	    if(uniques!=null) {
+		boolean hadOne=false;
+		for(String spec: Utils.split(uniques,",",true,true)) {
+		    hadOne = true;
+		    if(spec.equals(UNIQUE_FILE)) checkResource = true;
+		    else if(spec.equals(UNIQUE_NAME)) checkName = true;		
+		    else if(spec.equals(UNIQUE_GLOBAL)) checkParent = false;
+		}
+		if(!hadOne) checkName = true;
+	    }
+	    if(!stringDefined(uniques)) {
+		checkName = true;
+	    }
 
+            Connection connection = getDatabaseManager().getConnection();
+	    Clause clause;
+	    List<Clause> clauses=new ArrayList<Clause>();
+	    if(checkParent)
+		clauses.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, "?"));
+	    if(checkResource) 
+		clauses.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE, ""));
+	    if(checkName)
+		clauses.add(Clause.eq(Tables.ENTRIES.COL_NAME, ""));
             PreparedStatement select = SqlUtil.getSelectStatement(connection,
 								  Tables.ENTRIES.COL_ID,
 								  Misc.newList(Tables.ENTRIES.NAME),
-								  Clause.and(
-									     //                        Clause.eq(Tables.ENTRIES.COL_RESOURCE, ""),
-									     Clause.eq(Tables.ENTRIES.COL_NAME,
-										       ""), Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
-												      "?")), "");
-            long t1 = System.currentTimeMillis();
+								  Clause.and(clauses), "");
             for (Entry entry : entries) {
-                //                String path = getStorageManager().resourceToDB(entry.getResource().getPath());
-                String path        = entry.getName();
                 Entry  parentEntry = entry.getParentEntry();
                 if (parentEntry == null) {
                     needToAdd.add(entry);
-
                     continue;
                 }
-                String key = parentEntry.getId() + "_" + path;
-                if (seenResources.contains(key)) {
-                    nonUniqueOnes.add(entry);
 
+                String key = "";
+		int idx=1;
+		if(checkParent) {
+		    select.setString(idx++, entry.getParentEntry().getId());
+		    key+=" parent:"+parentEntry.getId();
+		}
+		if(checkResource) {
+		    String path  = getStorageManager().resourceToDB(entry.getResource().getPath());
+		    select.setString(idx++, path);
+		    key+=" resource:"+path;
+		}
+		if(checkName) {
+		    select.setString(idx++, entry.getName());
+		    key+=" name:"+entry.getName();
+		}
+
+		System.err.println("key:" + key);
+
+                if (seenResources.contains(key)) {
+		    if(nonUniqueOnes!=null)
+			nonUniqueOnes.add(entry);
                     continue;
                 }
                 seenResources.add(key);
 
-                select.setString(1, path);
-                select.setString(2, entry.getParentEntry().getId());
+
                 ResultSet results = select.executeQuery();
                 if (results.next()) {
                     String id = results.getString(1);
@@ -7826,15 +7851,9 @@ public class EntryManager extends RepositoryManager {
                         needToAdd.add(entry);
                     } else {
                         entry.putTransientProperty("existingEntryId", id);
-                        nonUniqueOnes.add(entry);
+			if(nonUniqueOnes!=null)
+			    nonUniqueOnes.add(entry);
                     }
-                    /*
-		      int found = results.getInt(1);
-		      if (found == 0) {
-		      needToAdd.add(entry);
-		      } else {
-		      nonUniqueOnes.add(entry);
-		      }*/
                 } else {
                     needToAdd.add(entry);
                 }
@@ -7842,10 +7861,8 @@ public class EntryManager extends RepositoryManager {
             }
             getDatabaseManager().closeStatement(select);
             getDatabaseManager().closeConnection(connection);
-            long t2 = System.currentTimeMillis();
         } catch (Exception exc) {
-            logError("Processing:" + query, exc);
-
+            logError("calling getUniqueEntries", exc);
             throw exc;
         }
 
