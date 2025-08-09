@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug  5 10:55:56 MDT 2025";
+var build_date="RAMADDA build date: Sat Aug  9 10:57:13 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -99,15 +99,32 @@ $.extend(Utils,{
         });
 	Utils.initCopyable('.colortable-id',{title:'Click to copy color table ID',ack:'Color table ID copied to clipboard'});
     },
-    getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
-        let popup = "<div class=wiki-editor-popup-items>"
+    //wikiEditor, itemize,label,showToggle,attr,value
+    getColorTablePopup: function(args) {
+	let opts = {
+	    wikiEditor:null,
+	    itemize:false,
+	    label:null,
+	    showToggle:true,
+	    attr:null,
+	    value:null,
+	    clazz:'wiki-editor-popup-items',
+	}
+	if(args) $.extend(opts,args);
+        let popup = HU.open('div',[ATTR_CLASS,opts.clazz]);
         let items = [];
         let item;
-	showToggle = Utils.isDefined(showToggle)?showToggle:true;
+	showToggle = opts.showToggle;
+	let category = '';
+	
 	Utils.AllColorTables.forEach(colortable=>{
             if(colortable.category) {
-                item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
-                popup+=item;
+		if(category!='') {
+		    popup+='</div>';
+		}
+		category  =colortable.category;
+		item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
+                popup+=HU.open('div',[ATTR_CLASS,'ramadda-colortable-category'])+item;
                 items.push(item);
 		return;
             }
@@ -115,11 +132,14 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),TITLE,colortable.id,CLASS, "ramadda-colortable-select","colortable",colortable.id];
-	    if(attr) attrs.push(attr,value);
+	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),
+			 ATTR_TITLE,colortable.id,
+			 'data-corpus',colortable.id +' '+ category,
+			 ATTR_CLASS, "ramadda-colortable-select","colortable",colortable.id];
+	    if(opts.attr) attrs.push(opts.attr,opts.value);
             ct = HU.div(attrs,ct);
-            if(wikiEditor) {
-                let call = "WikiUtil.insertText(" + HU.squote(wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
+            if(opts.wikiEditor) {
+                let call = "WikiUtil.insertText(" + HU.squote(opts.wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
                 item = HU.onClick(call,ct);
                 popup+=item;
                 items.push(item);
@@ -128,10 +148,10 @@ $.extend(Utils,{
                 popup+=ct;
             }
         });
-        popup+="</div>";
+        popup+="</div></div>";
 	if(showToggle)
-            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], label??"Color Table"),popup);
-        if(itemize) return items;
+            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+        if(opts.itemize) return items;
         return popup;
     },
 
@@ -177,6 +197,7 @@ $.extend(Utils,{
 		let info = colorInfo[v.color];
                 let value = v.value;
                 if(value=="") value = "&lt;blank&gt;";
+
                 info.label+=HU.div([ATTR_TITLE,v.value,ATTR_STYLE,style],value);
 		info.titles.push(value);
             });
@@ -298,7 +319,7 @@ $.extend(Utils,{
             }
             if(options.horizontal) {
                 html += HU.td(["data-value",val,
-			       ATTR_TITLE,title??'',
+			       title?ATTR_TITLE:'nulltitle',title??'',
 			       ATTR_CLASS, "display-colortable-slice",	
 			       ATTR_STYLE, HU.css('min-width','1px','height','1.5em','background', ct[i],"color",fg),
 			       ATTR_WIDTH, tdw], '');
@@ -6506,7 +6527,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
-		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
+		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +
+				Utils.getColorTablePopup({showToggle:false})]);
 		html =HU.div([ATTR_STYLE,HU.css('padding','8px')], html);
 		if(_this.colorTableDialog) _this.colorTableDialog.remove();
 		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
@@ -15612,7 +15634,12 @@ PointRecord.prototype =  {
 	return this.getDate()!=null;
     },
     hasLocation: function() {
-        return this.latitude !=null && !isNaN(this.latitude);
+
+	if(this.latitude=='') {
+	    return false;
+	}
+	let has =  this.latitude !=null && !isNaN(+this.latitude);
+	return has;
     },
     hasElevation: function() {
         return this.elevation !=null && !isNaN(this.elevation);
@@ -18764,9 +18791,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 
-
 		if(!ok && !startsWith) {
-		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
+		    for(let ri=0;ri<this.mySearch.matchers.length;ri++) {
 			let matcher = this.mySearch.matchers[ri];
 			if(matcher.matches(rowValue.toString())) {
 			    ok = true;
@@ -19426,7 +19452,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
             } else {
-		let dfltValue = this.getPropertyFromUrl('fv',"");
+		let filterValues = this.getProperty(this.getId()+".filterValues");
+		let dfltValue = this.getPropertyFromUrl('fv',filterValues);
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
 		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width),
 			    ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
@@ -19683,7 +19710,8 @@ function TextMatcher (pattern,myId) {
 		    //check if the string has a regep fragment
 		    if(p.includes('(') || p.includes(')')) {
 		    } else {
-			this.regexps.push(new RegExp("(" + p + ")","ig"));
+			p="(" + p + ")";
+			this.regexps.push(new RegExp(p,"ig"));
 		    }
 		} catch(err) {
 		    console.log('Error creating pattern matcher:' + err,p);
@@ -40547,7 +40575,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return feature.collisionInfo.dotSelected(feature);
 		}
 		if(record) {
-		    console.log('featureSelectHandler');
 		    this.propagateEventRecordSelection({record:record});
 		    this.propagateFilterFields(record);
 		    //		    didSomething= true;
@@ -49055,7 +49082,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let menuBar = "";
 		if(menuAttrs) {
 		    blocks = getWikiEditorMenuBlocks(menuAttrs,true);
-		    let ctItems =  Utils.getColorTablePopup(null, true);
+		    let ctItems =  Utils.getColorTablePopup({itemize:true});
 		    blocks.push({title:"Color table",items:ctItems});
 		    //		    menuBar =getWikiEditorMenuBar(blocks,this.domId("displayattrsmenubar"));
 		    let cnt = 0
@@ -49232,7 +49259,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
 		sub = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'], sub);
-		let dialog = HU.makeDialog({content:sub,anchor:$(this)});
+		
+		let dialog = HU.makeDialog({content:sub,anchor:$(this),
+					    title:block.title,
+					  header:true,sticky:false,
+					  draggable:true,modal:false});						    
 		let insert = line=>{
 		    if(!line) return
 		    line = line.trim()+"\n";
@@ -56539,8 +56570,8 @@ MapGlyph.prototype = {
 		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
 		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),'size','6',ATTR_TITLE,'min value']) +' -- '+    HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),'size','6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
-		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+
-				   Utils.getColorTablePopup(null,null,'Select',true,'prefix',prefix));
+		let ct = Utils.getColorTablePopup({label:'Select',showToggle:true,attr:'prefix',value:prefix});
+		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+ct);
 		comp+=HU.close(TAG_TABLE);
 		return comp;
 	    };
