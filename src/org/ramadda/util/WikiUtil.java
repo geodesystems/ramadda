@@ -2817,6 +2817,15 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    headingLinker.accept(buff,label,"h3",3);
                     continue;
                 }
+                if (tline.startsWith(":h4")) {
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
+                    String       label = (toks.size() > 1)
+			? toks.get(1)
+			: "";
+		    headingLinker.accept(buff,label,"h4",4);
+                    continue;
+                }
+
 
                 if (tline.startsWith(":center")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
