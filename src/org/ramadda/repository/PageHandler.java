@@ -2759,7 +2759,15 @@ public class PageHandler extends RepositoryManager {
                           ? typeHandler.getType()
                           : TypeHandler.TYPE_FINDMATCH;
         if (true) {
-            return HU.select(ARG_TYPE, items, selected);
+	    String guid = HU.getUniqueId("select_");
+            String select= HU.select(ARG_TYPE, items, selected,
+				     HU.attrs("id",guid));
+	    String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:true}";
+	    select+=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				      HU.quote("#"+guid),
+				      popupArgs));
+
+	    return select;
         }
 
         return repository.makeTypeSelect(items, request, ARG_TYPE,"",false, selected,
