@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Aug  9 10:57:13 MDT 2025";
+var build_date="RAMADDA build date: Sat Aug  9 12:00:21 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -46289,7 +46289,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:'userCanChange',tt:'Set to false to not show menubar, etc for all users'},
 	{p:'showLegendShapes',d:true,canCache:true},	
 	{p:'showMapLegend',d:false,canCache:true},
-
+	{p:'glyphid.visible',ex:true,tt:'Get the glyph id from its properties popup'},
+	{p:'glyphid.legendVisible',ex:true,tt:'Get the glyph id from its properties popup'},	
     ];
     
     displayDefineMembers(this, myProps, {
@@ -53138,9 +53139,7 @@ MapGlyph.prototype = {
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
 			[ATTR_ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
 	
-
-
-
+	html+=HU.div([],HU.b('ID: ') +HU.span([ATTR_CLASS,'ramadda-copyable'],this.getId()));
 
 	content.push({header:'Properties',contents:html});
 
@@ -54582,7 +54581,7 @@ MapGlyph.prototype = {
 	if(parent) this.display.removeMapGlyph(this);
     },    
     getLegendVisible:function() {
-	return this.attrs.legendVisible;
+	return this.getGlyphProperty('legendVisible');
     },
     setLegendVisible:function(visible) {
 	this.attrs.legendVisible = visible;
@@ -55068,7 +55067,12 @@ MapGlyph.prototype = {
 	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',ATTR_WIDTH,'150px','filter',filter??'')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
-	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',ATTR_WIDTH,'100%')]),['target','_image'])));
+	    item(HU.center(HU.href(this.style.legendUrl,
+				   HU.image(this.style.legendUrl,[ATTR_TITLE,'',
+								  ATTR_ID,this.domId('legendimage'),
+								  ATTR_CLASS,'imdv-legend-image',
+								  ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',
+										    ATTR_WIDTH,'100%')]),['target','_image'])));
 	}
 
 
@@ -55138,6 +55142,17 @@ MapGlyph.prototype = {
 	    this.checkLayersAnimation();
 	}	    
 
+	this.jq('legendimage').tooltip({
+	    show: { delay: 500 },
+	    position: {
+		my: 'left top',
+		at:'right top',
+		collision: "flipfit"
+	    },
+	    content: function() {
+		return HU.image($(this).attr('src'),[ATTR_STYLE,HU.css('max-width','450px','border','var(--basic-border)')]);
+	    },
+	});
 
 	let steps = this.getLegendDiv().find('.imdv-route-step');
 	steps.click(function(){
@@ -55444,6 +55459,10 @@ MapGlyph.prototype = {
 		    }
 		}	
 	    };
+
+
+
+
 
 	    let ctProps = [];
 	    this.getFeatureInfoList().forEach(info=>{
@@ -56024,6 +56043,7 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
+
 	HU.initPageSearch('.imdv-property',
 			  null,null,true,
 			  {target:'#'+this.domId('propsearch')});
@@ -56158,6 +56178,7 @@ MapGlyph.prototype = {
 	});
 	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
 	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
+	Utils.initCopyable(dialog.find('.ramadda-copyable'));
 
 	let initColor  = prefix=>{
 	    dialog.find('#'+this.domId(prefix+'colorby_property')).change(function() {
@@ -58450,9 +58471,19 @@ MapGlyph.prototype = {
 	}
 	this.checkDataIconMenu();	
     },
+    getGlyphProperty:function(prop,dflt) {
+	let key = this.getId()+'.' +prop;
+	let fromDisplay = this.display.getProperty(key);
+	if(Utils.isDefined(fromDisplay)) {
+	    this.attrs[prop] =fromDisplay;
+	    this.display.removeProperty(key);
+	    return fromDisplay;
+	}
+	return 	this.attrs[prop];
+    },
     getVisible:function() {
 	if(!Utils.isDefined(this.attrs.visible)) this.attrs.visible = true;
-	return this.attrs.visible;
+	return this.getGlyphProperty('visible');
     },
     setVisibleLevelRange:function(min,max) {
 	let range = this.getVisibleLevelRange();
