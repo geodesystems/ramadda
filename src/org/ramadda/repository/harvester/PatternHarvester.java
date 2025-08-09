@@ -44,8 +44,6 @@ import java.util.regex.*;
 /**
  * A harvester that looks at the local server file system
  *
- *
- * @version $Revision: 1.3 $
  */
 @SuppressWarnings("unchecked")
 public class PatternHarvester extends Harvester /*implements EntryInitializer*/ {
@@ -62,8 +60,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_MAXLEVEL = "maxlevel";
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
     public static final String ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS = "delete_when_file_size_differs";
-    public static final String ATTR_PUSHGEO = "pushgeo";    
+    public static final String ATTR_PUSHGEO = "pushgeo";
+    public static final String ATTR_UNIQUE = "unique";        
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 30 * 1000;
+
+
+
     private String dateFormat = "yyyyMMdd_HHmm";
     private List<SimpleDateFormat> sdf;
     private List<String> patternNames = new ArrayList<String>();
@@ -71,6 +73,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private String topPatternString = "";
     private String lastGroupType = "";
     private boolean ignoreErrors = false;
+    private String unique=EntryManager.UNIQUE_NAME;
     private boolean noTree = false;
     private List<PatternHolder> filePattern;
     private Pattern topPattern;
@@ -130,40 +133,40 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        moveToStorage = XmlUtil.getAttribute(element, ATTR_MOVETOSTORAGE, moveToStorage);
-        deleteWhenFileSizeDiffers = XmlUtil.getAttribute(element, ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
+        moveToStorage = XU.getAttribute(element, ATTR_MOVETOSTORAGE, moveToStorage);
+        deleteWhenFileSizeDiffers = XU.getAttribute(element, ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
 							 false);
 
-        filePatternString = XmlUtil.getAttribute(element, ATTR_FILEPATTERN,
+        filePatternString = XU.getAttribute(element, ATTR_FILEPATTERN,
 						 filePatternString);
 
-        ignoreErrors = XmlUtil.getAttribute(element, ATTR_IGNORE_ERRORS,
-                                            ignoreErrors);
-        noTree = XmlUtil.getAttribute(element, ATTR_NOTREE, noTree);
+        unique = XU.getAttribute(element, ATTR_UNIQUE,unique);
+        ignoreErrors = XU.getAttribute(element, ATTR_IGNORE_ERRORS,     ignoreErrors);
+        noTree = XU.getAttribute(element, ATTR_NOTREE, noTree);
 
-        topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
+        topPatternString = XU.getAttribute(element, ATTR_TOPPATTERN,
 						topPatternString);
-        lastGroupType = XmlUtil.getAttribute(element, ATTR_LASTGROUPTYPE,
+        lastGroupType = XU.getAttribute(element, ATTR_LASTGROUPTYPE,
 					     lastGroupType);	
 
-        notfilePatternString = XmlUtil.getAttribute(element,
+        notfilePatternString = XU.getAttribute(element,
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
-        skipTimeCheck = XmlUtil.getAttribute(element,
+        skipTimeCheck = XU.getAttribute(element,
 					     ATTR_SKIPTIMECHECK, skipTimeCheck);	
-        sizeLimit = XmlUtil.getAttribute(element,
+        sizeLimit = XU.getAttribute(element,
 					 ATTR_SIZELIMIT, sizeLimit);
-        pushGeo = XmlUtil.getAttribute(element,
+        pushGeo = XU.getAttribute(element,
 					 ATTR_PUSHGEO, pushGeo);
-        makeThumbnails = XmlUtil.getAttribute(element,
+        makeThumbnails = XU.getAttribute(element,
 					 ATTR_MAKETHUMBNAILS, makeThumbnails);		
-	maxLevel = XmlUtil.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
+	maxLevel = XU.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
         filePattern    = null;
         topPattern     = null;
         notfilePattern = null;
         sdf            = null;
         init();
-        dateFormat = XmlUtil.getAttribute(element, ATTR_DATEFORMAT,
+        dateFormat = XU.getAttribute(element, ATTR_DATEFORMAT,
                                           dateFormat);
         sdf = null;
 
@@ -178,6 +181,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
         element.setAttribute(ATTR_TOPPATTERN, topPatternString);
         element.setAttribute(ATTR_LASTGROUPTYPE, lastGroupType);	
+        element.setAttribute(ATTR_UNIQUE, unique);
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
@@ -208,16 +212,20 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         seenFiles   = new HashSet();
 
         lastRunTime = 0;
-        filePatternString = request.getUnsafeString(ATTR_FILEPATTERN,
-						    filePatternString);
+        filePatternString = request.getUnsafeString(ATTR_FILEPATTERN, filePatternString);
         filePattern = null;
 
-        topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,
-						   topPatternString);
+        topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,  topPatternString);
         topPattern   = null;
 
-        lastGroupType = request.getString(ATTR_LASTGROUPTYPE,
-					  lastGroupType);
+        lastGroupType = request.getString(ATTR_LASTGROUPTYPE,  lastGroupType);
+        unique = "";
+	if(request.get("unique_name",false))
+	    unique+="," +EntryManager.UNIQUE_NAME;
+	if(request.get("unique_file",false))
+	    unique+="," +EntryManager.UNIQUE_FILE;
+	if(request.get("unique_global",false))
+	    unique+="," +EntryManager.UNIQUE_GLOBAL;
 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
         noTree       = request.get(ATTR_NOTREE, false);
@@ -312,19 +320,19 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   ATTR_ROOTDIR, inputText.toString(), 5, 60,
 					   fileFieldExtra.toString()) + extraLabel));
 
-        sb.append(HU.formEntry("","Only harvest the top-level files that match this pattern"));
+        sb.append(HU.formEntry("",HU.formHelp("Only harvest the top-level files that match this pattern")));
         sb.append(HU.formEntry(msgLabel("Top directory pattern"),
 			       HU.input(ATTR_TOPPATTERN,
 					topPatternString,
 					HU.SIZE_60)));
 
-        sb.append(HU.formEntry("","Only harvest the descendent files that match one or more of these patterns"));
+        sb.append(HU.formEntry("",HU.formHelp("Only harvest the descendent files that match one or more of these patterns")));
         sb.append(HU.formEntryTop(msgLabel("File Patterns"),
 				  HU.textArea(ATTR_FILEPATTERN,
 					      filePatternString,
 					      3,60)));
 
-        sb.append(HU.formEntry("","Skip any file that matches any of these patterns"));
+        sb.append(HU.formEntry("",HU.formHelp("Skip any file that matches any of these patterns")));
         sb.append(HU.formEntryTop(msgLabel("Exclude files that match"),
 				  HU.textArea(ATTR_NOTFILEPATTERN,
 					      notfilePatternString,
@@ -337,9 +345,25 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_SIZELIMIT,
 					sizeLimit+"",
 					HU.SIZE_5) +" (MB)"));
+        sb.append(HU.formEntry("",HU.formHelp("How far down the directory hierarchy does the harvester go")));
         sb.append(HU.formEntry(msgLabel("Max level"),
 			       HU.hbox(HU.input(ATTR_MAXLEVEL,  maxLevel+"", HU.SIZE_5),
-				       "How far down the directory hierarchy does the harvester go<br>-1 -&gt; no limit<br>0 -&gt; just files under the main directories<br>1 -&gt; files under sub-directories<br>etc.")));
+				       "-1 -&gt; no limit<br>0 -&gt; just files under the main directories<br>1 -&gt; files under sub-directories<br>etc.")));
+
+	String uniqueWidgets="";
+	List<String> uniques = Utils.split(unique,",",true,true);
+	uniqueWidgets+=HU.labeledCheckbox("unique_name","true",
+					  uniques.contains(EntryManager.UNIQUE_NAME),"By entry name")+"&nbsp;&nbsp;";
+	uniqueWidgets+=HU.labeledCheckbox("unique_file","true",
+					  uniques.contains(EntryManager.UNIQUE_FILE),"By entry file")+"&nbsp;&nbsp;";	
+	uniqueWidgets+=HU.labeledCheckbox("unique_global","true",
+					  uniques.contains(EntryManager.UNIQUE_GLOBAL),"Global - check entire repository")+"&nbsp;&nbsp;";
+        sb.append(HU.formEntry("",HU.formHelp("Check for uniqueness by name or by the file. If global is checked than the entire repository is checked")));
+
+        sb.append(HU.formEntry(msgLabel("Uniqueness"),
+			       uniqueWidgets));
+
+        sb.append(HU.formEntry("",HU.formHelp("Should the harvest be continued when there are any errors harvesting a file")));
 
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,
@@ -355,6 +379,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(HU.formEntry(msgLabel("Folder template"),
 			       HU.input(ATTR_GROUPTEMPLATE,
 					groupTemplate, HU.SIZE_60) +HU.space(2) + folderHelp));
+
+	sb.append(HU.formEntry("",HU.formHelp("The entry type for the entry type that holds the files. e.g., Photo Album")));
+        sb.append(HU.formEntry(msgLabel("Last Folder Type"),
+			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
+							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
+							      false, null,true)));
+
+
+
         sb.append(
 		  HU.formEntry(
 			       "",
@@ -372,10 +405,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       makeEntryTypeSelector(request,
 						     getTypeHandler())));
 
-        sb.append(HU.formEntry(msgLabel("Last Group Type"),
-			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
-							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
-							      false, null,true)));
 
 	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
 
@@ -383,17 +412,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_DATEFORMAT,
 					dateFormat, HU.SIZE_60)));
 
-        String moveNote =HU.div("Note: This will move the files from their current location to RAMADDA's storage directory",
-				HU.cssClass("ramadda-callout ramadda-callout-info"));
-	sb.append(HU.formEntry("",moveNote));
+	sb.append(HU.formEntry("",HU.formHelp("Note: This will move the files from their current location to RAMADDA's storage directory")));
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_MOVETOSTORAGE,
 					   "true",
 						  moveToStorage,"Move file to storage")));
 
-        String deleteNote =HU.div("Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest",
-				  HU.cssClass("ramadda-callout ramadda-callout-info"));
-	sb.append(HU.formEntry("",deleteNote));
+	sb.append(HU.formEntry("",HU.formHelp("Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest")));
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
 						  "true",
@@ -428,8 +453,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public String makeEntryTypeSelector(Request request,
                                         TypeHandler typeHandler)
 	throws Exception {
-        return getPageHandler().makeFileTypeSelector(request, typeHandler,
-						     false);
+        return getPageHandler().makeFileTypeSelector(request, typeHandler, false);
     }
 
     private List<SimpleDateFormat> getSDF() {
@@ -736,6 +760,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         idList = new ArrayList<String[]>();
 
         List<Entry>         needToAdd = new ArrayList<Entry>();
+        List<Entry>         allEntries = new ArrayList<Entry>();
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
 	skipCnt = 0;
@@ -859,8 +884,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 }
                 List<Entry> nonUnique = new ArrayList<Entry>();
                 List<Entry> uniqueEntries =
-                    getEntryManager().getUniqueEntries(
-						       new Utils.TypedList<Entry>(entry), nonUnique);
+                    getEntryManager().getUniqueEntries(new Utils.TypedList<Entry>(entry), nonUnique,
+						       unique);
+
+		/*
+		if(uniqueEntries.size()>0) 
+		    System.err.println("* is unique: " + entry);
+		else
+		    System.err.println("not unique: " + entry);
+		*/
+
+
 		nonUniqueCnt+= nonUnique.size();
                 for (Entry found : nonUnique) {
                     String existingId = (String) found.getTransientProperty(
@@ -897,6 +931,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 }
                 if (needToAdd.size() > 999) {
                     addEntries(needToAdd, timestamp, entriesMap);
+		    allEntries.addAll(needToAdd);
                     needToAdd = new ArrayList<Entry>();
                 }
             }
@@ -912,9 +947,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	}
 
         if (needToAdd.size() > 0) {
+	    allEntries.addAll(needToAdd);
             addEntries(needToAdd, timestamp, entriesMap);
         }
 
+	for(Entry entry: allEntries) {
+	    entry.getTypeHandler().harvestComplete(request, entry);
+	}
+	allEntries=null;
 	getEntryManager().parentageChanged(getBaseGroup(),true);
         if ( !canContinueRunning(timestamp)) {
             return;
