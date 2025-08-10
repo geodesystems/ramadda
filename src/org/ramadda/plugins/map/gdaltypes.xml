@@ -60,6 +60,7 @@
   </type>
 
   <type name="geo_envi_data"
+	super="geo_gdal"
 	description="ENVI Data File"
 	icon="/map/envi.png"
     

@@ -56,7 +56,9 @@ public class EnviTypeHandler extends LatLonImageTypeHandler  {
 	
 	Entry hdrEntry=null;
 	for(Entry child:  getEntryManager().getChildren(getRepository().getAdminRequest(), dataEntry)) {
-	    if(child.isFile() && child.getTypeHandler().isType("geo_envi_hdr")) {
+	    if(!child.isFile()) continue;
+	    File file = child.getFile();
+	    if(file.getName().equals(headerFile.getName())) {
 		hdrEntry = child;
 		break;
 	    }
