@@ -736,7 +736,8 @@ public class Service extends RepositoryManager {
                 values = new ArrayList<String>();
                 for (Entry entry : entries) {
                     currentEntry = entry;
-                    String filePath = getStorageManager().getEntryResourcePath(currentEntry);
+                    String filePath = currentEntry.getTypeHandler().getServiceFilePath(this,currentEntry);
+		    if(filePath==null) return null;
                     if (arg.getCopy()) {
                         File newFile =
                             new File(
