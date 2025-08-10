@@ -109,8 +109,9 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
             results = job.executeCommand(commands, work);
             String err = results.getStderrMsg();
             if (err.length() > 0) {
+		System.err.println("TYPE:" + getType() +" entry:" + entry);
                 throw new IllegalArgumentException(
-                    "georeferencing geotiff failed:" + err);
+						   "georeferencing geotiff failed:" + err+" type:" + this.getType() + " src tiff:" + srcTiff);
             }
             imageFile = getStorageManager().getTmpFile(
                 request,
