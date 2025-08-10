@@ -90,6 +90,11 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 
     //Get the style with the macros applied
     style = this.getStyle(true);
+    if(Utils.isDefined(attrs.rotation)) {
+	//set and clear out the rotation
+	style.rotation=attrs.rotation;
+	delete attrs.rotation;
+    }
     if(fromJson) {
 	if(this.isStraightLine()) {
 	    this.checkLineType(json.points);
@@ -389,14 +394,21 @@ MapGlyph.prototype = {
 	    }
 	});
     },
-    applyStyleToChildren:function(prop,value) {
+    applyStyleProperty:function(prop,value) {
+	if(this.style) {
+	    this.style[prop] = value;
+	    this.applyStyle(this.style);
+	    this.applyStyleToChildren(prop,value);
+	    this.display.redraw(this);
+	}
+    },
+
+    applyStyleToChildren:function(prop,value,includeThis) {
+	if(includeThis) {
+	    this.applyStyleProperty(prop,value);
+	}
 	this.applyChildren(child=>{
-	    if(child.style) {
-		child.style[prop] = value;
-		child.applyStyle(child.style);
-		child.applyStyleToChildren(prop,value);
-		this.display.redraw(child);
-	    }
+	    child.applyStyleProperty(prop,value);
 	});
     },
     getPoints:function(obj) {
@@ -1843,7 +1855,7 @@ MapGlyph.prototype = {
 	let theLabel;
 	if(Utils.stringDefined(name)) {
 	    if(!args.forLegend && !args.simple)
-		theLabel= this.getType()+': '+name;
+		theLabel= name;
 	    else
 		theLabel = name;
 	} else if(this.isFixed()) {
@@ -2415,23 +2427,24 @@ MapGlyph.prototype = {
 
 
 	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl) || this.imageLayers || this.image) {
-	    let v = (this.imageLayers||this.isImage())?this.style.imageOpacity:this.style.opacity;
-	    if(!Utils.isDefined(v)) v = 1;
-	    if(showAnimation)
-		body+='Opacity:';
-	    body += 
-		HU.center(
-		    HU.div([ATTR_TITLE,'Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
-			    ID,this.domId('image_opacity_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block',ATTR_WIDTH,'90%')],''));
+	    if(this.getProperty(PROP_SHOWOPACITYSLIDER,true)) {
+		let v = (this.imageLayers||this.isImage())?this.style.imageOpacity:this.style.opacity;
+		if(!Utils.isDefined(v)) v = 1;
+		if(showAnimation)
+		    body+='Opacity:';
+		body += 
+		    HU.center(
+			HU.div([ATTR_TITLE,'Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
+				ID,this.domId('image_opacity_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block',ATTR_WIDTH,'90%')],''));
+	    }
 	}
 
-	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
-/*
+	if(this.display.canEdit() && this.getProperty('showRotationSlider',false) && 
+	   (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
 		HU.div([ATTR_TITLE,'Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
 		ID,this.domId('image_rotation_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block',ATTR_WIDTH,'90%')],''));
-		*/
 	}
 
 	let item  = (content,checkInMap,addDecoration) => {
@@ -4413,11 +4426,10 @@ MapGlyph.prototype = {
     },
     getProperty:function(key,dflt,checkParent) {
 	let debug = false;
+//	debug = key=='showOpacitySlider';
 	if(debug)
 	    console.log("KEY:" + key);
 	//Check the IMDV display
-	let v = this.display.getMapProperty(key);
-	if(Utils.isDefined(v))return v;
 	if(this.attrs.properties) {
 	    if(!this.parsedProperties) {
 		this.parsedProperties = Utils.parseMap(this.attrs.properties,"\n","=")??{};
@@ -4426,13 +4438,16 @@ MapGlyph.prototype = {
 	    let v = this.parsedProperties[key];
 	    if(debug) console.log("V:" + v);
 	    if(debug) console.log("PROPS:",this.parsedProperties);	    
-	    if(v) {
+	    if(Utils.isDefined(v)) {
 		return Utils.getProperty(v);
 	    }
 	}
 	if(checkParent && this.getParentGlyph()) {
 	    return this.getParentGlyph().getProperty(key,dflt,true);
 	}
+//	let v = this.display.getMapProperty(key);
+//	if(Utils.isDefined(v))return v;
+
 	return this.display.getMapProperty(key,dflt);
     },
     getTopHeader:function() {
@@ -5739,6 +5754,10 @@ MapGlyph.prototype = {
 	} else {
 	    bounds = this.getMap().transformProjBounds(bounds);
 	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
+	    this.image.textGetter = () =>{
+		console.log(0);
+		return '';
+	    }
 	    this.initImageLayer(this.image);
 	    if(Utils.isDefined(this.style.imageOpacity)) {
 		this.image.setOpacity(this.style.imageOpacity);
@@ -6648,7 +6667,8 @@ FeatureInfo.prototype= {
     },
     getLabel:function(addSpan) {
 	let label  =this.getProperty('label');
-	if(!Utils.stringDefined(label)) label  =this.mapGlyph.display.makeLabel(this.property);
+	if(!Utils.stringDefined(label))
+	    label  =this.mapGlyph.display.makeLabel(this.property);
 	if(addSpan) label = HU.span([ATTR_TITLE,this.property],label);
 	return label;
     },

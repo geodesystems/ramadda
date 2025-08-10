@@ -3270,6 +3270,14 @@ table.dataTable tfoot td {
     border:1px solid #000;
 }
     
+.imdv-popup-header {
+    font-size:140%;
+    font-weight:bold
+}
+
+.imdv-popup-header img {
+    width:32px;
+}
 .imdv-style-suffix {
     margin-left:4px;
     margin-right:4px;
