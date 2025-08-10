@@ -1322,13 +1322,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
 
+	System.err.println("FILE:" + filePath);
         if (typeHandlerToUse == null) {
 	    typeHandlerToUse = getEntryManager().findTypeFromPatterns(typePatterns, filePath);
+	    System.err.println("\ttype:" + typeHandlerToUse);
+	    System.err.println("\tpatterns:" + typePatterns);
 	}
 
         if ((typeHandlerToUse == null)
 	    && typeHandler.getType().equals(TypeHandler.TYPE_FINDMATCH)) {
 	    typeHandlerToUse = getEntryManager().findDefaultTypeHandler(null,filePath);
+	    System.err.println("\tdefault type:" + typeHandlerToUse);
         }
 
         if (typeHandlerToUse == null) {
