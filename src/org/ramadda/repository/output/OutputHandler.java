@@ -1081,6 +1081,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 				"icon",HU.squote(getPageHandler().getIconUrl(request, entry)),
                                 "isGroup", "" + isGroup, "isImage",
                                 "" + isImage);
+	Object rotation = entry.getValue(request,"rotation");
+	if(rotation!=null)
+	    Utils.add(attrs,"rotation",rotation.toString());
 	if(entry.isFile()) {
 	    Utils.add(attrs, "filename",JsonUtil.quote(IO.getFileTail(entry.getResource().getPath())));
 	}
