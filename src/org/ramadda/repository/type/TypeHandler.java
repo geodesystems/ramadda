@@ -3503,6 +3503,11 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
+    public String getServiceFilePath(Service service, Entry entry) throws Exception {
+	return getStorageManager().getEntryResourcePath(entry);
+    }
+
+
     public void applyService(Request request, Entry entry, Service service) {
 	if ( !service.isEnabled()) {
 	    //	    System.err.println("not enabled");
@@ -3520,9 +3525,11 @@ public class TypeHandler extends RepositoryManager {
 	    long t2 = System.currentTimeMillis();
 	    //	    System.err.println("Time:" + (t2-t1));
 	    if(output==null) {
+		/*
 		getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
 						      " for entry:" + entry.getName() +" id:" + entry.getId() +
 						      " Error: no service output"); 
+		*/
 		return;
 	    }
 	    if ( !output.isOk()) {
