@@ -7834,7 +7834,6 @@ public class EntryManager extends RepositoryManager {
 		    key+=" name:"+entry.getName();
 		}
 
-		System.err.println("key:" + key);
 
                 if (seenResources.contains(key)) {
 		    if(nonUniqueOnes!=null)
