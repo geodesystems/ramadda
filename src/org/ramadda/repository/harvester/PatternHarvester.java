@@ -320,19 +320,20 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   ATTR_ROOTDIR, inputText.toString(), 5, 60,
 					   fileFieldExtra.toString()) + extraLabel));
 
-        sb.append(HU.formEntry("",HU.formHelp("Only harvest the top-level files that match this pattern")));
+
+	formHelp(sb,"Only harvest the top-level files that match this pattern.","#heading-top_directory_pattern");
         sb.append(HU.formEntry(msgLabel("Top directory pattern"),
 			       HU.input(ATTR_TOPPATTERN,
 					topPatternString,
 					HU.SIZE_60)));
 
-        sb.append(HU.formEntry("",HU.formHelp("Only harvest the descendent files that match one or more of these patterns")));
+	formHelp(sb,"Only harvest the descendent files that match one or more of these patterns.","#heading-file_patterns");
         sb.append(HU.formEntryTop(msgLabel("File Patterns"),
 				  HU.textArea(ATTR_FILEPATTERN,
 					      filePatternString,
 					      3,60)));
 
-        sb.append(HU.formEntry("",HU.formHelp("Skip any file that matches any of these patterns")));
+        formHelp(sb,"Skip any file that matches any of these patterns.","#heading-exclude_files_that_match");
         sb.append(HU.formEntryTop(msgLabel("Exclude files that match"),
 				  HU.textArea(ATTR_NOTFILEPATTERN,
 					      notfilePatternString,
@@ -345,7 +346,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_SIZELIMIT,
 					sizeLimit+"",
 					HU.SIZE_5) +" (MB)"));
-        sb.append(HU.formEntry("",HU.formHelp("How far down the directory hierarchy does the harvester go")));
+        formHelp(sb,"How far down the directory hierarchy does the harvester go",null);
         sb.append(HU.formEntry(msgLabel("Max level"),
 			       HU.hbox(HU.input(ATTR_MAXLEVEL,  maxLevel+"", HU.SIZE_5),
 				       "-1 -&gt; no limit<br>0 -&gt; just files under the main directories<br>1 -&gt; files under sub-directories<br>etc.")));
@@ -358,12 +359,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					  uniques.contains(EntryManager.UNIQUE_FILE),"By entry file")+"&nbsp;&nbsp;";	
 	uniqueWidgets+=HU.labeledCheckbox("unique_global","true",
 					  uniques.contains(EntryManager.UNIQUE_GLOBAL),"Global - check entire repository")+"&nbsp;&nbsp;";
-        sb.append(HU.formEntry("",HU.formHelp("Check for uniqueness by name or by the file. If global is checked than the entire repository is checked")));
+        formHelp(sb,"Check for uniqueness by name or by the file. If global is checked than the entire repository is checked",null);
 
         sb.append(HU.formEntry(msgLabel("Uniqueness"),
 			       uniqueWidgets));
 
-        sb.append(HU.formEntry("",HU.formHelp("Should the harvest be continued when there are any errors harvesting a file")));
+        formHelp(sb,"Should the harvest be continued when there are any errors harvesting a file",null);
 
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,
@@ -380,7 +381,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_GROUPTEMPLATE,
 					groupTemplate, HU.SIZE_60) +HU.space(2) + folderHelp));
 
-	sb.append(HU.formEntry("",HU.formHelp("The entry type for the entry type that holds the files. e.g., Photo Album")));
+	formHelp(sb,"The entry type for the entry type that holds the files. e.g., Photo Album",null);
         sb.append(HU.formEntry(msgLabel("Last Folder Type"),
 			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
@@ -394,6 +395,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.labeledCheckbox(ATTR_NOTREE, "true", noTree,
 						  "Don't make entry hierarchy from directory tree")));
 
+	formHelp(sb,"Template to use for entry name.","#heading-name_template");
+
         sb.append(HU.formEntry(msgLabel("Name template"),
 			       HU.input(ATTR_NAMETEMPLATE,
 					nameTemplate, HU.SIZE_60)));
@@ -406,19 +409,21 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						     getTypeHandler())));
 
 
+
+	formHelp(sb,"Patterns to match on files to define entry type.","#heading-type_patterns");
 	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
 
         sb.append(HU.formEntry(msgLabel("Date format"),
 			       HU.input(ATTR_DATEFORMAT,
 					dateFormat, HU.SIZE_60)));
 
-	sb.append(HU.formEntry("",HU.formHelp("Note: This will move the files from their current location to RAMADDA's storage directory")));
+	formHelp(sb,"Note: This will move the files from their current location to RAMADDA's storage directory",null);
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_MOVETOSTORAGE,
 					   "true",
 						  moveToStorage,"Move file to storage")));
 
-	sb.append(HU.formEntry("",HU.formHelp("Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest")));
+	formHelp(sb,"Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest",null);
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
 						  "true",
@@ -455,6 +460,20 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	throws Exception {
         return getPageHandler().makeFileTypeSelector(request, typeHandler, false);
     }
+
+    private void formHelp(StringBuffer sb,String label, String link) {
+	sb.append(HU.formEntry("",HU.formHelp(label+   makeHarvesterHelp(link))));
+    }
+	
+
+    private String makeHarvesterHelp(String tag) {
+	if(tag==null) return "";
+	return  "&nbsp;" +
+	    HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html" + tag),
+						   msg("Help"), " target=_HELP");
+    }
+
+
 
     private List<SimpleDateFormat> getSDF() {
         if (sdf == null) {
@@ -1500,9 +1519,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (group.getDescription().length() > 0) {
                 return null;
             }
-            group.setDescription(IO.readContents(fileWrapper.toString(), ""));
+	    String text = IO.readContents(fileWrapper.toString(), "");
+	    if(!stringDefined(text))  return null;
+            group.setDescription(HU.div(text,HU.style("max-height:300px;overflow-y:auto;")));
             getEntryManager().updateEntry(request, group);
-
             return null;
         }
 
