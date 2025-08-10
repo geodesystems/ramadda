@@ -498,7 +498,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 	Utils.QuadConsumer<StringBuffer,String,String,Integer> headingLinker = (sb,label,tag,level) ->{
-	    defineHeading.accept(sb,label,level);
+	    if(level<=3)
+		defineHeading.accept(sb,label,level);
 	    String id = "heading-" +Utils.makeID(label);
 	    sb.append(HU.anchorName(id));
 	    label += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
