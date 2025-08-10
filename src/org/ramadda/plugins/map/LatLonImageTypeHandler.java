@@ -164,6 +164,7 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
                 return false;
             }
 
+	    Double rotation = (Double) entry.getValue(request,"rotation");
 	    String url=getImageUrl(request, entry);
 	    if(!stringDefined(url)) return false;
 
@@ -187,6 +188,8 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
             String desc =
                 getRepository().getMapManager().makeInfoBubble(request,
 							       entry, null,true);
+	    String args="{}";
+	    if(rotation!=null) args = "{rotation:" + rotation+"}";
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,
                                          HtmlUtils.squote(entry.getId()),
@@ -196,8 +199,9 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
                                          "" + entry.getNorth(request),
                                          "" + entry.getWest(request),
                                          "" + entry.getSouth(request),
-                                         "" + entry.getEast(request), "400",
-                                         "400")));
+                                         "" + entry.getEast(request),
+							  "400",
+							  "400",args)));
 
             map.addJS("\n");
 

@@ -15,10 +15,13 @@ import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
+import org.ramadda.util.geo.GeoUtils;
 import org.w3c.dom.*;
 
 import ucar.nc2.units.DateUnit;
+
+import ucar.unidata.geoloc.Bearing;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -74,10 +77,13 @@ public class GdalTypeHandler extends GenericTypeHandler {
                                      Service service, ServiceOutput output)
             throws Exception {
         super.handleServiceResults(request, entry, service, output);
-        List<Entry> entries = output.getEntries();
-        if (entries.size() != 0) {
-            return;
-        }
+	if(!Misc.equals("gdal_info",service.getAbsoluteId())) return;
+	String key = "handled service:" +service.toString();
+	if(entry.getTransientProperty(key)!=null) return;
+	entry.putTransientProperty(key,"true");
+	//        List<Entry> entries = output.getEntries();
+	//	System.err.println("good:" + entries);
+	//        if (entries.size() != 0) {            return;        }
         String results = output.getResults();
         //      System.err.println("results:" + results);
         /*
@@ -87,11 +93,13 @@ Upper Right (    2358.212, 4255884.544) (117d18'28.38"W, 33d56'37.74"N)
 Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         */
 
+
+	
         double ulLat  = Double.NaN, ulLon = Double.NaN;
         double llLat  = Double.NaN, llLon = Double.NaN;
         double urLat  = Double.NaN, urLon = Double.NaN;
-        double lrLat  = Double.NaN, lrLon = Double.NaN;			
-        double uln  = Double.NaN;	
+        double lrLat  = Double.NaN, lrLon = Double.NaN;
+        double centerLat  = Double.NaN, centerLon = Double.NaN;				
         double north = Double.NaN;
         double south = Double.NaN;
         double east  = Double.NaN;
@@ -121,6 +129,12 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                     east  = ((east != east)
                              ? latlon[0]
                              : Math.max(east, latlon[0]));
+                }
+            } else if (line.indexOf("Center") >= 0) {
+                latlon = getLatLon(line);
+                if (latlon != null) {
+		    centerLat=latlon[1];
+		    centerLon=latlon[0];		    
                 }
             } else if (line.indexOf("Upper Right") >= 0) {
                 latlon = getLatLon(line);
@@ -155,6 +169,41 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 			   " ll:" +llLat +"," + llLon +
 			   " lr:" +lrLat +"," + lrLon);
 	*/
+
+
+	double angleDeg=Double.NaN;
+	double angleRad=Double.NaN;	
+	System.err.println(service.getAbsoluteId() +" ll:" + ulLat +" " +urLat);
+	
+        if (!Double.isNaN(centerLat)&& !Double.isNaN(ulLat) && !Double.isNaN(urLat)) {
+	    double[] ulXY = GeoUtils.latLonToMeters(ulLat, ulLon, centerLat, centerLon);
+	    double[] urXY = GeoUtils.latLonToMeters(urLat, urLon, centerLat, centerLon);	    
+	    // Vector from UL to UR
+	    double dx = urXY[0] - ulXY[0];
+	    double dy = urXY[1] - ulXY[1];
+	    // Calculate angle relative to East (x-axis)
+	    angleRad = Math.atan2(dy, dx);
+	    angleDeg = Math.toDegrees(angleRad);
+	    // Normalize to 0–360°
+	    if (angleDeg < 0) {
+		angleDeg += 360;
+	    }
+	}
+	if(!Double.isNaN(angleDeg) && Math.abs(angleDeg-360)>2)  {
+	    entry.setValue("rotation",new Double(-angleDeg));
+	    double[] ulRotated = GeoUtils.rotatePoint(ulLat, ulLon, centerLat, centerLon, angleRad);
+	    double[] lrRotated = GeoUtils.rotatePoint(lrLat, lrLon, centerLat, centerLon, angleRad);
+	    System.err.println("ANGLE C:" + angleDeg +" nwse:" + north +" " + west +" " + south +" " + east);
+	    north = ulRotated[0];
+	    west = ulRotated[1];	    
+	    south = lrRotated[0];
+	    east = lrRotated[1];	    
+	    System.err.println("ANGLE C:" + angleDeg +" nwse:" + north +" " + west +" " + south +" " + east);
+	}
+	
+
+
+
         if ( !Double.isNaN(north)) {
             entry.setNorth(Utils.decimals(north,5));
         }

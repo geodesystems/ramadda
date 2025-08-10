@@ -64,6 +64,8 @@
     </description>
     <arg value="-b"/>
     <arg value="1"/>
+    <arg value="-ot"/>
+    <arg value="Byte"/>
     <arg value="-of"/>
     <arg value="PNG"/>
     <arg value="-scale"/>

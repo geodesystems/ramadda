@@ -2,6 +2,7 @@
   <type name="geo_gdal" foruser="false" handler="org.ramadda.plugins.map.GdalTypeHandler" >
      <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info"/>
+     <column name="rotation" label="Rotation"     type="double" default="0" />
   </type>
 
   <type name="geo_gdal_raster" super="geo_gdal" description="GDAL Raster" foruser="true" xhandler="org.ramadda.plugins.map.GdalTypeHandler" >
@@ -25,7 +26,7 @@
 +if property=show_map
 :vspace 1em
 +center
-{{map detailed=true width=80% showOpacitySlider=true}}
+{{map  hideIfNoLocations=true  detailed=true width=80% showOpacitySlider=true}}
 -center
 -if
 +skip
@@ -69,19 +70,19 @@
      <service link="gdal_info"/>
      <column name="show_map" label="Show Map"
 	    type="boolean" showinhtml="false" default="false"/>
-    <wiki_inner><![CDATA[
+    <wiki><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
-+if property=show_map
+:rem +if property=show_map
 :vspace 1em
 +center
 {{map detailed=true width=80% showOpacitySlider=true}}
 -center
--if
+:rem -if
 -section
 ]]>
-</wiki_inner>
+</wiki>
 
   </type>
 
