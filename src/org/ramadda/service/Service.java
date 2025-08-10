@@ -976,6 +976,13 @@ public class Service extends RepositoryManager {
 
     }
 
+    public String getAbsoluteId() {
+	if (haveLink()) {
+	    return link.getId();
+	}
+	return id;
+    }
+
     public String getId() {
         /*
 	  if (haveLink()) {
