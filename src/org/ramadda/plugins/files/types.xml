@@ -75,6 +75,19 @@ picky=false
 
   <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular"  category="Data">
      <property name="icon" value="/icons/xml.png"/>
+     <column name="showxml" label="Show XML"
+	    type="boolean" showinhtml="false" default="false"/>	     
+    <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{information showTitle="false" details="true"}}
++if property=showxml
+{{embed  as="xml" maxheight="600" maxSize="10000" }}
+-if
+-section
+]]>
+</wiki>
+
   </type>
 
 
