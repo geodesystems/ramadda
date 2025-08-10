@@ -203,6 +203,82 @@ public class GeoUtils {
     }
 
 
+    public static double calculateBearing(double lat1, double lon1, double lat2, double lon2) {
+        double lat1Rad = Math.toRadians(lat1);
+        double lat2Rad = Math.toRadians(lat2);
+        double deltaLonRad = Math.toRadians(lon2 - lon1);
+
+        double y = Math.sin(deltaLonRad) * Math.cos(lat2Rad);
+        double x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+                   Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(deltaLonRad);
+
+        return Math.toDegrees(Math.atan2(y, x));
+    }
+
+    // Approximate lat/lon to local meters relative to origin (lat0, lon0)
+    public static double[] latLonToMeters(double lat, double lon, double lat0, double lon0) {
+        double R = 6378137; // Earth radius in meters
+        double x = Math.toRadians(lon - lon0) * R * Math.cos(Math.toRadians(lat0));
+        double y = Math.toRadians(lat - lat0) * R;
+        return new double[]{x, y};
+    }
+
+    public static double[] metersToLatLon(double x, double y, double lat0, double lon0) {
+        double R = 6378137; // Earth radius in meters
+        double lat = y / R + Math.toRadians(lat0);
+        double lon = x / (R * Math.cos(Math.toRadians(lat0))) + Math.toRadians(lon0);
+        return new double[]{Math.toDegrees(lat), Math.toDegrees(lon)};
+    }
+
+    public static double[] rotatePoint(double x, double y, double cx, double cy, double angleRad) {
+	double dx = x - cx;
+	double dy = y - cy;
+	double cosA = Math.cos(angleRad);
+	double sinA = Math.sin(angleRad);
+	double xr = dx * cosA - dy * sinA;
+	double yr = dx * sinA + dy * cosA;
+	return new double[]{xr + cx, yr + cy};
+    }
+
+
+    public static double[] rotateLatLon(double lat, double lon,
+                                        double latCenter, double lonCenter,
+                                        double angleRad) {
+        // Convert to local XY in meters
+        double[] xy = latLonToMeters(lat, lon, latCenter, lonCenter);
+
+        // Rotate around origin (center)
+        double cosA = Math.cos(angleRad);
+        double sinA = Math.sin(angleRad);
+        double xRot = xy[0] * cosA - xy[1] * sinA;
+        double yRot = xy[0] * sinA + xy[1] * cosA;
+
+        // Convert back to lat/lon
+        return metersToLatLon(xRot, yRot, latCenter, lonCenter);
+    }
+
+public static double[] rotateLatLonDegrees(double lat, double lon,
+                                           double latCenter, double lonCenter,
+                                           double angleRad) {
+    double cosLatCenter = Math.cos(Math.toRadians(latCenter));
+
+    // Translate so center is origin
+    double x = (lon - lonCenter) * cosLatCenter; // scale longitude
+    double y = (lat - latCenter);
+
+    // Rotate
+    double xr = x * Math.cos(angleRad) - y * Math.sin(angleRad);
+    double yr = x * Math.sin(angleRad) + y * Math.cos(angleRad);
+
+    // Convert back, undo scaling
+    double lonRot = xr / cosLatCenter + lonCenter;
+    double latRot = yr + latCenter;
+
+    return new double[]{latRot, lonRot};
+}
+
+
+
     /**
      * _more_
      *
