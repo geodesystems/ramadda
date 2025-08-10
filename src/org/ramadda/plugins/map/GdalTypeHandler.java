@@ -74,6 +74,7 @@ public class GdalTypeHandler extends GenericTypeHandler {
                                      Service service, ServiceOutput output)
             throws Exception {
         super.handleServiceResults(request, entry, service, output);
+	System.err.println("handle service results");
         List<Entry> entries = output.getEntries();
         if (entries.size() != 0) {
             return;

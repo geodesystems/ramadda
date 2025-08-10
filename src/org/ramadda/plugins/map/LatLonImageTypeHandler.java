@@ -209,7 +209,7 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
 
     private String getImageUrl(Request request, Entry entry) throws Exception {
 	String url=null;
-	if(isType("geo_geotiff")) {
+	if(isType("geo_geotiff")|| isType("geo_envi_data")) {
 	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
 	    if(tuple!=null) url  = tuple[0];
 	} else {

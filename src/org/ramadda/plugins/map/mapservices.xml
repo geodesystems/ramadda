@@ -70,16 +70,18 @@
     <arg value="-outsize"/>
     <arg value="1200"/>
     <arg value="0"/>
-    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_gdal_raster" ></arg>
+    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_gdal_raster,geo_envi_data" ></arg>
     <arg value="${file}" file="${entry.file.base}.png"></arg>
     <output pattern=".*\.png" type="type_image"/>
   </service>
 
-  <service label="GDAL Info" id="gdal_info" command="${service.gdal.gdalinfo}" xoutputToStderr="true">
+  <service label="GDAL Info" id="gdal_info" command="${service.gdal.gdalinfo}"
+	   xoutputToStderr="true">
     <description>
       Run gdalinfo
     </description>
-    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_pdf,geo_gdal_raster" ></arg>
+    <arg value="${entry.file}"   type="entry" primary="true"
+	 entryType="geo_pdf,geo_gdal_raster,geo_envi_data" ></arg>
     <output showResults="true" stdout="true"/>
   </service>
 
