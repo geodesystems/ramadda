@@ -244,7 +244,6 @@ function RepositoryMap(mapId, params) {
             },
 	    
             featureclick: function(e) {
-
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
 		    if(debugSelect)    console.log('featureclick-1');
 		    return;
@@ -1592,8 +1591,10 @@ RepositoryMap.prototype = {
     },
 
     addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args,loadCallback) {
+	
 	let _this = this;
         let theArgs = {
+	    rotation:null,
             forSelect: false,
             addBox: true,
             isBaseLayer: false,
@@ -1620,6 +1621,25 @@ RepositoryMap.prototype = {
                 maxResolution: this.getMap().layers[0] ? this.getMap().layers[0].resolutions[0] : null
             }
         );
+	if(Utils.isDefined(theArgs.rotation) && image.div) {
+	    image.imageHook = ()=>{
+//		theArgs.rotation=-10;
+		let transform = 'rotate(' + theArgs.rotation+'deg)';
+		let childNodes = image.div.childNodes;
+		for(let i = 0, len = childNodes.length; i < len; ++i) {
+                    let element = childNodes[i].firstChild || childNodes[i];
+                    let lastChild = childNodes[i].lastChild;
+                    if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+			element = lastChild.parentNode;
+                    }
+		    if(element.style) {
+			element.style.transform=transform;
+		    }
+		}
+	    };
+	}
+
+
         image.events.on({
             "loadend": function(e) {
 		if(loadCallback) loadCallback(_this,image);
