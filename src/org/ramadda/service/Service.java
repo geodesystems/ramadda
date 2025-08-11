@@ -48,7 +48,7 @@ public class Service extends RepositoryManager {
 
     private static final String MACRO_OUTPUTDIR = "${outputdir}";
 
-    public static boolean debug = false;
+    public boolean debug = false;
     private static ServiceUtil dummyToForceCompile;
     public static final String ARG_SERVICEFORM = "serviceform";
     public static final String TAG_ARG = "arg";
@@ -143,7 +143,7 @@ public class Service extends RepositoryManager {
         init(parent, element, "service_" + index);
     }
 
-    private static void debug(String msg) {
+    private  void debug(String msg) {
         if (debug) {
             System.out.println(msg);
         }
@@ -196,6 +196,7 @@ public class Service extends RepositoryManager {
 						  (String) null);
         namePattern = XmlUtil.getAttributeFromTree(element, "namePattern",
 						   (String) null);
+	debug = XmlUtil.getAttributeFromTree(element,"debug",false);
         descriptionPattern = XmlUtil.getAttributeFromTree(element,
 							  "descriptionPattern", (String) null);
         if (namePattern != null) {
@@ -342,6 +343,13 @@ public class Service extends RepositoryManager {
 
         enabled = true;
 
+    }
+
+    public boolean hasApplied(Entry entry) {
+	String key = "handled service:" +toString();
+	if(entry.getTransientProperty(key)!=null) return true;
+	entry.putTransientProperty(key,"true");
+	return false;
     }
 
     public void toXml(Appendable xml, ServiceInput input) throws Exception {
@@ -763,10 +771,11 @@ public class Service extends RepositoryManager {
                 argValue = getRequestValue(request, input, argPrefix,
                                            arg.getName(), (String) null);
 
+		/** don't do this as the default is set in the form
                 if ((argValue == null) && (arg.getDefault() != null)) {
                     argValue = arg.getDefault();
                 }
-
+		*/
                 if (argValue != null) {}
             }
 
@@ -1728,6 +1737,8 @@ public class Service extends RepositoryManager {
 
 	//	System.err.println("commands:" + commands);
         //        System.out.println(getLinkXml(input));
+	if(debug) System.err.println("commands:" + commands);
+
         if (commandObject != null) {
             commandMethod.invoke(commandObject, new Object[] { request, this,
 							       input, commands });
@@ -1825,9 +1836,6 @@ public class Service extends RepositoryManager {
 	    //            System.err.println("Service: deleting file:" + f);
             f.delete();
         }
-
-	if(debug)
-	    System.err.println("Service.evaluate");
 
         for (OutputDefinition output : getOutputs()) {
             String depends = output.getDepends();
