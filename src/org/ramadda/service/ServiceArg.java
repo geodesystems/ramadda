@@ -13,7 +13,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -41,171 +40,56 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
 import java.util.regex.*;
 import java.util.zip.*;
 
 
-
-
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Oct 10, '14
- * @author         Enter your name here...
- */
 public class ServiceArg extends ServiceElement {
-
-    /** _more_ */
     private static final String TYPE_STRING = "string";
-
-    /** _more_ */
     private static final String TYPE_ENUMERATION = "enumeration";
-
-    /** _more_ */
     private static final String TYPE_INT = "int";
-
-    /** _more_ */
     private static final String TYPE_FLOAT = "float";
-
-    /** _more_ */
     private static final String TYPE_ENTRY = "entry";
-
-    /** _more_ */
     private static final String TYPE_FLAG = "flag";
-
-    /** _more_ */
     private static final String TYPE_FILE = "file";    
-
-    /** _more_ */
     private static final String TYPE_CATEGORY = "category";
-
-    /** _more_ */
     private static final String TYPE_DATE = "date";
-
-    /** _more_ */
     private Service service;
-
-    /** _more_ */
     private String name;
-
-
-    /** _more_ */
     private String value;
-
-    /** _more_ */
     private String dflt;
-
-    /** _more_ */
     private String prefix;
-
-    /** _more_ */
     private String group;
-
-    /** _more_ */
     private String file;
-
-    /** _more_ */
     private String filePattern;
-
-    /** _more_ */
     private SimpleDateFormat dateFormat;
-
-    /** _more_ */
     private String dateFormatString;
-
-    /** _more_ */
     private boolean nameDefined = false;
-
-
-    /** _more_ */
     private boolean ifDefined = true;
-
-    /** _more_ */
     private boolean include = true;
-
-
-    /** _more_ */
     private boolean multiple = false;
-
-    /** _more_ */
     private boolean first = false;
-
-    /** _more_ */
     private String multipleJoin;
-
-    /** _more_ */
     private boolean sameRow = false;
-
-
-    /** _more_ */
     private String label;
-
-    /** _more_ */
     private String help;
-
-    /** _more_ */
     private String type;
-
-
-
-    /** _more_ */
     private String depends;
-
-    /** _more_ */
     private boolean addAll;
-
-    /** _more_ */
     private boolean addNone;
-
-    /** _more_ */
     private String placeHolder;
-
-    /** _more_ */
     private String entryType;
-
-    /** _more_ */
     private List<String> entryTypes;
-
-    /** _more_ */
     private String entryPattern;
-
     private String matchPattern;    
-
-    /** _more_ */
     private boolean isPrimaryEntry = false;
-
-    /** _more_ */
     private boolean required = false;
-
-    /** _more_ */
     private boolean copy = false;
-
-    /** _more_ */
     private String fileName;
-
-    /** _more_ */
     private int size;
-
-
-    /** _more_ */
     private List<TwoFacedObject> values = new ArrayList<TwoFacedObject>();
-
-    /** _more_ */
     private String valuesProperty;
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param service _more_
-     * @param node _more_
-     * @param idx _more_
-     *
-     * @throws Exception _more_
-     */
     public ServiceArg(Service service, Element node, int idx)
             throws Exception {
         super(node);
@@ -216,10 +100,8 @@ public class ServiceArg extends ServiceElement {
         addAll       = XmlUtil.getAttribute(node, "addAll", false);
         addNone      = XmlUtil.getAttribute(node, "addNone", false);
 
-
         entryType = XmlUtil.getAttributeFromTree(node,
                 Service.ATTR_ENTRY_TYPE, (String) null);
-
 
         dateFormat =
             RepositoryUtil.makeDateFormat(dateFormatString =
@@ -301,14 +183,6 @@ public class ServiceArg extends ServiceElement {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     *
-     * @throws Exception _more_
-     */
     public void toXml(Appendable xml) throws Exception {
         StringBuilder attrs = new StringBuilder();
         Service.attr(attrs, Service.ATTR_TYPE, type);
@@ -352,14 +226,6 @@ public class ServiceArg extends ServiceElement {
         xml.append(XmlUtil.tag(Service.TAG_ARG, attrs.toString()));
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param debug _more_
-     *
-     * @return _more_
-     */
     public boolean isApplicable(Entry entry, boolean debug) {
         boolean defaultReturn = true;
 	//	debug  = entryType.equals("media_gs_thumbnail");
@@ -375,7 +241,6 @@ public class ServiceArg extends ServiceElement {
                 return true;
             }
         }
-
 
         if (entryTypes != null) {
 	    if(debug) System.err.println("entryTypes:" + entryTypes);
@@ -414,188 +279,82 @@ public class ServiceArg extends ServiceElement {
         return defaultReturn;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isRequired() {
         return required;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isMultiple() {
         return multiple;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return getName() + " " + getLabel();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isValueArg() {
         return (type == null) && !isCategory() && !nameDefined
                && Utils.stringDefined(value);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getIfDefined() {
         return ifDefined;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getInclude() {
         return include;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isEnumeration() {
         return (type != null) && type.equals(TYPE_ENUMERATION);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDate() {
         return (type != null) && type.equals(TYPE_DATE);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isFlag() {
         return (type != null) && type.equals(TYPE_FLAG);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isFile() {
         return (type != null) && type.equals(TYPE_FILE);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isEntry() {
         return (type != null) && type.equals(TYPE_ENTRY);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isInt() {
         return (type != null) && type.equals(TYPE_INT);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isFloat() {
         return (type != null) && type.equals(TYPE_FLOAT);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isPrimaryEntry() {
         return isPrimaryEntry;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isCategory() {
         return (type != null) && type.equals(TYPE_CATEGORY);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getGroup() {
         return group;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getPrefix() {
         return prefix;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getEntryType() {
         return entryType;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getEntryTypes() {
         return entryTypes;
     }
-
-
-
 
     /**
      * Set the Value property.
@@ -614,7 +373,6 @@ public class ServiceArg extends ServiceElement {
     public String getValue() {
         return value;
     }
-
 
     /**
      * Get the Id property.
@@ -643,12 +401,6 @@ public class ServiceArg extends ServiceElement {
         return label;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHelp() {
         return help;
     }
@@ -689,41 +441,17 @@ public class ServiceArg extends ServiceElement {
         return fileName;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getFile() {
         return file;
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getFilePattern() {
         return filePattern;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getValuesProperty() {
         return valuesProperty;
     }
-
-
-
 
     /**
      * Set the Type property.
@@ -761,7 +489,6 @@ public class ServiceArg extends ServiceElement {
         return values;
     }
 
-
     /**
      *  Get the Category property.
      *
@@ -775,94 +502,42 @@ public class ServiceArg extends ServiceElement {
         return label;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDefault() {
         return dflt;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getSameRow() {
         return sameRow;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getFirst() {
         return first;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getAddAll() {
         return addAll;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getPlaceHolder() {
         return placeHolder;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getAddNone() {
         return addNone;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getCopy() {
         return copy;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDepends() {
         return depends;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getMultipleJoin() {
         return multipleJoin;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public SimpleDateFormat getDateFormat() {
         return dateFormat;
     }
