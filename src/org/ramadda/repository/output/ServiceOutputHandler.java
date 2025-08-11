@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
 
@@ -36,6 +37,8 @@ import java.util.List;
 public class ServiceOutputHandler extends OutputHandler {
 
     public static final String ARG_ASYNCH = "asynch";
+    public static final String ARG_ADDTHUMBNAIL = "addthumbnail";
+    public static final String ARG_ADDTHUMBNAIL_DELETE = "addthumbnaildelete";        
     public static final String ARG_TOXML = "toxml";
     public static final String ARG_NEWDIRECTORY = "newdirectory";
     public static final String ARG_SHOWCOMMAND = "showcommand";
@@ -302,6 +305,8 @@ public class ServiceOutputHandler extends OutputHandler {
 
 		    getActionManager().setActionMessage(actionId,"Service complete");
                     String url = processDirUrl;
+
+
                     if (doingPublish && (outputEntries.size() > 0)) {
                         url = request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
@@ -317,6 +322,7 @@ public class ServiceOutputHandler extends OutputHandler {
         }
 
         StringBuffer        sb            = new StringBuffer();
+	HU.div(sb,"Processing results for: " + getEntryLink(request, baseEntry),"");
         List<Entry>         outputEntries = new ArrayList<Entry>();
         List<ServiceOutput> outputs       = new ArrayList<ServiceOutput>();
         for (ServiceInput serviceInput : serviceInputs) {
@@ -337,6 +343,7 @@ public class ServiceOutputHandler extends OutputHandler {
                 return new Result(actionName, sb);
             }
             outputEntries.addAll(output.getEntries());
+
             if (serviceInput.getForDisplay()) {
                 sb.append(output.getResults());
                 sb.append("\n");
@@ -379,6 +386,23 @@ public class ServiceOutputHandler extends OutputHandler {
                     getRepository().URL_ENTRY_SHOW, outputEntries.get(0)));
         }
 
+	if(request.get(ARG_ADDTHUMBNAIL,false)) {
+	    for(Entry e:outputEntries) {
+		if(e.isImage()) {
+		    if(request.get(ARG_ADDTHUMBNAIL_DELETE,false)) {
+			getMetadataManager().deleteThumbnails(request, baseEntry);
+		    }
+		    File thumbnailFile =  getStorageManager().copyToEntryDir(baseEntry,e.getFile());
+		    Metadata metadata = new Metadata(getRepository().getGUID(), baseEntry.getId(),
+						     getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
+						     false,  thumbnailFile.getName(), null, null, null, null);
+
+		    getMetadataManager().addMetadata(request,baseEntry,metadata,false);
+		    getEntryManager().updateEntry(request, baseEntry);
+		    break;
+		}
+	    }
+	}
         //Redirect to the products dir entry 
         if (request.get(ARG_GOTOPRODUCTS, false) && !forDisplay) {
             return new Result(processDirUrl);
@@ -516,6 +540,15 @@ public class ServiceOutputHandler extends OutputHandler {
         extraSubmit.add(HU.labeledCheckbox(ARG_GOTOPRODUCTS, "true",
                 request.get(ARG_GOTOPRODUCTS, haveAnyOutputs),
                 "Go to products page"));
+
+
+	String thumbnail = HU.labeledCheckbox(ARG_ADDTHUMBNAIL, "true",
+					      request.get(ARG_ADDTHUMBNAIL, false), "Add thumbnail if image")+
+	    HU.space(2) +
+	    HU.labeledCheckbox(ARG_ADDTHUMBNAIL_DELETE, "true",
+			       request.get(ARG_ADDTHUMBNAIL_DELETE, false), "Delete existing thumbnails");
+	    
+        extraSubmit.add(thumbnail);
         extraSubmit.add(HU.labeledCheckbox(ARG_WRITEWORKFLOW, "true",
                 request.get(ARG_WRITEWORKFLOW, false), "Write workflow"));
         if ( !request.isAnonymous()) {
@@ -559,7 +592,8 @@ public class ServiceOutputHandler extends OutputHandler {
 	    etc.append(HU.formTableClose());
 	    TypeHandler typeHandler = service.getOutputTypeHandler();
 	    if(typeHandler!=null) {
-		typeHandler.getFileExtras( request, null, etc);
+		//Not now as this adds tons of widgets
+		//		typeHandler.getFileExtras( request, null, etc);
 	    }
 
         }
@@ -613,8 +647,8 @@ public class ServiceOutputHandler extends OutputHandler {
         if (desc == null) {
             desc = "";
         }
-	if(desc.indexOf("{{tree") <0) {
-	    desc = desc+"\n{{tree message=\"\"}}";
+	if(desc.indexOf("{{tree") <0 && desc.indexOf("{{tabletree") <0) {
+	    desc = desc+"\n{{tabletree message=\"\"}}";
 	}
         desc = "<wiki>\n+section title={{name}}\n" + desc
                + "\n-section\n";
