@@ -529,7 +529,7 @@ WikiEditor.prototype = {
 	    }
 	    
 	    if(what==what_image) {
-		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center screenshot=true #width=75% }} ";
+		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" #width=75% #screenshot=true bordercolor=\"#ccc\" align=center  }} ";
 	    } else  if(what==what_map) {
 		text = "{{map entry=" + entryId+" details=true}}";
 	    } else  if(what==what_editable_map) {
