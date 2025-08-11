@@ -8669,13 +8669,24 @@ public class WikiManager extends RepositoryManager
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
+		boolean not = property.startsWith("!");
+		if(not) {
+		    property = property.substring(1);
+		}
+		Object value = entry.getValue(request, property);
+		if(value==null) {
+		    if(not) return true;
+		    return false;
+		}
 		String match = (String) props.get("match");
 		props.remove("property");
-		Object value = entry.getValue(request, property);
-		if(value==null) return false;
+		boolean ok = true;
 		if(match!=null) 
-		    return value.toString().equals(match);
-		return value.toString().equals("true");
+		    ok= value.toString().equals(match);
+		else 
+		    ok= value.toString().equals("true");
+		if(not) return !ok;
+		return ok;
 	    }
 
 	    boolean ok = true;
