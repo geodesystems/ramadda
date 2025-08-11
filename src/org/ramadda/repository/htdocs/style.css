@@ -1737,6 +1737,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draft {
     background: URL(images/draft.png);
+    min-height:400px;
 }
 
 .ramadda-splash-container {
