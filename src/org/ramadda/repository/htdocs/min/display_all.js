@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 11 04:18:30 MDT 2025";
+var build_date="RAMADDA build date: Mon Aug 11 08:59:16 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -51146,18 +51146,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {isData:true,
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
+	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
+			  {  externalGraphic:Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),
+			  },
+			  MyEntryPoint,
+			  {isZoom:true,
+			   tooltip:'Add a viewpoint location',
+			   icon:Ramadda.getUrl('/nps/binoculars_medium_gray.svg')});	    	    
+
+
 	    new GlyphType(this,GLYPH_OSM_LOCATIONS,"Query OSM",
  			  {externalGraphic: externalGraphic},
 			  MyEntryPoint,
 			  {isOsm:true,
 			   tooltip:'Query Open Stree Map for locations',
 			   icon:Ramadda.getUrl("/icons/osm.png")});
-	    new GlyphType(this,GLYPH_ZOOM,"Zoom To",
-			  {externalGraphic: Ramadda.getUrl("/nps/birding-wildlife-viewing-black-22.svg")},
-			  MyEntryPoint,
-			  {isZoom:true,
-			   tooltip:'Add a zoom to location',
-			   icon:Ramadda.getUrl("/nps/birding-wildlife-viewing-black-22.svg")});	    	    
 
 	},
 	clearMessage2:function(time) {
@@ -51756,6 +51759,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    let text=HU.div([ATTR_CLASS,'imdv-popup-header'],
 			    mapGlyph.getLabel({})??'');
+	    let entryLink = mapGlyph.getEntryLink('View entry');
+	    if(entryLink) text+=HU.div([],entryLink);
 	    text+= HU.div([],mapGlyph.getPopupText()??'');
 	    text = text??'';
 	    let bg = 	    mapGlyph.getLegendDiv().css('background');
@@ -54846,23 +54851,28 @@ MapGlyph.prototype = {
 	if(this.isZoom()) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    this.setLocationId = HU.getUniqueId('setlocation');
-	    buttons =  HU.span([ATTR_ID,this.setLocationId,ATTR_TITLE,'Set location',
+	    buttons =  HU.span([ATTR_ID,this.setLocationId,ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)) +buttons;
+			       HU.image(Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),['width','16x'])
+			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
 
 
 
-	if(this.attrs.entryId) {
-	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
-	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry',ATTR_TITLE,'View entry',
-											ATTR_CLASS,CLASS_CLICKABLE]) +buttons;
+	let entryLink = this.getEntryLink();
+	if(entryLink) {
+	    buttons = entryLink + HU.space(1)+buttons;
 	}
 	return buttons;
     },
 
 
+    getEntryLink: function(label) {
+	if(!this.attrs.entryId)  return null;
+	let url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
+	return  HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS)+(label?' ' + label:''),
+			[ATTR_TARGET,'_entry',ATTR_TITLE,'View entry', ATTR_CLASS,CLASS_CLICKABLE]);
+    },
 
     getLegendBody:function() {
 	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
