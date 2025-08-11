@@ -2,6 +2,11 @@
 
   <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"
 	handler="org.ramadda.plugins.files.XlsTypeHandler" priority="10" >
+  <column name="display_inline" type="boolean" default="false" label="Display Inline"
+	  showinhtml="false"
+	  help="If display inline set to true then the document is passed to officeapps.live.com and displayed in an embedded frame"/>
+
+
   <wikimacro name="embedms" label="Embed XLS"
 	     properties="height=800px width=100%">
   <![CDATA[{{embedms width="${width}" height="${height}"}}]]></wikimacro>
@@ -25,7 +30,13 @@ picky=false
 +toggle Information
 {{information  details="true"  showTitle="false" }}
 -toggle
++if property=display_inline
+{{embedms}}
+-if
++if property=!display_inline
 {{display_table height=800px}}
+-if
+
 -section
 ]]>
 </wiki>
