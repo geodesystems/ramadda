@@ -78,14 +78,10 @@ public class GdalTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.handleServiceResults(request, entry, service, output);
 	if(!Misc.equals("gdal_info",service.getAbsoluteId())) return;
-	String key = "handled service:" +service.toString();
+	String key = "gdal handled service:" +service.toString();
 	if(entry.getTransientProperty(key)!=null) return;
 	entry.putTransientProperty(key,"true");
-	//        List<Entry> entries = output.getEntries();
-	//	System.err.println("good:" + entries);
-	//        if (entries.size() != 0) {            return;        }
         String results = output.getResults();
-        //      System.err.println("results:" + results);
         /*
 Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
 Lower Left  (  -28493.167, 4224973.143) (117d38'27.05"W, 33d39'53.81"N)
@@ -173,8 +169,6 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 
 	double angleDeg=Double.NaN;
 	double angleRad=Double.NaN;	
-	System.err.println(service.getAbsoluteId() +" ll:" + ulLat +" " +urLat);
-	
         if (!Double.isNaN(centerLat)&& !Double.isNaN(ulLat) && !Double.isNaN(urLat)) {
 	    double[] ulXY = GeoUtils.latLonToMeters(ulLat, ulLon, centerLat, centerLon);
 	    double[] urXY = GeoUtils.latLonToMeters(urLat, urLon, centerLat, centerLon);	    
@@ -193,12 +187,10 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 	    entry.setValue("rotation",new Double(-angleDeg));
 	    double[] ulRotated = GeoUtils.rotatePoint(ulLat, ulLon, centerLat, centerLon, angleRad);
 	    double[] lrRotated = GeoUtils.rotatePoint(lrLat, lrLon, centerLat, centerLon, angleRad);
-	    System.err.println("ANGLE C:" + angleDeg +" nwse:" + north +" " + west +" " + south +" " + east);
 	    north = ulRotated[0];
 	    west = ulRotated[1];	    
 	    south = lrRotated[0];
 	    east = lrRotated[1];	    
-	    System.err.println("ANGLE C:" + angleDeg +" nwse:" + north +" " + west +" " + south +" " + east);
 	}
 	
 

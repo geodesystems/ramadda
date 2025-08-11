@@ -73,13 +73,11 @@
     <wiki><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
-{{information showTitle="false" details="true"}}
-:rem +if property=show_map
+{{information showTitle="false" details="true" menus=service}}
 :vspace 1em
 +center
-{{map detailed=true width=80% showOpacitySlider=true}}
+{{map detailed=true width=80% showOpacitySlider=true hideIfNoLocations=true}}
 -center
-:rem -if
 -section
 ]]>
 </wiki>
