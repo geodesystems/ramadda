@@ -2226,23 +2226,28 @@ MapGlyph.prototype = {
 	if(this.isZoom()) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    this.setLocationId = HU.getUniqueId('setlocation');
-	    buttons =  HU.span([ATTR_ID,this.setLocationId,ATTR_TITLE,'Set location',
+	    buttons =  HU.span([ATTR_ID,this.setLocationId,ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)) +buttons;
+			       HU.image(Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),['width','16x'])
+			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
 
 
 
-	if(this.attrs.entryId) {
-	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
-	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry',ATTR_TITLE,'View entry',
-											ATTR_CLASS,CLASS_CLICKABLE]) +buttons;
+	let entryLink = this.getEntryLink();
+	if(entryLink) {
+	    buttons = entryLink + HU.space(1)+buttons;
 	}
 	return buttons;
     },
 
 
+    getEntryLink: function(label) {
+	if(!this.attrs.entryId)  return null;
+	let url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
+	return  HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS)+(label?' ' + label:''),
+			[ATTR_TARGET,'_entry',ATTR_TITLE,'View entry', ATTR_CLASS,CLASS_CLICKABLE]);
+    },
 
     getLegendBody:function() {
 	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();

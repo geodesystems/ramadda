@@ -5290,18 +5290,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {isData:true,
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
+	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
+			  {  externalGraphic:Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),
+			  },
+			  MyEntryPoint,
+			  {isZoom:true,
+			   tooltip:'Add a viewpoint location',
+			   icon:Ramadda.getUrl('/nps/binoculars_medium_gray.svg')});	    	    
+
+
 	    new GlyphType(this,GLYPH_OSM_LOCATIONS,"Query OSM",
  			  {externalGraphic: externalGraphic},
 			  MyEntryPoint,
 			  {isOsm:true,
 			   tooltip:'Query Open Stree Map for locations',
 			   icon:Ramadda.getUrl("/icons/osm.png")});
-	    new GlyphType(this,GLYPH_ZOOM,"Zoom To",
-			  {externalGraphic: Ramadda.getUrl("/nps/birding-wildlife-viewing-black-22.svg")},
-			  MyEntryPoint,
-			  {isZoom:true,
-			   tooltip:'Add a zoom to location',
-			   icon:Ramadda.getUrl("/nps/birding-wildlife-viewing-black-22.svg")});	    	    
 
 	},
 	clearMessage2:function(time) {
@@ -5900,6 +5903,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    let text=HU.div([ATTR_CLASS,'imdv-popup-header'],
 			    mapGlyph.getLabel({})??'');
+	    let entryLink = mapGlyph.getEntryLink('View entry');
+	    if(entryLink) text+=HU.div([],entryLink);
 	    text+= HU.div([],mapGlyph.getPopupText()??'');
 	    text = text??'';
 	    let bg = 	    mapGlyph.getLegendDiv().css('background');
