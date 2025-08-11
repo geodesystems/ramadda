@@ -76,7 +76,7 @@
 {{information showTitle="false" details="true" menus=service}}
 :vspace 1em
 +center
-{{map detailed=true width=80% showOpacitySlider=true hideIfNoLocations=true}}
+{{map height=500px detailed=true width=80% showOpacitySlider=true hideIfNoLocations=true}}
 -center
 -section
 ]]>
