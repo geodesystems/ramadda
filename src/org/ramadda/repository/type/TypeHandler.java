@@ -3495,8 +3495,10 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 
+
             //Now run the services
             for (Service service : services) {
+		if(service.hasApplied(entry)) continue;
 		applyService(request, entry,service);
 	    }
         }
@@ -3513,6 +3515,8 @@ public class TypeHandler extends RepositoryManager {
 	    //	    System.err.println("not enabled");
 	    return;
 	}
+
+
 	try {
 	    //		    System.err.println("service:" + service);
 	    File workDir = getStorageManager().createProcessDir();
