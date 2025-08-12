@@ -100,6 +100,34 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         double south = Double.NaN;
         double east  = Double.NaN;
         double west  = Double.NaN;
+	StringBuilder desc = new StringBuilder();
+	String scope = StringUtil.findPattern(results,"SCOPE\\[(.*)\\]");
+	if(scope!=null) {
+	    scope= scope.replace("\"","");
+	    desc.append("Scope: ");
+	    desc.append(scope);
+	    desc.append("<br>");
+	}
+	String area = StringUtil.findPattern(results,"AREA\\[(.*)\\]");
+	if(area!=null) {
+	    area= area.replace("\"","");
+	    desc.append("<br>Area: ");
+	    desc.append(area);
+	    desc.append("<b>");
+	}	
+	if(desc.length()>0) {
+	    entry.setDescription(entry.getDescription()+desc);
+	}
+
+	/*
+        SCOPE["Engineering survey, topographic mapping."],
+        AREA["North America - between 102°W and 96°W - onshore and offshore. Canada - Manitoba; Nunavut; Saskatchewan. United States (USA) - Iowa; Kansas; Minnesota; Nebraska; North Dakota; Oklahoma; South Dakota; Texas."],
+        BBOX[25.83,-102,84,-96]],
+    ID["EPSG",26914]]
+	*/
+
+
+
         for (String line : StringUtil.split(results, "\n", true, true)) {
             double[] latlon;
             if (line.indexOf("Upper Left") >= 0) {
