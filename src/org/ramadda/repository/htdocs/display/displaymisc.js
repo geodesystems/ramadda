@@ -2797,7 +2797,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 		enums.push([field.getId(),label]);
 	    });
 	    let select = HU.span([ATTR_CLASS,"display-filterby"],
-				 "Display: " + HU.select("",[ATTR_STYLE,"", ID,this.domId("crosstabselect")],enums,
+				 "Display: " + HU.select("",[ATTR_STYLE,"", ATTR_ID,this.domId("crosstabselect")],enums,
 							 this.getProperty("column", "", true)));
 
 
@@ -3003,11 +3003,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    if(this.getShowSelectSlider()) {
 		let lowSlider = HU.div([ATTR_STYLE,HU.css('display','inline-block')],HU.div([],"Negative Correlation") +  
 				       HU.div([ATTR_ID,this.gid(ID_SLIDER_LOW_MIN),ATTR_STYLE,HU.css(ATTR_WIDTH,'50px','display','inline-block','text-align','right','margin-right','15px')],this.range.low.min) +
-				       HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block',ATTR_WIDTH,'200px','background',this.getProperty('lowSliderBackground','#FD9596')), ID,this.gid(ID_SLIDER_LOW)]) +
+				       HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block',ATTR_WIDTH,'200px','background',this.getProperty('lowSliderBackground','#FD9596')), ATTR_ID,this.gid(ID_SLIDER_LOW)]) +
 				       HU.div([ATTR_ID,this.gid(ID_SLIDER_LOW_MAX),ATTR_STYLE,HU.css('text-align','left','width','50px','display','inline-block','margin-left','15px')],this.range.low.max));
 		let highSlider = HU.div(["display","inline-block;"], HU.div([],"Positive Correlation") +
 					HU.div([ATTR_ID,this.gid(ID_SLIDER_HIGH_MIN),ATTR_STYLE,HU.css('width','50px','display','inline-block','text-align','right', 'margin-right','15px')],this.range.high.min) +
-					HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block','width','200px','background',this.getProperty('highSliderBackground','#64A982')), ID,this.gid(ID_SLIDER_HIGH)]) +
+					HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block','width','200px','background',this.getProperty('highSliderBackground','#64A982')), ATTR_ID,this.gid(ID_SLIDER_HIGH)]) +
 					HU.div([ATTR_ID,this.gid(ID_SLIDER_HIGH_MAX),ATTR_STYLE,HU.css('text-align','left','width','50px','display','inline-block','margin-left','15px')],this.range.high.max));
 
 
