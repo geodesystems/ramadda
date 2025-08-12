@@ -589,7 +589,6 @@ function Annotations(display,records) {
     if(prop) this.fields = [];
     this.map = {}
     let add = (record,index,annotation)=>{
-	console.log(record.getDate());
 	annotation.record = record;
 	if(!this.map[index])
 	    this.map[index] = [];

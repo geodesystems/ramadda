@@ -134,7 +134,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    let sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
 	    let strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
-	    let table =HU.open(TABLE,[WIDTH,"100%"]);
+	    let table =HU.open(TAG_TABLE,[ATTR_WIDTH,"100%"]);
 	    let width = this.getProperty("cellWidth", this.getProperty("cellSize",0));
 	    let height = this.getProperty("cellHeight",width);
 	    if(height==0) height=30;
@@ -148,15 +148,15 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let o = map[id];
 		    let extra = " id='" + id +"' ";
 		    let style = HU.css('position','relative','margin','1px','vertical-align','center','text-align','center',HEIGHT, height+"px");
-		    if(width>0) style+=HU.css(WIDTH,width+'px');
+		    if(width>0) style+=HU.css(ATTR_WIDTH,width+'px');
 		    let c = "";
 		    if(o) {
 			style+="background:#ccc;" + cellStyle;
 			if(!sparkLineField) {
 			    extra += " title='" + o.name +"' ";
 			}
-			extra += HU.attr(CLASS,'display-mapgrid-cell');
-			c = HU.div([STYLE,HU.css('padding-left','3px')], (showLabel?o.codes[0]:""));
+			extra += HU.attr(ATTR_CLASS,'display-mapgrid-cell');
+			c = HU.div([ATTR_STYLE,HU.css('padding-left','3px')], (showLabel?o.codes[0]:""));
 			o.codes.forEach(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
@@ -165,8 +165,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		}
 		table+=HU.close(TR);
 	    }
-	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ID,this.domId(ID_COLORTABLE)])));
-	    table+=HU.close(TABLE);
+	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
+	    table+=HU.close(TAG_TABLE);
 	    this.setContents(HU.center(table));
 
 	    let states = [];
@@ -240,8 +240,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    if(cellWidth==0) {
 			cellWidth = $("#" + s.cellId).width();
 		    }
-		    let style = HU.css(WIDTH,cellWidth+'px',HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
-		    let innerDiv = HU.div([ID, innerId, STYLE,style]);
+		    let style = HU.css(ATTR_WIDTH,cellWidth+'px',ATTR_HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
+		    let innerDiv = HU.div([ATTR_ID, innerId, ATTR_STYLE,style]);
 		    $("#" + s.cellId).append(innerDiv);
 		    drawSparkline(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
@@ -383,7 +383,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	},
 	writeMap:function(skipHeight)  {
 	    let width = this.getMapWidth(this.getProperty("width",800));
-	    let css = HU.css(BACKGROUND,this.getMapBackground("transparent"),WIDTH,HU.getDimension(width));
+	    let css = HU.css(ATTR_BACKGROUND,this.getMapBackground("transparent"),ATTR_WIDTH,HU.getDimension(width));
 	    let height;
 	    if(!skipHeight) {
 		height = this.getMapHeight(this.getProperty("height"));
@@ -399,7 +399,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    this.mapRange.minLon= this.getPropertyMinLon(this.mapRange.minLon);
 	    this.mapRange.maxLat= this.getPropertyMaxLat(this.mapRange.maxLat);
 	    this.mapRange.minLat= this.getPropertyMinLat(this.mapRange.minLat);	    	    
-	    this.setContents(HU.div([ID,this.domId(ID_BASEMAP),STYLE,css]));
+	    this.setContents(HU.div([ATTR_ID,this.domId(ID_BASEMAP),ATTR_STYLE,css]));
 	    if(isNaN(width)) {
 		width = this.getContents().width();
 	    }
@@ -848,10 +848,12 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 	    let html = "";
 	    sortedRegions.forEach((region,idx)=>{
-		html+= HU.div([CLASS,"display-maparray-block"],
-			      HU.div([CLASS,"display-maparray-header"],region) +
-			      HU.div([ID,this.domId(ID_MAPBLOCK+"_"+idx),CLASS,"display-maparray-map",STYLE,HU.css(WIDTH,blockWidth+"px",HEIGHT,blockHeight+"px")]) +
-			      HU.div([ID,this.domId(ID_MAPLABEL+"_"+idx),"display-maparray-label"]));			      
+		html+= HU.div([ATTR_CLASS,"display-maparray-block"],
+			      HU.div([ATTR_CLASS,"display-maparray-header"],region) +
+			      HU.div([ATTR_ID,this.domId(ID_MAPBLOCK+"_"+idx),
+				      ATTR_CLASS,"display-maparray-map",
+				      ATTR_STYLE,HU.css(ATTR_WIDTH,blockWidth+"px",ATTR_HEIGHT,blockHeight+"px")]) +
+			      HU.div([ATTR_ID,this.domId(ID_MAPLABEL+"_"+idx),"display-maparray-label"]));			      
 
 
 		    
