@@ -609,7 +609,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
-		    style+=HU.css(BACKGROUND,c);
+		    style+=HU.css(ATTR_BACKGROUND,c);
 		}
 
 		let recordContents;
