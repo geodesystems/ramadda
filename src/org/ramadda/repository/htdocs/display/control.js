@@ -218,7 +218,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    
 
 	    let btn = (data,title,icon,id)=>{
-		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,title,'command',data];
+		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',
+			     ATTR_TITLE,title,'command',data];
 		if(id) attrs.push(ATTR_ID,this.domId(id));
 		html +=HU.span(attrs,HU.getIconImage(icon))
 	    }
@@ -873,7 +874,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		if(!Utils.isDefined(on)) {
 		    on = true;
 		}
-		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
+		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
 	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
 	    html = HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
@@ -998,7 +999,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
 	    }		
 	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+		html+=" " + HU.span([ATTR_CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
 	    } else {
 		if(this.getPropertyShowCheckbox()) {
 		    html+=" " + HU.span([ATTR_ID,this.getDomId(ID_COUNTDOWN)],"Reload");
@@ -1123,7 +1124,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    }
 	    let html = "";
 	    Object.keys(years).sort().forEach(year=>{
-		html+=HU.div([CLASS,'display-ticks-ticks', ATTR_ID,this.getDomId(ID_ANIMATION+year)]);
+		html+=HU.div([ATTR_CLASS,'display-ticks-ticks', ATTR_ID,this.getDomId(ID_ANIMATION+year)]);
 	    })
 	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 

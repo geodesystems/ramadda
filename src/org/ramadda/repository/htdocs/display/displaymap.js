@@ -4532,7 +4532,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
-                let menu = HU.open(SELECT,[ATTR_CLASS,'ramadda-pulldown',
+                let menu = HU.open(TAG_SELECT,[ATTR_CLASS,'ramadda-pulldown',
 					   ATTR_ID,this.domId("colorByMenu")]);
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -4541,7 +4541,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
                 }
-                menu += HU.close(SELECT);
+                menu += HU.close(TAG_SELECT);
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);
                 this.jq("colorByMenu").change(() => {
                     let value = this.jq("colorByMenu").val();

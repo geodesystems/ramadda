@@ -153,9 +153,9 @@ RamaddaMediaTranscript.prototype = {
 	    table+=HtmlUtils.tr([ATTR_CLASS,'ramadda-hoverable','valign','top','id',p.rowId,'point-index',idx], 
 				prefix+
 				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','5%','style',HU.css('white-space','nowrap')], time) +
-				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','95%'], HU.div([STYLE,HU.css('margin-left','10px')],p.title)));
+				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','95%'], HU.div([ATTR_STYLE,HU.css('margin-left','10px')],p.title)));
 
-	    let details =  HU.div([CLASS,'ramadda-clickable ramadda-media-play','data-player-time',p.time],
+	    let details =  HU.div([ATTR_CLASS,'ramadda-clickable ramadda-media-play','data-player-time',p.time],
 				  HU.getIconImage('fas fa-play') + ' ' +
 				  'Play Segment' );
 
@@ -168,9 +168,9 @@ RamaddaMediaTranscript.prototype = {
 	    if(p.subjects && p.subjects.length>0) {
 		details+=HU.div([],HU.b("Subjects: ") + p.subjects.join(" "));
 	    }
-	    details = HU.div([CLASS,'ramadda-media-point-details-inner'],
+	    details = HU.div([ATTR_CLASS,'ramadda-media-point-details-inner'],
 			     details);
-	    let detailsDiv = HU.div([ID,p.detailsId,CLASS,'ramadda-media-point-details',STYLE,HU.css('display','none')],details);
+	    let detailsDiv = HU.div([ATTR_ID,p.detailsId,ATTR_CLASS,'ramadda-media-point-details',ATTR_STYLE,HU.css('display','none')],details);
 	    table+=HtmlUtils.tr([], HU.td(['colspan','3'], detailsDiv));
 	});
 	table+="</table>";
@@ -181,17 +181,17 @@ RamaddaMediaTranscript.prototype = {
 	}
 
 
-	table = HU.div([CLASS,"ramadda-media-points"], table);
+	table = HU.div([ATTR_CLASS,"ramadda-media-points"], table);
 	let search='';
 	this.searchInputId = HU.getUniqueId("search_");
 	let exportId =HU.getUniqueId("export_");
 	if(this.points.length>0) {
 	    search = HU.span([ATTR_ID, exportId,ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,'Export'],HU.getIconImage('fas fa-file-export'))+HU.space(2);
-	    search += HU.input("","",[ATTR_CLASS,'ramadda-media-search', "placeholder","Search",ATTR_ID,this.searchInputId]) + " " + HU.span([ATTR_TITLE,'Clear search',ATTR_ID,this.searchInputId+"_clear",CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser'));
+	    search += HU.input("","",[ATTR_CLASS,'ramadda-media-search', "placeholder","Search",ATTR_ID,this.searchInputId]) + " " + HU.span([ATTR_TITLE,'Clear search',ATTR_ID,this.searchInputId+"_clear",ATTR_CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser'));
 	    search+=
-		HU.div([ATTR_ID,this.searchId+"_results",STYLE,HU.css('max-width','300px','overflow-x','auto')]) ;
+		HU.div([ATTR_ID,this.searchId+"_results",ATTR_STYLE,HU.css('max-width','300px','overflow-x','auto')]) ;
 	}
-	search =HU.div([STYLE,HU.css('margin-left','10px')], extra+search);
+	search =HU.div([ATTR_STYLE,HU.css('margin-left','10px')], extra+search);
 	jqid(this.searchId).html(search);
 	jqid(exportId).click(()=>{
 	    let csv ='';
