@@ -2496,7 +2496,7 @@ public class TypeHandler extends RepositoryManager {
                 (List<String>) getSessionManager().getSessionProperty(
 								      request, ARG_TYPE);
             HashSet seen   = new HashSet();
-            boolean didone = addTypes(request, entry, links, getDefaultChildrenTypes(),
+            boolean didone = addTypes(request, entry, links, entry.getTypeHandler().getDefaultChildrenTypes(),
                                       seen);
             didone |= addTypes(request, entry, links, pastTypes, seen);
             didone |= addTypesFromEntries(request, entry, links,
