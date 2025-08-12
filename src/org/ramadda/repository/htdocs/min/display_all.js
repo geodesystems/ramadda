@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 12 04:57:22 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 05:03:43 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -25911,7 +25911,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    
 
 	    let btn = (data,title,icon,id)=>{
-		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,title,'command',data];
+		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',
+			     ATTR_TITLE,title,'command',data];
 		if(id) attrs.push(ATTR_ID,this.domId(id));
 		html +=HU.span(attrs,HU.getIconImage(icon))
 	    }
@@ -26566,7 +26567,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		if(!Utils.isDefined(on)) {
 		    on = true;
 		}
-		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
+		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
 	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
 	    html = HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
@@ -26691,7 +26692,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
 	    }		
 	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+		html+=" " + HU.span([ATTR_CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
 	    } else {
 		if(this.getPropertyShowCheckbox()) {
 		    html+=" " + HU.span([ATTR_ID,this.getDomId(ID_COUNTDOWN)],"Reload");
@@ -26816,7 +26817,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    }
 	    let html = "";
 	    Object.keys(years).sort().forEach(year=>{
-		html+=HU.div([CLASS,'display-ticks-ticks', ATTR_ID,this.getDomId(ID_ANIMATION+year)]);
+		html+=HU.div([ATTR_CLASS,'display-ticks-ticks', ATTR_ID,this.getDomId(ID_ANIMATION+year)]);
 	    })
 	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 
@@ -33633,7 +33634,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 
 
-	    corpus+=HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,"position:absolute;top:0;left:0;"],
+	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,"position:absolute;top:0;left:0;"],
 			   HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
@@ -43577,7 +43578,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
-                let menu = HU.open(SELECT,[ATTR_CLASS,'ramadda-pulldown',
+                let menu = HU.open(TAG_SELECT,[ATTR_CLASS,'ramadda-pulldown',
 					   ATTR_ID,this.domId("colorByMenu")]);
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -43586,7 +43587,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
                 }
-                menu += HU.close(SELECT);
+                menu += HU.close(TAG_SELECT);
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);
                 this.jq("colorByMenu").change(() => {
                     let value = this.jq("colorByMenu").val();
