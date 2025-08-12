@@ -7091,7 +7091,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let  highlight = this.getFilterHighlight();
 	    if(this.getShowFilterHighlight()) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		let select =  HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
+		let select =  HU.select("",["fieldId","_highlight",
+					    ATTR_ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
 		if(hideFilterWidget) {
 		    select = HU.div([ATTR_STYLE,HU.css("display","none")], select);
 		}

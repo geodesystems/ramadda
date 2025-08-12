@@ -2678,7 +2678,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		} else {
 		    value = this.formatNumber(value);
 		}
-		html += HU.tr([VALIGN,'top',ATTR_CLASS,'display-ranking-row','what',record.getId()],
+		html += HU.tr([ATTR_VALIGN,'top',ATTR_CLASS,'display-ranking-row','what',record.getId()],
 			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +HU.td([ATTR_ALIGN,'right'], SPACE +
 											    value));
             }
@@ -4070,7 +4070,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    if(template) {
 		html= headerTemplate;
 	    } else {
-		html += HU.open(TAG_TABLE, [ATTR_CLASS, "stripe nowrap ramadda-table", ID, this.domId("percentchange")]);
+		html += HU.open(TAG_TABLE, [ATTR_CLASS, "stripe nowrap ramadda-table",
+					    ATTR_ID, this.domId("percentchange")]);
 		html += HU.open(TAG_THEAD, []);
 		html += HU.tr([], HU.th([ATTR_STYLE,HU.css('text-align','center')], this.getProperty("fieldLabel", "Field")) + HU.th([ATTR_STYLE,HU.css('text-align','center')], label1) + HU.th([ATTR_STYLE,HU.css('text-align','center')], label2)
 			      + HU.th([ATTR_STYLE,HU.css('text-align','center')], "Percent Change"));

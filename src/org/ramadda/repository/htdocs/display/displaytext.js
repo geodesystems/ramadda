@@ -2423,9 +2423,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    label = label.replace(/ /g,"&nbsp;");
 		    var r =  "";
 		    if(this.showShrink) {
-			r+= HU.td([WIDTH, "5px",ATTR_STYLE,HU.css('background','#ccc')],  HU.getIconImage("fa-caret-right",null, [ATTR_STYLE,"line-height:0px;"]));
+			r+= HU.td([ATTR_WIDTH, "5px",ATTR_STYLE,HU.css('background','#ccc')],  HU.getIconImage("fa-caret-right",null, [ATTR_STYLE,"line-height:0px;"]));
 		    }
-		    r+= HU.td([WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
+		    r+= HU.td([ATTR_WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
 			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
 			HU.td([], line);
 		    corpus += HU.tr(rowAttrs, r);
