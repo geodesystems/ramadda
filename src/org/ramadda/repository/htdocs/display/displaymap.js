@@ -4031,15 +4031,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    items.mouseenter(function() {
 		//		$(this).css('display','none');
 		hitems.hide();
-		let popup = 	$('#'+$(this).attr(ID)+'_hover');
+		let popup = 	$('#'+$(this).attr(ATTR_ID)+'_hover');
 		popup.show();
-		//		$('#'+$(this).attr(ID)+'_hover').fadeIn(1000);
+		//		$('#'+$(this).attr(ATTR_ID)+'_hover').fadeIn(1000);
 	    });
 	    items.mouseleave(function() {
 		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$('#'+ $(this).attr(ID).replace('_hover','')).css('display','block');
+		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css('display','block');
 		$(this).css('display','none');
 	    });
 	    if(colorBy.hasField()) {
@@ -4403,13 +4403,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor:this.getProperty("fillColor","transparent")
                 }
 		if(tpoints.length==1) {
-		    featuresToAdd.push(this.map.createPoint(ID,  tpoints[0], attrs, null));
+		    featuresToAdd.push(this.map.createPoint(ATTR_ID,  tpoints[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
 			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
 			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
 		    }
-		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null,true);
+		    let poly = this.map.createPolygon(ATTR_ID, "", tpoints, attrs, null,true);
 		    poly.noSelect = true;
 		    featuresToAdd.push(poly);
 		}
