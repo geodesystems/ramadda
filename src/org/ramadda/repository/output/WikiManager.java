@@ -6842,9 +6842,16 @@ public class WikiManager extends RepositoryManager
                                             attrPrefix + ATTR_EXCLUDE,
                                             (String) null);
 
+
+	List<String> notTypes  = null;
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
             for (String id : Utils.split(excludeEntries, ",",true,true)) {
+		if(id.startsWith("type:")) {
+		    if(notTypes==null) notTypes=new ArrayList<String>();
+		    notTypes.add(id.substring("type:".length()));
+		    continue;
+		}
                 if (id.equals(ID_THIS)) {
                     seen.add(originalEntry.getId());
                 } else {
@@ -6853,13 +6860,23 @@ public class WikiManager extends RepositoryManager
             }
             List<Entry> okEntries = new ArrayList<Entry>();
             for (Entry e : entries) {
+		if(notTypes!=null) {
+		    boolean ok = true;
+		    for(String type: notTypes) {
+			if(e.getTypeHandler().isType(type)) {
+			    ok = false;
+			    break;
+			}
+		    }
+		    if(!ok) continue;
+		}
                 if ( !seen.contains(e.getId())
 		     && !seen.contains(e.getName())) {
                     okEntries.add(e);
                 }
             }
             entries = okEntries;
-        }
+	}
 
         //Only do the sort if the user has not done an entry sort
         String sort = null;
