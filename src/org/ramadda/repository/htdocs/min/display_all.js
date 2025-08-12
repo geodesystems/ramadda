@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 12 05:31:59 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 10:24:29 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -44903,12 +44903,12 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    let cellStyle  = this.getProperty("cellStyle","");
 	    let cellMap = {};
 	    for(let y=1;y<=maxy;y++) {
-		table+=HU.open(TR);
+		table+=HU.open(TAG_TR);
 		for(let x=1;x<=maxx;x++) {
 		    let id = this.domId("cell_" +x+ "_"+y);
 		    let o = map[id];
 		    let extra = " id='" + id +"' ";
-		    let style = HU.css('position','relative','margin','1px','vertical-align','center','text-align','center',HEIGHT, height+"px");
+		    let style = HU.css('position','relative','margin','1px','vertical-align','center','text-align','center',ATTR_HEIGHT, height+"px");
 		    if(width>0) style+=HU.css(ATTR_WIDTH,width+'px');
 		    let c = "";
 		    if(o) {
@@ -44924,7 +44924,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
 		    table+=td;
 		}
-		table+=HU.close(TR);
+		table+=HU.close(TAG_TR);
 	    }
 	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
 	    table+=HU.close(TAG_TABLE);
@@ -45153,7 +45153,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		if(!height)
 		    height = mh/mw*width;
 		if(isNaN(height)) height=400; 
-		css+=HU.css(HEIGHT,HU.getDimension(height));
+		css+=HU.css(ATTR_HEIGHT,HU.getDimension(height));
 	    }
 	    
 	    this.mapRange.maxLon= this.getPropertyMaxLon(this.mapRange.maxLon);
