@@ -982,7 +982,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    let tag = HU.openTag("div",[ATTR_CLASS,noWrapper?'':'display-template-record',
+		    let tag = HU.openTag(TAG_DIV,[ATTR_CLASS,noWrapper?'':'display-template-record',
 						ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
 						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
@@ -1595,25 +1595,25 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 let td1Width = "20%";
                 let td2Width = "10%";
                 if (this.getProperty("showSummary", true)) {
-                    html += HU.openTag("table", [ATTR_CLASS, "nowrap ramadda-table", ATTR_ID, this.domId("table_summary")]);
-                    html += HU.openTag("thead", []);
-                    html += HU.tr([], HU.th(["width", td1Width], "Summary") + HU.th([], "&nbsp;"));
-                    html += HU.closeTag("thead");
-                    html += HU.openTag("tbody", []);
-                    html += HU.tr([], HU.td(["align", "right"], "Total lines:") + HU.td([], records.length));
-                    html += HU.tr([], HU.td(["align", "right"], "Total words:") + HU.td([], cnt.count));
-                    html += HU.tr([], HU.td(["align", "right"], "Average word length:") + HU.td([], Math.round(cnt.total / cnt.count)));
-                    html += HU.closeTag("tbody");
+                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "nowrap ramadda-table", ATTR_ID, this.domId("table_summary")]);
+                    html += HU.openTag(TAG_THEAD, []);
+                    html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Summary") + HU.th([], "&nbsp;"));
+                    html += HU.closeTag(TAG_THEAD);
+                    html += HU.openTag(TAG_TBODY, []);
+                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Total lines:") + HU.td([], records.length));
+                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Total words:") + HU.td([], cnt.count));
+                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Average word length:") + HU.td([], Math.round(cnt.total / cnt.count)));
+                    html += HU.closeTag(TAG_TBODY);
 
-                    html += HU.closeTag("table");
+                    html += HU.closeTag(TAG_TABLE);
                     html += "<br>"
                 }
                 if (this.getProperty("showCounts", true)) {
-                    html += HU.openTag("table", [ATTR_CLASS, "row-border nowrap ramadda-table", ATTR_ID, this.domId("table_counts")]);
-                    html += HU.openTag("thead", []);
-                    html += HU.tr([], HU.th(["width", td1Width], "Word Length") + HU.th(["width", td2Width], "Count") + (showBars ? HU.th([], "") : ""));
-                    html += HU.closeTag("thead");
-                    html += HU.openTag("tbody", []);
+                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border nowrap ramadda-table", ATTR_ID, this.domId("table_counts")]);
+                    html += HU.openTag(TAG_THEAD, []);
+                    html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Word Length") + HU.th([ATTR_WIDTH, td2Width], "Count") + (showBars ? HU.th([], "") : ""));
+                    html += HU.closeTag(TAG_THEAD);
+                    html += HU.openTag(TAG_TBODY, []);
                     for (let i = 0; i < tmp.length; i++) {
                         let row = HU.td([], tmp[i].length) + HU.td([], tmp[i].count);
                         if (showBars) {
@@ -1625,16 +1625,16 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                         }
                         html += HU.tr([], row);
                     }
-                    html += HU.closeTag("tbody");
-                    html += HU.closeTag("table");
+                    html += HU.closeTag(TAG_TBODY);
+                    html += HU.closeTag(TAG_TABLE);
                     html += "<br>"
                 }
                 if (this.getProperty("showFrequency", true)) {
-                    html += HU.openTag("table", [ATTR_CLASS, "row-border ramadda-table", ATTR_ID, this.domId("table_frequency")]);
-                    html += HU.openTag("thead", []);
-                    html += HU.tr([], HU.th(["width", td1Width], "Word") + HU.th(["width", td2Width], "Frequency") + (showBars ? HU.th([], "") : ""));
-                    html += HU.closeTag("thead");
-                    html += HU.openTag("tbody", []);
+                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border ramadda-table", ATTR_ID, this.domId("table_frequency")]);
+                    html += HU.openTag(TAG_THEAD, []);
+                    html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Word") + HU.th([ATTR_WIDTH, td2Width], "Frequency") + (showBars ? HU.th([], "") : ""));
+                    html += HU.closeTag(TAG_THEAD);
+                    html += HU.openTag(TAG_TBODY, []);
                     let min = 0;
                     let max = 0;
                     if (counts.length > 0) {
@@ -1658,8 +1658,8 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                         }
                         html += HU.tr([], row);
                     }
-                    html += HU.closeTag("tbody");
-                    html += HU.closeTag("table");
+                    html += HU.closeTag(TAG_TBODY);
+                    html += HU.closeTag(TAG_TABLE);
                 }
             }
             this.setContents(html);
@@ -1853,25 +1853,25 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		if(this.getProperty("floatTable") !=null) {
 		    hor = this.getProperty("floatTable")==true;
 		}
-		html += HU.openTag("div", [ATTR_CLASS,"display-frequency-table",ATTR_STYLE,hor?"":"display:block;"]);
-		html += HU.openTag("table", ["cellpadding","3",
+		html += HU.openTag(TAG_DIV, [ATTR_CLASS,"display-frequency-table",ATTR_STYLE,hor?"":"display:block;"]);
+		html += HU.openTag(TAG_TABLE, ["cellpadding","3",
 					     ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
 					     ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
-		    html += HU.openTag("thead", []);
+		    html += HU.openTag(TAG_THEAD, []);
 		    let label =  HU.span([ATTR_TITLE,"Click to reset",
 					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
 		    label = HU.div([ATTR_STYLE,"max-width:500px;overflow-x:auto;"], label);
-		    let count = showCount? HU.th(["align","right","width","20%"],HU.div([ATTR_STYLE,"text-align:right"],"Count")):"";
-		    let percent  = showPercent?HU.th(["align","right","width","20%"],  HU.div([ATTR_STYLE,"text-align:right"],"Percent")):"";
-		    let bars = showBars? HU.th(["align","right","width",barWidth],HU.div([ATTR_STYLE,"text-align:right"],"&nbsp;")):"";
+		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],HU.div([ATTR_STYLE,"text-align:right"],"Count")):"";
+		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],  HU.div([ATTR_STYLE,"text-align:right"],"Percent")):"";
+		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,"text-align:right"],"&nbsp;")):"";
 		    html += HU.tr([], HU.th(["xxwidth","60%"],  label+ count+ percent+bars));
-		    html += HU.closeTag("thead");
+		    html += HU.closeTag(TAG_THEAD);
 		}
 
-		html += HU.openTag("tbody", []);
+		html += HU.openTag(TAG_TBODY, []);
 		let colors = this.getColorTable(true);
 		let dfltColor = this.getProperty("barColor","blue");
 		if(colors) {
@@ -1919,18 +1919,18 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",
 					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
-		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
-		    let tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
+		    let tdc =  (showCount?HU.td([ATTR_ALIGN, "right"], count):"");
+		    let tdp =  showPercent?HU.td([ATTR_ALIGN, "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
-		    let tdb = showBars?HU.td(["valign","center","width",barWidth], HU.div([ATTR_TITLE,Math.round(perc*100)+"%",ATTR_STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
+		    let tdb = showBars?HU.td(["valign","center",ATTR_WIDTH,barWidth], HU.div([ATTR_TITLE,Math.round(perc*100)+"%",ATTR_STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HU.tr([], 
 				  tdv + tdc + tdp + tdb
 				 );
 		}
 		//		Utils.makeDownloadFile('percents.csv',csv);
 
-		html += HU.close(TBODY,TABLE,TAG_DIV);
-		bannerHtml += HU.close(TD);
+		html += HU.close(TAG_TBODY,TAG_TABLE,TAG_DIV);
+		bannerHtml += HU.close(TAG_TD);
 	    }
 
 	    let doBanner = this.getProperty("banner",false);
@@ -2114,7 +2114,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 return;
             }
             var height = this.getProperty("height", "400");
-            var html = HU.openTag("div", [ATTR_ID, this.domId("tables")]);
+            var html = HU.openTag(TAG_DIV, [ATTR_ID, this.domId("tables")]);
 
             for (var i = 0; i < cols.length; i += 3) {
                 var c1 = cols[i];
@@ -2123,14 +2123,14 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 var width = c2 ? (c3 ? "33%" : "50%") : "100%";
                 var style = "padding:5px";
                 var row = "";
-                row += HU.td(["width", width], HU.div([ATTR_STYLE, style], c1));
+                row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c1));
                 if (c2)
-                    row += HU.td(["width", width], HU.div([ATTR_STYLE, style], c2));
+                    row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c2));
                 if (c3)
-                    row += HU.td(["width", width], HU.div([ATTR_STYLE, style], c3));
-                html += HU.tag("table", ["width", "100%"], HU.tr(row));
+                    row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c3));
+                html += HU.tag(TAG_TABLE, [ATTR_WIDTH, "100%"], HU.tr(row));
             }
-            html += HU.closeTag("div");
+            html += HU.closeTag(TAG_DIV);
             this.setContents(html);
             HU.formatTable("#" + this.domId("tables") + " .ramadda-table", {
                 scrollY: this.getProperty("tableHeight", "200")
@@ -2139,10 +2139,10 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
         printList: function(title, l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = HU.openTag("table", ["width", "100%", ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag("thead", []);
+            var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, "100%", ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
             table += HU.tr([], HU.th([], title) + HU.th([], "&nbsp;"));
-            table += HU.close(THEAD);
-            table += HU.open(TBODY);
+            table += HU.close(TAG_THEAD);
+            table += HU.open(TAG_TBODY);
             var cnt = 0;
             for (var i = 0; i < l.length; i++) {
                 if (l[i].count < minCount) continue;
@@ -2151,7 +2151,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 table += HU.tr([], row);
                 if (cnt++ > maxWords) break;
             }
-            table += HU.close(TBODY,TABLE);
+            table += HU.close(TAG_TBODY,TAG_TABLE);
             return table;
         }
     });
@@ -2289,9 +2289,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		});
 	    }
 
-            var corpus = HU.openTag("div", [ATTR_STYLE,"position:relative;"]);
+
 	    corpus+=HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,"position:absolute;top:0;left:0;"],
-			   HU.tag("table",[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
+			   HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
@@ -2444,7 +2444,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 }
             }
             if (addLineNumbers) {
-                corpus += HU.close(TABLE);
+                corpus += HU.close(TAG_TABLE);
             }
             corpus+= HU.close(TAG_DIV);
 
