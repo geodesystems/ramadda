@@ -608,7 +608,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
-            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
+            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS),
+			       ATTR_STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -1169,7 +1170,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    });
 		    let highlightWidget = SPACE + HU.vbox(["Highlight",
 							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
-		    let select =  HU.span([CLASS,"display-filter",STYLE,""],highlightWidget);
+		    let select =  HU.span([ATTR_CLASS,"display-filter",ATTR_STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
@@ -1409,7 +1410,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
 		    if(headerStyle)
 			style+=headerStyle;
-		    headerLabel = HU.div([TITLE,orig,STYLE,style], headerLabel);
+		    headerLabel = HU.div([TITLE,orig,ATTR_STYLE,style], headerLabel);
 		} 
                 if (colIdx == 0 && props.includeIndex) {
                     //This might be a number or a date
@@ -2134,9 +2135,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 	    }
 	    //	    style += HU.css("text-align","center");
-            divAttrs.push(STYLE);
+            divAttrs.push(ATTR_STYLE);
             divAttrs.push(style);
-	    divAttrs.push(CLASS);
+	    divAttrs.push(ATTR_CLASS);
 	    divAttrs.push("ramadda-expandable-target");
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
@@ -2230,11 +2231,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let tmpChartOptions = this.chartOptions;
 	    this.chartOptions = $.extend({},this.chartOptions);
 	    label = multiLabelTemplate.replace("${value}",label);
-	    let header = HU.div([CLASS,"display-multi-header"], label);
+	    let header = HU.div([ATTR_CLASS,"display-multi-header"], label);
 	    let top =labelPosition=="top"?header:"";
 	    let bottom = labelPosition=="bottom"?header:"";
 	    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
-	    let div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
+	    let div = HU.div([ATTR_CLASS,"display-multi-div",
+			      ATTR_STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
 	    this.jq(ID_CHARTS_INNER).append(div);
 	    let chart = this.makeGoogleChartInner(dataList, innerId, props, fields);
 	    if(chart) {
@@ -2268,7 +2270,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Clear out any existing charts
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
-		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
+		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),ATTR_STYLE,HU.css('text-align','center')]));
 		if(this.doMultiChartsByField()) {
 		    this.multiChartData=[];
 		    selectedFields.forEach((field,idx)=>{
@@ -2961,7 +2963,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		let color  = colors[colorCnt];
-		legend += HU.div([STYLE,HU.css('display','inline-block','width','8px','height','8px','background', color)]) +SPACE + v +SPACE2;
+		legend += HU.div([ATTR_STYLE,HU.css('display','inline-block','width','8px','height','8px','background', color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
@@ -2988,7 +2990,7 @@ function PiechartDisplay(displayManager, id, properties) {
         },
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
-            divAttrs.push(STYLE);
+            divAttrs.push(ATTR_STYLE);
             let style = "";
 	    let width = this.getProperty("chartWidth") || this.getChartWidth();
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
@@ -3522,10 +3524,10 @@ function TableDisplay(displayManager, id, properties) {
 		}
 
 		if(!this.getFilterHighlight() || !record) {
-		    f = HU.div([STYLE,HU.css('padding','4px')],f)
+		    f = HU.div([ATTR_STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
-		    f = HU.div([STYLE,HU.css('padding','4px','background', c)],f)
+		    f = HU.div([ATTR_STYLE,HU.css('padding','4px','background', c)],f)
 		}
 
 
@@ -3534,7 +3536,7 @@ function TableDisplay(displayManager, id, properties) {
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg = foreground || Utils.getForegroundColor(color);
-			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
+			f = HU.div([ATTR_STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
 			if(!v.startsWith('http')) v = 'https://' + v;
@@ -3667,7 +3669,7 @@ function BubbleDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
-            divAttrs.push(STYLE);
+            divAttrs.push(ATTR_STYLE);
             let style = "";
 	    let width = this.getProperty("chartWidth") || this.getChartWidth();
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
@@ -4364,7 +4366,7 @@ function CalendarDisplay(displayManager, id, properties) {
 		this.dateToRecords[dttm.v.getTime()] = records;
                 let tooltip = "<center><b>" + dttm.f + "</b></center>" +
                     "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
-                tooltip = HU.div([STYLE, HU.css('padding','5px')], tooltip);
+                tooltip = HU.div([ATTR_STYLE, HU.css('padding','5px')], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
             }
             dataTable.addRows(list);

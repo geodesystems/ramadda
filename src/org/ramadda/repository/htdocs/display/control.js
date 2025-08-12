@@ -782,7 +782,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.div([ATTR_STYLE,'display:inline-block;',
-			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",ATTR_TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -1272,10 +1272,11 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
 	    if(this.getShowArrows(false)) {
 		let noun = this.getProperty("noun", "Data");
-		let prev = HU.span([CLASS,"display-changeentries-button ramadda-clickable", TITLE,"Previous " +noun,
-				    ATTR_ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([CLASS, "display-changeentries-button ramadda-clickable", TITLE,"Next " + noun,
-				    ATTR_ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		let prev = HU.span([ATTR_CLASS,"display-changeentries-button ramadda-clickable",
+				    ATTR_TITLE,"Previous " +noun,
+				    ATTR_ID, this.getDomId(ID_PREV)], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([ATTR_CLASS, "display-changeentries-button ramadda-clickable", ATTR_TITLE,"Next " + noun,
+				    ATTR_ID, this.getDomId(ID_NEXT), ATTR_TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
 		menu = menu.replace(/\n/g,"");
 		menu = prev + "&nbsp;" + menu +  "&nbsp;" +next;
 	    }

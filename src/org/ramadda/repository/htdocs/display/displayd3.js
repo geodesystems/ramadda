@@ -411,7 +411,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 	    //          console.log("skewt.updateui-2");
             let skewtId = this.getDomId(ID_SKEWT);
 	    let html = '';
-            html += HU.div([ATTR_TITLE,'Download skew-t data',ATTR_ID,this.domId('download'),ATTR_CLASS,'ramadda-clickable',ATTR_STYLE,'text-align:right;margin-right:20px;'],HU.getIconImage('fas fa-download'));
+            html += HU.div([ATTR_TITLE,'Download skew-t data',ATTR_ID,this.domId('download'),
+			    ATTR_CLASS,'ramadda-clickable',ATTR_STYLE,'text-align:right;margin-right:20px;'],HU.getIconImage('fas fa-download'));
 	    html += HU.div([ATTR_ID, skewtId], "");
             this.setContents(html);
 	    this.jq('download').click(()=>{
@@ -442,7 +443,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 	    });
             let date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
-                this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ID,this.getDomId(ID_DATE_LABEL)]));
+                this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ATTR_ID,this.getDomId(ID_DATE_LABEL)]));
             }
             if(date!=null) {
                 this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
@@ -1207,7 +1208,10 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 	    let groupList = Object.keys(groups).sort();
 	    if(!groupByField) {
 		let data = groups["all"];
-		this.setContents(HtmlUtils.div([CLASS,"display-minidots-dots", ID, this.getDomId(ID_MINIDOTS), STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
+		this.setContents(HtmlUtils.div([ATTR_CLASS,"display-minidots-dots",
+						ATTR_ID, this.getDomId(ID_MINIDOTS),
+						ATTR_STYLE, HU.css(ATTR_HEIGHT,HU.getDimension(dotsHeight),
+								   ATTR_WIDTH,HU.getDimension(dotsWidth))], ""));
 		drawDots(this,"#"+ this.getDomId(ID_MINIDOTS),dotsWidth,dotsHeight,data.list,range,null/*colorBy*/);
 	    } else {
 		let container = this.jq(ID_MINIDOTS);
@@ -1217,7 +1221,8 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 		    table+="<tr>";
 		    table += HU.td([],key +" (" + data.total+")");
 		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
-		    table += HU.td([],HtmlUtils.div([CLASS,"display-minidots-dots", ID, id, STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
+		    table += HU.td([],HtmlUtils.div([ATTR_CLASS,"display-minidots-dots",
+						     ATTR_ID, id, ATTR_STYLE, HU.css(ATTR_HEIGHT,HU.getDimension(dotsHeight),ATTR_WIDTH,HU.getDimension(dotsWidth))], ""));
 		    table+="</tr>\n";
 		});
 		this.setContents(table);
