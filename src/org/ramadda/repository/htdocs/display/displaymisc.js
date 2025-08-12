@@ -4559,7 +4559,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    if(checked.length) {
 			let tooltip = _this.getProperty("tooltip","${default}");
 			if(tooltip =="") return null;
-			let tt = _this.getProperty("checkedTooltipHeader",HU.b('#Items: ${numberChecked}') +HU.close(BR));
+			let tt = _this.getProperty("checkedTooltipHeader",HU.b('#Items: ${numberChecked}') +HU.close(TAG_BR));
 			tt = tt.replace("${numberChecked}", checked.length);
 			checked.map(r=>{
 			    if(tt!="") tt += HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-hline']);
@@ -4642,9 +4642,9 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		    let c = HU.div([ATTR_CLASS,"display-sparkline-sparkline",ATTR_ID,gid,ATTR_STYLE,HU.css('width', w+'px','height', h+  'px')]);
 		    let label = HU.div([ATTR_CLASS,"display-sparkline-header"], value);
 		    if(labelPosition == "top")
-			c = label + HU.tag(BR) + c;
+			c = label + HU.tag(TAG_BR) + c;
 		    else if(labelPosition == "bottom")
-			c =  c + HU.tag(BR) + label;
+			c =  c + HU.tag(TAG_BR) + label;
 		    $("#"+id).append(HU.div([ATTR_STYLE,HU.css('display','inline-block','margin','4px')],c));
 		    let gcol = this.getColumnValues(grecords, field);
 		    drawSparkline(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);

@@ -79,6 +79,7 @@ var VALUE = "value";
 */
 
 
+var TAG_BR= 'br';
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
