@@ -6364,7 +6364,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let style = "";
             let height = this.getHeightForStyle();
             if (height) {
-                style += HU.css(HEIGHT, height);
+                style += HU.css(ATTR_HEIGHT, height);
             }
 
             let maxheight = this.getProperty("maxHeight");
@@ -6396,7 +6396,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let bottom = HU.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
-		style+=HU.css(HEIGHT,expandedHeight);
+		style+=HU.css(ATTR_HEIGHT,expandedHeight);
 	    if(!this.getProperty("showInnerContents",true)) {
 		style+="display:none;";
 	    }		

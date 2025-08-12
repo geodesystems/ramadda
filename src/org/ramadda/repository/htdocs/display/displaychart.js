@@ -1155,7 +1155,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    if(this.getProperty("highlightShowFields",false)) {
 		if(this.jq(ID_HIGHLIGHTFIELDSHOLDER).length==0) {
-		    this.jq(ID_HEADER2).append(HU.span([ID,this.domId(ID_HIGHLIGHTFIELDSHOLDER)]));
+		    this.jq(ID_HEADER2).append(HU.span([ATTR_ID,this.domId(ID_HIGHLIGHTFIELDSHOLDER)]));
 		}
 		
 		if(this.jq(ID_HIGHLIGHTFIELDS).length==0) {
@@ -1168,7 +1168,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			
 		    });
 		    let highlightWidget = SPACE + HU.vbox(["Highlight",
-							   HU.select("",[ID,this.domId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
+							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
 		    let select =  HU.span([CLASS,"display-filter",STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
@@ -2087,7 +2087,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.getPropertyShow = false;
 		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
 	    }
-            this.setContents(HU.div([ID,this.domId(ID_CHARTS)]));
+            this.setContents(HU.div([ATTR_ID,this.domId(ID_CHARTS)]));
 	    
 
 
@@ -2268,7 +2268,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Clear out any existing charts
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
-		this.jq(ID_CHARTS).html(HU.div([ID,this.domId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
+		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
 		if(this.doMultiChartsByField()) {
 		    this.multiChartData=[];
 		    selectedFields.forEach((field,idx)=>{
@@ -2965,7 +2965,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
-		this.jq(ID_HEADER2).append(HU.div([ID,this.domId(ID_PIE_LEGEND)]));
+		this.jq(ID_HEADER2).append(HU.div([ATTR_ID,this.domId(ID_PIE_LEGEND)]));
 	    }
 	    this.jq(ID_PIE_LEGEND).html(legend);
 
@@ -3489,7 +3489,7 @@ function TableDisplay(displayManager, id, properties) {
 	    let dom = this.jq(ID_COLORTABLE);
 	    cbs.forEach((cb,idx)=>{
 		let id = this.domId(ID_COLORTABLE+idx);
-		dom.append(HU.div([ID,id]));
+		dom.append(HU.div([ATTR_ID,id]));
 		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
 	    });
 
@@ -3546,7 +3546,7 @@ function TableDisplay(displayManager, id, properties) {
 		    if(field.getType()=="image") {
 			return {
 			    v:v,
-			    f:HU.href(v,HU.image(v,[WIDTH,this.getProperty("imageWidth",100)]))
+			    f:HU.href(v,HU.image(v,[ATTR_WIDTH,this.getProperty("imageWidth",100)]))
 			};
 		    }		    
 		}
@@ -4701,7 +4701,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 	},
 
 	updateUIInner: function() {
-            this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],""));
+            this.displayHtml(HU.div([ATTR_ID,this.domId(ID_ORGCHART)],""));
 	    if(this.jq(ID_ORGCHART).length==0) {
 		setTimeout(()=>this.updateUI(),1000);
 		return;

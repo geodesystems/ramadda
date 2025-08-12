@@ -781,7 +781,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    label = label.replace("${title}",this.getProperty(ATTR_TITLE,""));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.div([ATTR_STYLE,'display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+	    label = HU.div([ATTR_STYLE,'display:inline-block;',
+			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -845,13 +846,13 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let space = SPACE;
 	    let buttons = "";
 	    if(this.getShowCsvButton(true)) {
-		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space;
+		buttons+=HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space;
 	    }
 	    if(this.getShowJsonButton(true))
-		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space;
+		buttons+=HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space;
 	    if(this.getShowCopyButton(true))
-		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
-	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
+		buttons+=  HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
+	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],"Cancel");
 	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),ATTR_TITLE,'Select # records to download','size','4']) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
@@ -997,10 +998,10 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
 	    }		
 	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+		html+=" " + HU.span([CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
 	    } else {
 		if(this.getPropertyShowCheckbox()) {
-		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
+		    html+=" " + HU.span([ATTR_ID,this.getDomId(ID_COUNTDOWN)],"Reload");
 		}
 	    }
 	    this.setContents(html);
@@ -1122,7 +1123,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    }
 	    let html = "";
 	    Object.keys(years).sort().forEach(year=>{
-		html+=HU.div([CLASS,'display-ticks-ticks', ID,this.getDomId(ID_ANIMATION+year)]);
+		html+=HU.div([CLASS,'display-ticks-ticks', ATTR_ID,this.getDomId(ID_ANIMATION+year)]);
 	    })
 	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 
@@ -1271,8 +1272,10 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
 	    if(this.getShowArrows(false)) {
 		let noun = this.getProperty("noun", "Data");
-		let prev = HU.span([CLASS,"display-changeentries-button ramadda-clickable", TITLE,"Previous " +noun, ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([CLASS, "display-changeentries-button ramadda-clickable", TITLE,"Next " + noun, ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		let prev = HU.span([CLASS,"display-changeentries-button ramadda-clickable", TITLE,"Previous " +noun,
+				    ATTR_ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([CLASS, "display-changeentries-button ramadda-clickable", TITLE,"Next " + noun,
+				    ATTR_ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
 		menu = menu.replace(/\n/g,"");
 		menu = prev + "&nbsp;" + menu +  "&nbsp;" +next;
 	    }
