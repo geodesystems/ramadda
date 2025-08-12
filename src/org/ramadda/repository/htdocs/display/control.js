@@ -64,7 +64,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CONTROLS,
-//    tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
+    //    tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
 });
 
 addGlobalDisplayType({
@@ -231,7 +231,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    html+=SPACE2;
 	    btn("-","Slower",this.iconSlower);
 	    btn("+","Faster",this.iconFaster);	    	    	    
-    
+	    
             html += HU.div([ATTR_STYLE, "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
@@ -249,7 +249,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 		case '+':_this.faster();break;
 		case '-':_this.slower();break;
 		}
-	
+		
 
 	    });
 	    if(!Utils.isDefined(this.index)) {
@@ -390,7 +390,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		this.fieldsMap[f.getId()] = f;
 	    });
 
-//	    html += HU.center('#' + records.length +' records');
+	    //	    html += HU.center('#' + records.length +' records');
 	    let fs = [];
 	    let clazz = ' ramadda-clickable display-fields-field ';
 	    let asList = this.getAsList();
@@ -592,7 +592,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		}
 	    },20);
 	}	
-});
+    });
 }
 
 
@@ -768,7 +768,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{p:'showJsonButton',ex:false,tt:'Show/hide the JSON button'},
 	{p:'showCopyButton',ex:false,tt:'Show/hide the Copy button'},
 	{p:'showDateSelect',d:false,ex:true,tt:'Show date select'},			
-//	{p:'doSave',d:false,tt:'Show the save file button'}
+	//	{p:'doSave',d:false,tt:'Show the save file button'}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	fieldOn:{},
@@ -782,7 +782,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.div([ATTR_STYLE,'display:inline-block;',
-			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",ATTR_TITLE,label]):label);
+			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[ATTR_STYLE,"cursor:pointer;font-size:" + iconSize+";",ATTR_TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -859,12 +859,12 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowDateSelect()) {
 		html+=HU.formTable();
 		html+=HU.formEntry('From date:',
-				   HU.tag("input",[ATTR_ID,this.domId(ID_FROMDATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
+				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_FROMDATE),ATTR_PLACEHOLDER,'yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
 		html+=HU.formEntry('To date:',
-				   HU.tag("input",[ATTR_ID,this.domId(ID_TODATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectToDate??'']));
+				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_TODATE),ATTR_PLACEHOLDER,'yyyy-MM-dd','size','10','value',this.selectToDate??'']));
 		html+=HU.formTableClose();
 	    }
-    
+	    
 	    html += "<b>Include:</b>";
 	    let cbx = "";
 	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +"<br>";
@@ -875,8 +875,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		}
 		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
-	    html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
-	    html = HU.div([STYLE,HU.css("margin","5px")],html);
+	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
+	    html = HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
 	    return html;
 	},
 	doDownload: function() {
@@ -898,18 +898,18 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		});
 
 		/*
-		let pointData = this.dataCollection.getList()[0];
-		let url = new URL('https://localhost/' + pointData.getUrl());
-		if(allFields.length!=fields.length) {
-		    fields.forEach(f=>{
-			url = HU.url(url.toString(),['field_use',f.getId()]);
-		    });
-		}
-		if(!json)
-		    url = HU.url(url.toString(),['product','points.csv']);
-		console.log(url);
-		window.open(url,'_download');
-		return
+		  let pointData = this.dataCollection.getList()[0];
+		  let url = new URL('https://localhost/' + pointData.getUrl());
+		  if(allFields.length!=fields.length) {
+		  fields.forEach(f=>{
+		  url = HU.url(url.toString(),['field_use',f.getId()]);
+		  });
+		  }
+		  if(!json)
+		  url = HU.url(url.toString(),['product','points.csv']);
+		  console.log(url);
+		  window.open(url,'_download');
+		  return
 		*/
 
 		if(json) 
@@ -960,7 +960,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    } else  {
 		let cnt = parseInt(this.jq('number_records').val().trim());
 		this.getCsv(null, records,cnt,this.getSubsetFunction(),
-			   this.getPropertyFileName()+".csv");
+			    this.getPropertyFileName()+".csv");
 	    }
 	},
     });
@@ -1063,7 +1063,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],""));
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([ATTR_STYLE,"color:transparent;"],""));
 		this.doReload();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
@@ -1197,7 +1197,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    }
 	},
         pointDataLoaded: function(pointData, url, reload) {
-//	    this.logMsg("pointDataLoaded");
+	    //	    this.logMsg("pointDataLoaded");
 	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
 	    if(this.haveLoadedData && this.records) {
 		setTimeout(()=>{
@@ -1211,7 +1211,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 
 	updateUI: function() {
 	    let _this = this;
-//	    this.logMsg("updateUI");
+	    //	    this.logMsg("updateUI");
 	    this.records = this.filterData();
 	    if(!this.records) return;
 	    let options = [];
