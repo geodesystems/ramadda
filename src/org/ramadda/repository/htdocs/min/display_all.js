@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 12 05:03:43 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 05:06:41 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -24680,7 +24680,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([STYLE,HU.css('display','inline-block','width', width + "px','height', img.height +'px','background','rgb(" + c[0]+"," + c[1] +"," + c[2]+")")],"");
+		    html+=HU.div([ATTR_STYLE,HU.css('display','inline-block','width', width + "px','height', img.height +'px','background','rgb(" + c[0]+"," + c[1] +"," + c[2]+")")],"");
 		}
 		div.css("width",img.width);
 		div.css("height",img.height);
@@ -25083,7 +25083,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let style = baseStyle;
 		let imgAttrs = [ATTR_STYLE,imageStyle,"alt",galleryLabel,ATTR_ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
-		else if(height) imgAttrs.push(HEIGHT,height);		
+		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
 
 		let hasImage = Utils.stringDefined(image);
@@ -25153,7 +25153,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let css = "";
 		if(this.getPropertyMinHeightGallery()) css+=HU.css("min-height",HU.getDimension(this.getPropertyMinHeightGallery()));
 		if(this.getPropertyMinHeightGallery())	css+= HU.css("max-height",HU.getDimension(this.getPropertyMaxHeightGallery()));
-		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),STYLE,css+HU.css("overflow-y","auto")], contents);
+		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css("overflow-y","auto")], contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
@@ -25261,7 +25261,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
+	    let rect = HU.div([ATTR_STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div([ATTR_STYLE,"position:relative"],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
@@ -25272,7 +25272,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let contents = HU.table(["border",0,ATTR_WIDTH,"100%"],
 				    HU.tr(["valign","top"],
 					  HU.td([ATTR_WIDTH,"2%"],
-						HU.div([ATTR_ID,this.domId(ID_THUMBS), STYLE,HU.css("max-height",height,"overflow-y","auto","display","inline-block")],"")) +
+						HU.div([ATTR_ID,this.domId(ID_THUMBS),
+							ATTR_STYLE,HU.css("max-height",height,"overflow-y","auto","display","inline-block")],"")) +
 					  HU.td([ATTR_WIDTH,"90%"],
 						imageDiv)));
 	    let thumbsHtml = "";
@@ -25335,7 +25336,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let row = this.getDataValues(this.currentRecord);
 	    let image = row[this.imageField.getIndex()];
 	    this.jq(ID_POPUP).css("display","block");
-	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE),STYLE,HU.css("xposition","absolute")];
+	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE),ATTR_STYLE,HU.css("xposition","absolute")];
 	    if(this.getPopupImageWidth()) {
 		imageAttrs.push(ATTR_WIDTH);
 		imageAttrs.push(this.getPopupImageWidth());
@@ -25362,7 +25363,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css("z-index",1000),
 					ATTR_WIDTH, width,ATTR_ID,this.domId(ID_IMAGEINNER)]);
 	    if(label!="")
-		html+=HU.div([STYLE,"color:#000"],label);
+		html+=HU.div([ATTR_STYLE,"color:#000"],label);
 	    this.jq(ID_IMAGE).html(html);
 
 	    this.jq(ID_POPUP).html("");
@@ -25640,7 +25641,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    } else if(this.mediaField) {
 		let url = this.mediaField.getValue(record);
 		if(Utils.isImage(url)) {
-		    html = HU.image(url,[STYLE,HU.css('width',slideWidth)]);
+		    html = HU.image(url,[ATTR_STYLE,HU.css('width',slideWidth)]);
 		} else if(url.match('.mp3')) {
 		    html =HU.center( Utils.embedAudio(url));
 		} else if(url.match('soundcloud')) {
