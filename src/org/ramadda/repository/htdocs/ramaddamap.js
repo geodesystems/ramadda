@@ -1225,10 +1225,11 @@ RepositoryMap.prototype = {
 	}
 	MapUtils.setFeatureStyle(feature,null);
 	let layer = feature.layer;
+	let hadStrokeWidth = highlightStyle&&Utils.isDefined(highlightStyle.strokeWidth);
+	let hadFillColor = highlightStyle&&Utils.isDefined(highlightStyle.fillColor);	
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
 
-
-	if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
+	if(!hadFillColor && highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
 	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4)??highlight.fillColor;
 	}
 
@@ -1237,8 +1238,8 @@ RepositoryMap.prototype = {
 	}
 	fs = fs ??{};
 	this.checkMatchStyle(fs,highlight);
+	if(!hadStrokeWidth && fs.strokeWidth) highlight.strokeWidth = (+fs.strokeWidth)+1;
 
-	if(fs.strokeWidth) highlight.strokeWidth = (+fs.strokeWidth)+1;
 	if(Utils.stringDefined(fs.externalGraphic) && !Utils.stringDefined(highlight.externalGraphic)) {
 	    highlight.externalGraphic = fs.externalGraphic;
 	    if(fs.graphicWidth) 
