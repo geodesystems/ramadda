@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 12 04:08:53 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 04:12:34 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5445,8 +5445,8 @@ function DisplayThing(argId, argProperties) {
 		    if(labelWidth) {
 			label = HU.div([ATTR_STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label); 
 		    } 
-		    label  = HU.div([TITLE,tt],label);
-                    let row = HU.open(TR,['valign','top']);
+		    label  = HU.div([ATTR_TITLE,tt],label);
+                    let row = HU.open(TAG_TR,['valign','top']);
 		    let labelAttrs = [ATTR_CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
@@ -9611,7 +9611,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(label.length>20) label = label.substring(0,19) +"...";
 		label = prefix +label;
 		let id = Utils.getUniqueId("metadata_");
-		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ID,id,
+		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ATTR_ID,id,
 				  ATTR_CLASS,"display-search-tag",ATTR_TITLE, tt,
 				  ATTR_STYLE, HU.css("background", getMetadataColor(m.type))],label);
 		if(!groupThem)
@@ -10090,7 +10090,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let moveDown = HU.onClick(get + ".moveDisplayDown();", "Down");
 
 
-            let menu = HU.open(TABLE,[ATTR_CLASS,'formtable']) +
+            let menu = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']) +
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
                 "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
                 "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
@@ -10100,7 +10100,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 HU.checkbox(this.getDomId("showdetails"), [], this.getProperty("showDetails")) + " Details " +
                 "&nbsp;&nbsp;&nbsp;" +
                 HU.onClick(get + ".askSetTitle();", "Set Title");
-            menu += HU.formTable() + HU.formEntry("Show:", tmp) + HU.close(TABLE);
+            menu += HU.formTable() + HU.formEntry("Show:", tmp) + HU.close(TAG_TABLE);
             return menu;
         },
         loadInitialData: function() {
@@ -10156,7 +10156,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         askSetTitle: function() {
             let t = this.getTitle(false);
-            let v = prompt(TITLE, t);
+            let v = prompt(ATTR_TITLE, t);
             if (v != null) {
                 this.title = v;
                 this.setProperty(ATTR_TITLE, v);
@@ -11294,11 +11294,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		
 		label =  this.makeFilterLabel("Select " + label+": ");
 		let prefix="";
-		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepBackward"),ATTR_STYLE,HU.css("display","inline-block"),TITLE,"Step Back"],
+		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepBackward"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step Back"],
  				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css("cursor","pointer")])) +SPACE1;
-		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css("display","inline-block"),TITLE,"Play/Stop Animation"],
+		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Play/Stop Animation"],
 			       HU.getIconImage("fa-play",[ATTR_STYLE,HU.css("cursor","pointer")])) + SPACE1;
-		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),ATTR_STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
+		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
 		let widget =  HU.span([ATTR_CLASS,filterClass,ATTR_STYLE,style],
@@ -11365,7 +11365,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		if(this.getProperty("showFilterTotal",false)) {
-		    searchBar+= HU.span([ATTR_CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
+		    searchBar+= HU.span([ATTR_CLASS,"display-filter-label",ATTR_ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ATTR_ID,this.domId(ID_TAGBAR)],"");
 		header2+=HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" " +  filterClass,ATTR_STYLE,style,
@@ -11635,7 +11635,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //			if(item.length>50) return;
 			let label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
-			html+=HU.div([TITLE,item,ATTR_CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
+			html+=HU.div([ATTR_TITLE,item,ATTR_CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
@@ -12133,7 +12133,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         showDialog: function(text, from, initDialog, title) {
 	    if(this.dialog) this.dialog.remove();
 	    if(!this.dialogElement) {
-//		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
+//		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ATTR_ID,this.getDomId(ID_DIALOG)]));
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
@@ -12335,12 +12335,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    let buttons = "";
 	    if(skip!=null && skip>0) {
-		buttons+= HU.getIconImage("fa-step-backward",[ATTR_ID,this.getDomId(ID_PAGE_PREV),ATTR_CLASS,"display-page-button",TITLE,"View previous"])
+		buttons+= HU.getIconImage("fa-step-backward",[ATTR_ID,this.getDomId(ID_PAGE_PREV),ATTR_CLASS,"display-page-button",ATTR_TITLE,"View previous"])
 	    }  else if(!gotAll) {
 		buttons+= HU.getIconImage("fa-step-backward",[ATTR_CLASS,"display-page-button fa-disabled"])
 	    }
 	    if(count<max) {
-		buttons+= HU.getIconImage("fa-step-forward",[ATTR_ID,this.getDomId(ID_PAGE_NEXT),ATTR_CLASS,"display-page-button",TITLE,"View next"])
+		buttons+= HU.getIconImage("fa-step-forward",[ATTR_ID,this.getDomId(ID_PAGE_NEXT),ATTR_CLASS,"display-page-button",ATTR_TITLE,"View next"])
 	    }  else if(!gotAll) {
 		buttons+= HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-page-button fa-disabled"])
 	    }
@@ -12504,12 +12504,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let gotAll = !skip &&  count<max;
 
 		if(skip!=null && skip>0) {
-		    pageInfo+= HU.getIconImage("fa-step-backward",[ATTR_ID,this.getDomId(ID_PAGE_PREV),ATTR_CLASS,"display-page-button",TITLE,"View previous"])
+		    pageInfo+= HU.getIconImage("fa-step-backward",[ATTR_ID,this.getDomId(ID_PAGE_PREV),ATTR_CLASS,"display-page-button",ATTR_TITLE,"View previous"])
 		}  else if(!gotAll) {
 		    pageInfo+= HU.getIconImage("fa-step-backward",[ATTR_CLASS,"display-page-button fa-disabled"])
 		}
 		if(count==max) {
-		    pageInfo+= HU.getIconImage("fa-step-forward",[ATTR_ID,this.getDomId(ID_PAGE_NEXT),ATTR_CLASS,"display-page-button",TITLE,"View next"])
+		    pageInfo+= HU.getIconImage("fa-step-forward",[ATTR_ID,this.getDomId(ID_PAGE_NEXT),ATTR_CLASS,"display-page-button",ATTR_TITLE,"View next"])
 		}  else if(!gotAll) {
 		    pageInfo+= HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-page-button fa-disabled"])
 		}
@@ -13434,7 +13434,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
             for (let i=0; i < displaysToLayout.length; i++) {
                 let divId = HU.getUniqueId("divid_");
-                let div =  HU.div([ATTR_CLASS, " display-wrapper",ID,divId],"");
+                let div =  HU.div([ATTR_CLASS, " display-wrapper",ATTR_ID,divId],"");
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
@@ -13487,7 +13487,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 } else {
                     let percent = Math.round((100 / this.columns))+"%";
                     let i = 0;
-		    html+=HU.open(TABLE,[ATTR_WIDTH,'100%']);
+		    html+=HU.open(TAG_TABLE,[ATTR_WIDTH,'100%']);
 		    let colCnt = 100;
                     for (let i =0;i < displaysToLayout.length; i++) {
                         colCnt++;
