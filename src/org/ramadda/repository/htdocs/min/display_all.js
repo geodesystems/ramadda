@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 11 21:58:43 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 03:45:37 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -150,7 +150,7 @@ $.extend(Utils,{
         });
         popup+="</div></div>";
 	if(showToggle)
-            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+            popup = HU.toggleBlock(HU.div([ATTR_CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
         if(opts.itemize) return items;
         return popup;
     },
@@ -208,13 +208,13 @@ $.extend(Utils,{
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots"+(options.horizontal?'-h':''):"");
 	if(!options.horizontal)
 	    clazz+=' display-colortable-vertical';
-        let divargs = [CLASS, clazz];
+        let divargs = [ATTR_CLASS, clazz];
         if(Utils.isDefined(options.width)) {
-            divargs.push(STYLE);
-            divargs.push(HU.css(WIDTH, HU.getDimension(String(options.width))));
+            divargs.push(ATTR_STYLE);
+            divargs.push(HU.css(ATTR_WIDTH, HU.getDimension(String(options.width))));
         }
         
-        let html = HU.open(DIV, divargs);
+        let html = HU.open(TAG_DIV, divargs);
 	if(!options.horizontal && Utils.stringDefined(options.title))
 	    html+=HU.div([ATTR_CLASS,'display-colortable-title'],options.title);
 	    
@@ -341,8 +341,8 @@ $.extend(Utils,{
             if(options.horizontal) 
                 html += "</tr></table>";
         }
-        html += HU.close(DIV);
-        html += HU.open(DIV, [CLASS, "display-colortable-extra"]);
+        html += HU.close(TAG_DIV);
+        html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
         if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
@@ -356,7 +356,7 @@ $.extend(Utils,{
             });
             html+="</div>"
         }
-        html += HU.close(DIV);
+        html += HU.close(TAG_DIV);
 
         return html;
     },
@@ -6295,7 +6295,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         dataCollection: new DataCollection(),
         selectedCbx: [],
         entries: [],
-        wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
+        wikiAttrs: [ATTR_TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 	_properties:[],
 	callHook:function(func,arg1,arg2,arg3,arg4) {
 	    func = "hook_" + func;
@@ -10431,8 +10431,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let headerStyle = this.getProperty('headerStyle','');
 	    let h2Separate = this.getAnimationEnabled();
-	    let h1 = 	HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER1),ATTR_CLASS,"display-header-block display-header1"], "");
-	    let h2 = HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER2),ATTR_CLASS,"display-header-block display-header2"], "");
+	    let h1 = 	HU.div([ATTR_STYLE,headerStyle,ATTR_ID,this.getDomId(ID_HEADER1),ATTR_CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div([ATTR_STYLE,headerStyle,ATTR_ID,this.getDomId(ID_HEADER2),ATTR_CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ATTR_ID, this.getDomId(ID_TOP),ATTR_CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ATTR_ID, this.getDomId(ID_TOP_RIGHT)], rightContents);
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
@@ -10942,7 +10942,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		clazz+= " display-filter-label-vertical ";
 	    let attrs = [ATTR_CLASS,clazz];
 	    if(tt)  {
-		attrs.push(TITLE);
+		attrs.push(ATTR_TITLE);
 		attrs.push(tt);
 	    }
 	    return HU.span(attrs,label);
@@ -11342,7 +11342,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
-			widget = HU.span([ATTR_CLASS,'display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
+			widget = HU.span([ATTR_CLASS,'display-filter-container display-filter-'+ filter.displayType,
+					  ATTR_ID,this.domId("filtercontainer_" + filter.id)], widget);
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -11367,7 +11368,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([ATTR_CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ATTR_ID,this.domId(ID_TAGBAR)],"");
-		header2+=HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" " +  filterClass,ATTR_STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" " +  filterClass,ATTR_STYLE,style,
+				 ATTR_ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
@@ -14354,7 +14356,8 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
+    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",
+			       ATTR_STYLE,HU.css("display","block")]);
     let html = HU.openTag(TAG_DIV,[ATTR_STYLE,"position:relative;"]);
     html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
@@ -14386,7 +14389,7 @@ function DisplayManager(argId, argProperties) {
     $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[TITLE,"Display menu"],[ATTR_STYLE,'color:#aaa;'] )).button({
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],[ATTR_STYLE,'color:#aaa;'] )).button({
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	
@@ -39205,7 +39208,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	    let mapContainer = HU.div([ATTR_CLASS,"ramadda-map-container",ATTR_ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
-				      HU.div([ATTR_CLASS,"ramadda-map-slider",ATTR_STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;xxxmax-width:300px;overflow-x:auto;"),ATTR_ID,this.domId(ID_MAP)+"_slider"]));
+				      HU.div([ATTR_CLASS,"ramadda-map-slider",
+					      ATTR_STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;overflow-x:auto;"),
+					      ATTR_ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
 	    
@@ -39285,7 +39290,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(!groups[group]) groups[group] = "";
 		groups[group] +=item;});
 	    let html ='';
-	    html+= HU.center(HU.input('','',['placeholder','Find Region',ATTR_ID,this.domId('regionsearch'),'width','10']));
+	    html+= HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Region',ATTR_ID,this.domId('regionsearch'),'width','10']));
 	    html += "<table width=100%><tr valign=top>";
 	    let keys = Object.keys(groups);
 	    let width = (100/keys.length)+'%';
@@ -40075,7 +40080,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightIconSize',d:30},
 	{p:'recordHighlightShape',ex:shapes},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',d:3,tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',d:'red',tt:'Color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
@@ -40999,8 +41004,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		style+="display:none;";
 	    }		
 
-            let html =  HU.div([ATTR_STYLE,style,ATTR_CLASS, "display-inner-contents", ID,
-				this.domId(ID_DISPLAY_CONTENTS)], "");
+            let html =  HU.div([ATTR_STYLE,style,ATTR_CLASS, "display-inner-contents",
+				ATTR_ID,this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
 	addHighlightMarker:function(marker) {
@@ -41024,17 +41029,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(highlight) {
 		let point = MapUtils.createLonLat(lon,lat);
                 let attrs = {
-                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
+                    pointRadius: parseFloat(this.getRecordHighlightRadius(this.getPropertyRadius(6)+8)),
                     stroke: true,
                     strokeColor: this.getRecordHighlightStrokeColor(),
-                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
-		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
-		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
+                    strokeWidth: parseFloat(this.getRecordHighlightStrokeWidth(2)),
+		    fillColor: this.getRecordHighlightFillColor("#ccc"),
+		    fillOpacity: parseFloat(this.getRecordHighlightFillOpacity(0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
-		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
+		    let size = +this.getRecordHighlightRadius(this.getRadius(24));
 		    this.addHighlightMarker(this.getMap().createMarker("pt-" + featureCnt, point, null, "pt-" + featureCnt,null,null,size));
-		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
+		} else 	if(this.getRecordHighlightVerticalLine(false)) {
 		    let points = [];
                     points.push(MapUtils.createPoint(lon,0));
 		    points.push(MapUtils.createPoint(lon,80));
@@ -44649,8 +44654,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(feature.style) style = $.extend(style,feature.style);
 			style = $.extend(style,{
 			    strokeColor: this.getRecordHighlightStrokeColor(),
-			    strokeWidth: this.getRecordHighlightStrokeWidth(3)}
-					);
+			    strokeWidth: this.getRecordHighlightStrokeWidth(),
+			    fillColor: this.getRecordHighlightFillColor(null),
+			    fillOpacity: parseFloat(this.getRecordHighlightFillOpacity(0.5)),			    
+			});
 			this.getMap().highlightFeature(feature,style);
 			
 		    }
