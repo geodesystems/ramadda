@@ -549,6 +549,10 @@ public class TextRecord extends DataRecord {
                 if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
                     Date date = null;
+		    if(tok.equals("NA")) {
+                        objectValues[fieldCnt] = "";
+			continue;
+		    }
 		    try {
 			date = parseDate(field, tok);
 		    } catch(Exception exc) {

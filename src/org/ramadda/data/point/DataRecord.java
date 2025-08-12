@@ -223,7 +223,7 @@ public class DataRecord extends PointRecord {
                 if (idxX == -1) {
                     idxX = fieldIdx;
                 }
-            } else if (lowerCaseName.equals("longitude")
+            } else if (lowerCaseName.startsWith("longitude")
                        || lowerCaseName.equals("long")
                        || lowerCaseName.equals("lon")) {
 
@@ -238,7 +238,7 @@ public class DataRecord extends PointRecord {
                     idxY = fieldIdx;
                 }
 
-            } else if (lowerCaseName.equals("latitude")
+          } else if (lowerCaseName.startsWith("latitude")
                        || lowerCaseName.equals("lat")) {
                 dataHasLocation = true;
                 field.setIsLatitude(true);
