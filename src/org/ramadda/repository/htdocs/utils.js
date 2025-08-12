@@ -52,8 +52,9 @@ var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
 
-/*
-  var ID = "id";
+
+//Legacy IDs
+var ID = "id";
 var BACKGROUND = "background";
 var CLASS = "class";
 var DIV = "div";
@@ -76,7 +77,7 @@ var PRE = "pre";
 var SELECT = "select";
 var OPTION = "option";
 var VALUE = "value";
-*/
+
 
 
 var TAG_BR= 'br';
