@@ -526,6 +526,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount} ${filter_field} ..."},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount} ${filter_.field} ... "},
+	{p:'handler',ex:'someGlobalFunction',
+	 tt:'Global function to handle the record. takes (display,fields,record); use record.getValueFromField("some field")'},
+
 	{p:"templateStyle",ex:'display:inline-block;',tt:'Style for the wrapper div'},	
 	{p:"emptyMessage",tt:'Text to show when there are no records to show'},
 	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
@@ -619,6 +622,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
 	    let template = this.getTemplate();
+	    let handler  =this.getProperty('handler');
 	    let toggleTemplate = this.getToggleTemplate();
 	    let select = this.getProperty("select","all");
 	    let selected = [];
@@ -934,7 +938,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    let s = template;
 		    let row = this.getDataValues(record);
-		    if(s.trim()=="${default}") {
+		    if(handler) {
+			if(!window[handler]) {
+			    s = "Error: could not find handler:" + handler;
+			}  else {
+			    s = window[handler](this,fields,record);
+			}
+		    } else    if(s.trim()=="${default}") {
 			s = this.getRecordHtml(record,fields,s);
 		    } else  if(s.startsWith("${fields")) {
 			s = this.getRecordHtml(record,fields,s);
