@@ -52,7 +52,8 @@ var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
 
-var ID = "id";
+/*
+  var ID = "id";
 var BACKGROUND = "background";
 var CLASS = "class";
 var DIV = "div";
@@ -72,12 +73,14 @@ var TR = 'tr';
 var TD= 'td';
 var BR= 'br';
 var PRE = "pre";
-var TAG_A = "a";
-var TAG_B = "b";
-var TAG_DIV = "div";
 var SELECT = "select";
 var OPTION = "option";
 var VALUE = "value";
+*/
+
+var TAG_A = "a";
+var TAG_B = "b";
+var TAG_DIV = "div";
 var TAG_CANVAS = "canvas";
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
