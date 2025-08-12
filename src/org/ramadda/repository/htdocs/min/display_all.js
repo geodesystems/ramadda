@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 12 05:06:41 MDT 2025";
+var build_date="RAMADDA build date: Tue Aug 12 05:08:44 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -25105,7 +25105,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
-		    style+=HU.css(BACKGROUND,c);
+		    style+=HU.css(ATTR_BACKGROUND,c);
 		}
 
 		let recordContents;
