@@ -841,10 +841,10 @@ function RecordField(props, source) {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
         },
         isFieldLatitude: function() {
-            return this.isLatitude || this.id.toLowerCase() == "latitude";
+            return this.isLatitude || this.id.toLowerCase().startsWith("latitude");
         },
         isFieldLongitude: function() {
-            return this.isLongitude || this.id.toLowerCase() == "longitude";
+            return this.isLongitude || this.id.toLowerCase().startsWith("longitude");
         },
         isFieldElevation: function() {
             return this.isElevation || this.id.toLowerCase() == "elevation" || this.id.toLowerCase() == "altitude";
