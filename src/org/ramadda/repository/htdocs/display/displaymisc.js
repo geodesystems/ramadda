@@ -1399,7 +1399,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		html+=header2;
 	    }
 	    html+='</thead>';
-	    html+=HU.open('tbody',[ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')]);
+	    html+=HU.open(TAG_TBODY,[ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')]);
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
@@ -1664,10 +1664,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    html+="</td>";
 		});
 	    }
-	    html+=HU.close(TAG_TR);
-	    html+=HU.close(TAG_TFOOT);
-	    html+=HU.close(TAG_TABLE);
-	    html+=HU.close(TAG_DIV);
+	    html+=HU.close(TAG_TR,TAG_TFOOT,TAG_TABLE,TAG_DIV);
 	    if(!isNaN(total) && this.getShowGrandSummary()) {
 		html+='Total: ' + total;
 	    }
@@ -2466,12 +2463,12 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             html += HU.open(TAG_TABLE, ["border", "0", ATTR_CLASS, "display-heatmap"]);
             html += HU.open(TAG_TR,[ATTR_VALIGN,'bottom']);
             if (showIndex) {
-                html += HU.td([ALIGN,'center'], HU.div([ATTR_CLASS, "display-heatmap-heading-top"], header[0]));
+                html += HU.td([ATTR_ALIGN,'center'], HU.div([ATTR_CLASS, "display-heatmap-heading-top"], header[0]));
             }
             for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 let field = fields[fieldIdx];
                 if ((!field.isFieldNumeric() || field.isFieldGeo())) continue;
-                html += HU.td([ALIGN,'center'], HU.div([ATTR_CLASS, "display-heatmap-heading-top"], this.getFieldLabel(field)));
+                html += HU.td([ATTR_ALIGN,'center'], HU.div([ATTR_CLASS, "display-heatmap-heading-top"], this.getFieldLabel(field)));
             }
             html += HU.close(TAG_TR);
 
@@ -2682,11 +2679,10 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		    value = this.formatNumber(value);
 		}
 		html += HU.tr([VALIGN,'top',ATTR_CLASS,'display-ranking-row','what',record.getId()],
-			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +HU.td([ALIGN,'right'], SPACE +
+			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +HU.td([ATTR_ALIGN,'right'], SPACE +
 											    value));
             }
-            html += HU.close(TAG_TABLE);
-            html += HU.close(TAG_DIV);
+            html += HU.close(TAG_TABLE,TAG_DIV);
             this.setContents(html);
             let _this = this;
             this.jq(ID_TABLE).find(".display-ranking-row").click(function(e) {
@@ -2854,7 +2850,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 		colValues.sort();
 		rowValues.sort();
 		if(cnt==1)
-		    html+=HU.tr([],HU.td()+ HU.td([ALIGN,'center',
+		    html+=HU.tr([],HU.td()+ HU.td([ATTR_ALIGN,'center',
 						   ATTR_CLASS,'display-crosstab-header',ATTR_COLSPAN,colValues.length], col.getLabel()) +HU.td([],SPACE));
 		html+=HU.open(TAG_TR,[ATTR_VALIGN,'bottom',ATTR_CLASS,'display-crosstab-header-row'],
 			      HU.td([ATTR_CLASS,'display-crosstab-header'],row.getLabel()));
@@ -4983,7 +4979,8 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 						 "width",canvasWidth,"height",cw,ATTR_ID,cid]);
 		    contents +=HU.div([ATTR_STYLE,HU.css('position','absolute','left','0px','right', cw+'px')],
 				      inner);
-		    html+=HU.td(["data-order", v, ATTR_STYLE,HU.css('vertical-align','middle'),ALIGN,"right",ATTR_TITLE, "Range:" + c.min +" - " + c.max],HU.div([ATTR_STYLE,"position:relative;width:"+width+"px;" + "height:1px;margin-left:10px; margin-right:10px;border:1px solid #ccc;"],contents));
+		    html+=HU.td(["data-order", v, ATTR_STYLE,HU.css('vertical-align','middle'),
+				 ATTR_ALIGN,"right",ATTR_TITLE, "Range:" + c.min +" - " + c.max],HU.div([ATTR_STYLE,"position:relative;width:"+width+"px;" + "height:1px;margin-left:10px; margin-right:10px;border:1px solid #ccc;"],contents));
 		    
 		});
 		html += HU.close(TAG_TR);
@@ -5115,7 +5112,7 @@ function RamaddaSelectedrecordsDisplay(displayManager, id, properties) {
 	    if(labelField) {
 		let row = [];
 		this.csv.push(row);
-		html+=HU.open('thead');
+		html+=HU.open(TAG_THEAD);
 		row.push("Field");
 		html+=HU.th(['align','center'],'Field');
 
@@ -5128,9 +5125,9 @@ function RamaddaSelectedrecordsDisplay(displayManager, id, properties) {
 				     v);
 		    html+=HU.th(['align','center'],div);
 		});
-		html+=HU.close('thead');
+		html+=HU.close(TAG_THEAD);
 	    }
-	    html+=HU.open('tbody');
+	    html+=HU.open(TAG_TBODY);
 	    fields.forEach((f,idx)=>{
 		if(labelField && labelField.getId()==f.getId()) return;
 		html+=HU.open(TAG_TR);
@@ -5153,7 +5150,7 @@ function RamaddaSelectedrecordsDisplay(displayManager, id, properties) {
 		});
 		html+=HU.close(TAG_TR);		
 	    });
-	    html += HU.close(TBODY,TABLE);
+	    html += HU.close(TAG_TBODY,TAG_TABLE);
 	    this.setContents(html); 
 	    this.jq('download').button().click(()=>{
 		let c='';
