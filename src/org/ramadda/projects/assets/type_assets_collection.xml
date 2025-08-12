@@ -8,7 +8,7 @@ into some types.xml file
  handler="org.ramadda.projects.assets.AssetCollectionTypeHandler" 
  supercategory="General" 
  category="Assets" 
-childtypes="super:type_assets_base,type_assets_license,super:type_assets_thing"
+childtypes="type_assets_collection,super:type_assets_base,type_assets_license,super:type_assets_thing"
 >
 
 <!-- Columns-->
@@ -31,7 +31,6 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
-{{description wikify=true}}
 +center
 {{entrylink  link=""  icon="fas fa-search" title="Asset Search"  makeButton=true showIcon="false"  action="assets_search"  }}
 {{entrylink  link=""  icon="fas fa-camera" title="Scan Asset"  makeButton=true showIcon="false"  action="assets_scan"  }}
@@ -40,6 +39,7 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 {{entrylink  link=""  icon="fas fa-plus" title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -if
 -center
+{{description wikify=true}}
 :vspace 0.5em
 +center
 {{typecount  typecountPrefix=":heading Summary" 
