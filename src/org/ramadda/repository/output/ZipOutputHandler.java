@@ -458,7 +458,9 @@ public class ZipOutputHandler extends OutputHandler {
 			getLogManager().logError("reading deep entries from imdv:" + entry,exc);
 		    }
 		}
-		deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(entry.getDescription()),seenEntry));
+		//call this so we pick wiki page entries
+		String desc = entry.getTypeHandler().getEntryText(entry);
+		deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(desc),seenEntry));
 		if(deepEntries.size()>0) {
 		    String path = entry.getName();
 		    if (prefix.length() > 0) {
