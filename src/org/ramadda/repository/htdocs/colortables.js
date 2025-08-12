@@ -148,7 +148,7 @@ $.extend(Utils,{
         });
         popup+="</div></div>";
 	if(showToggle)
-            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+            popup = HU.toggleBlock(HU.div([ATTR_CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
         if(opts.itemize) return items;
         return popup;
     },
@@ -206,13 +206,13 @@ $.extend(Utils,{
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots"+(options.horizontal?'-h':''):"");
 	if(!options.horizontal)
 	    clazz+=' display-colortable-vertical';
-        let divargs = [CLASS, clazz];
+        let divargs = [ATTR_CLASS, clazz];
         if(Utils.isDefined(options.width)) {
-            divargs.push(STYLE);
-            divargs.push(HU.css(WIDTH, HU.getDimension(String(options.width))));
+            divargs.push(ATTR_STYLE);
+            divargs.push(HU.css(ATTR_WIDTH, HU.getDimension(String(options.width))));
         }
         
-        let html = HU.open(DIV, divargs);
+        let html = HU.open(TAG_DIV, divargs);
 	if(!options.horizontal && Utils.stringDefined(options.title))
 	    html+=HU.div([ATTR_CLASS,'display-colortable-title'],options.title);
 	    
@@ -339,8 +339,8 @@ $.extend(Utils,{
             if(options.horizontal) 
                 html += "</tr></table>";
         }
-        html += HU.close(DIV);
-        html += HU.open(DIV, [CLASS, "display-colortable-extra"]);
+        html += HU.close(TAG_DIV);
+        html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
         if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
@@ -354,7 +354,7 @@ $.extend(Utils,{
             });
             html+="</div>"
         }
-        html += HU.close(DIV);
+        html += HU.close(TAG_DIV);
 
         return html;
     },

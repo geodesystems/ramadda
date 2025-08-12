@@ -187,7 +187,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	    let mapContainer = HU.div([ATTR_CLASS,"ramadda-map-container",ATTR_ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
-				      HU.div([ATTR_CLASS,"ramadda-map-slider",ATTR_STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;xxxmax-width:300px;overflow-x:auto;"),ATTR_ID,this.domId(ID_MAP)+"_slider"]));
+				      HU.div([ATTR_CLASS,"ramadda-map-slider",
+					      ATTR_STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;overflow-x:auto;"),
+					      ATTR_ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
 	    
@@ -267,7 +269,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(!groups[group]) groups[group] = "";
 		groups[group] +=item;});
 	    let html ='';
-	    html+= HU.center(HU.input('','',['placeholder','Find Region',ATTR_ID,this.domId('regionsearch'),'width','10']));
+	    html+= HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Region',ATTR_ID,this.domId('regionsearch'),'width','10']));
 	    html += "<table width=100%><tr valign=top>";
 	    let keys = Object.keys(groups);
 	    let width = (100/keys.length)+'%';
@@ -1057,7 +1059,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightIconSize',d:30},
 	{p:'recordHighlightShape',ex:shapes},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',d:3,tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',d:'red',tt:'Color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
@@ -1981,8 +1983,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		style+="display:none;";
 	    }		
 
-            let html =  HU.div([ATTR_STYLE,style,ATTR_CLASS, "display-inner-contents", ID,
-				this.domId(ID_DISPLAY_CONTENTS)], "");
+            let html =  HU.div([ATTR_STYLE,style,ATTR_CLASS, "display-inner-contents",
+				ATTR_ID,this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
 	addHighlightMarker:function(marker) {
@@ -2006,17 +2008,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(highlight) {
 		let point = MapUtils.createLonLat(lon,lat);
                 let attrs = {
-                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
+                    pointRadius: parseFloat(this.getRecordHighlightRadius(this.getPropertyRadius(6)+8)),
                     stroke: true,
                     strokeColor: this.getRecordHighlightStrokeColor(),
-                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
-		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
-		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
+                    strokeWidth: parseFloat(this.getRecordHighlightStrokeWidth(2)),
+		    fillColor: this.getRecordHighlightFillColor("#ccc"),
+		    fillOpacity: parseFloat(this.getRecordHighlightFillOpacity(0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
-		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
+		    let size = +this.getRecordHighlightRadius(this.getRadius(24));
 		    this.addHighlightMarker(this.getMap().createMarker("pt-" + featureCnt, point, null, "pt-" + featureCnt,null,null,size));
-		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
+		} else 	if(this.getRecordHighlightVerticalLine(false)) {
 		    let points = [];
                     points.push(MapUtils.createPoint(lon,0));
 		    points.push(MapUtils.createPoint(lon,80));
@@ -5631,8 +5633,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(feature.style) style = $.extend(style,feature.style);
 			style = $.extend(style,{
 			    strokeColor: this.getRecordHighlightStrokeColor(),
-			    strokeWidth: this.getRecordHighlightStrokeWidth(3)}
-					);
+			    strokeWidth: this.getRecordHighlightStrokeWidth(),
+			    fillColor: this.getRecordHighlightFillColor(null),
+			    fillOpacity: parseFloat(this.getRecordHighlightFillOpacity(0.5)),			    
+			});
 			this.getMap().highlightFeature(feature,style);
 			
 		    }

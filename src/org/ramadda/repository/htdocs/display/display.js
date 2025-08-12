@@ -2146,7 +2146,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         dataCollection: new DataCollection(),
         selectedCbx: [],
         entries: [],
-        wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
+        wikiAttrs: [ATTR_TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 	_properties:[],
 	callHook:function(func,arg1,arg2,arg3,arg4) {
 	    func = "hook_" + func;
@@ -6282,8 +6282,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let headerStyle = this.getProperty('headerStyle','');
 	    let h2Separate = this.getAnimationEnabled();
-	    let h1 = 	HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER1),ATTR_CLASS,"display-header-block display-header1"], "");
-	    let h2 = HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER2),ATTR_CLASS,"display-header-block display-header2"], "");
+	    let h1 = 	HU.div([ATTR_STYLE,headerStyle,ATTR_ID,this.getDomId(ID_HEADER1),ATTR_CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div([ATTR_STYLE,headerStyle,ATTR_ID,this.getDomId(ID_HEADER2),ATTR_CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ATTR_ID, this.getDomId(ID_TOP),ATTR_CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ATTR_ID, this.getDomId(ID_TOP_RIGHT)], rightContents);
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
@@ -6793,7 +6793,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		clazz+= " display-filter-label-vertical ";
 	    let attrs = [ATTR_CLASS,clazz];
 	    if(tt)  {
-		attrs.push(TITLE);
+		attrs.push(ATTR_TITLE);
 		attrs.push(tt);
 	    }
 	    return HU.span(attrs,label);
@@ -7193,7 +7193,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
-			widget = HU.span([ATTR_CLASS,'display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
+			widget = HU.span([ATTR_CLASS,'display-filter-container display-filter-'+ filter.displayType,
+					  ATTR_ID,this.domId("filtercontainer_" + filter.id)], widget);
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -7218,7 +7219,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([ATTR_CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ATTR_ID,this.domId(ID_TAGBAR)],"");
-		header2+=HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" " +  filterClass,ATTR_STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" " +  filterClass,ATTR_STYLE,style,
+				 ATTR_ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
