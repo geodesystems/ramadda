@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 11 08:59:16 MDT 2025";
+var build_date="RAMADDA build date: Mon Aug 11 19:50:17 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -15386,10 +15386,10 @@ function RecordField(props, source) {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
         },
         isFieldLatitude: function() {
-            return this.isLatitude || this.id.toLowerCase() == "latitude";
+            return this.isLatitude || this.id.toLowerCase().startsWith("latitude");
         },
         isFieldLongitude: function() {
-            return this.isLongitude || this.id.toLowerCase() == "longitude";
+            return this.isLongitude || this.id.toLowerCase().startsWith("longitude");
         },
         isFieldElevation: function() {
             return this.isElevation || this.id.toLowerCase() == "elevation" || this.id.toLowerCase() == "altitude";
@@ -43497,7 +43497,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let iconSize = parseFloat(this.getProperty('iconSize',this.getProperty('radius',32)));
 	    let iconMap = this.getIconMap();
 	    let dfltShape = this.getProperty('defaultShape',null);
-	    let dfltShapes = ['circle','triangle','star',  'square', 'cross','x', 'lightning','rectangle','church'];
+	    let dfltShapes = ['circle','triangle','square','star',  'downtriangle','rectangle', 'cross','x', 'lightning','church'];
 	    let dfltShapeIdx=0;
 
 	    let shapeBy = {
@@ -43507,6 +43507,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		labels:{},
 		patterns:[]
 	    }
+
 
 
 	    if(this.getDisplayProp(source, 'shapeByMap', null)) {
@@ -43520,6 +43521,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		})
 	    }
+
+
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 
@@ -43715,6 +43718,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 		    }
 		});
+
+
 
 
 		//First get the rounded point for each RecordInfo
@@ -43945,6 +43950,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillOpacity: fillOpacity
                 };
 
+
+
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
 		    if(gv)  {
@@ -43959,6 +43966,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 
 			if(!shape) shape = shapeBy.map[_gv];
+
+
 
 
 			if(!shape) {
@@ -44324,7 +44333,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    else if(shape=="rectangle") shape=HU.getIconImage("fa-square");		    
 		    else if(shape=="star") shape=HU.getIconImage("fa-star");
 		    else if(shape=="diamond") shape=HU.getIconImage("fa-diamond");		    		    
-		    else if(shape=="triangle") shape=HU.getIconImage("/icons/triangle.png",["width","16px"]);		    
+		    else if(shape=="triangle") shape=HU.getIconImage("/icons/triangle.png",["width","16px"]);
+		    else if(shape=="downtriangle") shape=HU.getIconImage("/icons/downtriangle.png",["width","16px"]);		    		    
 		    else if(shape=="lightning") shape=HU.getIconImage("/icons/lightning.png",["width","16px"]);		    
 		    else if(shape=="cross") shape=HU.getIconImage("/icons/cross.png",["width","16px"]);		    
 		    else if(shape=="church") shape=HU.getIconImage("fa-cross");
