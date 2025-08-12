@@ -568,17 +568,21 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	createGlobe:function() {
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
-	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
-	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
-	    let rotate = HU.div([TITLE,"Toggle rotate", CLASS,"ramadda-clickable", ID,this.domId(ID_ROTATE_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","30px","z-index","1000")],HU.getIconImage("fa-rotate"));	    
+	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let pos = HU.div([ATTR_TITLE,"Select Position", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId(ID_POSITION_BUTTON),
+			      ATTR_STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
+	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate", ATTR_CLASS,"ramadda-clickable",
+				 ATTR_ID,this.domId(ID_ROTATE_BUTTON),
+				 ATTR_STYLE,HU.css("position","absolute","left","10px","top","30px","z-index","1000")],HU.getIconImage("fa-rotate"));	    
 	    let w  = parseInt(this.getGlobeWidth());
 	    let h = parseInt(this.getGlobeHeight());
 
-	    let globe = HU.div([STYLE,HU.css("position","relative")],
+	    let globe = HU.div([ATTR_STYLE,HU.css("position","relative")],
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div([ATTR_STYLE,HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),ID, this.domId(ID_GLOBE)]));
+			       HU.div([ATTR_STYLE,HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),
+				       ATTR_ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
 	    this.setContents(html);
@@ -595,9 +599,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.jq(ID_POSITION_BUTTON).click(()=>{
 		let html = "";
 		for(a in positions) {
-		    html+=HU.div([CLASS,"ramadda-clickable","place",a],a);
+		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","place",a],a);
 		}
-		html=HU.div([STYLE,HU.css("margin","5px")],html);
+		html=HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
 		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_POSITION_BUTTON)});
 		dialog.find(".ramadda-clickable").click(function() {
 		    _this.setPosition(positions[$(this).attr("place")]);
@@ -865,7 +869,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
-			    html = HU.div([CLASS,"display-three-globe-popup",ATTR_STYLE,this.getProperty('popupStyle','')], html);
+			    html = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_STYLE,this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }
@@ -1148,10 +1152,12 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	},
 
 	createScene: function() {
-	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
-	    let grid = HU.div([STYLE,HU.css("position","relative")],
+	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",
+				ATTR_ID,this.domId(ID_POPUP),
+				ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let grid = HU.div([ATTR_STYLE,HU.css("position","relative")],
 			      popup +
-			      HU.div([STYLE,HU.css("min-width","200px","min-height","200px"), ID, this.domId(ID_GRID)]));
+			      HU.div([ATTR_STYLE,HU.css("min-width","200px","min-height","200px"), ATTR_ID, this.domId(ID_GRID)]));
 	    let html = HU.center(grid);
 	    this.setContents(html);
 	    this.scene = new THREE.Scene();

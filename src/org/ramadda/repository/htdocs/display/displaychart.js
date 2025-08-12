@@ -1399,7 +1399,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(maxHeaderLength>0 && headerLabel.length>maxHeaderLength) {
 		    let orig = headerLabel;
 		    headerLabel = headerLabel.substring(0,maxHeaderLength-1)+"...";
-		    headerLabel = HU.span([TITLE,orig], headerLabel);
+		    headerLabel = HU.span([ATTR_TITLE,orig], headerLabel);
 		}
 		if(maxHeaderWidth>0 || headerStyle) {
 		    let orig = headerLabel;
@@ -1410,7 +1410,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
 		    if(headerStyle)
 			style+=headerStyle;
-		    headerLabel = HU.div([TITLE,orig,ATTR_STYLE,style], headerLabel);
+		    headerLabel = HU.div([ATTR_TITLE,orig,ATTR_STYLE,style], headerLabel);
 		} 
                 if (colIdx == 0 && props.includeIndex) {
                     //This might be a number or a date

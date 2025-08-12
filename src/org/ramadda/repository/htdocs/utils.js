@@ -78,6 +78,7 @@ var OPTION = "option";
 var VALUE = "value";
 */
 
+
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
@@ -97,6 +98,7 @@ var TAG_TD = "td";
 var TAG_UL = "ul";
 var TAG_OL = "ol";
 var ATTR_ACTION= "action";
+var ATTR_BACKGROUND = "background";
 var ATTR_SRC = "src";
 var ATTR_TYPE = "type";
 var ATTR_WIDTH = "width";
@@ -109,6 +111,7 @@ var ATTR_CELLPADDING = "cellpadding";
 var ATTR_CELLSPACING = "cellspacing";
 var ATTR_VALUE = "value";
 var ATTR_TITLE = "title";
+var ATTR_POSITION="position";
 var ATTR_ALT = "alt";
 var ATTR_ID = "id";
 var ATTR_CLASS = "class";

@@ -843,9 +843,9 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		    let row = "<tr style='border-top:1px solid #ccc;'>";
 		    //		    if(hour!=9) return
 		    let hourLabel  = HU.div([ATTR_STYLE,this.getPropertyDayLabelStyle("")], Utils.formatHour(hour));
-		    row += HU.td([WIDTH,"10","align","right"],hourLabel);
-		    row += HU.open(TAG_TD,[ATTR_STYLE,HU.css('background','#efefef'),WIDTH,"100%"]);
-		    row += HU.open("div",[ATTR_STYLE, HU.css(HEIGHT,"100%",POSITION,"relative",WIDTH,"100%",BACKGROUND,this.getPropertyRowBackground("#eee"))]);
+		    row += HU.td([ATTR_WIDTH,"10","align","right"],hourLabel);
+		    row += HU.open(TAG_TD,[ATTR_STYLE,HU.css('background','#efefef'),ATTR_WIDTH,"100%"]);
+		    row += HU.open("div",[ATTR_STYLE, HU.css(ATTR_HEIGHT,"100%",ATTR_POSITION,"relative",ATTR_WIDTH,"100%",ATTR_BACKGROUND,this.getPropertyRowBackground("#eee"))]);
 		    row += "&nbsp;";
 		    let displayed = {};
 		    let didOne= false;
@@ -866,10 +866,10 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 			    displayed[minutes].contents +=
 				HU.div([MULTI_ID,displayed[minutes].multiid,RECORD_ID, record.getId(), RECORD_INDEX,_this.recordToIndex[record.getId()],
 					ATTR_TITLE,"",ATTR_STYLE,
-					HU.css(WIDTH,boxWidth+"px",BACKGROUND,boxColor),
+					HU.css(ATTR_WIDTH,boxWidth+"px",ATTR_BACKGROUND,boxColor),
 					ATTR_CLASS,'display-hours-box'],"");
 			} else {
-			    let css = HU.css("position","absolute","top","0px",WIDTH,boxWidth+"px",'background',boxColor,'left',left);
+			    let css = HU.css("position","absolute","top","0px",ATTR_WIDTH,boxWidth+"px",'background',boxColor,'left',left);
 			    row+= HU.div([RECORD_ID, record.getId(), RECORD_INDEX,_this.recordToIndex[record.getId()],
 					  ATTR_TITLE,"",ATTR_STYLE, css,ATTR_CLASS,'display-hours-box']);
 			}
@@ -2151,7 +2151,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 
             buttons = HU.div([ATTR_CLASS, "display-tnse-toolbar"], buttons);
             this.jq(ID_TOP_LEFT).append(buttons);
-            this.setContents(HU.table([WIDTH,'100%'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
+            this.setContents(HU.table([ATTR_WIDTH,'100%'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
             this.search = this.jq(ID_SEARCH);
             this.search.keyup(e => {
                 let v = this.search.val().trim();
@@ -2271,7 +2271,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                     let index = parseInt($(this).attr("index"));
                     if (index < 0 || index >= _this.dataList.length) return;
                     let tuple = _this.getDataValues(_this.dataList[index]);
-                    let details = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable',WIDTH,'100%']);
+                    let details = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable',ATTR_WIDTH,'100%']);
                     for (let i = 0; i < _this.fields.length; i++) {
                         let field = _this.fields[i];
                         details += HU.tr([],HU.td(['align','right', ATTR_CLASS,'formlabel'], this.getFieldLabel(field) + ':') + HU.td([],tuple[field.getIndex()]));
@@ -3002,12 +3002,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getShowSelectSlider()) {
 		let lowSlider = HU.div([ATTR_STYLE,HU.css('display','inline-block')],HU.div([],"Negative Correlation") +  
-				       HU.div([ATTR_ID,this.gid(ID_SLIDER_LOW_MIN),ATTR_STYLE,HU.css(WIDTH,'50px','display','inline-block','text-align','right','margin-right','15px')],this.range.low.min) +
-				       HU.div([ATTR_STYLE,HU.css(HEIGHT,'20px','display','inline-block',WIDTH,'200px','background',this.getProperty('lowSliderBackground','#FD9596')), ID,this.gid(ID_SLIDER_LOW)]) +
+				       HU.div([ATTR_ID,this.gid(ID_SLIDER_LOW_MIN),ATTR_STYLE,HU.css(ATTR_WIDTH,'50px','display','inline-block','text-align','right','margin-right','15px')],this.range.low.min) +
+				       HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block',ATTR_WIDTH,'200px','background',this.getProperty('lowSliderBackground','#FD9596')), ID,this.gid(ID_SLIDER_LOW)]) +
 				       HU.div([ATTR_ID,this.gid(ID_SLIDER_LOW_MAX),ATTR_STYLE,HU.css('text-align','left','width','50px','display','inline-block','margin-left','15px')],this.range.low.max));
 		let highSlider = HU.div(["display","inline-block;"], HU.div([],"Positive Correlation") +
 					HU.div([ATTR_ID,this.gid(ID_SLIDER_HIGH_MIN),ATTR_STYLE,HU.css('width','50px','display','inline-block','text-align','right', 'margin-right','15px')],this.range.high.min) +
-					HU.div([ATTR_STYLE,HU.css(HEIGHT,'20px','display','inline-block','width','200px','background',this.getProperty('highSliderBackground','#64A982')), ID,this.gid(ID_SLIDER_HIGH)]) +
+					HU.div([ATTR_STYLE,HU.css(ATTR_HEIGHT,'20px','display','inline-block','width','200px','background',this.getProperty('highSliderBackground','#64A982')), ID,this.gid(ID_SLIDER_HIGH)]) +
 					HU.div([ATTR_ID,this.gid(ID_SLIDER_HIGH_MAX),ATTR_STYLE,HU.css('text-align','left','width','50px','display','inline-block','margin-left','15px')],this.range.high.max));
 
 
@@ -3972,7 +3972,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 				     "field-value",cat], cat);
 		let tdAttrs = ['align','right',ATTR_CLASS,'display-colorboxes-header'];
 		if(labelColumnWidth)
-		    tdAttrs.push(WIDTH,labelColumnWidth);
+		    tdAttrs.push(ATTR_WIDTH,labelColumnWidth);
 		let row = HU.open(TAG_TR,['valign','center'],HU.td(tdAttrs,label+ " ("+length+")"));
 		row+=	  HU.open(TAG_TD);
 
@@ -4496,7 +4496,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 																		  columnSelector));
 	    }
 
-	    let mainTable = HU.open(TAG_TABLE,[ATTR_STYLE,HU.css('font-size', this.getProperty("fontSize",'8pt')),ATTR_CLASS,'display-colorboxes-table', 'cellpadding',0,'cellspacing',0,  WIDTH,'100%']);
+	    let mainTable = HU.open(TAG_TABLE,[ATTR_STYLE,HU.css('font-size', this.getProperty("fontSize",'8pt')),ATTR_CLASS,'display-colorboxes-table', 'cellpadding',0,'cellspacing',0,
+					       ATTR_WIDTH,'100%']);
 	    mainTable+=HU.tr([],headerRow);
 	    mainTable+=table;
 	    //	    html+=header;
@@ -4538,7 +4539,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 			html+= v +":" + cf.counts[v]+SPACE + '<br>';
 		    });
 		    let id = _this.domId(cell.row+"-"+cell.column+"-" + f.getId());
-		    $(this).append(HU.div([ATTR_CLASS,"display-datatable-piechart",ATTR_ID,id,ATTR_TITLE,"", ATTR_STYLE,HU.css(WIDTH, pieWidth+'px',HEIGHT, pieWidth+'px')]));
+		    $(this).append(HU.div([ATTR_CLASS,"display-datatable-piechart",ATTR_ID,id,ATTR_TITLE,"", ATTR_STYLE,HU.css(ATTR_WIDTH, pieWidth+'px',ATTR_HEIGHT, pieWidth+'px')]));
 		    //drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 		    drawPieChart(_this, "#"+id,pieWidth,pieWidth,data,null,null,null,{colorMap:colorMap});
 		    $("#" + id).tooltip({
@@ -4837,7 +4838,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		}
 
 		let c = HU.tag("canvas",[ATTR_CLASS,canvasClass, ATTR_STYLE,canvasStyle, 	
-					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ATTR_ID,cid]);
+					 ATTR_WIDTH,canvasWidth,ATTR_HEIGHT,canvasHeight,ATTR_ID,cid]);
 		let icon = iconField? HU.image(record.getValue(iconField.getIndex()))+"&nbsp;":"";
 		let topTitle  = topTitleTemplate?
 		    HU.div([ATTR_CLASS,"display-canvas-title"],
@@ -5368,7 +5369,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    if(sizeBy.field) {
 			size  = 2*sizeBy.getSize(r.getData(), dotSize);
 			if(size<0) return;
-			style+=HU.css(HEIGHT,HU.getDimension(size),WIDTH,HU.getDimension(size));
+			style+=HU.css(ATTR_HEIGHT,HU.getDimension(size),ATTR_WIDTH,HU.getDimension(size));
 		    }
 		    let top = maxHeight/2-size/2;
 		    html +=  HU.span([RECORD_INDEX,idx2,RECORD_ID, r.getId(),ATTR_CLASS,clazz,ATTR_STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, ATTR_TITLE,""]); 
