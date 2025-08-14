@@ -563,11 +563,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Object[] values = entry.getTypeHandler().getEntryValues(entry);
 	    if(values!=null) {
 		for (Column column : columns) {
-		    if (!column.getCanSearch()) continue;
+		    if (!column.getCanSearch() && !column.isEntryType()) continue;
 		    String field  = getPropertyField(entry.getTypeHandler(),column);
 		    Object v= entry.getValue(request,column);
 		    if(v==null) continue;
 		    //TODO handle latlonbox
+		    //		    debugIndex =true;
 		    if(debugIndex) System.err.println("\tindexing column:" + column +" field:"  + field);
 		    if(column.isLatLon()) {
 			double[] latlon = column.getLatLon(request,values);
@@ -587,8 +588,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			doc.add(new StringField(field, v.toString(),Field.Store.YES));
 			if(column.getCanSort())
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
-		    }
-		    else if(column.isDouble())  {
+		    }   else if(column.isDouble())  {
 			double value = (Double)v;
 			if(!Double.isNaN(value)) {
 			    doc.add(new DoublePoint(field, (Double)v));
@@ -1517,6 +1517,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    String       searchArg = column.getSearchArg();
 		    Query term=null;
 		    String field = getPropertyField(typeHandler,column);
+
 		    if(column.isEnumeration()) {
 			List<String> values = (List<String>) request.get(searchArg,new ArrayList<String>());
 			List<Query> ors = new ArrayList<Query>();
