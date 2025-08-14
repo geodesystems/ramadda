@@ -568,6 +568,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 
 
+
 	    this.jq(ID_SEARCH_HIDEFORM).click(()=>{
 		this.formShown  = !this.formShown;
 		if(this.formShown)
@@ -1268,7 +1269,29 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			tag.remove();
 		    }
 		} else if(col.isDate()) {
+		} else if(col.isEntry()) {		    
 		    //this gets handled below with the date widgets
+                    let value = this.jq(id+'_hidden').val();
+		    if(Utils.stringDefined(value)) {
+			extra += "&" + arg + "=" + encodeURIComponent(value);
+			if(tag.length==0) {
+			    tag = makeTag("column",col.getName(),value);
+			    tag.click(()=>{
+				let obj=this.jq(id);
+				if(obj.data && obj.data('selectBox-selectBoxIt')) {
+				    obj.data('selectBox-selectBoxIt').selectOption(VALUE_NONE);
+				} else {
+				    obj.val(null);
+				}
+				this.submitSearchForm();
+			    });
+			} else {
+			    tag.html(label);
+			}
+		    } else {
+			tag.remove();
+		    }
+
 		} else {
                     let value = this.jq(id).val();
                     if (value == null || value==VALUE_NONE) {
@@ -2248,7 +2271,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    label = this.makeLabel(col.getSearchLabel());
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
-                    field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
+                    field = HU.input("", savedValue??this.getSearchValue(col.getName()),
+				     [ATTR_PLACEHOLDER,col.getSearchLabel(),
+				      ATTR_CLASS, "input display-simplesearch-input",
+				      ATTR_SIZE, this.getTextInputSize(),
+				      ATTR_ID, id]);
 		    label = col.getSearchLabel();
                     widget =  field + " " + help;
 		} else if(col.isDate()) {
@@ -2257,7 +2284,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 							  label+' end');
 		    this.dateWidgets.push({widget:dateWidget,column:col});
 		    widget=dateWidget.getHtml();
+		} else if(col.isEntry()) {
+		    let name = col.getName();
 
+		    let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"),
+					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
+					 ATTR_TITLE,"Clear selection"]);
+		    let input = HU.input("","",["READONLY",null,ATTR_PLACEHOLDER,'Select',
+						  ATTR_STYLE,HU.css('cursor','pointer','width','100%'),
+						  ATTR_ID,id,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
+
+		    label = col.getSearchLabel();
+		    widget = HU.hidden("","",[ATTR_ID,id+"_hidden"]);
+		    widget+= HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
+				    HU.leftRightTable(clear,input,"5%", "95%"));
 		} else {
 		    console.log('unknown column type:',col.getName(),col.getType());
 		}
@@ -2281,6 +2321,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		widget.widget.initHtml();
 	    });
 
+
+            cols.forEach(col=>{
+		if(col.isEntry()) {
+                    let id = this.getDomId(ID_COLUMN + col.getName());
+		    jqid(id).click((event) =>{
+			let root = this.getRamadda().getRoot();
+			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,col.entrytype,root);
+		    });
+		}
+	    });
 
 
 	    this.jq(ID_TYPEFIELDS).find('.display-metadatalist').each(function() {
