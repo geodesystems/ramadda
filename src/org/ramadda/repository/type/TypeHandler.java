@@ -5107,12 +5107,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String decorateValue(Request request, Entry entry, Column column,
-                                String s) {
+                                String s) throws Exception {
         if (parent != null) {
             return parent.decorateValue(request, entry, column, s);
         }
 
-        return column.decorate(s);
+        return column.decorate(request, s);
     }
 
     public String getDictionary() {

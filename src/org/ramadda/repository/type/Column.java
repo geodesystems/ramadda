@@ -527,9 +527,19 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return null;
     }
 
-    public String decorate(String v) {
+    public String decorate(Request request,String v) throws Exception {
         Display d = getDisplay(v);
         if (d == null) {
+	    if(isEntryType()) {
+		if(Utils.stringDefined(v)) {
+		    Entry entry = getRepository().getEntryManager().getEntry(request, v);
+		    if(entry!=null) {
+			return getRepository().getEntryManager().getLink(request, entry);
+		    }
+		}
+		return "---";
+	    }
+
 	    String icon = getIcon(v);
 	    if(icon!=null) {
 		v = HU.image(icon) + HU.space(1) + v;
@@ -1164,7 +1174,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
             if (raw) {
-                sb.append(entryId);
+                result.append(entryId);
             } else {
                 if (theEntry != null) {
                     try {
@@ -1172,16 +1182,16 @@ public class Column implements DataTypes, Constants, Cloneable {
                             getRepository().getEntryManager().getAjaxLink(
 									  request, theEntry,
 									  theEntry.getName()).toString();
-                        sb.append(link);
+                        result.append(link);
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
                     }
 
                 } else {
-                    sb.append("---");
+                    result.append("---");
                 }
-
-            }
+	    }
+	    return true;
         } else if (isType(DATATYPE_ENTRY_LIST)) {
             String entryIds  = toString(values, offset);
             List<Entry> entries=null;
