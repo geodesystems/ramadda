@@ -106,6 +106,7 @@ var ATTR_TYPE = "type";
 var ATTR_WIDTH = "width";
 var ATTR_HEIGHT = "height";
 var ATTR_HREF = "href";
+var ATTR_ONCLICK  = "onclick";
 var ATTR_PLACEHOLDER = "placeholder";
 var ATTR_BORDER = "border";
 var ATTR_COLSPAN = "colspan";
