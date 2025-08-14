@@ -662,7 +662,10 @@ function EntryTypeColumn(props) {
         },
         isDate: function() {
             return this.getType() == "date";
-        },		
+        },
+        isEntry: function() {
+            return this.getType() == "entry";
+        },			
         showCheckboxes: function() {
 	    return this.searchShowCheckboxes;
 	},
