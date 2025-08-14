@@ -127,7 +127,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	return false;
     },
     selectCreate:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
-	let key = selectorId + (baseUrl||"");
+	let key = selectorId + (baseUrl??"");
 	if (true || !selectors[key]) {
             return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
 	} else {
@@ -179,7 +179,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
         $("#" + id +"_input").keyup(function(event){
             let value =  $(this).val();
-            if(value=="") {
+            if(!Utils.isReturnKey(event) && value=="") {
                 results.hide();
                 results.html("");
                 return;
@@ -1901,10 +1901,9 @@ var selectors = new Array();
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
     this.id = selectorId;
-    this.domId = HU.getUniqueId('selector_');
-
-    this.props = props||{};
     this.elementId = elementId;
+    this.domId = HU.getUniqueId('selector_');
+    this.props = props||{};
     this.localeId = localeId;
     this.entryType = entryType;
     this.allEntries = allEntries;
