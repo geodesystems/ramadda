@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+			  
 package org.ramadda.repository.output;
 
 import org.ramadda.data.services.RecordTypeHandler;
@@ -4214,6 +4216,7 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
+
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
 	    boolean decorate = getProperty(wikiUtil, props, "decorate",  true);
 	    boolean expand = getProperty(wikiUtil, props, "expand",  false);	    
@@ -4912,17 +4915,29 @@ public class WikiManager extends RepositoryManager
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
 
+
+	    String result;
 	    if(!chunkDefined(request, wikiUtil,props)) {
-		return  makeTableTree(request, wikiUtil,props,children);
+		result=  makeTableTree(request, wikiUtil,props,children);
+	    } else {
+		List<List> chunkedEntries = getChunks(request,wikiUtil, props, children);
+		List<String> tds = new ArrayList<String>();
+		for(List entries: chunkedEntries) {
+		    tds.add(makeTableTree(request, wikiUtil,props,(List<Entry>)entries));
+		}
+		result = makeChunks(request, wikiUtil, props, tds);
 	    }
-
-	    List<List> chunkedEntries = getChunks(request,wikiUtil, props, children);
-	    List<String> tds = new ArrayList<String>();
-	    for(List entries: chunkedEntries) {
-		tds.add(makeTableTree(request, wikiUtil,props,(List<Entry>)entries));
+            if (children.size() >0) {
+		String heading = getProperty(wikiUtil,props,"contentsHeading",null);
+		if (heading != null) {
+		    //Convert ant _nl_, _qt_, etc
+		    heading = Utils.convertPattern(heading).replace("\\n","\n");
+		    heading = wikifyEntry(request, entry, wikiUtil, heading, false,
+					  wikiUtil.getNotTags(), true);
+		    result = heading+result;
+		}
 	    }
-
-	    return makeChunks(request, wikiUtil, props, tds);
+	    return result;
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
@@ -7241,6 +7256,25 @@ public class WikiManager extends RepositoryManager
 		entryId = "searchurl:" + searchUrl;
 	    }
 
+	    //entrylink:type;column
+	    if(entryId.startsWith("entrylink:")) {
+		entryId = entryId.substring("entrylink:".length());
+		List<String> toks  =Utils.split(entryId,";",true,true);
+		if(toks.size()!=2) {
+		    throw new IllegalArgumentException("bad entrylink: specifier:" + entryId);
+		}
+		String type = toks.get(0);
+		String column = toks.get(1);		
+		
+		//search.type_assets_base.vendor=a5255fbe-49c6-4624-9bff-ee7e5b777a3f
+		String searchUrl = HU.url("/search/do?forsearch=true",
+					  "type",type,
+
+					  "search." + type+"." + column,
+					  baseEntry.getId());
+		System.err.println("searchurl:" + searchUrl);
+		entryId = "searchurl:" + searchUrl;
+	    }
 
 	    if (entryId.startsWith(getRepository().getUrlPath("/search/do"))) {
 		entryId = "searchurl:" + entryId;
