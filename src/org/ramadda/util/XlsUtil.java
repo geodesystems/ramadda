@@ -106,6 +106,15 @@ public class XlsUtil {
             final BufferedOutputStream bos = new BufferedOutputStream(pos);
             final PipedInputStream     pis = new PipedInputStream(pos);
             final PrintWriter          pw  = new PrintWriter(pos);
+	    InputStream is = new BufferedInputStream(IO.getInputStream(path.getPath(), XlsUtil.class));
+	    final Workbook wb = StreamingReader.builder()
+		//                      .rowCacheSize(100)    
+		//                      .bufferSize(4096)     
+		.open(is);
+	    if(wb.getNumberOfSheets()<sheetNumber) {
+		wb.close();
+		return null;
+	    }
             ucar.unidata.util.Misc.run(new Runnable() {
                 public void run() {
                     try {
@@ -113,10 +122,12 @@ public class XlsUtil {
                         InputStream is = new BufferedInputStream(
                                              IO.getInputStream(
 							       path.getPath(), XlsUtil.class));
+			/*
                         Workbook wb = StreamingReader.builder()
                         //                      .rowCacheSize(100)    
                         //                      .bufferSize(4096)     
                         .open(is);
+			*/
                         //Only read the first sheet
                         for (Sheet sheet : wb) {
 			    if(--_sheetNumber>0) {
