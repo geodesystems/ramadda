@@ -161,6 +161,7 @@ public class TextReader implements Cloneable {
     }
 
     public void finishProcessing() throws Exception {
+	visitedRows =0;
         if (firstProcessor != null) {
             firstProcessor.finish(this);
         }
@@ -788,7 +789,6 @@ public class TextReader implements Cloneable {
     }    
 
     public PrintWriter getWriter() {
-
         try {
             if (writer == null) {
                 OutputStream os = this.getOutput();

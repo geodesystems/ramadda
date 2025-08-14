@@ -66,6 +66,9 @@ public class Seesv implements SeesvCommands {
     private InputStream inputStream;
     private ReadableByteChannel channel;
     private int sheetNumber =0;
+    private boolean multiSheets = false;
+    private int startSheet=-1;
+    private int endSheet=-1;    
     private Hashtable<String,String> macros = new Hashtable<String,String>();
     private File destDir = new File(".");
     private TextReader myTextReader;
@@ -768,6 +771,14 @@ public class Seesv implements SeesvCommands {
                 iteratePattern = new Filter.PatternFilter(myTextReader, getCols(iterateColumn), "");
                 myTextReader.addProcessor(iteratePattern);
             }
+	    if(multiSheets) {
+		List<IO.Path> tmp = new ArrayList<IO.Path>();
+		for(int i=startSheet;i<=endSheet;i++) {
+		    tmp.add(files.get(0));
+		}		
+		files =tmp;
+	    }
+
 	    //For now do the old way so we handle utf-8 better
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
@@ -775,39 +786,52 @@ public class Seesv implements SeesvCommands {
                     iteratePattern.setPattern(pattern);
                 }
 		int providerCnt = 0;
+		if(multiSheets && multiFileTemplate==null) {
+		    multiFileTemplate = "${file_name}_sheet_${sheet}.csv";
+		}
+		boolean doMulti  = multiFiles|| multiSheets;
                 for (DataProvider provider : providers) {
 		    providerCnt++;
 		    int cnt=0;
-		    for (NamedInputStream input : getStreams(files)) {
-			//			System.err.println("file:" + input);
+		    for(IO.Path file: files) {
 			int fileCnt = cnt++;
-			if(multiFiles) {
+			if(multiSheets) {
+			    sheetNumber = startSheet+fileCnt;
+			}
+			InputStream inputStream  = makeInputStream(file);
+			if(inputStream==null) break;
+			NamedInputStream input = new NamedInputStream(file.getPath(), wrapInputStream(inputStream));
+			//new NamedInputStream(file.getPath(), wrapInputStream(makeInputStream(file)));
+			if(doMulti) {
 			    File newFile;
 			    String source  = new File(input.getName()).getName();
+
 			    if(Utils.stringDefined(multiFileTemplate)) {
 				String name  = IOUtil.stripExtension(source);
-				newFile = new File(multiFileTemplate.replace("${file_name}",source).replace("${count}",""+(cnt)).replace("${file_shortname}",name));
+				String fileName = multiFileTemplate.replace("${file_name}",source).replace("${count}",""+(cnt)).replace("${file_shortname}",name).replace("${sheet}",""+sheetNumber);
+				newFile = new File(fileName);
 			    } else {
 				newFile = new File(input.getName()+".csv");
 			    }
+			    //			    System.err.println("file:" + newFile.getName() +" sheet:" + sheetNumber);
 			    if(newFile.equals(new File(source))) {
 				throw new IllegalArgumentException("Target file is same as source file:" + newFile);
 			    }
 			    checkOkToWrite(newFile.toString());
 			    myTextReader.setOutputFile(newFile);
 			}
-			myTextReader.resetProcessors(multiFiles);
+			myTextReader.resetProcessors(doMulti);
 			myTextReader.setInput(input);
-			process(myTextReader, provider,multiFiles?0:fileCnt);
+			process(myTextReader, provider,doMulti?0:fileCnt);
 			if(!multiFiles) {
 			    myTextReader.setFirstRow(null);
 			}
 			input.close();
-			if(multiFiles) {
+			if(doMulti) {
 			    myTextReader.finishProcessing();
 			}
 		    }
-		    if (okToRun && !multiFiles) {
+		    if (okToRun && !doMulti) {
 			myTextReader.finishProcessing();
 		    }
 		    provider.finish();
@@ -1654,6 +1678,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SHEET, "Set XLS sheet #",
                 new Arg("sheet", "Sheet number", ATTR_TYPE,
                         TYPE_NUMBER)),
+        new Cmd(CMD_SHEETS, "Process each XLSX sheet in turn",
+                new Arg("start sheet", "Start sheet"),
+                new Arg("end sheet", "End sheet")),
 
         new Cmd(CMD_CAT, "Concat the columns in one or more csv files", "*.csv"),
         new Cmd(CMD_APPEND, "Append the files, skipping the given rows in the latter files",
@@ -3847,6 +3874,15 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_SHEETS,2,(ctx,args,i) -> {
+		multiSheets = true;
+		startSheet = Integer.parseInt(args.get(++i));
+		String s = args.get(++i);
+		if(s.equals("*") || s.equals("")) endSheet= 100;
+		else endSheet = Integer.parseInt(s);
+		return i;
+	    });
+	
 	defineFunction(CMD_PROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Propper(args.get(++i), args.get(++i)));
 		return i;
