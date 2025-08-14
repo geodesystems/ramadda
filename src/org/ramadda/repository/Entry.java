@@ -1834,6 +1834,10 @@ public class Entry implements Cloneable {
         return parentEntry;
     }
 
+    public boolean isType(String type) {
+        return this.getTypeHandler().isType(type);
+    }
+
     public Entry getAncestor(String type) {
         if (this.getTypeHandler().isType(type)) {
             return this;
