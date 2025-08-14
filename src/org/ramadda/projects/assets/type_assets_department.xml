@@ -1,0 +1,49 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_department.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_department" 
+ description="Department" 
+ handler="org.ramadda.projects.assets.AssetBaseTypeHandler" 
+ super="type_assets_thing" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="dept_code"  label="Department Code"  type="string" />
+<column  name="manager_name"  label="Manager Name"  type="string" />
+<column  name="manager_email"  label="Manager Email"  type="string" />
+<column  name="phone_number"  label="Phone Number"  type="string" />
+<column  name="cost_center"  label="Cost Center"  type="string" />
+<column  name="status"  label="Status"  type="enumerationplus" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/department.png" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Department: {{name}}"
+{{assets_header}}
+{{description wikify=true}}
++row
++col-8
+{{information  showBase=false}}
+-col
++col-4
+{{information   showDetails=false}}
+-col
+-row
+
+{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;department"}}
+
+{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
+showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage=true}} 
+-section]]></wiki>
+</type>

@@ -5,7 +5,7 @@ into some types.xml file
 -->
 <type  name="type_assets_vendor" 
  description="Vendor" 
- handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ handler="org.ramadda.projects.assets.AssetBaseTypeHandler" 
  super="type_assets_thing" 
  supercategory="General" 
  category="Assets" 
@@ -33,7 +33,10 @@ into some types.xml file
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-+section title="License: {{name}}"
++section title="Vendor: {{name}}"
++center
+{{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
+-center
 {{description wikify=true}}
 +toggleopen Vendor Information
 +row
@@ -45,11 +48,10 @@ into some types.xml file
 -col
 -row
 -toggle
-:vspace 1em
-----
-:vspace 1em
+
 {{embed message=""  }} 
 
+{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;vendor"}}
 
 {{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
 showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 

@@ -29,6 +29,12 @@ import java.util.List;
 
 
 public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
+    public static final String TYPE_BASE = "type_assets_base";
+    public static final String TYPE_THING = "type_assets_thing";    
+    public static final String TYPE_LICENSE = "type_assets_license";
+    public static final String TYPE_DEPARTMENT = "type_assets_department";
+    public static final String TYPE_VENDOR = "type_assets_vendor";    
+
     public static final String ARG_REPORT="report";
     public static final String ACTION_SEARCH="assets_search";
     public static final String ACTION_REPORT="assets_report";
@@ -40,6 +46,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String REPORT_MAINTENANCE = "assets_report_maintenance";
     public static final String REPORT_WARRANTY = "assets_report_warranty";            
     public static final String REPORT_COSTS = "assets_report_costs";
+    public static final String TAG_HEADER= "assets_header";
 
 
     public AssetBaseTypeHandler(Repository repository, Element node)
@@ -50,6 +57,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     @Override
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
+	tags.add(new String[]{"Asset Group Header",TAG_HEADER});
+
         tags.add(new String[]{"Assets Report Table",REPORT_TABLE+" #types=\"type_assets_it,type_assets_equipment,...\" showHeader=true"});
         tags.add(new String[]{"Assets Report Counts",REPORT_COUNTS +" "});
         tags.add(new String[]{"Assets Report Maintenance",REPORT_MAINTENANCE+" "});
@@ -61,7 +70,16 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
     private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
-	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
+	if(entry.isType(TYPE_DEPARTMENT)) {
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
+	    return searchUrl;
+	}
+	if(entry.isType(TYPE_VENDOR)) {
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
+	    return searchUrl;
+	}	
+
+	String types = Utils.getProperty(props,"types","super:" + TYPE_BASE+"%2C"+ TYPE_LICENSE);
 	String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
 	return searchUrl;
     }
@@ -69,6 +87,18 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
     private List<Entry> getEntries(Request request, Entry entry, Hashtable props) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
+	if(entry.isType(TYPE_DEPARTMENT)) {
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
+	    getSearchManager().processSearchUrl(request, entries,searchUrl);
+	    return entries;
+	}
+
+	if(entry.isType(TYPE_VENDOR)) {
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
+	    getSearchManager().processSearchUrl(request, entries,searchUrl);
+	    return entries;
+	}	
+
 	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
 	getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
 	return entries;
@@ -217,11 +247,19 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     }
 
 
+    private String assetHeaderWiki;
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
 	throws Exception {
+	if(tag.equals(TAG_HEADER)) {
+	    if(assetHeaderWiki==null) {
+		assetHeaderWiki =
+		    getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetheader.txt");
+	    }
+	    return getWikiManager().wikifyEntry(request, entry,assetHeaderWiki);
+	}
         if (tag.equals("assets_report_link")) {
 	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
 	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
@@ -267,7 +305,11 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	types = HU.urlEncode(types);
 	boolean showHeader   = Utils.getProperty(props,"showHeader",true);
 	String guid = HU.getUniqueId("assets");
-	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
+	//	String searchUrl =  HU.urlEncode(getSearchUrl(request,entry,null));
+	String searchUrl =  getSearchUrl(request,entry,null);	
+	//	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
+	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:" +
+	    searchUrl+"\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
 
 
 	sb.append("<center>");

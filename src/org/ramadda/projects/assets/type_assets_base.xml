@@ -15,16 +15,21 @@ childtypes="type_assets_license"
 >
 
 <!-- Columns-->
-<column  name="asset_id"  tokenizesearch="false" label="Asset ID"  type="string"  size="400"  cansearch="true" />
-<column  name="department"  label="Department"  type="enumerationplus"  cansearch="true" />
+<column  name="asset_id"  label="Asset ID"  type="string"  size="400"  cansearch="true"  tokenizesearch="false" />
+<column  name="department"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" />
 <column  name="assigned_to"  label="Assigned To"  type="enumerationplus"  cansearch="true" />
 <column  name="location"  label="Location"  type="enumerationplus"  cansearch="true" />
 <column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
-<column  name="vendor"  label="Vendor"  type="entry"  entrytype="type_assets_vendor" />
+<column  name="vendor"  label="Vendor"  type="entry"  entrytype="type_assets_vendor"  cansearch="true" />
 <column  name="purchase_order"  label="Purchase Order"  type="string" />
 <column  name="check_number"  label="Check Number"  type="string" />
 <column  name="acquisition_cost"  label="Acquisition Cost"  type="double"  cansearch="true"  cansort="true" />
 <column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
+<column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"  subgroup="Status"   values="active:Active,inrepair:In Repair,disposed:Disposed,retired:Retired,lost:Lost" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
+<column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"    cansearch="true" />
+<column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
+<column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/asset.png" />

@@ -2,51 +2,50 @@
 asset_type,Asset Type,enumeration,\
 values=":Select\,type_assets_building:Building\,type_assets_vehicle:Vehicle"
 organization,Organization Name,enumerationplus,
-department,Department,enumerationplus,
+department,Department,entry, entrytype="type_assets_department"  cansearch="true"
 contact_person,Contact Person,enumerationplus,
 contact_email,Contact Email,email
 contact_phone,Contact Phone,string
 
 
-
 #base asset class
 asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
-department,Department,enumerationplus, cansearch="true" 
+department,Department,entry, entrytype="type_assets_department"  cansearch="true"
 assigned_to,Assigned To,enumerationplus,  cansearch="true" 
 location,Location,enumerationplus,  cansearch="true" 
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
 values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
-vendor,Vendor,entry, entrytype="type_assets_vendor" 
+vendor,Vendor,entry, entrytype="type_assets_vendor"  cansearch="true"
 purchase_order,,string
 check_number,,string
 acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"
 warranty_expiration,,date, default="none"  cansearch="true" 	      
-
-#physical asset
-status,Status,enumerationplus, cansearch="true"  subgroup="Equipment Information" \
+status,Status,enumerationplus, cansearch="true"  subgroup="Status" \
 values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
 condition,,enumerationplus, values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
-serial_number,,string,size="400"
-model,,enumerationplus,size="400" cansearch="true"
-manufacturer,,enumerationplus,
-disposal_date,,date, default="none"   subgroup="Disposal"  cansearch="true" 
+disposal_date,,date, default="none"    cansearch="true" 
 disposal_method,,string,size="2000" rows="5"
 disposed_comment,,string, size="5000" rows="5"
 
+#physical asset
+serial_number,,string,size="400"
+model,,enumerationplus,size="400" cansearch="true"
+manufacturer,,enumerationplus,
+
 
 #Vehicles
+super:type_assets_base
 make,,enumerationplus,size="600" group="Vehicle Information" cansearch="true" 
 model,,enumerationplus,size="600" cansearch="true" 
-vehicle_year,,int, cansearch="true" 
+color,,enumerationplus, \
+values="Black\, White\, Gray\, Silver\, Red\, Blue\, Green\, Yellow\, Brown\, Beige"
+model_year,,int, cansearch="true" 
 vin,,string,size="600" cansearch="true" 
 license_plate,,string,size="600"
 fuel_type,,enumerationplus,values="regular:Regular\,diesel:Diesel\,premium:Premium" default="regular"
 mileage,,int,
 last_service_date,,date,default="none"	     
-status,,enumerationplus, cansearch="true"  \
-values="inservice:In Service\,outofservice:Out of Service\,maintenance:Under Maintenance\,intransit:In Transit\,onloan:On Load"
-lifecycle_status,,enumerationplus,  cansearch="true"  \
-values="active:Active\,idle:Idle\,reserved:Reserved\,pendingdisposal:Pending Disposal\,disposed:Disposed"
+
 
 
 
@@ -113,6 +112,15 @@ expiration_date,,date,default="none"  cansearch="true"
 terms_url,,url,
 
 
+
+
+#deparment
+dept_code,Department Code,string
+manager_name,Manager Name,string
+manager_email,Manager Email,string
+phone_number,Phone Number,string
+cost_center,Cost Center,string
+status,Status,enumerationplus
 
 
 #vendor
