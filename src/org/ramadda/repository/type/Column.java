@@ -713,8 +713,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add("searchMultiples");
         col.add(""+enumerationSearchMultiples);
 
-        col.add("type");
-        col.add(JsonUtil.quote(getType()));
+        Utils.add(col,"type",JsonUtil.quote(getType()));
+	if(isEntryType() && Utils.stringDefined(entryType)) {
+	    Utils.add(col,"entrytype",JsonUtil.quote(entryType));
+	}
+	
+
+
 	if(displayGroup!=null) {
 	    col.add("group");
 	    col.add(JsonUtil.quote(displayGroup));
@@ -816,6 +821,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     public boolean isDouble() {
         return isType(DATATYPE_DOUBLE) || isType(DATATYPE_PERCENTAGE);
+    }
+
+    public boolean isEntryType() {
+	return isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST);
     }
 
     public boolean isString() {
