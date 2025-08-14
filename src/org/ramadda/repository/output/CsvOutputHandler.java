@@ -33,7 +33,10 @@ import java.util.function.Consumer;
 import java.util.function.BiConsumer;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.common.usermodel.HyperlinkType;
+
 import java.io.*;
 
 import java.io.File;
@@ -739,6 +742,8 @@ public class CsvOutputHandler extends OutputHandler {
 
 	dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
 
+	CreationHelper createHelper = workbook.getCreationHelper();
+
         for (String type : types) {
             List<Entry>  entries     = map.get(type);
             TypeHandler  typeHandler = entries.get(0).getTypeHandler();
@@ -754,6 +759,13 @@ public class CsvOutputHandler extends OutputHandler {
 		Cell cell = row[0].createCell(colCnt[0]++);
 		cell.setCellValue(value);
 	    };
+	    BiConsumer<String,String> addLink = (address,label)->{
+		Cell cell = row[0].createCell(colCnt[0]++);
+		cell.setCellValue(label);
+		XSSFHyperlink link = (XSSFHyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+		link.setAddress(address);
+		cell.setHyperlink(link);
+	    };	    
 
 
 	    BiConsumer<Entry,Long> fmt = (entry,date)->{
@@ -890,6 +902,7 @@ public class CsvOutputHandler extends OutputHandler {
 				add.accept(NA);
 				continue;
 			    }
+
 			    if(column.isDate()) {
 				Object o = entry.getValue(request, column);
 				if(o==null) {
@@ -901,6 +914,7 @@ public class CsvOutputHandler extends OutputHandler {
 				continue;
 			    }
 			    String v = entry.getStringValue(request, column,"");
+
 			    String s = entry.getTypeHandler().decorateValue(request, entry, column, v);
 			    if (column.isNumeric()) {
 				add.accept(v);
@@ -953,6 +967,18 @@ public class CsvOutputHandler extends OutputHandler {
 				    String s = entry.getStringValue(request, column,"");
 				    if (column.isNumeric()) {
 					add.accept(s);
+				    } else if (column.isEntryType()) {
+					Entry columnEntry = null;
+					if(stringDefined(s)) {
+					    columnEntry = getRepository().getEntryManager().getEntry(request, s);
+					}
+					if(entry==null) {
+					    add.accept("");
+					} else {
+					    String entryUrl = request.makeUrl(repository.URL_ENTRY_SHOW,  ARG_ENTRYID, columnEntry.getId());
+					    entryUrl = request.getAbsoluteUrl(entryUrl);
+					    addLink.accept(entryUrl,columnEntry.getName());
+					}
 				    } else {
 					add.accept(s);
 				    }
