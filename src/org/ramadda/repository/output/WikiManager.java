@@ -7056,6 +7056,16 @@ public class WikiManager extends RepositoryManager
 	};
     }
 
+    public String  makeEntryLinkSearchUrl(Request request, Entry baseEntry,String type,String column) {
+	//search.type_assets_base.vendor=a5255fbe-49c6-4624-9bff-ee7e5b777a3f
+	String searchUrl = HU.url("/search/do?forsearch=true",
+				  "type",type,
+				  "search." + type+"." + column,
+				  baseEntry.getId());
+	return searchUrl;
+    }
+
+
     public List<Entry> getEntries(Request initRequest,
 				  WikiUtil wikiUtil,
                                   Entry baseEntry, String ids,
@@ -7266,13 +7276,7 @@ public class WikiManager extends RepositoryManager
 		String type = toks.get(0);
 		String column = toks.get(1);		
 		
-		//search.type_assets_base.vendor=a5255fbe-49c6-4624-9bff-ee7e5b777a3f
-		String searchUrl = HU.url("/search/do?forsearch=true",
-					  "type",type,
-
-					  "search." + type+"." + column,
-					  baseEntry.getId());
-		System.err.println("searchurl:" + searchUrl);
+		String searchUrl = makeEntryLinkSearchUrl(myRequest, baseEntry,type,column);
 		entryId = "searchurl:" + searchUrl;
 	    }
 
