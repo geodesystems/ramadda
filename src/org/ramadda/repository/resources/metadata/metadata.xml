@@ -365,7 +365,7 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
         showinhtml="false"
          default="fromdate"
          name="Field"
-         datatype="enumeration"
+         datatype="enumerationplus"
          values="name:Name,fromdate:From Date,todate:To Date,createdate:Create Date,entryorder:Entry Order,type:Type,number:Number (extract number from name),mixed:Mixed,none:None"/>
       <element
          default="true"
