@@ -680,6 +680,7 @@ public interface Constants {
     public static final String ARG_MOVE_CONFIRM = "move.confirm";
 
     public static final String ARG_NAME = "name";
+    public static final String ARG_NAME_EXACT = "nameexact";    
 
     public static final String ARG_BULKUPLOAD = "bulkupload";
 
