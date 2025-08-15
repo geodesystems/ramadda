@@ -411,7 +411,9 @@ public class CsvImporter extends ImportHandler {
 	    message.append(getPageHandler().showDialogWarning("Some columns were not processed:" +
 							      myMessage));
 	}
-	message.append(myMessage2);
+	if(myMessage2.length()>0) {
+	    message.append(getPageHandler().showDialogWarning(myMessage2.toString()));
+	}
 
 	message.append(HU.div("New entries:"));
         return new ByteArrayInputStream(sb.toString().getBytes());
