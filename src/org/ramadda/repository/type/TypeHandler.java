@@ -5562,6 +5562,12 @@ public class TypeHandler extends RepositoryManager {
                 addCriteria(request, searchCriteria, "Entry Type=",
                             StringUtil.join(",", typeList));
             }
+	    List<Clause> ors  = new ArrayList<Clause>();
+	    for(Object type: typeList) {
+		ors.add(Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+	    }
+	    where.add(Clause.or(ors));
+
         }
 
         if (request.defined(ARG_RESOURCE)) {
@@ -5960,9 +5966,14 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+	String exactName = request.getString(ARG_NAME_EXACT,null);
+	if(stringDefined(exactName)) {
+	    where.add(Clause.eq(Tables.ENTRIES.COL_NAME, exactName, false));
+	}
         String[] textArgs = { ARG_NAME, ARG_DESCRIPTION };
         String[] columns = { Tables.ENTRIES.COL_NAME,
                              Tables.ENTRIES.COL_DESCRIPTION };
+
 
         for (int textIdx = 0; textIdx < textArgs.length; textIdx++) {
             String value = request.getString(textArgs[textIdx],
