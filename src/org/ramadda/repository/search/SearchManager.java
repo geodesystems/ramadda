@@ -124,11 +124,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static final String SUFFIX_LATITUDE ="_latitude";
     public static final String SUFFIX_LONGITUDE ="_longitude";
+    public static final String SUFFIX_EXACT ="_exact";
 
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
     public static final String ARG_PROVIDER = "provider";
     public static final String ARG_SEARCH_SUBSET = "search.subset";
     public static final String ARG_SEARCH_SERVERS = "search.servers";
+    
     public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
 							      "/search/do", "Search");
 
@@ -536,6 +538,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	corpus.append(name);
 	corpus.append(" ");
         doc.add(new TextField(FIELD_NAME,  name,Field.Store.YES));
+	doc.add(new StringField(FIELD_NAME+SUFFIX_EXACT, entry.getName(),Field.Store.NO));
 	String nameSort = entry.getTypeHandler().getNameSort(entry);
 
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(nameSort)));
@@ -605,7 +608,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    } else {
 			String s = v.toString();
 			if(column.getTokenizeSearch()) {
-			    doc.add(new TextField(field+"_exact", s,Field.Store.NO));
+			    doc.add(new TextField(field+SUFFIX_EXACT, s,Field.Store.NO));
 			}			    
 
 			s = s.toLowerCase();
@@ -1277,6 +1280,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
+	boolean exact = request.get(ARG_EXACT,false);
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
 		searchField = field;
@@ -1349,8 +1353,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String name = request.getUnsafeString(ARG_NAME,null);
 	if(stringDefined(name)) {
-	    queries.add(makeTextQuery(FIELD_NAME,name));
+	    if(exact) {
+		queries.add(new TermQuery(new Term(FIELD_NAME+SUFFIX_EXACT,name)));
+	    } else {
+		queries.add(makeTextQuery(FIELD_NAME,name));
+	    }
 	}
+	String nameExact = request.getUnsafeString(ARG_NAME_EXACT,null);
+	if(stringDefined(nameExact)) {
+	    queries.add(new TermQuery(new Term(FIELD_NAME+SUFFIX_EXACT,nameExact)));
+	}
+
 	String description = request.getUnsafeString(ARG_DESCRIPTION,null);
 	if(stringDefined(description)) {
 	    queries.add(makeTextQuery(FIELD_DESCRIPTION,description));
@@ -1649,7 +1662,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String v = s.toLowerCase();
 			List<Query> ors = new ArrayList<Query>();
 			if(column.getTokenizeSearch()) {
-			    ors.add(new TermQuery(new Term(field+"_exact", s)));
+			    ors.add(new TermQuery(new Term(field+SUFFIX_EXACT, s)));
 			}			    
 			v = v.toLowerCase();
 			if(v.indexOf(" ")>=0) {
