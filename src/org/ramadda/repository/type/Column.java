@@ -833,6 +833,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_DOUBLE) || isType(DATATYPE_PERCENTAGE);
     }
 
+    public String getEntryType() {
+	return entryType;
+    }
+
     public boolean isEntryType() {
 	return isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST);
     }
