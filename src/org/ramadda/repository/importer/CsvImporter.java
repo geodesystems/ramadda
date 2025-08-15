@@ -7,6 +7,7 @@ package org.ramadda.repository.importer;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.metadata.Metadata;
@@ -72,6 +73,8 @@ public class CsvImporter extends ImportHandler {
                                  String fileName, InputStream stream,
 				 StringBuilder message)
 	throws Exception {
+	Request lookupRequest = new Request(getRepository(),request.getUser());
+
 	boolean isMine  = request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV);
 	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
 	    isMine = fileName.toLowerCase().endsWith(".csv");
@@ -83,8 +86,10 @@ public class CsvImporter extends ImportHandler {
 
 	HashSet seenMessage=new HashSet();
 	StringBuilder myMessage =new StringBuilder();
+	StringBuilder myMessage2 =new StringBuilder();	
         final StringBuffer sb = new StringBuffer("<entries>\n");
 	Processor myProcessor = new Processor() {
+		boolean hadBadType = false;
 		int entryCnt=0;
 		Row headerRow;
 		int typeIdx=-1;
@@ -111,6 +116,7 @@ public class CsvImporter extends ImportHandler {
 		    try {
 			//Check for comments
 			if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
+			if(row.size()==0) return row;
 			cnt++;
 			//get the indices
 			if(headerRow==null) {
@@ -170,7 +176,18 @@ public class CsvImporter extends ImportHandler {
 			    if(nameIdx==-1) throw new IllegalArgumentException("input data must have a \"name\" column");			    
 			    return row;
 			}	
-			if(!row.indexOk(typeIdx)) return row;
+			if(!row.indexOk(typeIdx)) {
+			    if(!hadBadType) {
+				hadBadType=true;
+				String msg = "Bad type index:" + typeIdx+" for row:";
+				for(int i=0;i<row.size();i++) {
+				    msg+="#"+i+": " + row.get(i)+"<br>";
+				}
+				myMessage2.append(HU.div(msg));
+			    }
+			    return row;
+			}
+
 			String tmpType = row.getString(typeIdx,"");
 			if(Utils.stringDefined(tmpType)) {
 			    currentType = tmpType;
@@ -236,6 +253,7 @@ public class CsvImporter extends ImportHandler {
 			    }
 			}
 			for (String prop : columnIdx.keySet()) {
+			    boolean lookupName = false;
 			    int idx = columnIdx.get(prop);
 			    if(!row.indexOk(idx)) continue;
 			    if(prop.indexOf(".")>0) {
@@ -244,8 +262,19 @@ public class CsvImporter extends ImportHandler {
 				if(!propType.equals(currentType)) continue;
 				prop = propToks.get(1);
 			    }
+			    if(prop.indexOf(":")>0) {
+				List<String>propToks = Utils.splitUpTo(prop,":",2);
+				if(propToks.size()>1) {
+				    String modifier = propToks.get(1);
+				    if(modifier.equals("name")) {
+					lookupName  = true;
+				    }
+				    prop = propToks.get(0);
+				}
+			    }
 
-			    if(currentTypeHandler!=null && currentTypeHandler.getColumn(prop)==null) {
+			    Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
+			    if(column==null) {
 				if(!seenMessage.contains(prop)) {
 				    myMessage.append(HU.div("Column: " + prop));
 				    seenMessage.add(prop);
@@ -254,6 +283,20 @@ public class CsvImporter extends ImportHandler {
 			    }
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
+			    if(lookupName && column.isEntryType()) {
+				String entryType = column.getEntryType();
+				lookupRequest.put(ARG_NAME_EXACT,v);
+				lookupRequest.put(ARG_EXACT,"true");				
+				if(entryType!=null)
+				    lookupRequest.put(ARG_TYPE,entryType);
+				List<Entry> columnEntries = getEntryManager().getEntriesFromDb(lookupRequest);
+				lookupRequest.remove(ARG_NAME_EXACT,ARG_TYPE,ARG_EXACT);
+				if(columnEntries.size()==0) {
+				    myMessage2.append(HU.div("Could not find linked entry:" + v));
+				} else {
+				    v = columnEntries.get(0).getId();
+				}
+			    }
 			    sb.append(XU.openTag(prop,""));
 			    XU.appendCdata(sb,v);
 			    sb.append(XU.closeTag(prop));
@@ -368,6 +411,7 @@ public class CsvImporter extends ImportHandler {
 	    message.append(getPageHandler().showDialogWarning("Some columns were not processed:" +
 							      myMessage));
 	}
+	message.append(myMessage2);
 
 	message.append(HU.div("New entries:"));
         return new ByteArrayInputStream(sb.toString().getBytes());
