@@ -13,6 +13,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapLayer;
 import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
@@ -2985,17 +2986,18 @@ public class PageHandler extends RepositoryManager {
     public void addEntrySelect(Request request, Entry entry, String selectId,
                                Appendable sb, String label, String extra)
             throws Exception {
-        String baseSelect = OutputHandler.getGroupSelect(request, selectId);
+        OutputHandler.EntrySelect baseSelect = OutputHandler.getGroupSelect(request, selectId);
 	String event = HU.onMouseClick(OutputHandler.getSelectEvent(request, selectId, false, "", entry));
         sb.append(HU.hidden(selectId + "_hidden", ((entry != null)
                 ? entry.getId()
                 : ""), HU.id(selectId + "_hidden")));
-        sb.append(HU.formEntry(msgLabel(label),
-                               HU.disabledInput(selectId, ((entry != null)
-                ? entry.getFullName()
-							   : ""), HU.id(selectId) + event + HU.style("cursor:pointer;") +HU.SIZE_60 + ((entry == null)
-                ? HU.cssClass(CSS_CLASS_REQUIRED_DISABLED)
-						       : "")) + HU.space(2) + baseSelect + extra));
+	String clazz = entry == null ? CSS_CLASS_REQUIRED_DISABLED:HU.CLASS_DISABLEDINPUT;
+	String select = baseSelect.getSelectLink()+HU.space(1) +
+	    HU.disabledInput(selectId, ((entry != null)	? entry.getName(): ""),
+			     HU.attrs("size","60","class",clazz,"style","cursor:pointer;","id",selectId,
+				      "title",entry!=null?entry.getFullName():"")
+			     + event) + HU.space(2) + baseSelect.getSuffix() + extra;
+	sb.append(HU.formEntry(msgLabel(label),select));
     }
 
     public String getEntryHref(Request request, Entry entry, String... args)

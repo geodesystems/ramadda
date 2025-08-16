@@ -827,8 +827,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return HU.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_ENTRY)) {
-            return getRepository().getEntryManager().getEntryFormSelect(
-									request, entry, arg, value,entryType);
+            return getRepository().getEntryManager().getEntryFormSelect(request, entry, arg, value,entryType,"Entry for " + this.getLabel());
         } else if (dataType.equals(DATATYPE_API_KEY)) {
 	    String uid = HU.getUniqueId("apikey");
 	    if(!Utils.stringDefined(value)) value=Utils.getGuid();

@@ -10,10 +10,12 @@ import org.json.*;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.EntryLink;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.util.FormInfo;
@@ -1180,13 +1182,27 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (raw) {
                 result.append(entryId);
             } else {
+		
                 if (theEntry != null) {
                     try {
                         String link =
                             getRepository().getEntryManager().getAjaxLink(
 									  request, theEntry,
 									  theEntry.getName()).toString();
-                        result.append(link);
+			
+			EntryLink entryLink = getRepository().getEntryManager().getAjaxLink(request, theEntry, theEntry.getName());
+			String clickId = HU.getUniqueId("click");
+			HU.span(result,   HU.span(getRepository().getIconImage("fas fa-circle-info"),
+						  HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
+							   "title","Click to view contents",
+							   "data-title",theEntry.getName(),
+							   "data-url",entryLink.getFolderClickUrl())),
+				HU.attrs("id",clickId));
+
+			result.append(getRepository().getEntryManager().getLink(request, theEntry));
+			result.append(HU.script("RamaddaUtils.initToggleTable('#" + clickId+"');"));
+				      //                        result.append(link);
+
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
                     }
@@ -2603,9 +2619,26 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 value = toString(values, offset);
             }
-            widget =
-                getRepository().getEntryManager().getEntryFormSelect(request,
-								     entry, urlArg, value,entryType);
+	    String newUrl="";
+	    if(entryType!=null) {
+		String parentGroup="";
+		if(entry!=null)
+		    parentGroup = entry.getParentEntry().getId();
+		else
+		    parentGroup=request.getString(ARG_GROUP,"");
+		newUrl = HU.href(HU.url(getRepository().getUrlBase()+"/entry/form",
+					ARG_TYPE,entryType,
+					"defaultgroup",parentGroup,
+					ARG_TARGET_ENTRY,urlArg),
+				 getRepository().getIconImage(ICON_NEW),
+				 HU.attrs("target","_newentry","title","Create new " +getLabel()))
+		    +HU.space(1);
+
+	    }
+
+	    String title  = "Entry for " + typeHandler.getDescription()+" property: " +this.getLabel();
+            widget = newUrl+
+                getRepository().getEntryManager().getEntryFormSelect(request,   entry, urlArg, value,entryType,title);
         } else if (isType(DATATYPE_ENTRY_LIST)) {
 	    //TODO
             String value = "";
@@ -2613,8 +2646,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 value = toString(values, offset);
             }
             widget =
-                getRepository().getEntryManager().getEntryFormSelect(request,
-								     entry, urlArg, value);
+                getRepository().getEntryManager().getEntryFormSelect(request,  entry, urlArg, value,entryType,"Entry for " + this.getLabel());
         } else {
             String value = ((dflt != null)
                             ? dflt
@@ -3227,18 +3259,21 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
-            String select =
-                getRepository().getHtmlOutputHandler().getSelect(request,
-								 searchArg, "Select", true, null, entry);
-            StringBuffer sb = new StringBuffer();
+            OutputHandler.EntrySelect select =
+                OutputHandler.getSelect(request,searchArg, "Select", true, null, theEntry,true,true,true,null);
+	    //            StringBuffer sb = new StringBuffer();
+	    //	    sb.append(select);
+	    /*
             sb.append(HU.hidden(searchArg + "_hidden", entryId,
 				HU.id(searchArg + "_hidden")));
             sb.append(HU.disabledInput(searchArg, ((theEntry != null)
 						   ? theEntry.getFullName()
 						   : ""), HU.id(searchArg)
 				       + HU.SIZE_60) + select);
+	    */
 
-            widget = sb.toString();
+	    //            widget = sb.toString();
+	    widget = select.toString();
         } else if (isType(DATATYPE_ENTRY_LIST)) {
 	    //TODO
             String entryId  = request.getString(searchArg + "_hidden", "");
@@ -3253,7 +3288,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
-            String select =
+            OutputHandler.EntrySelect select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
 								 searchArg, "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();

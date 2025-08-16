@@ -538,11 +538,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	Entry ancestorEntry = (ancestor == null)
 	    ? null
 	    : getEntryManager().getEntry(request, ancestor);
-	String select =
+	OutputHandler.EntrySelect select =
 	    getRepository().getHtmlOutputHandler().getSelect(request,
 							     ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
-							     true,true,"",true);
-	formSB.append(select);
+							     true,true,true,"");
+	formSB.append(select.toString());
 	String vspace = "<div style='height:0.5em'></div>";
 
 	List<String> contents = new ArrayList<String>();

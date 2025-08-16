@@ -859,41 +859,41 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 					: "null", hook==null?"null": hook, args));
     }
 
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String selectType, Entry entry, boolean addView,
-				   boolean addClear,
-				   String...entryType)
+
+    public static EntrySelect getGroupSelect(Request request, String elementId)
             throws Exception {
-        return getSelect(request, elementId, label, allEntries, selectType, entry,
-                         addView, addClear, "",false,entryType);
+        return getSelect(request, elementId, HU.faIcon("fas fa-hand-pointer"), false, "");
     }
-
-    public static String getGroupSelect(Request request, String elementId)
+    
+    public static EntrySelect getSelect(Request request, String elementId,
+					String label, boolean allEntries,
+					String selectType,String...entryType)
             throws Exception {
-        return getSelect(request, elementId, "Select", false, "");
-    }
-
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String selectType,String...entryType)
-            throws Exception {
-
         return getSelect(request, elementId, label, allEntries, selectType, null,entryType);
     }
 
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String selectType, Entry entry,String...entryType)
+    public static EntrySelect getSelect(Request request, String elementId,
+					String label, boolean allEntries,
+					String selectType, Entry entry,String...entryType)
             throws Exception {
         return getSelect(request, elementId, label, allEntries, selectType, entry,true, true,entryType);
     }
 
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String type, Entry entry,
-                                   boolean addView, boolean addClear, String linkExtra,
-				   boolean addField,String...entryType)
+    public static EntrySelect getSelect(Request request, String elementId,
+					String label, boolean allEntries,
+					String selectType, Entry entry,
+					boolean addView,
+					boolean addClear,
+					String...entryType)
+            throws Exception {
+        return getSelect(request, elementId, label, allEntries, selectType, entry, addView, addClear, false,"",entryType);
+    }
+
+
+    public static EntrySelect getSelect(Request request, String elementId,
+					 String label, boolean allEntries,
+					 String type, Entry entry,
+					 boolean addView, boolean addClear, boolean addField,String linkExtra,String...entryType)
             throws Exception {
 
         boolean hasType    = Utils.stringDefined(type);
@@ -901,61 +901,77 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                            ? ""
                                            : "_" + type);
         String event = getSelectEvent(request, elementId, allEntries, type, entry);
+	String clazz=HU.attrs("class","ramadda-clickable");
+	if(linkExtra!=null && linkExtra.indexOf("class")>0) clazz="";
         String link = (label == null)
                       ? ""
                       : HU.mouseClickHref(event, label,
-                                          linkExtra
-					  + HU.cssClass("ramadda-clickable")
-                                          + HU.id(selectorId
-                                              + "_selectlink"));
+                                          linkExtra + clazz
+					  + HU.attrs("id",selectorId  + "_selectlink",
+						     "title","Click to select entry"));
+	String suffix = "";
         if (addView) {
             String viewEvent = HU.call("RamaddaUtils.viewSelect", HU.squote(selectorId));
-            link = link + " "
+            suffix = suffix + " "
                    + HU.mouseClickHref(viewEvent,
                                        HU.getIconImage("fas fa-link"),
-                                       HU.attr("title", "View selection")
-                                       + HU.id(selectorId + "_selectlink"));
+                                       HU.attrs("title", "View selection",
+						"id",selectorId + "_selectlink"));
 
 	}
 
         if (addClear) {
             String clearEvent = HU.call("RamaddaUtils.clearSelect", HU.squote(selectorId));
-            link = link + " "
+            suffix = suffix + " "
                    + HU.mouseClickHref(clearEvent,
                                        HU.getIconImage("fas fa-eraser"),
-                                       HU.attr("title", "Clear selection")
-                                       + HU.id(selectorId + "_selectlink"));
+                                       HU.attrs("title", "Clear selection",
+						"id",selectorId + "_selectlink"));
         }
 
+	String input = "";
 	if(addField) {
-            link+= HU.hidden(elementId + "_hidden",
+            input+= HU.hidden(elementId + "_hidden",
 			     (entry != null)
 			     ? entry.getId()
 			     : "", HU.id(elementId + "_hidden"));
-	    link += "<br>";
-	    link+= HU.disabledInput(elementId,
-				    (entry!= null)
-				    ? entry.getName()
-				    : "",
-				    HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable")+
-				    HU.attrs("title","Click to select entry",
-					     "onclick",event)+
+	    input+= HU.disabledInput(elementId,
+				    (entry!= null) ? entry.getName() : "",
+				     HU.attrs(ATTR_CLASS,HU.CLASS_DISABLEDINPUT+" ramadda-clickable",
+					      ATTR_TITLE,"Click to select entry",
+					      "onclick",event)+
 				    HU.SIZE_25 + HU.id(elementId));
 	}
-        return link;
+        return new EntrySelect(link,input,suffix);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param elementId _more_
-     * @param allEntries _more_
-     * @param type _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    public static class EntrySelect {
+	String selectLink;
+	String input;
+	String suffix;
+	public EntrySelect(String selectLink,String input,	String suffix) {
+	    this.selectLink = selectLink;
+	    this.input = input;
+	    this.suffix = suffix;
+	}
+	@Override
+	public String toString() {
+	    return selectLink + input+ suffix;
+
+	}
+	public String getSelectLink() {
+	    return selectLink;
+	}
+	public String getInput() {
+	    return input;
+	}
+	public String getSuffix() {
+	    return suffix;
+	}	
+
+    }
+
+
     public static String getSelectEvent(Request request, String elementId,
                                         boolean allEntries, String selectType,
                                         Entry entry,String...entryType)
@@ -1507,7 +1523,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	header = HU.div(header,HU.clazz("ramadda-form-help"));
 	HU.formEntry(sb,"",header);
 
-        String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
+        EntrySelect select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
 						"Select folder", false, null, entry);
 
         String addMetadata = !addMetadataField

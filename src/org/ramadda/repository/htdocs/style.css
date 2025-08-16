@@ -4224,6 +4224,10 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
     margin-right:0px;
     padding:0px;
     padding-left:12px;
+    /*background:#fff;
+    border:var(--basic-border);
+    z-index:1000;*/
+    position:relative;
 }
 
 

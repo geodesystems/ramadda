@@ -455,8 +455,8 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
             sb.append(HtmlUtils.hidden(id + "_hidden", "",
                                        HtmlUtils.id(id + "_hidden")));
-            String select = OutputHandler.getSelect(request, id, "Select",
-                                true, null, entry);
+            OutputHandler.EntrySelect select = OutputHandler.getSelect(request, id, "Select",
+								       true, null, entry);
             sb.append(
                 HtmlUtils.formEntry(
                     label,

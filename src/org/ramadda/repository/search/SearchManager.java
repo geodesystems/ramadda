@@ -499,7 +499,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	System.err.println("index:" + entry);
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
-	    Entry parent = entry;
+	    Entry parent = entry.getParentEntry();
 	    while(parent!=null) {
 		//		System.err.println("\tancestor:" + parent.getId() +  " "+ parent.getName());
 		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
@@ -1696,7 +1696,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-	//	System.err.println("queries:" + queries);
+	//System.err.println("queries:" + queries);
 
 	Query query = null;
 	if(queries.size()==0) {
@@ -2110,7 +2110,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
 	Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
-	String select =
+	OutputHandler.EntrySelect select =
 	    getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
 							     null,
 							     true, "", ancestorEntry, true,true);
@@ -2122,7 +2122,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
 					HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
 
-	sb.append(inset.apply(Utils.join(HU.space(1),HU.b("Under")+":",input,select)));
+	sb.append(inset.apply(Utils.join(HU.space(1),HU.b("Under")+":",input,select.toString())));
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 

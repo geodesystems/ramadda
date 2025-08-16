@@ -263,7 +263,7 @@ public class WebHarvester extends Harvester {
                                    ? null
                                    : getEntryManager().findGroup(request,
                                        urlEntry.baseGroupId));
-        String baseSelect = OutputHandler.getGroupSelect(request,
+        OutputHandler.EntrySelect baseSelect = OutputHandler.getGroupSelect(request,
                                 baseGroupFieldId);
         entrySB.append(HU.hidden(baseGroupFieldId + "_hidden",
                                         urlEntry.baseGroupId,

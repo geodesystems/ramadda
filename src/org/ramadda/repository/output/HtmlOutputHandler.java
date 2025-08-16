@@ -322,8 +322,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    public Result outputEntry(Request request, OutputType outputType,
-                              Entry entry)
+    public Result outputEntry(Request request, OutputType outputType, Entry entry)
             throws Exception {
         TypeHandler typeHandler =
             getRepository().getTypeHandler(entry.getType());
@@ -397,7 +396,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         ResultHandler resultHandler = new ResultHandler(request, this, entry,
-                                          new State(entry));
+							new State(entry));
         Appendable sb        = resultHandler.getAppendable();
         boolean    doingInfo = outputType.equals(OUTPUT_INFO);
         if (doingInfo) {
@@ -412,10 +411,22 @@ public class HtmlOutputHandler extends OutputHandler {
             handleDefaultWiki(request, entry, sb);
         }
 
+
+	checkTargetEntry(request,  entry, sb);
         resultHandler.finish();
 
         return resultHandler.getResult();
         //        return makeLinksResult(request, entry.getName(), sb, new State(entry));
+    }
+
+    private void checkTargetEntry(Request request, Entry entry, Appendable sb) throws Exception {
+	String targetEntry = request.getString(ARG_TARGET_ENTRY,null);
+	if(targetEntry!=null) {
+	    sb.append(HU.script( HU.call("RamaddaUtils.handleEntryCreated",
+					 HU.squote(targetEntry),
+					 HU.squote(entry.getId()),
+					 HU.squote(entry.getName()))));
+	}
     }
 
     public void handleDefaultWiki(Request request, Entry entry, Appendable sb)
@@ -1925,7 +1936,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         ResultHandler resultHandler = new ResultHandler(request, this, group,
-                                          new State(group));
+							new State(group));
         Appendable sb = resultHandler.getAppendable();
         request.appendMessage(sb);
         String prefix = request.getPrefixHtml();
@@ -1987,6 +1998,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
         }
+
+	checkTargetEntry(request,  group, sb);
+
 
         if (doingInfo && !group.isDummy()) {
             getPageHandler().entrySectionClose(request, group, sb);

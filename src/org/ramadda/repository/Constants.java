@@ -144,6 +144,7 @@ public interface Constants {
 
     public static final String ARG_AGREE = "agree";
 
+
     public static final String ATTR_ADDMETADATA = "addmetadata";
 
     public static final String ATTR_FILESIZE = "filesize";
@@ -160,6 +161,7 @@ public interface Constants {
 
     public static final String PROP_OVERRIDE_URL = "overrideurl";
 
+    public static final String ARG_TARGET_ENTRY = "targetentry";
     public static final String ARG_SHOWCATEGORIES = "showCategories";
 
     public static final String ARG_SHOWNEXT = "showNext";

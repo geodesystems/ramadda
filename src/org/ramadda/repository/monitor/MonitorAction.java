@@ -8,16 +8,11 @@ package org.ramadda.repository.monitor;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.auth.*;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.30 $
- */
-public abstract class MonitorAction implements Constants, Cloneable {
 
+public abstract class MonitorAction implements Constants, Cloneable {
     public static final HtmlUtils HU = null;
 
     public static final String macroTooltip =
@@ -25,11 +20,8 @@ public abstract class MonitorAction implements Constants, Cloneable {
         + "${to_day}  ${to_month} ${to_year} ${to_monthname}";
 
     private String id;
-
     protected String parentGroupId;
-
     private String pathTemplate;
-
     protected Entry group;
 
     public MonitorAction() {}
@@ -153,7 +145,7 @@ public abstract class MonitorAction implements Constants, Cloneable {
 			    ? group.getFullName()
 			    : "");
 	String inputId   = getArgId(ARG_GROUP);
-	String select =
+	OutputHandler.EntrySelect select =
 	    monitor.getRepository().getHtmlOutputHandler().getSelect(
 								     null, inputId,
 								     HU.img(

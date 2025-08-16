@@ -69,13 +69,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                                           10000);
             String suffix =
                 "entry ids - one per row<br>#use &quot;#&quot; to comment a line<br><a target=_help href=\"/repository/userguide/virtualgroup.html\">View help</a>";
-            String buttons = OutputHandler.getSelect(request, textAreaId,
-                                 "Add entry id", true, "entryid", entry,
-						     false,false);
-
+            OutputHandler.EntrySelect buttons = OutputHandler.getSelect(request, textAreaId,
+									"Add entry id", true, "entryid", entry,
+									false,false);
 	    HU.formEntry(formBuffer,
 			 HU.b(msgLabel(column.getLabel()))+" " +
-			 HU.span(buttons,HU.cssClass("ramadda-clickable")) +
+			 HU.span(buttons.toString(),HU.cssClass("ramadda-clickable")) +
 			 "<br><table cellspacing=0 cellpadding=0 border=0>"
 			 + HU.row(HU.cols(widget, suffix),"valign=top")
 			 + "</table>");

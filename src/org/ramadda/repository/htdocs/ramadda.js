@@ -119,11 +119,35 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             GuiUtils.loadXML(url, handler);
 	});
     },
+    
+    handleEntryCreated: function(selectorId,entryId,entryName) {
+	if(!window.opener) {
+	    console.log('RamaddaUtils.handleEntryCreated: no opener');
+	    return;
+	}
+	let entryInput =    window.opener.document.getElementById(selectorId);
+	let hiddenInput =    window.opener.document.getElementById(selectorId+'_hidden');
+	if(!entryInput || !hiddenInput) {
+	    console.log('RamaddaUtils.handleEntryCreated: could not find entry widget:' + selectorId);
+	    return;
+	}
+	if(entryInput.val)  entryInput.val(entryName);
+	else entryInput.value = entryName;
+	if(hiddenInput.val)  hiddenInput.val(entryId);
+	else hiddenInput.value = entryId
+	if(entryInput.title) {
+	    alert('Entry ID has been set for ' + entryInput.title)
+	}
+	
+    },
     selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 	if(RamaddaUtils.currentSelector) {
 	    RamaddaUtils.currentSelector.cancel();
 	}
 	RamaddaUtils.currentSelector = RamaddaUtils.selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
+	setTimeout(()=>{
+	    RamaddaUtils.handleEntryCreated(selectorId);
+	},2000);
 	return false;
     },
     selectCreate:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {

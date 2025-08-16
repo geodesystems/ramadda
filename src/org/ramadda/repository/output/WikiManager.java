@@ -2012,6 +2012,8 @@ public class WikiManager extends RepositoryManager
 			label = entryCount.getTypeHandler().getLabel();
 			typeCount++;
 		    }
+		    
+
 		    if(count==0 && getProperty(wikiUtil,props,"hideWhenZero",false)) return "";
 		    if(typeCount>1) label="Count";	
 		    label = getProperty(wikiUtil,props,"label",label);
@@ -2282,7 +2284,6 @@ public class WikiManager extends RepositoryManager
 		css.append(".share-bar {transform:initial;left:initial;bottom:initial;top:initial;display:inline-block;position:relative;}\n");
 		css.append(".share-bar.left {left:initial;}\n");
 	    }
-	    //	    System.err.println(css);
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.js")));
 	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.css")));	    
 	    sb.append(HU.importCss(css.toString()));
@@ -8332,6 +8333,7 @@ public class WikiManager extends RepositoryManager
     }
 
     private static final String BUTTONCLASS = HU.clazz("ramadda-menubar-button");
+
     public String makeMenuButton(final String title, final String contents,boolean...first) {
 	String clazz = "ramadda-menubar-button " + (first.length>0 && first[0]?"ramadda-menubar-button-first":"");
 	if(first.length>1 && first[1]) clazz+=" ramadda-menubar-button-last";
@@ -8340,18 +8342,6 @@ public class WikiManager extends RepositoryManager
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }
 
-    /**
-     *
-     * Make the wiki edit bar
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param textAreaId  the textAreaId
-     *
-     * @return  the edit bar
-     *
-     * @throws Exception problems
-     */
     public String makeWikiEditBar(Request request, Entry entry,
                                   String textAreaId)
 	throws Exception {
@@ -8411,17 +8401,12 @@ public class WikiManager extends RepositoryManager
 						 "class",
 						 "ramadda-menubar-button"));
 
-        String addEntry = OutputHandler.getSelect(request, textAreaId,
-						  "Entry ID", true, "entryid", entry, false, false,
-						  BUTTONCLASS,false);
 
-        String importEntry = OutputHandler.getSelect(request, textAreaId,
-						     "Embed Entry", true, "wikilink", entry, false, false,
-						     BUTTONCLASS,false);
+        OutputHandler.EntrySelect importEntry = OutputHandler.getSelect(request, textAreaId,
+									"Embed Entry", true, "wikilink", entry, false, false,false,BUTTONCLASS);
 
-        String fieldLink = OutputHandler.getSelect(request, textAreaId,
-						   "Field ID", true, "fieldname", entry, false, false,
-						   BUTTONCLASS,false);
+        OutputHandler.EntrySelect fieldLink = OutputHandler.getSelect(request, textAreaId,
+								      "Field ID", true, "fieldname", entry, false, false,false,BUTTONCLASS);
 
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")
@@ -8442,8 +8427,7 @@ public class WikiManager extends RepositoryManager
 	    buttons.append(popup);
         }
 
-        Utils.appendAll(buttons, importEntry, /*addEntry,*/ displaysButton,  
-                        fieldLink);
+        Utils.appendAll(buttons, importEntry.toString(), displaysButton,  fieldLink.toString());
 
         if (entry != null) {
             entry.getTypeHandler().addToWikiToolbar(request, entry, buttons,

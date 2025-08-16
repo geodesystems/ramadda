@@ -248,7 +248,7 @@ public abstract class Harvester extends RepositoryManager {
         }
 
         getRepository().getPageHandler().addEntrySelect(getRequest(),
-                baseGroup, ATTR_BASEGROUP, sb, "Base Group", extra);
+							baseGroup, ATTR_BASEGROUP, sb, "Base Group", extra);
     }
 
     protected void init(Element element) throws Exception {

@@ -385,7 +385,7 @@ public class DataAction extends MonitorAction {
         sb.append(HU.colspan(HU.div("Select entries to monitor",HU.cssClass("ramadda-form-help")),3));
 	String textAreaId = HU.getUniqueId("input_");
 	HU.importJS(sb, monitor.getRepository().getPageHandler().getCdnPath("/wiki.js"));
-	String buttons = OutputHandler.getSelect(request, textAreaId,
+	OutputHandler.EntrySelect buttons = OutputHandler.getSelect(request, textAreaId,
 						 HU.span("Add entry id",HU.cssClass("ramadda-button")), true, "entryid", null,
 						 false,false);
 
