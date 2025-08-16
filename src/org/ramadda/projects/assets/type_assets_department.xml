@@ -28,7 +28,9 @@ into some types.xml file
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title="Department: {{name}}"
-{{assets_header}}
++center
+{{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
+-center
 {{description wikify=true}}
 +row
 +col-8

@@ -19,7 +19,7 @@ vendor,Vendor,entry, entrytype="type_assets_vendor"  cansearch="true"
 purchase_order,,string
 check_number,,string
 acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"
-warranty_expiration,,date, default="none"  cansearch="true" 	      
+awarranty_expiration,,date, default="none"  cansearch="true" 	      
 status,Status,enumerationplus, cansearch="true"  subgroup="Status" \
 values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
 condition,,enumerationplus, values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
@@ -28,7 +28,6 @@ disposal_method,,string,size="2000" rows="5"
 disposed_comment,,string, size="5000" rows="5"
 
 #physical asset
-serial_number,,string,size="400"
 model,,enumerationplus,size="400" cansearch="true"
 manufacturer,,enumerationplus,
 
@@ -37,11 +36,11 @@ manufacturer,,enumerationplus,
 super:type_assets_base
 make,,enumerationplus,size="600" group="Vehicle Information" cansearch="true" 
 model,,enumerationplus,size="600" cansearch="true" 
-color,,enumerationplus, \
-values="Black\, White\, Gray\, Silver\, Red\, Blue\, Green\, Yellow\, Brown\, Beige"
 model_year,,int, cansearch="true" 
+color,,enumerationplus, values="Black\, White\, Gray\, Silver\, Red\, Blue\, Green\, Yellow\, Brown\, Beige"
+serial_number,,string,size="400"
 vin,,string,size="600" cansearch="true" 
-license_plate,,string,size="600"
+license_number,,string,size="600"
 fuel_type,,enumerationplus,values="regular:Regular\,diesel:Diesel\,premium:Premium" default="regular"
 mileage,,int,
 last_service_date,,date,default="none"	     
