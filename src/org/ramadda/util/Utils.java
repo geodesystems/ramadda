@@ -1978,30 +1978,33 @@ public class Utils extends IO {
         return sb.toString().trim();
     }
 
-    public static String nameCase(String s) {
-        StringBuilder sb = new StringBuilder();
-        for (String tok : Utils.split(s, " ", true, true)) {
-            List<String> toks2 = Utils.split(tok, "-", true, true);
-            for (int i = 0; i < toks2.size(); i++) {
-                String tok2 = toks2.get(i);
-                if (i > 0) {
-                    sb.append("-");
-                }
-                if (tok2.indexOf(".") >= 0) {
-                    sb.append(tok2.toUpperCase());
-                } else if (tok2.startsWith("Mc")) {
-                    sb.append(tok2);
-                } else if (tok2.startsWith("Mac")) {
-                    sb.append(tok2);
-                } else {
-                    sb.append(tok2.substring(0, 1).toUpperCase()
-                              + tok2.substring(1).toLowerCase());
-                }
-            }
-            sb.append(" ");
+    public static String nameCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
         }
 
-        return sb.toString().trim();
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = true;
+
+        for (char c : input.toCharArray()) {
+	    if(c=='\'') {
+		result.append(c);
+		continue;
+	    }
+            if (Character.isLetter(c)) {
+                if (capitalizeNext) {
+                    result.append(Character.toUpperCase(c));
+                    capitalizeNext = false;
+                } else {
+                    result.append(Character.toLowerCase(c));
+                }
+            } else {
+                result.append(c);
+                capitalizeNext = true; // next word starts after any non-letter
+            }
+        }
+
+        return result.toString();
     }
 
     public static String makeID(String label) {
