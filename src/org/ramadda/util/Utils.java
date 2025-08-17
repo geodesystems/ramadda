@@ -3648,6 +3648,7 @@ public class Utils extends IO {
         String hr = "<a[^>]*?href *= *\"?([^ <\"]+)";
         p = p.replaceAll("_href_", hr);
         p = p.replaceAll("_hrefandlabel_", hr + "[^>]*>([^<]+)</a>");
+        p = p.replaceAll("_amp_", "&");
         p = p.replaceAll("_dot_", "\\\\.");
         p = p.replaceAll("_dollar_", "\\\\\\$");
         p = p.replaceAll("_dot_", "\\\\.");
