@@ -683,7 +683,34 @@ public class EntryUtil extends RepositoryManager {
         return 0;
     }
 
-    private  int compareEntries(Request request,Entry e1, Entry e2, CompareOn on) {
+    private static class EntryWrapper     {
+	Entry entry;
+	double number= Double.NaN;
+       
+	String s;
+	long l;
+	Object o;
+	public EntryWrapper(Entry entry) 	{
+	    this.entry = entry;
+	}
+	
+	public double getNumber() 
+	{
+	    if(Double.isNaN(number)) {
+		number   = IO.extractNumber(entry.getName(),0);
+	    }
+	    return number;
+	}
+	
+
+    }
+    
+    
+
+    private  int compareEntries(Request request,EntryWrapper w1,EntryWrapper w2, CompareOn on) {
+	Entry e1=w1.entry;
+	Entry e2=w2.entry;
+	
 	if(on.column!=null) {
 	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
 		Object v1 = e1.getValue(request, on.column);
@@ -720,25 +747,17 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.is(ORDERBY_TYPE)) {
             return e1.getTypeHandler().getLabel().compareToIgnoreCase(
                 e2.getTypeHandler().getLabel());
+        } else if (on.is(ORDERBY_FOLDER)) {
+	    boolean g1 = e1.getTypeHandler().isGroup();
+	    boolean g2 = e2.getTypeHandler().isGroup();	    
+	    if(g1==g2) return 0;
+	    if(g1) return 1;
+	    return -1;
         } else if (on.is(ORDERBY_SIZE)) {
             return compare(e1.getResource().getFileSize(),
                            e2.getResource().getFileSize());
         } else if (on.is(ORDERBY_NUMBER)) {
-	    File f1 =e1.getFile();
-	    File f2 =e2.getFile();	    
-	    if(f1!=null && f2!=null) {
-		double v1 = IO.extractNumber(StorageManager.getOriginalFilename(f1.getName()),9999999);
-		double v2 = IO.extractNumber(StorageManager.getOriginalFilename(f2.getName()),9999999);
-		/*
-		System.err.println("by number:" +
-				   StorageManager.getOriginalFilename(f1.getName()) +" v:" + v1 + " " +
-				   StorageManager.getOriginalFilename(f2.getName()) +" v:" +v2);
-		*/
-		return compare(v1,v2);
-	    }
-	    if(f1!=null) return -1;
-	    if(f2!=null) return 1;
-	    return 0;
+	    return compare(w1.getNumber(),w2.getNumber());
 	} else {
 	    //	    if(true) throw new IllegalStateException("SOrt order:" + on.on);
 	    /*
@@ -785,21 +804,19 @@ public class EntryUtil extends RepositoryManager {
     }
 
     private  List<Entry> sortEntriesCompareOn(List<Entry> entries,
-						    final List<CompareOn> ons,
-						    final boolean descending) {
-
+					      final List<CompareOn> ons,
+					      final boolean descending) {
 	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
+                EntryWrapper e1 = (EntryWrapper) o1;
+                EntryWrapper e2 = (EntryWrapper) o2;
                 for (CompareOn on : ons) {
                     int result = compareEntries(request,e1, e2, on);
                     if (result != 0) {
                         if (descending) {
                             return -result;
                         }
-
                         return result;
                     }
                 }
@@ -810,11 +827,18 @@ public class EntryUtil extends RepositoryManager {
                 return obj == this;
             }
         };
-        Object[] array = entries.toArray();
+	EntryWrapper[]array = new EntryWrapper[entries.size()];
+	
+	for(int i=0;i<array.length;i++) {
+	    array[i] = new EntryWrapper(entries.get(i));
+	}
+	
+	//        Object[] array = wentries.toArray();
         Arrays.sort(array, comp);
-
-        entries = (List<Entry>) Misc.toList(array);
-
+	entries = new ArrayList<Entry>();
+	for(int i=0;i<array.length;i++) {
+	    entries.add(array[i].entry);
+	}
         return entries;
     }
 
@@ -1126,6 +1150,10 @@ public class EntryUtil extends RepositoryManager {
 	}
 	public boolean is(String on) {
 	    return this.on.equals(on);
+	}
+	@Override
+	public String toString()  {
+	    return "on:" + column +" " + on;
 	}
     }
 

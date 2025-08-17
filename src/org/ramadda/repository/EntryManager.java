@@ -8275,7 +8275,24 @@ public class EntryManager extends RepositoryManager {
 	    children = getEntryUtil().sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
 	}
 
+	//	boolean debug = (children.toString().indexOf("Test3")>=0);
+	boolean debug = false;
+
+	if(debug) {	
+	    //	    System.err.println("getChildren before");
+	    //	    for(Entry entry: children)	System.err.println("\t"+ entry.getName());
+	}
+
 	children =applyFilter(request,children,select);
+	if(debug) {	
+	    System.err.println("getChildren after");
+	    for(Entry entry: children)	System.err.println("\t"+ entry.getName());
+	}
+
+	if(debug) {	
+	    System.err.println(Utils.getStack(15));
+	}
+
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
     }
@@ -9554,33 +9571,45 @@ public class EntryManager extends RepositoryManager {
         if (addOrderBy) {
             orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
         }	
+
         if (selectOrderBy != null) {
-	    StringBuilder sb = new StringBuilder();
+	    List<String> orders = new ArrayList<String>();
 	    for(String by:Utils.split(selectOrderBy,",",true,true)) {
-		if(sb.length()>0) sb.append(",");
+		boolean myDesc = desc;
+		if(by.endsWith("_up")) {
+		    myDesc = false;
+		    by = by.replace("_up","");
+		} else if(by.endsWith("_down")) {
+		    myDesc = true;
+		    by = by.replace("_down","");
+		}
 		if (by.equals(ORDERBY_FROMDATE)) {
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc,false));
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,myDesc,false));
 		} else if (by.equals(ORDERBY_TODATE)) {
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, desc,false));
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, myDesc,false));
 		} else if (by.equals(ORDERBY_ENTRYORDER)) {
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_ENTRYORDER, desc,false));		
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_ENTRYORDER, myDesc,false));		
 		} else if (by.equals(ORDERBY_TYPE)) {
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc,false));
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,myDesc,false));
 		} else if (by.equals(ORDERBY_SIZE)) {
 		    //TODO: add a NULLS LAST for derby/postgres and something else for mysql and others?
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,desc,false));
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,myDesc,false));
 		} else if (by.equals(ORDERBY_CREATEDATE) || by.equals(ORDERBY_RELEVANT)) {
-		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,desc,false));
+		    orders.add(SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,myDesc,false));
 		} else if (by.equals(ORDERBY_NAME)) {
 		    if ( !haveOrder) {
-			desc = false;
+			myDesc = false;
 		    }
-		    sb.append(SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",desc,false));
+		    orders.add(SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",myDesc,false));
+		} else {
+		    //		    System.err.println("Unknown order by:" + by);
 		}
 	    }
-	    if(sb.length()>0)
-		orderBy="ORDER BY " + sb.toString();
-	    else orderBy="";
+	    if(orders.size()>0) {
+		orderBy="ORDER BY " + Utils.join(orders,",");
+	    } else {
+		orderBy="";
+	    }
         }
 	if(debugGetEntries)
 	    System.err.println("order:" + orderBy + " limit:" + limitString);
