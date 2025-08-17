@@ -33,40 +33,47 @@ pre {
 
 :navtop
 
+There are two main ways to define the sort order  entries are displayed - using the Sort Order metadata property
+or explicitly in a wiki tag.
+Both of these ways can specify one or more entry fields to sort on and a sort direction - ascending or descending.
 
-:heading Sort  by Date
-There are a number of ways to change the sort order of how entries are displayed.
-For example, say you have a collection of images that are contained by a Photo Album entry.
-By default the Photo Album sorts its entries by date. So, one way to do this is to explicitly
-set the date on each Image entry.
+:heading Sort fields
+The different entry sort fields are:
+* name - The entry name
+* fromdate, todate, createdate,changedate
+* entryorder - All entries have an integer entry order. See <a href=#entryorder>below</a>
+* folder - This sorts "folder" like entries first
+* type  - The entry type name
+* size - File size
+* number - this extracts the first numeric value in the entry name
 
-:heading Sort by Name 
-If you wanted to sort by name you can add a special "Sort Order" property to the Photo Album.
+
+:heading Sort Order Property
+There is a special Sort order metadata property that can be added to any entry.
 * Go to the "Add Properties" entry menu
 * Look for "Sort Order"
-* Specify Name for the Field and Ascending=true
+* Specify the desired sort field and direction
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/sortorder.png?version=225"><img  src="images/sortorder.png?version=225"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/sortorder.png?version=225" ></a></div></div>
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/sortorder.png?version=486"><img  src="images/sortorder.png?version=486"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/sortorder.png?version=486" ></a></div></div>
++callout-info
+Note: you can configure a sort order for an entire tree of entries by checking on "Inherited".
+To define the default sort order for the entire repository add a Sort Order property
+to the top-level entry and check on "Inherited".
+-callout
+
+The "Or:" field in the above form allows you to define one or more  comma separated sort fields, e.g.:
+the below would show all folders first, then sort by number then by name.
++pre
+folder,number,name
+-pre
+
+You can add a "_up" or a "_down" suffix to the sort field to specify the sort order, e.g.:
++pre
+folder_down,number_up,name
+-pre
 
 
-
-:heading Entry Order
-If you want to have an explicit sort order other than using date or name you can use
-the Entry Order field. All entries have a numeric entry order field.
-To set the entry order go to the Information page of the Photo Album.
-The Information page shows a list of the entries. The Order field is editable. Simply change
-the entry order - e.g. 1-999. Make sure you hit return in each field (The field will highlight in
-yellow when you hit return.
-
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/entryorder.png?version=486"><img  src="images/entryorder.png?version=486"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/entryorder.png?version=486" ></a></div></div>
-
-You can click on the "Order" table header to sort on order to see the updated order:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/entryorder2.png?version=486"><img  src="images/entryorder2.png?version=486"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/entryorder2.png?version=486" ></a></div></div>
-
-Once you have the entry order set to the desired order go add (or edit) the Sort Order property
-as described above and set the field to be "Entry Order"
-
-:heading With Wiki Text
+:heading Sorting with Wiki Text
 The default display of any entry can be overwritten with
 wiki text. Using this one can specify a sort order and other display components if desired.
 When editing the container entry (e.g., the entry that holds images)
@@ -86,6 +93,41 @@ be based on the entry order.
 :p
 In general all of the "collection" tags, e.g. gallery, tabletree, map, links, tabs, etc can
 have their sort order set.
+
+
+
+:heading Examples
+
+:heading2 Sort  by Date
+For example, say you have a collection of images that are contained by a Photo Album entry.
+By default the Photo Album sorts its entries by date. So, one way to do this is to explicitly
+set the date on each Image entry.
+
+:heading2 Sort by Name 
+If you wanted to sort by name you can add a special "Sort Order" property to the Photo Album.
+* Go to the "Add Properties" entry menu
+* Look for "Sort Order"
+* Specify Name for the Field and Ascending=true
+
+
+
+<a name=entryorder></a>
+:heading2 Entry Order
+If you want to have an explicit sort order other than using date or name you can use
+the Entry Order field. All entries have a numeric entry order field.
+To set the entry order go to the Information page of the Photo Album.
+The Information page shows a list of the entries. The Order field is editable. Simply change
+the entry order - e.g. 1-999. Make sure you hit return in each field (The field will highlight in
+yellow when you hit return.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/entryorder.png?version=225"><img  src="images/entryorder.png?version=225"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/entryorder.png?version=225" ></a></div></div>
+
+You can click on the "Order" table header to sort on order to see the updated order:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/entryorder2.png?version=225"><img  src="images/entryorder2.png?version=225"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/entryorder2.png?version=225" ></a></div></div>
+
+Once you have the entry order set to the desired order go add (or edit) the Sort Order property
+as described above and set the field to be "Entry Order"
+
 
 
 
