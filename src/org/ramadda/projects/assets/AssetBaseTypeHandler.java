@@ -610,7 +610,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		continue;
 	    }
 	    addCount(types,child.getTypeHandler().getLabel());
-	    addCount(department,child.getEnumValue(request,"department",""));
+	    Entry departmentEntry = getDepartment(request,child);
+	    addCount(department,departmentEntry==null?"NA":departmentEntry.getName());
 	    addCount(location,child.getEnumValue(request,"location",""));
 	    addCount(assignedto,child.getEnumValue(request,"assigned_to",""));
 	    if(child.getTypeHandler().isType("type_assets_physical")) {
@@ -641,6 +642,12 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	if(!stringDefined(id)) return null;
 	return getEntryManager().getEntry(request, id,true);
     }
+
+    private Entry getDepartment(Request request, Entry entry) throws Exception {
+	String id = entry.getStringValue(request, "department",null);
+	if(!stringDefined(id)) return null;
+	return getEntryManager().getEntry(request, id,true);
+    }    
 
 
     private void makeReportCosts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
@@ -685,7 +692,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    csv.append(",");
 	    csv.append(cleanColumnValue(child.getTypeHandler().getLabel()));
 	    csv.append(",");
-	    csv.append(cleanColumnValue(child.getStringValue(request,"department","")));
+	    Entry departmentEntry = getDepartment(request,child);
+	    csv.append(cleanColumnValue(departmentEntry==null?"NA":departmentEntry.getName()));
 	    csv.append(",");	    
 	    csv.append(cleanColumnValue(vendor==null?"NA":vendor.getName()));
 	    csv.append(",");	    

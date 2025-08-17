@@ -2,6 +2,7 @@
 department.filterMultiple=true
 name.filterLive=true  hideFilterWidget=true
 department.type=enumeration asset_type.type=enumeration vendor.type=enumeration}}
+{{display_filter inlineDataSrc="${costdata}" }}
 <costs_summary>
 :vspace 1em
 ${summary_title}
@@ -28,8 +29,6 @@ ${summary_title}
 <costs_table>
 :vspace 1em
 :heading ${table_title}
-
-{{display_filter inlineDataSrc="${costdata}" }}
 {{display_download fields=name,department,vendor,asset_type,cost}}
 {{display_htmltable showSummaryTotal=true  showSummaryAverage=true
 sortAscending="false" sortFields=cost  fields=name,department,vendor,asset_type,cost 

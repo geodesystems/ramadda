@@ -1,4 +1,22 @@
 
+function barcodeDebug(s) {
+//    jqid('barcodedebug').append(HU.div([],s));
+//    console.log(s);
+}
+
+function barcodeError(s) {
+    jqid('barcodedebug').append(HU.div([ATTR_STYLE,HU.css('background','red')],s));
+    console.error(s);
+}
+
+window.onerror = function (message, source, lineno, colno, error) {
+    barcodeError(`Error: ${message} at ${source}:${lineno}:${colno}`);
+};
+
+window.addEventListener("unhandledrejection", event => {
+    barcodeError("Unhandled rejection: " + event.reason);
+});
+
 var ID_ASSETS_NAME = 'name';
 var ID_ASSETS_CODE = 'barcode';
 var ID_ASSETS_ADDGEOLOCATION = 'addgeolocation';
@@ -8,38 +26,61 @@ var ASSET_TYPES=[['type_assets_building','Building'],
 		 ['type_assets_equipment','Equipment'],
 		 ['type_assets_it','IT Asset']];
 
+
+
+
 function BarcodeReader (videoId,callback,args) {
     let opts = {
     }
-    /*
-    window.onerror = function (message, source, lineno, colno, error) {
-	const errBox = document.createElement('pre');
-	errBox.style.color = 'red';
-	errBox.textContent = `JS Error: ${message} at ${source}:${lineno}:${colno}`;
-	document.body.appendChild(errBox);
-    };*/
     let videoElement = this.videoElement = document.getElementById(videoId);
     // Force attributes for iOS Safari
-    videoElement.setAttribute('autoplay', '');
-    videoElement.setAttribute('muted', '');
-    videoElement.setAttribute('playsinline', '');
+    videoElement.autoplay = true;
+    videoElement.muted = true;
+    videoElement.playsInline = true; // note camelCase property
+    videoElement.muted = true;
+    videoElement.setAttribute('webkit-playsinline', '');
 
-    const codeReader = this.codeReader = new ZXing.BrowserMultiFormatReader();
-    codeReader.decodeFromVideoDevice(null, videoElement, (result, error, controls) => {
-	if (result) {
-	    if(!callback(result.getText(),controls)) {
-//		controls.stop();
-	    }
-	} else if(error) {
-//	    console.log(error);
-	}
-    });
+//    videoElement.setAttribute('autoplay', '');    videoElement.setAttribute('muted', '');    videoElement.setAttribute('playsinline', '');
+
+    barcodeDebug('making ZXing reader');
+    this.startScanner(callback,videoElement);
+    barcodeDebug('after making ZXing reader');
 
     this.cancel = ()=>{
 	this.codeReader.reset();
     }
 }
 
+
+BarcodeReader.prototype = {
+    startScanner:async function(callback,videoElement) {
+	try {
+	    barcodeDebug('startScanner');
+	    const devices = await navigator.mediaDevices.enumerateDevices();
+	    const videoInputDevices = devices.filter(d => d.kind === 'videoinput');
+	    barcodeDebug('video devices:' + videoInputDevices.length);
+	    if (videoInputDevices.length === 0) {
+		barcodeError('No video input devices found.');
+		return;
+	    }
+
+	    // Pick the first camera (or you can filter for "back" camera)
+	    const selectedDeviceId = videoInputDevices[0].deviceId;
+	    const codeReader = this.codeReader = new ZXing.BrowserMultiFormatReader();
+	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
+		if (result) {
+		    if(!callback(result.getText(),controls)) {
+			//		controls.stop();
+		    }
+		} else if(error) {
+//		    barcodeError('barcode error: ' + error);
+		}
+	    });
+	} catch(err) {
+	    barcodeError('Barcode error starting scanner: '+ err);
+	}
+    }
+}
 
 function AssetHandler (id,args) {
     let _this = this;
@@ -52,7 +93,11 @@ function AssetHandler (id,args) {
     }
     this.opts = $.extend(this.opts,args??{});
     if(this.opts.editMode) {
-	this.initEditMode();
+	try {
+	    this.initEditMode();
+	} catch(err) {
+	    barcodeError('Barcode error: initEditMode:'+ err);
+	}
 	return;
     }
 
@@ -61,10 +106,13 @@ function AssetHandler (id,args) {
     this.contentsId= this.id+'_contents';    
     this.headerId= this.id+'_header';    
     if(this.opts.scanMode) {
-	this.initScanMode();
+	try {
+	    this.initScanMode();
+	} catch(err) {
+	    barcodeError('Barcode error - initScanMode: '+ err);
+	}
 	return;
     }
-
 
     jqid(this.id).append(HU.div([ATTR_ID,this.buttonId],"Scan bar code"));
     this.videoOpen=false;
@@ -179,8 +227,8 @@ AssetHandler.prototype = {
 		entryListChanged:(list) => {
 		    let entries = list.getEntries();
 		    if(entries.length==0) {
-			let msg = HU.div([],'No assets found. Do you want to create a new asset?');
-			msg+=HU.div([ATTR_ID,"newasset"],"Yes");
+			let msg = HU.div([ATTR_STYLE,HU.css('border-top','var(--basic-border)','padding','5px')],'No assets found. Do you want to create a new asset?');
+			msg+=HU.center(HU.div([ATTR_ID,"newasset"],"Yes"));
 			jqid(ID_SCAN_RESULTS).html(msg);
 			jqid("newasset").button().click(()=>{
 			    this.dialog.remove();
@@ -222,7 +270,11 @@ AssetHandler.prototype = {
 	html+=HU.center("<video class=assets_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
 		
 	jqid(this.id).append(HU.div([ATTR_ID,this.contentsId],html));
-	this.initVideo(args);
+	try {
+	    this.initVideo(args);
+	} catch(err) {
+	    barcodeError('Barcode error initVideo:' + err);
+	}
     },	
 
     initVideo:function(args) {
