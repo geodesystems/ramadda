@@ -358,6 +358,15 @@ Override the logo icon and URL used in the default page templates.
       <help>
 <![CDATA[
 Change how entries are sorted. e.g., by name, by date, ascending, etc.
+<br>
+Or custom sort with:
+<pre>
+name,fromdate,todate,createdate,changedate,entryorder,folder,type,size,number,none
+e.g.:
+name,fromdate,size
+Or add '_up' or '_down' e.g.:
+name_up,size_down
+</pre>
 ]]>
 </help>
 
@@ -366,7 +375,7 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
          default="fromdate"
          name="Field"
          datatype="enumerationplus"
-         values="name:Name,fromdate:From Date,todate:To Date,createdate:Create Date,entryorder:Entry Order,type:Type,number:Number (extract number from name),mixed:Mixed,none:None"/>
+         values="name:Name,fromdate:From Date,todate:To Date,createdate:Create Date,changedate:Change Date,entryorder:Entry Order,folder:Folder first,type:Type,size:Size,number:Number (extract number from name),mixed:Mixed,none:None"/>
       <element
          default="true"
          name="Ascending"
