@@ -1199,7 +1199,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 							   "data-url",entryLink.getFolderClickUrl())),
 				HU.attrs("id",clickId));
 
-			result.append(getRepository().getEntryManager().getLink(request, theEntry));
+			result.append(getRepository().getEntryManager().getEntryLink(request, theEntry,true,""));
 			result.append(HU.script("RamaddaUtils.initToggleTable('#" + clickId+"');"));
 				      //                        result.append(link);
 
