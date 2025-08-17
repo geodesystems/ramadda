@@ -86,7 +86,6 @@ public class JpegMetadataHandler extends MetadataHandler {
 
 	long t3= System.currentTimeMillis();
 	int newWidth = width>0?width:getDefaultThumbnailWidth();
-	System.err.println("Thumbnail width:" + newWidth);
         Image scaledImage = image.getScaledInstance(newWidth, -1, Image.SCALE_FAST);
  	long t4= System.currentTimeMillis();
         ImageUtils.waitOnImage(scaledImage);
