@@ -1516,6 +1516,7 @@ public interface Constants {
 
     public static final String ORDERBY_TYPE = "type";
 
+    public static final String ORDERBY_FOLDER = "folder";
     /**  */
     public static final String ORDERBY_RELEVANT = "relevant";
 
