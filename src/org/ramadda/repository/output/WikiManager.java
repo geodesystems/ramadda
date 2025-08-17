@@ -6765,8 +6765,9 @@ public class WikiManager extends RepositoryManager
 						attrPrefix + ATTR_ENTRIES,
 						ID_CHILDREN);
 
-        return getEntries(request, wikiUtil, originalEntry, entry,
-                          userDefinedEntries, props, onlyImages, attrPrefix);
+        List<Entry> entries  = getEntries(request, wikiUtil, originalEntry, entry,
+					  userDefinedEntries, props, onlyImages, attrPrefix);
+	return entries;
     }
 
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
@@ -6797,6 +6798,10 @@ public class WikiManager extends RepositoryManager
 	debugGetEntries = debug.length>0 && debug[0];
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
+
+
+
+
 
 	debugGetEntries = false;
 
@@ -7139,6 +7144,7 @@ public class WikiManager extends RepositoryManager
 	}
 	boolean descending = sortDir.equals(DIR_DOWN);
 
+
         HashSet     nots        = new HashSet();
 	SelectInfo select=null;
 	Utils.TriFunction<SelectInfo,String,String,String> matches =
@@ -7337,9 +7343,16 @@ public class WikiManager extends RepositoryManager
                 List<Entry> children = getEntryManager().getChildren(select.getRequest(),
 								     select.getEntry(),select);
 
+		/*
+		if(children.toString().indexOf("Test3")>=0) {
+		    System.err.println("BEFORE WIKI:");
+		    for(Entry child: children)	System.err.println("\t"+ child.getName());
+		}
+		*/
 		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter))
 
 ;
+
                 continue;
             }
 
@@ -7453,6 +7466,10 @@ public class WikiManager extends RepositoryManager
 
         }
 
+
+
+
+
         HashSet     seen = new HashSet();
         List<Entry> tmp  = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -7494,7 +7511,10 @@ public class WikiManager extends RepositoryManager
 	if(debug1)
 	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
 
+
         if (orderBy != null && !orderBy.equals(ORDERBY_NONE)) {
+	    entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
+	    /*
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
             } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
@@ -7507,8 +7527,10 @@ public class WikiManager extends RepositoryManager
 		    System.err.println("entries:" + entries);
             } else {
                 entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
-	    }
+		}*/
         }
+
+
 
 	max = initRequest.get(ARG_MAX,max);
         if (max > 0) {
