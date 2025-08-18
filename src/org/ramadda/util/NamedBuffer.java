@@ -85,6 +85,6 @@ public class NamedBuffer implements Appendable {
     }
 
     public String toString() {
-        return name + " " + buffer;
+        return buffer.toString();
     }
 }
