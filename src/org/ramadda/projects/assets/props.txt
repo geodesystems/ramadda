@@ -59,6 +59,7 @@ printer:Printer\,scanner:Scanner\,monitor:Monitor\,tablet:Tablet\,smartphone:Sma
 network_switch:Network Switch\,router:Router\,firewall:Firewall\,access_point:Wireless Access Point\,\
 phone:Desk Phone\,projector:Projector\,ups:Uninterruptible Power Supply\,storage_device:External Storage Device\,\
 workstation:Workstation\,other:Other"
+#license,License,entry, entrytype="type_assets_license"  cansearch="true"
 
 
 
