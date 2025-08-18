@@ -147,9 +147,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    RamaddaUtils.currentSelector.cancel();
 	}
 	RamaddaUtils.currentSelector = RamaddaUtils.selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
-	setTimeout(()=>{
-	    RamaddaUtils.handleEntryCreated(selectorId);
-	},2000);
+//	setTimeout(()=>{RamaddaUtils.handleEntryCreated(selectorId);},2000);
 	return false;
     },
     selectCreate:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
@@ -225,8 +223,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
                             return;
                         }
                         let html = "";
+
                         entries.forEach((entry,idx)=>{
+			    let title = 'Type: '+entry.getTypeName()+ HU.BR_ENTITY +
+				'Parent: '+ entry.getParentName();
                             html += HU.div(['index',idx,
+					    ATTR_TITLE,title,
 					    ATTR_CLASS,'ramadda-clickable ramadda-entry'], entry.getIconImage() +" " + entry.getName());
                         });
                         results.html(html);

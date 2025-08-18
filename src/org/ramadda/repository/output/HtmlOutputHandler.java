@@ -13,6 +13,7 @@ import org.ramadda.util.LabeledObject;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.SortedCategoryList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
@@ -811,7 +812,9 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean       isFieldName    = Utils.equals(selectType, "fieldname");	
         String        localeId   = request.getString(ARG_LOCALEID, null);
         String        target     = request.getString(ATTR_TARGET, "");
-        StringBuilder sb         = new StringBuilder();
+	List<NamedBuffer>buffers = new ArrayList<NamedBuffer>();
+        NamedBuffer sb         = new NamedBuffer("Entries");
+	buffers.add(sb);
         boolean       didExtra   = false;
         HashSet       seen       = new HashSet();
         String sectionDivider =
@@ -926,17 +929,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(sectionDivider);
                 }
 	    }
-	    if(!isFieldName) {
-		HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
-		String searchId = HU.getUniqueId("search");
-		HU.div(sb, "", HU.attrs("id", searchId));
-		sb.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
-					     HU.squote(searchId),
-					     HU.squote(target),
-					     HU.squote(request.getString("entrytype","")))));
-		HU.close(sb, "div");
-		sb.append(sectionDivider);
-	    }
+
 
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
@@ -968,21 +961,48 @@ public class HtmlOutputHandler extends OutputHandler {
         if (parent != null) {
             sb.append(getSelectLink(request, parent, seen, target, "../"));
         }
-        HU.open(sb, "div", HU.clazz(firstCall?"ramadda-select-block":"ramadda-select-inner"));
-        for (Entry subGroup : children) {
-            if (Utils.equals(localeId, subGroup.getId())) {
-                continue;
-            }
-            if (isImage && !subGroup.isImage() && !subGroup.isGroup()) {
-                continue;
-            }
-            sb.append(getSelectLink(request, subGroup, seen, target));
-        }
 
-        HU.close(sb, "div");
-        HU.close(sb, "div");
-        String s = sb.toString();
-        s = HU.div(s, HU.cssClass("ramadda-select-popup"));
+	if(children.size()>0) {
+	    NamedBuffer childrenSB         = new NamedBuffer(group!=null?group.getName():"Children");
+	    buffers.add(childrenSB);	    
+	    HU.open(childrenSB, "div", HU.clazz(firstCall?"ramadda-select-block":"ramadda-select-inner"));
+	    for (Entry subGroup : children) {
+		if (Utils.equals(localeId, subGroup.getId())) {
+		    continue;
+		}
+		if (isImage && !subGroup.isImage() && !subGroup.isGroup()) {
+		    continue;
+		}
+		childrenSB.append(getSelectLink(request, subGroup, seen, target));
+	    }
+
+	    HU.close(childrenSB, "div");
+	}
+
+	if(!isFieldName) {
+	    NamedBuffer searchSB         = new NamedBuffer("Search");
+	    buffers.add(searchSB);
+	    HU.open(searchSB, "div", HU.cssClass("ramadda-select-search"));
+	    String searchId = HU.getUniqueId("search");
+	    HU.div(searchSB, "", HU.attrs("id", searchId));
+	    searchSB.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
+					       HU.squote(searchId),
+					       HU.squote(target),
+					       HU.squote(request.getString("entrytype","")))));
+	    HU.close(searchSB, "div");
+	}
+
+
+
+	String s;
+	if(buffers.size()>1) {
+	    StringBuilder tabs = new StringBuilder();
+	    HU.makeTabs(tabs,buffers);
+	    s = tabs.toString();
+	} else {
+	    s = buffers.get(0).toString();
+	}
+        s = HU.div(s, HU.attrs("style","min-width:400px;","class","ramadda-select-popup"));
 
         return makeAjaxResult(request,s);
     }

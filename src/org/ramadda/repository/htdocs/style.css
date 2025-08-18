@@ -3555,6 +3555,11 @@ td.entry-table-block {
 
 
 
+.ui-tabs-panel {
+    padding-top:0.5em !important;
+    padding-bottom:0.5em !important;    
+}
+
 .ramadda-search-results .ui-tabs-panel {
     padding:0px !important;
 }
