@@ -136,7 +136,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(hiddenInput.val)  hiddenInput.val(entryId);
 	else hiddenInput.value = entryId
 	if(entryInput.title) {
-	    alert('Entry ID has been set for ' + entryInput.title)
+	    setTimeout(()=>{
+		alert('Entry ID has been set for ' + entryInput.title)
+	    },1000);
 	}
 	
     },
