@@ -1,10 +1,17 @@
 
-function barcodeDebug(s) {
+function barcodeDebug() {
+//    let s = Utils.join(arguments,' ');
 //    jqid('barcodedebug').append(HU.div([],s));
 //    console.log(s);
 }
+function barcodeInfo() {
+    let s = Utils.join(arguments,' ');
+    jqid('barcodedebug').append(HU.div([],s));
+    console.log(s);
+}
 
-function barcodeError(s) {
+function barcodeError() {
+    let s = Utils.join(arguments,' ');
     jqid('barcodedebug').append(HU.div([ATTR_STYLE,HU.css('background','red')],s));
     console.error(s);
 }
@@ -64,18 +71,47 @@ BarcodeReader.prototype = {
 		return;
 	    }
 
-	    // Pick the first camera (or you can filter for "back" camera)
+	    navigator.mediaDevices.getUserMedia({
+		video: { width: { ideal: 1280 }, height: { ideal: 720 } }
+	    });
+
+
+//	    Object.keys(ZXing.BarcodeFormat).forEach(key=>{onsole.log(key);});
+
+
+	    const hints = new Map();
+//	    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13]);
+	    videoInputDevices.forEach((device,index)=>{
+//		console.dir(device);
+//		barcodeInfo('video index:',index, ' kind:',device.kind, 'id:',device.deviceId);
+	    });
 	    const selectedDeviceId = videoInputDevices[0].deviceId;
 	    const codeReader = this.codeReader = new ZXing.BrowserMultiFormatReader();
-	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
+	    let readerDevices = await codeReader.listVideoInputDevices();
+	    readerDevices.forEach((device, index) => {
+//		barcodeInfo('index:',index, ' label:',device.label, 'id:',device.deviceId,'kind:',device.kind);
+	    });
+
+	    const constraints = {
+		video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+	    };
+
+	    let cnt = 0;
+	    let seen = {};
+//	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
+	    this.codeReader.decodeFromConstraints(constraints,videoElement, (result, error, controls) => {
 		if (result) {
-		    if(!callback(result.getText(),controls)) {
+		    if(!callback(result,controls)) {
 			//		controls.stop();
 		    }
 		} else if(error) {
-//		    barcodeError('barcode error: ' + error);
+		    let s = error+'';
+		    if(!seen[s]) {
+//			barcodeInfo('barcode: ', error);
+			seen[s] = true;
+		    }
 		}
-	    });
+	    },hints);
 	} catch(err) {
 	    barcodeError('Barcode error starting scanner: '+ err);
 	}
@@ -169,8 +205,9 @@ AssetHandler.prototype = {
 		cancel();
 	    });
 	    let callback = (result,controls) =>{
+		barcodeInfo('Scanned:', result.getText(), 'Format:', result.getBarcodeFormat());
 		cancel();
-		this.assetIdInput.val(result);
+		this.assetIdInput.val(result.getText());
 	    };
 	    this.barcodeReader = new BarcodeReader(this.videoId,callback);
 	});
@@ -192,7 +229,8 @@ AssetHandler.prototype = {
 		  HU.input('',this.opts.code,[ATTR_STYLE,HU.css('width','300px'),
 					      ATTR_ID,ID_ASSETS_CODE,
 					      ATTR_PLACEHOLDER,'Enter bar code']));
-	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Find Asset') + SPACE2 +
+	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Find Asset') +
+	    SPACE2 +
 	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
 	rows.push(HU.center(buttons));
 	rows.push(HU.div([ATTR_ID,ID_SCAN_RESULTS]));
@@ -262,7 +300,7 @@ AssetHandler.prototype = {
 	    this.showVideo();
             this.dialog.remove();
 	    this.dialog=null;
-        });
+        });	
     },	
     makeVideo:function(args) {
 	let html = HU.center(HU.div([ATTR_ID,this.headerId]));
@@ -289,9 +327,9 @@ AssetHandler.prototype = {
 	    return this.handleBarcode('');
 	});
 	let callback = args.callback;
-	if(callback) callback= (code)=>{
+	if(!callback) callback= (result,controls)=>{
 	    if(!jqid(this.videoId).is(':visible')) return;
-	    return this.handleBarcode(code);
+	    return this.handleBarcode(result.getText(),controls);
 	}
 	this.barcodeReader = new BarcodeReader(this.videoId,callback);
 	if(this.opts.debug) {
@@ -306,15 +344,15 @@ AssetHandler.prototype = {
     showVideo:function() {
 	$(this.barcodeReader.videoElement).show();
     },    
-    handleBarcode:function(code) {
+    handleBarcode:function(code,controls) {
 	if(this.dialog) return;
 	this.opts.code = code;
 	if(this.opts.scanMode) {
-	    this.handleScanMode(code);
+	    this.handleScanMode(code,controls);
 	    return;
 	}
 
-	this.makeNewDialog(code);
+	this.makeNewDialog(code,controls);
     },
 
     makeNewDialog:function(code) {
