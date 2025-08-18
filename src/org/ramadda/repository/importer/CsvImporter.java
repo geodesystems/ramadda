@@ -276,7 +276,15 @@ public class CsvImporter extends ImportHandler {
 			    Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
 			    if(column==null) {
 				if(!seenMessage.contains(prop)) {
-				    myMessage.append(HU.div("Column: " + prop));
+				    String message= "";
+				    if(currentTypeHandler!=null)
+					message+="Type:" + currentTypeHandler.getLabel()+" ";
+				    message+="column: " + prop+":";
+				    myMessage.append(HU.div(message));
+				    //				    System.err.println(currentTypeHandler);
+				    //				    System.err.println("prop:"+ prop+":");
+				    //				    for(Column _column: currentTypeHandler.getColumns()) {System.err.println("C:" + _column);}
+
 				    seenMessage.add(prop);
 				}
 				continue;
