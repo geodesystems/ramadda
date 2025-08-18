@@ -39,9 +39,12 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.*;
+import java.text.DecimalFormat;
 
 @SuppressWarnings("unchecked")
 public class RowCollector extends Processor {
+
+
     private List<Row> rows = new ArrayList<Row>();
 
     public RowCollector() {}
@@ -1877,13 +1880,13 @@ public class RowCollector extends Processor {
 
 		    for(String w: what) {
 			if(w.equals(OPERAND_SUM)) {
-			    newRow.add(Double.valueOf(count.totals[i]));
+			    newRow.add(format(count.totals[i]));
  			} else if(w.equals(OPERAND_MIN)) {
-			    newRow.add(Double.valueOf(count.mins[i]));
+			    newRow.add(format(count.mins[i]));
  			} else if(w.equals(OPERAND_MAX)) {
-			    newRow.add(Double.valueOf(count.maxs[i]));
+			    newRow.add(format(count.maxs[i]));
  			} else if(w.equals(OPERAND_AVG) || w.equals(OPERAND_AVERAGE)) {
-			    newRow.add(Double.valueOf(count.totals[i]/count.count));
+			    newRow.add(format(count.totals[i]/count.count));
  			} else if(w.equals(OPERAND_COUNT)) {
 			    newRow.add(Integer.valueOf(count.count));
 			}

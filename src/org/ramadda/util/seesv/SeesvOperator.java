@@ -39,6 +39,8 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public class SeesvOperator {
 
+    public static final DecimalFormat decimalFormat = new DecimalFormat("0.################");
+
     public static final HtmlUtils HU = null;
 
     public static int OP_LT = 0;
@@ -112,6 +114,12 @@ public class SeesvOperator {
 
     public SeesvOperator(List<String> cols) {
         this.sindices = cols;
+    }
+
+    public String format(double d) {
+	synchronized(decimalFormat) {
+	    return decimalFormat.format(d);
+	}
     }
 
     public String replaceMacros(String v, Row header, Row row) {
