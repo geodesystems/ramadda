@@ -2540,7 +2540,6 @@ public class Utils extends IO {
             }
             if (inBracket) {
                 sb.append(c);
-
                 continue;
             }
             if (isQuote) {
@@ -2551,36 +2550,31 @@ public class Utils extends IO {
                 } else {
                     inQuote = true;
                 }
-
                 continue;
             }
             if (inQuote) {
                 sb.append(c);
-
                 continue;
             }
             if (c == ' ') {
                 if (sb.length() > 0) {
                     args.add(sb.toString());
-                    sb = new StringBuilder();
+                    sb.setLength(0);
                 }
-
                 continue;
             }
             sb.append(c);
-        }
+	}
         if (inQuote) {
             if ( !throwError) {
                 return null;
             }
-
             throw new IllegalArgumentException("Unclosed quote:" + s);
         }
         if (inBracket) {
             if ( !throwError) {
                 return null;
             }
-
             throw new IllegalArgumentException("Unclosed bracket:" + s);
         }
         if (sb.length() > 0) {
