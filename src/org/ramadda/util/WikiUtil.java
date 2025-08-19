@@ -1843,6 +1843,28 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
 
+                if (tline.startsWith(":phrase")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
+		    if(toks.size()==3) {
+			String lang = toks.get(1);
+			String rest = toks.get(2);
+			List<String> cmds = Utils.parseCommandLine(toks.get(2),false);
+			
+			if(cmds==null || cmds.size()!=2) {
+			    wikiError(buff, "Badly formed phrase:" + tline);
+			} else {
+			    HU.script(buff, HU.call("Translate.definePhrase",
+						    HU.squote(lang),
+						    HU.squote(cmds.get(0)),
+						    HU.squote(cmds.get(1))));
+			}
+		    } else {
+			wikiError(buff, "Badly formed phrase:" + tline);
+		    }
+		    continue;
+		}
+
+
                 if (tline.startsWith(":setlang")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     HU.script(buff, HU.call("Translate.setDefaultLanguage",
