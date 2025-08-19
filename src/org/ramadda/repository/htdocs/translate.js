@@ -54,15 +54,20 @@ var Translate = {
     },
     addSwitcher:function(id,langs) {
 	if(langs) langs=Utils.split(langs,",",true,true);
+	else {
+	    langs = [];
+	    ramaddaLanguages.forEach(lang=>{langs.push(lang.id)});
+	}
 	let html = HU.open("div",[ATTR_CLASS,'ramadda-link-bar']);
 	let cnt = 0;
-	ramaddaLanguages.forEach(lang=>{
-	    if(langs && langs.length && !langs.includes(lang.id)) return;
-	    html+= HU.span(['data-language',lang.id,
-			    ATTR_TITLE,'Switch language',
-			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
-	    cnt++;
-	});
+	langs.forEach(langId=>{
+	    ramaddaLanguages.forEach(lang=>{
+		if(lang.id!= langId) return;
+		html+= HU.span(['data-language',lang.id,
+				ATTR_TITLE,'Switch language',
+				ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
+		cnt++;
+	    })});
 	html+=HU.close('div');
 	let block = $(html);
 	block.appendTo(jqid(id));
@@ -79,7 +84,7 @@ var Translate = {
 	}
 
 	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
-	console.dir(url);
+//	console.dir(url);
         $.ajax({
             url: url,
             dataType: 'text',
@@ -140,6 +145,12 @@ var Translate = {
 	});
     },
     haveDoneAnyTranslations:false,
+    phrases:{},
+    definePhrase:function(lang,from,to) {
+	let map = Translate.phrases[lang];
+	if(!map) map = Translate.phrases[lang] = {};
+	map[from] = to;
+    },
     translateInner: function(selector,lang,pack,useDflt) {
 	let all;
 	let blocks;
@@ -177,6 +188,8 @@ var Translate = {
 	    console.log('no language pack:' + lang);
 	    return;
 	}
+	let map = Translate.phrases[lang];
+	if(map) $.extend(pack,map);
 	let langFlag = (suffix) =>{
 	    return 'lang-orig-' + (suffix??'');
 	}
