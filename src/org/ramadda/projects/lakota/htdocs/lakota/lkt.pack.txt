@@ -22,13 +22,15 @@ Etc =
 Tag =
 SQL =
 URL =
-All =
-Save =
-Date =
-Size =
-Kind =
-Link =
+
+All = Owasin
+Save = Nikiya
+Date = Anpetu
+Size = Tanka/Cistinna
+Kind = Ocage
+Link = Okaze
 Help =Thípi
+
 File =
 RSS Feed =
 RSS Feed - Full =
