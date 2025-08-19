@@ -93,6 +93,8 @@ public class PluginManager extends RepositoryManager {
 
     private List<String> sqlFiles = new ArrayList<String>();
 
+    private List<String> packFiles = new ArrayList<String>();    
+
     /**  */
     private List<String> licenseFiles = new ArrayList<String>();
 
@@ -555,6 +557,8 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Sql", file);
             }
             sqlFiles.add(file);
+        } else if (file.endsWith(".pack")) {
+            packFiles.add(file);	    
         } else if (file.indexOf("licenses.json") >= 0) {
             if (fromPlugin) {
                 pluginStat("License", file);
@@ -858,6 +862,10 @@ public class PluginManager extends RepositoryManager {
     public List<String> getSqlFiles() {
         return sqlFiles;
     }
+
+    public List<String> getPackFiles() {
+        return packFiles;
+    }    
 
     /**
       * @return _more_
