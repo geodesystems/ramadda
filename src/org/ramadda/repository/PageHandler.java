@@ -1236,49 +1236,50 @@ public class PageHandler extends RepositoryManager {
 			 "/org/ramadda/repository/htdocs/languages",
 			 getStorageManager().getHtdocsDir() + "/languages",
 			 getStorageManager().getPluginsDir().toString());
+	List<String> packFiles = new ArrayList<String>();
+
         for (int i = 0; i < sourcePaths.size(); i++) {
             String       dir     = (String) sourcePaths.get(i);
             List<String> listing = getRepository().getListing(dir,getClass());
             for (String path : listing) {
-                if ( !path.endsWith(".pack")) {
-                    if (i == 0) {
-                        getLogManager().logInfoAndPrint(
-                            "RAMADDA: not ends with .pack:" + path);
-                    }
-                    continue;
-                }
-                if (seenPack.contains(path)) {
-                    continue;
-                }
-                seenPack.add(path);
-                String content =
-                    getStorageManager().readUncheckedSystemResource(path,
-                        (String) null);
-                if (content == null) {
-                    getLogManager().logInfoAndPrint("RAMADDA: could not read:" + path);
-                    continue;
-                }
-                Object[]   result     = parsePhrases(path, content);
-                String     type       = (String) result[0];
-                String     name       = (String) result[1];
-                StringBuilder phrases = (StringBuilder) result[2];
-                if (type != null) {
-                    if (name == null) {
-                        name = type;
-                    }
-		    StringBuilder existing = languageMap.get(type);
-		    if(existing ==null) {
-			languages.add(new TwoFacedObject(name, type));
-			existing = new StringBuilder();
-			languageMap.put(type,existing);
-		    }
-		    existing.append("\n");
-		    existing.append(phrases);
-                } else {
-                    getLogManager().logError("No _type_ found in: " + path);
-                }
-            }
-        }
+                if (path.endsWith(".pack")) {
+		    packFiles.add(path);
+		}
+	    }
+	}
+	packFiles.addAll(getPluginManager().getPackFiles());
+	for(String path:packFiles) {
+	    if (seenPack.contains(path)) {
+		continue;
+	    }
+	    seenPack.add(path);
+	    String content =
+		getStorageManager().readUncheckedSystemResource(path,
+								(String) null);
+	    if (content == null) {
+		getLogManager().logInfoAndPrint("RAMADDA: could not read:" + path);
+		continue;
+	    }
+	    Object[]   result     = parsePhrases(path, content);
+	    String     type       = (String) result[0];
+	    String     name       = (String) result[1];
+	    StringBuilder phrases = (StringBuilder) result[2];
+	    if (type != null) {
+		if (name == null) {
+		    name = type;
+		}
+		StringBuilder existing = languageMap.get(type);
+		if(existing ==null) {
+		    languages.add(new TwoFacedObject(name, type));
+		    existing = new StringBuilder();
+		    languageMap.put(type,existing);
+		}
+		existing.append("\n");
+		existing.append(phrases);
+	    } else {
+		getLogManager().logError("No _type_ found in: " + path);
+	    }
+	}
     }
 
     public StringBuilder getLanguage(String lang)  {
