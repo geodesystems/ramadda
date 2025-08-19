@@ -557,7 +557,7 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Sql", file);
             }
             sqlFiles.add(file);
-        } else if (file.endsWith(".pack")) {
+        } else if (file.endsWith(".pack") || file.endsWith(".pack.txt")) {
             packFiles.add(file);	    
         } else if (file.indexOf("licenses.json") >= 0) {
             if (fromPlugin) {

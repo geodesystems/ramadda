@@ -909,8 +909,9 @@ public class PageHandler extends RepositoryManager {
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
         StringBuilder   phrases = new StringBuilder();
-        String       type    =
-            IO.stripExtension(IO.getFileTail(file));
+        String       type    =   IO.stripExtension(IO.getFileTail(file));
+	type=type.replace(".txt","");
+	type=type.replace(".pack","");	
         String       name    = type;
         for (String line : lines) {
             if (line.startsWith("#")) {
@@ -1234,15 +1235,14 @@ public class PageHandler extends RepositoryManager {
         List sourcePaths =
 	    Misc.newList(
 			 "/org/ramadda/repository/htdocs/languages",
-			 getStorageManager().getHtdocsDir() + "/languages",
-			 getStorageManager().getPluginsDir().toString());
+			 getStorageManager().getHtdocsDir() + "/languages");
 	List<String> packFiles = new ArrayList<String>();
 
         for (int i = 0; i < sourcePaths.size(); i++) {
             String       dir     = (String) sourcePaths.get(i);
             List<String> listing = getRepository().getListing(dir,getClass());
             for (String path : listing) {
-                if (path.endsWith(".pack")) {
+                if (path.endsWith(".pack")|| path.endsWith(".pack.txt")) {
 		    packFiles.add(path);
 		}
 	    }
