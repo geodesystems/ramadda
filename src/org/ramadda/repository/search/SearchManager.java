@@ -480,7 +480,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
     int rcnt=0;
-    private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
+    private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew) {
+	try {
+	    indexEntryInner(indexWriter,entry, request,isNew);
+	} catch(Exception exc) {
+	    String message =    "Error indexing entry:" + entry.getName()+" error:" + exc.getMessage();
+	    getLogManager().logError(message,exc);
+	    getSessionManager().addSessionMessage(request,message);
+	}
+    }
+
+    private void indexEntryInner(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
+	
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
