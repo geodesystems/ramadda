@@ -1877,7 +1877,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String guid = HU.getUniqueId("langs");
                     HU.span(buff,"",HU.id(guid));
                     HU.script(buff, HU.call("Translate.addSwitcher",HU.squote(guid),
-					    toks.size()>1?HU.squote(toks.get(1)):"null"));
+					    toks.size()>1?HU.squote(toks.get(1)):"null",
+					    ""+tline.startsWith(":langswitcher-download")));
+			      
 		    continue;
 		}
 
