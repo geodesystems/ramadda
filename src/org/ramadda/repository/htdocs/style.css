@@ -581,6 +581,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 .ramadda-link-bar-item-active {
     background:var(--highlight-background);
+    font-weight:bold;
 }
 
 .ramadda-button-bar {
@@ -1458,8 +1459,7 @@ a.ramadda-menubar-button:hover {
     z-index:1000;
     position:fixed;
     top:5px;
-    left:50%;
-    transform: translateX(-50%);
+    right:8px;
 }
 
 .ramadda-header-small {
@@ -2573,6 +2573,10 @@ thin_hr,.ramadda-thin-hr {
     border-bottom:var(--basic-border);
 }
 
+
+.ramadda-navbar {
+    display:inline-block;
+}
 
 .ramadda-navbar-popup-link {
     background:#fff;

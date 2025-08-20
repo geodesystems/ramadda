@@ -26,6 +26,16 @@
     border:var(--basic-border);
 }
 
+.ramadda-header-floating .ramadda-link-bar, .ramadda-header .ramadda-link-bar {
+    background:#fff;
+    border-radius:var(--default-radius);
+    margin:4px;
+    padding:2px;
+    padding-left:0px;
+    padding-right:0px;        
+    border:var(--basic-border);
+}
+
 .ramadda-header .ramadda-navbar:hover {
     border  :var(--highlight-border);
 }

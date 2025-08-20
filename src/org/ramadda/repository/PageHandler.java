@@ -76,7 +76,7 @@ public class PageHandler extends RepositoryManager {
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
     private static final String ACK_MESSAGE =
-        "<div class='ramadda-acknowledgement'><a title='Powered by Geode Systems RAMADDA&#013;RAMADDA is a freely available open source content and data platform' href='https://geodesystems.com'><img style='background:#fff;' loading=lazy width=100px  src='${cdnpath}/images/poweredby.png'></a><br><a title='Help' href=${root}/userguide/index.html><i class='fas fa-question-circle'></i></a>&nbsp;<a title='Server Information' href=${root}/info><i class='fas fa-circle-info'></i></a></div>";
+        "<div class='ramadda-acknowledgement'><a title='Powered by Geode Systems RAMADDA' href='https://geodesystems.com'><img style='background:#fff;' loading=lazy width=100px  src='${cdnpath}/images/poweredby.png'></a><br><a title='Help' href=${root}/userguide/index.html><i class='fas fa-question-circle'></i></a>&nbsp;<a title='Server Information' href=${root}/info><i class='fas fa-circle-info'></i></a></div>";
 
     private String ackMessage;
     private List<MapLayer> mapLayers = null;
@@ -165,7 +165,7 @@ public class PageHandler extends RepositoryManager {
     public PageHandler(Repository repository) {
         super(repository);
         popupImage = HU.faIcon("ramadda-header-icon fas fa-cog", "title",
-                               "Login, user settings, help", "class",
+                               delimit("Login")+", "+delimit("User settings")+", "+delimit("Help"), "class",
                                "ramadda-user-menu-image");
         popupImage = HtmlUtils.div(popupImage,
                                    HtmlUtils.cssClass("ramadda-popup-link"));
@@ -478,17 +478,23 @@ public class PageHandler extends RepositoryManager {
             (String) result.getProperty(PROP_ENTRY_POPUP,
                                         (String) null);	
         Entry  thisEntry = request.getCurrentEntry();
+	Entry sourceEntry = thisEntry!=null?thisEntry:getEntryManager().getRootEntry();
+
+
         String     header        = entryHeader;
 	String pageHeader = "";
 
-	if(prefix) {
+
+	/**
+	if(prefix && false) {
 	    List<Metadata> pageHeaderMtd = 
-		getMetadataManager().findMetadata(request, thisEntry!=null?thisEntry:getEntryManager().getRootEntry(),
-						  "content.pageheader",true);
+		getMetadataManager().findMetadata(request, sourceEntry,
+						  "content.header",true);
+	    System.err.println("prefix mtd:" +pageHeaderMtd);
 	    if(pageHeaderMtd!=null && pageHeaderMtd.size()>0) {
-		pageHeader = getWikiManager().wikifyEntry(request,thisEntry!=null?thisEntry:getEntryManager().getRootEntry(),pageHeaderMtd.get(0).getAttr1());
+		pageHeader = getWikiManager().wikifyEntry(request,sourceEntry,pageHeaderMtd.get(0).getAttr1());
 	    }
-	}
+	    }**/
 
 	String headFinal = "";
 	if(prefix) {
@@ -643,29 +649,32 @@ public class PageHandler extends RepositoryManager {
 				      HU.squote(getAuthManager().getAuthToken(request.getSessionId())));
 	    }
             theFooter.append(HU.script(footerScript));
-	    List<Metadata> footerMtd = 
-                    getMetadataManager().findMetadata(request, thisEntry,
-						      "content.footer",true);
-	    if(footerMtd!=null && footerMtd.size()>0) {
-		for(Metadata mtd:footerMtd) {
-		    String w= getWikiManager().wikifyEntry(request, thisEntry, mtd.getAttr1());
-		    theFooter.append(w);
-		}
-	    }
-
-	    List<Metadata> headerMtd = 
-                    getMetadataManager().findMetadata(request, thisEntry,
-						      "content.header",true);
-	    if(headerMtd!=null && headerMtd.size()>0) {
-		StringBuilder headerSB = new StringBuilder();
-		for(Metadata mtd:headerMtd) {
-		    String w= getWikiManager().wikifyEntry(request, thisEntry, mtd.getAttr1());
-		    headerSB.append(w);
-		}
-		HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
-	    }
-
 	}
+
+	List<Metadata> headerMtd = 
+	    getMetadataManager().findMetadata(request, sourceEntry,
+					      "content.header",true);
+	if(headerMtd!=null && headerMtd.size()>0) {
+	    StringBuilder headerSB = new StringBuilder();
+	    for(Metadata mtd:headerMtd) {
+		String w= getWikiManager().wikifyEntry(request, sourceEntry, mtd.getAttr1());
+		headerSB.append(w);
+	    }
+	    HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
+	}
+	
+
+
+	List<Metadata> footerMtd = 
+	    getMetadataManager().findMetadata(request, sourceEntry,
+					      "content.footer",true);
+	if(footerMtd!=null && footerMtd.size()>0) {
+	    for(Metadata mtd:footerMtd) {
+		String w= getWikiManager().wikifyEntry(request, sourceEntry, mtd.getAttr1());
+		theFooter.append(w);
+	    }
+	}
+
 
 	if(suffix || fullTemplate) {
 	    List messages= getSessionManager().getSessionMessages(request,thisEntry!=null?thisEntry.getId():null);
@@ -837,74 +846,6 @@ public class PageHandler extends RepositoryManager {
         return result.toString();
     }
 
-    private static String replaceMsgNew(String s, Properties map) {
-        StringBuilder stripped     = new StringBuilder();
-        int           prefixLength = MSG_PREFIX.length();
-        int           suffixLength = MSG_PREFIX.length();
-        int           currentIdx   = 0;
-        int           length       = s.length();
-        while (currentIdx < length) {
-            String tmp  = s;
-            int    idx1 = s.indexOf(MSG_PREFIX, currentIdx);
-            if (idx1 < 0) {
-                stripped.append(s.substring(currentIdx));
-
-                break;
-            }
-            String text = s.substring(currentIdx, idx1);
-            stripped.append(text);
-            currentIdx = idx1 + 1;
-
-            int idx2 = s.indexOf(MSG_SUFFIX, currentIdx);
-            if (idx2 < 0) {
-                //Should never happen
-                throw new IllegalArgumentException(
-                    "No closing message suffix:" + s);
-            }
-            String key   = s.substring(currentIdx + prefixLength - 1, idx2);
-            String value = null;
-            if (map != null) {
-                value = (String) map.get(key);
-            }
-            if (debugMsg) {
-                try {
-                    if (allMsgOutput == null) {
-                        allMsgOutput = new PrintWriter(
-                            new FileOutputStream("allmessages.pack"));
-                        missingMsgOutput = new PrintWriter(
-                            new FileOutputStream("missingmessages.pack"));
-                    }
-                    if ( !seenMsg.contains(key)) {
-                        allMsgOutput.println(key + "=");
-                        allMsgOutput.flush();
-                        System.err.println(key);
-                        if (value == null) {
-                            missingMsgOutput.println(key + "=");
-                            missingMsgOutput.flush();
-                        }
-                        seenMsg.add(key);
-                    }
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-
-            if (map != null) {
-                value = (String) map.get(key);
-            }
-
-            if (value == null) {
-                value = key;
-                if (debugMsg) {
-                    value = "NA:" + key;
-                }
-            }
-            stripped.append(value);
-            currentIdx = idx2 + suffixLength;
-        }
-
-        return stripped.toString();
-    }
 
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
@@ -1532,6 +1473,7 @@ public class PageHandler extends RepositoryManager {
     public static String msg(String msg) {
         //for now no translation
         if (true) {
+	    if(msg.equals("Documentation")) System.err.println(Utils.getStack(15));
             return HU.span(msg,"");
         }
 
@@ -1612,10 +1554,11 @@ public class PageHandler extends RepositoryManager {
 				"Sign out"));
             String label = user.getLabel().replace(" ", "&nbsp;");
 	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25,
-							   HU.attrs("class","ramadda-user-menu-image","title","User Settings - "+
+							   HU.attrs("class","ramadda-user-menu-image",
+								    "title",delimit("User Settings")+" - "+
 								    request.getUser().getLabel()));
             String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
-							    "User Settings - " + request.getUser().getLabel(), "class",
+							    delimit("User Settings") +" - " + request.getUser().getLabel(), "class",
 							    "ramadda-user-menu-image");
 
             String settingsUrl =

@@ -10,7 +10,7 @@ id=mapheader
 ${imports}
 <style type="text/css">
 :root {
-    --header-height:100px;
+    --header-height:80px;
 }
 
 .ramadda-header-floating .ramadda-navbar, .ramadda-header .ramadda-navbar {
@@ -28,9 +28,8 @@ ${imports}
 }
 
 
-
 .ramadda-logo-image {height:55px;}
-.ramadda-header {padding: 1px;padding-left: 6px;padding-right: 6px;}
+.ramadda-header {padding: 1px;padding-left: 6px;padding-right: 6px;height:var(--header-height);}
 .ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
 </style>
 ${headfinal}
@@ -40,8 +39,9 @@ ${headfinal}
 <div style="font-size:80%;position:absolute;top:1px;left:50%;transform: translateX(-50%);">${pageheader}</div>
 <table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
 <td width="5%"><a href="${logo.url}"><img valign="bottom" class="ramadda-logo-image"  src="${logo.image}" ></a></td>
-<td>${entry.header} </td>
-<td align="right">${links}</td></tr></table>
+</td></tr></table>
+${entry.header}
+<div style="position:absolute;right:0px;bottom:0px;">${links}</div>
 </div>
 <div class="ramadda-outercontents">
 <div class="ramadda-innercontent">

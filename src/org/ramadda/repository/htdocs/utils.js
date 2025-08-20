@@ -764,6 +764,18 @@ var Utils =  {
         var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return {x:nx, y:ny};
     },
+    MSGCHAR:"\u200B",
+    NOMSGCHAR:"\u2063",
+    delimMsg:function(msg) {
+	return this.MSGCHAR + msg +this.MSGCHAR;
+    },
+
+    noMsg:function(msg) {
+	return  this.NOMSGCHAR+ msg +this.NOMSGCHAR;
+    },
+    isNoMsg:function(msg) {
+	return msg.includes(this.NOMSGCHAR);
+    },
     splitFirst: function(s,delim) {
 	let idx = s.indexOf(delim);
 	if(idx<0) return [s];
@@ -3042,7 +3054,17 @@ var Utils =  {
 	let menus = $(parent + ".ramadda-pulldown-with-icons");
 	menus.each(function() {
 	    let width = $(this).attr('width');
-	    $(this).iconselectmenu({width:width});
+	    $(this).iconselectmenu({width:width,
+				    create: function(event, ui) {
+					// set a max-height when the menu is created
+					$(this).iconselectmenu("menuWidget")
+					    .css({
+						"height": "200px",
+						"max-height": "200px",   // or compute based on desired "size"
+						"overflow-y": "auto"
+					    });
+				    }
+				   });
 	    $(this).addClass("ui-menu-icons ramadda-select-icon");
 	});
     },
@@ -5107,6 +5129,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             //Can't be in place if its a string
             opts.inPlace = false;
         }
+	
         if(opts.inPlace) {
             opts.remove = false;
             parentId= HtmlUtils.getUniqueId();

@@ -267,6 +267,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
+    public static String delimit(String msg) {
+	return "&#x200B;" + msg +"&#x200B;";
+    }
+
     public static String msg(String msg) {
         return PageHandler.msg(msg);
     }

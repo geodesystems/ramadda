@@ -4,6 +4,8 @@ var LANGUAGE_SPANISH = 'es';
 var Translate = {
     packs:{},
     missing:{},
+    language:null,
+    
     init: function() {
 	let icon =HU.getIconImage('fas fa-language ramadda-header-icon');
 	let switchPrefix = icon +HU.space(1);
@@ -38,6 +40,10 @@ var Translate = {
     },
     switcherClicked:function(link) {
 	let lang = link.attr('data-language');
+	if(lang=='showmissing') {
+	    Translate.showMissing();
+	    return;
+	}
         HU.hidePopupObject();
 	this.setLanguage(lang);
 //	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
@@ -51,8 +57,23 @@ var Translate = {
 
     setDefaultLanguage:function(lang) {
 	this.defaultLanguage = lang?lang:LANGUAGE_ENGLISH;
+	this.language = lang;
+	Translate.translate(null,lang);
+	
     },
-    addSwitcher:function(id,langs) {
+    checkSwitcher: function() {
+	let lang = this.language;
+	$('.ramadda-language-switch').each(function() {
+	    let selected = $(this).attr('data-language');
+	    if(selected==lang) {
+		$(this).addClass('ramadda-link-bar-item-active');
+	    } else {
+		$(this).removeClass('ramadda-link-bar-item-active');	
+	    }
+	});
+
+    },
+    addSwitcher:function(id,langs,addListing) {
 	if(langs) langs=Utils.split(langs,",",true,true);
 	else {
 	    langs = [];
@@ -68,6 +89,11 @@ var Translate = {
 				ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
 		cnt++;
 	    })});
+	if(addListing) {
+	    html+= HU.span(['data-language','showmissing',
+			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],'Download missing');
+	}
+
 	html+=HU.close('div');
 	let block = $(html);
 	block.appendTo(jqid(id));
@@ -75,6 +101,7 @@ var Translate = {
 	block.find('.ramadda-language-switch').click(function() {
 	    _this.switcherClicked($(this));
 	});
+	this.checkSwitcher();
 
     },
     loadPack: function(lang, callback) {
@@ -119,6 +146,7 @@ var Translate = {
 	this.language = ramaddaLanguage  =lang;
     },
     translate: function(selector,lang) {
+	lang = this.language;
 	if(!lang) lang = this.defaultLanguage;
 	if(!lang) {
 	    lang = this.language ?? Utils.getLocalStorage('ramadda-language');
@@ -152,6 +180,7 @@ var Translate = {
 	map[from] = to;
     },
     translateInner: function(selector,lang,pack,useDflt) {
+	lang = this.language;
 	let all;
 	let blocks;
 	if(selector) {
@@ -162,6 +191,7 @@ var Translate = {
 	    blocks = $('.ramadda-language-block');	    
 	}	    
 
+
 	blocks.each(function() {
 	    if($(this).attr('data-lang')==lang) {
 		$(this).show();
@@ -170,14 +200,7 @@ var Translate = {
 	    }
 	});
 
-	$('.ramadda-language-switch').each(function() {
-	    if($(this).attr('data-language')==lang) {
-		$(this).addClass('ramadda-link-bar-item-active');
-	    } else {
-		$(this).removeClass('ramadda-link-bar-item-active');
-	    }
-	});
-
+	this.checkSwitcher();
 
 	if(useDflt && !this.haveDoneAnyTranslations) {
 	    return
@@ -195,36 +218,51 @@ var Translate = {
 	}
 
 	let canTranslate = (tag,t,suffix)=>{
-	    if(tag.hasClass('ramadda-notranslate')) {
+	    if(tag.hasClass('ramadda-notranslate')|| tag.hasClass('ramadda-language-block')) {
 		return false;
 	    }
 	    if(!t || t.indexOf('<')>=0) {
 		return false;
 	    }
-	    if(t.match(/^[0-9]+/)) return;
-	    if(t.match(/ [0-9]+$/)) return;	    
-
-
+	    if(t.length<=1) return false;
+	    if(t.match(/.*[0-9].*/)) return false;
+	    if(t.match(/^[0-9]+/)) return false;
+	    if(t.match(/ [0-9]+$/)) return false;	    
 	    return true;
 	}
 	let translate = (a,text,suffix)=>{
+	    if(a.prop('tagName')=='I' && suffix!='title') {
+		return null;
+
+	    }
 	    text = text.trim();
 	    if(useDflt) {
 		let orig = a.attr(langFlag(suffix));
 		if(orig) return orig;
 		return null;
 	    }
-	    if(!canTranslate(a,text,suffix)) {
-		return;
+
+	    if(text.indexOf(Utils.MSGCHAR)>=0) {
+		let tokens = text.split(Utils.MSGCHAR).filter(Boolean);
+		let accum = '';
+		tokens.forEach(token=>{
+		    let translated = translate(a,token,suffix);
+		    if(translated) accum+=translated;
+		    else accum+=token;
+		});
+		return accum;
 	    }
 
-
+	    if(!canTranslate(a,text,suffix)) {
+		return null;
+	    }
+		
 	    if(pack[text]) {
 		if(pack[text]=='<skip>') return null;
 		a.attr(langFlag(suffix),text);
 		return pack[text];
 	    }
-	    
+
 //	    if(!Translate.missing[text])console.log('missing:'+text+':');
 	    Translate.missing[text] = true;
 	    return  a.attr(langFlag(suffix));
@@ -246,8 +284,9 @@ var Translate = {
 			return;
 		    }
 		}
-		if(a.attr(attr)) {
-		    v =translate(a,a.attr(langFlag(attr))??a.attr(attr),attr);
+		let attrValue = a.attr(attr);
+		if(attrValue) {
+		    v =translate(a,a.attr(langFlag(attr))??attrValue,attr);
 		    if(v) {
 			a.attr(attr,v);
 		    }
@@ -267,11 +306,16 @@ var Translate = {
     showMissing: function() {
 	let missing = '';
 	Object.keys(Translate.missing).forEach(key=>{
+	    if(key.length>100) return;
 	    if(key.match(/^[0-9]+/)) return;
 	    if(key.match(/ [0-9]+$/)) return;	    
+	    if(key.match(/^:.*/)) return;
+	    if(key.match(/^-.*/)) return;
+	    if(key.match(/.*&.*/)) return;	    
+	    if(Utils.isNoMsg(key)) return;
+	    console.log(key);
 	    missing+=key+'\n';
 	});
-	console.log(missing);
 	Utils.makeDownloadFile('missing.txt',missing);
     }
 };

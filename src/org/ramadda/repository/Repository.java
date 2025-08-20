@@ -241,7 +241,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** Copy OutputType */
     public static final OutputType OUTPUT_COPY =
-        new OutputType("Move/Copy/Link", "repository.copymovelink",
+        new OutputType(RepositoryManager.delimit("Move")+"/"+RepositoryManager.delimit("Copy")+"/"+RepositoryManager.delimit("Link"), "repository.copymovelink",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_MOVE);
 

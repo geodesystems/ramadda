@@ -588,7 +588,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let key ='orderByLabel_'+ type+(suffix?'_'+suffix:'');
 		    let label =this.getProperty(key);
 		    if(label) return label;
-		    if(!dflt) dflt = Utils.makeLabel(type)+(suffix?(' - '+suffix):'');
+		    if(suffix) suffix=Utils.delimMsg(suffix);
+		    if(!dflt) dflt = Utils.delimMsg(Utils.makeLabel(type))+(suffix?(' - '+suffix):'');
 		    return  dflt;
 		}
 
@@ -600,17 +601,18 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			byList.push([getLabel(type,'ascending',"Name A-Z"), type+'_ascending'],
 				    [getLabel(type,'descending',"Name Z-A"),type+'_descending']);
 		    else if(type=='createdate')
-			byList.push(["Record create date - newest first","createdate_descending"],
-				    ["Record create date - oldest first","createdate_ascending"]);
+			byList.push([Utils.delimMsg("Record create date")+" - "+
+				     Utils.delimMsg("newest first"),"createdate_descending"],
+				    [Utils.delimMsg("Record create date")+" - "+Utils.delimMsg("oldest first"),"createdate_ascending"]);
 		    else if(type=='date')
 			byList.push([getLabel(type,'descending',"From date - youngest first"),"fromdate_descending"],			  			  
 				    [getLabel(type,'ascending',"From date - oldest first"),"fromdate_ascending"]);
 		    else if(type=='size')
-			byList.push(["Size - largest first","size_descending"],
-				    ["Size - smallest first","size_ascending"]);
+			byList.push([Utils.delimMsg("Size")+" - "+Utils.delimMsg("largest first"),"size_descending"],
+				     [Utils.delimMsg("Size")+" - "+Utils.delimMsg("smallest first"),"size_ascending"]);
 		    else if(type=='entryorder')
-			byList.push(["Entry order - increasing","entryorder_ascending"],
-				    ["Entry order - decreasing","entryorder_descending"]);		    
+			byList.push([Utils.delimMsg("Entry order")+" - "+Utils.delimMsg("increasing"),"entryorder_ascending"],
+				    [Utils.delimMsg("Entry order")+" - "+Utils.delimMsg("decreasing"),"entryorder_descending"]);		    
 		    else {
 			byList.push(
 			    [getLabel(type,'descending'),'field:'+type+'_descending'],
@@ -657,7 +659,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    label = HU.div([ATTR_CLASS,'display-search-label-toggle',
 			    'data-widget-id',widgetId,
 			    'data-image-id',imageId,
-			    ATTR_TITLE, "click: toggle; shift-click: toggle all",ATTR_ID,toggleId],
+			    ATTR_TITLE, Utils.delimMsg("click") +": "+Utils.delimMsg("toggle") +"; "+
+			    Utils.delimMsg("shift-click")+": " + Utils.delimMsg("toggle all"),ATTR_ID,toggleId],
 			   HU.span([ATTR_ID,imageId],
 				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + label);
 	    setTimeout(()=>{
@@ -1110,7 +1113,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let id = tuple[0];
 		let label = tuple[1];
                 outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
-				      ATTR_TITLE,'Click to download; shift-click to copy URL',
+				      ATTR_TITLE,Utils.delimMsg('Click to download') +'; '+Utils.delimMsg('Shift-click to copy URL'),
 				      'custom-output','true',
 				      'data-name',label,
 				      'data-format',id,
@@ -1537,7 +1540,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(!Utils.stringDefined(text)) 
 		text = HU.getUrlArgument(ID_TEXT_FIELD);
 	    let textInputClass = "display-simplesearch-input display-search-textinput"
-	    let attrs  = [ATTR_PLACEHOLDER, this.getEgText("Search text"), ATTR_TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, textInputClass,  ATTR_ID, this.domId(ID_TEXT_FIELD)];
+	    let attrs  = [ATTR_PLACEHOLDER, this.getEgText("Search text"),
+			  ATTR_TITLE,Utils.noMsg("e.g. name:, contents:,path:"),
+			  ATTR_CLASS, textInputClass,  ATTR_ID, this.domId(ID_TEXT_FIELD)];
 	    let inputAttrs =  [ATTR_CLASS, textInputClass];
 	    if(this.getProperty("inputSize")) {
 		inputAttrs.push(ATTR_SIZE);
@@ -1676,7 +1681,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
             extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',ATTR_CLASS,'display-search-widget'],
-			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
+			   HU.b('#'+Utils.delimMsg('Records')+':') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
 										    ATTR_ID,this.domId(ID_SEARCH_MAX),
 										    'size','5']));
 	    

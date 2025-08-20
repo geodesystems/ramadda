@@ -2323,7 +2323,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 	if(cnt<=1 && skipIfNone) return;
         titles.add(title);
-        contents.add(HU.insetDiv(providerSB.toString(), 0, 20, 0, 0));
+	contents.add("");
+	//        contents.add(HU.insetDiv(providerSB.toString(), 0, 20, 0, 0));
     }
 
     private List getOutputHandlerSelectList() {
@@ -2339,7 +2340,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     if ( !HU.isFontAwesome("fa") && !icon.equals("")) {
                         icon = getRepository().getIconUrl(icon);
                     }
-                    tfos.add(new TwoFacedObject(type.getLabel(), type.getId()));
+                    tfos.add(new TwoFacedObject(delimit(type.getLabel()), type.getId()));
                     //tfos.add(new HU.Selector(HU.space(2)
 		    //+ type.getLabel(), type.getId(), icon));
                 }

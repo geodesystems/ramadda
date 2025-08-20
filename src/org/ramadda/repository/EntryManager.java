@@ -1855,7 +1855,7 @@ public class EntryManager extends RepositoryManager {
 
             HU.row(sb, HU.colspan(buttons, 2));
 
-	    if(group==null) {
+	    if(group==null && entry==null) {
 		HU.row(sb,HU.colspan(HU.b("Select a parent entry:"),2));
 		Entry defaultEntry=null;
 		String defaultGroup = request.getString("defaultgroup",null);
@@ -4583,7 +4583,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (entries.size() == 0) {
-            return new Result("", getPageHandler().makeEntryPage(request, parent,"Move/Copy/Link",
+            return new Result("", getPageHandler().makeEntryPage(request, parent,delimit("Move")+"/"+delimit("Copy")+"/"+delimit("Link"),
 								 getPageHandler().showDialogError("No entries specified",false, HtmlUtils.backButton("Back"))));
         }
 
@@ -4613,7 +4613,7 @@ public class EntryManager extends RepositoryManager {
         boolean isCopy = Misc.equals(action, "copy");
         boolean isLink = Misc.equals(action, "link");
 
-        String  label  = "Move/Copy/Link";
+        String  label  = delimit("Move")+"/"+delimit("Copy")+"/"+delimit("Link");
         if (force != null) {
             label = isCopy
 		? "Copy"

@@ -2557,7 +2557,7 @@ public class TypeHandler extends RepositoryManager {
 		      new Link(
 			       request.entryUrlWithArg(
 						       getRepository().URL_ENTRY_COPY, entry,
-						       ARG_FROM), ICON_MOVE, "Move/Copy/Link",
+						       ARG_FROM), ICON_MOVE, delimit("Move")+"/"+delimit("Copy")+"/"+delimit("Link"),
 			       OutputType.TYPE_EDIT));
 	}
 
@@ -2580,7 +2580,7 @@ public class TypeHandler extends RepositoryManager {
 		      new Link(
 			       request.entryUrl(
 						getMetadataManager().URL_METADATA_ADDFORM,
-						entry), ICON_METADATA_ADD, "Add Property...",
+						entry), ICON_METADATA_ADD, "<span>Add Property</span>...",
 			       OutputType.TYPE_EDIT));
 
             if (metadataTypes.size() > 0) {
@@ -5317,14 +5317,16 @@ public class TypeHandler extends RepositoryManager {
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
         if (true || (typeHandlers.size() > 1)) {
             List tmp = new ArrayList();
+	    String attr = HU.cssClass("ramadda-notranslate");
             for (TypeHandler typeHandler : typeHandlers) {
                 if ( !typeHandler.getForUser()) {
                     continue;
                 }
-                tmp.add(new TwoFacedObject(msg(typeHandler.getLabel()),
-                                           typeHandler.getType()));
+		//		tmp.add(new TwoFacedObject(typeHandler.getLabel(),  typeHandler.getType()));
+                tmp.add(new HtmlUtils.Selector(typeHandler.getLabel(),   typeHandler.getType(),null,attr));
             }
-            TwoFacedObject anyTfo = new TwoFacedObject(TYPE_ANY, TYPE_ANY);
+            HtmlUtils.Selector anyTfo = new HtmlUtils.Selector(TYPE_ANY, TYPE_ANY,attr);
+	    //            TwoFacedObject anyTfo = new TwoFacedObject(TYPE_ANY, TYPE_ANY);
             if ( !tmp.contains(anyTfo)) {
                 tmp.add(0, anyTfo);
             }
@@ -5410,8 +5412,7 @@ public class TypeHandler extends RepositoryManager {
 
         basicSB.append(HU.formTableClose());
         advancedSB.append(HU.formTableClose());
-
-        titles.add(msg("Type, date, space"));
+        titles.add(delimit("Type") +", " + delimit("Date") +", " + delimit("Space"));
         contents.add(basicSB.toString());
 
     }

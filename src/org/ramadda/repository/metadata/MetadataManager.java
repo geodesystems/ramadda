@@ -167,6 +167,8 @@ public class MetadataManager extends RepositoryManager {
     }
 
     public MetadataType findType(String stringType, boolean makeDefault) {
+	//a hack to fix the multiple header types problem
+	if(stringType.equals("content.pageheader")) stringType = "content.header";
 	MetadataType type =  typeMap.get(stringType);
 	if(type==null) {
 	    if(!makeDefault) return null;
@@ -1018,18 +1020,22 @@ public class MetadataManager extends RepositoryManager {
 					clause,
 					getDatabaseManager().makeOrderBy(Tables.METADATA.COL_TYPE));
 
+	final DatabaseManager dbm     = getDatabaseManager();
         getDatabaseManager().iterate(stmt, new SqlUtil.ResultsHandler() {
             public boolean handleResults(ResultSet results) throws Exception {
                 int             col     = 1;
-                String          type    = results.getString(3);
+		String id =     dbm.getString(results, col++);
+		String entryId =     dbm.getString(results, col++);		
+		String type =     dbm.getString(results, col++);
+		if(Misc.equals(type,"content.pageheader")) type = "content.header";
+		   
                 MetadataHandler handler = findMetadataHandler(type);
-                DatabaseManager dbm     = getDatabaseManager();
 
                 finalMetadataList.add(
                     handler.makeMetadata(
-                        dbm.getString(results, col++),
-                        dbm.getString(results, col++),
-                        dbm.getString(results, col++),
+					 id,
+					 entryId,
+					 type,
                         results.getInt(col++) == 1,
                         dbm.getString(results, col++),
                         getAttrString(results, col++),

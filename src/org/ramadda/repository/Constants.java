@@ -1473,7 +1473,7 @@ public interface Constants {
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
 
-    public static final String LABEL_NEW_ENTRY = "Pick a Type...";
+    public static final String LABEL_NEW_ENTRY = "<span>Pick a Type</span>...";
 
     public static final String LABEL_ENTRY = "Entry";
 

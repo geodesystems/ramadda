@@ -422,7 +422,9 @@ function RamaddaRepository(repositoryRoot) {
 		if(check && !check(output)) continue;
 		if(makeSpan) {
                     urls.push(HtmlUtils.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
-					      ATTR_TITLE,'Click to download; shift-click to copy URL',
+					      ATTR_TITLE,
+					      Utils.delimMsg('Click to download')+
+					      '; '+Utils.delimMsg('Shift-click to copy URL'),
 					      'data-name',output.name,
 					      'data-format',output.id,
 					      'data-url',

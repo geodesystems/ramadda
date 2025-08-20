@@ -79,6 +79,10 @@ public class Metadata implements Constants {
 
     public Metadata() {}
 
+    public Metadata(String id) {
+	this.id = id;
+    }
+
     public Metadata(Metadata that) {
         this("", "", that);
     }
@@ -99,7 +103,7 @@ public class Metadata implements Constants {
 
     public Metadata(String id, String entryId, MetadataType type,
                     boolean inherited, Object[] values) {
-        this.id        = id;
+	this(id);
         this.entryId   = id;
         this.inherited = inherited;
         this.values    = values;
@@ -111,7 +115,7 @@ public class Metadata implements Constants {
                     String attr3, String attr4, String extra) {
 	//        this(id, entryId, type.getId(), inherited, attr1, attr2, attr3,
 	//             attr4, extra);
-        this.id        = id;
+        this(id);
         this.entryId   = entryId;
 	setMetadataType(type);
         this.inherited = inherited;
@@ -137,7 +141,7 @@ public class Metadata implements Constants {
     public Metadata(String id, String entryId, String type,
                     boolean inherited, String attr1, String attr2,
                     String attr3, String attr4, String extra) {
-        this.id        = id;
+		    this(id);
         this.entryId   = entryId;
         this.type      = type;
         this.inherited = inherited;
@@ -161,7 +165,7 @@ public class Metadata implements Constants {
     */
 
     public Metadata(String id, String entryId, MetadataType type, String[] attrs) {
-        this.id      = id;
+        this(id);
         this.entryId = entryId;
 	setMetadataType(type);
         for (int i = 0; i < attrs.length; i++) {
@@ -170,7 +174,7 @@ public class Metadata implements Constants {
     }
 
     public Metadata(String id, String entryId, Metadata that) {
-        this.id        = id;
+        this(id);
         this.entryId   = entryId;
 	setMetadataType(that.metadataType);
         this.inherited = that.inherited;
