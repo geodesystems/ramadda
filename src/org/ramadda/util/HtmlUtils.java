@@ -1754,6 +1754,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
 		 Utils.split(labelId,":").get(1));
 	}
 
+
+
         public Selector(String label, String id) {
             this(label, id, null, 0, false);
         }
@@ -1761,6 +1763,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         public Selector(String label, String id, String icon) {
             this(label, id, icon, 0, false);
         }
+
+        public Selector(String label, String id, String icon,String attr) {
+            this(label, id, icon);
+	    this.attr = attr;
+        }
+
 
         public Selector(String label, String id, String icon, int margin) {
             this(label, id, icon, margin, false);
@@ -1853,6 +1861,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         if (extra == null) {
             extra = "";
         }
+	boolean multiple = extra.toLowerCase().indexOf("multiple")>=0;
 	boolean decorated = false;
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
@@ -1860,7 +1869,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             String cssClass = null;
             if (extra.indexOf(ATTR_ROWS) >= 0) {
                 cssClass = "ramadda-multiselect";
-            } else if ((values != null) && !values.isEmpty()
+            } else if (!multiple && (values != null) && !values.isEmpty()
                        && (values.get(0) instanceof HtmlUtils.Selector)) {
                 cssClass = "ramadda-pulldown-with-icons";
 		decorated = true;
@@ -1878,12 +1887,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
             String value;
             String label;
             String tooltip   = null;
-            String extraAttr = null;
+            String extraAttr = "";
+
             if (obj instanceof TwoFacedObject) {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
                 value = tfo.getId().toString();
                 label = tfo.toString();
-		tooltip = label +" ("+ value+")";
+		//		tooltip = label +" ("+ value+")";
 
             } else if (obj instanceof Selector) {
                 Selector selector = (Selector) obj;
@@ -1891,22 +1901,24 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 value   = selector.id;
                 label   = selector.label;
                 if (selector.attr != null) {
-                    extraAttr = selector.attr;
+                    extraAttr += selector.attr;
                 }
                 if (Utils.stringDefined(selector.icon)) {
                     String style = "";
                     if ( !selector.isHeader) {
                         style += "margin-left:" + selector.margin + "px;";
                     }
-                    extraAttr = attrs("data-class", "ramadda-select-icon",
-                                      "data-style", style, "img-src",  selector.icon);
                     if (selector.isHeader) {
-                        extraAttr = attrs("isheader", "true", "label-class",
+                        extraAttr += attrs("isheader", "true", "label-class",
                                           "ramadda-select-header");
-                    }
+                    } else {
+			extraAttr += attrs("data-class", "ramadda-select-icon",
+					   "data-style", style, "img-src",  selector.icon);
+		    }
+
                 } else if (selector.isHeader) {
 		    //                    extraAttr = style("font-weight:bold;background: #ddd;padding:6px;");
-		    extraAttr = attrs("isheader", "true", "label-class",
+		    extraAttr += attrs("isheader", "true", "label-class",
 				      "ramadda-select-header");
                 } else {
 		    if(!decorated && selector.margin>0 ) {
