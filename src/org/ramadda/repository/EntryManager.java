@@ -189,12 +189,16 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Entry getRootEntry(Request request) {
+	return getRootEntry(request, false);
+    }
+
+    public Entry getRootEntry(Request request, boolean force) {	
         try {
             if (rootCache == null) {
                 initTopEntry();
             }
             Entry topEntry = rootCache.get();
-            if (topEntry == null) {
+            if (force || topEntry == null) {
                 topEntry = initTopEntry();
             }
 

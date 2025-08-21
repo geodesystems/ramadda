@@ -847,6 +847,9 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+       @return  Object[] { type, name, phrases };
+    */
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
         StringBuilder   phrases = new StringBuilder();

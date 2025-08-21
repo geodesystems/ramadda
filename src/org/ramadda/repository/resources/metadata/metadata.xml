@@ -473,6 +473,17 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
 
 
+    <type
+       name="Language Phrases File"
+       tag="internal"
+       id="languagephrases">
+      <element name="Language" datatype="enumerationplus" values="en,es,fr"/>
+      <element name="File" datatype="file" thumbnail="false" />
+
+    </type>
+
+
+
 
     <type name="Wiki Category" id="wikicategory" foruser="false">
       <element name="Wiki Category" />
