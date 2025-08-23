@@ -5284,8 +5284,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.toggleid) {
 	    this.toggleDialogs[opts.toggleid] = popup;
 	}
-	Translate.translate(popup);
+	HtmlUtils.handleNewContent(popup);
         return popup;
+    },
+    handleNewContent:function(selector) {
+	Translate.translate(selector);
     },
     //If value==null then remove the param
     addToDocumentUrl:function(name,value,append) {
