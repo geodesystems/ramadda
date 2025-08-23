@@ -165,7 +165,7 @@ public class PageHandler extends RepositoryManager {
     public PageHandler(Repository repository) {
         super(repository);
         popupImage = HU.faIcon("ramadda-header-icon fas fa-cog", "title",
-                               delimit("Login")+", "+delimit("User settings")+", "+delimit("Help"), "class",
+                               delimit("Login")+", "+delimit("User Settings")+", "+delimit("Help"), "class",
                                "ramadda-user-menu-image");
         popupImage = HtmlUtils.div(popupImage,
                                    HtmlUtils.cssClass("ramadda-popup-link"));
@@ -477,6 +477,7 @@ public class PageHandler extends RepositoryManager {
         String entryPopup =
             (String) result.getProperty(PROP_ENTRY_POPUP,
                                         (String) null);	
+
         Entry  thisEntry = request.getCurrentEntry();
 	Entry sourceEntry = thisEntry!=null?thisEntry:getEntryManager().getRootEntry();
 
@@ -1476,7 +1477,6 @@ public class PageHandler extends RepositoryManager {
     public static String msg(String msg) {
         //for now no translation
         if (true) {
-	    if(msg.equals("Documentation")) System.err.println(Utils.getStack(15));
             return HU.span(msg,"");
         }
 
