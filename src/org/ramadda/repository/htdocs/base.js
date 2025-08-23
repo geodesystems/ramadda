@@ -1,5 +1,6 @@
 var ramaddaBaseUrl = "${ramadda.root}";
 var ramaddaBaseEntry = "${ramadda.baseentry}";
+var ramaddaCurrentEntry = "${ramadda.currententry}";
 var ramaddaBaseHtdocs = "${ramadda.htdocs}";
 var ramaddaIsMobile=${ramadda.ismobile};
 var ramaddaCdn = "${ramadda.cdn}";
