@@ -1872,6 +1872,12 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}
 
+                if (tline.startsWith(":langdisabled")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    HU.script(buff, HU.call("Translate.disable"));
+		    continue;
+		}
+
                 if (tline.startsWith(":langswitcher")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String guid = HU.getUniqueId("langs");
