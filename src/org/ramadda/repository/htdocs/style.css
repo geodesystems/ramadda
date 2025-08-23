@@ -558,10 +558,11 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 }
 
 .ramadda-link-bar {
+    background:#fff;
     display:inline-block;
     border-radius:var(--default-radius);
     border:var(--basic-border);
-    padding:0px;
+    padding:1px;
     padding-top:4px;
     padding-bottom:4px;
 }
@@ -575,8 +576,15 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     padding:6px;
 }
 
+.ramadda-link-bar-item:first-child {
+    border-top-left-radius:var(--default-radius);
+    border-bottom-left-radius:var(--default-radius);    
+}
+
 .ramadda-link-bar-item:last-child {
     border-right:0px;
+    border-top-right-radius:var(--default-radius);
+    border-bottom-right-radius:var(--default-radius);    
 }
 
 .ramadda-link-bar-item-active {

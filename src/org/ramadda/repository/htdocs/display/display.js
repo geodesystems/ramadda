@@ -9254,6 +9254,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.displays.push(display);
             if (display.getIsLayoutFixed()) {
 		display.initDisplay();
+		if(display.jq) {
+		    HU.handleNewContent(display.jq(ID_DISPLAY_CONTENTS));
+		}
 	    } else {
 		if (Utils.getPageLoaded()) {
                     this.doLayout();

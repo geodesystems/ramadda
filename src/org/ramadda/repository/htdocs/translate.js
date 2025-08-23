@@ -74,6 +74,7 @@ var Translate = {
 
     },
     addSwitcher:function(id,langs,addListing) {
+	if(this.disabled) return;
 	if(langs) langs=Utils.split(langs,",",true,true);
 	else {
 	    langs = [];
@@ -111,6 +112,8 @@ var Translate = {
 	}
 
 	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
+	if(ramaddaCurrentEntry)
+	    url += '&entryid=' + ramaddaCurrentEntry;
 //	console.dir(url);
         $.ajax({
             url: url,
@@ -138,14 +141,19 @@ var Translate = {
 	    if(i<0) return;
 	    let key = line.substring(0,i).trim();
 	    let value = line.substring(i+1).trim();	    
+	    if(value=='NA') return;
 	    pack[key] = value;
 	});
 	return pack;
+    },
+    disable: function() {
+	this.disabled = true;
     },
     setLanguage: function(lang) {
 	this.language = ramaddaLanguage  =lang;
     },
     translate: function(selector,lang) {
+	if(this.disabled) return;
 	lang = this.language;
 	if(!lang) lang = this.defaultLanguage;
 	if(!lang) {
@@ -154,6 +162,7 @@ var Translate = {
 	    if(lang==='undefined' || lang==='null') lang= null;
 	    lang = lang ??   ramaddaLanguage ?? navigator?.language ?? navigator?.userLanguage;
 	}
+
 
 	if(!Utils.stringDefined(lang)) {
 	    lang = LANGUAGE_ENGLISH;
@@ -179,6 +188,20 @@ var Translate = {
 	if(!map) map = Translate.phrases[lang] = {};
 	map[from] = to;
     },
+    canTranslate:function(tag,t,suffix) {
+	if(tag.hasClass('ramadda-notranslate')|| tag.hasClass('ramadda-language-block')) {
+	    return false;
+	}
+	if(!t || t.indexOf('<')>=0) {
+	    return false;
+	}
+	if(t.length<=1) return false;
+	if(t.match(/.*[0-9].*/)) return false;
+	if(t.match(/^[0-9]+/)) return false;
+	if(t.match(/ [0-9]+$/)) return false;	    
+	return true;
+    },
+
     translateInner: function(selector,lang,pack,useDflt) {
 	lang = this.language;
 	let all;
@@ -190,7 +213,6 @@ var Translate = {
 	    all = $('*');
 	    blocks = $('.ramadda-language-block');	    
 	}	    
-
 
 	blocks.each(function() {
 	    if($(this).attr('data-lang')==lang) {
@@ -217,19 +239,6 @@ var Translate = {
 	    return 'lang-orig-' + (suffix??'');
 	}
 
-	let canTranslate = (tag,t,suffix)=>{
-	    if(tag.hasClass('ramadda-notranslate')|| tag.hasClass('ramadda-language-block')) {
-		return false;
-	    }
-	    if(!t || t.indexOf('<')>=0) {
-		return false;
-	    }
-	    if(t.length<=1) return false;
-	    if(t.match(/.*[0-9].*/)) return false;
-	    if(t.match(/^[0-9]+/)) return false;
-	    if(t.match(/ [0-9]+$/)) return false;	    
-	    return true;
-	}
 	let translate = (a,text,suffix)=>{
 	    if(a.prop('tagName')=='I' && suffix!='title') {
 		return null;
@@ -253,7 +262,7 @@ var Translate = {
 		return accum;
 	    }
 
-	    if(!canTranslate(a,text,suffix)) {
+	    if(!Translate.canTranslate(a,text,suffix)) {
 		return null;
 	    }
 		
@@ -265,6 +274,7 @@ var Translate = {
 
 //	    if(!Translate.missing[text])console.log('missing:'+text+':');
 	    Translate.missing[text] = true;
+
 	    return  a.attr(langFlag(suffix));
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
@@ -295,7 +305,7 @@ var Translate = {
 
 	    let flag = langFlag()
 	    let html = a.attr(flag)??a.html();
-	    if(canTranslate(a,html)) {
+	    if(Translate.canTranslate(a,html)) {
 		v = translate(a,html);
 		if(v) {
 		    a.html(v);
@@ -311,7 +321,9 @@ var Translate = {
 	    if(key.match(/ [0-9]+$/)) return;	    
 	    if(key.match(/^:.*/)) return;
 	    if(key.match(/^-.*/)) return;
-	    if(key.match(/.*&.*/)) return;	    
+	    if(key.match(/.*&.*/)) return;
+	    if(key.match(/.*yyyy.*/i)) return;
+	    if(key.match(/.*ramadda.*/i)) return;	    	    	    
 	    if(Utils.isNoMsg(key)) return;
 	    console.log(key);
 	    missing+=key+'\n';
