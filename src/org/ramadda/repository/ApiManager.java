@@ -174,6 +174,8 @@ public class ApiManager extends RepositoryManager {
                 handler = getRepository().getDateHandler();		
             } else if (handlerName.equals("entrymanager")) {
                 handler = getRepository().getEntryManager();
+            } else if (handlerName.equals("pagehandler")) {
+                handler = getRepository().getPageHandler();		
             } else if (handlerName.equals("exteditor")) {
                 handler = getRepository().getExtEditor();
             } else if (handlerName.equals("mapmanager")) {

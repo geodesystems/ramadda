@@ -73,7 +73,40 @@ var Translate = {
 	});
 
     },
-    addSwitcher:function(id,langs,addListing) {
+    showLanguages:function(id,lang) {
+	let sid = HU.getUniqueId('switcher');
+	let lid = HU.getUniqueId('contents');
+	let html  = HU.center(HU.div([ATTR_ID,sid])) +
+	    HU.div([ATTR_ID,lid]);
+	jqid(id).html(html);
+	let callback = lang=>{
+	    Translate.setLanguage(lang);
+	    Translate.checkSwitcher();
+	    Translate.loadPack(lang,(pack)=>{
+		let searchId  = HU.getUniqueId('search');
+		let html = HU.div([ATTR_ID,searchId]);
+		html +='<table>';
+		html+=HU.tr([],HU.tds(['style','min-width:400px;'],[HU.b('English'),HU.b('Translated')]));
+		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
+		    if(key.startsWith('language.')) return;
+		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
+		});
+
+		html+='</table>';
+		jqid(lid).html(html);
+		HU.initPageSearch('.phrase',null,null,false,{target:'#'+searchId,focus:true});
+	    })
+	};
+
+	if(lang) {
+	    callback(lang);
+	}
+	Translate.addSwitcher(sid,null,false,{callback:callback,skipEnglish:true});
+
+	Translate.disable();
+    },
+    addSwitcher:function(id,langs,addListing,opts) {
+	opts = opts??{}
 	if(this.disabled) return;
 	if(langs) langs=Utils.split(langs,",",true,true);
 	else {
@@ -83,6 +116,7 @@ var Translate = {
 	let html = HU.open("div",[ATTR_CLASS,'ramadda-link-bar']);
 	let cnt = 0;
 	langs.forEach(langId=>{
+	    if(opts.skipEnglish && langId==LANGUAGE_ENGLISH) return;
 	    ramaddaLanguages.forEach(lang=>{
 		if(lang.id!= langId) return;
 		html+= HU.span(['data-language',lang.id,
@@ -100,6 +134,11 @@ var Translate = {
 	block.appendTo(jqid(id));
 	let _this = this;
 	block.find('.ramadda-language-switch').click(function() {
+	    if(opts.callback) {
+		let lang = $(this).attr('data-language');
+		opts.callback(lang);
+		return;
+	    }
 	    _this.switcherClicked($(this));
 	});
 	this.checkSwitcher();
@@ -110,7 +149,6 @@ var Translate = {
 	    callback(Translate.packs[lang]);
 	    return;
 	}
-
 	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
 	if(ramaddaCurrentEntry)
 	    url += '&entryid=' + ramaddaCurrentEntry;

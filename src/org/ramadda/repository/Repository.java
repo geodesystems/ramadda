@@ -3607,30 +3607,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    public Result processGetLanguage(Request request) throws Exception {
-	String lang = request.getString("language","");
-	StringBuilder sb = getPageHandler().getLanguage(lang);
-	if(sb==null) sb  = new StringBuilder();
-	Entry rootEntry = getEntryManager().getRequestEntry(request);
-	List<Metadata> metadataList =
-	    getMetadataManager().findMetadata(request, rootEntry,
-					      new String[] {"languagephrases"}, true);
 
-	if(metadataList!=null) {
-	    for(Metadata mtd: metadataList) {
-		if(Misc.equals(mtd.getAttr1(),lang)) {
-		    sb = new StringBuilder(sb);
-		    sb.append("\n");
-		    File f = getMetadataManager().getFile(request, rootEntry, mtd, 2);
-		    sb.append(IOUtil.readContents(f));
-		}
-	    }
-	}
-
-
-
-	return new Result("", sb, MIME_TEXT);
-    }
 
     public String debugPrefix() {
         return getUrlBase() + ": ";

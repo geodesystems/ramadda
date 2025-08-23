@@ -35,6 +35,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -209,6 +210,18 @@ public class PageHandler extends RepositoryManager {
         logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
         initWebResources();
     }
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+	languagesJson = null;
+        templateJavascriptContent = null;
+        htmlTemplates             = null;
+	templateMap = null;
+        typeToWikiTemplate        = new Hashtable<String, String>();
+    }
+
+
 
     public List<String[]> readWebResources(String resource) throws Exception {
         List<String[]> result = new ArrayList<String[]>();
@@ -896,7 +909,7 @@ public class PageHandler extends RepositoryManager {
         return new Object[] { type, name, phrases };
     }
 
-    public List<TwoFacedObject> getLanguages() {
+    private List<TwoFacedObject> getLanguages() {
         return languages;
     }
 
@@ -910,10 +923,23 @@ public class PageHandler extends RepositoryManager {
 		l.add(JsonUtil.map("id",JsonUtil.quote(tfo.getId()),
 				   "label",JsonUtil.quote(tfo.getLabel())));
 	    }
+	    String prop = getRepository().getProperty("ramadda.languages",null);
+	    if(prop!=null) {
+		for(String tuple: Utils.split(prop,",",true,true)) {
+		    List<String>toks = Utils.split(tuple,":",true,true);
+		    if(toks.size()>=2) {
+			l.add(JsonUtil.map("id",JsonUtil.quote(toks.get(0)),
+					   "label",JsonUtil.quote(toks.get(1))));
+			
+		    }		    
+		}
+	    }
 	    languagesJson = JsonUtil.list(l);
 	}
+	    
 	return languagesJson;
     }
+
 
     public HtmlTemplate getMobileTemplate() {
         return getTemplateMap().get(ID_TEMPLATE_MOBILE);
@@ -1231,6 +1257,46 @@ public class PageHandler extends RepositoryManager {
 	//	try {loadLanguagePacks();}catch(Exception exc) {}
 	return 	languageMap.get(lang);
     }
+
+    public Result processGetLanguage(Request request) throws Exception {
+	return new Result("", getLanguage(request), MIME_TEXT);
+    }
+
+    private StringBuilder getLanguage(Request request) throws Exception {
+	String lang = request.getString("language","");
+	StringBuilder sb = getPageHandler().getLanguage(lang);
+	if(sb==null) sb  = new StringBuilder();
+	Entry rootEntry = getEntryManager().getRequestEntry(request);
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, rootEntry,
+					      new String[] {"languagephrases"}, true);
+
+	if(metadataList!=null) {
+	    for(Metadata mtd: metadataList) {
+		if(Misc.equals(mtd.getAttr1(),lang)) {
+		    sb = new StringBuilder(sb);
+		    sb.append("\n");
+		    File f = getMetadataManager().getFile(request, rootEntry, mtd, 2);
+		    sb.append(IOUtil.readContents(f));
+		}
+	    }
+	}
+	return sb;
+    }
+
+
+    public Result processShowLanguage(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	sectionOpen(request, sb, "Languages", false);
+	String guid = HU.getUniqueId("langs");
+	String lang = request.getString("language",null);
+	HU.span(sb,"",HU.id(guid));
+	HU.script(sb, HU.call("Translate.showLanguages",HU.squote(guid),lang!=null?HU.squote(lang):"null"));
+	sectionClose(request, sb);
+	return new Result("", sb);
+    }
+
+
 
     public List<MapRegion> getMapRegions() {
         return getMapRegions(null);
@@ -2543,14 +2609,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-    @Override
-    public void clearCache() {
-        super.clearCache();
-        templateJavascriptContent = null;
-        htmlTemplates             = null;
-	templateMap = null;
-        typeToWikiTemplate        = new Hashtable<String, String>();
-    }
 
     public String getWikiTemplate(Request request, Entry entry,
                                   String templateType)
