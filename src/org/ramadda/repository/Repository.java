@@ -3611,10 +3611,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String lang = request.getString("language","");
 	StringBuilder sb = getPageHandler().getLanguage(lang);
 	if(sb==null) sb  = new StringBuilder();
-	Entry rootEntry = getEntryManager().getRootEntry(null,true);
-
+	Entry rootEntry = getEntryManager().getRequestEntry(request);
 	List<Metadata> metadataList =
-	    getMetadataManager().findMetadata(request, rootEntry,    new String[] {"languagephrases"}, true);
+	    getMetadataManager().findMetadata(request, rootEntry,
+					      new String[] {"languagephrases"}, true);
 
 	if(metadataList!=null) {
 	    for(Metadata mtd: metadataList) {
@@ -5455,6 +5455,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	js  = js.replace("${ramadda.cdn}", getPageHandler().getCdnPath(""));
 	js = js.replace("${ramadda.search.tree}","true");
 	js = js.replace("${ramadda.urlroot}", base);
+	Entry rootEntry = request.getCurrentEntry();
+	Entry localEntry = getEntryManager().getRequestEntry(request);
+	if(localEntry!=null) {
+	    js = js.replace("${ramadda.currententry}",localEntry.getId());
+	} else {
+	    js = js.replace("\"${ramadda.currententry}\"","null");
+	}
 	js = js.replace(
 			"${ramadda.baseentry}",
 			getEntryManager().getRootEntry().getId());
