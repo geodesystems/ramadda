@@ -617,6 +617,18 @@ public class EntryManager extends RepositoryManager {
         return entry;
     }
 
+    public Entry getRequestEntry(Request request) throws Exception {
+	Entry current = request.getCurrentEntry();
+	if(current!=null) return current;
+	String entryId = request.getString(ARG_ENTRYID,null);
+	if(entryId==null) entryId = request.getString(ARG_GROUP,null);
+	if(entryId!=null) {
+	    current = getEntry(request, entryId);
+	    if(current!=null) return current;
+	}
+	return getRootEntry(null,true);
+    }
+
     public void sanitizeEntries(List<Entry> entries) {
 	for(Entry entry: entries) {
 	    sanitizeEntry(entry);
@@ -7520,7 +7532,11 @@ public class EntryManager extends RepositoryManager {
         if (entries.size() == 0) {
             return;
         }
+	//clear the root cache just in case
+	if(rootCache!=null)
+	    rootCache.clearCache();
 	for (Entry entry : entries) {
+	    
 	    if(!entry.getTypeHandler().canCreate(request)) {
 		throw new IllegalArgumentException("User cannot create entry of type:" + entry.getTypeHandler());
 	    }
