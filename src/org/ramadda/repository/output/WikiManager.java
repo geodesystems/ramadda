@@ -8146,6 +8146,8 @@ public class WikiManager extends RepositoryManager
 				 ":setlang en|es|fr", ""),
 			l2.call( "Language switcher","Add language switching widget",
 				 ":langswitcher en,es,fr", ""),
+			l2.call( "Disable translation","Turn off language translations",
+				 ":langdisabled", ""),
 			l2.call( "Comment section","Commented out section",
 				 "+skip_nl__nl_", "-skip"),
 			l2.call( "Inline comment","Inline commented",
