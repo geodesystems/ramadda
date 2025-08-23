@@ -82,6 +82,8 @@ var Translate = {
 	let callback = lang=>{
 	    Translate.setLanguage(lang);
 	    Translate.checkSwitcher();
+	    if(lang)
+		HU.addToDocumentUrl('language',lang);
 	    Translate.loadPack(lang,(pack)=>{
 		let searchId  = HU.getUniqueId('search');
 		let html = HU.div([ATTR_ID,searchId]);

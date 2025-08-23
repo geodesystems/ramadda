@@ -137,7 +137,7 @@
 
   <group handler="pagehandler">
     <api request="/getlanguage"            method="processGetLanguage"     />
-    <api request="/showlanguages"            method="processShowLanguage"     />    
+    <api request="/languages"            method="processShowLanguage"     />    
   </group>
 
   <group handler="repository">
