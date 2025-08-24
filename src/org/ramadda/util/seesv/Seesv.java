@@ -785,13 +785,29 @@ public class Seesv implements SeesvCommands {
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
-		int providerCnt = 0;
 		if(multiSheets && multiFileTemplate==null) {
 		    multiFileTemplate = "${file_name}_sheet_${sheet}.csv";
 		}
 		boolean doMulti  = multiFiles|| multiSheets;
+		//Check for an explicit inputstream
+		if(files.size()==0 && inputStream!=null) {
+		    for (DataProvider provider : providers) {
+			myTextReader.resetProcessors(doMulti);
+			myTextReader.setInput(inputStream);
+			process(myTextReader, provider,0);
+			//			if(!multiFiles) {
+			//			    myTextReader.setFirstRow(null);
+			//			}
+			if (okToRun) {
+			    myTextReader.finishProcessing();
+			}
+			provider.finish();
+			myTextReader.flush();
+			myTextReader.close();
+		    }
+		    return;
+		}
                 for (DataProvider provider : providers) {
-		    providerCnt++;
 		    int cnt=0;
 		    for(IO.Path file: files) {
 			int fileCnt = cnt++;
@@ -894,6 +910,7 @@ public class Seesv implements SeesvCommands {
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
+    
 	    if(row==null) break;
 	    if(rowCnt++==0 && fileCnt>0) {
 		continue;
@@ -901,7 +918,6 @@ public class Seesv implements SeesvCommands {
             if (rowCnt <= ctx.getSkipRows()) {
                 continue;
             }
-
 	    if ( !processRow(ctx, row)) {
 		break;
 	    }
