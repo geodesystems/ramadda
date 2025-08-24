@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Aug 21 07:29:41 MDT 2025";
+var build_date="RAMADDA build date: Sun Aug 24 06:47:14 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -277,9 +277,9 @@ $.extend(Utils,{
 		if(options.tooltips) {
                     html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
 				    ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label],
-				   HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
+				   HU.div([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]) + delim + label);
 		} else {
-		    let dot = HU.span([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]);
+		    let dot = HU.span([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]);
 		    let item;
 		    if(!options.horizontal) {
 //			item = HU.hbox([dot, SPACE, label]);
@@ -350,7 +350,7 @@ $.extend(Utils,{
             let bin ={};
             ct.forEach(color=>{
 		let info = colorInfo[color];
-                let cell = HU.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
+                let cell = HU.div([ATTR_STYLE,"padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
                 html+=cell;
 //              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });
@@ -13402,6 +13402,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.displays.push(display);
             if (display.getIsLayoutFixed()) {
 		display.initDisplay();
+		if(display.jq) {
+		    HU.handleNewContent(display.jq(ID_DISPLAY_CONTENTS));
+		}
 	    } else {
 		if (Utils.getPageLoaded()) {
                     this.doLayout();
@@ -34646,12 +34649,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			byList.push([getLabel(type,'ascending',"Name A-Z"), type+'_ascending'],
 				    [getLabel(type,'descending',"Name Z-A"),type+'_descending']);
 		    else if(type=='createdate')
-			byList.push([Utils.delimMsg("Record create date")+" - "+
-				     Utils.delimMsg("newest first"),"createdate_descending"],
-				    [Utils.delimMsg("Record create date")+" - "+Utils.delimMsg("oldest first"),"createdate_ascending"]);
+			byList.push([Utils.delimMsg("Record create date")+" - "+ Utils.delimMsg("newest first"),"createdate_descending"],
+				    [Utils.delimMsg("Record create date")+" - "+ Utils.delimMsg("oldest first"),"createdate_ascending"]);
 		    else if(type=='date')
-			byList.push([getLabel(type,'descending',"From date - youngest first"),"fromdate_descending"],			  			  
-				    [getLabel(type,'ascending',"From date - oldest first"),"fromdate_ascending"]);
+			byList.push([getLabel(type,'descending',
+					      Utils.delimMsg("From date")+ " - " + Utils.delimMsg("youngest first")),"fromdate_descending"],
+				    [getLabel(type,'ascending',
+					      Utils.delimMsg("From date")+ " - " + Utils.delimMsg("oldest first")),"fromdate_ascending"]);
 		    else if(type=='size')
 			byList.push([Utils.delimMsg("Size")+" - "+Utils.delimMsg("largest first"),"size_descending"],
 				     [Utils.delimMsg("Size")+" - "+Utils.delimMsg("smallest first"),"size_ascending"]);
@@ -34707,7 +34711,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    ATTR_TITLE, Utils.delimMsg("click") +": "+Utils.delimMsg("toggle") +"; "+
 			    Utils.delimMsg("shift-click")+": " + Utils.delimMsg("toggle all"),ATTR_ID,toggleId],
 			   HU.span([ATTR_ID,imageId],
-				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + label);
+				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + HU.span([],label));
 	    setTimeout(()=>{
 		jqid(toggleId).click((event)=>{
 		    let toggle = jqid(toggleId);
@@ -35801,6 +35805,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    settings.entryType = type;
             settings.clearAndAddType(settings.entryType);
             this.addExtraForm();
+	    HU.handleNewContent(this.jq(ID_TYPEFIELDS));
             this.submitSearchForm();
         },
         initMetadata: function() {
