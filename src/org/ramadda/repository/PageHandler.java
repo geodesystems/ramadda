@@ -909,7 +909,7 @@ public class PageHandler extends RepositoryManager {
         return new Object[] { type, name, phrases };
     }
 
-    private List<TwoFacedObject> getLanguages() {
+    public List<TwoFacedObject> getLanguages() {
         return languages;
     }
 
