@@ -275,9 +275,9 @@ $.extend(Utils,{
 		if(options.tooltips) {
                     html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
 				    ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label],
-				   HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
+				   HU.div([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]) + delim + label);
 		} else {
-		    let dot = HU.span([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]);
+		    let dot = HU.span([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]);
 		    let item;
 		    if(!options.horizontal) {
 //			item = HU.hbox([dot, SPACE, label]);
@@ -348,7 +348,7 @@ $.extend(Utils,{
             let bin ={};
             ct.forEach(color=>{
 		let info = colorInfo[color];
-                let cell = HU.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
+                let cell = HU.div([ATTR_STYLE,"padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
                 html+=cell;
 //              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });

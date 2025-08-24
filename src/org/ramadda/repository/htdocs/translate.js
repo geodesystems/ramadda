@@ -87,14 +87,14 @@ var Translate = {
 	    Translate.loadPack(lang,(pack)=>{
 		let searchId  = HU.getUniqueId('search');
 		let html = HU.div([ATTR_ID,searchId]);
-		html +='<table>';
-		html+=HU.tr([],HU.tds(['style','min-width:400px;'],[HU.b('English'),HU.b('Translated')]));
+		html +=HU.open(TAG_TABLE);
+		html+=HU.tr([],HU.tds([ATTR_STYLE,'min-width:400px;'],[HU.b('English'),HU.b('Translated')]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
 		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
 		});
 
-		html+='</table>';
+		html+=HU.close(TAG_TABLE);
 		jqid(lid).html(html);
 		HU.initPageSearch('.phrase',null,null,false,{target:'#'+searchId,focus:true});
 	    })
@@ -366,9 +366,9 @@ var Translate = {
 	    if(key.match(/.*ramadda.*/i)) return;	    	    	    
 	    if(Utils.isNoMsg(key)) return;
 	    console.log(key);
-	    missing+=key+'\n';
+	    missing+=(key+'=\n');
 	});
-	Utils.makeDownloadFile('missing.txt',missing);
+	Utils.makeDownloadFile('phrases.txt',missing);
     }
 };
 

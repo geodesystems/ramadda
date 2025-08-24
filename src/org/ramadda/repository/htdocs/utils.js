@@ -770,6 +770,9 @@ var Utils =  {
 	return this.MSGCHAR + msg +this.MSGCHAR;
     },
 
+    msgLabel:function(msg) {
+	return HU.span([],msg)+':';
+    },
     noMsg:function(msg) {
 	return  this.NOMSGCHAR+ msg +this.NOMSGCHAR;
     },
@@ -6430,8 +6433,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let tt = fullLabel;
 	    if(item && item!=tt) {
 		//check for encoding
-		if(item.indexOf && item.indexOf('base64')<0) 
-		    tt = tt+HU.getTitleBr() + item;
+		if(item.indexOf && item.indexOf('base64')<0)  {
+//		    tt = tt+HU.getTitleBr() + item;
+//		    console.log(tt);
+		}
 	    }
 	    attrs.push(ATTR_TITLE,tt,extra,null,'value',item);
             options+=HU.tag("option",attrs,label);

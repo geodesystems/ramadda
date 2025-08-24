@@ -1380,7 +1380,7 @@ WikiEditor.prototype = {
 	let display = result.display;
 
 	if(blocks.length==0) return;
-	let menu =  HU.open('div',[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,'min-width:400px;']);
+	let menu =  HU.open(TAG_DIV,[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,'min-width:400px;']);
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +' Properties';
 	}
@@ -1403,7 +1403,7 @@ WikiEditor.prototype = {
 	let blockMap = {};
 	let blockCnt = 0;
 	Utils.splitList(blocks,5).forEach(blocks=>{
-	    menu += HU.open('div',[ATTR_CLASS,'wiki-editor-popup-section']);
+	    menu += HU.open(TAG_DIV,[ATTR_CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
 		blockCnt++;
 		blockMap[blockCnt] = block;
@@ -1426,9 +1426,9 @@ WikiEditor.prototype = {
 		contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items'],contents);
 		menu +=HU.toggleBlock(block.title, contents);
 	    });
-	    menu += HU.close('div');
+	    menu += HU.close(TAG_DIV);
 	});
-	menu += HU.close('div');
+	menu += HU.close(TAG_DIV);
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
 				    my: 'left top',     at: 'left+' +event.x +' top+' + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
@@ -1588,11 +1588,11 @@ WikiEditor.prototype = {
 	    if(block.title=='Color table') return;
 	    let title = block.title;
 	    all+=HU.div([ATTR_CLASS,'wiki-searchheader','data-block-index',block.index],HU.b(title));
-	    all+="<div>";
+	    all+=HU.open(TAG_DIV);
 	    let items = Utils.join(block.items," ");
 	    items = items.replace(/<div/g,'<span').replace(/\/div>/g,'/span>');		
 	    all+=items;
-	    all+="</div>";
+	    all+=HU.close(TAG_DIV);
 	});
 	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search - string 1,string 2',
 					ATTR_ID,_this.domId('allsearch'),'width','10'])) +
@@ -1842,14 +1842,15 @@ WikiEditor.prototype = {
 	    links[category].push(link);
         });
 	let menuTags = '';
-	let menu = "<table><tr valign=top>";
+	let menu = HU.open(TAG_TABLE)+HU.open(TAG_TR,[ATTR_VALIGN,'top']);
         for (let i = 0; i < cats.length; i++) {
 	    let cat = cats[i];
 	    let menuItems = Utils.join(links[cat],"<div>\n");
 	    menuTags+=  HU.div([ATTR_STYLE,"vertical-align:top;margin-right4px;display:inline-block;"],
 			       Utils.join(links[cat],""));	    
 	    menu += HU.td(['data-category',cat,ATTR_CLASS,'wiki-editor-display-category'],
-			  HU.div([ATTR_STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
+			  HU.div([ATTR_STYLE,'margin-right:5px;'], HU.b(cat)) +
+			  "<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
         }
 	menu = HU.div([ATTR_ID,"wiki-display-popup",ATTR_STYLE,"font-size:10pt;width:800px;"], menu);
 	this.displaysText = menuTags;
