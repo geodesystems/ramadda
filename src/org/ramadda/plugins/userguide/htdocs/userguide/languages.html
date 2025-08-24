@@ -36,9 +36,70 @@ pre {
 RAMADDA has support for multiple languages in the web interface
 -callout
 
+:heading Language Switcher
+To enable the display of the page language widget 
+<i class="fas fa-language ramadda-header-icon"></i>
+in the upper left of every page set the following property in
+a repository.properties file or in the Admin-&gt;Settings Properties section
++pre addCopy=true
+ramadda.languages.enabled = true
+-pre
 
 
-:heading 
+
+To show a large language switcher add the wiki text:
++pre
+<x>:langswitcher en,es,fr
+-pre
+
+e.g.:
++center
+:langswitcher en,es,fr
+-center
+  
+If you want to add the language switcher to every page 
+add the above langswitcher wiki text to a <a  href=pageconfig.html>Page Header</a>
+property.
+
+
+
+
+:heading Phrase Files
+There are a number of pre-defined language phrase files. 
+You can view
+these files on <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages>Github</a>.
+:p
+You can view the list of available languages and their phrase translations 
+<a href="{{root}}/languages">here</a>.
+
+
+
+  
+
+:heading Setting the Language
+To set the language on a page add the following wiki text:
++pre
+<x>:setlang &lt;the language ID&gt;
+-pre
+
+e.g. for Spanish:
++pre
+<x>:setlang es
+-pre
+
+
+
+:heading Language Blocks
+The wiki text of an entry can have any number of language blocks.  This lets you have long form
+text for different languages.
++pre
+<x>+lang en
+This is the English
+<x>-lang  
+<x>+lang es
+This is the Spanish
+<x>-lang  
+-pre
 
 
 </div>
