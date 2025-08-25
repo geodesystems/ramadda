@@ -119,6 +119,7 @@ var ATTR_ALT = "alt";
 var ATTR_ID = "id";
 var ATTR_CLASS = "class";
 var ATTR_NAME = "name";
+var ATTR_MULTIPLE = "multiple";
 var ATTR_SIZE = "size";
 var ATTR_STYLE = "style";
 var ATTR_TARGET = "target";
@@ -318,7 +319,7 @@ var Utils =  {
 		parent.css('position','relative');
 		let style = HU.css('position','absolute') +(opts.extraStyle??HU.css('top','5px',  'right','5px'));
 		link = $(HU.tag('ramadda-copy-link', [ATTR_CLASS,'ramadda-clickable',
-				 ATTR_STYLE,style],
+						      ATTR_STYLE,style],
 				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
 	    } else {
 		$(this).addClass('ramadda-clickable');
@@ -767,7 +768,7 @@ var Utils =  {
     MSGCHAR:"\u200B",
     NOMSGCHAR:"\u2063",
     delimMsg:function(msg) {
-	return this.MSGCHAR + msg +this.MSGCHAR;
+	return Utils.MSGCHAR + msg +Utils.MSGCHAR;
     },
 
     msgLabel:function(msg) {
@@ -779,6 +780,33 @@ var Utils =  {
     isNoMsg:function(msg) {
 	return msg.includes(this.NOMSGCHAR);
     },
+    tokenizeMessage:function(text) {
+	let startDelim = Utils.MSGCHAR;
+	let endDelim = Utils.MSGCHAR;	
+	// Escape delimiters if they are regex special chars
+	const escapeRegex = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const regex = new RegExp(`${escapeRegex(startDelim)}(.*?)${escapeRegex(endDelim)}`, "g");
+	let result = [];
+	let lastIndex = 0;
+	text.replace(regex, (match, token, offset) => {
+	    // Non-token text before the match
+	    if (offset > lastIndex) {
+		result.push({ type: "text", value: text.slice(lastIndex, offset) });
+	    }
+	    // The token itself
+	    result.push({ type: "token", value: token });
+	    lastIndex = offset + match.length;
+	});
+	// Trailing non-token text
+	if (lastIndex < text.length) {
+	    result.push({ type: "text", value: text.slice(lastIndex) });
+	}
+	return result;
+    },
+
+
+
+
     splitFirst: function(s,delim) {
 	let idx = s.indexOf(delim);
 	if(idx<0) return [s];
@@ -4190,7 +4218,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(args.callback) {
 	    args.callback();
 	}
-    
+	
     },				  
     initScreenshot: function(img) {
 	img.width/=2
@@ -6391,7 +6419,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     select: function(name, attrs,list, selected,maxWidth,debug) {
-       var select = this.openTag("select", attrs);
+	var select = this.openTag("select", attrs);
         select+=HU.makeOptions(list,selected,maxWidth,debug);
         select+=this.closeTag("select");
         return select;
@@ -6434,8 +6462,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(item && item!=tt) {
 		//check for encoding
 		if(item.indexOf && item.indexOf('base64')<0)  {
-//		    tt = tt+HU.getTitleBr() + item;
-//		    console.log(tt);
+		    //		    tt = tt+HU.getTitleBr() + item;
+		    //		    console.log(tt);
 		}
 	    }
 	    attrs.push(ATTR_TITLE,tt,extra,null,'value',item);
