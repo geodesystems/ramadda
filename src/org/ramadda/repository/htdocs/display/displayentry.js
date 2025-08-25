@@ -657,11 +657,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	addToggle:function(label,widgetId,toggleClose) {
 	    let toggleId = HU.getUniqueId('');
 	    let imageId = toggleId+'_image';
+	    let title = 'hello:' + Utils.delimMsg('click') +': '+Utils.delimMsg('toggle') +'; '+
+		Utils.delimMsg('shift-click')+': ' + Utils.delimMsg('toggle all');
+//	    console.log('title:'+ title);
 	    label = HU.div([ATTR_CLASS,'display-search-label-toggle',
+			    ATTR_ID,toggleId,
 			    'data-widget-id',widgetId,
 			    'data-image-id',imageId,
-			    ATTR_TITLE, Utils.delimMsg("click") +": "+Utils.delimMsg("toggle") +"; "+
-			    Utils.delimMsg("shift-click")+": " + Utils.delimMsg("toggle all"),ATTR_ID,toggleId],
+			    ATTR_TITLE,title],
 			   HU.span([ATTR_ID,imageId],
 				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + HU.span([],label));
 	    setTimeout(()=>{
@@ -1509,7 +1512,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				     ATTR_CLASS, "display-search-providers"];
 			if(this.getProvidersMultiple()) {
 			    let size =Math.min(8,providers.length+1);
-			    attrs.push("size",this.getProvidersMultipleSize(size),  "multiple", "multiple");
+			    attrs.push(ATTR_SIZE,this.getProvidersMultipleSize(size),  ATTR_MULTIPLE, "multiple");
 			}
 			let providersSelect = HU.tag(TAG_SELECT,attrs, options);
 			providersSelect = this.addWidget('Providers',providersSelect,
@@ -1681,11 +1684,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
 
-            extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',ATTR_CLASS,'display-search-widget'],
-			   HU.b('#'+Utils.delimMsg('Records')+':') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
-										    ATTR_ID,this.domId(ID_SEARCH_MAX),
-										    'size','5']));
-	    
+	    let recordsLabel = '#'+Utils.msgLabel('Records');
+            extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',
+			    ATTR_CLASS,'display-search-widget'],
+			   HU.b(recordsLabel) +' '+
+			   HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
+						       ATTR_ID,this.domId(ID_SEARCH_MAX),
+						       ATTR_SIZE,'5']));
 
 	    extra+=HU.div([ATTR_STYLE,'height:100px;']);
 
@@ -1868,6 +1873,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
 		}});
 	    dest.find(":checkbox").change(cbxChange);
+	    HU.handleNewContent(dest);
         },
 
 	metadataTagSelected:function(type, value) {
@@ -2224,8 +2230,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let attrs = [ATTR_ID, id];
 			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
 			if(values.length>=popupLimit || col.getSearchMultiples()) {
-			    attrs.push('multiple','true');
-			    attrs.push('size','4');			    
+			    attrs.push(ATTR_MULTIPLE,'true');
+			    attrs.push(ATTR_SIZE,'4');			    
 			} else {
 			    clazz= 'display-searchmenu ' + clazz;
 			}
@@ -4976,7 +4982,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 
 	    });
 	    let selectAttrs = [ATTR_ID,this.selectId];
-	    if(multiples) selectAttrs.push('multiple','true','size',4);
+	    if(multiples) selectAttrs.push(ATTR_MULTIPLE,'true',ATTR_SIZE,4);
 	    this.select = HU.tag(TAG_SELECT, selectAttrs,select);
 	    return cbxs;
 

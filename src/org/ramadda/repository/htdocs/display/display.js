@@ -1344,7 +1344,7 @@ function DisplayThing(argId, argProperties) {
 	    lists.forEach(list=>{
 		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
 	    });
-            values += "</tr></table>";
+            values += HU.close(TAG_TR,TAG_TABLE);
 	    if(this.getRecordHtmlStyle()){
 		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip", ATTR_STYLE,this.getRecordHtmlStyle()], values);
 	    }
@@ -2371,13 +2371,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let val = $(this).attr('data-value');
 		let html = '';
 		let items = [];
-		items.push(HU.b('Range: ') +  HU.input('',min,['size',4,ATTR_CLASS,'colortable-min']) + ' - ' +
-			   HU.input('',max,['size',4,ATTR_CLASS,'colortable-max']));
+		items.push(HU.b('Range: ') +  HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
+			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
 		items.push(HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','reset'],'Reset range'),
 			   HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
-		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
+		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,'margin-bottom:4px;']),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +
 				Utils.getColorTablePopup({showToggle:false})]);
 		html =HU.div([ATTR_STYLE,HU.css('padding','8px')], html);
@@ -6970,9 +6970,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		    let attrs = [ATTR_ID,this.getDomId("displayfields")];
 		    if(this.getProperty("displayFieldsMenuMultiple",false)) {
-			attrs.push("multiple");
+			attrs.push(ATTR_MULTIPLE);
 			attrs.push("true");
-			attrs.push("size");
+			attrs.push(ATTR_SIZE);
 			attrs.push("4");
 		    }
 		    this.displayFieldsMenuEnums = enums;
@@ -7067,7 +7067,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   this.makeFilterLabel("Unique: ") +
-				   HU.select("",['multiple',true,'size',Math.min(this.uniqueFields.length,4),ATTR_ID,this.getDomId("uniquefields")],
+				   HU.select("",[ATTR_MULTIPLE,true,ATTR_SIZE,Math.min(this.uniqueFields.length,4),ATTR_ID,this.getDomId("uniquefields")],
 					     enums,null))+SPACE;
 	    }
 

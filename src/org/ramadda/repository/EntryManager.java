@@ -9851,7 +9851,7 @@ public class EntryManager extends RepositoryManager {
 					     3, 50,HU.id(textid));
 	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
 
-	TypeHandler.addExtra(sb,"Type Patterns:",
+	TypeHandler.addExtra(sb,msgLabel("Type Patterns"),
 			     HU.hbox(
 				     textArea,
 				     select+ HU.space(1) + help +

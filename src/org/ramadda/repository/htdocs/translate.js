@@ -107,7 +107,7 @@ var Translate = {
 
 	Translate.disable();
     },
-    addSwitcher:function(id,langs,addListing,opts) {
+    addSwitcher:function(id,langs,addDownload,opts) {
 	opts = opts??{}
 	if(this.disabled) return;
 	if(langs) langs=Utils.split(langs,",",true,true);
@@ -126,7 +126,8 @@ var Translate = {
 				ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
 		cnt++;
 	    })});
-	if(addListing) {
+	if(addDownload) {
+	    Translate.downloadMode= true;
 	    html+= HU.span(['data-language','showmissing',
 			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],'Download missing');
 	}
@@ -146,15 +147,19 @@ var Translate = {
 	this.checkSwitcher();
 
     },
+    pending:{},
     loadPack: function(lang, callback) {
 	if(Translate.packs[lang]) {
 	    callback(Translate.packs[lang]);
 	    return;
 	}
+	if(Translate.pending[lang]) {
+	    Translate.pending[lang].push(callback);
+	    return;
+	}	    
+	Translate.pending[lang] = [];
 	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
-	if(ramaddaCurrentEntry)
-	    url += '&entryid=' + ramaddaCurrentEntry;
-//	console.dir(url);
+	if(ramaddaCurrentEntry)   url += '&entryid=' + ramaddaCurrentEntry;
         $.ajax({
             url: url,
             dataType: 'text',
@@ -166,6 +171,12 @@ var Translate = {
 		});
 		Translate.packs[lang]=pack;
 		callback(Translate.packs[lang]);
+		if(Translate.pending[lang]) {
+		    Translate.pending[lang].forEach(cb=>{
+			cb(Translate.packs[lang]);
+		    });
+		}
+		Translate.pending[lang] = null;
             }}).fail(function() {
 		console.log("Failed to load url: " + url);
 		Translate.packs[lang] ={};
@@ -218,7 +229,6 @@ var Translate = {
 
 	Translate.loadPack(lang,(pack)=>{
 	    Translate.translateInner(selector, lang,pack);
-	    
 	});
     },
     haveDoneAnyTranslations:false,
@@ -229,6 +239,9 @@ var Translate = {
 	map[from] = to;
     },
     canTranslate:function(tag,t,suffix) {
+	if(Translate.downloadMode) {
+	    if(tag.hasClass('display-metadatalist-item')) return false;
+	}
 	if(tag.hasClass('ramadda-notranslate')|| tag.hasClass('ramadda-language-block')) {
 	    return false;
 	}
@@ -275,47 +288,70 @@ var Translate = {
 	}
 	let map = Translate.phrases[lang];
 	if(map) $.extend(pack,map);
-	let langFlag = (suffix) =>{
+	let origValueFlag = (suffix) =>{
 	    return 'lang-orig-' + (suffix??'');
 	}
+	let currentValueFlag = (suffix) =>{
+	    return 'lang-current-' + (suffix??'');
+	}	
 
 	let translate = (a,text,suffix)=>{
 	    if(a.prop('tagName')=='I' && suffix!='title') {
 		return null;
-
 	    }
-	    text = text.trim();
 	    if(useDflt) {
-		let orig = a.attr(langFlag(suffix));
+		let orig = a.attr(origValueFlag(suffix));
 		if(orig) return orig;
 		return null;
 	    }
 
+//	    let debug = text.indexOf("toggle")>=0;
+	    let debug = false;
+//	    debug = text.indexOf("largest")>=0;
 	    if(text.indexOf(Utils.MSGCHAR)>=0) {
-		let tokens = text.split(Utils.MSGCHAR).filter(Boolean);
+//		if(debug) console.log(suffix +" has delim:" + text);
+		let tokens = Utils.tokenizeMessage(text);
 		let accum = '';
-		tokens.forEach(token=>{
-		    let translated = translate(a,token,suffix);
+		tokens.forEach(chunk=>{
+		    if(chunk.type=='text') {
+			accum+=chunk.value;
+			return;
+		    }
+//		    if(debug)	console.log('\ttoken:',chunk.value);
+		    let translated = translate(a,chunk.value,suffix);
 		    if(translated) accum+=translated;
-		    else accum+=token;
+		    else accum+=chunk.value;
 		});
 		return accum;
 	    }
 
+	    if(debug) {
+		console.log('text:'+suffix,':',text,a.prop('tagName'));
+//		if(!suffix && text.indexOf('xx')>=0) console.tr
+
+	    }
+//	    if(debug)		console.log('text:',suffix,':',text);
+
+	    text = text.trim();
 	    if(!Translate.canTranslate(a,text,suffix)) {
 		return null;
 	    }
 		
+	    let origText =text;
+	    if(!pack[text]) {
+		text =text.toLowerCase();
+	    }
+
 	    if(pack[text]) {
 		if(pack[text]=='<skip>') return null;
-		a.attr(langFlag(suffix),text);
+		a.attr(origValueFlag(suffix),origText);
 		return pack[text];
 	    }
 
 //	    if(!Translate.missing[text])console.log('missing:'+text+':');
-	    Translate.missing[text] = true;
 
-	    return  a.attr(langFlag(suffix));
+	    Translate.missing[origText] = true;
+	    return  a.attr(origValueFlag(suffix));
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
 	let attrs = ['placeholder','title','value'];
@@ -336,25 +372,37 @@ var Translate = {
 		}
 		let attrValue = a.attr(attr);
 		if(attrValue) {
-		    v =translate(a,a.attr(langFlag(attr))??attrValue,attr);
-		    if(v) {
-			a.attr(attr,v);
+		    let currentFlag = currentValueFlag(attr);
+//		    console.log(currentFlag,a.attr(currentFlag));
+		    if(a.attr(currentFlag) != lang) {
+			a.attr(currentFlag,lang);
+//			console.log('\ttranslating',attr);
+			v =translate(a,a.attr(origValueFlag(attr))??attrValue,attr);
+			if(v) {
+			    a.attr(attr,v);
+			}
+		    } else {
+//			console.log('\talready translated',attr,a.attr(attr));
 		    }
 		}});
 
 
-	    let flag = langFlag()
+	    let flag = origValueFlag()
+	    let currentFlag = currentValueFlag()	    
 	    let html = a.attr(flag)??a.html();
-	    if(Translate.canTranslate(a,html)) {
+	    if(Translate.canTranslate(a,html) && a.attr(currentFlag) != lang) {
 		v = translate(a,html);
 		if(v) {
 		    a.html(v);
+		    a.attr(currentFlag,lang);
 		}
 	    }
 	});
     },
     showMissing: function() {
 	let missing = '';
+	missing+='#page: ' +  window.location.pathname +' title:' + document.title+'\n';
+	let cnt = 0;
 	Object.keys(Translate.missing).forEach(key=>{
 	    if(key.length>100) return;
 	    if(key.match(/^[0-9]+/)) return;
@@ -367,7 +415,12 @@ var Translate = {
 	    if(Utils.isNoMsg(key)) return;
 	    console.log(key);
 	    missing+=(key+'=\n');
+	    cnt++;
 	});
+	if(cnt==0) {
+	    alert('No missing phrases');
+	    return
+	} 
 	Utils.makeDownloadFile('phrases.txt',missing);
     }
 };

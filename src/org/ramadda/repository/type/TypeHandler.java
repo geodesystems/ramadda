@@ -4564,7 +4564,7 @@ public class TypeHandler extends RepositoryManager {
 							 msgLabel("File or directory"),
 							 HU.input(ARG_SERVERFILE, "", size)
 							 + " "
-							 + msg("Note: If a directory then all files will be added")));
+							 + msg(msgLabel("Note")+msg("If a directory then all files will be added"))));
                         localFilesSB.append(
 					    HU.formEntry(
 							 msgLabel("Pattern"),
@@ -4821,42 +4821,42 @@ public class TypeHandler extends RepositoryManager {
 		     +" --- " + file);
 	}
 
-	addExtra(extras,"Entry type:",extraMore);
-	addExtra(extras,"Zip files:",unzipWidget);	
+	addExtra(extras,msgLabel("Entry type"),extraMore);
+	addExtra(extras,msgLabel("Zip files"),unzipWidget);	
 
 	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
 					       request.get(ARG_STRIPEXIF,false),
 					       "Strip metadata from images (e.g., lat/lon)");
 
 	HU.formEntry(extras,"",HU.formHelp("Image processing"));
-	addExtra(extras,"Images:",images);
+	addExtra(extras,msgLabel("Images"),images);
 	String ocr = getOcrForm(request, entry);
 	if(stringDefined(ocr)) {
-	    addExtra(extras,"OCR:",ocr);
+	    addExtra(extras,msgLabel("OCR"),ocr);
 	} 
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 	if(stringDefined(extract))  {
 	    HU.formEntry(extras,"",getLLMManager().getLLMWarning());
-	    addExtra(extras,"Use LLM to:",extract);
+	    addExtra(extras,msgLabel("Use LLM to"),extract);
 	}
 
 
 	HU.formEntry(extras,"",HU.formHelp("Metadata processing"));
-	addExtra(extras,"Metadata:",addMetadata);
-	addExtra(extras,"Entry name:",makeNameWidget);
+	addExtra(extras,msgLabel("Metadata"),addMetadata);
+	addExtra(extras,msgLabel("Entry name"),makeNameWidget);
 	if(GeoUtils.reverseGeocodeEnabled()) {
 	    String geocode = HU.labeledCheckbox(ARG_REVERSEGEOCODE, "true",
 						request.get(ARG_REVERSEGEOCODE,false),
 						"Set name from location");
-	    addExtra(extras,"Geocode:",geocode);
+	    addExtra(extras,msgLabel("Geocode"),geocode);
 	}
 
 	HU.formEntry(extras,"",HU.formHelp("Advanced"));
 	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
-	addExtra(extras,"Date Format:",dateFormatWidget);	
+	addExtra(extras,msgLabel("Date Format"),dateFormatWidget);	
 	if(entry==null)
 	    addExtra(extras,"",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 
