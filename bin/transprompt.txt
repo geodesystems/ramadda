@@ -1,0 +1,5 @@
+Attached is a text file with english phrases from a web application. I want to translate each english phrase into lakota.
+The result should be a text file of the form <english phrase=<lakota phrase>.
+I want you to try very hard to come up with a reasonable translation. expand the lakota dictionary and try
+very hard to cover all of the phrases.
+if you can't then use the phrase NA. I want you to  translate all phrases and return a text file.
