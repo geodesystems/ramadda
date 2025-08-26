@@ -57,7 +57,7 @@ public class RssOutputHandler extends OutputHandler {
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
     public static final OutputType OUTPUT_RSS_FULL =
-        new OutputType("RSS Feed - Full", "rss.full", OutputType.TYPE_FEEDS |
+        new OutputType("RSS Full Feed", "rss.full", OutputType.TYPE_FEEDS |
 		       OutputType.TYPE_FORSEARCH,
                        "", ICON_RSS);
 
