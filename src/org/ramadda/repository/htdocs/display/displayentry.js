@@ -2132,7 +2132,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 return searchable;
             }
 	    let onlyShow = null;
-	    if(this.getShowColumns()) {
+	    let showColumns = this.getShowColumns();
+	    if(Utils.stringDefined(showColumns)) {
 		onlyShow = {};
 		Utils.split(this.getShowColumns(),',',true,true).forEach(c=>{
 		    onlyShow[c] = true;
