@@ -4,8 +4,9 @@ RAMADDA is a freely available content and data management platform that is simpl
 * [User guide](https://boulderdata.org/repository/userguide/index.html)
 * Below are some [examples](https://ramadda.org/repository/alias/example_charts) of what you can do with RAMADDA. Also check out the [Boulder Data Hub](https://boulderdata.org).
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/geodesystems/ramadda)
+![License](https://img.shields.io/github/license/geodesystems/ramadda)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/geodesystems/ramadda)
 
 
 <center><img src=gallery.png width="80%"></center>
