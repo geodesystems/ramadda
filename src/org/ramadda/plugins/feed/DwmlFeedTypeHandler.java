@@ -857,8 +857,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		    HU.formEntry(sb, "Dew&nbsp;Point:", this.dewpoint);
 		}
 
+		sb.append(HU.formTableClose());
 		if(!anyDefined) {
-		    sb.append(HU.formTableClose());
 		    HU.div(sb,"No current conditions","");
 		    return sb.toString();
 		}
