@@ -5,6 +5,7 @@
 
 
 var DISPLAY_ENTRYLIST = "entrylist";
+var DISPLAY_SEARCH = "search";
 var DISPLAY_TESTLIST = "testlist";
 var DISPLAY_ENTRYDISPLAY = "entrydisplay";
 var DISPLAY_ENTRY_GALLERY = "entrygallery";
@@ -67,8 +68,8 @@ addGlobalDisplayType({
 
 
 addGlobalDisplayType({
-    type: DISPLAY_ENTRYLIST,
-    label: "Entry List",
+    type: DISPLAY_SEARCH,
+    label: "Entry Search",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
@@ -478,7 +479,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showIcon'},
 	{p:'showToggle'},
 	{p:'showThumbnail'},
-	{p:'placeholderImage',ex:'/repository/image.png'},
+	{p:'placeholderImage',ex:'/repository/images/placeholder.png'},
 	{p:'showEntryType',ex:'true',tt:'Show entry type in list'},
 	{p:'tagPopupLimit',d: 10,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
@@ -509,6 +510,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
     ];
+
 
     const SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties);
 
@@ -2415,11 +2417,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 }
 
 
-function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
+//xxxx
+function RamaddaSearchDisplay(displayManager, id, properties, theType) {
     if (theType == null) {
-        theType = DISPLAY_ENTRYLIST;
+        theType = DISPLAY_SEARCH;
     }
-    const SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_ENTRYLIST, properties);
+    //function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
+    const SUPER = new RamaddaSearcherDisplay(displayManager, id, theType, properties);
     let myProps = [];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         haveDisplayed: false,
@@ -3530,6 +3534,15 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+
+//xxxx
+function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
+    const SUPER = new RamaddaSearchDisplay(displayManager, id, properties);
+    let myProps = [];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {});
+}
 
 
 
