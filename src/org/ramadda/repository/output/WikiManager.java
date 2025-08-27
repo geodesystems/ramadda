@@ -9248,13 +9248,14 @@ public class WikiManager extends RepositoryManager
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if(columns!=null) {
 		    for (Column column : columns) {
-			Object v = entry.getValue(request, column);
+			Object v = entry.getValue(request, column,true);
 			if(v==null) v="";
 			svalue = svalue.replace("${property:" + column.getName()+"}", v.toString());
 			change=true;
 		    }
 		}
 	    }
+		
 	    if(svalue.startsWith("property:")) {
 		String prop =svalue.substring("property:".length());
 		Object o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,prop,props);
