@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 27 07:18:24 MDT 2025";
+var build_date="RAMADDA build date: Wed Aug 27 11:16:31 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34477,8 +34477,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
     let NONE = "-- None --";
     let myProps = [
 	{label:'Search'},
-        {p:'showForm',d: true},
-        {p:'formOpen',d: true},	
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_'},
         {p:'orientation',ex:'horizontal|vertical',d:'horizontal'},
 	{p:'formHeight',d:'1000px'},
@@ -34510,7 +34508,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showName',d: false},
         {p:'showDescription',d: false},		
 	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
-        {p:'showAncestor',d: true},
+        {p:'showAncestorSelector',d: true},
         {p:'ancestors',tt: 'Comma separated list of entry ids or type:entry_type'},
         {p:'ancestorsLabel',tt: 'Label to use for the ancestors section'},		
         {p:'mainAncestor',tt: 'Entry ID to force the search under'},
@@ -34557,6 +34555,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showOutputs',ex:'false',d:true},
 	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
+        {p:'showForm',d: true},
+        {p:'formOpen',d: true},	
+
     ];
 
 
@@ -35634,7 +35635,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		},1);
 	    }
 
-	    if(this.getShowAncestor()) {
+	    if(this.getShowAncestorSelector(this.getProperty('showAncestor',true))) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
 		let aid = this.domId(ID_ANCESTOR);
@@ -35648,7 +35649,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra += HU.hidden("",ancestor??"",[ATTR_ID,aid+"_hidden"]);
 		extra+=this.addWidget('Search Under',
 				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
-					     HU.leftRightTable(clear,input,"5%", "95%")),{toggleClose:!Utils.stringDefined(ancestor)});
+					     HU.leftRightTable(clear+SPACE,input,"5%", "95%")),{toggleClose:!Utils.stringDefined(ancestor)});
 	    }
 
 
