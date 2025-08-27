@@ -13,7 +13,13 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
 
 
 
+    <type name="type_archive_base"  foruser="false" description="Base Archive Type">
+      <property name="icon" value="/archive/collection.png"/>
+    </type>
+	  
+
   <type name="type_archive_section"  description="Archive Section"
+	super="type_archive_base"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	childtypes="type_archive_collection">
 
@@ -128,8 +134,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
 <type name="type_archive_root"  foruser="false" description="Archive Root"
+      super="type_archive_base"
       handler="org.ramadda.plugins.archive.ArchiveTypeHandler">
-    <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_description,archive_category"/>
+  <property name="icon" value="/archive/collection.png"/>
+  <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_description,archive_category"/>
   <wikimacro name="archive_finding_aid" label="Archive Finding Aid" isoutput="true" icon="/icons/magnifier.png">
 <![CDATA[+section 
 {{archive_finding_aid}}
