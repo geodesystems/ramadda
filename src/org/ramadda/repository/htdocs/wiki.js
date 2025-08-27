@@ -2530,7 +2530,12 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 	    if(tmp!="") title = tmp;
 	}
 	if(block.items.length==0) return
-	let sub = Utils.wrap(block.items,"<li>","");
+	let sub;
+	if(Array.isArray(block.items)) {
+	    sub = Utils.wrap(block.items,"<li>","");
+	} else {
+	    sub = block.items;
+	}
 	menu += HU.tag(TAG_LI, [],HU.div([ATTR_CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [ATTR_CLASS,"wiki-popup-menu-item"], sub));
     });
     let menubar = HU.div([ATTR_CLASS,"wiki-popup-menubar",  ATTR_ID, id],
