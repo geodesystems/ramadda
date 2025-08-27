@@ -126,6 +126,7 @@ public interface SeesvCommands {
     public static final String CMD_AFTER="-after";
     public static final String CMD_COUNTVALUE="-countvalue";
     public static final String CMD_DECIMATE="-decimate";
+    public static final String CMD_ROWRANGE="-rowrange";
     public static final String CMD_IFIN="-ifin";
     public static final String CMD_IFNOTIN="-ifnotin";
     public static final String CMD_IFMATCHESFILE="-ifmatchesfile";

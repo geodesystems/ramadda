@@ -1235,6 +1235,26 @@ public class Filter extends Processor {
 
     }
 
+
+    public static class RowRange extends Filter {
+	int  start;
+	int  end;	
+
+        public RowRange(TextReader ctx, int start, int end) {
+            this.start=start;
+	    this.end=end;
+        }
+
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+	    int index = rowCnt++;
+	    return index>=start && index<=end;
+        }
+
+    }
+
+
     /**
      * Class description
      *

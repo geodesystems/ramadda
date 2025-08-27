@@ -1724,6 +1724,10 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_MAXROWS, "Set max rows to process",
 		ARG_LABEL,"Max Rows",		
 		new Arg("rows","Number of rows",ATTR_TYPE, TYPE_NUMBER)),
+        new Cmd(CMD_ROWRANGE, "Pass through rows between ranges. 0-based",
+		ARG_LABEL,"Row Range",
+		new Arg("start index"),
+		new Arg("end index")),
         new Cmd(CMD_MATCH, "Pass through rows that the columns each match the pattern",
 		ARG_LABEL,"Match",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
@@ -5057,6 +5061,12 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_ROWRANGE, 2,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(),
+			     new Filter.RowRange(ctx,parseInt(args.get(++i)), parseInt(args.get(++i))));
+		return i;
+	    });
+
 	defineFunction(new String[]{CMD_NOTMATCH,CMD_NOTPATTERN}, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
