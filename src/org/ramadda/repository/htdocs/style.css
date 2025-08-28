@@ -4136,9 +4136,6 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
-.wiki-popup-inner {
-    padding:5px;
-}    
 
 .ramadda-popup-pin {
     border: 1px solid rgba(0,0,0,0);
@@ -6700,7 +6697,21 @@ a.wiki-link-noexist {
     font-weight:bold;
 }
 
+.wiki-search-items {
+    margin-left:10px;
+}
+.wiki-popup-inner {
+    padding:5px;
+}    
+
+
 .wikieditor-menu-popup .ramadda-menu-item {
+    display:inline-block;
+    padding:0px;
+    padding-right:2px;
+    padding-left:2px;    
+    margin-bottom:4px;
+    margin-right:4px;
     border: 1px solid #e8e8e8;
 }
 
