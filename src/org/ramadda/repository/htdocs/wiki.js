@@ -1318,7 +1318,11 @@ WikiEditor.prototype = {
 		ctDialog.remove();
 	    });
 	}
-	blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
+
+	//a hack for the search display
+	if(tagInfo.type!='search') {
+	    blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
+	}
 	//	}
 
 
@@ -1588,7 +1592,7 @@ WikiEditor.prototype = {
 	    if(block.title=='Color table') return;
 	    let title = block.title;
 	    all+=HU.div([ATTR_CLASS,'wiki-searchheader','data-block-index',block.index],HU.b(title));
-	    all+=HU.open(TAG_DIV);
+	    all+=HU.open(TAG_DIV,[ATTR_CLASS,'wiki-search-items']);
 	    let items = Utils.join(block.items," ");
 	    items = items.replace(/<div/g,'<span').replace(/\/div>/g,'/span>');		
 	    all+=items;
@@ -2445,12 +2449,14 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	blocks.push(block={index:blocks.length,title:title,items:items});
     };
     let itemClass = "ramadda-menu-item " + (forPopup?" ramadda-hoverable ramadda-highlightable ":"")
+    let currentLabel = '';
     let processAttr =(tag)=>{
 	if(tag.inline|| tag.inlineLabel) {
 	    addBlock(tag.inline || tag.inlineLabel);
 	    return;
 	}
 	if(tag.label && !tag.p) {
+	    currentLabel = tag.label;
 	    addBlock(tag.label);
 	    return;
 	}
@@ -2480,9 +2486,8 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	let value=attr;
 	attr=" " +tag.p+"=" + attr +" ";
 	if(block) {
-	    let corpus = label +" " + (tag.tt??"");
+	    let corpus = label +" " + (tag.tt??"") +' ' + currentLabel;
 	    let call
-
 	    if(attr.indexOf('|')>0 && attr.indexOf('(')<0) {
 		call ='WikiUtil.chooseInsertText('+HU.squote(id)+','+HU.squote(tag.p)+','+
 		    HU.squote(value)+')';
