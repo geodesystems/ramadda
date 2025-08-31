@@ -3552,9 +3552,9 @@ public class WikiManager extends RepositoryManager
 
             return sb.toString();
 
-        } else if (theTag.equals(WIKI_TAG_DISPLAY)
-                   || theTag.startsWith("display_")
-                   || theTag.equals(WIKI_TAG_CHART)) {
+        } else if (theTag.equals(WIKI_TAG_DISPLAY) ||
+		   theTag.startsWith("display_")   ||
+		   theTag.equals(WIKI_TAG_CHART)) {
 	    if(entry==null) {
 		return "{{"+ theTag+" " +"No entry" +"}}";
 	    }
