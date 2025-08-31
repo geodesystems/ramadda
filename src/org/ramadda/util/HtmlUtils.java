@@ -976,6 +976,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
+    public static Appendable div(Appendable sb, String content) {
+        tag(sb, TAG_DIV, "", content);
+        return sb;
+    }
+    
     public static String tds(List content,String...attrs) {
 	StringBuilder sb = new StringBuilder();
 	String a = attrs.length>0?attrs[0]:"";
