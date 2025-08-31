@@ -933,7 +933,7 @@ table.dataTable {
 
 .display-typelist-category {
    font-weight: bold !important;
-   background:#ccc;
+   background:#eee;
    border-top: 1px #aaa solid;
 }
 
@@ -1142,9 +1142,8 @@ svg > g > g:last-child { pointer-events: none }
 .display-search-block select {
     width:100%;
     padding:0px;
+    margin-top:2px;
 }
-
-
 
 
 .display-search-group-label, .display-search-label {
@@ -1170,6 +1169,8 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-widget {
     padding:5px;
+    xborder:var(--basic-border);
+    xborder-top:0px;
 }
 
 .display-search-widget-providers {
@@ -1178,8 +1179,14 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-group, .display-search-block {
     margin-top:8px;
-    border:var(--basic-border);
+    xborder:var(--basic-border);
+    xborder:0px;
 //    background:#E3D8CC;
+}
+
+.display-search-widgets  {
+    border:var(--basic-border);
+    border-top:0px;
 }
 
 .display-search-group .display-search-widget {
@@ -1219,7 +1226,7 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-metadata-block-inner {
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: auto;
 }
 
@@ -1240,19 +1247,21 @@ svg > g > g:last-child { pointer-events: none }
     display:inline-block;
 }
 
+
+
 .display-search-tag {
-    font-size:80%;
-    display:inline-block;
-    margin:3px;
-    border-radius: 10px;
-    padding:1px;
-    padding-left:8px;
-    padding-right:10px;
-    cursor:pointer;
-    background:#E5E5E5;
-    border:1px solid #ccc;
-    color:rgb(51,51,51);
+  display: inline-block;
+  padding: 0.1em 0.6em;
+  margin: 0.2em;
+  background-color:#e8f9e9;
+  color: #333; /* readable text */
+  border-radius: 12px;
+  font-size: 70%;
+  font-weight: 500;
+  border: 1px solid #d0e6f5; /* subtle border */
+  cursor:pointer;
 }
+
 
 .display-search-tag:hover {
     border:1px solid #999;
@@ -1277,8 +1286,8 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-text {
 }
-
-.display-text-edit {
+.
+display-text-edit {
     cursor:pointer;
     border: 1px #ccc solid;
     border-color: transparent;

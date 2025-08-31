@@ -208,7 +208,10 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
     this.what = what??'date';
     if(this.what == 'createdate') {
 	startLabel = 'Create start';
-	endLabel = 'Create end';	
+	endLabel = 'Create end';
+    } else    if(this.what == 'changedate') {
+	startLabel = 'Change start';
+	endLabel = 'Change end';	
     } else if(this.what=='date' || startLabel==null) {
 	startLabel = display.getProperty("date.start.label","Start date");
 	endLabel = display.getProperty("date.end.label","End date");	
@@ -235,6 +238,8 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
 	    HU.addToDocumentUrl(this.baseId+ID_DATE_END,Utils.stringDefined(end)?end:null);		    	    
 	    if(this.what=="createdate") {
 		settings.setCreateDateRange(start, end);
+	    } else    if(this.what=="changedate") {
+		settings.setChangeDateRange(start, end);		
 	    } else    if(this.what=="date") {
 		settings.setDateRange(start, end);
 	    } else {

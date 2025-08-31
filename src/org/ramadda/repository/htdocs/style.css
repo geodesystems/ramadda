@@ -6706,12 +6706,13 @@ a.wiki-link-noexist {
 
 
 .wikieditor-menu-popup .ramadda-menu-item {
+    border-radius: var(--default-radius);
     display:inline-block;
     padding:0px;
-    padding-right:2px;
-    padding-left:2px;    
+    padding-right:3px;
+    padding-left:3px;    
     margin-bottom:4px;
-    margin-right:4px;
+    margin-right:3px;
     border: 1px solid #e8e8e8;
 }
 

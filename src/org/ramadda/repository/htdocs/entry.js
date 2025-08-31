@@ -468,7 +468,9 @@ function RamaddaRepository(repositoryRoot) {
 	    addAttr("datadate.from",settings.startDate);
 	    addAttr("datadate.to",settings.endDate);
 	    addAttr("createdate.from",settings.createstartDate);
-	    addAttr("createdate.to",settings.createendDate);	    
+	    addAttr("createdate.to",settings.createendDate);
+	    addAttr("changedate.from",settings.changestartDate);
+	    addAttr("changedate.to",settings.changeendDate);	    	    
             if (settings.entries && settings.entries.length > 0) {
                 url += "&entries=" + settings.entries;
             }
@@ -1371,7 +1373,11 @@ function EntrySearchSettings(props) {
         setCreateDateRange: function(start, end) {
             this.createstartDate = start;
             this.createendDate = end;
-        },	
+        },
+        setChangeDateRange: function(start, end) {
+            this.changestartDate = start;
+            this.changeendDate = end;
+        },		
 
         setBounds: function(north, west, south, east) {
             this.north = (north == null || north.toString().length == 0 ? NaN : parseFloat(north));
