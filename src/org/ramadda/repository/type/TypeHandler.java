@@ -602,16 +602,6 @@ public class TypeHandler extends RepositoryManager {
         if(this.parent!=null) {
 	    this.parent.addToEntryTypePage(request,sb);
 	}
-	String help = getHelp();
-	if(stringDefined(help)) {
-	    HU.div(sb,
-		   getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))),"");
-	}
-
-	if(filePattern!=null) {
-	    sb.append(HU.b("File pattern: "));
-	    sb.append(filePattern);
-	}
     }
 
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
@@ -1078,6 +1068,17 @@ public class TypeHandler extends RepositoryManager {
             childrenTypes.add(child);
         }
     }
+
+    public void getAncestorTypes(List<TypeHandler> types) {
+	if(parent!=null) parent.getAncestorTypesInner(types);
+    }
+
+
+    private void getAncestorTypesInner(List<TypeHandler> types) {
+	if(parent!=null) parent.getAncestorTypesInner(types);
+	types.add(this);
+    }
+    
 
     public TypeHandler getParent() {
         return parent;
