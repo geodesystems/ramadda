@@ -1033,35 +1033,91 @@ public class EntryManager extends RepositoryManager {
 	if(asHtml) {
 	    StringBuilder sb = new StringBuilder();
 	    String type = request.getString(ARG_TYPE,null);
+	    String icon;
 	    if(type!=null) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		getPageHandler().sectionOpen(request, sb,"Entry Type  - " + typeHandler.getLabel(),false);
 		sb.append(HU.center(HU.href(getRepository().getUrlPath("/entry/types.html"),"Entry type list")));
-		HU.div(sb,HU.b("Type ID: ") + typeHandler.getType(),"");
-		typeHandler.addToEntryTypePage(request, sb);
-		sb.append("<br>");
+		sb.append(HU.formTable(true));
+
+		String help = typeHandler.getHelp();
+		if(stringDefined(help)) {
+		    HU.formEntry(sb,"", getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
+		}		
 
 
+		icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+		HU.formEntry(sb,"Type ID:", icon+HU.space(1)+typeHandler.getType());
+
+		String pattern = typeHandler.getFilePattern();
+		if(stringDefined(pattern)) 
+		    HU.formEntry(sb,"File pattern:", pattern);
+
+
+		List<TypeHandler> ancestors = new ArrayList<TypeHandler>();
+		typeHandler.getAncestorTypes(ancestors);
+		if(ancestors.size()!=0) {
+		    StringBuilder tmp = new StringBuilder();
+		    String space = "";
+		    for(TypeHandler parent: ancestors) {
+			icon = HU.img(parent.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+			String parentUrl = getRepository().getUrlPath("/entry/types.html?type="  + parent.getType());
+			HU.div(tmp,space+HU.href(parentUrl, icon+HU.space(1) +parent.getDescription() +" - "+ parent.getType()));
+			space+=HU.space(6);
+		    }
+		    sb.append(HU.formEntry("Parent Types:",tmp.toString()));
+		}
+
+		List<TypeHandler> children = typeHandler.getChildrenTypes();
+		if(children!=null && children.size()>0) {
+		    StringBuilder tmp = new StringBuilder();
+		    for(TypeHandler child: children) {
+			String childUrl = getRepository().getUrlPath("/entry/types.html?type="  + child.getType());
+			icon = HU.img(child.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+			HU.div(tmp,HU.href(childUrl, icon+HU.space(1)+child.getDescription() +" - "+ child.getType()));
+		    }
+		    sb.append(HU.formEntry("Sub Types:",tmp.toString()));
+		}
 		List<Column> columns = typeHandler.getColumns();
 		if (columns != null && columns.size()>0) {
-		    sb.append(HU.b("Columns:"));
-		    sb.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td></tr>");
+		    StringBuilder tmp = new StringBuilder();
+		    tmp.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td><td></td></tr>");
 		    for(Column column: columns) {
-			sb.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;") +
+			String extra = "";
+			String chelp = column.getHelp();
+			if(stringDefined(chelp)) extra+=chelp+" ";
+			String suffix = column.getSuffix();						
+			if(stringDefined(suffix)) extra+=suffix+" ";
+			if(stringDefined(extra)) {
+			    extra = getWikiManager().wikify(request,
+							    HU.div(extra,HU.cssClass("ramadda-form-help")));
+			}
+			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;") +
 					HU.td(column.getLabel()+"&nbsp;&nbsp;") +
-					HU.td(column.getType())));
+					 HU.td(column.getType()) +
+					 HU.td(extra),"valign=top"));
 		    }
-		    sb.append("<table>");
-		} else {
-		    sb.append("Entry type has no columns");
+		    tmp.append(HU.close("table"));
+		    sb.append(HU.formEntry("Columns:",tmp.toString()));
 		}
+		String wikiText = typeHandler.getWikiTemplate(request, null);
+		if(stringDefined(wikiText)) {
+		    StringBuilder tmp = new StringBuilder();
+		    typeHandler.addReadOnlyWikiEditor(request, null,tmp, wikiText.trim());
+		    sb.append(HU.formEntry("Wiki Text:",tmp.toString()));
+		}
+
+		sb.append(HU.formTableClose());
+		typeHandler.addToEntryTypePage(request, sb);
+
+
 	    } else {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
 		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type',null,{focus:true})");
 		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td><td class=ramadda-table-heading>Parent Type</td></tr>");
 		for (TypeHandler typeHandler : typeHandlers) {
-		    String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+		    icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
 		    String url = getRepository().getUrlPath("/entry/types.html?type="  + typeHandler.getType());
 		    String category = typeHandler.getSuperCategory();
 		    if(typeHandler.getCategory()!=null)category += " - " + typeHandler.getCategory();
