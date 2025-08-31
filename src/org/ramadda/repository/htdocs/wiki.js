@@ -1599,7 +1599,9 @@ WikiEditor.prototype = {
 	    all+=HU.close(TAG_DIV);
 	});
 	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search - string 1,string 2',
-					ATTR_ID,_this.domId('allsearch'),'width','10'])) +
+					ATTR_ID,_this.domId('allsearch'),ATTR_WIDTH,'10']) +
+			SPACE + HU.checkbox('',[ATTR_ID,_this.domId('searchshowall')],false,'Show descriptions')) +
+
 	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
 		    ATTR_CLASS,'wikieditor-menu-popup',
 		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
@@ -1607,8 +1609,43 @@ WikiEditor.prototype = {
 	let dialog = HU.makeDialog({content:all,anchor:anchor,title:'Attributes',header:true,
 				    sticky:true,draggable:true});
 
+
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
 	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
+
+	_this.jq('searchshowall').change(function() {
+	    if ($(this).is(':checked')) {
+		commands.each(function(){
+		    let span = $(this);
+		    let title  = span.attr('title');
+		    if(!Utils.stringDefined(title)) return;
+		    let a = span.find('a');
+		    if(a.length>0) {
+			span = a;
+		    }
+		    let orig = span.attr('origtext');
+		    if(!Utils.stringDefined(orig)) {
+			orig = span.html();
+			span.attr('origtext',orig);
+		    }
+		    span.html(orig  +' - ' + HU.span([ATTR_STYLE,HU.css('font-size','70%','font-style','italic')],title));
+		});
+	    } else {
+		commands.each(function(){
+		    let span = $(this);
+		    let a = span.find('a');
+		    if(a.length>0) {
+			span = a;
+		    }
+		    let orig = span.attr('origtext');
+		    if(orig)
+			span.html(orig);
+		});
+	    }
+	});
+	
+
+
 	jqid(_this.domId('allsearch')).focus();
 	jqid(_this.domId('allsearch')).keyup(function(event) {
 	    let text = $(this).val().trim().toLowerCase();
