@@ -115,7 +115,6 @@ public class JsonUtil {
 
 
 
-
     /*
       This method create a set of rows of date that are the result of joining the field values in a set of
       arrays (defined by arrayPaths) matching on the fields defined by keyList. If an array does not have a corresponding
@@ -1202,6 +1201,27 @@ public class JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	JSONArray array  = new JSONArray(IO.readContents(args[0],JsonUtil.class));
+	System.out.println("beneficial use,parameter,name,value");
+	HashSet seen = new HashSet();
+	for (int i = 0; i < array.length(); i++) {
+	    JSONObject item = array.getJSONObject(i);
+	    JSONObject use = item.getJSONObject("beneficialUse");
+	    String useName = use.getString("name");
+	    JSONArray stds = use.getJSONArray("beneficialUseStandards");
+	    for (int j = 0; j < stds.length(); j++) {
+		JSONObject item2 = stds.getJSONObject(j);
+		String key =  item2.getString("parameter") +"," +
+		    item2.getString("name");
+		if(seen.contains(key)) continue;
+		System.out.println(useName+","+
+				   item2.getString("parameter") +"," +
+				   item2.getString("name") +"," +
+				   item2.getDouble("value"));
+	    }
+	}
+	if(true) return;
+
 	/* Dont' have this in the release as it pulls too many things in
         JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(args[0])));
 	List<List<String>> results =
