@@ -1088,14 +1088,16 @@ public class HtmlOutputHandler extends OutputHandler {
 	    tabContents.add(HU.div(dd,HU.style("min-height:200px;")));
 	}
 
-        for (TwoFacedObject tfo :
-		 getMetadataHtml(request, entry, null, true, null,
-				 false, true,false,props)) {
-            tabTitles.add(tfo.toString());
-            tabContents.add(tfo.getId());
-        }
+	if(Utils.getProperty(props,"showMetadata",true)) {
+	    for (TwoFacedObject tfo :
+		     getMetadataHtml(request, entry, null, true, null,
+				     false, true,false,props)) {
+		tabTitles.add(tfo.toString());
+		tabContents.add(tfo.getId());
+	    }
+	}
         entry.getTypeHandler().addToInformationTabs(request, entry,
-                tabTitles, tabContents);
+						    tabTitles, tabContents);
 
         StringBuilder comments = getCommentBlock(request, entry, true);
         if (comments.length() > 0) {
@@ -1104,11 +1106,13 @@ public class HtmlOutputHandler extends OutputHandler {
             tabContents.add(comments);
         }
 
-        String attachments = getAttachmentsHtml(request, entry);
-        if (attachments.length() > 0) {
-            tabTitles.add(msg("Attachments"));
-            tabContents.add(attachments);
-        }
+	if(Utils.getProperty(props,"showAttachments",true)) {
+	    String attachments = getAttachmentsHtml(request, entry);
+	    if (attachments.length() > 0) {
+		tabTitles.add(msg("Attachments"));
+		tabContents.add(attachments);
+	    }
+	}
 
         StringBuilder associationBlock = new StringBuilder();
 	getAssociationManager().getAssociationBlock(request, entry,associationBlock);
