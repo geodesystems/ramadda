@@ -391,6 +391,7 @@ public class WikiManager extends RepositoryManager
 
 	    if(Utils.getProperty(props,"primaryPage",false)) {
 		Entry primaryEntry = (Entry)wikiUtil.getProperty("primaryEntry");
+		System.err.println("PRIMARY:" + primaryEntry +" current:" + entry);
 		if(primaryEntry==null || !entry.equals(primaryEntry)) return "";
 	    }
 
@@ -524,6 +525,7 @@ public class WikiManager extends RepositoryManager
 	    isPrimaryRequest=true;
 	    request.putExtraProperty("alreadyDoingIt", alreadyDoingIt);
 	}
+	System.err.println("is primary:"  + isPrimaryRequest);
 	List contentList = (List) alreadyDoingIt.get(entry.getId());
 	if(contentList==null) {
 	    alreadyDoingIt.put(entry.getId(),contentList = new ArrayList());
