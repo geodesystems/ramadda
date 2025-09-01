@@ -295,24 +295,20 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="form.tags.show" value="false"/>    
     <property name="search.area.show" value="false"/>
     <property name="form.area.show" value="false"/>    
-
     <property name="form.date.label" value="Publication Date"/>
     <property name="form.todate.show" value="false"/>
     <property name="form.time.show" value="false"/>    
     <property name="date.format" value="yyyy"/>
     <property name="date.nullok" value="true"/>
+    <property name="form.name.label" value="Title"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
-
-
-    <property name="form.name.label" value="Title"/>
-
-    <property  name="html.type.show"  value="false" />
-
-
+    <property name="html.type.show"  value="false" />
     <property name="html.owner.show" value="false"/>                
+    <property name="html.mainlabel" value="About this Book"/>
 
     <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true"
+	    group="About this Book"
 	    enumeration_show_checkboxes="true"/>
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
     <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
@@ -366,7 +362,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 +row
 +col-8
 {{description wikify="true" prefix="+callout" suffix="-callout"}}
-{{information  showDetails="true"  showTitle="false"   }} 
+{{information  showDetails="true"   showAttachments="false" showMetadata="false"    }} 
 {{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
