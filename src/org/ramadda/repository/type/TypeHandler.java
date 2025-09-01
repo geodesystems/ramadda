@@ -2222,7 +2222,8 @@ public class TypeHandler extends RepositoryManager {
 				      Appendable buff)
 	throws Exception {
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
-	NamedBuffer sb =  NamedBuffer.append(contents,"",null);
+	String mainLabel = getProperty(entry,"html.mainlabel","");
+	NamedBuffer sb =  NamedBuffer.append(contents,mainLabel,null);
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
@@ -2290,6 +2291,7 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 	}
+
 
 	applyContents(request, buff,contents);
     }
