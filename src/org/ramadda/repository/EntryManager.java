@@ -962,7 +962,7 @@ public class EntryManager extends RepositoryManager {
             fatalError(request, "No entry specified");
         }
 
-	request.putExtraProperty("entry", entry);
+	request.putExtraProperty(PROP_CURRENT_ENTRY, entry);
 
 	if(getRepository().getLogActivity()) {
 	    if(request.getString("product","").equals("points.json")) {

@@ -154,6 +154,8 @@ public interface Constants {
     public static final String ARG_EXPORT_SHALLOW = "exportshallow";
     public static final String ARG_EXPORT_DEEP = "exportdeep";    
 
+    public static final String  PROP_CURRENT_ENTRY ="entry";
+
     public static final String PROP_INSTALL_PASSWORD =
         "ramadda.install.password";
 
