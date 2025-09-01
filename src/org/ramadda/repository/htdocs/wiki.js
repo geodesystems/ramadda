@@ -2316,8 +2316,8 @@ WikiEditor.prototype = {
 		{p:'showResource',ex:'true'},
 		{p:'showBase',ex:'true'},
 		{p:'showDetails',ex:'true'},
-		{p:'showAttachments','false'},
-		{p:'showMetadata','false'},
+		{p:'showAttachments',ex:'false'},
+		{p:'showMetadata',ex:'false'},
 		{p:'menus',ex:'file,edit,view,feeds,other,service'},
 		{p:'menusTitle',ex:'Services'}],
 	    description: [
