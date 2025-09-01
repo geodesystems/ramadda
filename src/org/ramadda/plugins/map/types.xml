@@ -119,7 +119,7 @@ popupSliderRight=true
      <wiki><![CDATA[
 +section title="{{name}}"
 {{description}}
-{{map width="100%" height="450" details="true" listentries="true" showCheckbox="true"}}
+{{map width="100%" height="450" details="true" listentries="true" showCheckbox="true" showOpacitySlider=true}}
 {{resource includeicon="true"}}
 -section
 ]]>
