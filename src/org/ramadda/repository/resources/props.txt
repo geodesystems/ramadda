@@ -3,7 +3,7 @@ cat:Properties
 
 #entry name
 form.name.columns=80
-form.name.label=
+form.name.label=Title
 form.name.show=true
 form.name.showlabel=true
 
@@ -76,14 +76,16 @@ form.ark.show=true
 cat:Display
 date.format=yyyy
 date.nullok=true
+#The label to use 
+html.mainlabel=Information
+#Show the entry property groups as tabs
+html.tabs=true
 html.date.show=false
 html.changedate.show=false
 html.createdate.show=false
 html.owner.show=false
 html.resource.show=true
 
-#Show the entry property groups as tabs
-html.tabs=true
 
 #Don't show the entry type
 html.type.show=false
