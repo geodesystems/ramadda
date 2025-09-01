@@ -880,6 +880,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         String submit = HU.submit("Add" + HU.space(1)
 				  + getName());
         String        cancel = HU.submit(LABEL_CANCEL, ARG_CANCEL);
+	String buttons = submit + HU.buttonSpace()  + cancel;
+
+
         StringBuilder sb     = new StringBuilder();
         if (Utils.stringDefined(help)) {
 	    String _help = HU.div(help,HU.clazz("ramadda-form-help"));
@@ -887,9 +890,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             sb.append("\n");
         }
 
-        if ( !forEdit) {
-            //            sb.append(header(msgLabel("Add") + getName()));
+        if ( !forEdit && (entry != null)) {
+            sb.append("\n");
+            sb.append(HU.formEntry("",buttons));
         }
+
+
 	String clazz = 	"ramadda-metadata-widget ramadda-metadata-widget-"+HU.makeCssClass(id);
 
         String lastGroup = null;
@@ -956,9 +962,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         if ( !forEdit && (entry != null)) {
             sb.append("\n");
-            sb.append(HU.formEntry("",
-				   submit + HU.buttonSpace()
-				   + cancel));
+            sb.append(HU.formEntry("",buttons));
         }
 
         //Only show the value if its simple text
