@@ -2313,10 +2313,11 @@ WikiEditor.prototype = {
 	    information: [
 		{label:'Information Properties'},
 		{p:'info',ex:'Show entry information'},
-		{p:'showTitle',ex:'true'},
 		{p:'showResource',ex:'true'},
 		{p:'showBase',ex:'true'},
 		{p:'showDetails',ex:'true'},
+		{p:'showAttachments','false'},
+		{p:'showMetadata','false'},
 		{p:'menus',ex:'file,edit,view,feeds,other,service'},
 		{p:'menusTitle',ex:'Services'}],
 	    description: [
