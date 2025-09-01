@@ -2962,7 +2962,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 
 
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
-    let myProps = [
+    let myProps = this.simpleSearchProps = [
 	{label:'Simple Search'},
 	{p:'resultsPosition',ex:'absolute|relative'},
 	{p:'maxHeight',ex:300},
@@ -2990,6 +2990,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	callNumber:1,
         haveDisplayed: false,
         selectedEntries: [],
+	getWikiEditorTags: function() {
+	    return this.simpleSearchProps;
+	},
         getSelectedEntries: function() {
             return this.selectedEntries;
         },
