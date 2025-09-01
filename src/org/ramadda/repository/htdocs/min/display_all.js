@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep  1 07:54:30 MDT 2025";
+var build_date="RAMADDA build date: Mon Sep  1 09:45:47 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -37015,7 +37015,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 
 
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
-    let myProps = [
+    let myProps = this.simpleSearchProps = [
 	{label:'Simple Search'},
 	{p:'resultsPosition',ex:'absolute|relative'},
 	{p:'maxHeight',ex:300},
@@ -37043,6 +37043,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	callNumber:1,
         haveDisplayed: false,
         selectedEntries: [],
+	getWikiEditorTags: function() {
+	    return this.simpleSearchProps;
+	},
         getSelectedEntries: function() {
             return this.selectedEntries;
         },
