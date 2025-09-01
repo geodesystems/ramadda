@@ -1320,7 +1320,7 @@ WikiEditor.prototype = {
 	}
 
 	//a hack for the search display
-	if(tagInfo.type!='search') {
+	if(tagInfo.type!='search' && tagInfo.type!='simplesearch') {
 	    blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
 	}
 	//	}
