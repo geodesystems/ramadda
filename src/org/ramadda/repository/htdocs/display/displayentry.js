@@ -39,7 +39,9 @@ var ID_SEARCH_DATE_CREATE = "search_createdate";
 var ID_SEARCH_DATE_CHANGE = "search_changedate";
 var ID_SEARCH_TAGS = "search_tags";
 var ID_SEARCH_ANCESTOR = "search_ancestor";
+
 var ID_SEARCH_ANCESTORS = "search_ancestors";
+var ID_SEARCH_ANCESTORS_MENU = "search_ancestors_menu";
 var ID_TREE_LINK = "treelink";
 var ATTR_ENTRYID = "entryid";
 
@@ -460,6 +462,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search Settings'},
 	{p:'orderByTypes',
 	 tt:'Comma separated list to show in the order by menu',
+	 ex:'relevant,name,createdate,date,changedate,size,entryorder',	 
 	 d:'relevant,name,createdate,date,size,entryorder'},
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_',
 	 tt:'Initial sort order'},
@@ -487,7 +490,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'tagPopupLimit',d: 10,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 
-	{p:'inputSize',d:'200px',tt:'Text input size'},
+	{p:'inputSize',ex:'15',tt:'Text input size'},
 	{p:'textInputSize',d:'20px',ex:'100%'},	
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},
@@ -514,9 +517,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'areaToggleClose',ex:true},
 	{p:'columnsToggleClose',ex:true},		
 
+	{p:'showHeader',d:true},
         {p:'showFooter',d: true,tt:'Show the footer below the output'},	
 	{p:'showOutputs',ex:'false',d:true,tt:'Should the output buttons be shown'},
-	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl',tt:'The list of output buttons at the bottom of the form'},
+	{p:'resultButtons',ex:'default.ids,zip.tree,zip.export,extedit,copyurl',
+	 tt:'The list of output buttons at the bottom of the form'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 
 	{label:'Search Results'},
@@ -777,7 +782,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let searchBar = HU.div([ATTR_CLASS,horizontal?"display-search-bar":"display-search-bar-vertical",
 				    ATTR_ID, this.domId(ID_SEARCH_BAR)],"");
             let resultsDiv = "";
-            if (this.getProperty("showHeader", true)) {
+            if (this.getShowHeader()) {
                 resultsDiv = HU.div([ATTR_CLASS, "display-entries-results",
 				     ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
             }
@@ -1092,7 +1097,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         updateForSearching: function(jsonUrl) {
 	    let showOutputs = this.getShowOutputs(true);
 	    let settings = this.getSearchSettings();
-	    let okOutputs = this.getProperty('outputs');
+	    let okOutputs = this.getResultButtons(this.getProperty('outputs'));
 	    if(okOutputs) {
 		okOutputs = Utils.split(okOutputs,',',true,true);
 	    }
@@ -1106,7 +1111,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		return okOutputs.includes(id);
 	    }
 	    let outputs = this.getRamadda().getSearchLinks(settings,true,check);
-
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId('copy');
 	    let extra = [];
@@ -1398,6 +1402,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 		jsonUrl+='&mainancestor='+ main;
 	    }
+	    let selectedAncestors  =this.jq(ID_SEARCH_ANCESTORS_MENU).val();
+	    if(selectedAncestors) {
+		selectedAncestors.forEach(id=>{
+		    jsonUrl+='&ancestor='+ id;
+		});
+	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
 		if($(this).is(':checked')) {
 		    let id = $(this).attr('data-entryid');
@@ -1419,14 +1429,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         loadAncestorsList: function(entries) {
-	    let html = '';
+	    let options = [];
 	    entries.forEach(entry=>{
-		html+=HU.div([ATTR_CLASS,'display-search-ancestors-select'],
-			     HU.checkbox('',[ATTR_ID,'ancestor_'+ entry.getId(),ATTR_CLASS,'ramadda-displayentry-ancestor',
-					     'data-entryid',entry.getId()],false,entry.getName()));
+		options.push([entry.getId(),entry.getName()]);
 	    });
+	    let html = HU.select('',[ATTR_MULTIPLE,'true',ATTR_SIZE,4,ATTR_ID,this.domId(ID_SEARCH_ANCESTORS_MENU)],options);
 	    this.jq(ID_SEARCH_ANCESTORS).html(HU.div([ATTR_CLASS,'display-search-ancestors'],html));
-	    this.jq(ID_SEARCH_ANCESTORS).find('.ramadda-displayentry-ancestor').change(()=>{
+	    HU.makeSelectTagPopup(this.jq(ID_SEARCH_ANCESTORS_MENU),{
+		after:false,
+		single:false,
+		hide:false,
+		label:'Select'});
+
+
+	    this.jq(ID_SEARCH_ANCESTORS_MENU).change(()=> {
 		this.submitSearchForm();
 	    });
 	},
@@ -1574,9 +1590,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			  ATTR_TITLE,Utils.noMsg("e.g. name:, contents:,path:"),
 			  ATTR_CLASS, textInputClass,  ATTR_ID, this.domId(ID_TEXT_FIELD)];
 	    let inputAttrs =  [ATTR_CLASS, textInputClass];
-	    if(this.getProperty("inputSize")) {
+	    if(this.getInputSize()) {
 		inputAttrs.push(ATTR_SIZE);
-		inputAttrs.push(this.getProperty("inputSize", "30"));
+		inputAttrs.push(this.getInputSize());
 	    } else {
 		inputAttrs.push(ATTR_STYLE);
 		inputAttrs.push(HU.css("width","100%","min-width","50px","max-width","300px"));
@@ -1601,9 +1617,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra += HU.formTable();
 	    }
 
-	    let ancestors  = this.getProperty("ancestors");
+	    let ancestors  = this.getAncestors();
 	    if(ancestors) {
-		extra+=this.addWidget(this.getProperty('ancestorsLabel','Search Under'),
+		extra+=this.addWidget(this.getAncestorsLabel('Search Under'),
 				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTORS)]),{toggleClose:true});
 		setTimeout(()=>{
 		    this.loadAncestors(ancestors);
