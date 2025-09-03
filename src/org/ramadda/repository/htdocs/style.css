@@ -3851,6 +3851,13 @@ pre {
     color:rgb(51,51,51);
 }
 
+.ramadda-select-tag-category {
+    background:#eee;
+    padding:4px;
+    margin-top:4px;
+}
+
+
 .ramadda-select-tag {
     font-size:80%;
     display:inline-block;
