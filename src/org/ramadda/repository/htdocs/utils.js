@@ -103,12 +103,14 @@ var ATTR_ACTION= "action";
 var ATTR_BACKGROUND = "background";
 var ATTR_SRC = "src";
 var ATTR_TYPE = "type";
+var ATTR_DATA_CORPUS='data-corpus';
 var ATTR_WIDTH = "width";
 var ATTR_HEIGHT = "height";
 var ATTR_HREF = "href";
 var ATTR_ONCLICK  = "onclick";
 var ATTR_PLACEHOLDER = "placeholder";
 var ATTR_BORDER = "border";
+var ATTR_CATEGORY = 'category';
 var ATTR_COLSPAN = "colspan";
 var ATTR_CELLPADDING = "cellpadding";
 var ATTR_CELLSPACING = "cellspacing";
@@ -4148,7 +4150,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		let html = $(this).html();
 		let category = $(this).attr('data-category');
 		if(category) html+=' ' +category;
-		let corpus = $(this).attr('data-corpus');
+		let corpus = $(this).attr(ATTR_DATA_CORPUS);
 		if(corpus) html+=' ' +corpus;		
 		//check for title
 		let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
@@ -4934,11 +4936,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return this.div([ATTR_STYLE,this.css('margin-top',dim??'0.5em')]);
     },
     hbox: function(args,style) {
-        let row = HtmlUtils.openTag("tr", ["valign", "top"]);
+        let row = HtmlUtils.openTag(TAG_TR, [ATTR_VALIGN, "top"]);
         row += Utils.wrap(args, '<td align=left>' +HU.open('div',[ATTR_STYLE, style??'']),'</div></td>');
-        row += "</tr>";
-        return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
-                        row);
+        row += HU.close(TAG_TR);
+        return HU.tag(TAG_TABLE, [ATTR_BORDER, "0", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "0"], row);
     },
     vbox: function(args) {
         let col = HtmlUtils.join(args, "<br>");
@@ -6265,6 +6266,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    label:'Select',
 	    icon:false,
 	    single:false,
+	    showCategories:false,
 	    buttonLabel:'Select',
 	    hide: false,
 	    addBreak:false,
@@ -6313,10 +6315,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let makeDialog = anchor=>{
 	    let html = '';
 	    let cbxs=[];
+	    let category='';
 	    let radioName = HU.getUniqueId('radio');
-	    select.find('option').each(function() {
+	    	    select.find('option').each(function() {
 		let value = $(this).attr('value');
-		if(!Utils.stringDefined(value)) return;
+		if(!Utils.stringDefined(value)) {
+		    if($(this).attr(ATTR_CATEGORY) && opts.showCategories) {
+			category = 	 $(this).html();
+			cbxs.push(HU.div([ATTR_DATA_CORPUS,category,ATTR_CLASS,'ramadda-select-tag-category'],category));
+		    }
+		    return;
+		}
 		let label = $(this).html();
 		label = label.replace('&nbsp;',' ');
 		if($(this).attr('img-src')) {
@@ -6332,6 +6341,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 		let cbxLabel = $(this).html() +' ' + value;
 		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag',
+			      ATTR_DATA_CORPUS,category,
 			      ATTR_TITLE,value,
 			      'tag',cbxLabel], cbx);
 		cbxs.push(cbx);
@@ -6355,7 +6365,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    dialog.find(":checkbox").change(cbxChange);
 	    dialog.find(":radio").change(cbxChange);
-	    let tags = dialog.find(".ramadda-select-tag");
+	    let tags = dialog.find(".ramadda-select-tag, .ramadda-select-tag-category");
 	    dialog.find('.ramadda-select-action').button().click(function() {
 		let action =$(this).attr('data-action');
 		if(action=='showall') {
@@ -6395,18 +6405,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    $("#"+inputId).focus();
 	    $("#"+inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
-		tags.each(function() {
-		    if(text=='')
+		tags.each(function() { 
+		    if(text=='') {
 			$(this).show();
-		    else {
-			let tag = $(this).attr("tag");
-			if(tag) {
-			    tag = tag.toLowerCase();
-			    if(tag.indexOf(text)>=0)
-				$(this).show();
-			    else
-				$(this).hide();
-			}
+			return;
+		    }
+		    let tag = $(this).attr("tag")??'';
+		    tag+=' ' +($(this).attr(ATTR_DATA_CORPUS)??'');
+		    if(tag) {
+			tag = tag.toLowerCase();
+			if(tag.indexOf(text)>=0)
+			    $(this).show();
+			else
+			    $(this).hide();
 		    }
 		});
 	    });
