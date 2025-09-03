@@ -1108,6 +1108,11 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-search-footer {
+    margin-top:0.5em;
+    text-align:right;
+}
+
 .display-search-button {
     vertical-align:middle;
     margin-right:5px;
