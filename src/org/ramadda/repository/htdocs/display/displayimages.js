@@ -184,7 +184,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([ATTR_STYLE,HU.css('display','inline-block','width', width + "px','height', img.height +'px','background','rgb(" + c[0]+"," + c[1] +"," + c[2]+")")],"");
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width + 'px',CSS_HEIGHT, img.height +'px',
+						    CSS_BACKGROUND,'rgb(' + c[0]+',' + c[1] +',' + c[2]+')')],"");
 		}
 		div.css("width",img.width);
 		div.css("height",img.height);
@@ -313,7 +314,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt], HU.image(img,["width",width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
-				   ATTR_STYLE,HU.css('margin', margin+'px')], img);
+				   ATTR_STYLE,HU.css(CSS_MARGIN, margin+'px')], img);
                 } else {
                     var style = "";
                     if(fontSize) {
@@ -644,25 +645,26 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 	    });
 	    if(columns) {
-		contents = "<table border=0 width=100%><tr valign=top>";
+		contents = HU.open(TAG_TABLE,[ATTR_BORDER,'0',ATTR_WIDTH,'100%']) +
+		    HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
 		    contents+=HU.td(['align','center'],columnMap[col]);
 		}
-		contents+="</tr></table>";
+		contents+=HU.close(TAG_TR,TAG_TABLE);
 	    } else {
 	    }
 
 	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
 		let css = "";
-		if(this.getPropertyMinHeightGallery()) css+=HU.css("min-height",HU.getDimension(this.getPropertyMinHeightGallery()));
-		if(this.getPropertyMinHeightGallery())	css+= HU.css("max-height",HU.getDimension(this.getPropertyMaxHeightGallery()));
-		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css("overflow-y","auto")], contents);
+		if(this.getPropertyMinHeightGallery()) css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
+		if(this.getPropertyMinHeightGallery())	css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
+		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,"auto")], contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
-		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
+		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'8px',CSS_MARGIN_TOP,'8px')],
 				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
 					       this.hideNoImages,'Show entries with images')) +
 		    contents;
@@ -765,8 +767,11 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([ATTR_STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
-	    let imageDiv = HU.div([ATTR_STYLE,"position:relative"],
+	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,"1px solid " +this.getHighlightColor(),
+						 CSS_WIDTH,"20px",CSS_HEIGHT,"20px",CSS_LEFT,"10px",CSS_TOP,"10px",
+						 CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+						 CSS_Z_INDEX,1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
+	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
 					  ATTR_STYLE,HU.css("position","relative") ]) +
@@ -1065,7 +1070,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
-			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
+			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
