@@ -8186,7 +8186,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l.call("If block", "\\n+if #isgeoreferenced=true #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
@@ -8708,6 +8708,13 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    if(entry==null) return true;
+
+	    String hasLocation = Utils.getProperty(props,"isgeoreferenced",null);
+	    if(hasLocation !=null) {
+		boolean isGeo = entry.isGeoreferenced(request);
+		if(hasLocation.equals("true") && !isGeo) return false;
+		if(hasLocation.equals("false") && isGeo) return false;
+	    }
 
 	    String size = (String) props.get("size");
 	    if(stringDefined(size)) {
