@@ -4350,7 +4350,8 @@ public class EntryManager extends RepositoryManager {
 	List links = new ArrayList();
 	for(RequestUrl rurl:new RequestUrl[]{getRepository().URL_ENTRY_FORM,
 						 getMetadataManager().URL_METADATA_FORM,
-						 getMetadataManager().URL_METADATA_ADDFORM}) {
+						 getMetadataManager().URL_METADATA_ADDFORM,
+						 getAccessManager().URL_ACCESS_FORM}) {
 	    links.add(new HtmlUtils.Href(request.entryUrl(rurl,entry),rurl.getLabel(),
 					 rurl.equals(url)?"ramadda-linksheader-on":
 					 "ramadda-linksheader-off"));

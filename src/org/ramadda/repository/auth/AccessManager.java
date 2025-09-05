@@ -71,7 +71,7 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
-						       "/access/form", "Permissions");
+						       "/access/form", "Edit Permissions");
 
     /** _more_ */
     public RequestUrl URL_ACCESS_CHANGE = new RequestUrl(getRepository(),
@@ -1702,8 +1702,11 @@ public class AccessManager extends RepositoryManager {
             throw new AccessException("Can't set permissions", request);
         }
 
-        getPageHandler().entrySectionOpen(request, entry, sb, "Define Permissions");
+	//        getPageHandler().entrySectionOpen(request, entry, sb, "Edit Permissions");
+	getEntryManager().addEntryEditHeader(request, entry,sb, URL_ACCESS_FORM);
         request.appendMessage(sb);
+
+
 
         StringBuilder currentAccess = new StringBuilder();
 	getCurrentAccess(request, entry,currentAccess);

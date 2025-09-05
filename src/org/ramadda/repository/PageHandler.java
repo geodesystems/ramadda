@@ -2872,7 +2872,7 @@ public class PageHandler extends RepositoryManager {
                 sb.append(
                     HU.div(HU.div(
                         msg(title),
-                        HU.cssClass("ramadda-heading")), HU.cssClass(
+                        HU.cssClass("ramadda-heading ramadda-heading-top")), HU.cssClass(
                             "ramadda-heading-outer")));
 
             }

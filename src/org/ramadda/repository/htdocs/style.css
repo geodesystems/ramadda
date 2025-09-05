@@ -292,6 +292,10 @@ ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     text-align: center;
 }
 
+.ramadda-heading-top {
+    margin-top:0px;
+}
+
 ramadda-heading {
     display:block;
 }
