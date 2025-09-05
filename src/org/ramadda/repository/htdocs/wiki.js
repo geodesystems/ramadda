@@ -1279,7 +1279,8 @@ WikiEditor.prototype = {
 	    return null;
 	}
 
-	let { attrs, title, display }  = this.getDisplayAttributes(tagInfo);
+	let { attrs, title, display,help }  = this.getDisplayAttributes(tagInfo);
+	if(help) help =  RamaddaUtils.getUrl(help);
 	let callback =a => {
 	    this.getAttributeBlocks(tagInfo, forPopup, finalCallback);
 	};
@@ -1339,7 +1340,7 @@ WikiEditor.prototype = {
 	    }
 	}
 	
-	let r = {blocks:blocks, title:title,display:display};
+	let r = {blocks:blocks, title:title,display:display,help:help};
 	if(finalCallback) finalCallback(r);
 	return r;
     },
@@ -1354,9 +1355,9 @@ WikiEditor.prototype = {
 	    if(data.length) {
 		let html = prefix??'';
 		data.forEach(d=>{
-		    html+=(d.icon?HU.getIconImage(d.icon,['width','24px'])+HU.space(1):'')+
+		    html+=(d.icon?HU.getIconImage(d.icon,[ATTR_WIDTH,'24px'])+HU.space(1):'')+
 			HU.href(RamaddaUtil.getUrl("/entry/show")+"?entryid=" + d.id,
-				d.name,[ATTR_TITLE,d.id,'target','_entries'])+"<br>";
+				d.name,[ATTR_TITLE,d.id,ATTR_TARGET,'_entries'])+"<br>";
 		});
 		jqid(id).html(html);
 	    }
@@ -1382,7 +1383,7 @@ WikiEditor.prototype = {
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
-
+	let help = result.help;
 	if(blocks.length==0) return;
 	let menu =  HU.open(TAG_DIV,[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,'min-width:400px;']);
 	if(!title) {
@@ -1394,7 +1395,13 @@ WikiEditor.prototype = {
 	let edit =  HU.span([ATTR_ID,this.domId('edittag'),
 			     ATTR_CLASS,'wiki-popup-menu-header ramadda-clickable',
 			     ATTR_TITLE,'Edit tag'],HU.getIconImage('fas fa-edit'));
-	menu += HU.div([ATTR_CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
+	
+	let header = search+'' + edit +' '  +title;
+	if(help)
+	    header += SPACE2 +HU.href(help,HU.getIconImage(icon_help),[ATTR_TARGET,'_ramaddahelp']);
+	header = HU.div([ATTR_CLASS,'wiki-editor-popup-heading'], header);
+	menu+=header;
+
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId('entrieslist');
@@ -1825,6 +1832,7 @@ WikiEditor.prototype = {
 	let title = null;
 	let attrs = [];
 	let display = null;
+	let help = '';
 	if(tagInfo.type=='plus' ||
 	   (tagInfo.tag && tagInfo.tag!='display' && tagInfo.tag!='group')) {
 	    return {attrs:null,title:null,display:null};
@@ -1834,6 +1842,10 @@ WikiEditor.prototype = {
 	    display = new DisplayManager().createDisplay(tagInfo.type,{dummy:true});
 	    if(display) {
 		attrs = display.getWikiEditorTags();
+		if(display.getTypeDef) {
+		    help = display.getTypeDef().help;
+		}
+
 		if(display.getTypeLabel) {
 		    title = display.getTypeLabel();
 		    if(title==null) {
@@ -1843,13 +1855,14 @@ WikiEditor.prototype = {
 
 		    title =  title +" Properties";
 		    let url = display.getTypeHelpUrl();
-		    if(url) title = HU.href(url, title + SPACE + HU.getIconImage(icon_help),["target","_ramaddahelp"]);
+		    if(url) title = HU.href(url, title + SPACE + HU.getIconImage(icon_help),
+					    [ATTR_TARGET,"_ramaddahelp"]);
 		}
 	    }
 	} catch(e) {
 	    console.log("Error getting attrs for:" + tagInfo.type +" error:" + e  + " stack:" +e.stack);
 	}
-	return {attrs:attrs,title:title,display:display};
+	return {attrs:attrs,title:title,display:display,help:help};
     },
 
     

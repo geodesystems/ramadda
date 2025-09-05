@@ -23,6 +23,7 @@ addGlobalDisplayType({
     category:CATEGORY_MAPS,
     preview: "map1.png",
     desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
+    help:'/userguide/wiki/wikimaps.html'
 });
 
 

@@ -80,6 +80,7 @@ var VALUE = "value";
 
 
 
+var TAG_PRE= 'pre';
 var TAG_BR= 'br';
 var TAG_A = "a";
 var TAG_B = "b";
@@ -87,6 +88,7 @@ var TAG_DIV = "div";
 var TAG_CANVAS = "canvas";
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
+var TAG_LABEL = "label";
 var TAG_LI = "li";
 var TAG_SELECT = "select";
 var TAG_OPTION = "option";
@@ -108,6 +110,7 @@ var ATTR_WIDTH = "width";
 var ATTR_HEIGHT = "height";
 var ATTR_HREF = "href";
 var ATTR_ONCLICK  = "onclick";
+var ATTR_ONCHANGE  = "onchange";
 var ATTR_PLACEHOLDER = "placeholder";
 var ATTR_BORDER = "border";
 var ATTR_CATEGORY = 'category';
@@ -6317,7 +6320,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let cbxs=[];
 	    let category='';
 	    let radioName = HU.getUniqueId('radio');
-	    	    select.find('option').each(function() {
+	    select.find('option').each(function() {
 		let value = $(this).attr('value');
 		if(!Utils.stringDefined(value)) {
 		    if($(this).attr(ATTR_CATEGORY) && opts.showCategories) {
@@ -6985,6 +6988,40 @@ var SvgUtils  = SU = {
     }
     
 }
+
+
+var CSS_BASIC_BORDER='var(--basic-border)';
+var CSS_DISPLAY="display";
+var CSS_OVERFLOW_Y="overflow-y";
+var CSS_OVERFLOW_X="overflow-x";
+var CSS_MAX_HEIGHT="max-height";
+var CSS_MIN_HEIGHT="min-height";
+var CSS_MAX_WIDTH="max-width";
+var CSS_MIN_WIDTH="min-width";
+var CSS_MARGIN='margin';
+var CSS_MARGIN_TOP='margin-top';
+var CSS_MARGIN_BOTTOM='margin-bottom';
+var CSS_MARGIN_LEFT='margin-left';
+var CSS_MARGIN_RIGHT='margin-right';
+var CSS_POSITION="position";
+var CSS_PADDING='padding';
+var CSS_PADDING_TOP='padding-top';
+var CSS_PADDING_BOTTOM='padding-bottom';
+var CSS_PADDING_LEFT='padding-left';
+var CSS_PADDING_RIGHT='padding-right';
+var CSS_BORDER='border';
+var CSS_BORDER_TOP='border-top';
+var CSS_BORDER_RIGHT='border-right';
+var CSS_BORDER_LEFT='border-left';
+var CSS_BORDER_BOTTOM='border-bottom';
+var CSS_LEFT="left";
+var CSS_RIGHT="right";
+var CSS_TOP="top";
+var CSS_BOTTOM="bottom";
+var CSS_COLOR="color";
+var CSS_HEIGHT="height";
+var CSS_WIDTH="width";
+var CSS_BACKGROUND="background";
 
 
 /*

@@ -822,7 +822,7 @@ function DisplayThing(argId, argProperties) {
 		    imageAttrs.push("300");
 		}
 		imageAttrs.push(ATTR_STYLE);
-		imageAttrs.push("vertical-align:top");
+		imageAttrs.push(HU.css('vertical-align','top'));
 		return HU.image(value, imageAttrs);
 	    };
 
@@ -913,9 +913,9 @@ function DisplayThing(argId, argProperties) {
 			    if(value!="") 
 				value =  HU.href(value,value);
 			}
-			html+="<tr><td align=right><b>" +f.getLabel()+"</b>:</td><td>  " + value+"</td></tr>";
+			html+="<tr><td align=right>" + HU.b(f.getLabel()+":")+"</td><td>  " + value+"</td></tr>";
 		    });
-		    html +="</table>";
+		    html +=HU.close(TAG_TABLE);
 		    attrs[t.tag] = html;
 		}
 	    });
@@ -956,7 +956,7 @@ function DisplayThing(argId, argProperties) {
 			    imageAttrs.push("100%");
 			}
 			imageAttrs.push(ATTR_STYLE);
-			imageAttrs.push("vertical-align:top");
+			imageAttrs.push(HU.css('vertical-align','top'));
 			let img =  HU.image(value, imageAttrs);
 
 			attrs[f.getId() +"_image"] =  img;
@@ -1022,7 +1022,7 @@ function DisplayThing(argId, argProperties) {
 		    value.split(",").forEach(tagValue=>{
 			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,
 					 ATTR_TITLE,tagValue,
-					 ATTR_STYLE, HU.css("background", color),
+					 ATTR_STYLE, HU.css(CSS_BACKGROUND, color),
 					 ATTR_CLASS,"display-search-tag"],tagValue);
 		    });
 		    if(filter) result = filter.getLabel()+": " + result+"<br>";
@@ -1289,21 +1289,22 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>100) {
 			//Only if its not an image
 			if(!String(value).match('<img')) {
-			    value  = HU.div([ATTR_STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
+			    value  = HU.div([ATTR_STYLE,
+					     HU.css(CSS_MAX_HEIGHT,"100px",CSS_OVERFLOW_Y,"auto")],value);
 			}
 		    }
 		    let label = this.formatRecordLabel(labelValue)+":";
 		    if(labelWidth) {
-			label = HU.div([ATTR_STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label); 
+			label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH ,HU.getDimension(labelWidth),CSS_OVERFLOW_X,"auto")], label); 
 		    } 
 		    label  = HU.div([ATTR_TITLE,tt],label);
-                    let row = HU.open(TAG_TR,['valign','top']);
+                    let row = HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		    let labelAttrs = [ATTR_CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
-		    let valueStyle = HU.css('margin-left','5px','max-width','90vw');
+		    let valueStyle = HU.css('margin-left','5px',CSS_MAX_WIDTH,'90vw');
 		    if(maxWidth) {
-			valueStyle+=HU.css('max-width',HU.getDimension(maxWidth,'px'));
+			valueStyle+=HU.css(CSS_MAX_WIDTH,HU.getDimension(maxWidth,'px'));
 		    }
 
 
@@ -1324,29 +1325,30 @@ function DisplayThing(argId, argProperties) {
                     let row = HU.open(TR,['valign','top']);
 		    let label = this.formatRecordLabel("Date");
 		    row += HU.td([],HU.b(label+":"));
-		    row += HU.td(["align","left"], HU.div([ATTR_STYLE,HU.css('margin-left','5px')],
-							  this.formatDate(record.getDate())));
+		    row += HU.td([ATTR_ALIGN,"left"], HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px')],
+							     this.formatDate(record.getDate())));
 		    row += HU.close(TR);
 		    rows.push(row);
 		}
 	    }
             if (dflt.showElevation && record.hasElevation()) {
-                rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
-			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
+                rows.push(HU.tr([],HU.td([ATTR_ALIGN,'right'],HU.b('Elevation:')) +
+				HU.td([ATTR_ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
 	    let rowCnt = 0;
 	    values += "<table><tr valign=top>";
 
 
-
 	    let		lists   = Utils.splitList(rows,itemsPerColumn);
 	    let tdStyle =lists.length>1?"margin-right:5px;":"";
 	    lists.forEach(list=>{
-		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
+		values += HU.tag(TAG_TD,[],
+				 HU.div([ATTR_STYLE,tdStyle],HU.tag(TAG_TABLE,[],Utils.join(list,""))));
 	    });
             values += HU.close(TAG_TR,TAG_TABLE);
 	    if(this.getRecordHtmlStyle()){
-		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip", ATTR_STYLE,this.getRecordHtmlStyle()], values);
+		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip",
+				 ATTR_STYLE,this.getRecordHtmlStyle()], values);
 	    }
 	    
             return values;
@@ -2208,10 +2210,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
-	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
-	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"10px")], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
@@ -4731,7 +4733,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-	    wiki = HU.pre([ATTR_STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
+	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,"500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
 	},
         copyWikiText: function(type) {
@@ -5945,7 +5947,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
                 "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
                 "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
-                "</table>";
+                HU.close(TAG_TABLE);
             let tmp =
                 HU.checkbox(this.getDomId("showtitle"), [], this.getProperty("showTitle")) + " Title  " +
                 HU.checkbox(this.getDomId("showdetails"), [], this.getProperty("showDetails")) + " Details " +
@@ -7492,7 +7494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });	
 		    if(itemCnt>0) {
 			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-			popup.html(HU.div([ATTR_STYLE,HU.css("margin","5px"), ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popup.html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px"), ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
 			popup.position({
 			    of: $(this),
@@ -8155,7 +8157,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
 		tmp = tmp.replace(/\\n/g,'<br>');
                 error = tmp;
-                error = HU.tag("pre", [ATTR_STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto","max-width","600px","overflow-x","auto")], error);
+                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto",CSS_MAX_WIDTH,"600px","overflow-x","auto")], error);
                 msg += error;
             }
 	    
