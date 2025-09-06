@@ -26,12 +26,12 @@ var OUTPUTS = [
 //
 //return the global entry manager with the given id, null if not found
 //
-function getRamadda(id) {
-
+function getRamadda(id,forceNew) {
     if (!id) id = ramaddaBaseUrl;
     /*
       OpenSearch(http://asdasdsadsds);sdsadasdsa,...
      */
+
 
     //check for the embed label
     let toks = id.split(";");
@@ -56,9 +56,12 @@ function getRamadda(id) {
     if (window.globalRamaddas == null) {
         window.globalRamaddas = {};
     }
-    let repo = window.globalRamaddas[id];
-    if (repo != null) {
-        return repo;
+    let repo;
+    if(!forceNew) {
+	repo = window.globalRamaddas[id];
+	if (repo != null) {
+            return repo;
+	}
     }
 
 
@@ -92,8 +95,8 @@ function addRepository(repository) {
     window.globalRamaddas[repository.repositoryRoot] = repository;
 }
 
-function getGlobalRamadda() {
-    return getRamadda(ramaddaBaseUrl);
+function getGlobalRamadda(forceNew) {
+    return getRamadda(ramaddaBaseUrl,forceNew);
 }
 
 

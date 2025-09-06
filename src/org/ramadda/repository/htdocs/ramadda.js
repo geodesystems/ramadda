@@ -189,19 +189,49 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
 
+    selectorRamadda:null,
     initEntryPopup:function(id,target,entryType) {
-        let input = HU.input("","",[ATTR_ID,id+"_input",
+	let getId=(suffix) =>{
+	    return id+suffix;
+	}
+        let input = HU.input("","",[ATTR_ID,getId("_input"),
 				    ATTR_CLASS,"input",
 				    ATTR_PLACEHOLDER,"Search",
-				    ATTR_STYLE, HU.css('width',"200px")]);
-        input = HU.center(input);
+				    ATTR_STYLE, HU.css(CSS_WIDTH,"250px")]);
+
+	let addTypesSelector = !Utils.stringDefined(entryType);
+//        input = HU.center(input);
+	//If no entry types then get the list of types
+	if(addTypesSelector) {
+	    input = input+HU.div([ATTR_ID,getId('types')]);
+	}
         let html = input +HU.div([ATTR_CLASS,"ramadda-select-search-results",
 				  ATTR_ID,id+"_results"]);
         $("#" +id).html(html);
+	if(addTypesSelector) {
+	    let addTypes = (types)=>{
+		let options = types.map(type=>{
+		    return {value:type.id,label:type.label};
+		});
+		options.unshift({value:'',label:'Select entry type'});
+		let typeSelectId = getId('types_select');
+		let select= HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,'250px',CSS_MARGIN_TOP,'4px'),ATTR_ID,typeSelectId],options);
+		jqid(getId('types')).html(select);
+		HtmlUtils.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true});
+	    };
+	    if(!this.selectorRamadda) {
+		this.selectorRamadda =  getGlobalRamadda(true);
+	    }
+            let types =   this.selectorRamadda.getEntryTypes((ramadda, types) =>{
+		addTypes(types);
+	    });
+	    if(types) {
+		addTypes(types);
+	    }
+	}
+
         let results = $("#" + id +"_results");
-
-
-        $("#" + id +"_input").keyup(function(event){
+        jqid(getId("_input")).keyup(function(event){
             let value =  $(this).val();
             if(!Utils.isReturnKey(event) && value=="") {
                 results.hide();
@@ -212,6 +242,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             if(keycode == 13) {
                 let searchLink =  ramaddaBaseUrl + "/search/do?orderby=createdate&ascending=false&text=" + encodeURIComponent(value) +"&output=json";
 		if(Utils.stringDefined(entryType)) searchLink=HU.url(searchLink,["type",entryType]);
+		if(addTypesSelector) {
+		    let type = jqid(getId('types_select')).val();
+		    if(Utils.stringDefined(type)&& type!='any') {
+			searchLink=HU.url(searchLink,["type",type]);
+		    }
+		}
                 results.html(HU.getIconImage(icon_wait) + " Searching...");
                 results.show();
                 let myCallback = {

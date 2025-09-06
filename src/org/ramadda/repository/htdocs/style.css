@@ -5555,6 +5555,10 @@ wiki {
     padding-right:8px;
 }
 
+.ramadda-selectdiv {
+    width:400px;
+    max-width: 400px;
+}
 .ramadda-select-search {
     margin-top:8px;
     margin-bottom:8px;
@@ -5563,7 +5567,6 @@ wiki {
 .ramadda-select-search-results {
     max-height:300px;
     overflow-y: auto;
-    max-width: 300px;
     overflow-x:overlay;
     display:none;
     padding-left:5px;
