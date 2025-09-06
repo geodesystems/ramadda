@@ -1738,7 +1738,12 @@ public class AccessManager extends RepositoryManager {
 	HU.center(sb,getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(getPageHandler().showDialogNote("For a given action enter what user or user type can have access. <b>Note: always end with a 'none' to ban other users"));
+	String userguide = HU.href(getRepository().getUrlBase()+
+			      "/userguide/access.html", "Help",
+			      HU.attrs("target","_help","class","ramadda-clickable"));
+	String message = HU.div("For a given action enter the user role or user ID that can have access.") +
+	    HU.b("Note: always end with a 'none' to ban other users.") + HU.space(2) + userguide;
+        sb.append(getPageHandler().showDialogNote(message));
         sb.append(HU.submit("Change Permissions"));
         sb.append("<br>");
         if (dataPolicies.size() > 0) {
