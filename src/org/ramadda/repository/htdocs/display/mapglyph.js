@@ -1816,6 +1816,14 @@ MapGlyph.prototype = {
 	return this.style.wikiText || this.getPopupText();
     },
 
+    getPopupContents: function() {
+	let contents = this.getPopupText()??'';
+	if(this.isImage() && Utils.stringDefined(this.style.imageUrl)) {
+	    contents += HU.image(this.style.imageUrl,[ATTR_WIDTH,"100%"]);
+	}
+	return contents;
+    },
+
     getPopupText: function() {
 	let text = this.getPopupTextInner();
 	if(text) text = text.replace(/\${_name}/g,this.getName());
@@ -6315,7 +6323,7 @@ MapGlyph.prototype = {
     getDecoration:function(small) {
 	let type = this.getType();
 	let style = this.style??{};
-	let css= ['display','inline-block'];
+	let css= [CSS_DISPLAY,'inline-block'];
 	let dim = small?'10px':'25px';
 	css.push(ATTR_WIDTH,small?'10px':'50px');
 	let line = "solid";
@@ -6332,7 +6340,7 @@ MapGlyph.prototype = {
 
 	if(style.imageUrl) {
 	    if(!small) 
-		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,["width","200px"]));
+		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,[ATTR_WIDTH,"200px"]));
 	} else if(type==GLYPH_LABEL) {
 	    if(!small)
 		return style.label.replace(/\n/g,"<br>");

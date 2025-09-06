@@ -86,10 +86,12 @@ var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
 var TAG_CANVAS = "canvas";
+var TAG_I = "i";
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
 var TAG_LABEL = "label";
 var TAG_LI = "li";
+var TAG_SPAN = "span";
 var TAG_SELECT = "select";
 var TAG_OPTION = "option";
 var TAG_FORM = "form";
@@ -114,6 +116,8 @@ var ATTR_ONCHANGE  = "onchange";
 var ATTR_PLACEHOLDER = "placeholder";
 var ATTR_BORDER = "border";
 var ATTR_CATEGORY = 'category';
+var ATTR_COLS = "cols";
+var ATTR_ROWS="rows";
 var ATTR_COLSPAN = "colspan";
 var ATTR_CELLPADDING = "cellpadding";
 var ATTR_CELLSPACING = "cellspacing";
@@ -6991,7 +6995,14 @@ var SvgUtils  = SU = {
 
 
 var CSS_BASIC_BORDER='var(--basic-border)';
+
+var CSS_FONT_WEIGHT="font-weight";
+var CSS_FONT_SIZE="font-size";
+var CSS_FONT_STYLE="font-style";
+
 var CSS_DISPLAY="display";
+var CSS_TEXT_ALIGN="text-align";
+var CSS_VERTICAL_ALIGN="vertical-align";
 var CSS_OVERFLOW_Y="overflow-y";
 var CSS_OVERFLOW_X="overflow-x";
 var CSS_MAX_HEIGHT="max-height";
@@ -7020,7 +7031,9 @@ var CSS_RIGHT="right";
 var CSS_TOP="top";
 var CSS_BOTTOM="bottom";
 var CSS_COLOR="color";
+var CSS_CURSOR = "cursor";
 var CSS_HEIGHT="height";
+var CSS_WHITE_SPACE="white-space";
 var CSS_WIDTH="width";
 var CSS_BACKGROUND="background";
 

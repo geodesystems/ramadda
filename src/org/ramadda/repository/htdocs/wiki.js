@@ -15,16 +15,16 @@ if(!window.WikiUtil) {
 		let editor = WikiUtil.getWikiEditor(wikiId);
 		let on  = $("#" + cbxId).is(':checked');
 		if(on) {
-                    $("#" + textBlock).css("display","none");
-                    $("#" + wikiBlock).css("display","block");
+                    $("#" + textBlock).css(CSS_DISPLAY,"none");
+                    $("#" + wikiBlock).css(CSS_DISPLAY,"block");
                     let val = $("#" + textId).val();
                     editor.getEditor().setValue(val,8);
                     $("#" + wikiId).focus();
 		} else {
                     let val = editor.getEditor().getValue();
                     $("#" + textId).val(val);
-                    $("#" + textBlock).css("display","block");
-                    $("#" + wikiBlock).css("display","none");
+                    $("#" + textBlock).css(CSS_DISPLAY,"block");
+                    $("#" + wikiBlock).css(CSS_DISPLAY,"none");
                     $("#" + textId).focus();
 		}
             })
@@ -77,8 +77,8 @@ if(!window.WikiUtil) {
 				  'data-value',v],v);
 		html+=link;
 	    });
-	    html = HU.div([ATTR_STYLE,HU.css('padding','4px','min-width','200px',
-					     'max-height','200px','overflow-y','auto')],
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,'4px',CSS_MIN_WIDTH,'200px',
+					     CSS_MAX_HEIGHT,'200px',CSS_OVERFLOW_Y,'auto')],
 			  html);
 	    let dialog =HU.makeDialog({content:html,xanchor:null,title:"Select value for " + attr,
 				       header:true,sticky:true,draggable:true,modal:true});
@@ -348,7 +348,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 
     });
 
-    this.getBlock().find("#" + this.id).append(HU.div([ATTR_STYLE,HU.css("display","none"),
+    this.getBlock().find("#" + this.id).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"none"),
 						       ATTR_CLASS,"wiki-editor-message",
 						       ATTR_ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
@@ -499,14 +499,14 @@ WikiEditor.prototype = {
 
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
 	html += "<p>";
-	html += HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+	html += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),
 			ATTR_CLASS,"ramadda-button",
 			ATTR_ID,this.domId("addok")],"OK")+
 	    SPACE3 +
-	    HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+	    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),
 		    ATTR_CLASS,"ramadda-button",
 		    ATTR_ID,this.domId("addcancel")],"Cancel");
-	html = HU.div([ATTR_STYLE,HU.css('padding','10px','width','400px')],html);
+	html = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,'10px',CSS_WIDTH,'400px')],html);
 	let dialog = this.addDialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:"Select Entry",header:true,
 						     sticky:true,draggable:true,modal:true});
 	let menu = dialog.find("#"+this.domId("addtype"));
@@ -592,11 +592,11 @@ WikiEditor.prototype = {
     },
 
     showMessage:function(msg) {
-	this.jq(this.ID_WIKI_MESSAGE).css("display","block").html(msg);
+	this.jq(this.ID_WIKI_MESSAGE).css(CSS_DISPLAY,"block").html(msg);
     },
 
     clearMessage:function(msg) {
-	this.jq(this.ID_WIKI_MESSAGE).css("display","none");
+	this.jq(this.ID_WIKI_MESSAGE).css(CSS_DISPLAY,"none");
 	this.showingEntryPopup=false;
     },
 
@@ -634,7 +634,7 @@ WikiEditor.prototype = {
 		popup.focus();
 		//We do this because the  SF menu stays popped up after clicking so we hide it
 		//then after a second we remove the style so subsequent menu clicks will work
-		this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css("display","none");
+		this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css(CSS_DISPLAY,"none");
 		setTimeout(()=> {
 		    this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr("style");
 		},1000);
@@ -1010,22 +1010,28 @@ WikiEditor.prototype = {
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntry('Prompt prefix:',HU.textarea('',this.lastPromptPrefix??'',
 						      [ATTR_CLASS,'wiki-llm-input',
-						       ATTR_STYLE,'width:500px;',
+						       ATTR_STYLE,HU.css(CSS_WIDTH,'500px'),
 						       ATTR_ID,this.domId('llm-prompt-prefix'),'rows',5])) +
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input',
-								ATTR_STYLE,'width:500px;',
+								ATTR_STYLE,HU.css(CSS_WIDTH,'500px'),
 								ATTR_ID,this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
-	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor',ATTR_ID,this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	let textAreaStyle = HU.css(CSS_BORDER,'var(--basic-border)',CSS_PADDING,'4px',
+				   CSS_MARGIN,'4px',CSS_FONT_STYLE,'italic');
+	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor',
+				      ATTR_ID,this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80,
+				      ATTR_STYLE,textAreaStyle]);
 
 	html+='<br>';
 	html+=HU.span([ATTR_ID,this.domId('llm-call')],'Evaluate');	    
 	
-	html+=HU.div([ATTR_STYLE,'position:relative;'],
-		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results',ATTR_ID,this.domId('rewrite-results'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+	html+=HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
+		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results',
+					ATTR_ID,this.domId('rewrite-results'), ATTR_ROWS,6,ATRR_COLS,80,
+					ATTR_STYLE,textAreaStyle])+
 		     HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);',ATTR_ID,this.domId('llm-loading')],
-			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:100px;'])));
+			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,HU.css(CSS_WIDTH,'100px')])));
 
 
 
@@ -1121,7 +1127,7 @@ WikiEditor.prototype = {
     },    
 
     doColor: function (event) {
-	let html = HU.tag("input",[ATTR_STYLE,HU.css('width','100px','height','100px'), 'type','color',ATTR_ID,this.domId('color_picker')]);
+	let html = HU.tag("input",[ATTR_STYLE,HU.css(CSS_WIDTH,'100px',CSS_HEIGHT,'100px'), 'type','color',ATTR_ID,this.domId('color_picker')]);
 	html+= HU.div([ATTR_CLASS,'ramadda-buttons'],
 		      HU.span([ATTR_ID,this.domId("color_apply")],"Apply") + SPACE1 +
 		      HU.span([ATTR_ID,this.domId("color_ok")],"Ok") + SPACE1 +
@@ -1212,7 +1218,7 @@ WikiEditor.prototype = {
 
 		right="";
 		let bar = HtmlUtils.div([ATTR_CLASS,'ramadda-menubar',
-					 ATTR_STYLE,'padding:5px;xtext-align:center;width:100%;border:1px solid #ccc'],
+					 ATTR_STYLE,HU.css(CSS_PADDING,'5px',CSS_WIDTH,'100%',CSS_BORDER,'1px solid #ccc')],
 					HU.leftRight(left,right));
 
 		html = HtmlUtils.div([ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_INNER),
@@ -1300,7 +1306,7 @@ WikiEditor.prototype = {
 	    let contents = block.items;
 	    contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items wiki-editor-popup-colortable'],contents);
 	    let guid = HU.getUniqueId('find');
-	    contents = HU.center(HU.div([ATTR_ID,guid,ATTR_STYLE,HU.css('min-width','400px','margin','5px')])) + contents;
+	    contents = HU.center(HU.div([ATTR_ID,guid,ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'400px',CSS_MARGIN,'5px')])) + contents;
 
 	    let ctDialog = HU.makeDialog({content:contents,
 					  anchor:$(window),
@@ -1385,7 +1391,7 @@ WikiEditor.prototype = {
 	let display = result.display;
 	let help = result.help;
 	if(blocks.length==0) return;
-	let menu =  HU.open(TAG_DIV,[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,'min-width:400px;']);
+	let menu =  HU.open(TAG_DIV,[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'400px')]);
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +' Properties';
 	}
@@ -1513,9 +1519,9 @@ WikiEditor.prototype = {
 			   ATTR_CLASS,"wiki-editor-editor"],
 			  menubar +
 			  HU.textarea("",contents,["spellcheck","false",
-						   ATTR_STYLE,HU.css('width',width+'px','height','300px'),
-						   ATTR_ID,this.domId(this.ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
-			  HU.div([ATTR_STYLE,HU.css("text-align","center","padding","4px")],
+						   ATTR_STYLE,HU.css(CSS_WIDTH,width+'px',CSS_HEIGHT,'300px'),
+						   ATTR_ID,this.domId(this.ID_WIKI_POPUP_EDITOR)]) + "<br>" +
+			  HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,"center",CSS_PADDING,"4px")],
 				 HU.span([ATTR_TITLE,"Tidy the text",
 					  ATTR_ID,this.domId(this.ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
 				 HU.span([ATTR_TITLE,"Compact the text",
@@ -1544,7 +1550,7 @@ WikiEditor.prototype = {
 	    let cnt = 0;
 	    for(let i=0;i<attrs.length;i+=2) {
 		let v =  attrs[i+1];
-		if(v!=null && (v.indexOf(" ")>=0 || v.indexOf("\n")>=0 || v=="")) v = "\""  + v +"\"";
+		if(v!=null && (v.indexOf(",")>=0 || v.indexOf(" ")>=0 || v.indexOf("\n")>=0 || v=="")) v = "\""  + v +"\"";
 		nval+=attrs[i] +"=" +v;
 		if(tidy) {
 		    nval+="\n";
@@ -1605,15 +1611,19 @@ WikiEditor.prototype = {
 	    all+=items;
 	    all+=HU.close(TAG_DIV);
 	});
-	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search - string 1,string 2',
-					ATTR_ID,_this.domId('allsearch'),ATTR_WIDTH,'10']) +
-			SPACE + HU.checkbox('',[ATTR_ID,_this.domId('searchshowall')],false,'Show descriptions')) +
+	let top = HU.input('','',[ATTR_PLACEHOLDER,'Search - string 1,string 2',
+				  ATTR_ID,_this.domId('allsearch'),ATTR_WIDTH,'10']) +
+	    SPACE + HU.checkbox('',[ATTR_ID,_this.domId('searchshowall')],false,'Show descriptions');
 
+	top = 	HU.div([ATTR_STYLE,HU.css(CSS_PADDING,'5px',CSS_BORDER_BOTTOM,CSS_BASIC_BORDER)], top);
+	all  = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'5px')],all);
+	all  = top +
 	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
 		    ATTR_CLASS,'wikieditor-menu-popup',
-		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
-	all  = HU.div([ATTR_STYLE,'margin:5px;'], all);
-	let dialog = HU.makeDialog({content:all,anchor:anchor,title:'Attributes',header:true,
+		    ATTR_STYLE,HU.css(CSS_WIDTH,'500px',CSS_MAX_HEIGHT,'400px',CSS_OVERFLOW_Y,'auto')], all);
+
+
+	let dialog = HU.makeDialog({content:all,anchor:anchor,title:'Properties',header:true,
 				    sticky:true,draggable:true});
 
 
@@ -1635,7 +1645,7 @@ WikiEditor.prototype = {
 			orig = span.html();
 			span.attr('origtext',orig);
 		    }
-		    span.html(orig  +' - ' + HU.span([ATTR_STYLE,HU.css('font-size','70%','font-style','italic')],title));
+		    span.html(orig  +' - ' + HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,'70%',CSS_FONT_STYLE,'italic')],title));
 		});
 	    } else {
 		commands.each(function(){
@@ -1741,7 +1751,7 @@ WikiEditor.prototype = {
     
     showEntryPopup:function(entryId) {
 	let entryDiv = HU.getUniqueId('');
-	let message= HU.div([ATTR_ID,entryDiv,ATTR_STYLE,HU.css('display','inline-block')]);
+	let message= HU.div([ATTR_ID,entryDiv,ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block')]);
 
 	this.showMessage(message);
 	this.showingEntryPopup=true;
@@ -1764,7 +1774,7 @@ WikiEditor.prototype = {
 	if(tagInfo && !tagInfo.chunk) return;
 	if(c) {
 	    scroller.css("cursor","context-menu");
-	    let message= HU.b("Right-click: property menu; Double-click: editor");
+	    let message= HU.b("Right-click: property menu; Shift/Double-click: editor");
 	    //	    if(type!="plus")message+="<br>Double click to edit";
 	    this.showMessage(message);
 	} else {
@@ -1856,7 +1866,7 @@ WikiEditor.prototype = {
 		    title =  title +" Properties";
 		    let url = display.getTypeHelpUrl();
 		    if(url) title = HU.href(url, title + SPACE + HU.getIconImage(icon_help),
-					    [ATTR_TARGET,"_ramaddahelp"]);
+					    [ATTR_TARGET,'_ramaddahelp',ATTR_TITLE,'View help']);
 		}
 	    }
 	} catch(e) {
@@ -1900,13 +1910,14 @@ WikiEditor.prototype = {
         for (let i = 0; i < cats.length; i++) {
 	    let cat = cats[i];
 	    let menuItems = Utils.join(links[cat],"<div>\n");
-	    menuTags+=  HU.div([ATTR_STYLE,"vertical-align:top;margin-right4px;display:inline-block;"],
+	    menuTags+=  HU.div([ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,'top',CSS_MARGIN_RIGHT,'4px',CSS_DISPLAY,'inline-block')],
 			       Utils.join(links[cat],""));	    
 	    menu += HU.td(['data-category',cat,ATTR_CLASS,'wiki-editor-display-category'],
-			  HU.div([ATTR_STYLE,'margin-right:5px;'], HU.b(cat)) +
+			  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'5px')], HU.b(cat)) +
 			  "<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
         }
-	menu = HU.div([ATTR_ID,"wiki-display-popup",ATTR_STYLE,"font-size:10pt;width:800px;"], menu);
+	menu = HU.div([ATTR_ID,"wiki-display-popup",
+		       ATTR_STYLE,HU.css(CSS_FONT_SIZE,'10pt',CSS_WIDTH,'800px')], menu);
 	this.displaysText = menuTags;
 
 
@@ -1919,7 +1930,7 @@ WikiEditor.prototype = {
 			       HU.space(2) + expand);
 
 
-	let contents = HU.div([ATTR_STYLE,'margin:10px;'],
+	let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'10px')],
 			      header+ HU.div([ATTR_ID,this.domId('expandedwikimenu')]) +
 			      HU.div([ATTR_ID,this.domId('unexpandedwikimenu')],menu));
 
@@ -1957,27 +1968,25 @@ WikiEditor.prototype = {
 				inner+='</tr><tr valign=top>';
 			    }
 			    let c = $(this).attr(ATTR_TITLE);
-			    let div=HU.div(['onclick',click,
+			    let div=HU.div([ATTR_ONCLICK,click,
 					    ATTR_CLASS,CLASS_CLICKABLE,
-					    ATTR_STYLE,HU.css('display','inline-block')],
+					    ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block')],
 					   c);
 			    inner+=HU.td(['data-corpus',Utils.stringDefined(c)?c:'none',
 					  'data-category',cat,
 					  ATTR_CLASS,CLASS_HOVERABLE+' wiki-editor-popup-link',
-					  'width','33%',ATTR_STYLE,HU.css('border','var(--basic-border)','margin','6px','padding','4px')],div);
+					  ATTR_WIDTH,'33%',ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_MARGIN,'6px',CSS_PADDING,'4px')],div);
 			});
-			inner+='</tr></table>';
+			inner+=HU.close(TAG_TR,TAG_TABLE);
 			exDiv+=HU.center(HU.div([ATTR_CLASS,'wiki-editor-display-category',
 						 'data-category',cat,
-						 ATTR_STYLE,HU.css('text-align','center','margin-top','10px','font-weight','bold')], cat)) +inner;
+						 ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',CSS_MARGIN_TOP,'10px',CSS_FONT_WEIGHT,'bold')], cat)) +inner;
 		    });
-		    exDiv=HU.div([ATTR_STYLE,HU.css('margin','50px','width','500px')],exDiv);
-		    //		    $('body').html(exDiv);
-		    //		    return
-		    exDiv=HU.div([ATTR_STYLE,HU.css('max-height','500px','overflow-y','auto','min-width','700px','max-width','700px','overflow-x','auto')],
+		    exDiv=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'50px',CSS_WIDTH,'500px')],exDiv);
+		    exDiv=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,'500px',CSS_OVERFLOW_Y,'auto',CSS_MIN_WIDTH,'700px',CSS_MAX_WIDTH,'700px',CSS_OVERFLOW_X,'auto')],
 				 exDiv);
 		    let ex = $(exDiv).appendTo(_this.jq('expandedwikimenu'));
-		    ex.find('img').attr('width','200');
+		    ex.find('img').attr(ATTR_WIDTH,'200');
 		}
 		expanded = !expanded;
 		if(expanded) {
@@ -2039,12 +2048,12 @@ WikiEditor.prototype = {
 	let btn = $('#'+this.id+'_toolbar_edit');
 	this.editMode = mode;
 	if(!this.editMode) {
-	    btn.find('i').css('color','#aaa');
-	    btn.css('background','transparent');
+	    btn.find('i').css(CSS_COLOR,'#aaa');
+	    btn.css(CSS_BACKGROUND,'transparent');
 	    return
 	}
-	btn.find('i').css('color','blue');
-	btn.css('background','#aaa');
+	btn.find('i').css(CSS_COLOR,'blue');
+	btn.css(CSS_BACKGROUND,'#aaa');
     },
     initTagSearch:function() {
 	let popup = '';
@@ -2058,10 +2067,10 @@ WikiEditor.prototype = {
 	    popup+='<thin_hr>' +
 	    HU.center(HU.b("Data Displays")) +this.displaysText;
 	popup =HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Tag',ATTR_ID, this.domId('tagsearch'),
-					 ATTR_STYLE,'margin-top:4px;','width','10'])) + popup;
-	popup = HU.div([ATTR_STYLE,HU.css('width','600px',
-					  'height','300px',
-					  'max-height','300px','overflow-y','auto')],popup);
+					 ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px'),ATTR_WIDTH,'10'])) + popup;
+	popup = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,'600px',
+					  CSS_HEIGHT,'300px',
+					  CSS_MAX_HEIGHT,'300px',CSS_OVERFLOW_Y,'auto')],popup);
 
 	let _this = this;
 	this.toolbarEditButton = $('#'+this.id+'_toolbar_edit');
@@ -2512,7 +2521,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	    return;
 	}
 	if(tag.info) {
-	    block.items.push(HU.div([ATTR_CLASS, itemClass], "<i>"+tag.info+"</i>"));
+	    block.items.push(HU.div([ATTR_CLASS, itemClass], HU.tag(TAG_I,[],tag.info)));
 	    return;
 	}
 	if(!tag.p)  {
@@ -2570,7 +2579,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 function getWikiEditorMenuBar(blocks,id, prefix) {
     let menu  = "";
     menu += HU.tag(TAG_LI, [],HU.div([ATTR_ID,'searchattributes',
-				      ATTR_CLASS,"wiki-popup-menu-header ramadda-clickable",
+				      ATTR_CLASS,"wiki-popup-menu-header wiki-popup-menu-link ramadda-clickable",
 				      ATTR_TITLE,'Search attributes'],HU.getIconImage('fa-binoculars')));
     blocks.forEach((block,idx)=>{
 	if(typeof block=="string") {
@@ -2592,10 +2601,10 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 	} else {
 	    sub = block.items;
 	}
-	menu += HU.tag(TAG_LI, [],HU.div([ATTR_CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [ATTR_CLASS,"wiki-popup-menu-item"], sub));
+	menu += HU.tag(TAG_LI, [],HU.div([ATTR_CLASS,"wiki-popup-menu-header wiki-popup-menu-link "],title) + HU.tag(TAG_UL, [ATTR_CLASS,"wiki-popup-menu-item"], sub));
     });
     let menubar = HU.div([ATTR_CLASS,"wiki-popup-menubar",  ATTR_ID, id],
-			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu))
+			 HU.tag(TAG_UL, [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu))
     return menubar;
 }
 
@@ -2732,12 +2741,13 @@ Transcriber.prototype = {
 	    });
 	    let html = '';
 	    let controls =HU.hbox([
-		HU.span([ATTR_TITLE,'Start recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
+		HU.span([ATTR_TITLE,'Start recording',
+			 ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
 		HU.span([ATTR_TITLE,'Transcribe recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
 		HU.b(' Time: ')+
-		    HU.div([ATTR_STYLE,HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),ATTR_ID,this.domId('transcribe_label')],'0 seconds'),
+		    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_TEXT_ALIGN,'right',CSS_WIDTH,'150px'),ATTR_ID,this.domId('transcribe_label')],'0 seconds'),
 		HU.span([ATTR_TITLE,'Delete recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
-	    ],HU.css('margin-right','5px'));
+	    ],HU.css(CSS_MARGIN_RIGHT,'5px'));
 
 	    let right =    HU.checkbox('',
 				       [ATTR_ID,this.domId('transcribe_sendtochat'),
@@ -2753,10 +2763,11 @@ Transcriber.prototype = {
 	    else
 		html=controls;
 
-	    html+=HU.div([ATTR_STYLE,'position:relative;'],
-			 HU.textarea('','',[ATTR_PLACEHOLDER,'',ATTR_ID,this.domId('transcribe_text'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
+			 HU.textarea('','',[ATTR_PLACEHOLDER,'',ATTR_ID,this.domId('transcribe_text'), 'rows',6,'cols',80,
+					    ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_PADDING,'4px',CSS_MARGIN,'4px',CSS_FONT_STYLE,'italic')])+
 			 HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);',ATTR_ID,this.domId('transcribe_loading')],
-				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:100px;'])));
+				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,HU.css(CSS_WIDTH,'100px')])));
 
 
 	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),
@@ -2773,7 +2784,7 @@ Transcriber.prototype = {
 								callback:closeCallback,
 								header:true,sticky:true,draggable:true,modal:false});	
 	    this.transcribeElapsedTime = 0;
-	    this.jq('transcribe_pen').click(()=>{
+	    this.jq('transcribe_pen').button().click(()=>{
 		if(this.transcribePlaying) {
 		    this.callDoIt = true;
 		    this.transcribeStop();
@@ -2781,7 +2792,7 @@ Transcriber.prototype = {
 		    this.transcribeDoIt();
 		}
 	    });
-	    this.jq('transcribe_play').click(()=>{
+	    this.jq('transcribe_play').button().click(()=>{
 		if(this.transcribePlaying) {
 		    this.transcribeStop();
 		} else {

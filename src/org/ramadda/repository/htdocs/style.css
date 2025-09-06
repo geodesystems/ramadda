@@ -6677,9 +6677,7 @@ a.wiki-link-noexist {
     font-weight:bold;
 }
 
-.wiki-editor-menu-icon i, .wiki-popup-menu-header i { 
-    font-size:18px;
-}
+
 
 .wiki-editor-message {
     position:absolute;
@@ -6764,6 +6762,14 @@ a.wiki-link-noexist {
 .wiki-popup-menubar {
     background:#ccc;
 }    
+
+.wiki-editor-menu-icon i, .wiki-popup-menu-header i { 
+    font-size:18px;
+}
+
+.wiki-popup-menu-link  {
+    border-right:var(--basic-border);
+}
 
 .wiki-popup-menu-header {
     margin-right:2px;
