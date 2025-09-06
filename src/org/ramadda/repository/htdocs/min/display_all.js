@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep  1 09:45:47 MDT 2025";
+var build_date="RAMADDA build date: Sat Sep  6 05:50:45 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -4975,7 +4975,7 @@ function DisplayThing(argId, argProperties) {
 		    imageAttrs.push("300");
 		}
 		imageAttrs.push(ATTR_STYLE);
-		imageAttrs.push("vertical-align:top");
+		imageAttrs.push(HU.css('vertical-align','top'));
 		return HU.image(value, imageAttrs);
 	    };
 
@@ -5066,9 +5066,9 @@ function DisplayThing(argId, argProperties) {
 			    if(value!="") 
 				value =  HU.href(value,value);
 			}
-			html+="<tr><td align=right><b>" +f.getLabel()+"</b>:</td><td>  " + value+"</td></tr>";
+			html+="<tr><td align=right>" + HU.b(f.getLabel()+":")+"</td><td>  " + value+"</td></tr>";
 		    });
-		    html +="</table>";
+		    html +=HU.close(TAG_TABLE);
 		    attrs[t.tag] = html;
 		}
 	    });
@@ -5109,7 +5109,7 @@ function DisplayThing(argId, argProperties) {
 			    imageAttrs.push("100%");
 			}
 			imageAttrs.push(ATTR_STYLE);
-			imageAttrs.push("vertical-align:top");
+			imageAttrs.push(HU.css('vertical-align','top'));
 			let img =  HU.image(value, imageAttrs);
 
 			attrs[f.getId() +"_image"] =  img;
@@ -5175,7 +5175,7 @@ function DisplayThing(argId, argProperties) {
 		    value.split(",").forEach(tagValue=>{
 			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,
 					 ATTR_TITLE,tagValue,
-					 ATTR_STYLE, HU.css("background", color),
+					 ATTR_STYLE, HU.css(CSS_BACKGROUND, color),
 					 ATTR_CLASS,"display-search-tag"],tagValue);
 		    });
 		    if(filter) result = filter.getLabel()+": " + result+"<br>";
@@ -5442,21 +5442,22 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>100) {
 			//Only if its not an image
 			if(!String(value).match('<img')) {
-			    value  = HU.div([ATTR_STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
+			    value  = HU.div([ATTR_STYLE,
+					     HU.css(CSS_MAX_HEIGHT,"100px",CSS_OVERFLOW_Y,"auto")],value);
 			}
 		    }
 		    let label = this.formatRecordLabel(labelValue)+":";
 		    if(labelWidth) {
-			label = HU.div([ATTR_STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label); 
+			label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH ,HU.getDimension(labelWidth),CSS_OVERFLOW_X,"auto")], label); 
 		    } 
 		    label  = HU.div([ATTR_TITLE,tt],label);
-                    let row = HU.open(TAG_TR,['valign','top']);
+                    let row = HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		    let labelAttrs = [ATTR_CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
-		    let valueStyle = HU.css('margin-left','5px','max-width','90vw');
+		    let valueStyle = HU.css('margin-left','5px',CSS_MAX_WIDTH,'90vw');
 		    if(maxWidth) {
-			valueStyle+=HU.css('max-width',HU.getDimension(maxWidth,'px'));
+			valueStyle+=HU.css(CSS_MAX_WIDTH,HU.getDimension(maxWidth,'px'));
 		    }
 
 
@@ -5477,29 +5478,30 @@ function DisplayThing(argId, argProperties) {
                     let row = HU.open(TR,['valign','top']);
 		    let label = this.formatRecordLabel("Date");
 		    row += HU.td([],HU.b(label+":"));
-		    row += HU.td(["align","left"], HU.div([ATTR_STYLE,HU.css('margin-left','5px')],
-							  this.formatDate(record.getDate())));
+		    row += HU.td([ATTR_ALIGN,"left"], HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px')],
+							     this.formatDate(record.getDate())));
 		    row += HU.close(TR);
 		    rows.push(row);
 		}
 	    }
             if (dflt.showElevation && record.hasElevation()) {
-                rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
-			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
+                rows.push(HU.tr([],HU.td([ATTR_ALIGN,'right'],HU.b('Elevation:')) +
+				HU.td([ATTR_ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
 	    let rowCnt = 0;
 	    values += "<table><tr valign=top>";
 
 
-
 	    let		lists   = Utils.splitList(rows,itemsPerColumn);
 	    let tdStyle =lists.length>1?"margin-right:5px;":"";
 	    lists.forEach(list=>{
-		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
+		values += HU.tag(TAG_TD,[],
+				 HU.div([ATTR_STYLE,tdStyle],HU.tag(TAG_TABLE,[],Utils.join(list,""))));
 	    });
             values += HU.close(TAG_TR,TAG_TABLE);
 	    if(this.getRecordHtmlStyle()){
-		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip", ATTR_STYLE,this.getRecordHtmlStyle()], values);
+		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip",
+				 ATTR_STYLE,this.getRecordHtmlStyle()], values);
 	    }
 	    
             return values;
@@ -6361,10 +6363,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
-	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
-	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"10px")], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
@@ -8884,7 +8886,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-	    wiki = HU.pre([ATTR_STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
+	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,"500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
 	},
         copyWikiText: function(type) {
@@ -10098,7 +10100,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
                 "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
                 "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
-                "</table>";
+                HU.close(TAG_TABLE);
             let tmp =
                 HU.checkbox(this.getDomId("showtitle"), [], this.getProperty("showTitle")) + " Title  " +
                 HU.checkbox(this.getDomId("showdetails"), [], this.getProperty("showDetails")) + " Details " +
@@ -11645,7 +11647,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });	
 		    if(itemCnt>0) {
 			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-			popup.html(HU.div([ATTR_STYLE,HU.css("margin","5px"), ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popup.html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px"), ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
 			popup.position({
 			    of: $(this),
@@ -12308,7 +12310,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
 		tmp = tmp.replace(/\\n/g,'<br>');
                 error = tmp;
-                error = HU.tag("pre", [ATTR_STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto","max-width","600px","overflow-x","auto")], error);
+                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto",CSS_MAX_WIDTH,"600px","overflow-x","auto")], error);
                 msg += error;
             }
 	    
@@ -24688,7 +24690,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([ATTR_STYLE,HU.css('display','inline-block','width', width + "px','height', img.height +'px','background','rgb(" + c[0]+"," + c[1] +"," + c[2]+")")],"");
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width + 'px',CSS_HEIGHT, img.height +'px',
+						    CSS_BACKGROUND,'rgb(' + c[0]+',' + c[1] +',' + c[2]+')')],"");
 		}
 		div.css("width",img.width);
 		div.css("height",img.height);
@@ -24817,7 +24820,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt], HU.image(img,["width",width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
-				   ATTR_STYLE,HU.css('margin', margin+'px')], img);
+				   ATTR_STYLE,HU.css(CSS_MARGIN, margin+'px')], img);
                 } else {
                     var style = "";
                     if(fontSize) {
@@ -25148,25 +25151,26 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 	    });
 	    if(columns) {
-		contents = "<table border=0 width=100%><tr valign=top>";
+		contents = HU.open(TAG_TABLE,[ATTR_BORDER,'0',ATTR_WIDTH,'100%']) +
+		    HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
 		    contents+=HU.td(['align','center'],columnMap[col]);
 		}
-		contents+="</tr></table>";
+		contents+=HU.close(TAG_TR,TAG_TABLE);
 	    } else {
 	    }
 
 	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
 		let css = "";
-		if(this.getPropertyMinHeightGallery()) css+=HU.css("min-height",HU.getDimension(this.getPropertyMinHeightGallery()));
-		if(this.getPropertyMinHeightGallery())	css+= HU.css("max-height",HU.getDimension(this.getPropertyMaxHeightGallery()));
-		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css("overflow-y","auto")], contents);
+		if(this.getPropertyMinHeightGallery()) css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
+		if(this.getPropertyMinHeightGallery())	css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
+		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,"auto")], contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
-		contents = HU.div([ATTR_STYLE,HU.css('margin-left','8px','margin-top','8px')],
+		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'8px',CSS_MARGIN_TOP,'8px')],
 				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
 					       this.hideNoImages,'Show entries with images')) +
 		    contents;
@@ -25269,8 +25273,11 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([ATTR_STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
-	    let imageDiv = HU.div([ATTR_STYLE,"position:relative"],
+	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,"1px solid " +this.getHighlightColor(),
+						 CSS_WIDTH,"20px",CSS_HEIGHT,"20px",CSS_LEFT,"10px",CSS_TOP,"10px",
+						 CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+						 CSS_Z_INDEX,1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
+	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
 					  ATTR_STYLE,HU.css("position","relative") ]) +
@@ -25569,7 +25576,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
-			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
+			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -34077,6 +34084,7 @@ var ID_SEARCH_HEADER = "searchheader";
 var ID_SEARCH_BAR = "searchbar";
 var ID_SEARCH_TAG = "searchtag";
 var ID_SEARCH_TAG_GROUP = "searchtaggroup";
+var ID_SEARCH_FOOTER = ID_FOOTER;
 var ID_ENTRIES = "entries";
 var ID_DETAILS_INNER = "detailsinner";
 var ID_DETAILS_ANCESTORS = "detailsancestors";
@@ -34092,7 +34100,9 @@ var ID_SEARCH_DATE_CREATE = "search_createdate";
 var ID_SEARCH_DATE_CHANGE = "search_changedate";
 var ID_SEARCH_TAGS = "search_tags";
 var ID_SEARCH_ANCESTOR = "search_ancestor";
+
 var ID_SEARCH_ANCESTORS = "search_ancestors";
+var ID_SEARCH_ANCESTORS_MENU = "search_ancestors_menu";
 var ID_TREE_LINK = "treelink";
 var ATTR_ENTRYID = "entryid";
 
@@ -34129,7 +34139,8 @@ addGlobalDisplayType({
     type: DISPLAY_SEARCH,
     label: "Entry Search",
     requiresData: false,
-    category: CATEGORY_ENTRIES
+    category: CATEGORY_ENTRIES,
+    help:'/userguide/wiki/wikisearch.html'
 });
 /*
   addGlobalDisplayType({
@@ -34286,16 +34297,18 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 for (let j = 0; j < metadata.length; j++) {
                     let m = metadata[j];
                     if (tmp[m.type] == null) {
-                        tmp[m.type] = "";
+                        tmp[m.type] = '';
                         mdtsFromEntries.push(m.type);
                     }
                     mdtmap[metadata[j].type] = metadata[j].label;
                 }
             }
 
-            let html = "";
-            html += HU.openTag(TAG_TABLE, [ATTR_ID, this.getDomId(TAG_TABLE), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
-            html += "<thead>"
+            let html = '';
+            html += HU.openTag(TAG_TABLE, [ATTR_ID, this.getDomId(TAG_TABLE),
+					   ATTR_CLASS, 'cell-border stripe ramadda-table',
+					   ATTR_WIDTH, '100%', ATTR_CELLPADDING, '5', ATTR_CELLSPACING, '0']);
+            html += HU.open(TAG_THEAD);
             let type = this.findEntryType(this.searchSettings.entryType);
             let typeName = "Entry";
             if (type != null) {
@@ -34331,10 +34344,10 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 if (label == null) label = mdts[i];
                 headerItems.push(HU.th([], HU.b(label)));
             }
-            let headerRow = HU.tr(["valign", "bottom"], HU.join(headerItems, ""));
+            let headerRow = HU.tr([ATTR_VALIGN, "bottom"], HU.join(headerItems, ""));
             html += headerRow;
-            html += "</thead><tbody>"
-            let divider = "<div class=display-metadata-divider></div>";
+            html += HU.close(TAG_THEAD)+HU.open(TAG_TBODY);
+            let divider = HU.div([ATTR_CLASS,'display-metadata-divider']);
             let missing = this.missingMessage;
             if (missing = null) missing = "&nbsp;";
             for (let entryIdx = 0; entryIdx < entries.length; entryIdx++) {
@@ -34393,8 +34406,10 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     if (cell == null) {
                         cell = "";
                     }
-                    let add = HU.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
-					     "target", "_blank", "alt", "Add metadata", ATTR_TITLE, "Add metadata"
+                    let add = HU.tag(TAG_A, [ATTR_STYLE, HU.css(CSS_COLOR,"#000"),
+					     ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
+					     ATTR_TARGET, "_blank", ATTR_ALT, "Add metadata",
+					     ATTR_TITLE, "Add metadata"
 					    ], "+");
                     add = HU.div([ATTR_CLASS, "display-metadata-table-add"], add);
                     let cellContents = add + divider;
@@ -34403,12 +34418,11 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     }
                     row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
                 }
-                html += HU.tr(["valign", "top"], HU.join(row, ""));
+                html += HU.tr([ATTR_VALIGN, "top"], HU.join(row, ""));
                 //Add in the header every 10 rows
                 if (((entryIdx + 1) % 10) == 0) html += headerRow;
             }
-            html += "</tbody>"
-            html += HU.closeTag(TAG_TABLE);
+            html += HU.close(TAG_TBODY,TAG_TABLE);
 	    return html;
 	},
 
@@ -34428,8 +34442,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     imageCnt++;
 		    let imageUrl =entry.getImageUrl();
-                    html += HU.tag(TAG_IMG, ["src", imageUrl, ATTR_WIDTH, "500", ATTR_ID,
-					     this.getDomId("entry_" + entry.getIdForDom()),
+                    html += HU.tag(TAG_IMG, [ATTR_SRC, imageUrl, ATTR_WIDTH, "500",
+					     ATTR_ID,  this.getDomId("entry_" + entry.getIdForDom()),
 					     ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 					    ]) + "<br>" +
                         link + "<p>";
@@ -34447,16 +34461,17 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 		let itemWidth = this.getProperty("galleryItemWidth","200px");
                 for (let i = 0; i < imageEntries.length; i++) {
                     let entry = imageEntries[i];
-		    let attrs = ["width",itemWidth];
+		    let attrs = [CSS_WIDTH,itemWidth];
                     newHtml += HU.open(TAG_DIV,[ATTR_CLASS,"display-entrygallery-item",ATTR_STYLE,HU.css(attrs)]);
-                    let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
+                    let link = HU.tag(TAG_A, [ATTR_TARGET,"_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    link = link.replace(/"/g,"'");
 		    let imageUrl =entry.getImageUrl();
                     let img = HU.image(imageUrl, ["loading","lazy", ATTR_WIDTH, "100%", ATTR_ID,
 						  this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 						 ]);
-                    img = HU.href(entry.getResourceUrl(), img, ["data-fancybox",this.galleryId, "data-caption",link, ATTR_CLASS, "popup_image"]);
+                    img = HU.href(entry.getResourceUrl(), img, ["data-fancybox",this.galleryId, "data-caption",link,
+								ATTR_CLASS, "popup_image"]);
                     newHtml += HU.div([ATTR_CLASS, "image-outer"], HU.div([ATTR_CLASS, "image-inner"], img) +
 				      HU.div([ATTR_CLASS, "image-caption"], link));
 
@@ -34472,7 +34487,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 if (imageCnt > 0) {
                     html += "<hr>";
                 }
-                html += HU.div([ATTR_STYLE,HU.css("margin","10px")],nonImageHtml);
+                html += HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"10px")],nonImageHtml);
             }
             return html;
         }
@@ -34481,10 +34496,6 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         this.searchSettings.addType(properties.searchEntryType);
     }
 }
-
-
-
-
 
 
 function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
@@ -34499,7 +34510,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'typesLabel',tt: 'Label to use for the type section'},		
 	{p:'addAllTypes',d:false,ex:'true',tt:'Add the All types to the type list'},
 	{p:'addAnyType',d:true,ex:'true',tt:'Add the Any of these types to the type list'},
-	{p:'startWithAny',ex:'true',tt:'Start with the Any of these types'},	
+	{p:'startWithAny',d:true,ex:'true',tt:'Start with the Any of these types'},	
 
 
 	{label:'Search Context'},
@@ -34513,6 +34524,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search Settings'},
 	{p:'orderByTypes',
 	 tt:'Comma separated list to show in the order by menu',
+	 ex:'relevant,name,createdate,date,changedate,size,entryorder',	 
 	 d:'relevant,name,createdate,date,size,entryorder'},
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_',
 	 tt:'Initial sort order'},
@@ -34540,7 +34552,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'tagPopupLimit',d: 10,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 
-	{p:'inputSize',d:'200px',tt:'Text input size'},
+	{p:'inputSize',ex:'15',tt:'Text input size'},
 	{p:'textInputSize',d:'20px',ex:'100%'},	
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},
@@ -34567,9 +34579,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'areaToggleClose',ex:true},
 	{p:'columnsToggleClose',ex:true},		
 
+	{p:'showHeader',d:true},
         {p:'showFooter',d: true,tt:'Show the footer below the output'},	
 	{p:'showOutputs',ex:'false',d:true,tt:'Should the output buttons be shown'},
-	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl',tt:'The list of output buttons at the bottom of the form'},
+	{p:'resultButtons',ex:'default.ids,zip.tree,zip.export,extedit,copyurl',
+	 tt:'The list of output buttons at the bottom of the form'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 
 	{label:'Search Results'},
@@ -34586,10 +34600,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
         {p:'showDetailsForGroup',d: false},	
 
-
 	/*
           {p:'orientation',ex:'horizontal|vertical',d:'horizontal'},
-	  */
+	*/
 
     ];
 
@@ -34645,7 +34658,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         isLayoutHorizontal: function() {
 	    //Don't attempt the vertical layout
 	    return true;
-//	    return this.getOrientation()== "horizontal";
+	    //	    return this.getOrientation()== "horizontal";
         },
 
 	setFormVisible:function(visible) {
@@ -34705,7 +34718,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					      Utils.delimMsg("From date")+ " - " + Utils.delimMsg("oldest first")),"fromdate_ascending"]);
 		    else if(type=='size')
 			byList.push([Utils.delimMsg("Size")+" - "+Utils.delimMsg("largest first"),"size_descending"],
-				     [Utils.delimMsg("Size")+" - "+Utils.delimMsg("smallest first"),"size_ascending"]);
+				    [Utils.delimMsg("Size")+" - "+Utils.delimMsg("smallest first"),"size_ascending"]);
 		    else if(type=='entryorder')
 			byList.push([Utils.delimMsg("Entry order")+" - "+Utils.delimMsg("increasing"),"entryorder_ascending"],
 				    [Utils.delimMsg("Entry order")+" - "+Utils.delimMsg("decreasing"),"entryorder_descending"]);		    
@@ -34744,7 +34757,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		widget.show();
 		icon = 'fa-minus';
 	    }
-	    icon = HU.getIconImage(icon, [], [ATTR_STYLE,'color:#fff;'])
+	    icon = HU.getIconImage(icon, [], [ATTR_STYLE,HU.css(CSS_COLOR,'#fff')])
 	    let imageId= toggle.attr('data-image-id');
 	    jqid(imageId).html(icon);
 	},
@@ -34753,14 +34766,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let imageId = toggleId+'_image';
 	    let title = Utils.delimMsg('click') +': '+Utils.delimMsg('toggle') +'; '+
 		Utils.delimMsg('shift-click')+': ' + Utils.delimMsg('toggle all');
-//	    console.log('title:'+ title);
 	    label = HU.div([ATTR_CLASS,'display-search-label-toggle',
 			    ATTR_ID,toggleId,
 			    'data-widget-id',widgetId,
 			    'data-image-id',imageId,
 			    ATTR_TITLE,title],
 			   HU.span([ATTR_ID,imageId],
-				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + HU.span([],label));
+				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,HU.css(CSS_COLOR,'#fff')])) +' ' + HU.span([],label));
 	    setTimeout(()=>{
 		jqid(toggleId).click((event)=>{
 		    let toggle = jqid(toggleId);
@@ -34800,19 +34812,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		w  = HU.toggleBlock(HU.b(label),widget);
 	    } else {
 		w=w+HU.div([ATTR_ID,widgetId,
-			    ATTR_STYLE,HU.css('width','100%','display',opts.toggleClose?'none':'inline-block')],widget);
+			    ATTR_STYLE,HU.css(CSS_WIDTH,'100%',CSS_DISPLAY,opts.toggleClose?'none':'inline-block')],widget);
 	    }
 	    return HU.div([ATTR_CLASS,"display-search-block"], w);
 	},
+        getFooter: function() {
+            return HU.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer display-search-footer"]);
+        },
         getDefaultHtml: function() {
             let html = "";
             let horizontal = this.isLayoutHorizontal();
-            let footer = this.getFooter();
-            if (!this.getShowFooter(true)) {
-                footer = "";
-            }
-	    this.jq(ID_BOTTOM).html(footer);
-	    footer = "";
             let entriesDivAttrs = [ATTR_ID, this.getDomId(ID_ENTRIES), ATTR_CLASS, this.getClass("content")];
             let innerHeight= this.getProperty("innerHeight", null);
             let entriesStyle = this.getProperty("entriesStyle", "");	    
@@ -34821,8 +34830,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 innerHeight = this.getEntriesHeight();
             }
             if (innerHeight != null) {
-                style = "margin: 0px; padding: 0px; max-height:" + HU.getDimension(innerHeight) + "; overflow-y: auto;";
-                style = HU.css('max-height', HU.getDimension(innerHeight),'overflow-y','auto');
+                style = HU.css(CSS_MAX_HEIGHT, HU.getDimension(innerHeight),CSS_OVERFLOW_Y,'auto');
             }
 	    style+= entriesStyle;
             entriesDivAttrs.push(ATTR_STYLE);
@@ -34830,7 +34838,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let searchBar = HU.div([ATTR_CLASS,horizontal?"display-search-bar":"display-search-bar-vertical",
 				    ATTR_ID, this.domId(ID_SEARCH_BAR)],"");
             let resultsDiv = "";
-            if (this.getProperty("showHeader", true)) {
+            if (this.getShowHeader()) {
                 resultsDiv = HU.div([ATTR_CLASS, "display-entries-results",
 				     ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
             }
@@ -34840,44 +34848,35 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(horizontal &&  this.getShowFormToggle()) {
 		toggle = HU.div([ATTR_TITLE, "Toggle form",
 				 ATTR_ID,this.domId(ID_SEARCH_HIDEFORM), ATTR_CLASS,"ramadda-clickable",
-				 ATTR_STYLE,HU.css("position","absolute","left","0px","top","0px")],
+				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",CSS_LEFT,"0px","top","0px")],
 				HU.getIconImage("fas fa-bars"));
 	    }
-            let entriesDiv = HU.div([ATTR_STYLE,HU.css("position","relative")],
+            let entriesDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 				    toggle +
 				    searchBar +
 				    resultsDiv +
 				    HU.div(entriesDivAttrs, this.getLoadingMessage()));
 
-            if (horizontal) {
-		html += HU.open(TAG_TABLE,["width","100%","border",0]);
-		html+="<tr valign=top>";
-                let entriesAttrs = [ATTR_CLASS, "col-md-12"];
-		let form = HU.div([ATTR_CLASS,'display-entrylist-form',
-				   ATTR_STYLE,HU.css("width",HU.getDimension(this.getFormWidth()),
-						     "max-width",HU.getDimension(this.getFormWidth()),
-						     "overflow-x","auto")],this.makeSearchForm());
-		html += HU.tag(TAG_TD, [ATTR_ID,this.getDomId(ID_SEARCH_FORM),"width","1%"], form);
-		this.formShown  = true;
-                let attrs = [];
-		if (this.getEntriesWidth() != 0) {
-                    attrs = [ATTR_WIDTH, this.getEntriesWidth()];
-                }
-                html += HU.tag(TAG_TD,[], entriesDiv);		    
-                html += HU.closeTag(TAG_TR);
-                html += HU.closeTag(TAG_TABLE);
-
-                html += HU.openTag(TAG_DIV, [ATTR_CLASS, "row"]);
-                html += HU.tag(TAG_DIV, [ATTR_CLASS, "col-md-6"], "");
-                if (this.getShowFooter(true)) {
-                    html += HU.tag(TAG_DIV, [ATTR_CLASS, "col-md-6"], footer);
-                }
-                html += HU.closeTag(TAG_DIV);
-            } else {
-                html += this.makeSearchForm();
-                html += entriesDiv;
-                html += footer;
+	    html += HU.open(TAG_TABLE,[ATTR_WIDTH,"100%",ATTR_BORDER,0]);
+	    html+=HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+            let entriesAttrs = [ATTR_CLASS, "col-md-12"];
+	    let form = HU.div([ATTR_CLASS,'display-entrylist-form',
+			       ATTR_STYLE,HU.css(CSS_WIDTH,HU.getDimension(this.getFormWidth()),
+						 CSS_MAX_WIDTH,HU.getDimension(this.getFormWidth()),
+						 CSS_OVERFLOW_X,"auto")],this.makeSearchForm());
+	    html += HU.tag(TAG_TD, [ATTR_ID,this.getDomId(ID_SEARCH_FORM),ATTR_WIDTH,"1%"], form);
+	    this.formShown  = true;
+            if (this.getShowFooter()) {
+                entriesDiv +=  this.getFooter();
             }
+            html += HU.tag(TAG_TD,[], entriesDiv);		    
+            html += HU.close(TAG_TR,TAG_TABLE);
+            html += HU.openTag(TAG_DIV, [ATTR_CLASS, "row"]);
+            html += HU.tag(TAG_DIV, [ATTR_CLASS, "col-md-6"], "");
+            if (this.getShowFooter(true)) {
+		//                html += HU.tag(TAG_DIV, [ATTR_CLASS, "col-md-6"], footer);
+            }
+            html += HU.close(TAG_DIV);
             html += HU.div([ATTR_CLASS, "display-entry-popup", ATTR_ID, this.getDomId(ID_DETAILS)], "&nbsp;");
             return html;
         },
@@ -35145,7 +35144,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         updateForSearching: function(jsonUrl) {
 	    let showOutputs = this.getShowOutputs(true);
 	    let settings = this.getSearchSettings();
-	    let okOutputs = this.getProperty('outputs');
+	    let okOutputs = this.getResultButtons(this.getProperty('outputs'));
 	    if(okOutputs) {
 		okOutputs = Utils.split(okOutputs,',',true,true);
 	    }
@@ -35159,7 +35158,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		return okOutputs.includes(id);
 	    }
 	    let outputs = this.getRamadda().getSearchLinks(settings,true,check);
-
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId('copy');
 	    let extra = [];
@@ -35201,9 +35199,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    } else {
 		this.footerRight = '';
 	    }
-            this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+            this.writeHtml(ID_SEARCH_FOOTER, this.footerRight);
 	    let _this = this;
-	    this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event){
+	    this.jq(ID_SEARCH_FOOTER).find('.ramadda-search-link').button().click(function(event){
 		let custom  =$(this).attr('custom-output');
 		_this.handleSearchLink(event,$(this),custom);
 	    });
@@ -35451,6 +35449,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 		jsonUrl+='&mainancestor='+ main;
 	    }
+	    let selectedAncestors  =this.jq(ID_SEARCH_ANCESTORS_MENU).val();
+	    if(selectedAncestors) {
+		selectedAncestors.forEach(id=>{
+		    jsonUrl+='&ancestor='+ id;
+		});
+	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
 		if($(this).is(':checked')) {
 		    let id = $(this).attr('data-entryid');
@@ -35472,14 +35476,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         loadAncestorsList: function(entries) {
-	    let html = '';
+	    let options = [];
 	    entries.forEach(entry=>{
-		html+=HU.div([ATTR_CLASS,'display-search-ancestors-select'],
-			     HU.checkbox('',[ATTR_ID,'ancestor_'+ entry.getId(),ATTR_CLASS,'ramadda-displayentry-ancestor',
-					     'data-entryid',entry.getId()],false,entry.getName()));
+		options.push([entry.getId(),entry.getName()]);
 	    });
+	    let html = HU.select('',[ATTR_MULTIPLE,'true',ATTR_SIZE,4,ATTR_ID,this.domId(ID_SEARCH_ANCESTORS_MENU)],options);
 	    this.jq(ID_SEARCH_ANCESTORS).html(HU.div([ATTR_CLASS,'display-search-ancestors'],html));
-	    this.jq(ID_SEARCH_ANCESTORS).find('.ramadda-displayentry-ancestor').change(()=>{
+	    HU.makeSelectTagPopup(this.jq(ID_SEARCH_ANCESTORS_MENU),{
+		after:false,
+		single:false,
+		hide:false,
+		label:'Select'});
+
+
+	    this.jq(ID_SEARCH_ANCESTORS_MENU).change(()=> {
 		this.submitSearchForm();
 	    });
 	},
@@ -35500,7 +35510,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div([ATTR_STYLE,'margin-bottom:4px;max-width:80%;',
+            let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'4px',CSS_MAX_WIDTH,'80%'),
 				       ATTR_ID, this.getDomId(ID_SEARCH),
 				       ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
@@ -35612,9 +35622,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(this.typeList && this.typeList.length>0) this.urlPrefix+=this.typeList[0]+'.';
             if (this.getShowType()) {
 		if(this.typeList == null || this.typeList.length==0) {
-                    topItems.push(HU.div([ATTR_STYLE,HU.css("margin-bottom","4px"),ATTR_ID, this.getDomId(ID_TYPE_DIV)], HU.span([ATTR_CLASS, "display-loading"], "Loading types...")));
+                    topItems.push(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,"4px"),
+					  ATTR_ID, this.getDomId(ID_TYPE_DIV)],
+					 HU.span([ATTR_CLASS, "display-loading"], "Loading types...")));
 		} else {
-		    extra+= HU.div([ATTR_STYLE,HU.css("margin-bottom","4px"),ATTR_ID, this.getDomId(ID_TYPE_DIV)]);
+		    extra+= HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,"4px"),ATTR_ID, this.getDomId(ID_TYPE_DIV)]);
 		}
             }
 
@@ -35627,12 +35639,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			  ATTR_TITLE,Utils.noMsg("e.g. name:, contents:,path:"),
 			  ATTR_CLASS, textInputClass,  ATTR_ID, this.domId(ID_TEXT_FIELD)];
 	    let inputAttrs =  [ATTR_CLASS, textInputClass];
-	    if(this.getProperty("inputSize")) {
+	    if(this.getInputSize()) {
 		inputAttrs.push(ATTR_SIZE);
-		inputAttrs.push(this.getProperty("inputSize", "30"));
+		inputAttrs.push(this.getInputSize());
 	    } else {
 		inputAttrs.push(ATTR_STYLE);
-		inputAttrs.push(HU.css("width","100%","min-width","50px","max-width","300px"));
+		inputAttrs.push(HU.css(CSS_WIDTH,"100%",CSS_MIN_WIDTH,"50px",CSS_MAX_WIDTH,"300px"));
 	    }
 
 	    let contents = "";
@@ -35643,20 +35655,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    form += topItems[0];
 		    topContents +=  HU.join(topItems.slice(1), "");
 		} else {
-		    topItems = topItems.map(item=>{return HU.div([ATTR_STYLE,HU.css("margin-right","8px")], item);});
+		    topItems = topItems.map(item=>{return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,"8px")], item);});
 		    form+="<br>";
 		    form+=   HU.hrow(...topItems);
 		}
 	    }
 	    
 
-	    if(!horizontal)  {
-		extra += HU.formTable();
-	    }
 
-	    let ancestors  = this.getProperty("ancestors");
+	    let ancestors  = this.getAncestors();
 	    if(ancestors) {
-		extra+=this.addWidget(this.getProperty('ancestorsLabel','Search Under'),
+		extra+=this.addWidget(this.getAncestorsLabel('Search Under'),
 				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTORS)]),{toggleClose:true});
 		setTimeout(()=>{
 		    this.loadAncestors(ancestors);
@@ -35668,16 +35677,18 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
 		let aid = this.domId(ID_ANCESTOR);
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"),
-				    ['onClick',"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",
+				    [ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",
 				     ATTR_TITLE,"Clear selection"]);
-		let input = HU.input("",name||"",["READONLY",null,ATTR_PLACEHOLDER,'Select',
-						  ATTR_STYLE,HU.css('cursor','pointer','width','100%'),
+		let input = HU.input("",name??"",["READONLY",null,ATTR_PLACEHOLDER,'Select',
+						  ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,'100%'),
 						  ATTR_ID,aid,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		extra += HU.hidden("",ancestor??"",[ATTR_ID,aid+"_hidden"]);
+		//		input = HU.leftRightTable(clear,input,"5%", "95%");
+		input = HU.hbox([input,clear]);
 		extra+=this.addWidget('Search Under',
-				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
-					     HU.leftRightTable(clear+SPACE,input,"5%", "95%")),{toggleClose:!Utils.stringDefined(ancestor)});
+				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],input),
+				      {toggleClose:!Utils.stringDefined(ancestor)});
 	    }
 
 
@@ -35695,7 +35706,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
             if (this.getShowDescription()) {
 		textFields.push(HU.input("","",
-					 Utils.mergeLists([ATTR_TEXT_INPUT,'Description',ATTR_ID,this.domId(ID_DESCRIPTION_FIELD),ATTR_PLACEHOLDER,'Description'],
+					 Utils.mergeLists([ATTR_TEXT_INPUT,'Description',
+							   ATTR_ID,this.domId(ID_DESCRIPTION_FIELD),
+							   ATTR_PLACEHOLDER,'Description'],
 							  inputAttrs)));				       
 	    }	    
 
@@ -35720,7 +35733,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
 		else 
-		    dateWidget+=HU.div([ATTR_STYLE,'margin-top:4px;'],this.createdateRangeWidget.getHtml());
+		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px')],this.createdateRangeWidget.getHtml());
             }
             if (this.getShowChangeDate()) {
 		let label=this.getLabel(this.getChangeDateLabel());
@@ -35729,7 +35742,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CHANGE)],
 							  this.changedateRangeWidget.getHtml()));
 		else 
-		    dateWidget+=HU.div([ATTR_STYLE,'margin-top:4px;'],this.changedateRangeWidget.getHtml());
+		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px')],this.changedateRangeWidget.getHtml());
             }
 
 
@@ -35759,26 +35772,22 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    let recordsLabel = '#'+Utils.msgLabel('Records');
-            extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',
+            extra +=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'1em',CSS_BORDER_TOP,CSS_BASIC_BORDER),
 			    ATTR_CLASS,'display-search-widget'],
 			   HU.b(recordsLabel) +' '+
 			   HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
 						       ATTR_ID,this.domId(ID_SEARCH_MAX),
 						       ATTR_SIZE,'5']));
 
-	    extra+=HU.div([ATTR_STYLE,'height:100px;']);
-
-	    if(!horizontal) 
-		extra += HU.closeTag(TAG_TABLE);
-
 	    contents +=topContents;
 	    topContents='';
             contents += HU.div([ATTR_CLASS, "display-search-extra", ATTR_ID, this.getDomId(ID_SEARCH_SETTINGS)],
 			       HU.div([ATTR_CLASS, "display-search-extra-inner"], extra));
             //Hide the real submit button
-            contents += HU.open(TAG_INPUT,[ATTR_TYPE,"submit",ATTR_STYLE,"position:absolute;left:-9999px;width:1px;height:1px;"]);
+            contents += HU.open(TAG_INPUT,[ATTR_TYPE,"submit",ATTR_STYLE,
+					   HU.css(CSS_POSITION,"absolute",CSS_LEFT,"-9999px",CSS_WIDTH,"1px",CSS_HEIGHT,"1px")]);
 	    if(this.getFormHeight()) {
-		contents = HU.div([ATTR_STYLE,HU.css("overflow-y","auto","max-height",HU.getDimension(this.getFormHeight()))], contents);
+		contents = HU.div([ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,"auto",CSS_MAX_HEIGHT,HU.getDimension(this.getFormHeight()))], contents);
 	    }
 
 	    if(Utils.stringDefined(topContents)) {
@@ -35956,7 +35965,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +'_' +type +'_' + value);
 	    if(tagGroup.length==0) {
 		tagGroup = $(HU.div([ATTR_CLASS,'display-search-tag-group',
-				     ATTR_ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));			     
+				     ATTR_ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));
+		
 	    }
 	    let prefix = not?'Not ':'';
 	    let tag = $(HU.div(['source-id',cbxId,'metadta-not',not,'metadata-type',type,'metadata-value',value,
@@ -36013,7 +36023,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         addTypes: function(newTypes) {
             if (newTypes == null) {
-		let ancestor = this.getProperty('ancestor');
+		let ancestor = this.getAncestor();
 		let extraArgs=null;
 		if(ancestor) extraArgs='ancestor='+ ancestor;
                 newTypes = this.getRamadda().getEntryTypes((ramadda, types) =>{
@@ -36022,12 +36032,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(newTypes==null) {
 		    this.typesPending=true;
 		}
-
             }
             if (newTypes == null) {
                 return;
             }
-
 
             this.entryTypes = newTypes;
 	    /*
@@ -36054,29 +36062,23 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
             this.haveTypes = true;
-            if (!this.getShowType()) {
-		this.addExtraForm();
-                return;
-            }
-
-
-	    let addTypeCategory=this.getProperty('addTypeCategory');
+	    let addTypeCategory=this.getProperty('addTypeCategory',true) && this.entryTypes.length>1;
             let cats = [];
             let catMap = {};
             let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_TYPE_FIELD),
 						 ATTR_CLASS, 'display-typelist',
-						 'onchange', this.getGet() + '.typeChanged();'
+						 ATTR_ONCHANGE, this.getGet() + '.typeChanged();'
 						]);
 	    if(this.getAddAllTypes()) {
 		select += HU.tag(TAG_OPTION, [ATTR_TITLE, '', ATTR_VALUE, VALUE_ANY_TYPE],'Any type');
 	    }
-	    if(this.getAddAnyType()) {
+	    if(this.getAddAnyType() && this.entryTypes.length>1) {
 		select += HU.tag(TAG_OPTION, [ATTR_TITLE, '', ATTR_VALUE, ''],
 				 this.getEntryTypes()?'Any of these types':'Any type');
 	    }
 	    let hadSelected = false;
 	    let anySelected = false;
-	    let startWithAny=this.getProperty('startWithAny');
+	    let startWithAny=this.getStartWithAny();
 	    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
             this.entryTypes.every(type=>{
                 anySelected = this.getSearchSettings().hasType(type.getId());
@@ -36084,6 +36086,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    anySelected = type.getId()==fromUrl;
 		return !anySelected;
 	    });
+
 
 	    let seen = {};
 	    let excludeEmptyTypes = this.getExcludeEmptyTypes();
@@ -36123,9 +36126,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let option = HU.tag(TAG_OPTION, optionAttrs, label);
                 let map = catMap[type.getCategory()];
                 if (map == null) {
-		    if(true||addTypeCategory)  {
+		    if(addTypeCategory)  {
 			catMap[type.getCategory()] =
-			    HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
+			    HU.tag(TAG_OPTION, [ATTR_CATEGORY,'true',
+						ATTR_CLASS, "display-typelist-category",
+						ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
 		    }
                     cats.push(type.getCategory());
                 }
@@ -36138,7 +36143,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             select += HU.closeTag(TAG_SELECT);
 	    if(this.entryTypes.length==0) {
-	    } else  if(this.entryTypes.length==1) {
+	    } else  if(false && this.entryTypes.length==1) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
@@ -36148,9 +36153,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
-				 { autoWidth: false,  "max-height":"100px"});
+				 { autoWidth: false,  CSS_MAX_HEIGHT:"100px"});
 
 	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
+		showCategories:true,
 		icon:true,
 		after:true,
 		single:true,
@@ -36269,7 +36275,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let label="";
 		let help = "";
 		if(col.getSuffix()) {
-		    help = HU.span([ATTR_STYLE,HU.css('cursor','help','margin-left','10px'), ATTR_TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
+		    help = HU.span([ATTR_STYLE,HU.css('cursor','help',CSS_MARGIN_LEFT,'10px'),
+				    ATTR_TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
 		}		
 		
 
@@ -36291,13 +36298,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    if(label=="")
 				label= "--blank--"; 
 			    let boxId = id+'_'+vidx;
-                            field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',ATTR_ID,boxId,'checkbox-id',id,'data-value',value],
+                            field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',
+								  ATTR_ID,boxId,'checkbox-id',id,'data-value',value],
 							   value==searchValue, label));
 			}
 		    } else {
 			let clazz = 'display-metadatalist';
 			let attrs = [ATTR_ID, id];
-			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
+			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item",
+					   ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
 			if(values.length>=popupLimit || col.getSearchMultiples()) {
 			    attrs.push(ATTR_MULTIPLE,'true');
 			    attrs.push(ATTR_SIZE,'4');			    
@@ -36329,7 +36338,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    if(label=="&lt;blank&gt;") label="--blank--";
 			    if(label=="")
 				label= "--blank--"; 
-                            field += HU.tag(TAG_OPTION, [ATTR_CLASS,"display-metadatalist-item", ATTR_TITLE, label, ATTR_VALUE, value, extraAttr, null],
+                            field += HU.tag(TAG_OPTION, [ATTR_CLASS,"display-metadatalist-item",
+							 ATTR_TITLE, label, ATTR_VALUE, value, extraAttr, null],
 					    label);
 			    field+="\n";
 			}
@@ -36344,8 +36354,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			widget= HU.div([ATTR_CLASS,"display-search-block"], field+help);
 		    }
 		} else if (col.isNumeric()) {
-		    let from = HU.input("", "", [ATTR_TITLE,"greater than",ATTR_CLASS, "input display-simplesearch-input", ATTR_STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
-		    let to = HU.input("", "", [ATTR_TITLE,"less than",ATTR_CLASS, "input display-simplesearch-input", ATTR_STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
+		    let from = HU.input("", "", [ATTR_TITLE,"greater than",
+						 ATTR_CLASS, "input display-simplesearch-input",
+						 ATTR_STYLE,HU.css(CSS_WIDTH,"2.5em"),
+						 ATTR_ID, id+"_from"]);
+		    let to = HU.input("", "", [ATTR_TITLE,"less than",
+					       ATTR_CLASS, "input display-simplesearch-input",
+					       ATTR_STYLE,HU.css(CSS_WIDTH,"2.5em"),
+					       ATTR_ID, id+"_to"]);		    
 		    label = col.getSearchLabel();
                     widget = from +" - " + to +help;
                 } else if(col.isLatLon()) {
@@ -36373,8 +36389,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
 					 ATTR_TITLE,"Clear selection"]);
 		    let input = HU.input("","",["READONLY",null,ATTR_PLACEHOLDER,'Select',
-						  ATTR_STYLE,HU.css('cursor','pointer','width','100%'),
-						  ATTR_ID,id,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
+						ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,'100%'),
+						ATTR_ID,id,
+						ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		    label = col.getSearchLabel();
 		    widget = HU.hidden("","",[ATTR_ID,id+"_hidden"]);
@@ -36472,7 +36489,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             this.submitSearchForm();
         },
         loadPrevUrl: function() {
-            this.getSearchSettings().skip = Math.max(0, this.getSearchSettings().skip - this.getSearchSettings().getMax());
+            this.getSearchSettings().skip =
+		Math.max(0, this.getSearchSettings().skip - this.getSearchSettings().getMax());
             this.submitSearchForm();
         },
         entryListChanged: function(entryList) {
@@ -36523,7 +36541,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                 this.entryListChanged(this.entryList);
             }
 	    if(!this.getProvidersMultiple()) {
-		HU.initSelect(this.jq(ID_PROVIDERS), { multiple:true,autoWidth: false,  "max-height":"100px"});
+		HU.initSelect(this.jq(ID_PROVIDERS), { multiple:true,autoWidth: false,  CSS_MAX_HEIGHT:"100px"});
 	    }
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
@@ -36651,7 +36669,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }
 
 	    let makeExpandable= (html) =>{
-		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px','background','#fff','overflow-y','auto')],html);
+		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px','background','#fff',CSS_OVERFLOW_Y,'auto')],html);
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css('position','relative')],html);
 	    }
@@ -36671,14 +36689,14 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type});
 			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',
-					    ATTR_STYLE,HU.css('width','100%')]);
+					    ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]);
 			addContents(makeExpandable(images));
 		    }
 		} else if(type=='timeline') {
 		    titles.push('Timeline');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:type});
-		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
+		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
 		} else if(type=='map') {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
@@ -36687,16 +36705,16 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			titles.push('Map');
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
-			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
+			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
 		    }
 		} else if(type=='display') {
 		    titles.push('Details');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:'entrywiki',entries:entries});
-		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
+		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
 		} else if(type=='metadata') {		    
 		    titles.push('Metadata');
-		    let mtd = HU.div([ATTR_STYLE,HU.css('width','800px','max-width','800px','overflow-x','auto')],this.getEntriesMetadata(entries));
+		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,'800px',CSS_MAX_WIDTH,'800px',CSS_OVERFLOW_X,'auto')],this.getEntriesMetadata(entries));
 		    addContents(mtd);
 		} else {
 		    console.log('unknown display:' + type);
@@ -36808,7 +36826,6 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                         msg = "Nothing found so far. Still searching " + this.multiSearch.count + " repositories";
                     } else {}
                 }
-                this.writeHtml(ID_FOOTER_LEFT, "");
 		this.jq(ID_ENTRIES).html(this.getMessage(msg));
 		//                this.writeMessage(msg);		
                 this.getDisplayManager().handleEventEntriesChanged(this, []);
@@ -36821,11 +36838,10 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }
 
             let get = this.getGet();
-            this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
 		let _this =this;
-                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-		this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event) {
+                this.writeHtml(ID_SEARCH_FOOTER, this.footerRight);
+		this.jq(ID_SEARCH_FOOTER).find('.ramadda-search-link').button().click(function(event) {
 		    let custom  =$(this).attr('custom-output');
 		    _this.handleSearchLink(event,$(this),custom);
 		});
@@ -36985,7 +37001,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		let map = new RepositoryMap(this.mapId);
 		map.initMap(false);
 		this.areaEntries.forEach(entry=>{
-                    let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
+                    let link = HU.tag(TAG_A, [ATTR_TARGET,"_entries",
+					      ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    let text = link;
 		    if(entry.isImage()) {
 			text = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "400", ATTR_ID,
@@ -37224,11 +37241,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
 	    if(!abs) {
 		if(this.getMaxHeight(400)) {
-		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
+		    style+=HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getMaxHeight(400)));
 		} 
 		if(this.getMaxWidth()) {
-		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
-		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
+		    style+=HU.css(CSS_WIDTH,HU.getDimension(this.getMaxWidth(400)));
+		    style+=HU.css(CSS_MAX_WIDTH,HU.getDimension(this.getMaxWidth(200)));
 		}
 		let entries = HU.div([ATTR_ID,this.domId(ID_ENTRIES),ATTR_CLASS,"display-simplesearch-entries",ATTR_STYLE,style]);
 		if (this.getShowHeader(true)) {
@@ -37254,11 +37271,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 
 	    let size = HU.getDimension(this.getPropertyInputSize());
-            let textField = HU.input("", text, [ATTR_STYLE, HU.css("width", size), ATTR_PLACEHOLDER, eg,
+            let textField = HU.input("", text, [ATTR_STYLE, HU.css(CSS_WIDTH, size), ATTR_PLACEHOLDER, eg,
 						ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
-            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
+            form += HU.tag(TAG_INPUT,[ATTR_TYPE,'submit',ATTR_STYLE,'position:absolute;left:-9999px;width:1px;height:1px;']);
             form += HU.closeTag(TAG_FORM);
 	    form+=HU.div([ATTR_ID,this.domId(ID_FORM)]);
 	    if(hadInitText) {
@@ -37386,7 +37403,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    let values = Utils.split(value,",",true,true);
 		    textOk = false;
 		    let html = Utils.stripTags($(this).html());
-		    let corpus = $(this).attr('data-corpus')??' ';
+		    let corpus = $(this).attr(ATTR_DATA_CORPUS)??' ';
 		    html+=corpus+' ';
 		    html+=$(this).attr('entryid')??' ';		    
 		    html = html.toLowerCase();
@@ -37551,9 +37568,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.initCloser(ID_RESULTS);
 
             let get = this.getGet();
-            this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
-                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+                this.writeHtml(ID_SEARCH_FOOTER, this.footerRight);
             }
 
 
@@ -37570,7 +37586,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(showParent && entry.getParentName()) {
 		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
-		    link = HU.hbox([plink,HU.span([ATTR_STYLE,'margin-right:4px;margin-left:4px;'],"&raquo;"), link]);
+		    link = HU.hbox([plink,HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'4px',CSS_MARGIN_LEFT,'4px')],"&raquo;"), link]);
 		}
 		inner+=HU.div(attrs, link);
 	    });
@@ -37591,11 +37607,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    html+=HU.div([],'Type: ' + entry.getTypeName());
 		    let snippet = entry.getSnippet();
 		    if(snippet)
-			html+=HU.div([ATTR_STYLE,HU.css('border-top','var(--basic-border)')],snippet);
+			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER)],snippet);
 		    if(thumb) {
 			html+=
-			    HU.div([ATTR_STYLE,HU.css('max-height','100px','overflow-y','hidden','border-top','var(--basic-border)')],
-				   HU.image(thumb,['width','300px']));
+			    HU.div([ATTR_STYLE,HU.css('max-height','100px',CSS_OVERFLOW_Y,'hidden',CSS_BORDER_TOP,CSS_BASIC_BORDER)],
+				   HU.image(thumb,[CSS_WIDTH,'300px']));
 		    }
 		    return html;
 		}});
@@ -37964,9 +37980,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 let thumb = entry.getThumbnail();
                 let html = "";
                 if (thumb) {
-                    html = HU.image(thumb, ["width", "300;"]) + "<br>";
+                    html = HU.image(thumb, [ATTR_WIDTH, "300;"]) + "<br>";
                 } else if (entry.isImage()) {
-                    html += HU.image(entry.getResourceUrl(), ["width", "300"]) + "<br>";
+                    html += HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "300"]) + "<br>";
                 }
                 html += entry.getIconImage() + " " + entry.getName() + "<br>";
                 let start = entry.getStartDate().getUTCFullYear() + "-" + Utils.padLeft(entry.getStartDate().getUTCMonth() + 1, 2, "0") + "-" + Utils.padLeft(entry.getStartDate().getUTCDate(), 2, "0");
@@ -37993,8 +38009,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
             html += HU.openDiv([ATTR_CLASS, "display-grid", ATTR_ID, this.getDomId(ID_GRID)]);
             html += HU.div([ATTR_CLASS, "display-grid-popup ramadda-popup"], "");
-            html += HU.openTag(TAG_TABLE, ["border", "0",
-					   ATTR_CLASS, "", "cellspacing", "0", "cellspacing", "0", "width", "100%", ATTR_STYLE, "height:100%;"]);
+            html += HU.openTag(TAG_TABLE, [CSS_BORDER, "0px",
+					   ATTR_CLASS, "", ATTR_CELLSPACING, "0", ATTR_WIDTH, "100%", ATTR_STYLE, "height:100%;"]);
             html += HU.openTag(TAG_TR, ["valign", "bottom"]);
             html += HU.tag(TAG_TD);
             html += HU.tag(TAG_TD, [], HU.div([ATTR_ID, this.getDomId(ID_LINKS)], ""));
@@ -38014,7 +38030,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             html += HU.closeTag(TAG_TD);
             html += HU.closeTag(TAG_TR);
             html += HU.openTag(TAG_TR, []);
-            html += HU.tag(TAG_TD, ["width", "100"], "&nbsp;");
+            html += HU.tag(TAG_TD, [ATTR_WIDTH, "100"], "&nbsp;");
             html += HU.openTag(TAG_TD, []);
             html += HU.div([ATTR_CLASS, "display-grid-axis-bottom ramadda-noselect",
 			    ATTR_TITLE, mouseInfo, ATTR_ID, this.getDomId(ID_AXIS_BOTTOM)], "");
@@ -38139,9 +38155,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 let tick = axis.X.ticks[i];
                 if (tick.percent > 0) {
                     let lineClass = tick.major ? "display-grid-vline-major" : "display-grid-vline";
-                    axis.X.lines += HU.div([ATTR_STYLE, "left:" + tick.percent + "%;", ATTR_CLASS, lineClass], " ");
+                    axis.X.lines += HU.div([ATTR_STYLE, HU.css(CSS_LEFT,tick.percent + "%"), ATTR_CLASS, lineClass], " ");
                 }
-                axis.X.html += HU.div([ATTR_STYLE, "left:" + tick.percent + "%;",
+                axis.X.html += HU.div([ATTR_STYLE, HU.css(CSS_LEFT,tick.percent + "%"),
 				       ATTR_CLASS, "display-grid-axis-bottom-tick"], HU.div([ATTR_CLASS, "display-grid-vtick"], "") + " " + tick.label);
             }
 
@@ -38181,14 +38197,14 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
                 let namePos = pos;
                 if (axis.Y.ascending) {
-                    style += " bottom:" + vInfo.p2 + "%;";
-                    pos += " bottom:" + vInfo.p2 + "%;";
-                    namePos += " bottom:" + vInfo.p2 + "%;";
+                    style += HU.css(CSS_BOTTOM,vInfo.p2 + "%");
+                    pos += HU.css(CSS_BOTTOM, vInfo.p2 + "%");
+                    namePos += HU.css(CSS_BOTTOM,vInfo.p2 + "%");
                 } else {
-                    style += " top:" + vInfo.p2 + "%;";
-                    pos += " top:" + vInfo.p2 + "%;";
-                    namePos += " top:" + vInfo.p2 + "%;";
-                    namePos += "margin-top:-15px;"
+                    style += HU.css(CSS_TOP,vInfo.p2 + "%");
+                    pos += HU.css(CSS_TOP,vInfo.p2 + "%");
+                    namePos += HU.css(CSS_TOP,vInfo.p2 + "%");
+                    namePos += HU.css(CSS_MARGIN_TOP,'-15px');
                 }
                 if (axis.Y.scale) {
                     if (vInfo.p2 > 1) {
@@ -38496,7 +38512,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             let height = this.getProperty("height", "400px");
             if (!height.endsWith("px")) height += "px";
             this.setContents(HU.div([ATTR_CLASS, "display-entry-description",
-				     ATTR_STYLE, "height:" + height + ";"],
+				     ATTR_STYLE, HU.css(CSS_HEIGHT,height)],
 				    html));
             this.entryHtmlHasBeenDisplayed(entry);
         },
@@ -38533,7 +38549,7 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
 	    let html = "";
 	    if(this.sourceEntry) {
 		let e = this.sourceEntry;
-		html = this.getProperty("template","<b>${icon} ${name} Date: ${date}</b>");
+		html = this.getProperty("template",HU.b("${icon} ${name} Date: ${date}"));
 		html = html.replace("${name}",e.getDisplayName());
 		html = html.replace("${icon}",e.getIconImage());
 		html = html.replace("${date}",this.formatDate(e.getStartDate()));
@@ -38582,7 +38598,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Entry Wiki'},
 	{p:'wiki',d:'{{import macro=forchild}}',ex:'wiki text'},
-	{p:'wikiStyle',d:'width:100%;max-width:95vw;min-height:400px;'}
+	{p:'wikiStyle',d:HU.css(CSS_WIDTH,'100%',CSS_MAX_WIDTH,'95vw',CSS_MIN_HEIGHT,'400px')}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -38601,18 +38617,16 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		    let tt = label;
 		    let type = entry.getType();
 		    if(type) tt+=  ' - '+ type.getLabel();
-
                     let optionAttrs = [ATTR_TITLE, tt, ATTR_VALUE, entry.getId(), "data-iconurl", icon];
                     let option = HU.tag(TAG_OPTION, optionAttrs, label);
 		    options.push(option);
 		});
 		
-		let header = HU.select('',[ATTR_STYLE,'width:400px;',ATTR_ID,this.domId('entrymenu')],options);
-		header+=HU.div([ATTR_STYLE,HU.css('margin-top','4px'),
+		let header = HU.select('',[ATTR_STYLE,HU.css(CSS_WIDTH,'400px'),ATTR_ID,this.domId('entrymenu')],options);
+		header+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px'),
 				ATTR_ID,this.domId('entry_breadcrumbs'),
 				ATTR_CLASS,'display-entrylist-details-ancestors']);
-		html = HU.div([ATTR_STYLE,HU.css('margin-top','4px','margin-bottom','8px','border-bottom','var(--basic-border)')],header) +
-		    html;
+		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px',CSS_MARGIN_BOTTOM,'8px',CSS_BORDER_BOTTOM,CSS_BASIC_BORDER)],header) + html;
 	    }
 	    this.displayHtml(html);
 	    if(properties.entries) {
@@ -38704,7 +38718,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
         entryListChanged: function(entryList) {
             let html = "<form>";
             html += "<p>";
-            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable", "cellspacing", "0", "cellspacing", "0"]);
+            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable", ATTR_CELLSPACING, "0", ATTR_CELLSPACING, "0"]);
             let entries = this.entryList.getEntries();
             let get = this.getGet();
 
@@ -38744,7 +38758,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             html += HU.tag(TAG_DIV, [ATTR_CLASS, "display-button",
 				     ATTR_ID, this.getDomId(ID_NEWDISPLAY)], "New Chart");
             html += "<p>";
-            html += "</form>";
+            html += HU.close(TAG_FORM);
             this.writeEntries(html);
             let theDisplay = this;
             this.jq(ID_NEWDISPLAY).button().click(function(event) {
@@ -38824,7 +38838,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             let allTypes = [];
             let html = "";
             html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table",
-					   ATTR_WIDTH, "100%", ATTR_BORDER, "1", "cellspacing", "0", "cellpadding", "5"]);
+					   ATTR_WIDTH, "100%", ATTR_BORDER, "1", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "5"]);
             for (let i = 0; i < this.ramaddas.length; i++) {
                 let ramadda = this.ramaddas[i];
                 let types = ramadda.getEntryTypes();
@@ -38844,7 +38858,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 let link = HU.href(ramadda.getRoot(), ramadda.getName());
                 html += HU.th([ATTR_CLASS, "display-repositories-table-header"], link);
             }
-            html += "</tr>";
+            html += HU.close(TAG_TR);
 
             let onlyCats = [];
             if (this.categories != null) {
@@ -38868,14 +38882,15 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                         row += HU.td([ATTR_CLASS, "display-repositories-table-type-hasnot"], "");
                     } else {
                         let label =
-                            HU.tag(TAG_A, ["href", ramadda.getRoot() + "/search/type/" + repoType.getId(), "target", "_blank"],
+                            HU.tag(TAG_A, [ATTR_HREF, ramadda.getRoot() + "/search/type/" + repoType.getId(),
+					   ATTR_TARGET, "_blank"],
                                    repoType.getEntryCount());
                         row += HU.td([ATTR_ALIGN, "right",
 				      ATTR_CLASS, "display-repositories-table-type-has"], label);
                     }
 
                 }
-                row += "</tr>";
+                row += HU.close(TAG_TR);
 
                 let catRows = catMap[type.getCategory()];
                 if (catRows == null) {
@@ -38907,7 +38922,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 let rows = catMap[cat];
                 html += "<tr>";
                 html += HU.th(["colspan", "" + (1 + this.ramaddas.length)], cat);
-                html += "</tr>";
+                html += HU.close(TAG_TR);
                 for (let row = 0; row < rows.length; row++) {
                     html += rows[row];
                 }
@@ -38979,7 +38994,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 	    this.inputId = this.display.getMetadataFieldId(this.metadata.getType())+'_element_' + this.getIndex()+'_input';
 	    let input = HU.input('','',[ATTR_CLASS,'display-simplesearch-input',
 					ATTR_ID,this.inputId,
-					ATTR_STYLE,HU.css('width','100%'),
+					ATTR_STYLE,HU.css(CSS_WIDTH,'100%'),
 					ATTR_PLACEHOLDER,this.getName()]);
 	    return input;
 	},
@@ -39047,7 +39062,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 					  "metadata-type",type,
 					  "metadata-index",this.getIndex(),
 					  "metadata-value",value],selected) +" " +
-		    HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
+		    HU.tag(TAG_LABEL,  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
 		if(this.getValues().length>popupLimit) {
 		    cbx = HU.span([ATTR_CLASS,CLASS_SEARCH_TAG,'tag',label], cbx);
 		}
@@ -39060,7 +39075,9 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 					      "metadata-type",type,
 					      "metadata-index",this.getIndex(),
 					      "metadata-value",value],selected) +" " +
-			HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],"<b>Not</b> " + label +" (" + count+")");
+			HU.tag(TAG_LABEL,
+			       [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],
+			       HU.b("Not ") + label +" (" + count+")");
 		    if(this.getValues().length>popupLimit) {
 			cbx = HU.span([ATTR_CLASS,CLASS_SEARCH_TAG,'tag',label], cbx);
 		    }
@@ -39176,6 +39193,7 @@ addGlobalDisplayType({
     category:CATEGORY_MAPS,
     preview: "map1.png",
     desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
+    help:'/userguide/wiki/wikimaps.html'
 });
 
 
@@ -46535,8 +46553,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html = this.createRouteForm();
 	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-	    html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
-	    html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_TOP,'5px')], buttons);
+	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'5px')],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
 	    let message = 'New Route';
 	    let ok = ()=>{
@@ -46747,8 +46765,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=HU.formTableClose();
 	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-	    html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
-	    html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_TOP,'5px')], buttons);
+	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'5px')],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
@@ -46959,11 +46977,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    
 	    let clear = ()=>{
-		widget.css('background','#fff');
+		widget.css(CSS_BACKGROUND,'#fff');
 		this.jq(ID_ADDRESS_WAIT).html('');
 	    }
 
-	    widget.css('background','#eee');
+	    widget.css(CSS_BACKGROUND,'#eee');
 	    this.jq(ID_ADDRESS_WAIT).html(HU.getIconImage(icon_wait));
             let jqxhr = $.getJSON(url, (data)=> {
 		clear();
@@ -47290,11 +47308,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		args.forEach(a=>{
 		    form(a[0],a[1],a[2]);
 		});
-		wmtHtml+='</table>';
+		wmtHtml+=HU.close(TAG_TABLE);
 		wmtHtml+='<br>Or enter Tile JSON URL:';
 		wmtHtml +=  HU.formTable();
 		form("Tile JSON",'tilejson',60);
-		wmtHtml +=  '</table>';
+		wmtHtml+=HU.close(TAG_TABLE);
 
 		let contents = [];
 		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
@@ -47494,7 +47512,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		       Utils.isDefined(attrs.south) &&
 		       Utils.isDefined(attrs.east)) {
 			style.strokeColor='transparent';
-//			console.dir(attrs);
+			//			console.dir(attrs);
 			let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Polygon', style,
 						       [attrs.north,attrs.west,
 							attrs.north, attrs.east,
@@ -47617,15 +47635,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    HU.hidden('',icon,[ATTR_ID,this.domId(prop)]);
 		if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 		html += HU.formEntry('',HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,'Include Icon')+' ' + icons);
-		html+='</table>';
-		html+=HU.div([ATTR_STYLE,HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')],
+		html += HU.close(TAG_TABLE);
+		html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',CSS_PADDING_BOTTOM,'8px',CSS_MARGIN_BOTTOM,'8px',
+						CSS_BORDER_BOTTOM,'1px solid #ccc')],
 			     HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 			     HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
 		
 		html+=HU.b('Select Icon');
 		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
-		html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'5px')],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
 		let closeDialog = () =>{
@@ -47803,7 +47822,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+=HU.vspace();
 	    html+=HU.center(buttons);
-	    html+=HU.div([ATTR_STYLE,HU.css('min-width','150px')],
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'150px')],
 			 "&nbsp;" +
 			 HU.span([ATTR_ID,this.domId(ID_OSM_LABEL)],'&nbsp;'));
 	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
@@ -48486,29 +48505,31 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(buttons.length==0) return '';
-	    let attrs = [ATTR_STYLE,HU.css('margin-right','8px')];
-	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
+	    let attrs = [ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'8px')];
+	    let bar =  Utils.wrap(buttons,HU.open(TAG_SPAN,attrs),'</span>');
 	    return bar;
 	},
 	makeListItem:function(mapGlyph,idx) {
 	    let style  = mapGlyph.getStyle()||{};
 	    let line = "";
 	    let type = mapGlyph.getType();
-	    let select = HU.span([ATTR_TITLE,'Click to select',ATTR_STYLE,HU.css('padding-left','0px','padding-right','5px'), ID_GLYPH_ID,mapGlyph.getId(),
+	    let select = HU.span([ATTR_TITLE,'Click to select',
+				  ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'0px',CSS_PADDING_RIGHT,'5px'), ID_GLYPH_ID,mapGlyph.getId(),
 				  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature')], HU.getIconImage('fas fa-arrow-pointer'));
-	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible',ID_GLYPH_ID,mapGlyph.getId(),
+	    let visible = HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'5px'),
+					  ATTR_TITLE,'Visible',ID_GLYPH_ID,mapGlyph.getId(),
 					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
 	    title+=HU.div([], visible +	mapGlyph.makeLegendButtons());
 	    //		this.makeGlyphButtons(mapGlyph,true);
- 	    line += HU.td(['nowrap','',ATTR_STYLE,HU.css('padding','5px')], title);
+ 	    line += HU.td(['nowrap','',ATTR_STYLE,HU.css(CSS_PADDING,'5px')], title);
 	    let col = mapGlyph.getDecoration();
 	    let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType());
 	    if(msg) {
 		col+='' + msg.replace(/<br>/g,' ');
 	    }
 	    line+= HU.td([ID_GLYPH_ID,mapGlyph.getId(),
-			  STYLE,HU.css('padding','5px')],col);
+			  ATTR_STYLE,HU.css(CSS_PADDING,'5px')],col);
 	    return line;
 	},	    
 
@@ -48524,7 +48545,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let pointDataUrl = null;
 		let msg = "";
 		if(!match) {
-		    msg = "There doesn't seem to be any map displays defined for this entry<br>";
+		    msg = HU.div([],"There doesn't seem to be any map displays defined for this entry");
 		}
 		if(match) {
 		    inner = match[1];
@@ -48562,7 +48583,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
 					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], "Cancel"));
 		
-		widget = HU.div([ATTR_STYLE,HU.css('margin','4px')], widget+"<br>"+andZoom + buttons);
+		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'4px')], widget+"<br>"+andZoom + buttons);
 		
 		let dialog =  HU.makeDialog({content:widget,anchor:this.jq(ID_MENU_FILE),title:"Map Display Attributes",header:true,draggable:true,remove:false});
 
@@ -48613,7 +48634,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.isSelected()) {
 		    clazz+= " " + LIST_SELECTED_CLASS;
 		}
-		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,ATTR_VALIGN,'top',ATTR_STYLE,'border-bottom:1px solid #ccc',"glyphid",mapGlyph.getId()]);
+		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,ATTR_VALIGN,'top',
+					   ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,'1px solid #ccc'),"glyphid",mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
 		features+=tds;
 		features+="</tr>";
@@ -48666,7 +48688,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    close();
 
 	    let html ='';
-	    html+=HU.div([ATTR_ID,this.domId(ID_LIST), STYLE,HU.css('margin-bottom','10px','border','1px solid #ccc', 'max-height','300px','max-width','600px','overflow-x','auto','overflow-y','auto')], '');
+	    html+=HU.div([ATTR_ID,this.domId(ID_LIST),
+			  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'10px',CSS_BORDER,'1px solid #ccc', CSS_MAX_HEIGHT,'300px','max-width','600px','overflow-x','auto',CSS_OVERFLOW_Y,'auto')], '');
 
 	    html+='<center>';
 	    html +=HU.div([ATTR_ID,this.domId(ID_LIST_DELETE), ATTR_CLASS,'display-button'], 'Delete Selected');
@@ -48883,7 +48906,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		//		HU.image(icon_command,[ATTR_WIDTH,'12px']);
 		let prefix = '';
 		if(cmd!='Esc') prefix = 'Ctrl-';
-		label = HU.leftRightTable(label,HU.div([ATTR_STYLE,'margin-left:8px;'], HU.span([ATTR_STYLE,'color:#ccc'], prefix+cmd)));
+		label = HU.leftRightTable(label,HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'8px')],
+						       HU.span([ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')], prefix+cmd)));
 	    }
 	    return  HU.div([ATTR_ID,id,ATTR_CLASS,CLASS_CLICKABLE],label);
 	},
@@ -48900,14 +48924,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    colors.forEach(color=>{
 		bar += HU.div([ATTR_TITLE,color,'color',color,'widget-id',domId,
 			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-color-select','ramadda-dot'),
-			       ATTR_STYLE,HU.css('background',color)]) +HU.space(1);
+			       ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]) +HU.space(1);
 		cnt++;
 		if(cnt>=10) {
 		    cnt = 0;
 		    bar+="<br>";
 		}
 	    });
-	    bar = HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;border:1px solid #ccc;'],bar);
+	    bar = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,'150px',CSS_OVERFLOW_Y,'auto',CSS_BORDER,'1px solid #ccc')],bar);
 	    return bar;
 	},
 	
@@ -49005,7 +49029,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			graphic = this.getExternalGraphic();
 		    domId = this.domId(prop);
 		    let div = HU.div([ATTR_CLASS,'imdv-icons',
-				      ATTR_STYLE,'margin-left:5px;display:inline-block;',
+				      ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px',CSS_DISPLAY,'inline-block'),
 				      'icon-property',prop,
 				      ATTR_ID,this.domId(prop+"_icons")],'Loading...');
 		    widget = HU.hidden("",graphic,[ATTR_ID,domId]) +
@@ -49145,12 +49169,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(prop.indexOf("Offset")>=0) size=8;
 			    widget =  HU.input("",v,[ATTR_ID,domId,"size",size])+HU.space(4) +
 				
-			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css("display","inline-block","width","200px")],"");
+			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',
+				    ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_WIDTH,"200px")],"");
 
 			} else if(prop.toLowerCase().indexOf("opacity")>=0) {
 			    if(!v || v=="") v= 1;
 			    widget =  HU.input("",v,[ATTR_ID,domId,"size",4])+HU.space(4) +
-				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css("display","inline-block","width","200px")],"");
+				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',
+					ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_WIDTH,"200px")],"");
 			} else  if (rows>1) {
 			    widget =
 				HU.textarea("",v,[ATTR_ID,this.domId(id),"rows",rows,"cols",size]);
@@ -49171,8 +49197,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.formEntry(label+":",widget+suffix+extra);
 		html+='\n';
 	    });
-	    html+="</table>";
-	    html = HU.div([ATTR_CLASS,'imdv-form',ATTR_STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
+	    html+=HU.close(TAG_TABLE);
+	    html = HU.div([ATTR_CLASS,'imdv-form',
+			   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,"350px",CSS_OVERFLOW_Y,"scroll",CSS_MARGIN_BOTTOM,"5px")], html);
 	    return {props:props,html:html};
 	},
 	
@@ -49198,10 +49225,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
 	    widget+=HU.hidden('','',[ATTR_ID,this.domId(ID_LEVEL_RANGE_CHANGED)]);
 	    let slider =
-		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative',ATTR_WIDTH,width)]);
+		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),
+			ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'110px',CSS_MARGIN_TOP,'10px',CSS_POSITION,'relative',CSS_WIDTH,width)]);
 
 	    let clear = HU.span([ATTR_TITLE,'Clear range values',
-				 ATTR_STYLE,HU.css('margin-left','10px'),
+				 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'10px'),
 				 ATTR_CLASS,'ramadda-clickable',
 				 ATTR_ID,this.domId(ID_LEVEL_RANGE_CLEAR)],
 				HU.getIconImage('fas fa-delete-left'));
@@ -49210,7 +49238,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let tick = HU.image(icon_downdart,
 				[ATTR_ID,
 				 this.domId('level_range_tick'),
-				 ATTR_STYLE,HU.css('position','absolute','top','0px')]);
+				 ATTR_STYLE,HU.css(CSS_POSITION,'absolute','top','0px')]);
 	    let sample1 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'),
 				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
 				    ATTR_STYLE,'position:absolute;left:0px;bottom:0px;',
@@ -49219,7 +49247,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
 				    ATTR_STYLE,'position:absolute;right:0px;bottom:0px;',
 				    ATTR_WIDTH,'120px']);	    
-	    let container = HU.div([ATTR_STYLE,HU.css('display','inline-block','position','relative')],
+	    let container = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_POSITION,'relative')],
 				   slider +tick+sample1+sample2);
 
 
@@ -49266,7 +49294,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			seen[block.title] = true;
 			items.push(HU.div([ATTR_CLASS,CLASS_CLICKABLE,'blockidx',idx], block.title));
 		    });
-		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),ATTR_STYLE,HU.css('margin-left','5px','max-height','200px','overflow-y','auto')], Utils.join(items,""));
+		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),ATTR_STYLE,HU.css('margin-left','5px',CSS_MAX_HEIGHT,'200px',CSS_OVERFLOW_Y,'auto')], Utils.join(items,""));
 		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
@@ -49435,12 +49463,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq('displayattrsmenubar').find('.' + CLASS_CLICKABLE).click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
-		sub = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'], sub);
+		sub = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,'200px',CSS_OVERFLOW_Y,'auto')], sub);
 		
 		let dialog = HU.makeDialog({content:sub,anchor:$(this),
 					    title:block.title,
-					  header:true,sticky:false,
-					  draggable:true,modal:false});						    
+					    header:true,sticky:false,
+					    draggable:true,modal:false});						    
 		let insert = line=>{
 		    if(!line) return
 		    line = line.trim()+"\n";
@@ -49465,19 +49493,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),ATTR_STYLE,HU.css('position','relative','display','inline-block','background','#ccc;')],
-				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', ATTR_WIDTH,'600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
+		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),
+				       ATTR_STYLE,HU.css(CSS_POSITION,'relative',CSS_DISPLAY,'inline-block',CSS_BACKGROUND,'#ccc;')],
+				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y',
+									ATTR_WIDTH,'600px',ATTR_CLASS,'theimage',
+									ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',CSS_BORDER,'1px solid #ccc')]));
 		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
 		    let tryIt = true;
 		    html = buttons+
 			HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear')+HU.space(1)+
-			HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'pathtry',ATTR_STYLE,'width:4em'],
+			HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'pathtry',ATTR_STYLE,HU.css(CSS_WIDTH,'4em')],
 				'Try') +HU.space(1) +
-			HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.5em;']) +
+			HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'0.5em')]) +
 			'<br>'+html;
-		    html = HU.div([ATTR_STYLE,HU.css('margin','10px','text-align','center')],html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'10px',CSS_TEXT_ALIGN,'center')],html);
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
 		    let output = dialog.find('.pathoutput');
@@ -49490,7 +49521,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    HU.tag(TAG_CANVAS,[ATTR_ID,_this.domId('clippath_canvas'),
 					       ATTR_WIDTH,image.width(),
 					       ATTR_HEIGHT,image.height(),					     
-					       ATTR_STYLE,HU.css('position','absolute','pointer-events','none','left','0px','top','0px',
+					       ATTR_STYLE,HU.css(CSS_POSITION,'absolute','pointer-events','none','left','0px','top','0px',
 								 'background','transparent')]));
 			
 			canvas = document.getElementById(_this.domId('clippath_canvas'));
@@ -49693,11 +49724,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
 			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
-						    ATTR_WIDTH,'24px',ATTR_STYLE,'margin-right:4px;margin-bottom:2px;','loading','lazy',ATTR_TITLE,image.name]);
+						    ATTR_WIDTH,'24px',
+						    ATTR_STYLE,HU.css('margin-right','4px','margin-bottom','2px'),
+						    'loading','lazy',ATTR_TITLE,image.name]);
 		    });
 		});
 		html+="</div>";
-		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,'400px','max-height','200px','overflow-y','auto')], html);
+		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,'400px',CSS_MAX_HEIGHT,'200px',CSS_OVERFLOW_Y,'auto')], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search','placeholder','Search','size','30']) +' ' +
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
@@ -49896,7 +49929,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	makeBox: function(type) {
 	    type = type??GLYPH_BOX;
 	    let html = '';
-	    let style = HU.css('margin','1px');
+	    let style = HU.css(CSS_MARGIN,'1px');
 	    let r = this.dialogRectangle??{
 	    };
 	    html+=HU.center(HU.input('',r.n,[ATTR_STYLE, style,ATTR_ID,this.domId('_north'),'size','6','placeholder','North']));
@@ -50267,7 +50300,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let popup = '<center><h2>Current Location</h2></center>';
 
 		if(this.isIsolineEnabled()) {
-		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineForCurrentMarker()',	    HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
+		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineForCurrentMarker()',
+				      HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
 		}
 		this.currentLocationMarker =
 		    this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
@@ -50437,7 +50471,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let zoomPopup  = '';
 		opts.forEach(level=>{
 		    zoomPopup+=
-			HU.div([ATTR_STYLE,HU.css('margin-bottom','2px')],
+			HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'2px')],
 			       HU.image(level.image,
 					['data-level',level.value,
 					 ATTR_TITLE,'Level:' + level.value,
@@ -50564,7 +50598,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }
 	    let cssStyle = "";
-	    if(color) cssStyle= HU.css('border-bottom' , "3px " + line+ " " +color);
+	    if(color) cssStyle= HU.css(CSS_BORDER_BOTTOM , "3px " + line+ " " +color);
 	    let dim = 'width:30px;height:6px;';
 	    return  HU.div([ATTR_STYLE,'margin-bottom:5px;margin-right:5px;display:inline-block;'+dim + cssStyle]);
 	},
@@ -50981,7 +51015,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(this.mapLegendToggleId) {
 			    if(Utils.isDefined(this.getMapProperty('mapLegendOpen'))) {
 				if(!this.getMapProperty('mapLegendOpen')) {
-				    $("#" + this.mapLegendToggleId).css('display','none');
+				    $("#" + this.mapLegendToggleId).css(CSS_DISPLAY,'none');
 				}
 			    }
 			}
@@ -51572,8 +51606,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(html!="") {
 		let height= this.getProperty('height');
 		let legendHeight= this.getProperty('legendHeight',height);		
-		let css  = HU.css('max-width',HU.getDimension(legendWidth),ATTR_WIDTH,HU.getDimension(legendWidth));
-		if(height && !inMap && !legendDiv) css+=HU.css('height',legendHeight);
+		let css  = HU.css(CSS_MAX_WIDTH,HU.getDimension(legendWidth),CSS_WIDTH,HU.getDimension(legendWidth));
+		if(height && !inMap && !legendDiv) css+=HU.css(CSS_HEIGHT,legendHeight);
 		if(!legendDiv) {
 		    let attrs = [ATTR_CLASS,'imdv-legend',ATTR_STYLE,css]
 		    html  = HU.div(attrs,html);
@@ -51763,7 +51797,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    this.getMap().featureClickHandler = e=>{
 		let debug = false;
-//		debug=true;
+		//		debug=true;
 		let feature = e.feature;
 		if(debug)
 		    console.log('featureClick:' + feature);
@@ -51921,14 +51955,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let text=HU.div([ATTR_CLASS,'imdv-popup-header'],
 			    mapGlyph.getLabel({})??'');
 	    let entryLink = mapGlyph.getEntryLink('View entry');
-	    if(entryLink) text+=HU.div([],entryLink);
-	    text+= HU.div([],mapGlyph.getPopupText()??'');
-	    text = text??'';
-	    let bg = 	    mapGlyph.getLegendDiv().css('background');
-	    mapGlyph.getLegendDiv().css('background','yellow');
+	    if(entryLink) text=HU.leftRightTable(text,entryLink);
+	    //text+=HU.div([],entryLink);
+	    text+= HU.div([],mapGlyph.getPopupContents()??'');
+	    let bg =  mapGlyph.getLegendDiv().css(CSS_BACKGROUND);
+	    mapGlyph.getLegendDiv().css(CSS_BACKGROUND,'yellow');
 	    if(bg!='yellow') {
 		setTimeout(()=>{
-		    mapGlyph.getLegendDiv().css('background','#fff');
+		    mapGlyph.getLegendDiv().css(CSS_BACKGROUND,'#fff');
 		},2000);
 	    }
 	    if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith('<wiki>')) {
@@ -51985,23 +52019,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    menuBar = HU.div([ATTR_CLASS,'ramadda-menubar'], menuBar);
 
 	    let address =
-		HU.span([ATTR_STYLE,HU.css('position','relative')], 
-			HU.div([ATTR_STYLE,'display:inline-block;',ATTR_ID,this.domId(ID_ADDRESS_CLEAR),ATTR_TITLE,'Clear',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,'color:#ccc;'])) +
+		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,'relative')], 
+			HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block'),
+				ATTR_ID,this.domId(ID_ADDRESS_CLEAR),ATTR_TITLE,'Clear',ATTR_CLASS,CLASS_CLICKABLE],
+			       HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,'color:#ccc;'])) +
 			' ' +
-			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css('position','absolute','right','0px',
-										      'display','inline-block','margin-right','2px',ATTR_WIDTH,'20px')])+
+			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_RIGHT,'0px',
+										      CSS_DISPLAY,'inline-block',CSS_MARGIN_RIGHT,'2px',CSS_WIDTH,'20px')])+
 			HU.input('','',[ATTR_ID,this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
 
 	    if(this.canChange()) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),[ATTR_ID,this.domId(ID_ADDRESS_ADD),ATTR_TITLE,'Add marker to map'],false);
 	    }
-	    address=HU.span([ATTR_STYLE,'margin-right:5px'], address);
-
-	    address = HU.div([ATTR_STYLE,HU.css('white-space','nowrap','display','none','position','relative'),
+	    address=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'5px')], address);
+	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_DISPLAY,'none',CSS_POSITION,'relative'),
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
 	    
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),ATTR_CLASS,'imdv-message']);
-	    let mapHeader = HU.div([ATTR_STYLE,HU.css('margin-right','10px','margin-left','10px'),
+	    let mapHeader = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'10px',CSS_MARGIN_LEFT,'10px'),
 				    ATTR_ID,this.domId(ID_MAP+'_header')]);
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
@@ -52059,7 +52094,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	    //gotta have this here or else the draggable sets it to relative
-	    legendStyle+=HU.css('position','absolute');
+	    legendStyle+=HU.css(CSS_POSITION,'absolute');
 	    let innerDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP_WRAPPER),
 				   ATTR_CLASS,'imdv-legend-map-wrapper',ATTR_STYLE,legendStyle]);
 	    let inner = $(innerDiv);
@@ -52077,13 +52112,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		stop:function() {
 		    let top = inner.position().top;
 		    if(top<0) {
-			inner.css('top','0');
+			inner.css(CSS_TOP,'0');
 			top=0;
 		    }
 
 		    let left = inner.position().left;		    
 		    if(left<0) {
-			inner.css('left','0');
+			inner.css(CSS_LEFT,'0');
 			left = 0;
 		    }
 
@@ -52092,8 +52127,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let pw = inner.parent().width();
 		    let ph = inner.parent().height();		    
 		    let pos = _this.mapProperties.mapLegendPosition = {};
-		    pos.left = inner.css('left');		    
-		    pos.top = inner.css('top');
+		    pos.left = inner.css(CSS_LEFT);		    
+		    pos.top = inner.css(CSS_TOP);
 		    return
 		    /* TODO?
 		       let set = (which,v) =>{
@@ -52751,11 +52786,11 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 	let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
 	let bgStyle = "";
 	bgStyle+="fill:" +((style.textBackgroundFillColor=='' || !style.textBackgroundFillColor)?"transparent":style.textBackgroundFillColor)+";";
-	if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
+	if(style.textBackgroundStrokeColor!="") bgStyle+=HU.css('stroke',style.textBackgroundStrokeColor);
 	if(style.textBackgroundStrokeWidth>=0)
-	    bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
+	    bgStyle+=HU.css('stroke-width',style.textBackgroundStrokeWidth);
 	if(!isNaN(style.textBackgroundFillOpacity))
-	    bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
+	    bgStyle+=HU.css('fill-opacity', style.textBackgroundFillOpacity);
 
 	if(shape=='circle') {
 	    bg.setAttribute("cx", bbox.x+bbox.width/2);
@@ -54600,6 +54635,14 @@ MapGlyph.prototype = {
     },
     getWikiText:function() {
 	return this.style.wikiText || this.getPopupText();
+    },
+
+    getPopupContents: function() {
+	let contents = this.getPopupText()??'';
+	if(this.isImage() && Utils.stringDefined(this.style.imageUrl)) {
+	    contents += HU.image(this.style.imageUrl,[ATTR_WIDTH,"100%"]);
+	}
+	return contents;
     },
 
     getPopupText: function() {
@@ -59101,7 +59144,7 @@ MapGlyph.prototype = {
     getDecoration:function(small) {
 	let type = this.getType();
 	let style = this.style??{};
-	let css= ['display','inline-block'];
+	let css= [CSS_DISPLAY,'inline-block'];
 	let dim = small?'10px':'25px';
 	css.push(ATTR_WIDTH,small?'10px':'50px');
 	let line = "solid";
@@ -59118,7 +59161,7 @@ MapGlyph.prototype = {
 
 	if(style.imageUrl) {
 	    if(!small) 
-		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,["width","200px"]));
+		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,[ATTR_WIDTH,"200px"]));
 	} else if(type==GLYPH_LABEL) {
 	    if(!small)
 		return style.label.replace(/\n/g,"<br>");
