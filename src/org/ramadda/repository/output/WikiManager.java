@@ -1557,7 +1557,7 @@ public class WikiManager extends RepositoryManager
 	sb.append(
 		  HU.importJS(
 			      getRepository().getHtdocsUrl(
-							   "/displayicons.js")));
+							   "/showicons.js")));
 
 	String id = HU.getUniqueId("icons");
 	String searchid = HU.getUniqueId("search");
