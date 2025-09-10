@@ -6290,8 +6290,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    opts.tooltip=opts.single?'Select value':'Select multiple';
 
 	let label = opts.label??'Select';
-	if(opts.hide)
+	if(opts.hide) {
 	    select.hide();
+	}
 
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',
@@ -6303,6 +6304,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	else
 	    select.before(btn+SPACE);
 	let optionMap = {};
+	let dialog;
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
 	    if(!option) return;
@@ -6314,6 +6316,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    select.iconselectmenu('refresh');
 		}
 	    }
+	    if(opts.single) {
+		dialog.remove();
+	    }
+
 	}
 
 	let cbxChange = function() {
@@ -6324,7 +6330,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let cbxs=[];
 	    let category='';
 	    let radioName = HU.getUniqueId('radio');
-	    select.find('option').each(function() {
+	    select.find(TAG_OPTION).each(function() {
 		let value = $(this).attr('value');
 		if(!Utils.stringDefined(value)) {
 		    if($(this).attr(ATTR_CATEGORY) && opts.showCategories) {
@@ -6346,9 +6352,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    HU.radio(id, radioName,'',label,selected,null,label):
 		    HU.checkbox(id,[],selected,label);
 
+		let corpus = category;
+		corpus+= ' ' + ($(this).attr(ATTR_DATA_CORPUS)??'');
 		let cbxLabel = $(this).html() +' ' + value;
 		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag',
-			      ATTR_DATA_CORPUS,category,
+			      ATTR_DATA_CORPUS,corpus,
 			      ATTR_TITLE,value,
 			      'tag',cbxLabel], cbx);
 		cbxs.push(cbx);
@@ -6367,7 +6375,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
-	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
+	    dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
 					draggable:true,header:true});
 
 	    dialog.find(":checkbox").change(cbxChange);
@@ -6447,23 +6455,32 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         list.forEach(item=>{
 	    let attrs = [];
             let label = item;
+	    let value = '';
             if(typeof item =='string' && item.indexOf('<option')>=0) {
 		options+=item;
 		return;
 	    }
             if(Array.isArray(item)) {
                 label=item[1];
-                item = item[0];
+                value  = item[0];
+            } else if(Utils.isDefined(item.category)) {
+		label = item.category;
+		attrs.push('isheader',true);
+		attrs.push(ATTR_CLASS,'ramadda-select-header');
+		attrs.push(ATTR_CATEGORY,item.category);
             } else if(Utils.isDefined(item.value)) {
 		if(item.imgsrc)
 		    attrs.push('img-src',item.imgsrc);
 		if(item.datatitle)
 		    attrs.push(ATTR_TITLE,item.datatitle);
+		if(item.corpus)
+		    attrs.push(ATTR_DATA_CORPUS,item.corpus);
 		if(item.datastyle)
 		    attrs.push('data-style',item.datastyle);		
-		let value = String(item.value).replace(/"/g,'\\"');
+		value = String(item.value).replace(/"/g,'\\"');
 		label = item.label??value;
-		item = value;
+	    } else {
+		value = item;
 	    }
 	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
@@ -6484,8 +6501,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    //		    console.log(tt);
 		}
 	    }
-	    attrs.push(ATTR_TITLE,tt,extra,null,'value',item);
-            options+=HU.tag("option",attrs,label);
+	    attrs.push(ATTR_TITLE,tt,extra,null,'value',value);
+	    let option = HU.tag(TAG_OPTION,attrs,label);
+            options+=option;
         });
         return options;
     },
