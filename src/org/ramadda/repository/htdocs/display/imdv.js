@@ -1472,13 +1472,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return;
 		    }
 
+		    let goodLoc = v=>{
+			return Utils.isDefined(v) && !isNaN(v);
+		    }
 		    if(glyphType.isImage() &&
-		       Utils.isDefined(attrs.north) &&
-		       Utils.isDefined(attrs.west) &&
-		       Utils.isDefined(attrs.south) &&
-		       Utils.isDefined(attrs.east)) {
+		       goodLoc(attrs.north) &&
+		       goodLoc(attrs.west) &&
+		       goodLoc(attrs.south) &&
+		       goodLoc(attrs.east)) {
 			style.strokeColor='transparent';
-			//			console.dir(attrs);
 			let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Polygon', style,
 						       [attrs.north,attrs.west,
 							attrs.north, attrs.east,
@@ -1494,7 +1496,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    }
 			} else if(!attrs.isImage) {
 			    imageUrl = attrs.thumbnailUrl;
-
 			} else {
 			    imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			}
