@@ -189,8 +189,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
 
-    selectorRamadda:null,
-    initEntryPopup:function(id,target,entryType) {
+    selectorRamaddas:{},
+    initEntryPopup:function(id,target,entryType,showTypeSelector) {
 	let getId=(suffix) =>{
 	    return id+suffix;
 	}
@@ -199,7 +199,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				    ATTR_PLACEHOLDER,"Search",
 				    ATTR_STYLE, HU.css(CSS_WIDTH,"250px")]);
 
+	input+=SPACE+HU.span([ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,'Submit search',
+			      ATTR_ID,getId('button')],HU.getIconImage("fas fa-magnifying-glass"));
 	let addTypesSelector = !Utils.stringDefined(entryType);
+	if(!addTypesSelector && showTypeSelector) addTypesSelector = true;
 //        input = HU.center(input);
 	//If no entry types then get the list of types
 	if(addTypesSelector) {
@@ -210,28 +213,112 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
         $("#" +id).html(html);
 	if(addTypesSelector) {
 	    let addTypes = (types)=>{
-		let options = types.map(type=>{
-		    return {value:type.id,label:type.label};
+		let options=[];
+		let category = '';
+		let cats = [];
+		let catMap = {}
+		types.forEach(type=>{
+		    if(type.getCategory()!=category) {
+			category = type.getCategory();
+		    }
+		    let list = catMap[category]
+		    if(!list) {
+			cats.push(category);
+			catMap[category] = list= [];
+		    }
+		    let item =  {
+			value:type.id,label:type.label,
+			corpus:type.getSuperCategory()+ ' - '+ type.getCategory()
+		    };
+		    list.push(item);
+		});
+		cats.forEach(cat=>{
+		    options.push({category:cat});
+		    options= Utils.mergeLists(options,catMap[cat]);
 		});
 		options.unshift({value:'',label:'Select entry type'});
 		let typeSelectId = getId('types_select');
 		let select= HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,'250px',CSS_MARGIN_TOP,'4px'),ATTR_ID,typeSelectId],options);
+		select = HU.vspace()+select;
 		jqid(getId('types')).html(select);
-		HtmlUtils.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true});
+		HtmlUtils.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true,showCategories:true});
+		HU.initSelect('#'+typeSelectId);
 	    };
-	    if(!this.selectorRamadda) {
-		this.selectorRamadda =  getGlobalRamadda(true);
+	    let key = entryType??'';
+	    let selectorRamadda=this.selectorRamaddas[key];
+	    if(!selectorRamadda) {
+		selectorRamadda =  this.selectorRamaddas[key] = getGlobalRamadda(true);
 	    }
-            let types =   this.selectorRamadda.getEntryTypes((ramadda, types) =>{
+            let types =   selectorRamadda.getEntryTypes((ramadda, types) =>{
 		addTypes(types);
-	    });
+	    },entryType);
 	    if(types) {
 		addTypes(types);
 	    }
 	}
 
+        let inputWidget = jqid(getId("_input"));
+	let doSearch = ()=>{
+            let value =  inputWidget.val()??'';
+            let searchLink =  ramaddaBaseUrl + "/search/do?orderby=createdate&ascending=false&text=" + encodeURIComponent(value) +"&output=json";
+	    let theType = entryType;
+	    if(addTypesSelector) {
+		let type = jqid(getId('types_select')).val();
+		if(Utils.stringDefined(type)&& type!='any') {
+		    theType = type;
+		}
+	    }
+	    if(Utils.stringDefined(theType)) searchLink=HU.url(searchLink,["type",theType]);
+            results.html(HU.getIconImage(icon_wait) + " Searching...");
+            results.show();
+            let myCallback = {
+                entryListChanged: function(list) {
+                    let entries = list.getEntries();
+                    if(entries.length==0) {
+                        results.show();
+                        results.html("Nothing found");
+                        return;
+                    }
+                    let html = "";
+
+                    entries.forEach((entry,idx)=>{
+			let title = 'Type: '+entry.getTypeName()+ HU.BR_ENTITY +
+			    'Parent: '+ entry.getParentName();
+                        html += HU.div(['index',idx,
+					ATTR_TITLE,title,
+					ATTR_CLASS,'ramadda-clickable ramadda-entry'], entry.getIconImage() +" " + entry.getName());
+                    });
+                    results.html(html);
+		    results.find('.ramadda-entry').click(function() {
+			let entry = entries[$(this).attr('index')];
+			if(!entry) return;
+                        RamaddaUtils.selectClick(target, entry.getId(),entry.getName(),{
+			    entry:entry,
+			    entryName: entry.getName(),
+			    isImage:entry.getIsImage(),
+			    thumbnailUrl:entry.getThumbnail(),
+			    icon:entry.getIconUrl(),
+			    entryType:entry.getType().id,
+			    north:entry.getNorth(),
+			    west:entry.getWest(),
+			    south:entry.getSouth(),
+			    east:entry.getEast()
+			});
+		    });
+		    
+                    results.show(400);
+                },
+                handleSearchError:function(url, error) {
+                    results.html("An error occurred:" + error);
+                }
+            };
+            let entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
+            entryList.doSearch();
+	}
+
+	jqid(getId('button')).click(doSearch);
         let results = $("#" + id +"_results");
-        jqid(getId("_input")).keyup(function(event){
+        inputWidget.keyup(function(event){
             let value =  $(this).val();
             if(!Utils.isReturnKey(event) && value=="") {
                 results.hide();
@@ -240,51 +327,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             }
             let keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == 13) {
-                let searchLink =  ramaddaBaseUrl + "/search/do?orderby=createdate&ascending=false&text=" + encodeURIComponent(value) +"&output=json";
-		if(Utils.stringDefined(entryType)) searchLink=HU.url(searchLink,["type",entryType]);
-		if(addTypesSelector) {
-		    let type = jqid(getId('types_select')).val();
-		    if(Utils.stringDefined(type)&& type!='any') {
-			searchLink=HU.url(searchLink,["type",type]);
-		    }
-		}
-                results.html(HU.getIconImage(icon_wait) + " Searching...");
-                results.show();
-                let myCallback = {
-                    entryListChanged: function(list) {
-                        let entries = list.getEntries();
-                        if(entries.length==0) {
-                            results.show();
-                            results.html("Nothing found");
-                            return;
-                        }
-                        let html = "";
-
-                        entries.forEach((entry,idx)=>{
-			    let title = 'Type: '+entry.getTypeName()+ HU.BR_ENTITY +
-				'Parent: '+ entry.getParentName();
-                            html += HU.div(['index',idx,
-					    ATTR_TITLE,title,
-					    ATTR_CLASS,'ramadda-clickable ramadda-entry'], entry.getIconImage() +" " + entry.getName());
-                        });
-                        results.html(html);
-			results.find('.ramadda-entry').click(function() {
-			    let entry = entries[$(this).attr('index')];
-                            RamaddaUtils.selectClick(target, entry.getId(),entry.getName(),{
-				entryName: entry.getName(),
-				icon:entry.getIconUrl(),
-				entryType:entry.getType().id
-			    });
-			});
-			
-                        results.show(400);
-                    },
-                    handleSearchError:function(url, error) {
-                        results.html("An error occurred:" + error);
-                    }
-                };
-                let entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
-                entryList.doSearch();
+		doSearch();
             }
         });
     },
@@ -295,7 +338,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let handler = getHandler(id);
 	if(!handler) handler = getHandler(selector.elementId);
 	if (handler) {
-            handler.selectClick(selector.selecttype, id, entryId, value);
+            handler.selectClick(selector.selecttype, id, entryId, value,opts);
             selector.cancel();
             return;
 	}
@@ -1973,7 +2016,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.allEntries = allEntries;
     this.selecttype = selecttype;
     this.textComp = GuiUtils.getDomObject(this.elementId);
-    this.ramaddaUrl = ramaddaUrl || ramaddaBaseUrl;
+    this.ramaddaUrl = ramaddaUrl ?? ramaddaBaseUrl;
     this.getTextComponent = function() {
         let id = "#" + this.elementId;
         return $(id);
@@ -2060,6 +2103,9 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	if(this.props.typeLabel) {
             url = url + "&typelabel=" + this.props.typeLabel;
 	}
+	if(Utils.isDefined(this.props.showTypeSelector)) {
+            url = url + "&showtypeselector=" + this.props.showTypeSelector;
+	}	
         GuiUtils.loadXML(url, (request,id)=>{_this.handleSelect(request,id)}, this.id);
         return false;
     }
