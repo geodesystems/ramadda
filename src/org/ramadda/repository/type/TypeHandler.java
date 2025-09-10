@@ -845,6 +845,8 @@ public class TypeHandler extends RepositoryManager {
         items.add(JsonUtil.quote(icon));
         items.add("category");
         items.add(JsonUtil.quote(getCategory()));
+        items.add("superCategory");
+        items.add(JsonUtil.quote(getSuperCategory()));	
 
         return JsonUtil.map(items);
     }
