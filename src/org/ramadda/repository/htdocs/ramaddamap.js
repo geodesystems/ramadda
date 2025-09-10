@@ -754,15 +754,16 @@ RepositoryMap.prototype = {
 	   !ok(bounds.bottom)) {
 	    if(debugBounds)
 		console.error("zoomToExtent: bounds are bad:", bounds);
-	    return
+	    return false;
 	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
 	    var center = bounds.getCenterLonLat();
 	    this.setCenter(center);
-	    return;
+	    return true;
 	}
 	this.getMap().zoomToExtent(bounds,flag);
+	return true;
     },
     centerToMarkers: function() {
         if (!this.markers)
