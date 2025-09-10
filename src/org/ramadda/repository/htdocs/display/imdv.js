@@ -861,7 +861,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return true;
 	},	
 
-	handleNewFeature:function(feature,style,mapOptions) {
+	handleNewFeature:function(feature,style,mapOptions,zoomTo) {
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
 	    delete style.mapOptions;
@@ -870,7 +870,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    let selected=this.getSelected();
 	    if(selected.length>0 && selected[0].isGroup()) {
-		console.log('tg');
 		selected[0].addChildGlyph(mapGlyph);
 		this.makeLegend();
 	    } else {
@@ -879,12 +878,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
-	    /*
-	      not now...
-	      if(mapGlyph.isMap()) {
-	      setTimeout(()=>{mapGlyph.panMapTo();},100);
-	      }
-	    */
+	    if(zoomTo) {
+		let noBoundsCallback = ()=>{
+		    mapGlyph.panMapToPending=true;
+		}
+		setTimeout(()=>{mapGlyph.panMapTo(false,noBoundsCallback);},100);
+	    }
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -1386,22 +1385,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-
-
-
-	    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
+	    if(glyphType.requiresEntry()) {
 		let callback = (entryId,imageUrlOrEntryAttrs,resourceId) =>{
+		    getGlobalRamadda().getEntry(entryId,entry=>{
+//			console.dir(entry);
+		    });
+
 		    let attrs = {};
 		    let imageUrl;
 		    if(typeof imageUrlOrEntryAttrs == 'string') {
 			imageUrl = imageUrlOrEntryAttrs;
+			this.lastImageUrl = imageUrl;
 		    } else {
 			attrs = imageUrlOrEntryAttrs;
 		    }
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
 		    let style = Utils.clone({},tmpStyle);
-
 		    if(glyphType.isMultiEntry()) {
 			style.externalGraphic = attrs.icon??glyphType.getIcon();
 		    }
@@ -1441,7 +1441,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(snippet) {
 				mapOptions.legendText = snippet.trim();
 			    }
-			    let mapGlyph = this.handleNewFeature(null,style,mapOptions);
+			    let mapGlyph = this.handleNewFeature(null,style,mapOptions,true);
 			    mapGlyph.checkMapLayer(true);
 			});
 			return;
@@ -1472,7 +1472,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return;
 		    }
 
-		    if(glyphType.isImage() && Utils.isDefined(attrs.north) &&
+		    if(glyphType.isImage() &&
+		       Utils.isDefined(attrs.north) &&
 		       Utils.isDefined(attrs.west) &&
 		       Utils.isDefined(attrs.south) &&
 		       Utils.isDefined(attrs.east)) {
@@ -1484,15 +1485,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							attrs.south,attrs.east,
 							attrs.south, attrs.west]);
 			attrs.type = GLYPH_IMAGE;
-			if(!attrs.isImage) {
-			    style.imageUrl = attrs.thumbnailUrl;
-			    if(!style.imageUrl) {
-				alert("Selected entry does not have an image");
-				return;
+			let entry  = attrs.entry;
+			if(entry) {
+			    if(entry.getIsEntryImage()) {
+				imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entry.getId());
+			    } else {
+				imageUrl = entry.getThumbnail();
 			    }
+			} else if(!attrs.isImage) {
+			    imageUrl = attrs.thumbnailUrl;
+
 			} else {
-			    style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			    imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			}
+			if(!imageUrl) {
+			    alert("Selected entry does not have an image");
+			    return;
+			}
+			style.imageUrl = imageUrl;
 			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
 			mapGlyph.checkImage(feature);
 			this.addGlyph(mapGlyph);
@@ -1528,7 +1538,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				url = Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			    }
 			}
-			this.lastImageUrl = url;
 			style.imageUrl = url;
 		    } else if(attrs.icon) {
 			style.externalGraphic = attrs.icon;
@@ -1553,6 +1562,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		//Do this a bit later because the dialog doesn't get popped up
 		let initCallback = ()=>{
+		    HtmlUtils.makeSelectTagPopup('#'+this.domId(ID_MAPRESOURCE),{after:true,icon:true,single:true});
 		    this.jq(ID_MAPRESOURCE).change(()=>{
 			callback('',{},this.jq(ID_MAPRESOURCE).val());
 			if(this.selector) this.selector.cancel();
@@ -1574,18 +1584,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
-		    extra = this.wrapDialog(extra + '<br>Or select entry:');
+		    extra = this.wrapDialog(extra) + HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px')],HU.b('Or select entry:'));
 		}
 
-
 		let props = {title:glyphType.isImage()?'Select Image':
-			     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map'),
+			     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map Entry'),
 			     extra:extra,
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
 		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
+		props.showTypeSelector=true;
 		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
 	    } 
@@ -4847,6 +4857,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let loadCallback = (map,layer)=>{
 		if(layer.mapGlyph) {
 		    layer.mapGlyph.handleMapLoaded(map,layer);
+		    if(layer.mapGlyph.panMapToPending) {
+			layer.mapGlyph.panMapToPending = false;
+			layer.mapGlyph.panMapTo(false);
+		    }			
 		}
 		this.makeLegend()
 	    }
@@ -6480,6 +6494,10 @@ GlyphType.prototype = {
     isLabel:  function() {
 	return this.getStyle().label!=null;
     },
+    requiresEntry:function() {
+	return (this.isImage() || this.isEntry()||this.isMultiEntry() || this.isMap() || this.isData());
+    },
+
     isImage:  function() {
 	return this.options.isImage;
     },
