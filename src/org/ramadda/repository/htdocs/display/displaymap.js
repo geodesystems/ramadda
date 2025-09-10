@@ -1686,7 +1686,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    if(!entry.hasLocation()) return;
 			    let lonlat = MapUtils.createLonLat(entry.getWest(), entry.getNorth());
 			    let html = HU.b(entry.getName());
-			    if(entry.isImage()) {
+			    if(entry.getIsImage()) {
 				html+="<br>" + HU.image(entry.getImageUrl(),[ATTR_WIDTH,'100%']);
 			    }
 			    this.map.addMarker(entry.getId(), lonlat, entry.getIconUrl(),  "", html, null, 16);

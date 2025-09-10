@@ -377,7 +377,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 //If there is just one image we should just display it
                 //We should do a gallery here if more than 1
 
-                if (entry.isImage()) {
+                if (entry.getIsImage()) {
                     imageEntries.push(entry);
                     let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     imageCnt++;
@@ -2622,7 +2622,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
 			if(defaultImage) return true;
-			return entry.isImage();
+			return entry.getIsImage();
 		    });
 		    if(imageEntries.length>0) {
 			titles.push('Images');
@@ -2944,7 +2944,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                     let link = HU.tag(TAG_A, [ATTR_TARGET,"_entries",
 					      ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    let text = link;
-		    if(entry.isImage()) {
+		    if(entry.getIsImage()) {
 			text = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "400", ATTR_ID,
 								 this.getDomId("entry_" + entry.getIdForDom()),
 								 ATTR_ENTRYID, entry.getId(),
@@ -3921,7 +3921,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 let html = "";
                 if (thumb) {
                     html = HU.image(thumb, [ATTR_WIDTH, "300;"]) + "<br>";
-                } else if (entry.isImage()) {
+                } else if (entry.getIsImage()) {
                     html += HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "300"]) + "<br>";
                 }
                 html += entry.getIconImage() + " " + entry.getName() + "<br>";

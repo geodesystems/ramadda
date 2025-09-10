@@ -4931,7 +4931,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let metadata = entry.getMetadata();
 	    //Don't this now since this gets shown in the embed details
 	    if(dfltProps.showImage) {
-		if (entry.isImage()) {
+		if (entry.getIsImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
 					      ]);
