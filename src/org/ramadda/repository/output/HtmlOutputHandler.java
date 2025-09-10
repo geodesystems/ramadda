@@ -822,7 +822,6 @@ public class HtmlOutputHandler extends OutputHandler {
                    HU.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
         boolean firstCall = false;
-
 	Entry localeEntry = null;
         //If we have a localeid that means this is the first call
         if (localeId != null) {
@@ -872,7 +871,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    }
 	}
 
-	if (localeEntry != null) {
+	if (firstCall && localeEntry != null) {
 	    if (true || target.endsWith("_fieldname")) {
 		sb.append(getSelectLink(request, localeEntry, seen,
 					target));
@@ -979,7 +978,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    HU.close(childrenSB, "div");
 	}
 
-	if(!isFieldName) {
+	if(firstCall && !isFieldName) {
 	    NamedBuffer searchSB         = new NamedBuffer("Search");
 	    buffers.add(searchSB);
 	    HU.open(searchSB, "div", HU.cssClass("ramadda-select-search"));
@@ -988,19 +987,21 @@ public class HtmlOutputHandler extends OutputHandler {
 	    searchSB.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
 					       HU.squote(searchId),
 					       HU.squote(target),
-					       HU.squote(request.getString("entrytype","")))));
+					       HU.squote(request.getString("entrytype","")),
+					       request.get("showtypeselector",false))));
 	    HU.close(searchSB, "div");
 	}
 
 
 
-	String s;
-	if(buffers.size()>1) {
+	String s="";
+	if(firstCall && buffers.size()>1) {
 	    StringBuilder tabs = new StringBuilder();
 	    HU.makeTabs(tabs,buffers);
 	    s = tabs.toString();
 	} else {
-	    s = buffers.get(0).toString();
+	    for(NamedBuffer nb: buffers)
+		s = s+ nb.toString();
 	}
         s = HU.div(s, HU.attrs("style","min-width:400px;","class","ramadda-select-popup"));
 
