@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Sep  6 07:39:30 MDT 2025";
+var build_date="RAMADDA build date: Wed Sep 10 07:22:49 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -9084,7 +9084,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let metadata = entry.getMetadata();
 	    //Don't this now since this gets shown in the embed details
 	    if(dfltProps.showImage) {
-		if (entry.isImage()) {
+		if (entry.getIsImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
 					      ]);
@@ -34437,7 +34437,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 //If there is just one image we should just display it
                 //We should do a gallery here if more than 1
 
-                if (entry.isImage()) {
+                if (entry.getIsImage()) {
                     imageEntries.push(entry);
                     let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     imageCnt++;
@@ -36682,7 +36682,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
 			if(defaultImage) return true;
-			return entry.isImage();
+			return entry.getIsImage();
 		    });
 		    if(imageEntries.length>0) {
 			titles.push('Images');
@@ -37004,7 +37004,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                     let link = HU.tag(TAG_A, [ATTR_TARGET,"_entries",
 					      ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    let text = link;
-		    if(entry.isImage()) {
+		    if(entry.getIsImage()) {
 			text = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "400", ATTR_ID,
 								 this.getDomId("entry_" + entry.getIdForDom()),
 								 ATTR_ENTRYID, entry.getId(),
@@ -37981,7 +37981,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 let html = "";
                 if (thumb) {
                     html = HU.image(thumb, [ATTR_WIDTH, "300;"]) + "<br>";
-                } else if (entry.isImage()) {
+                } else if (entry.getIsImage()) {
                     html += HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "300"]) + "<br>";
                 }
                 html += entry.getIconImage() + " " + entry.getName() + "<br>";
@@ -40856,7 +40856,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    if(!entry.hasLocation()) return;
 			    let lonlat = MapUtils.createLonLat(entry.getWest(), entry.getNorth());
 			    let html = HU.b(entry.getName());
-			    if(entry.isImage()) {
+			    if(entry.getIsImage()) {
 				html+="<br>" + HU.image(entry.getImageUrl(),[ATTR_WIDTH,'100%']);
 			    }
 			    this.map.addMarker(entry.getId(), lonlat, entry.getIconUrl(),  "", html, null, 16);
@@ -46896,7 +46896,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return true;
 	},	
 
-	handleNewFeature:function(feature,style,mapOptions) {
+	handleNewFeature:function(feature,style,mapOptions,zoomTo) {
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
 	    delete style.mapOptions;
@@ -46905,7 +46905,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    let selected=this.getSelected();
 	    if(selected.length>0 && selected[0].isGroup()) {
-		console.log('tg');
 		selected[0].addChildGlyph(mapGlyph);
 		this.makeLegend();
 	    } else {
@@ -46914,12 +46913,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
-	    /*
-	      not now...
-	      if(mapGlyph.isMap()) {
-	      setTimeout(()=>{mapGlyph.panMapTo();},100);
-	      }
-	    */
+	    if(zoomTo) {
+		let noBoundsCallback = ()=>{
+		    mapGlyph.panMapToPending=true;
+		}
+		setTimeout(()=>{mapGlyph.panMapTo(false,noBoundsCallback);},100);
+	    }
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -47421,22 +47420,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-
-
-
-	    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
+	    if(glyphType.requiresEntry()) {
 		let callback = (entryId,imageUrlOrEntryAttrs,resourceId) =>{
+		    getGlobalRamadda().getEntry(entryId,entry=>{
+//			console.dir(entry);
+		    });
+
 		    let attrs = {};
 		    let imageUrl;
 		    if(typeof imageUrlOrEntryAttrs == 'string') {
 			imageUrl = imageUrlOrEntryAttrs;
+			this.lastImageUrl = imageUrl;
 		    } else {
 			attrs = imageUrlOrEntryAttrs;
 		    }
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
 		    let style = Utils.clone({},tmpStyle);
-
 		    if(glyphType.isMultiEntry()) {
 			style.externalGraphic = attrs.icon??glyphType.getIcon();
 		    }
@@ -47476,7 +47476,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(snippet) {
 				mapOptions.legendText = snippet.trim();
 			    }
-			    let mapGlyph = this.handleNewFeature(null,style,mapOptions);
+			    let mapGlyph = this.handleNewFeature(null,style,mapOptions,true);
 			    mapGlyph.checkMapLayer(true);
 			});
 			return;
@@ -47507,7 +47507,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return;
 		    }
 
-		    if(glyphType.isImage() && Utils.isDefined(attrs.north) &&
+		    if(glyphType.isImage() &&
+		       Utils.isDefined(attrs.north) &&
 		       Utils.isDefined(attrs.west) &&
 		       Utils.isDefined(attrs.south) &&
 		       Utils.isDefined(attrs.east)) {
@@ -47519,15 +47520,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							attrs.south,attrs.east,
 							attrs.south, attrs.west]);
 			attrs.type = GLYPH_IMAGE;
-			if(!attrs.isImage) {
-			    style.imageUrl = attrs.thumbnailUrl;
-			    if(!style.imageUrl) {
-				alert("Selected entry does not have an image");
-				return;
+			let entry  = attrs.entry;
+			if(entry) {
+			    if(entry.getIsEntryImage()) {
+				imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entry.getId());
+			    } else {
+				imageUrl = entry.getThumbnail();
 			    }
+			} else if(!attrs.isImage) {
+			    imageUrl = attrs.thumbnailUrl;
+
 			} else {
-			    style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			    imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			}
+			if(!imageUrl) {
+			    alert("Selected entry does not have an image");
+			    return;
+			}
+			style.imageUrl = imageUrl;
 			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
 			mapGlyph.checkImage(feature);
 			this.addGlyph(mapGlyph);
@@ -47563,7 +47573,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				url = Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			    }
 			}
-			this.lastImageUrl = url;
 			style.imageUrl = url;
 		    } else if(attrs.icon) {
 			style.externalGraphic = attrs.icon;
@@ -47588,6 +47597,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		//Do this a bit later because the dialog doesn't get popped up
 		let initCallback = ()=>{
+		    HtmlUtils.makeSelectTagPopup('#'+this.domId(ID_MAPRESOURCE),{after:true,icon:true,single:true});
 		    this.jq(ID_MAPRESOURCE).change(()=>{
 			callback('',{},this.jq(ID_MAPRESOURCE).val());
 			if(this.selector) this.selector.cancel();
@@ -47609,18 +47619,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
-		    extra = this.wrapDialog(extra + '<br>Or select entry:');
+		    extra = this.wrapDialog(extra) + HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px')],HU.b('Or select entry:'));
 		}
 
-
 		let props = {title:glyphType.isImage()?'Select Image':
-			     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map'),
+			     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map Entry'),
 			     extra:extra,
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
 		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
+		props.showTypeSelector=true;
 		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
 	    } 
@@ -50882,6 +50892,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let loadCallback = (map,layer)=>{
 		if(layer.mapGlyph) {
 		    layer.mapGlyph.handleMapLoaded(map,layer);
+		    if(layer.mapGlyph.panMapToPending) {
+			layer.mapGlyph.panMapToPending = false;
+			layer.mapGlyph.panMapTo(false);
+		    }			
 		}
 		this.makeLegend()
 	    }
@@ -52515,6 +52529,10 @@ GlyphType.prototype = {
     isLabel:  function() {
 	return this.getStyle().label!=null;
     },
+    requiresEntry:function() {
+	return (this.isImage() || this.isEntry()||this.isMultiEntry() || this.isMap() || this.isData());
+    },
+
     isImage:  function() {
 	return this.options.isImage;
     },
@@ -54493,7 +54511,7 @@ MapGlyph.prototype = {
 	}
 	return this.style;
     },
-    panMapTo: function(andZoomIn) {
+    panMapTo: function(andZoomIn,noBoundsCallback) {
 	if(this.isZoom()) {
 	    if(this.attrs.mapCenter) {
 		this.getMap().setCenter(this.attrs.mapCenter);
@@ -54514,7 +54532,10 @@ MapGlyph.prototype = {
 	    bounds = this.getBounds();
 	}
 	if(bounds) {
-	    this.getMap().zoomToExtent(bounds);
+	    if(!this.getMap().zoomToExtent(bounds)) {
+		if(noBoundsCallback) noBoundsCallback(this);
+		return;
+	    }
 	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
