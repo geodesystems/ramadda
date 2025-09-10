@@ -716,6 +716,9 @@ function EntryType(props) {
         getCategory: function() {
             return this.category;
         },
+        getSuperCategory: function() {
+            return this.superCategory;
+        },
         getEntryCount: function() {
             return this.entryCount;
         },
@@ -1161,7 +1164,10 @@ function Entry(props) {
         getFilename: function() {
             return this.filename;
         },
-        isImage: function() {
+	getIsEntryImage:function() {
+	    return this.isImage;
+	},
+        getIsImage: function() {
             if (this.url && this.url.search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
                 return true;
             }
