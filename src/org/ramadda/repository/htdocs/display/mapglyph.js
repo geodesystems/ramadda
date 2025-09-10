@@ -1672,7 +1672,7 @@ MapGlyph.prototype = {
 	}
 	return this.style;
     },
-    panMapTo: function(andZoomIn) {
+    panMapTo: function(andZoomIn,noBoundsCallback) {
 	if(this.isZoom()) {
 	    if(this.attrs.mapCenter) {
 		this.getMap().setCenter(this.attrs.mapCenter);
@@ -1693,7 +1693,10 @@ MapGlyph.prototype = {
 	    bounds = this.getBounds();
 	}
 	if(bounds) {
-	    this.getMap().zoomToExtent(bounds);
+	    if(!this.getMap().zoomToExtent(bounds)) {
+		if(noBoundsCallback) noBoundsCallback(this);
+		return;
+	    }
 	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
