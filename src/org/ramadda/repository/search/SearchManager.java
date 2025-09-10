@@ -1289,17 +1289,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	throws Exception {
 	List<Query> queries = new ArrayList<Query>();
 
-	String text = request.getUnsafeString(ARG_TEXT,"");
+	String text = request.getUnsafeString(ARG_TEXT,"").trim();
 	String searchField = null;
 	boolean exact = request.get(ARG_EXACT,false);
 	for(String field: SEARCH_FIELDS) {
-	    if(text.indexOf(field+":")>=0) {
+	    if(text.startsWith(field+":")) {
 		searchField = field;
-		text = text.substring((field.length()+1));
+		text = text.substring((field+":").length());
 		break;
 	    }
 	}
-
+	//handle shorthand
+	if(searchField==null && text.startsWith("creator:")) {
+	    searchField=FIELD_CREATOR;
+	    text  = text.substring("creator:".length());
+	}
 	text = text.trim();
 	if(text.length()>0) {
 	    Hashtable<String,List<String>>synonyms=null; 
