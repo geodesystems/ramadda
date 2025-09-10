@@ -2593,21 +2593,21 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
-    public static String call(String function, String... args) {
+    public static String call(String function, Object... args) {
         StringBuilder sb = new StringBuilder(function);
         call(sb, function, args);
         return sb.toString();
     }
 
     public static String call(Appendable sb, String function,
-                              String... args) {
+                              Object... args) {
         try {
             sb.append("(");
             for (int i = 0; i < args.length; i++) {
                 if (i > 0) {
                     sb.append(",");
                 }
-                sb.append(args[i]);
+                sb.append(args[i].toString());
             }
             sb.append(");");
 
