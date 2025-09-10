@@ -4233,6 +4233,7 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
 
 .ramadda-select-header {
     padding-left:4px;
+    width:100%;
     display:inline-block;
     background:#E0FFFF;
     border-top:1px solid #aaa;
