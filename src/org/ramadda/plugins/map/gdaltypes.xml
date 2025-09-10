@@ -1,5 +1,5 @@
 <types  supercategory="Geoscience" category="GIS Data">
-  <type name="geo_gdal" foruser="false" handler="org.ramadda.plugins.map.GdalTypeHandler" >
+  <type name="geo_gdal" description="Geo Raster" foruser="false" handler="org.ramadda.plugins.map.GdalTypeHandler" >
      <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info"/>
      <column name="rotation" label="Rotation"     type="double" default="0" />
