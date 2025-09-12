@@ -3856,9 +3856,13 @@ pre {
 }
 
 .ramadda-select-tag-category {
+    border-top-left-radius: var(--default-radius);
     background:#eee;
     padding:4px;
+    padding-left:8px;
+    padding-bottom:2px;
     margin-top:4px;
+    font-weight:bold;
 }
 
 

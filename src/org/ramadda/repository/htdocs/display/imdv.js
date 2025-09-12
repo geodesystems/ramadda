@@ -118,6 +118,11 @@ var CLASS_FILTER_STRING = 'imdv-filter-string';
 var CLASS_FILTER_STRINGS = 'imdv-filter-strings';
 
 
+var ROUTE_CAR ='car';
+var ROUTE_BICYCLE ='bicycle';
+var ROUTE_PEDESTRIAN ='pedestrian';
+
+
 var ID_GLYPH_ID='glyphid';
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
@@ -550,7 +555,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(this.getProperty('googleRoutingEnabled')) providers.push('google');
 		if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
 		html+=HU.formEntry('Provider:', HU.select('',[ATTR_ID,this.domId('routeprovider')],providers,this.routeProvider));
-		html+=HU.formEntry('Route Type:' , HU.select('',[ATTR_ID,this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
+		html+=HU.formEntry('Route Type:' , HU.select('',[ATTR_ID,this.domId('routetype')],[ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],this.routeType));
 		if(addSequence) {
 		    if(this.getProperty('hereRoutingEnabled')) {
 			html += HU.formEntry('',HU.checkbox(this.domId('routedosequence'),[],false,
@@ -575,7 +580,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	    let routeArgs = {
-		mode:mode??'car',
+		mode:mode??ROUTE_CAR,
 		points:Utils.join(xys,','),
 		provider:provider
 	    };	    
@@ -686,8 +691,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		route.style = Utils.clone(glyphType.getStyle());
 		this.addFeatures([route]);
 		let name = null;
+		let routeCode='&#128663;';
+		if(mode==ROUTE_BICYCLE)
+		    routeCode='&#128690;';
+		else if(mode==ROUTE_PEDESTRIAN)
+		    routeCode='&#128694;';		
 		if(provider)
-		    name ="Route: " + provider  +" - " +mode;
+		    name ="Route: " + provider  +" - " +routeCode;
 
 		this.handleNewFeature(route,null,{name:name,type:GLYPH_ROUTE,routeProvider:this.routeProvider,routeType:this.routeType,instructions:instructions});
 		this.showDistances(route.geometry,GLYPH_ROUTE,true);
@@ -723,7 +733,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.getMap().closePopup();
 	    let html = HU.formTable();
-	    html+=HU.formEntry('Mode:' , HU.select('',[ATTR_ID,this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
+	    html+=HU.formEntry('Mode:' , HU.select('',[ATTR_ID,this.domId('isolinemode')],[ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],this.isolineMode));
 	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',[ATTR_ID,this.domId('isolinevalue'),'size','5']) +
 			       HU.space(2)+
 			       HU.select('',[ATTR_ID,this.domId('isolinetype')],[{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],this.isolineType));	    
@@ -732,7 +742,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_TOP,'5px')], buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,'5px')],html);
-	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
+	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',
+					anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
 		this.isolineValue=this.jq('isolinevalue').val();		
@@ -761,7 +772,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let url = Ramadda.getUrl('/map/getisoline?entryid='+this.getProperty('entryId'));
 	    let routeArgs = {
-		mode:mode??'car',
+		mode:mode??ROUTE_CAR,
 		latitude:latitude,
 		longitude:longitude,
 		'rangetype':type,
@@ -1799,8 +1810,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=HU.vspace();
 	    html+=HU.center(buttons);
 	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'150px')],
-			 "&nbsp;" +
-			 HU.span([ATTR_ID,this.domId(ID_OSM_LABEL)],'&nbsp;'));
+			 SPACE +
+			 HU.span([ATTR_ID,this.domId(ID_OSM_LABEL)],SPACE));
 	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
 	    this.osm.dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_NEW),
 					     callback:()=>{this.osm.dialog=null;},
@@ -2665,7 +2676,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let html ='';
 	    html+=HU.div([ATTR_ID,this.domId(ID_LIST),
-			  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'10px',CSS_BORDER,'1px solid #ccc', CSS_MAX_HEIGHT,'300px','max-width','600px','overflow-x','auto',CSS_OVERFLOW_Y,'auto')], '');
+			  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'10px',CSS_BORDER,'1px solid #ccc', CSS_MAX_HEIGHT,'300px','max-width','600px',
+					    CSS_OVERFLOW_X,'auto',CSS_OVERFLOW_Y,'auto')], '');
 
 	    html+='<center>';
 	    html +=HU.div([ATTR_ID,this.domId(ID_LIST_DELETE), ATTR_CLASS,'display-button'], 'Delete Selected');
