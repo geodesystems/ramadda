@@ -972,10 +972,10 @@ public class CsvOutputHandler extends OutputHandler {
 					if(stringDefined(s)) {
 					    columnEntry = getRepository().getEntryManager().getEntry(request, s);
 					}
-					if(entry==null) {
+					if(columnEntry==null) {
 					    add.accept("");
 					} else {
-					    String entryUrl = request.makeUrl(repository.URL_ENTRY_SHOW,  ARG_ENTRYID, columnEntry.getId());
+					    String entryUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW,  ARG_ENTRYID, columnEntry.getId());
 					    entryUrl = request.getAbsoluteUrl(entryUrl);
 					    addLink.accept(entryUrl,columnEntry.getName());
 					}
