@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 12 11:31:02 MDT 2025";
+var build_date="RAMADDA build date: Sun Sep 14 13:10:43 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -19380,7 +19380,7 @@ function RecordFilter(display,filterFieldId, properties) {
 				label = "-blank-";
 			}
 			if(count) label = label +(showCount?" (" + count+")":"");
-			tmp.push([v,label]);
+			tmp.push({value:v,label:label});
 		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 		}
@@ -49317,7 +49317,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			seen[block.title] = true;
 			items.push(HU.div([ATTR_CLASS,CLASS_CLICKABLE,'blockidx',idx], block.title));
 		    });
-		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),ATTR_STYLE,HU.css('margin-left','5px',CSS_MAX_HEIGHT,'200px',CSS_OVERFLOW_Y,'auto')], Utils.join(items,""));
+		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),
+							      ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px',
+										CSS_MAX_HEIGHT,'300px',
+										CSS_OVERFLOW_Y,'auto')],
+							     Utils.join(items,""));
 		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
@@ -49327,7 +49331,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		});
 		let textarea = HU.textarea("",attrs,[ATTR_ID,this.domId('displayattrs'),"rows",15,"cols", 60]);
-		content.push({header:"Display Properties", contents: HU.hbox([textarea, menuBar])});
+		content.push({header:"Display Properties", contents: HU.div([],'One per line')+HU.hbox([textarea, menuBar])});
 	    }// else {
 	    let r =  this.makeStyleForm(style,mapGlyph,{isGroup:true});
 	    let div =
