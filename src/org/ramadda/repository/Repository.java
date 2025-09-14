@@ -1875,10 +1875,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if (getPluginManager().haveSeen("types:" + file, false)) {
 	    return false;
 	}
-	Element root = XU.getRoot(file, getClass());
+	String xml = IOUtil.readContents(file,getClass(),  (String) null);
+	if(xml==null) {
+	    throw new IllegalArgumentException("Could not load type definition file:" + file);
+	}
+	Element root = XU.getRoot(xml);
 	if (root == null) {
 	    return false;
-
 	}
 	loadTypeHandlers(root, file,false,false);
 	getPluginManager().markSeen("types:" + file);
@@ -1888,7 +1891,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public List<TypeHandler> loadTypeHandlers(Element root, String file, boolean overwrite, boolean debug)
 	throws Exception {
-        List children = XmlUtils.findChildren(root, TypeHandler.TAG_TYPE,"import");
+        List children = XmlUtils.findChildren(root, TypeHandler.TAG_TYPE,TypeHandler.TAG_IMPORT);
         List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         if ((children.size() == 0)
 	    && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
@@ -1896,7 +1899,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             for (int i = 0; i < children.size(); i++) {
                 Element node = (Element) children.get(i);
-		if (XmlUtil.isTag(node,"import")) {
+		if (XmlUtil.isTag(node,TypeHandler.TAG_IMPORT)) {
 		    String resource = XU.getAttribute(node,"resource");
 		    if(!resource.startsWith("/")) {
 			resource  = new File(file).getParentFile().toString()+"/"+ resource;
