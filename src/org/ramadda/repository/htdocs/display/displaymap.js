@@ -119,7 +119,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'overviewMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'showGraticules',ex:true},	
 	{p:'showLayerSwitcher',d:true,ex:'false'},
-	{p:'showScaleLine',ex:'true',d:false},
+	{p:'showScaleLine',ex:'true',d:true},
 	{p:'showZoomPanControl',ex:'true',d:true},
 	{p:'showZoomOnlyControl',ex:'false',d:false},
 	{p:'enableDragPan',ex:'false',d:true},
