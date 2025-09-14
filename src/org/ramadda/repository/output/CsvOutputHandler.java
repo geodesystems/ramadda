@@ -678,7 +678,9 @@ public class CsvOutputHandler extends OutputHandler {
 	    }
 	}
 	List<String> tags =getTags(request);
-	
+	String typesArgument = request.getString(ARG_TYPES,null);
+	List<String> useTypes= null;
+	if(stringDefined(typesArgument)) useTypes = Utils.split(typesArgument);
 	String title = request.getString(ARG_TITLE,null);
         boolean showColumns = Utils.getProperty(props, ARG_SHOWCOLUMNS, true);
         boolean showLink = request.get(ARG_SHOWLINK,true);
@@ -694,6 +696,9 @@ public class CsvOutputHandler extends OutputHandler {
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
             TypeHandler  typeHandler = entry.getTypeHandler();
+	    if(useTypes!=null) {
+		if(!typeHandler.isType(useTypes)) continue;
+	    }		
             String       type        = typeHandler.getType();
             List<Column> columns     = typeHandler.getColumnsWithTags(tags);
             boolean      hasFields   = false;
@@ -730,7 +735,6 @@ public class CsvOutputHandler extends OutputHandler {
 	Workbook workbook = new XSSFWorkbook(); 
 	CreationHelper creationHelper = workbook.getCreationHelper();
 	CellStyle dateStyle = workbook.createCellStyle();
-
 	dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
 
 	CreationHelper createHelper = workbook.getCreationHelper();
@@ -788,6 +792,7 @@ public class CsvOutputHandler extends OutputHandler {
 
 	    BiConsumer<Entry,Long> fmt = (entry,date)->{
 		Date d =new Date(date);
+		sheet.setColumnWidth(colCnt[0],256*20);
 		Cell cell = row[0].createCell(colCnt[0]++);
 		if(getDateHandler().isNullDate(d)) {
 		    cell.setCellValue("");
@@ -971,7 +976,7 @@ public class CsvOutputHandler extends OutputHandler {
 		    url = request.getAbsoluteUrl(url);
 		    add.accept(name);
 		    if(showLink) 
-			add.accept(url);
+			addLink.accept(url,"Repository link");
 		    if(showType) 
 			add.accept(entry.getTypeHandler().getLabel());
 		    if (showDate) {
