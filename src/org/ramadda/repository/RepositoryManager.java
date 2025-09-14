@@ -94,6 +94,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	}
     }
 
+    public List<String> getTags(Request request) {
+	String tags = request.getString(ARG_TAGS,null);
+	if(!stringDefined(tags)) return null;
+	return Utils.split(tags,",",true,true);
+    }
+
     public String makeSnippet(String snippet) {
         return makeSnippet(snippet, false);
     }
