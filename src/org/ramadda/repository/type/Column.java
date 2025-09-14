@@ -98,6 +98,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final String TAG_COLUMN = "column";
     public static final String ATTR_NAME = "name";
     public static final String ATTR_FORMAT = "format";
+    public static final String ATTR_TAGS = "tags";
     public static final String ATTR_CHANGETYPE = "changetype";
     public static final String ATTR_SHOWINFORM = "showinform";
     public static final String ATTR_GROUP = "group";
@@ -234,6 +235,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private int rows = 1;
     private int columns = 40;
     private String propertiesFile;
+    private List<String> tags;
     private int columnIndex;
     private int offset;
     private boolean canShow = true;
@@ -302,6 +304,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                                           searchType);
         propertiesFile = XU.getAttribute(element, ATTR_PROPERTIES,
 					      (String) null);
+
+        String tagString = XU.getAttribute(element, ATTR_TAGS,(String) null);
+	if(tagString!=null) {
+	    tags = Utils.split(tagString,",",true,true);
+	}
 
         String dttmFormat = XU.getAttribute(element, ATTR_FORMAT,
 						 (String) null);
@@ -656,6 +663,24 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     public boolean isType(String t) {
         return type.equals(t);
+    }
+
+    public boolean matchesTags(List<String> tagList) {
+	if(tagList==null || tagList.size()==0) return true;
+	if(tags==null) return false;
+	for(String tag: tagList) {
+	    if(matchesTag(tag)) return true;
+	}
+	return false;
+    }
+
+    public boolean matchesTag(String tag) {
+	if(tags==null) return false;
+	return tags.contains(tag);
+    }
+
+    public List<String> getTags() {
+	return tags;
     }
 
     public boolean getTokenizeSearch() {
