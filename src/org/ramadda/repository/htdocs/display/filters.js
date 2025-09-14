@@ -965,7 +965,7 @@ function RecordFilter(display,filterFieldId, properties) {
 				label = "-blank-";
 			}
 			if(count) label = label +(showCount?" (" + count+")":"");
-			tmp.push([v,label]);
+			tmp.push({value:v,label:label});
 		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 		}
