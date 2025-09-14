@@ -165,492 +165,261 @@ public interface Constants {
 
     public static final String ARG_TARGET_ENTRY = "targetentry";
     public static final String ARG_SHOWCATEGORIES = "showCategories";
-
+    public static final String ARG_SEPARATETYPES = "separateTypes";
+    public static final String ARG_PAGINATE = "paginate";
+    public static final String ARG_SHOWRESOURCE  = "showResource";
+    public static final String ARG_SHOWTYPE="showType";
+    public static final String ARG_SHOWDATE  = "showDate";
+    public static final String ARG_SHOWCREATEDATE  = "showCreateDate";
+    public static final String ARG_SHOWCHANGEDATE  = "showChangeDate";
+    public static final String ARG_SHOWFROMDATE  = "showFromDate";
+    public static final String ARG_SHOWTODATE  = "showToDate";                
+    public static final String ARG_SHOWCOLUMNS = "showColumns";
+    public static final String ARG_SHOWLINK = "showLink";
     public static final String ARG_SHOWNEXT = "showNext";
-
     public static final String ARG_DOOCR = "doocr";
     public static final String ARG_DOOCR_CONDITIONAL = "doocr_conditional";    
     public static final String ARG_CORPUS_FORCE = "corpus_force";
-
     public static final String ARG_RETURNFILENAME = "returnfilename";
 
     public static final String ATTR_ADDSHORTMETADATA = "addshortmetadata";
-
     public static final String ATTR_MAKETHUMBNAILS = "makethumbnails";
-
     public static final String ATTR_ATTR = "attr";
-
     public static final String ATTR_ATTR1 = ATTR_ATTR + "1";
-
     public static final String ATTR_ATTR2 = ATTR_ATTR + "2";
-
     public static final String ATTR_ATTR3 = ATTR_ATTR + "3";
-
     public static final String ATTR_ATTR4 = ATTR_ATTR + "4";
-
     public static final String ATTR_CANDONEW = "candonew";
-
     public static final String ATTR_CANDOUPLOAD = "candoupload";
-
     public static final String ATTR_CLASS = "class";
-
     public static final String ATTR_CODE = "code";
-
     public static final String ATTR_DATATYPE = "datatype";
-
     public static final String ATTR_DIRECTORY = "directory";
-
     public static final String ATTR_FILE_PATTERN = "filePattern";
-
-    /**  */
     public static final String ATTR_UNIQUE = "unique";
-
     public static final String ATTR_DB_DESCRIPTION = "description";
-
     public static final String ATTR_FORUSER = "foruser";
-
     public static final String ATTR_DB_NAME = "name";
-
     public static final String ATTR_DESCRIPTION = "description";
-
     public static final String ATTR_CATEGORY = "category";
-
     public static final String ATTR_ENTRYORDER = "entryorder";
-
     public static final String ATTR_EAST = "east";
-
     public static final String ATTR_FILE = "file";
-
     public static final String ATTR_FROM = "from";
-
     public static final String ATTR_FROMDATE = "fromdate";
-
     public static final String ATTR_GROUP = "group";
-
     public static final String ATTR_ID = "id";
-
     public static final String ATTR_ORIGINALID = "originalid";
-
     public static final String ATTR_INHERITED = "inherited";
-
     public static final String ATTR_INPUTID = "inputid";
-
     public static final String ATTR_LOCALFILE = "localfile";
-
     public static final String ATTR_LOCALFILETOMOVE = "localfiletomove";
-
     public static final String ATTR_NAME = "name";
-
     public static final String ATTR_NORTH = "north";
-
     public static final String ATTR_LATITUDE = "latitude";
-
     public static final String ATTR_LONGITUDE = "longitude";
-
     public static final String ATTR_PARENT = "parent";
-
     public static final String ATTR_SUPER = "super";
-
     public static final String ATTR_RESOURCE = "resource";
-
     public static final String ATTR_FILENAME = "filename";
-
     public static final String ATTR_RESOURCE_TYPE = "resource_type";
-
     public static final String ATTR_SERVER = "server";
-
     public static final String ATTR_SOUTH = "south";
-
     public static final String ATTR_TARGET = "target";
-
     public static final String ATTR_TITLE = "title";
-
     public static final String ATTR_TO = "to";
-
     public static final String ATTR_TODATE = "todate";
-
     public static final String ATTR_PATH = "path";
-
     public static final String ATTR_CREATEDATE = "createdate";
-
     public static final String ATTR_CHANGEDATE = "changedate";
-
     public static final String ATTR_TOOLTIP = "tooltip";
-
     public static final String ATTR_TYPE = "type";
-
     public static final String ATTR_ISGROUP = "isgroup";
-
     public static final String ATTR_URL = "url";
-
     public static final String ATTR_SIZE = "size";
-
     public static final String ATTR_DOWNLOAD = "download";
-
     public static final String ATTR_WEST = "west";
-
     public static final String ATTR_ALTITUDE = "altitude";
-
     public static final String ATTR_ALTITUDE_TOP = "altitudetop";
-
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
-    public static final String ARG_DISPLAY = "display";
-
     public static final String DISPLAY_FULL = "full";
-
     public static final String DISPLAY_SMALL = "small";
 
+    public static final String ARG_DISPLAY = "display";
     public static final String ARG_DECORATE = "decorate";
-
     public static final String ARG_TREEVIEW = "treeview";
-
     public static final String ARG_DEPTH = "depth";
-
     public static final String ARG_FULLURL = "fullurl";
-
     public static final String ARG_ACTION = "action";
-
     public static final String ARG_ACTION_FORCE = "action.force";
-
     public static final String ARG_ACTION_ASSOCIATE = "action.associate";
-
     public static final String ARG_ACTION_COPY = "action.copy";
-
     public static final String ARG_ACTION_ID = "actionid";
-
     public static final String ARG_ACTION_MOVE = "action.move";
-
     public static final String ARG_ADD = "add";
-
     public static final String ARG_ADMIN = "admin";
-
     public static final String ARG_ADMIN_WHAT = "what";
-
     public static final String ARG_PLUGIN_FILE = "plugin.file";
-
     public static final String ARG_ALLENTRIES = "allentries";
-
     public static final String ARG_ENTRYTYPE = "entrytype";
-
     public static final String ARG_ANCESTOR = "ancestor";
     public static final String ARG_DESCENDENT = "descendent";    
-
     public static final String ARG_APPLET = "applet";
-
     public static final String ARG_AREA = "area";
-
     public static final String ARG_LOCATION = "location";
-
     public static final String ARG_LOCATION_LATITUDE = "location.latitude";
-
     public static final String ARG_LOCATION_LONGITUDE = "location.longitude";
-
     public static final String ARG_LATITUDE = "latitude";
-
     public static final String ARG_LONGITUDE = "longitude";
-
     public static final String ARG_BBOX = "bbox";
-
     public static final String ARG_DEFAULTBBOX = "defaultbbox";
-
     public static final String ARG_AREA_MODE = "areamode";
-
     public static final String VALUE_BLANK = "-blank-";
-
     public static final String VALUE_AREA_CONTAINS = "contains";
-
     public static final String VALUE_AREA_OVERLAPS = "overlaps";
-
     public static final String ARG_AREA_EAST = ARG_AREA + "_east";
-
     public static final String ARG_AREA_NORTH = ARG_AREA + "_north";
-
     public static final String ARG_AREA_SOUTH = ARG_AREA + "_south";
-
     public static final String ARG_AREA_WEST = ARG_AREA + "_west";
-
     public static final String ARG_ASCENDING = "ascending";
     public static final String ARG_DESCENDING = "descending";    
-
     public static final String DIR_UP = "up";
     public static final String DIR_DOWN = "down";
-
     public static final String ARG_ASSOCIATION = "association";
-
     public static final String ARG_AUTH_PASSWORD = "auth.password";
-
     public static final String ARG_AUTH_USER = "auth.user";
-
     public static final String ARG_BYTES = "bytes";
-
     public static final String ARG_CANCEL = "cancel";
-
     public static final String ARG_UNDO = "undo";
-
     public static final String ARG_EXECUTE = "execute";
-
     public static final String ARG_CONFIRM = "confirm";
-
     public static final String ARG_COLUMNS = "columns";
-
     public static final String ARG_COMPRESS = "compress";
-
     public static final String ARG_CANCEL_DELETE = "canceldelete";
-
     public static final String ARG_DO_CHILDREN = "dochildren";
-
     public static final String ARG_CHANGE = "change";
-
     public static final String ARG_COLLECTION = "collection";
-
     public static final String ARG_COMMENT = "comment";
-
     public static final String ARG_COMMENTS = "showcomments";
-
     public static final String ARG_COMMENT_ID = "comment_id";
-
-    public static final String ARG_CONTRIBUTION_FROMEMAIL =
-        "contribution.fromemail";
-
-    public static final String ARG_CONTRIBUTION_FROMNAME =
-        "contribution.fromname";
-
+    public static final String ARG_CONTRIBUTION_FROMEMAIL =      "contribution.fromemail";
+    public static final String ARG_CONTRIBUTION_FROMNAME =    "contribution.fromname";
     public static final String ARG_ENTRYORDER = "entryorder";
-
     public static final String ARG_CREATEDATE = "createdate";
-
     public static final String ARG_CHANGEDATE = "changedate";
-
     public static final String ARG_CREATOR = "creator";
-
     public static final String ARG_DATASET = "dataset";
-
     public static final String ARG_CATEGORY = "category";
-
     public static final String ARG_CATEGORY_SELECT = "category.select";
-
     public static final String ARG_DATE = "date";
-
-    /**  */
     public static final String ARG_TAGS = "tags";
-
     public static final String ARG_DATE_OVERLAPS = "date.overlaps";
-
     public static final String ARG_DATE_SEARCHMODE = "date.searchmode";
-
     public static final String ARG_DATE_NODATAMODE = "date.nodatamode";
-
     public static final String VALUE_NODATAMODE_NONE = "none";
-
     public static final String VALUE_NODATAMODE_INCLUDE = "include";
-
     public static final String DATE_SEARCHMODE_OVERLAPS = "overlaps";
-
     public static final String DATE_SEARCHMODE_CONTAINEDBY = "containedby";
-
     public static final String DATE_SEARCHMODE_CONTAINS = "contains";
-
-    public static final String DATE_SEARCHMODE_DEFAULT =
-        DATE_SEARCHMODE_OVERLAPS;
-
+    public static final String DATE_SEARCHMODE_DEFAULT =    DATE_SEARCHMODE_OVERLAPS;
     public static final String ARG_DATE_PATTERN = "date.pattern";
-
     public static final String ARG_DAY = "day";
-
     public static final String ARG_DELETE = "delete";
-
     public static final String ARG_DELETE_CONFIRM = "delete.confirm";
-
     public static final String ARG_DESCRIPTION = "description";
-
     public static final String ARG_ISWIKI = "iswiki";
-
     public static final String ARG_WIKITEXT = "wikitext";
-
     public static final String ARG_EAST = "east";
-
     public static final String ARG_ELEMENT = "element";
-
     public static final String ARG_EDIT_METADATA = "edit.metadata";
-
     public static final String ARG_EMBEDDED = "embedded";
-
     public static final String ARG_ENTRYID = "entryid";
-
     public static final String ARG_SELENTRY = "selentry";
-
     public static final String ARG_ALLENTRY = "allentry";
-
     public static final String ARG_ENTRY_TIMESTAMP = "entry.timestamp";
-
     public static final String ARG_LOCALEID = "localeid";
-
     public static final String ARG_ENTRYIDS = "entryids";
-
     public static final String ARG_EXACT = "exact";
-
     public static final String ARG_ISREGEXP = "isregexp";
-
     public static final String ARG_FAVORITE_ADD = "user.favorite.add";
-
     public static final String ARG_FAVORITE_DELETE = "user.favorite.delete";
-
     public static final String ARG_FAVORITE_ID = "user.favorite.id";
-
     public static final String ARG_FILE = "file";
-
     public static final String ARG_FILESUFFIX = "filesuffix";
-
     public static final String ARG_MAXFILESIZE = "maxfilesize";
-
     public static final String ARG_FILE_UNZIP = "file.unzip";
     public static final String ARG_ZIP_PATTERN = "zippattern";    
-
     public static final String ARG_STRIPEXIF = "stripexif";
     public static final String ARG_REVERSEGEOCODE = "reversegeocode";        
-
     public static final String ARG_MAKENAME = "makename";
-
     public static final String ARG_DELETEFILE = "deletefile";
-
-    public static final String ARG_FILE_PRESERVEDIRECTORY =
-        "file.preservedirectoryfile";
-
+    public static final String ARG_FILE_PRESERVEDIRECTORY =  "file.preservedirectoryfile";
     public static final String ARG_FORMAT = "format";
-
     public static final String ARG_FORM_ADVANCED = "form.advanced";
-
     public static final String ARG_FORM_METADATA = "form.metadata";
-
     public static final String ARG_FORM_TYPE = "form.type";
-
     public static final String ARG_FROM = "from";
-
     public static final String ARG_FROMDATE = "fromdate";
-
     public static final String ARG_FROMDATE_TIME = ARG_FROMDATE + ".time";
-
     public static final String ARG_DATA_DATE = "datadate";
-
     public static final String ARG_CREATE_DATE = "createdate";
-
     public static final String ARG_CHANGE_DATE = "changedate";
-
     public static final String ARG_FROMLOGIN = "user.fromlogin";
-
     public static final String ARG_GROUP = "group";
-
     public static final String ARG_DEST_ENTRY = "destentry";
-
     public static final String ARG_GROUPID = "groupid";
-
     public static final String ARG_GROUP_CHILDREN = "group_children";
-
     public static final String ARG_PATHTEMPLATE = "pathtemplate";
-
     public static final String ARG_HARVESTER_CLASS = "harvester.class";
-
     public static final String ARG_HARVESTER_GETXML = "harvester.getxml";
-
     public static final String ARG_HARVESTER_ID = "harvester.id";
-
-    public static final String ARG_HARVESTER_REDIRECTTOEDIT =
-        "harvester.redirecttoedit";
-
+    public static final String ARG_HARVESTER_REDIRECTTOEDIT =  "harvester.redirecttoedit";
     public static final String ARG_HARVESTER_XMLFILE = "harvester.xmlfile";
-
     public static final String ARG_HEIGHT = "height";
-
     public static final String ARG_IMAGEHEIGHT = "imageheight";
-
     public static final String ARG_IMAGEWIDTH = "imagewidth";
     public static final String ARG_SERVERIMAGEWIDTH = "serverimagewidth";    
-
     public static final String ARG_INCLUDENONGEO = "includenongeo";
-
     public static final String ARG_LABEL = "label";
-
     public static final String ARG_LANGUAGE = "language";
-
     public static final String ARG_LATEST = "latest";
-
     public static final String ARG_LATESTOPENDAP = "latestopendap";
-
     public static final String ARG_LAYOUT = "layout";
-
     public static final String ARG_LIMIT = "limit";
-
     public static final String ARG_SERVERFILE = "serverfile";
-
     public static final String ARG_SERVERFILE_HARVEST = "serverfile_harvest";
-
     public static final String ARG_SERVERFILE_PATTERN = "serverfile_pattern";
-
     public static final String ARG_LOG = "log";
-
     public static final String ARG_MAX = "max";
-
     public static final String ARG_MARKER = "marker";
     public static final String ARG_PREVMARKERS = "prevmarkers";
-
     public static final String ARG_LAST = "last";
-
     public static final String ARG_MAXLAT = "maxlat";
-
     public static final String ARG_MAXLON = "maxlon";
-
-    //These can be used as well for search and subset. They are defined in the repository.properties 
-
     public static final String ARG_MAXLATITUDE = "maxlatitude";
-
     public static final String ARG_MINLATITUDE = "minlatitude";
-
     public static final String ARG_MAXLONGITUDE = "maxlongitude";
-
     public static final String ARG_MINLONGITUDE = "minlongitude";
-
     public static final String ARG_MESSAGE = "message";
-
     public static final String ARG_METADATA_ADD = "metadata.add";
-
     public static final String ARG_FROMHARVESTER = "fromharvester";
-
     public static final String ARG_METADATA_ADDSHORT = "metadata.addshort";
-
-    public static final String ARG_METADATA_ADDTOPARENT =
-        "metadata.addtoparent";
-
-    public static final String ARG_METADATA_CLIPBOARD_COPY =
-        "metadata.clipboard.copy";
-
-    public static final String ARG_METADATA_CLIPBOARD_PASTE =
-        "metadata.clipboard.paste";
-
+    public static final String ARG_METADATA_ADDTOPARENT =        "metadata.addtoparent";
+    public static final String ARG_METADATA_CLIPBOARD_COPY =       "metadata.clipboard.copy";
+    public static final String ARG_METADATA_CLIPBOARD_PASTE =       "metadata.clipboard.paste";
     public static final String ARG_METADATA_ATTR = "metadata_attr";
-
     public static final String ARG_METADATA_ATTR1 = "metadata_attr1";
-
     public static final String ARG_METADATA_ATTR2 = "metadata_attr2";
-
     public static final String ARG_METADATA_ATTR3 = "metadata_attr3";
-
     public static final String ARG_METADATA_ATTR4 = "metadata_attr4";
-
     public static final String ARG_METADATA_DELETE = "metadata_delete";
-
     public static final String ARG_METADATA_ID = "metadata_id";
-
     public static final String ARG_METADATA_INHERITED = "metadata_inherited";
-
     public static final String ARG_METADATA_TYPE = "metadata_type";
-
     public static final String ARG_MINLAT = "minlat";
-
     public static final String ARG_MINLON = "minlon";
-
     public static final String PROP_SYSTEM_MESSAGE = "system.message";
-
     public static final String PROP_ENTRY_TABLE_SHOW_CREATEDATE =
         "ramadda.entry.table.show.createdate";
 
@@ -823,7 +592,7 @@ public interface Constants {
     public static final String ARG_SHOWENTRYSELECTFORM =
         "showentryselectform";
 
-    public static final String ARG_SHOWLINK = "showlink";
+
 
     public static final String ARG_DISPLAYLINK = "displaylink";
 
