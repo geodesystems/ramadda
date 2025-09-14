@@ -174,6 +174,7 @@ public class TypeHandler extends RepositoryManager {
     public static final String ATTR_CATEGORY = "category";
     public static final String ATTR_SUPERCATEGORY = "supercategory";
     public static final String TAG_TYPE = "type";
+    public static final String TAG_IMPORT = "import";
     public static final String TAG_METADATA = "metadata";
     public static final String ATTR_HANDLER = "handler";
     public static final int MATCH_UNKNOWN = 0;
