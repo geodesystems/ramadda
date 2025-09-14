@@ -26,6 +26,9 @@ columns="80"
 #Is this wiki text
 iswiki="true"
 
+#tags
+tags="reportable,tag2"
+
 #help
 suffix="message for edit"
 help="help message for edit"
