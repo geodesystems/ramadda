@@ -36,6 +36,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.*;
 
@@ -46,7 +47,9 @@ import java.net.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+
 import java.util.ArrayList;
+import java.awt.Color;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -580,17 +583,6 @@ public class CsvOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     *
-     * @param sb _more_
-     * @param s _more_
-     * @param label _more_
-     * @param type _more_
-     * @param escape _more_
-     * @param full _more_
-     *
-     * @throws Exception _more_
-     */
     private void addHeader(Appendable sb, String s, String label,
                            String type, boolean escape, boolean full)
             throws Exception {
@@ -668,20 +660,12 @@ public class CsvOutputHandler extends OutputHandler {
 	return request.returnStream("entries.xlsx",  "application/excel",is);	    
     }
 
-    public void listXlsx(final Request request, OutputStream outputStream,final List<Entry> allEntries)
+    public void listXlsx(final Request request,
+			 OutputStream outputStream,final List<Entry> allEntries)
             throws Exception {
 	String NA = "";
 	Hashtable props = new Hashtable();
-
-        boolean showCategories = request.get(ARG_SHOWCATEGORIES,
-                                             Utils.getProperty(props,
-                                                 ARG_SHOWCATEGORIES, true));
-        boolean showAllTypes = request.get("showAllTypes",
-                                             Utils.getProperty(props,
-                                                 "showAllTypes", false));
-
-	if(showAllTypes) showCategories = true;
-
+        boolean separateTypes = request.get(ARG_SEPARATETYPES,true);
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
         List<String> displayColumns = null;
@@ -693,18 +677,25 @@ public class CsvOutputHandler extends OutputHandler {
 
 	    }
 	}
-        boolean showColumns = Utils.getProperty(props, "showColumns", true);
-        boolean showDate = Utils.getProperty(props, "showDate", true);
-        boolean showCreateDate = Utils.getProperty(props, "showCreateDate", false);
-        boolean showChangeDate = Utils.getProperty(props, "showChangeDate", true);
-        boolean showFromDate = Utils.getProperty(props, "showFromDate", false);
-        boolean showToDate = Utils.getProperty(props, "showToDate", false);		
+	List<String> tags =getTags(request);
+	
+	String title = request.getString(ARG_TITLE,null);
+        boolean showColumns = Utils.getProperty(props, ARG_SHOWCOLUMNS, true);
+        boolean showLink = request.get(ARG_SHOWLINK,true);
+        boolean showResource = request.get(ARG_SHOWRESOURCE,true);
+        boolean showDate = request.get(ARG_SHOWDATE, true);
+        boolean showCreateDate = request.get(ARG_SHOWCREATEDATE, false);
+        boolean showChangeDate = request.get(ARG_SHOWCREATEDATE, false);
+        boolean showFromDate = request.get(ARG_SHOWFROMDATE, false);
+        boolean showToDate = request.get(ARG_SHOWTODATE, false);
+        boolean showType = request.get(ARG_SHOWTYPE, false);		
         boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",  true);	
+
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
             TypeHandler  typeHandler = entry.getTypeHandler();
             String       type        = typeHandler.getType();
-            List<Column> columns     = typeHandler.getColumns();
+            List<Column> columns     = typeHandler.getColumnsWithTags(tags);
             boolean      hasFields   = false;
             if (columns != null) {
                 for (Column column : columns) {
@@ -722,11 +713,11 @@ public class CsvOutputHandler extends OutputHandler {
                 }
             }
 
-            if ( !showCategories) {
-                type = "entries";
-            }
-
-	    if(showAllTypes) type  =entry.getTypeHandler().getType();
+            if ( !separateTypes) {
+                type = "entries"; 
+            } else {
+		type  =entry.getTypeHandler().getType();
+	    }
             List<Entry> entries = map.get(type);
             if (entries == null) {
                 entries = new ArrayList<Entry>();
@@ -743,11 +734,35 @@ public class CsvOutputHandler extends OutputHandler {
 	dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
 
 	CreationHelper createHelper = workbook.getCreationHelper();
+	CellStyle titleStyle = workbook.createCellStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        // Fill background
+	XSSFColor lightGray = new XSSFColor(new Color(0xEE, 0xEE, 0xEE), null);
+	//        titleStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        ((XSSFCellStyle) titleStyle).setFillForegroundColor(lightGray);
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // Optionally add a border
+        titleStyle.setBorderTop(BorderStyle.THIN);
+        titleStyle.setBorderBottom(BorderStyle.THIN);
+	Font font = workbook.createFont();
+	font.setFontHeightInPoints((short)16); 
+	font.setBold(true);
+	titleStyle.setFont(font);
+
+	CellStyle headerStyle = workbook.createCellStyle();
+	font = workbook.createFont();
+	font.setBold(true);
+	headerStyle.setFont(font);
 
         for (String type : types) {
             List<Entry>  entries     = map.get(type);
             TypeHandler  typeHandler = entries.get(0).getTypeHandler();
-	    Sheet sheet = workbook.createSheet(typeHandler.getLabel());
+	    String sheetTitle = typeHandler.getLabel();
+	    if(!separateTypes) sheetTitle="Entries";
+	    Sheet sheet = workbook.createSheet(sheetTitle);
 
 
 	    int rowCnt=0;
@@ -759,6 +774,9 @@ public class CsvOutputHandler extends OutputHandler {
 		Cell cell = row[0].createCell(colCnt[0]++);
 		cell.setCellValue(value);
 	    };
+
+
+
 	    BiConsumer<String,String> addLink = (address,label)->{
 		Cell cell = row[0].createCell(colCnt[0]++);
 		cell.setCellValue(label);
@@ -779,7 +797,7 @@ public class CsvOutputHandler extends OutputHandler {
 		}
 	    };
 
-	    List<Column> columns     = typeHandler.getColumns();
+	    List<Column> columns     = typeHandler.getColumnsWithTags(tags);
 	    List<MetadataType> showMetadata = null;
 	    String tmp = Utils.getProperty(props,"showMetadata",null);
 	    if(tmp!=null) {
@@ -801,7 +819,10 @@ public class CsvOutputHandler extends OutputHandler {
 		}
 	    } else {
 		headers.add("Name");
-		headers.add("Link");
+		if(showLink)
+		    headers.add("Link");
+		if(showType)
+		    headers.add("Type");
 		if (showDate) {
 		    headers.add(Utils.getProperty(props,"dateLabel","Date"));
 		}
@@ -825,7 +846,7 @@ public class CsvOutputHandler extends OutputHandler {
 			break;
 		    }
 		}
-		if (haveFiles) {
+		if (haveFiles && showResource) {
 		    headers.add("File Size");
 		    headers.add("File Download");
 		}
@@ -849,20 +870,41 @@ public class CsvOutputHandler extends OutputHandler {
 		}
 	    }
 
+	    if(stringDefined(title)) {
+		row[0] = sheet.createRow(rowCnt++);
+		Cell titleCell = row[0].createCell(0);
+		titleCell.setCellValue(title.replace("${sheet}",sheetTitle));
+		titleCell.setCellStyle(titleStyle);
+		CellRangeAddress region = new CellRangeAddress(0, // first row (0-based)
+							       0, // last row  (0-based)
+							       0, // first column (0-based)
+							       headers.size()-1  // last column  (0-based)
+							       );
+		sheet.addMergedRegion(region);
+		for (int c = region.getFirstColumn(); c <= region.getLastColumn(); c++) {
+		    if (c == region.getFirstColumn()) {
+			continue; // skip top-left (already styled)
+		    }
+		    Cell mergedCell = row[0].createCell(c);
+		    mergedCell.setCellStyle(titleStyle);
+		}
 
+
+	    }
 	    row[0] = sheet.createRow(rowCnt++);
 	    for(String header: headers) {
-		add.accept(header);
+		Cell cell = row[0].createCell(colCnt[0]++);
+		cell.setCellValue(header);
+		cell.setCellStyle(headerStyle);
 	    }
 
 
 	    int numCols = headers.size();
-
 	    int cnt = 0;
             for (Entry entry : entries) {
 		boolean canEdit = getAccessManager().canDoEdit(request, entry);
 		typeHandler = entry.getTypeHandler();
-		columns     = typeHandler.getColumns();
+		columns     = typeHandler.getColumnsWithTags(tags);
 		String name = getEntryDisplayName(entry);
 		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
 		colCnt[0]=0;
@@ -928,7 +970,10 @@ public class CsvOutputHandler extends OutputHandler {
 		    String url = getEntryManager().getEntryUrl(request, entry);
 		    url = request.getAbsoluteUrl(url);
 		    add.accept(name);
-		    add.accept(url);
+		    if(showLink) 
+			add.accept(url);
+		    if(showType) 
+			add.accept(entry.getTypeHandler().getLabel());
 		    if (showDate) {
 			fmt.accept(entry,entry.getStartDate());
 		    }
@@ -946,7 +991,7 @@ public class CsvOutputHandler extends OutputHandler {
 		    if (showToDate) {
 			fmt.accept(entry,entry.getEndDate());
 		    }		
-		    if (haveFiles) {
+		    if (haveFiles  && showResource) {
 			String downloadUrl=request.getAbsoluteUrl(entry.getTypeHandler().getEntryResourceUrl(request, entry));
 
 			if (entry.isFile()) {
