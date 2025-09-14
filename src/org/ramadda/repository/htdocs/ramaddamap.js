@@ -3138,6 +3138,12 @@ RepositoryMap.prototype = {
             }
         });
         this.getMap().addControl(this.dragPanControl);
+
+	let attribution = new OpenLayers.Control.Attribution();
+	this.getMap().addControl(attribution);
+
+
+
 	this.setDragPanEnabled(this.params.enableDragPan);
 	if(this.params.scrollToZoom) {
 	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
