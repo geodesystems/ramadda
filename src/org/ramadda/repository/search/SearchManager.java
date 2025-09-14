@@ -1182,7 +1182,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	try {
 	    List<EntryUtil.EntryCount> counts =  getEntryCountsInner(request);
 	    long t2 = System.currentTimeMillis();
-	    Utils.printTimes("getEntryCounts: #" + counts.size() +" time:" ,t1,t2);
+	    //	    Utils.printTimes("getEntryCounts: #" + counts.size() +" time:" ,t1,t2);
 	    return counts;
 
 	} catch(Exception ignore) {
