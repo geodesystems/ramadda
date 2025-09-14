@@ -138,17 +138,10 @@ public interface Constants {
     public static final String ICON_ZIP = "fas fa-file-archive";
     public static final String ICON_ZIPTREE = "fas fa-file-archive";
 
-    //j++
-
     public static final String ARG_ICON = "ramadda.icon";
-
     public static final String ARG_AGREE = "agree";
-
-
     public static final String ATTR_ADDMETADATA = "addmetadata";
-
     public static final String ATTR_FILESIZE = "filesize";
-
     public static final String ARG_SERVICEID = "serviceid";
 
     public static final String ARG_EXPORT_SHALLOW = "exportshallow";
@@ -495,7 +488,6 @@ public interface Constants {
 
     public static final String ARG_SEARCH_POLYGON = "search_polygon";
 
-
     public static final String ARG_SEARCH_URL = "searchurl";
 
     public static final String ARG_NORTH = "north";
@@ -592,8 +584,6 @@ public interface Constants {
     public static final String ARG_SHOWENTRYSELECTFORM =
         "showentryselectform";
 
-
-
     public static final String ARG_DISPLAYLINK = "displaylink";
 
     public static final String ARG_SHOWTAB = "showtab";
@@ -601,80 +591,43 @@ public interface Constants {
     public static final String ARG_SHOWMETADATA = "showmetadata";
 
     public static final String ARG_SHOWYEAR = "showyear";
-
     public static final String ARG_SHOW_ASSOCIATIONS = "showassociations";
-
     public static final String ARG_SKIP = "skip";
-
     public static final String ARG_SOUTH = "south";
-
     public static final String ARG_SQLFILE = "sqlfile";
-
     public static final String ARG_SSLOK = "sslok";
-
     public static final String ARG_STATION = "station";
-
     public static final String ARG_STEP = "step";
-
     public static final String ARG_SUBJECT = "subject";
-
     public static final String ARG_SUBMIT = "submit";
-
     public static final String ARG_SAVENEXT = "savenext";
-
     public static final String ARG_TEMPLATE = "template";
     public static final String ARG_TESTNEW = "testnew";
-
     public static final String ARG_USER_TEMPLATE = "usertemplate";
-
     public static final String ARG_TARGET = "target";
-
     public static final String ARG_TEXT = "text";
-
-    /** title argument */
     public static final String ARG_TITLE = "title";
-
     public static final String ARG_THUMBNAIL = "thumbnail";
-
     public static final String ARG_TO = "to";
-
     public static final String ARG_TODATE = "todate";
-
     public static final String ARG_TODATE_TIME = ARG_TODATE + ".time";
-
     public static final String ARG_TONAME = "toname";
-
     public static final String ARG_TOPLEVEL = "toplevel";
-
     public static final String ARG_TYPE = "type";
     public static final String ARG_TYPES = "types";    
-
     public static final String ARG_TYPEPATTERNS = "typepatterns";
-
     public static final String ARG_TYPE_GUESS = "type.guess";
-
     public static final String ARG_TYPE_FREEFORM = "type.freeform";
-
     public static final String ARG_TYPE_EXCLUDE = "type.exclude";
-
     public static final String ARG_URL = "url";
-
     public static final String ARG_MD5 = "md5";
-
     public static final String ATTR_MD5 = "md5";
-
     public static final String ARG_FILESIZE = "filesize";
-
     public static final String ARG_USER = "user";
-
     public static final String ARG_PASSWORD = "password";
-
     public static final String ARG_USER_PASSWORD = "user_password";
-
     public static final String ARG_USER_PASSWORD1 = "user_password1";
-
     public static final String ARG_USER_PASSWORD2 = "user_password2";
-
     public static final String ARG_USER_PASSWORDKEY = "user_passwordkey";
 
     public static final String ARG_USER_QUESTION = "user_question";
