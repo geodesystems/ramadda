@@ -4999,6 +4999,17 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public List<Column> getColumnsWithTags(List<String> tags) {
+	List<Column> columns = getColumns();
+	if(columns==null) return null;
+	if(tags==null || tags.size()==0) return columns;
+	List<Column> tmp = new ArrayList<Column>();
+	for(Column column: columns) {
+	    if(column.matchesTags(tags)) tmp.add(column);
+	}
+	return tmp;
+    }
+
     public List<Column> getColumnsForPointJson() {
         return getColumns();
     }
