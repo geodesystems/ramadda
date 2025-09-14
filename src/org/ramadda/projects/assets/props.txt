@@ -11,7 +11,7 @@ contact_phone,Contact Phone,string
 #base asset class
 asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
 department,Department,entry, entrytype="type_assets_department"  cansearch="true"
-assigned_to,Assigned To,enumerationplus,  cansearch="true" 
+assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
 location,Location,enumerationplus,  cansearch="true" 
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
 values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
@@ -116,11 +116,26 @@ terms_url,,url,
 
 #deparment
 dept_code,Department Code,string
-manager_name,Manager Name,string
+manager,Manager,entry,entrytype="type_assets_personnel" cansearch="true"
 manager_email,Manager Email,string
 phone_number,Phone Number,string
 cost_center,Cost Center,string
 status,Status,enumerationplus
+
+
+#person
+type:type_assets_personnel
+name:Personnel
+employee_number,Employee Number
+job_title,Job Title
+department,Department,entry, entrytype="type_assets_department"  cansearch="true"
+manager_id,Manager ID,entry, entrytype="type_assets_personnel" cansearch="true"
+phone_number,Phone Number,string
+email,Email Address,email
+employment_status,Employment Status,enumeration, \
+values="Active\,On Leave\,Contractor\,Intern\,Terminated\,Retired\,Suspended\,Pending Hire"
+termination_date,Termination Date,date
+
 
 
 #vendor

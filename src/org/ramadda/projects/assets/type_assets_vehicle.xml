@@ -12,7 +12,7 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="make"  label="Make"  type="enumerationplus"  size="600" group="Vehicle Information" cansearch="true" />
+<column  name="make"  label="Make"  type="enumerationplus"  size="600" group="Vehicle Information" cansearch="true" tags="reportable"/>
 <column  name="model"  label="Model"  type="enumerationplus"  size="600" cansearch="true" />
 <column  name="model_year"  label="Model Year"  type="int"  cansearch="true" />
 <column  name="color"  label="Color"  type="enumerationplus"  values="Black, White, Gray, Silver, Red, Blue, Green, Yellow, Brown, Beige" />

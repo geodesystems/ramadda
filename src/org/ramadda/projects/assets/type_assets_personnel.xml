@@ -1,0 +1,57 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_personnel.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_personnel" 
+ description="Personnel" 
+ handler="org.ramadda.projects.assets.AssetBaseTypeHandler" 
+ super="type_assets_thing" 
+ supercategory="General" 
+ category="Assets" 
+>
+
+<!-- Columns-->
+<column  name="employee_number"  label="Employee Number"  type="string" />
+<column  name="job_title"  label="Job Title"  type="string" />
+<column  name="department"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" />
+<column  name="manager_id"  label="Manager ID"  type="entry"  entrytype="type_assets_personnel" cansearch="true" />
+<column  name="phone_number"  label="Phone Number"  type="string" />
+<column  name="email"  label="Email Address"  type="email" />
+<column  name="employment_status"  label="Employment Status"  type="enumeration"  values="Active,On Leave,Contractor,Intern,Terminated,Retired,Suspended,Pending Hire" />
+<column  name="termination_date"  label="Termination Date"  type="date" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/team.png" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Vendor: {{name}}"
++center
+{{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
+-center
+{{description wikify=true}}
++toggleopen Vendor Information
++row
++col-8
+{{information  showBase=false}}
+-col
++col-4
+{{information   showDetails=false}}
+-col
+-row
+-toggle
+
+{{embed message=""  }} 
+
+{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;vendor"}}
+
+{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
+showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage=true}} 
+-section]]></wiki>
+</type>

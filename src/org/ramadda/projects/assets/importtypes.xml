@@ -9,6 +9,7 @@
 <import resource="type_assets_equipment.xml"/>
 <import resource="type_assets_it.xml"/>
 <import resource="type_assets_license.xml"/>
+<import resource="type_assets_personnel.xml"/>
 <import resource="type_assets_department.xml"/>
 <import resource="type_assets_vendor.xml"/>
 </types>

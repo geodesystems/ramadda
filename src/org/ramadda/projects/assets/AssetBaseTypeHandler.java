@@ -28,14 +28,23 @@ import java.util.Hashtable;
 import java.util.List;
 
 
+@SuppressWarnings("unchecked")
 public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TYPE_BASE = "type_assets_base";
-    public static final String TYPE_THING = "type_assets_thing";    
+    public static final String TYPE_THING = "type_assets_thing";
+    public static final String TYPE_VEHICLE = "type_assets_vehicle";        
+    public static final String TYPE_BUILDING = "type_assets_building";
+    public static final String TYPE_EQUIPMENT = "type_assets_equipment";
+    public static final String TYPE_IT = "type_assets_it";        
     public static final String TYPE_LICENSE = "type_assets_license";
     public static final String TYPE_DEPARTMENT = "type_assets_department";
-    public static final String TYPE_VENDOR = "type_assets_vendor";    
+    public static final String TYPE_VENDOR = "type_assets_vendor";
+    public static final String TYPE_PERSONNEL = "type_assets_personnnel";        
 
     public static final String ARG_REPORT="report";
+    public static final String ARG_ALLCOLUMNS = "allcolumns";
+    
+    public static final String ARG_DOWNLOAD = "download";
     public static final String ACTION_SEARCH="assets_search";
     public static final String ACTION_REPORT="assets_report";
     public static final String ACTION_NEW="assets_new";
@@ -46,6 +55,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String REPORT_MAINTENANCE = "assets_report_maintenance";
     public static final String REPORT_WARRANTY = "assets_report_warranty";            
     public static final String REPORT_COSTS = "assets_report_costs";
+    public static final String REPORT_DOWNLOAD = "assets_report_download";    
     public static final String TAG_HEADER= "assets_header";
 
 
@@ -71,12 +81,13 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
     private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
 	if(entry.isType(TYPE_DEPARTMENT)) {
-	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
-	    return searchUrl;
+	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
 	}
+	if(entry.isType(TYPE_PERSONNEL)) {
+	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"assigned_to");
+	}	
 	if(entry.isType(TYPE_VENDOR)) {
-	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
-	    return searchUrl;
+	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
 	}	
 
 	String types = Utils.getProperty(props,"types","super:" + TYPE_BASE+"%2C"+ TYPE_LICENSE);
@@ -204,17 +215,14 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	String report = request.getString("report",REPORT_TABLE);
 	getPageHandler().entrySectionOpen(request, entry, sb, "");
 
-	String searchUrl = getSearchUrl(request,entry,null);
-	String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-					 ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
-					 ARG_SEARCH_URL,searchUrl);
 
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
 	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},
 					 {REPORT_COUNTS,"Counts"},
 					 {REPORT_COSTS,"Costs"},
 					 {REPORT_WARRANTY,"Warranty"},
-					 {REPORT_MAINTENANCE,"Maintenance"},					 
+					 {REPORT_MAINTENANCE,"Maintenance"},
+					 {REPORT_DOWNLOAD,"Download Data"}
 	    }) {
 	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
 						      ARG_REPORT,tuple[0]),
@@ -224,9 +232,9 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 					       "ramadda-linksheader-off"));
 	}
 
-	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download Data"));
-	sb.append(HU.center(HU.makeHeader1(headerItems)));
+	//	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download Data"));
 
+	sb.append(HU.center(HU.makeHeader1(headerItems)));
 
 	if(report.equals(REPORT_TABLE))
 	    makeReportTable(request, entry,sb, new Hashtable());
@@ -238,6 +246,10 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    makeReportCounts(request, entry,sb,new Hashtable());
 	else if(report.equals(REPORT_COSTS))
 	    makeReportCosts(request, entry,sb,new Hashtable());		
+	else if(report.equals(REPORT_DOWNLOAD)) {
+	    Result result  =   makeReportDownload(request, entry,sb, new Hashtable());
+	    if(result!=null) return result;
+	}
 	else
 	    sb.append("Unknown report:" + report);
 	getPageHandler().entrySectionClose(request, entry, sb);
@@ -297,6 +309,71 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
     }
 
+
+
+    private Result makeReportDownload(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
+	if(request.defined(ARG_DOWNLOAD)) {
+	    String searchUrl = getSearchUrl(request,entry,null);
+	    String xlsUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+					     ARG_OUTPUT, CsvOutputHandler.OUTPUT_XLSX.toString(),
+					     ARG_SHOWCHANGEDATE,"false",
+					     ARG_SHOWRESOURCE,"false",
+					     ARG_SEARCH_URL,searchUrl);
+	    String title = request.getString(ARG_TITLE,null);
+	    List<String> types =request.get(ARG_TYPES, new ArrayList<String>());
+	    if(types.size()>0) {
+		String typeSelect = Utils.join(types,",");
+		if(stringDefined(typeSelect)) {
+		    xlsUrl = HU.url(xlsUrl,ARG_TYPES,typeSelect);
+		}
+	    }
+
+	    if(!request.get(ARG_SEPARATETYPES,false)) {
+		xlsUrl = HU.url(xlsUrl,ARG_SEPARATETYPES,"false");
+		xlsUrl = HU.url(xlsUrl,ARG_TAGS,"_none_");
+		xlsUrl = HU.url(xlsUrl,ARG_SHOWTYPE,"true");
+		if(stringDefined(title)) {
+		    xlsUrl = HU.url(xlsUrl,	ARG_TITLE,title.replace("${sheet}","all assets"));
+		}
+	    } else {
+		if(stringDefined(title)) {
+		    xlsUrl = HU.url(xlsUrl,	ARG_TITLE,title);
+		}
+		if(!request.get(ARG_ALLCOLUMNS,false)) {
+		    xlsUrl = HU.url(xlsUrl,ARG_TAGS,"reportable");
+		}	    
+	    }
+
+	    return new Result(xlsUrl);
+	}
+	String url =  request.makeUrl(getRepository().URL_ENTRY_ACTION);
+	sb.append(HU.formPost(url));
+	sb.append(HU.hidden(ARG_ACTION,ACTION_REPORT));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.hidden(ARG_REPORT,REPORT_DOWNLOAD));
+	sb.append(HU.formTable());
+	HU.formEntry(sb,msgLabel("Title"),HU.input(ARG_TITLE,request.getString(ARG_TITLE,"Asset report for ${sheet}"),
+						   HU.SIZE_60));
+	
+	List options = new ArrayList();
+	options.add(new HtmlUtils.Selector("All Asset Types",""));
+	options.add(new HtmlUtils.Selector("Vehicles",TYPE_VEHICLE));	
+	options.add(new HtmlUtils.Selector("Equipment",TYPE_EQUIPMENT));	
+	options.add(new HtmlUtils.Selector("Buildings",TYPE_BUILDING));	
+	options.add(new HtmlUtils.Selector("IT",TYPE_IT));
+	options.add(new HtmlUtils.Selector("Licenses",TYPE_LICENSE));		
+	//	options.add(new HtmlUtils.Selector("",TYPE_));	
+	//	options.add(new HtmlUtils.Selector("",TYPE_));	
+	HU.formEntry(sb,"",HU.select(ARG_TYPES,options,"","multiple rows=4"));
+	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_ALLCOLUMNS,"true",true,"All Fields"));
+	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_SEPARATETYPES,"true",true,"Separate asset types"));	
+
+
+	HU.formEntry(sb,"",HU.submit("Download",ARG_DOWNLOAD));
+	sb.append(HU.formTableClose());	
+	sb.append(HU.formClose());
+	return null;
+    }
 
     private void makeReportTable(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -384,11 +461,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	}		 
 	map.put(label,new Integer(typeCnt+1));
     }
-
-
-
-
-
 
     private void makeReportMaintenance(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	List<Entry> entries = getEntries(request, entry,props);
@@ -613,7 +685,9 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    Entry departmentEntry = getDepartment(request,child);
 	    addCount(department,departmentEntry==null?"NA":departmentEntry.getName());
 	    addCount(location,child.getEnumValue(request,"location",""));
-	    addCount(assignedto,child.getEnumValue(request,"assigned_to",""));
+	    String assignedTo = child.getEnumValue(request,"assigned_to","");
+	    Entry personnel = getEntryManager().getEntry(request, assignedTo,true);
+	    addCount(assignedto,personnel!=null?personnel.getName():"NA");
 	    if(child.getTypeHandler().isType("type_assets_physical")) {
 		statusCnt++;
 		addCount(status,child.getEnumValue(request,"status",""));	     	     	     
