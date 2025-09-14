@@ -6538,11 +6538,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 label = label.substring(0,maxWidth)+'...';
             let extra = '';
             if(selected && Array.isArray(selected)) {
-                if(selected.indexOf(item)>=0) {
+                if(selected.indexOf(value)>=0) {
                     extra=' selected ';
                 }
             } else {
-                if(selected == item) extra=" selected ";
+                if(selected == value) extra=" selected ";
             }
 	    let tt = fullLabel;
 	    if(item && item!=tt) {
