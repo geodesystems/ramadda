@@ -13,8 +13,7 @@ into some types.xml file
 
 <!-- Columns-->
 <column  name="dept_code"  label="Department Code"  type="string" />
-<column  name="manager_name"  label="Manager Name"  type="string" />
-<column  name="manager_email"  label="Manager Email"  type="string" />
+<column  name="manager"  label="Manager"  type="entry"  entrytype="type_assets_personnel"	cansearch="true" />
 <column  name="phone_number"  label="Phone Number"  type="string" />
 <column  name="cost_center"  label="Cost Center"  type="string" />
 <column  name="status"  label="Status"  type="enumerationplus" />
