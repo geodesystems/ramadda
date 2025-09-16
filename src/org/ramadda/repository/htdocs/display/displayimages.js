@@ -190,7 +190,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		div.css("width",img.width);
 		div.css("height",img.height);
 		div.html(html);
-		//			div.css("background","rgb(" + c[0]+"," + c[1] +"," + c[2]);
+		//			div.css(CSS_BACKGROUND,"rgb(" + c[0]+"," + c[1] +"," + c[2]);
 		img.style.display = "none";
 	    }
 	},
@@ -1014,10 +1014,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ATTR_ID, this.domId(ID_PREV),
-			       ATTR_STYLE,HU.css('padding-right','10px','font-size','200%'),
+			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,'10px','font-size','200%'),
 			       ATTR_CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
 	    let right = HU.div([ATTR_ID, this.domId(ID_NEXT),
-				ATTR_STYLE,HU.css('padding-left','10px','font-size','200%'),
+				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'10px','font-size','200%'),
 				ATTR_CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
 				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height),

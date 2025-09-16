@@ -2609,7 +2609,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }
 
 	    let makeExpandable= (html) =>{
-		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px','background','#fff',CSS_OVERFLOW_Y,'auto')],html);
+		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px',CSS_BACKGROUND,'#fff',CSS_OVERFLOW_Y,'auto')],html);
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css('position','relative')],html);
 	    }
@@ -3112,12 +3112,12 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.find(".metadata-tag").click(function(){
 		    if($(this).hasClass("metadata-tag-selected")) {
 			$(this).removeClass("metadata-tag-selected");
-			$(this).css('background',$(this).attr('data-background')??"");
+			$(this).css(CSS_BACKGROUND,$(this).attr('data-background')??"");
 			let style = $(this).attr('data-style');
 			if(style) $(this).attr(ATTR_STYLE,style);
 		    } else {
 			$(this).addClass("metadata-tag-selected");
-			$(this).css('background','');
+			$(this).css(CSS_BACKGROUND,'');
 		    }
 		    _this.doInlineSearch();
 		});
@@ -3895,8 +3895,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     let other = _this.canvas.find("[entryid='" + id + "']");
                     other.each(function() {
                         if ($(this).attr("itemtype") == "box") {
-                            $(this).attr("prevcolor", $(this).css("background"));
-                            $(this).css("background", $(this).attr("prevcolor"));
+                            $(this).attr("prevcolor", $(this).css(CSS_BACKGROUND));
+                            $(this).css(CSS_BACKGROUND, $(this).attr("prevcolor"));
                         }
                     });
                 }
@@ -3909,8 +3909,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     let other = _this.canvas.find("[entryid='" + id + "']");
                     other.each(function() {
                         if ($(this).attr("itemtype") == "box") {
-                            $(this).attr("prevcolor", $(this).css("background"));
-                            $(this).css("background", "rgba(0,0,255,0.5)");
+                            $(this).attr("prevcolor", $(this).css(CSS_BACKGROUND));
+                            $(this).css(CSS_BACKGROUND, "rgba(0,0,255,0.5)");
                         }
                     });
                 }

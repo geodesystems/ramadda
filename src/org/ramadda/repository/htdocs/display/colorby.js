@@ -413,11 +413,11 @@ ColorByInfo.prototype = {
 	if(this.compareFields.length>0) {
 	    let legend = "";
 	    this.compareFields.forEach((f,idx)=>{
-		legend += HtmlUtils.div([ATTR_STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
+		legend += HtmlUtils.div([ATTR_STYLE,HU.css('display','inline-block','width','15px','height','15px',CSS_BACKGROUND, this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId);
-	    dom.html(HtmlUtils.div([ATTR_STYLE,HU.css('text-align','center','margin-top','5px')], legend));
+	    dom.html(HtmlUtils.div([ATTR_STYLE,HU.css('text-align','center',CSS_MARGIN_TOP,'5px')], legend));
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
@@ -434,7 +434,7 @@ ColorByInfo.prototype = {
 		    else if(step==steps-1)
 			contents =s.max;		    
 		    let fg = Utils.getForegroundColor(c);
-		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,ATTR_STYLE,HU.css('color',fg,'background',c)],contents);		    
+		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,ATTR_STYLE,HU.css('color',fg,CSS_BACKGROUND,c)],contents);		    
 		}
 	    });
 	    html += '</tr></table>';

@@ -1774,7 +1774,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'descriptionField',ex:''},
 	{p:'textColor',ex:'color'},
 	{p:'backgroundImage',ex:'',tt:'Image url to display in background'},
-	{p:'background',ex:'color'},
+	{p:CSS_BACKGROUND,ex:'color'},
 	{p:'showProgress',ex:true},
 	{p:'loadingMessage',ex:'',tt:'Message to show when loading data'},	
 	{p:'inlineDataSrc',tt:'div id that holds the CSV inline'},
@@ -5470,7 +5470,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let id = Utils.getUniqueId("metadata_");
 		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ATTR_ID,id,
 				  ATTR_CLASS,"display-search-tag",ATTR_TITLE, tt,
-				  ATTR_STYLE, HU.css("background", getMetadataColor(m.type))],label);
+				  ATTR_STYLE, HU.css(CSS_BACKGROUND, getMetadataColor(m.type))],label);
 		if(!groupThem)
 		    metadata+= tag;
 		else {
@@ -6390,9 +6390,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 image = HU.getEntryImage(this.entryId, image);
                 style += HU.css("background-attachment","auto","background-size","100% auto","background-image","url('" + image + "')");
             }
-            let background = this.getProperty("background");
+            let background = this.getProperty(CSS_BACKGROUND);
             if (background)
-                style += HU.css("background", background);
+                style += HU.css(CSS_BACKGROUND, background);
             let topBottomStyle = "";
 	    //            let width = this.getWidthForStyle();
 	    //            if (width) {
@@ -6931,7 +6931,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let header2="";
 	    //	    header2 +=HU.div([ATTR_ID,this.getDomId("test")],"test");
 	    if(this.getShowProgress(false)) {
-		header2 += HU.div([ATTR_ID,this.getDomId(ID_DISPLAY_PROGRESS), ATTR_STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
+		header2 += HU.div([ATTR_ID,this.getDomId(ID_DISPLAY_PROGRESS), ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_RIGHT,"4px","min-width","20px")]);
 	    }
 	    let headerLabel  = this.getHeaderLabel();
 	    if(Utils.stringDefined(headerLabel)) {
@@ -6956,7 +6956,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		fields.forEach((f)=>{
 		    if(colorCnt>=colors.length) colorCnt = 0;
 		    let color  = colors[colorCnt];
-		    html += HU.div([ATTR_STYLE,HU.css("display","inline-block","width","8px","height","8px","background",color)]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
+		    html += HU.div([ATTR_STYLE,HU.css("display","inline-block","width","8px","height","8px",CSS_BACKGROUND,color)]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
 		    colorCnt++;
 		});
 		header2+= HU.div([ATTR_CLASS,"display-field-legend"], html);
@@ -7678,15 +7678,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let value = f.val();
 	    if(Utils.isDefined(min)) {
 		if(value != min) {
-		    f.css("background",TEXT_HIGHLIGHT_COLOR);
+		    f.css(CSS_BACKGROUND,TEXT_HIGHLIGHT_COLOR);
 		} else {
-		    f.css("background","white");
+		    f.css(CSS_BACKGROUND,"white");
 		}
 	    } else if(Utils.isDefined(max)) {
 		if(value != max) {
-		    f.css("background",TEXT_HIGHLIGHT_COLOR);
+		    f.css(CSS_BACKGROUND,TEXT_HIGHLIGHT_COLOR);
 		} else {
-		    f.css("background","white");
+		    f.css(CSS_BACKGROUND,"white");
 		}
 	    }
 

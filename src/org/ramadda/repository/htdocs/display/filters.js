@@ -34,7 +34,7 @@ function BoundsFilter(display, properties) {
 	enabled:true,
 	getWidget: function() {
 	    let id = this.display.getDomId("boundsfilter");
-	    return HtmlUtils.span([ATTR_STYLE,HU.css("margin-left","4px","margin-right","4px"),
+	    return HtmlUtils.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,"4px",CSS_MARGIN_RIGHT,"4px"),
 				   ATTR_ID,id,ATTR_CLASS,"ramadda-clickable",
 				   ATTR_TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
 	},
@@ -471,7 +471,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		
 		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,value,
-				    ATTR_STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),
+				    ATTR_STYLE, HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId())),
 				    ATTR_CLASS,"display-search-tag",
 				    ATTR_ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 		tag.click(function(){
@@ -935,16 +935,16 @@ function RecordFilter(display,filterFieldId, properties) {
 			this.tagToCbx[value] = cbxId;
 			let cbx = HU.checkbox("",[ATTR_CLASS,"metadata-cbx",
 						  ATTR_ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
-			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId()))], cbx);
+			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,STYLE, HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()))], cbx);
 			cbxs.push(cbx);
 		    }); 
 		    this.tagCbxs  = cbxs;
 		    let clickId = this.getFilterId()+"_popup";
 		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
 		    label = label.replace(/ /g,"&nbsp;");
-		    let style = HU.css("white-space","nowrap", "line-height","1.5em",  "margin-top","6px","padding-right","5px");
+		    let style = HU.css("white-space","nowrap", "line-height","1.5em",  CSS_MARGIN_TOP,"6px",CSS_PADDING_RIGHT,"5px");
 		    if(doColor)
-			style+=HU.css("border","1px solid #ccc","background", Utils.getEnumColor(this.getFieldId()));
+			style+=HU.css("border","1px solid #ccc",CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()));
 		    else
 			style+=HU.css();
 		    widget= HU.div([ATTR_STYLE, style, ATTR_TITLE,"Click to select tag",

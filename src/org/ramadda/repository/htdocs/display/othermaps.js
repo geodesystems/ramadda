@@ -156,7 +156,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 			    extra += " title='" + o.name +"' ";
 			}
 			extra += HU.attr(ATTR_CLASS,'display-mapgrid-cell');
-			c = HU.div([ATTR_STYLE,HU.css('padding-left','3px')], (showLabel?o.codes[0]:""));
+			c = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'3px')], (showLabel?o.codes[0]:""));
 			o.codes.forEach(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
@@ -215,7 +215,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
                     let value = record.getData()[colorBy.index];
 		    let color = colorBy.getColorFromRecord(record);
 		    let cell = contents.find("#" + cellId);
-		    cell.css("background",color);
+		    cell.css(CSS_BACKGROUND,color);
 		    let foreground = Utils.getForegroundColor(color);
 		    if(foreground) {
 			cell.css('color', foreground);
@@ -428,7 +428,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style("position", "absolute")
-		    .style("background", "#fff")
+		    .style(CSS_BACKGROUND, "#fff")
 	    }
 	    this.clearTooltip();
 	    return this.tooltipDiv;

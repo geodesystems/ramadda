@@ -3114,7 +3114,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			      ID,domId+'_select'],HU.getIconImage('fas fa-palette'));
 			    */
 			    
-			    /*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
+			    /*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css(CSS_BACKGROUND,Utils.stringDefined(v)?v:'transparent')]) +
 						    HU.space(2)+widget;
 						    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr([ATTR_VALIGN,'top'],HU.tds([],[widget,bar])));
 						    */
@@ -3514,7 +3514,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					       ATTR_WIDTH,image.width(),
 					       ATTR_HEIGHT,image.height(),					     
 					       ATTR_STYLE,HU.css(CSS_POSITION,'absolute','pointer-events','none','left','0px','top','0px',
-								 'background','transparent')]));
+								 CSS_BACKGROUND,'transparent')]));
 			
 			canvas = document.getElementById(_this.domId('clippath_canvas'));
 			ctx = canvas.getContext("2d");
@@ -3613,7 +3613,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let id = $(this).attr('baseid');
 		let val = $(this).val();
 		$("#"+ id).val(val);
-		$("#"+ id+'_display').css('background',val);
+		$("#"+ id+'_display').css(CSS_BACKGROUND,val);
 		ifApply();
 	    });
 	    dialog.find('.ramadda-imdv-color-select').click(function() {
@@ -3628,7 +3628,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let c = $(this).attr('color');
 		    let id = $(this).attr('widget-id');
 		    jqid(id).val(c);
-		    jqid(id+'_display').css('background',c);
+		    jqid(id+'_display').css(CSS_BACKGROUND,c);
 		    jqid(id+'colorinput').val(c);
 		    dialog.remove();
 		    ifApply();
@@ -3639,7 +3639,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dialog.find('.ramadda-imdv-color').change(function() {
 		let c = $(this).val();
 		let id = $(this).attr(ATTR_ID);
-		$("#"+ id+'_display').css('background',c);
+		$("#"+ id+'_display').css(CSS_BACKGROUND,c);
 		ifApply();
 	    });
 
@@ -3717,7 +3717,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    cat.images.forEach(image=>{
 			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
 						    ATTR_WIDTH,'24px',
-						    ATTR_STYLE,HU.css('margin-right','4px','margin-bottom','2px'),
+						    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'4px',CSS_MARGIN_BOTTOM,'2px'),
 						    'loading','lazy',ATTR_TITLE,image.name]);
 		    });
 		});

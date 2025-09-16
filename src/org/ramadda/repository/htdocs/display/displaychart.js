@@ -2963,7 +2963,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		let color  = colors[colorCnt];
-		legend += HU.div([ATTR_STYLE,HU.css('display','inline-block','width','8px','height','8px','background', color)]) +SPACE + v +SPACE2;
+		legend += HU.div([ATTR_STYLE,HU.css('display','inline-block','width','8px','height','8px',CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
@@ -3527,7 +3527,7 @@ function TableDisplay(displayManager, id, properties) {
 		    f = HU.div([ATTR_STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
-		    f = HU.div([ATTR_STYLE,HU.css('padding','4px','background', c)],f)
+		    f = HU.div([ATTR_STYLE,HU.css('padding','4px',CSS_BACKGROUND, c)],f)
 		}
 
 
@@ -3536,7 +3536,7 @@ function TableDisplay(displayManager, id, properties) {
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg = foreground || Utils.getForegroundColor(color);
-			f = HU.div([ATTR_STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
+			f = HU.div([ATTR_STYLE,HU.css('height','100%',CSS_BACKGROUND, color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
 			if(!v.startsWith('http')) v = 'https://' + v;

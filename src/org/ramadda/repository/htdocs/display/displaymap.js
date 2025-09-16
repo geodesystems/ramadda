@@ -227,7 +227,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
 	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
-			   ATTR_STYLE,HU.css('margin-top','0.5em','min-width','800px')],html);
+			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'0.5em','min-width','800px')],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
 						 my:'left top',at:'left bottom',anchor:button});
@@ -275,7 +275,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let keys = Object.keys(groups);
 	    let width = (100/keys.length)+'%';
 	    keys.forEach(group=>{
-		html+= HU.td(['width',width], HU.div([ATTR_STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc","margin-right","5px")], Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto", "margin-right","10px")], groups[group]));
+		html+= HU.td(['width',width], HU.div([ATTR_STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc",CSS_MARGIN_RIGHT,"5px")], Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto", CSS_MARGIN_RIGHT,"10px")], groups[group]));
 	    });
 	    html+=HU.close(TAG_TR,TAG_TABLE);
 	    return html;
@@ -3779,7 +3779,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
 		
 
-		controls.push(HU.div([ATTR_STYLE,HU.css("display","inline-block","margin-left","5px","margin-right","5px")], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
+		controls.push(HU.div([ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_LEFT,"5px",CSS_MARGIN_RIGHT,"5px")], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
 		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
 		let _this = this;
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
@@ -4021,7 +4021,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    min = this.getHtmlLayerMin(min);
 		    max = this.getHtmlLayerMax(max);		    
 		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,min,max,colorBy,props1);
-		    $('#' + info.hoverId).css('background','#fff').css('border','1px solid #ccc');
+		    $('#' + info.hoverId).css(CSS_BACKGROUND,'#fff').css('border','1px solid #ccc');
 		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,min,max,colorBy,props2);
 		}
 	    });
@@ -4630,7 +4630,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let highlightGetter = f=>{
 		if(f.record) {
                     return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
-                    return   HU.div([ATTR_STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
+                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
 	    };	    

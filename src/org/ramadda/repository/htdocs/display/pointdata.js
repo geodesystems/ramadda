@@ -3572,7 +3572,7 @@ RequestMacro.prototype = {
 			 ATTR_CLASS, 'ramadda-clickable',
 			 ATTR_ID,this.display.getDomId(this.getId()+'_next')],
 			HU.getIconImage('fas fa-angle-right'));
-	    widget += HU.span([ATTR_STYLE,HU.css('padding-right','8px')],buttons);
+	    widget += HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,'8px')],buttons);
 
 	    widget+=HU.span([ATTR_ID,this.display.getDomId(this.getId()+'_label')],'');
 	    widget+=HU.input('',this.dflt,[ATTR_STYLE, HU.css('display','none'),

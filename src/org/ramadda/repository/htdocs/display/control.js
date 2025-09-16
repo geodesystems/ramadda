@@ -405,7 +405,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let block  =f.getLabel();
 		let color = this.getProperty(f.getId()+'.color');
 		if(color)
-		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css('background',color)]);
+		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]);
 		block = HU.div([ATTR_STYLE,HU.css('position','relative')],block);
 
 		if(details) {
@@ -876,7 +876,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		}
 		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
-	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
+	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto",CSS_MARGIN_LEFT,"10px")], cbx);
 	    html = HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
 	    return html;
 	},
