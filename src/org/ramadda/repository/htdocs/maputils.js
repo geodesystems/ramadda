@@ -743,7 +743,9 @@ var map_default_layer = 'osm';
 new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'],
-	     {attribution:'Map courtesy of OSM'});
+	     {
+		 attribution:'<a target=_help href=https://www.openstreetmap.org/copyright>© OpenStreetMap</a>'
+	     });
 
 
 new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',
@@ -805,7 +807,8 @@ new MapLayer('world.hillshade','World Hillshade','https://services.arcgisonline.
 
 new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
 new MapLayer('esri.worldgraycanvas','ESRI World Gray','https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ'});
-new MapLayer('cartodb.positron','CartoDB Positron','https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{attribution:'(C) OpenStreetMap contributors (C) CARTO'});
+new MapLayer('cartodb.positron','CartoDB Positron','https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
+attribution:'(C) OpenStreetMap contributors (C) CARTO'});
 
 new MapLayer('cartodb.voyager','CartoDB Voyager','https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',{attribution:'(C) OpenStreetMap contributors (C) CARTO'});
 
