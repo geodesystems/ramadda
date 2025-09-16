@@ -135,7 +135,8 @@ $.extend(Utils,{
 			 'data-corpus',colortable.id +' '+ category,
 			 ATTR_CLASS, "ramadda-colortable-select","colortable",colortable.id];
 	    if(opts.attr) attrs.push(opts.attr,opts.value);
-            ct = HU.div(attrs,ct);
+	    ct = HU.div(attrs,ct);
+	    
             if(opts.wikiEditor) {
                 let call = "WikiUtil.insertText(" + HU.squote(opts.wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
                 item = HU.onClick(call,ct);
@@ -160,7 +161,16 @@ $.extend(Utils,{
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
-        if (ct.colors) ct = ct.colors;
+	let colors=ct;
+	if(ct.steps) {
+//{label:'Good',min:0.0,max:12.0,color:"rgb(0, 228, 0)"},
+	    colors =[];
+	    ct.steps.forEach(step=>{
+		colors.push(step.color);
+	    });
+	}
+        if (ct.colors) colors = ct.colors;
+	ct = colors;
         //Handle d3
         if(ct.length && Array.isArray(ct[0]))
             ct = ct[ct.length-1];
@@ -219,7 +229,7 @@ $.extend(Utils,{
 
 
         if(!options.showColorTableDots) {
-            html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
+            html+= HU.open(TAG_TABLE,['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
             html +='<tr>';
         }
         let formatter = n=>{
