@@ -2456,13 +2456,13 @@ div:hover::-webkit-scrollbar-thumb {
 }
 
 .sf-menu  li {
-    background: #eee;
+    background: #fff;
     padding:0px;
     margin:0px;
 }
 
 .sf-menu ul li {
-    background: #eee;
+    background: #fff;
 }
 
 
@@ -6777,13 +6777,17 @@ a.wiki-link-noexist {
 
 .wiki-popup-menu-link  {
     border-right:var(--basic-border);
+    border-bottom:var(--basic-border);    
+    background:#eee;
 }
 
+.wiki-popup-menu-link:hover  {
+    background:#fff !important;
+}
+
+
 .wiki-popup-menu-header {
-    margin-right:2px;
-    margin-left:2px;    
     padding:4px;    
-    /*border-right:var(--basic-border);*/
     font-size:90%;
 }
 
@@ -6857,6 +6861,7 @@ a.wiki-link-noexist {
 
 .wiki-editor-editor {
     background:#efefef;
+    max-width:90vw;
 }
 
 .ace_contents {

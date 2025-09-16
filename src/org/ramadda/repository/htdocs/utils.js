@@ -46,12 +46,15 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_BUTTON = 'ramadda-button';
 var CLASS_DIALOG = 'ramadda-dialog';
 var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
 var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
-
+var CURSOR_POINTER='pointer';
+var CURSOR_TEXT='text';
+var CURSOR_CONTEXT_MENU = "context-menu";
 
 //Legacy IDs
 var ID = "id";
@@ -140,11 +143,13 @@ var SPACE2 = "&nbsp;&nbsp;";
 var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
+var CSS_VISIBILITY = 'visibility';
 var CSS_BASIC_BORDER='var(--basic-border)';
 var CSS_FONT_WEIGHT="font-weight";
 var CSS_FONT_SIZE="font-size";
 var CSS_FONT_STYLE="font-style";
 var CSS_DISPLAY="display";
+var CSS_TRANSFORM = "transform";
 var CSS_TEXT_ALIGN="text-align";
 var CSS_VERTICAL_ALIGN="vertical-align";
 var CSS_OVERFLOW_Y="overflow-y";
@@ -158,18 +163,22 @@ var CSS_MARGIN_TOP='margin-top';
 var CSS_MARGIN_BOTTOM='margin-bottom';
 var CSS_MARGIN_LEFT='margin-left';
 var CSS_MARGIN_RIGHT='margin-right';
+var CSS_POINTER_EVENTS = 'pointer-events'
 var CSS_PADDING='padding';
 var CSS_PADDING_TOP='padding-top';
 var CSS_PADDING_BOTTOM='padding-bottom';
 var CSS_PADDING_LEFT='padding-left';
 var CSS_PADDING_RIGHT='padding-right';
 var CSS_POSITION="position";
+var CSS_BORDER_COLLAPSE='border-collapse';
+var CSS_BORDER_SPACING='border-spacing';
 var CSS_BORDER='border';
 var CSS_BORDER_TOP='border-top';
 var CSS_BORDER_RIGHT='border-right';
 var CSS_BORDER_LEFT='border-left';
 var CSS_BORDER_BOTTOM='border-bottom';
 var CSS_Z_INDEX ="z-index";
+var CSS_LINE_HEIGHT="line-height";
 var CSS_LEFT="left";
 var CSS_RIGHT="right";
 var CSS_TOP="top";
@@ -180,7 +189,6 @@ var CSS_HEIGHT="height";
 var CSS_WHITE_SPACE="white-space";
 var CSS_WIDTH="width";
 var CSS_BACKGROUND="background";
-
 
 
 var ARG_PAGESEARCH='pagesearch';
@@ -824,7 +832,7 @@ var Utils =  {
     },
 
     msgLabel:function(msg) {
-	return HU.span([],msg)+':';
+	return HU.span([],msg)+': ';
     },
     noMsg:function(msg) {
 	return  this.NOMSGCHAR+ msg +this.NOMSGCHAR;
@@ -1372,7 +1380,7 @@ var Utils =  {
             path+=node.nodeName;
             html +=pad + "&lt;" + HU.span(["data-path",path,
 					   ATTR_TITLE,"Add path selector",
-					   ATTR_STYLE,HU.css(CSS_CURSOR,"pointer","text-decoration","underline"),
+					   ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,"text-decoration","underline"),
 					   ATTR_CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
             node.childNodes.forEach(child=>{
                 func(child,path,padding+1);
@@ -1415,7 +1423,7 @@ var Utils =  {
             var toggle = HtmlUtils.image(icon_tree_closed,[ATTR_ID,imageid]);
             var innerid = HtmlUtils.getUniqueId();
             var click = "Utils.formatJsonClick('" + imageid +"','" + innerid +"')";
-            html = HtmlUtils.div(["onclick",click,ATTR_CLASS,"json-label"],toggle + " " + html);
+            html = HtmlUtils.div([ATTR_ONCLICK,click,ATTR_CLASS,"json-label"],toggle + " " + html);
             var display = level<levelsShown?"block":"none";
             html += HtmlUtils.div([ATTR_STYLE,"display:" + display+";",ATTR_CLASS,"json-inner",ATTR_ID,innerid],blob.inner);
         }
@@ -2570,7 +2578,7 @@ var Utils =  {
                             let pre = value.substring(0,idx) +HU.span([ATTR_ID,id+"_ellipsis"], "...");
                             let post = HU.span([ATTR_ID,id+"_post",
 						ATTR_STYLE,HU.css(CSS_DISPLAY,'none')], value.substring(idx));                       
-                            let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ATTR_ID,id,
+                            let toggle = HU.div([ATTR_ONCLICK,"Utils.toggleShowMore('" + id+"')",ATTR_ID,id,
 						 ATTR_CLASS,'ramadda-showmore ' + CLASS_CLICKABLE], "Show More " + HU.getIconImage("fas fa-sort-down"));                   
                             value = pre + post + toggle;
                         }
@@ -3286,7 +3294,7 @@ var Utils =  {
 
             if(submitForm) {
                 let links = results.find(".ramadda-search-input");
-                links.css(CSS_CURSOR,"pointer");
+                links.css(CSS_CURSOR,CURSOR_POINTER);
                 links.click(function(e) {
                     e.stopPropagation();
                     let v = data.values[$(this).attr("index")].name;
@@ -3316,8 +3324,10 @@ var Utils =  {
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
-        let searchInput = HU.tag('input',['value', value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',ATTR_ID,'popup_search_input',ATTR_CLASS, 'ramadda-search-input',
-					  ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'4px', 'padding','2px',ATTR_WIDTH,'250px','border','0px'),'name','text']);
+        let searchInput = HU.tag('input',['value', value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',
+					  ATTR_ID,'popup_search_input',ATTR_CLASS, 'ramadda-search-input',
+					  ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'4px', 'padding','2px',ATTR_WIDTH,'250px','border','0px'),
+					  ATTR_NAME,'text']);
 	let right = '';
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css('margin-right','5px'),ATTR_TITLE,"Search under this entry"],
@@ -4005,6 +4015,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    jqid(textAreaId).val(t);
 	});
     },
+
 
     getTitleBr:function() {
 	return "&#10;";
@@ -5235,7 +5246,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(opts.header) {
             let closeImage = HtmlUtils.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
 					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ATTR_ID,id+'_close',
-											     ATTR_STYLE,HU.css(CSS_CURSOR,'pointer')]));
+											     ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 	    if(!opts.showCloseIcon) closeImage='';
             let title = HU.div([ATTR_CLASS,'ramadda-popup-title'],opts.title);
 	    if(opts.rightSideTitle)
@@ -5260,6 +5271,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         let popup=   $(html).appendTo("body");
+
 	if(true || opts.tooltip) {
 	    popup.find('a,div').tooltip({
 		classes: {"ui-tooltip": "wiki-editor-tooltip"},
@@ -5277,7 +5289,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(opts.inPlace) {
             let src =  $("#" + opts.contentId);
             let dest = $("#"+ parentId);
-            dest.css("display","block").css(ATTR_WIDTH,"fit-content").css("height","fit-content");
+            dest.css(CSS_DISPLAY,"block").css(ATTR_WIDTH,"fit-content").css(CSS_HEIGHT,"fit-content");
             src.appendTo(dest);
             src.show();
         }
@@ -5295,7 +5307,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
 	    //          console.log(opts.my +" " + opts.at);
         }
-
 
         if(opts.animate && opts.animate!=="false") {
 	    opts.animateSpeed = +opts.animateSpeed;
@@ -5338,8 +5349,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         } else if(!opts.sticky) {
 	    //Only set this if we don't have a toggleid cause if we
 	    //do have one then the popup is meant to be persistent
-	    if(!opts.toggleid)
+	    if(!opts.toggleid) {
 		HtmlUtils.setPopupObject(popup);
+	    }
         }
 
 
@@ -5354,6 +5366,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             });
         }
+
 
         if(opts.initCall) {
             if(typeof opts.initCall == "string") {
@@ -5456,8 +5469,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(attrs.length==1 && Array.isArray(attrs[0])) attrs = attrs[0]
 
         let css = "";
-        for(let i=0;i<attrs.length;i+=2) {
+        for(let i=0;i<attrs.length;) {
+	    let v=attrs[i];
+	    if(Array.isArray(v)&& v.length==2) {
+		css+=v[0]+':'+v[1]+';';
+		i++;
+		continue;
+	    }
             css +=attrs[i]+":" + attrs[i+1]+";";
+	    i+=2;
         }
         return css;
     },
@@ -5480,8 +5500,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeMultiline:function(l) {
 	return Utils.join(l,HtmlUtils.BR_ENTITY);
     },
-    getDimension(d) {
-        if(!d) return null;
+    px:function(v) {
+	return HU.getDimension(v,'px');
+    },
+    pt:function(v) {
+	return HU.getDimension(v,'pt');
+    },    
+    getDimension(d,unit) {
+        if(!Utils.isDefined(d)) return null;
         d = String(d).trim();
         if(d.match("calc")) {
             //correct for calc(x-y)
@@ -5491,7 +5517,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
             return d;
         }
-        return d+"px";
+	unit  = unit ??'px';
+        return d+unit;
+    },
+    br:function(html) {
+	if(html) return html+'<br>';
+	return '<br>';
     },
     td: function(attrs, inner) {
         return this.tag("td", attrs, inner);
@@ -5926,7 +5957,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(args) $.extend(opts,args);
         let icon =HtmlUtils.getIconImage(opts.icon,[ATTR_CLASS,CLASS_CLICKABLE],[]);
         let id = HtmlUtils.getUniqueId();
-	let style = HU.css(CSS_DISPLAY,'none',CSS_CURSOR,'pointer',
+	let style = HU.css(CSS_DISPLAY,'none',CSS_CURSOR,CURSOR_POINTER,
 			   'text-align','right',CSS_POSITION,'absolute',CSS_MARGIN_TOP,'0px');
 	if(opts.left) style+=HU.css('left',opts.left);
 	else style+=HU.css('right',opts.right);
@@ -6026,7 +6057,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         attrs.push(url);
         attrs.push(ATTR_CLASS);
         attrs.push("ramadda-link");
-        if (attrs.style) attrs.style += "display:inline-block;";
+        if (attrs.style) attrs.style += HU.css(CSS_DISPLAY,'inline-block');
         else attrs.style = "style='display:inline-block;'";
         return this.div(attrs, label);
     },
@@ -6080,7 +6111,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     onClick: function(call, html, attrs) {
-        let myAttrs = ["onclick", call, ATTR_STYLE, "color:black;   cursor:pointer;"];
+        let myAttrs = [ATTR_ONCLICK, call, ATTR_STYLE, HU.css(CSS_COLOR,'black',CSS_CURSOR,'pointer')];
         if (attrs != null) {
             for (let i = 0; i < attrs.length; i++) {
                 myAttrs.push(attrs[i]);
@@ -6664,7 +6695,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let img2 = ramaddaCdn + "/icons/togglearrowright.gif";
         $("#" + imageId).attr("state","open");
         $("#" + imageId).attr("src",img1);
-        $("#" + imageId).css(CSS_CURSOR,"pointer");       
+        $("#" + imageId).css(CSS_CURSOR,CURSOR_POINTER);       
         let open = (img) =>{
             img.attr("state","open");
             img.attr("src",img1);
@@ -6790,8 +6821,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 				 Utils.isDefined(opts.animated)?opts.animated:'null'], ',');
         let click = 'HtmlUtils.toggleBlockVisibility(' + clickArgs + ');';
         let img = HU.span([ATTR_ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
-        let header = HtmlUtils.div([ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass, 'onClick', click],  img +  ' ' + label);
-        let style = (visible ? 'display:block;visibility:visible' : 'display:none;');
+        let header = HtmlUtils.div([ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass, ATTR_ONCLICK, click],  img +  ' ' + label);
+        let style = (visible ? HU.css(CSS_DISPLAY,'block',CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,'none'));
         let body = HtmlUtils.div([ATTR_CLASS, 'hideshowblock', ATTR_ID, id, ATTR_STYLE, style],
                                  contents);
 
@@ -6822,7 +6853,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    attrs = Utils.mergeLists(attrs,opts.extraAttributes);
 	}
         let header = HtmlUtils.div(attrs,  img +  " " + label);
-        let style = (visible ? "display:block;visibility:visible" : "display:none;");
+        let style = (visible ? HU.css(CSS_DISPLAY,'block',CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,'none'));
         let body = HtmlUtils.div([ATTR_CLASS, "hideshowblock", ATTR_ID, id, ATTR_STYLE, style],
                                  contents);
 	if(opts.separate)
@@ -6932,10 +6963,10 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 	if(!item.element.attr("isheader")) {
             label = HU.span([ATTR_TITLE,label,ATTR_STYLE,
 			     HU.css(CSS_DISPLAY,'inline-block',ATTR_WIDTH,'100%',
-				    CSS_MARGIN_LEFT,img?'32px':'4px','white-space','nowrap')], label);
+				    CSS_MARGIN_LEFT,img?'32px':'4px',CSS_WHITE_SPACE,'nowrap')], label);
         } else {
-	    wrapper.css('padding-left','0px').css('pointer-events','none');
-	    li.css('pointer-events','none');
+	    wrapper.css(CSS_PADDING_LEFT,'0px').css(CSS_POINTER_EVENTS,'none');
+	    li.css(CSS_POINTER_EVENTS,'none');
 
 	}
 

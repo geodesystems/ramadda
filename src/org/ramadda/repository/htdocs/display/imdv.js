@@ -1815,7 +1815,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
 	    this.osm.dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_NEW),
 					     callback:()=>{this.osm.dialog=null;},
-					     draggable:true,title:'Open Street Map Query',header:true});
+					     draggable:true,title:'OpenStreetMap Query',header:true});
 
 	    let _this = this;
 	    this.jq(ID_OSM_TEXT).keydown(e=>{
@@ -5350,7 +5350,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
  			  {externalGraphic: externalGraphic},
 			  MyEntryPoint,
 			  {isOsm:true,
-			   tooltip:'Query Open Stree Map for locations',
+			   tooltip:'Query OpenStreetMap for locations',
 			   icon:Ramadda.getUrl("/icons/osm.png")});
 
 	},

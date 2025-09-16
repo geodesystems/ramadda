@@ -318,14 +318,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		for(word in wordToWeight) {
 		    info.push({
 			text: word,
-			html:{style:"cursor:pointer;"},
+			html:{style:HU.css(CSS_CURSOR,'pointer')},
 			weight:wordToWeight[word] ,
 			handlers:handlers,
 		    });
 
 		}
-                this.setContents(HU.div([ATTR_ID, this.domId("words"),
-					 ATTR_STYLE, HU.css('height','300px')], ""));
+                this.setContents(HU.div([ATTR_ID, this.domId('words'),
+					 ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], ""));
                 $("#" + this.domId("words")).jQCloud(info, options);
 		return
 	    }
@@ -383,13 +383,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     let word = counts[wordIdx];
                     let obj1 = {
                         weight: word.count,
-			html:{style:"cursor:pointer;"},
+			html:{style:HU.css(CSS_CURSOR,'pointer')},
                         handlers: handlers,
                         text: word.word,
                     };
                     let obj2 = {
                         weight: word.count,
-			html:{style:"cursor:pointer;"},
+			html:{style:HU.css(CSS_CURSOR,'pointer')},
                         handlers: handlers,
                         text: field.getLabel() + ":" + word.word,
                     };
@@ -400,14 +400,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (this.getProperty("showFieldLabel", true))
                     label = HU.b(fi.field.getLabel());
 
-                divs += HU.div([ATTR_STYLE,HU.css('display','inline-block','width', width)], 
-			       label + HU.div([ATTR_STYLE, HU.css('border','1px #ccc solid','height','300px'), ATTR_ID, fi.divId], ""));
+                divs += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width)], 
+			       label + HU.div([ATTR_STYLE, HU.css(CSS_BORDER,'1px #ccc solid',CSS_HEIGHT,HU.px(300)), ATTR_ID, fi.divId], ""));
             }
 
             this.setContents("");
             if (this.getProperty("combined", false)) {
                 this.setContents(HU.div([ATTR_ID, this.domId("words"),
-					 ATTR_STYLE, HU.css('height','300px')], ""));
+					 ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], ""));
                 $("#" + this.domId("words")).jQCloud(words, options);
             } else {
                 this.setContents(divs);
@@ -469,7 +469,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 			v = {v:v,f:this.formatDate(v)};
 		    } else {
 			if (tokenize) {
-                            v = v.replace(re, "<span style=background:yellow;>$1</span>");
+                            v = v.replace(re, HU.span([ATTR_STYLE,HU.css(CSS_BACKGROUND,'yellow')],'$1'));
 			}
 		    }
                     if (showRecords) {
@@ -490,7 +490,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
-                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ATTR_ID, this.domId("table"), ATTR_STYLE, HU.css('height','300px')], "")));
+                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ATTR_ID, this.domId('table'),
+									     ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], "")));
 		let step2=()=>{
                     let dataTable = google.visualization.arrayToDataTable(data);
                     this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
@@ -914,7 +915,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var colTag;
 		if(cols>0) {
 		    colTag = "col-md-" +Math.round(12/cols);
-		    contents += '<div class="row-tight row">';
+		    contents += HU.open(TAG_DIV,[ATTR_CLASS,'row-tight row']);
 		}
 		var colCnt = 0;
 		var style = this.getTemplateStyle("");
@@ -924,10 +925,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(cols>0) {
 			if(colCnt>=cols) {
 			    colCnt=0;
-			    contents += '</div>\n';
-			    contents += '<div class="row-tight row">\n';
+			    contents += HU.close(TAG_DIV);
+			    contents += HU.open(TAG_DIV,[ATTR_CLASS,'row-tight row']);
 			}
-			contents+='<div  class="' + colTag+'">\n';
+			contents+=HU.open(TAG_DIV,[ATTR_CLASS,colTag]);
 			colCnt++;
 		    }
 		    var record = selected[rowIdx];
@@ -976,12 +977,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let recordStyle = style;
 		    if(color) {
 			if(this.getColorBackground()) {
-			    recordStyle = HU.css("background",color) + recordStyle;
+			    recordStyle = HU.css(CSS_BACKGROUND,color) + recordStyle;
 			}
 			rowAttrs["color"] = color;
 		    }
 		    if(!handleSelectOnClick)
-			recordStyle+=HU.css("cursor","default");
+			recordStyle+=HU.css(CSS_CURSOR,'default');
 		    let tag = HU.openTag(TAG_DIV,[ATTR_CLASS,noWrapper?'':'display-template-record',
 						ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
 						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
@@ -1146,7 +1147,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			//			    console.log("un highlight css:" + element.css("background")+ " idx:" + element.attr(RECORD_INDEX));
+			//			    console.log("un highlight css:" + element.css(CSS_BACKGROUND)+ " idx:" + element.attr(RECORD_INDEX));
 			element.css(a,v);
 		    }
 		});
@@ -1278,8 +1279,8 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		    if(!scaleFont) fontSize = "100%";
 		    var field = data[j].field;
 		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(),
-					ATTR_TITLE,"Value: " + value, ATTR_CLASS,"display-topfields-row",
-					ATTR_STYLE,"font-size:" + fontSize+";"], field.getLabel());
+					ATTR_TITLE,Utils.msgLabel('Value') + value, ATTR_CLASS,"display-topfields-row",
+					ATTR_STYLE,HU.css(CSS_FONT_SIZE,fontSize)], field.getLabel());
 		}
 		div += HU.div([ATTR_CLASS,"display-topfields-header",RECORD_INDEX,i],header);
 		div += HU.div([ATTR_CLASS,"display-topfields-values"], contents);
@@ -1413,9 +1414,11 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	    while(this.headers.length< this.counts.length)
 		this.headers.push("");
 	    this.setContents(
-		HU.div([ATTR_CLASS,"display-blocks-header",ATTR_STYLE, this.getProperty("headerStyle","", true),ATTR_ID,this.domId(ID_BLOCKS_HEADER)]) +
+		HU.div([ATTR_CLASS,"display-blocks-header",
+			ATTR_STYLE, this.getProperty("headerStyle","", true),ATTR_ID,this.domId(ID_BLOCKS_HEADER)]) +
 		    HU.div([ATTR_CLASS,"display-blocks-blocks",ATTR_ID,this.domId(ID_BLOCKS)],"")+
-		    HU.div([ATTR_CLASS,"display-blocks-footer", ATTR_STYLE, this.getProperty("footerStyle","", true), ATTR_ID,this.domId(ID_BLOCKS_FOOTER)]));
+		    HU.div([ATTR_CLASS,"display-blocks-footer",
+			    ATTR_STYLE, this.getProperty("footerStyle","", true), ATTR_ID,this.domId(ID_BLOCKS_FOOTER)]));
 	    //Show the outline
 	    this.showBlocks(true);
 	    if(this.getProperty("displayOnScroll")) {
@@ -1456,22 +1459,23 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		let num = this.counts[i];
 		if(isNaN(num)) num = 0;
 		let label = this.footers[i].replace("${count}",Utils.formatNumberComma(num));
-		let style =  iconProp?"":"width:" + dim+"px;height:" + dim+"px;";
+		let style =  iconProp?"":HU.css(CSS_WIDTH,HU.px(dim),CSS_HEIGHT, HU.px(dim));
 		let iconStyle = "";
 		if(!initial) {
 		    if(i<step) {
 			if(!iconProp)
-			    style += HU.css("background", ct[i]);
+			    style += HU.css(CSS_BACKGROUND, ct[i]);
 			else
-			    iconStyle+=HU.css("color" ,ct[i]);
+			    iconStyle+=HU.css(CSS_COLOR ,ct[i]);
 			let footerIcon =  iconProp?HU.getIconImage(iconProp, null, [ATTR_STYLE, iconStyle]):"";
-			footer += HU.div([ATTR_CLASS,clazz,ATTR_STYLE,style],footerIcon) +" " + HU.span([ATTR_STYLE,labelStyle], label)+"&nbsp;&nbsp;";
+			footer += HU.div([ATTR_CLASS,clazz,ATTR_STYLE,style],footerIcon) +" " +
+			    HU.span([ATTR_STYLE,labelStyle], label)+SPACE2;
 		    } else {
 			if(iconProp)
-			    style += HU.css("background","transparent");
+			    style += HU.css(CSS_BACKGROUND,"transparent");
 			else
-			    style += HU.css("background","transparent","border","1px solid #ccc");			    			
-			footer += "&nbsp;&nbsp;";
+			    style += HU.css(CSS_BACKGROUND,"transparent",CSS_BORDER,"1px solid #ccc");			    			
+			footer += SPACE2;
 		    }
 		} else {
 		    style+=emptyStyle;
@@ -1620,7 +1624,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (tmp[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, "height:10px;width:" + width + "px;background:" + color], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -1653,7 +1657,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (counts[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, "height:10px;width:" + width + "px;background:" + color], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -1863,7 +1867,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
-		    label = HU.div([ATTR_STYLE,"max-width:500px;overflow-x:auto;"], label);
+		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),CSS_OVERFLOW_X,'auto')], label);
 		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],HU.div([ATTR_STYLE,"text-align:right"],"Count")):"";
 		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],  HU.div([ATTR_STYLE,"text-align:right"],"Percent")):"";
 		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,"text-align:right"],"&nbsp;")):"";
@@ -1922,7 +1926,10 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    let tdc =  (showCount?HU.td([ATTR_ALIGN, "right"], count):"");
 		    let tdp =  showPercent?HU.td([ATTR_ALIGN, "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
-		    let tdb = showBars?HU.td(["valign","center",ATTR_WIDTH,barWidth], HU.div([ATTR_TITLE,Math.round(perc*100)+"%",ATTR_STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
+		    let tdb = showBars?HU.td([ATTR_VALIGN,"center",ATTR_WIDTH,barWidth],
+					     HU.div([ATTR_TITLE,Math.round(perc*100)+"%",
+						     ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_HEIGHT,HU.px(10),
+								       CSS_WIDTH,HU.px(Math.round(bw*barWidth)))],"")):"";
 		    html += HU.tr([], 
 				  tdv + tdc + tdp + tdb
 				 );
@@ -1967,7 +1974,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    });
 	    this.find(".display-frequency-label").click(function(){
 		let field = $(this).attr("data-field");
-		//		    _this.find("[data-field=" + field+"]").css("color","black");
+		//		    _this.find("[data-field=" + field+"]").css(CSS_COLOR,"black");
 		_this.handleEventFilterChanged(_this,{
 		    id:ATTR_ID,
 		    fieldId: field,
@@ -2121,7 +2128,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 var c2 = i + 1 < cols.length ? cols[i + 1] : null;
                 var c3 = i + 2 < cols.length ? cols[i + 2] : null;
                 var width = c2 ? (c3 ? "33%" : "50%") : "100%";
-                var style = "padding:5px";
+                var style = HU.css(CSS_PADDING,HU.px(5));
                 var row = "";
                 row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c1));
                 if (c2)
@@ -2224,7 +2231,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             });
             var height = this.getProperty("height", "600");
 	    var style = this.getProperty("displayInnerStyle","");
-            var html = HU.div([ATTR_ID, this.domId(ID_TEXT), ATTR_STYLE, "padding:4px;border:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;" + style]);
+            var html = HU.div([ATTR_ID, this.domId(ID_TEXT),
+			       ATTR_STYLE, HU.css(CSS_PADDING,HU.px(4),
+						  CSS_BORDER,'1px #ccc solid',
+						  CSS_MAX_HEIGHT,HU.px(height),
+						  CSS_OVERFLOW_Y,'auto') + style]);
             this.setContents(html);
 	    let t1 = new Date();
             this.showText();
@@ -2254,9 +2265,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    let asHtml = this.getProperty("asHtml", true);
             let addLineNumbers = this.getProperty("addLineNumbers", true);
 	    let labelTemplate = this.getProperty("labelTemplate","");
-	    let labelWidth = "10px";
+	    let labelWidth = HU.px(10);
 	    if(labelTemplate == "") {
-		labelWidth = "1px";
+		labelWidth = HU.px(1);
 	    }
 	    if(labelTemplate == "" && addLineNumbers) {
 		labelTemplate = "${lineNumber}";
@@ -2282,7 +2293,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var highlightStyles;
 	    if(this.getProperty("highlights")) {
 		highlights=[];
-		highlightStyles = this.getProperty("highlightStyles","background:rgb(250_comma_0_comma_0);").split(",");
+		highlightStyles = this.getProperty("highlightStyles",HU.css(CSS_BACKGROUND,'rgb(250_comma_0_comma_0)')).split(",");
 		this.getProperty("highlights","").split(",").map(h=>{
 		    if(h.indexOf("(")<0) h = "(" + h +")";
 		    highlights.push(RegExp(h,'ig'));
@@ -2290,7 +2301,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 
 
-	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,"position:absolute;top:0;left:0;"],
+	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
 			   HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
@@ -2375,7 +2386,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    var color =  colorBy.getColor(value, record);
 		    if(color) {
 			rowAttrs.push(ATTR_STYLE);
-			rowStyle +="background:" + Utils.addAlphaToColor(color,"0.25")+";";
+			rowStyle +=HU.css(CSS_BACKGROUND,Utils.addAlphaToColor(color,"0.25"));
 		    }
                 }
 		rowAttrs.push(ATTR_CLASS);
@@ -2388,8 +2399,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		}
 		if(rowScale) {
 		    if(!hasMatch) {
-			rowStyle += "-webkit-transform: scale(1," + rowScale +");";
-			rowStyle += "line-height:"+ rowScale +";";
+			rowStyle += HU.css('-webkit-transform','scale(1," + rowScale +")');
+			rowStyle += HU.css(CSS_LINE_HEIGHT,rowScale);
 			rowAttrs.push(ATTR_STYLE);
 			rowAttrs.push(rowStyle);
 		    }
@@ -2408,7 +2419,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			var h = highlights[hi];
 			var s = hi<highlightStyles.length?highlightStyles[hi]:highlightStyles[highlightStyles.length-1];
 			s = s.replace(/_comma_/g,",");
-			line= line.replace(h, "<span style='" + s +"'>$1</span>");
+			line= line.replace(h, HU.span([ATTR_STYLE,s],'$1'));
 		    }
 		}
 		line = HU.div(lineAttrs,line);
@@ -2423,7 +2434,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    label = label.replace(/ /g,"&nbsp;");
 		    var r =  "";
 		    if(this.showShrink) {
-			r+= HU.td([ATTR_WIDTH, "5px",ATTR_STYLE,HU.css('background','#ccc')],  HU.getIconImage("fa-caret-right",null, [ATTR_STYLE,"line-height:0px;"]));
+			r+= HU.td([ATTR_WIDTH, HU.px(5),
+				   ATTR_STYLE,HU.css(CSS_BACKGROUND,'#ccc')],  HU.getIconImage("fa-caret-right",null,
+											       [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
 		    }
 		    r+= HU.td([ATTR_WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
 			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
@@ -2681,10 +2694,10 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 		html+=group;
 	    });
 
-	    let height = this.getProperty("glossaryHeight","600px");
+	    let height = this.getProperty("glossaryHeight",HU.px(600));
 	    header = HU.div([ATTR_ID,this.domId(ID_GLOSSARY_HEADER),
 			     ATTR_CLASS,"display-glossary-header"], header);
-	    html = HU.div([ATTR_STYLE,HU.css("max-height",HU.getDimension(height),"overflow-y","auto")], html);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.getDimension(height),CSS_OVERFLOW_Y,"auto")], html);
 	    this.setContents(header  + html);
 	    let _this = this;
 	    this.jq(ID_GLOSSARY_HEADER).find(".display-glossary-letter").click(function() {

@@ -251,7 +251,7 @@ function DisplayManager(argId, argProperties) {
             for (var i = 0; i < cats.length; i++) {
                 var cat = cats[i];
 		var menu = Utils.join(newMenus[cat],"");
-                var subMenu = HU.tag("ul", [], menu);
+                var subMenu = HU.tag(TAG_UL, [], menu);
                 var catLabel = HU.tag(TAG_A, [], cat);
                 newMenu += HU.tag(TAG_LI, [], catLabel + subMenu);
             }
@@ -264,7 +264,7 @@ function DisplayManager(argId, argProperties) {
 
 
             var fileMenu =
-                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag("ul", [], publishMenu)) + "\n" +
+                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag(TAG_UL, [], publishMenu)) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".copyWikiText();", "Copy Text")) + "\n" +		
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
@@ -300,15 +300,15 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
 
 
-            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag("ul", [], fileMenu));
-            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
-                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
-                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
+            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag(TAG_UL, [], fileMenu));
+            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag(TAG_UL, [], editMenu)) +
+                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag(TAG_UL, [], newMenu)) +
+                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag(TAG_UL, [], layoutMenu));
 
 
-            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup",
+            var menu = HU.div([ATTR_STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup",
 			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-			      HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
             //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");

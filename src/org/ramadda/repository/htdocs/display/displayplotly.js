@@ -204,7 +204,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             this.clearHtml();
 	    let html = 
 		HtmlUtils.div([ATTR_ID,this.getDomId(ID_HEADER)],"") +
-		HtmlUtils.div([ATTR_ID, this.getDomId(ID_PLOT), ATTR_STYLE, "width:100%;"+this.getDisplayStyle()], "") +
+		HtmlUtils.div([ATTR_ID, this.getDomId(ID_PLOT), ATTR_STYLE, HU.css(CSS_WIDTH,'100%')+this.getDisplayStyle()], "") +
 		HtmlUtils.div([ATTR_ID,this.getDomId(ID_FOOTER)],"");
 	    this.setContents(html);
 	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
@@ -462,7 +462,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
         },
 
         getDisplayStyle: function() {
-            return "border: 1px #ccc solid;";
+            return HU.css(CSS_BORDER,'1px #ccc solid');
         },
         get3DType: function() {
             //                'mesh3d'
@@ -1056,8 +1056,8 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
 		    tooltips = records.map((record,idx)=>{
 			let html = '';
 			ttf.forEach(field=>{
-			    html+='<b>' + field.getLabel()+': </b>' +
-				field.getValue(record)+'<br>';
+			    html+=HU.b(field.getLabel()+': ') +
+				field.getValue(record)+HU.br();
 			});
 			return  html;
 		    });
@@ -1675,8 +1675,8 @@ function TextcountDisplay(displayManager, id, properties) {
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDialogContents: function(tabTitles, tabContents) {
-	    let html = HtmlUtils.div([ATTR_ID,this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
-		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),[ATTR_ID, this.getDomId("dialog_patterns"),"rows","10"]);
+	    let html = HtmlUtils.div([ATTR_ID,this.getDomId("dialog_set_pattern")],"Change patterns") + HU.br() +
+		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),[ATTR_ID, this.getDomId("dialog_patterns"),ATTR_ROWS,"10"]);
 
 	    
             tabTitles.push("Patterns");

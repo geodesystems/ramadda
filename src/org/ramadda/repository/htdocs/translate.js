@@ -88,7 +88,7 @@ var Translate = {
 		let searchId  = HU.getUniqueId('search');
 		let html = HU.div([ATTR_ID,searchId]);
 		html +=HU.open(TAG_TABLE);
-		html+=HU.tr([],HU.tds([ATTR_STYLE,'min-width:400px;'],[HU.b('English'),HU.b('Translated')]));
+		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'400px')],[HU.b('English'),HU.b('Translated')]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
 		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
@@ -104,7 +104,6 @@ var Translate = {
 	    callback(lang);
 	}
 	Translate.addSwitcher(sid,null,false,{callback:callback,skipEnglish:true});
-
 	Translate.disable();
     },
     addSwitcher:function(id,langs,addDownload,opts) {
@@ -115,7 +114,7 @@ var Translate = {
 	    langs = [];
 	    ramaddaLanguages.forEach(lang=>{langs.push(lang.id)});
 	}
-	let html = HU.open("div",[ATTR_CLASS,'ramadda-link-bar']);
+	let html = HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-link-bar']);
 	let cnt = 0;
 	langs.forEach(langId=>{
 	    if(opts.skipEnglish && langId==LANGUAGE_ENGLISH) return;
@@ -132,7 +131,7 @@ var Translate = {
 			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],'Download missing');
 	}
 
-	html+=HU.close('div');
+	html+=HU.close(TAG_DIV);
 	let block = $(html);
 	block.appendTo(jqid(id));
 	let _this = this;

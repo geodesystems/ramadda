@@ -1290,7 +1290,7 @@ function DisplayThing(argId, argProperties) {
 			//Only if its not an image
 			if(!String(value).match('<img')) {
 			    value  = HU.div([ATTR_STYLE,
-					     HU.css(CSS_MAX_HEIGHT,"100px",CSS_OVERFLOW_Y,"auto")],value);
+					     HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,"auto")],value);
 			}
 		    }
 		    let label = this.formatRecordLabel(labelValue)+":";
@@ -1302,9 +1302,9 @@ function DisplayThing(argId, argProperties) {
 		    let labelAttrs = [ATTR_CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
-		    let valueStyle = HU.css('margin-left','5px',CSS_MAX_WIDTH,'90vw');
+		    let valueStyle = HU.css(CSS_MARGIN_LEFT,HU.px(5),CSS_MAX_WIDTH,'90vw');
 		    if(maxWidth) {
-			valueStyle+=HU.css(CSS_MAX_WIDTH,HU.getDimension(maxWidth,'px'));
+			valueStyle+=HU.css(CSS_MAX_WIDTH,HU.px(maxWidth));
 		    }
 
 
@@ -1325,7 +1325,7 @@ function DisplayThing(argId, argProperties) {
                     let row = HU.open(TR,['valign','top']);
 		    let label = this.formatRecordLabel("Date");
 		    row += HU.td([],HU.b(label+":"));
-		    row += HU.td([ATTR_ALIGN,"left"], HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'5px')],
+		    row += HU.td([ATTR_ALIGN,"left"], HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
 							     this.formatDate(record.getDate())));
 		    row += HU.close(TR);
 		    rows.push(row);
@@ -1340,7 +1340,7 @@ function DisplayThing(argId, argProperties) {
 
 
 	    let		lists   = Utils.splitList(rows,itemsPerColumn);
-	    let tdStyle =lists.length>1?"margin-right:5px;":"";
+	    let tdStyle =lists.length>1?HU.css(CSS_MARGIN_RIGHT,HU.px(5)):'';
 	    lists.forEach(list=>{
 		values += HU.tag(TAG_TD,[],
 				 HU.div([ATTR_STYLE,tdStyle],HU.tag(TAG_TABLE,[],Utils.join(list,""))));
@@ -2105,9 +2105,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'alphaMin',ex:1,tt:'set to transparent any value below the alpha min'},
 	{p:'alphaMax',ex:1,tt:'set to transparent any value above the alpha max'},	
 	{label:'Animation'},
-	{p:'doAnimation',ex:true},
-	{p:'animationMode',ex:'sliding|frame|cumulative'},
-	{p:'animationUseIndex',ex:'true'},
+	{p:'doAnimation',ex:true,tt:'Enable animation'},
+	{p:'animationMode',tt:'How to operate the animation, e.g. sliding, frame, cumulative',
+	 ex:'sliding|frame|cumulative'},
+	{p:'animationUseIndex',ex:'true',tt:'Instead of animating on time animate on record index'},
 	{p:'animationInitRange',ex:'start idx,end idx  e.g. "-50,end" or "0,10" or "0,end"'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
@@ -2210,10 +2211,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
-	    let cbxInner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5), CSS_WIDTH,HU.px(600),
+						     CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,"auto")],
+				  Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
-	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"10px")], HU.center(input) + cbxInner);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(300)),
+					ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
@@ -2379,10 +2383,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			   HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
-		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,'margin-bottom:4px;']),HU.close(TAG_DIV));
+		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +
 				Utils.getColorTablePopup({showToggle:false})]);
-		html =HU.div([ATTR_STYLE,HU.css('padding','8px')], html);
+		html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
 		if(_this.colorTableDialog) _this.colorTableDialog.remove();
 		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
 					     draggable:true,header:true});
@@ -2750,7 +2754,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.getShowTitle()) {
                 let titleStyle = HU.css("color" , this.getTextColor("titleColor","#000"));
                 let bg = this.getProperty("titleBackground");
-                if (bg) titleStyle += HU.css('background', bg,'padding','2px','padding-right','6px','padding-left','6px');
+                if (bg) titleStyle += HU.css(CSS_BACKGROUND, bg,CSS_PADDING,HU.px(2),CSS_PADDING_RIGHT,HU.px(6),CSS_PADDING_LEFT,HU.px(6));
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
                 if (entryId) {
@@ -3130,7 +3134,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
 	    let minHeight = contents.css("min-height");
 	    if(!minHeight || minHeight=="0px") {
-		contents.css("min-height","75px");
+		contents.css(CSS_MIN_HEIGHT,HU.px(75));
 		contents.attr("display-set-minheight","true");
 	    }
 	    this.jq(ID_DISPLAY_MESSAGE).html(msg).show();
@@ -3414,7 +3418,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
                 if (disabledFields != "") {
-                    html += HU.div([ATTR_STYLE, HU.css("border-top","1px #888  solid")], "<b>No Data Available</b>" + disabledFields);
+                    html += HU.div([ATTR_STYLE, HU.css(CSS_BORDER_TOP,"1px #888  solid")], "<b>No Data Available</b>" + disabledFields);
                 }
                 html += HU.close(TAG_DIV);
             }
@@ -4652,9 +4656,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		header  += HU.span([ATTR_ID,this.domId(ID_PREVNEXT_LABEL)]);
 		if(header!="") {
-		    header = HU.div([ATTR_STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
+		    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10), CSS_DISPLAY,'inline-block')],header);
 		    this.jq(ID_HEADER2_PREFIX).html(header);
-		    this.jq(ID_HEADER2).css("text-align","left");
+		    this.jq(ID_HEADER2).css(CSS_TEXT_ALIGN,"left");
 		}
 		if(number<records.length) {
 		    this.jq(ID_PREVNEXT_LABEL).html("Showing " + (this.rowStartIndex+1) +" - " +(this.rowStartIndex+cnt) +
@@ -4733,7 +4737,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,"500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
+	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_X,"auto",CSS_OVERFLOW_Y,"auto")], wiki);
 	    this.showDialog(wiki);
 	},
         copyWikiText: function(type) {
@@ -5113,7 +5117,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let main = entryMenuButton + " " + open + " " + extra + link;
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], main);
 		if(showEntryType) {
-		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,HU.css('font-style','italic','margin-right','4px')],entry.getTypeName()));
+		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,HU.css(CSS_FONT_STYLE,'italic',CSS_MARGIN_RIGHT,HU.px(4))],entry.getTypeName()));
 		}
 
 		if(mainMetadataDisplay && mainMetadataDisplay.length) {
@@ -5127,7 +5131,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    let thumb = entry.getThumbnail();
 		    if(!thumb) thumb = placeholderImage;
 		    if(thumb) {
-			thumb = HU.image(thumb,[ATTR_WIDTH,'80px',ATTR_STYLE,'margin-right:5px;']);
+			thumb = HU.image(thumb,[ATTR_WIDTH,HU.px(80),ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))]);
 			thumb = HU.div([ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')], thumb);
 			left = HU.table([ATTR_WIDTH,'100%'],
 					HU.tr([ATTR_VALIGN,'top'],
@@ -6328,7 +6332,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let centerWidth = "100%";	    
 	    let h0 = 	HU.div([ATTR_ID,this.getDomId(ID_HEADER0),ATTR_CLASS,"display-header-block display-header0"], "");
 	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
-            let table =   h0+HU.open('table', [ATTR_STYLE,this.isGoogleChart?"border:1px solid transparent;":'',ATTR_CLASS, 'display-ui-table', ATTR_WIDTH,'100%','border','0','cellpadding','0','cellspacing','0']);
+            let table =   h0+HU.open('table', [ATTR_STYLE,this.isGoogleChart?HU.css(CSS_BORDER,'1px solid transparent'):'',ATTR_CLASS, 'display-ui-table', ATTR_WIDTH,'100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getShowTopHeader(this.getProperty('showDisplayTop',true))) {
 		table+= HU.tr([],HU.td([ATTR_WIDTH,sideWidth]) + HU.td([ATTR_WIDTH,centerWidth],top) +HU.td([ATTR_WIDTH,sideWidth]));
 	    }
@@ -6674,7 +6678,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let valueMap = {}
 	    let applyButton = this.jq('requestapply').button();
 	    let applyRequest = ()=>{
-		applyButton.css('background','');
+		applyButton.css(CSS_BACKGROUND,'');
 		applyButton.css('border-color','');		    
 		this.macroChanged();
 		this.reloadData();
@@ -6698,7 +6702,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    reloaded=true;
 		    applyRequest();
 		} else {
-		    applyButton.css('background','yellow');
+		    applyButton.css(CSS_BACKGROUND,'yellow');
 		    applyButton.css('border-color','#000');		    
 		}
 		if(!macro.name) return;
