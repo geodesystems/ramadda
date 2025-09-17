@@ -1522,6 +1522,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return;
 		    }
 
+
 		    if(glyphType.isEntry() && (Utils.isDefined(attrs.latitude) || Utils.isDefined(attrs.north))) {
 			if(confirm('Do you want to use this entry\'s location?')) {
 			    style = $.extend({},style);
@@ -5792,8 +5793,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },500);
 
 	    this.getMap().featureClickHandler = e=>{
+
 		let debug = false;
-		//		debug=true;
 		let feature = e.feature;
 		if(debug)
 		    console.log('featureClick:' + feature);
@@ -5802,6 +5803,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(!mapGlyph) {
  		    if(debug)console.log('\tno mapGlyph');
 		    return true;
+		}
+		if(!mapGlyph.getCanSelect()) {
+		    return false;
 		}
 		return this.handleMapGlyphClick(mapGlyph,e.event? e.event.xy:null,e);
 	    };

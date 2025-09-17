@@ -22,6 +22,9 @@ var LINETYPE_STEPPED='stepped';
 
 var ID_INMAP_LABEL='inmaplabel';
 
+var ID_CANSELECT='canselect';
+var ID_IMAGEID='imageid';
+
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
@@ -49,6 +52,7 @@ var ID_MAPLEGEND = 'maplegend';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
+
     if(!type) {
 	console.log("no type given for MapGlyph");
 	console.trace();
@@ -550,8 +554,8 @@ MapGlyph.prototype = {
 
 	let level = this.getVisibleLevelRange(true)??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
-	if(this.getMapLayer()) {
-	    html+= HU.space(4)+HU.checkbox(this.domId('canselect'),[],this.getCanSelect(),'Can Select');
+	if(this.getMapLayer() || this.imageLayers || this.isImage()) {
+	    html+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
 	html+='<br>';	
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
@@ -731,9 +735,19 @@ MapGlyph.prototype = {
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
 	this.setVisible(this.jq('visible').is(':checked'),true,null,true);
-	if(this.jq('canselect').length) {
-	    this.attrs.canSelect = this.jq('canselect').is(':checked');
-	    if(this.getMapLayer()) this.getMapLayer().canSelect = this.attrs.canSelect;
+	if(this.jq(ID_CANSELECT).length) {
+	    this.attrs.canSelect = this.jq(ID_CANSELECT).is(':checked');
+	    if(this.getMapLayer()) {
+		this.getMapLayer().canSelect = this.attrs.canSelect;
+	    }
+	    if(this.image) {
+		this.image.canSelect = this.attrs.canSelect;
+	    }
+	    if(this.imageLayers) {
+		this.imageLayers.forEach(layer=>{
+		    layer.canSelect = this.attrs.canSelect;
+		});
+	    }
 	}
 
 	this.parsedProperties = null;
@@ -1949,7 +1963,7 @@ MapGlyph.prototype = {
 		HU.div([],typeLabel) +
 		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
-	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
+	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css(CSS_OVERFLOW_X,'hidden',CSS_WHITE_SPACE,'nowrap')], label);	    
 	}
 	if(right!='') {
 	    right= HU.span([ATTR_STYLE,HU.css('white-space','nowrap')], right);
@@ -2131,7 +2145,7 @@ MapGlyph.prototype = {
 	if(this.imageLayers) {
 	    let cbx='';
 	    if(this.getMapLayer() && this.getMapLayer().features.length) {
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid','main',
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),[ID_IMAGEID,'main',
 								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible({id:'main'}),
 					   'Main Layer'));
@@ -2139,7 +2153,7 @@ MapGlyph.prototype = {
 	    this.imageLayerMap = {};
 	    this.imageLayers.forEach(obj=>{
 		this.imageLayerMap[obj.id] = obj;
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid',obj.id,
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),[ID_IMAGEID,obj.id,
 								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible(obj),
 					   obj.name));
@@ -2629,7 +2643,7 @@ MapGlyph.prototype = {
 	if(this.imageLayers) {
 	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
 		let visible = $(this).is(':checked');
-		let id = $(this).attr('imageid');
+		let id = $(this).attr(ID_IMAGEID);
 		let obj = _this.imageLayerMap[id]??{id:id};
 		_this.setImageLayerVisible(obj,visible);
 	    });
