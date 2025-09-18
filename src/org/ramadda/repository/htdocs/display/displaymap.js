@@ -230,7 +230,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
 	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
-			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'0.5em','min-width',HU.px(800))],html);
+			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.em('0.5'),
+					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
 						 my:'left top',at:'left bottom',anchor:button});
@@ -281,7 +282,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		html+= HU.td([ATTR_WIDTH,width],
 			     HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,"bold",CSS_BORDER_BOTTOM,"1px solid #ccc",
 						       CSS_MARGIN_RIGHT,HU.px(5))],
-				    Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,"auto",
+				    Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+										      CSS_OVERFLOW_Y,"auto",
 										      CSS_MARGIN_RIGHT,HU.px(10))], groups[group]));
 	    });
 	    html+=HU.close(TAG_TR,TAG_TABLE);
@@ -2943,7 +2945,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_CURSOR,"pointer",CSS_PADDING,HU.px(1),
+		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+						  CSS_CURSOR,"pointer",
+						  CSS_PADDING,HU.px(1),
 						  CSS_BORDER,"1px solid rgba(0,0,0,0)"),
 				ATTR_TITLE,"Clip to view",
 				ATTR_ID,this.domId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
@@ -3006,7 +3010,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			inner+=HU.div([ATTR_CLASS,"ramadda-clickable ramadda-hoverable display-map-location", "index",idx], loc.name);
 		    }
 		});
-		inner = HU.div([ATTR_ID,_this.domId("locationmenu"),ATTR_STYLE,HU.css("max-height",HU.px(200),"overflow-y","auto","padding",HU.px(5))],inner);
+		inner = HU.div([ATTR_ID,_this.domId("locationmenu"),
+				ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+						  CSS_OVERFLOW_Y,"auto",
+						  CSS_PADDING,HU.px(5))],inner);
 		let dialog = HU.makeDialog({content:inner,my:"left top",at:"left bottom",anchor:$(this),draggable:false,header:false});
 		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
 		    if(_this.locationFeatures) {
@@ -3253,7 +3260,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    let url = urlField.getValue(record);
 			    if(Utils.stringDefined(url)) {
 				value = HU.td([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(10))],
-					      HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,CSS_FONT_SIZE,HU.pt(8)]),[ATTR_TARGET,'_link']))+value;
+					      HU.href(url,HU.getIconImage('fas fa-link',null,
+									  [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(8))]),[ATTR_TARGET,'_link']))+value;
 			    }
 			}
 			html+=HU.tag(TAG_TR,[], value);
@@ -3275,16 +3283,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 		if(doTable) {
-		    html+='</table>';
+		    html+=HU.close(TAG_TABLE);
 		}
 	    }
 
 	    if(html) {
 		let height = this.getProperty('height', this.getProperty('mapHeight', 300));
 		height='calc(' +HU.getDimension(height)+' - 1em)';
-		let style = HU.css('height',height,'max-height',height,'overflow-y','auto');
+		let style = HU.css(CSS_HEIGHT,height,CSS_MAX_HEIGHT,height,CSS_OVERFLOW_Y,'auto');
 		if(this.getTocWidth()) {
-		    style+=HU.css("min-width",this.getTocWidth());
+		    style+=HU.css(CSS_MIN_WIDTH,this.getTocWidth());
 		}
 		html = HU.div([ATTR_CLASS, "display-map-toc",ATTR_STYLE,style,ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
@@ -3779,17 +3787,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHmShowGroups(true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  [];
-		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_BACK),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step back"],
+		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_BACK),
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step back"],
  				     HU.getIconImage("fa-step-backward",[ATTR_CLASS,"display-anim-button"])));
 
 		if(!groupByField) 
-		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Play/Stop Animation"],
+		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),
+					  ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),
+					  ATTR_TITLE,"Play/Stop Animation"],
 					 HU.getIconImage("fa-play",[ATTR_CLASS,"display-anim-button"])));
-		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step forward"],
+		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step forward"],
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
 		
 
-		controls.push(HU.div([ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_LEFT,HU.px(5),CSS_MARGIN_RIGHT,HU.px(5))], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
+		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+							CSS_MARGIN_LEFT,HU.px(5),
+							CSS_MARGIN_RIGHT,HU.px(5))], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
 		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
 		let _this = this;
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
@@ -3867,10 +3881,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.htmlLayerId) {
 		this.htmlLayerId =this.getUniqueId(ID_HTMLLAYER);
 		this.htmlPopupLayerId =this.getUniqueId('popup');
-		this.jq(ID_MAP).append(HU.div([ATTR_ID,this.htmlPopupLayerId,ATTR_STYLE,HU.css('position','absolute','width','100%','left','0px','top','0px','bottom','0px','xbackground','red','z-index','0','pointer-events', 'none')]));
+		this.jq(ID_MAP).append(HU.div([ATTR_ID,this.htmlPopupLayerId,
+					       ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+								 CSS_WIDTH,'100%',
+								 CSS_LEFT,HU.px(0),
+								 CSS_TOP,HU.px(0),
+								 CSS_BOTTOM,HU.px(0),
+								 CSS_Z_INDEX,'0',
+								 'pointer-events', 'none')]));
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
-		$(vp).css('display','relative');
+		$(vp).css(CSS_DISPLAY,'relative');
 		$(vp).append(HU.div([ATTR_STYLE,'z-index:10',ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
 	    }
 	    if(this.htmlPopupLayerId) {
@@ -3931,8 +3952,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let allData = this.getColumnValues(records, htmlLayerField);
 	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
 	    let container = $($(this.map.getMap().getViewport()).children()[0]);
-	    let cleft = +container.css("left").replace("px","");
-	    let ctop = +container.css("top").replace("px","");
+	    let cleft = +container.css(CSS_LEFT).replace("px","");
+	    let ctop = +container.css(CSS_TOP).replace("px","");
 	    let hoverW = w*3;
 	    let hoverH = h*3;
 	    let layerRecords = [];
@@ -3950,7 +3971,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let hid = id +"_hover";
 		let html = 
 		    HU.div([ATTR_ID,id,  ATTR_CLASS,'display-map-html-item',
-			    ATTR_STYLE,style +HU.css('line-height','0px','z-index','1000','position','absolute','left', (px.x-w/2-cleft) +'px','top', (px.y-h/2-ctop)+'px')]);
+			    ATTR_STYLE,style +HU.css(CSS_LINE_HEIGHT,HU.px(0),
+						     CSS_Z_INDEX,'1000',
+						     CSS_POSITION,'absolute',
+						     CSS_LEFT, HU.px((px.x-w/2-cleft)),
+						     CSS_TOP, HU.px((px.y-h/2-ctop)))]);
 		let label = '';
 		if(record && popupLabelField) {
 		    label = popupLabelField.getValue(record);
@@ -3961,7 +3986,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.htmlPopup +=
 		    HU.div([ATTR_ID,hid, RECORD_INDEX, idx,
 			    ATTR_TITLE,"", ATTR_CLASS,'display-map-html-hitem',
-			    ATTR_STYLE,style +HU.css('display','none','line-height','0px','z-index','2001','position','absolute','xleft', (px.x-hoverW/2-cleft) +'px','left','0px','top','0px','xtop', (px.y-hoverH/2-ctop)+'px')],label);
+			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,'none',
+						     CSS_LINE_HEIGHT,HU.px(0),
+						     CSS_Z_INDEX,'2001',
+						     CSS_POSITION,'absolute',
+						     CSS_LEFT,HU.px(0),
+						     CSS_TOP,HU.px(0))],label);
 		this.htmlLayer += html;
 		infos.push({
 		    id:id,
@@ -3980,7 +4010,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let id = HU.getUniqueId("pie");
 			let cw = idx==0?w:hoverW;
 			let ch = idx==0?h:hoverH;
-			let pie = HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css('cursor','pointer'),
+			let pie = HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_CURSOR,'pointer'),
 						     ATTR_ID,id ,ATTR_WIDTH,cw,ATTR_HEIGHT, ch]);
 			if(idx==0)
 			    $("#" + info.id).html(pie);
@@ -4031,7 +4061,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    min = this.getHtmlLayerMin(min);
 		    max = this.getHtmlLayerMax(max);		    
 		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,min,max,colorBy,props1);
-		    $('#' + info.hoverId).css(CSS_BACKGROUND,'#fff').css('border','1px solid #ccc');
+		    $('#' + info.hoverId).css(CSS_BACKGROUND,'#fff').css(CSS_BORDER,'1px solid #ccc');
 		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,min,max,colorBy,props2);
 		}
 	    });
@@ -4040,7 +4070,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.makeTooltips(hitems, layerRecords);
 	    
 	    items.mouseenter(function() {
-		//		$(this).css('display','none');
 		hitems.hide();
 		let popup = 	$('#'+$(this).attr(ATTR_ID)+'_hover');
 		popup.show();
@@ -4050,8 +4079,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css('display','block');
-		$(this).css('display','none');
+		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,'block');
+		$(this).css(CSS_DISPLAY,'none');
 	    });
 	    if(colorBy.hasField()) {
 		this.showColorTable(colorBy);
@@ -4678,7 +4707,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
 		    records.forEach(record=>{
-			html+=HU.div([ATTR_STYLE,HU.css("border-bottom","1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
+			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,"1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
 		    });
 		    return html;
 		};
@@ -5404,7 +5433,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let lat = theRecord.getLatitude();
 		    let lon = theRecord.getLongitude();		    
 		    mapDiv= HU.getUniqueId('');
-		    let div  = HU.div([ATTR_ID,mapDiv,ATTR_STYLE,HU.css('height','400px')]);
+		    let div  = HU.div([ATTR_ID,mapDiv,ATTR_STYLE,HU.css(CSS_HEIGHT,HU.px(400))]);
 		    tabs.push({label:'Overview Map', contents:div});
 		}
 		if(tabs.length==1) {
@@ -5546,7 +5575,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!this.legendId) {
 		    this.legendId = this.domId("legendid");
 		    this.jq(ID_RIGHT).append(HU.div([ATTR_ID,this.legendId,
-						     ATTR_CLASS,"display-map-legend",ATTR_STYLE, HU.css("max-height",this.getHeight("400px"))]));
+						     ATTR_CLASS,"display-map-legend",
+						     ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,this.getHeight(HU.px(400)))]));
 		}
 		this.jq("legendid").html(keyLegend);
 	    }
@@ -5557,7 +5587,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getDeclutterLabels()) {
 		this.declutterLabels();
 	    }
-	    $("#" + this.map.labelLayer.id).css("z-index",900);
+	    $("#" + this.map.labelLayer.id).css(CSS_Z_INDEX,900);
         },
 
 
