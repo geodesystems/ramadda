@@ -2657,9 +2657,8 @@ public class EntryManager extends RepositoryManager {
 
             String description = getEntryDescription(request, entry);
             Date   createDate  = new Date();
-            Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
-						    createDate);
-
+            Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, createDate);
+	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
             File originalFile = null;
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
@@ -2774,7 +2773,7 @@ public class EntryManager extends RepositoryManager {
 		    }
 		}
 
-		if(!entry.getTypeHandler().getTypeProperty("date.nullok",false)) {
+		if(!entry.getTypeHandler().getNullDateOk()) {
 		    if (theDateRange[0] == null) {
 			theDateRange[0] = ((theDateRange[1] == null)
 					   ? createDate
@@ -2860,6 +2859,7 @@ public class EntryManager extends RepositoryManager {
 
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
 						    new Date());
+	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
             String newName = request.getString(ARG_NAME, entry.getLabel());
 
             entry.setName(newName);
@@ -6178,7 +6178,7 @@ public class EntryManager extends RepositoryManager {
 	    String sfromDate = Utils.getAttributeOrTag(node,ATTR_FROMDATE,null);
 	    String stoDate = Utils.getAttributeOrTag(node,ATTR_TODATE,null);	    
 	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): null;
-	    if(fromDate==null && !typeHandler.nullDateOk()) fromDate = createDate;
+	    if(fromDate==null && !typeHandler.getNullDateOk()) fromDate = createDate;
 	    Date toDate = stringDefined(stoDate) ? getDateHandler().parseDate(stoDate): fromDate;	
 
             String id    = getRepository().getGUID();

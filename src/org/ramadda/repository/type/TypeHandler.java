@@ -1652,6 +1652,9 @@ public class TypeHandler extends RepositoryManager {
 
     public String getProperty(Entry entry, String name, String dflt,boolean checkParent) {	
         String result = (String) properties.get(name);
+	if(name.indexOf("separate")>=0) {
+	    System.err.println(result +" " + properties);
+	}
         if (result != null) {
             return result;
         }
@@ -1692,8 +1695,12 @@ public class TypeHandler extends RepositoryManager {
         return okToShowInForm(entry, arg, true);
     }
 
-    public boolean nullDateOk(){
+    public boolean getNullDateOk(){
 	return getTypeProperty("date.nullok",false);
+    }
+
+    public boolean getDateRangeSeparate() {
+	return getTypeProperty("date.separate",false);
     }
 
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
@@ -2954,10 +2961,6 @@ public class TypeHandler extends RepositoryManager {
 		addArkToHtml(request,typeHandler,entry,sb);
 	}
 
-	if (forOutput||showCreateDate) {
-	    if(!seen.contains("createdate"))
-		addCreateDateToHtml(request,typeHandler,entry,sb);
-	}
 
 	if (forOutput||showCreated) {
 	    if(!seen.contains("owner"))
@@ -2968,6 +2971,11 @@ public class TypeHandler extends RepositoryManager {
 	if (forOutput||showDate) {
 	    if(!seen.contains("date"))
 		addDateToHtml(request,typeHandler,entry,sb);
+	}
+
+	if (forOutput||showCreateDate) {
+	    if(!seen.contains("createdate"))
+		addCreateDateToHtml(request,typeHandler,entry,sb);
 	}
 
 	//	if(!seen.contains("altitude"))
@@ -3137,8 +3145,15 @@ public class TypeHandler extends RepositoryManager {
 	    String endDate = getDateHandler().formatDate(request,   entry, entry.getEndDate());
 	    //	    addEntryProperty(request, sb, getFormLabel(null,null,"startdate","Start Date")),startDate);
 	    //addEntryProperty(request, sb,msgLabel(getFormLabel(null,null,"enddate","End Date")),endDate);
-	    addEntryProperty(request, sb,getFormLabel(null,null,"date","Date"),
-			     startDate +" - "+ endDate);
+	    boolean dateSeparate = getDateRangeSeparate();
+	    System.err.println(dateSeparate);
+	    if(!dateSeparate) {
+		addEntryProperty(request, sb,getFormLabel(null,null,"date","Date"),
+				 startDate +" - "+ endDate);
+	    } else {
+		addEntryProperty(request, sb,getFormLabel(null,null,ARG_FROMDATE,"From Date"),startDate);
+		addEntryProperty(request, sb,getFormLabel(null,null,ARG_TODATE,"To Date"),endDate);		
+	    }
 	} else {
 	    StringBuilder dateSB = new StringBuilder();
 	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
@@ -4192,37 +4207,31 @@ public class TypeHandler extends RepositoryManager {
 	    String help = getProperty(entry,"form.date.help",null);
 	    if(help!=null)
 		sb.append(HU.formEntry("",wrapHelp(help)));
-            if ( !okToShowInForm(entry, ARG_TODATE)) {
-                sb.append(
-			  formEntry(
-				    request,
+	    boolean dateSeparate = getDateRangeSeparate();
+	    String fromDateInput =  getDateHandler().makeDateInput(request, ARG_FROMDATE, "entryform",
+								   fromDate, timezone,
+								   showTime);
+
+            if (!okToShowInForm(entry, ARG_TODATE)) {
+                sb.append(formEntry(request,
 				    msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date")),
-				    getDateHandler().makeDateInput(
-								   request, ARG_FROMDATE, "entryform", fromDate,
-								   timezone, showTime) + " " + setTimeCbx));
+				    fromDateInput + HU.space(1) + setTimeCbx));
 
             } else {
-                sb.append(
-			  formEntry(
-				    request,
-				    msgLabel(
-					     getFormLabel(parentEntry,
-							  entry, ARG_DATE,
-							  "Date Range")), getDateHandler()
-                                    .makeDateInput(
-						   request, ARG_FROMDATE, "entryform",
-						   fromDate, timezone,
-						   showTime) + HU.space(1)
-				    + HtmlUtils
-				    .img(getIconUrl(
-                                                    ICON_RANGE)) + HtmlUtils
-				    .space(1) +
-				    //                        " <b>--</b> " +
-				    getDateHandler().makeDateInput(request, ARG_TODATE,
-								   "entryform", toDate, timezone,
-								   showTime) + HU.space(2) + " " + setTimeCbx));
-            }
-
+		String toDateInput = getDateHandler().makeDateInput(request, ARG_TODATE,
+								    "entryform", toDate, timezone,
+								    showTime);
+		if(!dateSeparate) {
+		    sb.append(formEntry(request,
+					msgLabel(getFormLabel(parentEntry,entry, ARG_DATE,"Date Range")),
+					fromDateInput + HU.space(1)	    +
+					HU.img(getIconUrl(ICON_RANGE)) + HU.space(1) +
+					toDateInput + HU.space(2)  + setTimeCbx));
+		} else {
+		    sb.append(formEntry(request,msgLabel(getFormLabel(parentEntry,entry, ARG_FROMDATE,"From Date")),fromDateInput));
+		    sb.append(formEntry(request,msgLabel(getFormLabel(parentEntry,entry, ARG_TODATE,"To Date")),toDateInput));		    
+		}
+	    }
         }
     }
 
