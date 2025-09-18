@@ -45,7 +45,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONCSV =
-        new OutputType("GeoJson CSV", "geojsoncsv", OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "",
+        new OutputType("GeoJson to CSV", "geojsoncsv", OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "",
                        ICON_CSV);
 
     /**  */
