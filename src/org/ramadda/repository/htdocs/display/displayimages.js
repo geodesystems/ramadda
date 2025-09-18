@@ -184,13 +184,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width + 'px',CSS_HEIGHT, img.height +'px',
-						    CSS_BACKGROUND,'rgb(' + c[0]+',' + c[1] +',' + c[2]+')')],"");
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',
+						    CSS_WIDTH, HU.px(width),
+						    CSS_HEIGHT, HU.px(img.height),
+						    CSS_BACKGROUND,HU.rgb(c[0],c[1],c[2]))],'');
 		}
-		div.css("width",img.width);
-		div.css("height",img.height);
+		div.css(CSS_WIDTH,img.width);
+		div.css(CSS_HEIGHT,img.height);
 		div.html(html);
-		//			div.css(CSS_BACKGROUND,"rgb(" + c[0]+"," + c[1] +"," + c[2]);
 		img.style.display = "none";
 	    }
 	},
@@ -311,14 +312,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
-                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt], HU.image(img,["width",width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
+                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt], HU.image(img,[ATTR_WIDTH,width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
-				   ATTR_STYLE,HU.css(CSS_MARGIN, margin+'px')], img);
+				   ATTR_STYLE,HU.css(CSS_MARGIN, HU.px(margin))], img);
                 } else {
                     var style = "";
                     if(fontSize) {
-                        style+= " font-size:" + fontSize +"; ";
+                        style+= HU.css(CSS_FONT_SIZE,fontSize);
                     }
                     if(this.colorByField && this.colorList) {
                         var value = this.colorByField.getValue(record);
@@ -329,12 +330,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         if(index>=this.colorList.length) {
                             index = this.colorList.length%index;
                         }
-                        style+="background:" + this.colorList[index]+";";
+                        style+=HU.css(CSS_BACKGROUND,this.colorList[index]);
                         if(this.foregroundList) {
                             if(index<this.foregroundList.length) {
-                                style+="color:" + this.foregroundList[index]+" !important;";
+                                style+=HU.css(CSS_COLOR,this.foregroundList[index]+" !important");
                             } else {
-                                style+="color:" + this.foregroundList[this.foregroundList-1]+" !important;";
+                                style+=HU.css(CSS_COLOR, this.foregroundList[this.foregroundList-1]+" !important");
                             }
                         }
                     }
@@ -388,7 +389,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 var width = group.members.length==0?"100%":100/group.members.length;
-                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,'100%','border',0]) +HU.open(TAG_TR,['valign','top']);
+                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,'100%',ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
@@ -461,8 +462,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let blocks = this.find(".display-images-block");
 	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
 	    let block = this.find(select);
-	    blocks.css('border',null);
-	    block.css('border',"1px solid " +this.getHighlightColor());
+	    blocks.css(CSS_BORDER,null);
+	    block.css(CSS_BORDER,"1px solid " +this.getHighlightColor());
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
@@ -543,7 +544,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(!decorate) {
 		class2 = "";
 		class1 = "display-images-block";
-		baseStyle = HU.css("margin",this.getPropertyImageMargin("10px"));
+		baseStyle = HU.css(CSS_MARGIN,this.getPropertyImageMargin(HU.px(10)));
 	    }
 	    if(columns) {
 		if(width && width.endsWith("%"))
@@ -586,7 +587,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [ATTR_STYLE,imageStyle,"alt",galleryLabel,ATTR_ID,base+"image" + rowIdx,"loading","lazy"];
+		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,ATTR_ID,base+"image" + rowIdx,ATTR_LOADING,"lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
 		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
@@ -618,13 +619,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(template) {
 		    let row = this.getDataValues(record);
 		    block = recordContents= this.applyRecordTemplate(record, row,fields,template);
-		    style+=HU.css("text-align","left");
+		    style+=HU.css(CSS_TEXT_ALIGN,'left');
 		} else {
-		    style+=HU.css("vertical-align","top","width",blockWidth);
+		    style+=HU.css(CSS_VERTICAL_ALIGN,'top',CSS_WIDTH,blockWidth);
 		    if(doPopup) {
 			img = HU.href(image,img,[ATTR_CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
 		    } else if(urlField&& !tooltipClick) {
-			img = HU.href(urlField.getValue(record),img,["target","_target"]);
+			img = HU.href(urlField.getValue(record),img,[ATTR_TARGET,"_target"]);
 		    }
 		    recordContents = HU.div([ATTR_CLASS,class2], topLbl + img + lbl);
 		}
@@ -657,14 +658,16 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
 		let css = "";
-		if(this.getPropertyMinHeightGallery()) css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
-		if(this.getPropertyMinHeightGallery())	css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
+		if(this.getPropertyMinHeightGallery())
+		    css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
+		if(this.getPropertyMinHeightGallery())
+		    css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
 		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,"auto")], contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
-		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,'8px',CSS_MARGIN_TOP,'8px')],
+		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(8))],
 				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
 					       this.hideNoImages,'Show entries with images')) +
 		    contents;
@@ -680,11 +683,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let blocks = this.find(".display-images-block");
 	    let _this = this;
 	    blocks.mouseenter(function() {
-		$(this).attr("oldborder",$(this).css("border"));
-		$(this).css("border","1px solid " + _this.getHighlightColor());
+		$(this).attr("oldborder",$(this).css(CSS_BORDER));
+		$(this).css(CSS_BORDER,"1px solid " + _this.getHighlightColor());
 	    });
 	    blocks.mouseleave(function() {
-		$(this).css("border",$(this).attr("oldborder"));
+		$(this).css(CSS_BORDER,$(this).attr("oldborder"));
 	    });			      
 
 
@@ -768,21 +771,32 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
 	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,"1px solid " +this.getHighlightColor(),
-						 CSS_WIDTH,"20px",CSS_HEIGHT,"20px",CSS_LEFT,"10px",CSS_TOP,"10px",
+						 CSS_WIDTH,HU.px(20),CSS_HEIGHT,HU.px(20),
+						 CSS_LEFT,HU.px(10),CSS_TOP,HU.px(10),
 						 CSS_DISPLAY,"none",CSS_POSITION,"absolute",
-						 CSS_Z_INDEX,1000,"pointer-events","none"),ATTR_ID, this.domId(ID_RECT)]);
+						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),ATTR_ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
-					  ATTR_STYLE,HU.css("position","relative") ]) +
-				  HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_CLASS,"display-imagezoom-popup",ATTR_STYLE,HU.css("z-index","100","display","none",ATTR_WIDTH,this.popupWidth+"px",
-															      ATTR_HEIGHT,this.popupHeight+"px","overflow-y","hidden","overflow-x","hidden", "position","absolute","top","0px","left", imageWidth+"px")],""));
+					  ATTR_STYLE,HU.css(CSS_POSITION,"relative") ]) +
+				  HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_CLASS,"display-imagezoom-popup",
+					  ATTR_STYLE,HU.css(CSS_Z_INDEX,"100",
+							    CSS_DISPLAY,"none",
+							    CSS_WIDTH,HU.px(this.popupWidth),
+							    CSS_HEIGHT,HU.px(this.popupHeight),
+							    CSS_OVERFLOW_Y,"hidden",
+							    CSS_OVERFLOW_X,"hidden",
+							    CSS_POSITION,"absolute",
+							    CSS_TOP,HU.px(0),
+							    CSS_LEFT, HU.px(imageWidth))],""));
 
-	    let contents = HU.table(["border",0,ATTR_WIDTH,"100%"],
-				    HU.tr(["valign","top"],
+	    let contents = HU.table([ATTR_BORDER,0,ATTR_WIDTH,"100%"],
+				    HU.tr([ATTR_VALIGN,CSS_TOP],
 					  HU.td([ATTR_WIDTH,"2%"],
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
-							ATTR_STYLE,HU.css("max-height",height,"overflow-y","auto","display","inline-block")],"")) +
+							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
+									  CSS_OVERFLOW_Y,"auto",
+									  CSS_DISPLAY,"inline-block")],"")) +
 					  HU.td([ATTR_WIDTH,"90%"],
 						imageDiv)));
 	    let thumbsHtml = "";
@@ -803,8 +817,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
-		thumbs.css("border","1px solid transparent");
-		thumb.css("border","1px solid " + this.getHighlightColor());
+		thumbs.css(CSS_BORDER,"1px solid transparent");
+		thumb.css(CSS_BORDER,"1px solid " + this.getHighlightColor());
 		let index = parseFloat(thumb.attr(RECORD_INDEX));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]
@@ -815,7 +829,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    thumbs.mouseover(function() {	
 		thumbSelect($(this));
 	    });
-	    this.jq(ID_THUMBS).css("border","1px solid transparent");
+	    this.jq(ID_THUMBS).css(CSS_BORDER,"1px solid transparent");
 	    let selectedIndex =  HU.getUrlArgument("imagezoom_thumb");
 	    let x = HU.getUrlArgument("imagezoom_x");
 	    let y = HU.getUrlArgument("imagezoom_y");	    
@@ -844,8 +858,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(!this.currentRecord) return;
 	    let row = this.getDataValues(this.currentRecord);
 	    let image = row[this.imageField.getIndex()];
-	    this.jq(ID_POPUP).css("display","block");
-	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE),ATTR_STYLE,HU.css("xposition","absolute")];
+	    this.jq(ID_POPUP).css(CSS_DISPLAY,"block");
+	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE)];
 	    if(this.getPopupImageWidth()) {
 		imageAttrs.push(ATTR_WIDTH);
 		imageAttrs.push(this.getPopupImageWidth());
@@ -869,21 +883,21 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
                     }
 		}
 	    }
-	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css("z-index",1000),
+	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css(CSS_Z_INDEX,1000),
 					ATTR_WIDTH, width,ATTR_ID,this.domId(ID_IMAGEINNER)]);
 	    if(label!="")
 		html+=HU.div([ATTR_STYLE,"color:#000"],label);
 	    this.jq(ID_IMAGE).html(html);
 
 	    this.jq(ID_POPUP).html("");
-	    this.jq(ID_POPUP).css("display","none");
+	    this.jq(ID_POPUP).css(CSS_DISPLAY,"none");
 	    this.jq(ID_IMAGEINNER).mouseenter(()=>{
 		this.showPopup();
 	    });
 	    this.jq(ID_IMAGEINNER).mouseout(()=>{
 		this.jq(ID_POPUP).html("");
-		this.jq(ID_POPUP).css("display","none");
-		this.jq(ID_RECT).css("display","none");		
+		this.jq(ID_POPUP).css(CSS_DISPLAY,"none");
+		this.jq(ID_RECT).css(CSS_DISPLAY,"none");		
 	    });
 
 	    this.jq(ID_IMAGEINNER).mousemove((e)=>{
@@ -938,7 +952,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		top:pp.top-percentH*ih};
 	    this.jq(ID_POPUPIMAGE).offset(offset);		    
 	    let rect = this.jq(ID_RECT);
-	    rect.css({"display":"block",top:params.y-sh2+"px",left:params.x-sw2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
+	    rect.css({display:"block",top:HU.px(params.y-sh2),
+		      left:HU.px(params.x-sw2),
+		      width:HU.px(scaledWidth),
+		      height:HU.px(scaledHeight)});
 	    return true;
 	},
 
@@ -1014,29 +1031,29 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ATTR_ID, this.domId(ID_PREV),
-			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,'10px','font-size','200%'),
+			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,'200%'),
 			       ATTR_CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
 	    let right = HU.div([ATTR_ID, this.domId(ID_NEXT),
-				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'10px','font-size','200%'),
+				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
 				ATTR_CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
-				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height),
+				ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,'auto',CSS_MAX_HEIGHT, height),
 				ATTR_ID, this.domId(ID_SLIDE), ATTR_CLASS,'display-slides-slide']);
 
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
-		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
+		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,'100%') +this.getProperty('stripStyle','');
 		top = HU.div([ATTR_ID,this.domId(ID_STRIP),
 			      ATTR_CLASS,'display-slides-strip','tabindex','0',ATTR_STYLE,stripStyle]);
 	    }
-	    let contents = top+HU.div([ATTR_STYLE,HU.css('position','relative')],
+	    let contents = top+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				      slide + left + right);
 
 	    this.setContents(contents);
 
 	    if(this.showStrip) {
-		let width = HU.getDimension(this.getThumbnailWidth("100px"));
+		let width = HU.getDimension(this.getThumbnailWidth(HU.px(100)));
 		let strip="";
 		this.records.forEach((record,idx)=>{
 		    let url = this.thumbnailField.getValue(record);
@@ -1055,7 +1072,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,['loading','lazy',ATTR_TITLE,tt,'width',width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
+			strip += HU.div([],HU.image(url,['loading','lazy',ATTR_TITLE,tt,
+							 ATTR_WIDTH,width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
@@ -1070,7 +1088,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
-			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
+			strip += HU.div([ATTR_TITLE,tt,
+					 ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MIN_WIDTH,width,
+							   CSS_WIDTH,width,CSS_OVERFLOW_X,'hidden'),
+					 ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -1150,7 +1171,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    } else if(this.mediaField) {
 		let url = this.mediaField.getValue(record);
 		if(Utils.isImage(url)) {
-		    html = HU.image(url,[ATTR_STYLE,HU.css('width',slideWidth)]);
+		    html = HU.image(url,[ATTR_STYLE,HU.css(CSS_WIDTH,slideWidth)]);
 		} else if(url.match('.mp3')) {
 		    html =HU.center( Utils.embedAudio(url));
 		} else if(url.match('soundcloud')) {
@@ -1161,7 +1182,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
-			html = HU.center(HU.tag("iframe",['src',url,'width','640','height','351','frameborder','0',
+			html = HU.center(HU.tag("iframe",['src',url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351','frameborder','0',
 							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}

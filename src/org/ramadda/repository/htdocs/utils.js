@@ -89,10 +89,12 @@ var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
 var TAG_CANVAS = "canvas";
+var TAG_CENTER="center";
 var TAG_I = "i";
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
 var TAG_LABEL = "label";
+var TAG_LINK = "link";
 var TAG_LI = "li";
 var TAG_SPAN = "span";
 var TAG_SELECT = "select";
@@ -101,6 +103,7 @@ var TAG_FORM = "form";
 var TAG_TABLE = "table";
 var TAG_TBODY = "tbody";
 var TAG_THEAD = "thead";
+var TAG_TH = "th";
 var TAG_TFOOT = "tfoot";
 var TAG_TR = "tr";
 var TAG_TD = "td";
@@ -191,7 +194,8 @@ var CSS_HEIGHT="height";
 var CSS_WHITE_SPACE="white-space";
 var CSS_WIDTH="width";
 var CSS_BACKGROUND="background";
-
+var CSS_BACKGROUND_COLOR="background-color";
+var CSS_BACKGROUND_IMAGE="background-image";
 
 var ARG_PAGESEARCH='pagesearch';
 
@@ -5514,6 +5518,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     px:function(v) {
 	return HU.getDimension(v,'px');
     },
+    em:function(v) {
+	return HU.getDimension(v,'em');
+    },    
     pt:function(v) {
 	return HU.getDimension(v,'pt');
     },    

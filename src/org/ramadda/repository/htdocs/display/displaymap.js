@@ -189,7 +189,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let mapContainer = HU.div([ATTR_CLASS,"ramadda-map-container",ATTR_ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
 				      HU.div([ATTR_CLASS,"ramadda-map-slider",
-					      ATTR_STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;overflow-x:auto;"),
+					      ATTR_STYLE,this.getProperty("popupSliderStyle",
+									  HU.css(CSS_MAX_HEIGHT,HU.px(400),
+										 CSS_OVERFLOW_Y,'auto',
+										 CSS_OVERFLOW_X,'auto')),
 					      ATTR_ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
@@ -227,7 +230,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
 	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
-			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'0.5em','min-width','800px')],html);
+			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'0.5em','min-width',HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
 						 my:'left top',at:'left bottom',anchor:button});
@@ -275,7 +278,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let keys = Object.keys(groups);
 	    let width = (100/keys.length)+'%';
 	    keys.forEach(group=>{
-		html+= HU.td(['width',width], HU.div([ATTR_STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc",CSS_MARGIN_RIGHT,"5px")], Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto", CSS_MARGIN_RIGHT,"10px")], groups[group]));
+		html+= HU.td([ATTR_WIDTH,width],
+			     HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,"bold",CSS_BORDER_BOTTOM,"1px solid #ccc",
+						       CSS_MARGIN_RIGHT,HU.px(5))],
+				    Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,"auto",
+										      CSS_MARGIN_RIGHT,HU.px(10))], groups[group]));
 	    });
 	    html+=HU.close(TAG_TR,TAG_TABLE);
 	    return html;
@@ -1880,7 +1887,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             url = HU.appendArg(url, "output", "json");
             let entryList = new EntryList(this.getRamadda(), url, null, false);
             entryList.doSearch(this);
-            this.getEntryList().showMessage("Searching", HU.div([ATTR_STYLE, HU.css("margin","20px")], this.getWaitImage()));
+            this.getEntryList().showMessage("Searching", HU.div([ATTR_STYLE, HU.css(CSS_MARGIN,HU.px(20))], this.getWaitImage()));
         },
         getEntryList: function() {
             if (!this.entryListDisplay) {
@@ -2936,7 +2943,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		html =  HU.div([ATTR_STYLE,HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), ATTR_TITLE,"Clip to view", ID,this.domId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
+		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_CURSOR,"pointer",CSS_PADDING,HU.px(1),
+						  CSS_BORDER,"1px solid rgba(0,0,0,0)"),
+				ATTR_TITLE,"Clip to view",
+				ATTR_ID,this.domId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
 	    }
 
 
@@ -2996,7 +3006,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			inner+=HU.div([ATTR_CLASS,"ramadda-clickable ramadda-hoverable display-map-location", "index",idx], loc.name);
 		    }
 		});
-		inner = HU.div([ATTR_ID,_this.domId("locationmenu"),ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto","padding","5px")],inner);
+		inner = HU.div([ATTR_ID,_this.domId("locationmenu"),ATTR_STYLE,HU.css("max-height",HU.px(200),"overflow-y","auto","padding",HU.px(5))],inner);
 		let dialog = HU.makeDialog({content:inner,my:"left top",at:"left bottom",anchor:$(this),draggable:false,header:false});
 		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
 		    if(_this.locationFeatures) {
@@ -3049,7 +3059,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty('showTogglePath',false)) {
 		let cbx = HU.checkbox('',[ATTR_ID,this.domId('togglepath')],this.getIsPath(),
 				      'Show track');
-		this.jq(ID_HEADER2_PREPREFIX).append(HU.span([ATTR_STYLE,'padding-right:10px;'],cbx));
+		this.jq(ID_HEADER2_PREPREFIX).append(HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10))],cbx));
 		this.jq('togglepath').click(function() {
 		    let on = $(this).is(':checked');
 		    _this.setProperty('isPath',on);
@@ -3105,9 +3115,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.jq("clip").click(function(e){
 		_this.clipToView = !_this.clipToView;
 		if(!_this.clipToView) {
-		    $(this).css("border","1px solid rgba(0,0,0,0)");
+		    $(this).css(CSS_BORDER,"1px solid rgba(0,0,0,0)");
 		} else {
-		    $(this).css("border","1px solid #aaa");
+		    $(this).css(CSS_BORDER,"1px solid #aaa");
 		}
 		_this.haveCalledUpdateUI = false;
 		_this.updateUI();
@@ -3237,16 +3247,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		    let value;
 		    if(doTable) {
-			let width = Math.floor(100/values.length)+'%';
-			value = Utils.wrap(values,HU.open('td',[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx,'x'+ATTR_WIDTH,width]),'</td>');
+			let width = HU.perc(Math.floor(100/values.length));
+			value = Utils.wrap(values,HU.open(TAG_TD,[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx]),'</td>');
 			if(urlField) {
 			    let url = urlField.getValue(record);
 			    if(Utils.stringDefined(url)) {
-				value = HU.td([ATTR_STYLE,HU.css('width','10px')],
-					      HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']))+value;
+				value = HU.td([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(10))],
+					      HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,CSS_FONT_SIZE,HU.pt(8)]),[ATTR_TARGET,'_link']))+value;
 			    }
 			}
-			html+=HU.tag('tr',[], value);
+			html+=HU.tag(TAG_TR,[], value);
 		    } else {
 			value = Utils.join(values,' ');
 			if(!iconField) {
@@ -3779,7 +3789,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
 		
 
-		controls.push(HU.div([ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_LEFT,"5px",CSS_MARGIN_RIGHT,"5px")], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
+		controls.push(HU.div([ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_LEFT,HU.px(5),CSS_MARGIN_RIGHT,HU.px(5))], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
 		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
 		let _this = this;
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
@@ -3822,7 +3832,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let toggle = reload +
 		    HU.checkbox("",[ATTR_ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
 				this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Heatmap')));
-		this.writeHeader(ID_HEADER2_PREFIX,HU.span([ATTR_STYLE,HU.css('margin-right:8px;')],toggle));
+		this.writeHeader(ID_HEADER2_PREFIX,HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8))],toggle));
 
 
 		let _this = this;
