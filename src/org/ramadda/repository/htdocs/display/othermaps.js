@@ -1,7 +1,5 @@
 
 
-
-
 const DISPLAY_MAPGRID = "mapgrid";
 const DISPLAY_MAPCHART = "mapchart";
 const DISPLAY_MAPARRAY = "maparray";
@@ -147,8 +145,12 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let id = this.domId("cell_" +x+ "_"+y);
 		    let o = map[id];
 		    let extra = " id='" + id +"' ";
-		    let style = HU.css('position','relative','margin','1px','vertical-align','center','text-align','center',ATTR_HEIGHT, height+"px");
-		    if(width>0) style+=HU.css(ATTR_WIDTH,width+'px');
+		    let style = HU.css(CSS_POSITION,'relative',
+				       CSS_MARGIN,HU.px(1),
+				       CSS_VERTICAL_ALIGN,'center',
+				       CSS_TEXT_ALIGN,'center',
+				       CSS_HEIGHT, HU.px(height));
+		    if(width>0) style+=HU.css(CSS_WIDTH,HU.px(width));
 		    let c = "";
 		    if(o) {
 			style+="background:#ccc;" + cellStyle;
@@ -156,7 +158,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 			    extra += " title='" + o.name +"' ";
 			}
 			extra += HU.attr(ATTR_CLASS,'display-mapgrid-cell');
-			c = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'3px')], (showLabel?o.codes[0]:""));
+			c = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(3))], (showLabel?o.codes[0]:""));
 			o.codes.forEach(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
@@ -218,7 +220,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    cell.css(CSS_BACKGROUND,color);
 		    let foreground = Utils.getForegroundColor(color);
 		    if(foreground) {
-			cell.css('color', foreground);
+			cell.css(CSS_COLOR, foreground);
 		    }
 		    cell.attr(RECORD_INDEX,i);
                 }
@@ -226,8 +228,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
                     let value = record.getData()[strokeColorBy.index];
 		    let color = strokeColorBy.getColor(value, record);
 		    let cell = contents.find("#" + cellId);
-		    cell.css("border-color",color);
-		    cell.css("border-width","2px");
+		    cell.css(CSS_BORDER_COLOR,color);
+		    cell.css(CSS_BORDER_WIDTH,HU.px(2));
                 }
 	    }
 
@@ -240,7 +242,11 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    if(cellWidth==0) {
 			cellWidth = $("#" + s.cellId).width();
 		    }
-		    let style = HU.css(ATTR_WIDTH,cellWidth+'px',ATTR_HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
+		    let style = HU.css(CSS_WIDTH,HU.px(cellWidth),
+				       CSS_HEIGHT, HU.px(height-vOffset),
+				       CSS_POSITION,'absolute',
+				       CSS_LEFT,HU.px(0),
+				       CSS_TOP, HU.px(vOffset));
 		    let innerDiv = HU.div([ATTR_ID, innerId, ATTR_STYLE,style]);
 		    $("#" + s.cellId).append(innerDiv);
 		    drawSparkline(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
@@ -269,13 +275,13 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    let contents = this.getContents();
 	    if(this.selectedCell) {
-		this.selectedCell.css("border",this.selectedBorder);
+		this.selectedCell.css(CSS_BORDER,this.selectedBorder);
 	    }
 	    let index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
 	    this.selectedCell = contents.find(HU.attrSelect(RECORD_INDEX, index));
-	    this.selectedBorder = this.selectedCell.css("border");
-	    this.selectedCell.css("border","1px solid red");
+	    this.selectedBorder = this.selectedCell.css(CSS_BORDER);
+	    this.selectedCell.css(CSS_BORDER,"1px solid red");
 	},
     })}
 
@@ -382,17 +388,18 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    return valueMap;
 	},
 	writeMap:function(skipHeight)  {
-	    let width = this.getMapWidth(this.getProperty("width",800));
-	    let css = HU.css(ATTR_BACKGROUND,this.getMapBackground("transparent"),ATTR_WIDTH,HU.getDimension(width));
+	    let width = this.getMapWidth(this.getProperty('width',800));
+	    let css = HU.css(CSS_BACKGROUND,this.getMapBackground("transparent"),
+			     CSS_WIDTH,HU.getDimension(width));
 	    let height;
 	    if(!skipHeight) {
-		height = this.getMapHeight(this.getProperty("height"));
+		height = this.getMapHeight(this.getProperty('height'));
 		let mw = this.mapRange.maxLon-this.mapRange.minLon;
 		let mh = this.mapRange.maxLat-this.mapRange.minLat;
 		if(!height)
 		    height = mh/mw*width;
 		if(isNaN(height)) height=400; 
-		css+=HU.css(ATTR_HEIGHT,HU.getDimension(height));
+		css+=HU.css(CSS_HEIGHT,HU.getDimension(height));
 	    }
 	    
 	    this.mapRange.maxLon= this.getPropertyMaxLon(this.mapRange.maxLon);
@@ -408,8 +415,8 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	},
 	makeSvg: function(width,height) {
 	    const svg = d3.select("#" + this.domId(ID_BASEMAP)).append('svg')
-		  .attr('width', width)
-		  .attr('height', height)
+		  .attr(ATTR_WIDTH, width)
+		  .attr(ATTR_HEIGHT, height)
 		  .append('g')
 	    let padx = 0;
 	    let pady = padx;
@@ -427,7 +434,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		this.tooltipDiv = d3.select("body").append("div")
 		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
-		    .style("position", "absolute")
+		    .style(CSS_POSITION, "absolute")
 		    .style(CSS_BACKGROUND, "#fff")
 	    }
 	    this.clearTooltip();
@@ -463,8 +470,8 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		}
 		if(tt) {
 		    _this.tooltipDiv.html(tt)
-			.style("left", (event.pageX + 10) + "px")
-			.style("top", (event.pageY + 20) + "px");
+			.style(CSS_LEFT, HU.px((event.pageX + 10)))
+			.style(CSS_TOP, HU.px((event.pageY + 20)));
 		    _this.tooltipDiv.style("opacity", 1);
 		    //For now don't transition as it seems to screw up
 		    //subsequent mouse overs
@@ -796,7 +803,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			    .attr("opacity",1)
 			    .attr("stroke",lineColor)
 			    .attr("stroke-width",1)
-			    .style("cursor", "pointer")
+			    .style(CSS_CURSOR, "pointer")
 			    .attr(RECORD_ID,recordId);
 			this.addEvents(polys);
 		    });
@@ -852,8 +859,10 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			      HU.div([ATTR_CLASS,"display-maparray-header"],region) +
 			      HU.div([ATTR_ID,this.domId(ID_MAPBLOCK+"_"+idx),
 				      ATTR_CLASS,"display-maparray-map",
-				      ATTR_STYLE,HU.css(ATTR_WIDTH,blockWidth+"px",ATTR_HEIGHT,blockHeight+"px")]) +
-			      HU.div([ATTR_ID,this.domId(ID_MAPLABEL+"_"+idx),"display-maparray-label"]));			      
+				      ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(blockWidth),
+							CSS_HEIGHT,HU.px(blockHeight))]) +
+			      HU.div([ATTR_ID,this.domId(ID_MAPLABEL+"_"+idx),"display-maparray-label"]));
+		
 
 
 		    
@@ -865,8 +874,8 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 	    sortedRegions.forEach((region,idx)=>{
 		let info = this.regions[region];
 		let svg = d3.select("#" + this.domId(ID_MAPBLOCK+"_"+idx)).append('svg')
-		    .attr('width', blockWidth)
-		    .attr('height', blockHeight)
+		    .attr(ATTR_WIDTH, blockWidth)
+		    .attr(ATTR_HEIGHT, blockHeight)
 		    .append('g')
 		let padx=5;
 		let pady=5;
@@ -930,7 +939,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			.attr("opacity",1)
 			.attr("stroke",lineColor)
 			.attr("stroke-width",1)
-			.style("cursor", "pointer")
+			.style(CSS_CURSOR, "pointer")
 			.attr(RECORD_ID,recordId);
 		    this.addEvents(polys);
 		});
@@ -1020,7 +1029,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 				})
 		    		.attr("stroke-width",1)
 				.attr("stroke","black")
-				.attr('transform',transform);
+				.attr(ATTR_TRANSFORM,transform);
 			}
 			let polys = 
 			    svg.selectAll(uid)
@@ -1033,8 +1042,8 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    .attr("opacity",1)
 			    .attr("stroke",lineColor)
 			    .attr("stroke-width",1)
-			    .attr('transform',transform)
-			    .style("cursor", "pointer")
+			    .attr(ATTR_TRANSFORM,transform)
+			    .style(ATTR_CURSOR, "pointer")
 			    .attr(RECORD_ID,recordId);
 			if(layer==1)
 			    this.addEvents(polys);
@@ -1064,15 +1073,15 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    let value = row[f.getIndex()];
 	    let imageAttrs = [];
 	    let tokenAttrs  = macros.getAttributes("imageField_image");
-	    let width = tokenAttrs?tokenAttrs["width"]:null;
+	    let width = tokenAttrs?tokenAttrs['width']:null;
 	    if(width) {
-		imageAttrs.push("width");
+		imageAttrs.push(ATTR_WIDTH);
 		imageAttrs.push(width);
 	    } else if(this.getProperty("imageWidth")) {
-		imageAttrs.push("width");
+		imageAttrs.push(ATTR_WIDTH);
 		imageAttrs.push(this.getProperty("imageWidth")); 
 	    } else  {
-		imageAttrs.push("width");
+		imageAttrs.push(ATTR_WIDTH);
 		imageAttrs.push("100%");
 	    }
 	    imageAttrs.push(ATTR_STYLE);
@@ -1116,14 +1125,14 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    .attr(ATTR_ID, "bgimage"+ uid)
 			    .attr("x", "1")
 			    .attr("y", "1")
-			    .attr("width", "100%")
-		            .attr("height", "100%")
+			    .attr(ATTR_WIDTH, HU.perc(100))
+		            .attr(ATTR_HEIGHT, HU.perc(100))
 			    .attr("patternContentUnits","objectBoundingBox")
 			    .append("svg:image")
 			    .attr("xlink:href", values.image)
 			    .attr("preserveAspectRatio","none")
-			    .attr("width", 1)
-			    .attr("height", 1)
+			    .attr(ATTR_WIDTH, 1)
+			    .attr(ATTR_HEIGHT, 1)
 			    .attr("x", "0")
 			    .attr("y", "0");
 		    }
