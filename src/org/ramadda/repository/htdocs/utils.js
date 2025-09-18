@@ -110,6 +110,7 @@ var ATTR_ACTION= "action";
 var ATTR_BACKGROUND = "background";
 var ATTR_SRC = "src";
 var ATTR_TYPE = "type";
+var ATTR_LOADING= "loading";
 var ATTR_DATA_CORPUS='data-corpus';
 var ATTR_WIDTH = "width";
 var ATTR_HEIGHT = "height";
@@ -143,8 +144,9 @@ var SPACE2 = "&nbsp;&nbsp;";
 var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
-var CSS_VISIBILITY = 'visibility';
 var CSS_BASIC_BORDER='var(--basic-border)';
+
+var CSS_VISIBILITY = 'visibility';
 var CSS_FONT_WEIGHT="font-weight";
 var CSS_FONT_SIZE="font-size";
 var CSS_FONT_STYLE="font-style";
@@ -5499,6 +5501,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     BR_ENTITY:"&#10;",
     makeMultiline:function(l) {
 	return Utils.join(l,HtmlUtils.BR_ENTITY);
+    },
+    rgb:function(r,g,b,a) {
+	if(Utils.isDefined(a)) {
+	    return 'rgba(' + r+',' + g +',' + b+ ','+a+')';
+	}
+	return 'rgb(' + r+',' + g +',' + b+')';
+    },
+    perc:function(v) {
+	return HU.getDimension(v,'%');
     },
     px:function(v) {
 	return HU.getDimension(v,'px');
