@@ -23,18 +23,24 @@ into some types.xml file
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/team.png" />
-<property  name="form.date.show"  value="false" />
+<property  name="form.date.show"  value="true" />
+<property  name="form.time.show"  value="false" />
+<property  name="html.time.show"  value="false" />
+<property  name="form.fromdate.label"  value="Hire date" />
+<property  name="form.todate.label"  value="Termination date" />
+<property  name="date.nullok"  value="true" />
+<property  name="date.separate"  value="true" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.resource.show"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-+section title="Vendor: {{name}}"
++section title="{{typename }} : {{name}}"
 +center
 {{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
 -center
 {{description wikify=true}}
-+toggleopen Vendor Information
++toggleopen Personnnel Information
 +row
 +col-8
 {{information  showBase=false}}
@@ -45,9 +51,7 @@ into some types.xml file
 -row
 -toggle
 
-{{embed message=""  }} 
-
-{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;vendor"}}
+{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;assigned_to"}}
 
 {{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
 showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 

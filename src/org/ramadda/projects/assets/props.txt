@@ -129,7 +129,7 @@ name:Personnel
 employee_number,Employee Number
 job_title,Job Title
 department,Department,entry, entrytype="type_assets_department"  cansearch="true"
-manager_id,Manager ID,entry, entrytype="type_assets_personnel" cansearch="true"
+manager,Manager,entry, entrytype="type_assets_personnel" cansearch="true"
 phone_number,Phone Number,string
 email,Email Address,email
 employment_status,Employment Status,enumeration, \
