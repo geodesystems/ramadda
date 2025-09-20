@@ -133,6 +133,7 @@ public interface Constants {
     public static final String ARG_SHOWTODATE  = "showToDate";                
     public static final String ARG_SHOWCOLUMNS = "showColumns";
     public static final String ARG_SHOWLINK = "showLink";
+    public static final String ARG_SHOWID = "showId";
     public static final String ARG_SHOWNEXT = "showNext";
     public static final String ARG_DOOCR = "doocr";
     public static final String ARG_DOOCR_CONDITIONAL = "doocr_conditional";    
