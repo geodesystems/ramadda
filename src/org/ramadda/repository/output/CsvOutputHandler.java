@@ -684,6 +684,7 @@ public class CsvOutputHandler extends OutputHandler {
 	String title = request.getString(ARG_TITLE,null);
         boolean showColumns = Utils.getProperty(props, ARG_SHOWCOLUMNS, true);
         boolean showLink = request.get(ARG_SHOWLINK,true);
+        boolean showId = request.get(ARG_SHOWID,true);
         boolean showResource = request.get(ARG_SHOWRESOURCE,true);
         boolean showDate = request.get(ARG_SHOWDATE, true);
         boolean showCreateDate = request.get(ARG_SHOWCREATEDATE, false);
@@ -826,6 +827,8 @@ public class CsvOutputHandler extends OutputHandler {
 		headers.add("Name");
 		if(showLink)
 		    headers.add("Link");
+		if(showId)
+		    headers.add("ID");		
 		if(showType)
 		    headers.add("Type");
 		if (showDate) {
@@ -977,6 +980,8 @@ public class CsvOutputHandler extends OutputHandler {
 		    add.accept(name);
 		    if(showLink) 
 			addLink.accept(url,"Repository link");
+		    if(showId) 
+			addLink.accept(entry.getId(),"ID");
 		    if(showType) 
 			add.accept(entry.getTypeHandler().getLabel());
 		    if (showDate) {
