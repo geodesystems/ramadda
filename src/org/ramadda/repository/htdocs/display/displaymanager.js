@@ -306,13 +306,11 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag(TAG_UL, [], layoutMenu));
 
 
-            var menu = HU.div([ATTR_STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup",
+            var menu = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff',CSS_Z_INDEX,'1000'),
 			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, 'sf-menu'], menuBar));
 
             html += menu;
-            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
-            //                html+="<br>";
             return html;
         },
         hasGeoMacro: function(jsonUrl) {
@@ -543,8 +541,8 @@ function DisplayManager(argId, argProperties) {
     addDisplayManager(this);
 
     let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",
-			       ATTR_STYLE,HU.css("display","block")]);
-    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,"position:relative;"]);
+			       ATTR_STYLE,HU.css(CSS_DISPLAY,"block")]);
+    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]);
     html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
@@ -575,7 +573,8 @@ function DisplayManager(argId, argProperties) {
     $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],[ATTR_STYLE,'color:#aaa;'] )).button({
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],
+						 [ATTR_STYLE,HU.css(CSS_COLOR,'#aaa')] )).button({
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	

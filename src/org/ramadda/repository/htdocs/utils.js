@@ -92,6 +92,7 @@ var TAG_CANVAS = "canvas";
 var TAG_CENTER="center";
 var TAG_I = "i";
 var TAG_IMG = "img";
+var TAG_IFRAME = "iframe";
 var TAG_INPUT = "input";
 var TAG_LABEL = "label";
 var TAG_LINK = "link";
@@ -148,6 +149,19 @@ var SPACE1 = "&nbsp;";
 var SPACE2 = "&nbsp;&nbsp;";
 var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+
+var POS_TOP="top";
+var POS_LEFT="left";
+var POS_BOTTOM="bottom";
+var POS_RIGHT="right";
+
+var DISPLAY_NONE = 'none';
+var DISPLAY_RELATIVE = 'relative';
+var DISPLAY_BLOCK='block';
+var DISPLAY_INLINE='inline';
+var DISPLAY_INLINE_BLOCK='inline-block';
+
 
 var CSS_BASIC_BORDER='var(--basic-border)';
 

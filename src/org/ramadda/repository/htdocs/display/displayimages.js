@@ -184,7 +184,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 						    CSS_WIDTH, HU.px(width),
 						    CSS_HEIGHT, HU.px(img.height),
 						    CSS_BACKGROUND,HU.rgb(c[0],c[1],c[2]))],'');
@@ -796,7 +796,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
 									  CSS_OVERFLOW_Y,"auto",
-									  CSS_DISPLAY,"inline-block")],"")) +
+									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
 					  HU.td([ATTR_WIDTH,"90%"],
 						imageDiv)));
 	    let thumbsHtml = "";
@@ -1004,11 +1004,11 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
-		style += " height:" + height + ";";
+		style += HU.css(CSS_HEIGHT,height);
             }
             var width = this.getWidthForStyle();
             if (width) {
-                style += " width:" + width + ";";
+                style += HU.css(CSS_WIDTH,width);
             }
             return style;
         },
@@ -1031,7 +1031,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ATTR_ID, this.domId(ID_PREV),
-			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,'200%'),
+			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
 			       ATTR_CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
 	    let right = HU.div([ATTR_ID, this.domId(ID_NEXT),
 				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
@@ -1043,7 +1043,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
-		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,'100%') +this.getProperty('stripStyle','');
+		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,HU.perc(100)) +this.getProperty('stripStyle','');
 		top = HU.div([ATTR_ID,this.domId(ID_STRIP),
 			      ATTR_CLASS,'display-slides-strip','tabindex','0',ATTR_STYLE,stripStyle]);
 	    }
@@ -1089,7 +1089,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
 			strip += HU.div([ATTR_TITLE,tt,
-					 ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MIN_WIDTH,width,
+					 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							   CSS_MIN_WIDTH,width,
 							   CSS_WIDTH,width,CSS_OVERFLOW_X,'hidden'),
 					 ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
@@ -1133,7 +1134,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	},
 	displaySlide: function(propagateEvent,fromStrip) {
 	    let _this = this;
-	    let slideWidth = this.getSlideWidth('100%');
+	    let slideWidth = this.getSlideWidth(HU.perc(100));
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -1182,7 +1183,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
-			html = HU.center(HU.tag("iframe",['src',url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351','frameborder','0',
+			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351',
+							  'frameborder','0',
 							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}

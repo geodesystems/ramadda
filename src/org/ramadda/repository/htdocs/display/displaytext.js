@@ -318,7 +318,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		for(word in wordToWeight) {
 		    info.push({
 			text: word,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
 			weight:wordToWeight[word] ,
 			handlers:handlers,
 		    });
@@ -383,13 +383,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     let word = counts[wordIdx];
                     let obj1 = {
                         weight: word.count,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
                         handlers: handlers,
                         text: word.word,
                     };
                     let obj2 = {
                         weight: word.count,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
                         handlers: handlers,
                         text: field.getLabel() + ":" + word.word,
                     };
@@ -984,8 +984,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css(CSS_CURSOR,'default');
 		    let tag = HU.openTag(TAG_DIV,[ATTR_CLASS,noWrapper?'':'display-template-record',
-						ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
-						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+						  ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
+						  ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
@@ -1048,7 +1048,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
 	    if(this.getProperty('addCopyToClipboard')) {
-		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css('cursor','pointer');
+		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css(CSS_CURSOR,CURSOR_POINTER);
 		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),{addLink:true,removeTags:true,removeNL:true,
 								 downloadFileName:this.getProperty('copyToClipboardDownloadFile')});
 	    }
@@ -1063,7 +1063,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    if(this.getPropertyHighlightOnScroll(false)) {
 		let items = this.find(".display-template-record");
-		this.getContents().css('overflow-y','scroll');
+		this.getContents().css(CSS_OVERFLOW_Y,'scroll');
 		this.getContents().scroll(()=>{
 		    let topElement = null;
 		    items.each(function() {
@@ -1147,7 +1147,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			//			    console.log("un highlight css:" + element.css(CSS_BACKGROUND)+ " idx:" + element.attr(RECORD_INDEX));
 			element.css(a,v);
 		    }
 		});
@@ -1474,7 +1473,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 			if(iconProp)
 			    style += HU.css(CSS_BACKGROUND,"transparent");
 			else
-			    style += HU.css(CSS_BACKGROUND,"transparent",CSS_BORDER,"1px solid #ccc");			    			
+			    style += HU.css(CSS_BACKGROUND,"transparent",CSS_BORDER,"1px solid #ccc");
 			footer += SPACE2;
 		    }
 		} else {
@@ -1624,7 +1623,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (tmp[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),
+								 CSS_WIDTH,HU.px(width),
+								 CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -1657,7 +1658,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (counts[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),
+								 CSS_WIDTH,HU.px(width),
+								 CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -1859,18 +1862,21 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 		html += HU.openTag(TAG_DIV, [ATTR_CLASS,"display-frequency-table",ATTR_STYLE,hor?"":"display:block;"]);
 		html += HU.openTag(TAG_TABLE, ["cellpadding","3",
-					     ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
-					     ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
+					       ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
+					       ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag(TAG_THEAD, []);
 		    let label =  HU.span([ATTR_TITLE,"Click to reset",
 					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
-		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),CSS_OVERFLOW_X,'auto')], label);
-		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],HU.div([ATTR_STYLE,"text-align:right"],"Count")):"";
-		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],  HU.div([ATTR_STYLE,"text-align:right"],"Percent")):"";
-		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,"text-align:right"],"&nbsp;")):"";
+		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
+						      CSS_OVERFLOW_X,'auto')], label);
+		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,HU.perc(20)],
+						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Count")):"";
+		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],
+						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Percent")):"";
+		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],SPACE)):"";
 		    html += HU.tr([], HU.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HU.closeTag(TAG_THEAD);
 		}
@@ -1927,7 +1933,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    let tdp =  showPercent?HU.td([ATTR_ALIGN, "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
 		    let tdb = showBars?HU.td([ATTR_VALIGN,"center",ATTR_WIDTH,barWidth],
-					     HU.div([ATTR_TITLE,Math.round(perc*100)+"%",
+					     HU.div([ATTR_TITLE,HU.perc(Math.round(perc*100)),
 						     ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_HEIGHT,HU.px(10),
 								       CSS_WIDTH,HU.px(Math.round(bw*barWidth)))],"")):"";
 		    html += HU.tr([], 
@@ -2135,7 +2141,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                     row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c2));
                 if (c3)
                     row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c3));
-                html += HU.tag(TAG_TABLE, [ATTR_WIDTH, "100%"], HU.tr(row));
+                html += HU.tag(TAG_TABLE, [ATTR_WIDTH, HU.perc(100)], HU.tr(row));
             }
             html += HU.closeTag(TAG_DIV);
             this.setContents(html);
@@ -2146,15 +2152,16 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
         printList: function(title, l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, "100%", ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
-            table += HU.tr([], HU.th([], title) + HU.th([], "&nbsp;"));
+            var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, HU.perc(100),
+					       ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
+            table += HU.tr([], HU.th([], title) + HU.th([], SPACE));
             table += HU.close(TAG_THEAD);
             table += HU.open(TAG_TBODY);
             var cnt = 0;
             for (var i = 0; i < l.length; i++) {
                 if (l[i].count < minCount) continue;
                 var row = HU.td([], l[i].normal) +
-                    HU.td([], l[i].count + " (" + l[i].percent + "%)");
+                    HU.td([], l[i].count + ' (' + HU.perc(l[i].percent) + ')');
                 table += HU.tr([], row);
                 if (cnt++ > maxWords) break;
             }
@@ -2301,13 +2308,14 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 
 
-	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
-			   HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
+	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),
+				ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
+			       HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
             if (labelTemplate) {
-                corpus += "<table width=100%>";
+                corpus += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
@@ -2435,8 +2443,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    var r =  "";
 		    if(this.showShrink) {
 			r+= HU.td([ATTR_WIDTH, HU.px(5),
-				   ATTR_STYLE,HU.css(CSS_BACKGROUND,'#ccc')],  HU.getIconImage("fa-caret-right",null,
-											       [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
+				   ATTR_STYLE,HU.css(CSS_BACKGROUND,'#ccc')],
+				  HU.getIconImage("fa-caret-right",null,
+						  [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
 		    }
 		    r+= HU.td([ATTR_WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
 			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
@@ -2468,7 +2477,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var linesWord = " "+ this.getProperty("linesDescriptor","lines");
 	    var label =displayedLineCnt +linesWord;
 	    if(this.allRecords.length!=displayedLineCnt) {
-		label = displayedLineCnt+"/" + this.allRecords.length+linesWord+" (" + Math.round(displayedLineCnt/this.allRecords.length*100)+"%)";
+		label = displayedLineCnt+"/" +
+		    this.allRecords.length+
+		    linesWord+
+		    " (" + HU.perc(Math.round(displayedLineCnt/this.allRecords.length*100))+")";
 	    }
 	    this.jq(ID_LABEL).html(label);
 	    this.jq(ID_SEARCH).focus();

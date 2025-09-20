@@ -609,7 +609,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
             let html = HU.div([ATTR_ID, this.domId(ID_FIELDS),
-			       ATTR_STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
+			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,'auto',CSS_MAX_HEIGHT, HU.px(height))], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -1407,7 +1407,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(maxHeaderWidth>0)
 			headerLabel = headerLabel.replace(/ /g,"&nbsp;");
 		    if(maxHeaderWidth>0)
-			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
+			style+=HU.css(CSS_MAX_WIDTH,HU.px(maxHeaderWidth),CSS_OVERFLOW_X,'auto');
 		    if(headerStyle)
 			style+=headerStyle;
 		    headerLabel = HU.div([ATTR_TITLE,orig,ATTR_STYLE,style], headerLabel);
@@ -1683,7 +1683,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				tooltip += HU.b(label) + ":" + SPACE + value;
 			    }
 			}
-			tooltip = HU.div([ATTR_STYLE,HU.css('padding','8px')],tooltip);
+			tooltip = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))],tooltip);
 			newRow.push(tooltip);
 			if(debug && rowIdx<debugRows)
 			    console.log("\t added tooltip");
@@ -2094,8 +2094,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             return chartOptions;
         },
-        getChartHeight: function() {
-            return this.getProperty('chartHeight', this.getProperty("height"));
+        getChartHeight: function(dflt) {
+            return this.getProperty('chartHeight', this.getProperty('height',dflt));
         },
         getChartWidth: function() {
             return this.getProperty('chartWidth', this.getProperty('width'));
@@ -2106,32 +2106,32 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let width = this.getChartWidth();
             if (false && width) {
 		if(width.endsWith("%")) {
-                    style += HU.css("width", width);
+                    style += HU.css(CSS_WIDTH, width);
 		} else {
                     if (width > 0)
-			style += HU.css("width", width + "px");
+			style += HU.css(CSS_WIDTH, HU.px(width));
                     else if (width < 0)
-			style += HU.css("width" , (-width) + "%");
+			style += HU.css(CSS_WIDTH , HU.perc(-width));
                     else
-			style += HU.css("width", width);
+			style += HU.css(CSS_WIDTH, width);
 		}
             } else {
-		//                style += HU.css("width","100%");
+		//                style += HU.css(CSS_WIDTH,"100%");
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             let height =  this.getChartHeight();
 	    if(expandedHeight) {
-                style += HU.css("height", expandedHeight);
+                style += HU.css(CSS_HEIGHT, expandedHeight);
 	    } else {
 		if (height) {
                     if (height > 0)
-			style += HU.css("height", height + "px");
+			style += HU.css(CSS_HEIGHT, HU.px(height));
                     else if (height < 0)
-			style += HU.css("height", (-height) + "%");
+			style += HU.css(CSS_HEIGHT, HU.perc(-height));
                     else
-			style += HU.css("height", height);
+			style += HU.css(CSS_HEIGHT, height);
 		} else {
-                    style += HU.css("height", "100%");
+                    style += HU.css(CSS_HEIGHT, HU.perc(100));
 		}
 	    }
 	    //	    style += HU.css("text-align","center");
@@ -2225,7 +2225,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return this.getProperty('doMultiChartsByField');
 	},
 	makeMultiChart:function (label, dataList, fields,props) {
-	    let multiStyle="width:200px;" + this.getProperty("multiStyle","");
+	    let multiStyle=HU.css(CSS_WIDTH,HU.px(200)) + this.getProperty("multiStyle","");
 	    let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 	    let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 	    let tmpChartOptions = this.chartOptions;
@@ -2456,8 +2456,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    pageY = +this.getTooltipY(pageY);	    
 	    let right = chartRect.left+chartRect.width;
 	    if(pageX+400>right) pageX=right-400;
-	    tooltip.style.left = pageX+'px';
-	    tooltip.style.top =(pageY+20)+'px';
+	    tooltip.style.left = HU.px(pageX);
+	    tooltip.style.top =HU.px(pageY+20);
 	    tooltip.style.display = 'block';
 	    
 	},
@@ -2655,7 +2655,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 	    let expandedHeight  = this.getProperty("expandedHeight");
-            chartOptions.height = expandedHeight || this.getProperty("chartHeight", this.getProperty("height", "150"));
+            chartOptions.height = expandedHeight ?? this.getChartHeight(this.getProperty("height", "150"));
 
             if (!chartOptions.legend)
                 chartOptions.legend = {};
@@ -2963,7 +2963,8 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		let color  = colors[colorCnt];
-		legend += HU.div([ATTR_STYLE,HU.css('display','inline-block','width','8px','height','8px',CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
+		legend += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(8),
+						    CSS_HEIGHT,HU.px(8),CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
@@ -2996,25 +2997,24 @@ function PiechartDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
-                    style += "width:" + width + "px;";
+                    style += HU.css(CSS_WIDTH,HU.px(width));
                 else if (width < 0)
-                    style += "width:" + (-width) + "%;";
+                    style += HU.css(CSS_WIDTH,HU.perc(-width));
                 else
-                    style += "width:" + width + ";";
+                    style += HU.css(CSS_WIDTH,width);
             } else {
-                style += "width:" + "100%;";
+                style += HU.css(CSS_WIDTH,HU.perc(100));
             }
             if (height) {
                 if (height > 0)
-                    style += "height:" + height + "px;";
+                    style += HU.css(CSS_HEIGHT,HU.px(height));
                 else if (height < 0)
-                    style += "height:" + (-height) + "%;";
+                    style += HU.css(CSS_HEIGHT,HU.perc(-height));
                 else
-                    style += "height:" + height + ";";
+                    style += HU.css(CSS_HEIGHT,height);
             } else {
-                style += "height:" + "100%;";
+                style += HU.css(CSS_HEIGHT,HU.perc(100));
             }
-	    //	    style += "border:1px solid green;"
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
@@ -3524,10 +3524,10 @@ function TableDisplay(displayManager, id, properties) {
 		}
 
 		if(!this.getFilterHighlight() || !record) {
-		    f = HU.div([ATTR_STYLE,HU.css('padding','4px')],f)
+		    f = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
-		    f = HU.div([ATTR_STYLE,HU.css('padding','4px',CSS_BACKGROUND, c)],f)
+		    f = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4),CSS_BACKGROUND, c)],f)
 		}
 
 
@@ -3573,7 +3573,7 @@ function TableDisplay(displayManager, id, properties) {
                     }
 		}
 		if (chartOptions.height == null) {
-                    chartOptions.height = "300px";
+                    chartOptions.height = HU.px(300);
 		}
 	    }
 
@@ -3675,26 +3675,25 @@ function BubbleDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
-                    style += "width:" + width + "px;";
+                    style += HU.css(CSS_WIDTH,HU.px(width));
                 else if (width < 0)
-                    style += "width:" + (-width) + "%;";
-                else
-                    style += "width:" + width + ";";
+                    style += HU.css(CSS_WIDTH,HU.perc((-width)));
+		else
+                    style += HU.css(CSS_WIDTH,width);
             } else {
-                style += "width:" + "100%;";
+                style += HU.css(CSS_WIDTH,HU.perc(100));
             }
-            if (height) {
+	    if (height) {
                 if (height > 0)
-                    style += "height:" + height + "px;";
+                    style += HU.css(CSS_HEIGHT,HU.px(height));
                 else if (height < 0)
-                    style += "height:" + (-height) + "%;";
+                    style += HU.css(CSS_HEIGHT,HU.perc((-height)));
                 else
-                    style += "height:" + height + ";";
+                    style += HU.css(CSS_HEIGHT,height);
             } else {
-                style += "height:" + "100%;";
+                style += HU.css(CSS_HEIGHT,HU.perc(100));
             }
-	    //	    style += "border:1px solid green;"
-	    style += "padding:5px;"
+	    style += HU.css(CSS_PADDING,HU.px(5));
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
@@ -3779,7 +3778,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		bottom: this.getChartBottom(40),
                 height: this.getChartHeight(200)
             });
-            chartOptions.height = "100px";
+            chartOptions.height =HU.px(100);
             chartOptions.sizeAxis = {
 	    }
 
@@ -4307,7 +4306,7 @@ function CalendarDisplay(displayManager, id, properties) {
         getContentsStyle: function() {
             let height = this.getProperty("height", 800);
             if (height > 0) {
-                return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
+                return HU.css(CSS_HEIGHT,HU.px(height),CSS_MAX_HEIGHT,HU.px(height),CSS_OVERFLOW_Y,'auto');
             }
             return "";
         },
@@ -4364,9 +4363,9 @@ function CalendarDisplay(displayManager, id, properties) {
 
 		let dttm = this.getDataValues(dataList[i])[0];
 		this.dateToRecords[dttm.v.getTime()] = records;
-                let tooltip = "<center><b>" + dttm.f + "</b></center>" +
-                    "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
-                tooltip = HU.div([ATTR_STYLE, HU.css('padding','5px')], tooltip);
+                let tooltip = HU.center(HU.b(dttm.f)) +
+                    HU.b(header[1].replace(/ /g, SPACE)) + ":" + SPACE + this.formatNumber(value);
+                tooltip = HU.div([ATTR_STYLE, HU.css(CSS_PADDING,HU.px(5))], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
             }
             dataTable.addRows(list);
@@ -4654,11 +4653,11 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if (Utils.isDefined(this.getProperty("chartWidth"))) {
                 width = this.getProperty("chartWidth");
             }
-	    if((typeof height)=="number") height = height+"px";
-	    if((typeof width)=="number") width = width+"px";
+	    if((typeof height)=="number") height = HU.px(height);
+	    if((typeof width)=="number") width = HU.px(width);
 
-            $("#" + chartDiv.id).css("width", width);
-            $("#" + chartDiv.id).css("height", height);
+            $("#" + chartDiv.id).css(CSS_WIDTH, width);
+            $("#" + chartDiv.id).css(CSS_HEIGHT, height);
             return new google.visualization.ScatterChart(chartDiv);
         },
 

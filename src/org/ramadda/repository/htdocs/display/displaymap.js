@@ -394,11 +394,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    let changed= false;
 		    //		console.log("\tlevel:",level,feature.levelRange,visible); 
 		    if(visible) {
-			changed = feature.style.display != 'inline';
-			feature.style.display = 'inline';
+			changed = feature.style.display != DISPLAY_INLINE;
+			feature.style.display = DISPLAY_INLINE;
 		    }  else {
-			changed = feature.style.display != 'none';
-			feature.style.display = 'none';
+			changed = feature.style.display != DISPLAY_NONE;
+			feature.style.display = DISPLAY_NONE;
 		    }			
 		    if(redraw &&changed) {
 			layer.drawFeature(feature);
@@ -2556,7 +2556,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		feature.pruned = false;
 		feature.newStyle=null;
 		if(feature.style) {
-		    feature.style.display ="inline-block";
+		    feature.style.display =DISPLAY_INLINE_BLOCK;
 		}
 		feature.featureIndex = j++;
 		feature.featureMatched = false;
@@ -2832,7 +2832,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatures) {
                 for (let i = 0; i < this.myFeatures.length; i++) {
                     let point = this.myFeatures[i];
-                    point.style.display = 'none';
+                    point.style.display = DISPLAY_NONE;
                 }
 	    }
             if (this.map.circles)
@@ -2856,22 +2856,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		for (let i = 0; i < this.myFeatures.length; i++) {
                     let point = this.myFeatures[i];
                     if (point.date < windowStart || point.date > windowEnd) {
-			point.style.display = 'none';
+			point.style.display = DISPLAY_NONE;
 			continue;
                     }
                     if (atLoc[point.location]) {
 			let other = atLoc[point.location];
 			if (other.date < point.date) {
                             atLoc[point.location] = point;
-                            other.style.display = 'none';
-                            point.style.display = 'inline';
+                            other.style.display = DISPLAY_NONE;
+                            point.style.display = DISPLAY_INLINE;
 			} else {
-                            point.style.display = 'none';
+                            point.style.display = DISPLAY_NONE;
 			}
 			continue;
                     }
                     atLoc[point.location] = point;
-                    point.style.display = 'inline';
+                    point.style.display = DISPLAY_INLINE;
 		}
 	    }
 
@@ -2882,7 +2882,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatures) {
 		for (let i = 0; i < this.myFeatures.length; i++) {
 		    let line = this.myFeatures[i];
-		    line.style.display = 'inline';
+		    line.style.display = DISPLAY_INLINE;
 		}
 		if (this.map.lines)
 		    this.map.lines.redraw();
@@ -2945,7 +2945,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 						  CSS_CURSOR,"pointer",
 						  CSS_PADDING,HU.px(1),
 						  CSS_BORDER,"1px solid rgba(0,0,0,0)"),
@@ -3788,20 +3788,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  [];
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_BACK),
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step back"],
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step back"],
  				     HU.getIconImage("fa-step-backward",[ATTR_CLASS,"display-anim-button"])));
 
 		if(!groupByField) 
 		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),
-					  ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),
+					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					  ATTR_TITLE,"Play/Stop Animation"],
 					 HU.getIconImage("fa-play",[ATTR_CLASS,"display-anim-button"])));
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step forward"],
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step forward"],
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
 		
 
-		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							CSS_MARGIN_LEFT,HU.px(5),
 							CSS_MARGIN_RIGHT,HU.px(5))], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
 		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
@@ -3891,8 +3891,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 								 'pointer-events', 'none')]));
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
-		$(vp).css(CSS_DISPLAY,'relative');
-		$(vp).append(HU.div([ATTR_STYLE,'z-index:10',ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
+		$(vp).css(CSS_DISPLAY,DISPLAY_RELATIVE);
+		$(vp).append(HU.div([ATTR_STYLE,HU.css(CSS_Z_INDEX,10),
+				     ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
 	    }
 	    if(this.htmlPopupLayerId) {
 		//		jqid(this.htmlPopupLayerId).html(HU.div([ATTR_STYLE,'position:absolute;top:50px;left:100px'],'xxxx'));
@@ -3986,7 +3987,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.htmlPopup +=
 		    HU.div([ATTR_ID,hid, RECORD_INDEX, idx,
 			    ATTR_TITLE,"", ATTR_CLASS,'display-map-html-hitem',
-			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,'none',
+			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,DISPLAY_NONE,
 						     CSS_LINE_HEIGHT,HU.px(0),
 						     CSS_Z_INDEX,'2001',
 						     CSS_POSITION,'absolute',
@@ -4079,8 +4080,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,'block');
-		$(this).css(CSS_DISPLAY,'none');
+		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,DISPLAY_BLOCK);
+		$(this).css(CSS_DISPLAY,DISPLAY_NONE);
 	    });
 	    if(colorBy.hasField()) {
 		this.showColorTable(colorBy);
@@ -4264,7 +4265,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
 			f.colorByValue=colorBy.lastValue;
 			if(isNaN(colorBy.lastValue)) {
-			    s.display='none';
+			    s.display=DISPLAY_NONE;
 			}
 		    }
 		    if(labelTemplate) {
