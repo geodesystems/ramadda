@@ -134,9 +134,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 			if(i<this.initGrouping.length) {
 			    selected = this.initGrouping[i].getId();
 			}
-			this.groupByHtml+= HU.select("",[ATTR_ID,this.domId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
+			this.groupByHtml+= HU.select("",[ATTR_ID,this.domId(ID_GROUPBY_FIELDS+i)],options,selected)+SPACE;
 		    }
-		    this.groupByHtml+="&nbsp;";
+		    this.groupByHtml+=SPACE;
 		    this.jq(ID_HEADER1).html(HU.div([ATTR_CLASS,"display-filterby"],this.groupByHtml));
 		    this.jq("docolors").button().click(()=>{
 			this.analyzeColors();
@@ -148,8 +148,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 		}
 	    }
-
-
 
             contents += HU.div([ATTR_ID,this.domId(ID_RESULTS)]);
             this.setContents(contents);
@@ -388,22 +386,23 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     if(a.id>b.id) return 1;
                     return 0;
                 });
-                var width = group.members.length==0?"100%":100/group.members.length;
-                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,'100%',ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+                var width = group.members.length==0?HU.perc(100):100/group.members.length;
+                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
 		    if(child.field)
 			prefix = child.field.getLabel()+": ";
-                    html+=HU.open(TAG_TD,[ATTR_WIDTH, width+"%"]);
+                    html+=HU.open(TAG_TD,[ATTR_WIDTH, HU.perc(width)]);
 		    let perc = Math.round(100*child.getCount()/topGroup.getCount());
-		    html+=HU.div([ATTR_CLASS,"display-cards-header"],prefix+child.id +" (#" + child.getCount()+" - " + perc +"%)");
+		    html+=HU.div([ATTR_CLASS,'display-cards-header'],
+				 prefix+child.id +' (#' + child.getCount()+' - ' + HU.perc(perc) +')');
 		    html+= this.makeGroupHtml(child, topGroup);
                     html+=HU.close(TAG_TD);
                 }
                 html +=HU.close(TAG_TR, TAG_TABLE);
             } else {
-                html+=Utils.join(group.members,"");
+                html+=Utils.join(group.members,'');
             }
             return html;
         }
@@ -587,7 +586,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,ATTR_ID,base+"image" + rowIdx,ATTR_LOADING,"lazy"];
+		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,
+				ATTR_ID,base+"image" + rowIdx,
+				ATTR_LOADING,"lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
 		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
@@ -1072,7 +1073,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,['loading','lazy',ATTR_TITLE,tt,
+			strip += HU.div([],HU.image(url,[ATTR_LOADING,'lazy',
+							 ATTR_TITLE,tt,
 							 ATTR_WIDTH,width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";

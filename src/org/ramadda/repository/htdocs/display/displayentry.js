@@ -882,7 +882,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
-            let closeImage = HU.getIconImage(icon_close, []);
+            let closeImage = HU.getIconImage(ICON_CLOSE, []);
             let close = HU.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",closeImage);
 
             let contents = this.getEntryHtml(entry, {
@@ -902,7 +902,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	getCloser: function() {
 	    if(true) return "";
-	    return  HU.jsLink("",HU.getIconImage(icon_close, [ATTR_ID,this.domId("close"),ATTR_STYLE,HU.css("cursor","pointer")]));
+	    return  HU.jsLink("",HU.getIconImage(ICON_CLOSE,[ATTR_ID,this.domId("close"),
+							     ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 	},
 	initCloser: function(what) {
 	    this.jq("close").click(()=>{

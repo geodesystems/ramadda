@@ -359,7 +359,7 @@ Ramadda3DDisplay.prototype = {
 
 	}
 	
-	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?'fas fa-stop':'fas fa-play','Auto-rotate')));
+	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?ICON_STOP:ICON_PLAY,'Auto-rotate')));
 	buttons.push(HU.checkbox(this.domId('_sharing'), [],this.getManager().shareCameraPosition,"Share position"));
 	buttons.push(HU.span(['id',this.domId('_grid')],icon('fas fa-table-cells','Show grid')));
 	buttons.push(HU.span(['id',this.domId('_light')],icon('fas fa-lightbulb','Set ambient light')));
@@ -410,9 +410,9 @@ Ramadda3DDisplay.prototype = {
 	jqid(this.domId('_play')).click(function() {
 	    _this.opts.rotating = !_this.opts.rotating;
 	    if(_this.opts.rotating) {
-		$(this).html(icon('fas fa-stop','Auto-rotate'));
+		$(this).html(icon(ICON_STOP,'Auto-rotate'));
 	    } else {
-		$(this).html(icon('fas fa-play','Auto-rotate'));
+		$(this).html(icon(ICON_PLAY,'Auto-rotate'));
 	    }
 	});
 

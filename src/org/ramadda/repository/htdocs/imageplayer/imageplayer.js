@@ -203,7 +203,7 @@ function ImagePlayer(args)  {
 	let html = HU.open('div',['class','imageplayer-buttons']);
 	[['Go to first frame','firstframe','fas fa-backward-step'],
 	 ['One step back','stepback','fas fa-backward'],
-	 ['Start/stop',ID_STARTSTOP,'fas fa-play'],
+	 ['Start/stop',ID_STARTSTOP,ICON_PLAY],
 	 ['One step forward','stepforward','fas fa-forward'],
 	 ['Go to last frame','lastframe','fas fa-forward-step']].forEach(tuple=>{
 	     html+=HU.span(['id',this.getId(tuple[1]),
@@ -283,7 +283,7 @@ function ImagePlayer(args)  {
     this.start = function() {
         this.running=true;
         HU.addToDocumentUrl("autoPlay", this.running);
-	this.jq(ID_STARTSTOP).html(HU.getIconImage('fas fa-stop',null,['style','color:#000;']));
+	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_STOP,null,[ATTR_STYLE,'color:#000;']));
 	if(this.timeout) 
 	    clearTimeout(this.timeout);
         this.timeout =  setTimeout(()=>{
@@ -296,7 +296,7 @@ function ImagePlayer(args)  {
         HU.addToDocumentUrl("autoPlay", this.running);
 	if(this.timeout) 
 	    clearTimeout(this.timeout);
-	this.jq(ID_STARTSTOP).html(HU.getIconImage('fas fa-play',null,['style','color:#000;']));
+	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_PLAY,null,[ATTR_STYLE,HU.css(CSS_COLOR,'#000')]));
     }
     
 

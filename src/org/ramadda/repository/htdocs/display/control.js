@@ -107,8 +107,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         running: false,
         timestamp: 0,
-        iconStart: "fa-play",
-        iconStop: "fa-stop",
+        iconStart: ICON_PLAY,
+        iconStop: ICON_STOP,
         iconBack: "fa-step-backward",
         iconForward: "fa-step-forward",
         iconSlower: "fa-minus",

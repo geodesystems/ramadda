@@ -5244,9 +5244,10 @@ RepositoryMap.prototype = {
 		}
 		slider.hide();
 		let width = HU.getDimension(this.params.popupWidth);
-		let contents = HU.div([ATTR_STYLE,HU.css('width',width,"padding","5px")],
+		let contents = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,width,CSS_PADDING,HU.px(5))],
 				      HU.div([ATTR_ID,this.mapDivId+"_sliderclose",
-					      ATTR_CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
+					      ATTR_CLASS,"ramadda-clickable"],
+					     HU.getIconImage(ICON_CLOSE)) + markerText);
 		slider.html(contents);
 		slider.slideDown(800);
 		$("#" +this.mapDivId+"_sliderclose").click(()=>{

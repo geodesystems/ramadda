@@ -11,10 +11,10 @@ var ramaddaGlobals = {
 }
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
-//Used in entry.js
-var icon_close = "fas fa-window-close";
-var icon_stop='fas fa-stop';
-var icon_play='fas fa-play';
+var ICON_CLOSE = "fas fa-window-close";
+var ICON_STOP='fas fa-stop';
+var ICON_PLAY='fas fa-play';
+
 var icon_pin = "fas fa-thumbtack";
 var icon_help = "fas fa-question-circle";
 var icon_command = ramaddaCdn + "/icons/command.png";
@@ -113,6 +113,7 @@ var TAG_OL = "ol";
 var ATTR_ACTION= "action";
 var ATTR_BACKGROUND = "background";
 var ATTR_SRC = "src";
+var ATTR_ENTRYID="entryid";
 var ATTR_TYPE = "type";
 var ATTR_TRANSFORM = "transform";
 var ATTR_LOADING= "loading";
@@ -120,6 +121,7 @@ var ATTR_DATA_CORPUS='data-corpus';
 var ATTR_WIDTH = "width";
 var ATTR_HEIGHT = "height";
 var ATTR_HREF = "href";
+var ATTR_ONMOUSEDOWN  = "onmousedown";
 var ATTR_ONCLICK  = "onclick";
 var ATTR_ONCHANGE  = "onchange";
 var ATTR_PLACEHOLDER = "placeholder";
@@ -136,6 +138,7 @@ var ATTR_TITLE = "title";
 var ATTR_POSITION="position";
 var ATTR_ALT = "alt";
 var ATTR_ID = "id";
+var ATTR_INDEX = "index";
 var ATTR_CLASS = "class";
 var ATTR_NAME = "name";
 var ATTR_MULTIPLE = "multiple";
@@ -173,8 +176,10 @@ var CSS_DISPLAY="display";
 var CSS_TRANSFORM = "transform";
 var CSS_TEXT_ALIGN="text-align";
 var CSS_VERTICAL_ALIGN="vertical-align";
+var CSS_OPACITY="opacity";
 var CSS_OVERFLOW_Y="overflow-y";
 var CSS_OVERFLOW_X="overflow-x";
+var CSS_OVERFLOW_WRAP="overflow-wrap";
 var CSS_MAX_HEIGHT="max-height";
 var CSS_MIN_HEIGHT="min-height";
 var CSS_MAX_WIDTH="max-width";
@@ -211,6 +216,7 @@ var CSS_CURSOR = "cursor";
 var CSS_HEIGHT="height";
 var CSS_WHITE_SPACE="white-space";
 var CSS_WIDTH="width";
+var CSS_WORD_BREAK='word-break';
 var CSS_BACKGROUND="background";
 var CSS_BACKGROUND_COLOR="background-color";
 var CSS_BACKGROUND_IMAGE="background-image";
@@ -5269,8 +5275,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.header) {
             let closeImage = HtmlUtils.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
-					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ATTR_ID,id+'_close',
-											     ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
+					   HU.jsLink('',HtmlUtils.getIconImage(ICON_CLOSE),
+						     [ATTR_ID,id+'_close',
+						      ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 	    if(!opts.showCloseIcon) closeImage='';
             let title = HU.div([ATTR_CLASS,'ramadda-popup-title'],opts.title);
 	    if(opts.rightSideTitle)

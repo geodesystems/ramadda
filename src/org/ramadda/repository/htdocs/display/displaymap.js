@@ -3795,7 +3795,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),
 					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					  ATTR_TITLE,"Play/Stop Animation"],
-					 HU.getIconImage("fa-play",[ATTR_CLASS,"display-anim-button"])));
+					 HU.getIconImage(ICON_PLAY,[ATTR_CLASS,"display-anim-button"])));
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step forward"],
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
@@ -3812,7 +3812,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		this.jq(ID_HEATMAP_ANIM_PLAY).click(function() {
 		    _this.heatmapPlayingAnimation = !_this.heatmapPlayingAnimation;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    $(this).html(HU.getIconImage(icon,[ATTR_CLASS, "display-anim-button"]));
 		    if(_this.heatmapPlayingAnimation) {
 			_this.stepHeatmapAnimation(1);
@@ -3820,13 +3820,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		this.jq(ID_HEATMAP_ANIM_STEP_FORWARD).click(function() {
 		    _this.heatmapPlayingAnimation = false;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,"display-anim-button"]));
 		    _this.stepHeatmapAnimation(1);
 		});
 		this.jq(ID_HEATMAP_ANIM_STEP_BACK).click(function() {
 		    _this.heatmapPlayingAnimation = false;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,"display-anim-button"]));
 		    _this.stepHeatmapAnimation(-1);
 		});		

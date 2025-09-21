@@ -59,7 +59,7 @@ function AreaWidget(display,arg) {
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
 			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
-	    html = HU.div([STYLE,"margin:5px;"], html);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
 		_this.areaContains = $(this).is(':checked');
@@ -107,8 +107,11 @@ function AreaWidget(display,arg) {
 
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
-            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag: select region. Cmd-drag: move region" +
-				HU.div([ID,this.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
+            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none")],
+			       SPACE+"Shift-drag: select region. Cmd-drag: move region" +
+			       HU.div([ID,this.domId(ID_MAP_POPUP),
+				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),CSS_HEIGHT,HU.px(300))]));
             return areaForm;
         },
 	showMap: function() {
@@ -294,7 +297,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 
     let tt = d3.select("body").append("div")	
 	.attr(ATTR_CLASS, "sparkline-tooltip")				
-	.style("opacity", 0);
+	.style(CSS_OPACITY, 0);
 
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
@@ -368,7 +371,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('width', BAR_WIDTH)
 	    .attr('height', d => getNum(h-y(d)))
 	    .attr('fill', (d,i)=>getColor(d,i,barColor))
-	    .style("cursor", "pointer")
+	    .style(CSS_CURSOR, "pointer")
     }
 
 
@@ -383,7 +386,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 		if(isNaN(d)) return "rgba(0,0,0,0)";
 		return getColor(d,i,lineColor)
 	    })
-	    .style("cursor", "pointer");
+	    .style(CSS_CURSOR, "pointer");
     }
 
 
@@ -393,7 +396,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
 	    .attr('cy', (d,i)=>{return getNum(y(d))})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
-	    .style("cursor", "pointer");
+	    .style(CSS_CURSOR, "pointer");
     }
 
 
@@ -437,15 +440,15 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    let ele = $(dom);
 	    let offset = ele.offset().top + ele.height();
 	    let left = ele.offset().left;
-	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.transition().duration(200).style(CSS_OPACITY, .9);		
 	    tt.html(html)
-		.style("left", left + "px")		
-		.style("top", offset + "px");	
+		.style(CSS_LEFT, HU.px(left))		
+		.style(CSS_TOP, HU.px(offset));	
 	})
 	    .on("mouseout", function(d) {		
 		tt.transition()		
 		    .duration(500)		
-		    .style("opacity", 0);
+		    .style(CSS_OPACITY, 0);
 	    });
     }
 }
@@ -459,7 +462,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style("opacity", 0);
+    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
@@ -490,7 +493,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr(RECORD_ID, (d,i)=>{
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
-	.style("cursor", "pointer");
+	.style(CSS_CURSOR, "pointer");
 
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
@@ -517,15 +520,15 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let html = _display.getRecordHtml(record);
 	    let offset = ele.offset().top + ele.height();
 	    let left = ele.offset().left;
-	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.transition().duration(200).style(CSS_OPACITY, .9);		
 	    tt.html(html)
-		.style("left", left + "px")		
-		.style("top", offset + "px");	
+		.style(CSS_LEFT, HU.px(left))		
+		.style(CSS_TOP, HU.px(offset));	
 	})
 	    .on("mouseout", function(d) {		
 		tt.transition()		
 		    .duration(500)		
-		    .style("opacity", 0);
+		    .style(CSS_OPACITY, 0);
 	    });
     }
 }
@@ -578,7 +581,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	})
 	.attr("stroke", "black")
 	.style("stroke-width", "1px")
-	.style("opacity", 0.7)
+	.style(CSS_OPACITY, 0.7)
 }
 
 
@@ -792,10 +795,6 @@ let Gfx = {
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	let ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "#000";
-//	ctx.fillStyle= "rgba(255,0,0,0.25)";	
-//	ctx.fillRect(0,0,canvas.width,canvas.height);
-
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;

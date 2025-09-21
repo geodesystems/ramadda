@@ -306,9 +306,9 @@ MapGlyph.prototype = {
 
     checkLayersAnimationButton:function() {
 	if(this.attrs[PROP_LAYERS_ANIMATION_ON]) {
-	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP));
 	} else {
-	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_play));
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_PLAY));
 	}
     },
     checkLayersAnimation:function(skipCall) {
@@ -331,10 +331,10 @@ MapGlyph.prototype = {
 		this.animationTimeout = setTimeout(stepAnimation,pause);
 		return;
 
-//		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop,null,[ATTR_STYLE,'color:blue;']));
+//		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP,null,[ATTR_STYLE,'color:blue;']));
 		/*
 		setTimeout(()=>{
-		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP));
 		},300);
 */
 	    }
@@ -1916,7 +1916,7 @@ MapGlyph.prototype = {
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
 					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_ANIMATION_PLAY],
-					 HU.getIconImage(icon_play,[],BUTTON_IMAGE_ATTRS));
+					 HU.getIconImage(ICON_PLAY,[],BUTTON_IMAGE_ATTRS));
 		}
 
 		/** Don't do this for now as we add a Step button to the legend 
@@ -2435,7 +2435,7 @@ MapGlyph.prototype = {
 		['Settings','fa-cog','settings'],
 		['Go to start','fa-backward','start'],
 		['Step backward','fa-step-backward','stepbackward'],
-		['Play','fa-play','play'],
+		['Play',ICON_PLAY,'play'],
 		['Step forward','fa-step-forward','stepforward'],
 		['Go to end','fa-forward','end']
 	    ].map(t=>{
@@ -2768,16 +2768,16 @@ MapGlyph.prototype = {
 		    clearTimeout(_this.timeAnimationTimeout);
 		_this.timeAnimationTimeout=null;
 		if(_this.timeAnimationRunning) {
-		    $(this).html(HU.getIconImage(icon_play));
+		    $(this).html(HU.getIconImage(ICON_PLAY));
 		} else {
-		    $(this).html(HU.getIconImage(icon_stop));
+		    $(this).html(HU.getIconImage(ICON_STOP));
 		    let stepTime = () =>{
 			let current = +slider.slider('value');
 			current = current+(_this.attrs.timeAnimationStep??1)*step;
 			change(current);
 			//			console.log("current time: " +new Date(current) +' step:' + _this.attrs.timeAnimationStep);
 			if(current>=max) {
-			    $(this).html(HU.getIconImage(icon_play));
+			    $(this).html(HU.getIconImage(ICON_PLAY));
 			    _this.timeAnimationRunning = false;
 			    return
 			}
@@ -4595,7 +4595,7 @@ MapGlyph.prototype = {
 				   HU.tr([],
 					 HU.td([ATTR_WIDTH,'18px'],HU.span(['feature-id',info.id,
 									 ATTR_CLASS,HU.classes(CLASS_FILTER_PLAY,CLASS_CLICKABLE),
-									 ATTR_TITLE,'Play'],HU.getIconImage(icon_play))) +
+									 ATTR_TITLE,'Play'],HU.getIconImage(ICON_PLAY))) +
 					 HU.td([],slider)));
 		} else {
 		    line+=slider;
@@ -4796,19 +4796,19 @@ MapGlyph.prototype = {
 		if(!sliderInfo) return;
 		let slider = sliderInfo.slider;
 		if(Utils.isDefined(playing) && playing==='true') {
-		    $(this).html(HU.getIconImage(icon_play));
+		    $(this).html(HU.getIconImage(ICON_PLAY));
 		    $(this).attr('playing',false);
 		    if(animation.timeout) {
 			clearTimeout(animation.timeout);
 			animation.timeout = null;
 		    }
 		} else {
-		    $(this).html(HU.getIconImage(icon_stop));
+		    $(this).html(HU.getIconImage(ICON_STOP));
 		    $(this).attr('playing',true);
 		    let step = (_values) =>{
 			let values = _values?? slider.slider('values');
 			if(values[1]>=sliderInfo.max) {
-			    $(this).html(HU.getIconImage(icon_play));
+			    $(this).html(HU.getIconImage(ICON_PLAY));
 			    $(this).attr('playing',false);			    
 			    return;
 			}

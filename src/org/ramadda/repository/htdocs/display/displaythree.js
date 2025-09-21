@@ -568,20 +568,28 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	createGlobe:function() {
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
-	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let pos = HU.div([ATTR_TITLE,"Select Position", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId(ID_POSITION_BUTTON),
-			      ATTR_STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
+			      ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+						CSS_LEFT,HU.px(10),
+						CSS_TOP,HU.px(10),
+						CSS_Z_INDEX,"1000")],HU.getIconImage("fa-globe"));
 	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate", ATTR_CLASS,"ramadda-clickable",
 				 ATTR_ID,this.domId(ID_ROTATE_BUTTON),
-				 ATTR_STYLE,HU.css("position","absolute","left","10px","top","30px","z-index","1000")],HU.getIconImage("fa-rotate"));	    
+				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+						   CSS_LEFT,HU.px(10),
+						   CSS_TOP,HU.px(30),
+						   CSS_Z_INDEX,"1000")],HU.getIconImage("fa-rotate"));	    
 	    let w  = parseInt(this.getGlobeWidth());
 	    let h = parseInt(this.getGlobeHeight());
 
-	    let globe = HU.div([ATTR_STYLE,HU.css("position","relative")],
+	    let globe = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div([ATTR_STYLE,HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),
+			       HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
 				       ATTR_ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
@@ -601,7 +609,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		for(a in positions) {
 		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","place",a],a);
 		}
-		html=HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_POSITION_BUTTON)});
 		dialog.find(".ramadda-clickable").click(function() {
 		    _this.setPosition(positions[$(this).attr("place")]);
@@ -869,7 +877,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
-			    html = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_STYLE,this.getProperty('popupStyle','')], html);
+			    html = HU.div([ATTR_CLASS,"display-three-globe-popup",
+					   ATTR_STYLE,this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }
@@ -1154,10 +1163,13 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	createScene: function() {
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",
 				ATTR_ID,this.domId(ID_POPUP),
-				ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
-	    let grid = HU.div([ATTR_STYLE,HU.css("position","relative")],
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",
+						  CSS_POSITION,"absolute",
+						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
+	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 			      popup +
-			      HU.div([ATTR_STYLE,HU.css("min-width","200px","min-height","200px"), ATTR_ID, this.domId(ID_GRID)]));
+			      HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
+				      ATTR_ID, this.domId(ID_GRID)]));
 	    let html = HU.center(grid);
 	    this.setContents(html);
 	    this.scene = new THREE.Scene();

@@ -156,7 +156,7 @@ RamaddaMediaTranscript.prototype = {
 				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','95%'], HU.div([ATTR_STYLE,HU.css('margin-left','10px')],p.title)));
 
 	    let details =  HU.div([ATTR_CLASS,'ramadda-clickable ramadda-media-play','data-player-time',p.time],
-				  HU.getIconImage('fas fa-play') + ' ' +
+				  HU.getIconImage(ICON_PLAY) + ' ' +
 				  'Play Segment' );
 
 	    if(Utils.stringDefined(p.synopsis)) {

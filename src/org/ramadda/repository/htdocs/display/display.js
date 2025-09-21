@@ -7168,7 +7168,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
 		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				ATTR_TITLE,"Play/Stop Animation"],
-			       HU.getIconImage("fa-play",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) + SPACE1;
+			       HU.getIconImage(ICON_PLAY,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) + SPACE1;
 		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),
 				  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
@@ -7547,7 +7547,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    this.jq("filterDatePlay").click(function() {
 		_this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
 		$(this).html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		if(_this.filterDatePlayingAnimation) {
 		    _this.stepFilterDateAnimation(inputFunc,1);
@@ -7555,13 +7555,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    this.jq("filterDateStepBackward").click(function() {
 		_this.filterDatePlayingAnimation = false;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
 		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		_this.stepFilterDateAnimation(inputFunc,-1);
 	    });
 	    this.jq("filterDateStepForward").click(function() {
 		_this.filterDatePlayingAnimation = false;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
 		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		_this.stepFilterDateAnimation(inputFunc,1);
 	    });

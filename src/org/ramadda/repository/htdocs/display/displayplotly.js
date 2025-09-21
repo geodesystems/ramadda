@@ -145,7 +145,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	},
         setDimensions: function(layout, widthDelta,ext) {
 	    ext = ext??{};
-            //                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
             var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
             //                layout.width = width-widthDelta;
             layout.height = height;
