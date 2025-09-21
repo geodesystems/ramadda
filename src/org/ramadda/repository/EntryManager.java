@@ -2658,7 +2658,7 @@ public class EntryManager extends RepositoryManager {
             String description = getEntryDescription(request, entry);
             Date   createDate  = new Date();
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, createDate);
-	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
+	    //	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
             File originalFile = null;
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
@@ -2859,7 +2859,7 @@ public class EntryManager extends RepositoryManager {
 
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
 						    new Date());
-	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
+	    //	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
             String newName = request.getString(ARG_NAME, entry.getLabel());
 
             entry.setName(newName);

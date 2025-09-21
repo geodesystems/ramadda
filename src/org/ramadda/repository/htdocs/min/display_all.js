@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep 18 06:25:39 MDT 2025";
+var build_date="RAMADDA build date: Sun Sep 21 07:11:28 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -597,7 +597,7 @@ function AreaWidget(display,arg) {
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
 			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
-	    html = HU.div([STYLE,"margin:5px;"], html);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
 		_this.areaContains = $(this).is(':checked');
@@ -645,8 +645,11 @@ function AreaWidget(display,arg) {
 
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
-            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag: select region. Cmd-drag: move region" +
-				HU.div([ID,this.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
+            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none")],
+			       SPACE+"Shift-drag: select region. Cmd-drag: move region" +
+			       HU.div([ID,this.domId(ID_MAP_POPUP),
+				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),CSS_HEIGHT,HU.px(300))]));
             return areaForm;
         },
 	showMap: function() {
@@ -832,7 +835,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 
     let tt = d3.select("body").append("div")	
 	.attr(ATTR_CLASS, "sparkline-tooltip")				
-	.style("opacity", 0);
+	.style(CSS_OPACITY, 0);
 
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
@@ -906,7 +909,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('width', BAR_WIDTH)
 	    .attr('height', d => getNum(h-y(d)))
 	    .attr('fill', (d,i)=>getColor(d,i,barColor))
-	    .style("cursor", "pointer")
+	    .style(CSS_CURSOR, "pointer")
     }
 
 
@@ -921,7 +924,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 		if(isNaN(d)) return "rgba(0,0,0,0)";
 		return getColor(d,i,lineColor)
 	    })
-	    .style("cursor", "pointer");
+	    .style(CSS_CURSOR, "pointer");
     }
 
 
@@ -931,7 +934,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
 	    .attr('cy', (d,i)=>{return getNum(y(d))})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
-	    .style("cursor", "pointer");
+	    .style(CSS_CURSOR, "pointer");
     }
 
 
@@ -975,15 +978,15 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    let ele = $(dom);
 	    let offset = ele.offset().top + ele.height();
 	    let left = ele.offset().left;
-	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.transition().duration(200).style(CSS_OPACITY, .9);		
 	    tt.html(html)
-		.style("left", left + "px")		
-		.style("top", offset + "px");	
+		.style(CSS_LEFT, HU.px(left))		
+		.style(CSS_TOP, HU.px(offset));	
 	})
 	    .on("mouseout", function(d) {		
 		tt.transition()		
 		    .duration(500)		
-		    .style("opacity", 0);
+		    .style(CSS_OPACITY, 0);
 	    });
     }
 }
@@ -997,7 +1000,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style("opacity", 0);
+    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
@@ -1028,7 +1031,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr(RECORD_ID, (d,i)=>{
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
-	.style("cursor", "pointer");
+	.style(CSS_CURSOR, "pointer");
 
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
@@ -1055,15 +1058,15 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let html = _display.getRecordHtml(record);
 	    let offset = ele.offset().top + ele.height();
 	    let left = ele.offset().left;
-	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.transition().duration(200).style(CSS_OPACITY, .9);		
 	    tt.html(html)
-		.style("left", left + "px")		
-		.style("top", offset + "px");	
+		.style(CSS_LEFT, HU.px(left))		
+		.style(CSS_TOP, HU.px(offset));	
 	})
 	    .on("mouseout", function(d) {		
 		tt.transition()		
 		    .duration(500)		
-		    .style("opacity", 0);
+		    .style(CSS_OPACITY, 0);
 	    });
     }
 }
@@ -1116,7 +1119,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	})
 	.attr("stroke", "black")
 	.style("stroke-width", "1px")
-	.style("opacity", 0.7)
+	.style(CSS_OPACITY, 0.7)
 }
 
 
@@ -1330,10 +1333,6 @@ let Gfx = {
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	let ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "#000";
-//	ctx.fillStyle= "rgba(255,0,0,0.25)";	
-//	ctx.fillRect(0,0,canvas.width,canvas.height);
-
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -1800,7 +1799,7 @@ function DisplayAnimation(display, enabled,attrs) {
         toggleAnimation: function() {
 	    this.running = !this.running;
 	    if(this.btnRun)
-		this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
+		this.btnRun.html(HtmlUtils.getIconImage(this.running ? ICON_STOP : ICON_PLAY));
 	    if (this.running)
 		this.startAnimation();
 	},
@@ -2084,7 +2083,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    buttons +=   HtmlUtils.span([ATTR_ID, this.getDomId(ID_BEGIN),ATTR_TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
 		buttons += HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIM_PREV), ATTR_TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
 		if(!short)
-		    buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_RUN),  ATTR_TITLE,"Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
+		    buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_RUN),  ATTR_TITLE,"Run/Stop"], HtmlUtils.getIconImage(ICON_PLAY)); 
 		buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIM_NEXT), ATTR_TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
 		if(!short)
 		    buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_END), ATTR_TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
@@ -2092,21 +2091,26 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    if(showLabel) {
 		if(showButtons) {
-		    buttons+=HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL), ATTR_CLASS, "display-animation-label",ATTR_STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
+		    buttons+=HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
+					     ATTR_CLASS, "display-animation-label",
+					     ATTR_STYLE,this.labelStyle+HU.css(CSS_FONT_SIZE,this.labelSize)]);
 		} else {
-		    buttons+=HtmlUtils.div([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL), ATTR_CLASS, "display-animation-label",ATTR_STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
+		    buttons+=HtmlUtils.div([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
+					    ATTR_CLASS, "display-animation-label",
+					    ATTR_STYLE,this.labelStyle+HU.css(CSS_TEXT_ALIGN,"center",
+									      CSS_FONT_SIZE,this.labelSize)]);
 		}
 	    }
             buttons = HtmlUtils.div([ ATTR_CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
-		let style= HU.css("height",this.tickHeight) +display.getProperty("animationSliderStyle","");
+		let style= HU.css(CSS_HEIGHT,this.tickHeight) +display.getProperty("animationSliderStyle","");
 		let tooltip  = HU.div([ATTR_ID,this.getDomId(ID_TOOLTIP),ATTR_CLASS,"display-animation-tooltip"],"");
-		let tickContainerStyle = HU.css("height",this.tickHeight);
+		let tickContainerStyle = HU.css(CSS_HEIGHT,this.tickHeight);
 		if(!this.makeSlider) {
-		    tickContainerStyle += HU.css(CSS_BACKGROUND,"efefef","border","1px solid #aaa");
+		    tickContainerStyle += HU.css(CSS_BACKGROUND,"efefef",CSS_BORDER,"1px solid #aaa");
 		}
 		if(!this.makeSlider) {
-		    style+=HU.css("cursor","move");
+		    style+=HU.css(CSS_CURSOR,"move");
 		}
 		buttons +=   HtmlUtils.div([ATTR_CLASS,"display-animation-slider",ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
 					   tooltip + HtmlUtils.div([ATTR_STYLE, tickContainerStyle,ATTR_CLASS,"display-animation-ticks","tabindex","0",ATTR_ID,this.getDomId(ID_TICKS)]));
@@ -2206,7 +2210,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"], "Window:<br>" +SPACE2 + HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),"size","10"]));
 		    html+=HU.div([ATTR_TITLE, "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"], "Step:<br>" +SPACE2+ HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),"size","10"]));
 		}
-		html=HU.div([ATTR_STYLE,HU.css("margin","4px")], html);
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({content:html,anchor:$(this),draggable:false,header:false});
 
 		let key = (e)=>{
@@ -2419,7 +2423,7 @@ function DisplayAnimation(display, enabled,attrs) {
         },
 	stopAnimation:function() {
 	    if(this.btnRun)
-		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		this.btnRun.html(HtmlUtils.getIconImage(ICON_PLAY));
             this.running = false;
 	},
 	setDateRange: function(begin,end) {
@@ -2515,7 +2519,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([ATTR_ID,this.display.getId()+"-"+record.getId(), ATTR_CLASS,clazz,ATTR_STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,ATTR_TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HtmlUtils.div([ATTR_ID,this.display.getId()+"-"+record.getId(), ATTR_CLASS,clazz,
+				      ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,CSS_LEFT, HU.perc(perc))+tickStyle,
+				      ATTR_TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);
@@ -2571,11 +2577,11 @@ function DisplayAnimation(display, enabled,attrs) {
                 this.running = false;
                 this.inAnimation = false;
 		if(this.btnRun)
-                    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+                    this.btnRun.html(HtmlUtils.getIconImage(ICON_PLAY));
             }
 	},
 	makeLabel: function(label) {
-	    return HU.span([ATTR_STYLE,HU.css("font-size",this.labelSize)+this.labelStyle],label);
+	    return HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,this.labelSize)+this.labelStyle],label);
 	},
 
 	applyLabelTemplate: function(records) {
@@ -4966,7 +4972,7 @@ function DisplayThing(argId, argProperties) {
 		let value = row[props.iconField.getIndex()];
 		let icon = props.iconMap[value];
 		if(icon) {
-		    attrs[props.iconField.getId() +"_icon"] =  HU.image(icon,["width",props.iconSize]);
+		    attrs[props.iconField.getId() +"_icon"] =  HU.image(icon,[ATTR_WIDTH,props.iconSize]);
 		}
 	    }
 
@@ -4975,17 +4981,17 @@ function DisplayThing(argId, argProperties) {
 		let imageAttrs = [];
 		let width = tokenAttrs?tokenAttrs["width"]:null;
 		if(width) {
-		    imageAttrs.push("width");
+		    imageAttrs.push(ATTR_WIDTH);
 		    imageAttrs.push(width);
 		} else if(this.getDefaultTemplateProps().imageWidth) {
-		    imageAttrs.push("width");
+		    imageAttrs.push(ATTR_WIDTH);
 		    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 		} else  {
-		    imageAttrs.push("width");
+		    imageAttrs.push(ATTR_WIDTH);
 		    imageAttrs.push("300");
 		}
 		imageAttrs.push(ATTR_STYLE);
-		imageAttrs.push(HU.css('vertical-align','top'));
+		imageAttrs.push(HU.css(CSS_VERTICAL_ALIGN,POS_TOP));
 		return HU.image(value, imageAttrs);
 	    };
 
@@ -5109,17 +5115,17 @@ function DisplayThing(argId, argProperties) {
 			let imageAttrs = [];
 			let width = tokenAttrs?tokenAttrs["width"]:null;
 			if(width) {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push(width);
 			} else if(this.getDefaultTemplateProps().imageWidth) {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 			} else  {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push("100%");
 			}
 			imageAttrs.push(ATTR_STYLE);
-			imageAttrs.push(HU.css('vertical-align','top'));
+			imageAttrs.push(HU.css(CSS_VERTICAL_ALIGN,POS_TOP));
 			let img =  HU.image(value, imageAttrs);
 
 			attrs[f.getId() +"_image"] =  img;
@@ -5132,7 +5138,7 @@ function DisplayThing(argId, argProperties) {
 		    if(value && value.trim().length>0) {
 			let movieAttrs = [];
 			if(this.getProperty("movieWidth")) {
-			    movieAttrs.push("width");
+			    movieAttrs.push(ATTR_WIDTH);
 			    movieAttrs.push(this.getProperty("movieWidth"));
 			}
 			let movie =  HU.movie(value,movieAttrs);
@@ -5350,7 +5356,7 @@ function DisplayThing(argId, argProperties) {
 	    if(this.getLabelColumnAttrs()) {
 		labelColAttrs = this.getLabelColumnAttrs().split(",");
 	    } else {
-		labelColAttrs = ["align","right"];
+		labelColAttrs = [ATTR_ALIGN,"right"];
 	    }
 	    let labelWidth = this.getLabelWidth();
 	    fields= this.getSortedFields(fields);
@@ -5416,20 +5422,20 @@ function DisplayThing(argId, argProperties) {
 			if(!dflt.showImage) continue;
 			let imageAttrs = [];
 			if(this.getImageWidth()) {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push(this.getImageWidth());
 			} else  {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push("200");
 			}
-			imageAttrs.push("align");
-			imageAttrs.push("top");
+			imageAttrs.push(ATTR_ALIGN);
+			imageAttrs.push(POS_TOP);
 			value = HU.image(value,imageAttrs);
 		    }
 		    if(field.getType() == "movie" && value!="") {
 			if(!dflt.showMovie) continue;
 			let movieAttrs = [];
-			movieAttrs.push("width");
+			movieAttrs.push(ATTR_WIDTH);
 			movieAttrs.push("200");
 			value = HU.movie(value,movieAttrs);
 		    }		    
@@ -5461,7 +5467,7 @@ function DisplayThing(argId, argProperties) {
 			label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH ,HU.getDimension(labelWidth),CSS_OVERFLOW_X,"auto")], label); 
 		    } 
 		    label  = HU.div([ATTR_TITLE,tt],label);
-                    let row = HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+                    let row = HU.open(TAG_TR,[ATTR_VALIGN,POS_TOP]);
 		    let labelAttrs = [ATTR_CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
@@ -5474,7 +5480,7 @@ function DisplayThing(argId, argProperties) {
 
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row+='\n';
-		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"],
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, ATTR_ALIGN,"left"],
 				 HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
@@ -5485,7 +5491,7 @@ function DisplayThing(argId, argProperties) {
             }
 	    if(!hadDate && dflt.showDate) {
 		if(record.hasDate()) {
-                    let row = HU.open(TR,['valign','top']);
+                    let row = HU.open(TR,[ATTR_VALIGN,POS_TOP]);
 		    let label = this.formatRecordLabel("Date");
 		    row += HU.td([],HU.b(label+":"));
 		    row += HU.td([ATTR_ALIGN,"left"], HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
@@ -5500,8 +5506,6 @@ function DisplayThing(argId, argProperties) {
             }
 	    let rowCnt = 0;
 	    values += "<table><tr valign=top>";
-
-
 	    let		lists   = Utils.splitList(rows,itemsPerColumn);
 	    let tdStyle =lists.length>1?HU.css(CSS_MARGIN_RIGHT,HU.px(5)):'';
 	    lists.forEach(list=>{
@@ -6531,7 +6535,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    dom.append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    dom.find('.display-colortable-slice').css('cursor','pointer');
+	    dom.find('.display-colortable-slice').css(CSS_CURSOR,'pointer');
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
@@ -6546,7 +6550,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			   HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
-		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
+		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
+							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +
 				Utils.getColorTablePopup({showToggle:false})]);
 		html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
@@ -6915,9 +6920,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getTitleHtml: function(title) {
             let titleToShow = "";
             if (this.getShowTitle()) {
-                let titleStyle = HU.css("color" , this.getTextColor("titleColor","#000"));
+                let titleStyle = HU.css(CSS_COLOR , this.getTextColor("titleColor","#000"));
                 let bg = this.getProperty("titleBackground");
-                if (bg) titleStyle += HU.css(CSS_BACKGROUND, bg,CSS_PADDING,HU.px(2),CSS_PADDING_RIGHT,HU.px(6),CSS_PADDING_LEFT,HU.px(6));
+                if (bg) titleStyle += HU.css(CSS_BACKGROUND, bg,
+					     CSS_PADDING,HU.px(2),
+					     CSS_PADDING_RIGHT,HU.px(6),
+					     CSS_PADDING_LEFT,HU.px(6));
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
                 if (entryId) {
@@ -7295,7 +7303,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
 	    }
 	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
-	    let minHeight = contents.css("min-height");
+	    let minHeight = contents.css(CSS_MIN_HEIGHT);
 	    if(!minHeight || minHeight=="0px") {
 		contents.css(CSS_MIN_HEIGHT,HU.px(75));
 		contents.attr("display-set-minheight","true");
@@ -7306,7 +7314,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
 	    this.jq(ID_DISPLAY_MESSAGE).hide();
 	    if(contents.attr("display-set-minheight")!=null) {
-		contents.css("min-height","");
+		contents.css(CSS_MIN_HEIGHT,"");
 	    }
 	},	
         getLoadingMessage: function(msg) {
@@ -7326,7 +7334,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.useDisplayMessage()) {
 		return SPACE+msg;
 	    } 
-            return HU.div([ATTR_STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
+            return HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,"center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
 	    this.dataLoadFailed = false;
@@ -8819,7 +8827,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		header  += HU.span([ATTR_ID,this.domId(ID_PREVNEXT_LABEL)]);
 		if(header!="") {
-		    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10), CSS_DISPLAY,'inline-block')],header);
+		    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10), CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],header);
 		    this.jq(ID_HEADER2_PREFIX).html(header);
 		    this.jq(ID_HEADER2).css(CSS_TEXT_ALIGN,"left");
 		}
@@ -8900,7 +8908,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_X,"auto",CSS_OVERFLOW_Y,"auto")], wiki);
+	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
+					     CSS_MAX_HEIGHT,HU.px(400),
+					     CSS_OVERFLOW_X,"auto",
+					     CSS_OVERFLOW_Y,"auto")], wiki);
 	    this.showDialog(wiki);
 	},
         copyWikiText: function(type) {
@@ -9295,10 +9306,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!thumb) thumb = placeholderImage;
 		    if(thumb) {
 			thumb = HU.image(thumb,[ATTR_WIDTH,HU.px(80),ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))]);
-			thumb = HU.div([ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')], thumb);
-			left = HU.table([ATTR_WIDTH,'100%'],
-					HU.tr([ATTR_VALIGN,'top'],
-					      HU.td([ATTR_WIDTH,'80px'],thumb +HU.td(left))));
+			thumb = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,'auto')], thumb);
+			left = HU.table([ATTR_WIDTH,HU.perc(100)],
+					HU.tr([ATTR_VALIGN,POS_TOP],
+					      HU.td([ATTR_WIDTH,HU.px(80)],thumb +HU.td(left))));
 						    
 		    }
 		}
@@ -9471,15 +9482,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (columnWidths != null) {
                 columnWidths = columnWidths.split(",");
             }
-            let html = HU.open(TAG_TABLE, [ATTR_WIDTH, "100%", "cellpadding", "0", "cellspacing", "0"]);
-            html += HU.open(TAG_TR, ["valign", "top"]);
+            let html = HU.open(TAG_TABLE, [ATTR_WIDTH, HU.perc(100), ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"]);
+            html += HU.open(TAG_TR, [ATTR_VALIGN, POS_TOP]);
             for (let i = 0; i < columnNames.length; i++) {
                 html += HU.td([ATTR_ALIGN, "center", ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
             }
             html += HU.close(TAG_TR);
 
             for (let i = 0; i < entries.length; i++) {
-                html += HU.open(TAG_TR, ["valign", "top"]);
+                html += HU.open(TAG_TR, [ATTR_VALIGN, POS_TOP]);
                 let entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
                 for (let j = 0; j < columns.length; j++) {
@@ -9534,15 +9545,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let toolbarItems = [];
 	    let props = "{showMenu:true,showTitle:true}";
             //                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
-            //                                                HU.image(RamaddaUtil.getCdnUrl("/icons/application-home.png"),["border",0,ATTR_TITLE,"View Entry"])));
+            //                                                HU.image(RamaddaUtil.getCdnUrl("/icons/application-home.png"),[ATTR_BORDER,0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), [ATTR_BORDER, 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile" || entry.getType().getId() == "geo_geojson") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), [ATTR_BORDER, 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
@@ -9564,10 +9575,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
 					     HU.sqt("entrydisplay") + "," + HU.sqt(jsonUrl) + "," + props +");"
 					    ],
-				     HU.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
+				     HU.getIconImage("fa-file", [ATTR_BORDER, 0, ATTR_TITLE, "Show Entry"])));
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl(),"download",null],
-					 HU.image(RamaddaUtil.getCdnUrl("/icons/download.png"), ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/download.png"), [ATTR_BORDER, 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
@@ -10370,12 +10381,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let div = $("#" + divId);
 		let inline = this.getDisplayInline();
 		if(inline) {
-		    div.css("display","inline-block");
-		    div.css("vertical-align","bottom");
+		    div.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
+		    div.css(CSS_VERTICAL_ALIGN,POS_BOTTOM);
 		} 
-		let width = this.getWidth("100%");
+		let width = this.getWidth(HU.perc(100));
 		if(!inline && width && width!="-1") {
-                    div.css("width",HU.getDimension(width));
+                    div.css(CSS_WIDTH,HU.getDimension(width));
 		}
 		let commandText = this.getHeaderText();
 		let commandMap = {};
@@ -10488,18 +10499,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    bottom+=legend;
 	    let leftStyle = "";
 	    if(this.getProperty("leftSideWidth"))
-		leftStyle = HU.css("width",HU.getDimension(this.getProperty("leftSideWidth")));
+		leftStyle = HU.css(CSS_WIDTH,HU.getDimension(this.getProperty("leftSideWidth")));
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT),ATTR_STYLE,leftStyle],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
 	    let sideWidth = "1px";
 	    let centerWidth = "100%";	    
 	    let h0 = 	HU.div([ATTR_ID,this.getDomId(ID_HEADER0),ATTR_CLASS,"display-header-block display-header0"], "");
 	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
-            let table =   h0+HU.open('table', [ATTR_STYLE,this.isGoogleChart?HU.css(CSS_BORDER,'1px solid transparent'):'',ATTR_CLASS, 'display-ui-table', ATTR_WIDTH,'100%','border','0','cellpadding','0','cellspacing','0']);
+            let table =   h0+HU.open('table', [ATTR_STYLE,this.isGoogleChart?HU.css(CSS_BORDER,'1px solid transparent'):'',ATTR_CLASS, 'display-ui-table',
+					       ATTR_WIDTH,HU.perc(100),
+					       ATTR_BORDER,'0',ATTR_CELLPADDING,'0',ATTR_CELLSPACING,'0']);
 	    if(this.getShowTopHeader(this.getProperty('showDisplayTop',true))) {
 		table+= HU.tr([],HU.td([ATTR_WIDTH,sideWidth]) + HU.td([ATTR_WIDTH,centerWidth],top) +HU.td([ATTR_WIDTH,sideWidth]));
 	    }
-	    table+= HU.tr(["valign","top"],HU.td([ATTR_WIDTH,sideWidth],left) + HU.td([ATTR_WIDTH,centerWidth],contents) +HU.td([ATTR_WIDTH,sideWidth],right));
+	    table+= HU.tr([ATTR_VALIGN,POS_TOP],HU.td([ATTR_WIDTH,sideWidth],left) + HU.td([ATTR_WIDTH,centerWidth],contents) +HU.td([ATTR_WIDTH,sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
 		if(this.getFooterDiv(this.getProperty('bottomDiv'))) {
 		    jqid(this.getFooterDiv(this.getProperty('bottomDiv'))).html(bottom);
@@ -10508,11 +10521,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		table+= HU.tr([],HU.td([ATTR_WIDTH,sideWidth]) + HU.td([ATTR_WIDTH,centerWidth],bottom) +HU.td([ATTR_WIDTH,sideWidth]));
 	    }
 	    table+=HU.close('table');
-	    let message= HU.div([ATTR_ID,this.domId(ID_DISPLAY_MESSAGE),ATTR_CLASS,"display-output-message", ATTR_STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
-									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"");
+	    let message= HU.div([ATTR_ID,this.domId(ID_DISPLAY_MESSAGE),ATTR_CLASS,"display-output-message",
+				 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,CSS_POSITION,"absolute",
+						   CSS_TOP,HU.px(10),CSS_LEFT,HU.perc(50),
+						   "-webkit-transform","translateX(-50%)",
+						   CSS_TRANSFORM,"translateX(-50%)")],"");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([ATTR_ID,this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',ATTR_CLASS, 'display-contents display-' + this.type +'-contents', ATTR_STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div([ATTR_ID,this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',ATTR_CLASS, 'display-contents display-' + this.type +'-contents', ATTR_STYLE, HU.css(CSS_POSITION,'relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -10524,7 +10540,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let height = this.getProperty("height", -1);
             if (height == -1) return dflt;
             if (new String(height).match("^[0-9]+$")) {
-                height = height + "px";
+                height = HU.px(height);
 	    }
             return height;
         },
@@ -10538,7 +10554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let maxheight = this.getProperty("maxHeight");
             if (maxheight) {
-                style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
+                style += HU.css(CSS_MAX_HEIGHT, HU.getDimension(maxheight),CSS_OVERFLOW_Y,"auto");
             }	    
             return style;
         },
@@ -10557,10 +10573,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (background)
                 style += HU.css(CSS_BACKGROUND, background);
             let topBottomStyle = "";
-	    //            let width = this.getWidthForStyle();
-	    //            if (width) {
-	    //                topBottomStyle += HU.css("width", width);
-	    //            }
             let top = HU.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             let bottom = HU.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 	    let expandedHeight  = this.getProperty("expandedHeight");
@@ -10694,7 +10706,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 labels.push("Download CSV");
             }
             for (let i = 0; i < calls.length; i++) {
-                let inner = HU.getIconImage(images[i], ["width","18px",ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                let inner = HU.getIconImage(images[i], [ATTR_WIDTH,HU.px(18),ATTR_TITLE, labels[i],
+							ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
                 toolbar += HU.onClick(calls[i], inner);
             }
@@ -10708,9 +10721,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	writeHeader:function(header,html) {
 	    if(html=="") {
-		this.jq(header).css("display","none");
+		this.jq(header).css(CSS_DISPLAY,DISPLAY_INLINE_NONE);
 	    } else {
-		this.jq(header).css("display","inline-block");
+		this.jq(header).css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
 	    }
 	    this.jq(header).html(html);
 	},
@@ -10842,7 +10855,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let applyButton = this.jq('requestapply').button();
 	    let applyRequest = ()=>{
 		applyButton.css(CSS_BACKGROUND,'');
-		applyButton.css('border-color','');		    
+		applyButton.css(CSS_BORDER_COLOR,'');		    
 		this.macroChanged();
 		this.reloadData();
 	    };
@@ -10866,7 +10879,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    applyRequest();
 		} else {
 		    applyButton.css(CSS_BACKGROUND,'yellow');
-		    applyButton.css('border-color','#000');		    
+		    applyButton.css(CSS_BORDER_COLOR,'#000');		    
 		}
 		if(!macro.name) return;
 		this.settingMacroValue = true;
@@ -11015,7 +11028,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(minValue==parseInt(minValue) && maxValue==parseInt(maxValue))
 		    numDecimals = 0;
 
-		let html = HU.div([ATTR_ID,"filter-range",ATTR_STYLE,HU.css("width","200px")],"");
+		let html = HU.div([ATTR_ID,"filter-range",ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200))],"");
 		let popup = HtmlUtils.getTooltip();
 		popup.html(html);
 		popup.show();
@@ -11094,7 +11107,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let header2="";
 	    //	    header2 +=HU.div([ATTR_ID,this.getDomId("test")],"test");
 	    if(this.getShowProgress(false)) {
-		header2 += HU.div([ATTR_ID,this.getDomId(ID_DISPLAY_PROGRESS), ATTR_STYLE,HU.css("display","inline-block",CSS_MARGIN_RIGHT,"4px","min-width","20px")]);
+		header2 += HU.div([ATTR_ID,this.getDomId(ID_DISPLAY_PROGRESS),
+				   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						     CSS_MARGIN_RIGHT,HU.px(4),CSS_MIN_WIDTH,HU.px(20))]);
 	    }
 	    let headerLabel  = this.getHeaderLabel();
 	    if(Utils.stringDefined(headerLabel)) {
@@ -11119,7 +11134,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		fields.forEach((f)=>{
 		    if(colorCnt>=colors.length) colorCnt = 0;
 		    let color  = colors[colorCnt];
-		    html += HU.div([ATTR_STYLE,HU.css("display","inline-block","width","8px","height","8px",CSS_BACKGROUND,color)]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
+		    html += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						      CSS_WIDTH,HU.px(8),CSS_HEIGHT,HU.px(8),
+						      CSS_BACKGROUND,color)]) +" " + f.getLabel() +SPACE2;
 		    colorCnt++;
 		});
 		header2+= HU.div([ATTR_CLASS,"display-field-legend"], html);
@@ -11263,7 +11280,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let select =  HU.select("",["fieldId","_highlight",
 					    ATTR_ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
 		if(hideFilterWidget) {
-		    select = HU.div([ATTR_STYLE,HU.css("display","none")], select);
+		    select = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)], select);
 		}
 		header2+=select;
 	    }
@@ -11315,18 +11332,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		
 		label =  this.makeFilterLabel("Select " + label+": ");
 		let prefix="";
-		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepBackward"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step Back"],
- 				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css("cursor","pointer")])) +SPACE1;
-		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Play/Stop Animation"],
-			       HU.getIconImage("fa-play",[ATTR_STYLE,HU.css("cursor","pointer")])) + SPACE1;
-		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),ATTR_STYLE,HU.css("display","inline-block"),ATTR_TITLE,"Step Forward"],
- 				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css("cursor","pointer")])) +SPACE1;
+		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepBackward"),
+				  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step Back"],
+ 				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
+		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+				ATTR_TITLE,"Play/Stop Animation"],
+			       HU.getIconImage(ICON_PLAY,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) + SPACE1;
+		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),
+				  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step Forward"],
+ 				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
 
 		let widget =  HU.span([ATTR_CLASS,filterClass,ATTR_STYLE,style],
 				      prefix +
 				      HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
 		if(hideFilterWidget) {
-		    widget = HU.div([ATTR_STYLE,HU.css("display","none")], widget);
+		    widget = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)], widget);
 		}
 		header2+=widget;
 
@@ -11398,9 +11418,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(vertical) {
 		header2 = HU.div([ATTR_CLASS,"display-header-vertical"],header2);
 	    } else {
-		let style = HU.css('line-height','0px');
-		if(this.getHeaderCenter(true)) style +=HU.css('text-align','center');
-		else style +=HU.css('text-align','left');		
+		let style = HU.css(CSS_LINE_HEIGHT,HU.px(0));
+		if(this.getHeaderCenter(true)) style +=HU.css(CSS_TEXT_ALIGN,'center');
+		else style +=HU.css(CSS_TEXT_ALIGN,'left');		
 		header2=HU.div([ATTR_STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
@@ -11661,7 +11681,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });	
 		    if(itemCnt>0) {
 			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-			popup.html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"5px"), ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popup.html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5)),
+					   ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
 			popup.position({
 			    of: $(this),
@@ -11695,22 +11716,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    this.jq("filterDatePlay").click(function() {
 		_this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		$(this).html(HU.getIconImage(icon,[ATTR_STYLE,HU.css("cursor","pointer")]));
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
+		$(this).html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		if(_this.filterDatePlayingAnimation) {
 		    _this.stepFilterDateAnimation(inputFunc,1);
 		}
 	    });
 	    this.jq("filterDateStepBackward").click(function() {
 		_this.filterDatePlayingAnimation = false;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css("cursor","pointer")]));
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		_this.stepFilterDateAnimation(inputFunc,-1);
 	    });
 	    this.jq("filterDateStepForward").click(function() {
 		_this.filterDatePlayingAnimation = false;
-		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css("cursor","pointer")]));
+		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 		_this.stepFilterDateAnimation(inputFunc,1);
 	    });
 
@@ -11925,7 +11946,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	makeTooltipClick: function(selector, records) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    if(!tooltipClick) return;
-	    selector.css("cursor","pointer");
+	    selector.css(CSS_CURSOR,"pointer");
 	    let idToRecord = this.makeIdToRecords(records);
 	    let _this = this;
 	    selector.click(function() {
@@ -11936,7 +11957,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.tooltipDialog = null;
 		} 
 		let tt =  _this.getRecordHtml(record,null,tooltipClick);
-		tt = HU.div([ATTR_STYLE,HU.css("width","600px")], tt);
+		tt = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(600))], tt);
 		_this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
 						      draggable:true,header:true});
 		if(_this.getProperty("dialogListener"))
@@ -12324,7 +12345,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
 		tmp = tmp.replace(/\\n/g,'<br>');
                 error = tmp;
-                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto",CSS_MAX_WIDTH,"600px","overflow-x","auto")], error);
+                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,"nowrap",
+							    CSS_MAX_HEIGHT,HU.px(300),
+							    CSS_OVERFLOW_Y,"auto",
+							    CSS_MAX_WIDTH,HU.px(600),
+							    CSS_OVERFLOW_X,"auto")], error);
                 msg += error;
             }
 	    
@@ -13519,12 +13544,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                             if (i > 0) {
                                 html += HU.close(TAG_TR);
                             }
-                            html += HU.open("tr", ["valign", "top"]);
+                            html += HU.open("tr", [ATTR_VALIGN, POS_TOP]);
 			    html+="\n";
                             colCnt = 0; 
                         }
 			//Add in the max-width so the width of the td doesn't exceed the percent value
-                        html += HU.td([ATTR_STYLE,"max-width:300px;", ATTR_WIDTH,percent], displaysToLayout[i].layoutDiv);
+                        html += HU.td([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300)), ATTR_WIDTH,percent], displaysToLayout[i].layoutDiv);
 			html+="\n";
 		    }
                     if (i > 0) {
@@ -13563,12 +13588,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 for (let i = 0; i < rows.length; i++) {
                     let cols = rows[i];
                     let width = Math.round(100 / cols.length) + "%";
-                    html += HU.open(TAG_TABLE, ["border", "0", "width", "100%", "cellpadding", "0", "cellspacing", "0"]);
-                    html += HU.open(TAG_TR, ["valign", "top"]);
+                    html += HU.open(TAG_TABLE, [ATTR_BORDER, "0", ATTR_WIDTH, "100%", ATTR_CELLPADDING, "0",
+						ATTR_CELLSPACING, "0"]);
+                    html += HU.open(TAG_TR, [ATTR_VALIGN, POS_TOP]);
                     for (let col = 0; col < cols.length; col++) {
                         let cell = cols[col];
                         cell = HU.div([ATTR_CLASS, "display-cell"], cell);
-                        html += HU.tag(TAG_TD, ["width", width], cell);
+                        html += HU.tag(TAG_TD, [ATTR_WIDTH, width], cell);
                     }
                     html += HU.close(TAG_TR);
                     html += HU.close(TAG_TABLE);
@@ -13803,9 +13829,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
-//            let html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_STYLE, HU.css("overflow-y","auto","max-height", height + "px")], "");
-//            tabTitles.push("Fields");
-//            tabContents.push(html);
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {
@@ -14144,13 +14167,11 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag(TAG_UL, [], layoutMenu));
 
 
-            var menu = HU.div([ATTR_STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup",
+            var menu = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff',CSS_Z_INDEX,'1000'),
 			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, 'sf-menu'], menuBar));
 
             html += menu;
-            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
-            //                html+="<br>";
             return html;
         },
         hasGeoMacro: function(jsonUrl) {
@@ -14381,8 +14402,8 @@ function DisplayManager(argId, argProperties) {
     addDisplayManager(this);
 
     let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",
-			       ATTR_STYLE,HU.css("display","block")]);
-    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,"position:relative;"]);
+			       ATTR_STYLE,HU.css(CSS_DISPLAY,"block")]);
+    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]);
     html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
@@ -14413,7 +14434,8 @@ function DisplayManager(argId, argProperties) {
     $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],[ATTR_STYLE,'color:#aaa;'] )).button({
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],
+						 [ATTR_STYLE,HU.css(CSS_COLOR,'#aaa')] )).button({
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	
@@ -20380,7 +20402,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
             let html = HU.div([ATTR_ID, this.domId(ID_FIELDS),
-			       ATTR_STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
+			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,'auto',CSS_MAX_HEIGHT, HU.px(height))], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -21178,7 +21200,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(maxHeaderWidth>0)
 			headerLabel = headerLabel.replace(/ /g,"&nbsp;");
 		    if(maxHeaderWidth>0)
-			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
+			style+=HU.css(CSS_MAX_WIDTH,HU.px(maxHeaderWidth),CSS_OVERFLOW_X,'auto');
 		    if(headerStyle)
 			style+=headerStyle;
 		    headerLabel = HU.div([ATTR_TITLE,orig,ATTR_STYLE,style], headerLabel);
@@ -21454,7 +21476,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				tooltip += HU.b(label) + ":" + SPACE + value;
 			    }
 			}
-			tooltip = HU.div([ATTR_STYLE,HU.css('padding','8px')],tooltip);
+			tooltip = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))],tooltip);
 			newRow.push(tooltip);
 			if(debug && rowIdx<debugRows)
 			    console.log("\t added tooltip");
@@ -21865,8 +21887,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             return chartOptions;
         },
-        getChartHeight: function() {
-            return this.getProperty('chartHeight', this.getProperty("height"));
+        getChartHeight: function(dflt) {
+            return this.getProperty('chartHeight', this.getProperty('height',dflt));
         },
         getChartWidth: function() {
             return this.getProperty('chartWidth', this.getProperty('width'));
@@ -21877,32 +21899,32 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let width = this.getChartWidth();
             if (false && width) {
 		if(width.endsWith("%")) {
-                    style += HU.css("width", width);
+                    style += HU.css(CSS_WIDTH, width);
 		} else {
                     if (width > 0)
-			style += HU.css("width", width + "px");
+			style += HU.css(CSS_WIDTH, HU.px(width));
                     else if (width < 0)
-			style += HU.css("width" , (-width) + "%");
+			style += HU.css(CSS_WIDTH , HU.perc(-width));
                     else
-			style += HU.css("width", width);
+			style += HU.css(CSS_WIDTH, width);
 		}
             } else {
-		//                style += HU.css("width","100%");
+		//                style += HU.css(CSS_WIDTH,"100%");
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             let height =  this.getChartHeight();
 	    if(expandedHeight) {
-                style += HU.css("height", expandedHeight);
+                style += HU.css(CSS_HEIGHT, expandedHeight);
 	    } else {
 		if (height) {
                     if (height > 0)
-			style += HU.css("height", height + "px");
+			style += HU.css(CSS_HEIGHT, HU.px(height));
                     else if (height < 0)
-			style += HU.css("height", (-height) + "%");
+			style += HU.css(CSS_HEIGHT, HU.perc(-height));
                     else
-			style += HU.css("height", height);
+			style += HU.css(CSS_HEIGHT, height);
 		} else {
-                    style += HU.css("height", "100%");
+                    style += HU.css(CSS_HEIGHT, HU.perc(100));
 		}
 	    }
 	    //	    style += HU.css("text-align","center");
@@ -21996,7 +22018,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return this.getProperty('doMultiChartsByField');
 	},
 	makeMultiChart:function (label, dataList, fields,props) {
-	    let multiStyle="width:200px;" + this.getProperty("multiStyle","");
+	    let multiStyle=HU.css(CSS_WIDTH,HU.px(200)) + this.getProperty("multiStyle","");
 	    let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 	    let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 	    let tmpChartOptions = this.chartOptions;
@@ -22227,8 +22249,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    pageY = +this.getTooltipY(pageY);	    
 	    let right = chartRect.left+chartRect.width;
 	    if(pageX+400>right) pageX=right-400;
-	    tooltip.style.left = pageX+'px';
-	    tooltip.style.top =(pageY+20)+'px';
+	    tooltip.style.left = HU.px(pageX);
+	    tooltip.style.top =HU.px(pageY+20);
 	    tooltip.style.display = 'block';
 	    
 	},
@@ -22426,7 +22448,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 	    let expandedHeight  = this.getProperty("expandedHeight");
-            chartOptions.height = expandedHeight || this.getProperty("chartHeight", this.getProperty("height", "150"));
+            chartOptions.height = expandedHeight ?? this.getChartHeight(this.getProperty("height", "150"));
 
             if (!chartOptions.legend)
                 chartOptions.legend = {};
@@ -22734,7 +22756,8 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		let color  = colors[colorCnt];
-		legend += HU.div([ATTR_STYLE,HU.css('display','inline-block','width','8px','height','8px',CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
+		legend += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(8),
+						    CSS_HEIGHT,HU.px(8),CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
@@ -22767,25 +22790,24 @@ function PiechartDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
-                    style += "width:" + width + "px;";
+                    style += HU.css(CSS_WIDTH,HU.px(width));
                 else if (width < 0)
-                    style += "width:" + (-width) + "%;";
+                    style += HU.css(CSS_WIDTH,HU.perc(-width));
                 else
-                    style += "width:" + width + ";";
+                    style += HU.css(CSS_WIDTH,width);
             } else {
-                style += "width:" + "100%;";
+                style += HU.css(CSS_WIDTH,HU.perc(100));
             }
             if (height) {
                 if (height > 0)
-                    style += "height:" + height + "px;";
+                    style += HU.css(CSS_HEIGHT,HU.px(height));
                 else if (height < 0)
-                    style += "height:" + (-height) + "%;";
+                    style += HU.css(CSS_HEIGHT,HU.perc(-height));
                 else
-                    style += "height:" + height + ";";
+                    style += HU.css(CSS_HEIGHT,height);
             } else {
-                style += "height:" + "100%;";
+                style += HU.css(CSS_HEIGHT,HU.perc(100));
             }
-	    //	    style += "border:1px solid green;"
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
@@ -23295,10 +23317,10 @@ function TableDisplay(displayManager, id, properties) {
 		}
 
 		if(!this.getFilterHighlight() || !record) {
-		    f = HU.div([ATTR_STYLE,HU.css('padding','4px')],f)
+		    f = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
-		    f = HU.div([ATTR_STYLE,HU.css('padding','4px',CSS_BACKGROUND, c)],f)
+		    f = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4),CSS_BACKGROUND, c)],f)
 		}
 
 
@@ -23344,7 +23366,7 @@ function TableDisplay(displayManager, id, properties) {
                     }
 		}
 		if (chartOptions.height == null) {
-                    chartOptions.height = "300px";
+                    chartOptions.height = HU.px(300);
 		}
 	    }
 
@@ -23446,26 +23468,25 @@ function BubbleDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
-                    style += "width:" + width + "px;";
+                    style += HU.css(CSS_WIDTH,HU.px(width));
                 else if (width < 0)
-                    style += "width:" + (-width) + "%;";
-                else
-                    style += "width:" + width + ";";
+                    style += HU.css(CSS_WIDTH,HU.perc((-width)));
+		else
+                    style += HU.css(CSS_WIDTH,width);
             } else {
-                style += "width:" + "100%;";
+                style += HU.css(CSS_WIDTH,HU.perc(100));
             }
-            if (height) {
+	    if (height) {
                 if (height > 0)
-                    style += "height:" + height + "px;";
+                    style += HU.css(CSS_HEIGHT,HU.px(height));
                 else if (height < 0)
-                    style += "height:" + (-height) + "%;";
+                    style += HU.css(CSS_HEIGHT,HU.perc((-height)));
                 else
-                    style += "height:" + height + ";";
+                    style += HU.css(CSS_HEIGHT,height);
             } else {
-                style += "height:" + "100%;";
+                style += HU.css(CSS_HEIGHT,HU.perc(100));
             }
-	    //	    style += "border:1px solid green;"
-	    style += "padding:5px;"
+	    style += HU.css(CSS_PADDING,HU.px(5));
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
@@ -23550,7 +23571,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		bottom: this.getChartBottom(40),
                 height: this.getChartHeight(200)
             });
-            chartOptions.height = "100px";
+            chartOptions.height =HU.px(100);
             chartOptions.sizeAxis = {
 	    }
 
@@ -24078,7 +24099,7 @@ function CalendarDisplay(displayManager, id, properties) {
         getContentsStyle: function() {
             let height = this.getProperty("height", 800);
             if (height > 0) {
-                return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
+                return HU.css(CSS_HEIGHT,HU.px(height),CSS_MAX_HEIGHT,HU.px(height),CSS_OVERFLOW_Y,'auto');
             }
             return "";
         },
@@ -24135,9 +24156,9 @@ function CalendarDisplay(displayManager, id, properties) {
 
 		let dttm = this.getDataValues(dataList[i])[0];
 		this.dateToRecords[dttm.v.getTime()] = records;
-                let tooltip = "<center><b>" + dttm.f + "</b></center>" +
-                    "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
-                tooltip = HU.div([ATTR_STYLE, HU.css('padding','5px')], tooltip);
+                let tooltip = HU.center(HU.b(dttm.f)) +
+                    HU.b(header[1].replace(/ /g, SPACE)) + ":" + SPACE + this.formatNumber(value);
+                tooltip = HU.div([ATTR_STYLE, HU.css(CSS_PADDING,HU.px(5))], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
             }
             dataTable.addRows(list);
@@ -24425,11 +24446,11 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if (Utils.isDefined(this.getProperty("chartWidth"))) {
                 width = this.getProperty("chartWidth");
             }
-	    if((typeof height)=="number") height = height+"px";
-	    if((typeof width)=="number") width = width+"px";
+	    if((typeof height)=="number") height = HU.px(height);
+	    if((typeof width)=="number") width = HU.px(width);
 
-            $("#" + chartDiv.id).css("width", width);
-            $("#" + chartDiv.id).css("height", height);
+            $("#" + chartDiv.id).css(CSS_WIDTH, width);
+            $("#" + chartDiv.id).css(CSS_HEIGHT, height);
             return new google.visualization.ScatterChart(chartDiv);
         },
 
@@ -24654,9 +24675,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 			if(i<this.initGrouping.length) {
 			    selected = this.initGrouping[i].getId();
 			}
-			this.groupByHtml+= HU.select("",[ATTR_ID,this.domId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
+			this.groupByHtml+= HU.select("",[ATTR_ID,this.domId(ID_GROUPBY_FIELDS+i)],options,selected)+SPACE;
 		    }
-		    this.groupByHtml+="&nbsp;";
+		    this.groupByHtml+=SPACE;
 		    this.jq(ID_HEADER1).html(HU.div([ATTR_CLASS,"display-filterby"],this.groupByHtml));
 		    this.jq("docolors").button().click(()=>{
 			this.analyzeColors();
@@ -24668,8 +24689,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 		}
 	    }
-
-
 
             contents += HU.div([ATTR_ID,this.domId(ID_RESULTS)]);
             this.setContents(contents);
@@ -24704,7 +24723,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		var html = "";
 		for(var i=0;i<p.length;i++) {
 		    var c = p[i];
-		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 						    CSS_WIDTH, HU.px(width),
 						    CSS_HEIGHT, HU.px(img.height),
 						    CSS_BACKGROUND,HU.rgb(c[0],c[1],c[2]))],'');
@@ -24908,22 +24927,23 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     if(a.id>b.id) return 1;
                     return 0;
                 });
-                var width = group.members.length==0?"100%":100/group.members.length;
-                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,'100%',ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+                var width = group.members.length==0?HU.perc(100):100/group.members.length;
+                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
 		    if(child.field)
 			prefix = child.field.getLabel()+": ";
-                    html+=HU.open(TAG_TD,[ATTR_WIDTH, width+"%"]);
+                    html+=HU.open(TAG_TD,[ATTR_WIDTH, HU.perc(width)]);
 		    let perc = Math.round(100*child.getCount()/topGroup.getCount());
-		    html+=HU.div([ATTR_CLASS,"display-cards-header"],prefix+child.id +" (#" + child.getCount()+" - " + perc +"%)");
+		    html+=HU.div([ATTR_CLASS,'display-cards-header'],
+				 prefix+child.id +' (#' + child.getCount()+' - ' + HU.perc(perc) +')');
 		    html+= this.makeGroupHtml(child, topGroup);
                     html+=HU.close(TAG_TD);
                 }
                 html +=HU.close(TAG_TR, TAG_TABLE);
             } else {
-                html+=Utils.join(group.members,"");
+                html+=Utils.join(group.members,'');
             }
             return html;
         }
@@ -25107,7 +25127,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,ATTR_ID,base+"image" + rowIdx,ATTR_LOADING,"lazy"];
+		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,
+				ATTR_ID,base+"image" + rowIdx,
+				ATTR_LOADING,"lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
 		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
@@ -25316,7 +25338,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
 									  CSS_OVERFLOW_Y,"auto",
-									  CSS_DISPLAY,"inline-block")],"")) +
+									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
 					  HU.td([ATTR_WIDTH,"90%"],
 						imageDiv)));
 	    let thumbsHtml = "";
@@ -25524,11 +25546,11 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
-		style += " height:" + height + ";";
+		style += HU.css(CSS_HEIGHT,height);
             }
             var width = this.getWidthForStyle();
             if (width) {
-                style += " width:" + width + ";";
+                style += HU.css(CSS_WIDTH,width);
             }
             return style;
         },
@@ -25551,7 +25573,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ATTR_ID, this.domId(ID_PREV),
-			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,'200%'),
+			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
 			       ATTR_CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
 	    let right = HU.div([ATTR_ID, this.domId(ID_NEXT),
 				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
@@ -25563,7 +25585,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
-		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,'100%') +this.getProperty('stripStyle','');
+		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,HU.perc(100)) +this.getProperty('stripStyle','');
 		top = HU.div([ATTR_ID,this.domId(ID_STRIP),
 			      ATTR_CLASS,'display-slides-strip','tabindex','0',ATTR_STYLE,stripStyle]);
 	    }
@@ -25592,7 +25614,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,['loading','lazy',ATTR_TITLE,tt,
+			strip += HU.div([],HU.image(url,[ATTR_LOADING,'lazy',
+							 ATTR_TITLE,tt,
 							 ATTR_WIDTH,width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
@@ -25609,7 +25632,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
 			strip += HU.div([ATTR_TITLE,tt,
-					 ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MIN_WIDTH,width,
+					 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							   CSS_MIN_WIDTH,width,
 							   CSS_WIDTH,width,CSS_OVERFLOW_X,'hidden'),
 					 ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
@@ -25653,7 +25677,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	},
 	displaySlide: function(propagateEvent,fromStrip) {
 	    let _this = this;
-	    let slideWidth = this.getSlideWidth('100%');
+	    let slideWidth = this.getSlideWidth(HU.perc(100));
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -25702,7 +25726,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
-			html = HU.center(HU.tag("iframe",['src',url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351','frameborder','0',
+			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351',
+							  'frameborder','0',
 							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}
@@ -25851,8 +25876,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         running: false,
         timestamp: 0,
-        iconStart: "fa-play",
-        iconStop: "fa-stop",
+        iconStart: ICON_PLAY,
+        iconStop: ICON_STOP,
         iconBack: "fa-step-backward",
         iconForward: "fa-step-forward",
         iconSlower: "fa-minus",
@@ -25962,7 +25987,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    
 
 	    let btn = (data,title,icon,id)=>{
-		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',
+		let attrs = [ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(6)),
+			     ATTR_CLASS,'ramadda-clickable',
 			     ATTR_TITLE,title,'command',data];
 		if(id) attrs.push(ATTR_ID,this.domId(id));
 		html +=HU.span(attrs,HU.getIconImage(icon))
@@ -25977,7 +26003,10 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    btn("-","Slower",this.iconSlower);
 	    btn("+","Faster",this.iconFaster);	    	    	    
 	    
-            html += HU.div([ATTR_STYLE, "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
+            html += HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block',
+					       CSS_MIN_HEIGHT,HU.px(24),
+					       CSS_MARGIN_LEFT,HU.px(10)),
+			    ATTR_ID, this.getDomId(ID_TIME)], SPACE);
             this.setDisplayTitle("Animation");
             this.setContents(html);
 
@@ -26150,7 +26179,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let color = this.getProperty(f.getId()+'.color');
 		if(color)
 		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]);
-		block = HU.div([ATTR_STYLE,HU.css('position','relative')],block);
+		block = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],block);
 
 		if(details) {
 		    block+= '<br>' +
@@ -26180,15 +26209,16 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
 	    let search=HU.div([ATTR_ID,this.domId(ID_SEARCH)],'');
 	    header = HU.leftRightTable(header,search);
-	    header = HU.div([ATTR_STYLE,HU.css('margin','4px')],header);
-	    html = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;width:600px;'], html);
+	    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],header);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,'auto',
+					     CSS_WIDTH,HU.px(600))], html);
 	    let htmlId=HU.getUniqueId('fields');
 	    html=HU.div([ATTR_ID,htmlId],html);
 	    html=header+html;
 
 	    if(this.getShowPopup()) {
 		html = HU.div([ATTR_ID,this.domId(ID_POPUP_BUTTON)], label) +
-		    HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,'display:none;margin:4px;'], html);
+		    HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_MARGIN,HU.px(4))], html);
 	    }
 
 
@@ -26366,10 +26396,10 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             if (this.editMode) {
                 textClass += " display-text-edit ";
             }
-            var style = "color:" + this.getTextColor("contentsColor") + ";";
+            var style = HU.css(CSS_COLOR,this.getTextColor("contentsColor"));
             var html = HU.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), ATTR_STYLE, style], this.text);
             if (this.editMode) {
-                html += HU.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
+                html += HU.textarea(ID_EDIT, this.text, [ATTR_ROWS, 5, ATTR_COLS, 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }
             this.setContents(html);
             if (this.editMode) {
@@ -26469,12 +26499,16 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HU.div([ATTR_CLASS,"display-legend-item"], HU.div([ATTR_CLASS,"display-legend-color " + (circles?"display-colortable-dot":""),ATTR_STYLE,"background:" + color+";width:" + colorWidth+";"+(circles?"height:" + colorWidth+";":	  "height:15px;")]) +
+		    html+=HU.div([ATTR_CLASS,"display-legend-item"], HU.div([ATTR_CLASS,"display-legend-color " + (circles?"display-colortable-dot":""),ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_WIDTH,colorWidth)+
+									     (circles?"height:" + colorWidth+";":	  "height:15px;")]) +
 				 HU.div([ATTR_CLASS,"display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
-		    html+=HU.div([ATTR_CLASS,"display-legend-color",ATTR_STYLE,"margin-left:8px;background:" + color+";"],
-				 HU.div([ATTR_CLASS,"display-legend-label",ATTR_STYLE,"margin-left:8px;margin-right:8x;color:" + lc+";"],label));
+		    html+=HU.div([ATTR_CLASS,"display-legend-color",ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),
+										      CSS_BACKGROUND,color)],
+				 HU.div([ATTR_CLASS,"display-legend-label",
+					 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_RIGHT,HU.px(8),
+							   CSS_COLOR,lc)],label));
 		}
 	    }
 	    if(orientation!="vertical") {
@@ -26526,8 +26560,13 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    label = label.replace("${title}",this.getProperty(ATTR_TITLE,""));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.div([ATTR_STYLE,'display:inline-block;',
-			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[ATTR_STYLE,"cursor:pointer;font-size:" + iconSize+";",ATTR_TITLE,label]):label);
+	    label = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block'),
+			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",
+										   [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0),
+												      CSS_DISPLAY,'block')],
+										   [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',
+												      CSS_FONT_SIZE,iconSize),
+										    ATTR_TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -26599,7 +26638,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		buttons+=  HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],"Cancel");
 	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),ATTR_TITLE,'Select # records to download','size','4']) +" records");
-	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
+	    html+=HU.center(HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80))],
+				    'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
 		html+=HU.formTable();
@@ -26620,8 +26660,10 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		}
 		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
-	    html += HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto",CSS_MARGIN_LEFT,"10px")], cbx);
-	    html = HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
+	    html += HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+					      CSS_OVERFLOW_Y,
+					      "auto",CSS_MARGIN_LEFT,HU.px(10))], cbx);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    return html;
 	},
 	doDownload: function() {
@@ -26808,7 +26850,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([ATTR_STYLE,"color:transparent;"],""));
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([ATTR_STYLE,HU.css(CSS_COLOR,'transparent')],""));
 		this.doReload();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
@@ -26972,7 +27014,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
 		let html = '';
 		if(maxPerRow>=0) {
-		    html=HU.open('div',[ATTR_STYLE,'text-align:center;']);
+		    html=HU.open('div',[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
@@ -26980,7 +27022,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 			if(count>maxPerRow) {
 			    count=1;
 			    //Add a spacer
-			    tabs.push('<div style=\'margin-top:4px;\'></div>');
+			    tabs.push(HU.vspace(HU.px(4)));
 			}
 		    }
 		    let label = this.getRecordHtml(record, null, labelTemplate);
@@ -31713,7 +31755,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		for(word in wordToWeight) {
 		    info.push({
 			text: word,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
 			weight:wordToWeight[word] ,
 			handlers:handlers,
 		    });
@@ -31778,13 +31820,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     let word = counts[wordIdx];
                     let obj1 = {
                         weight: word.count,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
                         handlers: handlers,
                         text: word.word,
                     };
                     let obj2 = {
                         weight: word.count,
-			html:{style:HU.css(CSS_CURSOR,'pointer')},
+			html:{style:HU.css(CSS_CURSOR,CURSOR_POINTER)},
                         handlers: handlers,
                         text: field.getLabel() + ":" + word.word,
                     };
@@ -32379,8 +32421,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css(CSS_CURSOR,'default');
 		    let tag = HU.openTag(TAG_DIV,[ATTR_CLASS,noWrapper?'':'display-template-record',
-						ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
-						ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+						  ATTR_STYLE,recordStyle, ATTR_ID, this.getId() +"-" + record.getId(),
+						  ATTR_TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
@@ -32443,7 +32485,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
 	    if(this.getProperty('addCopyToClipboard')) {
-		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css('cursor','pointer');
+		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css(CSS_CURSOR,CURSOR_POINTER);
 		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),{addLink:true,removeTags:true,removeNL:true,
 								 downloadFileName:this.getProperty('copyToClipboardDownloadFile')});
 	    }
@@ -32458,7 +32500,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    if(this.getPropertyHighlightOnScroll(false)) {
 		let items = this.find(".display-template-record");
-		this.getContents().css('overflow-y','scroll');
+		this.getContents().css(CSS_OVERFLOW_Y,'scroll');
 		this.getContents().scroll(()=>{
 		    let topElement = null;
 		    items.each(function() {
@@ -32542,7 +32584,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			//			    console.log("un highlight css:" + element.css(CSS_BACKGROUND)+ " idx:" + element.attr(RECORD_INDEX));
 			element.css(a,v);
 		    }
 		});
@@ -32869,7 +32910,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 			if(iconProp)
 			    style += HU.css(CSS_BACKGROUND,"transparent");
 			else
-			    style += HU.css(CSS_BACKGROUND,"transparent",CSS_BORDER,"1px solid #ccc");			    			
+			    style += HU.css(CSS_BACKGROUND,"transparent",CSS_BORDER,"1px solid #ccc");
 			footer += SPACE2;
 		    }
 		} else {
@@ -33019,7 +33060,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (tmp[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),
+								 CSS_WIDTH,HU.px(width),
+								 CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -33052,7 +33095,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                             let wpercent = (counts[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
                             let color = barColor;
-                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),CSS_WIDTH,HU.px(width),CSS_BACKGROUND,color)], "");
+                            let div = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(10),
+								 CSS_WIDTH,HU.px(width),
+								 CSS_BACKGROUND,color)], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -33254,18 +33299,21 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 		html += HU.openTag(TAG_DIV, [ATTR_CLASS,"display-frequency-table",ATTR_STYLE,hor?"":"display:block;"]);
 		html += HU.openTag(TAG_TABLE, ["cellpadding","3",
-					     ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
-					     ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
+					       ATTR_ID,this.domId("summary"+col),"table-height",this.getProperty("tableHeight","300",true),
+					       ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag(TAG_THEAD, []);
 		    let label =  HU.span([ATTR_TITLE,"Click to reset",
 					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
-		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),CSS_OVERFLOW_X,'auto')], label);
-		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],HU.div([ATTR_STYLE,"text-align:right"],"Count")):"";
-		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],  HU.div([ATTR_STYLE,"text-align:right"],"Percent")):"";
-		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,"text-align:right"],"&nbsp;")):"";
+		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
+						      CSS_OVERFLOW_X,'auto')], label);
+		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,HU.perc(20)],
+						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Count")):"";
+		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],
+						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Percent")):"";
+		    let bars = showBars? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,barWidth],HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],SPACE)):"";
 		    html += HU.tr([], HU.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HU.closeTag(TAG_THEAD);
 		}
@@ -33322,7 +33370,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    let tdp =  showPercent?HU.td([ATTR_ALIGN, "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
 		    let tdb = showBars?HU.td([ATTR_VALIGN,"center",ATTR_WIDTH,barWidth],
-					     HU.div([ATTR_TITLE,Math.round(perc*100)+"%",
+					     HU.div([ATTR_TITLE,HU.perc(Math.round(perc*100)),
 						     ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_HEIGHT,HU.px(10),
 								       CSS_WIDTH,HU.px(Math.round(bw*barWidth)))],"")):"";
 		    html += HU.tr([], 
@@ -33530,7 +33578,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                     row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c2));
                 if (c3)
                     row += HU.td([ATTR_WIDTH, width], HU.div([ATTR_STYLE, style], c3));
-                html += HU.tag(TAG_TABLE, [ATTR_WIDTH, "100%"], HU.tr(row));
+                html += HU.tag(TAG_TABLE, [ATTR_WIDTH, HU.perc(100)], HU.tr(row));
             }
             html += HU.closeTag(TAG_DIV);
             this.setContents(html);
@@ -33541,15 +33589,16 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
         printList: function(title, l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, "100%", ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
-            table += HU.tr([], HU.th([], title) + HU.th([], "&nbsp;"));
+            var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, HU.perc(100),
+					       ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
+            table += HU.tr([], HU.th([], title) + HU.th([], SPACE));
             table += HU.close(TAG_THEAD);
             table += HU.open(TAG_TBODY);
             var cnt = 0;
             for (var i = 0; i < l.length; i++) {
                 if (l[i].count < minCount) continue;
                 var row = HU.td([], l[i].normal) +
-                    HU.td([], l[i].count + " (" + l[i].percent + "%)");
+                    HU.td([], l[i].count + ' (' + HU.perc(l[i].percent) + ')');
                 table += HU.tr([], row);
                 if (cnt++ > maxWords) break;
             }
@@ -33696,13 +33745,14 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 
 
-	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
-			   HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
+	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),
+				ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
+			       HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
             if (labelTemplate) {
-                corpus += "<table width=100%>";
+                corpus += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
@@ -33830,8 +33880,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    var r =  "";
 		    if(this.showShrink) {
 			r+= HU.td([ATTR_WIDTH, HU.px(5),
-				   ATTR_STYLE,HU.css(CSS_BACKGROUND,'#ccc')],  HU.getIconImage("fa-caret-right",null,
-											       [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
+				   ATTR_STYLE,HU.css(CSS_BACKGROUND,'#ccc')],
+				  HU.getIconImage("fa-caret-right",null,
+						  [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
 		    }
 		    r+= HU.td([ATTR_WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
 			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
@@ -33863,7 +33914,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var linesWord = " "+ this.getProperty("linesDescriptor","lines");
 	    var label =displayedLineCnt +linesWord;
 	    if(this.allRecords.length!=displayedLineCnt) {
-		label = displayedLineCnt+"/" + this.allRecords.length+linesWord+" (" + Math.round(displayedLineCnt/this.allRecords.length*100)+"%)";
+		label = displayedLineCnt+"/" +
+		    this.allRecords.length+
+		    linesWord+
+		    " (" + HU.perc(Math.round(displayedLineCnt/this.allRecords.length*100))+")";
 	    }
 	    this.jq(ID_LABEL).html(label);
 	    this.jq(ID_SEARCH).focus();
@@ -34355,7 +34409,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             let html = '';
             html += HU.openTag(TAG_TABLE, [ATTR_ID, this.getDomId(TAG_TABLE),
 					   ATTR_CLASS, 'cell-border stripe ramadda-table',
-					   ATTR_WIDTH, '100%', ATTR_CELLPADDING, '5', ATTR_CELLSPACING, '0']);
+					   ATTR_WIDTH, HU.perc(100), ATTR_CELLPADDING, '5', ATTR_CELLSPACING, '0']);
             html += HU.open(TAG_THEAD);
             let type = this.findEntryType(this.searchSettings.entryType);
             let typeName = "Entry";
@@ -34392,7 +34446,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 if (label == null) label = mdts[i];
                 headerItems.push(HU.th([], HU.b(label)));
             }
-            let headerRow = HU.tr([ATTR_VALIGN, "bottom"], HU.join(headerItems, ""));
+            let headerRow = HU.tr([ATTR_VALIGN, POS_BOTTOM], HU.join(headerItems, ""));
             html += headerRow;
             html += HU.close(TAG_THEAD)+HU.open(TAG_TBODY);
             let divider = HU.div([ATTR_CLASS,'display-metadata-divider']);
@@ -34466,7 +34520,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     }
                     row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
                 }
-                html += HU.tr([ATTR_VALIGN, "top"], HU.join(row, ""));
+                html += HU.tr([ATTR_VALIGN, POS_TOP], HU.join(row, ""));
                 //Add in the header every 10 rows
                 if (((entryIdx + 1) % 10) == 0) html += headerRow;
             }
@@ -34506,7 +34560,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 //Show a  gallery instead
 		this.galleryId = HU.getUniqueId("gallery_");
                 let newHtml = HU.open(TAG_DIV,[ATTR_ID, this.galleryId,ATTR_CLASS,"ramadda-grid"]);
-		let itemWidth = this.getProperty("galleryItemWidth","200px");
+		let itemWidth = this.getProperty("galleryItemWidth",HU.px(200));
                 for (let i = 0; i < imageEntries.length; i++) {
                     let entry = imageEntries[i];
 		    let attrs = [CSS_WIDTH,itemWidth];
@@ -34514,7 +34568,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     let link = HU.tag(TAG_A, [ATTR_TARGET,"_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    link = link.replace(/"/g,"'");
 		    let imageUrl =entry.getImageUrl();
-                    let img = HU.image(imageUrl, ["loading","lazy", ATTR_WIDTH, "100%", ATTR_ID,
+                    let img = HU.image(imageUrl, ["loading","lazy", ATTR_WIDTH, HU.perc(100), ATTR_ID,
 						  this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 						 ]);
@@ -34535,7 +34589,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 if (imageCnt > 0) {
                     html += "<hr>";
                 }
-                html += HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,"10px")],nonImageHtml);
+                html += HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],nonImageHtml);
             }
             return html;
         }
@@ -34860,7 +34914,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		w  = HU.toggleBlock(HU.b(label),widget);
 	    } else {
 		w=w+HU.div([ATTR_ID,widgetId,
-			    ATTR_STYLE,HU.css(CSS_WIDTH,'100%',CSS_DISPLAY,opts.toggleClose?'none':'inline-block')],widget);
+			    ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_DISPLAY,opts.toggleClose?DISPLAY_NONE:DISPLAY_INLINE_BLOCK)],widget);
 	    }
 	    return HU.div([ATTR_CLASS,"display-search-block"], w);
 	},
@@ -34891,12 +34945,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				     ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
             }
 	    resultsDiv = HU.leftRightTable(resultsDiv,HU.div([ATTR_CLASS,"display-search-header",
-							      ATTR_ID,this.domId(ID_SEARCH_HEADER)]),null,null,{valign:"bottom"});
+							      ATTR_ID,this.domId(ID_SEARCH_HEADER)]),null,null,{valign:POS_BOTTOM});
 	    let toggle = "";
 	    if(horizontal &&  this.getShowFormToggle()) {
 		toggle = HU.div([ATTR_TITLE, "Toggle form",
 				 ATTR_ID,this.domId(ID_SEARCH_HIDEFORM), ATTR_CLASS,"ramadda-clickable",
-				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",CSS_LEFT,"0px","top","0px")],
+				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",CSS_LEFT,HU.px(0),CSS_TOP,HU.px(0))],
 				HU.getIconImage("fas fa-bars"));
 	    }
             let entriesDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
@@ -34905,14 +34959,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				    resultsDiv +
 				    HU.div(entriesDivAttrs, this.getLoadingMessage()));
 
-	    html += HU.open(TAG_TABLE,[ATTR_WIDTH,"100%",ATTR_BORDER,0]);
-	    html+=HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+	    html += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]);
+	    html+=HU.open(TAG_TR,[ATTR_VALIGN,POS_TOP]);
             let entriesAttrs = [ATTR_CLASS, "col-md-12"];
 	    let form = HU.div([ATTR_CLASS,'display-entrylist-form',
 			       ATTR_STYLE,HU.css(CSS_WIDTH,HU.getDimension(this.getFormWidth()),
 						 CSS_MAX_WIDTH,HU.getDimension(this.getFormWidth()),
 						 CSS_OVERFLOW_X,"auto")],this.makeSearchForm());
-	    html += HU.tag(TAG_TD, [ATTR_ID,this.getDomId(ID_SEARCH_FORM),ATTR_WIDTH,"1%"], form);
+	    html += HU.tag(TAG_TD, [ATTR_ID,this.getDomId(ID_SEARCH_FORM),ATTR_WIDTH,HU.perc(1)], form);
 	    this.formShown  = true;
             if (this.getShowFooter()) {
                 entriesDiv +=  this.getFooter();
@@ -34990,7 +35044,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
-            let closeImage = HU.getIconImage(icon_close, []);
+            let closeImage = HU.getIconImage(ICON_CLOSE, []);
             let close = HU.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",closeImage);
 
             let contents = this.getEntryHtml(entry, {
@@ -35010,7 +35064,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	getCloser: function() {
 	    if(true) return "";
-	    return  HU.jsLink("",HU.getIconImage(icon_close, [ATTR_ID,this.domId("close"),ATTR_STYLE,HU.css("cursor","pointer")]));
+	    return  HU.jsLink("",HU.getIconImage(ICON_CLOSE,[ATTR_ID,this.domId("close"),
+							     ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
 	},
 	initCloser: function(what) {
 	    this.jq("close").click(()=>{
@@ -35558,7 +35613,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,'4px',CSS_MAX_WIDTH,'80%'),
+            let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),CSS_MAX_WIDTH,HU.perc(80)),
 				       ATTR_ID, this.getDomId(ID_SEARCH),
 				       ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
@@ -35670,11 +35725,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(this.typeList && this.typeList.length>0) this.urlPrefix+=this.typeList[0]+'.';
             if (this.getShowType()) {
 		if(this.typeList == null || this.typeList.length==0) {
-                    topItems.push(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,"4px"),
+                    topItems.push(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4)),
 					  ATTR_ID, this.getDomId(ID_TYPE_DIV)],
 					 HU.span([ATTR_CLASS, "display-loading"], "Loading types...")));
 		} else {
-		    extra+= HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,"4px"),ATTR_ID, this.getDomId(ID_TYPE_DIV)]);
+		    extra+= HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4)),ATTR_ID, this.getDomId(ID_TYPE_DIV)]);
 		}
             }
 
@@ -35692,7 +35747,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		inputAttrs.push(this.getInputSize());
 	    } else {
 		inputAttrs.push(ATTR_STYLE);
-		inputAttrs.push(HU.css(CSS_WIDTH,"100%",CSS_MIN_WIDTH,"50px",CSS_MAX_WIDTH,"300px"));
+		inputAttrs.push(HU.css(CSS_WIDTH,HU.perc(100),CSS_MIN_WIDTH,HU.px(50),CSS_MAX_WIDTH,HU.px(300)));
 	    }
 
 	    let contents = "";
@@ -35703,7 +35758,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    form += topItems[0];
 		    topContents +=  HU.join(topItems.slice(1), "");
 		} else {
-		    topItems = topItems.map(item=>{return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,"8px")], item);});
+		    topItems = topItems.map(item=>{return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8))], item);});
 		    form+="<br>";
 		    form+=   HU.hrow(...topItems);
 		}
@@ -35728,11 +35783,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				    [ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",
 				     ATTR_TITLE,"Clear selection"]);
 		let input = HU.input("",name??"",["READONLY",null,ATTR_PLACEHOLDER,'Select',
-						  ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,'100%'),
+						  ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',CSS_WIDTH,HU.perc(100)),
 						  ATTR_ID,aid,ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		extra += HU.hidden("",ancestor??"",[ATTR_ID,aid+"_hidden"]);
-		//		input = HU.leftRightTable(clear,input,"5%", "95%");
 		input = HU.hbox([input,clear]);
 		extra+=this.addWidget('Search Under',
 				      HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],input),
@@ -35781,7 +35835,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
 		else 
-		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px')],this.createdateRangeWidget.getHtml());
+		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4))],this.createdateRangeWidget.getHtml());
             }
             if (this.getShowChangeDate()) {
 		let label=this.getLabel(this.getChangeDateLabel());
@@ -35790,7 +35844,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CHANGE)],
 							  this.changedateRangeWidget.getHtml()));
 		else 
-		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px')],this.changedateRangeWidget.getHtml());
+		    dateWidget+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4))],this.changedateRangeWidget.getHtml());
             }
 
 
@@ -35833,7 +35887,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			       HU.div([ATTR_CLASS, "display-search-extra-inner"], extra));
             //Hide the real submit button
             contents += HU.open(TAG_INPUT,[ATTR_TYPE,"submit",ATTR_STYLE,
-					   HU.css(CSS_POSITION,"absolute",CSS_LEFT,"-9999px",CSS_WIDTH,"1px",CSS_HEIGHT,"1px")]);
+					   HU.css(CSS_POSITION,"absolute",CSS_LEFT,HU.px(-9999),CSS_WIDTH,HU.px(1),CSS_HEIGHT,HU.px(1))]);
 	    if(this.getFormHeight()) {
 		contents = HU.div([ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,"auto",CSS_MAX_HEIGHT,HU.getDimension(this.getFormHeight()))], contents);
 	    }
@@ -36201,7 +36255,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
-				 { autoWidth: false,  CSS_MAX_HEIGHT:"100px"});
+				 { autoWidth: false,  CSS_MAX_HEIGHT:HU.px(100)});
 
 	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
 		showCategories:true,
@@ -36310,7 +36364,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let label = this.addToggle(group,widgetId,toggleClose);
 		    extra+=HU.div([ATTR_CLASS,'display-search-group-label'],label);
 		    extra+=HU.open(TAG_DIV,[ATTR_CLASS,'display-search-widgets',
-					    ATTR_ID,widgetId,ATTR_STYLE,HU.css('display',toggleClose?'none':'block')]);
+					    ATTR_ID,widgetId,ATTR_STYLE,HU.css(CSS_DISPLAY,toggleClose?DISPLAY_NONE:DISPLAY_BLOCK)]);
 		}
                 let field = "";
                 let id = this.getDomId(ID_COLUMN + col.getName());
@@ -36323,7 +36377,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let label="";
 		let help = "";
 		if(col.getSuffix()) {
-		    help = HU.span([ATTR_STYLE,HU.css('cursor','help',CSS_MARGIN_LEFT,'10px'),
+		    help = HU.span([ATTR_STYLE,HU.css('cursor','help',CSS_MARGIN_LEFT,HU.px(10)),
 				    ATTR_TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
 		}		
 		
@@ -36437,14 +36491,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
 					 ATTR_TITLE,"Clear selection"]);
 		    let input = HU.input("","",["READONLY",null,ATTR_PLACEHOLDER,'Select',
-						ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,'100%'),
+						ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,HU.perc(100)),
 						ATTR_ID,id,
 						ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		    label = col.getSearchLabel();
 		    widget = HU.hidden("","",[ATTR_ID,id+"_hidden"]);
 		    widget+= HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
-				    HU.leftRightTable(clear,input,"5%", "95%"));
+				    HU.leftRightTable(clear,input,HU.perc(5), HU.perc(95)));
 		} else {
 		    console.log('unknown column type:',col.getName(),col.getType());
 		}
@@ -36589,7 +36643,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                 this.entryListChanged(this.entryList);
             }
 	    if(!this.getProvidersMultiple()) {
-		HU.initSelect(this.jq(ID_PROVIDERS), { multiple:true,autoWidth: false,  CSS_MAX_HEIGHT:"100px"});
+		HU.initSelect(this.jq(ID_PROVIDERS), { multiple:true,autoWidth: false,  CSS_MAX_HEIGHT:HU.px(100)});
 	    }
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
@@ -36717,7 +36771,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }
 
 	    let makeExpandable= (html) =>{
-		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px',CSS_BACKGROUND,'#fff',CSS_OVERFLOW_Y,'auto')],html);
+		html =HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(1000),CSS_BACKGROUND,'#fff',CSS_OVERFLOW_Y,'auto')],html);
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css('position','relative')],html);
 	    }
@@ -36737,14 +36791,14 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type});
 			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',
-					    ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]);
+					    ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]);
 			addContents(makeExpandable(images));
 		    }
 		} else if(type=='timeline') {
 		    titles.push('Timeline');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:type});
-		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
+		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]));
 		} else if(type=='map') {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
@@ -36753,16 +36807,16 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			titles.push('Map');
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
-			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
+			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]));
 		    }
 		} else if(type=='display') {
 		    titles.push('Details');
 		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:'entrywiki',entries:entries});
-		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,'100%')]));
+		    addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]));
 		} else if(type=='metadata') {		    
 		    titles.push('Metadata');
-		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,'800px',CSS_MAX_WIDTH,'800px',CSS_OVERFLOW_X,'auto')],this.getEntriesMetadata(entries));
+		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(800),CSS_MAX_WIDTH,HU.px(800),CSS_OVERFLOW_X,'auto')],this.getEntriesMetadata(entries));
 		    addContents(mtd);
 		} else {
 		    console.log('unknown display:' + type);
@@ -36834,7 +36888,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 		    html+=HU.formTableClose();
 		    html+=buttons;
-		    html = HU.div([ATTR_STYLE,'margin:5px;'], html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 		    let dialog = HU.makeDialog({content:html,
 						title:'Download options',
 						anchor:button,
@@ -36991,7 +37045,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			    let entryId = records[0].data[8];
 			    this.wikify(entryType.mapwiki,entryId,null,null,uid);
 			    return HU.div([ATTR_ID,uid],
-					  HU.center(HU.image(ramaddaCdn + '/icons/mapprogress.gif',[ATTR_WIDTH,'80px'])));
+					  HU.center(HU.image(ramaddaCdn + '/icons/mapprogress.gif',[ATTR_WIDTH,HU.px(80)])));
 			};
 		    }
 		    let props = {centerOnMarkersAfterUpdate:true,
@@ -37004,8 +37058,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 tooltipClick:tooltip,
 				 myTextGetter:myTextGetter,
 				 descriptionField:"description",
-				 imageWidth:"140px",
-				 blockWidth:"150px",
+				 imageWidth:HU.px(140),
+				 blockWidth:HU.px(150),
 				 numberOfImages:500,
 				 includeNonImages:this.getProperty('includeNonImages',true),
 				 showTableOfContents:true,
@@ -37041,7 +37095,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 
 
 	    this.jq(ID_ENTRIES).find('.ramadda-expandable-wrapper').each(function() {
-		HU.makeExpandable($(this), false,{right:'5px',top:'0px'});
+		HU.makeExpandable($(this), false,{right:HU.px(5),top:HU.px(0)});
 	    });
 
 
@@ -37102,7 +37156,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},		
     ];
 
-    if(!properties.width) properties.width=properties.inputSize??"230px";
+    if(!properties.width) properties.width=properties.inputSize??HU.px(230);
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	callNumber:1,
@@ -37323,7 +37377,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 						ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
-            form += HU.tag(TAG_INPUT,[ATTR_TYPE,'submit',ATTR_STYLE,'position:absolute;left:-9999px;width:1px;height:1px;']);
+            form += HU.tag(TAG_INPUT,[ATTR_TYPE,'submit',
+				      ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+							CSS_LEFT,HU.px(-9999),
+							CSS_WIDTH,HU.px(1),
+							CSS_HEIGHT,HU.px(1))]);
             form += HU.closeTag(TAG_FORM);
 	    form+=HU.div([ATTR_ID,this.domId(ID_FORM)]);
 	    if(hadInitText) {
@@ -37634,7 +37692,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(showParent && entry.getParentName()) {
 		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
-		    link = HU.hbox([plink,HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,'4px',CSS_MARGIN_LEFT,'4px')],"&raquo;"), link]);
+		    link = HU.hbox([plink,HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_LEFT,HU.px(4))],"&raquo;"), link]);
 		}
 		inner+=HU.div(attrs, link);
 	    });
@@ -37658,8 +37716,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER)],snippet);
 		    if(thumb) {
 			html+=
-			    HU.div([ATTR_STYLE,HU.css('max-height','100px',CSS_OVERFLOW_Y,'hidden',CSS_BORDER_TOP,CSS_BASIC_BORDER)],
-				   HU.image(thumb,[CSS_WIDTH,'300px']));
+			    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),
+						      CSS_OVERFLOW_Y,'hidden',CSS_BORDER_TOP,CSS_BASIC_BORDER)],
+				   HU.image(thumb,[ATTR_WIDTH,HU.px(300)]));
 		    }
 		    return html;
 		}});
@@ -38057,20 +38116,20 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
             html += HU.openDiv([ATTR_CLASS, "display-grid", ATTR_ID, this.getDomId(ID_GRID)]);
             html += HU.div([ATTR_CLASS, "display-grid-popup ramadda-popup"], "");
-            html += HU.openTag(TAG_TABLE, [CSS_BORDER, "0px",
-					   ATTR_CLASS, "", ATTR_CELLSPACING, "0", ATTR_WIDTH, "100%", ATTR_STYLE, "height:100%;"]);
-            html += HU.openTag(TAG_TR, ["valign", "bottom"]);
+            html += HU.openTag(TAG_TABLE, [ATTR_BORDER, HU.px(0),
+					   ATTR_CLASS, "", ATTR_CELLSPACING, "0", ATTR_WIDTH, HU.perc(100), ATTR_STYLE, HU.css(CSS_HEIGHT,HU.perc(100))]);
+            html += HU.openTag(TAG_TR, [ATTR_VALIGN, POS_BOTTOM]);
             html += HU.tag(TAG_TD);
             html += HU.tag(TAG_TD, [], HU.div([ATTR_ID, this.getDomId(ID_LINKS)], ""));
             html += HU.closeTag(TAG_TR);
-            html += HU.openTag(TAG_TR, [ATTR_STYLE, "height:100%;"]);
-            html += HU.openTag(TAG_TD, [ATTR_STYLE, "height:100%;"]);
+            html += HU.openTag(TAG_TR, [ATTR_STYLE, HU.css(CSS_HEIGHT,HU.perc(100))]);
+            html += HU.openTag(TAG_TD, [ATTR_STYLE, HU.css(CSS_HEIGHT,HU.perc(100))]);
             html += HU.openDiv([ATTR_CLASS, "display-grid-axis-left ramadda-noselect",
 				ATTR_ID, this.getDomId(ID_AXIS_LEFT)]);
             html += HU.closeDiv();
             html += HU.closeDiv();
             html += HU.closeTag(TAG_TD);
-            html += HU.openTag(TAG_TD, [ATTR_STYLE, "height:" + this.getProperty("height", "400") + "px"]);
+            html += HU.openTag(TAG_TD, [ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(this.getProperty("height", "400")))]);
             html += HU.openDiv([ATTR_CLASS, "display-grid-canvas ramadda-noselect",
 				ATTR_ID, this.getDomId(ID_CANVAS)]);
             html += HU.closeDiv();
@@ -38184,8 +38243,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             }
             for (let i = 0; i < axis.Y.ticks.length; i++) {
                 let tick = axis.Y.ticks[i];
-		//                let style = (axis.Y.ascending ? "bottom:" : "top:") + tick.percent + "%;";
-                let style = "bottom:" + tick.percent + "%;";
+                let style = HU.css(CSS_BOTTOM,HU.perc(tick.percent));
                 let lineClass = tick.major ? "display-grid-hline-major" : "display-grid-hline";
                 axis.Y.lines += HU.div([ATTR_STYLE, style, ATTR_CLASS, lineClass], " ");
                 axis.Y.html += HU.div([ATTR_STYLE, style,
@@ -38236,29 +38294,29 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
                 if (axis.X.scale) {
                     if (xInfo.delta > 1) {
-                        style += "width:" + xInfo.delta + "%;";
+                        style += HU.css(CSS_WIDTH,HU.perc(xInfo.delta));
                     } else {
-                        style += "width:" + this.getProperty("fixedWidth", "5") + "px;";
+                        style += HU.css(CSS_WIDTH,HU.px(this.getProperty("fixedWidth", "5")));
                     }
                 }
 
 
                 let namePos = pos;
                 if (axis.Y.ascending) {
-                    style += HU.css(CSS_BOTTOM,vInfo.p2 + "%");
-                    pos += HU.css(CSS_BOTTOM, vInfo.p2 + "%");
-                    namePos += HU.css(CSS_BOTTOM,vInfo.p2 + "%");
+                    style += HU.css(CSS_BOTTOM,HU.perc(vInfo.p2));
+                    pos += HU.css(CSS_BOTTOM, HU.perc(vInfo.p2));
+                    namePos += HU.css(CSS_BOTTOM,HU.perc(vInfo.p2));
                 } else {
-                    style += HU.css(CSS_TOP,vInfo.p2 + "%");
-                    pos += HU.css(CSS_TOP,vInfo.p2 + "%");
-                    namePos += HU.css(CSS_TOP,vInfo.p2 + "%");
-                    namePos += HU.css(CSS_MARGIN_TOP,'-15px');
+                    style += HU.css(CSS_TOP,HU.perc(vInfo.p2));
+                    pos += HU.css(CSS_TOP,HU.perc(vInfo.p2));
+                    namePos += HU.css(CSS_TOP,HU.perc(vInfo.p2));
+                    namePos += HU.css(CSS_MARGIN_TOP,HU.px(-15));
                 }
                 if (axis.Y.scale) {
                     if (vInfo.p2 > 1) {
-                        style += "height:" + vInfo.delta + "%;";
+                        style += HU.css(CSS_HEIGHT,HU.perc(vInfo.delta));
                     } else {
-                        style += "height:" + this.getProperty("fixedHeight", "5") + "px;";
+                        style += HU.perc(CSS_HEIGHT,HU.px(this.getProperty("fixedHeight", "5")));
                     }
                 }
 
@@ -38557,7 +38615,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             let html = this.getEntryHtml(entry, {
                 showHeader: false
             });
-            let height = this.getProperty("height", "400px");
+            let height = this.getProperty("height", HU.px(400));
             if (!height.endsWith("px")) height += "px";
             this.setContents(HU.div([ATTR_CLASS, "display-entry-description",
 				     ATTR_STYLE, HU.css(CSS_HEIGHT,height)],
@@ -38646,7 +38704,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Entry Wiki'},
 	{p:'wiki',d:'{{import macro=forchild}}',ex:'wiki text'},
-	{p:'wikiStyle',d:HU.css(CSS_WIDTH,'100%',CSS_MAX_WIDTH,'95vw',CSS_MIN_HEIGHT,'400px')}
+	{p:'wikiStyle',d:HU.css(CSS_WIDTH,HU.perc(100),CSS_MAX_WIDTH,'95vw',CSS_MIN_HEIGHT,HU.px(400))}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -38670,11 +38728,14 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		    options.push(option);
 		});
 		
-		let header = HU.select('',[ATTR_STYLE,HU.css(CSS_WIDTH,'400px'),ATTR_ID,this.domId('entrymenu')],options);
-		header+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px'),
+		let header = HU.select('',[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400)),
+					   ATTR_ID,this.domId('entrymenu')],options);
+		header+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4)),
 				ATTR_ID,this.domId('entry_breadcrumbs'),
 				ATTR_CLASS,'display-entrylist-details-ancestors']);
-		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,'4px',CSS_MARGIN_BOTTOM,'8px',CSS_BORDER_BOTTOM,CSS_BASIC_BORDER)],header) + html;
+		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4),
+						 CSS_MARGIN_BOTTOM,HU.px(8),
+						 CSS_BORDER_BOTTOM,CSS_BASIC_BORDER)],header) + html;
 	    }
 	    this.displayHtml(html);
 	    if(properties.entries) {
@@ -38686,7 +38747,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		    _this.displayEntryBreadcrumbs(entry,_this.domId('entry_breadcrumbs'),4);		    
 		    _this.loadEntry(entry);
 		});
-		HtmlUtils.initSelect(menu,{ autoWidth: true,  'max-height':'100px'});
+		HtmlUtils.initSelect(menu,{ autoWidth: true,  'max-height':HU.px(100)});
 		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
 		if(this.sourceEntry)
 		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'),4);		    
@@ -38886,7 +38947,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             let allTypes = [];
             let html = "";
             html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table",
-					   ATTR_WIDTH, "100%", ATTR_BORDER, "1", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "5"]);
+					   ATTR_WIDTH, HU.perc(100), ATTR_BORDER, "1", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "5"]);
             for (let i = 0; i < this.ramaddas.length; i++) {
                 let ramadda = this.ramaddas[i];
                 let types = ramadda.getEntryTypes();
@@ -38899,7 +38960,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 }
             }
 
-            html += HU.openTag(TAG_TR, ["valign", "bottom"]);
+            html += HU.openTag(TAG_TR, [ATTR_VALIGN, POS_BOTTOM]);
             html += HU.th([ATTR_CLASS, "display-repositories-table-header"], "Type");
             for (let i = 0; i < this.ramaddas.length; i++) {
                 let ramadda = this.ramaddas[i];
@@ -39612,11 +39673,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    let changed= false;
 		    //		console.log("\tlevel:",level,feature.levelRange,visible); 
 		    if(visible) {
-			changed = feature.style.display != 'inline';
-			feature.style.display = 'inline';
+			changed = feature.style.display != DISPLAY_INLINE;
+			feature.style.display = DISPLAY_INLINE;
 		    }  else {
-			changed = feature.style.display != 'none';
-			feature.style.display = 'none';
+			changed = feature.style.display != DISPLAY_NONE;
+			feature.style.display = DISPLAY_NONE;
 		    }			
 		    if(redraw &&changed) {
 			layer.drawFeature(feature);
@@ -41774,7 +41835,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		feature.pruned = false;
 		feature.newStyle=null;
 		if(feature.style) {
-		    feature.style.display ="inline-block";
+		    feature.style.display =DISPLAY_INLINE_BLOCK;
 		}
 		feature.featureIndex = j++;
 		feature.featureMatched = false;
@@ -42050,7 +42111,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatures) {
                 for (let i = 0; i < this.myFeatures.length; i++) {
                     let point = this.myFeatures[i];
-                    point.style.display = 'none';
+                    point.style.display = DISPLAY_NONE;
                 }
 	    }
             if (this.map.circles)
@@ -42074,22 +42135,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		for (let i = 0; i < this.myFeatures.length; i++) {
                     let point = this.myFeatures[i];
                     if (point.date < windowStart || point.date > windowEnd) {
-			point.style.display = 'none';
+			point.style.display = DISPLAY_NONE;
 			continue;
                     }
                     if (atLoc[point.location]) {
 			let other = atLoc[point.location];
 			if (other.date < point.date) {
                             atLoc[point.location] = point;
-                            other.style.display = 'none';
-                            point.style.display = 'inline';
+                            other.style.display = DISPLAY_NONE;
+                            point.style.display = DISPLAY_INLINE;
 			} else {
-                            point.style.display = 'none';
+                            point.style.display = DISPLAY_NONE;
 			}
 			continue;
                     }
                     atLoc[point.location] = point;
-                    point.style.display = 'inline';
+                    point.style.display = DISPLAY_INLINE;
 		}
 	    }
 
@@ -42100,7 +42161,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatures) {
 		for (let i = 0; i < this.myFeatures.length; i++) {
 		    let line = this.myFeatures[i];
-		    line.style.display = 'inline';
+		    line.style.display = DISPLAY_INLINE;
 		}
 		if (this.map.lines)
 		    this.map.lines.redraw();
@@ -42163,7 +42224,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+		html =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 						  CSS_CURSOR,"pointer",
 						  CSS_PADDING,HU.px(1),
 						  CSS_BORDER,"1px solid rgba(0,0,0,0)"),
@@ -43006,20 +43067,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  [];
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_BACK),
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step back"],
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step back"],
  				     HU.getIconImage("fa-step-backward",[ATTR_CLASS,"display-anim-button"])));
 
 		if(!groupByField) 
 		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),
-					  ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),
+					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					  ATTR_TITLE,"Play/Stop Animation"],
-					 HU.getIconImage("fa-play",[ATTR_CLASS,"display-anim-button"])));
+					 HU.getIconImage(ICON_PLAY,[ATTR_CLASS,"display-anim-button"])));
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block"),ATTR_TITLE,"Step forward"],
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step forward"],
  				     HU.getIconImage("fa-step-forward",[ATTR_CLASS,"display-anim-button"])));
 		
 
-		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							CSS_MARGIN_LEFT,HU.px(5),
 							CSS_MARGIN_RIGHT,HU.px(5))], HU.select("",[ATTR_ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
 		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
@@ -43030,7 +43091,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		this.jq(ID_HEATMAP_ANIM_PLAY).click(function() {
 		    _this.heatmapPlayingAnimation = !_this.heatmapPlayingAnimation;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    $(this).html(HU.getIconImage(icon,[ATTR_CLASS, "display-anim-button"]));
 		    if(_this.heatmapPlayingAnimation) {
 			_this.stepHeatmapAnimation(1);
@@ -43038,13 +43099,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		this.jq(ID_HEATMAP_ANIM_STEP_FORWARD).click(function() {
 		    _this.heatmapPlayingAnimation = false;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,"display-anim-button"]));
 		    _this.stepHeatmapAnimation(1);
 		});
 		this.jq(ID_HEATMAP_ANIM_STEP_BACK).click(function() {
 		    _this.heatmapPlayingAnimation = false;
-		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,"display-anim-button"]));
 		    _this.stepHeatmapAnimation(-1);
 		});		
@@ -43109,8 +43170,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 								 'pointer-events', 'none')]));
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
-		$(vp).css(CSS_DISPLAY,'relative');
-		$(vp).append(HU.div([ATTR_STYLE,'z-index:10',ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
+		$(vp).css(CSS_DISPLAY,DISPLAY_RELATIVE);
+		$(vp).append(HU.div([ATTR_STYLE,HU.css(CSS_Z_INDEX,10),
+				     ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
 	    }
 	    if(this.htmlPopupLayerId) {
 		//		jqid(this.htmlPopupLayerId).html(HU.div([ATTR_STYLE,'position:absolute;top:50px;left:100px'],'xxxx'));
@@ -43204,7 +43266,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.htmlPopup +=
 		    HU.div([ATTR_ID,hid, RECORD_INDEX, idx,
 			    ATTR_TITLE,"", ATTR_CLASS,'display-map-html-hitem',
-			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,'none',
+			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,DISPLAY_NONE,
 						     CSS_LINE_HEIGHT,HU.px(0),
 						     CSS_Z_INDEX,'2001',
 						     CSS_POSITION,'absolute',
@@ -43297,8 +43359,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,'block');
-		$(this).css(CSS_DISPLAY,'none');
+		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,DISPLAY_BLOCK);
+		$(this).css(CSS_DISPLAY,DISPLAY_NONE);
 	    });
 	    if(colorBy.hasField()) {
 		this.showColorTable(colorBy);
@@ -43482,7 +43544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
 			f.colorByValue=colorBy.lastValue;
 			if(isNaN(colorBy.lastValue)) {
-			    s.display='none';
+			    s.display=DISPLAY_NONE;
 			}
 		    }
 		    if(labelTemplate) {
@@ -53263,9 +53325,9 @@ MapGlyph.prototype = {
 
     checkLayersAnimationButton:function() {
 	if(this.attrs[PROP_LAYERS_ANIMATION_ON]) {
-	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP));
 	} else {
-	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_play));
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_PLAY));
 	}
     },
     checkLayersAnimation:function(skipCall) {
@@ -53288,10 +53350,10 @@ MapGlyph.prototype = {
 		this.animationTimeout = setTimeout(stepAnimation,pause);
 		return;
 
-//		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop,null,[ATTR_STYLE,'color:blue;']));
+//		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP,null,[ATTR_STYLE,'color:blue;']));
 		/*
 		setTimeout(()=>{
-		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(ICON_STOP));
 		},300);
 */
 	    }
@@ -54873,7 +54935,7 @@ MapGlyph.prototype = {
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
 					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_ANIMATION_PLAY],
-					 HU.getIconImage(icon_play,[],BUTTON_IMAGE_ATTRS));
+					 HU.getIconImage(ICON_PLAY,[],BUTTON_IMAGE_ATTRS));
 		}
 
 		/** Don't do this for now as we add a Step button to the legend 
@@ -55392,7 +55454,7 @@ MapGlyph.prototype = {
 		['Settings','fa-cog','settings'],
 		['Go to start','fa-backward','start'],
 		['Step backward','fa-step-backward','stepbackward'],
-		['Play','fa-play','play'],
+		['Play',ICON_PLAY,'play'],
 		['Step forward','fa-step-forward','stepforward'],
 		['Go to end','fa-forward','end']
 	    ].map(t=>{
@@ -55725,16 +55787,16 @@ MapGlyph.prototype = {
 		    clearTimeout(_this.timeAnimationTimeout);
 		_this.timeAnimationTimeout=null;
 		if(_this.timeAnimationRunning) {
-		    $(this).html(HU.getIconImage(icon_play));
+		    $(this).html(HU.getIconImage(ICON_PLAY));
 		} else {
-		    $(this).html(HU.getIconImage(icon_stop));
+		    $(this).html(HU.getIconImage(ICON_STOP));
 		    let stepTime = () =>{
 			let current = +slider.slider('value');
 			current = current+(_this.attrs.timeAnimationStep??1)*step;
 			change(current);
 			//			console.log("current time: " +new Date(current) +' step:' + _this.attrs.timeAnimationStep);
 			if(current>=max) {
-			    $(this).html(HU.getIconImage(icon_play));
+			    $(this).html(HU.getIconImage(ICON_PLAY));
 			    _this.timeAnimationRunning = false;
 			    return
 			}
@@ -57552,7 +57614,7 @@ MapGlyph.prototype = {
 				   HU.tr([],
 					 HU.td([ATTR_WIDTH,'18px'],HU.span(['feature-id',info.id,
 									 ATTR_CLASS,HU.classes(CLASS_FILTER_PLAY,CLASS_CLICKABLE),
-									 ATTR_TITLE,'Play'],HU.getIconImage(icon_play))) +
+									 ATTR_TITLE,'Play'],HU.getIconImage(ICON_PLAY))) +
 					 HU.td([],slider)));
 		} else {
 		    line+=slider;
@@ -57753,19 +57815,19 @@ MapGlyph.prototype = {
 		if(!sliderInfo) return;
 		let slider = sliderInfo.slider;
 		if(Utils.isDefined(playing) && playing==='true') {
-		    $(this).html(HU.getIconImage(icon_play));
+		    $(this).html(HU.getIconImage(ICON_PLAY));
 		    $(this).attr('playing',false);
 		    if(animation.timeout) {
 			clearTimeout(animation.timeout);
 			animation.timeout = null;
 		    }
 		} else {
-		    $(this).html(HU.getIconImage(icon_stop));
+		    $(this).html(HU.getIconImage(ICON_STOP));
 		    $(this).attr('playing',true);
 		    let step = (_values) =>{
 			let values = _values?? slider.slider('values');
 			if(values[1]>=sliderInfo.max) {
-			    $(this).html(HU.getIconImage(icon_play));
+			    $(this).html(HU.getIconImage(ICON_PLAY));
 			    $(this).attr('playing',false);			    
 			    return;
 			}
@@ -65791,7 +65853,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	},
         setDimensions: function(layout, widthDelta,ext) {
 	    ext = ext??{};
-            //                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
             var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
             //                layout.width = width-widthDelta;
             layout.height = height;
@@ -68205,20 +68266,28 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	createGlobe:function() {
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
-	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let pos = HU.div([ATTR_TITLE,"Select Position", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId(ID_POSITION_BUTTON),
-			      ATTR_STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
+			      ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+						CSS_LEFT,HU.px(10),
+						CSS_TOP,HU.px(10),
+						CSS_Z_INDEX,"1000")],HU.getIconImage("fa-globe"));
 	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate", ATTR_CLASS,"ramadda-clickable",
 				 ATTR_ID,this.domId(ID_ROTATE_BUTTON),
-				 ATTR_STYLE,HU.css("position","absolute","left","10px","top","30px","z-index","1000")],HU.getIconImage("fa-rotate"));	    
+				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+						   CSS_LEFT,HU.px(10),
+						   CSS_TOP,HU.px(30),
+						   CSS_Z_INDEX,"1000")],HU.getIconImage("fa-rotate"));	    
 	    let w  = parseInt(this.getGlobeWidth());
 	    let h = parseInt(this.getGlobeHeight());
 
-	    let globe = HU.div([ATTR_STYLE,HU.css("position","relative")],
+	    let globe = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div([ATTR_STYLE,HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),
+			       HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
 				       ATTR_ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
@@ -68238,7 +68307,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		for(a in positions) {
 		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","place",a],a);
 		}
-		html=HU.div([ATTR_STYLE,HU.css("margin","5px")],html);
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_POSITION_BUTTON)});
 		dialog.find(".ramadda-clickable").click(function() {
 		    _this.setPosition(positions[$(this).attr("place")]);
@@ -68506,7 +68575,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
-			    html = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_STYLE,this.getProperty('popupStyle','')], html);
+			    html = HU.div([ATTR_CLASS,"display-three-globe-popup",
+					   ATTR_STYLE,this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }
@@ -68791,10 +68861,13 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	createScene: function() {
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",
 				ATTR_ID,this.domId(ID_POPUP),
-				ATTR_STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
-	    let grid = HU.div([ATTR_STYLE,HU.css("position","relative")],
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",
+						  CSS_POSITION,"absolute",
+						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
+	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 			      popup +
-			      HU.div([ATTR_STYLE,HU.css("min-width","200px","min-height","200px"), ATTR_ID, this.domId(ID_GRID)]));
+			      HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
+				      ATTR_ID, this.domId(ID_GRID)]));
 	    let html = HU.center(grid);
 	    this.setContents(html);
 	    this.scene = new THREE.Scene();
