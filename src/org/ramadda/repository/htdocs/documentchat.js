@@ -19,7 +19,8 @@ function DocumentChat(id,entryId,action,models,args) {
     }
     let cnt = 0;
     let div  =jqid(id);
-    let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
+    let chat = HU.open(TAG_DIV,[ATTR_STYLE,
+				HU.css(CSS_MARGIN_LEFT,HU.px(5),CSS_MAX_WIDTH,HU.perc(100),CSS_OVERFLOW_X,'auto')]);
     let mike = HU.span([ATTR_TITLE,'Voice transcribe',ATTR_ID,this.domId('transcribe'),ATTR_CLASS,'ramadda-clickable'],
 		       HU.getIconImage('fa-solid fa-microphone fa-gray'));
     let left = HU.div([],
@@ -45,57 +46,63 @@ function DocumentChat(id,entryId,action,models,args) {
 	right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
     }
     
-    chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
+    chat+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],HU.leftRightTable(left,right));
     let text=''
     let submit = HU.span([ATTR_TITLE,'Submit',
-			  ATTR_STYLE, HU.css('margin-right','4px'),
+			  ATTR_STYLE, HU.css(CSS_MARGIN_RIGHT,HU.px(4)),
 			  ATTR_ID, this.domId(ID_LLM_SUBMIT)],HU.getIconImage('fa-regular fa-share-from-square'));
     text += submit;
     text += HU.input('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
-			    ATTR_STYLE,HU.css('width','100%','min-width,','100%','font-size','18px'),
+			    ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_MIN_WIDTH,HU.perc(100),CSS_FONT_SIZE,HU.px(18)),
 			    ATTR_ID,this.domId(ID_LLM_INPUT_FIELD),
 			    ATTR_CLASS,'ramadda-documentchat-input']);    
 
 
-
     let textArea =  HU.textarea('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
-				       'rows','3',ATTR_STYLE,HU.css('width','100%'),
+				       ATTR_ROWS,'3',ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
 				       ATTR_ID,this.domId(ID_LLM_INPUT_TEXTAREA),
 				       ATTR_CLASS,'ramadda-documentchat-input']);    
     
-    let holder = HU.div([ATTR_ID,this.domId(ID_LLM_TEXTAREA_HOLDER),ATTR_STYLE,'width:100%;display:none;'],
-			HU.div([ATTR_STYLE,HU.css('width','100%')], textArea));
-    text=HU.div([ATTR_STYLE,HU.css('width','100%','display','flex','align-items','flex-start','white-space','nowrap','vertical-align','top')],
+    let holder = HU.div([ATTR_ID,this.domId(ID_LLM_TEXTAREA_HOLDER),
+			 ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_DISPLAY,'none')],
+			HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))], textArea));
+
+    text=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_DISPLAY,'flex',
+				   CSS_ALIGN_ITEMS,'flex-start',
+				   CSS_WHITE_SPACE,'nowrap',
+				   CSS_VERTICAL_ALIGN,'top')],
 		text+holder);
-    let change = HU.span([ATTR_STYLE,HU.css('margin-left','4px','display','inline-block'),
+    let change = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 			  ATTR_TITLE,'Toggle input',
 			  ATTR_ID,this.domId(ID_LLM_CHANGEINPUT)], HU.getIconImage('fa-solid fa-angle-right'));
     this.inputShown = true;
     text+=change;
-    text = HU.div([ATTR_STYLE,HU.css('width','100%',
-				     'display','flex','align-items','flex-start','white-space','nowrap','vertical-align','top')],text);
+    text = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
+				     CSS_DISPLAY,'flex',
+				     CSS_ALIGN_ITEMS,'flex-start',
+				     CSS_WHITE_SPACE,'nowrap',CSS_VERTICAL_ALIGN,'top')],text);
     
     let makeProgress = (id,width,top) => {
 	return HU.div([ATTR_ID,this.domId(id),
 		       ATTR_CLASS,'ramadda-clickable',
-		       ATTR_STYLE,HU.css('position','absolute','left','50%',
-					 'display','none',
-					 'transform','translate(-50%, 0)',
-					 'top',top)],
+		       ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_LEFT,'50%',
+					 CSS_DISPLAY,'none',
+					 CSS_TRANSFORM,'translate(-50%, 0)',
+					 CSS_TOP,top)],
 		      HU.image(ramaddaBaseUrl+'/icons/mapprogress.gif',[ATTR_WIDTH,width,
 									ATTR_TITLE,'Clear',
 									ATTR_TITLE,'ramadda-clickable']));
 
     };
 
-    chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
+    chat +=HU.div([ATTR_STYLE,HU.css(CSS_POSITION,DISPLAY_RELATIVE)],
 		  text+
-		  makeProgress(ID_LLM_PROGRESS1,'24px','0px')+
-		  makeProgress(ID_LLM_PROGRESS2,'40px','10px')		  
+		  makeProgress(ID_LLM_PROGRESS1,HU.px(24),HU.px(0))+
+		  makeProgress(ID_LLM_PROGRESS2,HU.px(40),HU.px(10))		  
 		 );
     
 
-    chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css('max-height','800px','overflow-y','auto')]);
+    chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(800),CSS_OVERFLOW_Y,'auto')]);
     chat+='</div>'
     div.html(chat);
     this.jq(ID_LLM_CHANGEINPUT).button().click(function() {
@@ -130,7 +137,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	if(!this.history.includes(q)) this.history.push(q);
 	let input = this.getInput();
 	input.prop('disabled',true);
-	input.css('background','#efefef');
+	input.css(CSS_BACKGROUND,'#efefef');
 	if(this.inputShown)  {
 	    toggleProgress(true,false);
 
@@ -214,12 +221,14 @@ function DocumentChat(id,entryId,action,models,args) {
 	    
 	    let qid = 'id_' + (cnt++);
 	    let guid= HU.getUniqueId('');
-	    let out = HU.div([ATTR_STYLE,'border:1px solid transparent;font-weight:bold;',ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
+	    let out = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,'1px solid transparent',CSS_FONT_WEIGHT,'bold'),
+			      ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
-	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
+	    out = HU.div(['style',HU.css(CSS_BORDER,HU.border(1,'#eee'),
+					 CSS_PADDING,HU.px(4),CSS_MARGIN_TOP,HU.px(8))], out);
 	    output.prepend(HU.div([],out));
-	    Utils.initCopyable('#'+guid,{addLink:true,extraStyle:'right:10px;bottom:10px;'});
+	    Utils.initCopyable('#'+guid,{addLink:true,extraStyle:HU.css(CSS_RIGHT,HU.px(10),CSS_BOTTOM,HU.px(10))});
 	    this.jq(qid).click(function() {
 		let input= _this.getInput();
 		input.val($(this).html()+' ');
@@ -249,9 +258,13 @@ function DocumentChat(id,entryId,action,models,args) {
 	if(_this.history.length==0) return;
 	let html = '';	
 	_this.history.slice().reverse().forEach(line=>{
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable ramadda-document-history',ATTR_STYLE,HU.css('width','400px','border','var(--basic-border)','padding','5px','margin-bottom','5px')], line);
+	    html+=HU.div([ATTR_CLASS,'ramadda-clickable ramadda-document-history',
+			  ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),
+					    CSS_BORDER,'var(--basic-border)',
+					    CSS_PADDING,HU.px(5),CSS_MARGIN_BOTTOM,HU.px(5))], line);
 	});
-	html = HU.div([ATTR_CLASS,'ramadda-dialog',ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')], html);
+	html = HU.div([ATTR_CLASS,'ramadda-dialog',ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+								     CSS_OVERFLOW_Y,'auto')], html);
 	_this.dialog =  HU.makeDialog({anchor:$(this),
 				       content:html});
 	
@@ -270,7 +283,7 @@ function DocumentChat(id,entryId,action,models,args) {
     let clear = ()=>{
 	let input = this.getInput();
 	input.prop('disabled',false);
-	input.css('background','#fff');
+	input.css(CSS_BACKGROUND,'#fff');
 	toggleProgress();
 	step++;
     };

@@ -168,6 +168,7 @@ var DISPLAY_INLINE_BLOCK='inline-block';
 
 var CSS_BASIC_BORDER='var(--basic-border)';
 
+var CSS_ALIGN_ITEMS='align-items';
 var CSS_VISIBILITY = 'visibility';
 var CSS_FONT_WEIGHT="font-weight";
 var CSS_FONT_SIZE="font-size";
@@ -5546,7 +5547,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     border:function(width, color, solid) {
 	solid = solid??'solid';
 	color = color ?? '#ccc';
-	return HU.getPx(width) + ' ' + solid +' ' + color;
+	return HU.px(width) + ' ' + solid +' ' + color;
     },
     px:function(v) {
 	return HU.getDimension(v,'px');
