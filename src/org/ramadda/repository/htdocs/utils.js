@@ -5537,8 +5537,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 	return 'rgb(' + r+',' + g +',' + b+')';
     },
+    rgba:function(r,g,b,a) {
+	return HU.rgb(r,g,b,a);
+    },
     perc:function(v) {
 	return HU.getDimension(v,'%');
+    },
+    border:function(width, color, solid) {
+	solid = solid??'solid';
+	color = color ?? '#ccc';
+	return HU.getPx(width) + ' ' + solid +' ' + color;
     },
     px:function(v) {
 	return HU.getDimension(v,'px');
