@@ -230,7 +230,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
 	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
-			   ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.em(0.5),
+			   ATTR_STYLE,HU.css(CSS_MARGIN,HU.em(1),
 					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,

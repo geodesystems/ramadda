@@ -327,7 +327,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
 	makeControls:function() {
-	    this.tickHeight = this.display.getProperty("animationHeight","15px");
+	    this.tickHeight = this.display.getProperty("animationHeight",HU.px(15));
 	    this.makeSlider = this.display.getProperty("animationMakeSlider",true);
             let buttons =  "";
 	    let showButtons  = this.display.getProperty("animationShowButtons",true);
@@ -364,13 +364,17 @@ function DisplayAnimation(display, enabled,attrs) {
 		let tooltip  = HU.div([ATTR_ID,this.getDomId(ID_TOOLTIP),ATTR_CLASS,"display-animation-tooltip"],"");
 		let tickContainerStyle = HU.css(CSS_HEIGHT,this.tickHeight);
 		if(!this.makeSlider) {
-		    tickContainerStyle += HU.css(CSS_BACKGROUND,"efefef",CSS_BORDER,"1px solid #aaa");
+		    tickContainerStyle += HU.css(CSS_BACKGROUND,"efefef",CSS_BORDER,HU.border(1,'#aaa'));
 		}
 		if(!this.makeSlider) {
 		    style+=HU.css(CSS_CURSOR,"move");
 		}
-		buttons +=   HtmlUtils.div([ATTR_CLASS,"display-animation-slider",ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
-					   tooltip + HtmlUtils.div([ATTR_STYLE, tickContainerStyle,ATTR_CLASS,"display-animation-ticks","tabindex","0",ATTR_ID,this.getDomId(ID_TICKS)]));
+		buttons +=   HtmlUtils.div([ATTR_CLASS,"display-animation-slider",
+					    ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
+					   tooltip + HtmlUtils.div([ATTR_STYLE, tickContainerStyle,
+								    ATTR_CLASS,"display-animation-ticks",
+								    ATTR_TABINDEX,"0",
+								    ATTR_ID,this.getDomId(ID_TICKS)]));
 	    }
 	    this.html = HtmlUtils.div([ATTR_STYLE,this.display.getProperty("animationStyle")], buttons);
 	    if(this.display.getProperty("animationShow",true)) {
