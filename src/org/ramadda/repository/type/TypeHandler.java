@@ -1652,9 +1652,6 @@ public class TypeHandler extends RepositoryManager {
 
     public String getProperty(Entry entry, String name, String dflt,boolean checkParent) {	
         String result = (String) properties.get(name);
-	if(name.indexOf("separate")>=0) {
-	    System.err.println(result +" " + properties);
-	}
         if (result != null) {
             return result;
         }
