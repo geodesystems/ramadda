@@ -3737,33 +3737,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    if(isNaN(v1) && isNaN(v2)) {
 				result= 0;
 			    } else if(isNaN(v1)) {
-				result = sortAscending?-1:1;
+//				result = sortAscending?-1:1;
+				result = -1;
 			    } else if(isNaN(v2)) {
-				result = sortAscending?1:-1;
+//				result = sortAscending?1:-1;
+				result = 1;
 			    } else {
+				/*
 				if(v1<v2) result = sortAscending?-1:1;
 				else if(v1>v2) result = sortAscending?1:-1;
+				else result = 0;
+				*/
+				if(v1<v2) result = -1;
+				else if(v1>v2) result = 1;
 				else result = 0;
 			    }
 			} else {
 			    result = String(v1).localeCompare(String(v2));
-			    if(!sortAscending) result=-result;
+//			    if(!sortAscending) result=-result;
 			}
 			if(result!=0) break;
 		    }
 		    return result;
 		});
+		if(!sortAscending) {
+		    records.reverse();
+		}
 	    }
 
-	    
-	    /*
-	    console.log("results " + sortFields);
-	    records.forEach(record=>{
-		let row1 = this.getDataValues(record);
-		let sortField = sortFields[0];
-		console.log('\t'+row1[1] +' '+ row1[sortField.getIndex()]);
-		});
-	    */
 	    
 
 	    if(this.getProperty("sortHighlight")) {

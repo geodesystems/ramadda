@@ -413,8 +413,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		block = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],block);
 
 		if(details) {
-		    block+= '<br>' +
-			f.getId() + f.getUnitSuffix()+'<br>' +
+		    block+= HU.br() +
+			f.getId() + f.getUnitSuffix()+HU.br() +
 			f.getType();
 		}
 		let c = clazz;
@@ -441,7 +441,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let search=HU.div([ATTR_ID,this.domId(ID_SEARCH)],'');
 	    header = HU.leftRightTable(header,search);
 	    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],header);
-	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,'auto',
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+					     CSS_OVERFLOW_Y,'auto',
 					     CSS_WIDTH,HU.px(600))], html);
 	    let htmlId=HU.getUniqueId('fields');
 	    html=HU.div([ATTR_ID,htmlId],html);
@@ -449,7 +450,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 	    if(this.getShowPopup()) {
 		html = HU.div([ATTR_ID,this.domId(ID_POPUP_BUTTON)], label) +
-		    HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_MARGIN,HU.px(4))], html);
+		    HU.div([ATTR_ID,this.domId(ID_POPUP),
+			    ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_MARGIN,HU.px(4))], html);
 	    }
 
 
@@ -718,27 +720,30 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 
 	    let colors = this.getColorList();
 	    let html = "";
-	    let colorWidth = this.getProperty("colorWidth","20px");
+	    let colorWidth = this.getProperty("colorWidth",HU.px(20));
 	    let labelColor = this.getProperty("labelColor","#000");
 	    let labelColors = this.getProperty("labelColors")?this.getProperty("labelColors").split(","):null;
 	    let inBox = this.getProperty("inBox",false);
 	    let orientation = this.getProperty("orientation","horizontal");
-	    let delim = orientation=="horizontal"?" ":"<br>";
+	    let delim = orientation=="horizontal"?" ":HU.br();
 	    let circles = this.getCircles();
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HU.div([ATTR_CLASS,"display-legend-item"], HU.div([ATTR_CLASS,"display-legend-color " + (circles?"display-colortable-dot":""),ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_WIDTH,colorWidth)+
-									     (circles?"height:" + colorWidth+";":	  "height:15px;")]) +
+		    html+=HU.div([ATTR_CLASS,"display-legend-item"],
+				 HU.div([ATTR_CLASS,"display-legend-color " + (circles?"display-colortable-dot":""),
+					 ATTR_STYLE,HU.css(CSS_BACKGROUND,color,CSS_WIDTH,colorWidth)+
+					 (circles?HU.css(CSS_HEIGHT,colorWidth):HU.css(CSS_HEIGHT,HU.px(15)))]) +
 				 HU.div([ATTR_CLASS,"display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
-		    html+=HU.div([ATTR_CLASS,"display-legend-color",ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),
-										      CSS_BACKGROUND,color)],
+		    html+=HU.div([ATTR_CLASS,"display-legend-color",
+				  ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8), CSS_BACKGROUND,color)],
 				 HU.div([ATTR_CLASS,"display-legend-label",
-					 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_RIGHT,HU.px(8),
+					 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),
+							   CSS_MARGIN_RIGHT,HU.px(8),
 							   CSS_COLOR,lc)],label));
 		}
 	    }
@@ -788,16 +793,17 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    let label = this.getDownloadLabel(this.getProperty("csvLabel","Download Data"));
-	    label = label.replace("${title}",this.getProperty(ATTR_TITLE,""));
+	    label = label.replace("${title}",this.getProperty('title',''));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block'),
-			    ATTR_ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",
-										   [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0),
-												      CSS_DISPLAY,'block')],
-										   [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',
-												      CSS_FONT_SIZE,iconSize),
-										    ATTR_TITLE,label]):label);
+			    ATTR_ID,this.getDomId("csv")],
+			   useIcon?HU.getIconImage("fa-download",
+						   [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0),
+								      CSS_DISPLAY,'block')],
+						   [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',
+								      CSS_FONT_SIZE,iconSize),
+						    ATTR_TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -868,32 +874,40 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],"Cancel");
-	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),ATTR_TITLE,'Select # records to download','size','4']) +" records");
+	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),
+								  ATTR_TITLE,'Select # records to download',
+								  ATTR_SIZE,'4']) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80))],
 				    'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
 		html+=HU.formTable();
 		html+=HU.formEntry('From date:',
-				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_FROMDATE),ATTR_PLACEHOLDER,'yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
+				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_FROMDATE),
+						     ATTR_PLACEHOLDER,'yyyy-MM-dd',ATTR_SIZE,'10',
+						     ATTR_VALUE,this.selectFromDate??'']));
 		html+=HU.formEntry('To date:',
-				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_TODATE),ATTR_PLACEHOLDER,'yyyy-MM-dd','size','10','value',this.selectToDate??'']));
+				   HU.tag(TAG_INPUT,[ATTR_ID,this.domId(ID_TODATE),
+						     ATTR_PLACEHOLDER,'yyyy-MM-dd',
+						     ATTR_SIZE,'10',
+						     ATTR_VALUE,this.selectToDate??'']));
 		html+=HU.formTableClose();
 	    }
 	    
-	    html += "<b>Include:</b>";
+	    html += HU.b('Include:');
 	    let cbx = "";
-	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +"<br>";
+	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +HU.br();
 	    this.getData().getRecordFields().forEach((f,idx)=>{
 		let on = this.fieldOn[f.getId()];
 		if(!Utils.isDefined(on)) {
 		    on = true;
 		}
-		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
+		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),
+				   [ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +HU.br();
 	    });
 	    html += HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-					      CSS_OVERFLOW_Y,
-					      "auto",CSS_MARGIN_LEFT,HU.px(10))], cbx);
+					      CSS_OVERFLOW_Y, "auto",
+					      CSS_MARGIN_LEFT,HU.px(10))], cbx);
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    return html;
 	},
@@ -1016,7 +1030,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
 	    }		
 	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([ATTR_CLASS,"display-reloader-label", ATTR_ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+		html+=" " + HU.span([ATTR_CLASS,"display-reloader-label",
+				     ATTR_ID,this.getDomId(ID_COUNTDOWN)],
+				    this.getCountdownLabel(this.getPropertyInterval()));
 	    } else {
 		if(this.getPropertyShowCheckbox()) {
 		    html+=" " + HU.span([ATTR_ID,this.getDomId(ID_COUNTDOWN)],"Reload");
@@ -1030,7 +1046,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
-	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css("cursor","pointer").attr(ATTR_TITLE,"Reload").click(()=>{
+	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css(CSS_CURSOR,"pointer").attr(ATTR_TITLE,"Reload").click(()=>{
 		this.checkReload(-1);
 	    });
 	    this.setTimer(this.getPropertyInterval());
@@ -1045,7 +1061,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	},
 	getCountdownLabel: function(time) {
 	    let pad = "";
-	    if(time<10) pad = "&nbsp;";
+	    if(time<10) pad = SPACE;
 	    if(time>60) {
 		let minutes = Math.round((time-time%60)/60);
 		let seconds = time%60;
@@ -1097,7 +1113,8 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 }
 
 function RamaddaTicksDisplay(displayManager, id, properties) {
-    if(!properties.animationHeight) properties.animationHeight = "30px";
+    if(!Utils.isDefined(properties.animationHeight))
+	properties.animationHeight = HU.px(30);
     properties.doAnimation =  false;
     properties.animationShowButtons = false;
     properties.animationMakeSlider = false;
@@ -1105,7 +1122,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TICKS, properties);
     let myProps = [
 	{label:'Time Ticks'},
-	{p:'animationHeight',ex:'30px'},
+	{p:'animationHeight',ex:HU.px(30)},
 	{p:'showYears',ex:'true'},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
@@ -1245,7 +1262,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
 		let html = '';
 		if(maxPerRow>=0) {
-		    html=HU.open('div',[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]);
+		    html=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
@@ -1259,7 +1276,9 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    let label = this.getRecordHtml(record, null, labelTemplate);
 		    let style = buttonStyle;
 		    if(idx==0) style+=buttonStyleOn;
-		    tabs.push(HU.span([ATTR_CLASS,'display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),ATTR_STYLE,style,RECORD_ID,record.getId()], label));
+		    tabs.push(HU.span([ATTR_CLASS,'display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),
+				       ATTR_STYLE,style,
+				       RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
 		});
 		html+=Utils.join(tabs,"");
@@ -1293,13 +1312,15 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let prev = HU.span([ATTR_CLASS,"display-changeentries-button ramadda-clickable",
 				    ATTR_TITLE,"Previous " +noun,
 				    ATTR_ID, this.getDomId(ID_PREV)], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([ATTR_CLASS, "display-changeentries-button ramadda-clickable", ATTR_TITLE,"Next " + noun,
-				    ATTR_ID, this.getDomId(ID_NEXT), ATTR_TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+ 		let next = HU.span([ATTR_CLASS, "display-changeentries-button ramadda-clickable",
+				    ATTR_TITLE,"Next " + noun,
+				    ATTR_ID, this.getDomId(ID_NEXT)],
+				   HU.getIconImage("fa-chevron-right")); 
 		menu = menu.replace(/\n/g,"");
-		menu = prev + "&nbsp;" + menu +  "&nbsp;" +next;
+		menu = prev + SPACE + menu +  SPACE +next;
 	    }
 	    let label = this.getMenuLabel();
-	    if(label) menu = label+"&nbsp;" + menu;
+	    if(label) menu = label+SPACE + menu;
 	    this.setContents(menu);
 	    if(this.getShowArrows(false)) {
 		this.jq(ID_PREV).click(e=>{

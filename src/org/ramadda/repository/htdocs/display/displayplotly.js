@@ -132,9 +132,12 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	},
 	updateUI:function(args) {
 	    if(!window.Plotly) {
+		if(this.callbackPending) return;
+		this.callbackPending = true;
 		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.24.1.min.js");
 		let callback = this.loadingJS?null:   ()=>{
 		    this.updateUI(args);
+		    this.callbackPending = false;
 		};
 		Utils.loadScript(url,callback); 
 		return;
@@ -203,7 +206,9 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             this.clearHtml();
 	    let html = 
 		HtmlUtils.div([ATTR_ID,this.getDomId(ID_HEADER)],"") +
-		HtmlUtils.div([ATTR_ID, this.getDomId(ID_PLOT), ATTR_STYLE, HU.css(CSS_WIDTH,'100%')+this.getDisplayStyle()], "") +
+		HtmlUtils.div([ATTR_ID, this.getDomId(ID_PLOT),
+			       ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100))+
+			       this.getDisplayStyle()], "") +
 		HtmlUtils.div([ATTR_ID,this.getDomId(ID_FOOTER)],"");
 	    this.setContents(html);
 	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
@@ -255,10 +260,8 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 
 function RamaddaRadialDisplay(displayManager, id, type, properties) {
     var SUPER;
-    $.extend(this, {
-        width: "400px",
-        height: "400px",
-    });
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(400);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(400);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
     RamaddaUtil.defineMembers(this, {
         getPlotType: function() {
@@ -366,10 +369,8 @@ function RamaddaWindroseDisplay(displayManager, id, properties) {
 
 function RamaddaDensityDisplay(displayManager, id, properties) {
     var SUPER;
-    $.extend(this, {
-        width: "600px",
-        height: "400px",
-    });
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(600);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(400);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -461,7 +462,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
         },
 
         getDisplayStyle: function() {
-            return HU.css(CSS_BORDER,'1px #ccc solid');
+            return HU.css(CSS_BORDER,HU.border(1,'#ccc'));
         },
         get3DType: function() {
             //                'mesh3d'
@@ -615,10 +616,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 
 function Ramadda3dmeshDisplay(displayManager, id, properties) {
     let SUPER;
-    $.extend(this, {
-        width: "100%",
-        height: "100%",
-    });
+    if(!Utils.isDefined(properties.width)) properties.width=HU.perc(100);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DMESH, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -629,13 +627,9 @@ function Ramadda3dmeshDisplay(displayManager, id, properties) {
 }
 
 
-
 function Ramadda3dscatterDisplay(displayManager, id, properties) {
-    var SUPER;
-    $.extend(this, {
-        width: "100%",
-        height: "100%",
-    });
+    let SUPER;
+    if(!Utils.isDefined(properties.width)) properties.width=HU.perc(100);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -646,12 +640,9 @@ function Ramadda3dscatterDisplay(displayManager, id, properties) {
 }
 
 
-
 function RamaddaSunburstDisplay(displayManager, id, properties) {
-    $.extend(this, {
-        width: "500",
-        height: "500",
-    });
+    if(!Utils.isDefined(properties.width)) properties.width=500;
+    if(!Utils.isDefined(properties.height)) properties.height=500;    
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SUNBURST, properties);
     let myProps = [
 	{label:'Sunburst Display'},
@@ -661,7 +652,8 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	{p:'valueField',ex:''},
 	{p:'nodeFields',ex:''},
 	{p:'treeRoot',ex:'some label'},
-	{p:'doTopColors',ex:'true'},
+	{p:'doTopColors',d:true,ex:'true'},
+	{p:'colorMap',ex:'value1:color1,value2:color2'},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -669,11 +661,11 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
             return "";
         },
         updateUIInner: function() {
-            var records = this.filterData();
+            let records = this.filterData();
             if (!records) return;
-            var parentField = this.getFieldById(null, this.getProperty("parentField"));
-	    var valueField = this.getFieldById(null, this.getProperty("valueField"));
-	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+            let parentField = this.getFieldById(null, this.getParentField());
+	    let valueField = this.getFieldById(null, this.getValueField());
+	    let labelField = this.getFieldById(null, this.getLabelField());
 	    let roots=null;
 	    try {
 		roots = this.makeTree();
@@ -692,7 +684,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    let calcValue = function(node) {
 		if(node.children.length==0) {
 		    if(node.record) {
-			var value = node.record.getValue(valueField.getIndex());
+			let value = node.record.getValue(valueField.getIndex());
 			node.value = value;
 			return value;
 		    }
@@ -724,10 +716,11 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		node.children.map(makeList);
 	    }
 	    roots.map(makeList);
-            var colors = this.getColorTable(true);
-	    let doTopColors= this.getProperty("doTopColors",true);
+            let colors = this.getColorTable(true);
+	    let doTopColors= this.getDoTopColors();
+	    
 	    if(!colors) {
-		var colorMap = Utils.parseMap(this.getProperty("colorMap"));
+		let colorMap = Utils.parseMap(this.getColorMap("Bitter-Harsh:black"));
 		if(colorMap) {
 		    colors = [];
 		    let dfltIdx =0;
@@ -748,7 +741,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var data = [{
+	    let data = [{
 		type: "sunburst",
 		ids:ids,
 		labels: labels,
@@ -763,7 +756,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    if(valueField) {
 		data[0].values = values;
 	    }
-	    var layout = {
+	    let layout = {
 		margin: {l: 0, r: 0, b: 0, t: 0},
 		width: +this.getProperty("width"),
 		height: +this.getProperty("height"),
@@ -788,8 +781,8 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    if(!data.points || data.points.length<=0) {
 		return;
 	    }
-	    var pointNumber = data.points[0].pointNumber;
-	    var record = this.myRecords[pointNumber];
+	    let pointNumber = data.points[0].pointNumber;
+	    let record = this.myRecords[pointNumber];
 	    //	    console.log(pointNumber +" " + record);
 	    if(record) {
 		this.propagateEventRecordSelection({record: record});
@@ -802,11 +795,9 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 
 
 function RamaddaTernaryDisplay(displayManager, id, properties) {
-    var SUPER;
-    $.extend(this, {
-        width: "400px",
-        height: "400px",
-    });
+    let SUPER;
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(400);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(400);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TERNARY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -950,12 +941,8 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
 
 function RamaddaDotplotDisplay(displayManager, id, properties) {
 
-    $.extend(this, {
-        width: "600px",
-        height: "400px",
-    });
-
-
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(600);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(400);
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
     let myProps = [
 	{label:'Dotplot Display'},
@@ -996,11 +983,9 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
 	    console.log(list);
 	    */
 
-
-
             let records = this.filterData();
             if (!records) return;
-            var pointData = this.getData();
+            let pointData = this.getData();
             if (pointData == null) return;
             let allFields = pointData.getRecordFields();
             let stringField = this.getFieldById(allFields,this.getLabelField());
@@ -1030,12 +1015,12 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 labels = this.getColumnValues(records, stringField).values;
                 labelName = stringField.getLabel();
             }
-            var colors = this.getColorTable(true);
+            let colors = this.getColorTable(true);
             if (!colors)
                 colors = ['rgba(156, 165, 196, 0.95)', 'rgba(204,204,204,0.95)', 'rgba(255,255,255,0.85)', 'rgba(150,150,150,0.95)']
-            var plotData = [];
-            var colorBy = this.getColorByInfo(records);
-	    var  didColorBy = false;
+            let plotData = [];
+            let colorBy = this.getColorByInfo(records);
+	    let  didColorBy = false;
             for (i in fields) {
                 let field = fields[i];
                 let size = this.getDotSize(this.getProperty(field.getId()+'.dotSize'));
@@ -1064,18 +1049,18 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 if (colorBy.index >= 0) {
 		    color = [];
 		    records.map(record=>{
-			var value = record.getData()[colorBy.index];
+			let value = record.getData()[colorBy.index];
 			didColorBy = true;
 			color.push(colorBy.getColor(value, record));
                     })
 		}
                 if (!labels) {
                     labels = [];
-                    for (var j = 0; j < values.length; j++) {
+                    for (let j = 0; j < values.length; j++) {
                         labels.push("Point " + (j + 1));
                     }
                 }
-
+//		console.dir(field.getId(),labels[0],values[0]);
                 plotData.push({
                     type: 'scatter',
                     x: values,
@@ -1096,9 +1081,12 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 });
             }
 	    
-
             let layout = this.makeLayout({
+		categoryorder: 'array',
+		categoryarray: labels,
+
                 yaxis: {
+		    autorange: 'reversed' ,
                     title: this.getYAxisTitle(labelName),
 		    type:this.getYAxisType(),
                     showline: this.getYAxisShowLine(),
@@ -1210,7 +1198,6 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
         updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
-//	    this.writePropertyDef = "";
 	    let indexField = this.getFieldById(null,this.getIndexField());
 	    if(indexField==null) {
                 this.setContents(this.getMessage("No indexField specified"));
@@ -1416,11 +1403,10 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 
 
 function RamaddaSplomDisplay(displayManager, id, properties) {
-    var SUPER;
-    $.extend(this, {
-        width: "600px",
-        height: "600px",
-    });
+    let SUPER;
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(600);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(600);
+
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SPLOM, properties));
 
     addRamaddaDisplay(this);
@@ -1562,10 +1548,8 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
 
 function RamaddaPTreemapDisplay(displayManager, id, properties) {
     var SUPER;
-    $.extend(this, {
-        width: "400px",
-        height: "400px",
-    });
+    if(!Utils.isDefined(properties.width)) properties.width=HU.px(400);
+    if(!Utils.isDefined(properties.height)) properties.height=HU.px(400);
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TREEMAP, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {

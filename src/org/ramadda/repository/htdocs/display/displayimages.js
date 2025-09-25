@@ -310,7 +310,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
-                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt], HU.image(img,[ATTR_WIDTH,width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
+                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt],
+					       HU.image(img,[ATTR_WIDTH,width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
 				   ATTR_STYLE,HU.css(CSS_MARGIN, HU.px(margin))], img);
@@ -339,7 +340,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     }
                     if(cardStyle)
                         style +=cardStyle;
-                    var attrs = [ATTR_TITLE,tooltip,ATTR_CLASS,"ramadda-gridbox display-cards-card",ATTR_STYLE,style];
+                    var attrs = [ATTR_TITLE,tooltip,
+				 ATTR_CLASS,"ramadda-gridbox display-cards-card",
+				 ATTR_STYLE,style];
                     if(this.altLabelField) {
                         html = HU.div(attrs,this.altLabelField.getValue(record));
                     } else {
@@ -512,9 +515,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let columns = +this.getPropertyColumns(0);
 	    let colorBy = this.getColorByInfo(records);
 	    let width = this.getPropertyImageWidth();
-	    let blockWidth = this.getBlockWidth("200px");	    
+	    let blockWidth = this.getBlockWidth(HU.px(200));	    
 	    let height = this.getPropertyImageHeight();	    
-	    if(!width && !height) width="100%";
+	    if(!width && !height) width=HU.perc(100);
 	    let imageStyle = this.getPropertyImageStyle("");
 	    let contents = "";
 	    let uid = HtmlUtils.getUniqueId();
@@ -553,7 +556,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let cnt = 1;
 
 	    let includeNonImages = this.getIncludeNonImages();
-	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
+	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',
+									[ATTR_WIDTH,HU.perc(100)]):
 		HU.space(1);
 	    
 	    let anyNoImages= false;
@@ -586,7 +590,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_ALT,galleryLabel,
+		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_TITLE,galleryLabel,
 				ATTR_ID,base+"image" + rowIdx,
 				ATTR_LOADING,"lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
@@ -647,7 +651,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 	    });
 	    if(columns) {
-		contents = HU.open(TAG_TABLE,[ATTR_BORDER,'0',ATTR_WIDTH,'100%']) +
+		contents = HU.open(TAG_TABLE,[ATTR_BORDER,'0',ATTR_WIDTH,HU.perc(100)]) +
 		    HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
@@ -775,12 +779,14 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						 CSS_WIDTH,HU.px(20),CSS_HEIGHT,HU.px(20),
 						 CSS_LEFT,HU.px(10),CSS_TOP,HU.px(10),
 						 CSS_DISPLAY,"none",CSS_POSITION,"absolute",
-						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),ATTR_ID, this.domId(ID_RECT)]);
+						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),
+			       ATTR_ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
 					  ATTR_STYLE,HU.css(CSS_POSITION,"relative") ]) +
-				  HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_CLASS,"display-imagezoom-popup",
+				  HU.div([ATTR_ID,this.domId(ID_POPUP),
+					  ATTR_CLASS,"display-imagezoom-popup",
 					  ATTR_STYLE,HU.css(CSS_Z_INDEX,"100",
 							    CSS_DISPLAY,"none",
 							    CSS_WIDTH,HU.px(this.popupWidth),
@@ -791,14 +797,14 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 							    CSS_TOP,HU.px(0),
 							    CSS_LEFT, HU.px(imageWidth))],""));
 
-	    let contents = HU.table([ATTR_BORDER,0,ATTR_WIDTH,"100%"],
+	    let contents = HU.table([ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)],
 				    HU.tr([ATTR_VALIGN,CSS_TOP],
-					  HU.td([ATTR_WIDTH,"2%"],
+					  HU.td([ATTR_WIDTH,HU.perc(2)],
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
 									  CSS_OVERFLOW_Y,"auto",
 									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
-					  HU.td([ATTR_WIDTH,"90%"],
+					  HU.td([ATTR_WIDTH,HU.perc(90)],
 						imageDiv)));
 	    let thumbsHtml = "";
 	    let first = null;
@@ -887,7 +893,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css(CSS_Z_INDEX,1000),
 					ATTR_WIDTH, width,ATTR_ID,this.domId(ID_IMAGEINNER)]);
 	    if(label!="")
-		html+=HU.div([ATTR_STYLE,"color:#000"],label);
+		html+=HU.div([ATTR_STYLE,HU.css(CSS_COLOR,'#000')],label);
 	    this.jq(ID_IMAGE).html(html);
 
 	    this.jq(ID_POPUP).html("");
@@ -1046,7 +1052,9 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    if(this.showStrip) {
 		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,HU.perc(100)) +this.getProperty('stripStyle','');
 		top = HU.div([ATTR_ID,this.domId(ID_STRIP),
-			      ATTR_CLASS,'display-slides-strip','tabindex','0',ATTR_STYLE,stripStyle]);
+			      ATTR_CLASS,'display-slides-strip',
+			      ATTR_TABINDEX,'0',
+			      ATTR_STYLE,stripStyle]);
 	    }
 	    let contents = top+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
 				      slide + left + right);
@@ -1075,7 +1083,9 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    if(Utils.isImage(url)) {
 			strip += HU.div([],HU.image(url,[ATTR_LOADING,'lazy',
 							 ATTR_TITLE,tt,
-							 ATTR_WIDTH,width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
+							 ATTR_WIDTH,width,
+							 ATTR_CLASS,clazz,
+							 RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
