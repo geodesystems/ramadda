@@ -414,7 +414,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 
 	},
 	makeSvg: function(width,height) {
-	    const svg = d3.select("#" + this.domId(ID_BASEMAP)).append('svg')
+	    const svg = d3.select("#" + this.domId(ID_BASEMAP)).append(TAG_SVG)
 		  .attr(ATTR_WIDTH, width)
 		  .attr(ATTR_HEIGHT, height)
 		  .append('g')
@@ -873,7 +873,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 	    sortedRegions.forEach((region,idx)=>{
 		let info = this.regions[region];
-		let svg = d3.select("#" + this.domId(ID_MAPBLOCK+"_"+idx)).append('svg')
+		let svg = d3.select("#" + this.domId(ID_MAPBLOCK+"_"+idx)).append(TAG_SVG)
 		    .attr(ATTR_WIDTH, blockWidth)
 		    .attr(ATTR_HEIGHT, blockHeight)
 		    .append('g')

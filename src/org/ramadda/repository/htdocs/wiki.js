@@ -1045,11 +1045,11 @@ WikiEditor.prototype = {
 					ATTR_STYLE,textAreaStyle])+
 		     HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'none',
 					       CSS_POSITION,'absolute',
-					       CSS_TOP, '50%',
-					       CSS_LEFT,'50%',
+					       CSS_TOP, HU.perc(50),
+					       CSS_LEFT,HU.perc(50),
 					       '-ms-transform',
-					       'translate(-50%, -50%)',
-					       CSS_TRANSFORM, 'translate(-50%, -50%)'),ATTR_ID,this.domId(ID_LLM_LOADING)],
+					       HU.translate('-50%', '-50%'),
+					       CSS_TRANSFORM, HU.translate('-50%', '-50%')),ATTR_ID,this.domId(ID_LLM_LOADING)],
 			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100))])));
 
 	html += HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'replace','true'],'Replace'),
@@ -1144,8 +1144,8 @@ WikiEditor.prototype = {
     },    
 
     doColor: function (event) {
-	let html = HU.tag("input",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100),CSS_HEIGHT,HU.px(100)),
-				   'type','color',ATTR_ID,this.domId('color_picker')]);
+	let html = HU.tag(TAG_INPUT,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100),CSS_HEIGHT,HU.px(100)),
+				     ATTR_TYPE,'color',ATTR_ID,this.domId('color_picker')]);
 	html+= HU.div([ATTR_CLASS,'ramadda-buttons'],
 		      HU.span([ATTR_ID,this.domId("color_apply")],"Apply") + SPACE1 +
 		      HU.span([ATTR_ID,this.domId("color_ok")],"Ok") + SPACE1 +
@@ -1236,7 +1236,8 @@ WikiEditor.prototype = {
 
 		right="";
 		let bar = HtmlUtils.div([ATTR_CLASS,'ramadda-menubar',
-					 ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5),CSS_WIDTH,'100%',CSS_BORDER,CSS_BASIC_BORDER)],
+					 ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5),CSS_WIDTH,HU.perc(100),
+							   CSS_BORDER,CSS_BASIC_BORDER)],
 					HU.leftRight(left,right));
 
 		html = HtmlUtils.div([ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_INNER),
@@ -1558,7 +1559,7 @@ WikiEditor.prototype = {
 			   ATTR_CLASS,'wiki-editor-editor'],
 			  menubar +
 			  HU.textarea('',contents,['spellcheck','false',
-						   ATTR_STYLE,HU.css(CSS_MAX_WIDTH,'100%',
+						   ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.perc(100),
 								     CSS_WIDTH,HU.px(width),CSS_HEIGHT,HU.px(300)),
 						   ATTR_ID,this.domId(this.ID_WIKI_POPUP_EDITOR)]) + HU.br() +
 			  HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,'center',CSS_PADDING,HU.px(4))],
@@ -1686,7 +1687,7 @@ WikiEditor.prototype = {
 			orig = span.html();
 			span.attr('origtext',orig);
 		    }
-		    span.html(orig  +' - ' + HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,'70%',CSS_FONT_STYLE,'italic')],title));
+		    span.html(orig  +' - ' + HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(70),CSS_FONT_STYLE,'italic')],title));
 		});
 	    } else {
 		commands.each(function(){
@@ -2016,7 +2017,8 @@ WikiEditor.prototype = {
 			    inner+=HU.td(['data-corpus',Utils.stringDefined(c)?c:'none',
 					  'data-category',cat,
 					  ATTR_CLASS,CLASS_HOVERABLE+' wiki-editor-popup-link',
-					  ATTR_WIDTH,'33%',ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_MARGIN,HU.px(6),CSS_PADDING,HU.px(4))],div);
+					  ATTR_WIDTH,HU.perc(33),
+					  ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_MARGIN,HU.px(6),CSS_PADDING,HU.px(4))],div);
 			});
 			inner+=HU.close(TAG_TR,TAG_TABLE);
 			exDiv+=HU.center(HU.div([ATTR_CLASS,'wiki-editor-display-category',
@@ -2814,9 +2816,10 @@ Transcriber.prototype = {
 			 HU.textarea('','',[ATTR_PLACEHOLDER,'',ATTR_ID,this.domId(ID_TRANSCRIBE_TEXT), ATTR_ROWS,6,ATTR_COLS,80,
 					    ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_PADDING,HU.px(4),CSS_MARGIN,HU.px(4),
 							      CSS_FONT_STYLE,'italic')])+
-			 HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_POSITION,'absolute',CSS_TOP,'50%',CSS_LEFT,'50%',
-						   '-ms-transform', 'translate(-50%, -50%)',
-						   CSS_TRANSFORM,'translate(-50%, -50%)'),
+			 HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_POSITION,'absolute',CSS_TOP,HU.perc(50),
+						   CSS_LEFT,HU.perc(50),
+						   '-ms-transform', HU.translate('-50%', '-50%'),
+						   CSS_TRANSFORM,HU.translate('-50%', '-50%')),
 				 ATTR_ID,this.domId(ID_TRANSCRIBE_LOADING)],
 				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100))])));
 	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),

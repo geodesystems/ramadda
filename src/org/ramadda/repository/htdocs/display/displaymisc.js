@@ -823,7 +823,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		dayInfo.hourToRecords[hour].push(record);
 	    });
 	    Utils.sortDates(days);
-	    html = HU.open("div",[ATTR_STYLE,"position:relative;"]) + HU.open(TAG_TABLE,[ATTR_WIDTH,"100%"]);
+	    html = HU.open("div",[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]) + HU.open(TAG_TABLE,[ATTR_WIDTH,"100%"]);
 	    let boxWidth = this.getPropertyBoxWidth(10);
 	    let boxColor = this.getPropertyBoxColor(BOX_COLOR);
 	    let extra = "";
@@ -838,18 +838,19 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		    }
 		}
 		let dayLabel = Utils.formatDateWithFormat(day,dateFormat,true);
-		html +=  HU.tr([ATTR_STYLE,"border-bottom:1px solid #ccc;"],HU.tds([],["",HU.div([ATTR_CLASS,"display-hours-label"], dayLabel),"#"]));
+		html +=  HU.tr([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'))],
+			       HU.tds([],["",HU.div([ATTR_CLASS,"display-hours-label"], dayLabel),"#"]));
 		let multiCount = 0;
 		Utils.sortNumbers(dayInfo.hours).forEach(hour=>{
-		    let row = "<tr style='border-top:1px solid #ccc;'>";
+		    let row = HU.open(TAG_TR,[ATTR_STYLE,HU.css(CSS_BORDER_TOP,HU.border(1,'#ccc'))]);
 		    //		    if(hour!=9) return
 		    let hourLabel  = HU.div([ATTR_STYLE,this.getPropertyDayLabelStyle("")], Utils.formatHour(hour));
 		    row += HU.td([ATTR_WIDTH,"10",ATTR_ALIGN,'right'],hourLabel);
-		    row += HU.open(TAG_TD,[ATTR_STYLE,HU.css(CSS_BACKGROUND,'#efefef'),ATTR_WIDTH,"100%"]);
-		    row += HU.open("div",[ATTR_STYLE, HU.css(ATTR_HEIGHT,"100%",
-							     ATTR_POSITION,"relative",
-							     ATTR_WIDTH,"100%",
-							     ATTR_BACKGROUND,this.getPropertyRowBackground("#eee"))]);
+		    row += HU.open(TAG_TD,[ATTR_STYLE,HU.css(CSS_BACKGROUND,'#efefef'),ATTR_WIDTH,HU.perc(100)]);
+		    row += HU.open(TAG_DIV,[ATTR_STYLE, HU.css(CSS_HEIGHT,HU.perc(100),
+							       CSS_POSITION,"relative",
+							       CSS_WIDTH,HU.perc(100),
+							       CSS_BACKGROUND,this.getPropertyRowBackground("#eee"))]);
 		    row += "&nbsp;";
 		    let displayed = {};
 		    let didOne= false;
@@ -865,14 +866,16 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 				displayed[minutes] = {
 				    multiid:multiId,
 				    contents:""};
-				row+= HU.div([ATTR_ID,multiId, ATTR_TITLE,"Click to view multiples","dttm",dayInfo.dttm.getTime(), "hour",hour,"minute",minutes,
+				row+= HU.div([ATTR_ID,multiId,
+					      ATTR_TITLE,"Click to view multiples",
+					      "dttm",dayInfo.dttm.getTime(), "hour",hour,"minute",minutes,
 					      ATTR_STYLE, HU.css(CSS_TOP,HU.px(0),CSS_LEFT,left),
 					      ATTR_CLASS,'display-hours-box-multi'],dayInfo.minutesCount[key]);
 			    }
 			    displayed[minutes].contents +=
 				HU.div([MULTI_ID,displayed[minutes].multiid,RECORD_ID, record.getId(), RECORD_INDEX,_this.recordToIndex[record.getId()],
-					ATTR_TITLE,"",ATTR_STYLE,
-					HU.css(ATTR_WIDTH,boxWidth+"px",ATTR_BACKGROUND,boxColor),
+					ATTR_TITLE,"",
+					ATTR_STYLE, HU.css(CSS_WIDTH,HU.px(boxWidth),CSS_BACKGROUND,boxColor),
 					ATTR_CLASS,'display-hours-box'],"");
 			} else {
 			    let css = HU.css(CSS_POSITION,"absolute",
@@ -1308,15 +1311,16 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 
 	    html+=HU.open(TAG_DIV,[ATTR_ID,this.domId(ID_TABLE+'_wrapper')]);
-	    html +=HU.openTag(TAG_TABLE,[ATTR_CLASS,"ramadda-table stripe", ATTR_WIDTH,'100%',
+	    html +=HU.openTag(TAG_TABLE,[ATTR_CLASS,"ramadda-table stripe", ATTR_WIDTH,HU.perc(100),
 					 ATTR_ID,this.domId(ID_TABLE),ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
 	    let maxColumns = this.getMaxColumns(-1);
-	    let headerAttrs = [ATTR_STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
+	    let headerAttrs = [ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_BACKGROUND,'#efefef',
+						 CSS_PADDING,HU.px(5),CSS_FONT_WEIGHT,'bold')];
 	    headerAttrs = [];
 	    html+="<thead>\n";
 	    if(anyGroups) {
-		let attrs = [ATTR_STYLE,HU.css(CSS_BACKGROUND,"#fff",CSS_WIDTH,"100%")];
+		let attrs = [ATTR_STYLE,HU.css(CSS_BACKGROUND,"#fff",CSS_WIDTH,HU.perc(100))];
 		html+="<tr style='background:transparent;' valign=top>\n"
 		let group = null;
 		let seen = {};
@@ -1327,14 +1331,15 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    if(!seen[group]) {
 				seen[group] =true;
 				html+=HU.th([ATTR_CLASS,"display-table-group-header-th",
-					     ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,"0px solid transparent",
+					     ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(0,'transparent'),
 							       CSS_BACKGROUND,"transparent"),
 					     ATTR_COLSPAN,groupCnt[group]],HU.div([ATTR_CLASS,"display-table-group-header"], group))+"\n";
 			    }
 			}
 			return;
 		    }
-		    html+=HU.th([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,"0px solid transparent", CSS_BACKGROUND,"transparent")],HU.div(attrs,"&nbsp;"))+"\n";
+		    html+=HU.th([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(0,transparent),
+						   CSS_BACKGROUND,"transparent")],HU.div(attrs,"&nbsp;"))+"\n";
 		});
 		html+="</tr>\n";
 	    } 
@@ -1353,8 +1358,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    //Add the place holder for the colored rows
 	    if(colorRowBy && !colorFullRow) {
 		colorRowBy.forEach(c=>{
-		    header1+=HU.th([ATTR_STYLE,'max-width:16px;width:16px;'],HU.div([],c.label));
-		    header2+=HU.th([ATTR_STYLE,'max-width:16px;width:16px;'],HU.div([],c.label));		    
+		    header1+=HU.th([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(16),CSS_WIDTH,HU.px(16))],HU.div([],c.label));
+		    header2+=HU.th([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(16),CSS_WIDTH,HU.px(16))],HU.div([],c.label));
 		});
 	    }
 
@@ -1364,7 +1369,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		header2+=HU.th(HU.div([],""));
 	    }
 
-	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
+	    let headerStyle = this.getTableHeaderStyle("")+HU.css(CSS_TEXT_ALIGN,'center');
 	    let fieldMap = {}
 	    let sortFields = this.getProperty("sortFields");
 	    let sortAscending = this.getSortAscending();
@@ -1381,7 +1386,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		if(title) title+="&#10;";
 		title=title??"";
 		title+="Click to sort";
-		let attrs = [ATTR_TITLE,title,ATTR_CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),ATTR_STYLE,headerStyle];
+		let attrs = [ATTR_TITLE,title,
+			     ATTR_CLASS,"ramadda-clickable display-table-header",
+			     "field-id",f.getId(),
+			     ATTR_STYLE,headerStyle];
 		let width = this.getProperty(f.getId()+".width");
 		if(width) attrs.push(CSS_WIDTH,width);
 
@@ -1503,7 +1511,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    label = this.getRecordHtml(record, null, template);
 			    label = HU.div([ATTR_STYLE,colorHeaderStyle], label);
 			}
-			addColumn(HU.td([ATTR_CLASS,'display-td display-htmltable-td',ATTR_STYLE,'width:24px;max-width:24px;border-right:1px solid #444;background:' + color+';width:24px;'],label));
+			addColumn(HU.td([ATTR_CLASS,'display-td display-htmltable-td',
+					 ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(24),CSS_MAX_WIDTH,HU.px(24),
+							   CSS_BORDER_RIGHT,HU.border(1,'#444'),
+							   CSS_BACKGROUND,color,CSS_WIDTH,HU.px(24))],label));
 		    });
 		}
 
@@ -1612,7 +1623,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			category=c;
 			let extra = '';
 			for(let j=0;j<columns.length-1;j++)
-			    extra+=HU.td([ATTR_STYLE,'display:none;',ATTR_CLASS,'display-htmltable-category-cell',],'');
+			    extra+=HU.td([ATTR_STYLE,HU.css(CSS_DISPLAY,'none'),
+					  ATTR_CLASS,'display-htmltable-category-cell',],'');
 			let row = HU.tr([ATTR_CLASS,'display-htmltable-category-row'], HU.td([ATTR_CLASS,'display-htmltable-category-cell',ATTR_COLSPAN,columns.length],HU.div([ATTR_CLASS,'display-htmltable-category'],c))+extra);
 			html+=row;
 		    }
@@ -5617,9 +5629,9 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 	    date = new Date(minDate.getTime()-rem+dateDelta);
 
 	    while(date.getTime()<=maxDate.getTime()) {
-		let perc = (100*scaleX(date))+"%";
+		let perc = HU.perc((100*scaleX(date)));
 		let style = HU.css(CSS_LEFT,perc,CSS_TOP,HU.perc(0),
-				   CSS_TRANSFORM,"translate(-50%, 0%)");
+				   CSS_TRANSFORM,HU.translate(HU.perc(-50), HU.perc(0)));
 		dateHeader+=HU.div([ATTR_CLASS,"display-dategrid-header display-dategrid-date",ATTR_STYLE,style],this.formatDate(date))+"\n";
 
 		date = new Date(date.getTime() +dateDelta);

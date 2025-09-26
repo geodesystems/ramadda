@@ -269,13 +269,13 @@ const D3Util = {
     // This is for the path lines the previous function for generic ones. 
     addColorBar: function(svg, colors, colorSpacing, displayWidth) {
         //Note: this originally had this.displayWidth which was undefined
-        var colorBar = svg.append("g")
+        var colorBar = svg.append(TAG_G)
             .attr({
                 ATTR_ID: "colorBarG",
-                "transform": "translate(" + (displayWidth - 40) + ",0)"
+                "transform": HU.translate((displayWidth - 40),0)
             });
 
-        colorBar.append("g")
+        colorBar.append(TAG_G)
             .append("defs")
             .append("linearGradient")
             .attr({
@@ -672,8 +672,10 @@ function RamaddaD3Display(displayManager, id, properties) {
             this.setContents(html);
 
             // To create dynamic size of the div
-            this.displayHeight = parseInt((d3.select("#" + this.getDomId(ID_SVG)).style("height")).split("px")[0]) - margin.top - margin.bottom; //this.getProperty("height",300);//d3.select("#"+this.getDomId(ID_SVG)).style("height");//
-            this.displayWidth = parseInt((d3.select("#" + this.getDomId(ID_SVG)).style("width")).split("px")[0]) - margin.left - margin.right; //this.getProperty("width",600);//d3.select("#"+this.getDomId(ID_SVG)).style("width");//
+            this.displayHeight = parseInt((d3.select("#" + this.getDomId(ID_SVG)).style(CSS_HEIGHT)).split("px")[0]) - margin.top - margin.bottom;
+	    //this.getProperty("height",300);//d3.select("#"+this.getDomId(ID_SVG)).style("height");//
+            this.displayWidth = parseInt((d3.select("#" + this.getDomId(ID_SVG)).style(CSS_WIDTH)).split("px")[0]) - margin.left - margin.right;
+	    //this.getProperty("width",600);//d3.select("#"+this.getDomId(ID_SVG)).style("width");//
 
             //                console.log("WxH:" + this.displayHeight +" " + this.displayWidth);
 
@@ -684,9 +686,9 @@ function RamaddaD3Display(displayManager, id, properties) {
                     myThis.zoomBehaviour()
                 });
             this.zoom = zoom;
-            this.svg = d3.select("#" + this.getDomId(ID_SVG)).append("svg")
-                .attr("width", this.displayWidth + margin.left + margin.right)
-                .attr("height", this.displayHeight + margin.top + margin.bottom)
+            this.svg = d3.select("#" + this.getDomId(ID_SVG)).append(TAG_SVG)
+                .attr(ATTR_WIDTH, this.displayWidth + margin.left + margin.right)
+                .attr(ATTR_HEIGHT, this.displayHeight + margin.top + margin.bottom)
                 .attr(ATTR_CLASS, "D3graph")
                 .call(zoom)
                 .on("click", function(event) {
@@ -695,8 +697,8 @@ function RamaddaD3Display(displayManager, id, properties) {
                 .on("dblclick", function(event) {
                     myThis.dbclick(event)
                 })
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .append(TAG_G)
+                .attr("transform", HU.translate(margin.left, margin.top));
 
             // Define the Axis
             // 100 pixels for the legend... lets see if we keep it
@@ -712,12 +714,12 @@ function RamaddaD3Display(displayManager, id, properties) {
                 .orient("left");
 
             // Add Axis to the plot
-            this.svg.append("g")
+            this.svg.append(TAG_G)
                 .attr(ATTR_CLASS, "x axis")
-                .attr("transform", "translate(0," + this.displayHeight + ")")
+                .attr("transform", HU.translate(0,this.displayHeight))
                 .call(this.xAxis);
 
-            this.svg.append("g")
+            this.svg.append(TAG_G)
                 .attr(ATTR_CLASS, "y axis")
                 .call(this.yAxis);
 
@@ -881,8 +883,8 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .attr("stroke", function(d) {
                         return color(fieldIdx);
                     })
-                    .attr("height", 2)
-                    .attr("width", 40);
+                    .attr(ATTR_HEIGHT, 2)
+                    .attr(ATTR_WIDTH, 40);
 
                 this.svg.append("svg:text")
                     .attr(ATTR_CLASS, "legendElement")
@@ -1504,16 +1506,16 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 }
 
                 function drawFace(selection) {
-                    var svg = selection.append("svg")
-                        .attr("width", width)
-                        .attr("height", height);
+                    var svg = selection.append(TAG_SVG)
+                        .attr(ATTR_WIDTH, width)
+                        .attr(ATTR_HEIGHT, height);
                     var face = svg.selectAll("g.chernoff")
                         .data(data())
-                        .enter().append("g")
+                        .enter().append(TAG_G)
                         .attr(ATTR_CLASS, "chernoff")
                         .call(chernoff);
                     if (color)
-                        face.attr(ATTR_STYLE, HU.css('fill',color));
+                        face.attr(ATTR_STYLE, HU.css(CSS_FILL,color));
                 }
 
                 function draw(selection) {
@@ -1578,8 +1580,9 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    if(colorByField)
 		this.setProperty("sortFields",colorByField.getId());
-	    let html = HtmlUtil.tag("svg", [ATTR_ID, this.getDomId(ID_BUBBLES),
-					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
+	    let html = HtmlUtil.tag(TAG_SVG, [ATTR_ID, this.getDomId(ID_BUBBLES),
+					      ATTR_WIDTH,HU.perc(100),ATTR_HEIGHT,700,
+					      "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.setContents(html);
 	    let values;
 	    let min = 0;

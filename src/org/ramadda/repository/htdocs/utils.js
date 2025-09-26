@@ -84,10 +84,12 @@ var VALUE = "value";
 
 
 
+var TAG_G='g';
 var TAG_PRE= 'pre';
 var TAG_BR= 'br';
 var TAG_A = "a";
 var TAG_B = "b";
+var TAG_BODY = "body";
 var TAG_DIV = "div";
 var TAG_CANVAS = "canvas";
 var TAG_CENTER="center";
@@ -98,6 +100,7 @@ var TAG_INPUT = "input";
 var TAG_LABEL = "label";
 var TAG_LINK = "link";
 var TAG_LI = "li";
+var TAG_SVG = "svg";
 var TAG_SPAN = "span";
 var TAG_SELECT = "select";
 var TAG_OPTION = "option";
@@ -5557,6 +5560,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	solid = solid??'solid';
 	color = color ?? '#ccc';
 	return HU.px(width) + ' ' + solid +' ' + color;
+    },
+    translate:function(x,y) {
+	return 'translate(' + x +',' + y + ')';
     },
     px:function(v) {
 	return HU.getDimension(v,'px');

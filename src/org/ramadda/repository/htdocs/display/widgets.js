@@ -295,15 +295,15 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	d3.scaleLinear().domain([max, min]).range([INNER_HEIGHT, 0]);    
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
-    let tt = d3.select("body").append(TAG_DIV)	
+    let tt = d3.select(TAG_BODY).append(TAG_DIV)	
 	.attr(ATTR_CLASS, "sparkline-tooltip")				
 	.style(CSS_OPACITY, 0);
 
-    const svg = d3.select(dom).append('svg')
-	  .attr('width', w)
-	  .attr('height', h)
+    const svg = d3.select(dom).append(TAG_SVG)
+	  .attr(ATTR_WIDTH, w)
+	  .attr(ATTR_HEIGHT, h)
 	  .append('g')
-	  .attr('transform', 'translate(' + opts.theMargin.left + ',' + opts.theMargin.top + ')');
+	  .attr('transform', HU.translate(opts.theMargin.left, opts.theMargin.top));
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
@@ -462,12 +462,12 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append(TAG_DIV).attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
-    const svg = d3.select(dom).append('svg')
-	  .attr('width', w)
-	  .attr('height', h)
+    let tt = d3.select(TAG_BODY).append(TAG_DIV).attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
+    const svg = d3.select(dom).append(TAG_SVG)
+	  .attr(ATTR_WIDTH, w)
+	  .attr(ATTR_HEIGHT, h)
 	  .append('g')
-    //	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    //	  .attr('transform', HU.translate(margin.left, margin.top));
 
     let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
     let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
@@ -551,11 +551,11 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 
     let radius = Math.min(width, height) / 2 - margin
     let svg = d3.select(dom)
-	.append("svg")
-	.attr("width", width)
-	.attr("height", height)
+	.append(TAG_SVG)
+	.attr(ATTR_WIDTH, width)
+	.attr(ATTR_HEIGHT, height)
 	.append("g")
-	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+	.attr("transform", HU.translate(width / 2, height / 2));
     let data = {};
     array.forEach(tuple=>{
 	data[tuple[0]] = tuple[1];
