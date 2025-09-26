@@ -34,7 +34,8 @@ function BoundsFilter(display, properties) {
 	enabled:true,
 	getWidget: function() {
 	    let id = this.display.getDomId("boundsfilter");
-	    return HtmlUtils.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,"4px",CSS_MARGIN_RIGHT,"4px"),
+	    return HtmlUtils.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),
+						     CSS_MARGIN_RIGHT,HU.px(4)),
 				   ATTR_ID,id,ATTR_CLASS,"ramadda-clickable",
 				   ATTR_TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
 	},
@@ -308,7 +309,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else {
 		this.mySearch = null;
 	    }
-//	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
+	    //	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
 	},
 	getFilterValues:function() {
 	    if(!this.mySearch) this.prepareToFilter();
@@ -418,7 +419,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
 		if(this.doTags()) {
-//		    console.log("\tselected tags: " + this.selectedTags);
+		    //		    console.log("\tselected tags: " + this.selectedTags);
 		    return this.selectedTags ||[];
 		}
 	    }
@@ -466,7 +467,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			bar= $("#"+this.display.getProperty("tagDiv"));
 		    else
 			bar= this.display.jq(ID_TAGBAR);
-		    tagGroup = $(HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+		    tagGroup = $(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					 ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
 		}
 		
@@ -489,7 +490,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.inputFunc(this.fakeInput,null,this.selectedTags);
 	    }
 	},
-	    
+	
 	initWidget: function(inputFunc) {
 	    let _this= this;
 	    if(!this.isEnabled()) return;
@@ -546,12 +547,16 @@ function RecordFilter(display,filterFieldId, properties) {
 			    let _rv = rv.toLowerCase();
 			    if(_rv.indexOf(v)>0) {
 				html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-					      ATTR_STYLE,HU.css('white-space','nowrap','max-width','400px','overflow-x','hidden')],
-					      rv);
+					      ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+								CSS_MAX_WIDTH,HU.px(400),
+								CSS_OVERFLOW_X,'hidden')],
+					     rv);
 			    }
 			});
 			if(html!='') {
-			    html = HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto','padding','5px')], html);
+			    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+							     CSS_OVERFLOW_Y,'auto',
+							     CSS_PADDING,HU.px(5))], html);
 			    _this.suggestDialog =
 				HU.makeDialog({content:html,my:'left top',at:'left bottom',anchor:input});
 			    _this.suggestDialog.find('.ramadda-clickable').click(function() {
@@ -654,20 +659,20 @@ function RecordFilter(display,filterFieldId, properties) {
 
 
 	    /*
-	    if(!this.dependMySearch || !this.filterIDependOn.mySearch || !this.dependMySearch.values || !this.filterIDependOn.mySearch.values) {
-		console.log("checkDependency: not ready:" +  " my search:" + this.dependMySearch);
-		return;
-	    }
+	      if(!this.dependMySearch || !this.filterIDependOn.mySearch || !this.dependMySearch.values || !this.filterIDependOn.mySearch.values) {
+	      console.log("checkDependency: not ready:" +  " my search:" + this.dependMySearch);
+	      return;
+	      }
 
-	    let v1 = this.dependMySearch.values;
-	    let v2 = this.filterIDependOn.mySearch.values;
-	    if(v1.length == v2.length) {
-		let equals = true;
-		for(let i=0;i<v1.length && equals;i++)
-		    equals = v1[i] == v2[i];
-		if(equals) return;
-	    }
-*/
+	      let v1 = this.dependMySearch.values;
+	      let v2 = this.filterIDependOn.mySearch.values;
+	      if(v1.length == v2.length) {
+	      let equals = true;
+	      for(let i=0;i<v1.length && equals;i++)
+	      equals = v1[i] == v2[i];
+	      if(equals) return;
+	      }
+	    */
             let enums = this.getEnums(this.records);
 	    let widgetId = this.getFilterId(this.getId());
 	    let tmp = [];
@@ -737,9 +742,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	getIncludeAll:function() {
 	    return this.getProperty(this.getId() +".includeAll",
-			     this.getProperty(this.getId() +".filterIncludeAll",
-					      this.getProperty("filterIncludeAll", 
-							       this.getProperty("filter.includeAll", true))));
+				    this.getProperty(this.getId() +".filterIncludeAll",
+						     this.getProperty("filterIncludeAll", 
+								      this.getProperty("filter.includeAll", true))));
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    let labelVertical =   this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
@@ -752,7 +757,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	    let widgetStyle = "";
 	    if(this.hideFilterWidget)
-		widgetStyle = "display:none;";
+		widgetStyle = HU.css(CSS_DISPLAY,'none');
 	    fieldMap[this.getId()] = {
 		field: this.fields[0],
 		values:[],
@@ -790,7 +795,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push('true','false');
 		}
 
-//		let values = filterValues?filterValues.split(","):["-","true","false"];
+		//		let values = filterValues?filterValues.split(","):["-","true","false"];
 		widget = HU.select("",attrs,enums,this.dflt);
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
@@ -824,20 +829,20 @@ function RecordFilter(display,filterFieldId, properties) {
 			let w = this.getProperty(this.getId() +".filterImageWidth");
 			let h = this.getProperty(this.getId() +".filterImageHeight");
 			if(h) {
-			    imageAttrs.push("height");
+			    imageAttrs.push(ATTR_HEIGHT);
 			    imageAttrs.push(h);
 			}
 			if(w) {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push(w);
 			}
 			if(!h && !w) {
-			    imageAttrs.push("width");
+			    imageAttrs.push(ATTR_WIDTH);
 			    imageAttrs.push("50");
 			}
 			
 			imageAttrs.push(ATTR_STYLE);
-			imageAttrs.push(this.getProperty(this.getId() +".filterImageStyle","border-radius:50%;"));
+			imageAttrs.push(this.getProperty(this.getId() +".filterImageStyle",HU.css(CSS_BORDER_RADIUS,HU.perc(50))));
 		    }
 		    for(let j=0;j<enums.length;j++) {
 			let extra = "";
@@ -853,9 +858,9 @@ function RecordFilter(display,filterFieldId, properties) {
 
 			let style = this.getProperty(this.getId() +".filterItemStyle","");
 			if(color) {
-			    style += " background-color:" + color +"; ";
+			    style += HU.css(CSS_BACKGROUND_COLOR,color);
 			} else {
-			    style += " border:1px solid #ccc; "
+			    style += HU.css(CSS_BORDER,HU.border(1,'#ccc'));
 			}
 			
 			let clazz = " ramadda-hoverable ramadda-clickable display-filter-item display-filter-item-" + this.displayType +" ";
@@ -935,21 +940,26 @@ function RecordFilter(display,filterFieldId, properties) {
 			this.tagToCbx[value] = cbxId;
 			let cbx = HU.checkbox("",[ATTR_CLASS,"metadata-cbx",
 						  ATTR_ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [ATTR_CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
-			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,STYLE, HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()))], cbx);
+			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
+				       ATTR_STYLE,  HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()))], cbx);
 			cbxs.push(cbx);
 		    }); 
 		    this.tagCbxs  = cbxs;
 		    let clickId = this.getFilterId()+"_popup";
 		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
 		    label = label.replace(/ /g,"&nbsp;");
-		    let style = HU.css("white-space","nowrap", "line-height","1.5em",  CSS_MARGIN_TOP,"6px",CSS_PADDING_RIGHT,"5px");
+		    let style = HU.css(CSS_WHITE_SPACE,"nowrap",
+				       CSS_LINE_HEIGHT,HU.em(1.5),
+				       CSS_MARGIN_TOP,HU.px(6),
+				       CSS_PADDING_RIGHT,HU.px(5));
 		    if(doColor)
-			style+=HU.css("border","1px solid #ccc",CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()));
-		    else
-			style+=HU.css();
-		    widget= HU.div([ATTR_STYLE, style, ATTR_TITLE,"Click to select tag",
-				    ATTR_ID,clickId,ATTR_CLASS,"ramadda-clickable entry-toggleblock-label"],
-				   HU.makeToggleImage("fa-solid fa-plus","font-size:8pt;") +label);   
+			style+=HU.css(CSS_BORDER,HU.border(1,'#ccc'),
+				      CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()));
+		    widget= HU.div([ATTR_STYLE, style,
+				    ATTR_TITLE,"Click to select tag",
+				    ATTR_ID,clickId,
+				    ATTR_CLASS,"ramadda-clickable entry-toggleblock-label"],
+				   HU.makeToggleImage("fa-solid fa-plus",HU.css(CSS_FONT_SIZE,HU.pt(8))) +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
@@ -991,25 +1001,26 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValueMin = min;
 		let dfltValueMax = max;
 		if(Utils.isDefined(tmpMin)) {
-		    minStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
+		    minStyle = HU.css(CSS_BACKGROUND,TEXT_HIGHLIGHT_COLOR);
 		    dfltValueMin = parseFloat(tmpMin);
 		}
 		if(Utils.isDefined(tmpMax)) {
-		    maxStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
+		    maxStyle = HU.css(CSS_BACKGROUND,TEXT_HIGHLIGHT_COLOR);
 		    dfltValueMax = parseFloat(tmpMax);
 		}
 
 		let size = this.getProperty(this.getId()+'.filterWidgetSize',
-					    this.getProperty('filterWidgetSize', '60px'));
-		minStyle+=HU.css('width',size);
-		maxStyle+=HU.css('width',size);
+					    this.getProperty('filterWidgetSize', HU.px(60)));
+		minStyle+=HU.css(CSS_WIDTH,size);
+		maxStyle+=HU.css(CSS_WIDTH,size);
                 widget = HtmlUtils.input('',dfltValueMin,[ATTR_STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,
 							  ATTR_CLASS,'display-filter-range display-filter-input',
-							  ATTR_ID,widgetId+'_min','xsize',3,'fieldId',this.getId()]);
+							  ATTR_ID,widgetId+'_min',
+							  'fieldId',this.getId()]);
 		widget += '-';
                 widget += HtmlUtils.input('',dfltValueMax,[ATTR_STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,
 							   ATTR_CLASS,'display-filter-range display-filter-input',
-							   ATTR_ID,widgetId+'_max','xsize',3,'fieldId',this.getId()]);
+							   ATTR_ID,widgetId+'_max','fieldId',this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
                 widget =HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',
 						    ATTR_STYLE,widgetStyle,
@@ -1024,7 +1035,7 @@ function RecordFilter(display,filterFieldId, properties) {
 
 		if(selects) {
 		    if(!this.getProperty(this.getId()+'.filterDateShowRange',true)) {
-			widget  = HU.span([ATTR_STYLE,'display:none;'], widget);
+			widget  = HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,'none')], widget);
 		    }
 		    this.dateSelectId = widgetId+'_date_select';
 		    selects = selects.split(",").map(o=>{
@@ -1038,7 +1049,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			let name = HU.getUniqueId('radios_');
 			selects = Utils.mergeLists([{value:'',label:'All dates'}],selects);
 			select = HU.div([ATTR_ID,this.dateRadiosId,
-					 ATTR_STYLE,HU.css('text-align','left')], HU.radioGroup(name, selects));
+					 ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,CSS_LEFT)], HU.radioGroup(name, selects));
 		    } else {
 			selects = Utils.mergeLists([{value:'',label:'Select date'}],selects);
 			select= HU.select('',[ATTR_ID,widgetId+'_date_select','ignore',true],selects);
@@ -1046,24 +1057,24 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(labelVertical)
 			widget += select;
 		    else
-			widget=HU.span([],widget)+HU.span([ATTR_STYLE,'margin-left:5px'],select);
+			widget=HU.span([],widget)+HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],select);
 		}
 
             } else {
 		let filterValues = this.getProperty(this.getId()+".filterValues");
 		let dfltValue = this.getPropertyFromUrl('fv',filterValues);
-		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width),
+		let width = this.getProperty(this.getId() +".filterWidth",HU.px(150));		
+		let attrs =[ATTR_STYLE,widgetStyle+HU.css(CSS_WIDTH,HU.getDimension(width)),
 			    ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
-		attrs.push("width");
+		attrs.push(ATTR_WIDTH);
 		attrs.push(width);
 		if(placeholder) {
-		    attrs.push("placeholder");
+		    attrs.push(ATTR_PLACEHOLDER);
 		    attrs.push(placeholder);
 		} else {
 		    showLabel = false;
-		    attrs.push("placeholder");
+		    attrs.push(ATTR_PLACEHOLDER);
 		    attrs.push(widgetLabel);
 		}
 
@@ -1098,7 +1109,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HtmlUtils.div([ATTR_STYLE,"display:inline-block;"],(showLabel?widgetLabel:"") + widget+this.suffix);
+		    widget = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block')],
+					   (showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }
 	    if(!vertical)
@@ -1106,7 +1118,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.prefix) widget = this.prefix+widget;
 
 	    let show = this.getProperty(this.getId() +".filterShow",this.getProperty("filterShow",true));
-	    if(!show) widget=HU.div([ATTR_STYLE,'display:none;'], widget);
+	    if(!show) widget=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'none')], widget);
 
 	    return widget;
 	},
@@ -1162,7 +1174,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		allName+=' (' + records.length+')'
 		enums = [];
 		let includeAll = this.getIncludeAll();
-//		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
+		//		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
 		if(includeAll) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
@@ -1181,7 +1193,7 @@ function RecordFilter(display,filterFieldId, properties) {
 
 		if(this.filterIDependOn) {
 		    this.filterIDependOn.prepareToFilter();
-//		    console.log('getEnums: dependencys search info:',this.filterIDependOn.mySearch)
+		    //		    console.log('getEnums: dependencys search info:',this.filterIDependOn.mySearch)
 		}
 
 		records.forEach((record,idx)=>{
@@ -1325,7 +1337,7 @@ function TextMatcher (pattern,myId) {
         highlight: function(text,id) {
 	    if(id && this.myId && id!=this.myId) return text;
             for(var i=0;i<this.regexps.length;i++) {
-                text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
+                text  =  text.replace(this.regexps[i], HU.span([ATTR_STYLE,HU.css(CSS_BACKGROUND,TEXT_HIGHLIGHT_COLOR)],'$1'));
             }
             return text;
         },

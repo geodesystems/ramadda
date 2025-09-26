@@ -17,8 +17,8 @@ var DEFAULT_MAX = 100;
 var OUTPUTS = [
     {id: OUTPUT_CHOOSE,name: "Select Output"},
     //These are handled by the choose
-//    {id: OUTPUT_CSV,name: "CSV"},
-//    {id: OUTPUT_JSON, name: "JSON"},
+    //    {id: OUTPUT_CSV,name: "CSV"},
+    //    {id: OUTPUT_JSON, name: "JSON"},
     {id: OUTPUT_ZIP, name: "Download Files"},
     {id: OUTPUT_EXPORT, name: "Export"},
 ];
@@ -30,7 +30,7 @@ function getRamadda(id,forceNew) {
     if (!id) id = ramaddaBaseUrl;
     /*
       OpenSearch(http://asdasdsadsds);sdsadasdsa,...
-     */
+    */
 
 
     //check for the embed label
@@ -359,7 +359,7 @@ function RamaddaRepository(repositoryRoot) {
             this.metadataCachePending[key] = true;
 
             let url = this.repositoryRoot + "/metadata/list?metadata_type=" + type.getType() + "&response=json";
-//            console.log("getMetadata:" + type.getType() + " URL:" + url);
+	    //            console.log("getMetadata:" + type.getType() + " URL:" + url);
             let _this = this;
             let jqxhr = $.getJSON(url, function(data) {
                 let callbacks = _this.metadataCacheCallbacks[key];
@@ -518,7 +518,7 @@ function RamaddaRepository(repositoryRoot) {
             this.entryCache[entry.getId()] = entry;
         },
         getEntry: async function(id, callback) {
-//	    console.log("getEntry");
+	    //	    console.log("getEntry");
 	    let debug = false;
 	    if(id == null) {
 		console.log("Error in getEntry: entry id is null");
@@ -570,8 +570,8 @@ function RamaddaRepository(repositoryRoot) {
 
 
 /**
-This creates a list of Entry objects from the given JSON data. 
-If the given ramadda is null then use the global
+   This creates a list of Entry objects from the given JSON data. 
+   If the given ramadda is null then use the global
 */
 function createEntriesFromJson(data, ramadda) {
     if (ramadda == null) {
@@ -1282,7 +1282,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
                 listener = this.listener;
             }
             let _this = this;
-//            console.log("search url:" + this.url);
+	    //            console.log("search url:" + this.url);
             await $.getJSON(this.url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;

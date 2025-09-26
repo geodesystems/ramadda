@@ -55,7 +55,7 @@ function AreaWidget(display,arg) {
             html += HU.div([ATTR_CLASS,"ramadda-clickable",
 			    ATTR_TITLE, "Clear form",
 			    ATTR_ID,this.domId(ID_CLEAR)],
-			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
+			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
 			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
@@ -295,7 +295,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	d3.scaleLinear().domain([max, min]).range([INNER_HEIGHT, 0]);    
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
-    let tt = d3.select("body").append("div")	
+    let tt = d3.select("body").append(TAG_DIV)	
 	.attr(ATTR_CLASS, "sparkline-tooltip")				
 	.style(CSS_OPACITY, 0);
 
@@ -462,18 +462,18 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    let tt = d3.select("body").append("div").attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
+    let tt = d3.select("body").append(TAG_DIV).attr(ATTR_CLASS, "sparkline-tooltip").style(CSS_OPACITY, 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
 	  .append('g')
-//	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    //	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
     let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
     let getColor = (d,i,dflt)=>{
 	return "#000"
-//	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
+	//	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     console.log(JSON.stringify(range));
 
@@ -509,7 +509,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 
     if(doTooltip) {
 	svg.on("mouseover", function(event) {
-	    d3.select(this).attr("r", 10).style("fill", "red");
+	    d3.select(this).attr("r", 10).style(CSS_FILL, "red");
 	    let ele = $(dom);
 	    ele.attr('r', 20);
 	    if(true) return
@@ -580,7 +580,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	    return colorMap[d.data.key];
 	})
 	.attr("stroke", "black")
-	.style("stroke-width", "1px")
+	.style(CSS_STROKE_WIDTH, HU.px(1))
 	.style(CSS_OPACITY, 0.7)
 }
 
@@ -785,14 +785,15 @@ let Gfx = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
+	//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
 	let id = HtmlUtils.getUniqueId();
 	opts.scale=+opts.scale;
 	let scale = opts.scale;
-//	scale=1;
+	//	scale=1;
 	opts.w*=opts.scale;
 	opts.h*=opts.scale;
-	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
+	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,'none'),
+						   ATTR_ID,id,ATTR_WIDTH,opts.w,ATTR_HEIGHT,opts.h]));
 	let canvas = document.getElementById(id);
 	let ctx = canvas.getContext("2d");
 	let cnt = 0;
@@ -813,7 +814,7 @@ let Gfx = {
 	    let s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
 	    let n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
 	    let s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
-//	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
+	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		let pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
 		let dy = n2.lat-pt.lat;
@@ -835,7 +836,7 @@ let Gfx = {
 		let lon = record.getLongitude();
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
-//		console.log("x:" + x +" " + y +" lat:" + lat +" " + lon);
+		//		console.log("x:" + x +" " + y +" lat:" + lat +" " + lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let colorValue = 0;
 		if(opts.colorBy && opts.colorBy.index>=0) {
@@ -852,7 +853,7 @@ let Gfx = {
 		if(x>=cols) x=cols-1;
 		if(y>=rows) y=rows-1;
 		points.push({x:x,y:y,colorValue:colorValue,r:record});
-//		console.log(x+" " + y +" " + colorValue);
+		//		console.log(x+" " + y +" " + colorValue);
 	    });
 
 
