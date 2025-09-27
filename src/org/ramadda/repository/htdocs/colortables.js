@@ -130,7 +130,7 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),
+	    let attrs = [ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(2),CSS_WIDTH,HU.px(400)),
 			 ATTR_TITLE,colortable.id,
 			 'data-corpus',colortable.id +' '+ category,
 			 ATTR_CLASS, "ramadda-colortable-select","colortable",colortable.id];
@@ -200,7 +200,7 @@ $.extend(Utils,{
 		    };
                     ct.push(v.color);
                 }  else {
-                    style = HU.css("border-top","1px solid #ccc");
+                    style = HU.css(CSS_BORDER_TOP,HU.border(1,'#ccc'));
                 }
 		let info = colorInfo[v.color];
                 let value = v.value;
@@ -279,9 +279,9 @@ $.extend(Utils,{
 
                 let delim = SPACE;
 //		if(!options.horizontal && !options.tooltips)                    delim="<br>";
-		let dotStyle = HU.css("background", color);
-		if(options.dotWidth) dotStyle+=HU.css('width',HU.getDimension(options.dotWidth),
-						      'height',HU.getDimension(options.dotWidth));
+		let dotStyle = HU.css(CSS_BACKGROUND, color);
+		if(options.dotWidth) dotStyle+=HU.css(CSS_WIDTH,HU.getDimension(options.dotWidth),
+						      CSS_HEIGHT,HU.getDimension(options.dotWidth));
 		if(options.tooltips) {
                     html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
 				    ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label],
@@ -319,9 +319,12 @@ $.extend(Utils,{
 	    if(!label)
 		label = options.labels?options.labels[idx]:"";
             let fg = Utils.getForegroundColor(ct[i]);
-	    let labelStyle=HU.css('padding-left','4px','padding-right','4px',
-				  'background', ct[i], ATTR_WIDTH,"100%",
-				  "min-height", options.height,'color',fg);
+	    let labelStyle=HU.css(CSS_PADDING_LEFT,HU.px(4),
+				  CSS_PADDING_RIGHT,HU.px(4),
+				  CSS_BACKGROUND, ct[i],
+				  CSS_WIDTH,HU.perc(100),
+				  CSS_MIN_HEIGHT, options.height,
+				  CSS_COLOR,fg);
             if(options.labelStyle) {
 		labelStyle+=options.labelStyle;
             }
@@ -329,13 +332,16 @@ $.extend(Utils,{
                 html += HU.td(["data-value",val,
 			       title?ATTR_TITLE:'nulltitle',title??'',
 			       ATTR_CLASS, "display-colortable-slice",	
-			       ATTR_STYLE, HU.css('min-width','1px','height','1.5em','background', ct[i],"color",fg),
+			       ATTR_STYLE, HU.css(CSS_MIN_WIDTH,HU.px(1),
+						  CSS_HEIGHT,HU.em(1.5),
+						  CSS_BACKGROUND, ct[i],
+						  CSS_COLOR,fg),
 			       ATTR_WIDTH, tdw], '');
 	    } else {
 		attrs.push(ATTR_STYLE);
 		attrs.push(labelStyle);
                 html += HU.div(["data-value",val,ATTR_CLASS, "display-colortable-slice",
-				ATTR_STYLE, HU.css("background",ct[i])],
+				ATTR_STYLE, HU.css(CSS_BACKGROUND,ct[i])],
 			       HU.div(attrs, label||""));
 	    }
         });
@@ -358,11 +364,15 @@ $.extend(Utils,{
             let bin ={};
             ct.forEach(color=>{
 		let info = colorInfo[color];
-                let cell = HU.div([ATTR_STYLE,"padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
+                let cell = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),
+						     CSS_VERTICAL_ALIGN,'top',
+						     CSS_DISPLAY,'inline-block',
+						     CSS_WIDTH,tdw,
+						     CSS_MAX_WIDTH,tdw,
+						     CSS_OVERFLOW_X,'auto')],info?info.label:'');
                 html+=cell;
-//              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });
-            html+="</div>"
+            html+=HU.close(TAG_DIV);
         }
         html += HU.close(TAG_DIV);
 

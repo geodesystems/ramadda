@@ -107,7 +107,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         initDisplay: async function() {
             this.createUI();
             var imports = HtmlUtils.div([ATTR_ID, this.getDomId(ID_IMPORTS)]);
-            var contents = imports + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "&nbsp;&nbsp;Loading...") +
+            var contents = imports + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells",
+						    ATTR_ID, this.getDomId(ID_CELLS)], SPACE2+'Loading...') +
                 HtmlUtils.div([ATTR_ID, this.getDomId(ID_CELLS_BOTTOM)]);
             var popup = HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU)]);
             contents = HtmlUtils.div([ATTR_ID, this.getDomId(ID_NOTEBOOK)], popup + contents);
@@ -221,7 +222,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 render: (value) => {
                     if (typeof value === "string") {
                         if (value.split("\n").length > 1) {
-                            return HtmlUtils.div([ATTR_STYLE, " white-space: pre;"], value);
+                            return HtmlUtils.div([ATTR_STYLE, HU.css(CSS_WHITE_SPACE,'pre')], value);
                         }
                     }
                     return value
@@ -433,13 +434,16 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 return "";
             }
             var contents = this.jq(ID_CONSOLE_OUTPUT).html();
-            var consoleToolbar = HtmlUtils.div([ATTR_ID, this.getDomId(ID_CONSOLE_TOOLBAR), ATTR_CLASS, "display-notebook-console-toolbar", ATTR_TITLE, "click to hide/show console"],
+            var consoleToolbar = HtmlUtils.div([ATTR_ID, this.getDomId(ID_CONSOLE_TOOLBAR),
+						ATTR_CLASS, "display-notebook-console-toolbar",
+						ATTR_TITLE, "click to hide/show console"],
                 HtmlUtils.leftRight("",
                     HtmlUtils.span([ATTR_CLASS, "ramadda-image-link", ATTR_TITLE, "Clear", "what", "clear"],
                         HtmlUtils.image(Utils.getIcon("clear.png")))));
             return HtmlUtils.div([ATTR_ID, this.getDomId(ID_CONSOLE), ATTR_CLASS, "display-notebook-console"],
                 consoleToolbar +
-                HtmlUtils.div([ATTR_CLASS, "display-notebook-console-output", ATTR_ID, this.getDomId(ID_CONSOLE_OUTPUT)], contents || ""));
+				 HtmlUtils.div([ATTR_CLASS, "display-notebook-console-output",
+						ATTR_ID, this.getDomId(ID_CONSOLE_OUTPUT)], contents || ""));
         },
 
         makeCellLayout: function() {
@@ -447,8 +451,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             var consoleContainer = HtmlUtils.div([ATTR_ID, this.getDomId(ID_CONSOLE_CONTAINER)]);
             this.jq(ID_CELLS_BOTTOM).html("");
             if (this.showInput() && this.layout == "horizontal") {
-                var left = HtmlUtils.div([ATTR_ID, this.getDomId(ID_INPUTS), ATTR_STYLE, "width:100%;"]);
-                var right = HtmlUtils.div([ATTR_ID, this.getDomId(ID_OUTPUTS), ATTR_STYLE, "width:100%;"]);
+                var left = HtmlUtils.div([ATTR_ID, this.getDomId(ID_INPUTS),
+					  ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100))]);
+                var right = HtmlUtils.div([ATTR_ID, this.getDomId(ID_OUTPUTS),
+					   ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100))]);
                 var center = HtmlUtils.div([], "");
                 left += consoleContainer;
                 html = "<table style='table-layout:fixed;' border=0 width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + "</td></tr></table>";
@@ -572,7 +578,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.console) return;
             if (!from) from = "";
             else from = HtmlUtils.div([ATTR_CLASS, "display-notebook-console-from"], from);
-            var block = HtmlUtils.div([ATTR_STYLE, "margin-left:5px;"], msg);
+            var block = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_MARGIN_LEFT,HU.px(5))], msg);
             var html = "<table width=100%><tr valign=top><td width=10>" + icon + "</td><td>" +
                 block +
                 "</td><td width=10>" +
@@ -616,7 +622,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     var cell = this.cells[i];
                     cell.index = i + 1;
                     html += HtmlUtils.openTag("div", [ATTR_CLASS, clazz]);
-                    html += HtmlUtils.openTag("div", [ATTR_STYLE, "max-width:100%;overflow-x:auto;padding:0px;margin:px;"]);
+                    html += HtmlUtils.openTag("div", [ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
+									 CSS_OVERFLOW_X,'auto',
+									 CSS_PADDING,HU.px(0),
+									 CSS_MARGIN,px)]);
                     html += HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id + "_cellinput"], "");
                     html += HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id + "_celloutput"], "");
                     html += HtmlUtils.closeTag("div");
@@ -1099,10 +1108,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run this cell", "run") +
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all", "runall");
 
-            var runIcon = HtmlUtils.image(icon_blank, ["align", "right", ATTR_ID, this.getDomId(ID_RUN_ICON), ATTR_STYLE, "padding-bottom:2px;padding-top:2px;padding-right:5px;"]);
+            var runIcon = HtmlUtils.image(icon_blank, [ATTR_ALIGN, "right", ATTR_ID, this.getDomId(ID_RUN_ICON),
+						       ATTR_STYLE, HU.css(CSS_PADDING_BOTTOM,HU.px(2),
+									  CSS_PADDING_TOP,HU.px(2),
+									  CSS_PADDING_RIGHT,HU.px(5))]);
             buttons = buttons + "&nbsp;" + HtmlUtils.span([ATTR_ID, this.getDomId(ID_CELLNAME)], this.cellName);
             buttons += runIcon;
-            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", ATTR_TITLE, "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons);
+            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER),
+					ATTR_TABINDEX, "0",
+					ATTR_TITLE, "Click to toggle input\nShift-click to clear output"], SPACE + buttons);
 
             //Strip out the meta chunks
             var content = "";
@@ -1142,7 +1156,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.inputToolbar = h;
                 this.jq(ID_INPUT_TOOLBAR).html(h);
                 $("#" + this.editId + "_prefix").html(HtmlUtils.span([ATTR_ID, this.getDomId("toolbar_notebook"),
-                    ATTR_STYLE, "border-right:1px #ccc solid;",
+								      ATTR_STYLE, HU.css(CSS_BORDER_RIGHT,HU.border(1,'#ccc')),
                     ATTR_CLASS, "ramadda-menubar-button"
                 ], "Notebook"));
                 this.jq("toolbar_notebook").click(() => this.showNotebookMenu());
@@ -1273,7 +1287,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let menu = "";
 	    let open = HU.open('div',[ATTR_CLASS,'display-notebook-menu-block']);
 	    let close = '</div>';
-            menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", ATTR_STYLE, "width:100%;", ATTR_ID, _this.getDomId(ID_CELLNAME_INPUT)]);
+            menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, [ATTR_PLACEHOLDER, "Cell name",
+									ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100)),
+									ATTR_ID, _this.getDomId(ID_CELLNAME_INPUT)]);
 
             menu += open;
             menu += "<table  width=100%> ";
@@ -1491,7 +1507,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var menu = "";
             menu += "Are you sure you want to delete this cell?<br>";
             menu += HtmlUtils.span([ATTR_CLASS, "ramadda-link", "what", "yes"], "Yes");
-            menu += HtmlUtils.span([ATTR_STYLE, "margin-left:50px;", ATTR_CLASS, "ramadda-link", "what", "cancel"], "No");
+            menu += HtmlUtils.span([ATTR_STYLE, HU.css(CSS_MARGIN_LEFT,HU.px(50)),
+				    ATTR_CLASS, "ramadda-link", "what", "cancel"], "No");
             var popup = this.getPopup();
 
             popup.html(HtmlUtils.div([ATTR_CLASS, "ramadda-popup-inner"], menu));
@@ -1827,7 +1844,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             chunk.div.set(content);
         },
         processCss: async function(chunk) {
-            var css = HtmlUtils.tag(ATTR_STYLE, ["type", "text/css"], chunk.getContent());
+            var css = HtmlUtils.tag(ATTR_STYLE, [ATTR_TYPE, "text/css"], chunk.getContent());
             this.rawOutput += css + "\n";
             chunk.output = css;
             chunk.div.set(css);
@@ -1930,7 +1947,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                             if (isJson) {
                                 chunk.div.append(Utils.formatJson(results));
                             } else {
-                                chunk.div.append(HtmlUtils.pre([ATTR_STYLE, "max-width:100%;overflow-x:auto;"], results));
+                                chunk.div.append(HtmlUtils.pre([ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
+										   CSS_OVERFLOW_X,'auto')],
+							       results));
                             }
                         }
                     }
@@ -2020,7 +2039,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let _this = this;
             let divId = HtmlUtils.getUniqueId();
             var wikiCallback = function(html) {
-                var h = HtmlUtils.div([ATTR_ID, divId, ATTR_STYLE], html);
+                var h = HtmlUtils.div([ATTR_ID, divId, ATTR_STYLE,''], html);
                 chunk.div.set(h);
                 chunk.output = h;
             }
@@ -2286,15 +2305,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         addToToolbar: function(id, entry, toolbarItems) {
             var call = "getHandler('" + id + "').setId('" + entry.getId() + "')";
             var icon = HtmlUtils.image(ramaddaBaseUrl + "/icons/setid.png", ["border", 0, ATTR_TITLE, "Set ID in Input"]);
-            toolbarItems.unshift(HtmlUtils.tag(TAG_A, ["onclick", call], icon));
+            toolbarItems.unshift(HtmlUtils.tag(TAG_A, [ATTR_ONCLICK, call], icon));
             var call = "getHandler('" + id + "').selectEntry('" + entry.getId() + "')";
             var icon = HtmlUtils.image(ramaddaBaseUrl + "/icons/circle-check.png", ["border", 0, ATTR_TITLE, "Select Entry"]);
-            toolbarItems.unshift(HtmlUtils.tag(TAG_A, ["onclick", call], icon));
+            toolbarItems.unshift(HtmlUtils.tag(TAG_A, [ATTR_ONCLICK, call], icon));
         },
         getEntryPrefix: function(id, entry) {
             this.entries[entry.getId()] = entry;
             var call = "getHandler('" + id + "').cdEntry('" + entry.getId() + "')";
-            return HtmlUtils.div([ATTR_STYLE, "padding-right:4px;", ATTR_TITLE, "cd to entry", "onclick", call, ATTR_CLASS, "ramadda-link"], HtmlUtils.image(ramaddaBaseUrl + "/icons/go.png"));
+            return HtmlUtils.div([ATTR_STYLE, HU.css(CSS_PADDING_RIGHT,HU.px(4)),
+				  ATTR_TITLE, "cd to entry", ATTR_ONCLICK, call,
+				  ATTR_CLASS, "ramadda-link"], HtmlUtils.image(ramaddaBaseUrl + "/icons/go.png"));
         },
         displayEntries: function(entries, div) {
             if (div == null) div = new Div();
@@ -2308,7 +2329,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 showIndex: false,
                 suffix: Utils.getUniqueId("_shell_")
             });
-            div.set(HtmlUtils.div([ATTR_STYLE, "max-height:200px;overflow-y:auto;"], html));
+            div.set(HtmlUtils.div([ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')], html));
             this.outputUpdated();
         },
         getEntryFromArgs: function(args, dflt) {
@@ -2450,10 +2471,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 showIndex: false,
                 suffix: Utils.getUniqueId("_shell_")
             });
-            div.set(HtmlUtils.div([ATTR_STYLE, "max-height:200px;overflow-y:auto;"], html));
+            div.set(HtmlUtils.div([ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(200),
+						      CSS_OVERFLOW_Y,'auto')], html));
             return div;
-            //            var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-            //            return "&gt; "+ icon +" " +entry.getName();
         },
         processCommand_pwd: async function(line, toks, div) {
             if (div == null) div = new Div();

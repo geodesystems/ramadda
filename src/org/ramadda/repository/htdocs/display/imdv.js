@@ -2604,7 +2604,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
 					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], "Cancel"));
 		
-		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], widget+"<br>"+andZoom + buttons);
+		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], widget+HU.br()+andZoom + buttons);
 		
 		let dialog =  HU.makeDialog({content:widget,anchor:this.jq(ID_MENU_FILE),title:"Map Display Attributes",header:true,draggable:true,remove:false});
 
@@ -2657,7 +2657,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,ATTR_VALIGN,'top',
 					   ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc')),
-					   "glyphid",mapGlyph.getId()]);
+					   ID_GLYPH_ID,mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
 		features+=tds;
 		features+=HU.close(TAG_TR);
@@ -2668,7 +2668,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_LIST).html(features);
 	    this.initGlyphButtons(this.jq(ID_LIST));
 	    this.jq(ID_LIST).find('.imdv-feature-visible').change(function(){
-		let id  = $(this).attr("glyphid");
+		let id  = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph   = _this.findGlyph(id);
 		if(!mapGlyph) {
 		    console.error("No map glyph from id:" + id);
@@ -2678,7 +2678,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    this.jq(ID_LIST).find(".imdv-feature").click(function(event) {
 		let clazz  = LIST_SELECTED_CLASS;
-		let id  = $(this).attr("glyphid");
+		let id  = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph   = _this.findGlyph(id);
 		if(!mapGlyph) {
 		    console.error("No map glyph from id:" + id);
@@ -2918,7 +2918,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(!mapGlyph) return;
 	    let style = mapGlyph.style;
-	    let html =HU.div([STYLE,HU.css('margin',HU.px(8))], 'Feature: ' + mapGlyph.type); 
+	    let html =HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8))], 'Feature: ' + mapGlyph.type); 
 	    this.redraw(mapGlyph);
 	    if(mapGlyph.image && Utils.isDefined(mapGlyph.image.opacity)) {
 		mapGlyph.style.imageOpacity=mapGlyph.image.opacity;
@@ -3148,7 +3148,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.input("",v,[ATTR_CLASS,'ramadda-imdv-color',ID,domId,"size",8]);
 			    widget+=SPACE1;
 			    widget +=  HU.input("",v,[ATTR_STYLE,HU.css(CSS_BORDER_RADIUS,'var(--default-radius)'),
-						      'type','color','baseid',domId,ATTR_CLASS,'ramadda-imdv-color-hidden',
+						      ATTR_TYPE,'color','baseid',domId,ATTR_CLASS,'ramadda-imdv-color-hidden',
 						      ATTR_ID,domId+'colorinput',ATTR_SIZE,8]);
 
 			    /*
@@ -3202,15 +3202,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.input("",v,[ATTR_ID,domId,"size",size])+HU.space(4) +
 				
 			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',
-				    ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
-										  CSS_WIDTH,HU.px(200))],"");
+				    ATTR_CLASS,'ramadda-slider',
+				    ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+						      CSS_WIDTH,HU.px(200))],"");
 
 			} else if(prop.toLowerCase().indexOf("opacity")>=0) {
 			    if(!v || v=="") v= 1;
 			    widget =  HU.input("",v,[ATTR_ID,domId,"size",4])+HU.space(4) +
 				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',
-					ATTR_CLASS,'ramadda-slider',ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
-										      CSS_WIDTH,HU.px(200))],"");
+					ATTR_CLASS,'ramadda-slider',
+					ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+							  CSS_WIDTH,HU.px(200))],"");
 			} else  if (rows>1) {
 			    widget =
 				HU.textarea("",v,[ATTR_ID,this.domId(id),"rows",rows,"cols",size]);
@@ -3276,15 +3278,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let tick = HU.image(icon_downdart,
 				[ATTR_ID,
 				 this.domId('level_range_tick'),
-				 ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,HU.px(0))]);
+				 ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,HU.px(0))]);
 	    let sample1 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'),
 				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
-				    ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_LEFT,HU.px(0),
+				    ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_LEFT,HU.px(0),
 						      CSS_BOTTOM,HU.px(0)),
 				    ATTR_WIDTH,HU.px(120)]);
 	    let sample2 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'),
 				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
-				    ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_RIGHT,HU.px(0),
+				    ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
 						      CSS_BOTTOM,HU.px(0)),
 				    ATTR_WIDTH,HU.px(120)]);	    
 	    let container = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_POSITION,'relative')],
@@ -3575,7 +3577,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    HU.tag(TAG_CANVAS,[ATTR_ID,_this.domId('clippath_canvas'),
 					       ATTR_WIDTH,image.width(),
 					       ATTR_HEIGHT,image.height(),					     
-					       ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+					       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 								 CSS_POINTER_EVENTS,'none',
 								 CSS_LEFT,HU.px(0),CSS_TOP,HU.px(0),
 								 CSS_BACKGROUND,'transparent')]));
@@ -3988,10 +3990,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let style = HU.css(CSS_MARGIN,HU.px(1));
 	    let r = this.dialogRectangle??{
 	    };
-	    html+=HU.center(HU.input('',r.n,[ATTR_STYLE, style,ATTR_ID,this.domId('_north'),ATTR_SIZE,'6','placeholder','North']));
-	    html+=HU.input('',r.w,[ATTR_STYLE, style,ATTR_ID,this.domId('_west'),ATTR_SIZE,'6','placeholder','West']);
-	    html+=HU.input('',r.e,[ATTR_STYLE, style,ATTR_ID,this.domId('_east'),ATTR_SIZE,'6','placeholder','East']);
-	    html+=HU.center(HU.input('',r.s,[ATTR_STYLE, style,ATTR_ID,this.domId('_south'),ATTR_SIZE,'6','placeholder','South']));
+	    html+=HU.center(HU.input('',r.n,[ATTR_STYLE, style,ATTR_ID,this.domId('_north'),ATTR_SIZE,'6',ATTR_PLACEHOLDER,'North']));
+	    html+=HU.input('',r.w,[ATTR_STYLE, style,ATTR_ID,this.domId('_west'),ATTR_SIZE,'6',ATTR_PLACEHOLDER,'West']);
+	    html+=HU.input('',r.e,[ATTR_STYLE, style,ATTR_ID,this.domId('_east'),ATTR_SIZE,'6',ATTR_PLACEHOLDER,'East']);
+	    html+=HU.center(HU.input('',r.s,[ATTR_STYLE, style,ATTR_ID,this.domId('_south'),ATTR_SIZE,'6',ATTR_PLACEHOLDER,'South']));
 	    
 	    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
@@ -6099,7 +6101,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				ATTR_ID,this.domId(ID_ADDRESS_CLEAR),ATTR_TITLE,'Clear',ATTR_CLASS,CLASS_CLICKABLE],
 			       HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')])) +
 			' ' +
-			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 										      CSS_RIGHT,HU.px(0),
 										      CSS_DISPLAY,'inline-block',
 										      CSS_MARGIN_RIGHT,HU.px(2),
@@ -6174,11 +6176,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    legendStyle+=HU.css(pos,legendPosition[pos]);
 		}
 	    });
-	    if(legendStyle=='') legendStyle='left:50px;top:20px;'
+	    if(legendStyle=='') legendStyle=HU.css(CSS_LEFT,HU.px(50),CSS_TOP,HU.px(20));
 
 
 	    //gotta have this here or else the draggable sets it to relative
-	    legendStyle+=HU.css(CSS_POSITION,'absolute');
+	    legendStyle+=HU.css(CSS_POSITION,POSITION_ABSOLUTE);
 	    let innerDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP_WRAPPER),
 				   ATTR_CLASS,'imdv-legend-map-wrapper',ATTR_STYLE,legendStyle]);
 	    let inner = $(innerDiv);

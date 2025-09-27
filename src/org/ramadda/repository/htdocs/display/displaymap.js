@@ -183,8 +183,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    height = HU.getDimension(height);
             extraStyle += HU.css(ATTR_HEIGHT, height);
 
-	    let map =HU.div(["tabindex","1",ATTR_CLASS, "display-map-map ramadda-expandable-target", ATTR_STYLE,
-			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
+	    let map =HU.div([ATTR_TABINDEX,"1",ATTR_CLASS, "display-map-map ramadda-expandable-target",
+			     ATTR_STYLE,  extraStyle,
+			     ATTR_ID, this.domId(ID_MAP)]);
 
 	    let mapContainer = HU.div([ATTR_CLASS,"ramadda-map-container",ATTR_ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
@@ -229,7 +230,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(_this.regionsDialog) _this.regionsDialog.remove();		
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
-	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
+	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",
+			   ATTR_ID,id,
 			   ATTR_STYLE,HU.css(CSS_MARGIN,HU.em(1),
 					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
@@ -1996,7 +1998,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		style+="display:none;";
 	    }		
 
-            let html =  HU.div([ATTR_STYLE,style,ATTR_CLASS, "display-inner-contents",
+            let html =  HU.div([ATTR_STYLE,style,
+				ATTR_CLASS, "display-inner-contents",
 				ATTR_ID,this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
@@ -3279,7 +3282,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 			    let url = urlField.getValue(record);
 			    if(Utils.stringDefined(url)) {
-				value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']) + HU.space(1) +value;
+				value=HU.href(url,HU.getIconImage('fas fa-link',null,
+								  [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(8))]),
+					      [ATTR_TARGET,'_link']) + HU.space(1) +value;
 			    }
 			}
 			html+= HU.span([ATTR_TITLE, title, ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
@@ -3297,7 +3302,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getTocWidth()) {
 		    style+=HU.css(CSS_MIN_WIDTH,this.getTocWidth());
 		}
-		html = HU.div([ATTR_CLASS, "display-map-toc",ATTR_STYLE,style,ATTR_ID, this.domId("toc")],html);
+		html = HU.div([ATTR_CLASS, "display-map-toc",
+			       ATTR_STYLE,style,
+			       ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		let _this = this;
@@ -3886,7 +3893,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.htmlLayerId =this.getUniqueId(ID_HTMLLAYER);
 		this.htmlPopupLayerId =this.getUniqueId('popup');
 		this.jq(ID_MAP).append(HU.div([ATTR_ID,this.htmlPopupLayerId,
-					       ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+					       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 								 CSS_WIDTH,HU.perc(100),
 								 CSS_LEFT,HU.px(0),
 								 CSS_TOP,HU.px(0),
@@ -3977,7 +3984,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    HU.div([ATTR_ID,id,  ATTR_CLASS,'display-map-html-item',
 			    ATTR_STYLE,style +HU.css(CSS_LINE_HEIGHT,HU.px(0),
 						     CSS_Z_INDEX,'1000',
-						     CSS_POSITION,'absolute',
+						     CSS_POSITION,POSITION_ABSOLUTE,
 						     CSS_LEFT, HU.px((px.x-w/2-cleft)),
 						     CSS_TOP, HU.px((px.y-h/2-ctop)))]);
 		let label = '';
@@ -3986,7 +3993,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(Utils.stringDefined(label)) {
 		    label  = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
-						       CSS_POSITION,'absolute',
+						       CSS_POSITION,POSITION_ABSOLUTE,
 						       CSS_FONT_SIZE,HU.pt(8),
 						       CSS_TOP,HU.px(25),
 						       CSS_LEFT,HU.px(10))],label);
@@ -3997,7 +4004,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    ATTR_STYLE,style +HU.css(CSS_DISPLAY,DISPLAY_NONE,
 						     CSS_LINE_HEIGHT,HU.px(0),
 						     CSS_Z_INDEX,'2001',
-						     CSS_POSITION,'absolute',
+						     CSS_POSITION,POSITION_ABSOLUTE,
 						     CSS_LEFT,HU.px(0),
 						     CSS_TOP,HU.px(0))],label);
 		this.htmlLayer += html;
@@ -5340,7 +5347,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
-		    if(label) legend=HU.div([ATTR_STYLE,'text-align:center;font-weight:bold'],label)+legend;
+		    if(label) legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',CSS_FONT_WEIGHT,'bold')],label)+legend;
 		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([ATTR_STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);

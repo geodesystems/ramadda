@@ -221,7 +221,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	    
 	    let qid = 'id_' + (cnt++);
 	    let guid= HU.getUniqueId('');
-	    let out = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,'1px solid transparent',CSS_FONT_WEIGHT,'bold'),
+	    let out = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'transparent'),CSS_FONT_WEIGHT,'bold'),
 			      ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);

@@ -5368,7 +5368,8 @@ RepositoryMap.prototype = {
         if (marker.locationKey != null) {
             let markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
-		let div = HU.div([ATTR_STYLE,HU.css('border-bottom:1px solid #ccc;margin-top:8px;margin-bottom:8px;')]);
+		let div = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),CSS_MARGIN_TOP,HU.px(8),
+						    CSS_MARGIN_BOTTOM,HU.px(8))]);
 		if(debugPopup)
 		    console.log('showMarkerPopup: seenMarkers:', markers.length);
 		let textList = [];

@@ -244,7 +244,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    }
 		    let style = HU.css(CSS_WIDTH,HU.px(cellWidth),
 				       CSS_HEIGHT, HU.px(height-vOffset),
-				       CSS_POSITION,'absolute',
+				       CSS_POSITION,POSITION_ABSOLUTE,
 				       CSS_LEFT,HU.px(0),
 				       CSS_TOP, HU.px(vOffset));
 		    let innerDiv = HU.div([ATTR_ID, innerId, ATTR_STYLE,style]);
@@ -281,7 +281,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if(!Utils.isDefined(index)) return;
 	    this.selectedCell = contents.find(HU.attrSelect(RECORD_INDEX, index));
 	    this.selectedBorder = this.selectedCell.css(CSS_BORDER);
-	    this.selectedCell.css(CSS_BORDER,"1px solid red");
+	    this.selectedCell.css(CSS_BORDER,HU.border(1,'red'));
 	},
     })}
 
@@ -434,7 +434,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		this.tooltipDiv = d3.select("body").append("div")
 		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
-		    .style(CSS_POSITION, "absolute")
+		    .style(CSS_POSITION, POSITION_ABSOLUTE)
 		    .style(CSS_BACKGROUND, "#fff")
 	    }
 	    this.clearTooltip();

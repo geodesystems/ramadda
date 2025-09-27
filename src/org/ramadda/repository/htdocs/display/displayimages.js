@@ -465,7 +465,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
 	    let block = this.find(select);
 	    blocks.css(CSS_BORDER,null);
-	    block.css(CSS_BORDER,"1px solid " +this.getHighlightColor());
+	    block.css(CSS_BORDER,HU.border(1,this.getHighlightColor()));
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
@@ -607,9 +607,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let lbl = HU.div([ATTR_CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
 		    if(topLbl!="")
-			topLbl = HU.href(urlField.getValue(record), topLbl,["target","_target"]);
-		    lbl = HU.href(urlField.getValue(record), lbl,["target","_target"]);
-		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
+			topLbl = HU.href(urlField.getValue(record), topLbl,[ATTR_TARGET,"_target"]);
+		    lbl = HU.href(urlField.getValue(record), lbl,[ATTR_TARGET,"_target"]);
+		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,[ATTR_TARGET,"_target"]);
 		    galleryLabel = galleryLabel.replace(/"/g,"'");
 		}
 		if(!showBottomLabel)
@@ -689,7 +689,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    blocks.mouseenter(function() {
 		$(this).attr("oldborder",$(this).css(CSS_BORDER));
-		$(this).css(CSS_BORDER,"1px solid " + _this.getHighlightColor());
+		$(this).css(CSS_BORDER,HU.border(1,_this.getHighlightColor()));
 	    });
 	    blocks.mouseleave(function() {
 		$(this).css(CSS_BORDER,$(this).attr("oldborder"));
@@ -775,10 +775,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,"1px solid " +this.getHighlightColor(),
+	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,this.getHighlightColor()),
 						 CSS_WIDTH,HU.px(20),CSS_HEIGHT,HU.px(20),
 						 CSS_LEFT,HU.px(10),CSS_TOP,HU.px(10),
-						 CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+						 CSS_DISPLAY,"none",CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),
 			       ATTR_ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
@@ -793,7 +793,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 							    CSS_HEIGHT,HU.px(this.popupHeight),
 							    CSS_OVERFLOW_Y,"hidden",
 							    CSS_OVERFLOW_X,"hidden",
-							    CSS_POSITION,"absolute",
+							    CSS_POSITION,POSITION_ABSOLUTE,
 							    CSS_TOP,HU.px(0),
 							    CSS_LEFT, HU.px(imageWidth))],""));
 
@@ -824,8 +824,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
-		thumbs.css(CSS_BORDER,"1px solid transparent");
-		thumb.css(CSS_BORDER,"1px solid " + this.getHighlightColor());
+		thumbs.css(CSS_BORDER,HU.border(1,'transparent'));
+		thumb.css(CSS_BORDER,HU.border(1,this.getHighlightColor()));
 		let index = parseFloat(thumb.attr(RECORD_INDEX));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]
@@ -836,7 +836,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    thumbs.mouseover(function() {	
 		thumbSelect($(this));
 	    });
-	    this.jq(ID_THUMBS).css(CSS_BORDER,"1px solid transparent");
+	    this.jq(ID_THUMBS).css(CSS_BORDER,HU.border(1,'transparent'));
 	    let selectedIndex =  HU.getUrlArgument("imagezoom_thumb");
 	    let x = HU.getUrlArgument("imagezoom_x");
 	    let y = HU.getUrlArgument("imagezoom_y");	    
@@ -1201,7 +1201,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    }
 		}
 		if(html&&mainUrl && !this.topLabelTemplate)
-		    html = html+"<br>"+HU.href(mainUrl, "Link",['target','_link']);
+		    html = html+"<br>"+HU.href(mainUrl, "Link",[ATTR_TARGET,'_link']);
 		if(this.tooltipFields) {
 		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
 			return  f.getValue(record);

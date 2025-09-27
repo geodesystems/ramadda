@@ -135,6 +135,7 @@ var ATTR_BORDER = "border";
 var ATTR_CATEGORY = 'category';
 var ATTR_CURSOR="cursor";
 var ATTR_COLS = "cols";
+var ATTR_READONLY="readonly";
 var ATTR_ROWS="rows";
 var ATTR_COLSPAN = "colspan";
 var ATTR_CELLPADDING = "cellpadding";
@@ -167,6 +168,8 @@ var POS_LEFT="left";
 var POS_BOTTOM="bottom";
 var POS_RIGHT="right";
 
+var POSITION_ABSOLUTE='absolute';
+var POSITION_RELATIVE='relative';
 var DISPLAY_NONE = 'none';
 var DISPLAY_RELATIVE = 'relative';
 var DISPLAY_BLOCK='block';
@@ -5569,7 +5572,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     em:function(v) {
 	return HU.getDimension(v,'em');
-    },    
+    },
+    vw:function(v) {
+	return HU.getDimension(v,'vw');
+    },        
     pt:function(v) {
 	return HU.getDimension(v,'pt');
     },    
@@ -5952,6 +5958,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return " " + name + "=" + this.qt(value) + " ";
     },
 
+//    seenAttr:{},
     attrs: function(list) {
         if (!list) return "";
 	if(typeof list=="string") return list;
@@ -5961,6 +5968,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         for (let i = 0; i < list.length; i += 2) {
             let name = list[i];
             if (!name) continue;
+	    /*
+	    let test = "ATTR_" + name.toUpperCase();
+	    if(!Utils.isDefined(window[test]) &&!HU.seenAttr[test]) {
+		HU.seenAttr[test]=true;
+		console.log(test);
+		}
+		*/
             let value = list[i + 1];
             if (value == null) {
                 html += " " + name + " ";

@@ -2439,7 +2439,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let tooltip = this.tooltipDiv;
 	    if(!this.tooltipDiv) {
 		tooltip = this.tooltipDiv =  document.createElement('div');
-		tooltip.style.position = 'absolute';
+		tooltip.style.position = POSITION_ABSOLUTE;
 		document.body.appendChild(tooltip);
 	    }
 	    let tt = this.getProperty("tooltip");
@@ -3542,7 +3542,7 @@ function TableDisplay(displayManager, id, properties) {
 			if(!v.startsWith('http')) v = 'https://' + v;
 			return {
 			    v:v,
-			    f:HU.href(v,v,['target','_link'])
+			    f:HU.href(v,v,[ATTR_TARGET,'_link'])
 			};
 		    }
 		    if(field.getType()=="image") {

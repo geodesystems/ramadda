@@ -569,16 +569,16 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
-				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",CSS_POSITION,"absolute",
+				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",CSS_POSITION,POSITION_ABSOLUTE,
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let pos = HU.div([ATTR_TITLE,"Select Position", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId(ID_POSITION_BUTTON),
-			      ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+			      ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						CSS_LEFT,HU.px(10),
 						CSS_TOP,HU.px(10),
 						CSS_Z_INDEX,"1000")],HU.getIconImage("fa-globe"));
 	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate", ATTR_CLASS,"ramadda-clickable",
 				 ATTR_ID,this.domId(ID_ROTATE_BUTTON),
-				 ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+				 ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						   CSS_LEFT,HU.px(10),
 						   CSS_TOP,HU.px(30),
 						   CSS_Z_INDEX,"1000")],HU.getIconImage("fa-rotate"));	    
@@ -647,7 +647,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    try {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
-		canvas.attr('tabindex','1');
+		canvas.attr(ATTR_TABINDEX,'1');
 		canvas.mouseover(()=>{
 		    this.mouseOver = true;
 		});
@@ -955,7 +955,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	{p:"gridWidth",d:400},
 	{p:"gridHeight",d:400},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
-	{p:'canvasBorder',d:'1px solid #ccc'},
+	{p:'canvasBorder',d:HU.border(1,'#ccc')},
 	{p:'shape',d:"box",ex:'box|cylinder'},
 	{p:'heightField',tt:'field to scale height by'},
 	{p:'heightScale',d:10,tt:'scale factor'},	
@@ -1164,7 +1164,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",
 				ATTR_ID,this.domId(ID_POPUP),
 				ATTR_STYLE,HU.css(CSS_DISPLAY,"none",
-						  CSS_POSITION,"absolute",
+						  CSS_POSITION,POSITION_ABSOLUTE,
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
 			      popup +
@@ -1217,7 +1217,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 
 	    let _this = this;
 	    let canvas = this.jq(ID_GRID).find('canvas');
-	    canvas.attr('tabindex','1');
+	    canvas.attr(ATTR_TABINDEX,'1');
 	    canvas.css("border",this.getCanvasBorder());
 	    this.renderer.domElement.addEventListener('keydown', (e) => {
 		    if(e.code=="KeyP") {

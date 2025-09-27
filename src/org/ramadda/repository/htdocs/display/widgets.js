@@ -87,7 +87,7 @@ function AreaWidget(display,arg) {
 				  ATTR_TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
 	    let input = (id,place,title,v)=>{
-		return HtmlUtils.input(id, v, ["placeholder", place,
+		return HtmlUtils.input(id, v, [ATTR_PLACEHOLDER, place,
 					       ATTR_CLASS, "input display-area-input", "size", "5",
 					       ATTR_ID,this.domId(id), ATTR_TITLE, title]);
 	    };
@@ -658,7 +658,7 @@ function Annotations(display,records) {
 	let legendLabel = desc;
 
 	if(url!=null) {
-	    legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
+	    legendLabel = HU.href(url, legendLabel,[ATTR_TARGET,"_annotation"]);
 	}
 	this.legend+= HU.b(label)+":" + legendLabel+" ";
     }

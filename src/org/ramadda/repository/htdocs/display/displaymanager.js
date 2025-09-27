@@ -240,7 +240,7 @@ function DisplayManager(argId, argProperties) {
                     newMenus[category] = [];
                     cats.push(category);
                 }
-		let menuAttrs = ["onclick", get + ".userCreateDisplay('" + type.type + "');"];
+		let menuAttrs = [ATTR_ONCLICK, get + ".userCreateDisplay('" + type.type + "');"];
 		if(type.desc) {
 		    menuAttrs.push(TITLE);
 		    menuAttrs.push(type.desc);
@@ -550,7 +550,7 @@ function DisplayManager(argId, argProperties) {
         html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button",
 			       ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
     }
-    let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
+    let targetDiv = this.getProperty(ATTR_TARGET,this.getProperty("targetDiv"));
     let _this = this;
     if (targetDiv != null) {
 	targetDiv = targetDiv.replace("${entryid}",this.getProperty("entryId"));

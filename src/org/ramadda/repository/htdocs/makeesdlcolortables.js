@@ -4,8 +4,9 @@ $.getJSON('https://api.earthsystemdatalab.net/api/colorbars', data=>{
     let cid = HU.getUniqueId("canvas_");
     let w = 256;
     let h=20;
-    let c =  HU.tag("canvas",[CLASS,"", STYLE,"border:1px solid red;", 	
-			      WIDTH,w,HEIGHT,h,ID,cid]);
+    let c =  HU.tag(TAG_CANVAS,[ATTR_CLASS,'',
+			      ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'red')), 	
+			      ATTR_WIDTH,w,ATTR_HEIGHT,h,ID,cid]);
     $(document.body).append(c);
     let canvas = document.getElementById(cid);
     let ctx = canvas.getContext("2d");

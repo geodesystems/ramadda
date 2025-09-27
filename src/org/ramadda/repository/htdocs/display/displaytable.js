@@ -105,11 +105,10 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var all = $("[id^=" + this.getDomId("sheet_") + "]");
             var sel = $("#" + this.getDomId("sheet_") + sheetIdx);
 
-            all.css('font-weight', 'normal');
-            sel.css('font-weight', 'bold');
-
-            all.css('border', '1px #ccc solid');
-            sel.css('border', '1px #666 solid');
+            all.css(CSS_FONT_WEIGHT, 'normal');
+            sel.css(CSS_FONT_WEIGHT, 'bold');
+            all.css(CSS_BORDER, HU.border(1,'#ccc'));
+            sel.css(CSS_BORDER, HU.border(1,'#666'));
 
             this.currentSheet = sheetIdx;
             var sheet = this.sheets[sheetIdx];
@@ -308,7 +307,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var divAttrs = [ATTR_ID, chartDivId];
             if (chartType == "scatterplot") {
                 divAttrs.push(ATTR_STYLE);
-                divAttrs.push("width: 450px; height: 450px;");
+                divAttrs.push(HU.css(CSS_WIDTH,HU.px(450),CSS_HEIGHT,HU.px(450)));
             }
             this.jq(ID_CHART).append(HtmlUtils.div(divAttrs));
 
@@ -452,64 +451,69 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             chartToolbar += "<p>";
             chartToolbar += "<form>Fields: ";
             chartToolbar += "<input type=radio checked name=\"param\" id=\"" + this.getDomId("params-yaxis-select") + "\"> y-axis:&nbsp;" +
-                HtmlUtils.div([ATTR_ID, this.getDomId("params-yaxis-label"), ATTR_STYLE, "border-bottom:1px #ccc dotted;min-width:10em;display:inline-block;"], "");
+                HtmlUtils.div([ATTR_ID, this.getDomId("params-yaxis-label"),
+			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
+						  CSS_MIN_WIDTH,HU.em(10),
+						  CSS_DISPLAY,'inline-block')], "");
 
             chartToolbar += "&nbsp;&nbsp;&nbsp;";
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-xaxis-select") + "\"> x-axis:&nbsp;" +
-                HtmlUtils.div([ATTR_ID, this.getDomId("params-xaxis-label"), ATTR_STYLE, "border-bottom:1px #ccc dotted;min-width:10em;display:inline-block;"], "");
+                HtmlUtils.div([ATTR_ID, this.getDomId("params-xaxis-label"),
+			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
+						  CSS_MIN_WIDTH,HU.em(10),
+						  CSS_DISPLAY,'inline-block')], "");
 
-            chartToolbar += "&nbsp;&nbsp;&nbsp;";
+            chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-group-select") + "\"> group:&nbsp;" +
-                HtmlUtils.div([ATTR_ID, this.getDomId("params-group-label"), ATTR_STYLE, "border-bottom:1px #ccc dotted;min-width:10em;display:inline-block;"], "");
+                HtmlUtils.div([ATTR_ID, this.getDomId("params-group-label"),
+			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
+						  CSS_MIN_WIDTH,HU.em(10),
+						  CSS_DISPLAY,'inline-block')], "");
 
             chartToolbar += "</form>";
 
             if (this.getProperty("showSearch", true)) {
-                var results = HtmlUtils.div([ATTR_STYLE, "display:inline-block;", ATTR_ID, this.getDomId(ID_RESULTS)], "");
-                var download = HtmlUtils.div([ATTR_STYLE, "display:inline-block;", ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
+                var results = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block'),
+					     ATTR_ID, this.getDomId(ID_RESULTS)], "");
+                var download = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block'),
+					      ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
                 var searchDiv = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SEARCH_DIV), ATTR_CLASS, "ramadda-xls-search-form"]);
 
 
                 var search = "";
-                search += HtmlUtils.openTag("form", ["action", "#", ATTR_ID, this.getDomId(ID_SEARCH_FORM)]);
+                search += HtmlUtils.openTag(TAG_FORM, ["action", "#", ATTR_ID, this.getDomId(ID_SEARCH_FORM)]);
                 search += HtmlUtils.image(icon_tree_closed, [ATTR_ID, this.getDomId(ID_SEARCH + "_open")]);
                 search += "\n";
-                search += HtmlUtils.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(), ["size", "60", ATTR_ID, this.getDomId(ID_SEARCH_TEXT), "placeholder", "Search"]);
+                search += HtmlUtils.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(), ["size", "60", ATTR_ID, this.getDomId(ID_SEARCH_TEXT), ATTR_PLACEHOLDER, "Search"]);
                 search += "<input type=submit name='' style='display:none;'>";
 
-                search += HtmlUtils.openTag("div", [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA), ATTR_CLASS, "ramadda-xls-search-extra"], "");
+                search += HtmlUtils.openTag(TAG_DIV, [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA), ATTR_CLASS, "ramadda-xls-search-extra"], "");
                 if (this.columns) {
-                    var extra = HtmlUtils.openTag("table", [ATTR_CLASS, "formtable"]);
+                    var extra = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "formtable"]);
                     for (var i = 0; i < this.columns.length; i++) {
                         var col = this.columns[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
-                        var widget = HtmlUtils.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), "placeholder", "Search"]);
+                        var widget = HtmlUtils.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), ATTR_PLACEHOLDER, "Search"]);
                         extra += HtmlUtils.formEntry(col.name.replace("_", " ") + ":", widget);
                     }
-                    extra += HtmlUtils.closeTag("table");
+                    extra += HtmlUtils.closeTag(TAG_TABLE);
                     search += extra;
                 }
 
 
                 if (this.searchFields) {
-                    var extra = HtmlUtils.openTag("table", [ATTR_CLASS, "formtable"]);
+                    var extra = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "formtable"]);
                     for (var i = 0; i < this.searchFields.length; i++) {
                         var col = this.searchFields[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
-                        var widget = HtmlUtils.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), "placeholder", "Search"]);
+                        var widget = HtmlUtils.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), ATTR_PLACEHOLDER, "Search"]);
                         extra += HtmlUtils.formEntry(col.label + ":", widget);
                     }
-                    extra += HtmlUtils.closeTag("table");
+                    extra += HtmlUtils.closeTag(TAG_TABLE);
                     search += extra;
                 }
-
-
-
-
-                search += "\n";
-                search += HtmlUtils.closeTag("div");
-                search += "\n";
-                search += HtmlUtils.closeTag("form");
+                search += HtmlUtils.closeTag(TAG_DIV);
+                search += HtmlUtils.closeTag(TAG_FORM);
 
                 this.jq(ID_SEARCH_HEADER).html(HtmlUtils.leftRight(searchDiv, results + " " + download));
 

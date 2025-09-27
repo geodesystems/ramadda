@@ -401,7 +401,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     label = HU.b(fi.field.getLabel());
 
                 divs += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width)], 
-			       label + HU.div([ATTR_STYLE, HU.css(CSS_BORDER,'1px #ccc solid',CSS_HEIGHT,HU.px(300)),
+			       label + HU.div([ATTR_STYLE, HU.css(CSS_BORDER,HU.border(1,'#ccc'),
+								  CSS_HEIGHT,HU.px(300)),
 					       ATTR_ID, fi.divId], ''));
             }
 
@@ -2324,7 +2325,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 
 	    let corpus =HU.div([ATTR_ID,this.domId(ID_OVERLAY),
-				ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,0,CSS_LEFT,0)],
+				ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,0,CSS_LEFT,0)],
 			       HU.tag(TAG_TABLE,[ATTR_ID,this.domId(ID_OVERLAY_TABLE)]));
 
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
@@ -2502,18 +2503,18 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    if(rowScale) {
 		var rows =  this.jq(ID_TEXT).find(".display-raw-row");
 		var open = function() {
-		    $(this).css("transform","scaleY(1)");		    
-		    $(this).css("line-height","1.5");
-		    $(this).css("border-bottom","1px solid #ccc");
-		    $(this).css("border-top","1px solid #ccc");
+		    $(this).css(CSS_TRANSFORM,"scaleY(1)");		    
+		    $(this).css(CSS_LINE_HEIGHT,"1.5");
+		    $(this).css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'));
+		    $(this).css(CSS_BORDER_TOP,HU.border(1,'#ccc'));
 		};
 		var close = function() {
 		    var row = this;
 		    if(!$(row).attr("matched")) {	
-			$(row).css("transform","scaleY(" + rowScale +")");
-			$(row).css("line-height",rowScale);
-			$(row).css("border-bottom","0px solid #ccc");
-			$(row).css("border-top","0px solid #ccc");
+			$(row).css(CSS_TRANSFORM,"scaleY(" + rowScale +")");
+			$(row).css(CSS_LINE_HEIGHT,rowScale);
+			$(row).css(CSS_BORDER_BOTTOM,HU.border(0,'#ccc'));
+			$(row).css(CSS_BORDER_TOP,HU.border(0,'#ccc'));
 		    }
 		}
 		rows.each(close);

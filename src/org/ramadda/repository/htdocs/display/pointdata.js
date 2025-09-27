@@ -3562,7 +3562,10 @@ RequestMacro.prototype = {
 	    label = null;
 	} else if(this.isSkip()) {
 	    widget = '';
-	    let bstyle = 'padding:4px;padding-top:2px;padding-bottom:2px;margin-right:4px;';
+	    let bstyle = HU.css(CSS_PADDING,HU.px(4),
+				CSS_PADDING_TOP,HU.px(2),
+				CSS_PADDING_BOTTOM,HU.px(2),
+				CSS_MARGIN_RIGHT,HU.px(4));
 	    let buttons =  
 		HU.span([ATTR_TITLE,'Show previous',ATTR_STYLE,bstyle,
 			 ATTR_CLASS, 'ramadda-clickable',
@@ -3572,7 +3575,7 @@ RequestMacro.prototype = {
 			 ATTR_CLASS, 'ramadda-clickable',
 			 ATTR_ID,this.display.getDomId(this.getId()+'_next')],
 			HU.getIconImage('fas fa-angle-right'));
-	    widget += HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,'8px')],buttons);
+	    widget += HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(8))],buttons);
 
 	    widget+=HU.span([ATTR_ID,this.display.getDomId(this.getId()+'_label')],'');
 	    widget+=HU.input('',this.dflt,[ATTR_STYLE, HU.css('display','none'),
