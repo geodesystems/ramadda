@@ -57,7 +57,7 @@ cssminify ${dir}/display/display.css  ${dest}/display.min.css
 
 echo "minifying ramadda_all"
 # ${dir}/wiki.js
-cat ${dir}/now.txt ${dir}/utils.js ${dir}/translate.js ${dir}/ramadda.js ${dir}/entry.js > ${dir}/tmp.js
+cat ${dir}/now.txt ${dir}/constants.js ${dir}/utils.js ${dir}/translate.js ${dir}/ramadda.js ${dir}/entry.js > ${dir}/tmp.js
 ${jsminify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
 rm ${dir}/tmp.js
 
