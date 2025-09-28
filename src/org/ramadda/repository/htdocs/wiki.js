@@ -1669,7 +1669,7 @@ WikiEditor.prototype = {
 				    sticky:true,draggable:true});
 
 
-	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
+	let commands = jqid(_this.domId('allsearch_corpus')).find(TAG_SPAN);
 	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
 
 	_this.jq('searchshowall').change(function() {

@@ -141,7 +141,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    this.dates.sort(function(a,b) {
 		return a.value - b.value;
 	    });
-	    	
+	    
 
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
@@ -152,31 +152,31 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	    let sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
 	    let tooltipFunc = {
-		    mouseleave: function(e) {
-			if(_this.tooltip)
-			    _this.tooltip.hide();
-		    },
-		    mousemove: function(e) {
-			if(!_this.tooltip) return;
-			if(e.offsetX>=0) {
-			    let parentWidth = _this.tooltip.parent().width();
-			    let parentLeft = _this.tooltip.parent().offset().left; 
-			    let percent = (e.pageX-parentLeft)/parentWidth;
-			    let dttm = new Date(_this.dateMin.getTime() + percent*_this.dateRange);
-			    dttm = _this.formatAnimationDate(dttm,_this.tooltipDateFormat);
-			    if(!_this.makeSlider) {
-				dttm+="<br>+/-:zoom";
-			    }
-			    _this.tooltip.html(dttm);
-			    _this.tooltip.show();
-			    _this.tooltip.position({
-				of: e.target,
-				my: "left top",
-				at: "left+" + e.offsetX +" bottom",
-				collision: "fit fit"
-			    });
+		mouseleave: function(e) {
+		    if(_this.tooltip)
+			_this.tooltip.hide();
+		},
+		mousemove: function(e) {
+		    if(!_this.tooltip) return;
+		    if(e.offsetX>=0) {
+			let parentWidth = _this.tooltip.parent().width();
+			let parentLeft = _this.tooltip.parent().offset().left; 
+			let percent = (e.pageX-parentLeft)/parentWidth;
+			let dttm = new Date(_this.dateMin.getTime() + percent*_this.dateRange);
+			dttm = _this.formatAnimationDate(dttm,_this.tooltipDateFormat);
+			if(!_this.makeSlider) {
+			    dttm+="<br>+/-:zoom";
 			}
-		    }};
+			_this.tooltip.html(dttm);
+			_this.tooltip.show();
+			_this.tooltip.position({
+			    of: e.target,
+			    my: "left top",
+			    at: "left+" + e.offsetX +" bottom",
+			    collision: "fit fit"
+			});
+		    }
+		}};
 
 	    if(this.makeSlider) {
 		let slider = this.slider = this.jq(ID_SLIDER).slider({
@@ -464,7 +464,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		let step = _this.display.getProperty("animationStep", window);		
 		let clazz = "ramadda-hoverable ramadda-clickable";
 		let html = HU.div([ATTR_ID,_this.domId(ID_FASTER),ATTR_TITLE, "Faster", ATTR_CLASS,clazz], "Faster") +	
-	    HU.div([ATTR_ID,_this.domId(ID_SLOWER),ATTR_TITLE, "Slower", ATTR_CLASS,clazz], "Slower")		+
+		    HU.div([ATTR_ID,_this.domId(ID_SLOWER),ATTR_TITLE, "Slower", ATTR_CLASS,clazz], "Slower")		+
 		    HU.div([ATTR_ID,_this.domId(ID_RESET),ATTR_TITLE, "Reset", ATTR_CLASS,clazz], "Reset") +
 		    HU.div([ATTR_ID,_this.domId(ID_SHOWALL),ATTR_TITLE, "Show all", ATTR_CLASS,clazz], "Show all");
 		if(window) {
@@ -597,7 +597,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	doNext: function() {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
-//	    debug=true;
+	    //	    debug=true;
 	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
 
 	    if (this.mode == MODE_SLIDING) {
@@ -816,7 +816,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 
 	    let t4 = new Date();
-//	    Utils.displayTimes("",[t1,t2,t3,t4],true);
+	    //	    Utils.displayTimes("",[t1,t2,t3,t4],true);
 	},
 	updateUI: function(skipSlider) {
 	    if(!skipSlider) {

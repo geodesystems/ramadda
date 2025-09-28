@@ -109,7 +109,7 @@ $.extend(Utils,{
 	    clazz:'wiki-editor-popup-items',
 	}
 	if(args) $.extend(opts,args);
-        let popup = HU.open('div',[ATTR_CLASS,opts.clazz]);
+        let popup = HU.open(TAG_DIV,[ATTR_CLASS,opts.clazz]);
         let items = [];
         let item;
 	showToggle = opts.showToggle;
@@ -122,7 +122,7 @@ $.extend(Utils,{
 		}
 		category  =colortable.category;
 		item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
-                popup+=HU.open('div',[ATTR_CLASS,'ramadda-colortable-category'])+item;
+                popup+=HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-colortable-category'])+item;
                 items.push(item);
 		return;
             }

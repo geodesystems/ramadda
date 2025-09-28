@@ -21,14 +21,20 @@ RamaddaCanvas.prototype = {
     init:function() {
 	let id = this.id =  this.divId+"_canvas";
 	let div = jqid(this.divId);
-	let canvasHtml = HU.tag('canvas',['class','ramadda-abs-canvas','id',id,'width',div.width(),'height',div.height(),'tabindex',1,
-					  'style',HU.css('position','absolute','background','transparent', 'left','0px','top','0px')]);
+	let canvasHtml = HU.tag(TAG_CANVAS,[ATTR_CLASS,'ramadda-abs-canvas',
+					    ATTR_ID,id,
+					    ATTR_WIDTH,div.width(),
+					    ATTR_HEIGHT,div.height(),
+					    ATTR_TABINDEX,1,
+					    ATTR_STYLE,HU.css(CSS_POSITION,'absolute',
+							      CSS_BACKGROUND,'transparent',
+							      CSS_LEFT,HU.px(0),
+							      CSS_TOP,HU.px(0))]);
 	div.prepend(canvasHtml);
 	let canEdit = this.canEdit;
 	let _this = this;
 	this.ctx = document.getElementById(this.id).getContext("2d");
 	let canvas =  this.canvas =  jqid(this.id);
-//	canvas.css('background','rgba(0,255,0,0.2)');
 	this.ctx.strokeStyle ="red";
 	this.ctx.lineWidth=2;
 	this.glyphs = [];
@@ -54,15 +60,29 @@ RamaddaCanvas.prototype = {
 	}
 	let  header =[];
 
-	header.push(HU.span(['title','Print lines','id',getId('_print'),'class','ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-print')));
-	header.push(HU.span(['title','List lines','id',getId('_listmenu'),'class','ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-list')));    
-	header.push(HU.checkbox(getId('_toggle'),['title','Toggle component visibility','id',getId('_toggle')],true,'Visible'));
-	header.push(HU.span(['id',getId('_polyline'),'active','false','title','Draw line','style','padding:2px;','class','ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-draw-polygon')));
-	header.push("Color: " + HU.input('','blue',['id',getId('_color'),'style',HU.css('width','80px')]));
-	header.push("Width: " + HU.select('',['id',getId('_width'),'style',HU.css('width','40px')],[1,2,3,4,5,6,7,8,9,10,15,20]));
-	header.push(HU.checkbox(getId('_arrow'),['title','Arrow endpoint','id',getId('_arrow')],false,'Arrow'));
-	let left = Utils.wrap(header,"<span style='margin-right:8px;'>","</span>");
-	let right = HU.div(['style',HU.css('max-width','200px','overflow-x','hidden','white-space','nowrap'),'id',getId('_message')]);
+	header.push(HU.span([ATTR_TITLE,'Print lines',
+			     ATTR_ID,getId('_print'),
+			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-print')));
+	header.push(HU.span([ATTR_TITLE,'List lines',
+			     ATTR_ID,getId('_listmenu'),
+			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-list')));    
+	header.push(HU.checkbox(getId('_toggle'),[ATTR_TITLE,'Toggle component visibility',ATTR_ID,getId('_toggle')],true,'Visible'));
+	header.push(HU.span([ATTR_ID,getId('_polyline'),'active','false',
+			     ATTR_TITLE,'Draw line',
+			     ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2)),
+			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-draw-polygon')));
+	header.push("Color: " + HU.input('','blue',[ATTR_ID,getId('_color'),
+						    ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(80))]));
+	header.push("Width: " + HU.select('',[ATTR_ID,getId('_width'),
+					      ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(40))],
+					  [1,2,3,4,5,6,7,8,9,10,15,20]));
+	header.push(HU.checkbox(getId('_arrow'),[ATTR_TITLE,'Arrow endpoint',
+						 ATTR_ID,getId('_arrow')],false,'Arrow'));
+	let left = Utils.wrap(header,HU.open(TAG_SPAN,[ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8)]),HU.close(TAG_SPANE));
+			      let right = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
+								    CSS_OVERFLOW_X,'hidden',
+								    CSS_WHITE_SPACE,'nowrap'),
+						  ATTR_ID,getId('_message')]);
 	jqid(this.divId+"_header").html(HU.leftRightTable(left,right));
 	jqid(getId('_toggle')).change(function() {
 	    _this.toggleVisibility($(this).is(':checked'));
@@ -70,12 +90,18 @@ RamaddaCanvas.prototype = {
 	jqid(getId('_listmenu')).click(function() {
 	    let menu = "";
 	    _this.glyphs.forEach((g,idx)=>{
-		let line = HU.span(['title','Delete','style','margin-right:10px;','class','ramadda-clickable','action','delete','idx',idx],HU.getIconImage('fas fa-trash'));
-		line += HU.span(['title','Apply style', 'style','margin-right:10px;','class','ramadda-clickable','action','apply','idx',idx],HU.getIconImage('fas fa-gears'));
-		line= HU.div(['style','padding:4px;','class','ramadda-hoverable','idx',idx],line+g.color);
+		let line = HU.span([ATTR_TITLE,'Delete',
+				    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
+				    ATTR_CLASS,'ramadda-clickable',
+				    ATTR_ACTION,'delete','idx',idx],HU.getIconImage('fas fa-trash'));
+		line += HU.span([ATTR_TITLE,'Apply style',
+				 ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
+				 ATTR_CLASS,'ramadda-clickable','action','apply','idx',idx],HU.getIconImage('fas fa-gears'));
+		line= HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4)),
+			      ATTR_CLASS,'ramadda-hoverable','idx',idx],line+g.color);
 		menu +=line;
 	    });
-	    menu = HU.div(['style','padding:4px;'],menu);
+	    menu = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],menu);
             _this.dialog = HU.makeDialog({content:menu,my:"left top",at:"left bottom",anchor:$(this)});
 	    _this.dialog.find('.ramadda-hoverable').mouseenter(function(){
 		let glyph = _this.glyphs[+$(this).attr('idx')];
@@ -113,10 +139,10 @@ RamaddaCanvas.prototype = {
 	    _this.currentGlyph = null;
 	    if(!active) {
 		_this.addGlyph = false;
-		jqid(getId('_polyline')).css('background','transparent');
+		jqid(getId('_polyline')).css(CSS_BACKGROUND,'transparent');
 		return;
 	    }
-	    jqid(getId('_polyline')).css('background','#ccc');
+	    jqid(getId('_polyline')).css(CSS_BACKGROUND,'#ccc');
 	    _this.addGlyph = true;
 	});
 
@@ -191,14 +217,14 @@ RamaddaCanvas.prototype = {
 	    if(!_this.currentGlyph) {
 		let line="";
 		if(x>_this.canvas.width()/2) {
-		    line += "right:" + (_this.canvas.width()-x)+"px;";
+		    line += HU.css(CSS_RIGHT,HU.px((_this.canvas.width()-x)));
 		} else {
-		    line += "left:" + x+"px;";
+		    line += HU.css(CSS_LEFT,HU.px(x));
 		}
 		if(y>_this.canvas.height()/2) {
-		    line += "bottom:" + (_this.canvas.height()-y)+"px;"
+		    line += HU.css(CSS_BOTTOM,HU.px((_this.canvas.height()-y)));
 		} else {
-		    line += "top:" + y+"px;"
+		    line += HU.css(CSS_TOP,HU.px(y));
 		}	    
 		Utils.copyToClipboard(line);
 		_this.message(line);
@@ -215,12 +241,12 @@ RamaddaCanvas.prototype = {
 	divs = this.div.children('div[style*="position:absolute"]');
 	divs.draggable({
 	    start: function( e, ui ) {
-		$(this).css('right','');
-		$(this).css('left','');
-		$(this).css('bottom','');
-		$(this).css('top','');
+		$(this).css(CSS_RIGHT,'');
+		$(this).css(CSS_LEFT,'');
+		$(this).css(CSS_BOTTOM,'');
+		$(this).css(CSS_TOP,'');
 		$(this).css('-webkit-transform','');
-		$(this).css('transform','');				
+		$(this).css(CSS_TRANSFORM,'');				
 	    },
 	    drag: function( e, ui ) {
 		_this.message(_this.makePosition($(this)));
@@ -256,16 +282,16 @@ RamaddaCanvas.prototype = {
 	if(Math.abs(mx-cmx)<30) {
 	    line += "absLeft=50% absTranslateX=-50% ";
 	} else if(l<cw-r) {
-	    line += "absLeft=" + parseInt(l)+"px ";
+	    line += "absLeft=" + HU.px(parseInt(l))+" ";
 	} else {
-	    line += "absRight=" + parseInt(cw-r)+"px ";
+	    line += "absRight=" +HU.px(parseInt(cw-r))+" ";
 	}
 	if(Math.abs(my-cmy)<30) {
 	    line += "absTop=50% absTranslateY=50% ";
 	} else if(t<ch-b) {
-	    line += "absTop=" + parseInt(t)+"px ";
+	    line += "absTop=" + HU.px(parseInt(t))+" ";
 	} else {
-	    line += "absBottom=" + parseInt(ch-b)+"px ";
+	    line += "absBottom=" + HU.px(parseInt(ch-b))+" ";
 	}
 	return line
     },	
@@ -351,7 +377,7 @@ RamaddaCanvas.prototype = {
 	});
     },	
     toggleVisibility:function(visible) {
-	let comps = this.canvas.parent().children('div');
+	let comps = this.canvas.parent().children(TAG_DIV);
 	comps.each(function() {
 	    if(!$(this).hasClass('ramadda-bgimage')) {
 		if(visible)

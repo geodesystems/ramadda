@@ -619,10 +619,10 @@ MapGlyph.prototype = {
 		let on = this.getAttribute(ID_DATAICON_USEENTRY);
 		let id = this.domId(ID_DATAICON_USEENTRY);
 		contents+=  HU.radio(id, id, '', 'true', on) +
-		    HU.tag('label',['for', id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
+		    HU.tag(TAG_LABEL,['for', id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
 		contents+=HU.br();
 		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
-		    HU.tag('label',['for', id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
+		    HU.tag(TAG_LABEL,['for', id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
 		contents+=HU.br();
 	    }
 
@@ -640,7 +640,7 @@ MapGlyph.prototype = {
 
 	    let dataIconInfo  =this.getDataIconInfo();
 	    contents+=  HU.buttons(buttonList,
-				   null,HU.css('text-align','left'));
+				   null,HU.css(CSS_TEXT_ALIGN,'left'));
 
 	    let fields1 = HU.b('Menu Fields:')+HU.br()+
 		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
@@ -1429,7 +1429,7 @@ MapGlyph.prototype = {
 	if(html!='') {
 	    html = HU.div([ATTR_CLASS,'ramadda-cleanscroll',
 			   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-					     CSS_OVERFLOW_Y,'auto')],
+					     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 			  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10))],html));
 	    this.jq('multientry').html(HU.b('Entries')+html);
 	}
@@ -2578,7 +2578,7 @@ MapGlyph.prototype = {
 		    instr+=HU.div(attrs, step.instr);
 		});
 		body+=HU.center(HU.b('Directions')) +
-		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')],instr);
+		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
 	    }
 	}
 	
@@ -2914,7 +2914,7 @@ MapGlyph.prototype = {
 		    if(obj.isEnumeration) {
 			let maxHeight = this.getProperty('mapLegendHeight',HU.px(150));
 			html+='\n';
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,maxHeight,CSS_OVERFLOW_Y,'auto')],div);
+			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,maxHeight,CSS_OVERFLOW_Y,OVERFLOW_AUTO)],div);
 		    } else {
 			html+=HU.center(div);
 		    }
@@ -2939,7 +2939,7 @@ MapGlyph.prototype = {
 			    html = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400),
 							     CSS_MAX_WIDTH,HU.px(400),
 							     CSS_MAX_HEIGHT,HU.px(200),
-							     CSS_OVERFLOW_Y,'auto',
+							     CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 							     CSS_MARGIN,HU.px(2))], html);
 			    let dialog = HU.makeDialog({content:html,
 							title:HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20),
@@ -3446,7 +3446,7 @@ MapGlyph.prototype = {
 						    url? HU.image(url,[ATTR_HEIGHT,HU.px(20),ATTR_WIDTH,HU.px(256)]):'No image'));
 
 	let _this = this;
-	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')], html);
+	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	this.jq('colortable').click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
 					     my:'left top',
@@ -3737,7 +3737,7 @@ MapGlyph.prototype = {
 	dialog.find('.feature-name').tooltip({
 	    show: { delay: 1000 },
 	    open: function(event, ui) {
-		ui.tooltip.css("max-width", "600px"); 
+		ui.tooltip.css(CSS_MAX_WIDTH, HU.px(600)); 
             },
 	    content: function() {
 		let feature = getFeature($(this));
@@ -3850,7 +3850,7 @@ MapGlyph.prototype = {
 		table+='<thead><tr>';
 		stats = [];
 		columns.forEach((column,idx)=>{
-		    table+=HU.tag('th',[],column.getLabel(true));
+		    table+=HU.tag(TAG_TH,[],column.getLabel(true));
 		    stats.push({total:0,count:0,min:0,max:0});
 		});
 		table+=HU.close(TAG_TR,'thead','tbody');
@@ -4194,7 +4194,7 @@ MapGlyph.prototype = {
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag(TAG_TABLE);
-	styleGroupsUI = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,'auto')], styleGroupsUI);
+	styleGroupsUI = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], styleGroupsUI);
 
 	//Don't add style groups if it is a group, just map glyphs
 	if(!this.isGroup()) {
@@ -4248,7 +4248,7 @@ MapGlyph.prototype = {
 
 	}
 
-	ex = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,'auto')], ex);
+	ex = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], ex);
 	content.push({header:'Sample Values',contents:ex});
 
 	let features= this.getMapFeatures();
@@ -4304,7 +4304,7 @@ MapGlyph.prototype = {
 	    });
 	    
 	    table+=HU.close(TAG_TABLE);
-	    table=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,'auto')], table);
+	    table=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], table);
 	    content.push({header:'Features',contents:table});
 	}
 
@@ -4694,7 +4694,7 @@ MapGlyph.prototype = {
 	    widgets = HU.div([ATTR_STYLE,
 			      HU.css(CSS_PADDING_BOTTOM,HU.px(5),
 				     CSS_MAX_HEIGHT,maxHeight??HU.px(200),
-				     CSS_OVERFLOW_Y,'auto')], widgets);
+				     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], widgets);
 	    let filtersHeader ='';
 	    if(this.getProperty('filter.zoomonchange.show',true)) {
 		filtersHeader = HU.checkbox(this.zoomonchangeid,
@@ -4896,7 +4896,7 @@ MapGlyph.prototype = {
 		if(!icons.length || !ll.length) return;
 		ll =ll[0];
 		let name = text(go,'name');
-		let url = text(icons[0],'href');
+		let url = text(icons[0],ATTR_HREF);
 		if(!url) return;
 		url = url.replace(/&amp;/g,'&');
 		let north = text(ll,'north');
@@ -6225,9 +6225,9 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(style.fillColor)) {
 	    css+=HU.css(CSS_BACKGROUND,style.fillColor);
 	}
-	css+=HU.css('color',style.fontColor);
+	css+=HU.css(CSS_COLOR,style.fontColor);
 	if(Utils.stringDefined(style.fontSize)) {
-	    css+=HU.css('font-size',style.fontSize);
+	    css+=HU.css(CSS_FONT_SIZE,style.fontSize);
 	}
 
 	['right','left','bottom','top'].forEach(d=>{
@@ -6290,7 +6290,7 @@ MapGlyph.prototype = {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
-		wiki = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,'auto')],wiki);
+		wiki = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],wiki);
 		jqid(id).html(wiki);
 		initFixed();
 	    });

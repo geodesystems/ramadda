@@ -431,7 +431,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	},
 	makeTooltipDiv: function() {
 	    if(!this.tooltipDiv) {
-		this.tooltipDiv = d3.select("body").append("div")
+		this.tooltipDiv = d3.select("body").append(TAG_DIV)
 		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style(CSS_POSITION, POSITION_ABSOLUTE)

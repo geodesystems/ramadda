@@ -10,7 +10,7 @@
 
 /*
   This gets created by the displayManager.createDisplay('example')
- */
+*/
 function RamaddaExampleDisplay(displayManager, id, properties) {
 
     //Dom id for example

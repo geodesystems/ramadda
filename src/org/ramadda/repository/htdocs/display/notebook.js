@@ -621,24 +621,24 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 for (var i = 0; i < this.cells.length; i++) {
                     var cell = this.cells[i];
                     cell.index = i + 1;
-                    html += HtmlUtils.openTag("div", [ATTR_CLASS, clazz]);
-                    html += HtmlUtils.openTag("div", [ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
+                    html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS, clazz]);
+                    html += HtmlUtils.openTag(TAG_DIV, [ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
 									 CSS_OVERFLOW_X,'auto',
 									 CSS_PADDING,HU.px(0),
 									 CSS_MARGIN,px)]);
                     html += HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id + "_cellinput"], "");
                     html += HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id + "_celloutput"], "");
-                    html += HtmlUtils.closeTag("div");
-                    html += HtmlUtils.closeTag("div");
+                    html += HtmlUtils.closeTag(TAG_DIV);
+                    html += HtmlUtils.closeTag(TAG_DIV);
                     html += "\n";
                     colCnt++;
                     if (colCnt >= this.columns) {
                         colCnt = 0;
-                        html += HtmlUtils.closeTag("div");
+                        html += HtmlUtils.closeTag(TAG_DIV);
                         html += "<div class=row style='padding:0px;margin:0px;'>";
                     }
                 };
-                html += HtmlUtils.closeTag("div");
+                html += HtmlUtils.closeTag(TAG_DIV);
                 this.jq(ID_CELLS).append(html);
             }
             for (var i = 0; i < this.cells.length; i++) {
@@ -1285,7 +1285,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let _this = this;
             let space = "&nbsp;&nbsp;";
             let menu = "";
-	    let open = HU.open('div',[ATTR_CLASS,'display-notebook-menu-block']);
+	    let open = HU.open(TAG_DIV,[ATTR_CLASS,'display-notebook-menu-block']);
 	    let close = '</div>';
             menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, [ATTR_PLACEHOLDER, "Cell name",
 									ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100)),

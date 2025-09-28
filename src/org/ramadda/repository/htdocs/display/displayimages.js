@@ -56,7 +56,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		   (jqxhr, settings, exception) => {
 		       console.log("err");
 		   });
-  
+    
     let myProps = [
 	{label:'Cards Attributes'},
 	{p:'groupByFields',ex:''},
@@ -167,7 +167,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 	    var cnt = 0;
 	    while(true) {
 		var img = document.querySelector('#' + this.domId("gallery")+"img" + cnt);
-		var div = $('#' + this.domId("gallery")+"div" + cnt);
+		var div = $('#' + this.domId("gallery")+TAG_DIV + cnt);
 		cnt++;
 		if(!img) {
 		    return;
@@ -310,7 +310,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
-                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+"div" + imgCnt],
+                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+TAG_DIV + imgCnt],
 					       HU.image(img,[ATTR_WIDTH,width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
@@ -483,11 +483,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 		return true;
 		/*** TODO?
-		let image = record.getValue(imageField.getIndex());
-		if(!Utils.stringDefined(image) && !includeBlanks) {
-		    return false;
-		}
-		return true;
+		     let image = record.getValue(imageField.getIndex());
+		     if(!Utils.stringDefined(image) && !includeBlanks) {
+		     return false;
+		     }
+		     return true;
 		*/
 	    }});
             if(!records) return;
@@ -638,7 +638,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 		block = 
 		    HU.div([ATTR_STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,
-			    ATTR_ID,base+"div"+  rowIdx, ATTR_CLASS, class1,ATTR_TITLE,tt],
+			    ATTR_ID,base+TAG_DIV+  rowIdx, ATTR_CLASS, class1,ATTR_TITLE,tt],
 			   recordContents);
 		if(columns) {
 		    if(++columnCnt>=columns) {
@@ -673,8 +673,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
 		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(8))],
-				   HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
-					       this.hideNoImages,'Show entries with images')) +
+				  HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
+					      this.hideNoImages,'Show entries with images')) +
 		    contents;
 	    }
 
@@ -944,8 +944,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    
 
 	    //This causes problems
-//	    HU.addToDocumentUrl("imagezoom_x",params.x);
-//	    HU.addToDocumentUrl("imagezoom_y",params.y);	    
+	    //	    HU.addToDocumentUrl("imagezoom_x",params.x);
+	    //	    HU.addToDocumentUrl("imagezoom_y",params.y);	    
 
 	    let offX = scaleX*iw/2;
 	    let offY = scaleY*ih/2;		
@@ -1028,7 +1028,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
             this.fields = this.getData().getRecordFields();
 	    this.records= this.sortRecords(this.records);
 	    this.theTemplate = this.getProperty('template','');
-//	    this.fields.forEach(f=>{console.log(f.getId());});
+	    //	    this.fields.forEach(f=>{console.log(f.getId());});
 	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    this.labelField = this.getFieldById(null, this.getLabelField());
 	    this.topLabelTemplate =  this.getTopLabelTemplate();
@@ -1196,8 +1196,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
 			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351',
-							  'frameborder','0',
-							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
+							    'frameborder','0',
+							    'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}
 		if(html&&mainUrl && !this.topLabelTemplate)
@@ -1220,7 +1220,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.labelTemplate);
 		    html=html+HU.div([ATTR_CLASS,'display-slides-label'], label);
 		}
-			
+		
 
 		
 	    }

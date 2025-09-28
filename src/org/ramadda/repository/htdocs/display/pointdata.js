@@ -405,7 +405,7 @@ function PointData(name, recordFields, records, url, properties) {
         loadPointJson: function(url, display, reload,callback) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
-//	    debug = debug2 = true;
+	    //	    debug = debug2 = true;
             let pointData = this;
             this.startLoading();
             let _this = this;
@@ -1207,7 +1207,7 @@ function makePointData(json, derived, source,url,callback) {
     let hasDate = false;
     let setDateFlags = false;
     let dateIsString = false;
-//    console.log('pointdata #:' +json.data.length);
+    //    console.log('pointdata #:' +json.data.length);
     json.data.forEach((tuple,rowIndex)=>{
 	//	if(rowIndex>100) return;
 	if(debug && rowIndex>0 && (rowIndex%10000)==0) console.log("\tprocessed:" + i);
@@ -1243,7 +1243,7 @@ function makePointData(json, derived, source,url,callback) {
         }
         if (isArray || (typeof tuple.latitude === 'undefined')) {
             if (latitudeIdx >= 0) 
-               tuple.latitude = values[latitudeIdx];
+		tuple.latitude = values[latitudeIdx];
             else
                 tuple.latitude = NaN;
         }
@@ -1384,13 +1384,13 @@ function makePointData(json, derived, source,url,callback) {
 
     /*
       don't do this for now
-    pointRecords.sort(function(a, b) {
-        if (a.getDate() && b.getDate()) {
-            if (a.getDate().getTime() < b.getDate().getTime()) return -1;
-            if (a.getDate().getTime() > b.getDate().getTime()) return 1;
-            return 0;
-        }
-    });
+      pointRecords.sort(function(a, b) {
+      if (a.getDate() && b.getDate()) {
+      if (a.getDate().getTime() < b.getDate().getTime()) return -1;
+      if (a.getDate().getTime() > b.getDate().getTime()) return 1;
+      return 0;
+      }
+      });
     */
 
 
@@ -1442,18 +1442,18 @@ var ArrayUtil = {
 	let tupleGetter = values[0].tuple?v=>{return v.tuple}:v=>{return  v};
 	let isNumeric = tupleGetter(values[0]).map((v,idx)=>{return Utils.isNumber(v);});
 	dataList.forEach((o,rowIdx)=>{
-		    if(rowIdx==0) return;
-		    let tuple = Utils.mergeLists(o.tuple);
-		    tmp.push({
-			record:o.record,
-			tuple:tuple});
-		    tuple[0] = "x"; tuple[1] = 5;
-		    tuple.forEach((v,colIdx)=>{
-			if(!isNumeric[colIdx]) return;
-			tuple[colIdx]=5;
-		    });
-		});
-		dataList = tmp;
+	    if(rowIdx==0) return;
+	    let tuple = Utils.mergeLists(o.tuple);
+	    tmp.push({
+		record:o.record,
+		tuple:tuple});
+	    tuple[0] = "x"; tuple[1] = 5;
+	    tuple.forEach((v,colIdx)=>{
+		if(!isNumeric[colIdx]) return;
+		tuple[colIdx]=5;
+	    });
+	});
+	dataList = tmp;
 
 
 
@@ -1587,7 +1587,7 @@ var RecordUtil = {
 		    label = display.formatDate(date,null,true);
 		groups.labels.push(label);
 	    } else {
-//		if(debug) console.log("\tadded:" + key);
+		//		if(debug) console.log("\tadded:" + key);
 	    }
 	    array.push(record);
 
@@ -1706,7 +1706,7 @@ var RecordUtil = {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
 		if(record.getLatitude()==0) {
-//		    console.log(record.getLatitude(),record.getLongitude());
+		    //		    console.log(record.getLatitude(),record.getLongitude());
 		}
 		if(record.getLongitude()>-150 && record.getLongitude()<150) outsideDateLine = true;
 		if (j == 0) {
@@ -1857,7 +1857,7 @@ function CsvUtil() {
 		}
             });
 
-//	    setVars+="console.log('v:' + (max_pool_elevation-lake_reservoir_elevation));\n";
+	    //	    setVars+="console.log('v:' + (max_pool_elevation-lake_reservoir_elevation));\n";
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
             eval(code);
 	    let funcState = {};		
@@ -2037,7 +2037,7 @@ function CsvUtil() {
 		    let value = record.data[f.getIndex()];
 		    if(!fieldOk(f)) {
 			if(rowIdx==records.length-1) {
-	//		    console.log(f +" ==" +  value);
+			    //		    console.log(f +" ==" +  value);
 			}
 			data.push(value);
 			return;
@@ -2052,7 +2052,7 @@ function CsvUtil() {
 			let perc = basev==0?0:(value-basev)/basev;
 			data.push(perc);
 			if(rowIdx==records.length-1) {
-//			    console.log(f +" =" + basev +" " + value +" perc:" + perc);
+			    //			    console.log(f +" =" + basev +" " + value +" perc:" + perc);
 			}
 		    }
 		}); 
@@ -2212,7 +2212,7 @@ function CsvUtil() {
 	    let newRecords = [];
 	    let indices = [];
 	    fields.forEach((f,fieldIdx)=>{
-//		console.log(f.getId());
+		//		console.log(f.getId());
 		if(cut.indexOf(f.getId())>=0) return;
 		f = f.clone();
 		let newField = f.clone();
@@ -2596,7 +2596,7 @@ function CsvUtil() {
 			let decimals = prop(f,"numberFormatDecimals");
 			if(decimals!==null)
 			    d = Utils.roundDecimals(d,decimals);
-//			if(debug) console.log(f.getId() +" d:" + d);
+			//			if(debug) console.log(f.getId() +" d:" + d);
 			newData[f.getIndex()] = d;
 		    }
 		});
@@ -2794,7 +2794,7 @@ function CsvUtil() {
 		    chartable:true,
 		}));		
 	    }
-//	    console.log("fields:" + newFields);
+	    //	    console.log("fields:" + newFields);
 	    let keys = [];
 	    let collection ={
 	    };
@@ -3004,7 +3004,7 @@ function CsvUtil() {
 		    uniqueType ="date";
 		else if(typeof uniques[0] =="number")
 		    uniqueType ="double";
-		    
+		
 	    }
 	    if(uniqueIsDate)
 		newColumns = Utils.mergeLists(["date"], newColumns);
@@ -3068,7 +3068,7 @@ function CsvUtil() {
                     includeCnt++;
                 });
 		let newRecord = new  PointRecord(newFields,firstRow.getLatitude(),firstRow.getLongitude(), NaN, null, array);
-//		console.log("lat:" + firstRow.getLatitude());
+		//		console.log("lat:" + firstRow.getLatitude());
 		newRecords.push(newRecord);
                 cnt++;
             });
@@ -3578,9 +3578,9 @@ RequestMacro.prototype = {
 	    widget += HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(8))],buttons);
 
 	    widget+=HU.span([ATTR_ID,this.display.getDomId(this.getId()+'_label')],'');
-	    widget+=HU.input('',this.dflt,[ATTR_STYLE, HU.css('display','none'),
+	    widget+=HU.input('',this.dflt,[ATTR_STYLE, HU.css(CSS_DISPLAY,'none'),
 					   ATTR_ID,this.display.getDomId(this.getId())]);
-			      
+	    
 	    label="";
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
@@ -3605,7 +3605,7 @@ RequestMacro.prototype = {
 		    attrs.push('size');
 		    attrs.push(Math.min(this.rows,values.length));
 		} else {
-//		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
+		    //		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
 		}
 		let v = this.dflt;
 		if(!Utils.stringDefined(v)) {
@@ -3685,9 +3685,9 @@ RequestMacro.prototype = {
 	else if(prop.what == "to")
 	    this.display.jq(id+"_to").val(prop.value);
 	else {
-//	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
+	    //	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
 	    this.display.jq(id).val(prop.value);
-//	    console.log("after:" + this.display.jq(id).val());
+	    //	    console.log("after:" + this.display.jq(id).val());
 	}
     },
     apply: function(url) {
@@ -3753,7 +3753,7 @@ RequestMacro.prototype = {
 			arg =this.multitemplate.replace(/\${value}/,arg);
 		    }
 		    url = url +"&" + HU.urlArg(this.urlarg,arg);
-		console.log("URL0:" + url);
+		    console.log("URL0:" + url);
 		} else {
 		    values.forEach(v=>{
 			url = url +"&" + HU.urlArg(this.urlarg,v);

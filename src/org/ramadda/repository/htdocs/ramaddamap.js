@@ -3503,7 +3503,7 @@ RepositoryMap.prototype = {
             }
             let jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
-                let result = HtmlUtils.openTag("div", [ATTR_STYLE, "max-height:400px;overflow-y:auto;"]);
+                let result = HtmlUtils.openTag(TAG_DIV, [ATTR_STYLE, "max-height:400px;overflow-y:auto;"]);
                 if (data.result.length == 0) {
                     wait.html("Nothing found");
                     return;
@@ -3520,7 +3520,7 @@ RepositoryMap.prototype = {
                 }
                 let my = "left bottom";
                 let at = "left top";
-                result += HtmlUtils.closeTag("div");
+                result += HtmlUtils.closeTag(TAG_DIV);
                 searchPopup.html(result);
                 HtmlUtils.setPopupObject(searchPopup);
                 searchPopup.show();
@@ -5395,7 +5395,7 @@ RepositoryMap.prototype = {
 			    if(idx>0) markerText+='\n</div closerow>\n';
 			    markerText+='<div  class="row row-tight">\n';
 			}
-			let open = HU.open('div',[ATTR_CLASS, clazz,
+			let open = HU.open(TAG_DIV,[ATTR_CLASS, clazz,
 						  ATTR_STYLE,HU.css('padding-bottom','8px !important',
 								    'padding-right','8px !important',
 								    )]);

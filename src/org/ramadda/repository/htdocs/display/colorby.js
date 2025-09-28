@@ -436,8 +436,8 @@ ColorByInfo.prototype = {
 		    else if(step==steps-1)
 			contents =s.max;		    
 		    let fg = Utils.getForegroundColor(c);
-		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,
-				       ATTR_STYLE,HU.css(CSS_COLOR,fg,CSS_BACKGROUND,c)],contents);		    
+		    html+=HU.tag(TAG_TD,[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,
+					 ATTR_STYLE,HU.css(CSS_COLOR,fg,CSS_BACKGROUND,c)],contents);		    
 		}
 	    });
 	    html += HU.close(TAG_TR, TAG_TABLE);

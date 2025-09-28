@@ -12,7 +12,8 @@ let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
 var ID_REGION_SELECTOR = "regionselector";
-
+var ID_LEGENDID="legendid";
+var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
 
 var debugit = false;
 var debugMapTime = false;
@@ -176,9 +177,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             let _this = this;
             let html = "";
             let extraStyle="";
-            let height = this.getProperty("height", this.getProperty("mapHeight", '70vh'));
+            let height = this.getProperty("height", this.getProperty("mapHeight", HU.vh(70)));
             if (height < 0) {
-		height = (-height)+"%";
+		height = HU.perc(-height);
 	    }
 	    height = HU.getDimension(height);
             extraStyle += HU.css(ATTR_HEIGHT, height);
@@ -1141,7 +1142,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
 	{p:'labelLimit',ex:'1000',tt:'Max number of records to display labels'},
 	{p:'labelFontColor',ex:'#000'},
-	{p:'labelFontSize',ex:'12px'},
+	{p:'labelFontSize',ex:HU.px(12)},
 	{p:'labelFontFamily',ex:'\'Open Sans\', Helvetica Neue, Arial, Helvetica, sans-serif'},
 	{p:'labelFontWeight',ex:'plain'},
 	{p:'labelBackground',ex:'green'},
@@ -1481,8 +1482,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	setVisible: function(visible) {
 	    this.layerVisible = visible;
 	    let show = true;
-	    if(this.jq("showMarkersToggle").length>0) {
-		show = this.jq("showMarkersToggle").is(":checked");
+	    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
+		show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
 	    }
 	    if(show) {
 		if(this.myFeatureLayer) {
@@ -1520,7 +1521,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.labelFeatures) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures,{silent:true});
 		this.labelFeatures = null;
-		this.jq("legendid").html("");
+		this.jq(ID_LEGENDID).html("");
 	    }
 	    if(debugMapTime)
 		console.timeEnd('removeFeatureLayer');
@@ -1701,7 +1702,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    let lonlat = MapUtils.createLonLat(entry.getWest(), entry.getNorth());
 			    let html = HU.b(entry.getName());
 			    if(entry.getIsImage()) {
-				html+="<br>" + HU.image(entry.getImageUrl(),[ATTR_WIDTH,'100%']);
+				html+=HU.br() + HU.image(entry.getImageUrl(),[ATTR_WIDTH,'100%']);
 			    }
 			    this.map.addMarker(entry.getId(), lonlat, entry.getIconUrl(),  "", html, null, 16);
 			});
@@ -2962,7 +2963,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.getProperty("showMarkersToggle")) {
 		let dflt = this.getProperty("markersVisibility", true);
-		html += HU.checkbox(this.domId("showMarkersToggle"),[ATTR_ID,this.domId("showMarkersToggle")],dflt,
+		html += HU.checkbox(this.domId(ID_SHOWMARKERSTOGGLE),
+				    [ATTR_ID,this.domId(ID_SHOWMARKERSTOGGLE)],dflt,
 				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
 	    }
 
@@ -3117,7 +3119,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 
-	    this.jq("showMarkersToggle").change(function() {
+	    this.jq(ID_SHOWMARKERSTOGGLE).change(function() {
 		let visible = $(this).is(':checked');
 		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
@@ -4331,8 +4333,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let showMarkers = this.showMarkers;
 		if(this.getHmShowPoints() || this.getShowPoints()) {
 		    let show = true;
-		    if(this.jq("showMarkersToggle").length>0) {
-			show = this.jq("showMarkersToggle").is(":checked");
+		    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
+			show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
 		    }
 		    if(show) {
 			this.createPoints(records, fields, points, bounds,debug);
@@ -5426,7 +5428,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(tooltipHeader) {
 		    text+=tooltipHeader.replace("${count}",records.length);
 		} else if(showCount && records.length>0) {
-		    text+=HU.b('Count:  ') + records.length+'<br>';
+		    text+=HU.b('Count: ') + records.length+HU.br();
 		}
 
 		records.forEach((record,idx)=>{
@@ -5564,7 +5566,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!keyMap[v]) {
 			if(keyIndex>=keys.length) keyIndex=0;
 			keyMap[v] = keys[keyIndex++];
-			keyLegend+=keyMap[v]+": " + v+"<br>";
+			keyLegend+=keyMap[v]+": " + v+HU.br();
 		    }
 		    labelFeature.attributes["_key"] = keyMap[v];
 		    style.label = style.label.replace('${_key}',keyMap[v]);
@@ -5588,12 +5590,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(keyLegend.length>0) {
 		if(!this.legendId) {
-		    this.legendId = this.domId("legendid");
+		    this.legendId = this.domId(ID_LEGENDID);
 		    this.jq(ID_RIGHT).append(HU.div([ATTR_ID,this.legendId,
 						     ATTR_CLASS,"display-map-legend",
 						     ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,this.getHeight(HU.px(400)))]));
 		}
-		this.jq("legendid").html(keyLegend);
+		this.jq(ID_LEGENDID).html(keyLegend);
 	    }
 	    if(this.labelFeatures)
 		this.map.labelLayer.removeFeatures(this.labelFeatures);

@@ -58,9 +58,10 @@ function AreaWidget(display,arg) {
 			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
-			  HU.tag("label",[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
+			  HU.tag(TAG_LABEL,[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
-	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
+	    this.settingsDialog = HU.makeDialog(
+		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
 		_this.areaContains = $(this).is(':checked');
 	    });
@@ -107,10 +108,10 @@ function AreaWidget(display,arg) {
 
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
-            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),
-				ATTR_STYLE,HU.css(CSS_DISPLAY,"none")],
+            areaForm += HU.div([ATTR_ID,this.domId(ID_MAP_POPUP_WRAPPER),
+				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],
 			       SPACE+"Shift-drag: select region. Cmd-drag: move region" +
-			       HU.div([ID,this.domId(ID_MAP_POPUP),
+			       HU.div([ATTR_ID,this.domId(ID_MAP_POPUP),
 				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),CSS_HEIGHT,HU.px(300))]));
             return areaForm;
         },
@@ -368,8 +369,8 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr(ATTR_CLASS, 'bar')
 	    .attr('x', (d, i) => getNum(x(i)))
 	    .attr('y', d => getNum(y(d)))
-	    .attr('width', BAR_WIDTH)
-	    .attr('height', d => getNum(h-y(d)))
+	    .attr(ATTR_WIDTH, BAR_WIDTH)
+	    .attr(ATTR_HEIGHT, d => getNum(h-y(d)))
 	    .attr('fill', (d,i)=>getColor(d,i,barColor))
 	    .style(CSS_CURSOR, "pointer")
     }
@@ -383,7 +384,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
 	    .attr("stroke-width", lineWidth)
             .attr("stroke", (d,i)=>{
-		if(isNaN(d)) return "rgba(0,0,0,0)";
+		if(isNaN(d)) return HU.rgb(0,0,0,0);
 		return getColor(d,i,lineColor)
 	    })
 	    .style(CSS_CURSOR, "pointer");
@@ -792,7 +793,7 @@ let Gfx = {
 	//	scale=1;
 	opts.w*=opts.scale;
 	opts.h*=opts.scale;
-	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,'none'),
+	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
 						   ATTR_ID,id,ATTR_WIDTH,opts.w,ATTR_HEIGHT,opts.h]));
 	let canvas = document.getElementById(id);
 	let ctx = canvas.getContext("2d");

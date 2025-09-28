@@ -743,7 +743,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_TOP,HU.px(5))], buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
-	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',
+	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',
+					draggable:true,header:true,
+					my:'left top',at:'left bottom',
 					anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
@@ -971,7 +973,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    data.result.forEach((loc,idx)=>{
 			html+=HU.div(['index',idx,ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-menu-item')],loc.name);
 		    });
-		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')], html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		    let dialog = HU.makeDialog({content:html,header:false,anchor:widget,my:'left top',at:'left bottom'});
 		    let _this = this;
 		    dialog.find('.ramadda-menu-item').click(function() {
@@ -2081,9 +2084,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    desc = desc.replace(/[\n\n]+/g,'\n').replace(/\n/g,'<br>');
 		    html+=HU.div([ATTR_CLASS,'boxquote',
 				  ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(600),
-						    CSS_OVERFLOW_X,'auto',
+						    CSS_OVERFLOW_X,OVERFLOW_AUTO,
 						    CSS_MAX_HEIGHT,HU.px(100),
-						    CSS_OVERFLOW_Y,'auto')],desc);
+						    CSS_OVERFLOW_Y,OVERFLOW_AUTO)],desc);
 		}
 		let linksHtml1 ='';
 		let linksHtml2 ='';		
@@ -2167,14 +2170,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+=HU.b('Links:<br>');
 		    linksHtml=HU.table(linksHtml);
 		    if(assetsHtml!='') 
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.em(5),CSS_OVERFLOW_Y,'auto')], linksHtml);
+			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.em(5),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], linksHtml);
 		    else
 			html+= linksHtml;		    
 		}
 
 		html+=assetsHtml;
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
-					       CSS_OVERFLOW_Y,'auto')], html);
+					       CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		this.jq('stac_output').html(html);
 		this.jq('stac_output').find('.imdv-stac-link').button().click(function() {
 		    load($(this).attr('link'));
@@ -2336,7 +2339,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		});
 		html+=HU.close(TAG_TABLE);
-		html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,'auto')], html);
+		html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html+= HU.buttons([
 		    HU.div([ATTR_CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
 		    HU.div([ATTR_CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
@@ -2716,8 +2719,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					    CSS_BORDER,HU.border(1,'#ccc'),
 					    CSS_MAX_HEIGHT,HU.px(300),
 					    CSS_MAX_WIDTH,HU.px(600),
-					    CSS_OVERFLOW_X,'auto',
-					    CSS_OVERFLOW_Y,'auto')], '');
+					    CSS_OVERFLOW_X,OVERFLOW_AUTO,
+					    CSS_OVERFLOW_Y,OVERFLOW_AUTO)], '');
 
 	    html+='<center>';
 	    html +=HU.div([ATTR_ID,this.domId(ID_LIST_DELETE), ATTR_CLASS,'display-button'], 'Delete Selected');
@@ -2960,7 +2963,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	    bar = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(150),
-					    CSS_OVERFLOW_Y,'auto',
+					    CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 					    CSS_BORDER,HU.border(1,'#ccc'))],bar);
 	    return bar;
 	},
@@ -3339,7 +3342,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),
 							      ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5),
 										CSS_MAX_HEIGHT,HU.px(300),
-										CSS_OVERFLOW_Y,'auto')],
+										CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 							     Utils.join(items,""));
 		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
@@ -3513,7 +3516,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
 		sub = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-						CSS_OVERFLOW_Y,'auto')], sub);
+						CSS_OVERFLOW_Y,OVERFLOW_AUTO)], sub);
 		
 		let dialog = HU.makeDialog({content:sub,anchor:$(this),
 					    title:block.title,
@@ -3597,10 +3600,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let tryButton = dialog.find('#pathtry').button();
 		    tryButton.click(function(){
 			if(tryIt) {
-			    image.css('clip-path',output.val());
+			    image.css(CSS_CLIP_PATH,output.val());
 			    $(this).html('Reset');
 			} else {
-			    image.css('clip-path','');
+			    image.css(CSS_CLIP_PATH,'');
 			    $(this).html('Try');
 			}
 			tryIt = !tryIt;
@@ -3608,7 +3611,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dialog.find('.ramadda-button-clear').button().click(()=>{
 			path='';
 			output.val('');
-			image.css('clip-path','');
+			image.css(CSS_CLIP_PATH,'');
 			tryButton.html('Try');
 			tryIt=true;
 			clear();
@@ -3778,7 +3781,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let html = "";
 		emojis.forEach(cat=>{
 		    if(html!="") html+=HU.close(TAG_DIV);
-		    html+=HU.open('div',[ATTR_CLASS,'ramadda-imdv-image-category']);
+		    html+=HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-imdv-image-category']);
 		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
 			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
@@ -3788,7 +3791,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 		});
 		html+=HU.close(TAG_DIV);
-		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(400),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')], html);
+		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(400),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search',ATTR_PLACEHOLDER,'Search',ATTR_SIZE,'30']) +' ' +
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
@@ -4540,7 +4543,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		zoomPopup=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',
 						    CSS_MAX_HEIGHT,HU.px(300),
-						    CSS_OVERFLOW_Y,'auto')], zoomPopup);
+						    CSS_OVERFLOW_Y,OVERFLOW_AUTO)], zoomPopup);
 		html+= HU.hidden('',_this.getCurrentLevel(),
 				 [ATTR_ID,_this.domId('choose_zoom_value')]);
 		let zoomButton = HU.div([ATTR_ID,_this.domId('choose_zoom_button')],
@@ -5964,7 +5967,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let showPopup = (html,props)=>{
 		this.getMap().lastClickTime  = new Date().getTime();
-		let id = HU.getUniqueId('div');
+		let id = HU.getUniqueId(TAG_DIV);
 		let div = HU.div([ATTR_ID,id]);
 		//		let location = e.feature.geometry.getBounds().getCenterLonLat();
 		let location = mapGlyph.getCentroid();
@@ -5990,7 +5993,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		//so we do this and handle the clicks here
 		jqid(id).find('a').each(function() {
 		    $(this).click(function(){
-			let url = $(this).attr('href');
+			let url = $(this).attr(ATTR_HREF);
 			if(url) {
 			    window.open(url,'_blank');
 			}
@@ -6064,7 +6067,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    wiki = '{{mappopup}}';
 		let wikiCallback = html=>{
 		    html = mapGlyph.convertPopupText(html);
-		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,'auto')],html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 		    doPopup(html,{width:this.getProperty('popupWidth',width),
 				  height:this.getProperty('popupHeight',height)});
 		};
@@ -6753,7 +6756,7 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     imageNode.setAttributeNS(null, "y",0);
     imageNode.setAttributeNS(null, "width",p.width);
     imageNode.setAttributeNS(null, "height",p.height);
-    imageNode.setAttributeNS(null, "href",p.url);
+    imageNode.setAttributeNS(null, ATTR_HREF,p.url);
     ol.defs.appendChild(patternNode);
     ol.idToSvgId[id] = svgId;
     return svgId;
@@ -6876,11 +6879,11 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 	let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
 	let bgStyle = "";
 	bgStyle+="fill:" +((style.textBackgroundFillColor=='' || !style.textBackgroundFillColor)?"transparent":style.textBackgroundFillColor)+";";
-	if(style.textBackgroundStrokeColor!="") bgStyle+=HU.css('stroke',style.textBackgroundStrokeColor);
+	if(style.textBackgroundStrokeColor!="") bgStyle+=HU.css(CSS_STROKE,style.textBackgroundStrokeColor);
 	if(style.textBackgroundStrokeWidth>=0)
-	    bgStyle+=HU.css('stroke-width',style.textBackgroundStrokeWidth);
+	    bgStyle+=HU.css(CSS_STROKE_WIDTH,style.textBackgroundStrokeWidth);
 	if(!isNaN(style.textBackgroundFillOpacity))
-	    bgStyle+=HU.css('fill-opacity', style.textBackgroundFillOpacity);
+	    bgStyle+=HU.css(CSS_FILL_OPACITY, style.textBackgroundFillOpacity);
 
 	if(shape=='circle') {
 	    bg.setAttribute("cx", bbox.x+bbox.width/2);

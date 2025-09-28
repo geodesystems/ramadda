@@ -272,27 +272,27 @@ function DisplayManager(argId, argProperties) {
 
             var titles = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
             var dates = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
-				      "Set date range: " +
-				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
-				      HU.onClick(layout + ".askMaxDate();", "Max"));
+			       "Set date range: " +
+			       HU.onClick(layout + ".askMinDate();", "Min") + "/" +
+			       HU.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
                 HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
-							"Set axis range :" +
-							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
+					  "Set axis range :" +
+					  HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+					  HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
                 HU.tag(TAG_LI, [], dates) +
                 HU.tag(TAG_LI, [], titles) + "\n" +
                 HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
-							HU.onClick(layout + ".detailsOff();", "Off", []))) +
+					  HU.onClick(layout + ".detailsOff();", "Off", []))) +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
             var table = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Table: " +
-				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',4);", "4 column"));
+			       HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+			       HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+			       HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+			       HU.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
                 HU.tag(TAG_LI, [], table) +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
@@ -350,24 +350,24 @@ function DisplayManager(argId, argProperties) {
             }
 
 
-//	    jsonUrl=jsonUrl+"&FOO+BAR";
+	    //	    jsonUrl=jsonUrl+"&FOO+BAR";
             let pattern = new RegExp(/startdate=([^&$]+)(&|$)/);
 	    if(match = jsonUrl.match(pattern)) {
 		let sep  = match[2];
-//		jsonUrl = jsonUrl.replace(pattern,"startdate=-1 month" + sep);
-//		console.log("URL:" + jsonUrl);
+		//		jsonUrl = jsonUrl.replace(pattern,"startdate=-1 month" + sep);
+		//		console.log("URL:" + jsonUrl);
 	    }
 
 	    /*
-	    if(display.getBounds) {
-		let b = display.getBounds();
-		//NWSE
-		jsonUrl = HU.url(jsonUrl,["bounds",b.top+","+b.right+","+b.bottom+","+b.left]);
-		console.log(b);
-		console.log(jsonUrl);
-	    }
-	    //	    https://localhost:8430/repository/entry/show?entryid=89516542-f88f-43cf-98ce-f8ea2d3111b0&map_bounds=63.6307%2C-183.21358%2C29.38993%2C15.41923&zoomLevel=3&mapCenter=49.38817%2C-83.89717
-*/
+	      if(display.getBounds) {
+	      let b = display.getBounds();
+	      //NWSE
+	      jsonUrl = HU.url(jsonUrl,["bounds",b.top+","+b.right+","+b.bottom+","+b.left]);
+	      console.log(b);
+	      console.log(jsonUrl);
+	      }
+	      //	    https://localhost:8430/repository/entry/show?entryid=89516542-f88f-43cf-98ce-f8ea2d3111b0&map_bounds=63.6307%2C-183.21358%2C29.38993%2C15.41923&zoomLevel=3&mapCenter=49.38817%2C-83.89717
+	      */
 
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
@@ -575,24 +575,24 @@ function DisplayManager(argId, argProperties) {
 
     this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],
 						 [ATTR_STYLE,HU.css(CSS_COLOR,'#aaa')] )).button({
-	classes: {
-	    "ui-button": "display-manager-button",
-	}	
-    }).click(function(event) {
-	if(this.dialog) {
-	    this.dialog.remove();
-	}
-        let html = _this.makeMainMenu();
-	this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
-        _this.jq(ID_MENU_INNER).superfish({
-            //Don't set animation - it is broke on safari
-            //                    animation: {height:'show'},
-            speed: 'fast',
-            delay: 300
-        });
+						     classes: {
+							 "ui-button": "display-manager-button",
+						     }	
+						 }).click(function(event) {
+						     if(this.dialog) {
+							 this.dialog.remove();
+						     }
+						     let html = _this.makeMainMenu();
+						     this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
+						     _this.jq(ID_MENU_INNER).superfish({
+							 //Don't set animation - it is broke on safari
+							 //                    animation: {height:'show'},
+							 speed: 'fast',
+							 delay: 300
+						     });
 
 
-    });
+						 });
 
 }
 
@@ -622,7 +622,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                 }
             } else if (value.includes("${fieldId}")) {
                 for (i = 0; i < selectedFields.length; i++) { 
-                   var v = value.replace("\${fieldId}", selectedFields[i].getId());
+                    var v = value.replace("\${fieldId}", selectedFields[i].getId());
                     toks.push(v);
                 }
             } else if (value.includes("${fieldCnt}")) {

@@ -697,7 +697,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let isExpanded = this.jq(ID_CHART).attr("isexpanded");
 	    let originalHeight = this.jq(ID_CHART).attr("original-height");
 	    if(isExpanded==="true") {
-		this.setProperty("expandedHeight",this.jq(ID_CHART).css("height"));
+		this.setProperty("expandedHeight",this.jq(ID_CHART).css(CSS_HEIGHT));
 		this.setProperty("isExpanded",true);
 		this.setProperty("originalHeight",originalHeight);
 	    } else {
@@ -1105,7 +1105,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			dflt = this.getPointSize();
 		    }
 		    let value = this.getProperty(id+"." + a,null);
-//		    if(debug)console.log('extra:' + id+ ' ' +a +'=' + value);
+		    //		    if(debug)console.log('extra:' + id+ ' ' +a +'=' + value);
 		    
 
 		    if(!Utils.isDefined(value)) {
@@ -1248,7 +1248,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 		if(!isNaN(info.value)) {
 		    if(depends && fieldMap &&!fieldMap[depends]) {
-//			console.log('skipping');
+			//			console.log('skipping');
 		    } else {
 			this.extraLines.push(info);
 		    }
@@ -1266,7 +1266,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-//	    debug=true
+	    //	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
@@ -2115,9 +2115,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     else
 			style += HU.css(CSS_WIDTH, width);
 		}
-            } else {
-		//                style += HU.css(CSS_WIDTH,"100%");
-            }
+            } 
 	    let expandedHeight  = this.getProperty("expandedHeight");
             let height =  this.getChartHeight();
 	    if(expandedHeight) {
@@ -2134,7 +2132,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     style += HU.css(CSS_HEIGHT, HU.perc(100));
 		}
 	    }
-	    //	    style += HU.css("text-align","center");
             divAttrs.push(ATTR_STYLE);
             divAttrs.push(style);
 	    divAttrs.push(ATTR_CLASS);
@@ -2236,7 +2233,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let bottom = labelPosition=="bottom"?header:"";
 	    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
 	    let div = HU.div([ATTR_CLASS,"display-multi-div",
-			      ATTR_STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
+			      ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
 	    this.jq(ID_CHARTS_INNER).append(div);
 	    let chart = this.makeGoogleChartInner(dataList, innerId, props, fields);
 	    if(chart) {
@@ -2270,7 +2267,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Clear out any existing charts
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
-		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),ATTR_STYLE,HU.css('text-align','center')]));
+		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),ATTR_STYLE,
+						HU.css(CSS_TEXT_ALIGN,'center')]));
 		if(this.doMultiChartsByField()) {
 		    this.multiChartData=[];
 		    selectedFields.forEach((field,idx)=>{
@@ -2438,12 +2436,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(!this.tooltipEvent) return;
 	    let tooltip = this.tooltipDiv;
 	    if(!this.tooltipDiv) {
-		tooltip = this.tooltipDiv =  document.createElement('div');
+		tooltip = this.tooltipDiv =  document.createElement(TAG_DIV);
 		tooltip.style.position = POSITION_ABSOLUTE;
 		document.body.appendChild(tooltip);
 	    }
 	    let tt = this.getProperty("tooltip");
-	    let style = HU.css('font-size','80%') +this.getTooltipStyle('');
+	    let style = HU.css(CSS_FONT_SIZE,HU.perc(80)) +this.getTooltipStyle('');
 	    let content =   HU.div([ATTR_CLASS,'display-tooltip display-chart-tooltip',ATTR_STYLE,style],
 				   this.getRecordHtml(record, null, tt));
 
@@ -3536,7 +3534,9 @@ function TableDisplay(displayManager, id, properties) {
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg = foreground || Utils.getForegroundColor(color);
-			f = HU.div([ATTR_STYLE,HU.css('height','100%',CSS_BACKGROUND, color,'color',fg+" !important")],f)
+			f = HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100),
+						      CSS_BACKGROUND, color,
+						      CSS_COLOR,fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
 			if(!v.startsWith('http')) v = 'https://' + v;
@@ -4424,7 +4424,7 @@ function GaugeDisplay(displayManager, id, properties) {
 	    SUPER.drawChart.call(this,chart,dataTable,chartOptions);
 	    let items = $(chart.container).find('svg g text');
 	    if(this.getFontSize()) {
-		items.css('font-size',this.getFontSize());
+		items.css(CSS_FONT_SIZE,this.getFontSize());
 	    }
 	},
 	doMultiChartsByField:function() {
@@ -4640,7 +4640,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
-//	    console.log(JSON.stringify(chartOptions,null,2));
+	    //	    console.log(JSON.stringify(chartOptions,null,2));
             return chartOptions;
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {

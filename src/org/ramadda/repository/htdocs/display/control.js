@@ -1283,7 +1283,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		});
 		html+=Utils.join(tabs,"");
 		if(maxPerRow>=0) {
-		    html+=HU.close('div');
+		    html+=HU.close(TAG_DIV);
 		}
 		this.setContents(html);
 		let items = this.getContents().find('.display-menu-button-item');

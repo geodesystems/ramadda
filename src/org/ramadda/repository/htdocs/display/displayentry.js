@@ -4446,7 +4446,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
                 if (title == null) {
                     title = this.sourceEntry.getName();
                 }
-                title = HU.tag("a", ["href", url, ATTR_TITLE, this.sourceEntry.getName(), "alt", this.sourceEntry.getName()], title);
+                title = HU.tag(TAG_A, ["href", url, ATTR_TITLE, this.sourceEntry.getName(), "alt", this.sourceEntry.getName()], title);
             } else {
                 this.addEntryHtml(this.selectedEntry);
                 if (title == null) {

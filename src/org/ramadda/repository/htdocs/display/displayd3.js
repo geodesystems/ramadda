@@ -332,22 +332,22 @@ function RamaddaD3plotDisplay(displayManager, id, properties) {
 	    let data=D3Util.getD3Data(this,fields,records,{includeDate:true});
 	    let marks = D3Util.createMarks(this,fields,records,{includeDate:true});    
 	    let opts=D3Util.initPlot(this,{marks:marks});
-/*
-  color bar example
-  https://observablehq.com/@observablehq/plot-warming-stripes
-	    let opts2 = {
-		x: {round: true},
-		color: {scheme: "BuRd"},
-		marks: [
-		    Plot.lineY(data, {
-			x: "Date",
-			y: "gcag",
-//			interval: "year", // yearly data
-//			inset: 0 // no gaps
-		    })
-		]
-		}
-		*/
+	    /*
+	      color bar example
+	      https://observablehq.com/@observablehq/plot-warming-stripes
+	      let opts2 = {
+	      x: {round: true},
+	      color: {scheme: "BuRd"},
+	      marks: [
+	      Plot.lineY(data, {
+	      x: "Date",
+	      y: "gcag",
+	      //			interval: "year", // yearly data
+	      //			inset: 0 // no gaps
+	      })
+	      ]
+	      }
+	    */
 	    let plot = Plot.plot(opts);
 	    this.getContents().html(plot);
 	}

@@ -2487,7 +2487,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             corpus+= HU.close(TAG_DIV);
 
             if (!asHtml)
-                corpus = HU.tag(PRE, [], corpus);
+                corpus = HU.tag(TAG_PRE, [], corpus);
             this.writeHtml(ID_TEXT, corpus);
 	    colorBy.displayColorTable();
 	    var linesWord = " "+ this.getProperty("linesDescriptor","lines");
