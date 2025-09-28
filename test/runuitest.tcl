@@ -128,6 +128,7 @@ if {$groupID!=""} {
     runGroup "Archive" archive_test
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
+    runGroup "SeeSV" a424786b-ebf2-43c3-add7-21c3bb2f526f
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
     runGroup "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
