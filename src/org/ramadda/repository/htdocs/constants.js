@@ -51,10 +51,13 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_SEARCHABLE = 'ramadda-searchable';
 var CLASS_BUTTON = 'ramadda-button';
 var CLASS_DIALOG = 'ramadda-dialog';
 var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
+var CLASS_COPYABLE = 'ramadda-copyable';
 var CLASS_CLICKABLE = 'ramadda-clickable';
+var CLASS_HIGHLIGHTABLE = 'ramadda-highlightable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
 var CURSOR_POINTER='pointer';

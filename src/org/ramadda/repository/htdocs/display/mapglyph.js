@@ -572,7 +572,7 @@ MapGlyph.prototype = {
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
 			[ATTR_ID,this.domId(ID_LEGEND_TEXT),ATTR_ROWS,4,ATTR_COLS, 40]);
 	
-	html+=HU.div([],HU.b('ID: ') +HU.span([ATTR_CLASS,'ramadda-copyable'],this.getId()));
+	html+=HU.div([],HU.b('ID: ') +HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
 	content.push({header:'Properties',contents:html});
 
@@ -2187,7 +2187,7 @@ MapGlyph.prototype = {
 	}
 
 	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
-				      {separate:true,headerStyle:'display:inline-block;',
+				      {separate:true,headerStyle:HU.css(CSS_DISPLAY,'inline-block'),
 				       extraAttributes:['map-glyph-id',this.getId()]});		
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
@@ -2359,7 +2359,8 @@ MapGlyph.prototype = {
 		    let type = rule.type;
 		    if(type=='==') type='=';
 		    type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>\n';
+		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +
+			type+HU.br()+HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
 		}
 		lastProperty  = propOp;
 		let value = rule.value;
@@ -3676,7 +3677,7 @@ MapGlyph.prototype = {
 	});
 	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
 	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
-	Utils.initCopyable(dialog.find('.ramadda-copyable'));
+	Utils.initCopyable(dialog.find(HU.dotClass(CLASS_COPYABLE)));
 
 	let initColor  = prefix=>{
 	    dialog.find('#'+this.domId(prefix+'colorby_property')).change(function() {
@@ -4279,10 +4280,10 @@ MapGlyph.prototype = {
 		if(!name) {
 		    name = 'Polygon ' + (idx+1)
 		}
-		let row = HU.open('tr',
+		let row = HU.open(TAG_TR,
 				  ['feature-index',idx,
 				   'feature-name',name,
-				   'data-corpus',feature.isVisible?'visible':'hidden',
+				   ATTR_DATA_CORPUS,feature.isVisible?'visible':'hidden',
 				   ATTR_CLASS,'dialog-feature','data-feature',idx]);
 
 		let id1=HU.getUniqueId('cbx');

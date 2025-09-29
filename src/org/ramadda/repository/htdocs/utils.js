@@ -5376,6 +5376,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     translate:function(x,y) {
 	return 'translate(' + x +',' + y + ')';
     },
+    dotClass:function(c) {
+	return '.' + c;
+    },
     px:function(v) {
 	return HU.getDimension(v,'px');
     },
@@ -5698,6 +5701,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     b: function(inner) {
         return this.tag(TAG_B, [], inner);
+    },
+    italic: function(inner) {
+        return this.tag(TAG_I, [], inner);
     },
 
     td: function(attrs, inner) {

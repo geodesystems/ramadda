@@ -2,6 +2,13 @@ var Seesv = {};
 
 function  SeesvForm(inputId, entry,params) {
     this.params = params||{};
+    const SEESV_DB='-db';
+    const SEESV_RAW='-raw';
+    const SEESV_HELP='-help';
+    const SEESV_TABLE='-table';
+    const SEESV_RECORD='-record';
+    const SEESV_STATS ='-stats';
+
     const ATTR_CATEGORY="category";
     const ATTR_COMMAND = "command";
     const ATTR_FIELD="field";
@@ -186,8 +193,6 @@ function  SeesvForm(inputId, entry,params) {
 			    HU.getIconImage('fas fa-cogs') + SPACE +
 			    'Process')+' ';	    
 
-
-
 	    let right = '';
 	    right += HU.span([ATTR_ID,this.domId(ID_LIST),
 			      ATTR_CLASS,CLASS_CLICKABLE,
@@ -231,27 +236,24 @@ function  SeesvForm(inputId, entry,params) {
 	    this.jq(ID_LIST).click(()=>{
 		this.call('',{listOutput:true});
 	    });
-
 	    this.jq(ID_CLEAR).click(()=>{
 		this.output('');
 	    });
-
 	    this.jq(ID_TABLE).button().click(()=>{
-		this.display('-table',null,true);
+		this.display(SEESV_TABLE,null,true);
 	    });
 	    this.jq(ID_RECORD).button().click(()=>{
-		this.display('-record',null,true);
+		this.display(SEESV_RECORD,null,true);
 	    });	    
 	    this.jq(ID_PROCESS).button().click(()=>{
 		this.display('',true);
 	    });				   
 
-
 	    this.jq(ID_OUTPUTS).button().click(function(){
 		let html = _this.outputCommands.reduce((acc,cmd)=>{
-		    if(cmd.command=='-table') return acc;
+		    if(cmd.command==SEESV_TABLE) return acc;
 		    if(cmd.command=='-torecord') return acc;
-		    if(cmd.command=='-stats') return acc;		    
+		    if(cmd.command==SEESV_STATS) return acc;		    
 		    acc+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_COMMAND,cmd.command,
 				 ATTR_TITLE,cmd.command],cmd.description);
@@ -259,7 +261,7 @@ function  SeesvForm(inputId, entry,params) {
 		},'');
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],html);
 		let dialog = HU.makeDialog({content:html,anchor:$(this)});
-		dialog.find('.ramadda-clickable').click(function(){
+		dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function(){
 		    let command = $(this).attr(ATTR_COMMAND);
 		    dialog.remove();
 		    _this.display(command);
@@ -268,7 +270,7 @@ function  SeesvForm(inputId, entry,params) {
 	    });
 
 	    this.jq(ID_HELP).click((e)=>{
-		this.call('-help');
+		this.call(SEESV_HELP);
 	    });
 
 
@@ -362,7 +364,7 @@ function  SeesvForm(inputId, entry,params) {
 
 			    return;
 			}
-			if(!command || !command.startsWith('-') || command.startsWith('-help')) {
+			if(!command || !command.startsWith('-') || command.startsWith(SEESV_HELP)) {
 			    return;
 			}
 			if(category=='Output') {
@@ -380,20 +382,21 @@ function  SeesvForm(inputId, entry,params) {
 			    if(desc!='') desc = ' '  + desc;
 			});
 			let corpus = cmd.label +' ' + cmd.command.replace(/-/g,' ') +' ' + cmd.description;
+			corpus+=' '+ category;
 			corpus = corpus.replace(/[\n\"\']/g,' ');
 			let label = cmd.label ||  Utils.camelCase(cmd.command.replace('-',''));
 			this.commandsMap[command] = cmd;
-			let menuItem = HU.div(['data-corpus',corpus,
-					       ATTR_TITLE,(desc||'')+HU.br()+cmd.command,
+			let menuItem = HU.div([ATTR_DATA_CORPUS,corpus,
+					       ATTR_TITLE,(desc??'')+HU.br()+HU.italic(cmd.command),
 					       ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(1),CSS_BORDER,HU.border(1,'transparent')),
-					       ATTR_CLASS, 'ramadda-hoverable ramadda-clickable',
+					       ATTR_CLASS, HU.classes(CLASS_SEARCHABLE,'ramadda-hoverable',CLASS_CLICKABLE),
 					       ATTR_COMMAND,command],label);
 			menuItems.push(menuItem);
-			this.allMenuItems.push(menuItem);
+			this.allMenuItems.push({category:category,item:menuItem});
 		    });
 		    let menuBar=menus.join('');
 		    this.jq('menu').html(HU.div([],menuBar));
-		    this.jq('menu').find('.ramadda-menubar-button').click(function() {
+		    this.jq('menu').find(HU.dotClass('ramadda-menubar-button')).click(function() {
 			let cat = $(this).attr(ATTR_CATEGORY);
 			if(!cat || !menuCategories[cat]) {
 			    RamaddaUtils.selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid','" + this.entry+"');
@@ -413,30 +416,58 @@ function  SeesvForm(inputId, entry,params) {
 	    let _this = this;
 	    let menuId = HU.getUniqueId('menu_');
 	    let menu;
-	    if(all) menu =  Utils.wrap(items,
-				       HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#ececec'),
-									  CSS_VERTICAL_ALIGN,ALIGN_TOP,
-									  CSS_MARGIN,HU.px(2),
-									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)]),HU.close(TAG_DIV));
-	    else menu = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
-									    CSS_MARGIN,HU.px(5),
-									    CSS_DISPLAY,DISPLAY_INLINE_BLOCK)]),HU.close(TAG_DIV));
+	    let prefix = HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#ececec'),
+							    CSS_VERTICAL_ALIGN,ALIGN_TOP,
+							    CSS_MARGIN,HU.px(2),
+							    CSS_DISPLAY,DISPLAY_INLINE_BLOCK)]);
+	    let suffix  = HU.close(TAG_DIV);
+	    if(all) {
+		menu='';
+		let category='';
+		items.forEach((item,idx)=>{
+		    if(!all) {
+			menu+=prefix + item +suffix;
+			return;
+		    }
+		    if(all && category!=item.category) {
+			menu+=HU.div([],
+				     HU.div([ATTR_CLASS,CLASS_SEARCHABLE,
+					     ATTR_DATA_CORPUS,item.category,
+					     ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold',CSS_TEXT_ALIGN,ALIGN_CENTER)],item.category));
+			category=item.category;
+		    }
+		    menu+=prefix + item.item +suffix;
+		});
+	    }   else {
+		menu = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
+									   CSS_MARGIN,HU.px(5),
+									   CSS_DISPLAY,DISPLAY_INLINE_BLOCK)]),HU.close(TAG_DIV));
+
+	    }
 	    let menuAttrs = [ATTR_ID,menuId];
-	    if(all)  menuAttrs.push(ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10),
-						      CSS_OVERFLOW_Y,OVERFLOW_AUTO,
-						      CSS_MAX_HEIGHT,HU.px(300),
-						      CSS_MIN_HEIGHT,HU.px(200),
-						      CSS_MAX_WIDTH,HU.px(800),
-						      CSS_MIN_WIDTH,HU.px(600)));
+	    if(all || true)  {
+		menuAttrs.push(ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10),
+						 CSS_MARGIN_TOP,HU.px(0),
+						 CSS_OVERFLOW_Y,OVERFLOW_AUTO,
+						 CSS_MAX_HEIGHT,HU.px(300),
+						 CSS_MIN_HEIGHT,HU.px(200),
+						 CSS_MAX_WIDTH,HU.px(800),
+						 CSS_MIN_WIDTH,HU.px(600)));
+	    }
 	    menu = HU.div(menuAttrs,menu);
 	    let inputId = HU.getUniqueId('input_');
+	    let cbxId = HU.getUniqueId('cbx_');
 	    let input = HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80),
-						  CSS_TEXT_ALIGN,ALIGN_CENTER,
+						  CSS_PADDING,HU.px(5),
+						  CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
 						  CSS_MARGIN,HU.px(5))],
 			       HU.input('','',[ATTR_AUTOFOCUS,null,
 					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(150)),
 					       ATTR_PLACEHOLDER,'Search Commands',
-					       ATTR_ID,inputId]));
+					       ATTR_ID,inputId])
+			       +SPACE +
+			       HU.checkbox('',[ATTR_ID,cbxId],false,'Show details')
+			      );
 	    menu = input+menu;
 	    
 	    if(_this.menuDialog) {
@@ -449,11 +480,11 @@ function  SeesvForm(inputId, entry,params) {
 			     draggable:true,
 			     title:title},args??{});
 	    let dialog = _this.menuDialog = HU.makeDialog(args);
-	    let commands = dialog.find('.ramadda-clickable');
+	    let commands = dialog.find(HU.dotClass(CLASS_SEARCHABLE));
 	    commands.tooltip({
 		show:{delay:1000},
 		content: function () {
-		    return $(this).prop('title');
+		    return $(this).prop(ATTR_TITLE);
 		}
 	    });
 	    jqid(menuId).css(CSS_MIN_WIDTH,jqid(menuId).width());
@@ -465,17 +496,34 @@ function  SeesvForm(inputId, entry,params) {
 		    if(all) {
 			item.parent().show();
 		    } else {
-			if(!force)
-			    item.css(CSS_BACKGROUND,'var(--color-mellow-yellow)').css(CSS_BORDER,'var(--highlight-border');
+			item.show();
+//			if(!force)    item.css(CSS_BACKGROUND,'var(--color-mellow-yellow)').css(CSS_BORDER,'var(--highlight-border');
 		    }
 		} else {
 		    if(all)
 			item.parent().hide();
-		    else
-			item.css(CSS_BACKGROUND,'transparent').css(CSS_BORDER,HU.border(1,'transparent'));
+		    else {
+			item.hide();
+//			item.css(CSS_BACKGROUND,'transparent').css(CSS_BORDER,HU.border(1,'transparent'));
+		    }
+		}
+	    };
+	    jqid(cbxId).change(function() {
+		let on =  $(this).is(':checked');
+		if(!on) {
+		    dialog.find('.seesv_extra').remove();
+		    return;
 		}
 
-	    };
+		commands.each(function() {
+		    let title = $(this).attr(ATTR_TITLE);
+		    if(!title) return;
+		    title = title.replace('<br>',' ');
+		    $(this).append(HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9),CSS_MARGIN_LEFT,HU.px(5)),
+					    ATTR_CLASS,'seesv_extra'],title));
+		});
+	    });
+
 	    jqid(inputId).focus();
 	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
@@ -483,10 +531,11 @@ function  SeesvForm(inputId, entry,params) {
 		    if(text=='') {
 			toggle($(this),true,true);
 		    } else {
-			let corpus = $(this).attr('data-corpus');
+			let corpus = $(this).attr(ATTR_DATA_CORPUS);
 			if(!corpus) return;
 			corpus =  corpus.toLowerCase();
-			toggle($(this),corpus.indexOf(text)>=0);
+			let visible = corpus.indexOf(text)>=0;
+			toggle($(this),visible);
 		    }
 		});
 	    });
@@ -501,7 +550,7 @@ function  SeesvForm(inputId, entry,params) {
 	    });
 	},
 	output: function(html) {
-	    this.jq('output').html(html);
+	    this.jq(ID_OUTPUT).html(html);
 	},
 	insertTags(tagOpen, tagClose, sampleText) {
 	    this.insertText(tagOpen);
@@ -529,14 +578,14 @@ function  SeesvForm(inputId, entry,params) {
 		    for(let i=0;i<row;i++) {
 			text+=lines[i]+'\n';
 		    }
-		    this.display('-table',null,true,text);
+		    this.display(SEESV_TABLE,null,true,text);
 		    this.gutterMouseDown = true;
 		}
 	    });
 	    this.editor.commands.addCommand({
 		name: 'keyt',
 		exec: function() {
-		    _this.display('-table',null,true);
+		    _this.display(SEESV_TABLE,null,true);
 		},
 		bindKey: {mac: 'ctrl-t', win: 'ctrl-t'}
 	    })
@@ -575,7 +624,7 @@ function  SeesvForm(inputId, entry,params) {
 		    _this.insertText('entry:' + entryId);
 		}
 	    },this.inputId);
-	    $('.ace_gutter').attr(ATTR_TITLE,'control-click to evaluate to here');
+	    $(HU.dotClass('ace_gutter')).attr(ATTR_TITLE,'control-click to evaluate to here');
 	},
 
 
@@ -803,12 +852,12 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 
 	    command = command.trim();
-	    if(what!='-raw' && command.indexOf('-template ')>=0) what = '';
+	    if(what!=SEESV_RAW && command.indexOf('-template ')>=0) what = '';
 
 	    if(what == null) {
 		this.call(command  +' ', {process:process,html:html});
 	    }  else {
-		if(what == '-raw') command = '';
+		if(what == SEESV_RAW) command = '';
 		this.call(command, {process:process, csvoutput:what,html:html});
 	    }
 	},
@@ -901,21 +950,21 @@ function  SeesvForm(inputId, entry,params) {
 	    let debug = cmds.match("-debug($| )");
 	    let rawInput = this.getInput();
 	    haveOutput = Utils.isDefined(args.csvoutput);
-	    if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  {
+	    if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf(SEESV_DB) <0 && !haveOutput)  {
 		args.csvoutput = "-print";
 	    }
 
-	    let isHelp = cmds.indexOf("-help")>=0;
-	    let raw = args.csvoutput=="-raw";
-	    let isDb = args.csvoutput == "-db" || cmds.indexOf("-db")>=0;
+	    let isHelp = cmds.indexOf(SEESV_HELP)>=0;
+	    let raw = args.csvoutput==SEESV_RAW;
+	    let isDb = args.csvoutput == SEESV_DB || cmds.indexOf(SEESV_DB)>=0;
 	    let isJson = args.csvoutput=="-tojson";
 	    let isXml = args.csvoutput=="-toxml";	
 
 
 	    let csv = args.csvoutput=="-print";
 	    let stats = args.csvoutput=="-htmlstats";
-	    let table =  args.csvoutput=="-table";					    
-	    let isRecord = args.csvoutput=="-torecord" || args.csvoutput=="-record";					    				
+	    let table =  args.csvoutput==SEESV_TABLE;					    
+	    let isRecord = args.csvoutput=="-torecord" || args.csvoutput==SEESV_RECORD;					    				
 	    let showHtml =false;
 	    let printHeader = args.csvoutput == "-printheader";
 
@@ -1020,11 +1069,9 @@ function  SeesvForm(inputId, entry,params) {
 
 		if(Utils.isDefined(data.url)) {
 		    this.output(data.url);
-		    output.find(".ramadda-button").button();
+		    output.find(HU.dotClass(CLASS_BUTTON)).button();
 		    return;
 		} 
-
-
 
 
 		if(Utils.isDefined(data.result)) {
@@ -1113,7 +1160,7 @@ function  SeesvForm(inputId, entry,params) {
 			db = db.replace(/name:/g," ");
 			db = db.replace(/column:[ \t]+/g,"column: ");			
 			writePre(db);
-			output.find(".csv_db_field").click(function(event) {
+			output.find(HU.dotClass('csv_db_field')).click(function(event) {
                             let space = SPACE2;
                             event.preventDefault();
                             let pos=$(this).offset();
@@ -1177,7 +1224,7 @@ function  SeesvForm(inputId, entry,params) {
                             }
                             html+="</div></div>";
 			    _this.dbDialog=HU.makeDialog({title:title,content:html,anchor:$(this),header:true,draggable:true});
-			    _this.dbDialog.find(".ramadda-clickable").click(function() {
+			    _this.dbDialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 				_this.insertDb($(this).attr('field'),$(this).attr('value'));
 
 			    });
@@ -1206,7 +1253,7 @@ function  SeesvForm(inputId, entry,params) {
 			    try {
 				let html =Utils.formatXml(result.trim());
 				output.html(HU.pre(html));
-				output.find(".ramadda-xmlnode").click(()=>{
+				output.find(HU.dotClass("ramadda-xmlnode")).click(()=>{
 				    this.insertText($(this).attr("data-path"));
 				});
 				return;
@@ -1241,7 +1288,7 @@ function  SeesvForm(inputId, entry,params) {
 			    writePre(result);
 			}
 			if(isHeader) {
-			    output.find(".csv_addheader_field").click(function(event) {
+			    output.find(HU.dotClass("csv_addheader_field")).click(function(event) {
 				event.preventDefault();
 				let field = $(this).attr(ATTR_FIELD);
 				let pos=$(this).offset();
@@ -1284,7 +1331,7 @@ function  SeesvForm(inputId, entry,params) {
 							      sticky:true,
 							      draggable:true,
 							      content:html,anchor:$(this)});
-				dialog.find(".ramadda-clickable").click(function() {
+				dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 				    _this.insertHeader($(this).attr(ATTR_FIELD),$(this).attr(ATTR_VALUE));
 				});
 			    });
@@ -1302,18 +1349,18 @@ function  SeesvForm(inputId, entry,params) {
 			let _this = this;
 			let visible = false;
 			if(table)
-			    output.find(".th2").hide();
+			    output.find(HU.dotClass('th2')).hide();
 			this.jq('csv_toggledetails').button().addClass(CLASS_CLICKABLE).click(function(){
 			    visible = !visible;
 			    $(this).html(visible?"Hide summary":"Show summary");
 			    if(visible)
-				output.find(".seesv-table-summary").show();
+				output.find(HU.dotClass('seesv-table-summary')).show();
 			    else
-				output.find(".seesv-table-summary").hide();
+				output.find(HU.dotClass('seesv-table-summary')).hide();
 			});
 
 			this.columnIds =  [];
-			let idComps = output.find( ".csv-id");
+			let idComps = output.find(HU.dotClass('csv-id'));
 			idComps.each(function() {
 			    _this.addColumnId($(this).attr('fieldid'));
 			});
@@ -1346,11 +1393,11 @@ function  SeesvForm(inputId, entry,params) {
   			let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$4</a>$5</th>");
 			result = newresult;
 			output.html(result);
-			output.find(".csv_header_field").each(function() {
+			output.find(HU.dotClass('csv_header_field')).each(function() {
 			});
 
-			output.find(".csv_header_field").click(function(event) {
-			    $(this).attr(ATTR_STYLE,"color:black;");
+			output.find(HU.dotClass('csv_header_field')).click(function(event) {
+			    $(this).attr(ATTR_STYLE,HU.css(CSS_COLOR,'black'));
 			    let label = $(this).attr("label");
 			    if(!label) {
 				let index = $(this).attr("index");
@@ -1360,10 +1407,10 @@ function  SeesvForm(inputId, entry,params) {
 			    }
 			    _this.insertColumnIndex(label);
 			});
-			HU.formatTable(".ramadda-table",{xordering:true});
+			HU.formatTable(HU.dotClass('ramadda-table'),{});
 		    } else if(isRecord) {
 			output.html(result);
-			let ids = 		output.find('.seesv-record-id');
+			let ids = 		output.find(HU.dotClass('seesv-record-id'));
 			ids.addClass(CLASS_CLICKABLE);
 			ids.attr(ATTR_TITLE,'Add field id. shift:prepend comma');
 			ids.click(function(event) {
@@ -1437,7 +1484,7 @@ function  SeesvForm(inputId, entry,params) {
 			} 
 			output.html(html);
 			if(printHeader) {
-			    output.find(".csv_header_field").click(function(event) {
+			    output.find(HU.dotClass('csv_header_field')).click(function(event) {
 				let index = $(this).attr("index").replace("#","").trim();
 				_this.insertColumnIndex(index,$(this).attr("plain"));
 			    });
@@ -1485,7 +1532,8 @@ function  SeesvForm(inputId, entry,params) {
 		    if((arg.type=='column' || arg.type=='columns') && this.allColumnIds.length>0) {
 			return HU.span([ATTR_INPUTID,id,
 					ATTR_TITLE,'Add column',
-					ATTR_CLASS,'ramadda-clickable seesv-column-button',ATTR_COLUMNID,id],HU.getIconImage('fa-plus') + ' ' +desc);
+					ATTR_CLASS,'ramadda-clickable seesv-column-button',ATTR_COLUMNID,id],
+				       HU.getIconImage('fa-plus') + ' ' +desc);
 
 		    }
 		    return '';
@@ -1499,7 +1547,8 @@ function  SeesvForm(inputId, entry,params) {
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
-			help=HU.br()+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HU.getIconImage(ICON_HELP),
+			help=HU.br()+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',
+					     HU.getIconImage(ICON_HELP),
 					     [ATTR_TARGET,'_help',ATTR_TITLE,'Columns Help']);
 		    desc+=help;
 		    return   HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
@@ -1512,7 +1561,7 @@ function  SeesvForm(inputId, entry,params) {
 		if(!this.headerInput && cmd.command=="-addheader" && a.id=="properties") {
 		    this.headerInput = id;
 		}
-		if(!this.dbInput && cmd.command=="-db" && a.id=="properties") {
+		if(!this.dbInput && cmd.command==SEESV_DB && a.id=="properties") {
 		    this.dbInput = id;
 		}		
 		if(a.type=="list" || a.type=="columns" || a.type=="rows") {
@@ -1600,7 +1649,7 @@ function  SeesvForm(inputId, entry,params) {
 
 
 	    let _this = this;
-	    dialog.find(".seesv-column-button").click(function() {
+	    dialog.find(HU.dotClass('seesv-column-button')).click(function() {
 		if(_this.allColumnIds.length==0) return;
 		let inputId = $(this).attr(ATTR_INPUTID);
 		let contentDiv = HU.getUniqueId('content');
@@ -1619,8 +1668,9 @@ function  SeesvForm(inputId, entry,params) {
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400),
 						 CSS_MARGIN,HU.px(5))], html);
 		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
-		HU.initPageSearch('#'+contentDiv+' .ramadda-clickable',null,'Search',null,{target:jqid(searchDiv)});
-		popup.find(".ramadda-clickable").click(function() {
+		HU.initPageSearch('#'+contentDiv+' ' +HU.dotClass(CLASS_CLICKABLE),
+				  null,'Search',null,{target:jqid(searchDiv)});
+		popup.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		    let id = $(this).attr(ATTR_COLUMNID);
 		    _this.insertColumnIndex(id,true,inputId);
 		});
