@@ -823,7 +823,8 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		dayInfo.hourToRecords[hour].push(record);
 	    });
 	    Utils.sortDates(days);
-	    html = HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]) + HU.open(TAG_TABLE,[ATTR_WIDTH,"100%"]);
+	    html = HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]) +
+		HU.open(TAG_TABLE,[ATTR_WIDTH,"100%"]);
 	    let boxWidth = this.getPropertyBoxWidth(10);
 	    let boxColor = this.getPropertyBoxColor(BOX_COLOR);
 	    let extra = "";
@@ -1415,13 +1416,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	    if(includeGeo) header1+=HU.th([],HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
 	    if(includeGeo) header2+=HU.th([],HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
-	    header1+="</tr>\n";
-	    header2+="</tr>\n";	    
+	    header1+=HU.close(TAG_TR);
+	    header2+=HU.close(TAG_TR);
 	    html+=header1;
 	    if(this.getIncludeFieldDescription()) {
 		html+=header2;
 	    }
-	    html+='</thead>';
+	    html+=HU.close(TAG_THEAD);
 	    html+=HU.open(TAG_TBODY,[ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
 	    this.recordMap = {};
 	    this.fieldMap = {};
@@ -2359,14 +2360,14 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId("colortable")]);
             for (table in Utils.ColorTable) {
                 if (table == colorTable)
-                    ct += HU.tag(TAG_OPTION,['selected',null], table);
+                    ct += HU.tag(TAG_OPTION,[ATTR_SELECTED,null], table);
                 else
                     ct += HU.tag(TAG_OPTION,[], table);
             }
             ct += HU.close(TAG_SELECT);
             tmp += HU.formEntry("Color Table:", ct);
-            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin, ["size", "7", ATTR_ID, this.domId("colorbymin")]) + " - " +
-				HU.input("", this.colorByMax, ["size", "7", ATTR_ID, this.domId("colorbymax")]));
+            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin, [ATTR_SIZE, "7", ATTR_ID, this.domId("colorbymin")]) + " - " +
+				HU.input("", this.colorByMax, [ATTR_SIZE, "7", ATTR_ID, this.domId("colorbymax")]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
         },
@@ -2657,13 +2658,13 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 let field = numericFields[i];
                 let extra = "";
                 if (field.getId() == sortField.getId()) extra = " selected ";
-                menu += HU.tag(TAG_OPTION,['value', field.getId(), extra,null], this.getFieldLabel(field));
+                menu += HU.tag(TAG_OPTION,[ATTR_VALUE, field.getId(), extra,null], this.getFieldLabel(field));
             }
             menu += HU.close(TAG_SELECT);
 	    let top ="";
 	    top += HU.span([ATTR_ID,this.domId("sort")],
 			   HU.getIconImage(this.sortAscending?"fa-sort-up":"fa-sort-down",
-					   [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer'),
+					   [ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER),
 					    ATTR_TITLE,"Change sort order"]));
             if (this.getProperty("showRankingMenu", true)) {
                 top+= " " + HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK), ATTR_CLASS,"display-filterby"],menu);
@@ -2672,9 +2673,9 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 	    this.jq("sort").click(()=>{
 		this.sortAscending= !this.sortAscending;
 		if(this.sortAscending) 
-		    this.jq("sort").html(HU.getIconImage("fa-sort-up", [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer')]));
+		    this.jq("sort").html(HU.getIconImage("fa-sort-up", [ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 		else
-		    this.jq("sort").html(HU.getIconImage("fa-sort-down", [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer')]));
+		    this.jq("sort").html(HU.getIconImage("fa-sort-down", [ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 		this.updateUI();
 	    });
             let html = "";
@@ -2872,7 +2873,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
             });
             let allFields = this.dataCollection.getList()[0].getRecordFields();
 	    let col =  this.getFieldById(null, this.getProperty("column", "", true));
-	    let rows =  this.getFieldsByIds(null, this.getProperty("rows", null, true));
+	    let rows =  this.getFieldsByIds(null, this.getProperty(ATTR_ROWS, null, true));
 	    if(!col) col  = allFields[0];
 	    if(rows.length==0) rows  = allFields;
 
@@ -2996,14 +2997,14 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId("colortable")]);
             for (table in Utils.ColorTables) {
                 if (table == colorTable)
-                    ct += HU.tag(TAG_OPTION,['selected',null],table);
+                    ct += HU.tag(TAG_OPTION,[ATTR_SELECTED,null],table);
                 else
                     ct += HU.tag(TAG_OPTION,[], table);
             }
             ct += HU.close(TAG_SELECT);
             tmp += HU.formEntry("Color Bar:", ct);
-            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin, ["size", "7", ATTR_ID, this.domId("colorbymin")]) + " - " +
-				HU.input("", this.colorByMax, ["size", "7", ATTR_ID, this.domId("colorbymax")]));
+            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin, [ATTR_SIZE, "7", ATTR_ID, this.domId("colorbymin")]) + " - " +
+				HU.input("", this.colorByMax, [ATTR_SIZE, "7", ATTR_ID, this.domId("colorbymax")]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
         },
@@ -3183,7 +3184,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 					ATTR_CLASS, "display-correlation", ATTR_WIDTH, "100%"]);
             let col1Width = 10 + "%";
             let width = 90 / fieldCnt + "%";
-            html += HU.open(TAG_TR,[ATTR_VALIGN,CSS_BOTTOM]) + HU.td([ATTR_CLASS,"display-heading",ATTR_WIDTH, col1Width],SPACE);
+            html += HU.open(TAG_TR,[ATTR_VALIGN,CSS_BOTTOM]) +
+		HU.td([ATTR_CLASS,"display-heading",ATTR_WIDTH, col1Width],SPACE);
 
             let short = this.getProperty("short", false);
             let showValue = this.getProperty("showValue", !short);
@@ -4047,7 +4049,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		catMap[category].max = Math.max(catMap[category].max,value);
 		list.push(r);
 	    });
-	    let html = HU.open(TAG_TABLE,[ATTR_CLASS,'display-colorboxes-table','cellpadding',5]);
+	    let html = HU.open(TAG_TABLE,[ATTR_CLASS,'display-colorboxes-table',ATTR_CELLPADDING,5]);
 	    let labelColumnWidth=this.getLabelColumnWidth();
 	    let tableWidth=this.getProperty("tableWidth",300);
 	    cats.sort((a,b)=>{
@@ -4592,7 +4594,10 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 																		  columnSelector));
 	    }
 
-	    let mainTable = HU.open(TAG_TABLE,[ATTR_STYLE,HU.css(CSS_FONT_SIZE, this.getProperty("fontSize",'8pt')),ATTR_CLASS,'display-colorboxes-table', 'cellpadding',0,'cellspacing',0,
+	    let mainTable = HU.open(TAG_TABLE,[ATTR_STYLE,HU.css(CSS_FONT_SIZE, this.getProperty("fontSize",'8pt')),
+					       ATTR_CLASS,'display-colorboxes-table',
+					       ATTR_CELLPADDING,0,
+					       ATTR_CELLSPACING,0,
 					       ATTR_WIDTH,'100%']);
 	    mainTable+=HU.tr([],headerRow);
 	    mainTable+=table;

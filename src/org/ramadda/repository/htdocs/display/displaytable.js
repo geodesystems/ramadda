@@ -454,28 +454,28 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 HtmlUtils.div([ATTR_ID, this.getDomId("params-yaxis-label"),
 			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
 						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,'inline-block')], "");
+						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += "&nbsp;&nbsp;&nbsp;";
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-xaxis-select") + "\"> x-axis:&nbsp;" +
                 HtmlUtils.div([ATTR_ID, this.getDomId("params-xaxis-label"),
 			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
 						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,'inline-block')], "");
+						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-group-select") + "\"> group:&nbsp;" +
                 HtmlUtils.div([ATTR_ID, this.getDomId("params-group-label"),
 			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
 						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,'inline-block')], "");
+						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += "</form>";
 
             if (this.getProperty("showSearch", true)) {
-                var results = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block'),
+                var results = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					     ATTR_ID, this.getDomId(ID_RESULTS)], "");
-                var download = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block'),
+                var download = HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					      ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
                 var searchDiv = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SEARCH_DIV), ATTR_CLASS, "ramadda-xls-search-form"]);
 
@@ -528,9 +528,9 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                     _this.jq(ID_SEARCH_EXTRA).toggle();
                     _this.extraOpen = !_this.extraOpen;
                     if (_this.extraOpen) {
-                        _this.jq(ID_SEARCH + "_open").attr("src", icon_tree_open);
+                        _this.jq(ID_SEARCH + "_open").attr(ATTR_SRC, icon_tree_open);
                     } else {
-                        _this.jq(ID_SEARCH + "_open").attr("src", icon_tree_closed);
+                        _this.jq(ID_SEARCH + "_open").attr(ATTR_SRC, icon_tree_closed);
                     }
                 });
 

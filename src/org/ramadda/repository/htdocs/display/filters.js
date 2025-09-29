@@ -805,9 +805,9 @@ function RecordFilter(display,filterFieldId, properties) {
                 let enums = this.getEnums(records);
 		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
-		    attrs.push("multiple");
+		    attrs.push(ATTR_MULTIPLE);
 		    attrs.push("");
-		    attrs.push("size");
+		    attrs.push(ATTR_SIZE);
 		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize",
 						this.getProperty('filterMultipleSize','3')));
 		    dfltValue = dfltValue.split(",");
@@ -1110,7 +1110,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block')],
+		    widget = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],
 					   (showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }

@@ -1225,7 +1225,7 @@ WikiEditor.prototype = {
 		    /*
 		      HU.span([ATTR_CLASS, CLASS_CLICKABLE,ATTR_TITLE,'Copy',
 		      ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
-		      HU.span([ATTR_CLASS, CLASS_CLICKABLE,TITLE,'Download',
+		      HU.span([ATTR_CLASS, CLASS_CLICKABLE,ATTR_TITLE,'Download',
 		      ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),
 		    */
 		],SPACE2);

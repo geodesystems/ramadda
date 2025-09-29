@@ -3600,9 +3600,9 @@ RequestMacro.prototype = {
 		}
 
 		if(this.multiple) {
-		    attrs.push('multiple');
+		    attrs.push(ATTR_MULTIPLE);
 		    attrs.push(null);
-		    attrs.push('size');
+		    attrs.push(ATTR_SIZE);
 		    attrs.push(Math.min(this.rows,values.length));
 		} else {
 		    //		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
@@ -3622,7 +3622,7 @@ RequestMacro.prototype = {
 	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, ATTR_STYLE, style, ATTR_ID,minId,ATTR_SIZE,4,
 				     ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
-		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, ATTR_STYLE, style, ATTR_ID,maxId,'size',4,
+		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, ATTR_STYLE, style, ATTR_ID,maxId,ATTR_SIZE,4,
 				ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
 	} else if(this.type=='daterange') {
@@ -3648,7 +3648,8 @@ RequestMacro.prototype = {
 	    size = this.getProperty("request." +this.name+".size",size),
 
 	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',ATTR_STYLE, style,
-					    ATTR_ID,this.display.getDomId(this.getId()),'size',size,
+					    ATTR_ID,this.display.getDomId(this.getId()),
+					    ATTR_SIZE,size,
 					    ATTR_CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';

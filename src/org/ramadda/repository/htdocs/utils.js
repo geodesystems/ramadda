@@ -188,8 +188,8 @@ var Utils =  {
 	    let link = $(this);
 	    if(opts.addLink) {
 		let parent = opts.addLinkToParent?$(this).parent():$(this);
-		parent.css(CSS_POSITION,'relative');
-		let style = HU.css(CSS_POSITION,'absolute') +
+		parent.css(CSS_POSITION,POSITION_RELATIVE);
+		let style = HU.css(CSS_POSITION,POSITION_ABSOLUTE) +
 		    (opts.extraStyle??HU.css(CSS_TOP,HU.px(5),  CSS_RIGHT,HU.px(5)));
 		link = $(HU.tag('ramadda-copy-link', [ATTR_CLASS,'ramadda-clickable',
 						      ATTR_STYLE,style],
@@ -210,7 +210,7 @@ var Utils =  {
 		    inputs.each(function() {
 			$(this).css(CSS_BACKGROUND,'#fff');
 		    });
-		    $(this).css(CSS_BACKGROUND,'var(--color-mellow-yellow)');
+		    $(this).css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW);
 		});
 	    }
 
@@ -505,7 +505,7 @@ var Utils =  {
 	let contents=jqid(id).html();
 	contents = contents.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").trim();
 	let div = jqid(id);
-	div.css(CSS_POSITION,'relative');
+	div.css(CSS_POSITION,POSITION_RELATIVE);
 	let copyId = id+"_copy";
 	let downloadId = id+"_download";	
 	let pos = 10;
@@ -513,7 +513,7 @@ var Utils =  {
 	    let copy = HU.div([ATTR_ID,copyId,
 			       ATTR_TITLE,"Copy to clipboard",
 			       ATTR_CLASS,CLASS_CLICKABLE,
-			       ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_RIGHT,HU.px(pos),
 						 CSS_TOP,HU.px(5))], HU.getIconImage("fas fa-clipboard"));
 	    pos+=20;
@@ -523,7 +523,7 @@ var Utils =  {
 	    let download = HU.div([ATTR_ID,downloadId,
 				   ATTR_TITLE,"Download",
 				   ATTR_CLASS,CLASS_CLICKABLE,
-				   ATTR_STYLE,HU.css(CSS_POSITION,"absolute",
+				   ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						     CSS_RIGHT,HU.px(pos),
 						     CSS_TOP,HU.px(5))],
 				  HU.getIconImage("fas fa-download"));
@@ -532,7 +532,7 @@ var Utils =  {
 	}	
 	jqid(copyId).click(function(){
 	    Utils.copyToClipboard(contents);
-	    let html = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'var(--color-mellow-yellow)',CSS_PADDING,HU.px(5))],
+	    let html = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW,CSS_PADDING,HU.px(5))],
 			      'Ok, result is copied');
             let dialog = HU.makeDialog({content:html,anchor:$(this),
 					my:"right top",at:"right bottom"});
@@ -735,7 +735,7 @@ var Utils =  {
         setTimeout(() =>{
             let success=json=>{
                 let msg = "";
-                if(json.message) msg= json.message.replace(/\n/g,"<br>");
+                if(json.message) msg= json.message.replace(/\n/g,HU.br());
                 $("#" + id).html(msg);
                 if(json.status=="running") {
                     Utils.handleActionResults(id,url);
@@ -1226,10 +1226,10 @@ var Utils =  {
         var image = $("#"+imageid);
         if (inner.is(":visible")) {
             inner.hide();
-            image.attr("src",icon_tree_closed);
+            image.attr(ATTR_SRC,icon_tree_closed);
         } else {
             inner.show();
-            image.attr("src",icon_tree_open);
+            image.attr(ATTR_SRC,icon_tree_open);
         }
     },
     formatJsonBlob: function(blob,label, level,levelsShown) {
@@ -1243,7 +1243,8 @@ var Utils =  {
             var click = "Utils.formatJsonClick('" + imageid +"','" + innerid +"')";
             html = HtmlUtils.div([ATTR_ONCLICK,click,ATTR_CLASS,"json-label"],toggle + " " + html);
             var display = level<levelsShown?"block":"none";
-            html += HtmlUtils.div([ATTR_STYLE,"display:" + display+";",ATTR_CLASS,"json-inner",ATTR_ID,innerid],blob.inner);
+            html += HtmlUtils.div([ATTR_STYLE,HU.css(CSS_DISPLAY,display),
+				   ATTR_CLASS,"json-inner",ATTR_ID,innerid],blob.inner);
         }
         return html;
     },
@@ -1295,13 +1296,13 @@ var Utils =  {
         }
 
         for(var i=0;i<indices.length;i++) {
-            html += "<div>";
+            html += HU.open(TAG_DIV);
             var blob = Utils.formatJsonInner(json[indices[i]], level+1, levelsShown);
             html += this.formatJsonBlob(blob,labels[i],level+1,levelsShown);
-            html += "</div>";
+            html += HU.close(TAG_DIV);
         }
 
-        html += "</div>";
+        html += HU.close(TAG_DIV);
         return {value:label,inner:html};
     },
     padLeft: function(s, length, pad) {
@@ -2088,13 +2089,13 @@ var Utils =  {
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
 						   ATTR_STYLE,
-						   HU.css(CSS_DISPLAY,"inline-block",
-							  CSS_POSITION,"relative",
+						   HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							  CSS_POSITION,POSITION_RELATIVE,
 							  CSS_HEIGHT,HU.px(height+2),
 							  CSS_WIDTH,width,
 							  CSS_BORDER,border,CSS_BORDER_LEFT,"none")],
                                                   HU.div([ATTR_STYLE,
-							  HU.css(CSS_POSITION,"absolute",
+							  HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 								 CSS_LEFT,HU.px(0),
 								 CSS_RIGHT,percent,
 								 CSS_HEIGHT,HU.px(height),
@@ -2126,11 +2127,11 @@ var Utils =  {
                                 let percent = (100-100*(value-min)/(max-min))+"%";
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
-						   ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_POSITION,"relative")],
+						   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_POSITION,POSITION_RELATIVE)],
                                                   starsbase+
                                                   HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,"nowrap",
 									    CSS_OVERFLOW_X,"hidden",
-									    CSS_POSITION,"absolute",
+									    CSS_POSITION,POSITION_ABSOLUTE,
 									    CSS_LEFT,HU.px(0),
 									    CSS_RIGHT,percent,
 									    CSS_TOP,HU.px(0),
@@ -2186,7 +2187,7 @@ var Utils =  {
                         }
                         if(t.attrs["showUrl"]) {
                             let label = t.attrs['label'] || value;
-                            value = HU.href(value,label,['target','_other',ATTR_STYLE,t.attrs[ATTR_STYLE]||'']);
+                            value = HU.href(value,label,[ATTR_TARGET,'_other',ATTR_STYLE,t.attrs[ATTR_STYLE]||'']);
                         }
                         if(t.attrs['delimiter'] && t.attrs['fields']) {
                             let l = [];
@@ -2428,13 +2429,13 @@ var Utils =  {
 			}
 
                         if(has('maxHeight')) {
-                            value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+                            value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							       CSS_MAX_HEIGHT,HU.getDimension(get('maxHeight')),
 							       CSS_OVERFLOW_Y,"auto")],value);
                         }
 
                         if(has("maxWidth")) {
-                            value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",
+                            value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							       CSS_WHITE_SPACE,"nowrap",
 							       CSS_MAX_WIDTH,HU.getDimension(get('maxWidth')),
 							       CSS_OVERFLOW_X,"auto")],value);
@@ -2495,7 +2496,7 @@ var Utils =  {
         let embedUrl = "//www.youtube.com/embed/" + id +
             "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
         let s =  "";
-	if(attrs['includeLink']) s +=HU.href(url,"Link") +"<br>";
+	if(attrs['includeLink']) s +=HU.href(url,"Link") +HU.br();
         s+=  HU.tag(TAG_IFRAME,[ATTR_ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
                               ATTR_WIDTH,attrs[ATTR_WIDTH]||640,ATTR_HEIGHT,attrs['height']||360, 
                               SRC,embedUrl
@@ -2716,7 +2717,7 @@ var Utils =  {
 		popup.hide();
 		return
 	    }		
-	    popup.css(CSS_DISPLAY,'inline-block');
+	    popup.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
 	    let args  ={
                 of: $(this),
                 my: opts.side+' top',
@@ -2733,7 +2734,7 @@ var Utils =  {
         let label = $("#" + id+"_label");
         if(cbx.length>0) {
             cbx.change(()=>{
-                let text = "Reload" +HtmlUtils.span([ATTR_STYLE,"color:transparent"]," in 00  seconds")
+                let text = "Reload" +HtmlUtils.span([ATTR_STYLE,HU.css(CSS_COLOR,'transparent')]," in 00  seconds")
                 label.html(text);
                 if(cbx.is(':checked')) {
                     Utils.checkPageReload(time,id,showLabel);
@@ -2861,7 +2862,7 @@ var Utils =  {
 	let lessLabel = bigText.attr('bigtext-label-less')??'Less...';		
 	let height = bigText.attr('bigtext-height')??HU.px(100);
 	let fadeId = HU.getUniqueId('fade_');
-	bigText.css(CSS_PADDING_BOTTOM,HU.px(25)).css(CSS_MAX_HEIGHT,height).css(CSS_OVERFLOW_Y,'hidden').css(CSS_POSITION,'relative');
+	bigText.css(CSS_PADDING_BOTTOM,HU.px(25)).css(CSS_MAX_HEIGHT,height).css(CSS_OVERFLOW_Y,'hidden').css(CSS_POSITION,POSITION_RELATIVE);
 	let fade = $(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,bigText.attr('bigtext-fade-height')??HU.px(50)),
 			     ATTR_ID,fadeId,ATTR_CLASS,'ramadda-bigtext-fade'])).appendTo(bigText);
 	let toggle = HU.div([ATTR_TITLE,'Expand',ATTR_CLASS,'ramadda-clickable ramadda-bigtext-toggle'], moreLabel);
@@ -2960,7 +2961,7 @@ var Utils =  {
         headings.mouseenter(function(){
             let id = $(this).attr(ATTR_ID);
             if(!id) return;
-            $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[ATTR_STYLE,"font-size:10pt;"]));
+            $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
             $("#" + id +"-hover").show();
         });
         headings.click(function(){
@@ -3021,7 +3022,7 @@ var Utils =  {
             let results = HU.div([ATTR_ID,resultsId,
 				  ATTR_STYLE,HU.css(CSS_BORDER,HU.px(0),
 						    CSS_WIDTH,HU.px(width),
-						    CSS_POSITION,"absolute"),
+						    CSS_POSITION,POSITION_ABSOLUTE),
 				  ATTR_CLASS,'ramadda-popup ramadda-search-popup'],"");
             input.parent().append(results);
         }
@@ -3109,7 +3110,7 @@ var Utils =  {
 					  'data-type',value.typeName,
 					  'data-name',value.name,
 					  'data-icon',value.icon,
-					  ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_WIDTH,HU.perc(100)),
+					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100)),
 					  ATTR_CLASS,"ramadda-highlightable"]);
                 let searchLink;
                 if(submitForm) {
@@ -3182,7 +3183,7 @@ var Utils =  {
             right=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			   ATTR_TITLE,"Search under this entry"],
 			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +
-			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE, "for","popup_search_here"],
+			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE, ATTR_FOR,"popup_search_here"],
 				 HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
 					HU.getIconImage('fas fa-folder-tree'))));
         }
@@ -3201,7 +3202,8 @@ var Utils =  {
 		    HU.span([ATTR_TITLE, 'Go to type search form',
 			     ATTR_CLASS,CLASS_CLICKABLE],  'By Type'));
 
-        let links =  HU.div([ATTR_ID, linksId,ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_FONT_SIZE,HU.px(12))],
+        let links =  HU.div([ATTR_ID, linksId,
+			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_FONT_SIZE,HU.px(12))],
 			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
@@ -3309,8 +3311,8 @@ var Utils =  {
         obj.style.opacity = "0.8";
     },
     centerDiv:function(c) {
-	return this.div([ATTR_STYLE,'text-align:center;'],
-			this.div([ATTR_STYLE,'display:inline-block;text-align:left;'],
+	return this.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')],
+			this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_TEXT_ALIGN,left)],
 				 c));
     },
     moveFloatDiv:function(x, y) {
@@ -3340,7 +3342,7 @@ var Utils =  {
         jqid(viewId+'_header_link').html(href);
         if (template && template!='default')
             url = url + "&template=" + template;
-	jqid(viewId).attr("src", url);
+	jqid(viewId).attr(ATTR_SRC, url);
     },
     framesInit:function(listId,viewId,template) {
 	let list = jqid(listId);
@@ -3352,11 +3354,12 @@ var Utils =  {
 	header.append(HU.div([ATTR_CLASS,'ramadda-frames-nav'],
 			     HU.span([ATTR_TITLE,'View previous',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
 				     HU.getIconImage('fas fa-caret-left',null,
-						     [ATTR_STYLE,'font-size:130%']))+
+						     [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(130))]))+
 			     HU.space(1) +
-			     HU.span([ATTR_TITLE,'View next',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
+			     HU.span([ATTR_TITLE,'View next',
+				      ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
 				     HU.getIconImage('fas fa-caret-right',null,
-						     [ATTR_STYLE,'font-size:130%']))));			     
+						     [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(130))]))));			     
 	let navClick=nav=>{
 	    //	    nav.focus();
 	    let dir = nav.attr('data-nav');
@@ -3920,7 +3923,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    content: function() {
 		let title = $(this).attr(ATTR_TITLE);
 		title = Utils.convertText(title??'');
-		let contents = HU.div([ATTR_CLASS,'ramadda-tooltip',ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],title);
+		let contents = HU.div([ATTR_CLASS,'ramadda-tooltip',
+				       ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],title);
 		return contents;
 	    }});
 
@@ -4138,7 +4142,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },				  
     initScreenshot: function(img) {
 	img.width/=2
-	$(img).css(CSS_DISPLAY,"inline-block").css(CSS_MAX_WIDTH,HU/vw(90));
+	$(img).css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK).css(CSS_MAX_WIDTH,HU/vw(90));
     },
     insertIntoTextarea:function(myField, value,newLine) {
 	if(typeof myField=='string') {
@@ -4756,12 +4760,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let id = HU.getUniqueId('tabs_');
 	let html=HU.open(TAG_DIV,[ATTR_ID,id]);
 	html+='\n';
-	html+='<ul>\n';
+	html+=HU.open(TAG_UL);
 	list.forEach((tab,idx)=>{
 	    html+=HU.tag(TAG_LI,[], HU.href('#' + id +'-'+(idx+1),tab.label??tab.header));
 	    html+='\n';
 	});
-	html+='</ul>\n';
+	html+=HU.close(TAG_UL);
 	list.forEach((tab,idx)=>{
 	    let contents = tab.contents;
 	    if(opts.contentsStyle) {
@@ -4770,7 +4774,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    html+=HU.div([ATTR_ID,id+'-'+(idx+1)], contents);
 	    html+='\n';
 	});
-	html+='</div>';
+        html += HU.close(TAG_DIV);
 	return {
 	    contents:html,
 	    init:()=>{
@@ -4786,7 +4790,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			 HU.href('#',HU.span([ATTR_CLASS,CLASS_CLICKABLE],item.header??item.label)));
 	    html+=HU.div([ATTR_ID,HU.getUniqueId('accordion_'),ATTR_CLASS,'ramadda-accordion-contents'],item.contents);
 	})
-	html+='</div>';
+        html += HU.close(TAG_DIV);
 	return {id:id,contents:html,init:(args)=>{
 	    HU.makeAccordion('#'+id,args);
 	}};
@@ -4845,7 +4849,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     buttons:function(args,clazz,style) {
-	let buttons = Utils.wrap(args,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MARGIN_RIGHT,HU.px(6))]),HU.close(TAG_DIV));
+	let buttons = Utils.wrap(args,HU.open(TAG_DIV,
+					      [ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),HU.close(TAG_DIV));
 	return HU.div([ATTR_CLASS,clazz??'ramadda-button-bar',ATTR_STYLE,style??''], buttons);
     },
     vspace:function(dim) {
@@ -4858,8 +4863,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HU.tag(TAG_TABLE, [ATTR_BORDER, "0", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "0"], row);
     },
     vbox: function(args) {
-        let col = HtmlUtils.join(args, "<br>");
-        return this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block")],col);
+        let col = HtmlUtils.join(args, HU.br());
+        return this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],col);
     },    
 
 
@@ -4868,21 +4873,24 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (rightWeight == null) rightWeight = "6";
         return this.div([ATTR_CLASS, "row"],
                         this.div([ATTR_CLASS, "col-md-" + leftWeight], left) +
-                        this.div([ATTR_CLASS, "col-md-" + rightWeight, ATTR_STYLE, "text-align:right;"], right));
+                        this.div([ATTR_CLASS, "col-md-" + rightWeight,
+				  ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,'right')], right));
     },
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
         if(!cellStyle) cellStyle = "";
-        return this.tag(TAG_TABLE, [ATTR_BORDER, 0, ATTR_WIDTH, "100%", "cellspacing", "0", "cellpadding", "0"],
-                        this.tr(["valign", attrs.valign],
+        return this.tag(TAG_TABLE, [ATTR_BORDER, 0, ATTR_WIDTH, "100%", ATTR_CELLSPACING, 0, ATTR_CELLPADDING, 0],
+                        this.tr([ATTR_VALIGN, attrs.valign],
                                 this.td([ATTR_ALIGN, "left", ATTR_WIDTH, leftWidth, ATTR_STYLE,cellStyle], left) +
                                 this.td([ATTR_ALIGN, "center", ATTR_WIDTH, centerWidth, ATTR_STYLE,cellStyle], center) +
                                 this.td([ATTR_ALIGN, "right", ATTR_WIDTH, rightWidth, ATTR_STYLE,cellStyle], right)));
     },
 
     row: function() {
-        let row = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr valign=center>";
+        let row = HU.open(TAG_TABLE,[ATTR_CELLPADDING,0,ATTR_CELLSPACING,0,
+				     ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)]) +
+	    HU.open(TAG_TR,[ATTR_VALIGN,'center']);
         Array.from(arguments).forEach(h=>{
             if(Array.isArray(h)) {
                 row+=HtmlUtils.tag(TAG_TD,h[0],h[1]);
@@ -4890,13 +4898,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 row+=HtmlUtils.tag(TAG_TD,[],h);
             }
         })
-        row+="</tr></table>";
+        row+=HU.close(TAG_TR,TAG_TABLE);
         return row;
     },
     hrow: function() {
         let row = "";
         Array.from(arguments).forEach(h=>{
-            row+=HtmlUtils.div([ATTR_STYLE, "display:inline-block"],h);
+            row+=HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],h);
         })
         return row;
     },
@@ -4915,7 +4923,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             rightAttrs.push(rightWidth);
         }
         return this.tag(TAG_TABLE, [ATTR_BORDER, "0", ATTR_WIDTH, "100%", "cellspacing", "0", "cellpadding", "0"],
-                        this.tr(["valign", attrs.valign],
+                        this.tr([ATTR_VALIGN, attrs.valign],
                                 this.td(leftAttrs, left) +
                                 this.td(rightAttrs, right)));
     },
@@ -5109,9 +5117,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		title+=HU.div([ATTR_CLASS,'ramadda-popup-title-right'],opts.rightSideTitle);
             let hdr = closeImage+title
 	    if(opts.headerRight) {
-		hdr = hdr+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_TOP,HU.px(0),CSS_RIGHT,HU.px(0))], opts.headerRight);
+		hdr = hdr+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,HU.px(0),CSS_RIGHT,HU.px(0))], opts.headerRight);
 	    }
-            let header = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative',CSS_TEXT_ALIGN,'left'),ATTR_CLASS,'ramadda-popup-header'],hdr);
+            let header = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,CSS_TEXT_ALIGN,'left'),ATTR_CLASS,'ramadda-popup-header'],hdr);
             html = header + html;
         }
 
@@ -5305,7 +5313,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<video src='" + path +"' " + a +" controls='controls'></video>";
     },
     image: function(path, attrs) {
-        return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
+        return "<img " + this.attrs([ATTR_SRC, path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
     },
     swapHtml:function(srcSelector, targetSelector) {
         $(document).ready(function(){
@@ -5658,12 +5666,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     formEntryTop: function(label, value, value2) {
         if(value2) 
-            return HU.tag(TAG_TR, ["valign", "top"],
+            return HU.tag(TAG_TR, [ATTR_VALIGN, "top"],
                           HU.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],
                                  label) +
                           HU.tag(TAG_TD, [],   value) +
                           HU.tag(TAG_TD, [],   value2));
-        return this.tag(TAG_TR, ["valign", "top"],
+        return this.tag(TAG_TR, [ATTR_VALIGN, "top"],
                         this.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],
                                  label) +
                         this.tag(TAG_TD, [],
@@ -5859,7 +5867,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let style = HU.css(CSS_DISPLAY,'none',
 			   CSS_CURSOR,CURSOR_POINTER,
 			   CSS_TEXT_ALIGN,'right',
-			   CSS_POSITION,'absolute',
+			   CSS_POSITION,POSITION_ABSOLUTE,
 			   CSS_MARGIN_TOP,HU.px(0));
 	if(opts.left) style+=HU.css(CSS_LEFT,opts.left);
 	else style+=HU.css(CSS_RIGHT,opts.right);
@@ -5883,7 +5891,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if(expanded) {
                 icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
                 $(this).attr(ATTR_TITLE,"Expand");
-                $(selector).css(CSS_LEFT,"").css(CSS_RIGHT,"").css(CSS_TOP,"").css(CSS_BOTTOM,"").css(CSS_POSITION,"relative").css(CSS_HEIGHT, "").css(CSS_Z_INDEX,"").css(CSS_BACKGROUND,origBackground?origBackground:"");
+                $(selector).css(CSS_LEFT,"").css(CSS_RIGHT,"").css(CSS_TOP,"").css(CSS_BOTTOM,"").css(CSS_POSITION,POSITION_RELATIVE).css(CSS_HEIGHT, "").css(CSS_Z_INDEX,"").css(CSS_BACKGROUND,origBackground?origBackground:"");
 		$(selector).removeClass('ramadda-expandable-expanded');
                 btn.css(CSS_DISPLAY,"none");
                 $(selector).find(".ramadda-expandable-target").each(function() {
@@ -5938,7 +5946,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     let o = $(this).offset();               
                     $(this).attr("oleft",o.left);
                     $(this).attr("otop",o.top);             
-                    $(this).css(CSS_POSITION,"absolute").css(CSS_LEFT,HU.px(o.left)).css(CSS_TOP,HU.px(o.top));
+                    $(this).css(CSS_POSITION,POSITION_ABSOLUTE).css(CSS_LEFT,HU.px(o.left)).css(CSS_TOP,HU.px(o.top));
                     console.log("start:" + o.left + " " + o.top);
                 }
             },
@@ -5957,7 +5965,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         attrs.push(url);
         attrs.push(ATTR_CLASS);
         attrs.push("ramadda-link");
-        if (attrs.style) attrs.style += HU.css(CSS_DISPLAY,'inline-block');
+        if (attrs.style) attrs.style += HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
         else attrs.style = "style='display:inline-block;'";
         return this.div(attrs, label);
     },
@@ -6011,7 +6019,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     onClick: function(call, html, attrs) {
-        let myAttrs = [ATTR_ONCLICK, call, ATTR_STYLE, HU.css(CSS_COLOR,'black',CSS_CURSOR,'pointer')];
+        let myAttrs = [ATTR_ONCLICK, call, ATTR_STYLE, HU.css(CSS_COLOR,'#000',
+							      CSS_CURSOR,CURSOR_POINTER)];
         if (attrs != null) {
             for (let i = 0; i < attrs.length; i++) {
                 myAttrs.push(attrs[i]);
@@ -6051,7 +6060,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    break;
 		}
 	    }
-	    let cbxAttrs = ["for", id];
+	    let cbxAttrs = [ATTR_FOR, id];
 	    if(Utils.stringDefined(title)) {
 		cbxAttrs.push(ATTR_TITLE);
 		cbxAttrs.push(title);
@@ -6074,7 +6083,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	    let id = HU.getUniqueId('radio_');
 	    html+=HU.radio(id,name,'',item,selected?selected==item:idx==0)+
-		HU.tag(TAG_LABEL,['for',id],label) + '<br>';
+		HU.tag(TAG_LABEL,[ATTR_FOR,id],label) + '<br>';
 	    html+='\n';
 	});
 	return html;
@@ -6089,7 +6098,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         html += " " + extra
         html += "/>";
 	if(label) {
-	    html+=HU.tag(TAG_LABEL,['for',id],label);
+	    html+=HU.tag(TAG_LABEL,[ATTR_FOR,id],label);
 	}
         return html;
     },
@@ -6340,7 +6349,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 						     CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,"auto")],
 				  Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200)), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200)),
+					ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),
+					ATTR_ID,inputId]);
 	    if(opts.makeButtons) {
 		let buttons = '';
 		if(!opts.single) {
@@ -6597,16 +6608,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let img1 = ramaddaCdn + "/icons/togglearrowdown.gif";
         let img2 = ramaddaCdn + "/icons/togglearrowright.gif";
         $("#" + imageId).attr("state","open");
-        $("#" + imageId).attr("src",img1);
+        $("#" + imageId).attr(ATTR_SRC,img1);
         $("#" + imageId).css(CSS_CURSOR,CURSOR_POINTER);       
         let open = (img) =>{
             img.attr("state","open");
-            img.attr("src",img1);
+            img.attr(ATTR_SRC,img1);
             $("#" + blockId).show();
         };
         let close = (img) =>{
             img.attr("state","close");
-            img.attr("src",img2);
+            img.attr(ATTR_SRC,img2);
             $("#" + blockId).hide();
         };
         $("#" + imageId).click(function(e){
@@ -6638,7 +6649,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         let closeId = Utils.getUniqueId("close_");
         let close = HU.div([ATTR_ID,closeId,ATTR_CLASS,CLASS_CLICKABLE,                           
-                            ATTR_STYLE,HU.css(CSS_POSITION,"absolute",CSS_RIGHT,HU.px(10),CSS_TOP,HU.px(10))],
+                            ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(10),CSS_TOP,HU.px(10))],
                            HU.getIconImage("far fa-window-close"));
         let inner = close + message;
         if(opts.showOk) {
@@ -6670,7 +6681,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     makeToggleImage: function(img,style) {
         style = (style||"");
-        return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MIN_WIDTH,HU.px(10))],
+        return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MIN_WIDTH,HU.px(10))],
 		      HU.getIconImage(img, [ATTR_ALIGN, "bottom"],[ATTR_STYLE,style]));
     },
     toggleBlockListeners:{},
@@ -6681,14 +6692,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if(HU.isFontAwesome(showimg)) {
 		$("#" + imgid).html(HU.makeToggleImage(showimg));
             } else {
-		$("#" + imgid).attr('src', showimg);
+		$("#" + imgid).attr(ATTR_SRC, showimg);
             }
 	} else {
 	    visible = false;
             if(HU.isFontAwesome(showimg)) {
 		$("#" + imgid).html(HU.makeToggleImage(hideimg));
             } else {
-		$("#" + imgid).attr('src', hideimg);
+		$("#" + imgid).attr(ATTR_SRC, hideimg);
             }
 	}
 	Utils.ramaddaUpdateMaps();
@@ -6866,7 +6877,7 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 
 	if(!item.element.attr("isheader")) {
             label = HU.span([ATTR_TITLE,label,ATTR_STYLE,
-			     HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH,HU.perc(100),
+			     HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100),
 				    CSS_MARGIN_LEFT,img?HU.px(32):HU.px(4),CSS_WHITE_SPACE,'nowrap')], label);
         } else {
 	    wrapper.css(CSS_PADDING_LEFT,HU.px(0)).css(CSS_POINTER_EVENTS,'none');

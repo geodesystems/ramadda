@@ -10,7 +10,7 @@ RamaddaJsonUtil = {
 	    $(this).append(HU.span(['visible','true','class','ramadda-json-toggle'],HU.getIconImage(icon_folderopen)));
 	});
 	let toggles = 	brackets.find('.ramadda-json-toggle');
-	toggles.css('cursor','pointer');
+	toggles.css(CSS_CURSOR,CURSOR_POINTER);
 	toggles.click(function() {
 	    let parent = $(this).closest('.ramadda-json-openbracket');
 	    let next = parent.next('.ramadda-json-block');

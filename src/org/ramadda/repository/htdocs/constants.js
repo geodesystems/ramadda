@@ -126,9 +126,17 @@ var TAG_TD = 'td';
 var TAG_UL = 'ul';
 var TAG_OL = 'ol';
 
+var ATTR_FOR='for';
 var ATTR_AUTOFOCUS='autofocus';
 var ATTR_ACTION= 'action';
 var ATTR_BACKGROUND = 'background';
+
+var ATTR_SLIDER_MIN='slider-min';
+var ATTR_SLIDER_MAX='slider-max';
+var ATTR_SLIDER_STEP='slider-step';
+var ATTR_SLIDER_VALUE='slider-value';
+
+
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
 var ATTR_TABINDEX = 'tabindex';
@@ -159,12 +167,14 @@ var ATTR_TITLE = 'title';
 var ATTR_POSITION='position';
 var ATTR_ALT = 'alt';
 var ATTR_ID = 'id';
+var ATTR_IDX = 'idx';
 var ATTR_INDEX = 'index';
 var ATTR_CLASS = 'class';
 var ATTR_NAME = 'name';
 var ATTR_NOWRAP = 'nowrap';
 var ATTR_METHOD='method';
 var ATTR_MULTIPLE = 'multiple';
+var ATTR_SELECTED='selected';
 var ATTR_SIZE = 'size';
 var ATTR_STYLE = 'style';
 var ATTR_TARGET = 'target';
@@ -191,6 +201,7 @@ var POS_RIGHT='right';
 
 var POSITION_ABSOLUTE='absolute';
 var POSITION_RELATIVE='relative';
+
 var DISPLAY_NONE = 'none';
 var DISPLAY_RELATIVE = 'relative';
 var DISPLAY_BLOCK='block';
@@ -198,6 +209,9 @@ var DISPLAY_INLINE='inline';
 var DISPLAY_INLINE_BLOCK='inline-block';
 
 var OVERFLOW_AUTO = 'auto';
+
+var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
+
 
 var CSS_BASIC_BORDER='var(--basic-border)';
 

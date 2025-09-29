@@ -502,12 +502,17 @@ function DisplayThing(argId, argProperties) {
 		    enums.push([toks[0],toks[1]]);
 		});
 		let noun = this.getProperty("noun", "Data");
-		let prev = HU.span([ATTR_CLASS,"display-changeentries-button", TITLE,"Previous " +noun, ATTR_ID, this.getDomId(ID_ENTRIES_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([ATTR_CLASS, "display-changeentries-button", TITLE,"Next " + noun, ATTR_ID, this.getDomId(ID_ENTRIES_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		let prev = HU.span([ATTR_CLASS,"display-changeentries-button",
+				    ATTR_TITLE,"Previous " +noun,
+				    ATTR_ID, this.getDomId(ID_ENTRIES_PREV)], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([ATTR_CLASS, "display-changeentries-button",
+				    ATTR_TITLE,"Next " + noun,
+				    ATTR_ID, this.getDomId(ID_ENTRIES_NEXT)], HU.getIconImage("fa-chevron-right")); 
 		let label = argProperties.changeEntriesLabel||"Select " + noun;
 		if(label!="") label = label+"<br>";
 
-		return  HU.center(HU.div([ATTR_CLASS,"display-filter"], label + prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next));
+		return  HU.center(HU.div([ATTR_CLASS,"display-filter"], label +
+					 prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next));
 	    }
 	    return "";
 	},
@@ -688,7 +693,7 @@ function DisplayThing(argId, argProperties) {
 		hideEffectSpeed: 400,
 	    };
 	    if(args) $.extend(opts,args);
-            HtmlUtils.initSelect(selector,opts);
+            HU.initSelect(selector,opts);
 	},
         writeHtml: function(idSuffix, html) {
 	    try {
@@ -939,7 +944,7 @@ function DisplayThing(argId, argProperties) {
 		if(props.iconMap) {
 		    let icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
-			s = s.replace("${" + f.getId() +"_icon}", HU.image(icon,["size",props.iconSize]));
+			s = s.replace("${" + f.getId() +"_icon}", HU.image(icon,[ATTR_SIZE,props.iconSize]));
 		    }
 		}
 		if(f.getType()=="image") {
@@ -955,7 +960,7 @@ function DisplayThing(argId, argProperties) {
 			    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 			} else  {
 			    imageAttrs.push(ATTR_WIDTH);
-			    imageAttrs.push("100%");
+			    imageAttrs.push(HU.perc(100));
 			}
 			imageAttrs.push(ATTR_STYLE);
 			imageAttrs.push(HU.css(CSS_VERTICAL_ALIGN,POS_TOP));
@@ -2369,7 +2374,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    dom.append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    dom.find('.display-colortable-slice').css(CSS_CURSOR,'pointer');
+	    dom.find('.display-colortable-slice').css(CSS_CURSOR,CURSOR_POINTER);
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
@@ -4744,7 +4749,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         showWikiText: function(type) {
 	    let wiki =  this.assembleWikiText();
-	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
+	    HU.setPopupObject(HU.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
 					     CSS_MAX_HEIGHT,HU.px(400),
@@ -4948,9 +4953,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //Don't this now since this gets shown in the embed details
 	    if(dfltProps.showImage) {
 		if (entry.getIsImage()) {
-                    let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
-					       ATTR_CLASS, "display-entry-image"
-					      ]);
+                    let img = HU.tag(TAG_IMG,
+				     [ATTR_SRC, entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
+				      ATTR_CLASS, "display-entry-image"
+				     ]);
 
                     html += HU.href(entry.getResourceUrl(), img,["download",null]) + "<br>";
 		} else {
@@ -5551,9 +5557,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let open = link.attr("tree-open") == "true";
             if (open) {
-                link.attr("src", icon_tree_closed);
+                link.attr(ATTR_SRC, icon_tree_closed);
             } else {
-                link.attr("src", icon_tree_open);
+                link.attr(ATTR_SRC, icon_tree_open);
             }
             link.attr("tree-open", open ? "false" : "true");
 
@@ -5858,9 +5864,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fileMenuItems = [];
             let viewMenuItems = [];
             let newMenuItems = [];
-            viewMenuItems.push(HU.tag(TAG_LI, [], HU.tag(TAG_A, ["href", entry.getEntryUrl(), ATTR_TARGET, "_"], "View Entry")));
+            viewMenuItems.push(HU.tag(TAG_LI, [],
+				      HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(), ATTR_TARGET, "_"], "View Entry")));
             if (entry.getFilesize() > 0) {
-                fileMenuItems.push(HU.tag(TAG_LI, [], HU.tag(TAG_A, ["download",null, "href", entry.getResourceUrl()], "Download " + entry.getFilename() + " (" + entry.getFormattedFilesize() + ")")));
+                fileMenuItems.push(HU.tag(TAG_LI, [],
+					  HU.tag(TAG_A, ["download",null, ATTR_HREF, entry.getResourceUrl()], "Download " + entry.getFilename() + " (" + entry.getFormattedFilesize() + ")")));
             }
 
             if (this.jsonUrl != null) {
@@ -5870,8 +5878,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let props = "{showMenu:true,showTitle:true}";
             let newMenu = "<a>New</a><ul>";
-            newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
-            newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
+            newMenu += HU.tag(TAG_LI, [],
+			      HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
+            newMenuItems.push(HU.tag(TAG_LI, [],
+				     HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
             //check if it has point data
             let pointUrl = this.getPointUrl(entry);
@@ -5962,8 +5972,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let menu = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']) +
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
-                "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
-                "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
+                "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""),
+								       [ATTR_SIZE, "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), [ATTR_SIZE, "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
+                "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""),
+									 [ATTR_SIZE, "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), [ATTR_SIZE, "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
                 HU.close(TAG_TABLE);
             let tmp =
                 HU.checkbox(this.getDomId("showtitle"), [], this.getProperty("showTitle")) + " Title  " +
@@ -6870,7 +6882,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    numDecimals = 0;
 
 		let html = HU.div([ATTR_ID,"filter-range",ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200))],"");
-		let popup = HtmlUtils.getTooltip();
+		let popup = HU.getTooltip();
 		popup.html(html);
 		popup.show();
 
@@ -6906,7 +6918,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    },
 		    stop: function() {
-			let popup = HtmlUtils.getTooltip();
+			let popup = HU.getTooltip();
 			popup.hide();
 			_this.checkFilterField(max);
 			inputFunc(min,max);
@@ -7175,13 +7187,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let prefix="";
 		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepBackward"),
 				  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step Back"],
- 				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
+ 				 HU.getIconImage("fa-step-backward",[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)])) +SPACE1;
 		prefix+=HU.div([ATTR_ID,this.getDomId("filterDatePlay"),ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				ATTR_TITLE,"Play/Stop Animation"],
-			       HU.getIconImage(ICON_PLAY,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) + SPACE1;
+			       HU.getIconImage(ICON_PLAY,[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)])) + SPACE1;
 		prefix += HU.div([ATTR_ID,this.getDomId("filterDateStepForward"),
 				  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),ATTR_TITLE,"Step Forward"],
- 				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")])) +SPACE1;
+ 				 HU.getIconImage("fa-step-forward",[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)])) +SPACE1;
 
 		let widget =  HU.span([ATTR_CLASS,filterClass,ATTR_STYLE,style],
 				      prefix +
@@ -7484,7 +7496,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if($(this).attr("istext")) return;
 		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
-		HtmlUtils.hidePopupObject();
+		HU.hidePopupObject();
 
 		let input = $(this);
 		let val = $(this).val().trim();
@@ -7521,7 +7533,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
-			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
+			let popup =HU.setPopupObject(HU.getTooltip());
 			popup.html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5)),
 					   ATTR_CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
@@ -7531,7 +7543,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    at: "left bottom",
 			});
 			$(".display-filter-popup-item").click(function(){
-			    HtmlUtils.hidePopupObject();
+			    HU.hidePopupObject();
 			    input.val($(this).attr("item"));
 			    inputFunc(input);
 			});
@@ -7558,7 +7570,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq("filterDatePlay").click(function() {
 		_this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
 		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
-		$(this).html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
+		$(this).html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 		if(_this.filterDatePlayingAnimation) {
 		    _this.stepFilterDateAnimation(inputFunc,1);
 		}
@@ -7566,13 +7578,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq("filterDateStepBackward").click(function() {
 		_this.filterDatePlayingAnimation = false;
 		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
-		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 		_this.stepFilterDateAnimation(inputFunc,-1);
 	    });
 	    this.jq("filterDateStepForward").click(function() {
 		_this.filterDatePlayingAnimation = false;
 		let icon = _this.filterDatePlayingAnimation?ICON_STOP:ICON_PLAY;
-		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 		_this.stepFilterDateAnimation(inputFunc,1);
 	    });
 
@@ -7787,7 +7799,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	makeTooltipClick: function(selector, records) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    if(!tooltipClick) return;
-	    selector.css(CSS_CURSOR,"pointer");
+	    selector.css(CSS_CURSOR,CURSOR_POINTER);
 	    let idToRecord = this.makeIdToRecords(records);
 	    let _this = this;
 	    selector.click(function() {
@@ -7927,10 +7939,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		popupTemplate = this.getProperty("popupTemplate");
 	    if(!popupTemplate) return;
 	    let _this = this;
-	    HtmlUtils.hidePopupObject();
+	    HU.hidePopupObject();
 	    let html =  _this.getRecordHtml(record,null,popupTemplate);
 	    html = HU.div([ATTR_CLASS, "display-popup " + _this.getProperty("popupClass",""),ATTR_STYLE, _this.getProperty("popupStyle","")],html);
-	    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
+	    let popup = HU.setPopupObject(HU.getTooltip());
 	    popup.html(html);
 	    popup.show();
 	    popup.position({
@@ -9147,7 +9159,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     const LAYOUT_HTABLE = "htable";
     const LAYOUT_TABS = "tabs";
     const LAYOUT_COLUMNS = "columns";
-    const LAYOUT_ROWS = "rows";
+    const LAYOUT_ROWS = ATTR_ROWS;
     const SUPER = new RamaddaDisplay(argDisplayManager, argId, type||"group", argProperties);
     RamaddaUtil.inherit(this, SUPER);
     let myProps = [
@@ -9408,7 +9420,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     if (label.length > 20) {
                         label = label.substring(0, 19) + "...";
                     }
-                    html += HU.tag(TAG_LI, [], HU.tag(TAG_A, ["href", "#" + tabId + "-" + cnt], label));
+                    html += HU.tag(TAG_LI, [], HU.tag(TAG_A, [ATTR_HREF, "#" + tabId + "-" + cnt], label));
                     hidden += HU.div([ATTR_ID, tabId + "-" + cnt, ATTR_CLASS, "ui-tabs-hide"], display.layoutDiv);
                     cnt++;
                 }

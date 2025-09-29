@@ -242,7 +242,7 @@ function DisplayManager(argId, argProperties) {
                 }
 		let menuAttrs = [ATTR_ONCLICK, get + ".userCreateDisplay('" + type.type + "');"];
 		if(type.desc) {
-		    menuAttrs.push(TITLE);
+		    menuAttrs.push(ATTR_TITLE);
 		    menuAttrs.push(type.desc);
 		}
                 newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
@@ -295,7 +295,7 @@ function DisplayManager(argId, argProperties) {
 			       HU.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
                 HU.tag(TAG_LI, [], table) +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout(ATTR_ROWS);", "Rows")) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
 

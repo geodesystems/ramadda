@@ -906,7 +906,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	getCloser: function() {
 	    if(true) return "";
 	    return  HU.jsLink("",HU.getIconImage(ICON_CLOSE,[ATTR_ID,this.domId("close"),
-							     ATTR_STYLE,HU.css(CSS_CURSOR,"pointer")]));
+							     ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 	},
 	initCloser: function(what) {
 	    this.jq("close").click(()=>{
@@ -1557,7 +1557,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			if(this.getProvidersMultiple()) {
 			    let size =Math.min(8,providers.length+1);
 			    attrs.push(ATTR_SIZE,this.getProvidersMultipleSize(size),
-				       ATTR_MULTIPLE, "multiple");
+				       ATTR_MULTIPLE, ATTR_MULTIPLE);
 			}
 			let providersSelect = HU.tag(TAG_SELECT,attrs, options);
 			providersSelect = this.addWidget('Providers',providersSelect,
@@ -1642,7 +1642,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				     ATTR_TITLE,'Clear selection']);
 		let input = HU.input('',name??'',[ATTR_READONLY,null,
 						  ATTR_PLACEHOLDER,'Select',
-						  ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',CSS_WIDTH,HU.perc(100)),
+						  ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
 						  ATTR_ID,aid,
 						  ATTR_CLASS,'ramadda-entry-popup-select  disabledinput']);
 
@@ -2355,7 +2355,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
 					 ATTR_TITLE,"Clear selection"]);
 		    let input = HU.input("","",["READONLY",null,ATTR_PLACEHOLDER,'Select',
-						ATTR_STYLE,HU.css('cursor','pointer',CSS_WIDTH,HU.perc(100)),
+						ATTR_STYLE,HU.css('cursor',CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
 						ATTR_ID,id,
 						ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
@@ -4446,7 +4446,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
                 if (title == null) {
                     title = this.sourceEntry.getName();
                 }
-                title = HU.tag(TAG_A, ["href", url, ATTR_TITLE, this.sourceEntry.getName(), "alt", this.sourceEntry.getName()], title);
+                title = HU.tag(TAG_A, [ATTR_HREF, url, ATTR_TITLE, this.sourceEntry.getName(), "alt", this.sourceEntry.getName()], title);
             } else {
                 this.addEntryHtml(this.selectedEntry);
                 if (title == null) {

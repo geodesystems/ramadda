@@ -234,7 +234,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    btn("-","Slower",this.iconSlower);
 	    btn("+","Faster",this.iconFaster);	    	    	    
 	    
-            html += HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,'inline-block',
+            html += HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 					       CSS_MIN_HEIGHT,HU.px(24),
 					       CSS_MARGIN_LEFT,HU.px(10)),
 			    ATTR_ID, this.getDomId(ID_TIME)], SPACE);
@@ -796,12 +796,12 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    label = label.replace("${title}",this.getProperty('title',''));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block'),
+	    label = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 			    ATTR_ID,this.getDomId("csv")],
 			   useIcon?HU.getIconImage("fa-download",
 						   [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0),
 								      CSS_DISPLAY,'block')],
-						   [ATTR_STYLE,HU.css(CSS_CURSOR,'pointer',
+						   [ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,
 								      CSS_FONT_SIZE,iconSize),
 						    ATTR_TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
@@ -1046,7 +1046,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
-	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css(CSS_CURSOR,"pointer").attr(ATTR_TITLE,"Reload").click(()=>{
+	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css(CSS_CURSOR,CURSOR_POINTER).attr(ATTR_TITLE,"Reload").click(()=>{
 		this.checkReload(-1);
 	    });
 	    this.setTimer(this.getPropertyInterval());

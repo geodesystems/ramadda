@@ -803,7 +803,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			    .attr("opacity",1)
 			    .attr("stroke",lineColor)
 			    .attr("stroke-width",1)
-			    .style(CSS_CURSOR, "pointer")
+			    .style(CSS_CURSOR, CURSOR_POINTER)
 			    .attr(RECORD_ID,recordId);
 			this.addEvents(polys);
 		    });
@@ -939,7 +939,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			.attr("opacity",1)
 			.attr("stroke",lineColor)
 			.attr("stroke-width",1)
-			.style(CSS_CURSOR, "pointer")
+			.style(CSS_CURSOR, CURSOR_POINTER)
 			.attr(RECORD_ID,recordId);
 		    this.addEvents(polys);
 		});
@@ -1043,7 +1043,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    .attr("stroke",lineColor)
 			    .attr("stroke-width",1)
 			    .attr(ATTR_TRANSFORM,transform)
-			    .style(ATTR_CURSOR, "pointer")
+			    .style(ATTR_CURSOR, CURSOR_POINTER)
 			    .attr(RECORD_ID,recordId);
 			if(layer==1)
 			    this.addEvents(polys);

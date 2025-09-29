@@ -1615,16 +1615,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                 }
 
-                this.jq(ID_RUN_ICON).attr("src", icon_progress);
+                this.jq(ID_RUN_ICON).attr(ATTR_SRC, icon_progress);
                 await this.runInner(value, doRows, doingAll).then(r => ok = r);
-                this.jq(ID_RUN_ICON).attr("src", icon_blank);
+                this.jq(ID_RUN_ICON).attr(ATTR_SRC, icon_blank);
                 if (!ok) {
                     this.running = false;
                     return Utils.call(callback, false);
                 }
                 this.outputUpdated();
             } catch (e) {
-                this.jq(ID_RUN_ICON).attr("src", icon_blank);
+                this.jq(ID_RUN_ICON).attr(ATTR_SRC, icon_blank);
                 this.running = false;
                 this.writeOutput("An error occurred:" + e.toString() + " " + (typeof e));
                 console.log("error:" + e.toString());
@@ -2222,7 +2222,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var lines = this.content.split("\n");
             if (lines.length != this.inputRows) {
                 this.inputRows = lines.length;
-                this.input.attr("rows", Math.max(1, this.inputRows));
+                this.input.attr(ATTR_ROWS, Math.max(1, this.inputRows));
             }
         },
 

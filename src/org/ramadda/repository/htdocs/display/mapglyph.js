@@ -484,7 +484,10 @@ MapGlyph.prototype = {
 			 HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
 			     ATTR_ID,this.domId('rangeringangle'),ATTR_SIZE,4]) +' Leave blank to not show labels') +
 		HU.formEntryTop('Ring Styles',
-				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',[ATTR_ID,this.domId('rangeringstyle'),ATTR_ROWS,5,ATTR_COLS, 40]),
+				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',
+						     [ATTR_ID,this.domId('rangeringstyle'),
+						      ATTR_ROWS,5,
+						      ATTR_COLS, 40]),
 					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
 	}
 	if(this.isMapServer()) {
@@ -493,11 +496,13 @@ MapGlyph.prototype = {
 		let extra = HU.formEntry("Server URL:",
 					 HU.input('',url,
 						  [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
-						   ATTR_ID,this.domId('serverurl'),ATTR_SIZE,'60']));
+						   ATTR_ID,this.domId('serverurl'),
+						   ATTR_SIZE,'60']));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
 		    extra += HU.formEntry("WMS Layer:",
-					  HU.input('',this.attrs.wmsLayer,[ATTR_ID,this.domId('wmslayer'),ATTR_SIZE,'20']));
+					  HU.input('',this.attrs.wmsLayer,[ATTR_ID,this.domId('wmslayer'),
+									   ATTR_SIZE,'20']));
 		}
 		return extra;
 	    }
@@ -528,7 +533,8 @@ MapGlyph.prototype = {
 	let layout = (lbl,widget)=>{
 	    html+=HU.b(lbl)+HU.br()+widget+HU.br();
 	}
-	let nameWidget = HU.input('',this.getName(),[ATTR_ID,this.domId('mapglyphname'),ATTR_SIZE,'40']);
+	let nameWidget = HU.input('',this.getName(),[ATTR_ID,this.domId('mapglyphname'),
+						     ATTR_SIZE,'40']);
 	if(this.isEntry()) {
 	    nameWidget+=HU.br() +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
@@ -538,10 +544,12 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    if(this.attrs.entryId) {
 		html+=HU.formEntry('Entry ID:',HU.input('',this.attrs.entryId,
-							[ATTR_ID,this.domId('entryid'),ATTR_SIZE,'60']));
+							[ATTR_ID,this.domId('entryid'),
+							 ATTR_SIZE,'60']));
 	    }
 	    if(this.attrs.resourceUrl) {
-		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),ATTR_SIZE,'60']));
+		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),
+										  ATTR_SIZE,'60']));
 	    }
 	}	    
 	html+=HU.formTableClose();
@@ -564,13 +572,17 @@ MapGlyph.prototype = {
 	    let h = HU.leftRightTable(HU.b(label),
 				      this.getHelp('#popuptext'));
 	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
-	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,ATTR_ROWS,4,ATTR_COLS, 40]),HU.space(2),help]);
+	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,
+							ATTR_ROWS,4,
+							ATTR_COLS, 40]),HU.space(2),help]);
 	    return h;
 	}
 	html+=makePopup('popupText','Popup Text:');
 	html+=HU.b('Legend Text:') +HU.br() +
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
-			[ATTR_ID,this.domId(ID_LEGEND_TEXT),ATTR_ROWS,4,ATTR_COLS, 40]);
+			[ATTR_ID,this.domId(ID_LEGEND_TEXT),
+			 ATTR_ROWS,4,
+			 ATTR_COLS, 40]);
 	
 	html+=HU.div([],HU.b('ID: ') +HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
@@ -601,7 +613,8 @@ MapGlyph.prototype = {
 						 suffix:'\n'});
 	let ex = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
-	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ATTR_ID,this.domId('miscproperties'),ATTR_ROWS,16,ATTR_COLS, 40]),
+	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
+				     [ATTR_ID,this.domId('miscproperties'),ATTR_ROWS,16,ATTR_COLS, 40]),
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
@@ -619,10 +632,10 @@ MapGlyph.prototype = {
 		let on = this.getAttribute(ID_DATAICON_USEENTRY);
 		let id = this.domId(ID_DATAICON_USEENTRY);
 		contents+=  HU.radio(id, id, '', 'true', on) +
-		    HU.tag(TAG_LABEL,['for', id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
+		    HU.tag(TAG_LABEL,[ATTR_FOR, id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
 		contents+=HU.br();
 		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
-		    HU.tag(TAG_LABEL,['for', id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
+		    HU.tag(TAG_LABEL,[ATTR_FOR, id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
 		contents+=HU.br();
 	    }
 
@@ -631,7 +644,8 @@ MapGlyph.prototype = {
 	    let buttonList = [HU.span([ATTR_ID,this.domId('dataicon_add_default'),
 				       ATTR_TITLE,'Set example values'],'Apply Defaults')];
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
-		buttonList.push(HU.span([ID_GLYPH_ID,this.getId(),ATTR_CLASS,CLASS_CLICKABLE,
+		buttonList.push(HU.span([ID_GLYPH_ID,this.getId(),
+					 ATTR_CLASS,CLASS_CLICKABLE,
 					 ATTR_TITLE,'Apply settings from entry',
 					 ATTR_ID,this.domId('applyentrydataicon')],'Apply from Entry'));
 	    }
@@ -647,12 +661,14 @@ MapGlyph.prototype = {
 			    [ATTR_PLACEHOLDER,'field pattern,label=<label>,unit=<unit>\ne.g.:\n'+
 			     DEFAULT_DATAICON_FIELDS,ATTR_ID,this.domId(ID_DATAICON_FIELDS),ATTR_ROWS,4,ATTR_COLS, 60]);
 	    let  fields2= HU.b('Initial field:')+HU.br()+
-		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',[ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),ATTR_SIZE,'25',
-								      ATTR_PLACEHOLDER,'Initial field']) +HU.br() +
+		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',
+			 [ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),ATTR_SIZE,'25',
+			  ATTR_PLACEHOLDER,'Initial field']) +HU.br() +
 		HU.b('Menu Label:') +HU.br()  +
-		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',[ATTR_ID,this.domId(ID_DATAICON_LABEL),ATTR_SIZE,'25']);
+		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',
+			 [ATTR_ID,this.domId(ID_DATAICON_LABEL),ATTR_SIZE,'25']);
 
-	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +
+	    contents+=HU.table(HU.tr([ATTR_VALIGN,'top'],HU.td(fields1) +
 				     HU.td(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8))],fields2))));
 	    contents+='<p>';
 	    contents+=HU.b('Canvas: ') +
@@ -966,7 +982,7 @@ MapGlyph.prototype = {
 
 	if(!this.dataIconContainer || jqid(this.dataIconContainer).length==0) {
 	    this.dataIconContainer = HU.getUniqueId('dataiconfieldscontainer_');
-	    this.display.jq(ID_HEADER1).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_MARGIN_RIGHT,HU.px(20)),
+	    this.display.jq(ID_HEADER1).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(20)),
 						       ATTR_ID,this.dataIconContainer]));
 	}
 	jqid(this.dataIconContainer).show();
@@ -2187,7 +2203,7 @@ MapGlyph.prototype = {
 	}
 
 	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
-				      {separate:true,headerStyle:HU.css(CSS_DISPLAY,'inline-block'),
+				      {separate:true,headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				       extraAttributes:['map-glyph-id',this.getId()]});		
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
@@ -2313,7 +2329,7 @@ MapGlyph.prototype = {
 	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_LEGEND_OFFSET,'imdv-legend-text')],text);
 	}
 
-	let boxStyle = HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH,HU.px(14),CSS_HEIGHT,HU.px(14),CSS_MARGIN_RIGHT,HU.px(4));
+	let boxStyle = HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(14),CSS_HEIGHT,HU.px(14),CSS_MARGIN_RIGHT,HU.px(4));
 	let legend = '';
 	let styleLegend='';
 	if(this.isMap()) {
@@ -2326,7 +2342,8 @@ MapGlyph.prototype = {
 	    this.getStyleGroups().forEach((group,idx)=>{
 		styleLegend+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
 		styleLegend+= HU.openTag(TAG_TR,[ATTR_TITLE,this.display.canEdit()?'Select style':'',
-						 ATTR_CLASS,HU.classes(CLASS_IMDV_STYLEGROUP,(this.display.canEdit()?CLASS_CLICKABLE:'')),'index',idx]);
+						 ATTR_CLASS,HU.classes(CLASS_IMDV_STYLEGROUP,(this.display.canEdit()?CLASS_CLICKABLE:'')),
+						 ATTR_INDEX,idx]);
 		let style = boxStyle + this.getLegendStyle(group.style);
 		styleLegend+=HU.tag(TAG_TD,[ATTR_WIDTH,HU.px(18)],
 				    HU.div([ATTR_STYLE, style]));
@@ -2437,8 +2454,8 @@ MapGlyph.prototype = {
 	    }
 
 	    let slider = 
-		HU.div([ATTR_TITLE,'Set time','slider-min',start.getTime(),'slider-max',end.getTime(),'slider-value',value,
-			ID,this.domId('time_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css(CSS_DISPLAY,'inline-block',ATTR_WIDTH,HU.perc(90))],'');
+		HU.div([ATTR_TITLE,'Set time',ATTR_SLIDER_MIN,start.getTime(),ATTR_SLIDER_MAX,end.getTime(),ATTR_SLIDER_VALUE,value,
+			ID,this.domId('time_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,ATTR_WIDTH,HU.perc(90))],'');
 
 	    let anim = HU.join([
 		['Settings','fa-cog','settings'],
@@ -2473,10 +2490,10 @@ MapGlyph.prototype = {
 		    body+='Opacity:';
 		body += 
 		    HU.center(
-			HU.div([ATTR_TITLE,'Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
+			HU.div([ATTR_TITLE,'Set image opacity',ATTR_SLIDER_MIN,0,ATTR_SLIDER_MAX,1,ATTR_SLIDER_VALUE,v,
 				ATTR_ID,this.domId('image_opacity_slider'),
 				ATTR_CLASS,'ramadda-slider',
-				ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH,'90%')],''));
+				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,'90%')],''));
 	    }
 	}
 
@@ -2484,10 +2501,10 @@ MapGlyph.prototype = {
 	   (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
-		HU.div([ATTR_TITLE,'Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
+		HU.div([ATTR_TITLE,'Set image rotation',ATTR_SLIDER_MIN,-360,ATTR_SLIDER_MAX,360,ATTR_SLIDER_VALUE,this.style.rotation??0,
 			ATTR_ID,this.domId('image_rotation_slider'),
 			ATTR_CLASS,'ramadda-slider',
-			ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH,HU.perc(90))],''));
+			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(90))],''));
 	}
 
 	let item  = (content,checkInMap,addDecoration) => {
@@ -2641,7 +2658,7 @@ MapGlyph.prototype = {
 		collision: "flipfit"
 	    },
 	    content: function() {
-		return HU.image($(this).attr('src'),[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(450),CSS_BORDER,'var(--basic-border)')]);
+		return HU.image($(this).attr(ATTR_SRC),[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(450),CSS_BORDER,'var(--basic-border)')]);
 	    },
 	});
 
@@ -2749,8 +2766,8 @@ MapGlyph.prototype = {
 	    return new Date(parseFloat(value));
 	}
 	let getStep = ()=>{
-	    let min =  +this.jq('time_slider').attr('slider-min');
-	    let max= +this.jq('time_slider').attr('slider-max');
+	    let min =  +this.jq('time_slider').attr(ATTR_SLIDER_MIN);
+	    let max= +this.jq('time_slider').attr(ATTR_SLIDER_MAX);
 	    let temp = this.getDatacubeAttr('temporal_resolution');
 	    let msPerDay = 1000*60*60*24;
 	    if(temp) {
@@ -2779,8 +2796,8 @@ MapGlyph.prototype = {
 	    let action = $(this).attr('action');
 	    let slider=	_this.jq('time_slider');
 	    let current = +slider.slider('value');
-	    let min = +slider.attr('slider-min');
-	    let max = +slider.attr('slider-max');	    
+	    let min = +slider.attr(ATTR_SLIDER_MIN);
+	    let max = +slider.attr(ATTR_SLIDER_MAX);	    
 	    let step = +slider.slider('option','step');
 	    let change = (v)=>{
 		v = Math.min(max,Math.max(min,v));
@@ -2856,10 +2873,10 @@ MapGlyph.prototype = {
 	});
 
 	this.jq('time_slider').slider({
-	    min: +this.jq('time_slider').attr('slider-min'),
-	    max: +this.jq('time_slider').attr('slider-max'),
+	    min: +this.jq('time_slider').attr(ATTR_SLIDER_MIN),
+	    max: +this.jq('time_slider').attr(ATTR_SLIDER_MAX),
 	    step:getStep(),
-	    value:+this.jq('time_slider').attr('slider-value'),
+	    value:+this.jq('time_slider').attr(ATTR_SLIDER_VALUE),
 	    slide: ( event, ui )=> {
 		let current = getSliderTime(ui.value);
 		this.jq('time_current').html(current.format('isoDate'));
@@ -2872,7 +2889,7 @@ MapGlyph.prototype = {
 	    min: -360,
 	    max: 360,
 	    step:1,
-	    value:this.jq('image_rotation_slider').attr('slider-value'),
+	    value:this.jq('image_rotation_slider').attr(ATTR_SLIDER_VALUE),
 	    slide:function(event,ui) {
 		setRotation(event,ui);
 	    },
@@ -2885,7 +2902,7 @@ MapGlyph.prototype = {
 	    min: 0,
 	    max: 1,
 	    step:0.01,
-	    value:this.jq('image_opacity_slider').attr('slider-value'),
+	    value:this.jq('image_opacity_slider').attr(ATTR_SLIDER_VALUE),
 	    slide:function(event,ui) {
 		setOpacity(event,ui);
 	    },
@@ -2926,7 +2943,7 @@ MapGlyph.prototype = {
 		    if(obj.isEnumeration) {
 			if(!this.extraFilter) this.extraFilter = {};
 			let slices =jqid(this.domId('legendcolortable_'+ prefix.toLowerCase())).find('.display-colortable-slice'); 
-			slices.css(CSS_CURSOR,'pointer');
+			slices.css(CSS_CURSOR,CURSOR_POINTER);
 			slices.click(function() {
 			    let ct = Utils.ColorTables[obj.colorTable];
 			    let searchId = HU.getUniqueId('');
@@ -3854,7 +3871,7 @@ MapGlyph.prototype = {
 		    table+=HU.tag(TAG_TH,[],column.getLabel(true));
 		    stats.push({total:0,count:0,min:0,max:0});
 		});
-		table+=HU.close(TAG_TR,'thead','tbody');
+		table+=HU.close(TAG_TR,TAG_THEAD,TAG_TBODY);
 	    }
 	    this.featureTableMap[rowIdx] =feature;
 	    table+=HU.openTag(TAG_TR,[ATTR_TITLE,'Click to zoom to','featureidx', rowIdx,
@@ -3877,7 +3894,7 @@ MapGlyph.prototype = {
 		    sv = Utils.stripTags(sv);
 		}
 		sv=column.format(sv);
-		table+=HU.tag(TAG_TD,[ATTR_STYLE,isNumber?'text-align:right':'',
+		table+=HU.tag(TAG_TD,[ATTR_STYLE,isNumber?HU.css(CSS_TEXT_ALIGN,'right'):'',
 				      ATTR_ALIGN,isNumber?'right':'left'],sv);
 	    });
 	});
@@ -4159,7 +4176,7 @@ MapGlyph.prototype = {
 	    valueInput =HU.span([ATTR_ID,'mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
 	    let styleInput = HU.textarea('',s,[ATTR_ID,'mapstyle_' + index,ATTR_ROWS,'3',ATTR_COLS,'30',ATTR_TITLE,styleTitle]);
-	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
+	    rulesTable+=HU.tr([ATTR_VALIGN,'top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	rulesTable += HU.close(TAG_TABLE);
 	let table = HU.div([ATTR_CLASS,'formgroupheader'],'Style Rules')+HU.div([ATTR_CLASS,'imdv-properties-section'], rulesTable);
@@ -4179,8 +4196,8 @@ MapGlyph.prototype = {
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.leftRightTable('',
 					      this.getHelp('mapfiles.html#stylegroups'));
-	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,'100%']);
-	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],
+	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
+	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold')],
 				       ['Group','Fill','Opacity','Stroke',ATTR_WIDTH,'Pattern','Features']));
 	for(let i=0;i<20;i++) {
 	    let group = styleGroups[i];
@@ -4520,7 +4537,7 @@ MapGlyph.prototype = {
 	if(!this.topHeaderId) {
 	    this.topHeaderId = HU.getUniqueId('topheader');
 	    this.display.appendHeader(HU.div([ATTR_CLASS,'imdv-legend-top',
-					      ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block'),
+					      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					      ATTR_ID,this.topHeaderId]));
 	}
 	return jqid(this.topHeaderId);
@@ -4605,7 +4622,7 @@ MapGlyph.prototype = {
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      ATTR_CLASS,'imdv-filter-enum',
-				      ATTR_ID,this.domId('enum_'+ id),'multiple',null,
+				      ATTR_ID,this.domId('enum_'+ id),ATTR_MULTIPLE,null,
 				      ATTR_SIZE,size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
 		    add(info,'enums',line);
 		}
@@ -4626,12 +4643,12 @@ MapGlyph.prototype = {
 				      HU.div([ATTR_ID,this.domId('slider_max_'+ id),
 					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.max,max))));
 		if(showTop) line = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(120))], line);
-		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
+		let slider =  HU.div([ATTR_SLIDER_MIN,min,ATTR_SLIDER_MAX,max,'slider-isint',info.isInt(),
 				      'slider-value-min',Utils.getDefined(filter.min,info.min),
 				      'slider-value-max',Utils.getDefined(filter.max,info.max),
 				      'filter-property',info.property,'feature-id',info.id,
 				      ATTR_CLASS,CLASS_FILTER_SLIDER,
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,"inline-block",CSS_WIDTH,HU.perc(100))],"");
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100))],"");
 		if(info.getProperty('filter.animate',false)) {
 		    line+=HU.table([ATTR_WIDTH,HU.perc(100)],
 				   HU.tr([],
@@ -4798,8 +4815,8 @@ MapGlyph.prototype = {
 			},500);
 		    _this.sliderThrottle();
 		};
-		let min = +$(this).attr('slider-min');
-		let max = +$(this).attr('slider-max');
+		let min = +$(this).attr(ATTR_SLIDER_MIN);
+		let max = +$(this).attr(ATTR_SLIDER_MAX);
 		let isInt = $(this).attr('slider-isint')=="true";
 		let step = 1;
 		let range = max-min;
@@ -5016,7 +5033,7 @@ MapGlyph.prototype = {
     initColorTableDots:function(obj, dialog) {
 	let _this  = this;
 	let dots = dialog.find('.display-colortable-dot-item');
-	dots.css({cursor:'pointer',title:'Click to show legend'});
+	dots.css({cursor:CURSOR_POINTER,title:'Click to show legend'});
 	dots.addClass(CLASS_CLICKABLE);
 	let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
 	select.find('option').each(function() {
@@ -6386,7 +6403,7 @@ MapGlyph.prototype = {
     getDecoration:function(small) {
 	let type = this.getType();
 	let style = this.style??{};
-	let css= [CSS_DISPLAY,'inline-block'];
+	let css= [CSS_DISPLAY,DISPLAY_INLINE_BLOCK];
 	let dim = small?HU.px(10):HU.px(25);
 	css.push(ATTR_WIDTH,small?HU.px(10):HU.px(50));
 	let line = "solid";
@@ -6454,7 +6471,7 @@ MapGlyph.prototype = {
 	    }
 	    return HU.div([ATTR_STYLE,HU.css(css)]);
 	}
-	return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_BORDER,HU.border(1,'transparent'),CSS_WIDTH,small?HU.px(10):HU.px(50))]);
+	return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_BORDER,HU.border(1,'transparent'),CSS_WIDTH,small?HU.px(10):HU.px(50))]);
     },
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);

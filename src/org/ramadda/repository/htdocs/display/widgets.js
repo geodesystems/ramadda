@@ -153,7 +153,7 @@ function AreaWidget(display,arg) {
         areaLinkClick: function() {
             this.linkArea = !this.linkArea;
             let image = root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png");
-            $("#" + this.domId(ID_AREA_LINK)).attr("src", image);
+            $("#" + this.domId(ID_AREA_LINK)).attr(ATTR_SRC, image);
             if (this.linkArea && this.lastBounds) {
                 let b = this.lastBounds;
                 $("#" + this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
@@ -372,7 +372,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr(ATTR_WIDTH, BAR_WIDTH)
 	    .attr(ATTR_HEIGHT, d => getNum(h-y(d)))
 	    .attr('fill', (d,i)=>getColor(d,i,barColor))
-	    .style(CSS_CURSOR, "pointer")
+	    .style(CSS_CURSOR, CURSOR_POINTER)
     }
 
 
@@ -387,7 +387,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 		if(isNaN(d)) return HU.rgb(0,0,0,0);
 		return getColor(d,i,lineColor)
 	    })
-	    .style(CSS_CURSOR, "pointer");
+	    .style(CSS_CURSOR, CURSOR_POINTER);
     }
 
 
@@ -397,7 +397,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
 	    .attr('cy', (d,i)=>{return getNum(y(d))})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
-	    .style(CSS_CURSOR, "pointer");
+	    .style(CSS_CURSOR, CURSOR_POINTER);
     }
 
 
@@ -494,7 +494,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr(RECORD_ID, (d,i)=>{
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
-	.style(CSS_CURSOR, "pointer");
+	.style(CSS_CURSOR, CURSOR_POINTER);
 
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;

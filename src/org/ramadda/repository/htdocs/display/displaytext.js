@@ -400,7 +400,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (this.getProperty("showFieldLabel", true))
                     label = HU.b(fi.field.getLabel());
 
-                divs += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'inline-block',CSS_WIDTH, width)], 
+                divs += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH, width)], 
 			       label + HU.div([ATTR_STYLE, HU.css(CSS_BORDER,HU.border(1,'#ccc'),
 								  CSS_HEIGHT,HU.px(300)),
 					       ATTR_ID, fi.divId], ''));
@@ -2403,7 +2403,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
                 lineCnt++;
-		var rowAttrs =["valign", "top"];
+		var rowAttrs =[ATTR_VALIGN, "top"];
 		var rowStyle="";
                 if (colorBy.index >= 0) {
 		    var value = record.getData()[colorBy.index];
