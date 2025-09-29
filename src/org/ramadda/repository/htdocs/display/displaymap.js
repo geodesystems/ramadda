@@ -2961,8 +2961,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						  CSS_CURSOR,CURSOR_POINTER,
 						  CSS_PADDING,HU.px(1),
 						  CSS_BORDER,HU.border(1,HU.rgba(0,0,0,0))),
-						  ATTR_TITLE,"Clip to view",
-						  ATTR_ID,this.domId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
+				ATTR_TITLE,"Clip to view",
+				ATTR_ID,this.domId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
 	    }
 
 
@@ -3269,7 +3269,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let value;
 		    if(doTable) {
 			let width = HU.perc(Math.floor(100/values.length));
-			value = Utils.wrap(values,HU.open(TAG_TD,[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx]),'</td>');
+			value = Utils.wrap(values,
+					   HU.open(TAG_TD,[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx]),
+					   HU.close(TAG_TD));
 			if(urlField) {
 			    let url = urlField.getValue(record);
 			    if(Utils.stringDefined(url)) {
@@ -4601,13 +4603,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
                 let menu = HU.open(TAG_SELECT,[ATTR_CLASS,'ramadda-pulldown',
-					   ATTR_ID,this.domId("colorByMenu")]);
+					       ATTR_ID,this.domId("colorByMenu")]);
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
                     let extra = "";
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
-                    menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
+                    menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + HU.close(TAG_OPTION);
                 }
                 menu += HU.close(TAG_SELECT);
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);

@@ -5678,6 +5678,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                                  value));
 
     },
+    formEntryLabel: function(label, value) {
+	return HU.formEntry(HU.span([],label)+':',value);
+    },
+
     formEntry: function(label, value) {
         return this.tag(TAG_TR, [],
                         this.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],

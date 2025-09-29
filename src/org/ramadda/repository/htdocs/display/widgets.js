@@ -94,7 +94,7 @@ function AreaWidget(display,arg) {
 	    };
             let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
-				     HtmlUtils.td(["align", "center"],
+				     HtmlUtils.td([ATTR_ALIGN, "center"],
 						  HtmlUtils.leftCenterRight("",
 									    input(ID_NORTH, " N","North",n),showMap, "20%", "60%", "20%")));
 
@@ -103,7 +103,7 @@ function AreaWidget(display,arg) {
 						      input(ID_EAST, " E", "East",e)));
 
             areaForm += HtmlUtils.tr([],
-				     HtmlUtils.td(["align", "center"],
+				     HtmlUtils.td([ATTR_ALIGN, "center"],
 						  HtmlUtils.leftCenterRight("", input(ID_SOUTH,  " S", "South",s), settings, "20%", "60%", "20%")));
 
 

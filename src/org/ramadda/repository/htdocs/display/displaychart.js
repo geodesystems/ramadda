@@ -544,14 +544,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             let tmp = HU.formTable();
-            tmp += HU.formEntry("Axis Range:", HU.input("", min, [ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismin")]) + " - " +
-				HU.input("", max, [ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismax")]));
-            tmp += HU.formEntry("Date Range:", HU.input("", this.minDate, [ATTR_SIZE, "10", ATTR_ID, this.domId("mindate")]) + " - " +
-				HU.input("", this.maxDate, [ATTR_SIZE, "10", ATTR_ID, this.domId("maxdate")]));
+            tmp += HU.formEntry("Axis Range:", HU.input("", min,
+							[ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismin")]) + " - " +
+				HU.input("", max,
+					 [ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismax")]));
+            tmp += HU.formEntry("Date Range:", HU.input("", this.minDate,
+							[ATTR_SIZE, "10", ATTR_ID, this.domId("mindate")]) + " - " +
+				HU.input("", this.maxDate,
+					 [ATTR_SIZE, "10", ATTR_ID, this.domId("maxdate")]));
 
 
             tmp += HU.formEntry("Colors:",
-				HU.input("", this.getColorList().join(","), [ATTR_SIZE, "35", ATTR_ID, this.domId(ID_COLORS)]));
+				HU.input("", this.getColorList().join(","),
+					 [ATTR_SIZE, "35", ATTR_ID, this.domId(ID_COLORS)]));
             tmp += "</table>";
             menuItems.push(tmp);
 
@@ -1169,7 +1174,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			
 		    });
 		    let highlightWidget = SPACE + HU.vbox(["Highlight",
-							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),ATTR_MULTIPLE,"true",ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
+							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),
+									 ATTR_MULTIPLE,"true",
+									 ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
 		    let select =  HU.span([ATTR_CLASS,"display-filter",ATTR_STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
@@ -2132,10 +2139,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     style += HU.css(CSS_HEIGHT, HU.perc(100));
 		}
 	    }
-            divAttrs.push(ATTR_STYLE);
-            divAttrs.push(style);
-	    divAttrs.push(ATTR_CLASS);
-	    divAttrs.push("ramadda-expandable-target");
+            divAttrs.push(ATTR_STYLE,style);
+	    divAttrs.push(ATTR_CLASS,"ramadda-expandable-target");
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
 	    if(isExpanded) {
@@ -2267,8 +2272,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Clear out any existing charts
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
-		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),ATTR_STYLE,
-						HU.css(CSS_TEXT_ALIGN,'center')]));
+		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),
+						ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]));
 		if(this.doMultiChartsByField()) {
 		    this.multiChartData=[];
 		    selectedFields.forEach((field,idx)=>{
@@ -2442,7 +2447,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    let tt = this.getProperty("tooltip");
 	    let style = HU.css(CSS_FONT_SIZE,HU.perc(80)) +this.getTooltipStyle('');
-	    let content =   HU.div([ATTR_CLASS,'display-tooltip display-chart-tooltip',ATTR_STYLE,style],
+	    let content =   HU.div([ATTR_CLASS,'display-tooltip display-chart-tooltip',
+				    ATTR_STYLE,style],
 				   this.getRecordHtml(record, null, tt));
 
 	    tooltip.innerHTML = content;
@@ -2989,7 +2995,6 @@ function PiechartDisplay(displayManager, id, properties) {
         },
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
-            divAttrs.push(ATTR_STYLE);
             let style = "";
 	    let width = this.getProperty("chartWidth") || this.getChartWidth();
 	    let height = this.getProperty("chartHeight") || this.getChartHeight();
@@ -3013,7 +3018,7 @@ function PiechartDisplay(displayManager, id, properties) {
             } else {
                 style += HU.css(CSS_HEIGHT,HU.perc(100));
             }
-            divAttrs.push(style);
+            divAttrs.push(ATTR_STYLE,style);
             return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {

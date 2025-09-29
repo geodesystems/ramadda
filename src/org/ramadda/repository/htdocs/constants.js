@@ -110,6 +110,7 @@ var TAG_INPUT = 'input';
 var TAG_LABEL = 'label';
 var TAG_LINK = 'link';
 var TAG_LI = 'li';
+var TAG_SCRIPT='script';
 var TAG_SOURCE='source';
 var TAG_SVG = 'svg';
 var TAG_SPAN = 'span';

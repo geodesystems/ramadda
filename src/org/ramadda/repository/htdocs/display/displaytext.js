@@ -233,8 +233,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
-		let includes = "<link rel='stylesheet' href='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")+"'>";
-		includes += "<script src='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")+"'></script>";
+		let includes = HU.tag(TAG_LINK,[ATTR_REL,'stylesheet',ATTR_HREF,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")]);
+		includes += HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")]);
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
 		let tmp = $("body");
@@ -446,7 +446,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
             let showRecords = this.getProperty("showRecords", false);
             if (showRecords) {
-                html += "<br>";
+                html += HU.br();
             }
             let re = new RegExp("(\\b" + word + "\\b)", 'i');
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -546,7 +546,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'selectHighlight',ex:'true'},	
 	{p:'handleSelectOnClick',ex:'false',tt:"Don't select the record on a click"},
 	{p:"groupByField"},
-	{p:"groupDelimiter",ex:"<br>"},	
+	{p:"groupDelimiter",ex:HU.br()},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
 	{p:"sortGroups",wikivalue:"true"},
 	{p:'${&lt;field&gt;_total}'},
@@ -588,7 +588,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		}
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    this.setContents(this.getEmptyMessage("<br>"));
+		    this.setContents(this.getEmptyMessage(HU.br()));
 		    return;
 		}
 		records = this.selectedRecords|| [this.selectedRecord];
@@ -1602,7 +1602,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     min = (i == 0 ? tmp[i].count : Math.min(min, tmp[i].count));
                 }
                 if (this.getProperty("showFieldLabel", true))
-                    html += HU.b(fi.field.getLabel()) + "<br>";
+                    html += HU.b(fi.field.getLabel()) + HU.br();
                 let td1Width = "20%";
                 let td2Width = "10%";
                 if (this.getProperty("showSummary", true)) {
@@ -1612,13 +1612,13 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Summary") + HU.th([], "&nbsp;"));
                     html += HU.closeTag(TAG_THEAD);
                     html += HU.openTag(TAG_TBODY, []);
-                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Total lines:") + HU.td([], records.length));
-                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Total words:") + HU.td([], cnt.count));
-                    html += HU.tr([], HU.td([ATTR_ALIGN, "right"], "Average word length:") + HU.td([], Math.round(cnt.total / cnt.count)));
+                    html += HU.tr([], HU.td([ATTR_ALIGN, ALIGN_RIGHT], "Total lines:") + HU.td([], records.length));
+                    html += HU.tr([], HU.td([ATTR_ALIGN, ALIGN_RIGHT], "Total words:") + HU.td([], cnt.count));
+                    html += HU.tr([], HU.td([ATTR_ALIGN, ALIGN_RIGHT], "Average word length:") + HU.td([], Math.round(cnt.total / cnt.count)));
                     html += HU.closeTag(TAG_TBODY);
 
                     html += HU.closeTag(TAG_TABLE);
-                    html += "<br>"
+                    html += HU.br()
                 }
                 if (this.getProperty("showCounts", true)) {
                     html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border nowrap ramadda-table",
@@ -1643,7 +1643,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     }
                     html += HU.closeTag(TAG_TBODY);
                     html += HU.closeTag(TAG_TABLE);
-                    html += "<br>"
+                    html += HU.br()
                 }
                 if (this.getProperty("showFrequency", true)) {
                     html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border ramadda-table",
@@ -1803,7 +1803,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		bannerHtml += "<div style='text-align:center;'>";
 		let f = fields[col];
 		let s = summary[f.getId()];
-		//		if(col>0) html+="<br>";
+		//		if(col>0) html+=HU.br();
 		if(f.isNumeric()) {
 		    let numBins = parseFloat(this.getProperty("numBins",10,true));
 		    s.bins = [];
@@ -1885,15 +1885,15 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 
 		    
 		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-						      CSS_OVERFLOW_X,'auto')], label);
-		    let count = showCount? HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,HU.perc(20)],
-						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Count")):"";
-		    let percent  = showPercent?HU.th([ATTR_ALIGN,"right",ATTR_WIDTH,"20%"],
-						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],"Percent")):"";
-		    let bars = showBars? HU.th([ATTR_ALIGN,"right",
+						      CSS_OVERFLOW_X,OVERFLOW_AUTO)], label);
+		    let count = showCount? HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,HU.perc(20)],
+						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Count")):"";
+		    let percent  = showPercent?HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,"20%"],
+						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Percent")):"";
+		    let bars = showBars? HU.th([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_WIDTH,barWidth],
-					       HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right')],SPACE)):"";
-		    html += HU.tr([], HU.th(["xxwidth","60%"],  label+ count+ percent+bars));
+					       HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],SPACE)):"";
+		    html += HU.tr([], HU.th([],  label+ count+ percent+bars));
 		    html += HU.closeTag(TAG_THEAD);
 		}
 
@@ -1943,10 +1943,11 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    //		    csv+=value+','+perc+'\n';
 
 		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",
-					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
+					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value],
+					 value +HU.br() + countLabel);
 		    let tdv = HU.td([], value);
-		    let tdc =  (showCount?HU.td([ATTR_ALIGN, "right"], count):"");
-		    let tdp =  showPercent?HU.td([ATTR_ALIGN, "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
+		    let tdc =  (showCount?HU.td([ATTR_ALIGN, ALIGN_RIGHT], count):"");
+		    let tdp =  showPercent?HU.td([ATTR_ALIGN, ALIGN_RIGHT], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    let bw = perc/maxPercent;
 		    let tdb = showBars?HU.td([ATTR_VALIGN,"center",ATTR_WIDTH,barWidth],
 					     HU.div([ATTR_TITLE,HU.perc(Math.round(perc*100)),
@@ -2020,7 +2021,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             this.updateUIInner();
         },
         updateUI: function() {
-            var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/compromise.min.js")+"'></script>";
+            var includes = HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/compromise.min.js")]);
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
@@ -2258,7 +2259,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			       ATTR_STYLE, HU.css(CSS_PADDING,HU.px(4),
 						  CSS_BORDER,HU.border(1,'#ccc'),
 						  CSS_MAX_HEIGHT,HU.px(height),
-						  CSS_OVERFLOW_Y,'auto') + style]);
+						  CSS_OVERFLOW_Y,OVERFLOW_AUTO) + style]);
             this.setContents(html);
 	    let t1 = new Date();
             this.showText();
@@ -2463,8 +2464,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 				  HU.getIconImage("fa-caret-right",null,
 						  [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
 		    }
-		    r+= HU.td([ATTR_WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
-			      "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
+		    r+= HU.td([ATTR_WIDTH, labelWidth], HU.tag(TAG_A,[ATTR_NAME,'line_' + lineCnt]),
+			      HU.tag(TAG_A,[ATTR_HREF,'#line_' + lineCnt], label)+ SPACE) +
 			HU.td([], line);
 		    corpus += HU.tr(rowAttrs, r);
                 } else {
@@ -2473,7 +2474,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                         if (breakLines)
                             corpus += "<p>";
                         else
-                            corpus += "<br>";
+                            corpus += HU.br();
                     } else {
                         corpus += "\n";
                         if (breakLines)
@@ -2715,8 +2716,10 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 			def  = h.highlight(def);
 		    });
 
-		    let entry  = HU.div([ATTR_CLASS,"display-glossary-word"], info.word) + HU.div([ATTR_CLASS,"display-glossary-definition"], def); 
-		    group+=HU.div([ATTR_TITLE,"",ATTR_CLASS,"display-glossary-entry",RECORD_ID,info.record.getId()],entry);
+		    let entry  = HU.div([ATTR_CLASS,"display-glossary-word"], info.word) +
+			HU.div([ATTR_CLASS,"display-glossary-definition"], def); 
+		    group+=HU.div([ATTR_TITLE,"",ATTR_CLASS,"display-glossary-entry",
+				   RECORD_ID,info.record.getId()],entry);
 		});
 		group += HU.closeTag(TAG_DIV);
 		html+=group;
@@ -2725,7 +2728,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("glossaryHeight",HU.px(600));
 	    header = HU.div([ATTR_ID,this.domId(ID_GLOSSARY_HEADER),
 			     ATTR_CLASS,"display-glossary-header"], header);
-	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.getDimension(height),CSS_OVERFLOW_Y,"auto")], html);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.getDimension(height),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	    this.setContents(header  + html);
 	    let _this = this;
 	    this.jq(ID_GLOSSARY_HEADER).find(".display-glossary-letter").click(function() {

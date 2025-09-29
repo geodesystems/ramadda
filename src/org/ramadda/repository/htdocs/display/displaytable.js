@@ -590,7 +590,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             if (!icon) {
                 icon = icon_information;
             }
-            var html = HtmlUtils.hbox([HtmlUtils.image(icon, ["align", "left"]),
+            var html = HtmlUtils.hbox([HtmlUtils.image(icon, [ATTR_ALIGN, "left"]),
                 HtmlUtils.inset(msg, 10, 10, 5, 10)]);
             html = HtmlUtils.div([ATTR_CLASS, "note"], html);
             this.jq(ID_TABLE_HOLDER).html(html);

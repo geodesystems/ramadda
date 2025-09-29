@@ -655,7 +655,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    HU.open(TAG_TR,[ATTR_VALIGN,'top']);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
-		    contents+=HU.td(['align','center'],columnMap[col]);
+		    contents+=HU.td([ATTR_ALIGN,'center'],columnMap[col]);
 		}
 		contents+=HU.close(TAG_TR,TAG_TABLE);
 	    } else {

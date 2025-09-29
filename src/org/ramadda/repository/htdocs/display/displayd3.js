@@ -1020,7 +1020,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!loadedVenn) {
 		loadedVenn = true;
-		var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/venn.js")+"'></script>";
+		var includes = HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/venn.js")]);
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 	    }
 	    let _this = this;
@@ -1259,7 +1259,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
         updateUI: function() {
             if (!this.written) {
                 this.written = true;
-                var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/chernoff.js")+"'></script>";
+                var includes = HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/chernoff.js")]);
                 this.writeHtml(ID_DISPLAY_TOP, includes);
             }
             this.updateUIInner();
@@ -1307,7 +1307,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                     colorscale.push(colors[idx]);
                 }
                 this.displayColorTable(colors, ID_DISPLAY_BOTTOM, min, max);
-                legend += "<b>Colored by</b>: " + colorField.getLabel() + "&nbsp;&nbsp;";
+                legend += HU.b('Colored by') + colorField.getLabel() + SPACE2;
             }
             var attrs = [{
                 label: "Face width",
@@ -1371,7 +1371,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 }
                 attr.field = this.getFieldById(allFields, this.getProperty(attr.name + "Field"));
                 if (attr.field) {
-                    legend += "<b>" + attr.label + "</b>: " + attr.field.getLabel() + "&nbsp;&nbsp;";
+                    legend += HU.b(attr.label) + ': ' + attr.field.getLabel() + SPACE2;
                     if (Utils.isDefined(this.getProperty(attr.name + "Min"))) {
                         attr.min = parseFloat(this.getProperty(attr.name + "Min"));
                     }

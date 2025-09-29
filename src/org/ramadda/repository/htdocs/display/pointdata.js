@@ -3567,7 +3567,8 @@ RequestMacro.prototype = {
 				CSS_PADDING_BOTTOM,HU.px(2),
 				CSS_MARGIN_RIGHT,HU.px(4));
 	    let buttons =  
-		HU.span([ATTR_TITLE,'Show previous',ATTR_STYLE,bstyle,
+		HU.span([ATTR_TITLE,'Show previous',
+			 ATTR_STYLE,bstyle,
 			 ATTR_CLASS, 'ramadda-clickable',
 			 ATTR_ID,this.display.getDomId(this.getId()+'_prev')],
 			HU.getIconImage('fas fa-angle-left')) +
