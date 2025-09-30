@@ -509,7 +509,7 @@ function DisplayThing(argId, argProperties) {
 				    ATTR_TITLE,"Next " + noun,
 				    ATTR_ID, this.getDomId(ID_ENTRIES_NEXT)], HU.getIconImage("fa-chevron-right")); 
 		let label = argProperties.changeEntriesLabel||"Select " + noun;
-		if(label!="") label = label+"<br>";
+		if(label!="") label = label+HU.br();
 
 		return  HU.center(HU.div([ATTR_CLASS,"display-filter"], label +
 					 prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next));
@@ -543,8 +543,8 @@ function DisplayThing(argId, argProperties) {
 
 
         popup: function(srcId, popupId, srcObj, popup) {
-            popup = popup || $("#"+popupId);
-            let src = srcObj || $("#"+srcId);
+            popup = popup || jqid(popupId);
+            let src = srcObj || jqid(srcId);
             let myalign = 'left top';
             let atalign = 'left bottom';
             popup.show();
@@ -697,7 +697,7 @@ function DisplayThing(argId, argProperties) {
 	},
         writeHtml: function(idSuffix, html) {
 	    try {
-		$("#" + this.getDomId(idSuffix)).html(html);
+		jqid(this.getDomId(idSuffix)).html(html);
 	    } catch(err) {
 		console.log("writeHtml error:" + err);
 		console.log("idSuffix:" + idSuffix);
@@ -1032,7 +1032,7 @@ function DisplayThing(argId, argProperties) {
 					 ATTR_STYLE, HU.css(CSS_BACKGROUND, color),
 					 ATTR_CLASS,"display-search-tag"],tagValue);
 		    });
-		    if(filter) result = filter.getLabel()+": " + result+"<br>";
+		    if(filter) result = filter.getLabel()+": " + result+HU.br();
 		    return result;
 		}
 		return "Unknown tag handler:" + tag.attrs["handle"];
@@ -1318,7 +1318,7 @@ function DisplayThing(argId, argProperties) {
 
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row+='\n';
-		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, ATTR_ALIGN,"left"],
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, ATTR_ALIGN,ALIGN_LEFT],
 				 HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
@@ -1332,7 +1332,7 @@ function DisplayThing(argId, argProperties) {
                     let row = HU.open(TR,[ATTR_VALIGN,POS_TOP]);
 		    let label = this.formatRecordLabel("Date");
 		    row += HU.td([],HU.b(label+":"));
-		    row += HU.td([ATTR_ALIGN,"left"],
+		    row += HU.td([ATTR_ALIGN,ALIGN_LEFT],
 				 HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
 					this.formatDate(record.getDate())));
 		    row += HU.close(TR);
@@ -1341,7 +1341,7 @@ function DisplayThing(argId, argProperties) {
 	    }
             if (dflt.showElevation && record.hasElevation()) {
                 rows.push(HU.tr([],HU.td([ATTR_ALIGN,'right'],HU.b('Elevation:')) +
-				HU.td([ATTR_ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
+				HU.td([ATTR_ALIGN,ALIGN_LEFT], number_format(record.getElevation(), 4, '.', ''))));
             }
 	    let rowCnt = 0;
 	    values += HU.open(TAG_TABLE) + HU.open(TAG_TR,[ATTR_VALIGN,'top']);
@@ -1365,7 +1365,7 @@ function DisplayThing(argId, argProperties) {
             return label;
         },
         getFormValue: function(what, dflt) {
-            let fromForm = $("#" + this.getDomId(what)).val();
+            let fromForm = jqid(this.getDomId(what)).val();
             if (fromForm != null) {
                 if (fromForm.length > 0) {
                     this.setProperty(what, fromForm);
@@ -2231,7 +2231,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.tagDialogs[type] = dialog;
 	    dialog.find(":checkbox").change(cbxChange);
 	    let tags = dialog.find(".display-search-tag");
-	    $("#"+inputId).keyup(function(event) {
+	    jqid("#"+inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() {
 		    if(text=="")
@@ -2876,10 +2876,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.setProperty("filterHighlight", prop.value=="highlight");
 		    this.dfltFilterHighlight = null;
 		} else 	if(Utils.isDefined(prop.value2)) {
-		    $("#" +widgetId+"_min").val(prop.value);
-		    $("#" +widgetId+"_min").attr("data-value", prop.value);
-		    $("#" +widgetId+"_max").val(prop.value2);
-		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
+		    jqid(widgetId+"_min").val(prop.value);
+		    jqid(widgetId+"_min").attr("data-value", prop.value);
+		    jqid(widgetId+"_max").val(prop.value2);
+		    jqid(widgetId+"_max").attr("data-value", prop.value2);
 		} else {
 		    filter.handleEventPropertyChanged(prop);
 		}
@@ -3175,7 +3175,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.useDisplayMessage()) {
 		return SPACE+msg;
 	    } 
-            return HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,"center")], this.getMessage(SPACE + msg));
+            return HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
 	    this.dataLoadFailed = false;
@@ -3193,14 +3193,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("noDataMessage","No data available");
 	},
         getFieldValue: function(id, dflt) {
-            let jq = $("#" + id);
+            let jq = jqid(id);
             if (jq.length > 0) {
                 return jq.val();
             }
             return dflt;
         },
         getFieldValues: function(id, dflt) {
-            let jq = $("#" + id);
+            let jq = jqid(id);
             if (jq.length > 0) {
 		let v = [];
 		jq.each(function(){
@@ -4300,7 +4300,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
-		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
+		let date = jqid(this.getFilterId(ID_FILTER_DATE)).val();
 		if(date) {
 		    if(date=="all") {
 			this.setDateRange(null,null);
@@ -4672,7 +4672,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(header!="") {
 		    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10), CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],header);
 		    this.jq(ID_HEADER2_PREFIX).html(header);
-		    this.jq(ID_HEADER2).css(CSS_TEXT_ALIGN,"left");
+		    this.jq(ID_HEADER2).css(CSS_TEXT_ALIGN,ALIGN_LEFT);
 		}
 		if(number<records.length) {
 		    this.jq(ID_PREVNEXT_LABEL).html("Showing " + (this.rowStartIndex+1) +" - " +(this.rowStartIndex+cnt) +
@@ -4958,7 +4958,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				      ATTR_CLASS, "display-entry-image"
 				     ]);
 
-                    html += HU.href(entry.getResourceUrl(), img,["download",null]) + "<br>";
+                    html += HU.href(entry.getResourceUrl(), img,["download",null]) + HU.br();
 		} else {
                     for (let i = 0; i < metadata.length; i++) {
 			if (metadata[i].type == "content.thumbnail") {
@@ -5020,7 +5020,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         let url = toks[i].trim();
                         if (url.length == 0) continue;
                         tmp += HU.href(url, url);
-                        tmp += "<br>";
+                        tmp += HU.br();
                     }
                     columnValue = tmp;
                 }
@@ -5211,7 +5211,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         addEntrySelect: function() {
             let theDisplay = this;
-            let entryRows = $("#" + this.getDomId(ID_DISPLAY_CONTENTS) + "  ." + this.getClass("entry-main"));
+            let entryRows = jqid(this.getDomId(ID_DISPLAY_CONTENTS) + "  ." + this.getClass("entry-main"));
 
             entryRows.unbind();
             entryRows.mouseover(async function(event) {
@@ -5234,13 +5234,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let domEntryId = Utils.cleanId(entryId);
                 let toolbarId = theDisplay.getEntryToolbarId(domEntryId);
 
-                let toolbar = $("#" + toolbarId);
+                let toolbar = jqid(toolbarId);
                 toolbar.show();
                 let myalign = 'right top+1';
                 let atalign = 'right top';
                 let srcId = theDisplay.getDomId(ID_DETAILS_MAIN + domEntryId);
                 toolbar.position({
-                    of: $("#" + srcId),
+                    of: jqid(srcId),
                     my: myalign,
                     at: atalign,
                     collision: "none none"
@@ -5259,7 +5259,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 });
                 let domEntryId = Utils.cleanId(entryId);
                 let toolbarId = theDisplay.getEntryToolbarId(entryId);
-                let toolbar = $("#" + toolbarId);
+                let toolbar = jqid(toolbarId);
                 //TOOLBAR                        toolbar.hide();
             });
 
@@ -5330,7 +5330,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let html = HU.open(TAG_TABLE, [ATTR_WIDTH, HU.perc(100), ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"]);
             html += HU.open(TAG_TR, [ATTR_VALIGN, POS_TOP]);
             for (let i = 0; i < columnNames.length; i++) {
-                html += HU.td([ATTR_ALIGN, "center", ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
+                html += HU.td([ATTR_ALIGN, ALIGN_CENTER, ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
             }
             html += HU.close(TAG_TR);
 
@@ -5355,7 +5355,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             let m = metadata[j];
                             if (m.type == type) {
                                 if (value != "") {
-                                    value += "<br>";
+                                    value += HU.br();
                                 }
                                 value += m.value.attr1;
                             }
@@ -5505,7 +5505,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(groupThem) {
 		list.forEach(m=>{
 		    metadata+=m.label +": " +map[m.type].join(" ");
-		    metadata+="<br>";
+		    metadata+=HU.br();
 		});
 	    }
 
@@ -5936,7 +5936,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.writeHtml(ID_MENU_OUTER, menu);
             let srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
 	    this.dialog = HU.makeDialog({content:menu,anchor:srcId,draggable:false,header:false});
-            $("#" + this.getDomId(ID_MENU_INNER + Utils.cleanId(entryId))).superfish({
+            jqid(this.getDomId(ID_MENU_INNER + Utils.cleanId(entryId))).superfish({
                 speed: 'fast',
                 delay: 300
             });
@@ -6068,7 +6068,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         setDisplayProperty: function(key, value) {
             this.setProperty(key, value);
-            $("#" + this.getDomId(key)).val(value);
+            jqid(this.getDomId(key)).val(value);
         },
         deltaColumn: function(delta) {
             let column = parseInt(this.getProperty("column", 0));
@@ -6219,17 +6219,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getMainDiv: function() {
 	    //Don't check the parent for the targetDiv
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
-	    return $("#" + divId); 
+	    return jqid(divId); 
 	},
         getGroupDiv: function() {
-	    return $("#" + this.getProperty("groupDiv"));
+	    return jqid(this.getProperty("groupDiv"));
 	},	
         createUI: function() {
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
             if (divId != null) {
                 let html = this.getHtml();
 		//		console.log("*****",html,"*******");
-		let div = $("#" + divId);
+		let div = jqid(divId);
 		let inline = this.getDisplayInline();
 		if(inline) {
 		    div.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
@@ -6560,7 +6560,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (let i = 0; i < calls.length; i++) {
                 let inner = HU.getIconImage(images[i], [ATTR_WIDTH,HU.px(18),ATTR_TITLE, labels[i],
 							ATTR_CLASS, "display-dialog-header-icon"]);
-                if (addLabel) inner += " " + labels[i] + "<br>";
+                if (addLabel) inner += " " + labels[i] + HU.br();
                 toolbar += HU.onClick(calls[i], inner);
             }
             return toolbar;
@@ -6770,7 +6770,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		};
 
-		$("#" + this.getDomId(macro.getId())+"," +
+		jqid(this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
 		  "#" + this.getDomId(macro.getId()+"_max")).keyup(function(e){
 		      keyup(e,null,$(this).val())});
@@ -6835,7 +6835,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	stepFilterDateAnimation: function(inputFunc, dir){
-	    let select = $("#" +this.getFilterId(ID_FILTER_DATE));
+	    let select = jqid(this.getFilterId(ID_FILTER_DATE));
 	    let index = select[0].selectedIndex;
 	    let length = select.find('option').length;
 	    index+=dir;
@@ -6868,8 +6868,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else if(id.endsWith("_max")) {
 		    id = id.replace(/_max$/,"");
 		}
-		let min = $("#" + id+"_min");
-		let max = $("#" + id+"_max");
+		let min = jqid(id+"_min");
+		let max = jqid(id+"_max");
 		let range = {
 		    min: parseFloat(min.attr("data-min")),
 		    max: parseFloat(max.attr("data-max"))};
@@ -7272,8 +7272,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 = HU.div([ATTR_CLASS,"display-header-vertical"],header2);
 	    } else {
 		let style = HU.css(CSS_LINE_HEIGHT,HU.px(0));
-		if(this.getHeaderCenter(true)) style +=HU.css(CSS_TEXT_ALIGN,'center');
-		else style +=HU.css(CSS_TEXT_ALIGN,'left');		
+		if(this.getHeaderCenter(true)) style +=HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER);
+		else style +=HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT);		
 		header2=HU.div([ATTR_STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
@@ -7323,7 +7323,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.filters.forEach(filter=>{
 			if(filter.depends == changedFilter.id) {
 			    dependentFilters.push(filter);
-			    let widget = $("#" + filter.widgetId);
+			    let widget = jqid(filter.widgetId);
 			    this.ignoreFilterChange = true; 
 			    filter.lastValue = widget.val();
 			    widget.val(FILTER_ALL);
@@ -7335,10 +7335,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		if(!input2) {
 		    if(id.endsWith("_min")) {
-			input2 = $("#" + id.replace(/_min$/,"_max"));
+			input2 = jqid(id.replace(/_min$/,"_max"));
 		    } else if(id.endsWith("_max")) {
 			let tmp = input;
-			input =$("#" + id.replace(/_max$/,"_min"));
+			input =jqid(id.replace(/_max$/,"_min"));
 			input2 = tmp;
 		    }
 		}
@@ -7397,7 +7397,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(filter.initWidget)
 			filter.initWidget(inputFunc);
 		    if(filter.widgetId) {
-			let widget = $("#" + filter.widgetId);
+			let widget = jqid(filter.widgetId);
 			if(!widget.length) {
 			    console.log("Could not find dependent widget:" + filter.id);
 			    return;
@@ -7446,7 +7446,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
 
 	    dataFilterIds.forEach(id=>{
-		$("#" + id).click(function(e){
+		jqid(id).click(function(e){
 		    inputFunc($(this));
 		});
 	    });
@@ -7487,7 +7487,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    let value =  Utils.join(values,",");
 		    parent.attr("data-value", value);
-		    $("#"+parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
+		    jqid(parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
 		    inputFunc(parent,null, values);
 		});
 
@@ -7564,7 +7564,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-	    $("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
+	    jqid(this.getFilterId(ID_FILTER_DATE)).change(function() {
 		inputFunc($(this));
 	    });
 	    this.jq("filterDatePlay").click(function() {
@@ -8206,7 +8206,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg += error;
             }
 	    
-	    msg = msg.replace(/\n/g,"<br>");
+	    msg = msg.replace(/\n/g,HU.br());
 	    this.setErrorMessage(msg);
         },
         //callback from the pointData.loadData call
@@ -9492,9 +9492,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	    //If we don't  have any displays to show then hide us
 	    if(!this.getShowMenu() && displaysToLayout.length==0) {
 		//TODO: This hides the change entry group menu 
-		//		$("#" + this.getId()).hide();
+		//		jqid(this.getId()).hide();
 	    } else {
-		$("#" + this.getId()).show();
+		jqid(this.getId()).show();
 	    }
 	    let div = this.getGroupDiv();
 	    if(div.length>0) {
@@ -9503,7 +9503,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 		this.writeHtml(ID_DISPLAYS, html);
 	    }
             if (this.layout == LAYOUT_TABS) {
-                $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
+                jqid(tabId).tabs({activate: HU.tabLoaded});
             }
             this.initDisplays();
         }, 

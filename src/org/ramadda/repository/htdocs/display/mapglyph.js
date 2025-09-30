@@ -654,7 +654,7 @@ MapGlyph.prototype = {
 
 	    let dataIconInfo  =this.getDataIconInfo();
 	    contents+=  HU.buttons(buttonList,
-				   null,HU.css(CSS_TEXT_ALIGN,'left'));
+				   null,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT));
 
 	    let fields1 = HU.b('Menu Fields:')+HU.br()+
 		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
@@ -690,8 +690,8 @@ MapGlyph.prototype = {
 
 	}
 	if(this.isMultiEntry()) {
-	    let exc = 'Enter entry IDs to exclude. One per line. Note: this will take effect on map reload.<br>';
-
+	    let exc = 'Enter entry IDs to exclude. One per line. Note: this will take effect on map reload.';
+	    exc+=HU.br();
 	    exc+= HU.textarea('',   this.getAttribute('excludes')??'',
 			      [ATTR_ID,this.domId('excludes'),ATTR_ROWS,'8',ATTR_COLS,'60']);
 	    content.push({
@@ -3895,7 +3895,7 @@ MapGlyph.prototype = {
 		}
 		sv=column.format(sv);
 		table+=HU.tag(TAG_TD,[ATTR_STYLE,isNumber?HU.css(CSS_TEXT_ALIGN,'right'):'',
-				      ATTR_ALIGN,isNumber?'right':'left'],sv);
+				      ATTR_ALIGN,isNumber?'right':ALIGN_LEFT],sv);
 	    });
 	});
 	if(stats) {
@@ -4590,7 +4590,7 @@ MapGlyph.prototype = {
 		    attrs.push(ATTR_CLASS,CLASS_FILTER_STRING);
 		    widget =     HU.input("",filter.stringValue??"",attrs);
 		}
-		let string=label+":<br>" +widget + HU.br();
+		let string=label+":" + HU.br()+ widget + HU.br();
 		add(info,'strings',string);
 		return
 	    } 
@@ -4618,12 +4618,12 @@ MapGlyph.prototype = {
 		    });
 
 		    let size = info.filterSize();
-		    let line=label+":<br>" +
+		    let line=label+":" + HU.br() +
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      ATTR_CLASS,'imdv-filter-enum',
 				      ATTR_ID,this.domId('enum_'+ id),ATTR_MULTIPLE,null,
-				      ATTR_SIZE,size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
+				      ATTR_SIZE,size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+HU.br();
 		    add(info,'enums',line);
 		}
 		return;
@@ -6314,7 +6314,7 @@ MapGlyph.prototype = {
 	    });
 	} else {
 	    text = this.convertText(text);
-	    text = text.replace(/\n/g,"<br>");
+	    text = text.replace(/\n/g,HU.br());
 	    if(toggleLabel)
 		text = HU.toggleBlock(toggleLabel+SPACE2, text,false);
 	    jqid(id).html(text);
@@ -6423,7 +6423,7 @@ MapGlyph.prototype = {
 		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,[ATTR_WIDTH,HU.px(200)]));
 	} else if(type==GLYPH_LABEL) {
 	    if(!small)
-		return style.label.replace(/\n/g,"<br>");
+		return style.label.replace(/\n/g,HU.br());
 	} else if(type==GLYPH_MARKER) {
 	    if(!small)
 		return HU.image(style.externalGraphic,[ATTR_WIDTH,HU.px(16)]);

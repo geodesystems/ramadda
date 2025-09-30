@@ -56,7 +56,7 @@ function DisplayAnimation(display, enabled,attrs) {
         toggleAnimation: function() {
 	    this.running = !this.running;
 	    if(this.btnRun)
-		this.btnRun.html(HtmlUtils.getIconImage(this.running ? ICON_STOP : ICON_PLAY));
+		this.btnRun.html(HU.getIconImage(this.running ? ICON_STOP : ICON_PLAY));
 	    if (this.running)
 		this.startAnimation();
 	},
@@ -335,55 +335,55 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let showLabel = display.getProperty("animationShowLabel",true);	    
 	    if(showButtons) {
 		let short = display.getProperty("animationWidgetShort",false);
-		buttons +=   HtmlUtils.span([ATTR_ID, this.getDomId(ID_SETTINGS),
-					     ATTR_TITLE,"Settings"], HtmlUtils.getIconImage("fas fa-cog")); 
+		buttons +=   HU.span([ATTR_ID, this.getDomId(ID_SETTINGS),
+				      ATTR_TITLE,"Settings"], HU.getIconImage("fas fa-cog")); 
 		if(!short)
-		    buttons +=   HtmlUtils.span([ATTR_ID, this.getDomId(ID_BEGIN),
-						 ATTR_TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
-		buttons += HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIM_PREV),
-					   ATTR_TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		    buttons +=   HU.span([ATTR_ID, this.getDomId(ID_BEGIN),
+					  ATTR_TITLE,"Go to beginning"], HU.getIconImage("fa-fast-backward")); 
+		buttons += HU.span([ATTR_ID, this.getDomId(ID_ANIM_PREV),
+				    ATTR_TITLE,"Previous"], HU.getIconImage("fa-step-backward")); 
 		if(!short)
-		    buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_RUN),
-					      ATTR_TITLE,"Run/Stop"], HtmlUtils.getIconImage(ICON_PLAY)); 
-		buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIM_NEXT),
-					  ATTR_TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		    buttons +=HU.span([ATTR_ID, this.getDomId(ID_RUN),
+				       ATTR_TITLE,"Run/Stop"], HU.getIconImage(ICON_PLAY)); 
+		buttons +=HU.span([ATTR_ID, this.getDomId(ID_ANIM_NEXT),
+				   ATTR_TITLE,"Next"], HU.getIconImage("fa-step-forward"));
 		if(!short)
-		    buttons +=HtmlUtils.span([ATTR_ID, this.getDomId(ID_END),
-					      ATTR_TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
+		    buttons +=HU.span([ATTR_ID, this.getDomId(ID_END),
+				       ATTR_TITLE,"Go to end"], HU.getIconImage("fa-fast-forward"));
 	    }
 
 	    if(showLabel) {
 		if(showButtons) {
-		    buttons+=HtmlUtils.span([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
-					     ATTR_CLASS, "display-animation-label",
-					     ATTR_STYLE,this.labelStyle+HU.css(CSS_FONT_SIZE,this.labelSize)]);
+		    buttons+=HU.span([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
+				      ATTR_CLASS, "display-animation-label",
+				      ATTR_STYLE,this.labelStyle+HU.css(CSS_FONT_SIZE,this.labelSize)]);
 		} else {
-		    buttons+=HtmlUtils.div([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
-					    ATTR_CLASS, "display-animation-label",
-					    ATTR_STYLE,this.labelStyle+HU.css(CSS_TEXT_ALIGN,"center",
-									      CSS_FONT_SIZE,this.labelSize)]);
+		    buttons+=HU.div([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
+				     ATTR_CLASS, "display-animation-label",
+				     ATTR_STYLE,this.labelStyle+HU.css(CSS_TEXT_ALIGN,"center",
+								       CSS_FONT_SIZE,this.labelSize)]);
 		}
 	    }
-            buttons = HtmlUtils.div([ ATTR_CLASS,"display-animation-buttons"], buttons);
+            buttons = HU.div([ ATTR_CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
 		let style= HU.css(CSS_HEIGHT,this.tickHeight) +display.getProperty("animationSliderStyle","");
 		let tooltip  = HU.div([ATTR_ID,this.getDomId(ID_TOOLTIP),
 				       ATTR_CLASS,"display-animation-tooltip"],"");
 		let tickContainerStyle = HU.css(CSS_HEIGHT,this.tickHeight);
 		if(!this.makeSlider) {
-		    tickContainerStyle += HU.css(CSS_BACKGROUND,"efefef",CSS_BORDER,HU.border(1,'#aaa'));
+		    tickContainerStyle += HU.css(CSS_BACKGROUND,"#efefef",CSS_BORDER,HU.border(1,'#aaa'));
 		}
 		if(!this.makeSlider) {
 		    style+=HU.css(CSS_CURSOR,"move");
 		}
-		buttons +=   HtmlUtils.div([ATTR_CLASS,"display-animation-slider",
-					    ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
-					   tooltip + HtmlUtils.div([ATTR_STYLE, tickContainerStyle,
-								    ATTR_CLASS,"display-animation-ticks",
-								    ATTR_TABINDEX,"0",
-								    ATTR_ID,this.getDomId(ID_TICKS)]));
+		buttons +=   HU.div([ATTR_CLASS,"display-animation-slider",
+				     ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
+				    tooltip + HU.div([ATTR_STYLE, tickContainerStyle,
+						      ATTR_CLASS,"display-animation-ticks",
+						      ATTR_TABINDEX,0,
+						      ATTR_ID,this.getDomId(ID_TICKS)]));
 	    }
-	    this.html = HtmlUtils.div([ATTR_STYLE,this.display.getProperty("animationStyle")], buttons);
+	    this.html = HU.div([ATTR_STYLE,this.display.getProperty("animationStyle")], buttons);
 	    if(this.display.getProperty("animationShow",true)) {
 		if(this.targetDiv) this.targetDiv.append(this.html);
 		else this.jq(ID_TOP_LEFT).append(this.html);
@@ -484,10 +484,10 @@ function DisplayAnimation(display, enabled,attrs) {
 			    ATTR_CLASS,clazz], "Show all");
 		if(window) {
 		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Window:<br>" +SPACE2 + HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
+				 "Window:"+ HU.br() +SPACE2 + HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
 									     ATTR_SIZE,"10"]));
 		    html+=HU.div([ATTR_TITLE, "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Step:<br>" +SPACE2+ HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),ATTR_SIZE,"10"]));
+				 "Step:" + HU.br() +SPACE2+ HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),ATTR_SIZE,"10"]));
 		}
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({content:html,anchor:$(this),draggable:false,header:false});
@@ -702,7 +702,7 @@ function DisplayAnimation(display, enabled,attrs) {
         },
 	stopAnimation:function() {
 	    if(this.btnRun)
-		this.btnRun.html(HtmlUtils.getIconImage(ICON_PLAY));
+		this.btnRun.html(HU.getIconImage(ICON_PLAY));
             this.running = false;
 	},
 	setDateRange: function(begin,end) {
@@ -798,9 +798,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([ATTR_ID,this.display.getId()+"-"+record.getId(), ATTR_CLASS,clazz,
-				      ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,CSS_LEFT, HU.perc(perc))+tickStyle,
-				      ATTR_TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HU.div([ATTR_ID,this.display.getId()+"-"+record.getId(),
+			       ATTR_CLASS,clazz,
+			       ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,CSS_LEFT, HU.perc(perc))+tickStyle,
+			       ATTR_TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);
@@ -856,7 +857,7 @@ function DisplayAnimation(display, enabled,attrs) {
                 this.running = false;
                 this.inAnimation = false;
 		if(this.btnRun)
-                    this.btnRun.html(HtmlUtils.getIconImage(ICON_PLAY));
+                    this.btnRun.html(HU.getIconImage(ICON_PLAY));
             }
 	},
 	makeLabel: function(label) {

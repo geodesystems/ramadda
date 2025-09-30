@@ -445,7 +445,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 	    });
             let date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
-                this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ATTR_ID,this.getDomId(ID_DATE_LABEL)]));
+                this.jq(ID_TOP_LEFT).append(HU.div([ATTR_ID,this.getDomId(ID_DATE_LABEL)]));
             }
             if(date!=null) {
                 this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
@@ -642,7 +642,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 q = q.replace(/^ *\n/,"");
                 q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
                 q = q.replace(/[[\r\n]/g,"\n");
-                q = HtmlUtils.div([ATTR_CLASS, "display-skewt-text"],q);
+                q = HU.div([ATTR_CLASS, "display-skewt-text"],q);
                 $("#" + this.skewt.textBoxId).html(q);
             });
         }
@@ -668,7 +668,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                 left: 50
             };
             let divStyle =HU.css(CSS_HEIGHT,HU.px(height),CSS_WIDTH,HU.px(width));
-            let html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
+            let html = HU.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
             this.setContents(html);
 
             // To create dynamic size of the div
@@ -741,7 +741,7 @@ function RamaddaD3Display(displayManager, id, properties) {
         },
         getDialogContents: function() {
             let height = this.getProperty(PROP_HEIGHT, "400");
-            let html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
+            let html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
             html += SUPER.getDialogContents.apply(this);
             return html;
         },
@@ -1103,7 +1103,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                     obj.label = setInfo.label;
                 sets.push(obj);
             }
-            this.setContents(HtmlUtils.div([ATTR_ID, this.getDomId(ID_VENN),
+            this.setContents(HU.div([ATTR_ID, this.getDomId(ID_VENN),
 					    ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], ""));
             var chart = venn.VennDiagram()
                 .width(600)
@@ -1211,7 +1211,7 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 	    let groupList = Object.keys(groups).sort();
 	    if(!groupByField) {
 		let data = groups["all"];
-		this.setContents(HtmlUtils.div([ATTR_CLASS,"display-minidots-dots",
+		this.setContents(HU.div([ATTR_CLASS,"display-minidots-dots",
 						ATTR_ID, this.getDomId(ID_MINIDOTS),
 						ATTR_STYLE, HU.css(ATTR_HEIGHT,HU.getDimension(dotsHeight),
 								   ATTR_WIDTH,HU.getDimension(dotsWidth))], ""));
@@ -1224,7 +1224,7 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 		    table+=HU.open(TAG_TR);
 		    table += HU.td([],key +" (" + data.total+")");
 		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
-		    table += HU.td([],HtmlUtils.div([ATTR_CLASS,"display-minidots-dots",
+		    table += HU.td([],HU.div([ATTR_CLASS,"display-minidots-dots",
 						     ATTR_ID, id,
 						     ATTR_STYLE, HU.css(CSS_HEIGHT,HU.getDimension(dotsHeight),
 									CSS_WIDTH,HU.getDimension(dotsWidth))], ""));
@@ -1446,14 +1446,14 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 }
                 var label = (string ? row[string.getIndex()] : "Row: " + rowIdx);
                 var labelValue = (string ? row[string.getIndex()] : "");
-                label = HtmlUtils.div([ATTR_CLASS, "display-chernoff-label"], label);
-                var div = HtmlUtils.div([ATTR_ID, this.getDomId("chernoff") + "_" + rowIdx, ATTR_CLASS, "display-chernoff-face"], "");
-                html += HtmlUtils.div([ATTR_TITLE, tt, ATTR_CLASS, "display-chernoff-wrapper ramadda-div-link", "value", labelValue], div + label);
+                label = HU.div([ATTR_CLASS, "display-chernoff-label"], label);
+                var div = HU.div([ATTR_ID, this.getDomId("chernoff") + "_" + rowIdx, ATTR_CLASS, "display-chernoff-face"], "");
+                html += HU.div([ATTR_TITLE, tt, ATTR_CLASS, "display-chernoff-wrapper ramadda-div-link", "value", labelValue], div + label);
             }
-            legend = HtmlUtils.div([ATTR_CLASS, "display-chernoff-legend"], legend);
+            legend = HU.div([ATTR_CLASS, "display-chernoff-legend"], legend);
             var height = this.getProperty("height", HU.px(400));
             if (!height.endsWith("px")) height += "px";
-            this.setContents(legend + HtmlUtils.div([ATTR_STYLE, HU.css(CSS_HEIGHT,height),
+            this.setContents(legend + HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,height),
 						     ATTR_CLASS, "display-chernoff-container",
 						     ATTR_ID, this.getDomId("chernoff")], html));
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -1580,7 +1580,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    if(colorByField)
 		this.setProperty("sortFields",colorByField.getId());
-	    let html = HtmlUtil.tag(TAG_SVG, [ATTR_ID, this.getDomId(ID_BUBBLES),
+	    let html = HU.tag(TAG_SVG, [ATTR_ID, this.getDomId(ID_BUBBLES),
 					      ATTR_WIDTH,HU.perc(100),ATTR_HEIGHT,700,
 					      "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.setContents(html);

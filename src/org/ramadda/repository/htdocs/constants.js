@@ -14,6 +14,7 @@ var urlroot = ramaddaBaseUrl;
 
 
 var ARG_PAGESEARCH='pagesearch';
+var ARG_MAPBOUNDS='map_bounds';
 
 var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
@@ -146,6 +147,9 @@ var ATTR_TRANSFORM = 'transform';
 var ATTR_LAYOUT='layout';
 var ATTR_LOADING= 'loading';
 var ATTR_DATA_CORPUS='data-corpus';
+var ATTR_DATA_MIN='data-min';
+var ATTR_DATA_MAX='data-max';
+var ATTR_DATA_VALUE='data-value';
 var ATTR_WIDTH = 'width';
 var ATTR_HEIGHT = 'height';
 var ATTR_HREF = 'href';
@@ -210,6 +214,7 @@ var DISPLAY_INLINE='inline';
 var DISPLAY_INLINE_BLOCK='inline-block';
 
 var OVERFLOW_AUTO = 'auto';
+var OVERFLOW_HIDDEN = 'hidden';
 
 var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
 

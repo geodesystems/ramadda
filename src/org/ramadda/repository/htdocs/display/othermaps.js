@@ -747,7 +747,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(maxLayer)) maxLayer = 1;
 		    if(layer>maxLayer) return;
 		    this.regions[region].polygons.forEach(polygon=>{
-			let uid = HtmlUtils.getUniqueId('selector_');
+			let uid = HU.getUniqueId('selector_');
 			let poly = this.makePoly(polygon);
 			let fillColor = "transparent";
 			if(missing) {
@@ -906,7 +906,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 		let recordId = record?record.getId():"";
 		info.polygons.forEach(polygon=>{
-		    let uid = HtmlUtils.getUniqueId();
+		    let uid = HU.getUniqueId();
 		    let poly = this.makePoly(polygon);
 		    let fillColor = "transparent";
 		    if(missing) {
@@ -988,7 +988,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 		    }
 		    let recordId = record?record.getId():"";
 		    this.regions[region].polygons.forEach(polygon=>{
-			let uid = HtmlUtils.getUniqueId();
+			let uid = HU.getUniqueId();
 			let poly = this.makePoly(polygon);
 			let fillColor = "red";
 			let transform  = "";
@@ -1119,7 +1119,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 		let recordId = values!=null?values.record.getId():"";
 		let regionClean = Utils.cleanId(region);
 		this.regions[region].polygons.forEach(polygon=>{
-		    let uid = HtmlUtils.getUniqueId();
+		    let uid = HU.getUniqueId();
 		    if(values!=null) {
 			defs.append("svg:pattern")
 			    .attr(ATTR_ID, "bgimage"+ uid)

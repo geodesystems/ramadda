@@ -36,9 +36,9 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
             //this returns "getRamaddaDisplay('" + this.getId() +"')";
             var get = this.getGet();
             var html = "<p>";
-            html += HtmlUtils.onClick(get + ".click();", HtmlUtils.div([ATTR_ID, this.getDomId(ID_CLICK)], "Click me"));
+            html += HU.onClick(get + ".click();", HU.div([ATTR_ID, this.getDomId(ID_CLICK)], "Click me"));
             html += "<p>";
-            html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_DATA)], "");
+            html += HU.div([ATTR_ID, this.getDomId(ID_DATA)], "");
 
             //Set the contents
             this.setContents(html);

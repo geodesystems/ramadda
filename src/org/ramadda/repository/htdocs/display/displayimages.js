@@ -520,7 +520,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(!width && !height) width=HU.perc(100);
 	    let imageStyle = this.getPropertyImageStyle("");
 	    let contents = "";
-	    let uid = HtmlUtils.getUniqueId();
+	    let uid = HU.getUniqueId();
 	    let base = "gallery"+uid;
 	    let displayedRecords = [];
 	    let doPopup = this.getPropertyDoPopup(true);
@@ -1099,7 +1099,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			if(url.match(/youtube.com\/watch/)) {
 			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
 			}
-			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
+			tt = tt.replace(/<br>/g,HU.BR_ENTITY);
 			strip += HU.div([ATTR_TITLE,tt,
 					 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							   CSS_MIN_WIDTH,width,
@@ -1159,7 +1159,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    if(!fromStrip && this.showStrip) {
 		this.stripImages.removeClass('display-slides-strip-image-selected');
-		this.stripImages.find(HtmlUtils.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-slides-strip-image-selected');
+		this.stripImages.find(HU.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-slides-strip-image-selected');
 		this.stripImages.each(function() {
 		    if(+$(this).attr(RECORD_INDEX) == _this.slideIndex) {
 			$(this).addClass('display-slides-strip-image-selected');

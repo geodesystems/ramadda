@@ -4024,7 +4024,7 @@ RepositoryMap.prototype = {
 	this.removePolygonSelectionLines();
 	this.polygonSelectionPoints=[];
         this.findSelectionFields();
-	HU.addToDocumentUrl("map_bounds","");
+	HU.addToDocumentUrl(ARG_MAPBOUNDS,"");
         if (this.fldNorth) {
             this.fldNorth.obj.value = "";
             this.fldSouth.obj.value = "";
@@ -4100,7 +4100,7 @@ RepositoryMap.prototype = {
                     _this.fldSouth.obj.value = MapUtils.formatLocationValue(bounds.bottom);
                     _this.fldWest.obj.value = MapUtils.formatLocationValue(bounds.left);
                     _this.fldEast.obj.value = MapUtils.formatLocationValue(bounds.right);
-		    HU.addToDocumentUrl("map_bounds",bounds.top+"," + bounds.left+"," + bounds.bottom +","+bounds.right);
+		    HU.addToDocumentUrl(ARG_MAPBOUNDS,bounds.top+"," + bounds.left+"," + bounds.bottom +","+bounds.right);
                 }
             }
         });

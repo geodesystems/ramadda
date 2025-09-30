@@ -57,8 +57,8 @@ function AreaWidget(display,arg) {
 			    ATTR_ID,this.domId(ID_CLEAR)],
 			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
-			  HtmlUtils.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
-			  HU.tag(TAG_LABEL,[ATTR_CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
+			  HU.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
+			  HU.tag(TAG_LABEL,[ATTR_CLASS,"ramadda-clickable",ATTR_FOR,this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	    this.settingsDialog = HU.makeDialog(
 		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
@@ -75,7 +75,7 @@ function AreaWidget(display,arg) {
 	    });	    
 	},
         getHtml: function() {
-	    let bounds =  this.arg?null:HU.getUrlArgument("map_bounds");
+	    let bounds =  this.arg?null:HU.getUrlArgument(ARG_MAPBOUNDS);
 	    let n="",w="",s="",e="";
 	    if(bounds) {
 		[n,w,s,e]  = bounds.split(",");
@@ -85,29 +85,30 @@ function AreaWidget(display,arg) {
 				   ATTR_ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
 	    let showMap = HU.div([ATTR_CLASS,"ramadda-clickable",
 				  ATTR_ID,this.domId(ID_MAP_SHOW),
-				  ATTR_TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
+				  ATTR_TITLE,"Show map selector"], HU.getIconImage("fas fa-globe"));
 
 	    let input = (id,place,title,v)=>{
-		return HtmlUtils.input(id, v, [ATTR_PLACEHOLDER, place,
-					       ATTR_CLASS, "input display-area-input", "size", "5",
-					       ATTR_ID,this.domId(id), ATTR_TITLE, title]);
+		return HU.input(id, v, [ATTR_PLACEHOLDER, place,
+					ATTR_CLASS, "input display-area-input",
+					ATTR_SIZE, "5",
+					ATTR_ID,this.domId(id), ATTR_TITLE, title]);
 	    };
-            let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
-            areaForm += HtmlUtils.tr([],
-				     HtmlUtils.td([ATTR_ALIGN, "center"],
-						  HtmlUtils.leftCenterRight("",
-									    input(ID_NORTH, " N","North",n),showMap, "20%", "60%", "20%")));
+            let areaForm = HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
+            areaForm += HU.tr([],
+			      HU.td([ATTR_ALIGN, ALIGN_CENTER],
+				    HU.leftCenterRight("",
+						       input(ID_NORTH, " N","North",n),showMap, "20%", "60%", "20%")));
 
-            areaForm += HtmlUtils.tr([], HtmlUtils.td([],
-						      input(ID_WEST, " W", "West",w) +
-						      input(ID_EAST, " E", "East",e)));
+            areaForm += HU.tr([], HU.td([],
+					input(ID_WEST, " W", "West",w) +
+					input(ID_EAST, " E", "East",e)));
 
-            areaForm += HtmlUtils.tr([],
-				     HtmlUtils.td([ATTR_ALIGN, "center"],
-						  HtmlUtils.leftCenterRight("", input(ID_SOUTH,  " S", "South",s), settings, "20%", "60%", "20%")));
+            areaForm += HU.tr([],
+			      HU.td([ATTR_ALIGN, ALIGN_CENTER],
+				    HU.leftCenterRight("", input(ID_SOUTH,  " S", "South",s), settings, "20%", "60%", "20%")));
 
 
-            areaForm += HtmlUtils.closeTag(TAG_TABLE);
+            areaForm += HU.closeTag(TAG_TABLE);
             areaForm += HU.div([ATTR_ID,this.domId(ID_MAP_POPUP_WRAPPER),
 				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],
 			       SPACE+"Shift-drag: select region. Cmd-drag: move region" +
@@ -122,10 +123,10 @@ function AreaWidget(display,arg) {
 	    this.map.getMap().updateSize();
 	},
         areaClear: function() {
-            $("#" + this.domId(ID_NORTH)).val("");
-            $("#" + this.domId(ID_WEST)).val("");
-            $("#" + this.domId(ID_SOUTH)).val("");
-            $("#" + this.domId(ID_EAST)).val("");
+            jqid(this.domId(ID_NORTH)).val("");
+            jqid(this.domId(ID_WEST)).val("");
+            jqid(this.domId(ID_SOUTH)).val("");
+            jqid(this.domId(ID_EAST)).val("");
             this.display.areaClear();
         },
         useMyLocation: function() {
@@ -143,23 +144,23 @@ function AreaWidget(display,arg) {
             if (this.display.myLocationOffset)
                 offset = parseFloat(this.display.myLocationOffset);
 
-            $("#" + this.domId(ID_NORTH)).val(lat + offset);
-            $("#" + this.domId(ID_WEST)).val(lon - offset);
-            $("#" + this.domId(ID_SOUTH)).val(lat - offset);
-            $("#" + this.domId(ID_EAST)).val(lon + offset);
+            jqid(this.domId(ID_NORTH)).val(lat + offset);
+            jqid(this.domId(ID_WEST)).val(lon - offset);
+            jqid(this.domId(ID_SOUTH)).val(lat - offset);
+            jqid(this.domId(ID_EAST)).val(lon + offset);
             if (this.display.submitSearchForm)
                 this.display.submitSearchForm();
         },
         areaLinkClick: function() {
             this.linkArea = !this.linkArea;
             let image = root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png");
-            $("#" + this.domId(ID_AREA_LINK)).attr(ATTR_SRC, image);
+            jqid(this.domId(ID_AREA_LINK)).attr(ATTR_SRC, image);
             if (this.linkArea && this.lastBounds) {
                 let b = this.lastBounds;
-                $("#" + this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
-                $("#" + this.domId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
-                $("#" + this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
-                $("#" + this.domId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
+                jqid(this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
+                jqid(this.domId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
+                jqid(this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
+                jqid(this.domId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
             }
         },
         linkArea: false,
@@ -168,10 +169,10 @@ function AreaWidget(display,arg) {
             bounds = args.bounds;
             this.lastBounds = bounds;
             if (!args.force && !this.linkArea) return;
-            $("#" + this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
-            $("#" + this.domId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
-            $("#" + this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
-            $("#" + this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
+            jqid(this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
+            jqid(this.domId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
+            jqid(this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
+            jqid(this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
 	getContains: function() {
 	    return this.jq(ID_CONTAINS).is(':checked');
@@ -197,9 +198,9 @@ function AreaWidget(display,arg) {
 		HU.addToDocumentUrl("map_contains",this.areaContains);
 	    if(Utils.stringDefined(n,w,s,e)) {
 		if(okToAddToUrl) 
-		    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+		    HU.addToDocumentUrl(ARG_MAPBOUNDS,[n||"",w||"",s||"",e||""].join(","));
 	    } else {
-		HU.removeFromDocumentUrl("map_bounds");
+		HU.removeFromDocumentUrl(ARG_MAPBOUNDS);
 	    }
         },
     });
@@ -226,18 +227,18 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
-	    let args= HtmlUtils.makeClearDatePickerArgs({dateFormat: "yy-mm-dd",changeMonth:true,changeYear:true});
-            $("#" + this.baseId +ID_DATE_START).datepicker(args);
-            $("#" + this.baseId +ID_DATE_END).datepicker(args);
+	    let args= HU.makeClearDatePickerArgs({dateFormat: "yy-mm-dd",changeMonth:true,changeYear:true});
+            jqid(this.baseId +ID_DATE_START).datepicker(args);
+            jqid(this.baseId +ID_DATE_END).datepicker(args);
         },
 	getStartEnd: function() {
-            let start = $("#"+ this.baseId +ID_DATE_START).val();
-            let end =  $("#"+ this.baseId +ID_DATE_END).val();
+            let start = jqid(this.baseId +ID_DATE_START).val();
+            let end =  jqid(this.baseId +ID_DATE_END).val();
 	    return {start:start,end:end};
 	},
         setSearchSettings: function(settings) {
-            let start = $("#"+ this.baseId +ID_DATE_START).val();
-            let end =  $("#"+ this.baseId +ID_DATE_END).val();
+            let start = jqid(this.baseId +ID_DATE_START).val();
+            let end =  jqid(this.baseId +ID_DATE_END).val();
 	    HU.addToDocumentUrl(this.baseId+ID_DATE_START,Utils.stringDefined(start)?start:null);
 	    HU.addToDocumentUrl(this.baseId+ID_DATE_END,Utils.stringDefined(end)?end:null);		    	    
 	    if(this.what=="createdate") {
@@ -252,17 +253,17 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
         getHtml: function() {
 	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
 	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"",
-				       [ATTR_CLASS, "display-date-input",
-					ATTR_PLACEHOLDER, " " +startLabel,
-					ATTR_TITLE, startLabel, ATTR_ID,
-					this.baseId +ID_DATE_START, 
-				       ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, end||"",
+            let html = HU.input(this.baseId +ID_DATE_START, start||"",
 				[ATTR_CLASS, "display-date-input",
-				 ATTR_PLACEHOLDER,  " " +endLabel,
-				 ATTR_TITLE,endLabel,ATTR_ID, this.baseId +ID_DATE_END, 
-				]);
+				 ATTR_PLACEHOLDER, " " +startLabel,
+				 ATTR_TITLE, startLabel, ATTR_ID,
+				 this.baseId +ID_DATE_START, 
+				]) + " - " +
+                HU.input(this.baseId +ID_DATE_END, end||"",
+			 [ATTR_CLASS, "display-date-input",
+			  ATTR_PLACEHOLDER,  " " +endLabel,
+			  ATTR_TITLE,endLabel,ATTR_ID, this.baseId +ID_DATE_END, 
+			 ]);
             return html;
         }
     });
@@ -661,7 +662,7 @@ function Annotations(display,records) {
 	if(url!=null) {
 	    legendLabel = HU.href(url, legendLabel,[ATTR_TARGET,"_annotation"]);
 	}
-	this.legend+= HU.b(label)+":" + legendLabel+" ";
+	this.legend+= HU.b(label)+": " + legendLabel+" ";
     }
     for(let aidx=0;aidx<this.annotations.length;aidx++) {
 	let annotation = this.annotations[aidx];
@@ -787,7 +788,7 @@ let Gfx = {
 	}
 	$.extend(opts,args);
 	//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
-	let id = HtmlUtils.getUniqueId();
+	let id = HU.getUniqueId();
 	opts.scale=+opts.scale;
 	let scale = opts.scale;
 	//	scale=1;
@@ -815,7 +816,6 @@ let Gfx = {
 	    let s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
 	    let n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
 	    let s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
-	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		let pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
 		let dy = n2.lat-pt.lat;
@@ -837,7 +837,6 @@ let Gfx = {
 		let lon = record.getLongitude();
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
-		//		console.log("x:" + x +" " + y +" lat:" + lat +" " + lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let colorValue = 0;
 		if(opts.colorBy && opts.colorBy.index>=0) {

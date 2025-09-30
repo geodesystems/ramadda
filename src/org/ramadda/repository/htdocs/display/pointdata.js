@@ -414,7 +414,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    } 
 	    let cacheId = this.getCacheUrl();
 	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
-		cacheId = HtmlUtils.getUniqueId();
+		cacheId = HU.getUniqueId();
 	    }
 
             let cacheObject = getPointDataCacheObject(cacheId);
@@ -889,7 +889,7 @@ function RecordField(props, source) {
                 type="fa-list";
             }
             let tt = this.getType();
-            return  HtmlUtils.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,
+            return  HU.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,
 				    ATTR_STYLE,"color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
@@ -972,7 +972,7 @@ function PointRecord(fields,lat, lon, elevation, time, data, rowIdx,dateHasDate)
         elevation: elevation,
         recordTime: time,
         data: data,
-	id: HtmlUtils.getUniqueId(),
+	id: HU.getUniqueId(),
     });
     if(!time && data && !dateHasDate) {
 	data.every(d=>{

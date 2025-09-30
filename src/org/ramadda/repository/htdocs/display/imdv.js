@@ -526,7 +526,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_TOP,HU.px(5))], buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
-	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
+	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',
+					header:true,my:'left top',at:'left bottom',
+					anchor:this.jq(ID_MENU_NEW)});
 	    let message = 'New Route';
 	    let ok = ()=>{
 		this.routeProvider = this.jq('routeprovider').val();
@@ -737,11 +739,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().closePopup();
 	    let html = HU.formTable();
 	    html+=HU.formEntryLabel('Mode',
-				    HU.select('',[ATTR_ID,this.domId('isolinemode')],[ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],this.isolineMode));
+				    HU.select('',[ATTR_ID,this.domId('isolinemode')],
+					      [ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],this.isolineMode));
 	    html+=HU.formEntryLabel('Range',
-				    HU.input('',this.isolineValue??'10',[ATTR_ID,this.domId('isolinevalue'),ATTR_SIZE,'5']) +
+				    HU.input('',this.isolineValue??'10',
+					     [ATTR_ID,this.domId('isolinevalue'),ATTR_SIZE,'5']) +
 			       HU.space(2)+
-			       HU.select('',[ATTR_ID,this.domId('isolinetype')],[{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],this.isolineType));	    
+				    HU.select('',[ATTR_ID,this.domId('isolinetype')],
+					      [{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],
+					      this.isolineType));	    
 	    html+=HU.formTableClose();
 	    let buttons  =HU.div([ATTR_CLASS, 'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 		HU.div([ATTR_CLASS, 'ramadda-button-cancel display-button'], 'Cancel');	    
@@ -928,7 +934,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	gotoAddress:function(widget,address) {
-            let url = Ramadda.getUrl('/geocode?query=' + encodeURIComponent(address));
+            let url = Ramadda.getUrl(HU.url('/geocode',['query',address]));
 	    let add = loc=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
@@ -999,7 +1005,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    style = style??{};
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
-			      fontSize:style.fontSize??'10pt',
+			      fontSize:style.fontSize??HU.pt(10),
 			      fontColor:style.fontColor??'#000'};
 	    for(a in style) {
 		if(a.indexOf('label')>=0|| a.indexOf('font')>=0 || a.indexOf('textBackground')>=0) {
@@ -1158,7 +1164,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		msg = distancePrefix + Utils.formatNumberComma(total) +' ' + unit;
 		if(pts.length>2 && pts.length<6)  {
-		    //		    msg+='<br>Segments:' + segments;
 		}
 		if(pts.length<=1) msg='';
 	    }
@@ -2180,7 +2185,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		let linksHtml = linksHtml1+linksHtml2;
 		if(linksHtml!='') {
-		    html+=HU.b('Links:<br>');
+		    html+=HU.b('Links:');
+		    html+=HU.br();
 		    linksHtml=HU.table(linksHtml);
 		    if(assetsHtml!='') 
 			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.em(5),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], linksHtml);
@@ -2212,7 +2218,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let asset =  data.assets[$(this).attr('asset-id')];
 		    let url = new URL(asset.href,baseUrl).href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
-			url =   Ramadda.getUrl('/tifftopng?url=' + encodeURIComponent(url));
+			url =   Ramadda.getUrl(HU.url('/tifftopng',['url',url]));
 		    }
 		    console.log(url);
 		    let attrs = {
@@ -3144,7 +3150,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			} else if(prop=='imagefilter') {
 			    label = 'Image Filter'
 			    size='60';
-			    extra='<br>e.g.:<pre>contrast(200%) grayscale(80%) brightness(0.4)\ninvert(75%) saturate(30%) sepia(60%)</pre>';
+			    extra=HU.br()+'e.g.:<pre>contrast(200%) grayscale(80%) brightness(0.4)\ninvert(75%) saturate(30%) sepia(60%)</pre>';
 			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/filter','Help',[ATTR_TARGET,'_help']);
 			} else if(prop=='clippath') {
 			    label='Image Clip Path';
@@ -3157,7 +3163,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			} else if(prop=='transform') {
 			    label='Image Transform';
 			    size='60';
-			    extra = '<br>Apply CSS transform. e.g., to shrink the lower part of an image do:<pre>perspective(10px) rotateX(-0.05deg)</pre>';
+			    extra = HU.br() + 'Apply CSS transform. e.g., to shrink the lower part of an image do:<pre>perspective(10px) rotateX(-0.05deg)</pre>';
 			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',[ATTR_TARGET,'_help']);
 			}
 			if(prop.indexOf("Color")>=0) {
@@ -3953,10 +3959,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doImport: function() {
 	    let callback = (entryId) =>{
-		let url = Ramadda.getUrl("/entry/get?entryid=" + entryId);
+		let url = Ramadda.getUrl(HU.url('/entry/get',['entryid',entryId]));
 		this.showProgress("Importing map...");
 		let finish = ()=>{
-		    this.display.clearMessage2();
+		    this.clearMessage2();
 		    this.getMap().clearAllProgress();
 		    this.featureChanged(true);
 		}
@@ -4945,7 +4951,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(opts.resourceUrl) {
 		//For now proxy the request through our ramadda
 		if(opts.resourceUrl.indexOf('ramadda.org')>=0)
-		    url =   Ramadda.getUrl('/proxy?url=' + encodeURIComponent(opts.resourceUrl));
+		    url =   Ramadda.getUrl(HU.url('/proxy',['url',opts.resourceUrl]));
 		else
 		    url =   opts.resourceUrl;
 	    } else {
