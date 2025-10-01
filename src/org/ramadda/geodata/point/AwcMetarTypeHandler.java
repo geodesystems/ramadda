@@ -95,13 +95,17 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-        super.initializeNewEntry(request, entry, newType);
-	if(!isNew(newType)) return;
+	if(!isNew(newType)) {
+	    super.initializeNewEntry(request, entry, newType);
+	    return;
+	}
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) {
+	    super.initializeNewEntry(request, entry, newType);
+	}
 	String id = (String) entry.getStringValue(request,IDX_SITE_ID, "");
 	initializeStation(request, entry,  id);
 
-	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
-	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 
 	HashSet<String> seen = new HashSet<String>();
 	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_id",seen,"^[^-]+$",null);
