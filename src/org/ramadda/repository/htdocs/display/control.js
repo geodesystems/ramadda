@@ -442,7 +442,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    header = HU.leftRightTable(header,search);
 	    header = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],header);
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
-					     CSS_OVERFLOW_Y,'auto',
+					     CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 					     CSS_WIDTH,HU.px(600))], html);
 	    let htmlId=HU.getUniqueId('fields');
 	    html=HU.div([ATTR_ID,htmlId],html);
@@ -800,7 +800,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 			    ATTR_ID,this.getDomId("csv")],
 			   useIcon?HU.getIconImage("fa-download",
 						   [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0),
-								      CSS_DISPLAY,'block')],
+								      CSS_DISPLAY,DISPLAY_BLOCK)],
 						   [ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,
 								      CSS_FONT_SIZE,iconSize),
 						    ATTR_TITLE,label]):label);
@@ -906,7 +906,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 				   [ATTR_CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +HU.br();
 	    });
 	    html += HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-					      CSS_OVERFLOW_Y, "auto",
+					      CSS_OVERFLOW_Y, OVERFLOW_AUTO,
 					      CSS_MARGIN_LEFT,HU.px(10))], cbx);
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    return html;

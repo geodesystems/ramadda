@@ -4,86 +4,86 @@
 */
 
 
-const DISPLAY_PLOTLY_RADAR = "radar";
-const DISPLAY_PLOTLY_WINDROSE = "windrose";
-const DISPLAY_PLOTLY_DENSITY = "density";
-const DISPLAY_PLOTLY_DOTPLOT = "dotplot";
-const DISPLAY_PLOTLY_SPLOM = "splom";
-const DISPLAY_PLOTLY_PROFILE = "profile";
-const DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
-const DISPLAY_PLOTLY_3DMESH = "3dmesh";
-const DISPLAY_PLOTLY_TREEMAP = "ptreemap";
-const DISPLAY_PLOTLY_TERNARY = "ternary";
-const DISPLAY_PLOTLY_SUNBURST= "sunburst";
-const DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
-const DISPLAY_PLOTLY_COMBOCHART = "combochart";
-const DISPLAY_PLOTLY_PARCOORDS = "parcoords";
+const DISPLAY_PLOTLY_RADAR = 'radar';
+const DISPLAY_PLOTLY_WINDROSE = 'windrose';
+const DISPLAY_PLOTLY_DENSITY = 'density';
+const DISPLAY_PLOTLY_DOTPLOT = 'dotplot';
+const DISPLAY_PLOTLY_SPLOM = 'splom';
+const DISPLAY_PLOTLY_PROFILE = 'profile';
+const DISPLAY_PLOTLY_3DSCATTER = '3dscatter';
+const DISPLAY_PLOTLY_3DMESH = '3dmesh';
+const DISPLAY_PLOTLY_TREEMAP = 'ptreemap';
+const DISPLAY_PLOTLY_TERNARY = 'ternary';
+const DISPLAY_PLOTLY_SUNBURST= 'sunburst';
+const DISPLAY_PLOTLY_TEXTCOUNT = 'textcount';
+const DISPLAY_PLOTLY_COMBOCHART = 'combochart';
+const DISPLAY_PLOTLY_PARCOORDS = 'parcoords';
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
-    label: "Radar",
+    label: 'Radar',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Radar Plot','radar.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
-    label: "Wind Rose",
+    label: 'Wind Rose',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Wind Rose Plot','windrose.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SUNBURST,
-    label: "Sunburst",
+    label: 'Sunburst',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Sunburst Plot','sunburst.png')                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
-    label: "Density",
+    label: 'Density',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Density Plot','density.png',null)                                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
-    label: "Combo Chart",
+    label: 'Combo Chart',
     category: CATEGORY_CHARTS,
     tooltip: makeDisplayTooltip('Combo Chart','combochart.png','Display line and bar chart')
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PARCOORDS,
-    label: "Parallel Coords",
+    label: 'Parallel Coords',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Parallel Coordinates','parallel.png',null)
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
-    label: "Dot Plot",
+    label: 'Dot Plot',
     category: CATEGORY_CHARTS,
     tooltip: makeDisplayTooltip('Dot Plot', 'dotplot.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
-    label: "Splom",
+    label: 'Splom',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('Splom','splom.png')    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
-    label: "3D Scatter",
+    label: '3D Scatter',
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip('3D Scatter','3dscatter.png')    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
-    label: "Profile",
+    label: 'Profile',
     category: CATEGORY_CHARTS,
     tooltip: makeDisplayTooltip('Profile','profile.png')                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
-    label: "3D Mesh",
+    label: '3D Mesh',
     requiresData: false,
     forUser: false,
     category: CATEGORY_RADIAL_ETC,
@@ -92,20 +92,20 @@ addGlobalDisplayType({
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
-    label: "Text Count",
+    label: 'Text Count',
     category: CATEGORY_TEXT,
     tooltip: makeDisplayTooltip('Text Count','textcount.png',
 				'Given a text field show the number of <br>times certain word patterns occur')
 });
 
 //Ternary doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:'Ternary',requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 //Treempap doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:'Tree Map',requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 
 
-var ID_PLOT= "plot";
-var ID_PLOTY = "plotly";
+var ID_PLOT= 'plot';
+var ID_PLOTY = 'plotly';
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
@@ -122,7 +122,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 //    RamaddaUtil.inherit(this, SUPER);
 //    RamaddaUtil.defineMembers(this, {
 	getRequirement:function() {
-	    return "Plotly";
+	    return 'Plotly';
 	},
         needsData: function() {
             return true;
@@ -134,7 +134,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	    if(!window.Plotly) {
 		if(this.callbackPending) return;
 		this.callbackPending = true;
-		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.24.1.min.js");
+		let url = RamaddaUtil.getCdnUrl('/lib/plotly/plotly-2.24.1.min.js');
 		let callback = this.loadingJS?null:   ()=>{
 		    this.updateUI(args);
 		    this.callbackPending = false;
@@ -148,11 +148,11 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	},
         setDimensions: function(layout, widthDelta,ext) {
 	    ext = ext??{};
-            var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
+            var height = parseInt(this.getProperty('height', '400').replace('px', '').replace('%', ''));
             //                layout.width = width-widthDelta;
             layout.height = height;
 	    if(!layout.margin) layout.margin={};
-	    [["l","marginLeft"],["r","marginRight"],["t","marginTop"],["b","marginBottom"]].map(t=>{
+	    [['l','marginLeft'],['r','marginRight'],['t','marginTop'],['b','marginBottom']].map(t=>{
 		let key = t[1];
 		if(Utils.isDefined(this.getProperty(key)))
 		    layout.margin[t[0]]  = this.getProperty(key);
@@ -200,16 +200,16 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             };
         },
         getDisplayStyle: function() {
-            return "";
+            return '';
         },
         makePlot: function(data, layout) {
             this.clearHtml();
 	    let html = 
-		HU.div([ATTR_ID,this.getDomId(ID_HEADER)],"") +
+		HU.div([ATTR_ID,this.getDomId(ID_HEADER)],'') +
 		HU.div([ATTR_ID, this.getDomId(ID_PLOT),
 			       ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100))+
-			       this.getDisplayStyle()], "") +
-		HU.div([ATTR_ID,this.getDomId(ID_FOOTER)],"");
+			       this.getDisplayStyle()], '') +
+		HU.div([ATTR_ID,this.getDomId(ID_FOOTER)],'');
 	    this.setContents(html);
 	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
 	    setTimeout(()=>{
@@ -273,23 +273,23 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 return;
             }
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-	    var numericFields = this.getFieldsByType(fields, "numeric");
+	    var numericFields = this.getFieldsByType(fields, 'numeric');
             if (numericFields.length == 0) {
-                this.displayError("No numeric fields specified");
+                this.displayError('No numeric fields specified');
                 return;
             }
 	    var theta;
 	    var thetaType;
-	    if(this.getProperty("useDates")) {
+	    if(this.getProperty('useDates')) {
 		var tmp = this.getDateValues(records);
 		theta=[];
-		var dateFormat = this.getProperty("dateFormat", "yyyyMMdd");
-		thetaType = "category";
+		var dateFormat = this.getProperty('dateFormat', 'yyyyMMdd');
+		thetaType = 'category';
 		tmp.map(d=>{
 		    theta.push(Utils.formatDateWithFormat(d,dateFormat));
 		});
 	    } else {
-		var thetaField = this.getFieldById(null, this.getProperty("thetaField"));
+		var thetaField = this.getFieldById(null, this.getProperty('thetaField'));
 		if (thetaField) {
 		    theta = this.getColumnValues(records, thetaField).values;
 		}
@@ -322,7 +322,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
             layout = {
                 polar: {
                     angularaxis: {
-			type:"category"
+			type:'category'
 		    },
                     radialaxis: {
                         visible: true,
@@ -378,9 +378,9 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var numericFields = this.getFieldsByType(fields, "numeric");
+            var numericFields = this.getFieldsByType(fields, 'numeric');
             if (numericFields.length < 2) {
-                this.displayError("No numeric fields specified");
+                this.displayError('No numeric fields specified');
                 return;
             }
 
@@ -390,10 +390,10 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
                 x: x.values,
                 y: y.values,
                 mode: 'markers',
-                name: "",
+                name: '',
                 marker: {
-                    color: this.getProperty("pointColor", 'rgb(102,0,0)'),
-                    size: parseInt(this.getProperty("markerSize", "4")),
+                    color: this.getProperty('pointColor', 'rgb(102,0,0)'),
+                    size: parseInt(this.getProperty('markerSize', '4')),
                     opacity: 0.4
                 },
                 type: 'scatter'
@@ -408,9 +408,9 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
                 type: 'histogram2dcontour'
             };
             var plotData = [];
-            if (this.getProperty("showDensity", true))
+            if (this.getProperty('showDensity', true))
                 plotData.push(density);
-            if (this.getProperty("showPoints", true))
+            if (this.getProperty('showPoints', true))
                 plotData.push(markers);
             var layout = {
                 showlegend: true,
@@ -422,14 +422,14 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
                 bargap: 0,
                 xaxis: {
                     domain: [x.min, x.max],
-                    showline: this.getProperty("showLines", true),
-                    showgrid: this.getProperty("showLines", true),
+                    showline: this.getProperty('showLines', true),
+                    showgrid: this.getProperty('showLines', true),
                     title: fields[0].getLabel()
                 },
                 yaxis: {
                     domain: [y.min, y.max],
-                    showline: this.getProperty("showLines", true),
-                    showgrid: this.getProperty("showLines", true),
+                    showline: this.getProperty('showLines', true),
+                    showgrid: this.getProperty('showLines', true),
                     title: fields[1].getLabel()
                 },
             };
@@ -472,9 +472,9 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let records = this.filterData();
             if (!records) return;
             let allFields = this.getSelectedFields(this.getData().getRecordFields());
-            let fields = this.getFieldsByType(allFields, "numeric");
+            let fields = this.getFieldsByType(allFields, 'numeric');
             if (fields.length == 0) {
-                this.displayError("No numeric fields specified");
+                this.displayError('No numeric fields specified');
                 return;
             }
             if (fields.length < 3) {

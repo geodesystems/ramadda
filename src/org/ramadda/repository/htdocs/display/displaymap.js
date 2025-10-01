@@ -274,7 +274,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(r.name == "World") return
 		let group = r.group;
 		if(group.toLowerCase()=="model regions") group="Regions";
-		let name = r.name.replace(/ /g,"&nbsp;");
+		let name = r.name.replace(/ /g,SPACE);
 		let item = HU.div([ATTR_CLASS,"ramadda-menu-item ramadda-region-item", ATTR_IDX,idx],name);
 		if(!groups[group]) groups[group] = "";
 		groups[group] +=item;});
@@ -2001,7 +2001,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         getContentsDiv: function() {
 	    let style="";
 	    if(!this.getProperty("showInnerContents",true)) {
-		style+="display:none;";
+		style+=HU.css(CSS_DISPLAY,DISPLAY_NONE);
 	    }		
 
             let html =  HU.div([ATTR_STYLE,style,
@@ -2588,7 +2588,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    points.forEach((point,idx)=>{
-                if (point.style && point.style.display == "none") {
+                if (point.style && point.style.display == DISPLAY_NONE) {
 		    return;
 		}
 		let record = point.record;
@@ -2698,7 +2698,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(feature.pointCount==0) {
 			//TODO: what to do with no count features?
 			if(prune === true) {
-			    newStyle.display = "none";
+			    newStyle.display = DISPLAY_NONE;
 			}
 		    }
 		    feature.newStyle = newStyle;
@@ -2719,7 +2719,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			};
 			let newStyle = {};
 			$.extend(newStyle,style);
-			newStyle.display= "none";
+			newStyle.display= DISPLAY_NONE;
 			feature.pruned = true;
 			feature.newStyle = newStyle;
 		    }
@@ -2734,7 +2734,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature.wasPruned && !feature.pruned ||
 		   !feature.style ||
 		   (feature.newStyle.display && 
-		    feature.newStyle.display=="none" &&
+		    feature.newStyle.display==DISPLAY_NONE &&
 		    feature.newStyle.display!=feature.style.display) ||
 		   feature.style.fillColor!=feature.newStyle.fillColor) {
 		    feature.style = feature.newStyle;
@@ -3250,12 +3250,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		let doTable=this.getProperty('tocTable',true);
 		if(doTable) {
-		    html+='<table  width=100%><tr>'
-		    if(urlField) html+='<td></td>';
+		    html+=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]) + HU.open(TAG_TR);
+		    if(urlField) html+=HU.tag(TAG_TD);
 		    fields.forEach(f=>{
-			html+='<td style=\'font-weight:bold;\'>' + f.getLabel() +'</td>';
+			html+=HU.tag(TAG_TD,[ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold')],f.getLabel());
 		    });
-		    html+='</tr>';
+		    html+=HU.close(TAG_TR);
 		}
 		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
 		records.forEach((record,idx)=>{
@@ -5083,7 +5083,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(hideNaN && isNaN(value)) return;
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
-			//if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
 

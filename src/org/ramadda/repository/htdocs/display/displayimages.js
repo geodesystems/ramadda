@@ -121,7 +121,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		if(this.colorAnalysisEnabled)
 		    this.groupByHtml +=  HU.span([ATTR_CLASS,"ramadda-button",
 						  ATTR_ID,this.domId("docolors")], "Do colors")+" " +
-		    HU.span([ATTR_CLASS,"ramadda-button",ATTR_ID,this.domId("docolorsreset")], "Reset");
+		    HU.span([ATTR_CLASS,"ramadda-button",
+			     ATTR_ID,this.domId("docolorsreset")], "Reset");
 		if(this.groupByFields.length>0) {
 		    var options = [["","--"]];
 		    this.groupByFields.map(field=>{
@@ -190,7 +191,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		div.css(CSS_WIDTH,img.width);
 		div.css(CSS_HEIGHT,img.height);
 		div.html(html);
-		img.style.display = "none";
+		img.style.display = DISPLAY_NONE;
 	    }
 	},
 	displaySearchResults: function(records, fields) {
@@ -284,7 +285,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         if(this.captionTemplate)
                             caption = caption.replace("\${" + field.getId()+"}",value);
                         else
-                            caption+=value+"<br>";
+                            caption+=value+HU.br();
                     });
                     if(this.urlField) {
                         var url = this.urlField.getValue(record);
@@ -310,8 +311,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
-                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+TAG_DIV + imgCnt],
-					       HU.image(img,[ATTR_WIDTH,width,ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
+                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+'div' + imgCnt],
+					       HU.image(img,[ATTR_WIDTH,width,
+							     ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
 				   ATTR_STYLE,HU.css(CSS_MARGIN, HU.px(margin))], img);
@@ -332,9 +334,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         style+=HU.css(CSS_BACKGROUND,this.colorList[index]);
                         if(this.foregroundList) {
                             if(index<this.foregroundList.length) {
-                                style+=HU.css(CSS_COLOR,this.foregroundList[index]+" !important");
+                                style+=HU.css(CSS_COLOR,HU.important(this.foregroundList[index]));
                             } else {
-                                style+=HU.css(CSS_COLOR, this.foregroundList[this.foregroundList-1]+" !important");
+                                style+=HU.css(CSS_COLOR, HU.important(this.foregroundList[this.foregroundList-1]));
                             }
                         }
                     }
@@ -390,7 +392,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 var width = group.members.length==0?HU.perc(100):100/group.members.length;
-                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
@@ -556,7 +558,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let cnt = 1;
 
 	    let includeNonImages = this.getIncludeNonImages();
-	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',
+	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(RamaddaUtil.getCdnUrl('/images/placeholder.png'),
 									[ATTR_WIDTH,HU.perc(100)]):
 		HU.space(1);
 	    
@@ -624,9 +626,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(template) {
 		    let row = this.getDataValues(record);
 		    block = recordContents= this.applyRecordTemplate(record, row,fields,template);
-		    style+=HU.css(CSS_TEXT_ALIGN,'left');
+		    style+=HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT);
 		} else {
-		    style+=HU.css(CSS_VERTICAL_ALIGN,'top',CSS_WIDTH,blockWidth);
+		    style+=HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,CSS_WIDTH,blockWidth);
 		    if(doPopup) {
 			img = HU.href(image,img,[ATTR_CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
 		    } else if(urlField&& !tooltipClick) {
@@ -651,8 +653,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 	    });
 	    if(columns) {
-		contents = HU.open(TAG_TABLE,[ATTR_BORDER,'0',ATTR_WIDTH,HU.perc(100)]) +
-		    HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+		contents = HU.open(TAG_TABLE,[ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)]) +
+		    HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
 		    contents+=HU.td([ATTR_ALIGN,'center'],columnMap[col]);
@@ -667,7 +669,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
 		if(this.getPropertyMinHeightGallery())
 		    css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
-		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,"auto")], contents);
+		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO)], contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
@@ -776,9 +778,12 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
 	    let rect = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,this.getHighlightColor()),
-						 CSS_WIDTH,HU.px(20),CSS_HEIGHT,HU.px(20),
-						 CSS_LEFT,HU.px(10),CSS_TOP,HU.px(10),
-						 CSS_DISPLAY,"none",CSS_POSITION,POSITION_ABSOLUTE,
+						 CSS_WIDTH,HU.px(20),
+						 CSS_HEIGHT,HU.px(20),
+						 CSS_LEFT,HU.px(10),
+						 CSS_TOP,HU.px(10),
+						 CSS_DISPLAY,DISPLAY_NONE,
+						 CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),
 			       ATTR_ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
@@ -788,11 +793,11 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 				  HU.div([ATTR_ID,this.domId(ID_POPUP),
 					  ATTR_CLASS,"display-imagezoom-popup",
 					  ATTR_STYLE,HU.css(CSS_Z_INDEX,"100",
-							    CSS_DISPLAY,"none",
+							    CSS_DISPLAY,DISPLAY_NONE,
 							    CSS_WIDTH,HU.px(this.popupWidth),
 							    CSS_HEIGHT,HU.px(this.popupHeight),
-							    CSS_OVERFLOW_Y,"hidden",
-							    CSS_OVERFLOW_X,"hidden",
+							    CSS_OVERFLOW_Y,OVERFLOW_HIDDEN,
+							    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
 							    CSS_POSITION,POSITION_ABSOLUTE,
 							    CSS_TOP,HU.px(0),
 							    CSS_LEFT, HU.px(imageWidth))],""));
@@ -802,7 +807,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 					  HU.td([ATTR_WIDTH,HU.perc(2)],
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
-									  CSS_OVERFLOW_Y,"auto",
+									  CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
 					  HU.td([ATTR_WIDTH,HU.perc(90)],
 						imageDiv)));
@@ -817,7 +822,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
 		thumbsHtml += HU.image(thumb,[RECORD_INDEX,rowIdx,ATTR_ID,this.domId(ID_THUMB)+rowIdx,
-					      ATTR_WIDTH, thumbWidth,ATTR_CLASS,"display-imagezoom-thumb"])+"<br>\n";
+					      ATTR_WIDTH, thumbWidth,ATTR_CLASS,"display-imagezoom-thumb"])+HU.br()+"\n";
 	    }
             this.setContents(contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
@@ -865,7 +870,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(!this.currentRecord) return;
 	    let row = this.getDataValues(this.currentRecord);
 	    let image = row[this.imageField.getIndex()];
-	    this.jq(ID_POPUP).css(CSS_DISPLAY,"block");
+	    this.jq(ID_POPUP).css(CSS_DISPLAY,DISPLAY_BLOCK);
 	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE)];
 	    if(this.getPopupImageWidth()) {
 		imageAttrs.push(ATTR_WIDTH);
@@ -897,14 +902,14 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.jq(ID_IMAGE).html(html);
 
 	    this.jq(ID_POPUP).html("");
-	    this.jq(ID_POPUP).css(CSS_DISPLAY,"none");
+	    this.jq(ID_POPUP).css(CSS_DISPLAY,DISPLAY_NONE);
 	    this.jq(ID_IMAGEINNER).mouseenter(()=>{
 		this.showPopup();
 	    });
 	    this.jq(ID_IMAGEINNER).mouseout(()=>{
 		this.jq(ID_POPUP).html("");
-		this.jq(ID_POPUP).css(CSS_DISPLAY,"none");
-		this.jq(ID_RECT).css(CSS_DISPLAY,"none");		
+		this.jq(ID_POPUP).css(CSS_DISPLAY,DISPLAY_NONE);
+		this.jq(ID_RECT).css(CSS_DISPLAY,DISPLAY_NONE);		
 	    });
 
 	    this.jq(ID_IMAGEINNER).mousemove((e)=>{
@@ -959,7 +964,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		top:pp.top-percentH*ih};
 	    this.jq(ID_POPUPIMAGE).offset(offset);		    
 	    let rect = this.jq(ID_RECT);
-	    rect.css({display:"block",top:HU.px(params.y-sh2),
+	    rect.css({display:DISPLAY_BLOCK,top:HU.px(params.y-sh2),
 		      left:HU.px(params.x-sw2),
 		      width:HU.px(scaledWidth),
 		      height:HU.px(scaledHeight)});
@@ -1044,13 +1049,13 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
 				ATTR_CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
-				ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,'auto',CSS_MAX_HEIGHT, height),
+				ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, height),
 				ATTR_ID, this.domId(ID_SLIDE), ATTR_CLASS,'display-slides-slide']);
 
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
-		let stripStyle = HU.css(CSS_OVERFLOW_X,'auto',CSS_MAX_WIDTH,HU.perc(100)) +this.getProperty('stripStyle','');
+		let stripStyle = HU.css(CSS_OVERFLOW_X,OVERFLOW_AUTO,CSS_MAX_WIDTH,HU.perc(100)) +this.getProperty('stripStyle','');
 		top = HU.div([ATTR_ID,this.domId(ID_STRIP),
 			      ATTR_CLASS,'display-slides-strip',
 			      ATTR_TABINDEX,'0',
@@ -1093,17 +1098,18 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			} else {
 			    label = "Record:" + idx;
 			    let tail = Utils.getFileTail(url);
-			    if(tail) label+="<br>" + tail;
+			    if(tail) label+=HU.br() + tail;
 			}
 			if(tt=="") tt = label;
 			if(url.match(/youtube.com\/watch/)) {
-			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
+			    label = HU.image(RamaddaUtil.getCdnUrl("/media/youtube.png")) +" " + label;
 			}
 			tt = tt.replace(/<br>/g,HU.BR_ENTITY);
 			strip += HU.div([ATTR_TITLE,tt,
 					 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							   CSS_MIN_WIDTH,width,
-							   CSS_WIDTH,width,CSS_OVERFLOW_X,'hidden'),
+							   CSS_WIDTH,width,
+							   CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 					 ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
 		});
@@ -1195,13 +1201,14 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
-			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,'640',ATTR_HEIGHT,'351',
+			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,640,ATTR_HEIGHT,351,
 							    'frameborder','0',
-							    'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
+							    'webkitallowfullscreen',true,
+							    'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}
 		if(html&&mainUrl && !this.topLabelTemplate)
-		    html = html+"<br>"+HU.href(mainUrl, "Link",[ATTR_TARGET,'_link']);
+		    html = html+HU.br()+HU.href(mainUrl, "Link",[ATTR_TARGET,'_link']);
 		if(this.tooltipFields) {
 		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
 			return  f.getValue(record);

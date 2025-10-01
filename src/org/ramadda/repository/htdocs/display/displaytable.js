@@ -96,7 +96,8 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 lbl = lbl.substring(0, 25) + "...";
             }
             if (lbl.trim() != "") {
-                lbl = HU.span([ATTR_ID, id, ATTR_CLASS, "ramadda-tag-box"], "&nbsp;&nbsp;" + lbl + "&nbsp;&nbsp;");
+                lbl = HU.span([ATTR_ID, id, ATTR_CLASS, "ramadda-tag-box"],
+			      SPACE2 + lbl + SPACE2);
             }
             this.jq(fieldId).html(lbl);
         },
@@ -434,17 +435,16 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             tableHtml += HU.td([], HU.div([ATTR_ID, this.getDomId(ID_TABLE), ATTR_CLASS, "ramadda-xls-table", ATTR_STYLE, style]));
 
 
-            tableHtml += "</tr>";
-            tableHtml += "</table>";
+            tableHtml += HU.close(TAG_TR,TAG_TABLE);
 
             var chartToolbar = "";
             var chartTypes = ["barchart", "linechart", "scatterplot"];
             for (var i = 0; i < chartTypes.length; i++) {
                 chartToolbar += HU.div([ATTR_ID, makeChartId + "-" + chartTypes[i], ATTR_CLASS, "ramadda-xls-button"], "Make " + chartTypes[i]);
-                chartToolbar += "&nbsp;";
+                chartToolbar += SPACE;
             }
 
-            chartToolbar += "&nbsp;";
+            chartToolbar += SPACE;
             chartToolbar += HU.div([ATTR_ID, this.getDomId("removechart"), ATTR_CLASS, "ramadda-xls-button"], "Clear Charts");
 
 
@@ -456,7 +456,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 						  CSS_MIN_WIDTH,HU.em(10),
 						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
-            chartToolbar += "&nbsp;&nbsp;&nbsp;";
+            chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-xaxis-select") + "\"> x-axis:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-xaxis-label"),
 			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),

@@ -473,8 +473,9 @@ MapGlyph.prototype = {
     },
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
-	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
-							[ATTR_ID,this.domId('radii'),ATTR_SIZE,'40'])+' e.g., 1km, 2mi (miles), 100ft') +
+	    return HU.formEntry('Rings Radii:',
+				HU.input('',Utils.join(this.getRadii(),','),
+					 [ATTR_ID,this.domId('radii'),ATTR_SIZE,'40'])+' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntryTop('Rings Labels:',
 				HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
 						  [ATTR_ID,this.domId('rangeringlabels'),ATTR_SIZE,'40']),
@@ -483,7 +484,7 @@ MapGlyph.prototype = {
 	    HU.formEntry('Ring label angle:',
 			 HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
 			     ATTR_ID,this.domId('rangeringangle'),ATTR_SIZE,4]) +' Leave blank to not show labels') +
-		HU.formEntryTop('Ring Styles',
+		HU.formEntryTop('Ring Styles:',
 				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',
 						     [ATTR_ID,this.domId('rangeringstyle'),
 						      ATTR_ROWS,5,
@@ -578,13 +579,13 @@ MapGlyph.prototype = {
 	    return h;
 	}
 	html+=makePopup('popupText','Popup Text:');
-	html+=HU.b('Legend Text:') +HU.br() +
+	html+=HU.boldLabel('Legend Text') +HU.br() +
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
 			[ATTR_ID,this.domId(ID_LEGEND_TEXT),
 			 ATTR_ROWS,4,
 			 ATTR_COLS, 40]);
 	
-	html+=HU.div([],HU.b('ID: ') +HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
+	html+=HU.div([],HU.boldLabel('ID') +HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
 	content.push({header:'Properties',contents:html});
 
@@ -603,7 +604,8 @@ MapGlyph.prototype = {
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
 	    if(idx==0) {
-		miscLines.push({skip:true,line:'<thin_hr></thin_hr>'+HU.b('Features')});
+		miscLines.push({skip:true,line:'<thin_hr></thin_hr>'+
+				HU.b('Features')});
 	    }		
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
@@ -611,7 +613,7 @@ MapGlyph.prototype = {
 	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),
 						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
 						 suffix:'\n'});
-	let ex = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
+	let ex = HU.boldLabel('Add property') + HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
 				     [ATTR_ID,this.domId('miscproperties'),ATTR_ROWS,16,ATTR_COLS, 40]),
@@ -621,7 +623,7 @@ MapGlyph.prototype = {
 	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    let dataIconsSelect= HU.b('Show data icons: ')+
+	    let dataIconsSelect= HU.boldLabel('Show data icons')+
 		HU.select('',[ATTR_ID,this.domId(ID_SHOWDATAICONS)],
 			  ['inherited','yes','no'],
 			  this.attrs[ID_SHOWDATAICONS]??'inherited');
@@ -656,32 +658,32 @@ MapGlyph.prototype = {
 	    contents+=  HU.buttons(buttonList,
 				   null,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT));
 
-	    let fields1 = HU.b('Menu Fields:')+HU.br()+
+	    let fields1 = HU.boldLabel('Menu Fields')+HU.br()+
 		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
 			    [ATTR_PLACEHOLDER,'field pattern,label=<label>,unit=<unit>\ne.g.:\n'+
 			     DEFAULT_DATAICON_FIELDS,ATTR_ID,this.domId(ID_DATAICON_FIELDS),ATTR_ROWS,4,ATTR_COLS, 60]);
-	    let  fields2= HU.b('Initial field:')+HU.br()+
+	    let  fields2= HU.boldLabel('Initial field')+HU.br()+
 		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',
 			 [ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),ATTR_SIZE,'25',
 			  ATTR_PLACEHOLDER,'Initial field']) +HU.br() +
-		HU.b('Menu Label:') +HU.br()  +
+		HU.boldLabel('Menu Label') +HU.br()  +
 		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',
 			 [ATTR_ID,this.domId(ID_DATAICON_LABEL),ATTR_SIZE,'25']);
 
 	    contents+=HU.table(HU.tr([ATTR_VALIGN,'top'],HU.td(fields1) +
 				     HU.td(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8))],fields2))));
 	    contents+='<p>';
-	    contents+=HU.b('Canvas: ') +
+	    contents+=HU.boldLabel('Canvas') +
 		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',[ATTR_ID,this.domId(ID_DATAICON_WIDTH),ATTR_SIZE,'3']) +
 		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',[ATTR_ID,this.domId(ID_DATAICON_HEIGHT),ATTR_SIZE,'3']) +
-		HU.space(2) + HU.b('Icon Size: ') +
+		HU.space(2) + HU.boldLabel('Icon Size') +
 		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',[ATTR_ID,this.domId(ID_DATAICON_SIZE),ATTR_SIZE,'3']);
 
 
 	    contents+=  HU.div([ATTR_STYLE,HU.css(CSS_PADDING_BOTTOM,HU.em(0.5))],
-			       HU.b('Properties:') + HU.space(1) +
+			       HU.boldLabel('Properties') + HU.space(1) +
 			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),ATTR_SIZE,'80']));
-	    contents+=HU.b('Icon Specification:')  +HU.br();
+	    contents+=HU.boldLabel('Icon Specification')  +HU.br();
 	    contents +=
 		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ATTR_ID,this.domId(ID_DATAICON_MARKERS),ATTR_ROWS,4,ATTR_COLS, 90]);
 	    content.push({
@@ -1007,7 +1009,7 @@ MapGlyph.prototype = {
 	if(!this.isVisible()) {
 	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
-	let contents = HU.div([ATTR_CLASS,clazz,ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],HU.b(label)+':'+HU.space(1)+menu);
+	let contents = HU.div([ATTR_CLASS,clazz,ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],HU.boldLabel(label)+HU.space(1)+menu);
 	jqid(this.dataIconContainer).html(contents);
 
 	jqid(this.dataIconFieldsId).change(function(){
@@ -1423,7 +1425,7 @@ MapGlyph.prototype = {
 	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,[ATTR_TARGET,'_entry']);
-	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_MAX_WIDTH,HU.px(180),CSS_OVERFLOW_X,'hidden'),
+	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_MAX_WIDTH,HU.px(180),CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
 	    let add = '';
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
@@ -1982,7 +1984,8 @@ MapGlyph.prototype = {
 		HU.div([],typeLabel) +
 		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
-	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css(CSS_OVERFLOW_X,'hidden',CSS_WHITE_SPACE,'nowrap')], label);	    
+	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
+							       CSS_WHITE_SPACE,'nowrap')], label);	    
 	}
 	if(right!='') {
 	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], right);
@@ -2609,7 +2612,7 @@ MapGlyph.prototype = {
 	    inMapLegend=
 		HU.div([ATTR_TITLE,this.getName(),
 			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_MAX_WIDTH,HU.px(150),
-					  CSS_OVERFLOW_X,'hidden')],HU.b(this.getName())) +
+					  CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],HU.b(this.getName())) +
 		inMapLegend;
 
 	    inMapLegend = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,'var(--basic-border)',
@@ -2988,7 +2991,7 @@ MapGlyph.prototype = {
 		let menu = HU.select('',[ATTR_ID,this.domId('colortableproperty')],
 				     ctProps.map(info=>{return {
 					 value:info.id,label:info.getLabel()}}),this.attrs.fillColorBy.property);
-		this.jq('legendcolortableprops').html(HU.b('Color by: ') + menu);
+		this.jq('legendcolortableprops').html(HU.boldLabel('Color by') + menu);
 		this.jq('colortableproperty').change(()=>{
 		    let val = this.jq('colortableproperty').val();
 		    let info = this.getFeatureInfo(val);
@@ -4042,7 +4045,7 @@ MapGlyph.prototype = {
 	    if(!attrs[key]) return;
 	    let v = String(attrs[key]);
 	    if(v.length>100) v = v.substring(0,99)+'...';
-	    html+=HU.b(key)+': '+ v+HU.br();
+	    html+=HU.boldLabel(key)+ v+HU.br();
 	});
 	return html;
 
@@ -4106,7 +4109,8 @@ MapGlyph.prototype = {
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
 		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
-		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),
+		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +SPACE2+
+				     HU.boldLabel('Range') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),
 																									 ATTR_SIZE,'6',ATTR_TITLE,'min value']) +' -- '+
 				     HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),ATTR_SIZE,'6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
@@ -4183,7 +4187,7 @@ MapGlyph.prototype = {
 	content.push({header:'Style Rules', contents:colorBy+table});
 
 
-	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	let mapPointsRange = HU.leftRightTable(HU.boldLabel('Visiblity limit') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('mapfiles.html#map_labels'));
 
@@ -4221,7 +4225,7 @@ MapGlyph.prototype = {
 
 
 	let input = (id,label,dflt) =>{
-	    return SPACE2 + HU.b(label+': ')+
+	    return SPACE2 + HU.boldLabel(label)+
 		HU.input('', this.attrs[id]??'', [ATTR_PLACEHOLDER,dflt,ATTR_ID,this.domId(id),ATTR_SIZE,'5']);
 	}
 	let space =  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(5))]);
@@ -4237,7 +4241,7 @@ MapGlyph.prototype = {
 	extra+=input('declutter_pixelsperline','Pixels/Line',10);
 	extra+=input('declutter_pixelspercharacter','Pixels/Character',4);
 	let labelsHtml =mapPointsRange+ 
-	    HU.b('Label Template:')+ HU.br() +    
+	    HU.boldLabel('Label Template')+ HU.br() +    
 	    mapPoints +
 	    extra;
 	
@@ -4661,7 +4665,7 @@ MapGlyph.prototype = {
 		    line+=slider;
 		}
 
-		label = HU.b(label)+':';
+		label = HU.boldLabel(label);
 		if(showTop)
 		    line = HU.hbox([label+HU.space(1),line]);
 		else 

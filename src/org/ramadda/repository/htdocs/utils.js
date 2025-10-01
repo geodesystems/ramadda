@@ -5384,8 +5384,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     translate:function(x,y) {
 	return 'translate(' + x +',' + y + ')';
     },
+    boldLabel:function(msg) {
+	return HU.b(msg)+': ';
+    },    
     dotClass:function(c) {
 	return '.' + c;
+    },
+    important:function(v) {
+	return v +' !important';
     },
     px:function(v) {
 	return HU.getDimension(v,'px');
@@ -5711,6 +5717,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         return path;
     },
+
     b: function(inner) {
         return this.tag(TAG_B, [], inner);
     },

@@ -233,7 +233,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
-		let includes = HU.tag(TAG_LINK,[ATTR_REL,'stylesheet',ATTR_HREF,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")]);
+		let includes = HU.tag(TAG_LINK,[ATTR_REL,'stylesheet',
+						ATTR_HREF,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")]);
 		includes += HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")]);
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
@@ -335,7 +336,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             let words = [];
             let maxWords = parseInt(this.getProperty("maxWords", -1));
             let minCount = parseInt(this.getProperty("minCount", 0));
-            let width = (100 * 1 / strings.length) + "%;";
+	    let width = HU.perc((100 * 1 / strings.length));
             for (a in fieldInfo) {
                 let fi = fieldInfo[a];
                 let field = fi.field;
@@ -1278,10 +1279,10 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		for(var j=0;j<data.length && j<fieldCount;j++) {
 		    var value = data[j].value;
 		    var percent = max==min?1:(value-min)/(max-min);
-		    var fontSize = 6+Math.round(percent*24)+"pt";
+		    var fontSize = HU.pt(6+Math.round(percent*24));
 		    if(!scaleFont) fontSize = "100%";
 		    var field = data[j].field;
-		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(),
+		    contents += HU.div(["field-id",field.getId(), ATTR_DATA_VALUE,field.getLabel(),
 					ATTR_TITLE,Utils.msgLabel('Value') + value,
 					ATTR_CLASS,"display-topfields-row",
 					ATTR_STYLE,HU.css(CSS_FONT_SIZE,fontSize)], field.getLabel());
@@ -1304,8 +1305,8 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    let rows =this.find(".display-topfields-row");
 	    rows.hover(function() {
 		rows.removeClass("display-topfields-highlight");
-		var value = $(this).attr("data-value");
-		_this.find(HU.attrSelect("data-value", value)).addClass("display-topfields-highlight");
+		var value = $(this).attr(ATTR_DATA_VALUE);
+		_this.find(HU.attrSelect(ATTR_DATA_VALUE, value)).addClass("display-topfields-highlight");
 		
 	    });
 	    rows.click(function() {
@@ -1609,7 +1610,8 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "nowrap ramadda-table",
 						   ATTR_ID, this.domId("table_summary")]);
                     html += HU.openTag(TAG_THEAD, []);
-                    html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Summary") + HU.th([], "&nbsp;"));
+                    html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Summary") +
+				  HU.th([], SPACE));
                     html += HU.closeTag(TAG_THEAD);
                     html += HU.openTag(TAG_TBODY, []);
                     html += HU.tr([], HU.td([ATTR_ALIGN, ALIGN_RIGHT], "Total lines:") + HU.td([], records.length));
@@ -1665,8 +1667,8 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     }
                     for (let i = counts.length - 1; i >= 0; i--) {
                         let percent = Math.round(10000 * (counts[i].count / totalWords)) / 100;
-                        let row = HU.td([], counts[i].word + "&nbsp;:&nbsp;") +
-                            HU.td([], counts[i].count + "&nbsp;&nbsp;(" + percent + "%)&nbsp;:&nbsp;");
+                        let row = HU.td([], counts[i].word + SPACE2) +
+                            HU.td([], counts[i].count + SPACE2+"(" + HU.perc(percent) + ")" + SPACE2);
                         if (showBars) {
                             let wpercent = (counts[i].count - min) / max;
                             let width = 2 + wpercent * barWidth;
@@ -1888,7 +1890,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 						      CSS_OVERFLOW_X,OVERFLOW_AUTO)], label);
 		    let count = showCount? HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,HU.perc(20)],
 						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Count")):"";
-		    let percent  = showPercent?HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,"20%"],
+		    let percent  = showPercent?HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,HU.perc(20)],
 						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Percent")):"";
 		    let bars = showBars? HU.th([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_WIDTH,barWidth],
@@ -1939,15 +1941,16 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    let color = s.values[i].color;
 		    if(!color) color = dfltColor;
 
-		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
+		    if(showPercent) countLabel+=" (" + HU.perc(Math.round(perc*100))+")";
 		    //		    csv+=value+','+perc+'\n';
 
 		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",
-					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value],
+					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),
+					  ATTR_DATA_VALUE,value],
 					 value +HU.br() + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td([ATTR_ALIGN, ALIGN_RIGHT], count):"");
-		    let tdp =  showPercent?HU.td([ATTR_ALIGN, ALIGN_RIGHT], s.total==0?"0":Math.round(perc*100)+"%"):"";
+		    let tdp =  showPercent?HU.td([ATTR_ALIGN, ALIGN_RIGHT], s.total==0?"0":HU.perc(Math.round(perc*100))):"";
 		    let bw = perc/maxPercent;
 		    let tdb = showBars?HU.td([ATTR_VALIGN,"center",ATTR_WIDTH,barWidth],
 					     HU.div([ATTR_TITLE,HU.perc(Math.round(perc*100)),
@@ -1971,7 +1974,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    let items = this.find(".display-frequency-item");
 	    items.click(function(){
 		let click = _this.getProperty("clickFunction")
-		let value = $(this).attr("data-value");
+		let value = $(this).attr(ATTR_DATA_VALUE);
 		let fieldId = $(this).attr("data-field");
 		let parent = $(this).parent();
 		let isSelected = $(this).hasClass("display-frequency-item-selected");
@@ -2456,7 +2459,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			num - lineCnt;
 		    }
 		    label = label.replace("${lineNumber}", "#" +(num));
-		    label = label.replace(/ /g,"&nbsp;");
+		    label = label.replace(/ /g,SPACE);
 		    var r =  "";
 		    if(this.showShrink) {
 			r+= HU.td([ATTR_WIDTH, HU.px(5),

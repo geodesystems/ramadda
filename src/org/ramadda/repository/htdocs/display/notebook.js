@@ -189,16 +189,16 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     return Array.isArray(value) && value.length > 0 && Array.isArray(value[0]);
                 },
                 render: (value) => {
-                    var table = "<table>";
+                    var table = HU.open(TAG_TABLE);
                     for (var rowIdx = 0; rowIdx < value.length; rowIdx++) {
                         var row = value[rowIdx];
-                        table += "<tr>";
+                        table += HU.open(TAG_TR);
                         for (var colIdx = 0; colIdx < row.length; colIdx++) {
-                            table += "<td>&nbsp;" + row[colIdx] + "</td>";
+                            table += HU.tag(TAG_TD,[],SPACE+ row[colIdx]);
                         }
-                        table += "</tr>";
+                        table += HU.close(TAG_TR);
                     }
-                    table += "</table>";
+                    table += HU.close(TAG_TABLE);
                     return table;
 
                 }
@@ -623,7 +623,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     cell.index = i + 1;
                     html += HU.openTag(TAG_DIV, [ATTR_CLASS, clazz]);
                     html += HU.openTag(TAG_DIV, [ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
-									 CSS_OVERFLOW_X,'auto',
+									 CSS_OVERFLOW_X,OVERFLOW_AUTO,
 									 CSS_PADDING,HU.px(0),
 									 CSS_MARGIN,px)]);
                     html += HU.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id + "_cellinput"], "");
@@ -1112,7 +1112,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 						       ATTR_STYLE, HU.css(CSS_PADDING_BOTTOM,HU.px(2),
 									  CSS_PADDING_TOP,HU.px(2),
 									  CSS_PADDING_RIGHT,HU.px(5))]);
-            buttons = buttons + "&nbsp;" + HU.span([ATTR_ID, this.getDomId(ID_CELLNAME)], this.cellName);
+            buttons = buttons + SPACE + HU.span([ATTR_ID, this.getDomId(ID_CELLNAME)], this.cellName);
             buttons += runIcon;
             var header = HU.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER),
 					ATTR_TABINDEX, "0",
@@ -1283,7 +1283,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             if (!at) at = "left top";
             let _this = this;
-            let space = "&nbsp;&nbsp;";
+            let space = SPACE2;
             let menu = "";
 	    let open = HU.open(TAG_DIV,[ATTR_CLASS,'display-notebook-menu-block']);
 	    let close = '</div>';
@@ -1479,24 +1479,24 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         applyStyle: function(fromUser) {
             if (this.shouldShowInput()) {
-                this.jq(ID_INPUT_TOOLBAR).css("display", "block");
+                this.jq(ID_INPUT_TOOLBAR).css(CSS_DISPLAY, DISPLAY_BLOCK);
                 this.inputContainer.show(400, () => this.editor.resize());
                 this.showHeader = true;
             } else {
-                this.jq(ID_INPUT_TOOLBAR).css("display", "none");
+                this.jq(ID_INPUT_TOOLBAR).css(CSS_DISPLAY, DISPLAY_NONE);
                 this.inputContainer.hide(fromUser ? 200 : 0);
                 this.showHeader = false;
             }
             this.showHeader = this.notebook.showInput();
             if (this.showHeader) {
-                this.header.css("display", "block");
+                this.header.css(CSS_DISPLAY, DISPLAY_BLOCK);
             } else {
-                this.header.css("display", "none");
+                this.header.css(CSS_DISPLAY, DISPLAY_NONE);
             }
             if (this.showOutput) {
-                this.output.css("display", "block");
+                this.output.css(CSS_DISPLAY, DISPLAY_BLOCK);
             } else {
-                this.output.css("display", "none");
+                this.output.css(CSS_DISPLAY, DISPLAY_NONE);
             }
         },
         getPopup: function() {
@@ -1948,7 +1948,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                                 chunk.div.append(Utils.formatJson(results));
                             } else {
                                 chunk.div.append(HU.pre([ATTR_STYLE, HU.css(CSS_MAX_WIDTH,HU.perc(100),
-										   CSS_OVERFLOW_X,'auto')],
+										   CSS_OVERFLOW_X,OVERFLOW_AUTO)],
 							       results));
                             }
                         }
@@ -2329,7 +2329,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 showIndex: false,
                 suffix: Utils.getUniqueId("_shell_")
             });
-            div.set(HU.div([ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,'auto')], html));
+            div.set(HU.div([ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html));
             this.outputUpdated();
         },
         getEntryFromArgs: function(args, dflt) {
@@ -2472,7 +2472,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 suffix: Utils.getUniqueId("_shell_")
             });
             div.set(HU.div([ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(200),
-						      CSS_OVERFLOW_Y,'auto')], html));
+						      CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html));
             return div;
         },
         processCommand_pwd: async function(line, toks, div) {

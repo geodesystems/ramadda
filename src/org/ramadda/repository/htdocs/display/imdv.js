@@ -1905,7 +1905,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    query +=');\nout body;';
 	    console.log('osm query:',query);
-	    this.setOSMLabel(HU.image(icon_progress) +'&nbsp;&nbsp;Searching...');
+	    this.setOSMLabel(HU.image(icon_progress) +SPACE2+'Searching...');
 	    let url = "https://overpass-api.de/api/interpreter";
 	    let callback = data => {
 		if(!data.elements?.length) {
@@ -2159,7 +2159,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(!Utils.stringDefined(asset.href)) return;
 			if(table=='') {
 			    table+=HU.b('Assets: ')+'note: the IMDV does not handle all projections. Try the thumbnail<br>';
-			    table +='<table width=100%>';
+			    table +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
 			}
 
 			let label = asset.name??asset.title??key;
@@ -2327,7 +2327,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let selects = [];
 		let variableMap = {}
 		let idToMaps = {}	    
-		let selectStyle=HU.css(CSS_MAX_WIDTH,HU.px(300),CSS_OVERFLOW_X,'hidden');
+		let selectStyle=HU.css(CSS_MAX_WIDTH,HU.px(300),CSS_OVERFLOW_X,OVERFLOW_HIDDEN);
 		data.datasets.forEach((dataset,idx)=>{
 		    let variables  = {};
 		    variableMap[''+idx] = variables;
@@ -2669,7 +2669,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	addFeatureList:function() {
-	    let features="<table width=100%>";
+	    let features=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
 	    this.glyphListMap = {};
             this.glyphs.forEach((mapGlyph,idx)=>{
 		this.glyphListMap[idx]  = mapGlyph;
@@ -4586,7 +4586,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let zoomDialog;
 		_this.jq('choose_zoom_button').click(function(){
 		    if(zoomDialog) zoomDialog.remove();
-		    zoomDialog =HU.makeDialog({content:zoomPopup,anchor:$(this),header:true,title:'&nbsp;&nbsp;Select Zoom Level'});
+		    zoomDialog =HU.makeDialog({content:zoomPopup,anchor:$(this),header:true,
+					       title:SPACE2+'Select Zoom Level'});
 		    zoomDialog.find('.ramadda-clickable').click(function() {
 			let zoom  = $(this).attr('data-level');
 			_this.jq('choose_zoom_value').val(zoom);
@@ -4732,7 +4733,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let tmp = Utils.splitList(this.glyphTypes,this.glyphTypes.length/3);
 	    this.glyphTypes.forEach(glyphType=>{
 		if(glyphType.type=='map' || glyphType.type=='freehand') {
-		    html+='<td>&nbsp;</td><td>';
+		    html+=HU.tag(TAG_TD,[],SPACE) + HU.open(TAG_TD);
 		}
 		if(!glyphType.handler) return;
 		let icon = glyphType.options.icon||Ramadda.getUrl('/map/marker-blue.png');

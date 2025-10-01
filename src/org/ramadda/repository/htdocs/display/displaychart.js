@@ -614,7 +614,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
             let html = HU.div([ATTR_ID, this.domId(ID_FIELDS),
-			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,'auto',CSS_MAX_HEIGHT, HU.px(height))], "  ");
+			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, HU.px(height))], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -1412,9 +1412,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let orig = headerLabel;
 		    let style = "";
 		    if(maxHeaderWidth>0)
-			headerLabel = headerLabel.replace(/ /g,"&nbsp;");
+			headerLabel = headerLabel.replace(/ /g,SPACE);
 		    if(maxHeaderWidth>0)
-			style+=HU.css(CSS_MAX_WIDTH,HU.px(maxHeaderWidth),CSS_OVERFLOW_X,'auto');
+			style+=HU.css(CSS_MAX_WIDTH,HU.px(maxHeaderWidth),CSS_OVERFLOW_X,OVERFLOW_AUTO);
 		    if(headerStyle)
 			style+=headerStyle;
 		    headerLabel = HU.div([ATTR_TITLE,orig,ATTR_STYLE,style], headerLabel);
@@ -1675,7 +1675,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    for (let j = 0; j < row.length; j++) {
 				if (j > 0)
 				    tooltip += "<br>";
-				label = header[j].replace(/ /g, "&nbsp;");
+				label = header[j].replace(/ /g, SPACE);
 				value = row[j];
 				if (!Utils.isDefined(value)) value = "NA";
 				if (value && value.f) {
@@ -1713,7 +1713,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				desc+= (d+"<br>");
 			});
 			desc = desc.trim();
-			desc = desc.replace(/ /g,"&nbsp;");
+			desc = desc.replace(/ /g,SPACE);
 			annotationCnt++;
 			let label = null; 
 			if(annotationLabelTemplate) {
@@ -2462,7 +2462,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(pageX+400>right) pageX=right-400;
 	    tooltip.style.left = HU.px(pageX);
 	    tooltip.style.top =HU.px(pageY+20);
-	    tooltip.style.display = 'block';
+	    tooltip.style.display = DISPLAY_BLOCK;
 	    
 	},
 
@@ -2484,7 +2484,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 		google.visualization.events.addListener(chart, 'onmouseout', (event)=> {
 		    if(this.tooltipDiv) {
-			this.tooltipDiv.style.display = 'none';
+			this.tooltipDiv.style.display = DISPLAY_NONE;
 		    }
 		});
 	    }
@@ -3516,7 +3516,7 @@ function TableDisplay(displayManager, id, properties) {
 		}
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());
-		    f = HU.image(icon) +"&nbsp;" +f;
+		    f = HU.image(icon) +SPACE +f;
 		}
 		if(linkField && record&& idx==0) {
 		    let url = record.getValue(linkField.getIndex());
@@ -4311,7 +4311,7 @@ function CalendarDisplay(displayManager, id, properties) {
         getContentsStyle: function() {
             let height = this.getProperty("height", 800);
             if (height > 0) {
-                return HU.css(CSS_HEIGHT,HU.px(height),CSS_MAX_HEIGHT,HU.px(height),CSS_OVERFLOW_Y,'auto');
+                return HU.css(CSS_HEIGHT,HU.px(height),CSS_MAX_HEIGHT,HU.px(height),CSS_OVERFLOW_Y,OVERFLOW_AUTO);
             }
             return "";
         },

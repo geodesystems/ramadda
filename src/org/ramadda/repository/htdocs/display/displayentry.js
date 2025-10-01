@@ -782,7 +782,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 innerHeight = this.getEntriesHeight();
             }
             if (innerHeight != null) {
-                style = HU.css(CSS_MAX_HEIGHT, HU.getDimension(innerHeight),CSS_OVERFLOW_Y,'auto');
+                style = HU.css(CSS_MAX_HEIGHT, HU.getDimension(innerHeight),CSS_OVERFLOW_Y,OVERFLOW_AUTO);
             }
 	    style+= entriesStyle;
             entriesDivAttrs.push(ATTR_STYLE,style);	    
@@ -817,7 +817,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let form = HU.div([ATTR_CLASS,'display-entrylist-form',
 			       ATTR_STYLE,HU.css(CSS_WIDTH,HU.getDimension(this.getFormWidth()),
 						 CSS_MAX_WIDTH,HU.getDimension(this.getFormWidth()),
-						 CSS_OVERFLOW_X,"auto")],this.makeSearchForm());
+						 CSS_OVERFLOW_X,OVERFLOW_AUTO)],this.makeSearchForm());
 	    html += HU.tag(TAG_TD, [ATTR_ID,this.getDomId(ID_SEARCH_FORM),ATTR_WIDTH,HU.perc(1)], form);
 	    this.formShown  = true;
             if (this.getShowFooter()) {
@@ -956,7 +956,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 	    }
             let results = "";
-            let spacer = "&nbsp;&nbsp;&nbsp;"
+            let spacer = SPACE3;
 	    if(includeCloser)
 		results = this.getCloser();
 	    results += SPACE + left + spacer;
@@ -2657,7 +2657,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    let makeExpandable= (html) =>{
 		html =HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(1000),
 						CSS_BACKGROUND,'#fff',
-						CSS_OVERFLOW_Y,'auto')],html);
+						CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],html);
 	    }
@@ -2706,7 +2706,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 					ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]));
 		} else if(type=='metadata') {		    
 		    titles.push('Metadata');
-		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(800),CSS_MAX_WIDTH,HU.px(800),CSS_OVERFLOW_X,'auto')],this.getEntriesMetadata(entries));
+		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(800),CSS_MAX_WIDTH,HU.px(800),CSS_OVERFLOW_X,OVERFLOW_AUTO)],this.getEntriesMetadata(entries));
 		    addContents(mtd);
 		} else {
 		    console.log('unknown display:' + type);
@@ -3624,7 +3624,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    if(thumb) {
 			html+=
 			    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),
-						      CSS_OVERFLOW_Y,'hidden',CSS_BORDER_TOP,CSS_BASIC_BORDER)],
+						      CSS_OVERFLOW_Y,OVERFLOW_HIDDEN,
+						      CSS_BORDER_TOP,CSS_BASIC_BORDER)],
 				   HU.image(thumb,[ATTR_WIDTH,HU.px(300)]));
 		    }
 		    return html;
@@ -3887,7 +3888,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 				 HU.checkbox(this.getDomId(ID_SHOW_ICON),
 					     ["attr", ID_SHOW_ICON],
 					     this.getProperty(ID_SHOW_ICON, "true")) + " Show Icon" +
-				 "&nbsp;&nbsp;" +
+				 SPACE2 +
 				 HU.checkbox(this.getDomId(ID_SHOW_NAME),
 					     ["attr", ID_SHOW_NAME],
 					     this.getProperty(ID_SHOW_NAME, "true")) + " Show Name");
@@ -3895,7 +3896,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 				 HU.checkbox(this.getDomId(ID_XAXIS_ASCENDING),
 					     ["attr", ID_XAXIS_ASCENDING],
 					     this.getXAxisAscending()) + " Ascending" +
-				 "&nbsp;&nbsp;" +
+				 SPACE2 +
 				 HU.checkbox(this.getDomId(ID_XAXIS_SCALE),
 					     ["attr", ID_XAXIS_SCALE],
 					     this.getXAxisScale()) + " Scale Width");
@@ -3903,7 +3904,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 				 HU.checkbox(this.getDomId(ID_YAXIS_ASCENDING),
 					     ["attr", ID_YAXIS_ASCENDING],
 					     this.getYAxisAscending()) + " Ascending" +
-				 "&nbsp;&nbsp;" +
+				 SPACE2 +
 				 HU.checkbox(this.getDomId(ID_YAXIS_SCALE),
 					     ["attr", ID_YAXIS_SCALE],
 					     this.getYAxisScale()) + " Scale Height");
@@ -4911,7 +4912,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             for (let typeIdx = 0; typeIdx < allTypes.length; typeIdx++) {
                 let type = allTypes[typeIdx];
                 let row = "";
-                row += "<tr>";
+                row += HU.open(TAG_TR);
                 row += HU.td([], HU.image(type.getIcon()) + " " + type.getLabel());
                 for (let i = 0; i < this.ramaddas.length; i++) {
                     let ramadda = this.ramaddas[i];
@@ -4959,7 +4960,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
                 }
                 let rows = catMap[cat];
-                html += "<tr>";
+                html += HU.open(TAG_TR);
                 html += HU.th(["colspan", "" + (1 + this.ramaddas.length)], cat);
                 html += HU.close(TAG_TR);
                 for (let row = 0; row < rows.length; row++) {
