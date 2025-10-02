@@ -360,7 +360,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		} else {
 		    buttons+=HU.div([ATTR_ID, this.getDomId(ID_ANIMATION_LABEL),
 				     ATTR_CLASS, "display-animation-label",
-				     ATTR_STYLE,this.labelStyle+HU.css(CSS_TEXT_ALIGN,"center",
+				     ATTR_STYLE,this.labelStyle+HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
 								       CSS_FONT_SIZE,this.labelSize)]);
 		}
 	    }
@@ -800,8 +800,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		}
 		ticks+=HU.div([ATTR_ID,this.display.getId()+"-"+record.getId(),
 			       ATTR_CLASS,clazz,
-			       ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,CSS_LEFT, HU.perc(perc))+tickStyle,
-			       ATTR_TITLE,tt,RECORD_ID,record.getId()],"");
+			       ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,
+						 CSS_LEFT, HU.perc(perc))+tickStyle,
+			       ATTR_TITLE,tt,ATTR_RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);
@@ -876,7 +877,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	updateLabels: function() {
 	    if(!this.label) return;
 	    if(!this.makeSlider) {
-		this.label.html(HU.leftCenterRight(this.makeLabel(this.formatAnimationDate(this.dateMin)),this.makeLabel("# " +this.tickCount), this.makeLabel(this.formatAnimationDate(this.dateMax))));
+		this.label.html(HU.leftCenterRight(this.makeLabel(this.formatAnimationDate(this.dateMin)),
+						   this.makeLabel("# " +this.tickCount),
+						   this.makeLabel(this.formatAnimationDate(this.dateMax))));
 	    } else {
 		if(this.labelTemplate) {
 		    //If there is a labelTemplate then the display will call applyLabelTemplate when

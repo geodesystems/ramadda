@@ -190,7 +190,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    //		    console.log("Could not find cell:" + state);
 		    continue;
 		}
-		$("#"+cellId).attr(RECORD_INDEX,i);
+		$("#"+cellId).attr(ATTR_RECORD_INDEX,i);
 
 		if(!stateData[state]) {
 		    states.push(state);
@@ -222,7 +222,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    if(foreground) {
 			cell.css(CSS_COLOR, foreground);
 		    }
-		    cell.attr(RECORD_INDEX,i);
+		    cell.attr(ATTR_RECORD_INDEX,i);
                 }
 		if (strokeColorBy.isEnabled()) {
                     let value = record.getData()[strokeColorBy.index];
@@ -256,7 +256,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;
 	    contents.find(".display-mapgrid-cell").click(function() {
-		let record = records[$(this).attr(RECORD_INDEX)];
+		let record = records[$(this).attr(ATTR_RECORD_INDEX)];
 		if(record) {
 		    _this.propagateEventRecordSelection({record: record});
 		}
@@ -279,7 +279,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    }
 	    let index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
-	    this.selectedCell = contents.find(HU.attrSelect(RECORD_INDEX, index));
+	    this.selectedCell = contents.find(HU.attrSelect(ATTR_RECORD_INDEX, index));
 	    this.selectedBorder = this.selectedCell.css(CSS_BORDER);
 	    this.selectedCell.css(CSS_BORDER,HU.border(1,'red'));
 	},
@@ -300,7 +300,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	{p:'valueField',tt:'Field to get the height of each polygon from',ex:''},
 	{p:'skipRegions',ex:'Alaska,Hawaii'},
 	{p:'pruneMissing',ex:'true'},				
-	{p:'mapBackground',ex:'transparent'},
+	{p:'mapBackground',ex:COLOR_TRANSPARENT},
 	{p:'transforms',ex:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
 	{p:'prunes',ex:'Alaska,100;Region,maxCount'},
 	{p:'mapWidth',ex:'600'},
@@ -389,7 +389,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	},
 	writeMap:function(skipHeight)  {
 	    let width = this.getMapWidth(this.getProperty('width',800));
-	    let css = HU.css(CSS_BACKGROUND,this.getMapBackground("transparent"),
+	    let css = HU.css(CSS_BACKGROUND,this.getMapBackground(COLOR_TRANSPARENT),
 			     CSS_WIDTH,HU.getDimension(width));
 	    let height;
 	    if(!skipHeight) {
@@ -435,7 +435,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style(CSS_POSITION, POSITION_ABSOLUTE)
-		    .style(CSS_BACKGROUND, "#fff")
+		    .style(CSS_BACKGROUND, COLOR_WHITE)
 	    }
 	    this.clearTooltip();
 	    return this.tooltipDiv;
@@ -446,13 +446,13 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    tooltipDiv = tooltipDiv || this.makeTooltipDiv();
 	    polys.on('click', function (event, d) {
 		let poly = d3.select(this);
-		let record = idToRecord[poly.attr(RECORD_ID)];
+		let record = idToRecord[poly.attr(ATTR_RECORD_ID)];
 		if(record)
 		    _this.propagateEventRecordSelection({record: record});
 	    });
 	    polys.on('mouseover', function (event, i) {
 		let poly = d3.select(this);
-		let record = idToRecord[poly.attr(RECORD_ID)];
+		let record = idToRecord[poly.attr(ATTR_RECORD_ID)];
 		poly.attr("lastStroke",poly.attr("stroke"))
 		    .attr("lastFill",poly.attr("fill"));
 		poly.attr("stroke",_this.getProperty('highlightStrokeColor','blue')).attr("stroke-width",_this.getProperty('highlightStrokeWidth',1))
@@ -749,7 +749,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    this.regions[region].polygons.forEach(polygon=>{
 			let uid = HU.getUniqueId('selector_');
 			let poly = this.makePoly(polygon);
-			let fillColor = "transparent";
+			let fillColor = COLOR_TRANSPARENT;
 			if(missing) {
 			    fillColor = this.getMissingFillColor("#ccc");
 			    lineColor=this.getMissingLineColor("#000"); 
@@ -804,7 +804,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			    .attr("stroke",lineColor)
 			    .attr("stroke-width",1)
 			    .style(CSS_CURSOR, CURSOR_POINTER)
-			    .attr(RECORD_ID,recordId);
+			    .attr(ATTR_RECORD_ID,recordId);
 			this.addEvents(polys);
 		    });
 		});
@@ -867,7 +867,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 		    
 	    });
-	    this.jq(ID_BASEMAP).html(html+"<p>");
+	    this.jq(ID_BASEMAP).html(html+HU.p());
 
 	    let showValue = this.getPropertyShowValue(true);
 
@@ -908,7 +908,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 		info.polygons.forEach(polygon=>{
 		    let uid = HU.getUniqueId();
 		    let poly = this.makePoly(polygon);
-		    let fillColor = "transparent";
+		    let fillColor = COLOR_TRANSPARENT;
 		    if(missing) {
 			fillColor = "#ccc";
 			lineColor="#000" 
@@ -940,7 +940,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			.attr("stroke",lineColor)
 			.attr("stroke-width",1)
 			.style(CSS_CURSOR, CURSOR_POINTER)
-			.attr(RECORD_ID,recordId);
+			.attr(ATTR_RECORD_ID,recordId);
 		    this.addEvents(polys);
 		});
 	    });
@@ -994,9 +994,9 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			let transform  = "";
 			lineColor="#000" 
 			if(layer==0) {
-			    fillColor = "#fff";
+			    fillColor = COLOR_WHITE;
 			} else {
-			    lineColor="transparent" 
+			    lineColor=COLOR_TRANSPARENT; 
 			    fillColor = this.colorBy.getColor(value);
 			    let bounds = Utils.getBounds(polygon);
 			    let center = bounds.getCenter();
@@ -1044,7 +1044,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    .attr("stroke-width",1)
 			    .attr(ATTR_TRANSFORM,transform)
 			    .style(ATTR_CURSOR, CURSOR_POINTER)
-			    .attr(RECORD_ID,recordId);
+			    .attr(ATTR_RECORD_ID,recordId);
 			if(layer==1)
 			    this.addEvents(polys);
 		    });
@@ -1143,13 +1143,13 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			.attr("points",function(d) { 
 			    return d.map(d=>{return [scaleX(d.x),scaleY(d.y)].join(",");}).join(" ");
 			})
-			.attr(RECORD_ID,recordId)
+			.attr(ATTR_RECORD_ID,recordId)
 		    	.attr("stroke-width",strokeWidth)
 			.attr("stroke",strokeColor);
 		    if(values!=null)
 			polys.style("fill", "url(#bgimage"+ uid+")")
 		    else
-			polys.style("fill",this.getPropertyMissingFill("#fff"));
+			polys.style("fill",this.getPropertyMissingFill(COLOR_WHITE));
 		    this.addEvents(polys);
 		});
 	    });

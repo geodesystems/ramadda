@@ -866,8 +866,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		let alt = this.getPolygonAltitude();
 		this.globe.polygonsData(json.features)
 		    .polygonStrokeColor(()=>strokeColor)
-		    .polygonCapColor((f)=>f.color || "transparent")
-		    .polygonSideColor((f)=>f.color||"transparent")		    
+		    .polygonCapColor((f)=>f.color || COLOR_TRANSPARENT)
+		    .polygonSideColor((f)=>f.color||COLOR_TRANSPARENT)		    
 		    .polygonAltitude(alt);
 
 

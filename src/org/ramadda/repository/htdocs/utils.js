@@ -5426,6 +5426,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(html) return html+'<br>';
 	return '<br>';
     },
+    p:function(html) {
+	if(html) return html+'<p>';
+	return '<p>';
+    },    
     td: function(attrs, inner) {
         return this.tag(TAG_TD, attrs, inner);
     },

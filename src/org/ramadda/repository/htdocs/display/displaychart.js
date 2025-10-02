@@ -625,7 +625,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 html += HU.checkbox(this.domId(ID_PERCENT_CBX),
 				    [],
 				    this.showPercent,"Show percent of displayed total");
-                html += "<br>";
+                html += HU.br();
             }
 
             tabTitles.push("Fields");
@@ -1667,14 +1667,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    let label = "";
 			    if (theRecord) {
 				for (let j = 0; j < tooltipFields.length; j++) {
-				    label += "<b>" + tooltipFields[j].getLabel(this) + "</b>: " +
-					theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
+				    label += HU.boldLabel(tooltipFields[j].getLabel(this)) +
+					theRecord.getValue(tooltipFields[j].getIndex()) + HU.br();
 				}
 			    }
 			    tooltip += label;
 			    for (let j = 0; j < row.length; j++) {
 				if (j > 0)
-				    tooltip += "<br>";
+				    tooltip += HU.br();
 				label = header[j].replace(/ /g, SPACE);
 				value = row[j];
 				if (!Utils.isDefined(value)) value = "NA";
@@ -1710,7 +1710,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			this.annotations.getFields().forEach(f=>{
 			    let d = HU.b(f.getLabel())+': '+f.getValue(theRecord);
 			    if(d!="")
-				desc+= (d+"<br>");
+				desc+= (d+HU.br());
 			});
 			desc = desc.trim();
 			desc = desc.replace(/ /g,SPACE);
@@ -1755,10 +1755,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			annotations.forEach(a=>{
 			    if(label!="") label+="/";
 			    label+=a.label;
-			    if(desc!="") desc+="<br>";
+			    if(desc!="") desc+=HU.br();
 			    else {
 				if(a.record && a.record.getDate()) {
-				    desc+=HU.b(this.formatDate(a.record.getDate()))+"<br>";
+				    desc+=HU.b(this.formatDate(a.record.getDate()))+HU.br();
 				}
 			    }
 			    desc+=a.description;			    
@@ -1924,7 +1924,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 
-	    let minorGridLinesColor = this.getProperty("minorGridLines.color",this.getProperty("gridlines.color")||lineColor||"transparent");
+	    let minorGridLinesColor = this.getProperty("minorGridLines.color",this.getProperty("gridlines.color")||lineColor||COLOR_TRANSPARENT);
             this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color")|| lineColor);
 	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", minorGridLinesColor);
 
@@ -2273,7 +2273,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		this.jq(ID_CHARTS).html(HU.div([ATTR_ID,this.domId(ID_CHARTS_INNER),
-						ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]));
+						ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)]));
 		if(this.doMultiChartsByField()) {
 		    this.multiChartData=[];
 		    selectedFields.forEach((field,idx)=>{
@@ -2571,16 +2571,16 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'chartArea.fill',ex:''},
 	{p:'chartArea.stroke',ex:''},
 	{p:'chartArea.strokeWidth',ex:''},
-	{p:'gridlines.color',ex:'transparent'},
-	{p:'minorGridLines.color',ex:'transparent'},
+	{p:'gridlines.color',ex:COLOR_TRANSPARENT},
+	{p:'minorGridLines.color',ex:COLOR_TRANSPARENT},
 	{p:'gridlines.color',ex:''},
 	{p:'hAxis.gridlines.color',ex:''},
-	{p:'hAxis.minorGridlines.color',ex:'transparent'},
+	{p:'hAxis.minorGridlines.color',ex:COLOR_TRANSPARENT},
 	{p:'baselineColor',ex:''},
 	{p:'hAxis.baselineColor',ex:''},
 	{p:'gridlines.color',ex:''},
 	{p:'vAxis.gridlines.color',ex:''},
-	{p:'vAxis.minorGridlines.color',ex:'transparent'},
+	{p:'vAxis.minorGridlines.color',ex:COLOR_TRANSPARENT},
 	{p:'baselineColor',ex:''},
 	{p:'vAxis.baselineColor',ex:''},
 	{p:'textColor',ex:'#000'},
@@ -2967,8 +2967,10 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		let color  = colors[colorCnt];
-		legend += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(8),
-						    CSS_HEIGHT,HU.px(8),CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
+		legend += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						    CSS_WIDTH,HU.px(8),
+						    CSS_HEIGHT,HU.px(8),
+						    CSS_BACKGROUND, color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
@@ -3472,7 +3474,7 @@ function TableDisplay(displayManager, id, properties) {
             return true;
         },
         getDataTableValueGetter: function(records) {
-	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
+	    let unhighlightColor = this.getProperty("unhighlightColor",COLOR_WHITE);
 	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
 	    let colorCells = this.getProperty("colorCells");
 	    let colorByMap = {};
@@ -3541,7 +3543,7 @@ function TableDisplay(displayManager, id, properties) {
 			let fg = foreground || Utils.getForegroundColor(color);
 			f = HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100),
 						      CSS_BACKGROUND, color,
-						      CSS_COLOR,fg+" !important")],f)
+						      CSS_COLOR,HU.important(fg))],f)
 		    }
 		    if(field.getType()=="url") {
 			if(!v.startsWith('http')) v = 'https://' + v;
@@ -3636,7 +3638,7 @@ function TableDisplay(displayManager, id, properties) {
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let t = (typeof row[colIdx]);
                     if (t == "string") {
-                        row[colIdx] = row[colIdx].replace(/\n/g, "<br>");
+                        row[colIdx] = row[colIdx].replace(/\n/g, HU.br());
 			if(row[colIdx].startsWith("http:") || row[colIdx].startsWith("https:")) {
 			    row[colIdx] = "<a href='" +row[colIdx] +"'>" + row[colIdx]+"</a>";
 			}
@@ -4076,9 +4078,9 @@ function TreemapDisplay(displayManager, id, properties) {
                     let v = row[tooltipFields[f].getIndex()];
                     let field = tooltipFields[f];
                     v = HU.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
-                    tt += HU.b(field.getLabel(this)) + ": " + v + "<br>";
+                    tt += HU.boldLabel(field.getLabel(this))  + v + HU.br();
                 }
-                tt += "</div></div>";
+                tt += HU.close(TAG_TD,TAG_TD);
                 tmptt.push(tt);
             }
             for (let i = 0; i < leafs.length; i++) {
@@ -4311,7 +4313,9 @@ function CalendarDisplay(displayManager, id, properties) {
         getContentsStyle: function() {
             let height = this.getProperty("height", 800);
             if (height > 0) {
-                return HU.css(CSS_HEIGHT,HU.px(height),CSS_MAX_HEIGHT,HU.px(height),CSS_OVERFLOW_Y,OVERFLOW_AUTO);
+                return HU.css(CSS_HEIGHT,HU.px(height),
+			      CSS_MAX_HEIGHT,HU.px(height),
+			      CSS_OVERFLOW_Y,OVERFLOW_AUTO);
             }
             return "";
         },

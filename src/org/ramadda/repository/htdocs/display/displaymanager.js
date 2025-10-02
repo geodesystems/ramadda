@@ -270,7 +270,8 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
+            var titles = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Titles: " +
+				HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
             var dates = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
 			       "Set date range: " +
 			       HU.onClick(layout + ".askMinDate();", "Min") + "/" +
@@ -282,7 +283,8 @@ function DisplayManager(argId, argProperties) {
 					  HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
                 HU.tag(TAG_LI, [], dates) +
                 HU.tag(TAG_LI, [], titles) + "\n" +
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Details: " +
+					  HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
 					  HU.onClick(layout + ".detailsOff();", "Off", []))) +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
@@ -540,7 +542,8 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",
+    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS),
+			       ATTR_CLASS, "display-container",
 			       ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_BLOCK)]);
     let html = HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]);
     html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
@@ -583,7 +586,12 @@ function DisplayManager(argId, argProperties) {
 							 this.dialog.remove();
 						     }
 						     let html = _this.makeMainMenu();
-						     this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
+						     this.dialog = HU.makeDialog({
+							 content:html,
+							 title:"Displays",
+							 my:"left top",
+							 at:"left bottom",
+							 anchor:_this.jq(ID_MENU_BUTTON)});
 						     _this.jq(ID_MENU_INNER).superfish({
 							 //Don't set animation - it is broke on safari
 							 //                    animation: {height:'show'},
@@ -700,7 +708,8 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                     props[a] = value;
                 }
             }
-            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS),
+			       ATTR_CLASS, "display-container"]);
             this.setContents(html);
             var groupProps = {
                 target: this.getDomId(ID_DISPLAYS),

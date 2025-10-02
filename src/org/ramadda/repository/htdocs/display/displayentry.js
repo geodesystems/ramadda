@@ -391,7 +391,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 					     ATTR_ID,  this.getDomId("entry_" + entry.getIdForDom()),
 					     ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 					    ]) + HU.br() +
-                        link + "<p>";
+                        link + HU.p();
                 } else {
                     let icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
                     let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entry.getName());
@@ -4751,7 +4751,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
         },
         entryListChanged: function(entryList) {
             let html = "<form>";
-            html += "<p>";
+            html += HU.p();
             html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable",
 					   ATTR_CELLSPACING, "0",
 					   ATTR_CELLSPACING, "0"]);
@@ -4791,10 +4791,10 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             html += HU.formEntry("Chart Type:", select);
 
             html += HU.closeTag(TAG_TABLE);
-            html += "<p>";
+            html += HU.p();
             html += HU.tag(TAG_DIV, [ATTR_CLASS, "display-button",
 				     ATTR_ID, this.getDomId(ID_NEWDISPLAY)], "New Chart");
-            html += "<p>";
+            html += HU.p();
             html += HU.close(TAG_FORM);
             this.writeEntries(html);
             let theDisplay = this;

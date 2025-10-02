@@ -160,9 +160,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var dttm = this.formatDate(record.getDate(), {
                     suffix: this.getTimeZone()
                 });
-                label += HU.b("Date:") + " " + dttm;
+                label += HU.boldLabel("Date") + " " + dttm;
             } else {
-                label += HU.b("Index:") + " " + this.index;
+                label += HU.boldLabel("Index") + " " + this.index;
             }
             $("#" + this.getDomId(ID_TIME)).html(label);
             if (propagate) {
@@ -409,7 +409,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let block  =f.getLabel();
 		let color = this.getProperty(f.getId()+'.color');
 		if(color)
-		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]);
+		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',
+				   ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]);
 		block = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],block);
 
 		if(details) {
@@ -423,7 +424,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		if(selectable && selected) c += ' display-fields-field-selected ';
 		let title = f.getId();
 		if(selectable)    title += ' - Click to toggle. Shift-click toggle all';
-		block =HU.div([ATTR_TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
+		block =HU.div([ATTR_TITLE,title,'field-selected',selected,
+			       ATTR_FIELD_ID, f.getId(),ATTR_CLASS,c], block);
 		fs.push(block);
 	    });
 	    let fhtml = Utils.wrap(fs,'','');
@@ -451,7 +453,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    if(this.getShowPopup()) {
 		html = HU.div([ATTR_ID,this.domId(ID_POPUP_BUTTON)], label) +
 		    HU.div([ATTR_ID,this.domId(ID_POPUP),
-			    ATTR_STYLE,HU.css(CSS_DISPLAY,'none',CSS_MARGIN,HU.px(4))], html);
+			    ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
+					      CSS_MARGIN,HU.px(4))], html);
 	    }
 
 
@@ -469,7 +472,13 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    });
 	    if(this.getShowPopup()) {
 		this.jq(ID_POPUP_BUTTON).button().click(()=>{
-		    this.fieldsDialog = HU.makeDialog({contentId:this.domId(ID_POPUP),title:label,inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
+		    this.fieldsDialog = HU.makeDialog({contentId:this.domId(ID_POPUP),
+						       title:label,
+						       inPlace:true,
+						       anchor:this.domId(ID_POPUP_BUTTON),
+						       draggable:true,
+						       header:true,
+						       sticky:true});
 		});
 	    }
 	    if(selectable) {
@@ -485,8 +494,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		    hoverClass: 'display-fields-droppable',
 		    accept:'.display-fields-field',
 		    drop: function(event,ui) {
-			let draggedId = ui.draggable.attr('field-id');
-			let targetId = $(this).attr('field-id');			
+			let draggedId = ui.draggable.attr(ATTR_FIELD_ID);
+			let targetId = $(this).attr(ATTR_FIELD_ID);			
 			let draggedField = _this.fields.find(f=>{
 			    if(f.getId()==draggedId) return f;
 			    return null;
@@ -574,7 +583,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    fieldBoxes.each(function(){
 		let selected  = $(this).attr("field-selected")=="true";
 		if(selected) {
-		    let id = $(this).attr("field-id");
+		    let id = $(this).attr(ATTR_FIELD_ID);
 		    let field = _this.fieldsMap[id];
 		    if(field) isSelected[field.getId()]=true;
 		}
@@ -630,9 +639,16 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
                 textClass += " display-text-edit ";
             }
             var style = HU.css(CSS_COLOR,this.getTextColor("contentsColor"));
-            var html = HU.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), ATTR_STYLE, style], this.text);
+            var html = HU.div([ATTR_CLASS, textClass,
+			       ATTR_ID, this.getDomId(ID_TEXT),
+			       ATTR_STYLE, style], this.text);
             if (this.editMode) {
-                html += HU.textarea(ID_EDIT, this.text, [ATTR_ROWS, 5, ATTR_COLS, 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
+                html += HU.textarea(ID_EDIT, this.text,
+				    [ATTR_ROWS, 5,
+				     ATTR_COLS, 120,
+				     ATTR_SIZE, 120,
+				     ATTR_CLASS, "display-text-input",
+				     ATTR_ID, this.getDomId(ID_EDIT)]);
             }
             this.setContents(html);
             if (this.editMode) {
@@ -679,7 +695,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	{p:'colors',ex:''},
 	{p:'circles',ex:'true'},	
 	{p:'inBox',ex:'true'},
-	{p:'labelColor',ex:'#fff'},
+	{p:'labelColor',ex:COLOR_WHITE},
 	{p:'labelColors',ex:'color1,color2,...'},
 	{p:'labelField',ex:''},	
 	{p:'orientation',ex:'vertical'}
@@ -729,7 +745,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    let circles = this.getCircles();
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
-		let color = colors[i]||"#fff";
+		let color = colors[i]||COLOR_WHITE;
 		if(i>0) html+=delim;
 		if(!inBox) {
 		    html+=HU.div([ATTR_CLASS,"display-legend-item"],
@@ -876,7 +892,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],"Cancel");
 	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),
 								  ATTR_TITLE,'Select # records to download',
-								  ATTR_SIZE,'4']) +" records");
+								  ATTR_SIZE,4]) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80))],
 				    'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
@@ -894,7 +910,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		html+=HU.formTableClose();
 	    }
 	    
-	    html += HU.b('Include:');
+	    html += HU.boldLabel('Include');
 	    let cbx = "";
 	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +HU.br();
 	    this.getData().getRecordFields().forEach((f,idx)=>{
@@ -1097,7 +1113,8 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([ATTR_STYLE,HU.css(CSS_COLOR,'transparent')],""));
+		this.jq(ID_COUNTDOWN).html("Reloading..." +
+					   HU.span([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_TRANSPARENT)],""));
 		this.doReload();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
@@ -1278,7 +1295,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    if(idx==0) style+=buttonStyleOn;
 		    tabs.push(HU.span([ATTR_CLASS,'display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),
 				       ATTR_STYLE,style,
-				       RECORD_ID,record.getId()], label));
+				       ATTR_RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
 		});
 		html+=Utils.join(tabs,"");
@@ -1289,7 +1306,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let items = this.getContents().find('.display-menu-button-item');
 		items.click(function() {
 		    if($(this).hasClass('display-menu-button-item-on')) return;
-		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
+		    let record = _this.idToRecord[$(this).attr(ATTR_RECORD_ID)];
 		    items.removeClass('display-menu-button-item-on');
 		    items.attr(ATTR_STYLE,buttonStyle);		    
 		    items.removeClass('display-menu-button-item-on');
@@ -1311,7 +1328,8 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let noun = this.getProperty("noun", "Data");
 		let prev = HU.span([ATTR_CLASS,"display-changeentries-button ramadda-clickable",
 				    ATTR_TITLE,"Previous " +noun,
-				    ATTR_ID, this.getDomId(ID_PREV)], HU.getIconImage("fa-chevron-left"));
+				    ATTR_ID, this.getDomId(ID_PREV)],
+				   HU.getIconImage("fa-chevron-left"));
  		let next = HU.span([ATTR_CLASS, "display-changeentries-button ramadda-clickable",
 				    ATTR_TITLE,"Next " + noun,
 				    ATTR_ID, this.getDomId(ID_NEXT)],

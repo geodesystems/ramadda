@@ -13,6 +13,9 @@ var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 
 
+var LABEL_OK="OK";
+var LABEL_CANCEL ="Cancel";
+
 var ARG_PAGESEARCH='pagesearch';
 var ARG_MAPBOUNDS='map_bounds';
 
@@ -61,7 +64,12 @@ var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HIGHLIGHTABLE = 'ramadda-highlightable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
+
+
+
+
 var CURSOR_POINTER='pointer';
+var CURSOR_DEFAULT='default';
 var CURSOR_TEXT='text';
 var CURSOR_CONTEXT_MENU = 'context-menu';
 
@@ -138,6 +146,9 @@ var ATTR_SLIDER_MAX='slider-max';
 var ATTR_SLIDER_STEP='slider-step';
 var ATTR_SLIDER_VALUE='slider-value';
 
+var COLOR_TRANSPARENT='transparent';
+var COLOR_BLACK='#000';
+var COLOR_WHITE='#fff';
 
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
@@ -221,6 +232,7 @@ var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
 
 var CSS_BASIC_BORDER='var(--basic-border)';
 
+var FONT_BOLD='bold';
 var CSS_ALIGN_ITEMS='align-items';
 var CSS_ALIGN='align';
 var CSS_VISIBILITY = 'visibility';
@@ -276,6 +288,7 @@ var CSS_CLIP_PATH='clip-path';
 var CSS_COLOR='color';
 var CSS_CURSOR = 'cursor';
 var CSS_HEIGHT='height';
+var CSS_WEBKIT_TRANSFORM="-webkit-transform";
 var CSS_WHITE_SPACE='white-space';
 var CSS_WIDTH='width';
 var CSS_WORD_BREAK='word-break';

@@ -464,7 +464,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	},
         handleEventRecordSelection: function(source, args) {
 	    let blocks = this.find(".display-images-block");
-	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
+	    let select = HU.attrSelect(ATTR_RECORD_ID, args.record.getId());
 	    let block = this.find(select);
 	    blocks.css(CSS_BORDER,null);
 	    block.css(CSS_BORDER,HU.border(1,this.getHighlightColor()));
@@ -639,7 +639,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 
 		block = 
-		    HU.div([ATTR_STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,
+		    HU.div([ATTR_STYLE, style, ATTR_RECORD_ID,record.getId(),ATTR_RECORD_INDEX,recordIndex++,
 			    ATTR_ID,base+TAG_DIV+  rowIdx, ATTR_CLASS, class1,ATTR_TITLE,tt],
 			   recordContents);
 		if(columns) {
@@ -703,7 +703,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let _this = this;
 		if(!tooltipClick) {
 		    blocks.click(function() {
-			let record = _this.idToRecord[$(this).attr(RECORD_ID)];
+			let record = _this.idToRecord[$(this).attr(ATTR_RECORD_ID)];
 			if(record) {
 			    _this.propagateEventRecordSelection({record: record});
 			}
@@ -821,7 +821,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		}
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
-		thumbsHtml += HU.image(thumb,[RECORD_INDEX,rowIdx,ATTR_ID,this.domId(ID_THUMB)+rowIdx,
+		thumbsHtml += HU.image(thumb,[ATTR_RECORD_INDEX,rowIdx,ATTR_ID,this.domId(ID_THUMB)+rowIdx,
 					      ATTR_WIDTH, thumbWidth,ATTR_CLASS,"display-imagezoom-thumb"])+HU.br()+"\n";
 	    }
             this.setContents(contents);
@@ -829,9 +829,9 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
-		thumbs.css(CSS_BORDER,HU.border(1,'transparent'));
+		thumbs.css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT));
 		thumb.css(CSS_BORDER,HU.border(1,this.getHighlightColor()));
-		let index = parseFloat(thumb.attr(RECORD_INDEX));
+		let index = parseFloat(thumb.attr(ATTR_RECORD_INDEX));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]
 		_this.handleImage(record);
@@ -841,7 +841,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    thumbs.mouseover(function() {	
 		thumbSelect($(this));
 	    });
-	    this.jq(ID_THUMBS).css(CSS_BORDER,HU.border(1,'transparent'));
+	    this.jq(ID_THUMBS).css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT));
 	    let selectedIndex =  HU.getUrlArgument("imagezoom_thumb");
 	    let x = HU.getUrlArgument("imagezoom_x");
 	    let y = HU.getUrlArgument("imagezoom_y");	    
@@ -1090,7 +1090,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 							 ATTR_TITLE,tt,
 							 ATTR_WIDTH,width,
 							 ATTR_CLASS,clazz,
-							 RECORD_INDEX,idx]));
+							 ATTR_RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
@@ -1110,7 +1110,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 							   CSS_MIN_WIDTH,width,
 							   CSS_WIDTH,width,
 							   CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
-					 ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
+					 ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -1132,7 +1132,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.stripImages.click(function() {
 		    _this.stripImages.removeClass('display-slides-strip-image-selected');
 		    $(this).addClass('display-slides-strip-image-selected');
-		    _this.slideIndex = $(this).attr(RECORD_INDEX);
+		    _this.slideIndex = $(this).attr(ATTR_RECORD_INDEX);
 		    _this.displaySlide(true,true);
 		});
 	    }
@@ -1165,9 +1165,9 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    if(!fromStrip && this.showStrip) {
 		this.stripImages.removeClass('display-slides-strip-image-selected');
-		this.stripImages.find(HU.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-slides-strip-image-selected');
+		this.stripImages.find(HU.attrSelect(ATTR_RECORD_INDEX,this.slideIndex)).addClass('display-slides-strip-image-selected');
 		this.stripImages.each(function() {
-		    if(+$(this).attr(RECORD_INDEX) == _this.slideIndex) {
+		    if(+$(this).attr(ATTR_RECORD_INDEX) == _this.slideIndex) {
 			$(this).addClass('display-slides-strip-image-selected');
 			$(this).scrollintoview({
 			    direction:'x'

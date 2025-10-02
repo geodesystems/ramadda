@@ -107,7 +107,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var sel = $("#" + this.getDomId("sheet_") + sheetIdx);
 
             all.css(CSS_FONT_WEIGHT, 'normal');
-            sel.css(CSS_FONT_WEIGHT, 'bold');
+            sel.css(CSS_FONT_WEIGHT, FONT_BOLD);
             all.css(CSS_BORDER, HU.border(1,'#ccc'));
             sel.css(CSS_BORDER, HU.border(1,'#666'));
 
@@ -448,7 +448,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             chartToolbar += HU.div([ATTR_ID, this.getDomId("removechart"), ATTR_CLASS, "ramadda-xls-button"], "Clear Charts");
 
 
-            chartToolbar += "<p>";
+            chartToolbar += HU.p();
             chartToolbar += "<form>Fields: ";
             chartToolbar += "<input type=radio checked name=\"param\" id=\"" + this.getDomId("params-yaxis-select") + "\"> y-axis:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-yaxis-label"),

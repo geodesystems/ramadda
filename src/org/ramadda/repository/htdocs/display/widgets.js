@@ -492,7 +492,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr('cx', (d,i)=>{return getNum(x(d.x))})
 	.attr('cy', (d,i)=>{return getNum(y(d.y))})
 	.attr('fill', (d,i)=>{return getColor(d,i,circleColor)})
-	.attr(RECORD_ID, (d,i)=>{
+	.attr(ATTR_RECORD_ID, (d,i)=>{
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
 	.style(CSS_CURSOR, CURSOR_POINTER);
@@ -515,8 +515,8 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let ele = $(dom);
 	    ele.attr('r', 20);
 	    if(true) return
-	    let record = recordMap[ele.attr(RECORD_ID)];
-	    console.log(ele.attr(RECORD_ID) +" " + record);
+	    let record = recordMap[ele.attr(ATTR_RECORD_ID)];
+	    console.log(ele.attr(ATTR_RECORD_ID) +" " + record);
 	    let coords = d3.pointer(event);
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);

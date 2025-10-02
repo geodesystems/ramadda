@@ -475,15 +475,19 @@ MapGlyph.prototype = {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',
 				HU.input('',Utils.join(this.getRadii(),','),
-					 [ATTR_ID,this.domId('radii'),ATTR_SIZE,'40'])+' e.g., 1km, 2mi (miles), 100ft') +
+					 [ATTR_ID,this.domId('radii'),
+					  ATTR_SIZE,40])+
+				' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntryTop('Rings Labels:',
 				HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
-						  [ATTR_ID,this.domId('rangeringlabels'),ATTR_SIZE,'40']),
+						  [ATTR_ID,this.domId('rangeringlabels'),
+						   ATTR_SIZE,40]),
 					 'Use ${d} macro for the distance e.g.:<br> Label 1 ${d}, ..., Label N ${d}  '])) +
 
 	    HU.formEntry('Ring label angle:',
 			 HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-			     ATTR_ID,this.domId('rangeringangle'),ATTR_SIZE,4]) +' Leave blank to not show labels') +
+			     ATTR_ID,this.domId('rangeringangle'),
+			     ATTR_SIZE,4]) +' Leave blank to not show labels') +
 		HU.formEntryTop('Ring Styles:',
 				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',
 						     [ATTR_ID,this.domId('rangeringstyle'),
@@ -498,12 +502,12 @@ MapGlyph.prototype = {
 					 HU.input('',url,
 						  [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
 						   ATTR_ID,this.domId('serverurl'),
-						   ATTR_SIZE,'60']));
+						   ATTR_SIZE,60]));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
 		    extra += HU.formEntry("WMS Layer:",
 					  HU.input('',this.attrs.wmsLayer,[ATTR_ID,this.domId('wmslayer'),
-									   ATTR_SIZE,'20']));
+									   ATTR_SIZE,20]));
 		}
 		return extra;
 	    }
@@ -523,7 +527,8 @@ MapGlyph.prototype = {
 				    {value:LINETYPE_CURVE,label:'Curve'},
 				    {value:LINETYPE_GREATCIRCLE,label:'Great Circle'}],
 					  this.attrs.lineType)) +
-		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),[ATTR_ID,this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
+		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),
+					    [ATTR_ID,this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
 	}
 
 	return '';
@@ -535,9 +540,10 @@ MapGlyph.prototype = {
 	    html+=HU.b(lbl)+HU.br()+widget+HU.br();
 	}
 	let nameWidget = HU.input('',this.getName(),[ATTR_ID,this.domId('mapglyphname'),
-						     ATTR_SIZE,'40']);
+						     ATTR_SIZE,40]);
 	if(this.isEntry()) {
-	    nameWidget+=HU.br() +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
+	    nameWidget+=HU.br() +
+		HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.formTable();
@@ -546,11 +552,12 @@ MapGlyph.prototype = {
 	    if(this.attrs.entryId) {
 		html+=HU.formEntry('Entry ID:',HU.input('',this.attrs.entryId,
 							[ATTR_ID,this.domId('entryid'),
-							 ATTR_SIZE,'60']));
+							 ATTR_SIZE,60]));
 	    }
 	    if(this.attrs.resourceUrl) {
-		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),
-										  ATTR_SIZE,'60']));
+		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,
+						       [ATTR_ID,this.domId('resourceurl'),
+							ATTR_SIZE,60]));
 	    }
 	}	    
 	html+=HU.formTableClose();
@@ -585,7 +592,8 @@ MapGlyph.prototype = {
 			 ATTR_ROWS,4,
 			 ATTR_COLS, 40]);
 	
-	html+=HU.div([],HU.boldLabel('ID') +HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
+	html+=HU.div([],HU.boldLabel('ID') +
+		     HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
 	content.push({header:'Properties',contents:html});
 
@@ -613,10 +621,13 @@ MapGlyph.prototype = {
 	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),
 						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
 						 suffix:'\n'});
-	let ex = HU.boldLabel('Add property') + HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
+	let ex = HU.boldLabel('Add property') +
+	    HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
-				     [ATTR_ID,this.domId('miscproperties'),ATTR_ROWS,16,ATTR_COLS, 40]),
+				     [ATTR_ID,this.domId('miscproperties'),
+				      ATTR_ROWS,16,
+				      ATTR_COLS, 40]),
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
@@ -637,7 +648,8 @@ MapGlyph.prototype = {
 		    HU.tag(TAG_LABEL,[ATTR_FOR, id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
 		contents+=HU.br();
 		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
-		    HU.tag(TAG_LABEL,[ATTR_FOR, id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
+		    HU.tag(TAG_LABEL,[ATTR_FOR, id+'_oruse',ATTR_TITLE,''],
+			   'Use parent group\'s or the below if defined');
 		contents+=HU.br();
 	    }
 
@@ -646,7 +658,7 @@ MapGlyph.prototype = {
 	    let buttonList = [HU.span([ATTR_ID,this.domId('dataicon_add_default'),
 				       ATTR_TITLE,'Set example values'],'Apply Defaults')];
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
-		buttonList.push(HU.span([ID_GLYPH_ID,this.getId(),
+		buttonList.push(HU.span([ATTR_GLYPH_ID,this.getId(),
 					 ATTR_CLASS,CLASS_CLICKABLE,
 					 ATTR_TITLE,'Apply settings from entry',
 					 ATTR_ID,this.domId('applyentrydataicon')],'Apply from Entry'));
@@ -661,31 +673,48 @@ MapGlyph.prototype = {
 	    let fields1 = HU.boldLabel('Menu Fields')+HU.br()+
 		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
 			    [ATTR_PLACEHOLDER,'field pattern,label=<label>,unit=<unit>\ne.g.:\n'+
-			     DEFAULT_DATAICON_FIELDS,ATTR_ID,this.domId(ID_DATAICON_FIELDS),ATTR_ROWS,4,ATTR_COLS, 60]);
+			     DEFAULT_DATAICON_FIELDS,
+			     ATTR_ID,this.domId(ID_DATAICON_FIELDS),
+			     ATTR_ROWS,4,
+			     ATTR_COLS, 60]);
 	    let  fields2= HU.boldLabel('Initial field')+HU.br()+
 		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',
-			 [ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),ATTR_SIZE,'25',
+			 [ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),
+			  ATTR_SIZE,25,
 			  ATTR_PLACEHOLDER,'Initial field']) +HU.br() +
 		HU.boldLabel('Menu Label') +HU.br()  +
 		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',
-			 [ATTR_ID,this.domId(ID_DATAICON_LABEL),ATTR_SIZE,'25']);
+			 [ATTR_ID,this.domId(ID_DATAICON_LABEL),
+			  ATTR_SIZE,25]);
 
-	    contents+=HU.table(HU.tr([ATTR_VALIGN,'top'],HU.td(fields1) +
+	    contents+=HU.table(HU.tr([ATTR_VALIGN,ALIGN_TOP],
+				     HU.td(fields1) +
 				     HU.td(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8))],fields2))));
-	    contents+='<p>';
+	    contents+=HU.p();
 	    contents+=HU.boldLabel('Canvas') +
-		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',[ATTR_ID,this.domId(ID_DATAICON_WIDTH),ATTR_SIZE,'3']) +
-		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',[ATTR_ID,this.domId(ID_DATAICON_HEIGHT),ATTR_SIZE,'3']) +
+		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',
+				 [ATTR_ID,this.domId(ID_DATAICON_WIDTH),
+				  ATTR_SIZE,3]) +
+		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',
+				  [ATTR_ID,this.domId(ID_DATAICON_HEIGHT),
+				   ATTR_SIZE,3]) +
 		HU.space(2) + HU.boldLabel('Icon Size') +
-		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',[ATTR_ID,this.domId(ID_DATAICON_SIZE),ATTR_SIZE,'3']);
+		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',
+			 [ATTR_ID,this.domId(ID_DATAICON_SIZE),
+			  ATTR_SIZE,3]);
 
 
 	    contents+=  HU.div([ATTR_STYLE,HU.css(CSS_PADDING_BOTTOM,HU.em(0.5))],
 			       HU.boldLabel('Properties') + HU.space(1) +
-			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),ATTR_SIZE,'80']));
+			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',
+					[ATTR_ID,this.domId(ID_DATAICON_PROPS),
+					 ATTR_SIZE,80]));
 	    contents+=HU.boldLabel('Icon Specification')  +HU.br();
 	    contents +=
-		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ATTR_ID,this.domId(ID_DATAICON_MARKERS),ATTR_ROWS,4,ATTR_COLS, 90]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',
+			    [ATTR_ID,this.domId(ID_DATAICON_MARKERS),
+			     ATTR_ROWS,4,
+			     ATTR_COLS, 90]);
 	    content.push({
 		header:'Data Icons',
 		contents: contents});
@@ -695,7 +724,9 @@ MapGlyph.prototype = {
 	    let exc = 'Enter entry IDs to exclude. One per line. Note: this will take effect on map reload.';
 	    exc+=HU.br();
 	    exc+= HU.textarea('',   this.getAttribute('excludes')??'',
-			      [ATTR_ID,this.domId('excludes'),ATTR_ROWS,'8',ATTR_COLS,'60']);
+			      [ATTR_ID,this.domId('excludes'),
+			       ATTR_ROWS,8,
+			       ATTR_COLS,60]);
 	    content.push({
 		header:'Exclude Entries',
 		contents: exc});
@@ -802,7 +833,7 @@ MapGlyph.prototype = {
 	    this.attrs.rangeRingLabels =this.jq('rangeringlabels').val();
 	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
-	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
+	    if(this.features.length>0) this.features[0].style.strokeColor=COLOR_TRANSPARENT;
 	}
 
 
@@ -984,7 +1015,8 @@ MapGlyph.prototype = {
 
 	if(!this.dataIconContainer || jqid(this.dataIconContainer).length==0) {
 	    this.dataIconContainer = HU.getUniqueId('dataiconfieldscontainer_');
-	    this.display.jq(ID_HEADER1).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(20)),
+	    this.display.jq(ID_HEADER1).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+									 CSS_MARGIN_RIGHT,HU.px(20)),
 						       ATTR_ID,this.dataIconContainer]));
 	}
 	jqid(this.dataIconContainer).show();
@@ -1009,7 +1041,8 @@ MapGlyph.prototype = {
 	if(!this.isVisible()) {
 	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
-	let contents = HU.div([ATTR_CLASS,clazz,ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],HU.boldLabel(label)+HU.space(1)+menu);
+	let contents = HU.div([ATTR_CLASS,clazz,
+			       ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],HU.boldLabel(label)+HU.space(1)+menu);
 	jqid(this.dataIconContainer).html(contents);
 
 	jqid(this.dataIconFieldsId).change(function(){
@@ -1235,7 +1268,9 @@ MapGlyph.prototype = {
 	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId('canvas_');
-	let c = HU.tag(TAG_CANVAS,[ATTR_WIDTH,canvasWidth,ATTR_HEIGHT,canvasHeight,ATTR_ID,cid]);
+	let c = HU.tag(TAG_CANVAS,[ATTR_WIDTH,canvasWidth,
+				   ATTR_HEIGHT,canvasHeight,
+				   ATTR_ID,cid]);
 
 	let isShown = true;
 	markers.forEach(marker=>{
@@ -1252,8 +1287,8 @@ MapGlyph.prototype = {
 	    ctx.fillStyle=props.fill;
 	    ctx.fillRect(0,0,canvasWidth,canvasHeight);
 	}
-	ctx.strokeStyle ="#000";
-	ctx.fillStyle="#000";
+	ctx.strokeStyle =COLOR_BLACK;
+	ctx.fillStyle=COLOR_BLACK;
 	let pending = [];
 	let records = data.getRecords();
 	let numberCount = 0;
@@ -1425,18 +1460,26 @@ MapGlyph.prototype = {
 	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,[ATTR_TARGET,'_entry']);
-	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_MAX_WIDTH,HU.px(180),CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
+	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+				 CSS_MAX_WIDTH,HU.px(180),
+				 CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
 	    let add = '';
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-			       ATTR_TITLE,'add map','entryid',entry.getId(),ATTR_COMMAND,GLYPH_MAP],HU.getIconImage('fas fa-plus'));
+			       ATTR_TITLE,'add map',
+			       ATTR_ENTRYID,entry.getId(),
+			       ATTR_COMMAND,GLYPH_MAP],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isPoint) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-			       ATTR_TITLE,'add data','entryid',entry.getId(),ATTR_COMMAND,GLYPH_DATA],HU.getIconImage('fas fa-plus'));
+			       ATTR_TITLE,'add data',
+			       ATTR_ENTRYID,entry.getId(),
+			       ATTR_COMMAND,GLYPH_DATA],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isGroup) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-			       ATTR_TITLE,'add multi entry','entryid',entry.getId(),ATTR_COMMAND,GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
+			       ATTR_TITLE,'add multi entry',
+			       ATTR_ENTRYID,entry.getId(),
+			       ATTR_COMMAND,GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
 	    } else {
 	    }		
 	    if(add!='') {
@@ -1935,7 +1978,7 @@ MapGlyph.prototype = {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
-					  ID_GLYPH_ID,this.getId(),
+					  ATTR_GLYPH_ID,this.getId(),
 					  ATTR_BUTTON_COMMAND,PROP_LAYERS_ANIMATION_PLAY],
 					 HU.getIconImage(ICON_PLAY,[],BUTTON_IMAGE_ATTRS));
 		}
@@ -1944,7 +1987,7 @@ MapGlyph.prototype = {
 		    if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 		    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-		    ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
+		    ATTR_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
 		    HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 		    }
 		**/
@@ -1953,8 +1996,8 @@ MapGlyph.prototype = {
 	    if(showZoomTo) {
 		right+=SPACE+
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
-			     ID_GLYPH_ID,this.getId(),
-			     ATTR_TITLE,'Click:Move to; Shift-click:Zoom in',],
+			     ATTR_GLYPH_ID,this.getId(),
+			     ATTR_TITLE,'Click:Move to; Shift-click:Zoom in'],
 			    //<i class="fa-regular fa-eye"></i>
 			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
@@ -1984,8 +2027,9 @@ MapGlyph.prototype = {
 		HU.div([],typeLabel) +
 		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
-	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
-							       CSS_WHITE_SPACE,'nowrap')], label);	    
+	    label = HU.div([ATTR_TITLE,title,
+			    ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
+					      CSS_WHITE_SPACE,'nowrap')], label);	    
 	}
 	if(right!='') {
 	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], right);
@@ -1993,7 +2037,7 @@ MapGlyph.prototype = {
 	if(args.forLegend) {
 	    let clazz = CLASS_LEGEND_LABEL;
 	    label = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, clazz),
-			    ID_GLYPH_ID,this.getId()],label);
+			    ATTR_GLYPH_ID,this.getId()],label);
 	    return [label,right];
 	}
 	return label;
@@ -2167,16 +2211,18 @@ MapGlyph.prototype = {
 	if(this.imageLayers) {
 	    let cbx='';
 	    if(this.getMapLayer() && this.getMapLayer().features.length) {
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),[ID_IMAGEID,'main',
-								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),
+					   [ID_IMAGEID,'main',
+					    ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible({id:'main'}),
 					   'Main Layer'));
 	    }
 	    this.imageLayerMap = {};
 	    this.imageLayers.forEach(obj=>{
 		this.imageLayerMap[obj.id] = obj;
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),[ID_IMAGEID,obj.id,
-								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),
+					   [ID_IMAGEID,obj.id,
+					    ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible(obj),
 					   obj.name));
 	    });
@@ -2188,10 +2234,12 @@ MapGlyph.prototype = {
 
 	if(this.haveChildren()) {
 	    if(this.getProperty('showTextSearch',false)) {
-		let input =  HU.input('',this.getProperty('searchtext')??'',[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
-									     ATTR_PLACEHOLDER,'Search Text',
-									     ATTR_ID,this.domId('searchtext')]);
-		body+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),CSS_MARGIN_LEFT,HU.px(8),
+		let input =  HU.input('',this.getProperty('searchtext')??'',
+				      [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
+				       ATTR_PLACEHOLDER,'Search Text',
+				       ATTR_ID,this.domId('searchtext')]);
+		body+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
+						CSS_MARGIN_LEFT,HU.px(8),
 						CSS_MARGIN_RIGHT,HU.px(8))],input);
 	    }
 
@@ -2206,7 +2254,8 @@ MapGlyph.prototype = {
 	}
 
 	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
-				      {separate:true,headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+				      {separate:true,
+				       headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				       extraAttributes:['map-glyph-id',this.getId()]});		
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
@@ -2218,7 +2267,8 @@ MapGlyph.prototype = {
 	    clazz+= ' ' + CLASS_LEGEND_LABEL_HIGHLIGHT;
 	}
 
-	html+=HU.open(TAG_DIV,[ATTR_ID,this.domId(ID_GLYPH_LEGEND),ID_GLYPH_ID,this.getId(),
+	html+=HU.open(TAG_DIV,[ATTR_ID,this.domId(ID_GLYPH_LEGEND),
+			       ATTR_GLYPH_ID,this.getId(),
 			       ATTR_CLASS,HU.classes(CLASS_LEGEND_ITEM,clazz)]);
 	html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'flex')],
 		     HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4))],block.header)+
@@ -2239,7 +2289,8 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(style.fillPattern)) {
 	    let svg = window.olGetSvgPattern(style.fillPattern,
 					     style.strokeColor,style.fillColor);
-	    s+='background-image: url(\''+ svg.url+'\');background-repeat: repeat;';
+	    s+=HU.css('background-image','url(\''+ svg.url+'\')',
+		      'background-repeat','repeat');
 	}  else if(style.fillColor) {
 	    s+=HU.css(CSS_BACKGROUND,style.fillColor);
 	} 
@@ -2255,7 +2306,8 @@ MapGlyph.prototype = {
 	    }
 	}
 	if(lineColor || lineColor||lineWidth) {
-	    s+=HU.css(CSS_BORDER,HU.getDimension(lineWidth??HU.px(1))+ ' ' + (lineStyle??'solid') + ' ' +
+	    s+=HU.css(CSS_BORDER,
+		      HU.getDimension(lineWidth??HU.px(1))+ ' ' + (lineStyle??'solid') + ' ' +
 		      (lineColor??'black'));
 	}
 	return s;
@@ -2280,7 +2332,8 @@ MapGlyph.prototype = {
 	    buttons =  HU.span([ATTR_ID,this.setLocationId,
 				ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.image(Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),[ATTR_WIDTH,HU.px(16)])
+			       HU.image(Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),
+					[ATTR_WIDTH,HU.px(16)])
 			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
 
@@ -2298,7 +2351,9 @@ MapGlyph.prototype = {
 	if(!this.attrs.entryId)  return null;
 	let url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
 	return  HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS)+(label?' ' + label:''),
-			[ATTR_TARGET,'_entry',ATTR_TITLE,'View entry', ATTR_CLASS,CLASS_CLICKABLE]);
+			[ATTR_TARGET,'_entry',
+			 ATTR_TITLE,'View entry',
+			 ATTR_CLASS,CLASS_CLICKABLE]);
     },
 
     getLegendBody:function() {
@@ -2320,7 +2375,8 @@ MapGlyph.prototype = {
 	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
 	    body += HU.div([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
 			    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-			    ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
+			    ATTR_GLYPH_ID,this.getId(),
+			    ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
 			   HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 	}
 
@@ -2332,7 +2388,10 @@ MapGlyph.prototype = {
 	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_LEGEND_OFFSET,'imdv-legend-text')],text);
 	}
 
-	let boxStyle = HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(14),CSS_HEIGHT,HU.px(14),CSS_MARGIN_RIGHT,HU.px(4));
+	let boxStyle = HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+			      CSS_WIDTH,HU.px(14),
+			      CSS_HEIGHT,HU.px(14),
+			      CSS_MARGIN_RIGHT,HU.px(4));
 	let legend = '';
 	let styleLegend='';
 	if(this.isMap()) {
@@ -2438,7 +2497,8 @@ MapGlyph.prototype = {
 		inMapLegend+=legend;
 	    else
 		body+=HU.toggleBlock(HU.span([ATTR_TITLE,'Legend'],
-					     HU.getIconImage('fas fa-list',null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(8))])),
+					     HU.getIconImage('fas fa-list',null,
+							     [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(8))])),
 				     /*'Legend',*/legend,true);
 	}
 
@@ -2457,8 +2517,14 @@ MapGlyph.prototype = {
 	    }
 
 	    let slider = 
-		HU.div([ATTR_TITLE,'Set time',ATTR_SLIDER_MIN,start.getTime(),ATTR_SLIDER_MAX,end.getTime(),ATTR_SLIDER_VALUE,value,
-			ID,this.domId('time_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,ATTR_WIDTH,HU.perc(90))],'');
+		HU.div([ATTR_TITLE,'Set time',
+			ATTR_SLIDER_MIN,start.getTime(),
+			ATTR_SLIDER_MAX,end.getTime(),
+			ATTR_SLIDER_VALUE,value,
+			ATTR_ID,this.domId('time_slider'),
+			ATTR_CLASS,'ramadda-slider',
+			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+					  CSS_WIDTH,HU.perc(90))],'');
 
 	    let anim = HU.join([
 		['Settings','fa-cog','settings'],
@@ -2469,7 +2535,8 @@ MapGlyph.prototype = {
 		['Go to end','fa-forward','end']
 	    ].map(t=>{
 		return HU.span([ATTR_CLASS,HU.classes('imdv-time-anim',CLASS_CLICKABLE),
-				ATTR_TITLE,t[0],'action',t[2]],HU.getIconImage(t[1]));
+				ATTR_TITLE,t[0],
+				ATTR_ACTION,t[2]],HU.getIconImage(t[1]));
 	    }),HU.space(2));
 
 	    if(this.getProperty('showAnimation',true)) {
@@ -2493,10 +2560,13 @@ MapGlyph.prototype = {
 		    body+='Opacity:';
 		body += 
 		    HU.center(
-			HU.div([ATTR_TITLE,'Set image opacity',ATTR_SLIDER_MIN,0,ATTR_SLIDER_MAX,1,ATTR_SLIDER_VALUE,v,
+			HU.div([ATTR_TITLE,'Set image opacity',
+				ATTR_SLIDER_MIN,0,
+				ATTR_SLIDER_MAX,1,
+				ATTR_SLIDER_VALUE,v,
 				ATTR_ID,this.domId('image_opacity_slider'),
 				ATTR_CLASS,'ramadda-slider',
-				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,'90%')],''));
+				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(90))],''));
 	    }
 	}
 
@@ -2504,10 +2574,14 @@ MapGlyph.prototype = {
 	   (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
-		HU.div([ATTR_TITLE,'Set image rotation',ATTR_SLIDER_MIN,-360,ATTR_SLIDER_MAX,360,ATTR_SLIDER_VALUE,this.style.rotation??0,
+		HU.div([ATTR_TITLE,'Set image rotation',
+			ATTR_SLIDER_MIN,-360,
+			ATTR_SLIDER_MAX,360,
+			ATTR_SLIDER_VALUE,this.style.rotation??0,
 			ATTR_ID,this.domId('image_rotation_slider'),
 			ATTR_CLASS,'ramadda-slider',
-			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(90))],''));
+			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+					  CSS_WIDTH,HU.perc(90))],''));
 	}
 
 	let item  = (content,checkInMap,addDecoration) => {
@@ -2539,9 +2613,11 @@ MapGlyph.prototype = {
 	    this.jq(ID_MAPFILTERS_OUTER).remove();
 	    let label = HU.b(this.getLabel({simple:true}));
 	    let inMap=HU.div([ATTR_ID,this.domId(ID_MAPFILTERS_OUTER),
-			      ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff',CSS_POSITION,POSITION_ABSOLUTE,
+			      ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE,
+						CSS_POSITION,POSITION_ABSOLUTE,
 						CSS_TOP,HU.px(10),
-						CSS_LEFT,HU.px(50),CSS_PADDING,HU.px(5)),
+						CSS_LEFT,HU.px(50),
+						CSS_PADDING,HU.px(5)),
 			      ATTR_CLASS,'ramadda-popup'],
 			     label+HU.div([ATTR_ID,this.domId(ID_MAPFILTERS)]));
 	    this.display.jq(ID_MAP_CONTAINER).append(inMap);
@@ -2568,8 +2644,11 @@ MapGlyph.prototype = {
 	    let filter = this.getStyleFromTree('imagefilter');
 	    item(HU.center(HU.href(this.style.imageUrl,
 				   HU.image(this.style.imageUrl,
-					    [ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),CSS_BORDER,HU.border(1,'#ccc'),
-							       CSS_WIDTH,HU.px(150),'filter',filter??'')]),[ATTR_TARGET,'_image'])));
+					    [ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
+							       CSS_BORDER,HU.border(1,'#ccc'),
+							       CSS_WIDTH,HU.px(150),
+							       'filter',filter??'')]),
+				   [ATTR_TARGET,'_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
 	    item(HU.center(HU.href(this.style.legendUrl,
@@ -2578,7 +2657,8 @@ MapGlyph.prototype = {
 								  ATTR_CLASS,'imdv-legend-image',
 								  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 										    CSS_BORDER,HU.border(1,'#ccc'),
-										    ATTR_WIDTH,HU.perc(100))]),[ATTR_TARGET,'_image'])));
+										    CSS_WIDTH,HU.perc(100))]),
+				   [ATTR_TARGET,'_image'])));
 	}
 
 
@@ -2599,7 +2679,8 @@ MapGlyph.prototype = {
 		    instr+=HU.div(attrs, step.instr);
 		});
 		body+=HU.center(HU.b('Directions')) +
-		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
+		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+					      CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
 	    }
 	}
 	
@@ -2611,11 +2692,12 @@ MapGlyph.prototype = {
 	if(inMapLegend!='') {
 	    inMapLegend=
 		HU.div([ATTR_TITLE,this.getName(),
-			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_MAX_WIDTH,HU.px(150),
+			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+					  CSS_MAX_WIDTH,HU.px(150),
 					  CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],HU.b(this.getName())) +
 		inMapLegend;
 
-	    inMapLegend = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,'var(--basic-border)',
+	    inMapLegend = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,CSS_BASIC_BORDER,
 						    CSS_PADDING,HU.px(4)),
 				  ATTR_ID,this.domId('maplegend')], inMapLegend);
 	    this.display.addToMapLegend(this,inMapLegend);
@@ -2661,7 +2743,9 @@ MapGlyph.prototype = {
 		collision: "flipfit"
 	    },
 	    content: function() {
-		return HU.image($(this).attr(ATTR_SRC),[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(450),CSS_BORDER,'var(--basic-border)')]);
+		return HU.image($(this).attr(ATTR_SRC),[ATTR_STYLE,
+							HU.css(CSS_MAX_WIDTH,HU.px(450),
+							       CSS_BORDER,CSS_BASIC_BORDER)]);
 	    },
 	});
 
@@ -2935,7 +3019,8 @@ MapGlyph.prototype = {
 		    if(obj.isEnumeration) {
 			let maxHeight = this.getProperty('mapLegendHeight',HU.px(150));
 			html+='\n';
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,maxHeight,CSS_OVERFLOW_Y,OVERFLOW_AUTO)],div);
+			html+=HU.div([ATTR_STYLE,
+				      HU.css(CSS_MAX_HEIGHT,maxHeight,CSS_OVERFLOW_Y,OVERFLOW_AUTO)],div);
 		    } else {
 			html+=HU.center(div);
 		    }
@@ -3467,7 +3552,9 @@ MapGlyph.prototype = {
 						    url? HU.image(url,[ATTR_HEIGHT,HU.px(20),ATTR_WIDTH,HU.px(256)]):'No image'));
 
 	let _this = this;
-	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
+	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8),
+					 CSS_MAX_HEIGHT,HU.px(200),
+					 CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	this.jq('colortable').click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
 					     my:'left top',
@@ -3763,7 +3850,8 @@ MapGlyph.prototype = {
 	    content: function() {
 		let feature = getFeature($(this));
 		let html = _this.getFeatureText(feature.attributes);
-		html = HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9),CSS_WIDTH,HU.px(600))],html);
+		html = HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9),
+						 CSS_WIDTH,HU.px(600))],html);
 		return html;
 
 	    }});
@@ -3905,7 +3993,8 @@ MapGlyph.prototype = {
 	    table+='<tfoot><tr>';
 	    let fmt = (label,amt) =>{
 		return HU.tr(HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_ALIGN,'right')],HU.b(label)) +
-			     HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_ALIGN,'right')],Utils.formatNumberComma(amt)));
+			     HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_ALIGN,'right')],
+				   Utils.formatNumberComma(amt)));
 	    };
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
@@ -3964,7 +4053,9 @@ MapGlyph.prototype = {
 	    html += HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200),CSS_MARGIN,HU.px(10))],'No data');
 	} else {
 	    html +=  
-		HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),CSS_MAX_WIDTH,HU.px(1000),CSS_OVERFLOW_X,'scroll')],table);
+		HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
+					  CSS_MAX_WIDTH,HU.px(1000),
+					  CSS_OVERFLOW_X,'scroll')],table);
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	}
 	this.jq('featurestable').html(html);
@@ -4084,9 +4175,9 @@ MapGlyph.prototype = {
 	    html+=SPACE;
 	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
 
-	    html+='<p>'
+	    html+=HU.p();
 	    html += HU.div([ATTR_ID,this.domId('makecsv')],'Make CSV File');	    
-	    html+='<p>'
+	    html+=HU.p();
 	    html += HU.div([ATTR_ID,this.domId('createroute')],'Create Route');	    
 	    content.push({header:'Make Map',contents:html});
 	}
@@ -4151,7 +4242,8 @@ MapGlyph.prototype = {
 	    v = v.replace(/"/g,'').replace(/\n/g,' ');
 	    sample+=a+'=' + v+'&#013;';
 	}
-	rulesTable+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold')],['Property','Operator','Value',ATTR_STYLE]));
+	rulesTable+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD)],
+				    ['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules(true);
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;<br>strokeColor:blue&#013;strokeWidth:1&#013;<br>strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot<br>fillPattern:dots-1|circles-1|crosshatch|dialog-stripe-1|etc';
 	for(let index=0;index<20;index++) {
@@ -4201,8 +4293,8 @@ MapGlyph.prototype = {
 	let styleGroupsUI = HU.leftRightTable('',
 					      this.getHelp('mapfiles.html#stylegroups'));
 	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
-	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold')],
-				       ['Group','Fill','Opacity','Stroke',ATTR_WIDTH,'Pattern','Features']));
+	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD)],
+				       ['Group','Fill','Opacity','Stroke','Width','Pattern','Features']));
 	for(let i=0;i<20;i++) {
 	    let group = styleGroups[i];
 	    let prefix = 'mapstylegroups_' + i;
@@ -4216,7 +4308,8 @@ MapGlyph.prototype = {
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag(TAG_TABLE);
-	styleGroupsUI = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], styleGroupsUI);
+	styleGroupsUI = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+						  CSS_OVERFLOW_Y,OVERFLOW_AUTO)], styleGroupsUI);
 
 	//Don't add style groups if it is a group, just map glyphs
 	if(!this.isGroup()) {
@@ -4270,7 +4363,8 @@ MapGlyph.prototype = {
 
 	}
 
-	ex = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], ex);
+	ex = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),
+				       CSS_OVERFLOW_Y,OVERFLOW_AUTO)], ex);
 	content.push({header:'Sample Values',contents:ex});
 
 	let features= this.getMapFeatures();
@@ -4288,7 +4382,8 @@ MapGlyph.prototype = {
 	    let allId  = this.domId('features_visible_all');
 	    let selectCbx = HU.checkbox(selectId,[ATTR_ID,selectId],true,'Select');
 	    let allCbx = HU.checkbox(allId,[ATTR_ID,allId],true,'Visible');
-	    table+='<tr>' + HU.tds([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(20),CSS_FONT_WEIGHT,'bold')],
+	    table+='<tr>' + HU.tds([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(20),
+						      CSS_FONT_WEIGHT,FONT_BOLD)],
 				   [allCbx,'length miles/mile&sup2;/acres']) +HU.close(TAG_TR);
 	    
 	    this.indexToFeature={};
@@ -4326,7 +4421,8 @@ MapGlyph.prototype = {
 	    });
 	    
 	    table+=HU.close(TAG_TABLE);
-	    table=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], table);
+	    table=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),
+					    CSS_OVERFLOW_Y,OVERFLOW_AUTO)], table);
 	    content.push({header:'Features',contents:table});
 	}
 
@@ -4652,7 +4748,8 @@ MapGlyph.prototype = {
 				      'slider-value-max',Utils.getDefined(filter.max,info.max),
 				      'filter-property',info.property,'feature-id',info.id,
 				      ATTR_CLASS,CLASS_FILTER_SLIDER,
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100))],"");
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							CSS_WIDTH,HU.perc(100))],"");
 		if(info.getProperty('filter.animate',false)) {
 		    line+=HU.table([ATTR_WIDTH,HU.perc(100)],
 				   HU.tr([],
@@ -4676,9 +4773,11 @@ MapGlyph.prototype = {
 
 
 	if(contents.sliders!='')
-	    contents.sliders = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_RIGHT,HU.px(20))],contents.sliders);
+	    contents.sliders = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),
+							 CSS_MARGIN_RIGHT,HU.px(20))],contents.sliders);
 	if(contents.first!='')
-	    contents.first = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_RIGHT,HU.px(20))],contents.first);	    
+	    contents.first = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),
+						       CSS_MARGIN_RIGHT,HU.px(20))],contents.first);	    
 
 	if(this.topHeaderId) {
 	    jqid(this.topHeaderId).html('');
@@ -4688,8 +4787,11 @@ MapGlyph.prototype = {
 	}
 	if(contents.top.length) {
 	    let label =  this.getLabel({addIcon:this.getProperty('showIconInHeader',false),forLegend:true})[0];
-	    let top = HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,'bold',CSS_TEXT_ALIGN,'center')], label) +
-		HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(15))], c);}));
+	    let top = HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD,
+						CSS_TEXT_ALIGN,'center')], label) +
+		HU.hbox(contents.top.map(c=>{
+		    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(15))], c);
+		}));
 	    this.getTopHeader().html(top);
 	}
 
@@ -5081,7 +5183,7 @@ MapGlyph.prototype = {
 		tmp.push(pt.y,pt.x);
 	    });
 	    points = tmp;
-	    let style = {strokeColor:'transparent',imageUrl:feature.attributes.fillimage};
+	    let style = {strokeColor:COLOR_TRANSPARENT,imageUrl:feature.attributes.fillimage};
 	    let mapGlyph = new MapGlyph(this.display,GLYPH_IMAGE,{type:GLYPH_IMAGE},null,style,
 					true,{geometryType:'OpenLayers.Geometry.LineString',points:points});
 	    this.addChildGlyph(mapGlyph);
@@ -5241,7 +5343,7 @@ MapGlyph.prototype = {
 			    }
 			    //			    label = "hello there\nhow are you\nI am fine"
 			    featureStyle = Utils.clone(featureStyle,{
-				strokeColor:'transparent',
+				strokeColor:COLOR_TRANSPARENT,
 				textBackgroundFillColor:featureStyle.fillColor,
 				textBackgroundPadding:2,
 				textBackgroundShape:'rectangle',				
@@ -5250,7 +5352,7 @@ MapGlyph.prototype = {
 				labelAlign:'lt',
 				fontSize:'6pt',
 				label:label});
-			    //			    featureStyle.fillColor = 'transparent'
+			    //			    featureStyle.fillColor = COLOR_TRANSPARENT
 			}
 		    }
 		}
@@ -5508,7 +5610,7 @@ MapGlyph.prototype = {
 
 	this.mapLayer.features.forEach(f=>{
 	    if(f.style && f.style.fillPattern && !Utils.stringDefined(f.style.fillColor)) {
-		f.style.fillColor='transparent'
+		f.style.fillColor=COLOR_TRANSPARENT
 	    }
 	});
 	this.checkVisible();
@@ -5653,7 +5755,7 @@ MapGlyph.prototype = {
 	}
 
 	let style = $.extend({},this.features[0].style);
-	style.strokeColor='transparent';
+	style.strokeColor=COLOR_TRANSPARENT;
 	this.features[0].style = style;
 
 	let pt = this.features[0].geometry.getCentroid();
@@ -6253,12 +6355,15 @@ MapGlyph.prototype = {
 	}
 
 	['right','left','bottom','top'].forEach(d=>{
-	    if(Utils.stringDefined(style[d])) css+=HU.css(d,HU.getDimension(style[d]));
+	    if(Utils.stringDefined(style[d]))
+		css+=HU.css(d,HU.getDimension(style[d]));
 	});
 	let id = this.getFixedId();
 	jqid(id).remove();
 	let text = this.style.text??"";
-	let html = HU.div([ATTR_ID,id,ATTR_CLASS,"ramadda-imdv-fixed",ATTR_STYLE,css],"");
+	let html = HU.div([ATTR_ID,id,
+			   ATTR_CLASS,"ramadda-imdv-fixed",
+			   ATTR_STYLE,css],"");
 	this.display.jq(ID_MAP_CONTAINER).append(html);
 	let toggleLabel = null;
 	if(text.startsWith("toggle:")) {
@@ -6348,7 +6453,7 @@ MapGlyph.prototype = {
 		     "showRecordSelection":true,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
-		     ATTR_TITLE:this.attrs.name,
+		     "title":this.attrs.name,
 		     "max":"5000",
 		     "thisEntryType":this.attrs.entryType,
 		     "entryId":entryId,
@@ -6409,7 +6514,7 @@ MapGlyph.prototype = {
 	let style = this.style??{};
 	let css= [CSS_DISPLAY,DISPLAY_INLINE_BLOCK];
 	let dim = small?HU.px(10):HU.px(25);
-	css.push(ATTR_WIDTH,small?HU.px(10):HU.px(50));
+	css.push(CSS_WIDTH,small?HU.px(10):HU.px(50));
 	let line = "solid";
 	if(style.strokeWidth>0) {
 	    if(style.strokeDashstyle) {
@@ -6475,7 +6580,8 @@ MapGlyph.prototype = {
 	    }
 	    return HU.div([ATTR_STYLE,HU.css(css)]);
 	}
-	return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_BORDER,HU.border(1,'transparent'),CSS_WIDTH,small?HU.px(10):HU.px(50))]);
+	return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_BORDER,HU.border(1,COLOR_TRANSPARENT),
+					 CSS_WIDTH,small?HU.px(10):HU.px(50))]);
     },
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
@@ -6525,7 +6631,7 @@ MapGlyph.prototype = {
 		    style.externalGraphic = this.style.childIcon;
 		}
 		style.strokeWidth=1;
-		style.strokeColor="transparent";
+		style.strokeColor=COLOR_TRANSPARENT;
 		style.fontSize=HU.px(12);
 		if(style.showLabels) {
 		    let label  =e.getName();
@@ -6585,16 +6691,16 @@ MapGlyph.prototype = {
 	if(this.isSelected()) {
 	    return;
 	}
-	this.findInLegend(CLASS_LEGEND_LABEL).css(CSS_FONT_WEIGHT,'bold');
+	this.findInLegend(CLASS_LEGEND_LABEL).css(CSS_FONT_WEIGHT,FONT_BOLD);
 	this.selected = true;
 	this.selectDots = [];
 	let pointCount = 0;
 	let mapLayer = this.getMapLayer();
 	if(mapLayer && mapLayer.features) {
 	    let style={
-		strokeColor:'#000',
+		strokeColor:COLOR_BLACK,
 		strokeWidth:2,
-		fillColor:'transparent',
+		fillColor:COLOR_TRANSPARENT,
 		pointRadius:5
 	    };
 

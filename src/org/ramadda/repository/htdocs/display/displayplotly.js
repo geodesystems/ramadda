@@ -1336,7 +1336,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     xanchor: this.getLegendXAnchor(),
                 },
                 showlegend: this.getShowLegend(true),
-		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
+		paper_bgcolor: this.getProperty("chart.fill", COLOR_TRANSPARENT),		
 //                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
                 plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				
                 hovermode: 'closest'
