@@ -1,5 +1,3 @@
-
-
 const DISPLAY_MAPGRID = "mapgrid";
 const DISPLAY_MAPCHART = "mapchart";
 const DISPLAY_MAPARRAY = "maparray";
@@ -144,30 +142,31 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		for(let x=1;x<=maxx;x++) {
 		    let id = this.domId("cell_" +x+ "_"+y);
 		    let o = map[id];
-		    let extra = " id='" + id +"' ";
-		    let style = HU.css(CSS_POSITION,'relative',
+		    let extra = [ATTR_ID,id];
+		    let style = HU.css(CSS_POSITION,POSITION_RELATIVE,
 				       CSS_MARGIN,HU.px(1),
-				       CSS_VERTICAL_ALIGN,'center',
-				       CSS_TEXT_ALIGN,'center',
+				       CSS_VERTICAL_ALIGN,ALIGN_CENTER,
+				       CSS_TEXT_ALIGN,ALIGN_CENTER,
 				       CSS_HEIGHT, HU.px(height));
 		    if(width>0) style+=HU.css(CSS_WIDTH,HU.px(width));
 		    let c = "";
 		    if(o) {
-			style+="background:#ccc;" + cellStyle;
+			style+=HU.css(CSS_BACKGROUND,COLOR_LIGHT_GRAY) + cellStyle;
 			if(!sparkLineField) {
-			    extra += " title='" + o.name +"' ";
+			    extra.push(ATTR_TITLE, o.name);
 			}
-			extra += HU.attr(ATTR_CLASS,'display-mapgrid-cell');
+			extra.push(ATTR_CLASS,'display-mapgrid-cell');
 			c = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(3))], (showLabel?o.codes[0]:""));
 			o.codes.forEach(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
-		    let td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
+		    extra.push(ATTR_STYLE,style);
+		    let td = HU.td([],HU.div(extra,c));
 		    table+=td;
 		}
 		table+=HU.close(TAG_TR);
 	    }
-	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
+	    table +=HU.tr([],HU.td(["colspan", maxx],HU.br() +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
 	    table+=HU.close(TAG_TABLE);
 	    this.setContents(HU.center(table));
 
@@ -751,8 +750,8 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			let poly = this.makePoly(polygon);
 			let fillColor = COLOR_TRANSPARENT;
 			if(missing) {
-			    fillColor = this.getMissingFillColor("#ccc");
-			    lineColor=this.getMissingLineColor("#000"); 
+			    fillColor = this.getMissingFillColor(COLOR_LIGHT_GRAY);
+			    lineColor=this.getMissingLineColor(COLOR_BLACK); 
 			} else {
 			    if(layer==maxLayer-1) {
 				fillColor = this.colorBy.getColorFromRecord(record);
@@ -910,11 +909,11 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 		    let poly = this.makePoly(polygon);
 		    let fillColor = COLOR_TRANSPARENT;
 		    if(missing) {
-			fillColor = "#ccc";
-			lineColor="#000" 
+			fillColor = COLOR_LIGHT_GRAY;
+			lineColor=COLOR_BLACK; 
 		    } else {
 			fillColor = this.colorBy.getColor(value);
-			lineColor = "#ccc";
+			lineColor = COLOR_LIGHT_GRAY;
 		    }
 		    if(missing) {
 			svg.selectAll(uid)
@@ -923,7 +922,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			    .attr("points",function(d) { 
 				return d.map(d=>{return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");}).join(" ");
 			    })
-			    .attr("fill","#ccc")
+			    .attr("fill",COLOR_LIGHT_GRAY)
 		    	    .attr("stroke-width",1)
 			    .attr("stroke","black");
 			return;
@@ -992,7 +991,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			let poly = this.makePoly(polygon);
 			let fillColor = "red";
 			let transform  = "";
-			lineColor="#000" 
+			lineColor=COLOR_BLACK; 
 			if(layer==0) {
 			    fillColor = COLOR_WHITE;
 			} else {
@@ -1015,7 +1014,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 				.attr("points",function(d) { 
 				    return  d.map(d=>{return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");}).join(" ");
 				})
-				.attr("fill","#ccc")
+				.attr("fill",COLOR_LIGHT_GRAY)
 		    		.attr("stroke-width",1)
 			    	.attr("stroke","black");
 			    return;
@@ -1100,7 +1099,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 		this.imageField =  this.getFieldByType(null, "image");
 	    }
 	    let strokeWidth = this.getStrokeWidth(1);
-	    let strokeColor = this.getStrokeColor("#000");
+	    let strokeColor = this.getStrokeColor(COLOR_BLACK);
 	    if(this.imageField==null) {
                 this.displayError("No image fields");
 		return

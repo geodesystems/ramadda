@@ -46,8 +46,8 @@ var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_layer','type_wms_layer'];
 
-var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,'#ccc',CSS_FONT_SIZE,HU.pt(9))];
-var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')];
+var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY,CSS_FONT_SIZE,HU.pt(9))];
+var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var PROP_DONT_SHOW_IN_LEGEND='dontShowInLegend';
@@ -457,7 +457,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		 9,10,11,12,13,14,15,16,17,18,19,[20,'20 - Most zoomed in']],
 	DOT_STYLE:{
 	    zIndex:1000,
-	    fillColor:'#000',
+	    fillColor:COLOR_BLACK,
 	    fillOpacity:1,
 	    strokeWidth:0,
 	    pointRadius:4
@@ -1013,7 +1013,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
 			      fontSize:style.fontSize??HU.pt(10),
-			      fontColor:style.fontColor??'#000'};
+			      fontColor:style.fontColor??COLOR_BLACK};
 	    for(a in style) {
 		if(a.indexOf('label')>=0|| a.indexOf('font')>=0 || a.indexOf('textBackground')>=0) {
 		    labelStyle[a] = style[a];
@@ -1448,7 +1448,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			style.strokeColor='#ccc';
+			style.strokeColor=COLOR_LIGHT_GRAY;
 			style.fillColor = COLOR_TRANSPARENT;
 		    } else {
 			$.extend(mapOptions,attrs);
@@ -1662,7 +1662,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
 						CSS_PADDING_BOTTOM,HU.px(8),
 						CSS_MARGIN_BOTTOM,HU.px(8),
-						CSS_BORDER_BOTTOM,HU.border(1,'#ccc'))],
+						CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY))],
 			     HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 			     HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
 		
@@ -2736,9 +2736,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    clazz+= " " + LIST_SELECTED_CLASS;
 		}
 		features+=HU.openTag(TAG_TR,[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,
-					   ATTR_VALIGN,'top',
-					   ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc')),
-					   ATTR_GLYPH_ID,mapGlyph.getId()]);
+					     ATTR_VALIGN,'top',
+					     ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY)),
+					     ATTR_GLYPH_ID,mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
 		features+=tds;
 		features+=HU.close(TAG_TR);
@@ -2794,7 +2794,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html ='';
 	    html+=HU.div([ATTR_ID,this.domId(ID_LIST),
 			  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(10),
-					    CSS_BORDER,HU.border(1,'#ccc'),
+					    CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
 					    CSS_MAX_HEIGHT,HU.px(300),
 					    CSS_MAX_WIDTH,HU.px(600),
 					    CSS_OVERFLOW_X,OVERFLOW_AUTO,
@@ -3028,7 +3028,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let prefix = '';
 		if(cmd!='Esc') prefix = 'Ctrl-';
 		label = HU.leftRightTable(label,HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8))],
-						       HU.span([ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')], prefix+cmd)));
+						       HU.span([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)], prefix+cmd)));
 	    }
 	    return  HU.div([ATTR_ID,id,
 			    ATTR_CLASS,CLASS_CLICKABLE],label);
@@ -3057,7 +3057,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    bar = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(150),
 					    CSS_OVERFLOW_Y,OVERFLOW_AUTO,
-					    CSS_BORDER,HU.border(1,'#ccc'))],bar);
+					    CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY))],bar);
 	    return bar;
 	},
 	
@@ -3662,13 +3662,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),
 				       ATTR_STYLE,HU.css(CSS_POSITION,'relative',
 							 CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-							 CSS_BACKGROUND,'#ccc')],
+							 CSS_BACKGROUND,COLOR_LIGHT_GRAY)],
 				      HU.image(mapGlyph.style.imageUrl,
 					       [ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y',
 						ATTR_WIDTH,HU.px(600),
 						ATTR_CLASS,'theimage',
 						ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,
-								  CSS_BORDER,HU.border(1,'#ccc'))]));
+								  CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY))]));
 		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
@@ -5316,7 +5316,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	    let textStyle = {
-		fontColor: this.getProperty("labelFontColor","#000"),
+		fontColor: this.getProperty("labelFontColor",COLOR_BLACK),
 		fontSize: this.getFontSize(),
 		fontFamily: this.getFontFamily(),
 		fontWeight: this.getFontWeight(),
@@ -5395,9 +5395,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		left:'',
 		top:'',
 		borderWidth:1,
-		borderColor:"#ccc",
+		borderColor:COLOR_LIGHT_GRAY,
 		fillColor:"#fffeec",
-		fontColor:"#000",
+		fontColor:COLOR_BLACK,
 		fontSize:HU.pt(12)			      
 		
 	    },
@@ -6258,7 +6258,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				ATTR_ID,this.domId(ID_ADDRESS_CLEAR),
 				ATTR_TITLE,'Clear',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')])) +
+			       HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)])) +
 			' ' +
 			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),
 				ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
@@ -6903,7 +6903,7 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     if(!ol.idToSvgId) {
 	ol.idToSvgId={};
     }
-    stroke = stroke||'#000';
+    stroke = stroke||COLOR_BLACK;
     fill = fill||COLOR_TRANSPARENT;
     let id = p+'_'+stroke +'_'+fill;
     if(ol.idToSvgId[id]) return ol.idToSvgId[id];
@@ -7001,7 +7001,7 @@ var IMDV_PATTERNS = {
 
 
 window.olGetSvgPattern = function(p,stroke,fill) {
-    stroke = stroke||'#000';
+    stroke = stroke||COLOR_BLACK;
     fill = fill||COLOR_TRANSPARENT;
 
     p=IMDV_PATTERNS[p] ??IMDV_PATTERNS['diagonal-stripe-1'];
@@ -7074,6 +7074,4 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
     }
     return false;
 }
-
-
 

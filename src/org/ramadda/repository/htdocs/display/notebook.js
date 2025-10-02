@@ -957,7 +957,7 @@ function NotebookState(cell, div) {
             var entries = this.currentEntries;
             for (var name in entries) {
                 var e = entries[name];
-                h += name + "=" + e.entry.getName() + "<br>";
+                h += name + "=" + e.entry.getName() + HU.br();
             }
             this.write(h);
         },
@@ -1156,7 +1156,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.inputToolbar = h;
                 this.jq(ID_INPUT_TOOLBAR).html(h);
                 $("#" + this.editId + "_prefix").html(HU.span([ATTR_ID, this.getDomId("toolbar_notebook"),
-								      ATTR_STYLE, HU.css(CSS_BORDER_RIGHT,HU.border(1,'#ccc')),
+								      ATTR_STYLE, HU.css(CSS_BORDER_RIGHT,HU.border(1,COLOR_LIGHT_GRAY)),
                     ATTR_CLASS, "ramadda-menubar-button"
                 ], "Notebook"));
                 this.jq("toolbar_notebook").click(() => this.showNotebookMenu());
@@ -1286,51 +1286,51 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let space = SPACE2;
             let menu = "";
 	    let open = HU.open(TAG_DIV,[ATTR_CLASS,'display-notebook-menu-block']);
-	    let close = '</div>';
+	    let close = HU.close(TAG_DIV);
             menu += HU.input(ID_CELLNAME_INPUT, _this.cellName, [ATTR_PLACEHOLDER, "Cell name",
 									ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100)),
 									ATTR_ID, _this.getDomId(ID_CELLNAME_INPUT)]);
 
             menu += open;
-            menu += "<table  width=100%> ";
+            menu += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
             menu += "<tr><td align=right><b>New cell:</b>&nbsp;</td><td>";
             menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "newabove"], "Above") + space;
             menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "newbelow"], "Below");
-            menu += "</td></tr>"
+            menu += HU.close(TAG_TD,TAG_TR);
             menu += "<tr><td align=right><b>Move:</b>&nbsp;</td><td>";
             menu += HU.div([ATTR_TITLE, "ctrl-^", ATTR_CLASS, "ramadda-link", "what", "moveup"], "Up") + space;
             menu += HU.div([ATTR_TITLE, "ctrl-v", ATTR_CLASS, "ramadda-link", "what", "movedown"], "Down");
-            menu += "</td></tr>"
-            menu += "</table>";
+            menu += HU.close(TAG_TD,TAG_TR,TAG_TABLE);
+
 
 	    menu+=close;
 	    menu+=open;
             menu += HU.div([ATTR_TITLE, "ctrl-return", ATTR_CLASS, "ramadda-link", "what", "hideall"], "Hide all inputs");
-            menu += "<br>"
+            menu += HU.br()
             menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "clearall"], "Clear all outputs");
-            menu += "<br>";
+            menu += HU.br();
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
             menu += "<b>Layout:</b> ";
-            menu += HU.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal","Horizontal") + "<br>";
+            menu += HU.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal","Horizontal") + HU.br();
             //            menu += "Columns: ";
             //            menu += HU.input(colId, this.notebook.columns, ["size", "3", ATTR_ID, _this.getDomId(ID_LAYOUT_COLUMNS)]);
 	    menu+=close;
 	    menu+=open;
-            menu += HU.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [], _this.showOutput,"Output enabled") + "<br>";
-            menu += HU.checkbox(_this.getDomId(ID_SHOWCONSOLE), [], _this.notebook.showConsole,"Show console") + "<br>";
+            menu += HU.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [], _this.showOutput,"Output enabled") + HU.br();
+            menu += HU.checkbox(_this.getDomId(ID_SHOWCONSOLE), [], _this.notebook.showConsole,"Show console") + HU.br();
 
-            menu += HU.checkbox(_this.getDomId(ID_RUNFIRST), [], _this.runFirst, "Run first") + "<br>";
-            menu += HU.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [], _this.notebook.runOnLoad,"Run on load") + "<br>";
-            menu += HU.div([ATTR_TITLE, "Don't show the left side and input for anonymous users"], HU.checkbox(_this.getDomId(ID_DISPLAY_MODE), [], _this.notebook.displayMode) + " Display mode" + "<br>");
+            menu += HU.checkbox(_this.getDomId(ID_RUNFIRST), [], _this.runFirst, "Run first") + HU.br();
+            menu += HU.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [], _this.notebook.runOnLoad,"Run on load") + HU.br();
+            menu += HU.div([ATTR_TITLE, "Don't show the left side and input for anonymous users"], HU.checkbox(_this.getDomId(ID_DISPLAY_MODE), [], _this.notebook.displayMode) + " Display mode" + HU.br());
 
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "savewithout"], "Save notebook") + "<br>";
+            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "savewithout"], "Save notebook") + HU.br();
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "delete"], "Delete cell") + "<br>";
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "help"], "Help") + "<br>";
+            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "delete"], "Delete cell") + HU.br();
+            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "help"], "Help") + HU.br();
             menu = HU.div([ATTR_CLASS, "display-notebook-menu"], menu);
 	    menu+=close;
             var popup = this.getPopup();
@@ -2507,11 +2507,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         processCommand_printEntries: async function(line, toks, div) {
             var h = "";
             await this.getCurrentEntry(e => current = e);
-            h += "current" + "=" + current.getName() + "<br>";
+            h += "current" + "=" + current.getName() + HU.br();
             var entries = this.notebook.getCurrentEntries();
             for (var name in entries) {
                 var e = entries[name];
-                h += name + "=" + e.entry.getName() + "<br>";
+                h += name + "=" + e.entry.getName() + HU.br();
             }
             if (h == "") h = "No entries";
             div.set(h);
@@ -2527,7 +2527,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
         processCommand_info: async function(line, toks, div) {
             await this.getCurrentEntry(e => entry = e);
-            div.append("current:" + entry.getName() + " id:" + entry.getId() + "<br>");
+            div.append("current:" + entry.getName() + " id:" + entry.getId() + HU.br());
         },
 
         processCommand_cd: async function(line, toks, div) {

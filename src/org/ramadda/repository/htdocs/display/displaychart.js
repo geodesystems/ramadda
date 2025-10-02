@@ -557,7 +557,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             tmp += HU.formEntry("Colors:",
 				HU.input("", this.getColorList().join(","),
 					 [ATTR_SIZE, "35", ATTR_ID, this.domId(ID_COLORS)]));
-            tmp += "</table>";
+            tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
 
         },
@@ -2583,13 +2583,13 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxis.minorGridlines.color',ex:COLOR_TRANSPARENT},
 	{p:'baselineColor',ex:''},
 	{p:'vAxis.baselineColor',ex:''},
-	{p:'textColor',ex:'#000'},
+	{p:'textColor',ex:COLOR_BLACK},
 	{p:'textBold',ex:'true'},
 
-	{p:'axis.text.color',ex:'#000'},
-	{p:'hAxis.text.color',ex:'#000'},
-	{p:'vAxis.text.color',ex:'#000'},
-	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+	{p:'axis.text.color',ex:COLOR_BLACK},
+	{p:'hAxis.text.color',ex:COLOR_BLACK},
+	{p:'vAxis.text.color',ex:COLOR_BLACK},
+	{p:'&lt;field&gt;.vAxis.text.color',ex:COLOR_BLACK},
 
 	{p:'hAxis.text.fontSize',ex:'16'},
 	{p:'vAxis.text.fontSize',ex:'16'},
@@ -2614,15 +2614,15 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 	{p:'slantedText',ex:'true'},
 	{p:'hAxis.slantedText',ex:''},
-	{p:'hAxis.text.color',ex:'#000'},
-	{p:'vAxis.text.color',ex:'#000'},
+	{p:'hAxis.text.color',ex:COLOR_BLACK},
+	{p:'vAxis.text.color',ex:COLOR_BLACK},
 
-	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+	{p:'&lt;field&gt;.vAxis.text.color',ex:COLOR_BLACK},
 
 
 
 	{p:'legend.position',ex:'top|bottom|none'},
-	{p:'legend.text.color',ex:'#000'},
+	{p:'legend.text.color',ex:COLOR_BLACK},
 	{p:'hAxis.ticks',tt:'Comma separated list of tick marks',ex:''},
 	{p:'hAxis.tickTemplate',ex:'${value}'},
 	{p:'vAxis.ticks',tt:'Comma separated list of tick marks',ex:''},
@@ -3026,7 +3026,7 @@ function PiechartDisplay(displayManager, id, properties) {
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.tooltip = {
                 textStyle: {
-                    color: '#000000',
+                    color: COLOR_BLACK,
 		    fontSize:12,
                 },
                 showColorCode: true,

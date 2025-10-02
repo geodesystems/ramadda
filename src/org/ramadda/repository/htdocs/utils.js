@@ -2085,7 +2085,7 @@ var Utils =  {
                                 let width = t.attrs[ATTR_WIDTH]||"100%";
                                 let height = parseFloat(t.attrs["height"]||12);
                                 let percent = (100-100*(value-min)/(max-min))+"%";
-                                let border = t.attrs["border"]||HU.border(1,'#ccc');
+                                let border = t.attrs["border"]||HU.border(1,COLOR_LIGHT_GRAY);
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
 						   ATTR_STYLE,
@@ -2989,9 +2989,9 @@ var Utils =  {
 					// set a max-height when the menu is created
 					$(this).iconselectmenu("menuWidget")
 					    .css({
-						CSS_HEIGHT: HU.px(200),
-						CSS_MAX_HEIGHT: HU.px(200),   // or compute based on desired "size"
-						CSS_OVERFLOW_Y: "auto"
+						'height': HU.px(200),
+						'max-height': HU.px(200),   // or compute based on desired "size"
+						'overflow-y': "auto"
 					    });
 				    }
 				   });
@@ -5378,7 +5378,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     border:function(width, color, solid) {
 	solid = solid??'solid';
-	color = color ?? '#ccc';
+	color = color ?? COLOR_LIGHT_GRAY;
 	return HU.px(width) + ' ' + solid +' ' + color;
     },
     translate:function(x,y) {

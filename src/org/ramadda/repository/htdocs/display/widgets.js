@@ -18,10 +18,8 @@ function AreaWidget(display,arg) {
     const ID_MAP_POPUP = "mappopup";    
     const ID_CLEAR = "mapclear";    
     const ID_SET_LOCATION="mapsetlocation";
-
-
-
-    let mapContains = this.arg?null:Utils.stringDefined(HU.getUrlArgument("map_contains"))?HU.getUrlArgument("map_contains")=='true':true;
+    const ARG_MAP_CONTAINS="map_contains";
+    let mapContains = this.arg?null:Utils.stringDefined(HU.getUrlArgument(ARG_MAP_CONTAINS))?HU.getUrlArgument(ARG_MAP_CONTAINS)=='true':true;
     $.extend(this, {
 	areaContains: mapContains,
         display: display,
@@ -48,17 +46,17 @@ function AreaWidget(display,arg) {
         showSettings: function() {
 	    let _this = this;
 	    let html = "";
-	    html+= HU.div([ATTR_CLASS,"ramadda-clickable",
+	    html+= HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 			   ATTR_TITLE, "Use my location",
 			   ATTR_ID,this.domId(ID_SET_LOCATION)],
 			  HU.getIconImage("fas fa-compass") + SPACE + "Use my location");
-            html += HU.div([ATTR_CLASS,"ramadda-clickable",
+            html += HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 			    ATTR_TITLE, "Clear form",
 			    ATTR_ID,this.domId(ID_CLEAR)],
 			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HU.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
-			  HU.tag(TAG_LABEL,[ATTR_CLASS,"ramadda-clickable",ATTR_FOR,this.domId(ID_CONTAINS)], SPACE + "Contains"));
+			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE,ATTR_FOR,this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	    this.settingsDialog = HU.makeDialog(
 		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
@@ -81,9 +79,9 @@ function AreaWidget(display,arg) {
 		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
-            let settings = HU.div([ATTR_TITLE,"Settings",ATTR_CLASS,"ramadda-clickable",
+            let settings = HU.div([ATTR_TITLE,"Settings",ATTR_CLASS,CLASS_CLICKABLE,
 				   ATTR_ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
-	    let showMap = HU.div([ATTR_CLASS,"ramadda-clickable",
+	    let showMap = HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 				  ATTR_ID,this.domId(ID_MAP_SHOW),
 				  ATTR_TITLE,"Show map selector"], HU.getIconImage("fas fa-globe"));
 
@@ -97,7 +95,9 @@ function AreaWidget(display,arg) {
             areaForm += HU.tr([],
 			      HU.td([ATTR_ALIGN, ALIGN_CENTER],
 				    HU.leftCenterRight("",
-						       input(ID_NORTH, " N","North",n),showMap, "20%", "60%", "20%")));
+						       input(ID_NORTH, " N","North",n),
+						       showMap,
+						       "20%", "60%", "20%")));
 
             areaForm += HU.tr([], HU.td([],
 					input(ID_WEST, " W", "West",w) +
@@ -105,7 +105,9 @@ function AreaWidget(display,arg) {
 
             areaForm += HU.tr([],
 			      HU.td([ATTR_ALIGN, ALIGN_CENTER],
-				    HU.leftCenterRight("", input(ID_SOUTH,  " S", "South",s), settings, "20%", "60%", "20%")));
+				    HU.leftCenterRight("", input(ID_SOUTH,  " S", "South",s),
+						       settings,
+						       "20%", "60%", "20%")));
 
 
             areaForm += HU.closeTag(TAG_TABLE);
@@ -118,7 +120,11 @@ function AreaWidget(display,arg) {
         },
 	showMap: function() {
 	    let anchor = this.jq(ID_MAP_SHOW);
-	    this.dialog = HU.makeDialog({contentId:this.domId(ID_MAP_POPUP_WRAPPER),anchor:anchor,draggable:true,header:true});
+	    this.dialog = HU.makeDialog({
+		contentId:this.domId(ID_MAP_POPUP_WRAPPER),
+		anchor:anchor,
+		draggable:true,
+		header:true});
 	    this.map.selectionPopupInit();
 	    this.map.getMap().updateSize();
 	},
@@ -195,7 +201,7 @@ function AreaWidget(display,arg) {
 	    let now = new Date();
 	    let okToAddToUrl = now.getTime()-this.createTime.getTime()>5000;
 	    if(okToAddToUrl) 
-		HU.addToDocumentUrl("map_contains",this.areaContains);
+		HU.addToDocumentUrl(ARG_MAP_CONTAINS,this.areaContains);
 	    if(Utils.stringDefined(n,w,s,e)) {
 		if(okToAddToUrl) 
 		    HU.addToDocumentUrl(ARG_MAPBOUNDS,[n||"",w||"",s||"",e||""].join(","));
@@ -282,7 +288,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	drawAxis:true,
 	drawAxisLabels:false,	
 	axisWidth:1,
-	axisColor:'#ccc',
+	axisColor:COLOR_LIGHT_GRAY,
     }
     if(params) {
 	if(params.margin) $.extend(opts.theMargin,params.margin);
@@ -305,7 +311,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	  .attr(ATTR_WIDTH, w)
 	  .attr(ATTR_HEIGHT, h)
 	  .append('g')
-	  .attr('transform', HU.translate(opts.theMargin.left, opts.theMargin.top));
+	  .attr(ATTR_TRANSFORM, HU.translate(opts.theMargin.left, opts.theMargin.top));
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
@@ -343,16 +349,16 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('y1', 0)
 	    .attr('x2', 0)
 	    .attr('y2', h)    
-	    .attr("stroke-width", opts.axisWidth)
-    	    .attr("stroke", opts.axisColor);
+	    .attr(ATTR_STROKE_WIDTH, opts.axisWidth)
+    	    .attr(ATTR_STROKE, opts.axisColor);
 
 	svg.append('line')
 	    .attr('x1',0)
 	    .attr('y1', h)
 	    .attr('x2', w)
 	    .attr('y2', h)    
-	    .attr("stroke-width", opts.axisWidth)
-    	    .attr("stroke", opts.axisColor);
+	    .attr(ATTR_STROKE_WIDTH, opts.axisWidth)
+    	    .attr(ATTR_STROKE, opts.axisColor);
     }
     
 
@@ -383,8 +389,8 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('y1', (d,i)=>{return y(d)})
 	    .attr('x2', (d,i)=>{return x(i+1)})
 	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
-	    .attr("stroke-width", lineWidth)
-            .attr("stroke", (d,i)=>{
+	    .attr(ATTR_STROKE_WIDTH, lineWidth)
+            .attr(ATTR_STROKE, (d,i)=>{
 		if(isNaN(d)) return HU.rgb(0,0,0,0);
 		return getColor(d,i,lineColor)
 	    })
@@ -471,10 +477,10 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	  .append('g')
     //	  .attr('transform', HU.translate(margin.left, margin.top));
 
-    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
+    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor",COLOR_BLACK);
     let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
     let getColor = (d,i,dflt)=>{
-	return "#000"
+	return COLOR_BLACK;
 	//	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     console.log(JSON.stringify(range));
@@ -524,14 +530,13 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let left = ele.offset().left;
 	    tt.transition().duration(200).style(CSS_OPACITY, .9);		
 	    tt.html(html)
-		.style(CSS_LEFT, HU.px(left))		
+		.style(CSS_LEFT,HU.px(left))		
 		.style(CSS_TOP, HU.px(offset));	
-	})
-	    .on("mouseout", function(d) {		
-		tt.transition()		
-		    .duration(500)		
-		    .style(CSS_OPACITY, 0);
-	    });
+	}).on("mouseout", function(d) {		
+	    tt.transition()		
+		.duration(500)		
+		.style(CSS_OPACITY, 0);
+	});
     }
 }
 
@@ -557,7 +562,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	.attr(ATTR_WIDTH, width)
 	.attr(ATTR_HEIGHT, height)
 	.append("g")
-	.attr("transform", HU.translate(width / 2, height / 2));
+	.attr(ATTR_TRANSFORM, HU.translate(width / 2, height / 2));
     let data = {};
     array.forEach(tuple=>{
 	data[tuple[0]] = tuple[1];
@@ -578,10 +583,10 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	      .innerRadius(0)
 	      .outerRadius(radius)
 	     )
-	.attr('fill', function(d){
+	.attr(ATTR_FILL, function(d){
 	    return colorMap[d.data.key];
 	})
-	.attr("stroke", "black")
+	.attr(ATTR_STROKE, "black")
 	.style(CSS_STROKE_WIDTH, HU.px(1))
 	.style(CSS_OPACITY, 0.7)
 }
@@ -827,7 +832,7 @@ let Gfx = {
 		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
 	    }
 	}
-	ctx.lineStyle = "#000";
+	ctx.lineStyle = COLOR_BLACK;
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
 	    let rows = Math.floor(opts.h/opts.cellSizeY);

@@ -419,7 +419,8 @@ ColorByInfo.prototype = {
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId);
-	    dom.html(HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',CSS_MARGIN_TOP,HU.px(5))], legend));
+	    dom.html(HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
+					       CSS_MARGIN_TOP,HU.px(5))], legend));
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
@@ -969,7 +970,7 @@ SizeBy.prototype = {
 								   CSS_BORDER_RADIUS,HU.perc(50)
 								  )])) + v);
 
-		if(vert) html+="<br>";
+		if(vert) html+=HU.br();
 	    });
 	} else {
 	    for(let i=0;i<=cnt;i++) {
@@ -985,7 +986,7 @@ SizeBy.prototype = {
 								   CSS_BORDER_RADIUS,HU.perc(50)
 								  )])) + v);
 
-		if(vert) html+="<br>";
+		if(vert) html+=HU.br();
 	    }
 	}
 	return HU.div([ATTR_CLASS,"display-size-legend"], html);

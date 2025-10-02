@@ -348,7 +348,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     if (cell == null) {
                         cell = "";
                     }
-                    let add = HU.tag(TAG_A, [ATTR_STYLE, HU.css(CSS_COLOR,"#000"),
+                    let add = HU.tag(TAG_A, [ATTR_STYLE, HU.css(CSS_COLOR,COLOR_BLACK),
 					     ATTR_HREF,
 					     HU.url(this.getRamadda().getRoot() + "/metadata/addform",
 						    ['entryid',entry.getId(),'metadata_type',mdt]),
@@ -705,7 +705,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		widget.show();
 		icon = 'fa-minus';
 	    }
-	    icon = HU.getIconImage(icon, [], [ATTR_STYLE,HU.css(CSS_COLOR,'#fff')])
+	    icon = HU.getIconImage(icon, [], [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_WHITE)])
 	    let imageId= toggle.attr('data-image-id');
 	    jqid(imageId).html(icon);
 	},
@@ -721,7 +721,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    ATTR_TITLE,title],
 			   HU.span([ATTR_ID,imageId],
 				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [],
-						   [ATTR_STYLE,HU.css(CSS_COLOR,'#fff')])) +' ' + HU.span([],label));
+						   [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_WHITE)])) +' ' + HU.span([],label));
 	    setTimeout(()=>{
 		jqid(toggleId).click((event)=>{
 		    let toggle = jqid(toggleId);
@@ -2132,8 +2132,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			       this.addWidget(this.getProperty('typesLabel','Types'),select,{toggleClose:toggleClose}));
 	    }
 	    
-            HU.initSelect(this.jq(ID_TYPE_FIELD),
-			  { autoWidth: false,  CSS_MAX_HEIGHT:HU.px(100)});
+            HU.initSelect(this.jq(ID_TYPE_FIELD),  { autoWidth: false,  'max-height':HU.px(100)});
 
 	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
 		showCategories:true,
@@ -2234,7 +2233,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let group = col.getSearchGroup();
 
 		if(Utils.stringDefined(group) && group!=lastGroup) {
-		    if(inGroup) extra+='</div></div>';
+		    if(inGroup) extra+=HU.close(TAG_DIV)+HU.open(TAG_DIV);
 		    inGroup=true;
 		    lastGroup=group;
 		    let widgetId = HU.getUniqueId('');
@@ -2397,7 +2396,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		});
 	    }
 
-	    if(inGroup) extra+='</div></div>';
+	    if(inGroup) extra+=HU.close(TAG_DIV,TAG_DIV);
             this.writeHtml(ID_TYPEFIELDS, extra);
 	    this.dateWidgets.forEach(widget=>{
 		widget.widget.initHtml();
@@ -2527,7 +2526,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    if(!this.getProvidersMultiple()) {
 		HU.initSelect(this.jq(ID_PROVIDERS), { multiple:true,
 						       autoWidth: false,
-						       CSS_MAX_HEIGHT:HU.px(100)});
+						       'max-height':HU.px(100)});
 	    }
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
@@ -2656,7 +2655,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 
 	    let makeExpandable= (html) =>{
 		html =HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(1000),
-						CSS_BACKGROUND,'#fff',
+						CSS_BACKGROUND,COLOR_WHITE,
 						CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],html);
@@ -3013,12 +3012,6 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		    }
 		    //		    map.addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
 		    map.addMarker('',{x:entry.getLongitude(),y:entry.getLatitude()}, entry.getIconUrl(),"",text,null,16,0,true,{});
-		    /*
-		      {"pointRadius":16,
-		      "strokeWidth":1,
-		      "fillColor":"blue",
-		      "strokeColor":"#000"},text);
-		    */
 		});
 		map.centerOnMarkersInit(null);
 	    }

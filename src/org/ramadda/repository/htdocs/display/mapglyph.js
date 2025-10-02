@@ -2289,8 +2289,8 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(style.fillPattern)) {
 	    let svg = window.olGetSvgPattern(style.fillPattern,
 					     style.strokeColor,style.fillColor);
-	    s+=HU.css('background-image','url(\''+ svg.url+'\')',
-		      'background-repeat','repeat');
+	    s+=HU.css(CSS_BACKGROUND_IMAGE,'url(\''+ svg.url+'\')',
+		      CSS_BACKGROUND_REPEAT,'repeat');
 	}  else if(style.fillColor) {
 	    s+=HU.css(CSS_BACKGROUND,style.fillColor);
 	} 
@@ -2645,7 +2645,7 @@ MapGlyph.prototype = {
 	    item(HU.center(HU.href(this.style.imageUrl,
 				   HU.image(this.style.imageUrl,
 					    [ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
-							       CSS_BORDER,HU.border(1,'#ccc'),
+							       CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
 							       CSS_WIDTH,HU.px(150),
 							       'filter',filter??'')]),
 				   [ATTR_TARGET,'_image'])));
@@ -2656,7 +2656,7 @@ MapGlyph.prototype = {
 								  ATTR_ID,this.domId('legendimage'),
 								  ATTR_CLASS,'imdv-legend-image',
 								  ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
-										    CSS_BORDER,HU.border(1,'#ccc'),
+										    CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
 										    CSS_WIDTH,HU.perc(100))]),
 				   [ATTR_TARGET,'_image'])));
 	}
@@ -3954,7 +3954,9 @@ MapGlyph.prototype = {
 	    let attrs = feature.attributes;
 	    let first = rowCnt++==0;
 	    if(first) {
-		table = HU.openTag(TAG_TABLE,[ATTR_ID,id,'table-ordering','true','table-searching','true','table-height',HU.px(400),
+		table = HU.openTag(TAG_TABLE,[ATTR_ID,id,'table-ordering','true',
+					      'table-searching','true',
+					      ATTR_TABLE_HEIGHT,HU.px(400),
 					      ATTR_CLASS,'stripe rowborder ramadda-table'])
 		table+='<thead><tr>';
 		stats = [];
@@ -4788,7 +4790,7 @@ MapGlyph.prototype = {
 	if(contents.top.length) {
 	    let label =  this.getLabel({addIcon:this.getProperty('showIconInHeader',false),forLegend:true})[0];
 	    let top = HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD,
-						CSS_TEXT_ALIGN,'center')], label) +
+						CSS_TEXT_ALIGN,ALIGN_CENTER)], label) +
 		HU.hbox(contents.top.map(c=>{
 		    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(15))], c);
 		}));
@@ -6344,7 +6346,7 @@ MapGlyph.prototype = {
 	    }
 	}
 	let css = HU.css(CSS_PADDING,HU.px(5));
-	let color = Utils.stringDefined(style.borderColor)?style.borderColor:"#ccc";
+	let color = Utils.stringDefined(style.borderColor)?style.borderColor:COLOR_LIGHT_GRAY;
 	css+= HU.css(CSS_BORDER , HU.border(HU.px(style.borderWidth), color,line));
 	if(Utils.stringDefined(style.fillColor)) {
 	    css+=HU.css(CSS_BACKGROUND,style.fillColor);
@@ -6550,7 +6552,7 @@ MapGlyph.prototype = {
 	    if(Utils.stringDefined(style.strokeColor)) {
 		css.push('color',style.strokeColor);
 	    }		
-	    css.push('font-size',small?HU.px(16):HU.px(32),'vertical-align','center');
+	    css.push(CSS_FONT_SIZE,small?HU.px(16):HU.px(32),CSS_VERTICAL_ALIGN,ALIGN_CENTER);
 	    return HU.span([ATTR_STYLE,HU.css(css)],"&#x2B22;");
 	} else if(type==GLYPH_CIRCLE || type==GLYPH_POINT) {
 	    if(Utils.stringDefined(style.fillColor)) {

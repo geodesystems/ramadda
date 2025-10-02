@@ -308,7 +308,7 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag(TAG_UL, [], layoutMenu));
 
 
-            var menu = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff',CSS_Z_INDEX,'1000'),
+            var menu = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE,CSS_Z_INDEX,1000),
 			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
 			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, 'sf-menu'], menuBar));
 

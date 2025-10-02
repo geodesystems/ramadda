@@ -276,7 +276,10 @@ function  SeesvForm(inputId, entry,params) {
 
 	    this.jq(ID_SELECTFILE).click(function(event){
 		RamaddaUtils.selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid',''+_this.entry,null,null,
-						{anchor:$(this),locationMy:'top right',locationAt:'bottom right-50',minWidth:'300px'});
+						{anchor:$(this),
+						 locationMy:'top right',
+						 locationAt:'bottom right-50',
+						 minWidth:HU.px(300)});
 	    });
 	    this.jq(ID_ALL).click(function(e){
 		_this.showMenu(_this.allMenuItems,$(this),'All Commands',true);
@@ -388,7 +391,7 @@ function  SeesvForm(inputId, entry,params) {
 			this.commandsMap[command] = cmd;
 			let menuItem = HU.div([ATTR_DATA_CORPUS,corpus,
 					       ATTR_TITLE,(desc??'')+HU.br()+HU.italic(cmd.command),
-					       ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(1),CSS_BORDER,HU.border(1,'transparent')),
+					       ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(1),CSS_BORDER,HU.border(1,COLOR_TRANSPARENT)),
 					       ATTR_CLASS, HU.classes(CLASS_SEARCHABLE,'ramadda-hoverable',CLASS_CLICKABLE),
 					       ATTR_COMMAND,command],label);
 			menuItems.push(menuItem);
@@ -459,7 +462,7 @@ function  SeesvForm(inputId, entry,params) {
 	    let cbxId = HU.getUniqueId('cbx_');
 	    let input = HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80),
 						  CSS_PADDING,HU.px(5),
-						  CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
+						  CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY),
 						  CSS_MARGIN,HU.px(5))],
 			       HU.input('','',[ATTR_AUTOFOCUS,null,
 					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(150)),
@@ -490,7 +493,7 @@ function  SeesvForm(inputId, entry,params) {
 	    jqid(menuId).css(CSS_MIN_WIDTH,jqid(menuId).width());
 	    let toggle = (item,on,force)=>{
 		if(force) {
-		    item.css(CSS_BACKGROUND,'transparent').css(CSS_BORDER,HU.border(1,'transparent'));
+		    item.css(CSS_BACKGROUND,COLOR_TRANSPARENT).css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT));
 		}
 		if(on) {
 		    if(all) {
@@ -504,7 +507,7 @@ function  SeesvForm(inputId, entry,params) {
 			item.parent().hide();
 		    else {
 			item.hide();
-//			item.css(CSS_BACKGROUND,'transparent').css(CSS_BORDER,HU.border(1,'transparent'));
+//			item.css(CSS_BACKGROUND,COLOR_TRANSPARENT).css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT));
 		    }
 		}
 	    };
@@ -518,7 +521,7 @@ function  SeesvForm(inputId, entry,params) {
 		commands.each(function() {
 		    let title = $(this).attr(ATTR_TITLE);
 		    if(!title) return;
-		    title = title.replace('<br>',' ');
+		    title = title.replace(HU.br(),' ');
 		    $(this).append(HU.span([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9),CSS_MARGIN_LEFT,HU.px(5)),
 					    ATTR_CLASS,'seesv_extra'],title));
 		});
@@ -1307,7 +1310,7 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu(field+".type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu(field+".type","image","image");
 
-				html += '<br>' +
+				html += HU.br() +
 				    _this.makeHeaderMenu(field+".id",field)+ SPACE2+				    
 				    _this.makeHeaderMenu(field+".label",'{' + field+'}','label')+ SPACE2 +
 				    _this.makeHeaderMenu(field+".unit","unit","unit");
@@ -1317,7 +1320,7 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu(field+".enumeratedValues","{value1:label1;value2:label2}","enum values");
 				
 
-				html+='<br>';
+				html+=HU.br();
 				html +=HU.b('Default type: ') + 
 				    _this.makeHeaderMenu("default.type","enumeration","enumeration")+ SPACE2+
 				    _this.makeHeaderMenu("default.type","string","string")+ SPACE2+	

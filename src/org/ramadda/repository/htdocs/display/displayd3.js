@@ -175,7 +175,7 @@ const D3Util = {
 	let fill = args.fill??this.getProperty(display,field.getId(),'fillColor');
 
 	opts.strokeWidth =parseFloat(args.strokeWidth??this.getProperty(display,field.getId(),'strokeWidth',1));
-	opts.stroke =  args.stroke??this.getProperty(display,field.getId(), 'strokeColor','#000');
+	opts.stroke =  args.stroke??this.getProperty(display,field.getId(), 'strokeColor',COLOR_BLACK);
 	
 	let mark;
 	let markType  = display.getProperty(field.getId()+'.markType',display.getProperty('markType','line'));
@@ -271,8 +271,8 @@ const D3Util = {
         //Note: this originally had this.displayWidth which was undefined
         var colorBar = svg.append(TAG_G)
             .attr({
-                ATTR_ID: "colorBarG",
-                "transform": HU.translate((displayWidth - 40),0)
+                'id': "colorBarG",
+                'transform': HU.translate((displayWidth - 40),0)
             });
 
         colorBar.append(TAG_G)
@@ -503,8 +503,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
 	    let getFieldIds = () =>{
 		return fields.reduce((acc,field)=>{
-		    return acc+field.getId()+"<br>";
-		},"<br>Fields:<br>");
+		    return acc+field.getId()+HU.br();
+		},HU.div([],HU.boldLabel("Fields")));
 	    }
 	    
 
@@ -829,14 +829,14 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .on("mousemove", function(event) {
                         myThis.mouseover(event)
                     })
-                    .attr("fill", "none")
-                    .attr("stroke", function(d) {
+                    .attr(ATTR_FILL, "none")
+                    .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
-                    .attr("stroke-width", "0.5px");
+                    .attr(ATTR_STROKE_WIDTH, "0.5px");
 
                 if (properties.graph.axis.z == FIELD_SELECTEDFIELD) {
-                    displayLine.attr("stroke", "url(#colorBarGradient)");
+                    displayLine.attr(ATTR_STROKE, "url(#colorBarGradient)");
                 }
 
                 if (properties.graph.derived != null) {
@@ -861,11 +861,11 @@ function RamaddaD3Display(displayManager, id, properties) {
                             this.svg.append("path")
                                 .attr(ATTR_CLASS, "line")
                                 .attr("d", movingAverageLine(records))
-                                .attr("fill", "none")
-                                .attr("stroke", function(d) {
+                                .attr(ATTR_FILL, "none")
+                                .attr(ATTR_STROKE, function(d) {
                                     return color(fieldIdx);
                                 })
-                                .attr("stroke-width", "1.5px")
+                                .attr(ATTR_STROKE_WIDTH, "1.5px")
                                 .attr("viewBox", "50 50 100 100 ")
                                 .style("stroke-dasharray", ("3, 3"));
                         } else {
@@ -880,7 +880,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .attr(ATTR_CLASS, "legendElement")
                     .attr("x", this.displayWidth - 100)
                     .attr("y", (50 + 50 * fieldIdx))
-                    .attr("stroke", function(d) {
+                    .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
                     .attr(ATTR_HEIGHT, 2)
@@ -890,7 +890,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .attr(ATTR_CLASS, "legendElement")
                     .attr("x", this.displayWidth - 100 + 40 + 10) // position+color rect+padding
                     .attr("y", (55 + 55 * fieldIdx))
-                    .attr("stroke", function(d) {
+                    .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
                     .attr(ATTR_STYLE, HU.css(CSS_FONT_SIZE,HU.perc(50)))
@@ -1119,7 +1119,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                 .style("fill-opacity", parseFloat(this.getProperty("fillOpacity", 0.5)))
                 .style("stroke-width", parseInt(this.getProperty("strokeWidth", 1)))
                 .style("stroke-opacity", parseFloat(this.getProperty("strokeOpacity", 0.5)))
-                .style("stroke", function(d, i) {
+                .style(ATTR_STROKE, function(d, i) {
                     return i < strokeColors.length ? strokeColors[i] : strokeColors[i % strokeColors.length];
                 })
                 .style("fill", function(d, i) {

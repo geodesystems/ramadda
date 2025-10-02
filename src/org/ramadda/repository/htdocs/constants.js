@@ -121,6 +121,8 @@ var TAG_LINK = 'link';
 var TAG_LI = 'li';
 var TAG_SCRIPT='script';
 var TAG_SOURCE='source';
+var TAG_RECT='rect';
+var TAG_PATH='path';
 var TAG_SVG = 'svg';
 var TAG_SPAN = 'span';
 var TAG_SELECT = 'select';
@@ -141,6 +143,7 @@ var ATTR_AUTOFOCUS='autofocus';
 var ATTR_ACTION= 'action';
 var ATTR_BACKGROUND = 'background';
 
+
 var ATTR_SLIDER_MIN='slider-min';
 var ATTR_SLIDER_MAX='slider-max';
 var ATTR_SLIDER_STEP='slider-step';
@@ -149,9 +152,11 @@ var ATTR_SLIDER_VALUE='slider-value';
 var COLOR_TRANSPARENT='transparent';
 var COLOR_BLACK='#000';
 var COLOR_WHITE='#fff';
+var COLOR_LIGHT_GRAY='#ccc';
 
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
+var ATTR_TABLE_HEIGHT = 'table-height';
 var ATTR_TABINDEX = 'tabindex';
 var ATTR_TYPE = 'type';
 var ATTR_TRANSFORM = 'transform';
@@ -192,6 +197,9 @@ var ATTR_METHOD='method';
 var ATTR_MULTIPLE = 'multiple';
 var ATTR_SELECTED='selected';
 var ATTR_SIZE = 'size';
+var ATTR_STROKE = 'stroke';
+var ATTR_STROKE_WIDTH = 'stroke-width';
+var ATTR_FILL="fill";
 var ATTR_STYLE = 'style';
 var ATTR_TARGET = 'target';
 var ATTR_ALIGN = 'align';
@@ -293,6 +301,8 @@ var CSS_WHITE_SPACE='white-space';
 var CSS_WIDTH='width';
 var CSS_WORD_BREAK='word-break';
 var CSS_BACKGROUND='background';
+var CSS_BACKGROUND_IMAGE = 'background-image';
+var CSS_BACKGROUND_REPEAT = 'background-repeat';
 var CSS_BACKGROUND_COLOR='background-color';
 var CSS_BACKGROUND_IMAGE='background-image';
 

@@ -128,8 +128,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'baseLayerSelectLabel',d:null},
 	{p:'locations',ex:'countries.json,usstates.json,uscities.json,usairports.json'},
-	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
-	{p:'highlightFillColor',ex:'#ccc',
+	{p:'highlightColor',d:'blue',ex:COLOR_LIGHT_GRAY,tt:''},
+	{p:'highlightFillColor',ex:COLOR_LIGHT_GRAY,
 	 tt:'Use "match" to match the features opacity'},		
 	{p:'highlightFillOpacity',ex:'0.5',
 	 tt:'Use "match" to match the features opacity'},		
@@ -138,7 +138,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:"highlightStrokeColor",
 	 tt:'Use "match" to match the features opacity'},
 
-	{p:'selectFillColor',ex:'#ccc',
+	{p:'selectFillColor',ex:COLOR_LIGHT_GRAY,
 	 tt:'Use "match" to match the features opacity'},		
 	{p:'selectFillOpacity',ex:'0.5',
 	 tt:'Use "match" to match the features opacity'},		
@@ -150,7 +150,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	 tt:'Use "match" to match the features opacity'},			 		
 	
         {p:"vectorLayerStrokeColor",d:COLOR_BLACK},
-	{p:"vectorLayerFillColor",d:'#ccc'},
+	{p:"vectorLayerFillColor",d:COLOR_LIGHT_GRAY},
 	{p:"vectorLayerFillOpacity",d:0.25},
         {p:"vectorLayerStrokeWidth",d:0.3},
     ];
@@ -289,7 +289,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    keys.forEach(group=>{
 		html+= HU.td([ATTR_WIDTH,width],
 			     HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD,
-						       CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
+						       CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY),
 						       CSS_MARGIN_RIGHT,HU.px(5))],
 				    Utils.camelCase(group))+
 			     HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
@@ -1085,10 +1085,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
-	{p:'highlightColor',ex:'#ccc',tt:''},
-	{p:'highlightFillColor',ex:'#ccc',tt:''},	
+	{p:'highlightColor',ex:COLOR_LIGHT_GRAY,tt:''},
+	{p:'highlightFillColor',ex:COLOR_LIGHT_GRAY,tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
-	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
+	{p:'unhighlightColor',ex:COLOR_LIGHT_GRAY,tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
 	{p:'unhighlightRadius',d:-1,ex:'1',tt:'Radius for when records are highlighted with the filters'},
@@ -1156,7 +1156,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelAlign',ex:'l|c|r t|m|b'},
 	{p:'labelXOffset',ex:'0'},
 	{p:'labelYOffset',ex:'0'},
-	{p:'labelOutlineColor',ex:'#fff'},
+	{p:'labelOutlineColor',ex:COLOR_WHITE},
 	{p:'labelOutlineWidth',ex:'0'},
 	{p:'labelDeclutterPadding',d:1},
 	{p:'labelDeclutterGranularity',d:1},
@@ -2038,7 +2038,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     stroke: true,
                     strokeColor: this.getRecordHighlightStrokeColor(),
                     strokeWidth: parseFloat(this.getRecordHighlightStrokeWidth(2)),
-		    fillColor: this.getRecordHighlightFillColor("#ccc"),
+		    fillColor: this.getRecordHighlightFillColor(COLOR_LIGHT_GRAY),
 		    fillOpacity: parseFloat(this.getRecordHighlightFillOpacity(0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
@@ -3166,8 +3166,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.baseStyle) {
 		    this.baseStyle = $.extend({}, MapUtils.getVectorStyle('default'));
 		    $.extend(this.baseStyle,{
-			strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
-			fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
+			strokeColor: this.getProperty("vectorLayerStrokeColor",COLOR_BLACK),
+			fillColor:this.getProperty("vectorLayerFillColor",COLOR_LIGHT_GRAY),
 			fillOpacity:this.getProperty("vectorLayerFillOpacity",0.10),
 			strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
 			cursor:CURSOR_POINTER
@@ -4077,7 +4077,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):fillColor;
 			let ctx = canvas.getContext("2d");
 			if(idx==1) {
-			    ctx.fillStyle= '#fff';
+			    ctx.fillStyle= COLOR_WHITE;
 			    ctx.beginPath();
 			    ctx.moveTo(cw/2,ch/2);
 			    ctx.arc(cw/2,ch/2, cw/2-2, 0-Math.PI/2, 2*Math.PI);
@@ -4118,7 +4118,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    min = this.getHtmlLayerMin(min);
 		    max = this.getHtmlLayerMax(max);		    
 		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,min,max,colorBy,props1);
-		    $('#' + info.hoverId).css(CSS_BACKGROUND,'#fff').css(CSS_BORDER,HU.border(1,'#ccc'));
+		    $('#' + info.hoverId).css(CSS_BACKGROUND,COLOR_WHITE).css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
 		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,min,max,colorBy,props2);
 		}
 	    });
@@ -4729,7 +4729,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let highlightGetter = f=>{
 		if(f.record) {
                     return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
-                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'#fff')],
+                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE)],
 				    this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
@@ -4768,7 +4768,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
 		    records.forEach(record=>{
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'))],
+			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY))],
 				     this.getRecordHtml(record, null,collisionTooltip));
 		    });
 		    return html;
@@ -4796,8 +4796,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let CH = new CollisionHandler(this.map, {
 		    pointSize:this.getCollisionPointSize(),
 		    collisionArgs:collisionArgs,
-		    lineWidth: this.getProperty("collisionLineWidth","2"),			
-		    lineColor: this.getProperty("collisionLineColor","#000"),
+		    lineWidth: this.getProperty("collisionLineWidth",2),			
+		    lineColor: this.getProperty("collisionLineColor",COLOR_BLACK),
 		    addCollisionLines:function(info,lines) {
 			_this.addFeatures(lines,true);
 		    },
@@ -4975,7 +4975,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 							     lat:secondRecord.getLatitude()},
 							    {lon:lastRecord.getLongitude(),
 							     lat:lastRecord.getLatitude()});							  
-			    let endPoint = this.map.createPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()}, {fillColor:color,strokeColor:"#000",pointRadius:6,graphicName:shape,rotation:angleDeg}, null);
+			    let endPoint = this.map.createPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()},
+								{fillColor:color,strokeColor:COLOR_BLACK,
+								 pointRadius:6,
+								 graphicName:shape,
+								 rotation:angleDeg}, null);
 			    featuresToAdd.push(endPoint);
 			}
 			if(this.getProperty("showPathStartPoint",false)) {
@@ -5279,8 +5283,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ctx.strokeStyle = canvasBorder;
 			ctx.strokeRect(0,0,canvasWidth,canvasHeight);
 		    }
-		    ctx.strokeStyle ="#000";
-		    ctx.fillStyle="#000";
+		    ctx.strokeStyle =COLOR_BLACK;
+		    ctx.fillStyle=COLOR_BLACK;
 		    let pending = [];
 		    glyphs.forEach(glyph=>{
 			let isReady =  glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:record});
@@ -5553,7 +5557,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    let labelStyle = {
-                fontColor: this.getProperty("labelFontColor","#000"),
+                fontColor: this.getProperty("labelFontColor",COLOR_BLACK),
 		textBackgroundFillColor:this.getLabelBackground(),
 		textBackgroundStrokeColor:this.getLabelStrokeColor(),
 		textBackgroundStrokeWidth:this.getLabelStrokeWidth(),				
@@ -5563,7 +5567,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 labelAlign: this.getProperty("labelAlign","cc"),
                 labelXOffset: this.getProperty("labelXOffset","0"),
                 labelYOffset: this.getProperty("labelYOffset","0"),
-                labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                labelOutlineColor:this.getProperty("labelOutlineColor",COLOR_WHITE),
                 labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 		labelSelect:true,
 	    };

@@ -235,9 +235,9 @@ var RamaddaDisplayUtils = {
 	{p:'labelStyle',ex:''},			
 	{p:'sparklineWidth',d:60, canCache:true},
 	{p:'sparklineHeight',d:20, canCache:true},
-	{p:'sparklineLineColor',d:'#000', canCache:true},
+	{p:'sparklineLineColor',d:COLOR_BLACK, canCache:true},
 	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
-	{p:'sparklineCircleColor',d:'#000', canCache:true},
+	{p:'sparklineCircleColor',d:COLOR_BLACK, canCache:true},
 	{p:'sparklineCircleRadius',d:'1', canCache:true},
 	{p:'sparklineLineWidth',d:'1', canCache:true},
 	{p:'sparklineShowLines',d:true, canCache:true},
@@ -2771,12 +2771,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getTextColor: function(property, dflt) {
             if (property) return this.getProperty(property, this.getProperty("textColor",dflt));
-            return this.getProperty("textColor", "#000");
+            return this.getProperty("textColor", COLOR_BLACK);
         },
         getTitleHtml: function(title) {
             let titleToShow = "";
             if (this.getShowTitle()) {
-                let titleStyle = HU.css(CSS_COLOR , this.getTextColor("titleColor","#000"));
+                let titleStyle = HU.css(CSS_COLOR , this.getTextColor("titleColor",COLOR_BLACK));
                 let bg = this.getProperty("titleBackground");
                 if (bg) titleStyle += HU.css(CSS_BACKGROUND, bg,
 					     CSS_PADDING,HU.px(2),
@@ -6753,7 +6753,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    applyRequest();
 		} else {
 		    applyButton.css(CSS_BACKGROUND,'yellow');
-		    applyButton.css(CSS_BORDER_COLOR,'#000');		    
+		    applyButton.css(CSS_BORDER_COLOR,COLOR_BLACK);
 		}
 		if(!macro.name) return;
 		this.settingMacroValue = true;
@@ -6838,7 +6838,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return HU.div([ATTR_CLASS,"display-filter-widget"],widget);
 	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
 	    if(this.getFilterLabelVertical(this.getProperty(name+'.filterLabelVertical')))
-		label = label+'<br>'+widget;							       
+		label = label+HU.br()+widget;							       
 	    else
 		label = label+widget;
 	    return HU.div([ATTR_CLASS,"display-filter-widget"],label);
@@ -8201,7 +8201,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
             } else {
                 msg = HU.b("An error has occurred:");
-		msg+=' '+this.getLogLabel()+'<br>';
+		msg+=' '+this.getLogLabel()+HU.br();
                 if (!data) data = this.getNoDataMessage();
                 let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
@@ -8216,7 +8216,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     tmp += line + "\n";
                 }
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
-		tmp = tmp.replace(/\\n/g,'<br>');
+		tmp = tmp.replace(/\\n/g,HU.br());
                 error = tmp;
                 error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,"nowrap",
 							    CSS_MAX_HEIGHT,HU.px(300),
@@ -8484,7 +8484,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.updateUI({reload:reload});
 		}
 	    } catch(err) {
-		this.handleError("Error creating display:<br>" + err,err);
+		this.handleError(HU.div([],HU.boldLabel("Error creating display")) + err,err);
 		return;
 	    }
 	    if (!reload || this.getPropagateDataReload()) {
@@ -9205,7 +9205,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			 "$entryid_maindiv"
 			];
             let wiki = "";
-            wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n";
+            wiki += HU.div([ATTR_ID,"{{entryid}}_maindiv"]);
             wiki += "{{group " + HU.attrs(attrs) + "}}\n"
             return wiki;
         },
@@ -9533,7 +9533,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 		try {
                     display.initDisplay();
 		} catch (e) {
-		    display.handleError("Error creating display:<br>" + e,e);
+		    display.handleError(HU.div([],HU.boldLabel("Error creating display")) + e,e);
 		}
             });
 	},

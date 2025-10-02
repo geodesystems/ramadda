@@ -870,7 +870,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(color) {
 			    style += HU.css(CSS_BACKGROUND_COLOR,color);
 			} else {
-			    style += HU.css(CSS_BORDER,HU.border(1,'#ccc'));
+			    style += HU.css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
 			}
 			
 			let clazz = " ramadda-hoverable ramadda-clickable display-filter-item display-filter-item-" + this.displayType +" ";
@@ -965,7 +965,7 @@ function RecordFilter(display,filterFieldId, properties) {
 				       CSS_MARGIN_TOP,HU.px(6),
 				       CSS_PADDING_RIGHT,HU.px(5));
 		    if(doColor)
-			style+=HU.css(CSS_BORDER,HU.border(1,'#ccc'),
+			style+=HU.css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
 				      CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()));
 		    widget= HU.div([ATTR_STYLE, style,
 				    ATTR_TITLE,"Click to select tag",

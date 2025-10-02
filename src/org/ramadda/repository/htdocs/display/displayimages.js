@@ -898,7 +898,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css(CSS_Z_INDEX,1000),
 					ATTR_WIDTH, width,ATTR_ID,this.domId(ID_IMAGEINNER)]);
 	    if(label!="")
-		html+=HU.div([ATTR_STYLE,HU.css(CSS_COLOR,'#000')],label);
+		html+=HU.div([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_BLACK)],label);
 	    this.jq(ID_IMAGE).html(html);
 
 	    this.jq(ID_POPUP).html("");

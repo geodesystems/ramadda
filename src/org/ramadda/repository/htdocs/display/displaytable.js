@@ -108,7 +108,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             all.css(CSS_FONT_WEIGHT, 'normal');
             sel.css(CSS_FONT_WEIGHT, FONT_BOLD);
-            all.css(CSS_BORDER, HU.border(1,'#ccc'));
+            all.css(CSS_BORDER, HU.border(1,COLOR_LIGHT_GRAY));
             sel.css(CSS_BORDER, HU.border(1,'#666'));
 
             this.currentSheet = sheetIdx;
@@ -449,28 +449,29 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
 
             chartToolbar += HU.p();
-            chartToolbar += "<form>Fields: ";
+            chartToolbar += HU.open(TAG_FORM);
+            chartToolbar += "Fields: ";
             chartToolbar += "<input type=radio checked name=\"param\" id=\"" + this.getDomId("params-yaxis-select") + "\"> y-axis:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-yaxis-label"),
-			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
+			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
 						  CSS_MIN_WIDTH,HU.em(10),
 						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-xaxis-select") + "\"> x-axis:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-xaxis-label"),
-			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
-						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
+			ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
+					   CSS_MIN_WIDTH,HU.em(10),
+					   CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-group-select") + "\"> group:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-group-label"),
-			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc','dotted'),
+			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
 						  CSS_MIN_WIDTH,HU.em(10),
 						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
-            chartToolbar += "</form>";
+            chartToolbar += HU.close(TAG_FORM);
 
             if (this.getProperty("showSearch", true)) {
                 var results = HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
@@ -539,7 +540,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             if (this.getProperty("showTable", true)) {
                 this.jq(ID_TABLE_HOLDER).html(tableHtml);
-                chartToolbar += "<br>";
+                chartToolbar += HU.br();
                 if (this.getProperty("showChart", true)) {
                     this.jq(ID_CHARTTOOLBAR).html(chartToolbar);
                 }
@@ -602,7 +603,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 return
             }
             url = url.replace("xls_json", "media_tabular_extractsheet");
-            url += "&execute=true";
+            url = HU.url(url,["execute","true"]);
             let img = HU.span([ATTR_TITLE,'Download'],HU.getIconImage("fa-download"));
             this.jq(ID_DOWNLOADURL).html(HU.href(url, img));
         },
@@ -614,7 +615,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             var text = this.jq(ID_SEARCH_TEXT).val();
             if (text && text != "") {
-                url = url + "&table.text=" + encodeURIComponent(text);
+                url = HU.url(url,["table.text",text]);
             }
             if (this.columns) {
                 for (var i = 0; i < this.columns.length; i++) {

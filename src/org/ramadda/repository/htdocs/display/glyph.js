@@ -211,7 +211,7 @@ Glyph.prototype = {
 	    }
 	}
 	ctx.fillStyle =color || props.fillStyle || props.color || COLOR_TRANSPARENT;
-	ctx.strokeStyle =props.strokeStyle ?? props.color ?? opts.strokeStyle ?? '#000';
+	ctx.strokeStyle =props.strokeStyle ?? props.color ?? opts.strokeStyle ?? COLOR_BLACK;
 	ctx.lineWidth=props.lineWidth??props.strokeWidth??opts.lineWidth??1;
 	if(props.type=='label') {
 	    let label = props.labelField?args.record.getValue(props.labelField.getIndex()):props.label;
@@ -254,7 +254,7 @@ Glyph.prototype = {
 	    }
 
 	    ctx.font = props.font ??  this.display.getProperty('glyphFont','12pt sans-serif');
-	    ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor','#000');
+	    ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor',COLOR_BLACK);
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
 
@@ -282,7 +282,7 @@ Glyph.prototype = {
 		    let rw = dim.width;
 		    ctx.fillRect(pt.x-pad,pt.y-rh-pad,rw+2*pad,rh+2*pad);
 		}
-		ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor','#000');
+		ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor',COLOR_BLACK);
 		dim = ctx.measureText(t);
 		let offset =dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
 		if(debug) console.log('draw text:' + t +' x:' + pt.x +' y:'+ (pt.y+offset));
@@ -352,7 +352,7 @@ Glyph.prototype = {
 	    let cy = pt.y+props.height;
 	    ctx.arc(cx,cy, props.width/2,  1 * Math.PI,0);
 	    ctx.fill();
-	    ctx.strokeStyle =   '#000';
+	    ctx.strokeStyle =   COLOR_BLACK;
 	    ctx.stroke();
 	    ctx.beginPath();
 	    ctx.beginPath();
@@ -361,7 +361,7 @@ Glyph.prototype = {
 	    let ex = cx-props.width*0.4;
 	    let ey = cy;
 	    let ep = Utils.rotate(cx,cy,ex,ey,degrees);
-	    ctx.strokeStyle =  props.color || '#000';
+	    ctx.strokeStyle =  props.color || COLOR_BLACK;
 	    ctx.lineWidth=props.lineWidth||2;
 	    ctx.moveTo(cx,cy);
 	    ctx.lineTo(ep.x,ep.y);
@@ -369,7 +369,7 @@ Glyph.prototype = {
 	    ctx.lineWidth=1;
 	    props.showLabel = true;
 	    if(props.showLabel && props.sizeByInfo) {
-		ctx.fillStyle='#000';
+		ctx.fillStyle=COLOR_BLACK;
 		let label = String(props.sizeByInfo.minValue);
 		ctx.font = props.font || '9pt arial'
 		let dim = ctx.measureText(label);
@@ -381,7 +381,7 @@ Glyph.prototype = {
 	    let y1= this.cvrt(props.y1);
  	    let x2= this.cvrt(props.x2);
 	    let y2= this.cvrt(props.y2);	    	    
-	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    ctx.strokeStyle = props.strokeStyle||COLOR_BLACK;
 	    ctx.beginPath();
 	    ctx.moveTo(x1,y1);
 	    ctx.lineTo(x2,y2);
@@ -390,7 +390,7 @@ Glyph.prototype = {
 	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
 	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
 	    ctx.fillStyle =   color || props.color;
-	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    ctx.strokeStyle = props.strokeStyle||COLOR_BLACK;
 	    this.draw3DRect(canvas,ctx,pt.x, 
 			    canvas.height-pt.y-props.height,
 			    +props.width,height,+props.width);
@@ -398,7 +398,7 @@ Glyph.prototype = {
 	} else if(props.type=='axis') {
 	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
 	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
-	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    ctx.strokeStyle = props.strokeStyle||COLOR_BLACK;
 	    ctx.beginPath();
 	    ctx.moveTo(pt.x,pt.y);
 	    ctx.lineTo(pt.x,pt.y+props.height);
@@ -442,7 +442,7 @@ Glyph.prototype = {
 	    //Draw the circle if no arrow
 	    if(arrowLength<=0) {
 		ctx.save();
-		ctx.fillStyle='#000';
+		ctx.fillStyle=COLOR_BLACK;
 		ctx.beginPath();
 		ctx.arc(x,y, 1, 0, 2 * Math.PI);
 		ctx.fill();
@@ -473,7 +473,7 @@ Glyph.prototype = {
 	    for (let side=0; side < 7; side++) {
 		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
 	    }
-	    ctx.strokeStyle = '#000';
+	    ctx.strokeStyle = COLOR_BLACK;
 	    //	    ctx.fill();
 	    ctx.stroke();
 	} else {

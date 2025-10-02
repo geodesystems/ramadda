@@ -116,7 +116,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	{p:'plotTitle'},
 	{p:'font'},
 	{p:'fontSize',d:12},
-	{p:'fontColor',d:'#000'}];
+	{p:'fontColor',d:COLOR_BLACK}];
 
     defineDisplay(this, SUPER, myProps, {
 //    RamaddaUtil.inherit(this, SUPER);
@@ -449,7 +449,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 	{p:'markerSize',d:6},
 	{p:'axisLineColor',d:'rgb(255,255,255)'},
 	{p:'xaxisBackground',d:'rgb(200, 200, 230)'},
-	{p:'yaxisBackground',d:'#ccc'},	
+	{p:'yaxisBackground',d:COLOR_LIGHT_GRAY},	
 	{p:'zaxisBackground',d:'rgb(230, 230,200)'},
 	{p:'chartBackground', d:'rgb(255,255,255,0)'}
     ];
@@ -462,7 +462,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
         },
 
         getDisplayStyle: function() {
-            return HU.css(CSS_BORDER,HU.border(1,'#ccc'));
+            return HU.css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
         },
         get3DType: function() {
             //                'mesh3d'
@@ -490,7 +490,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let z = this.getColumnValues(records, this.zField);
 	    let marker =  {
                 size: +this.getMarkerSize(),
-		color:'#fff',
+		color:COLOR_WHITE,
                 opacity: 0.8,
                 line: {
 		    color: 'blue',
@@ -1338,7 +1338,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                 showlegend: this.getShowLegend(true),
 		paper_bgcolor: this.getProperty("chart.fill", COLOR_TRANSPARENT),		
 //                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
-                plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				
+                plot_bgcolor: this.getProperty("chartArea.fill", COLOR_WHITE),				
                 hovermode: 'closest'
             };
 	    if(fields.length>1) {
@@ -1772,7 +1772,7 @@ function CombochartDisplay(displayManager, id, properties) {
 	{p:'xAxisShowLine',ex:''},
 	{p:'legendBackground',ex:''},
 	{p:'legendBorder',ex:''},
-	{p:'chartBackground',ex:'#ccc'},
+	{p:'chartBackground',ex:COLOR_LIGHT_GRAY},
 	{p:'plotBackground',ex:''},
 	{p:'marginLeft',ex:''},
 	{p:'marginRight',ex:''},

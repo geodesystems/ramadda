@@ -737,7 +737,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    let colors = this.getColorList();
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth",HU.px(20));
-	    let labelColor = this.getProperty("labelColor","#000");
+	    let labelColor = this.getProperty("labelColor",COLOR_BLACK);
 	    let labelColors = this.getProperty("labelColors")?this.getProperty("labelColors").split(","):null;
 	    let inBox = this.getProperty("inBox",false);
 	    let orientation = this.getProperty("orientation","horizontal");
@@ -1279,7 +1279,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
 		let html = '';
 		if(maxPerRow>=0) {
-		    html=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')]);
+		    html=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)]);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
