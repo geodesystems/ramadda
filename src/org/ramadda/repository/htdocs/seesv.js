@@ -134,7 +134,7 @@ function  SeesvForm(inputId, entry,params) {
 	    let makeToolbarLink = (v,style) =>{
 		return  HU.span([ATTR_TITLE,v[0],ATTR_ID,this.domId(v[1]),
 				 ATTR_STYLE,style??HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
-				 ATTR_CLASS,'ramadda-clickable ramadda-highlightable'],
+				 ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-highlightable')],
 				HU.getIconImage(v[2]));
 	    }
 
@@ -392,7 +392,7 @@ function  SeesvForm(inputId, entry,params) {
 			let menuItem = HU.div([ATTR_DATA_CORPUS,corpus,
 					       ATTR_TITLE,(desc??'')+HU.br()+HU.italic(cmd.command),
 					       ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(1),CSS_BORDER,HU.border(1,COLOR_TRANSPARENT)),
-					       ATTR_CLASS, HU.classes(CLASS_SEARCHABLE,'ramadda-hoverable',CLASS_CLICKABLE),
+					       ATTR_CLASS, HU.classes(CLASS_SEARCHABLE,CLASS_HOVERABLE,CLASS_CLICKABLE),
 					       ATTR_COMMAND,command],label);
 			menuItems.push(menuItem);
 			this.allMenuItems.push({category:category,item:menuItem});
@@ -879,7 +879,7 @@ function  SeesvForm(inputId, entry,params) {
 	makeHeaderMenu: function(field,value,label) {
 	    return HU.span([ATTR_FIELD,field,
 			    ATTR_VALUE,value,
-			    ATTR_CLASS,'ramadda-menuitem-link ramadda-clickable'],(label||field));
+			    ATTR_CLASS,HU.classes('ramadda-menuitem-link',CLASS_CLICKABLE)],(label||field));
 	},
 	insertHeader:function(field,value) {
 	    if(this.headerInput && $('#' + this.headerInput).length>0) {
@@ -1342,7 +1342,9 @@ function  SeesvForm(inputId, entry,params) {
 			return;
 		    } else if(stats || table) {
 			output.html(result);
-			let toolbar = HU.span([ATTR_TITLE,"Insert all field names", ATTR_CLASS,CLASS_CLICKABLE, ATTR_ID,this.domId("addfields")],"Add field ids") + SPACE3;
+			let toolbar = HU.span([ATTR_TITLE,"Insert all field names",
+					       ATTR_CLASS,CLASS_CLICKABLE,
+					       ATTR_ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
 			    toolbar += HU.span([ATTR_ID,this.domId('csv_toggledetails')],"Show summary");
 
@@ -1535,7 +1537,8 @@ function  SeesvForm(inputId, entry,params) {
 		    if((arg.type=='column' || arg.type=='columns') && this.allColumnIds.length>0) {
 			return HU.span([ATTR_INPUTID,id,
 					ATTR_TITLE,'Add column',
-					ATTR_CLASS,'ramadda-clickable seesv-column-button',ATTR_COLUMNID,id],
+					ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'seesv-column-button'),
+					ATTR_COLUMNID,id],
 				       HU.getIconImage('fa-plus') + ' ' +desc);
 
 		    }

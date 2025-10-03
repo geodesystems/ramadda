@@ -13,9 +13,17 @@ var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 
 
+var ACTION_OK='ok';
+var ACTION_NO='no';
+var ACTION_CANCEL='cancel';
+
 var LABEL_OK="OK";
+var LABEL_YES="Yes";
+var LABEL_NO="No";
 var LABEL_CANCEL ="Cancel";
 
+var ARG_ASCENDING='ascending';
+var ARG_ORDERBY='orderby';
 var ARG_PAGESEARCH='pagesearch';
 var ARG_MAPBOUNDS='map_bounds';
 
@@ -55,8 +63,10 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
 var CLASS_BUTTON = 'ramadda-button';
+var CLASS_MENU_ITEM = 'ramadda-menu-item';
 var CLASS_DIALOG = 'ramadda-dialog';
 var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
 var CLASS_COPYABLE = 'ramadda-copyable';
@@ -153,6 +163,8 @@ var COLOR_TRANSPARENT='transparent';
 var COLOR_BLACK='#000';
 var COLOR_WHITE='#fff';
 var COLOR_LIGHT_GRAY='#ccc';
+var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
+
 
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
@@ -162,10 +174,17 @@ var ATTR_TYPE = 'type';
 var ATTR_TRANSFORM = 'transform';
 var ATTR_LAYOUT='layout';
 var ATTR_LOADING= 'loading';
+var ATTR_DISABLED='disabled';
+
+var ATTR_DATA_URL = 'data-url';
 var ATTR_DATA_CORPUS='data-corpus';
+var ATTR_DATA_TITLE='data-title';
+var ATTR_DATA_ACTION='data-action';
 var ATTR_DATA_MIN='data-min';
 var ATTR_DATA_MAX='data-max';
 var ATTR_DATA_VALUE='data-value';
+
+var ATTR_IMGSRC='img-src';
 var ATTR_WIDTH = 'width';
 var ATTR_HEIGHT = 'height';
 var ATTR_HREF = 'href';
@@ -174,6 +193,7 @@ var ATTR_ONCLICK  = 'onclick';
 var ATTR_ONCHANGE  = 'onchange';
 var ATTR_PLACEHOLDER = 'placeholder';
 var ATTR_BORDER = 'border';
+var ATTR_CANCEL='cancel';
 var ATTR_CATEGORY = 'category';
 var ATTR_CURSOR='cursor';
 var ATTR_COLS = 'cols';
@@ -232,15 +252,17 @@ var DISPLAY_BLOCK='block';
 var DISPLAY_INLINE='inline';
 var DISPLAY_INLINE_BLOCK='inline-block';
 
+var OVERFLOW_NONE = 'none';
 var OVERFLOW_AUTO = 'auto';
 var OVERFLOW_HIDDEN = 'hidden';
 
-var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
+
 
 
 var CSS_BASIC_BORDER='var(--basic-border)';
 
 var FONT_BOLD='bold';
+var FONT_ITALIC='italic';
 var CSS_ALIGN_ITEMS='align-items';
 var CSS_ALIGN='align';
 var CSS_VISIBILITY = 'visibility';

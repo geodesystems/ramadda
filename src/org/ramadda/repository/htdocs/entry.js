@@ -424,7 +424,7 @@ function RamaddaRepository(repositoryRoot) {
 		let output = OUTPUTS[i];
 		if(check && !check(output)) continue;
 		if(makeSpan) {
-                    urls.push(HtmlUtils.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+                    urls.push(HtmlUtils.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
 					      ATTR_TITLE,
 					      Utils.delimMsg('Click to download')+
 					      '; '+Utils.delimMsg('Shift-click to copy URL'),
@@ -1076,7 +1076,7 @@ function Entry(props) {
         },
         getIconImage: function(attrs) {
 	    attrs = attrs??[];
-	    if(!attrs.includes("width"))attrs.push("width",ramaddaGlobals.iconWidth);
+	    if(!attrs.includes(ATTR_WIDTH))attrs.push(ATTR_WIDTH,ramaddaGlobals.iconWidth);
 	    if(this.iconRelative)
 		return HtmlUtils.image(this.iconRelative, attrs);
             return HtmlUtils.image(this.getIconUrl(), attrs);

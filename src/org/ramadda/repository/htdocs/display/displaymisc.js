@@ -1205,7 +1205,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 					    [[ATTR_STYLE,HU.css(CSS_PADDING,HU.px(0))],v]));
 	    }
 	    let span = HU.span([ATTR_ID,aggId+"_toggle","toggleopen","false",
-				ATTR_CLASS,"ramadda-clickable"],
+				ATTR_CLASS,CLASS_CLICKABLE],
 			       HU.span([ATTR_ID,aggId+"_toggleimage"],
 				       HU.getIconImage("fas fa-chevron-right"))+SPACE + v);
 	    tdAttrs = Utils.mergeLists(tdAttrs,[ATTR_NOWRAP,null]);
@@ -1402,7 +1402,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		title=title??"";
 		title+="Click to sort";
 		let attrs = [ATTR_TITLE,title,
-			     ATTR_CLASS,"ramadda-clickable display-table-header",
+			     ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-table-header'),
 			     ATTR_FIELD_ID,f.getId(),
 			     ATTR_STYLE,headerStyle];
 		let width = this.getProperty(f.getId()+".width");
@@ -1723,7 +1723,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ATTR_ID,this.domId("addrow"),
-			      ATTR_CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
+			      ATTR_CLASS,CLASS_CLICKABLE],
+			     HU.getIconImage("fas fa-plus"));
 	    }	
 	    if(cellCnt==0) {
 		this.setContents('');
@@ -2001,10 +2002,10 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		$(this).append(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.em(2)),
 				       ATTR_CLASS,'display-polltable-padding']));
 		let contents = HU.leftRightTable(HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','yes',
-							 ATTR_CLASS,'vote ramadda-clickable',
+							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Up vote'],HU.getIconImage('fa-regular fa-thumbs-up')),
 						 HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','no',
-							 ATTR_CLASS,'vote ramadda-clickable',
+ 							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Down vote'],HU.getIconImage('fa-regular fa-thumbs-down')));
 		$(this).append(HU.div([ATTR_FIELD_ID,field,'record-index',record,
 				       ATTR_CLASS,'display-polltable-block',
@@ -2217,9 +2218,12 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 				HU.div([ATTR_CLASS, "display-tnse-canvas",
 					ATTR_ID, this.domId(ID_CANVAS)], ""));
             let buttons = HU.div([ATTR_ID, this.domId(ID_RUN),
-				  ATTR_CLASS, "ramadda-button", "what", "run"], "Stop") + SPACE +
-                HU.div([ATTR_ID, this.domId(ID_STEP), ATTR_CLASS, "ramadda-button", "what", "step"], "Step") + SPACE +
-                HU.div([ATTR_ID, this.domId(ID_RESET), ATTR_CLASS, "ramadda-button", "what", "reset"], "Reset") + SPACE +
+				  ATTR_CLASS, CLASS_BUTTON,
+				  "what", "run"], "Stop") + SPACE +
+                HU.div([ATTR_ID, this.domId(ID_STEP), ATTR_CLASS, CLASS_BUTTON,
+			"what", "step"], "Step") + SPACE +
+                HU.div([ATTR_ID, this.domId(ID_RESET), ATTR_CLASS, CLASS_BUTTON,
+			"what", "reset"], "Reset") + SPACE +
                 HU.input("", "", [ATTR_ID, this.domId(ID_SEARCH), ATTR_PLACEHOLDER, "search"]);
 
             buttons = HU.div([ATTR_CLASS, "display-tnse-toolbar"], buttons);
@@ -3231,7 +3235,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		html+=HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(75))]);
 	    }
 	    this.csv =[];
-            html += HU.open(TAG_TABLE, [ATTR_CELLSPACING,"0",ATTR_CELLPADDING, "0", ATTR_BORDER, "0",
+            html += HU.open(TAG_TABLE, [ATTR_CELLSPACING,0,
+					ATTR_CELLPADDING, 0,
+					ATTR_BORDER, 0,
 					ATTR_CLASS, "display-correlation", ATTR_WIDTH, "100%"]);
             let col1Width = 10 + "%";
             let width = 90 / fieldCnt + "%";
@@ -4163,7 +4169,8 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 			let label = this.applyRecordTemplate(record, null,null,labelTemplate);
 			contents +=HU.div([ATTR_CLASS,'display-colorboxes-label',ATTR_STYLE,labelStyle],label);
 		    }
-		    row +=HU.div([ATTR_TITLE,"",ATTR_RECORD_ID, record.getId(), ATTR_CLASS,'ramadda-clickable ' + clazz,ATTR_STYLE,style],contents);
+		    row +=HU.div([ATTR_TITLE,"",ATTR_RECORD_ID, record.getId(), ATTR_CLASS,HU.classes(CLASS_CLICKABLE,clazz),
+				  ATTR_STYLE,style],contents);
 		});
 		row+=HU.close(TAG_TD,TAG_TR);
 		html+=row;
@@ -5328,7 +5335,7 @@ function RamaddaSelectedrecordsDisplay(displayManager, id, properties) {
 		    this.idToRecord[record.getId()] = record;
 		    let v = labelField.getValue(record);
 		    row.push(v);
-		    let div = HU.div([ATTR_CLASS,'ramadda-clickable display-selectedrecords-header',
+		    let div = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-selectedrecords-header'),
 				      ATTR_TITLE,'Click to remove','data-record-id',record.getId()],
 				     v);
 		    html+=HU.th([ATTR_ALIGN,ALIGN_CENTER],div);
@@ -5722,7 +5729,11 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 		return  (d.getTime()-minDate.getTime())/dateRange;
 	    };
 	    let height = HU.em(1.5);
-	    html="<div class=display-dategrid-table><table width=100% border=0 cellpadding=0 cellspacing=0>";
+	    html=HU.open(TAG_DIV,[ATTR_CLASS,'display-dategrid-table']) +
+		HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),
+				   ATTR_BORDER,0,
+				   ATTR_CELLPADDING,0,
+				   ATTR_CELLSPACING,0]);
 	    html+=HU.open(TAG_TR) + HU.tag(TAG_TD,[ATTR_WIDTH,leftWidth],
 					   HU.div([ATTR_CLASS,"display-dategrid-header"],
 						  this.getLeftLabel(this.getFieldLabel(groupField))));

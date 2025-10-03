@@ -31,7 +31,9 @@ var  displayDebug= {
 
 var ATTR_FIELD_ID='field-id';
 var ATTR_FIELD_VALUE='field-value';
-
+var ATTR_METADATA_VALUE='metadata-value';
+var ATTR_METADATA_TYPE='metadata-type';
+var ATTR_METADATA_INDEX='metadata-index';
 
 var ramaddaDoingWiki = 0;
 
@@ -211,6 +213,9 @@ function addGlobalDisplayType(type, front) {
     }
 
     if(type.preview && !type.tooltip) {
+	type.tooltip= makeDisplayTooltip(type.label,type.preview,type.desc);
+    }
+    if(!type.tooltip) {
 	type.tooltip= makeDisplayTooltip(type.label,type.preview,type.desc);
     }
     if(type.type) {
@@ -1038,7 +1043,8 @@ function DisplayThing(argId, argProperties) {
 		    value = String(value).trim();
 		    if(value=="") return "";
 		    value.split(",").forEach(tagValue=>{
-			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,
+			result+= HU.div([ATTR_METADATA_TYPE,type,
+					 ATTR_METADATA_VALUE,tagValue,
 					 ATTR_TITLE,tagValue,
 					 ATTR_STYLE, HU.css(CSS_BACKGROUND, color),
 					 ATTR_CLASS,"display-search-tag"],tagValue);
@@ -2395,14 +2401,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.originalColorRange = [min,max];
 	    }		
 	    dom.find('.display-colortable-slice').click(function(e) {
-		let val = $(this).attr('data-value');
+		let val = $(this).attr(ATTR_DATA_VALUE);
 		let html = '';
 		let items = [];
 		items.push(HU.boldLabel('Range') +
 			   HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
 			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
-		items.push(HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','reset'],'Reset range'),
-			   HU.div([ATTR_CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
+		items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-menu-item'),
+				   'what','reset'],'Reset range'),
+			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-menu-item'),
+				   'what','ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
@@ -5503,7 +5511,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(label.length>20) label = label.substring(0,19) +"...";
 		label = prefix +label;
 		let id = Utils.getUniqueId("metadata_");
-		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ATTR_ID,id,
+		let tag = HU.div([ATTR_METADATA_TYPE,m.type,
+				  ATTR_METADATA_VALUE, m.value.attr1,ATTR_ID,id,
 				  ATTR_CLASS,"display-search-tag",ATTR_TITLE, tt,
 				  ATTR_STYLE, HU.css(CSS_BACKGROUND, getMetadataColor(m.type))],label);
 		if(!groupThem)
@@ -5614,7 +5623,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(Utils.stringDefined(embedWiki)) {
 		    uid =this.getUniqueId("details");
 		    details+=HU.div([ATTR_ID,uid,
-				     ATTR_CLASS,'ramadda-button ramadda-clickable'],
+				     ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
 				    'Details');
 		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-embed']);
 		}
@@ -6399,7 +6408,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 						   CSS_TRANSFORM,"translateX(-50%)")],"");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([ATTR_ID,this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',ATTR_CLASS, 'display-contents display-' + this.type +'-contents', ATTR_STYLE, HU.css(CSS_POSITION,'relative') + style],table + message);
+            html += HU.div([ATTR_ID,this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',
+			    ATTR_CLASS, 'display-contents display-' + this.type +'-contents',
+			    ATTR_STYLE, HU.css(CSS_POSITION,POSITION_RELATIVE) + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -7549,7 +7560,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			//			if(item.length>50) return;
 			let label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
-			html+=HU.div([ATTR_TITLE,item,ATTR_CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
+			html+=HU.div([ATTR_TITLE,item,
+				      ATTR_CLASS,HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE,'display-filter-popup-item'),
+				      "item",item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
@@ -7842,11 +7855,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	initTemplatePopup: function(dialog) {
 	    let _this = this;
 	    dialog.find(".display-search-tag").click(function() {
-		let type = $(this).attr("metadata-type");
+		let type = $(this).attr(ATTR_METADATA_TYPE);
 		if(type==null) return;
 		let filter = _this.filterMap[type];
 		if(filter==null) return;
-		let value = $(this).attr("metadata-value");
+		let value = $(this).attr(ATTR_METADATA_VALUE);
 		filter.toggleTag(value,true,null, true);
 	    });
 

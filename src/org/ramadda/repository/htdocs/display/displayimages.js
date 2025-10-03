@@ -119,9 +119,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 	    if(!this.groupByHtml) {
 		this.groupByHtml = "";
 		if(this.colorAnalysisEnabled)
-		    this.groupByHtml +=  HU.span([ATTR_CLASS,"ramadda-button",
+		    this.groupByHtml +=  HU.span([ATTR_CLASS,CLASS_BUTTON,
 						  ATTR_ID,this.domId("docolors")], "Do colors")+" " +
-		    HU.span([ATTR_CLASS,"ramadda-button",
+		    HU.span([ATTR_CLASS,CLASS_BUTTON,
 			     ATTR_ID,this.domId("docolorsreset")], "Reset");
 		if(this.groupByFields.length>0) {
 		    var options = [["","--"]];
@@ -605,8 +605,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    if(this.hideNoImages) return;
 		}
 		let img = !hasImage?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
-		let topLbl = (topLabel!=null?HU.div([ATTR_CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
-		let lbl = HU.div([ATTR_CLASS,"ramadda-clickable display-images-label"], label.trim());
+		let topLbl = (topLabel!=null?HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-images-toplabel')], topLabel):"");
+		let lbl = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-images-label')], label.trim());
 		if(urlField) {
 		    if(topLbl!="")
 			topLbl = HU.href(urlField.getValue(record), topLbl,[ATTR_TARGET,"_target"]);
@@ -786,10 +786,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						 CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_Z_INDEX,1000,CSS_POINTER_EVENTS,"none"),
 			       ATTR_ID, this.domId(ID_RECT)]);
-	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
+	    let imageDiv = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 				  rect+
 				  HU.div([ATTR_ID,this.domId(ID_IMAGE),
-					  ATTR_STYLE,HU.css(CSS_POSITION,"relative") ]) +
+					  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE) ]) +
 				  HU.div([ATTR_ID,this.domId(ID_POPUP),
 					  ATTR_CLASS,"display-imagezoom-popup",
 					  ATTR_STYLE,HU.css(CSS_Z_INDEX,"100",
@@ -1044,10 +1044,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ATTR_ID, this.domId(ID_PREV),
 			       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
-			       ATTR_CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
+			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-slides-arrow-left fas fa-angle-left')]);
 	    let right = HU.div([ATTR_ID, this.domId(ID_NEXT),
 				ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(10),CSS_FONT_SIZE,HU.perc(200)),
-				ATTR_CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
+				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-slides-arrow-right fas fa-angle-right')]);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
 				ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, height),
 				ATTR_ID, this.domId(ID_SLIDE), ATTR_CLASS,'display-slides-slide']);
@@ -1061,7 +1061,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			      ATTR_TABINDEX,'0',
 			      ATTR_STYLE,stripStyle]);
 	    }
-	    let contents = top+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],
+	    let contents = top+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 				      slide + left + right);
 
 	    this.setContents(contents);

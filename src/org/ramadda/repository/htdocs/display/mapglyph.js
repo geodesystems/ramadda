@@ -1496,7 +1496,7 @@ MapGlyph.prototype = {
 	}
 	this.jq('multientry').find('[command]').click(function(){
 	    let command = $(this).attr(ATTR_COMMAND);
-	    let entry = map[$(this).attr('entryid')];
+	    let entry = map[$(this).attr(ATTR_ENTRYID)];
 	    let glyphType = _this.display.getGlyphType(command);
 	    let style = $.extend({},glyphType.getStyle());
 	    let mapOptions = {
@@ -2880,7 +2880,7 @@ MapGlyph.prototype = {
 
 
 	this.getLegendDiv().find('.imdv-time-anim').click(function() {
-	    let action = $(this).attr('action');
+	    let action = $(this).attr(ATTR_ACTION);
 	    let slider=	_this.jq('time_slider');
 	    let current = +slider.slider('value');
 	    let min = +slider.attr(ATTR_SLIDER_MIN);
@@ -3743,7 +3743,7 @@ MapGlyph.prototype = {
 	let clearElevations = this.jq('clearelevations');
 	clearElevations.button().click(function(){
 	    _this.attrs.elevations = null;
-	    $(this).attr('disabled','disabled');
+	    $(this).attr(ATTR_DISABLED,'disabled');
 	    $(this).addClass('ramadda-button-disabled');
 	});
 	if(!this.attrs.elevations) {
@@ -3758,7 +3758,7 @@ MapGlyph.prototype = {
 	    }
 	    let done = ()=>{
 		clearElevations.removeClass('ramadda-button-disabled');
-		clearElevations.attr('disabled',null);
+		clearElevations.attr(ATTR_DISABLED,null);
 		$(this).html('Done');
 		setTimeout(()=>{
 		    $(this).html('Add elevations');
@@ -3814,18 +3814,20 @@ MapGlyph.prototype = {
 	    let extvalue = jqid('mapvalueext_' + index).val();	    
 	    let wrapper = jqid('mapvaluewrapper_' + index);
 	    if(info.isNumeric()) {
-		wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,ATTR_SIZE,'15']));
+		wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,
+						ATTR_SIZE,15]));
 		tt=info.min +" - " + info.max;
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.getSamplesLabels(), ", ");
 		if(info.isEnumeration()) {
 		    let widget = HU.select("",[ATTR_ID,'mapvalue_' + index],info.samples,value,20);
 		    let extwidget = HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,
-							  ATTR_SIZE,'15',
+							  ATTR_SIZE,15,
 							  ATTR_PLACEHOLDER,'pattern']);
 		    wrapper.html(widget+HU.div([],'Or: '+extwidget));
 		} else {
-		    wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,ATTR_SIZE,'15']));
+		    wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,
+						    ATTR_SIZE,15]));
 		}
 	    }
 	    //	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
@@ -3954,7 +3956,8 @@ MapGlyph.prototype = {
 	    let attrs = feature.attributes;
 	    let first = rowCnt++==0;
 	    if(first) {
-		table = HU.openTag(TAG_TABLE,[ATTR_ID,id,'table-ordering','true',
+		table = HU.openTag(TAG_TABLE,[ATTR_ID,id,
+					      'table-ordering','true',
 					      'table-searching','true',
 					      ATTR_TABLE_HEIGHT,HU.px(400),
 					      ATTR_CLASS,'stripe rowborder ramadda-table'])
@@ -3987,15 +3990,15 @@ MapGlyph.prototype = {
 		    sv = Utils.stripTags(sv);
 		}
 		sv=column.format(sv);
-		table+=HU.tag(TAG_TD,[ATTR_STYLE,isNumber?HU.css(CSS_TEXT_ALIGN,'right'):'',
-				      ATTR_ALIGN,isNumber?'right':ALIGN_LEFT],sv);
+		table+=HU.tag(TAG_TD,[ATTR_STYLE,isNumber?HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT):'',
+				      ATTR_ALIGN,isNumber?ALIGN_RIGHT:ALIGN_LEFT],sv);
 	    });
 	});
 	if(stats) {
 	    table+='<tfoot><tr>';
 	    let fmt = (label,amt) =>{
-		return HU.tr(HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_ALIGN,'right')],HU.b(label)) +
-			     HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_ALIGN,'right')],
+		return HU.tr(HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_ALIGN,ALIGN_RIGHT)],HU.b(label)) +
+			     HU.td([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_ALIGN,ALIGN_RIGHT)],
 				   Utils.formatNumberComma(amt)));
 	    };
 	    columns.forEach((column,idx)=>{
@@ -4407,7 +4410,8 @@ MapGlyph.prototype = {
 		let id1=HU.getUniqueId('cbx');
 		let id2=HU.getUniqueId('cbx');		
 		//		row+=HU.td(HU.checkbox(id1,[ATTR_ID,id1,ATTR_CLASS,'feature-select','feature-index',idx],true));
-		name = HU.span([ATTR_CLASS,'ramadda-clickable feature-name','feature-index',idx,
+		name = HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'feature-name'),
+				'feature-index',idx,
 				ATTR_TITLE,'Click to center',
 				ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10),CSS_MARGIN_LEFT,HU.px(10))], name);
 		row+=HU.td(HU.checkbox(id2,[ATTR_ID,id2,ATTR_CLASS,'feature-visible','feature-index',idx],

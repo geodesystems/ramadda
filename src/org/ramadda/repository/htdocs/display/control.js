@@ -219,7 +219,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
 	    let btn = (data,title,icon,id)=>{
 		let attrs = [ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(6)),
-			     ATTR_CLASS,'ramadda-clickable',
+			     ATTR_CLASS,CLASS_CLICKABLE,
 			     ATTR_TITLE,title,'command',data];
 		if(id) attrs.push(ATTR_ID,this.domId(id));
 		html +=HU.span(attrs,HU.getIconImage(icon))
@@ -397,11 +397,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 	    //	    html += HU.center('#' + records.length +' records');
 	    let fs = [];
-	    let clazz = ' ramadda-clickable display-fields-field ';
+	    let clazz = HU.classes(CLASS_CLICKABLE,'display-fields-field');
 	    let asList = this.getAsList();
-	    if(this.getDecorate(true)) clazz+= ' display-fields-field-decorated ';
+	    if(this.getDecorate(true)) clazz+= HU.classes(clazz,'display-fields-field-decorated');
 	    if(asList)
-		clazz+=' display-fields-list-field';
+		clazz+=HU.classes(clazz,'display-fields-list-field');
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
@@ -411,7 +411,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		if(color)
 		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',
 				   ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]);
-		block = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,'relative')],block);
+		block = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],block);
 
 		if(details) {
 		    block+= HU.br() +
@@ -433,11 +433,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 	    let label = this.getSelectLabel(this.getFilterSelect()?this.getFilterSelectLabel('Select Filter Fields'):'Select fields');
 	    let header ='';
-	    header+=HU.span([ATTR_ID,this.getDomId(ID_CLEARALL),ATTR_CLASS,'ramadda-button'],
+	    header+=HU.span([ATTR_ID,this.getDomId(ID_CLEARALL),ATTR_CLASS,CLASS_BUTTON],
 			    'Clear all');
 	    header+=HU.space(1);
 	    if(this.getShowSelectAll()) {
-		header+=HU.span([ATTR_ID,this.getDomId(ID_SETALL),ATTR_CLASS,'ramadda-button'],
+		header+=HU.span([ATTR_ID,this.getDomId(ID_SETALL),ATTR_CLASS,CLASS_BUTTON],
 				'Set all');
 	    }
 	    let search=HU.div([ATTR_ID,this.domId(ID_SEARCH)],'');
@@ -1062,7 +1062,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
-	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css(CSS_CURSOR,CURSOR_POINTER).attr(ATTR_TITLE,"Reload").click(()=>{
+	    this.jq(ID_COUNTDOWN).addClass(CLASS_CLICKABLE).css(CSS_CURSOR,CURSOR_POINTER).attr(ATTR_TITLE,"Reload").click(()=>{
 		this.checkReload(-1);
 	    });
 	    this.setTimer(this.getPropertyInterval());
@@ -1293,7 +1293,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    let label = this.getRecordHtml(record, null, labelTemplate);
 		    let style = buttonStyle;
 		    if(idx==0) style+=buttonStyleOn;
-		    tabs.push(HU.span([ATTR_CLASS,'display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),
+		    tabs.push(HU.span([ATTR_CLASS,HU.classes('display-menu-button-item',CLASS_HOVERABLE,CLASS_CLICKABLE, (idx==0?'display-menu-button-item-on':'')),
 				       ATTR_STYLE,style,
 				       ATTR_RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
@@ -1326,11 +1326,11 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
 	    if(this.getShowArrows(false)) {
 		let noun = this.getProperty("noun", "Data");
-		let prev = HU.span([ATTR_CLASS,"display-changeentries-button ramadda-clickable",
+		let prev = HU.span([ATTR_CLASS,HU.classes('display-changeentries-button',CLASS_CLICKABLE),
 				    ATTR_TITLE,"Previous " +noun,
 				    ATTR_ID, this.getDomId(ID_PREV)],
 				   HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([ATTR_CLASS, "display-changeentries-button ramadda-clickable",
+ 		let next = HU.span([ATTR_CLASS, HU.classes('display-changeentries-button',CLASS_CLICKABLE),
 				    ATTR_TITLE,"Next " + noun,
 				    ATTR_ID, this.getDomId(ID_NEXT)],
 				   HU.getIconImage("fa-chevron-right")); 

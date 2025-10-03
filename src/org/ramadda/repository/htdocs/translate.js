@@ -18,12 +18,12 @@ var Translate = {
 	menu.click(()=>{
 	    let html = '';
 	    html+= HU.div([ATTR_TITLE,'Clear language',
-			   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],switchPrefix+'Clear');
+			   ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],switchPrefix+'Clear');
 
 	    ramaddaLanguages.forEach(lang=>{
 		html+= HU.div(['data-language',lang.id,
 			       ATTR_TITLE,'Switch language',
-			       ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],switchPrefix+lang.label);
+			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],switchPrefix+lang.label);
 	    });
 	    html = HU.div([],html);
 	    if(this.menuPopup)
@@ -46,7 +46,7 @@ var Translate = {
 	}
         HU.hidePopupObject();
 	this.setLanguage(lang);
-//	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
+	//	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
 	Utils.setLocalStorage('ramadda-language', lang);
 	if(lang==LANGUAGE_ENGLISH) {
 	    Translate.translateInner(null, LANGUAGE_ENGLISH,{},true);
@@ -88,7 +88,7 @@ var Translate = {
 		let searchId  = HU.getUniqueId('search');
 		let html = HU.div([ATTR_ID,searchId]);
 		html +=HU.open(TAG_TABLE);
-		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,'400px')],[HU.b('English'),HU.b('Translated')]));
+		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400))],[HU.b('English'),HU.b('Translated')]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
 		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
@@ -122,13 +122,13 @@ var Translate = {
 		if(lang.id!= langId) return;
 		html+= HU.span(['data-language',lang.id,
 				ATTR_TITLE,'Switch language',
-				ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
+				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],lang.label);
 		cnt++;
 	    })});
 	if(addDownload) {
 	    Translate.downloadMode= true;
 	    html+= HU.span(['data-language','showmissing',
-			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],'Download missing');
+			    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],'Download missing');
 	}
 
 	html+=HU.close(TAG_DIV);
@@ -279,7 +279,7 @@ var Translate = {
 	if(useDflt && !this.haveDoneAnyTranslations) {
 	    return
 	}
-//	console.log('translating to:' + lang +' use dflt:' + useDflt);
+	//	console.log('translating to:' + lang +' use dflt:' + useDflt);
 	this.haveDoneAnyTranslations=true;
 	if(!pack) {
 	    console.log('no language pack:' + lang);
@@ -304,11 +304,11 @@ var Translate = {
 		return null;
 	    }
 
-//	    let debug = text.indexOf("toggle")>=0;
+	    //	    let debug = text.indexOf("toggle")>=0;
 	    let debug = false;
-//	    debug = text.indexOf("largest")>=0;
+	    //	    debug = text.indexOf("largest")>=0;
 	    if(text.indexOf(Utils.MSGCHAR)>=0) {
-//		if(debug) console.log(suffix +" has delim:" + text);
+		//		if(debug) console.log(suffix +" has delim:" + text);
 		let tokens = Utils.tokenizeMessage(text);
 		let accum = '';
 		tokens.forEach(chunk=>{
@@ -316,7 +316,7 @@ var Translate = {
 			accum+=chunk.value;
 			return;
 		    }
-//		    if(debug)	console.log('\ttoken:',chunk.value);
+		    //		    if(debug)	console.log('\ttoken:',chunk.value);
 		    let translated = translate(a,chunk.value,suffix);
 		    if(translated) accum+=translated;
 		    else accum+=chunk.value;
@@ -326,16 +326,16 @@ var Translate = {
 
 	    if(debug) {
 		console.log('text:'+suffix,':',text,a.prop('tagName'));
-//		if(!suffix && text.indexOf('xx')>=0) console.tr
+		//		if(!suffix && text.indexOf('xx')>=0) console.tr
 
 	    }
-//	    if(debug)		console.log('text:',suffix,':',text);
+	    //	    if(debug)		console.log('text:',suffix,':',text);
 
 	    text = text.trim();
 	    if(!Translate.canTranslate(a,text,suffix)) {
 		return null;
 	    }
-		
+	    
 	    let origText =text;
 	    if(!pack[text]) {
 		text =text.toLowerCase();
@@ -347,13 +347,13 @@ var Translate = {
 		return pack[text];
 	    }
 
-//	    if(!Translate.missing[text])console.log('missing:'+text+':');
+	    //	    if(!Translate.missing[text])console.log('missing:'+text+':');
 
 	    Translate.missing[origText] = true;
 	    return  a.attr(origValueFlag(suffix));
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
-	let attrs = ['placeholder','title','value'];
+	let attrs = [ATTR_PLACEHOLDER,ATTR_TITLE,ATTR_VALUE];
 	all.each(function() {
 	    let v;
 	    let a = $(this);
@@ -362,26 +362,27 @@ var Translate = {
 		return;
 	    }
 	    attrs.forEach(attr=>{
-		if(attr=='value') {
+		if(attr==ATTR_VALUE) {
 		    //only handle value attr for submit
 		    if(tag=='INPUT' && a.attr('type')=='submit') {
 		    } else {
 			return;
 		    }
 		}
+
 		let attrValue = a.attr(attr);
 		if(attrValue) {
 		    let currentFlag = currentValueFlag(attr);
-//		    console.log(currentFlag,a.attr(currentFlag));
+		    //		    console.log(currentFlag,a.attr(currentFlag));
 		    if(a.attr(currentFlag) != lang) {
 			a.attr(currentFlag,lang);
-//			console.log('\ttranslating',attr);
+			//			console.log('\ttranslating',attr);
 			v =translate(a,a.attr(origValueFlag(attr))??attrValue,attr);
 			if(v) {
 			    a.attr(attr,v);
 			}
 		    } else {
-//			console.log('\talready translated',attr,a.attr(attr));
+			//			console.log('\talready translated',attr,a.attr(attr));
 		    }
 		}});
 
@@ -429,5 +430,5 @@ if(ramaddaLanguagesEnabled) {
 	Translate.init();
     });
 }
-	 
+
 

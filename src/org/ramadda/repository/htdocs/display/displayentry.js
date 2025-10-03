@@ -68,7 +68,8 @@ addGlobalDisplayType({
     type: DISPLAY_SIMPLESEARCH,
     label: "Simple Search",
     requiresData: false,
-    category: CATEGORY_ENTRIES
+    category: CATEGORY_ENTRIES,
+    desc:"Show a search field for entry or in page search"
 });
 
 
@@ -78,7 +79,8 @@ addGlobalDisplayType({
     label: "Entry Search",
     requiresData: false,
     category: CATEGORY_ENTRIES,
-    help:'/userguide/wiki/wikisearch.html'
+    help:'/userguide/wiki/wikisearch.html',
+    desc:'Show the full search form'
 });
 /*
   addGlobalDisplayType({
@@ -799,7 +801,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(horizontal &&  this.getShowFormToggle()) {
 		toggle = HU.div([ATTR_TITLE, "Toggle form",
 				 ATTR_ID,this.domId(ID_SEARCH_HIDEFORM),
-				 ATTR_CLASS,"ramadda-clickable",
+				 ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						   CSS_LEFT,HU.px(0),
 						   CSS_TOP,HU.px(0))],
@@ -1137,13 +1139,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(tuple.length<2)return;
 		let id = tuple[0];
 		let label = tuple[1];
-                outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+                outputs.push(HU.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
 				      ATTR_TITLE,Utils.delimMsg('Click to download') +
 				      '; '+Utils.delimMsg('Shift-click to copy URL'),
 				      'custom-output','true',
 				      'data-name',label,
 				      'data-format',id,
-				      'data-url',
+				      ATTR_DATA_URL,
 				      this.getRamadda().getSearchUrl(settings,id)],
 				     label));
 	    });
@@ -1153,7 +1155,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    outputs = HU.join(outputs, HU.space(2));
 	    if(check('copyurl'))
 		outputs = outputs+ HU.space(2)+
-		HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+		HU.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
 			 ATTR_ID,copyId,
 			 'data-copy',url],
 			HU.getIconImage("fas fa-clipboard"));
@@ -1278,7 +1280,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let cbxs = $('[checkbox-id='+ fullId+']');
 		    cbxs.each(function() {
 			if($(this).is(':checked')) {
-			    let value = $(this).attr('data-value');
+			    let value = $(this).attr(ATTR_DATA_VALUE);
 			    extra += '&' + arg + '=' + encodeURIComponent(value);
 			    cbxValues.push(value);
 			}
@@ -1476,7 +1478,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 							 CSS_MAX_WIDTH,HU.perc(80)),
 				       ATTR_ID, this.getDomId(ID_SEARCH),
-				       ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
+				       ATTR_CLASS, HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 
@@ -1862,9 +1864,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.idToElement = {};
 	    let cbxChange = function(){
 		let not  = $(this).attr("metadata-not");
-		let value  = $(this).attr("metadata-value");
-		let type  = $(this).attr("metadata-type");
-		let index  = $(this).attr("metadata-index");				
+		let value  = $(this).attr(ATTR_METADATA_VALUE);
+		let type  = $(this).attr(ATTR_METADATA_TYPE);
+		let index  = $(this).attr(ATTR_METADATA_INDEX);				
 		let on = $(this).is(':checked');
 		let cbx = $(this);
 		let element  = _this.idToElement[$(this).attr(ATTR_ID)];
@@ -1930,7 +1932,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	metadataTagSelected:function(type, value) {
 	    let tagGroupId = ID_SEARCH_TAG_GROUP+"_"+type;
 	    let tagGroup = this.jq(tagGroupId);
-	    let existing = tagGroup.find(HU.attrSelect("metadata-type",type)+HU.attrSelect("metadata-value",value));
+	    let existing = tagGroup.find(HU.attrSelect(ATTR_METADATA_TYPE,type)+HU.attrSelect(ATTR_METADATA_VALUE,value));
 	    return (existing.length>0);
 	},
 	addMetadataTag:function(type, label,value, cbx,not) {
@@ -1946,13 +1948,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		
 	    }
 	    let prefix = not?'Not ':'';
-	    let tag = $(HU.div(['source-id',cbxId,'metadata-not',not,'metadata-type',type,'metadata-value',value,
+	    let tag = $(HU.div(['source-id',cbxId,'metadata-not',not,
+				ATTR_METADATA_TYPE,type,
+				ATTR_METADATA_VALUE,value,
 				ATTR_TITLE,label+':' + prefix + value,
 				ATTR_CLASS,CLASS_SEARCH_TAG, ATTR_ID,tagId],
 			       prefix + value+SPACE +HU.getIconImage('fas fa-times'))).appendTo(tagGroup);
 	    tag.click(function() {
 		let element=_this.idToElement[$(this).attr('source-id')];
-		let value = $(this).attr('metadata-value');
+		let value = $(this).attr(ATTR_METADATA_VALUE);
 		if(element && value) {
 		    element.setCbxOff(value);
 		}
@@ -2280,7 +2284,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				label= "--blank--"; 
 			    let boxId = id+'_'+vidx;
                             field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',
-								  ATTR_ID,boxId,'checkbox-id',id,'data-value',value],
+								  ATTR_ID,boxId,'checkbox-id',id,
+								  ATTR_DATA_VALUE,value],
 							   value==searchValue, label));
 			}
 		    } else {
@@ -2740,7 +2745,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		return;
 	    }		
 
-	    let url = button.attr('data-url');
+	    let url = button.attr(ATTR_DATA_URL);
 	    let format = button.attr('data-format')
 	    let formatName = button.attr('data-name')	    
 	    let size = "100";
@@ -2923,8 +2928,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		    let data = info.entries?new  PointData("pointdata", fields, makeData(info.entries)):baseData;
 		    let dialogListener = (display, dialog)=>{
 			dialog.find('.'+ CLASS_SEARCH_TAG).click(function() {
-			    let type = $(this).attr("metadata-type");
-			    let value = $(this).attr("metadata-value");			    
+			    let type = $(this).attr(ATTR_METADATA_TYPE);
+			    let value = $(this).attr(ATTR_METADATA_VALUE);			    
 			    if(!_this.addMetadataTag(type,type, value)) return;
 			    _this.submitSearchForm();
 			});
@@ -3031,7 +3036,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'autoSearch',ex:true},
 	{p:'showHeader',ex:true},
 	{p:'inputSize',d:'200px',ex:'100%'},
-	{p:'placeholder'},
+	{p:ATTR_PLACEHOLDER},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true',tt:'Just search in the page'},
 	{p:'autoFocus',d:false,ex:'false',tt:'auto focus on the search input field'},	
@@ -3080,7 +3085,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		let tags ={};
 		let list = [];
 		sel.find('.metadata-tag').each(function() {
-		    $(this).addClass('ramadda-clickable').click(function(){
+		    $(this).addClass(CLASS_CLICKABLE).click(function(){
 			_this.selectTag($(this).attr('metadata-tag'));
 		    });
 		    let tag = $(this).attr('metadata-tag');
@@ -3123,7 +3128,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			let title = ele.attr(ATTR_TITLE)+HU.getTitleBr()??'';
 			title+='Click to filter';
 			group.contents+=HU.image(ele.attr('data-image-url'),
-						 [ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,
+						 [ATTR_CLASS,HU.classes('metadata-tag',CLASS_CLICKABLE),
+						  'metadata-tag',tag,
 						  ATTR_TITLE,title]);
 		    } else {
 			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
@@ -3131,7 +3137,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			group.contents+=HU.div(['data-background',ele.attr('data-background'),
 						'data-style',style??'',
 						ATTR_STYLE,style??'',
-						ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
+						ATTR_CLASS,HU.classes('metadata-tag',CLASS_CLICKABLE),
+						'metadata-tag',tag],label);
 		    }
 		});
 		groups.forEach(g=>{
@@ -5093,10 +5100,11 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		let cbxId = this.display.getMetadataFieldId(this.metadata.getType())+"_checkbox_" + this.getIndex()+"_"+i;
 		if(idToElementMap) idToElementMap[cbxId] = this;
 		let cbx = HU.checkbox("",[ATTR_ID,cbxId,
-					  "metadata-type",type,
-					  "metadata-index",this.getIndex(),
-					  "metadata-value",value],selected) +" " +
-		    HU.tag(TAG_LABEL,  [ATTR_CLASS,"ramadda-noselect ramadda-clickable",ATTR_FOR,cbxId],label +" (" + count+")");
+					  ATTR_METADATA_TYPE,type,
+					  ATTR_METADATA_INDEX,this.getIndex(),
+					  ATTR_METADATA_VALUE,value],selected) +" " +
+		    HU.tag(TAG_LABEL,  [ATTR_CLASS,HU.classes('ramadda-noselect',CLASS_CLICKABLE),
+					ATTR_FOR,cbxId],label +" (" + count+")");
 		if(this.getValues().length>popupLimit) {
 		    cbx = HU.span([ATTR_CLASS,CLASS_SEARCH_TAG,'tag',label], cbx);
 		}
@@ -5106,11 +5114,12 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		    if(idToElementMap) idToElementMap[cbxId] = this;
 		    let cbx = HU.checkbox("",[ATTR_ID,cbxId,
 					      "metadata-not",true,
-					      "metadata-type",type,
-					      "metadata-index",this.getIndex(),
-					      "metadata-value",value],selected) +" " +
+					      ATTR_METADATA_TYPE,type,
+					      ATTR_METADATA_INDEX,this.getIndex(),
+					      ATTR_METADATA_VALUE,value],selected) +" " +
 			HU.tag(TAG_LABEL,
-			       [ATTR_CLASS,"ramadda-noselect ramadda-clickable",ATTR_FOR,cbxId],
+			       [ATTR_CLASS,HU.classes('ramadda-noselect',CLASS_CLICKABLE),
+				ATTR_FOR,cbxId],
 			       HU.b("Not ") + label +" (" + count+")");
 		    if(this.getValues().length>popupLimit) {
 			cbx = HU.span([ATTR_CLASS,CLASS_SEARCH_TAG,'tag',label], cbx);

@@ -51,7 +51,7 @@ function editImageClick(event, imgId, pt1x, pt1y, pt2x, pt2y) {
                 left: idx + parseInt(fldx1.obj.value),
                 width: width,
                 height: height,
-                position: 'absolute'
+                position: POSITION_ABSOLUTE
             });
         }
     }

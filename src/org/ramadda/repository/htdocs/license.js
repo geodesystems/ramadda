@@ -21,9 +21,9 @@ var RamaddaLicense =  {
 	let agreed =Utils.getProperty(Utils.getLocalStorage(key));
 	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
 	if(!agreed) {
-	    let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],
+	    let buttonList = [HU.div(['action','ok','class',HU.clases(CLASS_BUTTON,CLASS_CLICKABLE)],
 				     "Yes"),
-			      HU.div(['action','no','class','ramadda-button ' + CLASS_CLICKABLE],"No")]
+			      HU.div(['action','no','class',HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],"No")]
 
 	    let buttons = HU.buttons(buttonList);
 	    let html =  opts.message;
@@ -48,7 +48,7 @@ var RamaddaLicense =  {
 					 remove:false,modalStrict:true,sticky:true});
 
 
-	    dialog.find('.ramadda-button').click(function() {
+	    dialog.find(HU.dotClass(CLASS_BUTTON)).click(function() {
 		if($(this).attr('action')!='ok') {
 		    window.location.href=opts.redirect;
 		    return;

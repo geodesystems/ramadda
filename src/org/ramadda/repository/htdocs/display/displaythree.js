@@ -571,21 +571,26 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
 				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,CSS_POSITION,POSITION_ABSOLUTE,
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
-	    let pos = HU.div([ATTR_TITLE,"Select Position", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId(ID_POSITION_BUTTON),
+	    let pos = HU.div([ATTR_TITLE,"Select Position",
+			      ATTR_CLASS,CLASS_CLICKABLE,
+			      ATTR_ID,this.domId(ID_POSITION_BUTTON),
 			      ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						CSS_LEFT,HU.px(10),
 						CSS_TOP,HU.px(10),
-						CSS_Z_INDEX,"1000")],HU.getIconImage("fa-globe"));
-	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate", ATTR_CLASS,"ramadda-clickable",
+						CSS_Z_INDEX,1000)],
+			     HU.getIconImage("fa-globe"));
+	    let rotate = HU.div([ATTR_TITLE,"Toggle rotate",
+				 ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_ID,this.domId(ID_ROTATE_BUTTON),
 				 ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						   CSS_LEFT,HU.px(10),
 						   CSS_TOP,HU.px(30),
-						   CSS_Z_INDEX,"1000")],HU.getIconImage("fa-rotate"));	    
+						   CSS_Z_INDEX,1000)],
+				HU.getIconImage("fa-rotate"));	    
 	    let w  = parseInt(this.getGlobeWidth());
 	    let h = parseInt(this.getGlobeHeight());
 
-	    let globe = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
+	    let globe = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 			       pos +
 			       rotate+
 			       popup +
@@ -607,11 +612,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.jq(ID_POSITION_BUTTON).click(()=>{
 		let html = "";
 		for(a in positions) {
-		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","place",a],a);
+		    html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,"place",a],a);
 		}
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_POSITION_BUTTON)});
-		dialog.find(".ramadda-clickable").click(function() {
+		dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		    _this.setPosition(positions[$(this).attr("place")]);
 		    dialog.remove();
 		});
@@ -1166,7 +1171,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
 						  CSS_POSITION,POSITION_ABSOLUTE,
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
-	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,"relative")],
+	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 			      popup +
 			      HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
 				      ATTR_ID, this.domId(ID_GRID)]));

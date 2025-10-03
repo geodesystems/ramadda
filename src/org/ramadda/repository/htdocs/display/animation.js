@@ -469,7 +469,7 @@ function DisplayAnimation(display, enabled,attrs) {
             this.jq(ID_SETTINGS).button().click(function(){
 		let window = _this.display.getProperty("animationWindow");
 		let step = _this.display.getProperty("animationStep", window);		
-		let clazz = "ramadda-hoverable ramadda-clickable";
+		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
 		let html = HU.div([ATTR_ID,_this.domId(ID_FASTER),
 				   ATTR_TITLE, "Faster",
 				   ATTR_CLASS,clazz], "Faster") +	

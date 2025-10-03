@@ -97,8 +97,8 @@ function D3Graph(div, nodes, links, width, height) {
             })
             .attr("x", "-8px")
             .attr("y", "-8px")
-            .attr("width", "16px")
-            .attr("height", "16px");
+            .attr(ATTR_WIDTH, HU.px(16))
+            .attr(ATTR_HEIGHT, HU.px(16));
 
 
         nodeEnter.append("text")
@@ -249,7 +249,7 @@ function D3Graph(div, nodes, links, width, height) {
 
     this.svg = d3.select(div).append("svg");
 
-    this.svg.attr("width", width).attr("height", height);
+    this.svg.attr(ATTR_WIDTH, width).attr(ATTR_HEIGHT, height);
 
     this.force = d3.layout.force()
         .gravity(.05)

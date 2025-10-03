@@ -475,7 +475,9 @@ function RecordFilter(display,filterFieldId, properties) {
 					 ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
 		}
 		
-		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,value,
+		let tag = $(HU.div([ATTR_METADATA_TYPE,type,
+				    ATTR_METADATA_VALUE,value,
+				    ATTR_TITLE,value,
 				    ATTR_STYLE, HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId())),
 				    ATTR_CLASS,"display-search-tag",
 				    ATTR_ID,tagId],value+SPACE +
@@ -636,14 +638,14 @@ function RecordFilter(display,filterFieldId, properties) {
 		let cbxChange = function() {
         	    let cbx = $(this);
 	            let on = cbx.is(':checked');
-		    let value  = $(this).attr("metadata-value");
+		    let value  = $(this).attr(ATTR_METADATA_VALUE);
 		    _this.toggleTag(value,on,cbx,true);
 		}
 		let clickId = this.getFilterId()+"_popup";
 		$("#" + clickId).click(()=>{
 		    let dialog = this.display.createTagDialog(this.tagCbxs, $("#" + clickId), cbxChange, this.getFilterId(),this.getLabel());
 		    dialog.find(".metadata-cbx").each(function() {
-			let value = $(this).attr('metadata-value');
+			let value = $(this).attr(ATTR_METADATA_VALUE);
 			$(this).prop('checked',_this.selectedTags.includes(value));
 		    });
 		});
@@ -873,8 +875,8 @@ function RecordFilter(display,filterFieldId, properties) {
 			    style += HU.css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
 			}
 			
-			let clazz = " ramadda-hoverable ramadda-clickable display-filter-item display-filter-item-" + this.displayType +" ";
-			if(useButton) clazz+=" ramadda-button ";
+			let clazz = HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-filter-item display-filter-item-' + this.displayType);
+			if(useButton) clazz=HU.classes(clazz,CLASS_BUTTON);
 			if(v == dfltValue) {
 			    clazz+=  " display-filter-item-" + this.displayType +"-selected ";
 			}
@@ -950,8 +952,11 @@ function RecordFilter(display,filterFieldId, properties) {
 			let cbxId = this.getFilterId() +"_cbx_" + idx;
 			this.tagToCbx[value] = cbxId;
 			let cbx = HU.checkbox("",[ATTR_CLASS,"metadata-cbx",
-						  ATTR_ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " +
-			    HU.tag(TAG_LABEL,  [ATTR_CLASS,"ramadda-noselect ramadda-clickable",ATTR_FOR,cbxId],label);
+						  ATTR_ID,cbxId,
+						  ATTR_METADATA_TYPE,this.getFilterId(),
+						  ATTR_METADATA_VALUE,value],false) +" " +
+			    HU.tag(TAG_LABEL,  [ATTR_CLASS,HU.classes('ramadda-noselect',CLASS_CLICKABLE),
+						ATTR_FOR,cbxId],label);
 			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
 				       ATTR_STYLE,  HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()))], cbx);
 			cbxs.push(cbx);
@@ -970,7 +975,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    widget= HU.div([ATTR_STYLE, style,
 				    ATTR_TITLE,"Click to select tag",
 				    ATTR_ID,clickId,
-				    ATTR_CLASS,"ramadda-clickable entry-toggleblock-label"],
+				    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'entry-toggleblock-label')],
 				   HU.makeToggleImage("fa-solid fa-plus",HU.css(CSS_FONT_SIZE,HU.pt(8))) +label);   
 		} else {
 		    if(debug) console.log("\tis select");

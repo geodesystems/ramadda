@@ -62,15 +62,15 @@ RamaddaCanvas.prototype = {
 
 	header.push(HU.span([ATTR_TITLE,'Print lines',
 			     ATTR_ID,getId('_print'),
-			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-print')));
+			     ATTR_CLASS,HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE)],HU.getIconImage('fas fa-print')));
 	header.push(HU.span([ATTR_TITLE,'List lines',
 			     ATTR_ID,getId('_listmenu'),
-			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-list')));    
+			     ATTR_CLASS,HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE)],HU.getIconImage('fas fa-list')));    
 	header.push(HU.checkbox(getId('_toggle'),[ATTR_TITLE,'Toggle component visibility',ATTR_ID,getId('_toggle')],true,'Visible'));
 	header.push(HU.span([ATTR_ID,getId('_polyline'),'active','false',
 			     ATTR_TITLE,'Draw line',
 			     ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2)),
-			     ATTR_CLASS,'ramadda-hoverable ramadda-clickable'],HU.getIconImage('fas fa-draw-polygon')));
+			     ATTR_CLASS,HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE)],HU.getIconImage('fas fa-draw-polygon')));
 	header.push("Color: " + HU.input('','blue',[ATTR_ID,getId('_color'),
 						    ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(80))]));
 	header.push("Width: " + HU.select('',[ATTR_ID,getId('_width'),
@@ -92,28 +92,28 @@ RamaddaCanvas.prototype = {
 	    _this.glyphs.forEach((g,idx)=>{
 		let line = HU.span([ATTR_TITLE,'Delete',
 				    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
-				    ATTR_CLASS,'ramadda-clickable',
+				    ATTR_CLASS,CLASS_CLICKABLE,
 				    ATTR_ACTION,'delete','idx',idx],HU.getIconImage('fas fa-trash'));
 		line += HU.span([ATTR_TITLE,'Apply style',
 				 ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
-				 ATTR_CLASS,'ramadda-clickable','action','apply','idx',idx],HU.getIconImage('fas fa-gears'));
+				 ATTR_CLASS,CLASS_CLICKABLE,'action','apply','idx',idx],HU.getIconImage('fas fa-gears'));
 		line= HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4)),
-			      ATTR_CLASS,'ramadda-hoverable','idx',idx],line+g.color);
+			      ATTR_CLASS,CLASS_HOVERABLE,'idx',idx],line+g.color);
 		menu +=line;
 	    });
 	    menu = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],menu);
             _this.dialog = HU.makeDialog({content:menu,my:"left top",at:"left bottom",anchor:$(this)});
-	    _this.dialog.find('.ramadda-hoverable').mouseenter(function(){
+	    _this.dialog.find(HU.dotClass(CLASS_HOVERABLE)).mouseenter(function(){
 		let glyph = _this.glyphs[+$(this).attr('idx')];
 		glyph.highlight = true;
 		_this.redraw();
 	    });
-	    _this.dialog.find('.ramadda-hoverable').mouseleave(function(){
+	    _this.dialog.find(HU.dotClass(CLASS_HOVERABLE)).mouseleave(function(){
 		let glyph = _this.glyphs[+$(this).attr('idx')];
 		glyph.highlight = false;
 		_this.redraw();
 	    });
-	    _this.dialog.find('.ramadda-clickable').click(function(){
+	    _this.dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function(){
 		let action = $(this).attr('action');
 		let glyph = _this.glyphs[+$(this).attr('idx')];
 		glyph.highlight = false;

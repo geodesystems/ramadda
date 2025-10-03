@@ -1,5 +1,6 @@
 //see https://mistic100.github.io/jQCloud/
 
+
 function ramaddaWordCloud(source,target,args) {
     let opts = {
 	colorTable:null,
@@ -71,7 +72,7 @@ ramaddaWordCloud.prototype = {
     },
     create:function(match) {
 	let cloudId = HU.getUniqueId('cloud');
-	jqid(this.target).html(HU.div([ATTR_ID,cloudId,ATTR_STYLE,HU.css('width','100%','height','100%')]));
+	jqid(this.target).html(HU.div([ATTR_ID,cloudId,ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.perc(100))]));
 	let words = [];
 	if(match) match=match.toLowerCase();
 	if(this.metadata) {

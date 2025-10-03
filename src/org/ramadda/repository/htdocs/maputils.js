@@ -365,7 +365,7 @@ var MapUtils =  {
     },
     isFeatureVisible:function(feature) {
 	if(!feature.style) return true;
-	return feature.style.display!='none';
+	return feature.style.display!=DISPLAY_NONE;
     },
     setFeatureVisible:function(feature, vis) {
 	if(!feature.style) {
@@ -374,9 +374,9 @@ var MapUtils =  {
 	    feature.style = feature.layer?$.extend({},feature.layer.style):{};
 	}
 	if(vis) {
-	    feature.style.display = 'inline';
+	    feature.style.display = DISPLAY_INLINE;
 	}  else {
-	    feature.style.display = 'none';
+	    feature.style.display = DISPLAY_NONE;
 	}
 	if(feature.originalStyle) feature.originalStyle.display = feature.style.display;
 //	$.extend(feature.style,{display:feature.style.display});

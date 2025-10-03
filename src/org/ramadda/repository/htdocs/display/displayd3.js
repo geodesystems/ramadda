@@ -412,7 +412,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             let skewtId = this.getDomId(ID_SKEWT);
 	    let html = '';
             html += HU.div([ATTR_TITLE,'Download skew-t data',ATTR_ID,this.domId('download'),
-			    ATTR_CLASS,'ramadda-clickable',
+			    ATTR_CLASS,CLASS_CLICKABLE,
 			    ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_MARGIN_RIGHT,HU.px(20))],
 			   HU.getIconImage('fas fa-download'));
 	    html += HU.div([ATTR_ID, skewtId], "");

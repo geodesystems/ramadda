@@ -18,7 +18,8 @@ function RamaddaReader(id,args,data) {
     let sid = HU.getUniqueId('search_');
     let left = '';
     if(opts.showSearch) {
-	left +=HU.div([],HU.input('','',[ATTR_ID,sid,'placeholder','Search','size','12']));
+	left +=HU.div([],HU.input('','',[ATTR_ID,sid,
+					 ATTR_PLACEHOLDER,'Search','size','12']));
 
     }
     data.forEach((d,idx)=>{
@@ -27,27 +28,39 @@ function RamaddaReader(id,args,data) {
 	label = label.replace(/\.[^\.]+$/,'');
 	let href =HU.href(RamaddaUtils.getEntryUrl(d.entryid),'#'+(idx+1),['target','entry']);
 	label = href +': '+label;
-	left+=HU.div([ATTR_STYLE,'padding:2px;white-space:nowrap;',ATTR_CLASS,'ramadda-clickable ramadda-hoverable','data-entryid',d.entryid,'data-index',idx],label);
+	left+=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),CSS_WHITE_SPACE,'nowrap'),
+		      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE),
+		      'data-entryid',d.entryid,'data-index',idx],label);
     });
 
 
     let leftId = HU.getUniqueId('left_');
     let w = '150px';
     left = HU.div([ATTR_ID,leftId,
-		   ATTR_STYLE,HU.css('padding-right','8px','max-width',w,'width',w,'height',height,'max-height',height,'overflow-y','auto')],left);
-    left = HU.div([ATTR_STYLE,HU.css('vertical-align','top','display','table-cell','max-width',w,'width',w)],left);
+		   ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(8),
+				     CSS_MAX_WIDTH,w,
+				     CSS_WIDTH,w,
+				     CSS_HEIGHT,height,
+				     CSS_MAX_HEIGHT,height,
+				     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],left);
+    left = HU.div([ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
+				     CSS_DISPLAY,'table-cell',
+				     CSS_MAX_WIDTH,w,CSS_WIDTH,w)],left);
     if(!opts.showToc) 
-	left=HU.div([ATTR_STYLE,HU.css('vertical-align','top','display','table-cell','max-width','1px','width','1px')],'');
+	left=HU.div([ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
+				       CSS_DISPLAY,'table-cell',
+				       CSS_MAX_WIDTH,HU.px(1),
+				       CSS_WIDTH,HU.px(1))],'');
     let rid = HU.getUniqueId('reader_');
-    let main = HU.div([ATTR_ID,rid,ATTR_STYLE,HU.css('width',width,'height',height)]);
-    main = HU.div([ATTR_STYLE,HU.css('display','table-cell','width',width)], main);
+    let main = HU.div([ATTR_ID,rid,ATTR_STYLE,HU.css(CSS_WIDTH,width,CSS_HEIGHT,height)]);
+    main = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'table-cell',CSS_WIDTH,width)], main);
     let html = left+main;
     jqid(id).append(html);
     opts.el='#'+rid;
     this.br = new BookReader(opts);
     this.br.init();
     let _this = this;
-    let tocItems =  jqid(leftId).find('.ramadda-clickable');
+    let tocItems =  jqid(leftId).find(HU.dotClass(CLASS_CLICKABLE));
     let map = {};
     tocItems.each(function() {
 	map[$(this).attr('data-entryid')] = $(this);

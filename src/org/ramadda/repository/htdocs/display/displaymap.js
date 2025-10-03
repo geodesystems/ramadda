@@ -598,7 +598,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		this.map.popupListener = (id,text) =>{
 		    let fields = jqid(id).find('[' + ATTR_FIELD_ID+']');
-		    fields.addClass('ramadda-clickable');
+		    fields.addClass(CLASS_CLICKABLE);
 		    fields.click(function() {
 			let field = $(this).attr(ATTR_FIELD_ID);
 			let value = $(this).attr('field-value');			
@@ -1346,7 +1346,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.currentPopupRecord = record;
 	    let haveTrack = this.tracks[record.getId()]!=null;
 	    let label =haveTrack?"Remove track":(token.attrs["label"] ||  "View track");
-	    return SPACE + HU.span([ATTR_CLASS,"ramadda-clickable",
+	    return SPACE + HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				    ATTR_ID,this.domId(ID_TRACK_VIEW)],label);
 	}, 
 	getRecordUrlHtml: function(attrs, field, record) {
@@ -2997,7 +2997,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!label) {
 		label = Utils.makeLabel(url.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/,"").replace("_"," "));
 	    }
-	    html += HU.div([ATTR_CLASS,"ramadda-menu-button ramadda-clickable ramadda-map-button bold",
+	    html += HU.div([ATTR_CLASS,HU.classes('ramadda-menu-button',CLASS_CLICKABLE,'ramadda-map-button bold'),
 			    ATTR_ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
 	    this.map.appendToolbar(html);
 	    //	    this.jq("locations").append(html);
@@ -3018,14 +3018,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		locations.forEach((loc,idx)=>{
 		    if(Utils.isDefined(loc.latitude)) {
-			inner+=HU.div([ATTR_CLASS,"ramadda-clickable ramadda-hoverable display-map-location",
+			inner+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
 				       "latitude",loc.latitude,
 				       "longitude",loc.longitude], loc.name);
 		    } else if(Utils.isDefined(loc.north)) {
-			inner+=HU.div([ATTR_CLASS,"ramadda-clickable ramadda-hoverable display-map-location", "north",loc.north,"west",loc.west,"south",loc.south,"east",loc.east], loc.name);
+			inner+=HU.div([ATTR_CLASS,
+				       HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
+				       "north",loc.north,"west",loc.west,"south",loc.south,"east",loc.east], loc.name);
 
 		    } else if(Utils.isDefined(loc.geometry)) {
-			inner+=HU.div([ATTR_CLASS,"ramadda-clickable ramadda-hoverable display-map-location",
+			inner+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
 				       ATTR_INDEX,idx], loc.name);
 		    }
 		});
@@ -3039,7 +3041,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					    anchor:$(this),
 					    draggable:false,
 					    header:false});
-		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
+		_this.jq("locationmenu").find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		    if(_this.locationFeatures) {
 			_this.locationFeatures.forEach(feature=>{
 			    _this.map.getHighlightLinesLayer().removeFeatures([feature]);
@@ -3251,7 +3253,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html='';
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
 	    if(template) {
-		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
+		let clazz = HU.classes(CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
 		    html+=HU.div([ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx], label);
@@ -3267,7 +3269,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    html+=HU.close(TAG_TR);
 		}
-		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
+		let clazz = HU.classes(CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
@@ -3504,7 +3506,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let label = this.getRegionSelectorLabel() ??
 		    HU.getIconImage("fa-globe-americas");
 		
-		header+= HU.span([ATTR_CLASS,"display-header-span ramadda-menu-button ramadda-clickable",
+		header+= HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-header-span ramadda-menu-button'),
 				  ATTR_TITLE,"Select region",
 				  ATTR_ID,this.domId("selectregion")],label)+SPACE2;
 

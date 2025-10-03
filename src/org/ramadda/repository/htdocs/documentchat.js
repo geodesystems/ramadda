@@ -20,15 +20,20 @@ function DocumentChat(id,entryId,action,models,args) {
     let cnt = 0;
     let div  =jqid(id);
     let chat = HU.open(TAG_DIV,[ATTR_STYLE,
-				HU.css(CSS_MARGIN_LEFT,HU.px(5),CSS_MAX_WIDTH,HU.perc(100),CSS_OVERFLOW_X,'auto')]);
-    let mike = HU.span([ATTR_TITLE,'Voice transcribe',ATTR_ID,this.domId('transcribe'),ATTR_CLASS,'ramadda-clickable'],
+				HU.css(CSS_MARGIN_LEFT,HU.px(5),CSS_MAX_WIDTH,HU.perc(100),CSS_OVERFLOW_X,OVERFLOW_AUTO)]);
+    let mike = HU.span([ATTR_TITLE,'Voice transcribe',ATTR_ID,this.domId('transcribe'),
+			ATTR_CLASS,CLASS_CLICKABLE],
 		       HU.getIconImage('fa-solid fa-microphone fa-gray'));
     let left = HU.div([],
-		      HU.span([ATTR_TITLE,'History',ATTR_CLASS,'ramadda-clickable',ATTR_ID,this.domId('history')],
+		      HU.span([ATTR_TITLE,'History',
+			       ATTR_CLASS,CLASS_CLICKABLE,
+			       ATTR_ID,this.domId('history')],
 			      HU.getIconImage('fas fa-list'))+
 		      SPACE1+
 		      //		      mike +     SPACE1+
-		      HU.span([ATTR_ID,this.domId('button_clear'),ATTR_TITLE,'Clear output',ATTR_CLASS,'ramadda-clickable'],
+		      HU.span([ATTR_ID,this.domId('button_clear'),
+			       ATTR_TITLE,'Clear output',
+			       ATTR_CLASS,CLASS_CLICKABLE],
 			      HU.getIconImage('fas fa-eraser'))
 		      /*+
 			HU.space(2) +
@@ -84,14 +89,15 @@ function DocumentChat(id,entryId,action,models,args) {
     
     let makeProgress = (id,width,top) => {
 	return HU.div([ATTR_ID,this.domId(id),
-		       ATTR_CLASS,'ramadda-clickable',
-		       ATTR_STYLE,HU.css(CSS_POSITION,'absolute',CSS_LEFT,'50%',
+		       ATTR_CLASS,CLASS_CLICKABLE,
+		       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+					 CSS_LEFT,HU.perc(50),
 					 CSS_DISPLAY,'none',
 					 CSS_TRANSFORM,'translate(-50%, 0)',
 					 CSS_TOP,top)],
 		      HU.image(ramaddaBaseUrl+'/icons/mapprogress.gif',[ATTR_WIDTH,width,
 									ATTR_TITLE,'Clear',
-									ATTR_TITLE,'ramadda-clickable']));
+									ATTR_CLASS,CLASS_CLICKABLE]));
 
     };
 
@@ -102,7 +108,7 @@ function DocumentChat(id,entryId,action,models,args) {
 		 );
     
 
-    chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(800),CSS_OVERFLOW_Y,'auto')]);
+    chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(800),CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
     chat+='</div>'
     div.html(chat);
     this.jq(ID_LLM_CHANGEINPUT).button().click(function() {
@@ -136,7 +142,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	if(!q || q.trim().length==0) return;
 	if(!this.history.includes(q)) this.history.push(q);
 	let input = this.getInput();
-	input.prop('disabled',true);
+	input.prop(ATTR_DISABLED,true);
 	input.css(CSS_BACKGROUND,'#efefef');
 	if(this.inputShown)  {
 	    toggleProgress(true,false);
@@ -222,8 +228,8 @@ function DocumentChat(id,entryId,action,models,args) {
 	    let qid = 'id_' + (cnt++);
 	    let guid= HU.getUniqueId('');
 	    let out = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'transparent'),CSS_FONT_WEIGHT,'bold'),
-			      ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
-			      'Use question'],
+			      ATTR_ID,this.domId(qid),ATTR_CLASS,CLASS_CLICKABLE,
+			      ATTR_TITLE,  'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css(CSS_BORDER,HU.border(1,'#eee'),
 					 CSS_PADDING,HU.px(4),CSS_MARGIN_TOP,HU.px(8))], out);
@@ -258,13 +264,13 @@ function DocumentChat(id,entryId,action,models,args) {
 	if(_this.history.length==0) return;
 	let html = '';	
 	_this.history.slice().reverse().forEach(line=>{
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable ramadda-document-history',
+	    html+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-document-history'),
 			  ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),
 					    CSS_BORDER,'var(--basic-border)',
 					    CSS_PADDING,HU.px(5),CSS_MARGIN_BOTTOM,HU.px(5))], line);
 	});
 	html = HU.div([ATTR_CLASS,'ramadda-dialog',ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-								     CSS_OVERFLOW_Y,'auto')], html);
+								     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	_this.dialog =  HU.makeDialog({anchor:$(this),
 				       content:html});
 	
@@ -282,8 +288,8 @@ function DocumentChat(id,entryId,action,models,args) {
 
     let clear = ()=>{
 	let input = this.getInput();
-	input.prop('disabled',false);
-	input.css(CSS_BACKGROUND,'#fff');
+	input.prop(ATTR_DISABLED,false);
+	input.css(CSS_BACKGROUND,COLOR_WHITE);
 	toggleProgress();
 	step++;
     };

@@ -3569,11 +3569,11 @@ RequestMacro.prototype = {
 	    let buttons =  
 		HU.span([ATTR_TITLE,'Show previous',
 			 ATTR_STYLE,bstyle,
-			 ATTR_CLASS, 'ramadda-clickable',
+			 ATTR_CLASS, CLASS_CLICKABLE,
 			 ATTR_ID,this.display.getDomId(this.getId()+'_prev')],
 			HU.getIconImage('fas fa-angle-left')) +
 		HU.span([ATTR_TITLE,'Show next',ATTR_STYLE,bstyle,
-			 ATTR_CLASS, 'ramadda-clickable',
+			 ATTR_CLASS, CLASS_CLICKABLE,
 			 ATTR_ID,this.display.getDomId(this.getId()+'_next')],
 			HU.getIconImage('fas fa-angle-right'));
 	    widget += HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(8))],buttons);

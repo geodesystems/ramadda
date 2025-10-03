@@ -12,7 +12,7 @@ function addHandler(obj, id) {
     if (window.globalHandlers == null) {
         window.globalHandlers = {};
     }
-    if (!id) id = HtmlUtils.getUniqueId();
+    if (!id) id = HU.getUniqueId();
     window.globalHandlers[id] = obj;
     return id;
 }
@@ -57,19 +57,25 @@ var Utils =  {
 	let agreed = Utils.getLocalStorage(key);
 	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
 	if(!agreed) {
-	    let buttonList = [HU.div(['action','ok',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],
-				     "Yes"),
-			      HU.div(['action','no',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],"No")]
+	    let buttonList = [HU.div([ATTR_ACTION,ACTION_OK,
+				      ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
+				     LABEL_YES),
+			      HU.div([ATTR_ACTION,ACTION_NO,
+				      ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_NO)]
 
 	    let buttons = HU.buttons(buttonList);
 	    let html =  opts.message;
-	    html+=(opts.showLicense?HU.div([],text):'<br>')+opts.suffix;
+	    html+=(opts.showLicense?HU.div([],text):HU.br())+opts.suffix;
 	    if(opts.logName) {
-		html+=HU.vspace('1em');
+		html+=HU.vspace(HU.em(1));
 		html+=HU.div([],'Please enter your contact information');
 		html+=HU.formTable();
-		html+=HU.formEntry("Name:",HU.input('','',['tabindex','1',ATTR_ID,'licenseagreename','size','30']));
-		html+=HU.formEntry("Email:",HU.input('','',['tabindex','2',ATTR_ID,'licenseagreeemail','size','30']));		
+		html+=HU.formEntry("Name:",HU.input('','',[ATTR_TABINDEX,1,
+							   ATTR_ID,'licenseagreename',
+							   ATTR_SIZE,30]));
+		html+=HU.formEntry("Email:",HU.input('','',[ATTR_TABINDEX,2,
+							    ATTR_ID,'licenseagreeemail',
+							    ATTR_SIZE,30]));		
 		html+=HU.formTableClose();
 	    }
 
@@ -84,8 +90,8 @@ var Utils =  {
 					 remove:false,modalStrict:true,sticky:true});
 
 
-	    dialog.find('.ramadda-button').click(function() {
-		if($(this).attr('action')!='ok') {
+	    dialog.find(HU.dotClass(CLASS_BUTTON)).click(function() {
+		if($(this).attr(ATTR_ACTION)!=ACTION_OK) {
 		    window.location.href=opts.redirect;
 		    return;
 		}
@@ -191,11 +197,11 @@ var Utils =  {
 		parent.css(CSS_POSITION,POSITION_RELATIVE);
 		let style = HU.css(CSS_POSITION,POSITION_ABSOLUTE) +
 		    (opts.extraStyle??HU.css(CSS_TOP,HU.px(5),  CSS_RIGHT,HU.px(5)));
-		link = $(HU.tag('ramadda-copy-link', [ATTR_CLASS,'ramadda-clickable',
+		link = $(HU.tag('ramadda-copy-link', [ATTR_CLASS,CLASS_CLICKABLE,
 						      ATTR_STYLE,style],
-				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
+				HU.getIconImage('fa-copy'))).appendTo(parent);
 	    } else {
-		$(this).addClass('ramadda-clickable');
+		$(this).addClass(CLASS_CLICKABLE);
 	    }
 	    let inputs;
 	    let focusedInput;
@@ -208,7 +214,7 @@ var Utils =  {
 		inputs.on('focus', function() {
 		    focusedInput=$(this);
 		    inputs.each(function() {
-			$(this).css(CSS_BACKGROUND,'#fff');
+			$(this).css(CSS_BACKGROUND,COLOR_WHITE);
 		    });
 		    $(this).css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW);
 		});
@@ -725,6 +731,12 @@ var Utils =  {
 	return s;
     },
 
+    utf8ToB64:function(str) {
+	return window.btoa(unescape(encodeURIComponent(str)));
+    },
+    b64ToUtf8:function(b64) {
+	return decodeURIComponent(escape(window.atob(b64)));
+    },
     decodeText: function(t) {
         if(!t) return null;
         t = String(t);
@@ -1237,14 +1249,15 @@ var Utils =  {
         if(label!=null) html = label+": ";
         html+=  blob.value;
         if(blob.inner) {
-            var imageid = HtmlUtils.getUniqueId();
-            var toggle = HtmlUtils.image(icon_tree_closed,[ATTR_ID,imageid]);
-            var innerid = HtmlUtils.getUniqueId();
+            var imageid = HU.getUniqueId();
+            var toggle = HU.image(icon_tree_closed,[ATTR_ID,imageid]);
+            var innerid = HU.getUniqueId();
             var click = "Utils.formatJsonClick('" + imageid +"','" + innerid +"')";
-            html = HtmlUtils.div([ATTR_ONCLICK,click,ATTR_CLASS,"json-label"],toggle + " " + html);
-            var display = level<levelsShown?"block":"none";
-            html += HtmlUtils.div([ATTR_STYLE,HU.css(CSS_DISPLAY,display),
-				   ATTR_CLASS,"json-inner",ATTR_ID,innerid],blob.inner);
+            html = HU.div([ATTR_ONCLICK,click,ATTR_CLASS,"json-label"],toggle + " " + html);
+            var display = level<levelsShown?DISPLAY_BLOCK:DISPLAY_NONE;
+            html += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,display),
+			    ATTR_CLASS,"json-inner",
+			    ATTR_ID,innerid],blob.inner);
         }
         return html;
     },
@@ -1255,26 +1268,26 @@ var Utils =  {
             var clazz="json-string";
             if(json.match("^http")) {
                 clazz="json-url";
-                json = HtmlUtils.href(json,json,[ATTR_CLASS,clazz]);
+                json = HU.href(json,json,[ATTR_CLASS,clazz]);
             }
-            return {value:HtmlUtils.span([ATTR_CLASS,clazz],"\"" +json +"\"")};
+            return {value:HU.span([ATTR_CLASS,clazz],"\"" +json +"\"")};
         }
         if(type == "number" || type == "boolean") {
-            return {value:HtmlUtils.span([ATTR_CLASS,"json-"+type],json)};
+            return {value:HU.span([ATTR_CLASS,"json-"+type],json)};
         }
 
         if(json.toISOString) {
-            return {value:HtmlUtils.span([ATTR_CLASS,"json-date"],"\"" +json.toISOString()+"\"")};
+            return {value:HU.span([ATTR_CLASS,"json-date"],"\"" +json.toISOString()+"\"")};
         }
         if(type == "function") {
             var args = (json + '').replace(/[/][/].*$/mg,'').replace(/\s+/g, '');
             args = args.replace(/[/][*][^\/*]*[*][/]/g, ''); 
             args = args.split('){', 1)[0].replace(/^[^\(]*[\(]/, '').replace(/=[^,]+/g, '').split(',').filter(Boolean);
-            return {value:HtmlUtils.span([ATTR_CLASS,"json-function"], json.name +"(" + args+") {...}")};
+            return {value:HU.span([ATTR_CLASS,"json-function"], json.name +"(" + args+") {...}")};
         }
         var isArray  = Array.isArray(json);
-        var label = isArray?HtmlUtils.span([ATTR_CLASS,"json-number"],"["  + json.length +"]"):"";
-        var  html = HtmlUtils.openTag(TAG_DIV);
+        var label = isArray?HU.span([ATTR_CLASS,"json-number"],"["  + json.length +"]"):"";
+        var  html = HU.openTag(TAG_DIV);
         var labels = [];
         var indices = [];
         if(isArray) {
@@ -1283,7 +1296,7 @@ var Utils =  {
                 indices.push(i);
             }
             if(indices.length==0) {
-                html += this.formatJsonBlob({value:HtmlUtils.span([ATTR_CLASS,"json-none"],"[]")},null,level+1,levelsShown);
+                html += this.formatJsonBlob({value:HU.span([ATTR_CLASS,"json-none"],"[]")},null,level+1,levelsShown);
             }
         } else {
             for(var name in json) {
@@ -1291,7 +1304,7 @@ var Utils =  {
                 indices.push(name);
             }
             if(indices.length==0) {
-                html += this.formatJsonBlob({value:HtmlUtils.span([ATTR_CLASS,"json-none"],"No properties")},null,level+1,levelsShown);
+                html += this.formatJsonBlob({value:HU.span([ATTR_CLASS,"json-none"],"No properties")},null,level+1,levelsShown);
             }
         }
 
@@ -1324,7 +1337,7 @@ var Utils =  {
         return v;
     },
     getUniqueId: function(prefix) {
-        return HtmlUtils.getUniqueId(prefix);
+        return HU.getUniqueId(prefix);
         
     },
     uuidv4:function() {
@@ -1538,7 +1551,7 @@ var Utils =  {
         return ms/1000/60;
     },
     formatHour: function(h,nospace) {
-        let space = nospace?"":"&nbsp;";
+        let space = nospace?"":SPACE;
         if(h==0) return "12" + space +"AM";
         if(h==12) return "12" + space+"PM";
         if(h>12) return (h-12)+space+"PM";
@@ -1796,7 +1809,7 @@ var Utils =  {
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
         element.setAttribute('download', filename);
-        element.style.display = 'none';
+        element.style.display = DISPLAY_NONE;
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
@@ -2082,10 +2095,10 @@ var Utils =  {
                             }
                             if(Utils.isDefined(min,max)) {
                                 let color  = t.attrs["color"]||"#4E79A7";
-                                let width = t.attrs[ATTR_WIDTH]||"100%";
-                                let height = parseFloat(t.attrs["height"]||12);
-                                let percent = (100-100*(value-min)/(max-min))+"%";
-                                let border = t.attrs["border"]||HU.border(1,COLOR_LIGHT_GRAY);
+                                let width = t.attrs[ATTR_WIDTH]||HU.perc(100);
+                                let height = parseFloat(t.attrs[ATTR_HEIGHT]||12);
+                                let percent = HU.perc((100-100*(value-min)/(max-min)));
+                                let border = t.attrs[ATTR_BORDER]||HU.border(1,COLOR_LIGHT_GRAY);
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
 						   ATTR_STYLE,
@@ -2093,14 +2106,15 @@ var Utils =  {
 							  CSS_POSITION,POSITION_RELATIVE,
 							  CSS_HEIGHT,HU.px(height+2),
 							  CSS_WIDTH,width,
-							  CSS_BORDER,border,CSS_BORDER_LEFT,"none")],
+							  CSS_BORDER,border,
+							  CSS_BORDER_LEFT,"none")],
                                                   HU.div([ATTR_STYLE,
 							  HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 								 CSS_LEFT,HU.px(0),
 								 CSS_RIGHT,percent,
 								 CSS_HEIGHT,HU.px(height),
 								 CSS_BACKGROUND,color)]));
-                                if(includeValue) return HU.row([[ATTR_WIDTH,"1%"],value],bar);
+                                if(includeValue) return HU.row([[ATTR_WIDTH,HU.perc(1)],value],bar);
                                 return bar;
 
                                 
@@ -2121,22 +2135,24 @@ var Utils =  {
                                 for(let i=0;i<count;i++) {
                                     starsbase+=HU.getIconImage("far fa-star",null,
 							       [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10),
-										  CSS_COLOR,"#000")]);
-                                    stars+=HU.getIconImage("fas fa-star",null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10),CSS_COLOR,color)]);                                    
+										  CSS_COLOR,COLOR_BLACK)]);
+                                    stars+=HU.getIconImage("fas fa-star",null,
+							   [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10),CSS_COLOR,color)]);                                    
                                 }
-                                let percent = (100-100*(value-min)/(max-min))+"%";
+                                let percent = HU.perc((100-100*(value-min)/(max-min)));
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
-						   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_POSITION,POSITION_RELATIVE)],
+						   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+								     CSS_POSITION,POSITION_RELATIVE)],
                                                   starsbase+
                                                   HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,"nowrap",
-									    CSS_OVERFLOW_X,"hidden",
+									    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
 									    CSS_POSITION,POSITION_ABSOLUTE,
 									    CSS_LEFT,HU.px(0),
 									    CSS_RIGHT,percent,
 									    CSS_TOP,HU.px(0),
 									    CSS_BOTTOM,HU.px(0))], stars));
-                                if(includeValue) return HU.row([[ATTR_WIDTH,"1%"],value],bar);
+                                if(includeValue) return HU.row([[ATTR_WIDTH,HU.perc(1)],value],bar);
                                 return bar;
                             }
                         }
@@ -2187,7 +2203,8 @@ var Utils =  {
                         }
                         if(t.attrs["showUrl"]) {
                             let label = t.attrs['label'] || value;
-                            value = HU.href(value,label,[ATTR_TARGET,'_other',ATTR_STYLE,t.attrs[ATTR_STYLE]||'']);
+                            value = HU.href(value,label,[ATTR_TARGET,'_other',
+							 ATTR_STYLE,t.attrs[ATTR_STYLE]||'']);
                         }
                         if(t.attrs['delimiter'] && t.attrs['fields']) {
                             let l = [];
@@ -2259,7 +2276,7 @@ var Utils =  {
                             value = t.attrs["prefix"]+value;
                         }
                         if(t.attrs["toggle"]) {
-                            //value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
+                            //value = HU.toggleBlock(t.attrs["label"]||"More", value,false);
                         }
                         if(t.attrs["image"]) {
                             if(Utils.stringDefined(value) && t.attrs['urlPrefix']) {
@@ -2278,23 +2295,26 @@ var Utils =  {
                                         title = title.replace("{" + a+"}",source[a]);
                                 }
                                 let attrs = [ATTR_TITLE, title,'data-caption',title];
-                                if(t.attrs["height"]) {
-                                    attrs.push("height");
-                                    attrs.push(t.attrs["height"]);
+                                if(t.attrs[ATTR_HEIGHT]) {
+                                    attrs.push(ATTR_HEIGHT);
+                                    attrs.push(t.attrs[ATTR_HEIGHT]);
                                 } else {
                                     attrs.push(ATTR_WIDTH);
-                                    attrs.push(t.attrs[ATTR_WIDTH]||"100%");
+                                    attrs.push(t.attrs[ATTR_WIDTH]||HU.perc(100));
                                 }
-                                attrs.push("loading");
+                                attrs.push(ATTR_LOADING);
                                 attrs.push("lazy");
                                 let url = value;
-                                value = HtmlUtils.image(url,attrs);
+                                value = HU.image(url,attrs);
                                 if(t.attrs['doPopup']) {
                                     if(!t.attrs['popupBase']) {
                                         t.attrs['popupBase'] = "gallery"+Utils.getUniqueId();
                                     }
                                     let base = t.attrs['popupBase'];
-                                    value = HU.href(url,value,[ATTR_CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,ATTR_TITLE,title]);
+                                    value = HU.href(url,value,[ATTR_CLASS,"popup_image",
+							       "data-fancybox","fancybox",
+							       "data-caption",title,
+							       ATTR_TITLE,title]);
                                 }
                             }
                         }
@@ -2319,17 +2339,16 @@ var Utils =  {
                                         title = title.replace("{" + a+"}",source[a]);
                                 }
                                 let attrs = [ATTR_TITLE, title];
-                                if(t.attrs["height"]) {
-                                    attrs.push("height");
-                                    attrs.push(t.attrs["height"]);
+                                if(t.attrs[ATTR_HEIGHT]) {
+                                    attrs.push(ATTR_HEIGHT);
+                                    attrs.push(t.attrs[ATTR_HEIGHT]);
                                 } else {
                                     attrs.push(ATTR_WIDTH);
-                                    attrs.push(t.attrs[ATTR_WIDTH]||"100%");
+                                    attrs.push(t.attrs[ATTR_WIDTH]||HU.perc(100));
                                 }
-                                console.log("VALUE:" + value);
                                 value ="";
                                 images.forEach(image=>{
-                                    value += HtmlUtils.image(image,attrs);
+                                    value += HU.image(image,attrs);
                                 });
                                 console.log(value);
                             }
@@ -2414,8 +2433,9 @@ var Utils =  {
 
                             let pre = value.substring(0,idx) +HU.span([ATTR_ID,id+"_ellipsis"], "...");
                             let post = HU.span([ATTR_ID,id+"_post",
-						ATTR_STYLE,HU.css(CSS_DISPLAY,'none')], value.substring(idx));                       
-                            let toggle = HU.div([ATTR_ONCLICK,"Utils.toggleShowMore('" + id+"')",ATTR_ID,id,
+						ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)], value.substring(idx));                       
+                            let toggle = HU.div([ATTR_ONCLICK,"Utils.toggleShowMore('" + id+"')",
+						 ATTR_ID,id,
 						 ATTR_CLASS,'ramadda-showmore ' + CLASS_CLICKABLE], "Show More " + HU.getIconImage("fas fa-sort-down"));                   
                             value = pre + post + toggle;
                         }
@@ -2431,14 +2451,14 @@ var Utils =  {
                         if(has('maxHeight')) {
                             value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							       CSS_MAX_HEIGHT,HU.getDimension(get('maxHeight')),
-							       CSS_OVERFLOW_Y,"auto")],value);
+							       CSS_OVERFLOW_Y,OVERFLOW_AUTO)],value);
                         }
 
                         if(has("maxWidth")) {
                             value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							       CSS_WHITE_SPACE,"nowrap",
 							       CSS_MAX_WIDTH,HU.getDimension(get('maxWidth')),
-							       CSS_OVERFLOW_X,"auto")],value);
+							       CSS_OVERFLOW_X,OVERFLOW_AUTO)],value);
                         }
                         s+=value;
                         return s;
@@ -2479,7 +2499,8 @@ var Utils =  {
     embedAudio: function(url) {
 	let type = 'audio/mpeg';
 	return HU.tag(TAG_AUDIO,['controls',null],
-		      HU.tag(TAG_SOURCE,[ATTR_SRC,url,'type',type],'Your browser does not support the audio tag.'));
+		      HU.tag(TAG_SOURCE,[ATTR_SRC,url,ATTR_TYPE,type],
+			     'Your browser does not support the audio tag.'));
     },
     embedYoutube:function(url, attrs) {
 	attrs  =attrs||{};
@@ -2497,8 +2518,12 @@ var Utils =  {
             "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
         let s =  "";
 	if(attrs['includeLink']) s +=HU.href(url,"Link") +HU.br();
-        s+=  HU.tag(TAG_IFRAME,[ATTR_ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
-                              ATTR_WIDTH,attrs[ATTR_WIDTH]||640,ATTR_HEIGHT,attrs['height']||360, 
+        s+=  HU.tag(TAG_IFRAME,[ATTR_ID,'ytplayer',
+				'allow', 'autoplay; fullscreen',
+				ATTR_TYPE,'text/html',
+				'frameborder','0',
+				ATTR_WIDTH,attrs[ATTR_WIDTH]||640,
+				ATTR_HEIGHT,attrs['height']||360, 
                               SRC,embedUrl
                              ]);
 	return s;
@@ -2734,7 +2759,7 @@ var Utils =  {
         let label = $("#" + id+"_label");
         if(cbx.length>0) {
             cbx.change(()=>{
-                let text = "Reload" +HtmlUtils.span([ATTR_STYLE,HU.css(CSS_COLOR,'transparent')]," in 00  seconds")
+                let text = "Reload" +HU.span([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_TRANSPARENT)]," in 00  seconds")
                 label.html(text);
                 if(cbx.is(':checked')) {
                     Utils.checkPageReload(time,id,showLabel);
@@ -2763,7 +2788,7 @@ var Utils =  {
         if(time<=5) {
             label.css(CSS_BACKGROUND,"#eee");
         } else {
-            label.css(CSS_BACKGROUND,"transparent");
+            label.css(CSS_BACKGROUND,COLOR_TRANSPARENT);
         }
         if(!Utils.checkPageReloadPending) {
             Utils.checkPageReloadPending=true;
@@ -2862,10 +2887,10 @@ var Utils =  {
 	let lessLabel = bigText.attr('bigtext-label-less')??'Less...';		
 	let height = bigText.attr('bigtext-height')??HU.px(100);
 	let fadeId = HU.getUniqueId('fade_');
-	bigText.css(CSS_PADDING_BOTTOM,HU.px(25)).css(CSS_MAX_HEIGHT,height).css(CSS_OVERFLOW_Y,'hidden').css(CSS_POSITION,POSITION_RELATIVE);
+	bigText.css(CSS_PADDING_BOTTOM,HU.px(25)).css(CSS_MAX_HEIGHT,height).css(CSS_OVERFLOW_Y,OVERFLOW_HIDDEN).css(CSS_POSITION,POSITION_RELATIVE);
 	let fade = $(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,bigText.attr('bigtext-fade-height')??HU.px(50)),
 			     ATTR_ID,fadeId,ATTR_CLASS,'ramadda-bigtext-fade'])).appendTo(bigText);
-	let toggle = HU.div([ATTR_TITLE,'Expand',ATTR_CLASS,'ramadda-clickable ramadda-bigtext-toggle'], moreLabel);
+	let toggle = HU.div([ATTR_TITLE,'Expand',ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-bigtext-toggle')], moreLabel);
 	toggle = $(toggle).appendTo(bigText);
 	let open=false;
 	toggle.click(function() {
@@ -2889,7 +2914,7 @@ var Utils =  {
         try {
             let tables = $(parent + ".ramadda-table");
             if(tables.length) {
-                HtmlUtils.formatTable(tables);
+                HU.formatTable(tables);
             }
         } catch (e) {
             console.log("Error formatting table:" + e);
@@ -2940,20 +2965,20 @@ var Utils =  {
                     if(!this.showingHeaderCenter) {
                         this.showingHeaderCenter = true; 
                         headerCenter.html(pageTitle.html());
-                        pageTitle.html("&nbsp;");
+                        pageTitle.html(SPACE);
                     }
                 } else {
                     if(this.showingHeaderCenter) {
                         this.showingHeaderCenter = false
                         pageTitle.html(headerCenter.html());
-                        headerCenter.html("&nbsp;");
+                        headerCenter.html(SPACE);
                     }
                 }
             });
         }
         //Buttonize
         $(parent + ':submit').button().click(function(event) {});
-        $(parent + '.ramadda-button').button().click(function(event) {});
+        $(parent + '.'+CLASS_BUTTON).button().click(function(event) {});
 
         //Headers
         let headings = $(parent + '.ramadda-linkable');
@@ -2961,7 +2986,7 @@ var Utils =  {
         headings.mouseenter(function(){
             let id = $(this).attr(ATTR_ID);
             if(!id) return;
-            $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
+            $("#" + id +"-hover").html(HU.getIconImage("fa-link",null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
             $("#" + id +"-hover").show();
         });
         headings.click(function(){
@@ -2983,7 +3008,7 @@ var Utils =  {
 	//iconmenu
 	let menus = $(parent + ".ramadda-pulldown-with-icons");
 	menus.each(function() {
-	    let width = $(this).attr('width');
+	    let width = $(this).attr(ATTR_WIDTH);
 	    $(this).iconselectmenu({width:width,
 				    create: function(event, ui) {
 					// set a max-height when the menu is created
@@ -2991,7 +3016,7 @@ var Utils =  {
 					    .css({
 						'height': HU.px(200),
 						'max-height': HU.px(200),   // or compute based on desired "size"
-						'overflow-y': "auto"
+						'overflow-y': OVERFLOW_AUTO
 					    });
 				    }
 				   });
@@ -3092,7 +3117,7 @@ var Utils =  {
             };      
 
             if (data.values.length == 0) {
-                results.html(HtmlUtils.div([ATTR_CLASS, "ramadda-search-suggestion "],"No results"))
+                results.html(HU.div([ATTR_CLASS, "ramadda-search-suggestion "],"No results"))
                 opener();
                 return;
             }
@@ -3111,22 +3136,23 @@ var Utils =  {
 					  'data-name',value.name,
 					  'data-icon',value.icon,
 					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100)),
-					  ATTR_CLASS,"ramadda-highlightable"]);
+					  ATTR_CLASS,CLASS_HIGHLIGHTABLE]);
                 let searchLink;
                 if(submitForm) {
-                    searchLink =  HU.span([ATTR_CLASS,"ramadda-highlightable ramadda-search-input","index",i,
-					   ATTR_TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
+                    searchLink =  HU.span([ATTR_CLASS,HU.classes(CLASS_HIGHLIGHTABLE,'ramadda-search-input'),
+					   ATTR_INDEX,i,
+					   ATTR_TITLE,"Search for"],HU.getIconImage("fa-search"));
                 } else {
-                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HtmlUtils.getIconImage("fa-search"),[ATTR_TITLE,"Search for text: " + value.name]);
+                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HU.getIconImage("fa-search"),[ATTR_TITLE,"Search for text: " + value.name]);
                 }
                 let row =  searchLink +  SPACE + entryLink;
-                //                      html += HtmlUtils.div([ATTR_CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
-                html += HtmlUtils.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
+                //                      html += HU.div([ATTR_CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
+                html += HU.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
                 html +="\n";
                 even = !even;
             });
             results.html(html);
-	    results.find('.ramadda-highlightable').tooltip({
+	    results.find(HU.dotClass(CLASS_HIGHLIGHTABLE)).tooltip({
 		show: {
 		    delay: 1000,
 		    duration: 300
@@ -3203,7 +3229,7 @@ var Utils =  {
 			     ATTR_CLASS,CLASS_CLICKABLE],  'By Type'));
 
         let links =  HU.div([ATTR_ID, linksId,
-			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'right',CSS_FONT_SIZE,HU.px(12))],
+			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_FONT_SIZE,HU.px(12))],
 			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
@@ -3222,19 +3248,19 @@ var Utils =  {
         input.focus();
     },
     handleKeyPress:function(event) {
-        HtmlUtils.getTooltip().hide();
+        HU.getTooltip().hide();
     },
     handleMouseDown:function(event) {
-        if (HtmlUtils.hasPopupObject() || Utils.tooltipObject) {
+        if (HU.hasPopupObject() || Utils.tooltipObject) {
             setTimeout(() => {
                 if(Utils.tooltipObject) {
                     Utils.tooltipObject.hide();
                     Utils.tooltipObject = null;
                 }
-                if(HtmlUtils.hasPopupObject()) {
-                    let thisId = HtmlUtils.getPopupObject().attr(ATTR_ID);
-                    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr(ATTR_ID)) {
-                        HtmlUtils.hidePopupObject();
+                if(HU.hasPopupObject()) {
+                    let thisId = HU.getPopupObject().attr(ATTR_ID);
+                    if (HU.checkToHidePopup() && thisId == HU.getPopupObject().attr(ATTR_ID)) {
+                        HU.hidePopupObject();
                     }
                 }
             }, 250);
@@ -3311,14 +3337,14 @@ var Utils =  {
         obj.style.opacity = "0.8";
     },
     centerDiv:function(c) {
-	return this.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center')],
+	return this.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)],
 			this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_TEXT_ALIGN,left)],
 				 c));
     },
     moveFloatDiv:function(x, y) {
         let obj = $("#ramadda-floatdiv");
         if (obj.length) {
-            let visible = obj.css(CSS_DISPLAY)!="none";
+            let visible = obj.css(CSS_DISPLAY)!=DISPLAY_NONE;
             if (!visible) {
                 obj.show();
                 let html = "";
@@ -3331,7 +3357,7 @@ var Utils =  {
         }
     },
     framesClick:function(listId,viewId,listEntry, template) {
-	let url = listEntry.attr('data-url');			      
+	let url = listEntry.attr(ATTR_DATA_URL);			      
 	let label = listEntry.attr('data-label');
 	jqid(listId).find('.ramadda-frames-entry').removeClass('ramadda-frames-entry-active');
 	listEntry.addClass('ramadda-frames-entry-active');
@@ -3352,12 +3378,15 @@ var Utils =  {
 
 	let header = jqid(viewId+'_leftheader');
 	header.append(HU.div([ATTR_CLASS,'ramadda-frames-nav'],
-			     HU.span([ATTR_TITLE,'View previous',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
+			     HU.span([ATTR_TITLE,'View previous',
+				      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-frames-nav-link ramadda-frames-nav-link-prev'),
+				      'data-nav','prev'],
 				     HU.getIconImage('fas fa-caret-left',null,
 						     [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(130))]))+
 			     HU.space(1) +
 			     HU.span([ATTR_TITLE,'View next',
-				      ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
+				      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-frames-nav-link ramadda-frames-nav-link-next'),
+				      'data-nav','next'],
 				     HU.getIconImage('fas fa-caret-right',null,
 						     [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(130))]))));			     
 	let navClick=nav=>{
@@ -3399,9 +3428,9 @@ var Utils =  {
         if(c.match("rgb")) {
 	    c = Utils.rgbToHex(c);
 	}
-        if(!c) return "#000";
+        if(!c) return COLOR_BLACK;
         if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
-        return this.foregroundColors[c] ||"#000";
+        return this.foregroundColors[c] ||COLOR_BLACK;
     },
     darkerColor: function(c,amt) {
         if(!c) return c;
@@ -3857,7 +3886,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     initTypeMenu: function(selectId, textAreaId) {
-	HtmlUtils.makeSelectTagPopup('#'+selectId,{after:true});
+	HU.makeSelectTagPopup('#'+selectId,{after:true});
 	jqid(selectId).change(function() {
 	    let v = $(this).val();
 	    if(!Utils.stringDefined(v)) {
@@ -3943,7 +3972,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let id = HU.getUniqueId('search_');
 	let initValue = HU.getUrlArgument(ARG_PAGESEARCH)??'';
 	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
-					   ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
+					   ATTR_ID,id,
+					   ATTR_PLACEHOLDER,label??'Search',
+					   ATTR_SIZE,args.inputSize]);
 	let buttonMap ={};
 	if(args.buttons) {
 	    args.buttons.forEach(b=>{
@@ -4024,7 +4055,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },		       
     classes:function() {
-	return Utils.join(Array.from(arguments),' ');
+	return ' ' + Utils.join(Array.from(arguments),' ') +' ';
     },
     doPageSearch:function(value,select,parentSelect,hideAll,args) {
 	args = args??{}
@@ -4244,7 +4275,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loadJqueryLib: function(name,css,js,selector,callback) {
 	let debug = false;
         if(debug) console.log('loadJqueryLib:' + name);
-        if(!HtmlUtils.loaded[name]) {
+        if(!HU.loaded[name]) {
             css.forEach(url=>{
 		if(debug) console.log('\tcss: ' + url);
                 let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
@@ -4256,14 +4287,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     "<script src='" + url +"'  type=text/JavaScript></script>";
                 $(html).appendTo("head");
             });
-            HtmlUtils.loaded[name] = true;
+            HU.loaded[name] = true;
         }
 	if(debug) console.log('\tafter loading');
         //check and wait for it
         if(!$(selector)[name]) {
 	    if(debug) console.log('\tnot loaded:' + name);
             setTimeout(()=>{
-                HtmlUtils.loadJqueryLib(name,css,js,selector,callback);
+                HU.loadJqueryLib(name,css,js,selector,callback);
             },50);
             return
         }
@@ -4278,7 +4309,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(items.length>0 && Utils.isDefined(items.attr('data-order'))) {
 	    items = items.sort((a, b) => $(a).data('order') - $(b).data('order'));
 	}
-        HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
+        HU.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
                                 [ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
                                 selector,()=>{
 				    $(items).fancybox(args);
@@ -4308,7 +4339,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initInteractiveInput:function(id,url) {
         let input = HU.jqid(id);
         input.keyup(function(event) {
-            HtmlUtils.hidePopupObject();
+            HU.hidePopupObject();
             let val = $(this).val();
             if(!Utils.stringDefined(val)) return;
             let input = $(this);
@@ -4316,14 +4347,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 if(data.length==0) return;
                 let suggest = "";
                 data.forEach(d=>{
-                    suggest+=HU.div([ATTR_CLASS,CLASS_CLICKABLE +' ramadda-suggest',"suggest",d],d);
+                    suggest+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-suggest'),
+				     "suggest",d],d);
                 });
                 let html = HU.div([ATTR_CLASS,"ramadda-search-popup",
 				   ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
 						     CSS_PADDING,HU.px(4))],suggest);
                 let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
                 dialog.find(".ramadda-suggest").click(function() {
-                    HtmlUtils.hidePopupObject();
+                    HU.hidePopupObject();
                     input.val($(this).attr("suggest"));
                 });
             }).fail(
@@ -4425,10 +4457,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if (event.shiftKey) {
-            if (HtmlUtils.lastCbxClicked) {
+            if (HU.lastCbxClicked) {
                 let pos1 = GuiUtils.getTop(cbx);
-                let pos2 = GuiUtils.getTop(HtmlUtils.lastCbxClicked);
-                let lastCbx = $("#" + HtmlUtils.lastCbxIdClicked);
+                let pos2 = GuiUtils.getTop(HU.lastCbxClicked);
+                let lastCbx = $("#" + HU.lastCbxIdClicked);
                 let thisCbx = $("#" + id);
 
                 if (lastCbx.position()) {
@@ -4452,8 +4484,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
             return;
         }
-        HtmlUtils.lastCbxClicked = cbx;
-        HtmlUtils.lastCbxIdClicked = id;
+        HU.lastCbxClicked = cbx;
+        HU.lastCbxIdClicked = id;
     },
 
 
@@ -4484,11 +4516,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 return;
             }
             setTimeout(function(){
-                if(HtmlUtils.elementScrolled('#' + id)) {
+                if(HU.elementScrolled('#' + id)) {
                     setTimeout(function() {$('#' + id).html(value);},pause);
                 } else {
                     $(window).scroll(function(){
-                        if(HtmlUtils.elementScrolled('#' + id)) {
+                        if(HU.elementScrolled('#' + id)) {
                             setTimeout(function() {$('#' + id).html(value);},pause);
                         }});
                 }},1000);
@@ -4498,11 +4530,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(!Utils.isDefined(pause)) pause = 0;
         $(document).ready(function(){
             setTimeout(function(){
-                if(HtmlUtils.elementScrolled('#' + id)) {
+                if(HU.elementScrolled('#' + id)) {
                     setTimeout(func, pause);
                 } else {
                     $(window).scroll(function(){
-                        if(HtmlUtils.elementScrolled('#' + id)) {
+                        if(HU.elementScrolled('#' + id)) {
                             setTimeout(func, pause);
                         }});
                 }},1000);
@@ -4520,7 +4552,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             return;         
         }
         setTimeout(()=>{
-            HtmlUtils.waitForIt(what,callback, error, cnt-1);
+            HU.waitForIt(what,callback, error, cnt-1);
         },50);
     },
     loadAndWait: function(what,load, callback,error) {
@@ -4528,27 +4560,27 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let imports = load;
             $(imports).appendTo("head");
         }
-        HtmlUtils.waitForIt(what,callback, error);
+        HU.waitForIt(what,callback, error);
     },
     makeMessage: function(what,msg) {
         return "<div class='ramadda-message ramadda-message-plain ' id='messageblock'><table width='100%'><tbody><tr valign='top'><td width='5%'><div class='ramadda-message-icon'><span><i class='" + what +"' style='font-size:32pt;'></i></span></div></td><td><div class='ramadda-message-inner'><p>" + msg +"</p></div></td></tr></tbody></table></div>"
     },
     makeErrorMessage: function(msg) {
-        return HtmlUtils.makeMessage("fas fa-exclamation-triangle text-danger",msg);
+        return HU.makeMessage("fas fa-exclamation-triangle text-danger",msg);
     },
     makeInfoMessage: function(msg) {
-        return HtmlUtils.makeMessage("fas fa-info",msg);
+        return HU.makeMessage("fas fa-info",msg);
     },    
 
     makeRunningMessage: function(msg) {
-        return HtmlUtils.makeMessage("fas fa-spinner fa-spin",msg);
+        return HU.makeMessage("fas fa-spinner fa-spin",msg);
     },    
 
     makeSlides: async function(id,args, tries) {
 	if(!Utils.isDefined(tries)) {
 	    tries = 0;
 	}
-	await HtmlUtils.loadSlides();
+	await HU.loadSlides();
         let opts = {
 	    arrows:true,
 	    speed:0,
@@ -4569,19 +4601,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
             jqid(id).on('afterChange', function(event, slick, currentSlide){
                 items.removeClass("ramadda-slides-header-item-selected");
-                header.find(HtmlUtils.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
+                header.find(HU.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
             });
         });
 
     },
     loadSlides: async function() {
-        if(!HtmlUtils.slidesLoaded) {
+        if(!HU.slidesLoaded) {
 	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
 					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
 	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
 					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
             await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/slick/slick.min.js"));
-            HtmlUtils.slidesLoaded = true;
+            HU.slidesLoaded = true;
 	    return false;
 	}
 	return true;
@@ -4591,7 +4623,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
             $(imports).appendTo("head");
         }
-        HtmlUtils.waitForIt("katex",callback, error);
+        HU.waitForIt("katex",callback, error);
     },
     applyMarkdown:function(srcId,targetId) {
         let f = ()=>{
@@ -4610,7 +4642,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $("#" + targetId).html("Error loading showdown");
         };
         let imports = "<script src='" +ramaddaCdn + "/lib/showdown.min.js'/>";
-        HtmlUtils.loadAndWait("showdown",imports,f,e);
+        HU.loadAndWait("showdown",imports,f,e);
     },
     applyLatex:function(srcId,targetId) {
         let f = ()=>{
@@ -4627,7 +4659,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let e = ()=> {
             $("#" + targetId).html("Error loading katex");
         };
-        HtmlUtils.loadKatex(f,e);
+        HU.loadKatex(f,e);
     },
 
     isFontAwesome:function(icon) {
@@ -4635,7 +4667,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             || icon.startsWith("fab ");     
     },
     getIconImage: function(url,attrs,attrs2) {
-        if(HtmlUtils.isFontAwesome(url)) {
+        if(HU.isFontAwesome(url)) {
             let clazz = "";
             let a;
             if(url.startsWith("fa-thin") || url.startsWith("fa-light") || url.startsWith("fa-regular") || url.startsWith("fa-solid") ||url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
@@ -4645,9 +4677,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
             if(attrs2)
                 a = Utils.mergeLists(a, attrs2);
-            return HtmlUtils.span(attrs,HtmlUtils.tag(TAG_I,a));
+            return HU.span(attrs,HU.tag(TAG_I,a));
         } else {
-            return HtmlUtils.image(url, attrs);
+            return HU.image(url, attrs);
         }
     },
     getObjectURL:function(blob) {
@@ -4662,11 +4694,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(!Utils.getPageLoaded()) {
             let theId = id;
             Utils.addLoadFunction(() =>{
-                HtmlUtils.makeBreadcrumbs(theId);
+                HU.makeBreadcrumbs(theId);
             });
             return;
         }
-        HtmlUtils.makeBreadcrumbs(id);
+        HU.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
         let bc = jQuery("#" + id);
@@ -4751,7 +4783,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (right) {
             style += HU.css(CSS_PADDING_RIGHT,HU.px(right));
         }
-        return HtmlUtils.div([ATTR_STYLE, style], html);
+        return HU.div([ATTR_STYLE, style], html);
 
     },
     makeTabs(list,args) {
@@ -4783,12 +4815,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeAccordionHtml(list) {
 	let id = HU.getUniqueId('accordion_');
-	let html = HU.open(TAG_DIV,[ATTR_CLASS,'ui-accordion ui-widget ui-helper-reset',ATTR_ID,id]);
+	let html = HU.open(TAG_DIV,[ATTR_CLASS,'ui-accordion ui-widget ui-helper-reset',
+				    ATTR_ID,id]);
 	list.forEach(item=>{
 	    html+=HU.tag(TAG_H3,[ATTR_CLASS,'ui-accordion-header ui-helper-reset ui-corner-top',
-				 ATTR_STYLE,HU.css(CSS_BORDER,HU.px(0),CSS_BACKGROUND,'none')+(item.style??'')],
+				 ATTR_STYLE,HU.css(CSS_BORDER,HU.px(0),
+						   CSS_BACKGROUND,'none')+(item.style??'')],
 			 HU.href('#',HU.span([ATTR_CLASS,CLASS_CLICKABLE],item.header??item.label)));
-	    html+=HU.div([ATTR_ID,HU.getUniqueId('accordion_'),ATTR_CLASS,'ramadda-accordion-contents'],item.contents);
+	    html+=HU.div([ATTR_ID,HU.getUniqueId('accordion_'),
+			  ATTR_CLASS,'ramadda-accordion-contents'],item.contents);
 	})
         html += HU.close(TAG_DIV);
 	return {id:id,contents:html,init:(args)=>{
@@ -4809,7 +4844,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             //We initially hide the accordion contents
             //Show all contents
             var contents = $(id +" .ramadda-accordion-contents");
-            contents.css(CSS_DISPLAY, "block");
+            contents.css(CSS_DISPLAY, DISPLAY_BLOCK);
             var ctorArgs = {
                 animate:200,
 		icons:icons,
@@ -4837,7 +4872,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		let header = ele.closest('.ui-accordion-header');
 		let cbx = header.find(':checkbox');
 		if(cbx.is(':checked')) header.css(CSS_BACKGROUND,'#fffeec');
-		else  header.css(CSS_BACKGROUND,'transparent');		
+		else  header.css(CSS_BACKGROUND,COLOR_TRANSPARENT);		
 	    }
 
 	    let ff = function(event){f($(this),event);}
@@ -4850,20 +4885,24 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     buttons:function(args,clazz,style) {
 	let buttons = Utils.wrap(args,HU.open(TAG_DIV,
-					      [ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),HU.close(TAG_DIV));
+					      [ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),
+				 HU.close(TAG_DIV));
 	return HU.div([ATTR_CLASS,clazz??'ramadda-button-bar',ATTR_STYLE,style??''], buttons);
     },
     vspace:function(dim) {
-	return this.div([ATTR_STYLE,this.css(CSS_MARGIN_TOP,dim??'0.5em')]);
+	return this.div([ATTR_STYLE,this.css(CSS_MARGIN_TOP,dim??HU.em(0.5))]);
     },
     hbox: function(args,style) {
-        let row = HtmlUtils.openTag(TAG_TR, [ATTR_VALIGN, "top"]);
-        row += Utils.wrap(args, '<td align=left>' +HU.open(TAG_DIV,[ATTR_STYLE, style??'']),'</div></td>');
+        let row = HU.openTag(TAG_TR, [ATTR_VALIGN, ALIGN_TOP]);
+        row += Utils.wrap(args, HU.open(TAG_TD,[ATTR_ALIGN,ALIGN_LEFT]) +
+			  HU.open(TAG_DIV,[ATTR_STYLE, style??'']),HU.close(TAG_DIV,TAG_TD));
         row += HU.close(TAG_TR);
-        return HU.tag(TAG_TABLE, [ATTR_BORDER, "0", ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "0"], row);
+        return HU.tag(TAG_TABLE, [ATTR_BORDER, 0,
+				  ATTR_CELLSPACING, 0,
+				  ATTR_CELLPADDING, 0], row);
     },
     vbox: function(args) {
-        let col = HtmlUtils.join(args, HU.br());
+        let col = HU.join(args, HU.br());
         return this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],col);
     },    
 
@@ -4874,28 +4913,29 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.div([ATTR_CLASS, "row"],
                         this.div([ATTR_CLASS, "col-md-" + leftWeight], left) +
                         this.div([ATTR_CLASS, "col-md-" + rightWeight,
-				  ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,'right')], right));
+				  ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)], right));
     },
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
-        if (!attrs.valign) attrs.valign = "top";
+        if (!attrs.valign) attrs.valign = ALIGN_TOP;
         if(!cellStyle) cellStyle = "";
-        return this.tag(TAG_TABLE, [ATTR_BORDER, 0, ATTR_WIDTH, "100%", ATTR_CELLSPACING, 0, ATTR_CELLPADDING, 0],
+        return this.tag(TAG_TABLE, [ATTR_BORDER, 0, ATTR_WIDTH, HU.perc(100),
+				    ATTR_CELLSPACING, 0, ATTR_CELLPADDING, 0],
                         this.tr([ATTR_VALIGN, attrs.valign],
-                                this.td([ATTR_ALIGN, "left", ATTR_WIDTH, leftWidth, ATTR_STYLE,cellStyle], left) +
-                                this.td([ATTR_ALIGN, "center", ATTR_WIDTH, centerWidth, ATTR_STYLE,cellStyle], center) +
-                                this.td([ATTR_ALIGN, "right", ATTR_WIDTH, rightWidth, ATTR_STYLE,cellStyle], right)));
+                                this.td([ATTR_ALIGN, ALIGN_LEFT, ATTR_WIDTH, leftWidth, ATTR_STYLE,cellStyle], left) +
+                                this.td([ATTR_ALIGN, ALIGN_CENTER, ATTR_WIDTH, centerWidth, ATTR_STYLE,cellStyle], center) +
+                                this.td([ATTR_ALIGN, ALIGN_RIGHT, ATTR_WIDTH, rightWidth, ATTR_STYLE,cellStyle], right)));
     },
 
     row: function() {
         let row = HU.open(TAG_TABLE,[ATTR_CELLPADDING,0,ATTR_CELLSPACING,0,
 				     ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)]) +
-	    HU.open(TAG_TR,[ATTR_VALIGN,'center']);
+	    HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_CENTER]);
         Array.from(arguments).forEach(h=>{
             if(Array.isArray(h)) {
-                row+=HtmlUtils.tag(TAG_TD,h[0],h[1]);
+                row+=HU.tag(TAG_TD,h[0],h[1]);
             } else {
-                row+=HtmlUtils.tag(TAG_TD,[],h);
+                row+=HU.tag(TAG_TD,[],h);
             }
         })
         row+=HU.close(TAG_TR,TAG_TABLE);
@@ -4904,16 +4944,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     hrow: function() {
         let row = "";
         Array.from(arguments).forEach(h=>{
-            row+=HtmlUtils.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],h);
+            row+=HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],h);
         })
         return row;
     },
 
     leftRightTable: function(left, right, leftWidth, rightWidth, attrs) {
         if (!attrs) attrs = {};
-        if (!attrs.valign) attrs.valign = "top";
-        var leftAttrs = [ATTR_ALIGN, "left"];
-        var rightAttrs = [ATTR_ALIGN, "right"];
+        if (!attrs.valign) attrs.valign = ALIGN_TOP;
+        var leftAttrs = [ATTR_ALIGN, ALIGN_LEFT];
+        var rightAttrs = [ATTR_ALIGN, ALIGN_RIGHT];
         if (leftWidth) {
             leftAttrs.push(ATTR_WIDTH);
             leftAttrs.push(leftWidth);
@@ -4922,7 +4962,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             rightAttrs.push(ATTR_WIDTH);
             rightAttrs.push(rightWidth);
         }
-        return this.tag(TAG_TABLE, [ATTR_BORDER, "0", ATTR_WIDTH, "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag(TAG_TABLE, [ATTR_BORDER, 0,
+				    ATTR_WIDTH, HU.perc(100),
+				    ATTR_CELLSPACING, 0,
+				    ATTR_CELLPADDING, 0],
                         this.tr([ATTR_VALIGN, attrs.valign],
                                 this.td(leftAttrs, left) +
                                 this.td(rightAttrs, right)));
@@ -4943,8 +4986,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     toggleDialogs:{},
     makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra,opts) {
 	opts = opts??{};
-	let buttonList = [HU.div(['action','ok',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],opts.okLabel??'OK'),
-			  HU.div([ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],opts.cancelLabel??'Cancel')];
+	let buttonList = [HU.div([ATTR_ACTION,ACTION_OK,
+				  ATTR_CLASS,HU.classes(CLASS_BUTTON, CLASS_CLICKABLE)],opts.okLabel??LABEL_OK),
+			  HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON, CLASS_CLICKABLE)],opts.cancelLabel??LABEL_CANCEL)];
 
 	if(extra) buttonList.push(extra);
 	let buttons = HU.buttons(buttonList);
@@ -4953,7 +4997,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:opts.my??"left top",at:opts.at??"left bottom",
 				    title:opts.title,header:opts.header,draggable:opts.draggable});
 	dialog.find('.' + CLASS_CLICKABLE).button().click(function() {
-	    if($(this).attr('action')=='ok') {
+	    if($(this).attr(ATTR_ACTION)==ACTION_OK) {
 		okFunc();
 	    } else if(cancelFunc) {
 		cancelFunc();
@@ -5053,7 +5097,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
 	if(opts.hidePopup) {
-            HtmlUtils.hidePopupObject(null,true);
+            HU.hidePopupObject(null,true);
 	}
 
 	//Check if there is a toggleid and the popup is visible
@@ -5088,7 +5132,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	
         if(opts.inPlace) {
             opts.remove = false;
-            parentId= HtmlUtils.getUniqueId();
+            parentId= HU.getUniqueId();
             html = HU.div([ATTR_ID,parentId,ATTR_STYLE,HU.css()],HU.SPACE);
         } else {
             html = opts.content;
@@ -5101,14 +5145,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } 
 	    
         }
-        let id = HtmlUtils.getUniqueId();
+        let id = HU.getUniqueId();
         if(opts.header) {
             html = HU.div([ATTR_CLASS,"ramadda-popup-inner"], html);
         }
 
         if(opts.header) {
-            let closeImage = HtmlUtils.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
-					   HU.jsLink('',HtmlUtils.getIconImage(ICON_CLOSE),
+            let closeImage = HU.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
+					   HU.jsLink('',HU.getIconImage(ICON_CLOSE),
 						     [ATTR_ID,id+'_close',
 						      ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 	    if(!opts.showCloseIcon) closeImage='';
@@ -5119,7 +5163,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(opts.headerRight) {
 		hdr = hdr+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,HU.px(0),CSS_RIGHT,HU.px(0))], opts.headerRight);
 	    }
-            let header = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,CSS_TEXT_ALIGN,'left'),ATTR_CLASS,'ramadda-popup-header'],hdr);
+            let header = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,CSS_TEXT_ALIGN,ALIGN_LEFT),
+					ATTR_CLASS,'ramadda-popup-header'],hdr);
             html = header + html;
         }
 
@@ -5130,7 +5175,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         let innerId = HU.getUniqueId("model_inner");
         if(opts.modal || opts.modalStrict) {
-            html  = HU.div([ATTR_ID, innerId, ATTR_STYLE,opts.modalContentsCss,ATTR_CLASS,"ramadda-modal-contents"],html);
+            html  = HU.div([ATTR_ID, innerId, ATTR_STYLE,opts.modalContentsCss,
+			    ATTR_CLASS,"ramadda-modal-contents"],html);
             html = HU.div([ATTR_CLASS,'ramadda-modal ' + (opts.modalStrict?'ramadda-modal-strict':'')],html);
         }
 
@@ -5153,7 +5199,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(opts.inPlace) {
             let src =  $("#" + opts.contentId);
             let dest = $("#"+ parentId);
-            dest.css(CSS_DISPLAY,"block").css(ATTR_WIDTH,"fit-content").css(CSS_HEIGHT,"fit-content");
+            dest.css(CSS_DISPLAY,DISPLAY_BLOCK).css(ATTR_WIDTH,"fit-content").css(CSS_HEIGHT,"fit-content");
             src.appendTo(dest);
             src.show();
         }
@@ -5214,7 +5260,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    //Only set this if we don't have a toggleid cause if we
 	    //do have one then the popup is meant to be persistent
 	    if(!opts.toggleid) {
-		HtmlUtils.setPopupObject(popup);
+		HU.setPopupObject(popup);
 	    }
         }
 
@@ -5243,7 +5289,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.toggleid) {
 	    this.toggleDialogs[opts.toggleid] = popup;
 	}
-	HtmlUtils.handleNewContent(popup);
+	HU.handleNewContent(popup);
         return popup;
     },
     handleNewContent:function(selector) {
@@ -5264,7 +5310,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             //      url = url.replace(regex,"");
         } else  {
             if (!url.includes("?")) url += "?";
-            url += "&" + HtmlUtils.urlArg(name,value);
+            url += "&" + HU.urlArg(name,value);
         }
 
         try {
@@ -5362,7 +5408,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },  
     BR_ENTITY:"&#10;",
     makeMultiline:function(l) {
-	return Utils.join(l,HtmlUtils.BR_ENTITY);
+	return Utils.join(l,HU.BR_ENTITY);
     },
     rgb:function(r,g,b,a) {
 	if(Utils.isDefined(a)) {
@@ -5459,14 +5505,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     formatTable: function(id, args, callback) {
-        HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +'/lib/datatables-1.13.1/datatables.min.css'],
+        HU.loadJqueryLib('DataTable',[ramaddaCdn +'/lib/datatables-1.13.1/datatables.min.css'],
                                 [ramaddaCdn + '/lib/datatables-1.13.1/datatables.min.js'],
                                 id,()=>{
                                     $(id).each(function() {
                                         if($.fn.dataTable.isDataTable(this)) {
                                             return;
                                         }
-                                        let table = HtmlUtils.formatTableInner($(this),args);
+                                        let table = HU.formatTableInner($(this),args);
                                         if(callback) callback($(this),table);
                                     });
                                 });
@@ -5547,13 +5593,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     initNavPopup: function(id,args) {
         let opts = {
-            align:"left"
+            align:ALIGN_LEFT
         };
         if(args) $.extend(opts, args);
         $("#"+id).click(function() {
-            let popup = HtmlUtils.setPopupObject($("#"+ id+"-popup"));
+            let popup = HU.setPopupObject($("#"+ id+"-popup"));
             let my,at;
-            if(opts.align=="right") {
+            if(opts.align==ALIGN_RIGHT) {
                 my = "right top";
                 at = "right top";
             } else {
@@ -5576,7 +5622,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let links =     $(".ramadda-nav-left-link");    
         links.removeClass("ramadda-nav-link-active");
         $("#" + id+"_href").parent().addClass("ramadda-nav-link-active");
-        HtmlUtils.scrollToAnchor(id,offset);
+        HU.scrollToAnchor(id,offset);
     },
     initNavLinks: function(args) {
         let opts = {
@@ -5592,7 +5638,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let menu = HU.div(["toggle-state",opts.leftOpen?"open":"closed",
 			       ATTR_TITLE,"Toggle left",
 			       ATTR_ID,"ramadda-nav-left-toggle",
-			       ATTR_CLASS,"ramadda-nav-left-toggle"], HtmlUtils.getIconImage("fa-bars"));
+			       ATTR_CLASS,"ramadda-nav-left-toggle"], HU.getIconImage("fa-bars"));
             $(menu).appendTo(right);
             $("#ramadda-nav-left-toggle").click(function() {
                 let closed = $(this).attr("toggle-state")==="closed";
@@ -5657,7 +5703,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             });
             if(!amScrolling && activeLink) {
-                HtmlUtils.scrollVisible(activeLink.parent(), activeLink,100);
+                HU.scrollVisible(activeLink.parent(), activeLink,100);
             }
 
         });
@@ -5669,20 +5715,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         $("#" + id).html(val);
     },
     formTable: function() {
-        return this.openTag("table", [ATTR_CLASS, "formtable", "cellspacing", "0", "cellspacing", "0"]);
+        return this.openTag("table", [ATTR_CLASS, "formtable",
+				      ATTR_CELLSPACING, "0",
+				      ATTR_CELLSPACING, "0"]);
     },
     formTableClose: function() {
         return this.closeTag("table");
     },
     formEntryTop: function(label, value, value2) {
         if(value2) 
-            return HU.tag(TAG_TR, [ATTR_VALIGN, "top"],
-                          HU.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],
+            return HU.tag(TAG_TR, [ATTR_VALIGN, ALIGN_TOP],
+                          HU.tag(TAG_TD, [ATTR_CLASS, CLASS_FORMLABEL, ATTR_ALIGN, ALIGN_RIGHT],
                                  label) +
                           HU.tag(TAG_TD, [],   value) +
                           HU.tag(TAG_TD, [],   value2));
-        return this.tag(TAG_TR, [ATTR_VALIGN, "top"],
-                        this.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],
+        return this.tag(TAG_TR, [ATTR_VALIGN, ALIGN_TOP],
+                        this.tag(TAG_TD, [ATTR_CLASS, CLASS_FORMLABEL, ATTR_ALIGN, ALIGN_RIGHT],
                                  label) +
                         this.tag(TAG_TD, [],
                                  value));
@@ -5694,7 +5742,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     formEntry: function(label, value) {
         return this.tag(TAG_TR, [],
-                        this.tag(TAG_TD, [ATTR_CLASS, "formlabel", ATTR_ALIGN, "right"],
+                        this.tag(TAG_TD, [ATTR_CLASS, CLASS_FORMLABEL, ATTR_ALIGN, ALIGN_RIGHT],
                                  label) +
                         this.tag(TAG_TD, [],
                                  value));
@@ -5706,7 +5754,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         } else {
             url += "&";
         }
-        url += HtmlUtils.urlArg(arg, value);
+        url += HU.urlArg(arg, value);
         return url;
     },
     getUrl: function(path, args) {
@@ -5790,7 +5838,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     space:function(cnt) {
 	let s = "";
-	for(let i=0;i<cnt;i++) s+="&nbsp;";
+	for(let i=0;i<cnt;i++) s+=SPACE;
 	return s;
     },
     attr: function(name, value) {
@@ -5835,7 +5883,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeFullScreen:function(elem) {
         if(elem==null) {
-            console.log("HtmlUtils.makeFullScreen: null elem argument");
+            console.log("HU.makeFullScreen: null elem argument");
             console.trace();
             return;
         }
@@ -5862,7 +5910,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let shrunkHeight= contents.height();
 	enlargeMsg = Utils.getStringDefined(enlargeMsg,'Show more');
 	shrinkMsg = Utils.getStringDefined(shrinkMsg,'Show less');	
-	let bbutton = HU.div([ATTR_ID,id+'_button',ATTR_CLASS,'ramadda-enlarge-button ramadda-enlarge-bbutton ramadda-clickable'],enlargeMsg);
+	let bbutton = HU.div([ATTR_ID,id+'_button',
+			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-enlarge-button ramadda-enlarge-bbutton')],enlargeMsg);
 	$(bbutton).appendTo(outer).click(function(){
 	    enlarged = !enlarged;
 	    contents.css(CSS_HEIGHT,enlarged?'':shrunkHeight);
@@ -5877,17 +5926,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    
 	}
 	if(args) $.extend(opts,args);
-        let icon =HtmlUtils.getIconImage(opts.icon,[ATTR_CLASS,CLASS_CLICKABLE],[]);
-        let id = HtmlUtils.getUniqueId();
-	let style = HU.css(CSS_DISPLAY,'none',
+        let icon =HU.getIconImage(opts.icon,[ATTR_CLASS,CLASS_CLICKABLE],[]);
+        let id = HU.getUniqueId();
+	let style = HU.css(CSS_DISPLAY,DISPLAY_NONE,
 			   CSS_CURSOR,CURSOR_POINTER,
-			   CSS_TEXT_ALIGN,'right',
+			   CSS_TEXT_ALIGN,ALIGN_RIGHT,
 			   CSS_POSITION,POSITION_ABSOLUTE,
 			   CSS_MARGIN_TOP,HU.px(0));
 	if(opts.left) style+=HU.css(CSS_LEFT,opts.left);
 	else style+=HU.css(CSS_RIGHT,opts.right);
 	style+=HU.css(CSS_TOP,opts.top);		
-        let html= HtmlUtils.div([ATTR_ID,id,ATTR_TITLE,"Expand", ATTR_CLASS,"ramadda-expandable-link",
+        let html= HU.div([ATTR_ID,id,ATTR_TITLE,"Expand", ATTR_CLASS,"ramadda-expandable-link",
 				 ATTR_STYLE,style],icon);
         $(selector).append(html);
         let btn = $("#"+id);
@@ -5895,45 +5944,45 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         btn.attr("data-expanded",expandNow);
         let origBackground = $(selector).css(CSS_BACKGROUND);
         $(selector).mouseenter(function() {
-            btn.css(CSS_DISPLAY,"block");
+            btn.css(CSS_DISPLAY,DISPLAY_BLOCK);
         });
         $(selector).mouseleave(function() {
-            btn.css(CSS_DISPLAY,"none");
+            btn.css(CSS_DISPLAY,DISPLAY_NONE);
         });
         let expandIt = function() {
             let icon;
             let expanded = $(this).attr("data-expanded")=="true";
             if(expanded) {
-                icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
+                icon  = HU.getIconImage("fa-expand-arrows-alt");
                 $(this).attr(ATTR_TITLE,"Expand");
                 $(selector).css(CSS_LEFT,"").css(CSS_RIGHT,"").css(CSS_TOP,"").css(CSS_BOTTOM,"").css(CSS_POSITION,POSITION_RELATIVE).css(CSS_HEIGHT, "").css(CSS_Z_INDEX,"").css(CSS_BACKGROUND,origBackground?origBackground:"");
 		$(selector).removeClass('ramadda-expandable-expanded');
-                btn.css(CSS_DISPLAY,"none");
+                btn.css(CSS_DISPLAY,DISPLAY_NONE);
                 $(selector).find(".ramadda-expandable-target").each(function() {
                     $(this).attr("isexpanded","false");
                     $(this).attr(ATTR_STYLE,$(this).attr("original-style"));		    
                 });
             } else {
                 let h = $(window).height();
-                icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
+                icon  = HU.getIconImage("fa-compress-arrows-alt");
                 let top = $(selector).offset().top;
                 $(this).attr(ATTR_TITLE,"Contract");
                 if(fullScreen) {
                     let target  = $(selector).find(".ramadda-expandable");
-                    target.css(CSS_BACKGROUND,"#fff");
-                    HtmlUtils.makeFullScreen(target.get(0));
+                    target.css(CSS_BACKGROUND,COLOR_WHITE);
+                    HU.makeFullScreen(target.get(0));
                     return
                 }               
 		$(selector).addClass('ramadda-expandable-expanded');
-                $(selector).css(CSS_LEFT,HU.px(50)).css(CSS_RIGHT,HU.px(5)).css(CSS_TOP,HU.px(5)).css(CSS_POSITION,"fixed").css(CSS_Z_INDEX,"2000").css(CSS_BACKGROUND,"#fff").css(CSS_HEIGHT,HU.px(h));
+                $(selector).css(CSS_LEFT,HU.px(50)).css(CSS_RIGHT,HU.px(5)).css(CSS_TOP,HU.px(5)).css(CSS_POSITION,"fixed").css(CSS_Z_INDEX,"2000").css(CSS_BACKGROUND,COLOR_WHITE).css(CSS_HEIGHT,HU.px(h));
                 $(selector).find(".ramadda-expandable-target").each(function() {
 		    $(this).attr('original-style',$(this).attr(ATTR_STYLE));
                     $(this).attr("isexpanded","true");
                     let height = $(this).attr("expandable-height");
                     if(!height) if(height==-1) return;
-                    $(this).css(CSS_HEIGHT,height || "95vh");
+                    $(this).css(CSS_HEIGHT,height || HU.vh(95));
                 });
-                btn.css(CSS_DISPLAY,"block");
+                btn.css(CSS_DISPLAY,DISPLAY_BLOCK);
             }
             $(this).attr("data-expanded",(!expanded)+"");
             $(this).html(icon);
@@ -6034,7 +6083,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     onClick: function(call, html, attrs) {
-        let myAttrs = [ATTR_ONCLICK, call, ATTR_STYLE, HU.css(CSS_COLOR,'#000',
+        let myAttrs = [ATTR_ONCLICK, call, ATTR_STYLE, HU.css(CSS_COLOR,COLOR_BLACK,
 							      CSS_CURSOR,CURSOR_POINTER)];
         if (attrs != null) {
             for (let i = 0; i < attrs.length; i++) {
@@ -6098,7 +6147,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	    let id = HU.getUniqueId('radio_');
 	    html+=HU.radio(id,name,'',item,selected?selected==item:idx==0)+
-		HU.tag(TAG_LABEL,[ATTR_FOR,id],label) + '<br>';
+		HU.tag(TAG_LABEL,[ATTR_FOR,id],label) + HU.br();
 	    html+='\n';
 	});
 	return html;
@@ -6147,7 +6196,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if (item.name == "" || item.value == null || item.value == "") return;
             if (item.value == "-all-") return;
             if (item.type == "submit") {
-                if (item.value == "Cancel") {
+                if (item.value == LABEL_CANCEL) {
                     return
                 }
             }
@@ -6225,16 +6274,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
-        let input = opts.showInputField?HtmlUtils.input("formurl", url, [ATTR_SIZE, "80",ATTR_ID,"formurl"]):
-	    HtmlUtils.hidden("formurl", url, [ATTR_SIZE, "80",ATTR_ID,"formurl"]);
-        let html = HU.vspace() +HtmlUtils.div([ATTR_CLASS, "ramadda-form-url"], 
+        let input = opts.showInputField?HU.input("formurl", url,
+							[ATTR_SIZE, 80,ATTR_ID,"formurl"]):
+	    HU.hidden("formurl", url, [ATTR_SIZE, 80,ATTR_ID,"formurl"]);
+        let html = HU.vspace() +HU.div([ATTR_CLASS, "ramadda-form-url"], 
 					      input+SPACE2+
 					      (opts.includeCopyArgs?
-					       HU.span([ATTR_ID,'argscopy',ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Copy json for subset action'],
-						       HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
-					      HU.span([ATTR_ID,'clipboard',ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Copy URL to clipboard'],
-						      HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
-					      HU.href(url, HtmlUtils.getIconImage('fas fa-link'),[ATTR_TITLE,'Form URL']));
+					       HU.span([ATTR_ID,'argscopy',
+							ATTR_CLASS,CLASS_CLICKABLE,
+							ATTR_TITLE,'Copy json for subset action'],
+						       HU.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
+					      HU.span([ATTR_ID,'clipboard',
+						       ATTR_CLASS,CLASS_CLICKABLE,
+						       ATTR_TITLE,'Copy URL to clipboard'],
+						      HU.getIconImage('fas fa-clipboard')) + SPACE2+
+					      HU.href(url, HU.getIconImage('fas fa-link'),[ATTR_TITLE,'Form URL']));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -6261,9 +6315,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,args) {
         jqid(formId).find(':input').change(function() {
-            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
+            HU.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
         });
-        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
+        HU.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
     },
     makeSelectTagPopup:function(select,args) {
 	args = args??{};
@@ -6293,9 +6347,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 
 	let guid = HU.getUniqueId('btn');
-	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',
+	let btn =HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
-			 opts.buttonLabel)+(opts.addBreak?'<br>':'');
+			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
 	btn = opts.wrap.replace('${widget}',btn);
 	if(opts.after)
 	    select.after(' ' +btn);
@@ -6333,14 +6387,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		if(!Utils.stringDefined(value)) {
 		    if($(this).attr(ATTR_CATEGORY) && opts.showCategories) {
 			category = 	 $(this).html();
-			cbxs.push(HU.div([ATTR_DATA_CORPUS,category,ATTR_CLASS,'ramadda-select-tag-category'],category));
+			cbxs.push(HU.div([ATTR_DATA_CORPUS,category,
+					  ATTR_CLASS,'ramadda-select-tag-category'],category));
 		    }
 		    return;
 		}
 		let label = $(this).html();
-		label = label.replace('&nbsp;',' ');
-		if($(this).attr('img-src')) {
-		    label = HU.image($(this).attr('img-src'),[ATTR_WIDTH,HU.px(16)]) +' ' +label;
+		label = label.replace(SPACE,' ');
+		if($(this).attr(ATTR_IMGSRC)) {
+		    label = HU.image($(this).attr(ATTR_IMGSRC),[ATTR_WIDTH,HU.px(16)]) +' ' +label;
 		}
 
 		let selected=$(this).is(':selected');
@@ -6361,7 +6416,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
 						     CSS_WIDTH,HU.px(600),
-						     CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,"auto")],
+						     CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 				  Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200)),
@@ -6370,11 +6425,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(opts.makeButtons) {
 		let buttons = '';
 		if(!opts.single) {
-		    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
-		    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','selectshown'],'Select shown');
+		    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action',
+						 ATTR_DATA_ACTION,'clear'],'Clear all');
+		    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action',
+						 ATTR_DATA_ACTION,'selectshown'],'Select shown');
 		}
-		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showselected'],'Show selected');
-		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showall'],'Show all');	   
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action',
+					     ATTR_DATA_ACTION,'showselected'],'Show selected');
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action',
+					     ATTR_DATA_ACTION,'showall'],'Show all');	   
 		input+=HU.div([ATTR_STYLE,
 			       HU.css(CSS_BORDER_BOTTOM,'var(--basic-border)',CSS_PADDING,HU.px(6))],buttons);
 	    }
@@ -6387,7 +6446,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    dialog.find(":radio").change(cbxChange);
 	    let tags = dialog.find(".ramadda-select-tag, .ramadda-select-tag-category");
 	    dialog.find('.ramadda-select-action').button().click(function() {
-		let action =$(this).attr('data-action');
+		let action =$(this).attr(ATTR_DATA_ACTION);
 		if(action=='showall') {
 		    tags.show();
 		    return
@@ -6481,7 +6540,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		attrs.push(ATTR_CATEGORY,item.category);
             } else if(Utils.isDefined(item.value)) {
 		if(item.imgsrc)
-		    attrs.push('img-src',item.imgsrc);
+		    attrs.push(ATTR_IMGSRC,item.imgsrc);
 		if(item.datatitle)
 		    attrs.push(ATTR_TITLE,item.datatitle);
 		if(item.corpus)
@@ -6522,7 +6581,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     datePicker: function(name,value,attrs) {
         attrs.push(ATTR_SIZE);
         attrs.push("8");
-        return  HtmlUtils.input(name, value,attrs);
+        return  HU.input(name, value,attrs);
     },
 
     makeClearDatePickerArgs:function(args) {
@@ -6553,7 +6612,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    yearRange: '1900:2100'});
     },
     rangeInput: function(name,id) {
-        var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div([ATTR_ID,id]) +"</form>";
+        var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HU.div([ATTR_ID,id]) +"</form>";
         console.log(html);
         return html;
     },
@@ -6575,13 +6634,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     input: function(name, value, attrs) {
-        return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["value", value]) +(name==null?'':HtmlUtils.attrs("name", name))  + ">";
+        return "<input " + HU.attrs(attrs) + HU.attrs(["value", value]) +(name==null?'':HU.attrs("name", name))  + ">";
     },
     hidden: function(name, value, attrs) {
-        return "<input type=hidden " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
+        return "<input type=hidden " + HU.attrs(attrs) + HU.attrs(["name", name, "value", value]) + ">";
     },    
     textarea: function(name, value, attrs) {
-        return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
+        return "<textarea " + HU.attrs(attrs) + HU.attrs(["name", name]) + ">" + value + "</textarea>";
     },
     initSelect: function(selector, args) {
         if(selector.length==0) return;
@@ -6595,7 +6654,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         };
         if(args) $.extend(opts,args);
 	$(document).ready(function() {
-            HtmlUtils.loadJqueryLib('selectBoxIt',
+            HU.loadJqueryLib('selectBoxIt',
 				    [RamaddaUtil.getCdnUrl("/lib/selectboxit/stylesheets/jquery.selectBoxIt.css")],
                                     [RamaddaUtil.getCdnUrl("/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js")],
                                     selector, ()=>{
@@ -6650,7 +6709,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeSplash: function(message,args) {
         let opts = {
-            width:"50%",
+            width:HU.perc(50),
             style:"",
             showOk:true
         };
@@ -6664,11 +6723,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         let closeId = Utils.getUniqueId("close_");
         let close = HU.div([ATTR_ID,closeId,ATTR_CLASS,CLASS_CLICKABLE,                           
-                            ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(10),CSS_TOP,HU.px(10))],
+                            ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+					      CSS_RIGHT,HU.px(10),
+					      CSS_TOP,HU.px(10))],
                            HU.getIconImage("far fa-window-close"));
         let inner = close + message;
         if(opts.showOk) {
-            inner += HU.center(HU.div([ATTR_ID,closeId+"_button"],"OK"));
+            inner += HU.center(HU.div([ATTR_ID,closeId+"_button"],LABEL_OK));
         }
         inner = HU.div([ATTR_CLASS,"ramadda-shadow-box ramadda-splash",
                         ATTR_STYLE,HU.css(ATTR_WIDTH,opts.width)+ opts.style],
@@ -6697,7 +6758,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeToggleImage: function(img,style) {
         style = (style||"");
         return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MIN_WIDTH,HU.px(10))],
-		      HU.getIconImage(img, [ATTR_ALIGN, "bottom"],[ATTR_STYLE,style]));
+		      HU.getIconImage(img, [ATTR_ALIGN, ALIGN_BOTTOM],[ATTR_STYLE,style]));
     },
     toggleBlockListeners:{},
     toggleBlockVisibility:function(id, imgid, showimg, hideimg,anim,forceVisible) {
@@ -6718,13 +6779,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
 	}
 	Utils.ramaddaUpdateMaps();
-	if(HtmlUtils.toggleBlockListeners[id]) {
-	    HtmlUtils.toggleBlockListeners[id](id,visible);
+	if(HU.toggleBlockListeners[id]) {
+	    HU.toggleBlockListeners[id](id,visible);
 	}
     },
     toggleBlock: function(label, contents, visible, args,result) {
         let opts = {
-            headerClass:'ramadda-noselect ramadda-toggleblock entry-toggleblock-label ramadda-hoverable ' + CLASS_CLICKABLE,
+            headerClass:HU.classes('ramadda-noselect ramadda-toggleblock entry-toggleblock-label',CLASS_HOVERABLE,CLASS_CLICKABLE),
             headerStyle:'',
 	    orientation:'h',
 	    imgopen:'fas fa-caret-down',
@@ -6749,15 +6810,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 				 HU.squote(img1),
 				 HU.squote(img2),
 				 Utils.isDefined(opts.animated)?opts.animated:'null'], ',');
-        let click = 'HtmlUtils.toggleBlockVisibility(' + clickArgs + ');';
+        let click = 'HU.toggleBlockVisibility(' + clickArgs + ');';
         let img = HU.span([ATTR_ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
         let header = HU.div([ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass, ATTR_ONCLICK, click],  img +  ' ' + label);
-        let style = (visible ? HU.css(CSS_DISPLAY,'block',CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,'none'));
-        let body = HtmlUtils.div([ATTR_CLASS, 'hideshowblock', ATTR_ID, id, ATTR_STYLE, style],
+        let style = (visible ? HU.css(CSS_DISPLAY,DISPLAY_BLOCK,
+				      CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,DISPLAY_NONE));
+        let body = HU.div([ATTR_CLASS, 'hideshowblock', ATTR_ID, id, ATTR_STYLE, style],
                                  contents);
 
 	if(opts.listener)
-	    HtmlUtils.toggleBlockListeners[id] = opts.listener;
+	    HU.toggleBlockListeners[id] = opts.listener;
 
 
 	if(opts.separate)
@@ -6769,7 +6831,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     toggleBlockNew: function(label, contents, visible, args) {
 	if(!Utils.isDefined(visible))  visible=false;
         let opts = {
-            headerClass:"ramadda-noselect ramadda-toggleblock-label " + CLASS_CLICKABLE,
+            headerClass:HU.classes('ramadda-noselect ramadda-toggleblock-label', CLASS_CLICKABLE),
             headerStyle:""
         };
         if(args) $.extend(opts, args);
@@ -6782,9 +6844,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.extraAttributes) {
 	    attrs = Utils.mergeLists(attrs,opts.extraAttributes);
 	}
-        let header = HtmlUtils.div(attrs,  img +  " " + label);
-        let style = (visible ? HU.css(CSS_DISPLAY,'block',CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,'none'));
-        let body = HtmlUtils.div([ATTR_CLASS, "hideshowblock", ATTR_ID, id, ATTR_STYLE, style],
+        let header = HU.div(attrs,  img +  " " + label);
+        let style = (visible ? HU.css(CSS_DISPLAY,DISPLAY_BLOCK,
+				      CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,DISPLAY_NONE));
+        let body = HU.div([ATTR_CLASS, "hideshowblock", ATTR_ID, id, ATTR_STYLE, style],
                                  contents);
 	if(opts.separate)
 	    return {header:header,body:body,id:id};
@@ -6917,14 +6980,14 @@ window.onbeforeunload = pageIsUnloading;
 
 
 function Div(contents, clazz) {
-    this.id = HtmlUtils.getUniqueId();
+    this.id = HU.getUniqueId();
     this.contents = contents || "";
     this.extra = "";
     this.clazz = clazz;
     this.setHidden = function() {
     }
     this.toString = function() {
-        return HtmlUtils.div([ATTR_CLASS, clazz || "", ATTR_ID, this.id], this.contents);
+        return HU.div([ATTR_CLASS, clazz || "", ATTR_ID, this.id], this.contents);
     }
     this.getId = function() {
         return this.id;
@@ -6933,7 +6996,7 @@ function Div(contents, clazz) {
         return $("#" + this.id)
     }
     this.set = function(html, attrs) {
-        if (attrs) this.extra = HtmlUtils.attrs(attrs);
+        if (attrs) this.extra = HU.attrs(attrs);
         this.contents = html;
         this.jq().html(html);
         return this;
@@ -6944,7 +7007,7 @@ function Div(contents, clazz) {
         $("#" + this.id).append(html);
     }
     this.msg = function(msg) {
-        return this.set(HtmlUtils.div([ATTR_CLASS, "display-message"], msg));
+        return this.set(HU.div([ATTR_CLASS, "display-message"], msg));
     }
 }
 
@@ -7153,7 +7216,7 @@ dateFormat.i18n = {
 
 //convenience method
 function jqid(id) {
-    return HtmlUtils.jqid(id);
+    return HU.jqid(id);
 }
 
 function jqname(name) {

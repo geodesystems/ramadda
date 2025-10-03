@@ -545,7 +545,7 @@ function DisplayManager(argId, argProperties) {
     let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS),
 			       ATTR_CLASS, "display-container",
 			       ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_BLOCK)]);
-    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,'relative')]);
+    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)]);
     html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 

@@ -131,7 +131,7 @@ function RepositoryMap(mapId, params) {
         displayProjection: MapUtils.defaults.displayProjection,
         projectionUnits: MapUtils.defaults.units,
         mapDivId: this.mapId,
-//        defaultLocation: MapUtils.defaults.location,
+	//        defaultLocation: MapUtils.defaults.location,
         defaultLocation: null,
         latlonReadout: null,
 
@@ -268,7 +268,7 @@ function RepositoryMap(mapId, params) {
     };
 
 
-//    this.addLayer(wmts);
+    //    this.addLayer(wmts);
 
 
     this.mapOptions = options;
@@ -433,11 +433,11 @@ RepositoryMap.prototype = {
     CUSTOM_MAP : "CUSTOM",
 
     drawFeature:function(layer,feature,style) {
-//	if(style=='default' && feature.originalStyle) style=feature.originalStyle;
-//	console.log('draw',style);
+	//	if(style=='default' && feature.originalStyle) style=feature.originalStyle;
+	//	console.log('draw',style);
 	layer.drawFeature(feature,style);
     },
-	
+    
     setFeatureStyle:function(feature,style) { 
 	MapUtils.setFeatureStyle(feature,style);
     },
@@ -521,7 +521,7 @@ RepositoryMap.prototype = {
 		    //bounds = MapUtils.extendBounds(bounds,latLonBounds);
 		    if(layer.features) {
 			layer.features.forEach((f,idx)=>{
-			    if(f.style && f.style.display=='none') return;
+			    if(f.style && f.style.display==DISPLAY_NONE) return;
 			    if(!f.geometry) return;
 			    let b = f?.geometry.bounds;
 			    if(!b) return;
@@ -561,7 +561,7 @@ RepositoryMap.prototype = {
         }
 	if(debugBounds)
 	    console.log("calling setViewToBounds: ",bounds);
-//	console.log("final: " + bounds);
+	//	console.log("final: " + bounds);
 
         this.setViewToBounds(bounds);
     },
@@ -618,12 +618,11 @@ RepositoryMap.prototype = {
 
     setMapRegion: function(regionid, north, west, south, east) {
 	let baseId = this.mapId;
-        $("#" + baseId + "_regionid").val(regionid);
-        $("#" + baseId + "_north").val(north);
-        $("#" + baseId + "_west").val(west);
-        $("#" + baseId + "_south").val(south);
-        $("#" + baseId + "_east").val(east);
-
+        jqid(baseId + "_regionid").val(regionid);
+        jqid(baseId + "_north").val(north);
+        jqid(baseId + "_west").val(west);
+        jqid(baseId + "_south").val(south);
+        jqid(baseId + "_east").val(east);
     },
 
     toggleMapWidget: function(onOrOff) {
@@ -681,7 +680,7 @@ RepositoryMap.prototype = {
 	    }
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
-//	    if(debugBounds)console.log(bounds.getCenterLonLat());
+	    //	    if(debugBounds)console.log(bounds.getCenterLonLat());
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
@@ -690,8 +689,8 @@ RepositoryMap.prototype = {
             this.zoomTo(this.params.maxZoom);
 	}
 	//xxxxx
-//	this.defaultBounds=null;
-//	this.defaultLocation=null;
+	//	this.defaultBounds=null;
+	//	this.defaultLocation=null;
 
     },
     setCenter:function(to) {
@@ -808,12 +807,12 @@ RepositoryMap.prototype = {
         let _this = this;
         if (this.params.showSearch) {
             this.searchDiv = this.mapDivId + "_search";
-            let cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
+            let cbx = HU.checkbox(this.searchDiv + "_download", [], false);
             let input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
             let search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>"+/* + cbx + " Download*/"</td></tr></table>"
-            $("#" + this.searchDiv).html(search);
-            this.searchMsg = $("#" + this.searchDiv + "_message");
-            let searchInput = $("#" + this.searchDiv + "_input");
+            jqid(this.searchDiv).html(search);
+            this.searchMsg = jqid(this.searchDiv + "_message");
+            let searchInput = jqid(this.searchDiv + "_input");
             searchInput.keypress(function(event) {
                 if (event.which == 13) {
                     _this.searchFor(searchInput.val());
@@ -824,19 +823,24 @@ RepositoryMap.prototype = {
 	let getId = id=>{
 	    return this.mapDivId+"_" + id;
 	};
-	let html = HU.open("table",[ATTR_STYLE,HU.css("height","100%"),
-				    ATTR_WIDTH,"100%","border","0"  ]);
-	let theMap = HtmlUtils.div([ATTR_CLASS, "ramadda-map-inner",
-				    ATTR_STYLE,"width:100%;height:100%;position:relative;",
-				    ATTR_ID,getId("themap")]);
-	html+=HU.tr([ATTR_STYLE,HU.css("height","100%")],HU.td([ATTR_WIDTH,"100%"],theMap));
-	html+="</table>";
-	//	$("#" + this.mapDivId).html(html);
-	$("#" + this.mapDivId).html(theMap);
-
-	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("progress"), ATTR_CLASS,"ramadda-map-progess", ATTR_STYLE,"z-index:3000;position:absolute;top:10px;left:40%;"],""));
-	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("label"), ATTR_STYLE,"z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
-	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("toolbar"), ATTR_STYLE,"z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
+	let html = HU.open("table",[ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100)),
+				    ATTR_WIDTH,HU.perc(100),
+				    ATTR_BORDER,0]);
+	let theMap = HU.div([ATTR_CLASS, "ramadda-map-inner",
+			     ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.perc(100),
+					       CSS_POSITION,POSITION_RELATIVE),
+			     ATTR_ID,getId("themap")]);
+	html+=HU.tr([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100))],
+		    HU.td([ATTR_WIDTH,HU.perc(100)],theMap));
+	html+=HU.close(TAG_TABLE);
+	jqid(this.mapDivId).html(theMap);
+	jqid(getId("themap")).append(HU.div([ATTR_ID,getId("progress"),
+					     ATTR_CLASS,"ramadda-map-progess",
+					     ATTR_STYLE,"z-index:3000;position:absolute;top:10px;left:40%;"],""));
+	jqid(getId("themap")).append(HU.div([ATTR_ID,getId("label"),
+					     ATTR_STYLE,"z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
+	jqid(getId("themap")).append(HU.div([ATTR_ID,getId("toolbar"),
+					     ATTR_STYLE,"z-index:1000;position:absolute;top:10px;left:50%;transform: translateX(-50%);"],""));
 
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
 
@@ -893,13 +897,13 @@ RepositoryMap.prototype = {
 	let makeSlider = () =>{
 	    let slider = "Image Opacity:&nbsp;" + 
 		HU.div([ATTR_ID,this.mapDivId +"_opacity_slider_div",
-			ATTR_STYLE,HU.css("display", "inline-block","width","150px")],"");
+			ATTR_STYLE,HU.css(CSS_DISPLAY, DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(150))],"");
 
-	    slider = HU.span([ATTR_ID,this.mapDivId+'_opacity_slider',ATTR_STYLE,
-			      (this.params.showOpacitySlider)?'display:inline':'display:none'], slider);	    
+	    slider = HU.span([ATTR_ID,this.mapDivId+'_opacity_slider',
+			      ATTR_STYLE, (this.params.showOpacitySlider)?HU.css(CSS_DISPLAY,DISPLAY_INLINE):HU.css(CSS_DISPLAY,DISPLAY_NONE)], slider);	    
 
-	    $("#" + this.mapDivId+"_header").append(slider);
-	    $("#"+ this.mapDivId +"_opacity_slider_div").slider({
+	    jqid(this.mapDivId+"_header").append(slider);
+	    jqid(this.mapDivId +"_opacity_slider_div").slider({
 		min: 0,
 		max: 1,
 		step:0.05,
@@ -949,9 +953,9 @@ RepositoryMap.prototype = {
     showOpacitySlider:function(visible) {
 	this.params.showOpacitySlider = visible;
 	if(visible)
-	    $('#'+this.mapDivId+'_opacity_slider').css('display','inline');
+	    $('#'+this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_INLINE);
 	else
-	    $('#'+this.mapDivId+'_opacity_slider').css('display','none');	
+	    $('#'+this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_NONE);	
     },
     getBounds: function() {
 	return  this.transformProjBounds(this.getMap().getExtent());
@@ -1018,7 +1022,7 @@ RepositoryMap.prototype = {
 	ramaddaMapShareState(this,"baseLayer");
     },
     appendToolbar: function(html) {
-	$("#" + this.mapDivId+"_toolbar").append(html);
+	jqid(this.mapDivId+"_toolbar").append(html);
     },
 
     setMapDiv: function(divid) {
@@ -1065,9 +1069,9 @@ RepositoryMap.prototype = {
 	if(!background1) background1= '#ffffcc';
 	let links = 	    $(selector).find('[data-mapid]');
 	links.mouseenter(function(event) {
-//	    _this.closePopup();  HtmlUtils.hidePopupObject();
+	    //	    _this.closePopup();  HU.hidePopupObject();
 	    if (background1)
-                $(this).css('background', background1);
+                $(this).css(CSS_BACKGROUND, background1);
 	    let id = $(this).data('mapid');
 	    if (!id)  return;
             let box = _this.findBox(id);
@@ -1099,9 +1103,9 @@ RepositoryMap.prototype = {
         });
 	links.mouseleave(function() {
 	    if (background2)
-                $(this).css('background', background2);
+                $(this).css(CSS_BACKGROUND, background2);
 	    else 
-                $(this).css('background', 'transparent');
+                $(this).css(CSS_BACKGROUND, 'transparent');
 	    let id = $(this).data('mapid');
 	    if (!id)  return;
 	    if (markerMap[id]) {
@@ -1212,14 +1216,14 @@ RepositoryMap.prototype = {
 
 
     unhighlightFeature:function(feature) {
-	if(feature.style && feature.style.display=='none') return;
+	if(feature.style && feature.style.display==DISPLAY_NONE) return;
 	if(feature.originalStyle) {
 	    MapUtils.setFeatureStyle(feature, feature.originalStyle);
 	    this.drawFeature(feature.layer,feature);
 	}
     },
     highlightFeature:function(feature,highlightStyle) {
-	if(feature.style && feature.style.display=='none') return;
+	if(feature.style && feature.style.display==DISPLAY_NONE) return;
 	let fs = feature.style;
 	if(!feature.originalStyle && feature.style) {
             feature.originalStyle = $.extend({},feature.style);
@@ -1327,7 +1331,7 @@ RepositoryMap.prototype = {
 	}
 
 	this.closePopup();
-        HtmlUtils.hidePopupObject();
+        HU.hidePopupObject();
 
         if (layer.canSelect === false) return;
         if (layer && layer.selectedFeature) {
@@ -1518,7 +1522,7 @@ RepositoryMap.prototype = {
 	//Offset a bunch from the base
 	let base = this.numberOfBaseLayers+100;
 	let debug = false;
-//	debug = true;
+	//	debug = true;
 	let max = 0;
 	if(debug)   console.log("***** layer order");
 	let changed = false;
@@ -1538,8 +1542,8 @@ RepositoryMap.prototype = {
 	};
 	this.nonSelectLayers.forEach(setIndex);
 	this.loadedLayers.forEach(setIndex);
-//	console.log("external")
-//	this.externalLayers.forEach(setIndex);
+	//	console.log("external")
+	//	this.externalLayers.forEach(setIndex);
 	if (this.boxes) {
 	    if(debug)console.log("\tboxes");
 	    setIndex(this.boxes);
@@ -1625,7 +1629,7 @@ RepositoryMap.prototype = {
         );
 	if(Utils.isDefined(theArgs.rotation) && image.div) {
 	    image.imageHook = ()=>{
-//		theArgs.rotation=-10;
+		//		theArgs.rotation=-10;
 		let transform = 'rotate(' + theArgs.rotation+'deg)';
 		let childNodes = image.div.childNodes;
 		for(let i = 0, len = childNodes.length; i < len; ++i) {
@@ -1787,12 +1791,12 @@ RepositoryMap.prototype = {
 
         let temporaryStyle = $.extend({}, MapUtils.getVectorStyle("temporary"));
         $.extend(temporaryStyle, props);
-/*        $.extend(temporaryStyle, {
-            pointRadius: props.pointRadius,
-            fillOpacity: props.fillOpacity,
-            strokeWidth: props.strokeWidth,
-            strokeColor: props.strokeColor,
-        });*/
+	/*        $.extend(temporaryStyle, {
+		  pointRadius: props.pointRadius,
+		  fillOpacity: props.fillOpacity,
+		  strokeWidth: props.strokeWidth,
+		  strokeColor: props.strokeColor,
+		  });*/
         let selectStyle = $.extend({}, MapUtils.getVectorStyle("select"));
         $.extend(selectStyle, {
             pointRadius: 3,
@@ -1894,7 +1898,7 @@ RepositoryMap.prototype = {
 		filter: new OpenLayers.Filter.Comparison(),
 		symbolizer: args
 	    });
-//	    mapRules.push(finalRule);
+	    //	    mapRules.push(finalRule);
 
 	    map.styles.default.addRules(mapRules);
 	}
@@ -1944,7 +1948,7 @@ RepositoryMap.prototype = {
         let bounds = null;
         let toks = null;
         let doHelp = false;
-        let download = $("#" + this.searchDiv + "_download").is(':checked');
+        let download = jqid(this.searchDiv + "_download").is(':checked');
         let attrs = [];
         let doOr = true;
         if (searchFor) {
@@ -2108,9 +2112,9 @@ RepositoryMap.prototype = {
         }
 
         if (!visible) {
-            style.display = 'none';
+            style.display = DISPLAY_NONE;
         } else {
-            style.display = 'inline';
+            style.display = DISPLAY_INLINE;
         }
         if (redraw) {
             if (!feature.isSelected)
@@ -2155,7 +2159,9 @@ RepositoryMap.prototype = {
                 didOn = true;
                 cnt++;
                 if (!onFeature) onFeature = feature;
-                html += HtmlUtils.div([ATTR_TITLE,'',ATTR_CLASS, 'ramadda-map-feature', 'feature-index', '' + i], this.getFeatureName(feature));
+                html += HU.div([ATTR_TITLE,'',
+				ATTR_CLASS, 'ramadda-map-feature',
+				'feature-index', '' + i], this.getFeatureName(feature));
                 let geometry = feature.geometry;
                 if (geometry) {
                     let fbounds = geometry.getBounds();
@@ -2169,34 +2175,35 @@ RepositoryMap.prototype = {
         } else {
             if (didSearch || (didOn && didOff)) {
                 let id = this.mapDivId + "_features";
-                this.showText(HU.div([ATTR_ID, id, ATTR_CLASS, "ramadda-map-features"], html),true);
+                this.showText(HU.div([ATTR_ID, id,
+				      ATTR_CLASS, "ramadda-map-features"], html),true);
 		/****
-                $("#" + id + " .ramadda-map-feature").tooltip({
-		    content: function() {
-			let index = parseInt($(this).attr("feature-index"));
-			feature =  layer.features[index];
-			if(feature) {
-			    let p = feature.attributes;
-			    if(p) {
-				return MapUtils.makeDefaultFeatureText(p);
-			    }				
-			}
-			return null;
-		    }
-		    });
-		    **/
+                     jqid(id + " .ramadda-map-feature").tooltip({
+		     content: function() {
+		     let index = parseInt($(this).attr("feature-index"));
+		     feature =  layer.features[index];
+		     if(feature) {
+		     let p = feature.attributes;
+		     if(p) {
+		     return MapUtils.makeDefaultFeatureText(p);
+		     }				
+		     }
+		     return null;
+		     }
+		     });
+		**/
 
-                $("#" + id + " .ramadda-map-feature").click(function(e) {
+                jqid(id + " .ramadda-map-feature").click(function(e) {
                     let index = parseInt($(this).attr("feature-index"));
 		    _this.dontShowText = true;
                     _this.handleFeatureclick(layer, layer.features[index], true,null,{strokeColor:'red'});
 		    _this.dontShowText = false;
                 });
-                $("#" + id + " .ramadda-map-feature").mouseover(function() {
+                jqid(id + " .ramadda-map-feature").mouseover(function() {
                     let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureover(layer.features[index], true,{strokeColor:'red'});
                 });
-                $("#" + id + " .ramadda-map-feature").mouseout(function() {
+                jqid(id + " .ramadda-map-feature").mouseout(function() {
                     let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureout(layer.features[index], true);
                 });
@@ -2448,23 +2455,27 @@ RepositoryMap.prototype = {
                 options = {
                     year: 'numeric'
                 };
-            $("#" + this.mapDivId + "_footer").html(HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation", ATTR_ID, this.mapDivId + "_animation"], ""));
-            this.animation = $("#" + this.mapDivId + "_animation");
-            let ticksDiv = HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation-ticks", ATTR_ID, this.mapDivId + "_animation_ticks"], "");
-            let infoDiv = HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation-info", ATTR_ID, this.mapDivId + "_animation_info"], "");
+            jqid(this.mapDivId + "_footer").html(HU.div([ATTR_CLASS, "ramadda-map-animation",
+							 ATTR_ID, this.mapDivId + "_animation"], ""));
+            this.animation = jqid(this.mapDivId + "_animation");
+            let ticksDiv = HU.div([ATTR_CLASS, "ramadda-map-animation-ticks",
+				   ATTR_ID, this.mapDivId + "_animation_ticks"], "");
+            let infoDiv = HU.div([ATTR_CLASS, "ramadda-map-animation-info",
+				  ATTR_ID, this.mapDivId + "_animation_info"], "");
             this.animation.html(ticksDiv + infoDiv);
             let startLabel = Utils.formatDate(this.minDate, options);
             let endLabel = Utils.formatDate(this.maxDate, options);
-            this.animationTicks = $("#" + this.mapDivId + "_animation_ticks");
-            this.animationInfo = $("#" + this.mapDivId + "_animation_info");
+            this.animationTicks = jqid(this.mapDivId + "_animation_ticks");
+            this.animationInfo = jqid(this.mapDivId + "_animation_info");
             let center = "";
             if (this.startDate && this.endDate) {
-                center = HtmlUtils.div([ATTR_ID, this.mapDivId + "_ticks_reset", ATTR_CLASS, "ramadda-map-animation-tick-reset"], "Reset");
+                center = HU.div([ATTR_ID, this.mapDivId + "_ticks_reset",
+				 ATTR_CLASS, "ramadda-map-animation-tick-reset"], "Reset");
             }
             let info = "<table width=100%><tr valign=top><td width=40%>" + startLabel + "</td><td align=center width=20%>" + center + "</td><td align=right width=40%>" + endLabel + "</td></tr></table>";
             this.animationInfo.html(info);
             if (this.startDate && this.endDate) {
-                let reset = $("#" + this.mapDivId + "_ticks_reset");
+                let reset = jqid(this.mapDivId + "_ticks_reset");
                 reset.click(function() {
                     _this.startDate = null;
                     _this.endDate = null;
@@ -2500,14 +2511,16 @@ RepositoryMap.prototype = {
                     let tooltip = "";
                     tooltip += name != null ? name + "<br>" : "";
                     tooltip += fdate;
-//		    tooltip=HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto')], tooltip);
-                    tooltip += "<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
+                    tooltip += HU.br()+'shift-click: set visible range<br>cmd/ctrl-click:zoom';
                     tooltip += "";
-                    html += HtmlUtils.div([ATTR_ID, this.mapDivId + "_tick" + i, "feature-index", "" + i, ATTR_STYLE, "left:" + percent + "%", ATTR_CLASS, "ramadda-map-animation-tick", "title", tooltip], "");
+                    html += HU.div([ATTR_ID, this.mapDivId + "_tick" + i, "feature-index", "" + i,
+				    ATTR_STYLE, HU.css(CSS_LEFT,HU.perc(percent)),
+				    ATTR_CLASS, "ramadda-map-animation-tick",
+				    ATTR_TITLE, tooltip], "");
                 }
             }
             this.animationTicks.html(html);
-            let tick = $("#" + this.mapDivId + "_animation .ramadda-map-animation-tick");
+            let tick = jqid(this.mapDivId + "_animation .ramadda-map-animation-tick");
             tick.tooltip({
                 content: function() {
                     return $(this).prop('title');
@@ -2646,11 +2659,11 @@ RepositoryMap.prototype = {
     },
     getFeatureTick:  function(feature) {
         if (!feature)
-            return $("#" + this.mapDivId + "_animation_ticks" + " .ramadda-map-animation-tick");
-        return $("#" + this.mapDivId + "_tick" + feature.dateIndex);
+            return jqid(this.mapDivId + "_animation_ticks" + " .ramadda-map-animation-tick");
+        return jqid(this.mapDivId + "_tick" + feature.dateIndex);
     },
     clearDateFeature:  function(feature) {
-        let element = feature != null ? $("#" + this.mapDivId + "_tick" + feature.dateIndex) : $("#" + this.mapDivId + "_animation_ticks .ramadda-map-animation-tick");
+        let element = feature != null ? jqid(this.mapDivId + "_tick" + feature.dateIndex) : jqid(this.mapDivId + "_animation_ticks .ramadda-map-animation-tick");
         element.css("background-color", "");
         element.css("zIndex", "0");
     },
@@ -2771,7 +2784,7 @@ RepositoryMap.prototype = {
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 	if(url.match(".kmz")) {
-	    let div = $("<div  class=ramadda-map-message>Note: KMZ files are not supported</div>")[0];
+	    let div = $(HU.div([ATTR_CLASS,'ramadda-map-message'],'Note: KMZ files are not supported'))[0];
             this.getMap().viewPortDiv.appendChild(div);
 	    return;
 	}
@@ -2789,10 +2802,13 @@ RepositoryMap.prototype = {
 
 	if(this.params["showLayerToggle"]) {
 	    let color = Utils.addAlphaToColor(opts.fillColor,0.4);
-            let cbx = HU.span([], HtmlUtils.checkbox(this.mapDivId + "_layertoggle"+idx, ["title", "Toggle Layer"], visible,name)) +" ";
-	    cbx = HU.span([ATTR_STYLE,HU.css('margin-right','5px','padding','5px','background',color)], cbx);
-	    $("#" + this.mapDivId+"_header").append(" " +cbx);
-	    $("#" + this.mapDivId + "_layertoggle"+idx).change(function() {
+            let cbx = HU.span([], HU.checkbox(this.mapDivId + "_layertoggle"+idx,
+					      [ATTR_TITLE, "Toggle Layer"], visible,name)) +" ";
+	    cbx = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5),
+					     CSS_PADDING,HU.px(5),
+					     CSS_BACKGROUND,color)], cbx);
+	    jqid(this.mapDivId+"_header").append(" " +cbx);
+	    jqid(this.mapDivId + "_layertoggle"+idx).change(function() {
 		if($(this).is(':checked')) {
 		    layer.setVisibility(true);
 		} else {
@@ -2996,9 +3012,9 @@ RepositoryMap.prototype = {
 
     initSearch:  function(inputId) {
 	let _this = this;
-        $("#" + inputId).keyup(function(e) {
+        jqid(inputId).keyup(function(e) {
             if (e.keyCode == 13) {
-                _this.searchMarkers($("#" + inputId).val());
+                _this.searchMarkers(jqid(inputId).val());
             }
         });
     },
@@ -3036,12 +3052,12 @@ RepositoryMap.prototype = {
                     visible = name.toLowerCase().includes(text);
                 }
                 if (visible) {
-                    marker.style.display = 'inline';
+                    marker.style.display = DISPLAY_INLINE;
                     if (marker.location)
                         bounds.extend(marker.location);
                     cnt++;
                 } else {
-                    marker.style.display = 'none';
+                    marker.style.display = DISPLAY_NONE;
                 }
                 if (visible)
                     block.show();
@@ -3085,9 +3101,9 @@ RepositoryMap.prototype = {
                     visible = name.toLowerCase().includes(text);
                 }
                 if (visible) {
-                    line.style.display = 'inline';
+                    line.style.display = DISPLAY_INLINE;
                 } else {
-                    line.style.display = 'none';
+                    line.style.display = DISPLAY_NONE;
                 }
             }
             this.lines.redraw();
@@ -3146,7 +3162,7 @@ RepositoryMap.prototype = {
 
 	this.setDragPanEnabled(this.params.enableDragPan);
 	if(this.params.scrollToZoom) {
-	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
+	    //	jqid(this.mapDivId+"_themap").attr('tabindex','1');
 	    const el = document.querySelector("#"+this.mapDivId+"_themap");
 	    this.checkedBaseLayerDiv = false;
 	    //A big hack. We want to not pass the wheel event up to the main
@@ -3349,7 +3365,7 @@ RepositoryMap.prototype = {
                 }
                 if (opacity < 0) opacity = 0;
                 else if (opacity > 1) opacity = 1;
-//		if(evt.key=='Shift') opacity = 0.1;
+		//		if(evt.key=='Shift') opacity = 0.1;
                 image.setOpacity(opacity);
             });
         }
@@ -3464,15 +3480,19 @@ RepositoryMap.prototype = {
     initLocationSearch:  function() {
         if (this.selectRegion) return;
         let _this = this;
-        let input = HtmlUtils.span([ATTR_STYLE, "padding-right:4px;",
-				    ATTR_ID, this.mapDivId + "_loc_search_wait"], "") +
-            HtmlUtils.checkbox(this.mapDivId + "_loc_bounds", ["title", "Search in map bounds"], false) + HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
-            HtmlUtils.input("", "", [ATTR_CLASS, "ramadda-map-loc-input", "title", "^string - matches beginning", "size", "30", "placeholder", "Search location", ATTR_ID, this.mapDivId + "_loc_search"])
-        $("#" + this.mapDivId + "_footer2").html(input);
-        let searchInput = $("#" + this.mapDivId + "_loc_search");
-        let bounds = $("#" + this.mapDivId + "_loc_bounds");
-        let searchPopup = $("#" + this.mapDivId + "_loc_popup");
-        let wait = $("#" + this.mapDivId + "_loc_search_wait");
+        let input = HU.span([ATTR_STYLE, HU.css(CSS_PADDING_RIGHT,HU.px(4)),
+			     ATTR_ID, this.mapDivId + "_loc_search_wait"], "") +
+            HU.checkbox(this.mapDivId + "_loc_bounds", [ATTR_TITLE, "Search in map bounds"], false) +
+	    HU.span([ATTR_TITLE, "Search in map bounds"], " In view ") +
+            HU.input("", "", [ATTR_CLASS, "ramadda-map-loc-input",
+			      ATTR_TITLE, "^string - matches beginning", "size", "30",
+			      ATTR_PLACEHOLDER, "Search location",
+			      ATTR_ID, this.mapDivId + "_loc_search"])
+        jqid(this.mapDivId + "_footer2").html(input);
+        let searchInput = jqid(this.mapDivId + "_loc_search");
+        let bounds = jqid(this.mapDivId + "_loc_bounds");
+        let searchPopup = jqid(this.mapDivId + "_loc_popup");
+        let wait = jqid(this.mapDivId + "_loc_search_wait");
         searchInput.blur(function(e) {
             setTimeout(function() {
                 wait.html("");
@@ -3495,7 +3515,7 @@ RepositoryMap.prototype = {
             if (keyCode != 13) {
                 return;
             }
-            wait.html(HtmlUtils.image(icon_wait));
+            wait.html(HU.image(icon_wait));
             let url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
             if (bounds.is(':checked')) {
                 let b = _this.transformProjBounds(_this.getMap().getExtent());
@@ -3503,7 +3523,8 @@ RepositoryMap.prototype = {
             }
             let jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
-                let result = HtmlUtils.openTag(TAG_DIV, [ATTR_STYLE, "max-height:400px;overflow-y:auto;"]);
+                let result = HU.openTag(TAG_DIV, [ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(400),
+								     CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
                 if (data.result.length == 0) {
                     wait.html("Nothing found");
                     return;
@@ -3514,15 +3535,21 @@ RepositoryMap.prototype = {
                         let icon = data.result[i].icon;
                         if (!icon)
                             icon = ramaddaCdn + "/icons/green-dot.png";
-                        result += HtmlUtils.div([ATTR_CLASS, "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
+                        result += HU.div([ATTR_CLASS, "ramadda-map-loc",
+					  ATTR_NAME, n,
+					  "icon", icon,
+					  "latitude", data.result[i].latitude,
+					  "longitude", data.result[i].longitude],
+					 HU.tag(TAG_IMG,[ATTR_WIDTH,16,ATTR_SRC,icon]) +' '  + data.result[i].name);
                     }
-                    result += HtmlUtils.div([ATTR_CLASS, "ramadda-map-loc", "name", "all"], "Show all");
+                    result += HU.div([ATTR_CLASS, "ramadda-map-loc",
+				      ATTR_NAME, "all"], "Show all");
                 }
                 let my = "left bottom";
                 let at = "left top";
-                result += HtmlUtils.closeTag(TAG_DIV);
+                result += HU.closeTag(TAG_DIV);
                 searchPopup.html(result);
-                HtmlUtils.setPopupObject(searchPopup);
+                HU.setPopupObject(searchPopup);
                 searchPopup.show();
                 searchPopup.position({
                     of: searchInput,
@@ -3532,7 +3559,7 @@ RepositoryMap.prototype = {
                 });
                 searchPopup.find(".ramadda-map-loc").click(function() {
                     searchPopup.hide();
-                    let name = $(this).attr("name");
+                    let name = $(this).attr(ATTR_NAME);
                     if (name == "all") {
                         _this.addAllLocationResults();
                         return;
@@ -3713,10 +3740,10 @@ RepositoryMap.prototype = {
         }
 	//The updateSize messes with map position
 	let center = this.map.getCenter();
-//	let zoom =  this.map.getZoom();
+	//	let zoom =  this.map.getZoom();
 	this.getMap().updateSize();
         this.getMap().setCenter(center);
-//	this.setZoom(zoom);
+	//	this.setZoom(zoom);
     },
 
     setSelectionBoxFromFields:  function(zoom) {
@@ -3812,8 +3839,8 @@ RepositoryMap.prototype = {
         if (!lon || !lat || lon == "" || lat == "")
             return;
         if (this.lonFldId != null) {
-            $("#" + this.lonFldId).val(MapUtils.formatLocationValue(lon));
-            $("#" + this.latFldId).val(MapUtils.formatLocationValue(lat));
+            jqid(this.lonFldId).val(MapUtils.formatLocationValue(lon));
+            jqid(this.latFldId).val(MapUtils.formatLocationValue(lat));
         }
 
 
@@ -4017,7 +4044,7 @@ RepositoryMap.prototype = {
 	    this.setFieldValues(lat,lon);
 	    if(this.selectionDialog) this.selectionDialog.hide()
 	},error=>{
-		console.error(error);
+	    console.error(error);
 	},options);	
     },
     selectionClear:  function() {
@@ -4287,9 +4314,9 @@ RepositoryMap.prototype = {
             let visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
             //            console.log("   visible:" + visible +" " + marker.ramaddaId + " " + marker.parentId);
             if (visible) {
-                marker.style.display = 'inline';
+                marker.style.display = DISPLAY_INLINE;
             } else {
-                marker.style.display = 'none';
+                marker.style.display = DISPLAY_NONE;
             }
             //            marker.display(visible);
         }
@@ -4303,9 +4330,9 @@ RepositoryMap.prototype = {
             let line = features[i];
             let visible = this.isLayerVisible(line.ramaddaId);
             if (visible) {
-                line.style.display = 'inline';
+                line.style.display = DISPLAY_INLINE;
             } else {
-                line.style.display = 'none';
+                line.style.display = DISPLAY_NONE;
             }
 
         }
@@ -4399,14 +4426,14 @@ RepositoryMap.prototype = {
 	this.hideLoadingImage();	
     },
     clearProgress: function(msg) {
-	$("#" + this.mapDivId+"_progress").hide();
+	jqid(this.mapDivId+"_progress").hide();
     },
     setProgress: function(msg) {
-	$("#" + this.mapDivId+"_progress").html(msg);
-	$("#" + this.mapDivId+"_progress").show();
+	jqid(this.mapDivId+"_progress").html(msg);
+	jqid(this.mapDivId+"_progress").show();
     },
     setLabel: function(msg) {
-	$("#" + this.mapDivId+"_label").html(msg);
+	jqid(this.mapDivId+"_label").html(msg);
     },	
     setCursor:  function(cursor) {
 	jqid(this.mapDivId+"_themap").css('cursor',cursor??'default');
@@ -4478,14 +4505,14 @@ RepositoryMap.prototype = {
 	    visible++;
             geometry = feature.geometry;
             if (geometry) {
-//		console.dir(feature.fid,this.transformProjBounds(geometry.getBounds()));
+		//		console.dir(feature.fid,this.transformProjBounds(geometry.getBounds()));
                 if (maxExtent === null) {
                     maxExtent = MapUtils.createBounds();
                 }
                 maxExtent.extend(geometry.getBounds());
             }
         }
-//	console.log('not visible:'+ notVisible +' visible:' + visible,   this.transformProjBounds(maxExtent));
+	//	console.log('not visible:'+ notVisible +' visible:' + visible,   this.transformProjBounds(maxExtent));
         return maxExtent;
     },
 
@@ -4515,7 +4542,7 @@ RepositoryMap.prototype = {
         if (text == null) return null;
         if (text.indexOf("base64:") == 0) {
             text = window.atob(text.substring(7)).trim();
-//	    console.log(text);
+	    //	    console.log(text);
             if (text.indexOf("{") == 0) {
                 props = JSON.parse(text);
                 text = props.text;
@@ -4693,7 +4720,7 @@ RepositoryMap.prototype = {
     },
 
     createPolygonFromString:function(id,s,polygonProps,latlon,text,justPoints) {
-//	s = "35.6895;139.6917;37.7749;-122.4194";
+	//	s = "35.6895;139.6917;37.7749;-122.4194";
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
@@ -4935,7 +4962,7 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
-        $("#" + this.params.displayDiv).html(text);
+        jqid(this.params.displayDiv).html(text);
     },
 
     hideFeatureText:  function(feature) {
@@ -5147,9 +5174,9 @@ RepositoryMap.prototype = {
 	this.polygonMap[id] = line;
         let visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {
-            line.style.display = 'inline';
+            line.style.display = DISPLAY_INLINE;
 	} else {
-            line.style.display = 'none';
+            line.style.display = DISPLAY_NONE;
         }
         return line;
     },
@@ -5236,21 +5263,21 @@ RepositoryMap.prototype = {
 	    //For some reason if we do this here then the browser hangs
 	    //	    if(location)this.setCenter(location);
 	    setTimeout(()=> {
-		let slider = $("#" +this.mapDivId+"_slider");
+		let slider = jqid(this.mapDivId+"_slider");
 		if(this.params.popupSliderRight) {
-		    slider.css("right","0px");
+		    slider.css(CSS_RIGHT,HU.px(0));
 		} else {
-		    slider.css("left","0px");
+		    slider.css(CSS_LEFT,HU.px(0));
 		}
 		slider.hide();
 		let width = HU.getDimension(this.params.popupWidth);
 		let contents = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,width,CSS_PADDING,HU.px(5))],
 				      HU.div([ATTR_ID,this.mapDivId+"_sliderclose",
-					      ATTR_CLASS,"ramadda-clickable"],
+					      ATTR_CLASS,CLASS_CLICKABLE],
 					     HU.getIconImage(ICON_CLOSE)) + markerText);
 		slider.html(contents);
 		slider.slideDown(800);
-		$("#" +this.mapDivId+"_sliderclose").click(()=>{
+		jqid(this.mapDivId+"_sliderclose").click(()=>{
 		    slider.slideUp();
 		});
 		//Wait a bit so the above setCenter can happen
@@ -5292,13 +5319,13 @@ RepositoryMap.prototype = {
 
 	//For now do this but we had the check for the clickListener here for some reason
 	//Sometime I need to clean up all of the click listening that goes no
-//	if(!Utils.isDefined(this.clickListener)) {
-	    //	    console.log("showMarkerPopup:" + this.clickListener);
-	    if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
-		if(debugPopup) console.log("\tfeatureSelectHandler returned true");
-		return;
-	    }
-//	}
+	//	if(!Utils.isDefined(this.clickListener)) {
+	//	    console.log("showMarkerPopup:" + this.clickListener);
+	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
+	    if(debugPopup) console.log("\tfeatureSelectHandler returned true");
+	    return;
+	}
+	//	}
 
         let id = marker.ramaddaId;
         if (!id)
@@ -5368,7 +5395,8 @@ RepositoryMap.prototype = {
         if (marker.locationKey != null) {
             let markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
-		let div = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),CSS_MARGIN_TOP,HU.px(8),
+		let div = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
+						    CSS_MARGIN_TOP,HU.px(8),
 						    CSS_MARGIN_BOTTOM,HU.px(8))]);
 		if(debugPopup)
 		    console.log('showMarkerPopup: seenMarkers:', markers.length);
@@ -5392,21 +5420,21 @@ RepositoryMap.prototype = {
 		textList.forEach((t,idx)=>{
 		    if(cols>1) {
 			if(idx%cols==0) {
-			    if(idx>0) markerText+='\n</div closerow>\n';
-			    markerText+='<div  class="row row-tight">\n';
+			    if(idx>0) markerText+=HU.close(TAG_DIV);
+			    markerText+=HU.open(TAG_DIV,[ATTR_CLASS,'row row-tight']);
 			}
 			let open = HU.open(TAG_DIV,[ATTR_CLASS, clazz,
-						  ATTR_STYLE,HU.css('padding-bottom','8px !important',
-								    'padding-right','8px !important',
-								    )]);
+						    ATTR_STYLE,HU.css(CSS_PADDING_BOTTOM,HU.important(HU.px(8)),
+								      CSS_PADDING_RIGHT,HU.important(HU.px(8)),
+								     )]);
 			markerText+=open;
 		    }
 		    markerText+=t;
 		    if(cols<=1)
 			markerText+=div;
-		    if(cols>1) markerText+='</div>\n';
+		    if(cols>1) markerText+=HU.close(TAG_DIV);
 		});
-		if(cols>1) markerText+='</div>\n';
+		if(cols>1) markerText+=HU.close(TAG_DIV);
             }
 	}
 	return markerText;
@@ -5453,7 +5481,7 @@ RepositoryMap.prototype = {
                     this.currentEntryMarker = marker;
                     let call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
                     let label = marker.entryLayer ? "Remove Layer" : "Load Layer";
-                    markerText = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markerText;
+                    markerText = HU.center(HU.onClick(call, label)) + markerText;
 		}
             }
 	    projPoint = this.transformLLPoint(location);
@@ -5476,7 +5504,8 @@ RepositoryMap.prototype = {
 
 
 	let uid = HU.getUniqueId("div");
-	let div = HU.div([ATTR_STYLE,'width:100%;',ATTR_ID,uid]);
+	let div = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
+			  ATTR_ID,uid]);
 	props.width = props.width??inputProps.minSizeX??this.params.popupWidth;
 	props.height = props.height??inputProps.minSizeY??this.params.popupHeight;	
         let popup = this.makePopup( projPoint,div,props);

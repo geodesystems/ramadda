@@ -24,9 +24,6 @@ var CreateType  = {
 	    HU.span([ATTR_ID,'clearcols'],'Clear'),
 	    HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'),
 	    HU.span([ATTR_ID,'textdownload'],'Download Text')]));
-
-
-
 	_this.currentColumn = null;
 	this.columns = [];
 	for(let i=0;i<COLUMNS_MAX_ROWS;i++) {
@@ -44,25 +41,30 @@ var CreateType  = {
 	    c.name.on('focus', function() {	    
 		_this.currentColumn=c;
 		_this.columns.forEach(c=>{
-		    c.name.css('background','#fff');
+		    c.name.css(CSS_BACKGROUND,COLOR_WHITE);
 		});
-		$(this).css('background','var(--color-mellow-yellow)');
+		$(this).css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW);
 	    });
 	});
 
 	let  popup =function(event,widget,c) {
 	    event.preventDefault();
 	    let html = '';
-	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-above'],'Insert rows above');
-	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-below'],'Insert rows below');
-	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','clear'],'Clear row');		
-	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','delete'],'Delete rows');		
+	    let clazz=HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE);
+	    html+=HU.div([ATTR_CLASS,clazz,
+			  ATTR_DATA_ACTION,'insert-above'],'Insert rows above');
+	    html+=HU.div([ATTR_CLASS,clazz,
+			  ATTR_DATA_ACTION,'insert-below'],'Insert rows below');
+	    html+=HU.div([ATTR_CLASS,clazz,
+			  ATTR_DATA_ACTION,'clear'],'Clear row');		
+	    html+=HU.div([ATTR_CLASS,clazz,
+			  ATTR_DATA_ACTION,'delete'],'Delete rows');		
 	    let dialog =  HU.makeDialog({anchor:widget,
 					 at:'left bottom',
 					 my:'left top',
 					 content:html});
-	    dialog.find('.ramadda-menu-item').click(function() {
-		let action = $(this).attr('data-action');
+	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
+		let action = $(this).attr(ATTR_DATA_ACTION);
 		_this.handleRowAction(c,action);
 		dialog.remove();
 	    });
@@ -101,19 +103,20 @@ var CreateType  = {
 	    let html = 'Enter columns, one per line. "name,label,type,extra"';
 	    html+=SPACE2+HU.checkbox('clearrows',[ATTR_ID,'clearrows'],true,'Clear all rows');
 	    if(_this.currentColumn) {
-		html+='<br>'+HU.checkbox('insertabove',[ATTR_ID,'insertabove'],false,'Insert above selected row' +' ' + _this.currentColumn.name.val());
+		html+=HU.br()+HU.checkbox('insertabove',[ATTR_ID,'insertabove'],
+					  false,'Insert above selected row' +' ' + _this.currentColumn.name.val());
 	    }
 
-	    html+='<br>';
-	    let buttonList = [HU.div([ATTR_ACTION,'ok',
-				      ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],
+	    html+=HU.br();
+	    let buttonList = [HU.div([ATTR_ACTION,ACTION_OK,
+				      ATTR_CLASS,HU.classes(CLASS_BUTTON, CLASS_CLICKABLE)],
 				     "Load"),
-			      HU.div(['action','cancel',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],"Cancel")]
+			      HU.div([ATTR_ACTION,ACTION_CANCEL,ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL)]
 
 	    let buttons = HU.buttons(buttonList);
 	    html+=HU.textarea(ID_CT_BULKTEXT,'',[ATTR_ID,ID_CT_BULKTEXT,'rows',10,'cols',60]);
 	    html+=buttons;
-	    html = HU.div([ATTR_STYLE,HU.css('min-width','600px'),
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600)),
 			   ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(this),
 					 at:'left+100 top+100',
@@ -123,8 +126,8 @@ var CreateType  = {
 					 header:true,
 					 draggable:true});
 	    jqid(ID_CT_BULKTEXT).focus();
-	    dialog.find('.ramadda-button').button().click(function() {
-		if($(this).attr('action')=='ok') {
+	    dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function() {
+		if($(this).attr(ATTR_ACTION)==ACTION_OK) {
 		    if(jqid('clearrows').is(':checked')) {
 			_this.clearColumns();
 		    }

@@ -229,7 +229,7 @@ $.extend(Utils,{
 
 
         if(!options.showColorTableDots) {
-            html+= HU.open(TAG_TABLE,['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
+            html+= HU.open(TAG_TABLE,[ATTR_CELLPADDING,0,ATTR_CELLSPACING,0,ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]);
             html +='<tr>';
         }
         let formatter = n=>{
@@ -283,11 +283,11 @@ $.extend(Utils,{
 		if(options.dotWidth) dotStyle+=HU.css(CSS_WIDTH,HU.getDimension(options.dotWidth),
 						      CSS_HEIGHT,HU.getDimension(options.dotWidth));
 		if(options.tooltips) {
-                    html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
+                    html += HU.div(['label',label,ATTR_DATA_VALUE,val,'style','width:100%;display:inline-block;',
 				    ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label],
-				   HU.div([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]) + delim + label);
+				   HU.div([ATTR_DATA_VALUE,val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]) + delim + label);
 		} else {
-		    let dot = HU.span([ "data-value",val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]);
+		    let dot = HU.span([ATTR_DATA_VALUE,val,ATTR_CLASS, "display-colortable-dot", ATTR_STYLE, dotStyle]);
 		    let item;
 		    if(!options.horizontal) {
 //			item = HU.hbox([dot, SPACE, label]);
@@ -329,7 +329,7 @@ $.extend(Utils,{
 		labelStyle+=options.labelStyle;
             }
             if(options.horizontal) {
-                html += HU.td(["data-value",val,
+                html += HU.td([ATTR_DATA_VALUE,val,
 			       title?ATTR_TITLE:'nulltitle',title??'',
 			       ATTR_CLASS, "display-colortable-slice",	
 			       ATTR_STYLE, HU.css(CSS_MIN_WIDTH,HU.px(1),
@@ -340,7 +340,8 @@ $.extend(Utils,{
 	    } else {
 		attrs.push(ATTR_STYLE);
 		attrs.push(labelStyle);
-                html += HU.div(["data-value",val,ATTR_CLASS, "display-colortable-slice",
+                html += HU.div([ATTR_DATA_VALUE,val,
+				ATTR_CLASS, "display-colortable-slice",
 				ATTR_STYLE, HU.css(CSS_BACKGROUND,ct[i])],
 			       HU.div(attrs, label||""));
 	    }

@@ -1844,11 +1844,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    HU.input('',this.osm.limit??'100',
 					     [ATTR_ID,this.domId('osmlimit'),ATTR_SIZE,10]));	    
 	    html += HU.formTableClose();	    
-	    let buttons =Utils.join([HU.div([ATTR_CLASS,'ramadda-button-ok ramadda-button'], 'Search'),
-				     HU.div([ATTR_CLASS,'ramadda-button-clear ramadda-button'], 'Clear Markers'),
-				     HU.div([ATTR_CLASS,'ramadda-button-add ramadda-button',
+	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes('ramadda-button-ok',CLASS_BUTTON)], 'Search'),
+				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_BUTTON)], 'Clear Markers'),
+				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-add',CLASS_BUTTON),
 					     ATTR_TITLE,'Add markers as glyphs'], 'Add'),
-				     HU.div([ATTR_CLASS,'ramadda-button-cancel ramadda-button'], 'Close')],
+				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-cancel',CLASS_BUTTON)], 'Close')],
 				    SPACE1);
 
 	    html+=HU.vspace();
@@ -2023,7 +2023,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				     ATTR_TITLE,'Go back'],HU.getIconImage('fas fa-rotate-left'));
 
 		let top = back +' ' + plus+' '+HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-									       CSS_OVERFLOW,'none'),
+									       CSS_OVERFLOW,OVERFLOW_NONE),
 							     ATTR_ID,this.domId('stac_url')],stacLinks,current,100);
 		top = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ddd'),
 						CSS_PADDING_BOTTOM,HU.px(6),
@@ -2302,7 +2302,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    ATTR_CLASS,CLASS_CLICKABLE,
 				    ATTR_TITLE,'Add a Data Cube server URL'],HU.getIconImage('fas fa-plus'));
 		let top =plus +' ' +HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-								    CSS_OVERFLOW_X,'none'),
+								    CSS_OVERFLOW_X,OVERFLOW_NONE),
 						  ATTR_ID,this.domId('datacube_url')],datacubeLinks,current,100);
 		top = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ddd'),
 						CSS_PADDING_BOTTOM,HU.px(6),
@@ -2516,7 +2516,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!dom) return;
 	    let _this = this;
 	    //init any buttons
-	    dom.find('.ramadda-button').button();
+	    dom.find(HU.dotClass(CLASS_BUTTON)).button();
 
 	    dom.find('[' + ATTR_BUTTON_COMMAND +']').click(function(event) {
 		event.preventDefault();
@@ -3258,14 +3258,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			    /*
 			      widget +=  HU.span([ATTR_TITLE,'Show color chooser',
-			      ATTR_CLASS,'ramadda-clickable ramadda-imdv-color-select','baseid',domId,
+			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-color-select'),'baseid',domId,
 			      ID,domId+'_select'],HU.getIconImage('fas fa-palette'));
 			    */
 			    
 			    /*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot',
 						    ATTR_STYLE,HU.css(CSS_BACKGROUND,Utils.stringDefined(v)?v:COLOR_TRANSPARENT)]) +
 						    HU.space(2)+widget;
-						    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr([ATTR_VALIGN,'top'],HU.tds([],[widget,bar])));
+						    //			    widget  = HU.table([ATTR_CELLPADDING,'0',ATTR_CELLSPACING,'0'],HU.tr([ATTR_VALIGN,'top'],HU.tds([],[widget,bar])));
 						    */
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
@@ -3381,11 +3381,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),
 			ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(110),
 					  CSS_MARGIN_TOP,HU.px(10),
-					  CSS_POSITION,'relative',CSS_WIDTH,width)]);
+					  CSS_POSITION,POSITION_RELATIVE,
+					  CSS_WIDTH,width)]);
 
 	    let clear = HU.span([ATTR_TITLE,'Clear range values',
 				 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10)),
-				 ATTR_CLASS,'ramadda-clickable',
+				 ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_ID,this.domId(ID_LEVEL_RANGE_CLEAR)],
 				HU.getIconImage('fas fa-delete-left'));
 	    slider= HU.hbox([slider,clear]);
@@ -3403,7 +3404,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
 						      CSS_BOTTOM,HU.px(0)),
 				    ATTR_WIDTH,HU.px(120)]);	    
-	    let container = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_POSITION,'relative')],
+	    let container = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						      CSS_POSITION,POSITION_RELATIVE)],
 				   slider +tick+sample1+sample2);
 
 
@@ -3660,7 +3662,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
 		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),
-				       ATTR_STYLE,HU.css(CSS_POSITION,'relative',
+				       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,
 							 CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							 CSS_BACKGROUND,COLOR_LIGHT_GRAY)],
 				      HU.image(mapGlyph.style.imageUrl,
@@ -4683,7 +4685,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					['data-level',level.value,
 					 ATTR_TITLE,'Level:' + level.value,
 					 ATTR_WIDTH,HU.px(100),
-					 ATTR_CLASS,'ramadda-clickable']));
+					 ATTR_CLASS,CLASS_CLICKABLE]));
 		});
 		zoomPopup=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
 						    CSS_MAX_HEIGHT,HU.px(300),
@@ -4695,7 +4697,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						 [ATTR_TITLE,'Click to select level',
 						  ATTR_ID,_this.domId('choose_zoom_image'),
 						  ATTR_WIDTH,HU.px(100),
-						  ATTR_CLASS,'ramadda-clickable']));
+						  ATTR_CLASS,CLASS_CLICKABLE]));
 		html+=HU.formEntryLabel('Zoom Level',zoomButton);
 		html+=HU.formTableClose();
 		let buttons =HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply') + SPACE2 +
@@ -4710,7 +4712,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(zoomDialog) zoomDialog.remove();
 		    zoomDialog =HU.makeDialog({content:zoomPopup,anchor:$(this),header:true,
 					       title:SPACE2+'Select Zoom Level'});
-		    zoomDialog.find('.ramadda-clickable').click(function() {
+		    zoomDialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 			let zoom  = $(this).attr('data-level');
 			_this.jq('choose_zoom_value').val(zoom);
 			_this.jq('choose_zoom_image').attr(ATTR_SRC,$(this).attr(ATTR_SRC));
@@ -5232,7 +5234,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(this.mapLegendToggleId) {
 			    if(Utils.isDefined(this.getMapProperty('mapLegendOpen'))) {
 				if(!this.getMapProperty('mapLegendOpen')) {
-				    $("#" + this.mapLegendToggleId).css(CSS_DISPLAY,'none');
+				    $("#" + this.mapLegendToggleId).css(CSS_DISPLAY,DISPLAY_NONE);
 				}
 			    }
 			}
@@ -6049,10 +6051,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.createMapLegendWrapper();
 
 	    let legendLeft = HU.div([ATTR_ID,this.domId(ID_LEGEND_LEFT),
-				     ATTR_STYLE,HU.css(CSS_DISPLAY,'none')]);
+				     ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)]);
 	    this.jq(ID_LEFT).html(legendLeft);
 	    let legendRight = HU.div([ATTR_ID,this.domId(ID_LEGEND_RIGHT),
-				      ATTR_STYLE,HU.css(CSS_DISPLAY,'none')]);
+				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)]);
 	    this.jq(ID_RIGHT).html(legendRight);	    
 
 	    this.jq(ID_HEADER0).append(HU.div([ATTR_ID,this.domId('topwikitext')]));
@@ -6253,7 +6255,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    menuBar = HU.div([ATTR_CLASS,'ramadda-menubar'], menuBar);
 
 	    let address =
-		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,'relative')], 
+		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)], 
 			HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				ATTR_ID,this.domId(ID_ADDRESS_CLEAR),
 				ATTR_TITLE,'Clear',
@@ -6276,7 +6278,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						     ATTR_TITLE,'Add marker to map'],false);
 	    }
 	    address=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))], address);
-	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',CSS_DISPLAY,'none',CSS_POSITION,'relative'),
+	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+						CSS_DISPLAY,DISPLAY_NONE,
+						CSS_POSITION,POSITION_RELATIVE),
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
 	    
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),
@@ -6361,18 +6365,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
 		start:function() {
-		    //		    inner.attr(ATTR_STYLE,'position:absolute;');
+		    //inner.attr(ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE));
 		},
 		stop:function() {
 		    let top = inner.position().top;
 		    if(top<0) {
-			inner.css(CSS_TOP,'0');
+			inner.css(CSS_TOP,0);
 			top=0;
 		    }
 
 		    let left = inner.position().left;		    
 		    if(left<0) {
-			inner.css(CSS_LEFT,'0');
+			inner.css(CSS_LEFT,0);
 			left = 0;
 		    }
 

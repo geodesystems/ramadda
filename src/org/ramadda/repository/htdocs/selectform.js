@@ -224,10 +224,10 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         //        this.totalSize
         var btns = $(':input[id*=\"' + this.id + '_do_\"]');
         if (hasSelectedEntries) {
-            //btns.removeAttr('disabled').removeClass( 'ui-state-disabled' );
+            //btns.removeAttr(ATTR_DISABLED).removeClass( 'ui-state-disabled' );
             btns.show();
         } else {
-            //btns.attr('disabled', 'disabled' ).addClass( 'ui-state-disabled' );
+            //btns.attr(ATTR_DISABLED, 'disabled' ).addClass( 'ui-state-disabled' );
             btns.hide();
         }
     }
