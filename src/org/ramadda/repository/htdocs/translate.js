@@ -11,19 +11,22 @@ var Translate = {
 	let switchPrefix = icon +HU.space(1);
 
 	let menu = HU.span([ATTR_TITLE,'Change language',
-			    ATTR_CLASS,CLASS_CLICKABLE+' ramadda-page-link',
+			    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-page-link'),
 			    ATTR_ID,'ramadda_language_menu'],icon);
 	menu = $(menu).appendTo(jqid('ramadda_links_prefix'));
 	
 	menu.click(()=>{
 	    let html = '';
 	    html+= HU.div([ATTR_TITLE,'Clear language',
-			   ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],switchPrefix+'Clear');
+			   ATTR_CLASS,
+			   HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			  switchPrefix+'Clear');
 
 	    ramaddaLanguages.forEach(lang=>{
 		html+= HU.div(['data-language',lang.id,
 			       ATTR_TITLE,'Switch language',
-			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],switchPrefix+lang.label);
+			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			      switchPrefix+lang.label);
 	    });
 	    html = HU.div([],html);
 	    if(this.menuPopup)
@@ -88,7 +91,8 @@ var Translate = {
 		let searchId  = HU.getUniqueId('search');
 		let html = HU.div([ATTR_ID,searchId]);
 		html +=HU.open(TAG_TABLE);
-		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400))],[HU.b('English'),HU.b('Translated')]));
+		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400))],
+				      [HU.b('English'),HU.b('Translated')]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
 		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
@@ -122,13 +126,15 @@ var Translate = {
 		if(lang.id!= langId) return;
 		html+= HU.span(['data-language',lang.id,
 				ATTR_TITLE,'Switch language',
-				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],lang.label);
+				ATTR_CLASS,
+				HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],lang.label);
 		cnt++;
 	    })});
 	if(addDownload) {
 	    Translate.downloadMode= true;
 	    html+= HU.span(['data-language','showmissing',
-			    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],'Download missing');
+			    ATTR_CLASS,
+			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],'Download missing');
 	}
 
 	html+=HU.close(TAG_DIV);

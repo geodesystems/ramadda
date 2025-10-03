@@ -96,7 +96,8 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 lbl = lbl.substring(0, 25) + "...";
             }
             if (lbl.trim() != "") {
-                lbl = HU.span([ATTR_ID, id, ATTR_CLASS, "ramadda-tag-box"],
+                lbl = HU.span([ATTR_ID, id,
+			       ATTR_CLASS, "ramadda-tag-box"],
 			      SPACE2 + lbl + SPACE2);
             }
             this.jq(fieldId).html(lbl);
@@ -269,17 +270,17 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var labels = this.columnLabels != null ? this.columnLabels : ["Field 1", "Field 2"];
             rows.splice(0, 0, labels);
             /*
-            for(var rowIdx=0;rowIdx<rows.length;rowIdx++) {
-                var cols = rows[rowIdx];
-                var s = "";
-                for(var colIdx=0;colIdx<cols.length;colIdx++) {
-                    if(colIdx>0)
-                        s += ", ";
-                    s += "'" +cols[colIdx]+"'" + " (" + (typeof cols[colIdx]) +")";
-                }
-                console.log(s);
-                if(rowIdx>5) break;
-            }
+              for(var rowIdx=0;rowIdx<rows.length;rowIdx++) {
+              var cols = rows[rowIdx];
+              var s = "";
+              for(var colIdx=0;colIdx<cols.length;colIdx++) {
+              if(colIdx>0)
+              s += ", ";
+              s += "'" +cols[colIdx]+"'" + " (" + (typeof cols[colIdx]) +")";
+              }
+              console.log(s);
+              if(rowIdx>5) break;
+              }
             */
 
             var dataTable = google.visualization.arrayToDataTable(rows);
@@ -399,8 +400,9 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var buttons = "";
             for (var sheetIdx = 0; sheetIdx < this.sheets.length; sheetIdx++) {
                 var id = this.getDomId("sheet_" + sheetIdx);
-                buttons += HU.div([ATTR_ID, id, ATTR_CLASS, "ramadda-xls-button-sheet"],
-                    this.sheets[sheetIdx].name);
+                buttons += HU.div([ATTR_ID, id,
+				   ATTR_CLASS, "ramadda-xls-button-sheet"],
+				  this.sheets[sheetIdx].name);
 
                 buttons += "\n";
             }
@@ -428,11 +430,13 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             var style = "";
             if (tableWidth != "") {
-                style += " width:" + tableWidth + ";";
+                style += HU.css(CSS_WIDTH,tableWidth);
             }
-            style += " height: " + tableHeight + ";";
-            style += " overflow: auto;";
-            tableHtml += HU.td([], HU.div([ATTR_ID, this.getDomId(ID_TABLE), ATTR_CLASS, "ramadda-xls-table", ATTR_STYLE, style]));
+            style += HU.css(CSS_HEIGHT,tableHeight);
+            style += HU.css(CSS_OVERFLOW,OVERFLOW_AUTO);
+            tableHtml += HU.td([], HU.div([ATTR_ID, this.getDomId(ID_TABLE),
+					   ATTR_CLASS, "ramadda-xls-table",
+					   ATTR_STYLE, style]));
 
 
             tableHtml += HU.close(TAG_TR,TAG_TABLE);
@@ -440,12 +444,14 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var chartToolbar = "";
             var chartTypes = ["barchart", "linechart", "scatterplot"];
             for (var i = 0; i < chartTypes.length; i++) {
-                chartToolbar += HU.div([ATTR_ID, makeChartId + "-" + chartTypes[i], ATTR_CLASS, "ramadda-xls-button"], "Make " + chartTypes[i]);
+                chartToolbar += HU.div([ATTR_ID, makeChartId + "-" + chartTypes[i],
+					ATTR_CLASS, "ramadda-xls-button"], "Make " + chartTypes[i]);
                 chartToolbar += SPACE;
             }
 
             chartToolbar += SPACE;
-            chartToolbar += HU.div([ATTR_ID, this.getDomId("removechart"), ATTR_CLASS, "ramadda-xls-button"], "Clear Charts");
+            chartToolbar += HU.div([ATTR_ID, this.getDomId("removechart"),
+				    ATTR_CLASS, "ramadda-xls-button"], "Clear Charts");
 
 
             chartToolbar += HU.p();
@@ -453,9 +459,9 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             chartToolbar += "Fields: ";
             chartToolbar += "<input type=radio checked name=\"param\" id=\"" + this.getDomId("params-yaxis-select") + "\"> y-axis:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-yaxis-label"),
-			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
-						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
+			ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
+					   CSS_MIN_WIDTH,HU.em(10),
+					   CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-xaxis-select") + "\"> x-axis:&nbsp;" +
@@ -467,17 +473,17 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             chartToolbar += SPACE3;
             chartToolbar += "<input type=radio  name=\"param\" id=\"" + this.getDomId("params-group-select") + "\"> group:&nbsp;" +
                 HU.div([ATTR_ID, this.getDomId("params-group-label"),
-			       ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
-						  CSS_MIN_WIDTH,HU.em(10),
-						  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
+			ATTR_STYLE, HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY,'dotted'),
+					   CSS_MIN_WIDTH,HU.em(10),
+					   CSS_DISPLAY,DISPLAY_INLINE_BLOCK)], "");
 
             chartToolbar += HU.close(TAG_FORM);
 
             if (this.getProperty("showSearch", true)) {
                 var results = HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-					     ATTR_ID, this.getDomId(ID_RESULTS)], "");
+				      ATTR_ID, this.getDomId(ID_RESULTS)], "");
                 var download = HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-					      ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
+				       ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
                 var searchDiv = HU.div([ATTR_ID, this.getDomId(ID_SEARCH_DIV), ATTR_CLASS, "ramadda-xls-search-form"]);
 
 
@@ -490,7 +496,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
                 search += HU.openTag(TAG_DIV, [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA), ATTR_CLASS, "ramadda-xls-search-extra"], "");
                 if (this.columns) {
-                    var extra = HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable"]);
+                    var extra = HU.openTag(TAG_TABLE, [ATTR_CLASS, CLASS_FORMTABLE]);
                     for (var i = 0; i < this.columns.length; i++) {
                         var col = this.columns[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
@@ -503,7 +509,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
 
                 if (this.searchFields) {
-                    var extra = HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable"]);
+                    var extra = HU.openTag(TAG_TABLE, [ATTR_CLASS, CLASS_FORMTABLE]);
                     for (var i = 0; i < this.searchFields.length; i++) {
                         var col = this.searchFields[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
@@ -592,7 +598,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 icon = icon_information;
             }
             var html = HU.hbox([HU.image(icon, [ATTR_ALIGN, "left"]),
-                HU.inset(msg, 10, 10, 5, 10)]);
+				HU.inset(msg, 10, 10, 5, 10)]);
             html = HU.div([ATTR_CLASS, "note"], html);
             this.jq(ID_TABLE_HOLDER).html(html);
         },
@@ -660,11 +666,11 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 			this.handleError("Error:" + exc, exc);
 		    }
                 })
-                .fail(function(jqxhr, textStatus, error) {
-                    var err = textStatus + ", " + error;
-                    _this.displayMessage("An error occurred: " + error);
-                    console.log("JSON error:" + err);
-                });
+                    .fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			_this.displayMessage("An error occurred: " + error);
+			console.log("JSON error:" + err);
+                    });
 	    }
 	    load();
 	}

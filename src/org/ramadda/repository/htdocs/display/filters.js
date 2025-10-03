@@ -243,7 +243,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let values=null;
 	    let matchers =[];
 	    if(this.ops) {
-		let v = $("#" + this.getFilterId(this.getId())).val();
+		let v = jqid(this.getFilterId(this.getId())).val();
 		if(v==FILTER_ALL) {
 		    this.mySearch = null;
 		    return;
@@ -253,8 +253,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		};
 		return;
 	    } else  if(this.isFieldNumeric()) {
-		let minField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_min"));
-		let maxField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_max"));
+		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
+		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
 		if(!minField.val() || !maxField.val()) return;
 		let minValue = parseFloat(minField.val().trim());
 		let maxValue = parseFloat(maxField.val().trim());
@@ -264,8 +264,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [minValue,maxValue];
 		}
  	    } else if(this.isFieldDate()){
-		let date1 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date_from")).val();
-		let date2 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date_to")).val();
+		let date1 = jqid(this.display.getDomId("filterby_" + this.getId()+"_date_from")).val();
+		let date2 = jqid(this.display.getDomId("filterby_" + this.getId()+"_date_to")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
@@ -426,7 +426,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    return this.selectedTags ||[];
 		}
 	    }
-	    let element =$("#" + this.display.getDomId("filterby_" + this.getId()));
+	    let element =jqid(this.display.getDomId("filterby_" + this.getId()));
 	    let value=null;
 	    if(element.attr("isCheckbox")) {
 		if(element.is(':checked')) {
@@ -472,7 +472,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    else
 			bar= this.display.jq(ID_TAGBAR);
 		    tagGroup = $(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-					 ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
+					 ATTR_CLASS,"tag-group",
+					 "tag-type",this.getFilterId()])).appendTo(bar);
 		}
 		
 		let tag = $(HU.div([ATTR_METADATA_TYPE,type,
@@ -491,7 +492,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		});
 	    } else {
 		this.selectedTags = Utils.removeElement(this.selectedTags,value);
-		$("#" + tagId).remove();
+		jqid(tagId).remove();
 	    }
 	    if(propagateEvent && this.inputFunc) {
 		this.inputFunc(this.fakeInput,null,this.selectedTags);
@@ -513,7 +514,7 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",this.getProperty('filterLive',false))) {
 		let widgetId = this.getFilterId(this.getId());
-		let widget = $("#" + widgetId);
+		let widget = jqid(widgetId);
 		if(widget.length) {
 		    widget.keyup(function() {
 			inputFunc($(this),null,$(this).val());
@@ -540,7 +541,7 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
 		let widgetId = this.getFilterId(this.getId());
-		let widget = $("#" + widgetId);
+		let widget = jqid(widgetId);
 		if(widget.length) {
 		    widget.keyup(function(e) {
 			if(_this.suggestDialog)
@@ -632,7 +633,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    processDateSelect($(this).val());
 		});
 	    }
-	    //	HU.initSelect($("#" + this.widgetId));
+	    //	HU.initSelect(jqid(this.widgetId));
 	    if(this.tagCbxs) {
 		let _this = this;
 		let cbxChange = function() {
@@ -642,8 +643,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    _this.toggleTag(value,on,cbx,true);
 		}
 		let clickId = this.getFilterId()+"_popup";
-		$("#" + clickId).click(()=>{
-		    let dialog = this.display.createTagDialog(this.tagCbxs, $("#" + clickId), cbxChange, this.getFilterId(),this.getLabel());
+		jqid(clickId).click(()=>{
+		    let dialog = this.display.createTagDialog(this.tagCbxs,
+							      jqid(clickId), cbxChange, this.getFilterId(),this.getLabel());
 		    dialog.find(".metadata-cbx").each(function() {
 			let value = $(this).attr(ATTR_METADATA_VALUE);
 			$(this).prop('checked',_this.selectedTags.includes(value));
@@ -657,7 +659,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		for(let i=0;i<this.dateIds.length;i++) {
 		    let id = this.dateIds[i];
 		    HU.datePickerInit(id);
-		    $("#" + id).change(function(){
+		    jqid(id).change(function(){
 			inputFunc($(this));
 		    });
 		}
@@ -689,7 +691,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let tmp = [];
 	    enums.forEach(e=>tmp.push(e.value));
 	    this.display.ignoreFilterChange = true;
-	    let widget = $("#" + widgetId);
+	    let widget = jqid(widgetId);
 	    let val = widget.val();
 	    if(!val) val  = 	widget.attr(ATTR_DATA_VALUE);
 	    widget.html(HU.makeOptions(tmp,val));
@@ -701,7 +703,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let type  = this.getFilterId();
 		    this.selectedTags.forEach(value=>{
 			let tagId = Utils.makeId(type +"_" +  value);	
-			$("#" + tagId).remove();
+			jqid(tagId).remove();
 		    });
 		}
 		this.selectedTags = [];
@@ -738,7 +740,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 
 
-	    let widget = $("#"+id);
+	    let widget = jqid(id);
 	    if(widget.attr("isCheckbox")) {
 		let on = widget.attr("onValue");
 		widget.prop('checked',prop.value.includes(on));
@@ -747,7 +749,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	    widget.attr(ATTR_DATA_VALUE,prop.value);
 	    if(widget.attr("isButton")) {
-		widget.find(".display-filter-button").removeClass("display-filter-button-selected");
+		widget.find(HU.dotClass('display-filter-button')).removeClass("display-filter-button-selected");
 		widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
 	    }
 	},
@@ -789,10 +791,14 @@ function RecordFilter(display,filterFieldId, properties) {
 		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
-		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,ATTR_FIELDID,this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle,
+			    ATTR_ID,widgetId,
+			    ATTR_FIELDID,this.getId()];
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(this.isFieldBoolean()) {
-		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,ATTR_FIELDID,this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle,
+			    ATTR_ID,widgetId,
+			    ATTR_FIELDID,this.getId()];
 		let filterValues = this.getProperty(this.getId()+".filterValues");
                 let enums = [];
 		let allName = this.getProperty(this.getId() +".allName","-");
@@ -814,10 +820,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValue = this.defaultValue = filterValue?filterValue:
 		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
-		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,ATTR_FIELDID,this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle,
+			    ATTR_ID,widgetId,
+			    ATTR_FIELDID,this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
-		    attrs.push(ATTR_MULTIPLE);
-		    attrs.push("");
+		    attrs.push(ATTR_MULTIPLE,'');
 		    attrs.push(ATTR_SIZE);
 		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize",
 						this.getProperty('filterMultipleSize','3')));
@@ -840,16 +847,13 @@ function RecordFilter(display,filterFieldId, properties) {
 			let w = this.getProperty(this.getId() +".filterImageWidth");
 			let h = this.getProperty(this.getId() +".filterImageHeight");
 			if(h) {
-			    imageAttrs.push(ATTR_HEIGHT);
-			    imageAttrs.push(h);
+			    imageAttrs.push(ATTR_HEIGHT,h);
 			}
 			if(w) {
-			    imageAttrs.push(ATTR_WIDTH);
-			    imageAttrs.push(w);
+			    imageAttrs.push(ATTR_WIDTH,w);
 			}
 			if(!h && !w) {
-			    imageAttrs.push(ATTR_WIDTH);
-			    imageAttrs.push("50");
+			    imageAttrs.push(ATTR_WIDTH,50);
 			}
 			
 			imageAttrs.push(ATTR_STYLE);
@@ -888,17 +892,24 @@ function RecordFilter(display,filterFieldId, properties) {
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HU.div([ATTR_FIELDID,this.getId(),ATTR_CLASS,clazz,
+				buttons+=HU.div([ATTR_FIELDID,this.getId(),
+						 ATTR_CLASS,clazz,
 						 ATTR_STYLE,style,
-						 ATTR_DATA_VALUE,v,ATTR_TITLE,label],
+						 ATTR_DATA_VALUE,v,
+						 ATTR_TITLE,label],
 						HU.image(image,imageAttrs));
 			    } else {
-				buttons+=HU.div([ATTR_FIELDID,this.getId(),ATTR_CLASS,clazz,
-						 ATTR_STYLE,style,ATTR_DATA_VALUE,v,ATTR_TITLE,label],label);
+				buttons+=HU.div([ATTR_FIELDID,this.getId(),
+						 ATTR_CLASS,clazz,
+						 ATTR_STYLE,style,
+						 ATTR_DATA_VALUE,v,
+						 ATTR_TITLE,label],label);
 			    }
 			} else {
-			    buttons+=HU.div([ATTR_FIELDID,this.getId(),ATTR_CLASS,clazz,
-					     ATTR_STYLE,style,ATTR_DATA_VALUE,v],label);
+			    buttons+=HU.div([ATTR_FIELDID,this.getId(),
+					     ATTR_CLASS,clazz,
+					     ATTR_STYLE,style,
+					     ATTR_DATA_VALUE,v],label);
 			}
 			buttons+="\n";
 		    }
@@ -909,9 +920,11 @@ function RecordFilter(display,filterFieldId, properties) {
 					 ATTR_ID,this.display.getDomId("filterby_" + this.getId() +"_label")],SPACE);
 		    }
 		    bottom[0]+= this.prefix + 
-			HU.div([ATTR_DATA_VALUE,dfltValue,ATTR_CLASS,"display-filter-items",
-				ATTR_ID,widgetId,"isButton","true", ATTR_FIELDID,
-				this.getId()], buttons);
+			HU.div([ATTR_DATA_VALUE,dfltValue,
+				ATTR_CLASS,"display-filter-items",
+				ATTR_ID,widgetId,
+				"isButton","true",
+				ATTR_FIELDID,this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
 		} else if(this.getProperty(this.getId() +".filterCheckbox")) {
@@ -957,7 +970,8 @@ function RecordFilter(display,filterFieldId, properties) {
 						  ATTR_METADATA_VALUE,value],false) +" " +
 			    HU.tag(TAG_LABEL,  [ATTR_CLASS,HU.classes('ramadda-noselect',CLASS_CLICKABLE),
 						ATTR_FOR,cbxId],label);
-			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
+			cbx = HU.span([ATTR_CLASS,'display-search-tag',
+				       ATTR_TAG,label,
 				       ATTR_STYLE,  HU.css(CSS_BACKGROUND, Utils.getEnumColor(this.getFieldId()))], cbx);
 			cbxs.push(cbx);
 		    }); 
@@ -1032,21 +1046,24 @@ function RecordFilter(display,filterFieldId, properties) {
 		maxStyle+=HU.css(CSS_WIDTH,size);
                 widget = HU.input('',dfltValueMin,[ATTR_STYLE,minStyle,'data-type',this.getFieldType(),
 						   ATTR_DATA_MIN,min,
-						   ATTR_CLASS,'display-filter-range display-filter-input',
+						   ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
 						   ATTR_ID,widgetId+'_min',
-						   'fieldId',this.getId()]);
+						   ATTR_FIELDID,this.getId()]);
 		widget += '-';
                 widget += HU.input('',dfltValueMax,[ATTR_STYLE,maxStyle,'data-type',this.getFieldType(),
 						    ATTR_DATA_MAX,max,
-						    ATTR_CLASS,'display-filter-range display-filter-input',
-						    ATTR_ID,widgetId+'_max','fieldId',this.getId()]);
+						    ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
+						    ATTR_ID,widgetId+'_max',
+						    ATTR_FIELDID,this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
                 widget =HU.datePicker('','',[ATTR_CLASS,'display-filter-input',
 					     ATTR_STYLE,widgetStyle,
-					     ATTR_ID,widgetId+'_date_from','fieldId',this.getId()]) +'-' +
+					     ATTR_ID,widgetId+'_date_from',
+					     ATTR_FIELDID,this.getId()]) +'-' +
 		    HU.datePicker('','',[ATTR_CLASS,'display-filter-input',
 					 ATTR_STYLE,widgetStyle,
-					 ATTR_ID,widgetId+'_date_to','fieldId',this.getId()]);
+					 ATTR_ID,widgetId+'_date_to',
+					 ATTR_FIELDID,this.getId()]);
 		this.dateIds.push(widgetId+'_date_from');
 		this.dateIds.push(widgetId+'_date_to');
 
@@ -1072,7 +1089,8 @@ function RecordFilter(display,filterFieldId, properties) {
 					HU.radioGroup(name, selects));
 		    } else {
 			selects = Utils.mergeLists([{value:'',label:'Select date'}],selects);
-			select= HU.select('',[ATTR_ID,widgetId+'_date_select','ignore',true],selects);
+			select= HU.select('',[ATTR_ID,widgetId+'_date_select',
+					      'ignore',true],selects);
 		    }
 		    if(labelVertical)
 			widget += select;
@@ -1085,17 +1103,17 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValue = this.getPropertyFromUrl('fv',filterValues);
 		let width = this.getProperty(this.getId() +".filterWidth",HU.px(150));		
 		let attrs =[ATTR_STYLE,widgetStyle+HU.css(CSS_WIDTH,HU.getDimension(width)),
-			    ATTR_ID,widgetId,ATTR_FIELDID,this.getId(),ATTR_CLASS,"display-filter-input"];
+			    ATTR_ID,widgetId,
+			    ATTR_FIELDID,this.getId(),
+			    ATTR_CLASS,"display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push(ATTR_WIDTH);
 		attrs.push(width);
 		if(placeholder) {
-		    attrs.push(ATTR_PLACEHOLDER);
-		    attrs.push(placeholder);
+		    attrs.push(ATTR_PLACEHOLDER,placeholder);
 		} else {
 		    showLabel = false;
-		    attrs.push(ATTR_PLACEHOLDER);
-		    attrs.push(widgetLabel);
+		    attrs.push(ATTR_PLACEHOLDER, widgetLabel);
 		}
 
 		attrs.push("istext",this.isText);

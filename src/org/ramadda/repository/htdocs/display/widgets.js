@@ -56,7 +56,8 @@ function AreaWidget(display,arg) {
 			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HU.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
-			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE,ATTR_FOR,this.domId(ID_CONTAINS)], SPACE + "Contains"));
+			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE,
+					    ATTR_FOR,this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
 	    this.settingsDialog = HU.makeDialog(
 		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
@@ -79,7 +80,8 @@ function AreaWidget(display,arg) {
 		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
-            let settings = HU.div([ATTR_TITLE,"Settings",ATTR_CLASS,CLASS_CLICKABLE,
+            let settings = HU.div([ATTR_TITLE,"Settings",
+				   ATTR_CLASS,CLASS_CLICKABLE,
 				   ATTR_ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
 	    let showMap = HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 				  ATTR_ID,this.domId(ID_MAP_SHOW),
@@ -87,11 +89,13 @@ function AreaWidget(display,arg) {
 
 	    let input = (id,place,title,v)=>{
 		return HU.input(id, v, [ATTR_PLACEHOLDER, place,
-					ATTR_CLASS, "input display-area-input",
-					ATTR_SIZE, "5",
-					ATTR_ID,this.domId(id), ATTR_TITLE, title]);
+					ATTR_CLASS, HU.classes('input','display-area-input'),
+					ATTR_SIZE, 5,
+					ATTR_ID,this.domId(id),
+					ATTR_TITLE, title]);
 	    };
-            let areaForm = HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
+            let areaForm = HU.openTag(TAG_TABLE,
+				      [ATTR_CLASS, "display-area"]);
             areaForm += HU.tr([],
 			      HU.td([ATTR_ALIGN, ALIGN_CENTER],
 				    HU.leftCenterRight("",
@@ -115,7 +119,8 @@ function AreaWidget(display,arg) {
 				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],
 			       SPACE+"Shift-drag: select region. Cmd-drag: move region" +
 			       HU.div([ATTR_ID,this.domId(ID_MAP_POPUP),
-				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),CSS_HEIGHT,HU.px(300))]));
+				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),
+							 CSS_HEIGHT,HU.px(300))]));
             return areaForm;
         },
 	showMap: function() {
@@ -262,13 +267,14 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
             let html = HU.input(this.baseId +ID_DATE_START, start||"",
 				[ATTR_CLASS, "display-date-input",
 				 ATTR_PLACEHOLDER, " " +startLabel,
-				 ATTR_TITLE, startLabel, ATTR_ID,
-				 this.baseId +ID_DATE_START, 
+				 ATTR_TITLE, startLabel,
+				 ATTR_ID, this.baseId +ID_DATE_START, 
 				]) + " - " +
                 HU.input(this.baseId +ID_DATE_END, end||"",
 			 [ATTR_CLASS, "display-date-input",
 			  ATTR_PLACEHOLDER,  " " +endLabel,
-			  ATTR_TITLE,endLabel,ATTR_ID, this.baseId +ID_DATE_END, 
+			  ATTR_TITLE,endLabel,
+			  ATTR_ID, this.baseId +ID_DATE_END, 
 			 ]);
             return html;
         }
@@ -310,7 +316,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     const svg = d3.select(dom).append(TAG_SVG)
 	  .attr(ATTR_WIDTH, w)
 	  .attr(ATTR_HEIGHT, h)
-	  .append('g')
+	  .append(TAG_G)
 	  .attr(ATTR_TRANSFORM, HU.translate(opts.theMargin.left, opts.theMargin.top));
     const line = d3.line()
 	  .x((d, i) => x(i))
@@ -378,7 +384,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('y', d => getNum(y(d)))
 	    .attr(ATTR_WIDTH, BAR_WIDTH)
 	    .attr(ATTR_HEIGHT, d => getNum(h-y(d)))
-	    .attr('fill', (d,i)=>getColor(d,i,barColor))
+	    .attr(ATTR_FILL, (d,i)=>getColor(d,i,barColor))
 	    .style(CSS_CURSOR, CURSOR_POINTER)
     }
 
@@ -403,7 +409,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
 	    .attr('cy', (d,i)=>{return getNum(y(d))})
-	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
+	    .attr(ATTR_FILL, (d,i)=>getColor(d,i,circleColor))
 	    .style(CSS_CURSOR, CURSOR_POINTER);
     }
 
@@ -418,12 +424,12 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(fidx))
 	    .attr('cy', y(data[fidx]))
-	    .attr('fill', opts.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
+	    .attr(ATTR_FILL, opts.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
 	svg.append('circle')
 	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(lidx))
 	    .attr('cy', y(data[lidx]))
-	    .attr('fill', opts.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
+	    .attr(ATTR_FILL, opts.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
     }
     let _display = display;
     let doTooltip = display.getSparklineDoTooltip()  || opts.doTooltip;
@@ -474,7 +480,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const svg = d3.select(dom).append(TAG_SVG)
 	  .attr(ATTR_WIDTH, w)
 	  .attr(ATTR_HEIGHT, h)
-	  .append('g')
+	  .append(TAG_G);
     //	  .attr('transform', HU.translate(margin.left, margin.top));
 
     let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor",COLOR_BLACK);
@@ -492,12 +498,11 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 
     
     let recordMap = {};
-    
-    svg.selectAll('circle').data(data).enter().append("circle")
+    svg.selectAll('circle').data(data).enter().append('circle')
 	.attr('r', (d,i)=>{return circleRadius})
 	.attr('cx', (d,i)=>{return getNum(x(d.x))})
 	.attr('cy', (d,i)=>{return getNum(y(d.y))})
-	.attr('fill', (d,i)=>{return getColor(d,i,circleColor)})
+	.attr(ATTR_FILL, (d,i)=>{return getColor(d,i,circleColor)})
 	.attr(ATTR_RECORD_ID, (d,i)=>{
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
@@ -522,7 +527,6 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    ele.attr('r', 20);
 	    if(true) return
 	    let record = recordMap[ele.attr(ATTR_RECORD_ID)];
-	    console.log(ele.attr(ATTR_RECORD_ID) +" " + record);
 	    let coords = d3.pointer(event);
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
@@ -561,7 +565,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	.append(TAG_SVG)
 	.attr(ATTR_WIDTH, width)
 	.attr(ATTR_HEIGHT, height)
-	.append("g")
+	.append(TAG_G)
 	.attr(ATTR_TRANSFORM, HU.translate(width / 2, height / 2));
     let data = {};
     array.forEach(tuple=>{
@@ -586,7 +590,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	.attr(ATTR_FILL, function(d){
 	    return colorMap[d.data.key];
 	})
-	.attr(ATTR_STROKE, "black")
+	.attr(ATTR_STROKE, COLOR_BLACK)
 	.style(CSS_STROKE_WIDTH, HU.px(1))
 	.style(CSS_OPACITY, 0.7)
 }

@@ -4752,9 +4752,9 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
         entryListChanged: function(entryList) {
             let html = "<form>";
             html += HU.p();
-            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable",
-					   ATTR_CELLSPACING, "0",
-					   ATTR_CELLSPACING, "0"]);
+            html += HU.openTag(TAG_TABLE, [ATTR_CLASS, CLASS_FORMTABLE,
+					   ATTR_CELLSPACING, 0,
+					   ATTR_CELLSPACING, 0]);
             let entries = this.entryList.getEntries();
             let get = this.getGet();
 

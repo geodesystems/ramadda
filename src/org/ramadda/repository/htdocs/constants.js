@@ -63,6 +63,7 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_FORMTABLE = 'formtable';
 var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
 var CLASS_BUTTON = 'ramadda-button';
@@ -168,6 +169,7 @@ var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
 
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
+var ATTR_TAG='tag';
 var ATTR_TABLE_HEIGHT = 'table-height';
 var ATTR_TABINDEX = 'tabindex';
 var ATTR_TYPE = 'type';
