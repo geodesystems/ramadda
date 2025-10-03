@@ -872,6 +872,18 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Result processEntryWikiText(Request request) throws Exception {
+	try {
+	    request.put(ARG_RESPONSE,RESPONSE_JSON);
+	    return processEntryWikiTextInner(request);
+	} catch(Exception exc) {
+	    String message=exc.getMessage();
+            String json = getRepository().makeErrorResponse(request,message);
+	    getLogManager().logError("Error processing entry wiki text request: " + request,exc);
+	    return getRepository().makeErrorResult(request,json, false,false);
+	}
+    }
+
+    private Result processEntryWikiTextInner(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
 					  getRepository().URL_ENTRY_SHOW,false);
@@ -1691,8 +1703,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryTypeAction(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
-            throw new RepositoryUtil.MissingEntryException(
-							   "Could not find entry");
+            throw new RepositoryUtil.MissingEntryException("Could not find entry");
         }
 
         return entry.getTypeHandler().processEntryAction(request, entry);
