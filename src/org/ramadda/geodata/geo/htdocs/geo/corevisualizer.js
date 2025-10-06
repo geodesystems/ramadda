@@ -10,6 +10,7 @@ addGlobalDisplayType({
 
 
 var ID_CV_CONTENTS = 'cv_contents';
+var ID_CV_MESSAGE = 'cv_message';
 var ID_CV_CANVAS = 'cv_canvas';
 var ID_CV_MENUBAR = 'cv_menubar';
 var ID_CV_DISPLAYS = 'cv_displays';
@@ -20,6 +21,7 @@ var ACTION_CV_ZOOMOUT='zoomout';
 var ACTION_CV_ZOOMIN='zoomin';
 
 
+var ATTR_CV_COLLECTION_INDEX='collection-index';
 var ID_CV_MEASURE = 'measure';
 var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'doRotation';
@@ -98,7 +100,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		return;
 		let html = this.applyRecordTemplate(args.record,null,null, '${default}');
 		let left = false;
-		html = HU.div([ATTR_STYLE,HU.css('padding','5px')],html);
+		html = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5))],html);
 		this.recordSelect.dialog =
 		    HU.makeDialog({anchor:this.mainDiv,
 				   callback:()=>{
@@ -120,87 +122,122 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    if(this.haveDrawn) return;
 	    this.haveDrawn = true;
 	    let menuItemsLeft = [];
-	    let menuItemsRight = [];    
-	    let canvas =HU.div([ATTR_CLASS,'cv-canvas',ATTR_ID,this.domId(ID_CV_CANVAS)]);
-	    let menuBarContainer =HU.div([ATTR_CLASS,"cv-menubar",ATTR_ID,this.domId(ID_CV_MENUBAR)]);	
-	    let displaysBarContainer =HU.div([ATTR_CLASS,"cv-displaysbar",ATTR_ID,this.domId(ID_CV_DISPLAYSBAR)]);	
-	    let displays =HU.div([ATTR_CLASS,'cv-displays',ATTR_ID,this.domId(ID_CV_DISPLAYS)]);
+	    let menuItemsRight = [];    	    
+	    let canvas =HU.div([ATTR_CLASS,'cv-canvas',
+				ATTR_ID,this.domId(ID_CV_CANVAS)]);
+	    let menuBarContainer =HU.div([ATTR_CLASS,"cv-header",
+					  ATTR_ID,this.domId(ID_CV_MENUBAR)]);	
+	    let displaysBarContainer =HU.div([ATTR_CLASS,"cv-displaysbar",
+					      ATTR_ID,this.domId(ID_CV_DISPLAYSBAR)]);	
+	    let displays =HU.div([ATTR_CLASS,'cv-displays',
+				  ATTR_ID,this.domId(ID_CV_DISPLAYS)]);
 	    let main = HU.div([ATTR_CLASS,'cv-main'],canvas);	
-	    let row1 = HU.tr([],HU.td([],displaysBarContainer)+
+	    let row1 = HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.td([],displaysBarContainer)+
 			     HU.td([],menuBarContainer));
 
-	    let row2 = HU.tr([ATTR_VALIGN,'top'],HU.td([],displays)+
+	    let row2 = HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.td([],displays)+
 			     HU.td([],main));
 
-
-	    let html=HU.table(['cellpadding','0px','cellspacing','0px',ATTR_WIDTH,'100%'],row1+row2);
+	    let html=HU.table([ATTR_CELLPADDING,HU.px(0),
+			       ATTR_CELLSPACING,HU.px(0),
+			       ATTR_WIDTH,HU.perc(100)],row1+row2);
 
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
 
-	    let displaysBar = HU.div([ATTR_TITLE,'Add data display',ATTR_ACTION,ID_CV_DISPLAYS_ADD,
-				      ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,CLASS_CLICKABLE],
+	    let divider= SPACE1;
+	    let clazz= HU.classes(CLASS_CLICKABLE,'cv-toolbar-button');
+	    let displaysBar = HU.div([ATTR_TITLE,'Add data display',
+				      ATTR_ACTION,ID_CV_DISPLAYS_ADD,
+				      ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),
+				      ATTR_CLASS,clazz],
 				     HU.getIconImage('fas fa-chart-line'));
 	    this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
-	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
-					ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
-					ATTR_CLASS,CLASS_CLICKABLE],
-				       HU.getIconImage('fas fa-plus')));
 
-	    menuItemsLeft.push(HU.space(1));
+	    if(this.canSave()) {
+		menuItemsLeft.push(HU.span([ATTR_TITLE,'Save',
+					    ATTR_ACTION,'save',
+					    ATTR_CLASS,clazz],HU.getIconImage('fas fa-file')));
 
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',ATTR_ACTION,'home',ATTR_ID,'home',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fas fa-house')));
+		menuItemsLeft.push(divider);
+	    }
 
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',
+					ATTR_ACTION,'home',
+					ATTR_ID,'home',
+					ATTR_CLASS,clazz],HU.getIconImage('fas fa-house')));
 
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',ATTR_ACTION,ACTION_CV_ZOOMOUT,
-					ATTR_CLASS,CLASS_CLICKABLE],
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',
+					ATTR_ACTION,ACTION_CV_ZOOMOUT,
+					ATTR_CLASS,clazz],
 				       HU.getIconImage('fas fa-magnifying-glass-minus')));
 
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',ATTR_ACTION,ACTION_CV_ZOOMIN,
-					ATTR_CLASS,CLASS_CLICKABLE],
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',
+					ATTR_ACTION,ACTION_CV_ZOOMIN,
+					ATTR_CLASS,clazz],
 				       HU.getIconImage('fas fa-magnifying-glass-plus')));
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',ATTR_ACTION,'down',
-					ATTR_CLASS,CLASS_CLICKABLE],
+
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',
+					ATTR_ACTION,'down',
+					ATTR_CLASS,clazz],
 				       HU.getIconImage('fas fa-arrow-down')));
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',ATTR_ACTION,'up',
-					ATTR_CLASS,CLASS_CLICKABLE],
+
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',
+					ATTR_ACTION,'up',
+					ATTR_CLASS,clazz],
 				       HU.getIconImage('fas fa-arrow-up')));
-	    menuItemsRight.push(HU.span([ATTR_TITLE,'Show Gallery',
-					 ATTR_ACTION,'gallery',
-					 ATTR_CLASS,CLASS_CLICKABLE],
-					HU.getIconImage('fas fa-images')));
+	    menuItemsLeft.push(divider);
+
+	    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,10,
+					       ATTR_ID,this.domId(ID_CV_GOTO),
+					       ATTR_PLACEHOLDER,"Go to depth"]));
 
 
+	    menuItemsLeft.push(divider);
 
-
-	    menuItemsLeft.push(HU.space(1));
-	    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
-	    menuItemsLeft.push(HU.space(1));
-	    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				       ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,CLASS_CLICKABLE,
+	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_MEASURE),
+				       ATTR_CLASS,clazz,
 				       ATTR_TITLE,'Measure'],
 				      HU.getIconImage('fas fa-ruler-vertical')));
-	    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-				       ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,CLASS_CLICKABLE,
+	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_SAMPLE),
+				       ATTR_CLASS,clazz,
 				       ATTR_TITLE,'Sample @ depth'],
 				      HU.getIconImage('fas fa-eye-dropper')));	
-	    menuItemsLeft.push(HU.space(1));
 
-	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
-					ATTR_STYLE,HU.css('margin-right','50px',
-							  'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
-
-
-	    menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
-					 ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
-					 ATTR_CLASS,CLASS_CLICKABLE],
+	    menuItemsLeft.push(divider);
+	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Show Gallery',
+					 ATTR_ACTION,'gallery',
+					 ATTR_CLASS,clazz],
+					HU.getIconImage('fas fa-images')));
+	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('settings'),
+					ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
+					ATTR_CLASS,clazz],
 					HU.getIconImage('fas fa-cog')));
 	    
-	    let menuBar=Utils.join(menuItemsLeft,HU.space(1));
-	    menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
-			     Utils.join(menuItemsRight,HU.space(2)));
-	    this.mainDiv =jqid(this.opts.mainId);
+
+	    let menuLeft = Utils.join(menuItemsLeft,SPACE1);
+	    let message = HU.div([ATTR_ID,this.domId(ID_CV_MESSAGE), ATTR_CLASS,'cv-message']);
+	    let menuBar = HU.div([ATTR_CLASS,HU.classes(CLASS_MENUBAR,'cv-menubar')],menuLeft+message);
+	    let collectionSection =
+		HU.div([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
+			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+					  CSS_MARGIN_LEFT,HU.px(10),
+					  CSS_VERTICAL_ALIGN,ALIGN_TOP)]);
+	    let addLink= HU.span([ATTR_ID,this.domId('add'),
+				  ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
+				  ATTR_CLASS,CLASS_CLICKABLE],
+				 HU.getIconImage('fas fa-plus'));
+
+	    let collectionHeader =
+		HU.div([ATTR_CLASS,'cv-collections',
+			ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(50),
+					  CSS_VERTICAL_ALIGN,ALIGN_TOP)],
+		      addLink + collectionSection);	    
+
+
 	    if(!this.opts.showMenuBar)menuBar='';
-	    this.jq(ID_CV_MENUBAR).html(menuBar);
+	    let header = menuBar +collectionHeader;
+	    this.mainDiv =jqid(this.opts.mainId);
+	    this.jq(ID_CV_MENUBAR).html(header);
 
 	    addHandler({
 		selectClick:function(type,id,entryId,value) {
@@ -214,7 +251,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		}
 	    },this.domId(ID_CV_DISPLAYS_ADD));	
 
-	    $(document).on('keydown', (event) =>{
+	    $(document).on(EVENT_KEYDOWN, (event) =>{
 		if(event.key=='=') {
 		    this.resetZoomAndPan();
 		} else    if(event.key=='+') {
@@ -228,10 +265,12 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		}
 	    });
 
-	    this.jq(ID_DISPLAY_CONTENTS).find('.ramadda-clickable').click(function(event){
+	    this.jq(ID_DISPLAY_CONTENTS).find(HU.dotClass(CLASS_CLICKABLE)).click(function(event){
 		let action = $(this).attr(ATTR_ACTION);
 		if(action=='settings') {
 		    _this.showSettings($(this));
+		} else	if(action=='save') {
+		    _this.doSave();
 		} else	if(action=='home') {
 		    _this.resetZoomAndPan();
 		} else if(action==ACTION_CV_ZOOMIN) {
@@ -285,7 +324,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		height: this.getScreenHeight(),
 		draggable: true 
 	    });
-	    this.stage.on('dragmove',()=>{
+	    this.stage.on(EVENT_DRAGMOVE,()=>{
 		this.updateCollectionLabels();
 	    });
 	    this.stage.offsetY(this.opts.offsetY);
@@ -305,31 +344,38 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    
 	    this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
 
-	    if(this.opts.collectionIds) {
-		Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
-		    this.loadCollection(entryId);
-		});
+	    let collections ;
+	    let data = this.opts.dataVar;
+	    if(data && data.collectionIds && data.collectionIds.length) {
+		collections = data.collectionIds;
+	    } else {
+		if(this.opts.collectionIds) {
+		    collections = Utils.split(this.opts.collectionIds,",",true,true);
+		}
 	    }
 
+	    if(collections) {
+		this.loadCollections(collections,data);
+	    }
 
 	    this.drawLegend();
 	    this.layer.draw();
 
 	    this.displayEntries = [];
-	    if(this.opts.displayEntries) {
+            if(this.opts.displayEntries) {
 		Utils.split(this.opts.displayEntries,'\n',true,true).forEach((line,idx)=>{
-		    let toks = Utils.split(line,',',true,true);
-		    let entryId = toks[0];
-		    toks.shift();
-		    if(entryId.startsWith('#')) return;
-		    this.displayEntries.push({
+                    let toks = Utils.split(line,',',true,true);
+                    let entryId = toks[0];
+                    toks.shift();
+                    if(entryId.startsWith('#')) return;
+                    this.displayEntries.push({
 			display:null,
 			entryId:entryId,
 			props:this.parseDisplayProps(toks)
-		    });
+                    });
 		});
-	    }
-	    this.loadDisplays();
+		this.loadDisplays();
+            }
 
 	},
 
@@ -401,24 +447,24 @@ function RamaddaCoreDisplay(displayManager, id, args) {
     //define setters/getters & check for url override
     [ID_CV_SHOWLABELS, ID_CV_SHOWALLDEPTHS, ID_CV_ASFEET, ID_CV_SHOWHIGHLIGHT, ID_CV_SHOWBOXES,
      ID_CV_SHOWPIECES,ID_CV_DOROTATION,ID_CV_IMAGEWIDTHSCALE].forEach(prop=>{
-	let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
-	let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
-	let getFunc = (dflt)=>{
-	    return  this.getCoreProperty(prop,dflt);
-	};
-	let setFunc = (v)=>{
-	    this.setCoreProperty(prop,v);
-	};
-	if(!this[getName])
-	    this[getName] = getFunc;
-	if(!this[setName])
-	    this[setName] = setFunc;	
+	 let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
+	 let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
+	 let getFunc = (dflt)=>{
+	     return  this.getCoreProperty(prop,dflt);
+	 };
+	 let setFunc = (v)=>{
+	     this.setCoreProperty(prop,v);
+	 };
+	 if(!this[getName])
+	     this[getName] = getFunc;
+	 if(!this[setName])
+	     this[setName] = setFunc;	
 
-	let value = HU.getUrlArgument(prop);
-	if(Utils.isDefined(value)) {
-	    this.setCoreProperty(prop,value);
-	}
-    });
+	 let value = HU.getUrlArgument(prop);
+	 if(Utils.isDefined(value)) {
+	     this.setCoreProperty(prop,value);
+	 }
+     });
 
     this.opts.top =+this.opts.top;
 
@@ -523,22 +569,22 @@ RamaddaCoreDisplay.prototype = {
 	}
 
     	if(this.isSampling()) {
-	    this.stage.container().style.cursor = 'crosshair';
-	    this.jq(ID_CV_SAMPLE).css('background','#ccc');
+	    this.stage.container().style.cursor = CURSOR_CROSSHAIR;
+	    this.jq(ID_CV_SAMPLE).css(CSS_BACKGROUND,COLOR_LIGHT_GRAY);
 	} else {
 	    if(this.sampleDialog) this.sampleDialog.remove();
 	    this.clearRecordSelection();
 	    this.sampleDialog=null;
-	    if(this.stage.container().style.cursor == 'crosshair')
-		this.stage.container().style.cursor = 'default';
-	    this.jq(ID_CV_SAMPLE).css('background','transparent');
+	    if(this.stage.container().style.cursor == CURSOR_CROSSHAIR)
+		this.stage.container().style.cursor = CURSOR_DEFAULT;
+	    this.jq(ID_CV_SAMPLE).css(CSS_BACKGROUND,COLOR_TRANSPARENT);
 	    return;
 	}
 
 
 	if(this.samplingInit) return;
 	this.samplingInit=true;
-	this.stage.on('mousedown', (e) => {
+	this.stage.on(EVENT_MOUSEDOWN, (e) => {
 	    if(!this.isSampling()) return;
 	    const pos = this.stage.getRelativePointerPosition();
 	    let depth = this.canvasToWorld(pos.y);
@@ -604,11 +650,12 @@ RamaddaCoreDisplay.prototype = {
 		html+=HU.div([ATTR_CLASS,'ramadda-thin-hr']);
 	    html += HU.div([],HU.b(display.getTitle()));
 	    let recordHtml = this.applyRecordTemplate(closest,null,null, '${default}');
-	    html+=HU.div([ATTR_STYLE,HU.css('max-height',maxHeight,'overflow-y','auto')],
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,maxHeight,
+					    CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 			 recordHtml);
 	});
 	if(Utils.stringDefined(html)) {
-	    html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+	    html=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5))], html);
 	    if(this.sampleDialog) this.sampleDialog.remove();
 	    this.sampleDialog =
 		HU.makeDialog({anchor:this.mainDiv,
@@ -638,13 +685,13 @@ RamaddaCoreDisplay.prototype = {
 	}
 
     	if(this.isMeasuring()) {
-	    this.jq(ID_CV_MEASURE).css('background','#ccc');
-	    this.stage.container().style.cursor = 'row-resize';
+	    this.jq(ID_CV_MEASURE).css(CSS_BACKGROUND,COLOR_LIGHT_GRAY);
+	    this.stage.container().style.cursor = CURSOR_ROW_RESIZE;
 	    this.stage.setAttrs({draggable: false});
 	} else {
-	    if(this.stage.container().style.cursor == 'row-resize')
-		this.stage.container().style.cursor = 'default';
-	    this.jq(ID_CV_MEASURE).css('background','transparent');
+	    if(this.stage.container().style.cursor == CURSOR_ROW_RESIZE)
+		this.stage.container().style.cursor = CURSOR_DEFAULT;
+	    this.jq(ID_CV_MEASURE).css(CSS_BACKGROUND,COLOR_TRANSPARENT);
 	    this.clearMeasure();
 	    this.stage.setAttrs({draggable: true});
 	    return;
@@ -656,7 +703,7 @@ RamaddaCoreDisplay.prototype = {
 	    line:null
 	}
 
-	this.stage.on('mousedown', (e) => {
+	this.stage.on(EVENT_MOUSEDOWN, (e) => {
 	    if(!this.isMeasuring()) return;
 	    this.clearMeasure();
 	    const pos = this.stage.getRelativePointerPosition();
@@ -679,7 +726,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.drawLayer.draw();
 	});
 
-	this.stage.on('mousemove', (e) => {
+	this.stage.on(EVENT_MOUSEMOVE, (e) => {
 	    if(!this.isMeasuring()) return;
 	    if (!this.measureState.line || !this.measureState.start) return;
 	    const pos = this.stage.getRelativePointerPosition();
@@ -694,7 +741,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.drawLayer.draw();
 	});
 
-	this.stage.on('mouseup', (e) => {
+	this.stage.on(EVENT_MOUSEUP, (e) => {
 	    if(!this.isMeasuring()) return;
 	    if (!this.measureState.start) return;
 	    const pos = this.stage.getRelativePointerPosition();
@@ -737,7 +784,8 @@ RamaddaCoreDisplay.prototype = {
 		props.dialogHook = (what,v)=>{
 		    if(what=='contents') {
 			//The v is the dialog html
-			return HU.div([ATTR_STYLE,HU.css('margin','5px')], HU.div([ATTR_CLASS,'cv-display-delete'],'Delete display')) + v;
+			return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],
+				      HU.div([ATTR_CLASS,'cv-display-delete'],'Delete display')) + v;
 		    }  else if(what=='init') {
 			//the v is the dialog
 			v.find('.cv-display-delete').button().click(()=>{
@@ -758,17 +806,19 @@ RamaddaCoreDisplay.prototype = {
     addDisplayEntry:function(entryId) {
 	let toks=[];
 	let html = 'Enter display properties. e.g.:<pre>indexField:&lt;field id&gt;\nfields:&lt;field id&gt;\ntitle:Some title\netc.</pre>';
-	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),ATTR_STYLE,HU.css('width','400px'),'rows','5']);
-	let buttons = [HU.div([ATTR_ID,this.domId('cancel')],'Cancel'),	
+	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),
+							ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400)),
+							ATTR_ROWS,5]);
+	let buttons = [HU.div([ATTR_ID,this.domId(ACTION_CANCEL)],'Cancel'),	
 		       ' '+   HU.div([ATTR_ID,this.domId('add_display')],'Create Display')];
 	html+=HU.buttons(buttons);
-	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+	html=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5))], html);
 	
 	let anchor =  this.jq(ID_CV_DISPLAYS_ADD);
 	let dialog = HU.makeDialog({content:html,title:'Display Properties',
 				    draggable:true,header:true,my:'left top',at:'left bottom',anchor:anchor});
 
-	this.jq('cancel').button().click(()=>{
+	this.jq(ACTION_CANCEL).button().click(()=>{
 	    dialog.remove();
 	});
 	this.jq('add_display').button().click(()=>{
@@ -865,20 +915,24 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.getCoreProperty(ID_CV_ASFEET),
 				 'Display Feet'));
 	
-	html+= HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
+	html+= HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.em(0.5))],
 		      'Image Width Scale: ' +
-		      HU.span([ATTR_STYLE,HU.css('display','inline-block','min-width','6em'),
+		      HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						 CSS_MIN_WIDTH,HU.em(6)),
 			       ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
 			      this.getImageWidthScale()) +
-		      HU.div([ATTR_STYLE,HU.css('margin-top','0.5em')],HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
-									       ATTR_ID,this.domId(ID_CV_IMAGEWIDTHSCALE)])));
+		      HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.em(0.5))],
+			     HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
+				     ATTR_ID,this.domId(ID_CV_IMAGEWIDTHSCALE)])));
 
 	html+= HU.div([],
-		      'Column width: ' + HU.input('',this.opts.maxColumnWidth,
-						  [ATTR_ID,this.domId(ID_CV_COLUMN_WIDTH),ATTR_STYLE,'width:40px']));
+		      'Column width: ' +
+		      HU.input('',this.opts.maxColumnWidth,
+			       [ATTR_ID,this.domId(ID_CV_COLUMN_WIDTH),
+				ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(40))]));
 
 
-	html=HU.div([ATTR_STYLE,HU.css('padding','10px')], html);
+	html=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(10))], html);
 	if(this.settingsDialog) this.settingsDialog.remove();
 	let dialog =  this.settingsDialog = HU.makeDialog({anchor:anchor,
 							   decorate:true,
@@ -1066,9 +1120,11 @@ RamaddaCoreDisplay.prototype = {
 		let url = RamaddaUtil.getEntryUrl(entry.entryId);
 		label = HU.href(url,label,[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']);
 		html+=HU.div([],HU.b(label));
-		html+=HU.div([],HU.href(url,HU.image(entry.url,[ATTR_WIDTH,'400px']),[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']));
+		html+=HU.div([],HU.href(url,HU.image(entry.url,[ATTR_WIDTH,HU.px(400)]),
+					[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']));
 	    });
-	    html = HU.div([ATTR_STYLE,HU.css('max-height','600px','overflow-y','auto')],html);
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(600),
+					     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 	    contents.push({label:c.name,contents:html});
 	});
 	if(this.collections.length==0) {
@@ -1083,7 +1139,7 @@ RamaddaCoreDisplay.prototype = {
 	    gallery=HU.b(contents[0].label)  +
 		HU.div([ATTR_CLASS,'cv-gallery-collection'],contents[0].contents);
 	}
-	gallery = HU.div([ATTR_STYLE,HU.css('margin','5px')], gallery);
+	gallery = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], gallery);
 	let dialog =  HU.makeDialog({anchor:anchor,
 				     decorate:true,
 				     at:'right top',
@@ -1133,16 +1189,113 @@ RamaddaCoreDisplay.prototype = {
 	this.drawCollections();
     },
 
-    loadCollection:function(entryId) {
+    canSave:function() {
+	return this.getProperty('mainEntryType')=='type_geo_borehole_images' &&
+	    this.getProperty('canEdit');
+    },
+    showMessage: function(msg) {
+	this.jq(ID_CV_MESSAGE).html(msg);
+	this.jq(ID_CV_MESSAGE).show();
+	setTimeout(()=>{
+	    this.jq(ID_CV_MESSAGE).hide(1000);
+	},3000);
+    },
+    doSave: function() {
+	let json  = JSON.stringify(this.getJson());
+        let success = r=>{
+            if(r && r.error) {
+		alert('An error has occurred:' + r.error);
+		return;
+            }
+	    this.showMessage('Data saved');
+	}
+        let error = r=>{
+            let e = r;
+            if(typeof e   == "string") e = JSON.parse(e);
+            alert("An error occurred:" + (e?e.error:r));
+        };
+
+        RamaddaUtil.changeField(this.getProperty('entryId'),
+				'visualizer_data',
+				json, success,error);
+    },
+    getJson: function() {
+	let json ={};
+	json.collectionIds = [];
+	this.collections.forEach((collection,idx)=>{
+	    json.collectionIds.push(collection.entryId);
+	});
+	json.stage = {
+	    scale:this.stage.scale(),
+	    position:this.stage.position()
+	}
+	json.settings = {
+	};
+
+	[ID_CV_SHOWLABELS, ID_CV_SHOWALLDEPTHS, ID_CV_ASFEET, ID_CV_SHOWHIGHLIGHT, ID_CV_SHOWBOXES, ID_CV_SHOWPIECES,ID_CV_DOROTATION,ID_CV_IMAGEWIDTHSCALE].forEach(prop=>{
+	    let value = this.getCoreProperty(prop);
+	    if(Utils.isDefined(value)) {
+		json.settings[prop] = value;
+	    }
+	 });
+
+	if(this.displayEntries.length) {
+	    json.displayEntries = [];
+	    this.displayEntries.forEach(entry=>{
+		let props = {};
+		$.extend(props,entry.props);
+		props.theData = null;
+		props.dialogHook = null;		
+		json.displayEntries.push({
+		    entryId:entry.entryId,
+		    props: props
+		});
+	    });
+	}
+	return json;
+    },
+    loadCollections: async function(collections,opts) {
+	if(opts && opts.settings) {
+	    Object.keys(opts.settings).forEach(prop=>{
+		this.setCoreProperty(prop,opts.settings[prop]);
+	    });
+	}
+
+	for (const entryId of collections) {
+	    await   this.loadCollection(entryId);
+	}
+	if(opts) {
+	    if(opts?.stage?.scale) {
+		this.stage.scale(opts.stage.scale);
+	    }
+	    if(opts?.stage?.position) {
+		this.stage.position(opts.stage.position);
+	    }	    
+	    this.scaleChanged();
+	}
+
+	if(opts.displayEntries) {
+	    this.displayEntries = [];
+	    opts.displayEntries.forEach(entry=>{
+		this.displayEntries.push({
+		    display:null,
+		    entryId:entry.entryId,
+		    props:entry.props
+		});
+	    });
+	    this.loadDisplays();
+	}
+    },
+
+    loadCollection:async function(entryId) {
 	let _this = this;
 	let url = RamaddaUtils.getUrl('/core/entries');
-	url +='?entryid='+ entryId;
-	$.getJSON(url, (data)=> {
+	url =HU.url(url,'entryid', entryId);
+	await $.getJSON(url, (data)=> {
 	    if(data.error) {
 		console.log('Error loading collection:' + entryId +' error:' + data.error);
 		return;
 	    }
-
 	    _this.addCollection(data);
 	}).fail((data)=>{
 	    window.alert('Failed to load entries');
@@ -1167,9 +1320,9 @@ RamaddaCoreDisplay.prototype = {
 	let displayIndex=0;
 	this.collections.forEach((collection,idx)=>{
 	    collection.collectionIndex = idx;
-	    let style = HU.css('display','inline-block');
-	    if(!collection.visible) style+=HU.css('background','#aaa');
-	    html+=HU.span(['collection-index',idx,
+	    let style = HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
+	    if(!collection.visible) style+=HU.css(CSS_BACKGROUND,'#aaa');
+	    html+=HU.span([ATTR_CV_COLLECTION_INDEX,idx,
 			   ATTR_CLASS,'ramadda-button',
 			   ATTR_STYLE,style],collection.name);
 	    this.toggleAll(collection.annotationObjects,collection.visible,false)
@@ -1180,10 +1333,44 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	});
 	this.jq(ID_CV_COLLECTIONS).html(html);
-	this.jq(ID_CV_COLLECTIONS).find('.ramadda-button').button().click(function(event) {
-	    let collection = _this.collections[+$(this).attr('collection-index')];
+	let buttons = this.jq(ID_CV_COLLECTIONS).find(HU.dotClass(CLASS_BUTTON));
+
+	let sortableTime=0;
+	buttons.button().click(function(event) {
+	    let now = new Date().getTime();
+	    if(now-sortableTime<500) return;
+	    let collection = _this.collections[+$(this).attr(ATTR_CV_COLLECTION_INDEX)];
 	    _this.showCollectionMenu(collection, $(this));
 	});
+
+	if(buttons.length>1) {
+	    this.jq(ID_CV_COLLECTIONS).sortable({
+		axis: "x",               // restrict movement to horizontal
+		containment: "parent",   // keep within parent div
+		tolerance: "pointer",
+		placeholder: "cv-sortable-placeholder",
+		forcePlaceholderSize: true,
+		delay: 150, 
+		start: function(event, ui) {
+		    const w = ui.item.outerWidth();
+		    $(".cv-sortable-placeholder").css("width", w * 1.3);
+		},
+		update: function(event, ui){
+		    sortableTime=new Date().getTime();
+		    let newCollections = [];
+		    let order = $(this).children().each(function() {
+			let collection = _this.collections[+$(this).attr(ATTR_CV_COLLECTION_INDEX)];
+			if(collection) {
+			    newCollections.push(collection);
+			}
+		    });
+		    _this.collections = newCollections;
+		    _this.resetZoomAndPan();
+		    _this.drawCollections();
+		}
+	    });
+	}
+
 	this.drawLegend();
 	this.updateCollectionLabels();
 	if(opts.resetZoom) {
@@ -1196,15 +1383,16 @@ RamaddaCoreDisplay.prototype = {
     showCollectionMenu:function(collection, target,args) {
 	let _this = this;
 	let html = '';
-	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+	let clazz = HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_MENUITEM);
+	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'view'],'View Entry');
-	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'goto'],'Scroll To');	    
-	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'toggle'],collection.visible?'Hide':'Show');
-	html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'delete'],'Delete');
-	html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
+	html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200))], html);
 	let opts = {anchor:target,
 		    decorate:true,
 		    at:'left bottom',
@@ -1214,7 +1402,7 @@ RamaddaCoreDisplay.prototype = {
 	if(args) $.extend(opts,args);
 	let dialog =  HU.makeDialog(opts);
 	
-	dialog.find('.ramadda-clickable').click(function() {
+	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='delete') {
 		_this.removeCollection(collection);
@@ -1257,8 +1445,9 @@ RamaddaCoreDisplay.prototype = {
 	collection.xPosition =  this.getXOffset(column);
 
 	let x = this.getXOffset(column);
-	let l = this.makeText(this.layer,collection.name,x,this.worldToCanvas(collection.range.min)-20,
-			      {fontStyle:'bold'});
+	let l = this.makeText(this.layer,collection.name,x,
+			      this.worldToCanvas(collection.range.min)-20,
+			      {fontStyle:'bold',background:'white'});
 	collection.nameText = l;
 	l.collectionId = collection.collectionId;
 	this.addClickHandler(l,(event)=>{
@@ -1338,7 +1527,7 @@ RamaddaCoreDisplay.prototype = {
 	if(!text) return;
 	if(obj &&  obj.dialog) obj.dialog.remove();
 	text = Utils.convertText(text);
-	let div = HU.div([ATTR_STYLE,HU.css('margin','10px')],
+	let div = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],
 			 text);
 	let dialog =  HU.makeDialog({anchor:this.mainDiv,
 				     title:label,
@@ -1350,10 +1539,10 @@ RamaddaCoreDisplay.prototype = {
 				     draggable:true});
 
 	
-	dialog.find('.wiki-image img').css('cursor','pointer');
+	dialog.find('.wiki-image img').css(CSS_CURSOR,CURSOR_POINTER);
 	dialog.find('.wiki-image img').click(function() {
-	    let url  =$(this).attr('src');
-	    let div = HU.image(url,[ATTR_WIDTH,'800px']);
+	    let url  =$(this).attr(ATTR_SRC);
+	    let div = HU.image(url,[ATTR_WIDTH,HU.px(800)]);
 	    let idialog =  HU.makeDialog({anchor:dialog,
 					  decorate:true,
 					  at:'right top',
@@ -1458,6 +1647,9 @@ RamaddaCoreDisplay.prototype = {
 		let text =collection.nameText; 
 		let pos = text.position();
 		text.position({ x: pos.x, y: top+margin });
+		if(text.backgroundRect) {
+		    text.backgroundRect.position({ x: pos.x, y: top+margin });
+		}
 	    }		
 	});
     },
@@ -1491,10 +1683,10 @@ RamaddaCoreDisplay.prototype = {
 	    this.stage.batchDraw();
 	});
 
-	this.stage.on('dblclick',  (e)=> {
+	this.stage.on(EVENT_DBLCLICK,  (e)=> {
 	    this.zoom(1.2);
 	});
-	this.stage.on('wheel', (e) => {
+	this.stage.on(EVENT_WHEEL, (e) => {
 	    e.evt.preventDefault(); 
 	    let scale = this.stage.scaleX();
 	    let oscale = scale;
@@ -1515,7 +1707,7 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 
-	document.addEventListener('keydown', (e) => {
+	document.addEventListener(EVENT_KEYDOWN, (e) => {
 	    const scrollSpeed = 20;
 	    const stagePos = this.stage.position();
 	    switch (e.key) {
@@ -1782,15 +1974,15 @@ RamaddaCoreDisplay.prototype = {
 	return true;
     },
     addClickHandler:function(obj,f) {
-	obj.on('click', (e) =>{
+	obj.on(EVENT_CLICK, (e) =>{
 	    if(!this.canShowPopup())  return;
 	    f(e,obj);
 	});
-	obj.on('mouseover', function (e) {
-	    document.body.style.cursor = 'pointer'; 
+	obj.on(EVENT_MOUSEOVER, function (e) {
+	    document.body.style.cursor = CURSOR_POINTER; 
 	});
-	obj.on('mouseout', function (e) {
-	    document.body.style.cursor = 'default'; 
+	obj.on(EVENT_MOUSEOUT, function (e) {
+	    document.body.style.cursor = CURSOR_DEFAULT; 
 	});
     },
 
@@ -1806,8 +1998,10 @@ RamaddaCoreDisplay.prototype = {
 	html+=HU.formEntry('Bottom:',HU.input('',y2, [ATTR_ID,this.domId('editbottom')]));		
 	html+=HU.formTableClose();
 	let buttonList =[
-	    HU.div([ATTR_ACTION,'cancel','class','ramadda-button ' + CLASS_CLICKABLE],"Cancel"),
-	    HU.div([ATTR_ACTION,'apply','class','ramadda-button ' + CLASS_CLICKABLE],
+	    HU.div([ATTR_ACTION,ACTION_CANCEL,
+		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],"Cancel"),
+	    HU.div([ATTR_ACTION,ACTION_APPLY,
+		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
 		   "Change Entry")];
 	html+=HU.buttons(buttonList);
 
@@ -1822,8 +2016,8 @@ RamaddaCoreDisplay.prototype = {
 						       header:true,
 						       content:html,
 						       draggable:true});
-	dialog.find('.ramadda-button').button().click(function(){
-	    let apply = $(this).attr(ATTR_ACTION)=='apply';
+	dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function(){
+	    let apply = $(this).attr(ATTR_ACTION)==ACTION_APPLY;
 	    if(apply) {
 		let name = _this.jq('editname').val();
 		let top = _this.jq('edittop').val();
@@ -2256,13 +2450,13 @@ RamaddaCoreDisplay.prototype = {
 	    let bottom = this.canvasToWorld(y2);		
 	    return {top:top,bottom:bottom};
 	}
-	group.on('dragmove', (e)=> {
+	group.on(EVENT_DRAGMOVE, (e)=> {
 	    let pos  = getPos(e.target);
 	    group.ticks.l1.text(this.formatDepth(pos.top));
 	    group.ticks.l2.text(this.formatDepth(pos.bottom));	    
 	});
 
-	group.on('dragend', (e)=> {
+	group.on(EVENT_DRAGEND, (e)=> {
 	    let pos  = getPos(e.target);
 	    console.log(pos);
 	    this.editEntry(entry,pos.top,pos.bottom);
