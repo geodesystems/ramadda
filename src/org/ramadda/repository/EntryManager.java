@@ -2797,6 +2797,7 @@ public class EntryManager extends RepositoryManager {
 		if(noName)
 		    entry.putTransientProperty("noname","true");
 
+
                 initEntry(entry, name, description, info.parent, request.getUser(),
 			  new Resource(theResource, resourceType),
 			  category, entryOrder,
@@ -2874,7 +2875,9 @@ public class EntryManager extends RepositoryManager {
             String newName = request.getString(ARG_NAME, entry.getLabel());
 
             entry.setName(newName);
-            entry.setDescription(getEntryDescription(request, entry));
+	    if(request.exists(ARG_DESCRIPTION) || request.exists(ARG_WIKITEXT) ) {
+		entry.setDescription(getEntryDescription(request, entry));
+	    }		
 
             if (isAnonymousUpload(entry)) {
                 if (request.get(ARG_PUBLISH, false)) {
