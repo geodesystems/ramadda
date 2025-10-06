@@ -20,7 +20,9 @@
 	    columns="80"
 	    label="Chart Displays"  showinhtml="false" help="One entry per line. Format:&lt;br&gt;entryid,field1:value1,...,fieldN:valueN&lt;br&gt;e.g.:&lt;br&gt;entryid,fields:gamma,indexField:depth"/>
     
-
+    <column name="visualizer_data" type="clob" label="Visualizer Data"
+	    showinhtml="false"
+            candisplay="false" editable="false"/>
 <wiki><![CDATA[
 +section title={{name}}
 :navtop
@@ -59,7 +61,7 @@ displayEntries="${property:displays}"
 +col-8
 {{group}}
 {{description wikify=true}}
-{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
+{{zoomify singleFile=true annotationsField="annotations_json"
 useAttachmentIfNeeded=true
 }}
 :vspace 1em
@@ -148,7 +150,7 @@ isoutput="true" foreditmenu="false">
 {{group}}
 {{description wikify=true}}
 +if show_visualizer=false
-{{zoomify singleFile=true annotationsField="type_borehole_coreimage_annotations_json"
+{{zoomify singleFile=true annotationsField="annotations_json"
 useAttachmentIfNeeded=true}}
 -if
 +if show_visualizer=true
@@ -157,7 +159,7 @@ useAttachmentIfNeeded=true}}
 {{core_visualizer}}
 -tab
 +tab Annotated Image
-{{zoomify singleFile=true annotationsField="type_borehole_coreimage_annotations_json"
+{{zoomify singleFile=true annotationsField="annotations_json"
 useAttachmentIfNeeded=true}}
 -tab
 -tabs

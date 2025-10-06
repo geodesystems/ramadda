@@ -316,6 +316,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	StringBuilder js = new StringBuilder();
 	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
 	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
+	Utils.add(args,"mainEntryType",JU.quote(entry.getTypeHandler().getType()));	
 	if (getAccessManager().canDoEdit(request, entry)) {
 	    Utils.add(args,"canEdit","true");
 	}
@@ -373,7 +374,12 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	}
 
 
-
+	String data = entry.getStringValue(request,"visualizer_data",null);
+	if(stringDefined(data)) {
+	    String varId =  HU.getUniqueId("corevisualizer_data");
+	    HU.script(sb,"\nvar " + varId +" = " + data+"\n");
+	    Utils.add(args,"dataVar", varId);
+	}
 	String legend=Utils.getProperty(props,"legendUrl",null);
 	if(legend!=null) {
 	    Utils.add(args,"legendUrl",JU.quote(legend));
