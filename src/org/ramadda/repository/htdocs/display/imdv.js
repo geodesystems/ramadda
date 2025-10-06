@@ -4008,7 +4008,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doSave: function() {
 	    let _this = this;
-	    if(this.getProperty("thisEntryType")!="geo_editable_json" && this.getProperty("thisEntryType")!="geo_imdv") {
+	    if(this.getProperty("thisEntryType")!="geo_editable_json" &&
+	       this.getProperty("thisEntryType")!="geo_imdv") {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }

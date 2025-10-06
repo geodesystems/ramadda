@@ -419,7 +419,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 						  ATTR_ID, this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 						 ]);
-                    img = HU.href(entry.getResourceUrl(), img, ["data-fancybox",this.galleryId, "data-caption",link,
+                    img = HU.href(entry.getResourceUrl(), img, [ATTR_DATA_FANCYBOX,this.galleryId,
+								ATTR_DATA_CAPTION,link,
 								ATTR_CLASS, "popup_image"]);
                     newHtml += HU.div([ATTR_CLASS, "image-outer"], HU.div([ATTR_CLASS, "image-inner"], img) +
 				      HU.div([ATTR_CLASS, "image-caption"], link));

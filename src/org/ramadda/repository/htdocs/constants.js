@@ -16,6 +16,7 @@ var urlroot = ramaddaBaseUrl;
 var ACTION_OK='ok';
 var ACTION_NO='no';
 var ACTION_CANCEL='cancel';
+var ACTION_APPLY='apply';
 
 var LABEL_OK="OK";
 var LABEL_YES="Yes";
@@ -63,6 +64,7 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_BUTTON_BAR = 'ramadda-button-bar';
 var CLASS_FORMTABLE = 'formtable';
 var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
@@ -74,7 +76,8 @@ var CLASS_COPYABLE = 'ramadda-copyable';
 var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HIGHLIGHTABLE = 'ramadda-highlightable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
-
+var CLASS_MENUITEM = 'ramadda-menu-item';
+var CLASS_MENUBAR = 'ramadda-menubar';
 
 
 
@@ -83,6 +86,20 @@ var CURSOR_POINTER='pointer';
 var CURSOR_DEFAULT='default';
 var CURSOR_TEXT='text';
 var CURSOR_CONTEXT_MENU = 'context-menu';
+var CURSOR_CROSSHAIR='crosshair';
+var CURSOR_ROW_RESIZE='row-resize';
+
+var EVENT_CLICK='click';
+var EVENT_MOUSEDOWN = 'mousedown';
+var EVENT_MOUSEUP = 'mouseup';
+var EVENT_MOUSEOUT = 'mouseout';
+var EVENT_MOUSEOVER='mouseover';
+var EVENT_MOUSEMOVE='mousemove';
+var EVENT_KEYDOWN='keydown';
+var EVENT_WHEEL='wheel';
+var EVENT_DBLCLICK='dblclick';
+var EVENT_DRAGMOVE='dragmove';
+var EVENT_DRAGEND='dragend';
 
 //Legacy IDs
 var ID = 'id';
@@ -178,6 +195,8 @@ var ATTR_LAYOUT='layout';
 var ATTR_LOADING= 'loading';
 var ATTR_DISABLED='disabled';
 
+var ATTR_DATA_CAPTION = 'data-caption';
+var ATTR_DATA_FANCYBOX = 'data-fancybox';
 var ATTR_DATA_URL = 'data-url';
 var ATTR_DATA_CORPUS='data-corpus';
 var ATTR_DATA_TITLE='data-title';

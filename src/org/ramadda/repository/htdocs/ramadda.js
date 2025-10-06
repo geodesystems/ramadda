@@ -397,6 +397,40 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     fileDrops:{
     },
+    changeField:function(entryId,fieldName,value,success,errorCallback) {
+	let args = {
+	    entryid:entryId,
+	    what:fieldName,
+	    value:value,
+	    response:"json"
+	};
+	let url = RamaddaUtil.getUrl("/entry/changefield");
+        $.post(url, args, (result) => {
+	    if(success) {
+		success(result);
+	    }
+	}).fail(error=>{
+	    try {
+		let json = JSON.parse(error.responseText);
+		if(json.error)  {
+		    if(errorCallback) {
+			errorCallback(json.error);
+		    }  else {
+			alert("Error:" + json.error);
+		    }
+		    return;
+		} else {
+		}
+	    } catch(err) {
+	    }
+	    if(errorCallback) {
+		errorCallback(error.responseText);
+	    } else {
+		alert("Error:" + error.responseText);
+	    }
+	});
+
+    },
     doSave: function(entryId,authtoken,args, success,errorFunc) {
 	args = args||{};
 	args.entryid = entryId;
@@ -1587,7 +1621,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    alert("An error occurred creating entry: "  + err);
 		}
 	    });
-	    let html = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,'center',CSS_PADDING,HU.px(5))],
+	    let html = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_PADDING,HU.px(5))],
 			      "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',[ATTR_WIDTH,HU.px(50)]));
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}
@@ -1775,37 +1809,37 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    hasTags = true;
 		}
 	    });
-	    header.css("text-align","center");
+	    header.css(CSS_TEXT_ALIGN,ALIGN_CENTER);
 	    let hdr = 
 		HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar ramadda-button-on'),
+			ATTR_CLASS,HU.classes(CLASS_BUTTON,HU.classes(CLASS_BUTTON_BAR,'ramadda-button-on')),
 			ATTR_LAYOUT,"grid"],"Grid");
 	    if(Object.keys(years).length>1)
 		hdr += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			       ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			       ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			       ATTR_LAYOUT,"year"],"Year");
 	    if(Object.keys(months).length>1)
 		hdr+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			     ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			     ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			     ATTR_LAYOUT,"month"],"Month");
 	    if(Object.keys(days).length>1)	    
 		hdr+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			     ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			     ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			     ATTR_LAYOUT,"day"],"Day");		
 	    hdr += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			   ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			   ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			   ATTR_LAYOUT,ATTR_TITLE],"Title");	    
 	    if(hasTags)
 		hdr +=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			      ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			      ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			      ATTR_LAYOUT,"tags"],"Tag");
 
 	    hdr+= HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			  ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			  ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			  ATTR_LAYOUT,"author"],"Author");			
 	    if(hasLocations) {
 		hdr += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			       ATTR_CLASS,HU.classes(CLASS_BUTTON,'ramadda-button-bar'),
+			       ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_BUTTON_BAR),
 			       ATTR_LAYOUT,"map"],"Map");			
 	    }
 	    header.append(HU.div([],hdr));

@@ -2294,7 +2294,8 @@ var Utils =  {
                                     for(a in source)
                                         title = title.replace("{" + a+"}",source[a]);
                                 }
-                                let attrs = [ATTR_TITLE, title,'data-caption',title];
+                                let attrs = [ATTR_TITLE, title,
+					     ATTR_DATA_CAPTION,title];
                                 if(t.attrs[ATTR_HEIGHT]) {
                                     attrs.push(ATTR_HEIGHT);
                                     attrs.push(t.attrs[ATTR_HEIGHT]);
@@ -2312,8 +2313,8 @@ var Utils =  {
                                     }
                                     let base = t.attrs['popupBase'];
                                     value = HU.href(url,value,[ATTR_CLASS,"popup_image",
-							       "data-fancybox","fancybox",
-							       "data-caption",title,
+							       ATTR_DATA_FANCYBOX,"fancybox",
+							       ATTR_DATA_CAPTION,title,
 							       ATTR_TITLE,title]);
                                 }
                             }
@@ -4887,7 +4888,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let buttons = Utils.wrap(args,HU.open(TAG_DIV,
 					      [ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),
 				 HU.close(TAG_DIV));
-	return HU.div([ATTR_CLASS,clazz??'ramadda-button-bar',ATTR_STYLE,style??''], buttons);
+	return HU.div([ATTR_CLASS,clazz??CLASS_BUTTON_BAR,
+		       ATTR_STYLE,style??''], buttons);
     },
     vspace:function(dim) {
 	return this.div([ATTR_STYLE,this.css(CSS_MARGIN_TOP,dim??HU.em(0.5))]);

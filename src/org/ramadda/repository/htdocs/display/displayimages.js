@@ -306,7 +306,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     if(this.onlyShowImages && !Utils.stringDefined(img)) continue;
                 } 
                 
-                var  imgAttrs= [ATTR_CLASS,"display-cards-popup","data-fancybox",this.domId("gallery"),"data-caption",caption];
+                var  imgAttrs= [ATTR_CLASS,"display-cards-popup",
+				ATTR_DATA_FANCYBOX,this.domId("gallery"),
+				ATTR_DATA_CAPTION,caption];
 		if(img) img = img.trim();
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
@@ -392,7 +394,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 var width = group.members.length==0?HU.perc(100):100/group.members.length;
-                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
+                html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),
+					  ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
@@ -463,7 +466,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
         handleEventRecordSelection: function(source, args) {
-	    let blocks = this.find(".display-images-block");
+	    let blocks = this.find(HU.dotClass('display-images-block'));
 	    let select = HU.attrSelect(ATTR_RECORD_ID, args.record.getId());
 	    let block = this.find(select);
 	    blocks.css(CSS_BORDER,null);
@@ -592,7 +595,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [ATTR_STYLE,imageStyle,ATTR_TITLE,galleryLabel,
+		let imgAttrs = [ATTR_STYLE,imageStyle,
+				ATTR_TITLE,galleryLabel,
 				ATTR_ID,base+"image" + rowIdx,
 				ATTR_LOADING,"lazy"];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
@@ -630,7 +634,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		} else {
 		    style+=HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,CSS_WIDTH,blockWidth);
 		    if(doPopup) {
-			img = HU.href(image,img,[ATTR_CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
+			img = HU.href(image,img,[ATTR_CLASS,"popup_image",
+						 ATTR_DATA_FANCYBOX,base,
+						 ATTR_DATA_CAPTION,galleryLabel]);
 		    } else if(urlField&& !tooltipClick) {
 			img = HU.href(urlField.getValue(record),img,[ATTR_TARGET,"_target"]);
 		    }
@@ -639,8 +645,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 
 		block = 
-		    HU.div([ATTR_STYLE, style, ATTR_RECORD_ID,record.getId(),ATTR_RECORD_INDEX,recordIndex++,
-			    ATTR_ID,base+TAG_DIV+  rowIdx, ATTR_CLASS, class1,ATTR_TITLE,tt],
+		    HU.div([ATTR_STYLE, style,
+			    ATTR_RECORD_ID,record.getId(),
+			    ATTR_RECORD_INDEX,recordIndex++,
+			    ATTR_ID,base+TAG_DIV+  rowIdx,
+			    ATTR_CLASS, class1,
+			    ATTR_TITLE,tt],
 			   recordContents);
 		if(columns) {
 		    if(++columnCnt>=columns) {
@@ -653,11 +663,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 	    });
 	    if(columns) {
-		contents = HU.open(TAG_TABLE,[ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)]) +
+		contents = HU.open(TAG_TABLE,[ATTR_BORDER,0,
+					      ATTR_WIDTH,HU.perc(100)]) +
 		    HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
 		for(let col=0;true;col++) {
 		    if(!columnMap[col]) break;
-		    contents+=HU.td([ATTR_ALIGN,'center'],columnMap[col]);
+		    contents+=HU.td([ATTR_ALIGN,ALIGN_CENTER],columnMap[col]);
 		}
 		contents+=HU.close(TAG_TR,TAG_TABLE);
 	    } else {
@@ -712,7 +723,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    } else {
 		HU.createFancyBox( this.jq(ID_RESULTS).find("a.popup_image"), {
                     caption : function( instance, item ) {
-			return  $(this).data('data-caption') || '';
+			return  $(this).data(ATTR_DATA_CAPTION) || '';
                     }});
 		
 	    }

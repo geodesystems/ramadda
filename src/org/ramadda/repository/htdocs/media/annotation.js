@@ -8,7 +8,7 @@ function RamaddaAnnotatedImage(attrs,id) {
     let anno = this.annotorius = Annotorious.init(aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     attrs.zoomable = false;
-    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_type_annotated_image_annotations_json");
+    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"annotations_json");
     anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
@@ -30,7 +30,7 @@ function RamaddaZoomableImage(attrs,id) {
 		 };
     let anno =this.annotorius =  OpenSeadragon.Annotorious(osd,aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
-    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_"+attrs.annotationsField);
+    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,attrs.annotationsField);
     anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
@@ -194,10 +194,11 @@ RamaddaAnnotation.prototype = {
 	return this.annotorius;
     },
     doSave:function() {
-	var annotations = JSON.stringify(this.getAnno().getAnnotations());
-	let args = {};
-	args[this.entryAttribute] = annotations;
+	let annotations = JSON.stringify(this.getAnno().getAnnotations());
 	let success = r=>{
+	    if(r && r.error) {
+		alert('An error has occurred:' + r.error);
+	    }
 	};
 	
 	let error = r=>{
@@ -205,7 +206,7 @@ RamaddaAnnotation.prototype = {
 	    if(typeof e   == "string") e = JSON.parse(e);
 	    alert("An error occurred:" + (e?e.error:r));
 	};	
-	RamaddaUtil.doSave(this.entryId,this.authToken,args, success,error);
+	RamaddaUtil.changeField(this.entryId,this.entryAttribute,annotations, success,error);
     }
 }
 
