@@ -145,6 +145,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
 
 	    let divider= SPACE1;
+	    divider=HU.div([ATTR_CLASS,'cv-menubar-divider'],'');
+
 	    let clazz= HU.classes(CLASS_CLICKABLE,'cv-toolbar-button');
 	    let displaysBar = HU.div([ATTR_TITLE,'Add data display',
 				      ATTR_ACTION,ID_CV_DISPLAYS_ADD,
@@ -153,69 +155,46 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 				     HU.getIconImage('fas fa-chart-line'));
 	    this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
 
-	    if(this.canSave()) {
-		menuItemsLeft.push(HU.span([ATTR_TITLE,'Save',
-					    ATTR_ACTION,'save',
-					    ATTR_CLASS,clazz],HU.getIconImage('fas fa-file')));
+	    let add = item=>{
+		item = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(30),
+						 CSS_MARGIN_BOTTOM,HU.px(30))],item);
+		menuItemsLeft.push(item);
+	    };
+	    let icon = (icon) =>{
+		return HU.getIconImage(icon);
+	    }
+	    let button  = (title,action,img,id) =>{
+		let attrs =[ATTR_TITLE,title,
+			    ATTR_ACTION,action,
+			    ATTR_CLASS,clazz];
+		if(id) attrs.push(ATTR_ID,id);
+		add(HU.span(attrs,  icon(img)));
 
+	    }
+	    if(this.canSave()) {
+		button('File menu','file','fas fa-file');
 		menuItemsLeft.push(divider);
 	    }
-
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')',
-					ATTR_ACTION,'home',
-					ATTR_ID,'home',
-					ATTR_CLASS,clazz],HU.getIconImage('fas fa-house')));
-
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')',
-					ATTR_ACTION,ACTION_CV_ZOOMOUT,
-					ATTR_CLASS,clazz],
-				       HU.getIconImage('fas fa-magnifying-glass-minus')));
-
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom in (\'+\')',
-					ATTR_ACTION,ACTION_CV_ZOOMIN,
-					ATTR_CLASS,clazz],
-				       HU.getIconImage('fas fa-magnifying-glass-plus')));
-
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan down',
-					ATTR_ACTION,'down',
-					ATTR_CLASS,clazz],
-				       HU.getIconImage('fas fa-arrow-down')));
-
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Pan up',
-					ATTR_ACTION,'up',
-					ATTR_CLASS,clazz],
-				       HU.getIconImage('fas fa-arrow-up')));
+	    button('Reset zoom (\'=\')','home','fas fa-house');
+	    button('Zoom out (\'-\')',ACTION_CV_ZOOMOUT,'fas fa-magnifying-glass-minus');
+	    button('Zoom in (\'+\')',ACTION_CV_ZOOMIN,'fas fa-magnifying-glass-plus');
+	    button('Pan down','down','fas fa-arrow-down');
+	    button('Pan up','up','fas fa-arrow-up');
 	    menuItemsLeft.push(divider);
-
-	    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,10,
-					       ATTR_ID,this.domId(ID_CV_GOTO),
-					       ATTR_PLACEHOLDER,"Go to depth"]));
-
-
+	    add(HU.input('','',[ATTR_SIZE,10,
+				ATTR_ID,this.domId(ID_CV_GOTO),
+				ATTR_PLACEHOLDER,"Go to depth"]));
 	    menuItemsLeft.push(divider);
-
-	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_MEASURE),
-				       ATTR_CLASS,clazz,
-				       ATTR_TITLE,'Measure'],
-				      HU.getIconImage('fas fa-ruler-vertical')));
-	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_SAMPLE),
-				       ATTR_CLASS,clazz,
-				       ATTR_TITLE,'Sample @ depth'],
-				      HU.getIconImage('fas fa-eye-dropper')));	
-
+	    button('Measure','measure', 'fas fa-ruler-vertical',this.domId(ID_CV_MEASURE));
+	    button('Sample @ depth','sample','fas fa-eye-dropper',this.domId(ID_CV_SAMPLE));	
 	    menuItemsLeft.push(divider);
-	    menuItemsLeft.push(HU.span([ATTR_TITLE,'Show Gallery',
-					 ATTR_ACTION,'gallery',
-					 ATTR_CLASS,clazz],
-					HU.getIconImage('fas fa-images')));
-	    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('settings'),
-					ATTR_TITLE,'Settings',ATTR_ACTION,'settings',
-					ATTR_CLASS,clazz],
-					HU.getIconImage('fas fa-cog')));
-	    
+	    button('Show Gallery','gallery','fas fa-images');
+	    button('Settings','settings','fas fa-cog');
 
 	    let menuLeft = Utils.join(menuItemsLeft,SPACE1);
-	    let message = HU.div([ATTR_ID,this.domId(ID_CV_MESSAGE), ATTR_CLASS,'cv-message']);
+	    let message = HU.span([ATTR_ID,this.domId(ID_CV_MESSAGE),
+				   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
+				   ATTR_CLASS,'cv-message']);
 	    let menuBar = HU.div([ATTR_CLASS,HU.classes(CLASS_MENUBAR,'cv-menubar')],menuLeft+message);
 	    let collectionSection =
 		HU.div([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
@@ -269,8 +248,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		let action = $(this).attr(ATTR_ACTION);
 		if(action=='settings') {
 		    _this.showSettings($(this));
-		} else	if(action=='save') {
-		    _this.doSave();
+		} else	if(action=='file') {
+		    _this.showFileMenu($(this));
 		} else	if(action=='home') {
 		    _this.resetZoomAndPan();
 		} else if(action==ACTION_CV_ZOOMIN) {
@@ -1200,14 +1179,42 @@ RamaddaCoreDisplay.prototype = {
 	    this.jq(ID_CV_MESSAGE).hide(1000);
 	},3000);
     },
+    showFileMenu(target) {
+	let _this = this;
+	let html = '';
+	let clazz = HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_MENUITEM);
+	html+=HU.div([ATTR_CLASS,clazz,
+		      ATTR_ACTION,'save'],'Save State');
+	html+=HU.div([ATTR_CLASS,clazz,
+		      ATTR_ACTION,'clear'],'Clear State');	    
+	let opts = {anchor:target,
+		    decorate:true,
+		    at:'left bottom',
+		    my:'left top',
+		    content:html,
+		    draggable:false}
+	let dialog =  HU.makeDialog(opts);
+	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+	    let action = $(this).attr(ATTR_ACTION);
+	    if(action=='save') _this.doSave();
+	    else if(action=='clear') _this.doClear();
+	});
+    },
+    doClear: function() {
+	let json = JSON.stringify({});
+	this.saveState(json,'Data cleared');
+    },
     doSave: function() {
 	let json  = JSON.stringify(this.getJson());
+	this.saveState(json,'Data saved');
+    },
+    saveState: function(json,message) {
         let success = r=>{
             if(r && r.error) {
 		alert('An error has occurred:' + r.error);
 		return;
             }
-	    this.showMessage('Data saved');
+	    this.showMessage(message);
 	}
         let error = r=>{
             let e = r;
