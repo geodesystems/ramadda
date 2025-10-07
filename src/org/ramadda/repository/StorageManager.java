@@ -375,23 +375,23 @@ public class StorageManager extends RepositoryManager implements PointFile
         if ( !repositoryDir.exists()) {
             //            makeDirRecursive(repositoryDir);
             System.out.println("Error: The home directory does not exist: "
-                               + repositoryDir);
+                               + repositoryDir.getAbsoluteFile());
             System.out.println(
                 "Please create the directory and restart the server");
 
             throw new IllegalStateException(
                 "RAMADDA: error: home directory does not exist: "
-                + repositoryDir);
+                + repositoryDir.getAbsoluteFile());
 
         }
 
         if (new File(IOUtil.joinDir(repositoryDir,
                                     "not_for_server.txt")).exists()) {
             System.out.println("RAMADDA: error: not supposed to run here: "
-                               + repositoryDir);
+                               + repositoryDir.getAbsoluteFile());
 
             throw new IllegalStateException(
-                "RAMADDA: error: not supposed to run here: " + repositoryDir);
+                "RAMADDA: error: not supposed to run here: " + repositoryDir.getAbsoluteFile());
 
         }
 
@@ -406,10 +406,10 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         if ( !repositoryDir.canWrite()) {
             System.out.println(
-                "RAMADDA: error: home directory is not writable");
+			       "RAMADDA: error: home directory is not writable:" + repositoryDir.getAbsoluteFile());
 
             throw new IllegalStateException(
-                "RAMADDA: error: home directory is not writable");
+                "RAMADDA: error: home directory is not writable: " + repositoryDir.getAbsoluteFile());
         }
 
         htdocsDir = IOUtil.joinDir(repositoryDir, DIR_HTDOCS);
