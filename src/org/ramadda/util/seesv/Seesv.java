@@ -2740,6 +2740,7 @@ public class Seesv implements SeesvCommands {
         /*  Output   */
         new Category("Output"), 
 	new Cmd(CMD_PRINT, "Print text output",ARG_LABEL,"Text Output"),
+	new Cmd(CMD_PRINTRAW, "Print raw text output",ARG_LABEL,"Raw Text Output"),	
 	new Cmd(CMD_PRINTDELIM, "Print with delimited output", ARG_LABEL, "Delimited Print",
 		new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
         new Cmd(CMD_OUTPUT, "Write to the given file (command line only)",
@@ -5239,8 +5240,7 @@ public class Seesv implements SeesvCommands {
 	defineFunction("-quit",0,(ctx,args,i) -> {
 		String last = args.get(args.size() - 1);
 		if (last.equals(CMD_PRINT) || last.equals("-p")) {
-		    ctx.addProcessor(
-				     new Processor.Printer(ctx.getPrintFields(), false,","));
+		    ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false,","));
 		} else if (last.equals(CMD_TABLE)) {
 		    ctx.addProcessor(new RowCollector.Html(ctx));
 		}
@@ -5421,6 +5421,12 @@ public class Seesv implements SeesvCommands {
 		}
 		ctx.putProperty("seenPrint","true");
 		ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false,","));
+		return i;
+	    });
+
+	defineFunction(CMD_PRINTRAW, 0,(ctx,args,i) -> {
+		ctx.putProperty("seenPrint","true");
+		ctx.addProcessor(new Processor.PrintRaw());
 		return i;
 	    });
 

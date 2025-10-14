@@ -1235,25 +1235,15 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Printer extends Processor {
-
         private String template;
-
         private String prefix;
-
 	private boolean haveWrittenPrefix = false;
-
         private String suffix;
-
         private String delimiter=null;
-
 	private String columnDelimiter = ",";
-
         private boolean addPointHeader = false;
-
         private boolean trim = false;
-
         private String commentChar;
-
         private Row headerRow;
 
         public Printer() {
@@ -1490,22 +1480,32 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-    public static class Subd extends Printer {
+    public static class PrintRaw extends Processor {
+        public PrintRaw() {
+	}
 
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    for(int i=0;i<row.size();i++) {
+		if(i>0) {
+		    ctx.print(",");
+		}
+                ctx.print(row.get(i));
+	    }
+	    ctx.print("\n");
+            return row;
+        }
+    }
+
+    public static class Subd extends Printer {
 	private  List<Integer> indices;
 	private List<String> cols;
-
         private Seesv seesv;
-
         private String output;
-
 	private List<Range> ranges;
-
 	private  int[] rangeIndices;
 	private Row header;
-
 	private Hashtable<String,PrintWriter> writers = new Hashtable<String,PrintWriter>();
-
 	private List<PrintWriter> pws = new ArrayList<PrintWriter>();
 
         public Subd(Seesv seesv,  List<String> cols, String rangeDef, String output) {

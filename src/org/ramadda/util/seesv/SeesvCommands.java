@@ -338,6 +338,7 @@ public interface SeesvCommands {
     public static final String CMD_EXT="-ext";
     public static final String CMD_EXEC="-exec";
     public static final String CMD_PRINT="-print";
+    public static final String CMD_PRINTRAW="-printraw";
     public static final String CMD_PRINTDELIM="-printdelim";
     public static final String CMD_OUTPUTPREFIX="-outputprefix";
     public static final String CMD_PRINTHEADER="-printheader";
