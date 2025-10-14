@@ -245,7 +245,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     if(formId) {
 	let _this = this;
 	//If we are editing then listen for the submit and clear the editorChanged flag
-	$('#' + formId).submit(()=>{
+	jqid(formId).submit(()=>{
 	    this.editorChanged = false;
 	    return true;
 	});
@@ -327,7 +327,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.editor.getSession().setUseWrapMode(true);
     this.editor.setOptions(options);
     this.editor.session.setMode("ace/mode/ramadda");
-    this.toolbar = $("#" + this.getId() +"_toolbar");
+    this.toolbar = jqid(this.getId() +"_toolbar");
 
     this.editor.container.addEventListener("contextmenu", (e) =>{
 	e.preventDefault();
@@ -365,7 +365,6 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 						       ATTR_ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
     this.initTagSearch();
-
 
     this.jq("previewbutton").click(()=>{
 	HtmlUtils.hidePopupObject();
@@ -2121,11 +2120,11 @@ WikiEditor.prototype = {
     },
 
     setEditMode:function(mode) {
-	let btn = $('#'+this.id+'_toolbar_edit');
+	let btn = jqid(this.id+'_toolbar_edit');
 	this.editMode = mode;
 	let scroller = this.getScroller();
 	if(!this.editMode) {
-	    btn.find('i').css(CSS_COLOR,'#aaa');
+	    btn.find(TAG_I).css(CSS_COLOR,'#aaa');
 	    btn.css(CSS_BACKGROUND,COLOR_TRANSPARENT);
 	    scroller.css(CSS_CURSOR,CURSOR_TEXT);
 	    return
@@ -2136,8 +2135,9 @@ WikiEditor.prototype = {
     },
     initTagSearch:function() {
 	let popup = '';
+	if(!this.toolbar) return;
 	if(!this.formId) return;
-	$('#' + this.formId).find('.wiki-menubar-tags').each(function(){
+	this.toolbar.find('.wiki-menubar-tags').each(function(){
 	    if(popup!='')popup+='<thin_hr>';
 	    popup+=HU.center(HU.b($(this).attr(ATTR_DATA_TITLE)));
 	    popup+=$(this).html();
@@ -2157,12 +2157,16 @@ WikiEditor.prototype = {
 	    this.setEditMode(!this.editMode);
 	});
 
-	$('#'+this.id+'_toolbar_search').click(function(){
+	jqid(this.id+'_toolbar_search').click(function(){
 	    if(this.tagSelectDialog) this.tagSelectDialog.remove();
-	    this.tagSelectDialog =
-		HU.makeDialog({content:popup,anchor:$(this),at:'left+300 bottom+40',title:"Tags",header:true,draggable:true});
+	    this.tagSelectDialog =HU.makeDialog({
+		content:popup,
+		anchor:$(this),
+		at:'left+300 bottom+40',
+		title:"Tags",
+		header:true,
+		draggable:true});
 	    _this.jq('tagsearch').focus();
-
 	    this.tagSelectDialog.find('a').tooltip({
 		classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		content: function () {
