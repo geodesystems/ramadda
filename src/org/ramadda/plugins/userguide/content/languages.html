@@ -16,24 +16,21 @@ or
 Where &lt;language id&gt; is the short identifier for the language, e.g. 
 
 There are a number of pre-defined language phrase files. 
-You can view
-these files on
+You can view these files on
 <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages>Github</a>.
 :p
 You can view the list of available languages and their phrase translations 
 <a href="{{root}}/languages">here</a>.
 
 
-
 :heading Language Switcher
 To enable the display of the page language widget 
 <i class="fas fa-language ramadda-header-icon"></i>
-in the upper left of every page set the following property in
+in the upper right of every page set the following property in
 a repository.properties file or in the Admin-&gt;Settings Properties section
 +pre addCopy=true
 ramadda.languages.enabled = true
 -pre
-
 
 
 To show a large language switcher add the wiki text:
@@ -51,11 +48,6 @@ add the above langswitcher wiki text to a <a  href=pageconfig.html>Page Header</
 property.
 
 
-
-
-
-
-
   
 
 :heading Setting the Language
@@ -69,6 +61,23 @@ e.g. for Spanish:
 <x>:setlang es
 -pre
 
+:heading Adding new phrases
+You can add to the set of translations to your RAMADDA with a 
+"Language Phrases File" property file added to any entry.
+This enables you to add new phrases and/or overwrite the existing translation.
+:p
+Add this property to the top-level entry and set its inherited flag to true
+and these phrases can be used  throughout your RAMADDA entries.
+:p
+This file is of the form:
++pre
+English phrase=&lt;translation&gt;
+Another English phrase=&lt;translation&gt;  
+...
+-pre
+
+Upload the file and set its language to the appropriate ID, e.g. "es", "fr", "lkt", etc.
+  
 
 
 :heading Language Blocks
@@ -82,5 +91,38 @@ This is the English
 This is the Spanish
 <x>-lang  
 -pre
+
+e.g.:
++lang en
+This is the English
+-lang  
++lang es
+This is the Spanish
+-lang  
+
+:heading Defining new languages
+To define a new language, e.g, with ID "es" download the set of phrases  from:
+<a href="https://ramadda.org/languages/base.pack.txt">
+https://ramadda.org/languages/base.pack.txt
+</a>
+:p
+Change the name to use the language identifier and copy the file into the plugins directory
+under your RAMADDA home directory, e.g.
++pre
+es.pack.txt
+-pre
+
+You will then need to edit the file. Change the type and name to the appropriate values:
++pre
+language.type=es
+language.name=Español
+-pre
+
+Then, for every phrase provide a translation, e. g.:
++pre
+Date = Fecha
+-pre
+
+
 
 [ht::foot]
