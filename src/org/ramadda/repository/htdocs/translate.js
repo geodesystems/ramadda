@@ -92,7 +92,8 @@ var Translate = {
 		let html = HU.div([ATTR_ID,searchId]);
 		html +=HU.open(TAG_TABLE);
 		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400))],
-				      [HU.b('English'),HU.b('Translated')]));
+				      
+				      [HU.b('English'),HU.b('Translated - ' + lang)]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
 		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
@@ -411,8 +412,13 @@ var Translate = {
 	let cnt = 0;
 	Object.keys(Translate.missing).forEach(key=>{
 	    if(key.length>100) return;
-	    if(key.match(/^[0-9]+/)) return;
+	    if(key.match(/^[_\{\}=0-9]+/)) return;
 	    if(key.match(/ [0-9]+$/)) return;	    
+	    if(key.match(/\./)) {
+		if(!key.match(/\s/)) return;
+	    }
+	    if(key.match('©')) return;
+	    if(key.match(/^Test$/)) return;	    
 	    if(key.match(/^:.*/)) return;
 	    if(key.match(/^-.*/)) return;
 	    if(key.match(/.*&.*/)) return;
