@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Oct  7 09:03:18 EDT 2025";
+var build_date="RAMADDA build date: Tue Oct 14 06:17:58 EDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -68011,8 +68011,6 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		return;
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
-
-
             if (fields.length == 0) {
 		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
@@ -68035,8 +68033,6 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		});
 		range=[min,max]
 	    }
-
-  
 	    let minX=NaN;
 	    let maxX= NaN;
             fields.forEach((field,idx)=>{
@@ -68174,15 +68170,17 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 
 	    if(this.annotations) {
 		let shapes= layout.shapes = [];
-		this.annotations.forEach(v=>{
+		this.annotations.forEach(annotation=>{
+		    let value = annotation.value;
+		    let color = annotation.color??'red';
 		    shapes.push({
 			type: 'line',
 			x0: minX,
 			x1: maxX,      
-			y0: v,      
-			y1: v,     
+			y0: value,      
+			y1: value,     
 			line: {
-			    color: 'red',
+			    color: color,
 			    width: 2,
 			    dash: 'solid', 
 			}
