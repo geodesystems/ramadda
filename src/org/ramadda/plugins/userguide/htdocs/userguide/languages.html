@@ -81,34 +81,6 @@ property.
 
   
 
-:heading Setting the Language
-To set the language on a page add the following wiki text:
-+pre
-<x>:setlang &lt;the language ID&gt;
--pre
-
-e.g. for Spanish:
-+pre
-<x>:setlang es
--pre
-
-:heading Adding new phrases
-You can add to the set of translations to your RAMADDA with a 
-"Language Phrases File" property file added to any entry.
-This enables you to add new phrases and/or overwrite the existing translation.
-:p
-Add this property to the top-level entry and set its inherited flag to true
-and these phrases can be used  throughout your RAMADDA entries.
-:p
-This file is of the form:
-+pre
-English phrase=&lt;translation&gt;
-Another English phrase=&lt;translation&gt;  
-...
--pre
-
-Upload the file and set its language to the appropriate ID, e.g. "es", "fr", "lkt", etc.
-  
 
 
 :heading Language Blocks
@@ -130,6 +102,37 @@ This is the English
 +lang es
 This is the Spanish
 -lang  
+
+:heading Setting the Language
+To set the language on a page add the following wiki text:
++pre
+<x>:setlang &lt;the language ID&gt;
+-pre
+
+e.g. for Spanish:
++pre
+<x>:setlang es
+-pre
+
+
+
+:heading Adding new phrases
+You can add to the set of translations to your RAMADDA with a 
+"Language Phrases File" property file added to any entry.
+This enables you to add new phrases and/or overwrite the existing translation.
+:p
+Add this property to the top-level entry and set its inherited flag to true
+and these phrases can be used  throughout your RAMADDA entries.
+:p
+This file is of the form:
++pre
+English phrase=&lt;translation&gt;
+Another English phrase=&lt;translation&gt;  
+...
+-pre
+
+Upload the file and set its language to the appropriate ID, e.g. "es", "fr", "lkt", etc.
+
 
 :heading Defining new languages
 To define a new language, e.g, with ID "es" download the set of phrases  from:
