@@ -1144,7 +1144,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				      ATTR_TITLE,Utils.delimMsg('Click to download') +
 				      '; '+Utils.delimMsg('Shift-click to copy URL'),
 				      'custom-output','true',
-				      'data-name',label,
+				      ATTR_DATA_NAME,label,
 				      'data-format',id,
 				      ATTR_DATA_URL,
 				      this.getRamadda().getSearchUrl(settings,id)],
@@ -1159,7 +1159,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		HU.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
 			 ATTR_ID,copyId,
 			 'data-copy',url],
-			HU.getIconImage("fas fa-clipboard"));
+			HU.getIconImage(ICON_CLIPBOARD));
 	    if(this.getShowOutputs()) {
 		this.footerRight = outputs == null ? "" :  outputs;
 	    } else {
@@ -1649,7 +1649,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty('ancestor');
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty('ancestorName');		
 		let aid = this.domId(ID_ANCESTOR);
-		let clear = HU.href('javascript:void(0);',HU.getIconImage('fas fa-eraser'),
+		let clear = HU.href('javascript:void(0);',HU.getIconImage(ICON_ERASER),
 				    [ATTR_ONCLICK,'RamaddaUtils.clearSelect(' + HU.squote(aid) +');',
 				     ATTR_TITLE,'Clear selection']);
 		let input = HU.input('',name??'',[ATTR_READONLY,null,
@@ -2373,7 +2373,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		} else if(col.isEntry()) {
 		    let name = col.getName();
 
-		    let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"),
+		    let clear = HU.href("javascript:void(0);",HU.getIconImage(ICON_ERASER),
 					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
 					 ATTR_TITLE,"Clear selection"]);
 		    let input = HU.input("","",[ATTR_READONLY,null,
@@ -2748,7 +2748,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 
 	    let url = button.attr(ATTR_DATA_URL);
 	    let format = button.attr('data-format')
-	    let formatName = button.attr('data-name')	    
+	    let formatName = button.attr(ATTR_DATA_NAME)	    
 	    let size = "100";
 	    let doit = (extra) =>{
 		url = url.replace(/max=\d+/,'max='+size);
@@ -2783,8 +2783,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		    html+= HU.formEntry('What to download:',
 					HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
 		    let buttons = HU.buttons([
-			HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
-			HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 		    html+=HU.formTableClose();
 		    html+=buttons;
 		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
@@ -2792,13 +2792,13 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 						title:'Download options',
 						anchor:button,
 						draggable:true,header:true});
-		    dialog.find('.ramadda-button-ok').button().click(()=>{
+		    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 			size = this.jq('downloadrecords').val();
 			what = this.jq('downloadwhat').val();
 			doit('&what='+ what);
 			dialog.remove();
 		    });
-		    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 			dialog.remove();			
 		    });
 		} else {
@@ -4027,7 +4027,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
             html += HU.openDiv([ATTR_CLASS, "display-grid",
 				ATTR_ID, this.getDomId(ID_GRID)]);
-            html += HU.div([ATTR_CLASS, "display-grid-popup ramadda-popup"], "");
+            html += HU.div([ATTR_CLASS, HU.classes('display-grid-popup',CLASS_POPUP)], "");
             html += HU.openTag(TAG_TABLE, [ATTR_BORDER, HU.px(0),
 					   ATTR_CLASS, "",
 					   ATTR_CELLSPACING, "0",

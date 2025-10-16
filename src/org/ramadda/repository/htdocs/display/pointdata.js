@@ -3620,10 +3620,16 @@ RequestMacro.prototype = {
 	} else if(this.type=='numeric' || this.type=='number') {
 	    let minId = this.display.getDomId(this.getId()+'_min');
 	    let maxId = this.display.getDomId(this.getId()+'_max');			    
-	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, ATTR_STYLE, style, ATTR_ID,minId,ATTR_SIZE,4,
+	    widget = HU.input('','',[ATTR_TITLE,title??'',
+				     ATTR_DATA_MIN, this.dflt_min,
+				     ATTR_STYLE, style,
+				     ATTR_ID,minId,ATTR_SIZE,4,
 				     ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
-		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, ATTR_STYLE, style, ATTR_ID,maxId,ATTR_SIZE,4,
+		HU.input('','',[ATTR_TITLE,title??'',
+				ATTR_DATA_MAX, this.dflt_max,
+				ATTR_STYLE, style,
+				ATTR_ID,maxId,ATTR_SIZE,4,
 				ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
 	} else if(this.type=='daterange') {

@@ -18,6 +18,7 @@ var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
 var debugit = false;
 var debugMapTime = false;
 
+var CLASS_ANIM_BUTTON  = 'display-anim-button';
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
@@ -185,7 +186,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             extraStyle += HU.css(ATTR_HEIGHT, height);
 
 	    let map =HU.div([ATTR_TABINDEX,1,
-			     ATTR_CLASS, "display-map-map ramadda-expandable-target",
+			     ATTR_CLASS, HU.classes('display-map-map','ramadda-expandable-target'),
 			     ATTR_STYLE,  extraStyle,
 			     ATTR_ID, this.domId(ID_MAP)]);
 
@@ -233,14 +234,14 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(_this.regionsDialog) _this.regionsDialog.remove();		
 	    let id = _this.domId(ID_REGION_SELECTOR);
 	    let html = _this.makeRegionsMenu();
-	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",
+	    html = HU.div([ATTR_CLASS, CLASS_POPUP_INNER,
 			   ATTR_ID,id,
 			   ATTR_STYLE,HU.css(CSS_MARGIN,HU.em(1),
 					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
 						 my:'left top',at:'left bottom',anchor:button});
-	    _this.regionsDialog.find(".ramadda-menu-item").click(function() {
+	    _this.regionsDialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 		let region = MapUtils.regions[+$(this).attr(ATTR_IDX)];
 		_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
 	    });
@@ -275,7 +276,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		let group = r.group;
 		if(group.toLowerCase()=="model regions") group="Regions";
 		let name = r.name.replace(/ /g,SPACE);
-		let item = HU.div([ATTR_CLASS,"ramadda-menu-item ramadda-region-item",
+		let item = HU.div([ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,'ramadda-region-item'),
 				   ATTR_IDX,idx],name);
 		if(!groups[group]) groups[group] = "";
 		groups[group] +=item;});
@@ -283,7 +284,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    html+= HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Region',
 					     ATTR_ID,this.domId('regionsearch'),
 					     ATTR_WIDTH,10]));
-	    html += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)])+HU.open(TAG_TR,[ATTR_VALIGN,'top']);
+	    html += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)])+HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
 	    let keys = Object.keys(groups);
 	    let width = HU.perc((100/keys.length));
 	    keys.forEach(group=>{
@@ -601,7 +602,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    fields.addClass(CLASS_CLICKABLE);
 		    fields.click(function() {
 			let field = $(this).attr(ATTR_FIELD_ID);
-			let value = $(this).attr('field-value');			
+			let value = $(this).attr(ATTR_FIELD_VALUE);			
 			//A hack because for some reason clicking on an href isn't doing anything
 			if(value && value.toLowerCase().startsWith('http')) {
 			    window.open(value,'_link');
@@ -2997,7 +2998,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!label) {
 		label = Utils.makeLabel(url.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/,"").replace("_"," "));
 	    }
-	    html += HU.div([ATTR_CLASS,HU.classes('ramadda-menu-button',CLASS_CLICKABLE,'ramadda-map-button bold'),
+	    html += HU.div([ATTR_CLASS,HU.classes(CLASS_MENU_BUTTON,CLASS_CLICKABLE,'ramadda-map-button bold'),
 			    ATTR_ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
 	    this.map.appendToolbar(html);
 	    //	    this.jq("locations").append(html);
@@ -3019,12 +3020,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		locations.forEach((loc,idx)=>{
 		    if(Utils.isDefined(loc.latitude)) {
 			inner+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
-				       "latitude",loc.latitude,
-				       "longitude",loc.longitude], loc.name);
+				       ATTR_LATITUDE,loc.latitude,
+				       ATTR_LONGITUDE,loc.longitude], loc.name);
 		    } else if(Utils.isDefined(loc.north)) {
 			inner+=HU.div([ATTR_CLASS,
 				       HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
-				       "north",loc.north,"west",loc.west,"south",loc.south,"east",loc.east], loc.name);
+				       ATTR_NORTH,loc.north,ATTR_WEST,loc.west,
+				       ATTR_SOUTH,loc.south,ATTR_EAST,loc.east], loc.name);
 
 		    } else if(Utils.isDefined(loc.geometry)) {
 			inner+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'display-map-location'),
@@ -3048,12 +3050,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 		    }
 		    _this.locationFeatures = [];
-		    if($(this).attr("longitude")) {
-			let point = MapUtils.createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
+		    if(Utils.isDefined($(this).attr(ATTR_LONGITUDE))) {
+			let point = MapUtils.createLonLat(+$(this).attr(ATTR_LONGITUDE),+$(this).attr(ATTR_LATITUDE));
 			_this.map.zoomTo(9);
 			_this.map.setCenter(point);
-		    } else if($(this).attr("north")) {
-			_this.map.setViewToBounds(new RamaddaBounds(+$(this).attr("north"),+$(this).attr("west"),+$(this).attr("south"),+$(this).attr("east")));
+		    } else if(Utils.isDefined($(this).attr(ATTR_NORTH))) {
+			_this.map.setViewToBounds(new RamaddaBounds(+$(this).attr(ATTR_NORTH),
+								    +$(this).attr(ATTR_WEST),
+								    +$(this).attr(ATTR_SOUTH),
+								    +$(this).attr(ATTR_EAST)));
 		    } else {
 			let geometry = locations[$(this).attr(ATTR_INDEX)].geometry;
 			let type = geometry.type;
@@ -3314,7 +3319,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			html+= HU.span([ATTR_TITLE, title,
 					ATTR_CLASS,clazz,
-					ATTR_RECORD_ID,record.getId(),ATTR_RECORD_INDEX,idx], value);
+					ATTR_RECORD_ID,record.getId(),
+					ATTR_RECORD_INDEX,idx], value);
 		    }
 		});
 		if(doTable) {
@@ -3506,7 +3512,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let label = this.getRegionSelectorLabel() ??
 		    HU.getIconImage("fa-globe-americas");
 		
-		header+= HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-header-span ramadda-menu-button'),
+		header+= HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,HU.classes('display-header-span',CLASS_MENU_BUTTON)),
 				  ATTR_TITLE,"Select region",
 				  ATTR_ID,this.domId("selectregion")],label)+SPACE2;
 
@@ -3831,19 +3837,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				      ATTR_TITLE,"Step back"],
  				     HU.getIconImage("fa-step-backward",
-						     [ATTR_CLASS,"display-anim-button"])));
+						     [ATTR_CLASS,CLASS_ANIM_BUTTON])));
 
 		if(!groupByField) 
 		    controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_PLAY),
 					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 					  ATTR_TITLE,"Play/Stop Animation"],
 					 HU.getIconImage(ICON_PLAY,
-							 [ATTR_CLASS,"display-anim-button"])));
+							 [ATTR_CLASS,CLASS_ANIM_BUTTON])));
 		controls.push(HU.div([ATTR_ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				      ATTR_TITLE,"Step forward"],
  				     HU.getIconImage("fa-step-forward",
-						     [ATTR_CLASS,"display-anim-button"])));
+						     [ATTR_CLASS,CLASS_ANIM_BUTTON])));
 		
 
 		controls.push(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -3859,7 +3865,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq(ID_HEATMAP_ANIM_PLAY).click(function() {
 		    _this.heatmapPlayingAnimation = !_this.heatmapPlayingAnimation;
 		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
-		    $(this).html(HU.getIconImage(icon,[ATTR_CLASS, "display-anim-button"]));
+		    $(this).html(HU.getIconImage(icon,[ATTR_CLASS, CLASS_ANIM_BUTTON]));
 		    if(_this.heatmapPlayingAnimation) {
 			_this.stepHeatmapAnimation(1);
 		    }
@@ -3868,13 +3874,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    _this.heatmapPlayingAnimation = false;
 		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,
-									[ATTR_CLASS,"display-anim-button"]));
+									[ATTR_CLASS,CLASS_ANIM_BUTTON]));
 		    _this.stepHeatmapAnimation(1);
 		});
 		this.jq(ID_HEATMAP_ANIM_STEP_BACK).click(function() {
 		    _this.heatmapPlayingAnimation = false;
 		    let icon = _this.heatmapPlayingAnimation?ICON_STOP:ICON_PLAY;
-		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,"display-anim-button"]));
+		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[ATTR_CLASS,CLASS_ANIM_BUTTON]));
 		    _this.stepHeatmapAnimation(-1);
 		});		
 
@@ -3887,7 +3893,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.getHmShowToggle(this.getProperty("hm.showToggle")) || this.getHmShowReload()) {
 		let cbx = this.jq(ID_HEATMAP_TOGGLE);
-		let reload =  HU.getIconImage("fa-sync",[ATTR_CLASS,"display-anim-button",
+		let reload =  HU.getIconImage("fa-sync",[ATTR_CLASS,CLASS_ANIM_BUTTON,
 							 ATTR_TITLE,"Reload heatmap",
 							 ATTR_ID,this.domId("heatmapreload")])+SPACE2;
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
@@ -4632,14 +4638,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
-                let menu = HU.open(TAG_SELECT,[ATTR_CLASS,'ramadda-pulldown',
+                let menu = HU.open(TAG_SELECT,[ATTR_CLASS,CLASS_PULLDOWN,
 					       ATTR_ID,this.domId("colorByMenu")]);
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
 		    let attrs =[];
                     if (colorBy.field.getId() == field.getId())
-			attrs.push(ATTR_EXTRA,'true');
+			attrs.push(ATTR_EXTRA,true);
 		    attrs.push(ATTR_VALUE,field.getId());
                     menu += HU.tag(TAG_OPTION,attrs,field.getLabel());
                 }
@@ -4768,7 +4774,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHandleCollisions()) {
 		let collisionTooltip = this.getCollisionTooltip('${default}');
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
-		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
+		    let html = "#" + records.length+" records"+ HU.thinLine();
 		    records.forEach(record=>{
 			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY))],
 				     this.getRecordHtml(record, null,collisionTooltip));
@@ -5492,7 +5498,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let v = this.getRecordHtml(record, fields, tooltip);
 		    if(tooltipTemplate)
 			v = tooltipTemplate.replace('${value}',v);
-		    else   if(idx>0) text+='<thin_hr/>';
+		    else   if(idx>0) text+=HU.thinLine();
 		    text +=   v;
 		});
 		if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);

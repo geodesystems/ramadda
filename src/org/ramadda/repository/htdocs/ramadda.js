@@ -245,7 +245,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					  ATTR_ID,typeSelectId],options);
 		select = HU.vspace()+select;
 		jqid(getId('types')).html(select);
-		HtmlUtils.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true,showCategories:true});
+		HU.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true,showCategories:true});
 		HU.initSelect('#'+typeSelectId);
 	    };
 	    let key = entryType??'';
@@ -293,10 +293,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    'Parent: '+ entry.getParentName();
                         html += HU.div([ATTR_INDEX,idx,
 					ATTR_TITLE,title,
-					ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-entry')], entry.getIconImage() +" " + entry.getName());
+					ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-entry')],
+				       entry.getIconImage() +" " + entry.getName());
                     });
                     results.html(html);
-		    results.find('.ramadda-entry').click(function() {
+		    results.find(HU.dotClass('ramadda-entry')).click(function() {
 			let entry = entries[$(this).attr(ATTR_INDEX)];
 			if(!entry) return;
                         RamaddaUtils.selectClick(target, entry.getId(),entry.getName(),{
@@ -610,7 +611,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    html+=HU.open(TAG_FORM,[ATTR_ID,formId,ATTR_METHOD,'post',
 				    ATTR_ACTION,RamaddaUtil.getUrl('/entry/getentries')]);
 	    let form = HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
-				       ATTR_TITLE,'Toggle all',ATTR_ID,id+'_form_cbx'],false);
+				       ATTR_TITLE,'Toggle all',
+				       ATTR_ID,id+'_form_cbx'],false);
 	    let actions = [['','Apply action']];
 	    props.actions.forEach(action=>{
 		actions.push([action.id,action.label]);
@@ -785,7 +787,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
 	if(Utils.stringDefined(mtd) && opts.doBigText) {
-	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length','100'], mtd);
+	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length',100], mtd);
 	}
 	return mtd;
     },
@@ -997,7 +999,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 		    tds.push(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(2),
 						       CSS_MIN_WIDTH,HU.px(10)),
-				     'innerid',innerId,ATTR_ENTRYID,entry.getId(),
+				     'innerid',innerId,
+				     ATTR_ENTRYID,entry.getId(),
 				     ATTR_TITLE,'Click to show contents',
 				     ATTR_CLASS,HU.classes('entry-arrow',CLASS_CLICKABLE)], this.getToggleIcon(false)));
 
@@ -1024,7 +1027,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 		    tds.push(v);
-		    v =  HU.table([],HU.tr([ATTR_VALIGN,'top'],HU.tds([],tds)));
+		    v =  HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.tds([],tds)));
 		} else {
 		    if(col.id=='attachments') {
 			v='';
@@ -1085,13 +1088,19 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 
-	    let row =  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),ATTR_ID,rowId]);
-	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),ATTR_ID,rowId,ATTR_CLASS,rowClass]);
-	    row+= HU.open(TAG_TABLE,[ATTR_CELLSPACING,'0',
-				     ATTR_CELLPADDING,'border',ATTR_WIDTH,'100%',
-				     ATTR_CLASS,  'entry-row-table',ATTR_ENTRYID,entry.getId()]);
+	    let row =  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),
+					ATTR_ID,rowId]);
+	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),
+				     ATTR_ID,rowId,
+				     ATTR_CLASS,rowClass]);
+	    row+= HU.open(TAG_TABLE,[ATTR_CELLSPACING,0,
+				     ATTR_CELLPADDING,'border',
+				     ATTR_WIDTH,'100%',
+				     ATTR_CLASS,  'entry-row-table',
+				     ATTR_ENTRYID,entry.getId()]);
 	    let title='';
-	    let rowAttrs = [ATTR_CLASS,'entry-row',ATTR_VALIGN,'top'];
+	    let rowAttrs = [ATTR_CLASS,'entry-row',
+			    ATTR_VALIGN,ALIGN_TOP];
 	    if(!props.simple) {
 		let img = entry.getIconImage([ATTR_WIDTH,HU.px(32)]).replace(/"/g,"'");
 		//			attrs.push('data-icon',entry.getIconUrl());
@@ -1099,7 +1108,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(entry.remoteRepository) rowAttrs.push('remote-repository', entry.remoteRepository.name);
 
 		let type = entry.getType();
-		if(type) rowAttrs.push('data-type', type.name);
+		if(type) rowAttrs.push(ATTR_DATA_TYPE, type.name);
 		let thumb =entry.getThumbnail()
 		if(thumb)
 		    rowAttrs.push('data-thumbnail', thumb);
@@ -1147,7 +1156,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    let icon = $(this).attr('data-icon');		
 		    let thumb = $(this).attr('data-thumbnail');		
 		    if(icon) {
-			icon = HtmlUtils.image(icon,[ATTR_WIDTH,HU.px(32)]);
+			icon = HU.image(icon,[ATTR_WIDTH,HU.px(32)]);
 			title = icon+HU.space(1) +title;
 		    }
 		    title = HU.div([],HU.b(title));
@@ -1155,7 +1164,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(val)
 			title+=HU.div([],val);
 
-		    let type = $(this).attr('data-type');		
+		    let type = $(this).attr(ATTR_DATA_TYPE);		
 		    if(type) title=title+ 'Type: ' + type+'<br>';
 		    let filename = $(this).attr('data-filename');		
 		    if(filename) title=title+ 'File: ' + filename+'<br>';
@@ -1166,7 +1175,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			HU.div([],'Shift-drag to copy/move');
 
 		    if(thumb) {
-			thumb = HtmlUtils.image(thumb,[ATTR_WIDTH,HU.px(250)]);
+			thumb = HU.image(thumb,[ATTR_WIDTH,HU.px(250)]);
 			title = title +  HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
 								   CSS_OVERFLOW_Y,OVERFLOW_HIDDEN)],thumb);
 		    }
@@ -1237,7 +1246,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    }
 		    
 		    table+=HU.formEntry(Utils.delimMsg('Kind'),
-					HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),entry.typeName,[ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + entry.typeName]));
+					HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),entry.typeName,
+						[ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + entry.typeName]));
 		    let searchUrl = RamaddaUtil.getUrl('/search/type/' + entry.getType().id+'?user_id='+ entry.creator+'&search.submit=true');
 		    let created = HU.href(searchUrl,entry.creator,
 					  [ATTR_TITLE,
@@ -1431,7 +1441,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	form.attr('autocomplete','off');
 	inputs.attr('autocomplete','off');
 	inputs.keyup(function(event) {
-	    HtmlUtils.hidePopupObject();
+	    HU.hidePopupObject();
 	    let val = $(this).val();
 	    if(val=="") return;
 	    let url = HU.getUrl(RamaddaUtil.getUrl("/metadata/suggest"),[ATTR_VALUE,val.trim()]);
@@ -1448,7 +1458,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 						     CSS_PADDING,HU.px(4))],suggest);
 		let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
 		dialog.find(".metadata-suggest").click(function() {
-		    HtmlUtils.hidePopupObject();
+		    HU.hidePopupObject();
 		    input.val($(this).attr("suggest"));
 		});
 	    }).fail(
@@ -1477,7 +1487,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let custom = HU.div([ATTR_TITLE,"Click to select a file",
 			     ATTR_ID,fileInputId+"_filewrapper",
 			     ATTR_CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-upload") +
-			    SPACE +HU.div([ATTR_ID,fileInputId+"_filename",ATTR_CLASS,"fileinput_label"]));
+			    SPACE +HU.div([ATTR_ID,fileInputId+"_filename",
+					   ATTR_CLASS,"fileinput_label"]));
 	input.after(custom);
 	input.hide();
 	let inputWrapper = $("#" +fileInputId+"_filewrapper");
@@ -1518,7 +1529,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cnt:0,
 		added:false
 	    };
-	    target.append(HU.div([ATTR_CLASS,"ramadda-dnd-target-files",ID,fileInputId+"_dnd_files"]));
+	    target.append(HU.div([ATTR_CLASS,"ramadda-dnd-target-files",
+				  ATTR_ID,fileInputId+"_dnd_files"]));
 	    let files=$("#" +fileInputId+"_dnd_files");
 	    Utils.initDragAndDrop(target,
 				  event=>{},
@@ -1554,8 +1566,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				      let del =HU.span([ATTR_CLASS,CLASS_CLICKABLE,ID,listId+"_trash"],HU.getIconImage(icon_trash));
 				      let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):"";
 				      files.append(HU.div([ATTR_ID,listId],del +" " +name+" "+size));
-				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',ATTR_NAME,fileName,ATTR_ID,inputId]));
-				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',ATTR_NAME,nameName,ATTR_ID,nameInputId]));				  
+				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
+								    ATTR_NAME,fileName,
+								    ATTR_ID,inputId]));
+				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
+								    ATTR_NAME,nameName,
+								    ATTR_ID,nameInputId]));				  
 				      $("#"+inputId).val(result);
 				      $("#"+nameInputId).val(name);				  
 				      $("#"+listId+"_trash").click(function(){
@@ -1622,7 +1638,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 	    });
 	    let html = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_PADDING,HU.px(5))],
-			      "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',[ATTR_WIDTH,HU.px(50)]));
+			      "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',
+							    [ATTR_WIDTH,HU.px(50)]));
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}
 
@@ -1715,7 +1732,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    this.entryPopup.remove();
 	    this.entryPopup=null;
 	}
-	HtmlUtils.getTooltip().hide();
+	HU.getTooltip().hide();
     },
 
 
@@ -1891,7 +1908,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(image) popup +=HU.image(image,[ATTR_WIDTH,HU.px(300)]);
 		    if(url) popup=HU.href(url,popup);
 		    let point = new MapUtils.createLonLat(lon,lat);
-		    map.addPoint("", point, {pointRadius:6, strokeWidth:1, strokeColor:'#000', fillColor:"blue"},popup);
+		    map.addPoint("", point, {pointRadius:6,
+					     strokeWidth:1,
+					     strokeColor:COLOR_BLACK,
+					     fillColor:"blue"},popup);
 		});
 		map.centerOnMarkers();
 	    } else {
@@ -2049,15 +2069,17 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 			       ATTR_ID,"tooltipclose"]);
 	let label = HU.image(entryRow.args.icon)+ SPACE +entryRow.args.name;
 	let header =  HU.div([ATTR_CLASS,"ramadda-popup-header"],close +SPACE2 +label);
-	let html = HU.div([ATTR_CLASS,"ramadda-popup",ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_BLOCK)],   header + HU.table([], text));
-	let popup =  HtmlUtils.getTooltip();
+	let html = HU.div([ATTR_CLASS,"ramadda-popup",
+			   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_BLOCK)],
+			  header + HU.table([], text));
+	let popup =  HU.getTooltip();
 	popup.html(html);
 	popup.draggable();
         Utils.checkTabs(text);
         let pos = entryRow.getRow().offset();
         let eWidth = entryRow.getRow().outerWidth();
         let eHeight = entryRow.getRow().outerHeight();
-        let mWidth = HtmlUtils.getTooltip().outerWidth();
+        let mWidth = HU.getTooltip().outerWidth();
         let wWidth = $(window).width();
 
         let x = entryRow.lastClick;
@@ -2133,10 +2155,11 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	    }
 	}
 
-        HtmlUtils.hidePopupObject(event);
+        HU.hidePopupObject(event);
 	let container = $(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)])).appendTo("body");
         $(HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
-		  ATTR_CLASS,'ramadda-selectdiv',ATTR_ID,this.domId])).appendTo(container);
+		  ATTR_CLASS,'ramadda-selectdiv',
+		  ATTR_ID,this.domId])).appendTo(container);
         this.div = jqid(this.domId);
 	if(this.props.minWidth) {
 	    this.div.css('min-width',this.props.minWidth);
@@ -2193,18 +2216,20 @@ Selector.prototype = {
 	let xmlDoc = request.responseXML.documentElement;
 	text = getChildText(xmlDoc);
 	let pinId = this.domId +"-pin";
-	let pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), [ATTR_CLASS,"ramadda-popup-pin", ATTR_ID,pinId]); 
-	let closeImage = HtmlUtils.getIconImage(ICON_CLOSE, []);
+	let pin = HU.jsLink("",HU.getIconImage(icon_pin), [ATTR_CLASS,"ramadda-popup-pin",
+							   ATTR_ID,pinId]); 
+	let closeImage = HU.getIconImage(ICON_CLOSE, []);
 	let closeId = id+'_close';
-	let close = HU.span([ATTR_ID,closeId,ATTR_CLASS,CLASS_CLICKABLE],closeImage);
+	let close = HU.span([ATTR_ID,closeId,
+			     ATTR_CLASS,CLASS_CLICKABLE],closeImage);
 	let title = (this.props?this.props.title:"")??"";
 	let extra = (this.props?this.props.extra:"")??"";
 	if(Utils.stringDefined(title)) {
 	    title = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))], title);
 	}
-	let header = HtmlUtils.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT),
+	let header = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT),
 				    ATTR_CLASS,"ramadda-popup-header"],SPACE+close+SPACE+pin+title);
-	let popup = HtmlUtils.div([ATTR_ID,id+"-popup"], header + extra+text);
+	let popup = HU.div([ATTR_ID,id+"-popup"], header + extra+text);
 	this.div.html(popup);
 	this.showDiv();
 	
@@ -2253,7 +2278,7 @@ function getChildText(node) {
 
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg,visible) {
-    HtmlUtils.toggleBlockVisibility(id, imgid, showimg, hideimg,null,visible);
+    HU.toggleBlockVisibility(id, imgid, showimg, hideimg,null,visible);
 }
 
 

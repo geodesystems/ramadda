@@ -545,18 +545,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let tmp = HU.formTable();
             tmp += HU.formEntry("Axis Range:", HU.input("", min,
-							[ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismin")]) + " - " +
+							[ATTR_SIZE, 7,
+							 ATTR_ID, this.domId("vaxismin")]) + " - " +
 				HU.input("", max,
-					 [ATTR_SIZE, "7", ATTR_ID, this.domId("vaxismax")]));
+					 [ATTR_SIZE, 7,
+					  ATTR_ID, this.domId("vaxismax")]));
             tmp += HU.formEntry("Date Range:", HU.input("", this.minDate,
-							[ATTR_SIZE, "10", ATTR_ID, this.domId("mindate")]) + " - " +
+							[ATTR_SIZE, 10,
+							 ATTR_ID, this.domId("mindate")]) + " - " +
 				HU.input("", this.maxDate,
-					 [ATTR_SIZE, "10", ATTR_ID, this.domId("maxdate")]));
+					 [ATTR_SIZE, 10,
+					  ATTR_ID, this.domId("maxdate")]));
 
 
             tmp += HU.formEntry("Colors:",
 				HU.input("", this.getColorList().join(","),
-					 [ATTR_SIZE, "35", ATTR_ID, this.domId(ID_COLORS)]));
+					 [ATTR_SIZE, 35,
+					  ATTR_ID, this.domId(ID_COLORS)]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
 
@@ -1176,7 +1181,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let highlightWidget = SPACE + HU.vbox(["Highlight",
 							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),
 									 ATTR_MULTIPLE,"true",
-									 ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],seriesValues,highlightFields)]);
+									 ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],
+								     seriesValues,highlightFields)]);
 		    let select =  HU.span([ATTR_CLASS,"display-filter",ATTR_STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
@@ -2238,7 +2244,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let bottom = labelPosition=="bottom"?header:"";
 	    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
 	    let div = HU.div([ATTR_CLASS,"display-multi-div",
-			      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)+ multiStyle], top + this.getChartDiv(innerId) + bottom);
+			      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)+ multiStyle],
+			     top + this.getChartDiv(innerId) + bottom);
 	    this.jq(ID_CHARTS_INNER).append(div);
 	    let chart = this.makeGoogleChartInner(dataList, innerId, props, fields);
 	    if(chart) {
@@ -3435,7 +3442,7 @@ function WordtreeDisplay(displayManager, id, properties) {
             if (this.getProperty("header")) {
                 header = this.getProperty("header", "");
             } else {
-                header = "<b>Fields: </b>" + header;
+                header = HU.boldLabel('Fields') + header;
                 if (this.getProperty("headerPrefix"))
                     header = this.getProperty("headerPrefix") + " " + header;
             }

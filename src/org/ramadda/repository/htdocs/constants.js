@@ -22,6 +22,9 @@ var LABEL_OK="OK";
 var LABEL_YES="Yes";
 var LABEL_NO="No";
 var LABEL_CANCEL ="Cancel";
+var LABEL_APPLY="Apply";
+var LABEL_DELETE="Delete";
+
 
 var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
@@ -32,6 +35,9 @@ var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
 var ICON_PLAY='fas fa-play';
 var ICON_CLOSE = 'fas fa-window-close';
+var ICON_LINK= 'fas fa-link';
+var ICON_CLIPBOARD = 'fas fa-clipboard';
+var ICON_ERASER = 'fas fa-eraser';
 
 var icon_pin = 'fas fa-thumbtack';
 var icon_help = 'fas fa-question-circle';
@@ -68,7 +74,17 @@ var CLASS_BUTTON_BAR = 'ramadda-button-bar';
 var CLASS_FORMTABLE = 'formtable';
 var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
+
+
 var CLASS_BUTTON = 'ramadda-button';
+var CLASS_BUTTONS = 'ramadda-buttons';
+var CLASS_BUTTON_SMALL = 'ramadda-button-small';
+var CLASS_BUTTON_OK = 'ramadda-button-ok';
+var CLASS_BUTTON_CANCEL = 'ramadda-button-cancel';
+var CLASS_BUTTON_APPLY = 'ramadda-button-apply';
+var CLASS_BUTTON_DISABLED = 'ramadda-button-disabled';
+
+var CLASS_LINK = 'ramadda-link';
 var CLASS_MENU_ITEM = 'ramadda-menu-item';
 var CLASS_DIALOG = 'ramadda-dialog';
 var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
@@ -77,7 +93,17 @@ var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HIGHLIGHTABLE = 'ramadda-highlightable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 var CLASS_MENUITEM = 'ramadda-menu-item';
+var CLASS_MENU_BUTTON = 'ramadda-menu-button';
 var CLASS_MENUBAR = 'ramadda-menubar';
+var CLASS_SLIDER = 'ramadda-slider';
+var CLASS_POPUP='ramadda-popup';
+var CLASS_POPUP_INNER='ramadda-popup-inner';
+var CLASS_PULLDOWN='ramadda-pulldown';
+var CLASS_TABLE='ramadda-table';
+var CLASS_TABLE_STRIPE='stripe';
+var CLASS_TABLE_NOWRAP='nowrap';
+var CLASS_TABLE_HOVER='hover';
+var CLASS_TABLE_ROWBORDER='row-border';
 
 
 
@@ -149,6 +175,7 @@ var TAG_LINK = 'link';
 var TAG_LI = 'li';
 var TAG_SCRIPT='script';
 var TAG_SOURCE='source';
+
 var TAG_RECT='rect';
 var TAG_PATH='path';
 var TAG_SVG = 'svg';
@@ -165,6 +192,17 @@ var TAG_TR = 'tr';
 var TAG_TD = 'td';
 var TAG_UL = 'ul';
 var TAG_OL = 'ol';
+
+var ATTR_X='x';
+var ATTR_Y = 'y';
+
+var ATTR_NORTH='north';
+var ATTR_WEST = 'west';
+var ATTR_SOUTH = 'south';
+var ATTR_EAST = 'east';
+var ATTR_LATITUDE='latitude';
+var ATTR_LONGITUDE='longitude';
+
 
 var ATTR_FOR='for';
 var ATTR_AUTOFOCUS='autofocus';
@@ -200,15 +238,22 @@ var ATTR_DATA_FANCYBOX = 'data-fancybox';
 var ATTR_DATA_URL = 'data-url';
 var ATTR_DATA_CORPUS='data-corpus';
 var ATTR_DATA_TITLE='data-title';
+var ATTR_DATA_NAME='data-name';
 var ATTR_DATA_ACTION='data-action';
 var ATTR_DATA_MIN='data-min';
 var ATTR_DATA_MAX='data-max';
 var ATTR_DATA_VALUE='data-value';
+var ATTR_DATA_TYPE='data-type';
+var ATTR_DATA_FIELDID = 'data-fieldid';
+var ATTR_DATA_FIELD = 'data-field';
+
+
 
 var ATTR_IMGSRC='img-src';
 var ATTR_WIDTH = 'width';
 var ATTR_HEIGHT = 'height';
 var ATTR_HREF = 'href';
+var ATTR_URL = 'url';
 var ATTR_ONMOUSEDOWN  = 'onmousedown';
 var ATTR_ONCLICK  = 'onclick';
 var ATTR_ONCHANGE  = 'onchange';
@@ -217,6 +262,7 @@ var ATTR_BORDER = 'border';
 var ATTR_CANCEL='cancel';
 var ATTR_CATEGORY = 'category';
 var ATTR_CURSOR='cursor';
+var ATTR_COMMAND='command';
 var ATTR_COLS = 'cols';
 var ATTR_REL = 'rel';
 var ATTR_READONLY='readonly';

@@ -34,7 +34,7 @@ function DocumentChat(id,entryId,action,models,args) {
 		      HU.span([ATTR_ID,this.domId('button_clear'),
 			       ATTR_TITLE,'Clear output',
 			       ATTR_CLASS,CLASS_CLICKABLE],
-			      HU.getIconImage('fas fa-eraser'))
+			      HU.getIconImage(ICON_ERASER))
 		      /*+
 			HU.space(2) +
 			HU.checkbox(this.domId('button_clearalways'),[ATTR_TITLE,'Always clear output'],false,'Clear')*/);
@@ -266,11 +266,12 @@ function DocumentChat(id,entryId,action,models,args) {
 	_this.history.slice().reverse().forEach(line=>{
 	    html+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-document-history'),
 			  ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400),
-					    CSS_BORDER,'var(--basic-border)',
+					    CSS_BORDER,CSS_BASIC_BORDER,
 					    CSS_PADDING,HU.px(5),CSS_MARGIN_BOTTOM,HU.px(5))], line);
 	});
-	html = HU.div([ATTR_CLASS,'ramadda-dialog',ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-								     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
+	html = HU.div([ATTR_CLASS,CLASS_DIALOG,
+		       ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+					 CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	_this.dialog =  HU.makeDialog({anchor:$(this),
 				       content:html});
 	

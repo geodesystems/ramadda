@@ -1614,7 +1614,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 let td1Width = HU.perc(20);
                 let td2Width = HU.perc(10);
                 if (this.getProperty("showSummary", true)) {
-                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "nowrap ramadda-table",
+                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE_NOWRAP,CLASS_TABLE),
 						   ATTR_ID, this.domId("table_summary")]);
                     html += HU.openTag(TAG_THEAD, []);
                     html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Summary") +
@@ -1630,7 +1630,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.br()
                 }
                 if (this.getProperty("showCounts", true)) {
-                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border nowrap ramadda-table",
+		    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE_NOWRAP,CLASS_TABLE),
 						   ATTR_ID, this.domId("table_counts")]);
                     html += HU.openTag(TAG_THEAD, []);
                     html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Word Length") +
@@ -1655,7 +1655,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.br()
                 }
                 if (this.getProperty("showFrequency", true)) {
-                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "row-border ramadda-table",
+                    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE),
 						   ATTR_ID, this.domId("table_frequency")]);
                     html += HU.openTag(TAG_THEAD, []);
                     html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Word") +
@@ -1887,11 +1887,12 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		html += HU.openTag(TAG_TABLE, [ATTR_CELLPADDING,3,
 					       ATTR_ID,this.domId("summary"+col),
 					       ATTR_TABLE_HEIGHT,this.getProperty("tableHeight","300",true),
-					       ATTR_CLASS, "stripe row-border nowrap ramadda-table"]);
+					       ATTR_CLASS, HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE_NOWRAP,CLASS_TABLE,CLASS_TABLE_STRIPE)]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag(TAG_THEAD, []);
 		    let label =  HU.span([ATTR_TITLE,"Click to reset",
-					  ATTR_CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
+					  ATTR_CLASS,"display-frequency-label",
+					  ATTR_DATA_FIELD,s.field.getId()],f.getLabel());
 
 		    
 		    label = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
@@ -1953,7 +1954,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    //		    csv+=value+','+perc+'\n';
 
 		    bannerHtml += HU.div([ATTR_TITLE,"Click to select",
-					  ATTR_CLASS," display-frequency-item","data-field",s.field.getId(),
+					  ATTR_CLASS," display-frequency-item",
+					  ATTR_DATA_FIELD,s.field.getId(),
 					  ATTR_DATA_VALUE,value],
 					 value +HU.br() + countLabel);
 		    let tdv = HU.td([], value);
@@ -1979,7 +1981,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    items.click(function(){
 		let click = _this.getProperty("clickFunction")
 		let value = $(this).attr(ATTR_DATA_VALUE);
-		let fieldId = $(this).attr("data-field");
+		let fieldId = $(this).attr(ATTR_DATA_FIELD);
 		let parent = $(this).parent();
 		let isSelected = $(this).hasClass("display-frequency-item-selected");
 		items.removeClass("display-frequency-item-selected");
@@ -2003,7 +2005,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 	    });
 	    this.find(".display-frequency-label").click(function(){
-		let field = $(this).attr("data-field");
+		let field = $(this).attr(ATTR_DATA_FIELD);
 		//		    _this.find("[data-field=" + field+"]").css(CSS_COLOR,"black");
 		_this.handleEventFilterChanged(_this,{
 		    id:ATTR_ID,
@@ -2169,7 +2171,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             }
             html += HU.closeTag(TAG_DIV);
             this.setContents(html);
-            HU.formatTable("#" + this.domId("tables") + " .ramadda-table", {
+            HU.formatTable("#" + this.domId("tables") + " " + HU.dotClass(CLASS_TABLE), {
                 scrollY: this.getProperty("tableHeight", "200")
             });
         },
@@ -2177,7 +2179,8 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
             var table = HU.openTag(TAG_TABLE, [ATTR_WIDTH, HU.perc(100),
-					       ATTR_CLASS, "stripe hover ramadda-table"]) + HU.openTag(TAG_THEAD, []);
+					       ATTR_CLASS, HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE_HOVER,CLASS_TABLE)]) +
+		HU.openTag(TAG_THEAD, []);
             table += HU.tr([], HU.th([], title) + HU.th([], SPACE));
             table += HU.close(TAG_THEAD);
             table += HU.open(TAG_TBODY);
@@ -2414,7 +2417,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
                 lineCnt++;
-		var rowAttrs =[ATTR_VALIGN, "top"];
+		var rowAttrs =[ATTR_VALIGN, ALIGN_TOP];
 		var rowStyle="";
                 if (colorBy.index >= 0) {
 		    var value = record.getData()[colorBy.index];

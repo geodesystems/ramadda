@@ -53,7 +53,7 @@ function AreaWidget(display,arg) {
             html += HU.div([ATTR_CLASS,CLASS_CLICKABLE,
 			    ATTR_TITLE, "Clear form",
 			    ATTR_ID,this.domId(ID_CLEAR)],
-			   HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
+			   HU.getIconImage(ICON_ERASER) + SPACE + "Clear form");
 	    html+= HU.div([ATTR_TITLE, "Search mode: checked - contains, unchecked - overlaps"],
 			  HU.checkbox("",[ATTR_ID, this.domId(ID_CONTAINS)], this.areaContains) +
 			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE,
@@ -336,14 +336,14 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	let minLabel= opts.flipYAxis?Utils.formatNumber(max):Utils.formatNumber(min);	
 	let maxLabel = opts.flipYAxis?Utils.formatNumber(min):Utils.formatNumber(max);	
 	svg.append('text')
-	    .attr("x", 5) 
-	    .attr("y", h-5) 
+	    .attr(ATTR_X, 5) 
+	    .attr(ATTR_Y, h-5) 
 	    .attr("text-anchor", "left") 
 	    .attr('font-size','8pt')
 	    .text(minLabel);
 	svg.append('text')
-	    .attr("x", 5) 
-	    .attr("y", 0+10) 
+	    .attr(ATTR_X, 5) 
+	    .attr(ATTR_Y, 0+10) 
 	    .attr("text-anchor", "left") 
 	    .attr('font-size','8pt')
 	    .text(maxLabel);	
@@ -378,7 +378,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
 	    .enter()
-	    .append('rect')
+	    .append(TAG_RECT)
 	    .attr(ATTR_CLASS, 'bar')
 	    .attr('x', (d, i) => getNum(x(i)))
 	    .attr('y', d => getNum(y(d)))

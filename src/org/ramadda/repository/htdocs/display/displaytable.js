@@ -418,7 +418,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             if (this.sheets.length > 1) {
                 //                    tableHtml += HU.openTag([ATTR_CLASS,"col-md-2"]);
-                tableHtml += HU.td(["width", "140"], HU.div([ATTR_CLASS, "ramadda-xls-buttons"], buttons));
+                tableHtml += HU.td([ATTR_WIDTH, 140], HU.div([ATTR_CLASS, "ramadda-xls-buttons"], buttons));
                 weight = "10";
             }
 
@@ -491,7 +491,9 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 search += HU.openTag(TAG_FORM, ["action", "#", ATTR_ID, this.getDomId(ID_SEARCH_FORM)]);
                 search += HU.image(icon_tree_closed, [ATTR_ID, this.getDomId(ID_SEARCH + "_open")]);
                 search += "\n";
-                search += HU.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(), ["size", "60", ATTR_ID, this.getDomId(ID_SEARCH_TEXT), ATTR_PLACEHOLDER, "Search"]);
+                search += HU.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(), [ATTR_SIZE, 60,
+										   ATTR_ID, this.getDomId(ID_SEARCH_TEXT),
+										   ATTR_PLACEHOLDER, "Search"]);
                 search += "<input type=submit name='' style='display:none;'>";
 
                 search += HU.openTag(TAG_DIV, [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA), ATTR_CLASS, "ramadda-xls-search-extra"], "");

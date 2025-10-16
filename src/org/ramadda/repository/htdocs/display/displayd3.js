@@ -698,7 +698,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                     myThis.dbclick(event)
                 })
                 .append(TAG_G)
-                .attr("transform", HU.translate(margin.left, margin.top));
+                .attr(ATTR_TRANSFORM, HU.translate(margin.left, margin.top));
 
             // Define the Axis
             // 100 pixels for the legend... lets see if we keep it
@@ -716,7 +716,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             // Add Axis to the plot
             this.svg.append(TAG_G)
                 .attr(ATTR_CLASS, "x axis")
-                .attr("transform", HU.translate(0,this.displayHeight))
+                .attr(ATTR_TRANSFORM, HU.translate(0,this.displayHeight))
                 .call(this.xAxis);
 
             this.svg.append(TAG_G)
@@ -833,7 +833,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
-                    .attr(ATTR_STROKE_WIDTH, "0.5px");
+                    .attr(ATTR_STROKE_WIDTH, HU.px(0.5));
 
                 if (properties.graph.axis.z == FIELD_SELECTEDFIELD) {
                     displayLine.attr(ATTR_STROKE, "url(#colorBarGradient)");
@@ -878,8 +878,8 @@ function RamaddaD3Display(displayManager, id, properties) {
                 // Legend element Maybe create a function or see how we implement the legend
                 this.svg.append("svg:rect")
                     .attr(ATTR_CLASS, "legendElement")
-                    .attr("x", this.displayWidth - 100)
-                    .attr("y", (50 + 50 * fieldIdx))
+                    .attr(ATTR_X, this.displayWidth - 100)
+                    .attr(ATTR_Y, (50 + 50 * fieldIdx))
                     .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
@@ -888,8 +888,8 @@ function RamaddaD3Display(displayManager, id, properties) {
 
                 this.svg.append("svg:text")
                     .attr(ATTR_CLASS, "legendElement")
-                    .attr("x", this.displayWidth - 100 + 40 + 10) // position+color rect+padding
-                    .attr("y", (55 + 55 * fieldIdx))
+                    .attr(ATTR_X, this.displayWidth - 100 + 40 + 10) // position+color rect+padding
+                    .attr(ATTR_Y, (55 + 55 * fieldIdx))
                     .attr(ATTR_STROKE, function(d) {
                         return color(fieldIdx);
                     })
@@ -1448,7 +1448,8 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 var labelValue = (string ? row[string.getIndex()] : "");
                 label = HU.div([ATTR_CLASS, "display-chernoff-label"], label);
                 var div = HU.div([ATTR_ID, this.getDomId("chernoff") + "_" + rowIdx, ATTR_CLASS, "display-chernoff-face"], "");
-                html += HU.div([ATTR_TITLE, tt, ATTR_CLASS, "display-chernoff-wrapper ramadda-div-link", "value", labelValue], div + label);
+                html += HU.div([ATTR_TITLE, tt, ATTR_CLASS, "display-chernoff-wrapper ramadda-div-link",
+				ATTR_VALUE, labelValue], div + label);
             }
             legend = HU.div([ATTR_CLASS, "display-chernoff-legend"], legend);
             var height = this.getProperty("height", HU.px(400));
@@ -1463,7 +1464,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
             if (string) {
                 this.find(".ramadda-div-link").click(function() {
-                    var value = $(this).attr("value");
+                    var value = $(this).attr(ATTR_VALUE);
                     _this.propagateEvent("fieldValueSelected", {
                         field: string,
                         value: value

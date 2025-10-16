@@ -425,10 +425,9 @@ function RamaddaRepository(repositoryRoot) {
 		if(check && !check(output)) continue;
 		if(makeSpan) {
                     urls.push(HtmlUtils.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
-					      ATTR_TITLE,
-					      Utils.delimMsg('Click to download')+
+					      ATTR_TITLE, Utils.delimMsg('Click to download')+
 					      '; '+Utils.delimMsg('Shift-click to copy URL'),
-					      'data-name',output.name,
+					      ATTR_DATA_NAME,output.name,
 					      'data-format',output.id,
 					      'data-url',
 					      this.getSearchUrl(searchSettings, output.id)],
@@ -833,19 +832,20 @@ function Entry(props) {
 	    props = props??{};
 	    if(what=="name") {
 		if(this.canEdit() && inlineEdit) {
-		    return HU.input(null,this.getName(),['size','30',
-							 'entryid',this.getId(),
-							 'title','Edit name',
-							 'class','ramadda-entry-inlineedit','data-field','name']);
+		    return HU.input(null,this.getName(),[ATTR_SIZE,30,
+							 ATTR_ENTRYID,this.getId(),
+							 ATTR_TITLE,'Edit name',
+							 ATTR_CLASS,'ramadda-entry-inlineedit',
+							 ATTR_DATA_FIELD,'name']);
 		}
 		return this.getName();
 	    }
 	    if(what=="fromdate") {
-		return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
+		return HU.span([ATTR_CLASS,'ramadda-datetime',ATTR_TITLE,this.startDate],this.startDateFormat);
 	    }
 	    
 	    if(what=="time") {
-		return HU.span(['class','ramadda-datetime','title',this.startDate],this.hhmm);
+		return HU.span([ATTR_CLASS,'ramadda-datetime',ATTR_TITLE,this.startDate],this.hhmm);
 	    }
 
 	    if(what=="download") {
@@ -859,7 +859,11 @@ function Entry(props) {
 		if(!this.canEdit() || !inlineEdit) {
 		    return this.order;
 		}
-		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class','ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder','data-field','entryorder']);
+		return HU.input(null,this.order,[ATTR_SIZE,3,
+						 ATTR_ENTRYID,this.getId(),
+						 ATTR_TITLE,'Edit order',
+						 ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
+						 ATTR_DATA_FIELD,'entryorder']);
 	    }
 	    if(what=="creator") {
 		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');
@@ -879,8 +883,8 @@ function Entry(props) {
 	    if(what=="altitude") {
 		return this.getAltitude();
 	    }	    
-	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat);
-	    if(what=="changedate") return HU.span(['class','ramadda-datetime','title',this.changeDate],this.changeDateFormat);
+	    if(what=="createdate") return HU.span(['class','ramadda-datetime',ATTR_TITLE,this.createDate],this.createDateFormat);
+	    if(what=="changedate") return HU.span(['class','ramadda-datetime',ATTR_TITLE,this.changeDate],this.changeDateFormat);
 	    if(what=="size") {
 		return this.getFilesize()?this.getFormattedFilesize():"---";
 	    }

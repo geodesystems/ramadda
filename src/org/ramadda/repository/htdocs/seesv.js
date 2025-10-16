@@ -201,7 +201,7 @@ function  SeesvForm(inputId, entry,params) {
 	    right += HU.span([ATTR_ID,this.domId(ID_CLEAR),
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_TITLE,'Clear output'],
-			     HU.getIconImage('fa-eraser')) +SPACE2;
+			     HU.getIconImage(ICON_ERASER)) +SPACE2;
 	    right += HU.span([ATTR_ID,this.domId(ID_TRASH),
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_TITLE,'Remove temp files'],
@@ -1025,7 +1025,7 @@ function  SeesvForm(inputId, entry,params) {
 				     ATTR_CLASS,CLASS_CLICKABLE,
 				     ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						       CSS_RIGHT,HU.px(10),CSS_TOP,HU.px(5))],
-				    HU.getIconImage("fas fa-clipboard"))).appendTo(this.jq(ID_PRE));
+				    HU.getIconImage(ICON_CLIPBOARD))).appendTo(this.jq(ID_PRE));
 		copy.click(()=>{
 		    Utils.copyToClipboard(result);
 		    msg.html("OK, result is copied");

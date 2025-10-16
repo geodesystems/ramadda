@@ -110,7 +110,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             var contents = imports + HU.div([ATTR_CLASS, "display-notebook-cells",
 						    ATTR_ID, this.getDomId(ID_CELLS)], SPACE2+'Loading...') +
                 HU.div([ATTR_ID, this.getDomId(ID_CELLS_BOTTOM)]);
-            var popup = HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU)]);
+	    var popup = HU.div([ATTR_CLASS, CLASS_POPUP,
+				ATTR_ID, this.getDomId(ID_MENU)]);
             contents = HU.div([ATTR_ID, this.getDomId(ID_NOTEBOOK)], popup + contents);
             this.setContents(contents);
             this.makeCellLayout();
@@ -1145,7 +1146,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             input = HU.div([ATTR_CLASS, "display-notebook-input-container"], inputToolbar + input);
             var output = HU.div([ATTR_CLASS, "display-notebook-output", ATTR_ID, this.getDomId(ID_OUTPUT)], this.outputHtml);
             output = HU.div([ATTR_CLASS, "display-notebook-output-container"], output);
-            var menu = HU.div([ATTR_ID, this.getDomId(ID_MENU), ATTR_CLASS, "ramadda-popup"], "");
+            var menu = HU.div([ATTR_ID, this.getDomId(ID_MENU), ATTR_CLASS, CLASS_POPUP], "");
             var html = header + input;
             html = HU.div([ATTR_ID, this.getDomId(ID_CELL)], html);
             $("#" + this.id + "_cellinput").html(html);
@@ -1294,27 +1295,27 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             menu += open;
             menu += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
             menu += "<tr><td align=right><b>New cell:</b>&nbsp;</td><td>";
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "newabove"], "Above") + space;
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "newbelow"], "Below");
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "newabove"], "Above") + space;
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "newbelow"], "Below");
             menu += HU.close(TAG_TD,TAG_TR);
             menu += "<tr><td align=right><b>Move:</b>&nbsp;</td><td>";
-            menu += HU.div([ATTR_TITLE, "ctrl-^", ATTR_CLASS, "ramadda-link", "what", "moveup"], "Up") + space;
-            menu += HU.div([ATTR_TITLE, "ctrl-v", ATTR_CLASS, "ramadda-link", "what", "movedown"], "Down");
+            menu += HU.div([ATTR_TITLE, "ctrl-^", ATTR_CLASS, CLASS_LINK, "what", "moveup"], "Up") + space;
+            menu += HU.div([ATTR_TITLE, "ctrl-v", ATTR_CLASS, CLASS_LINK, "what", "movedown"], "Down");
             menu += HU.close(TAG_TD,TAG_TR,TAG_TABLE);
 
 
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_TITLE, "ctrl-return", ATTR_CLASS, "ramadda-link", "what", "hideall"], "Hide all inputs");
+            menu += HU.div([ATTR_TITLE, "ctrl-return", ATTR_CLASS, CLASS_LINK, "what", "hideall"], "Hide all inputs");
             menu += HU.br()
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "clearall"], "Clear all outputs");
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "clearall"], "Clear all outputs");
             menu += HU.br();
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
             menu += "<b>Layout:</b> ";
             menu += HU.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal","Horizontal") + HU.br();
             //            menu += "Columns: ";
-            //            menu += HU.input(colId, this.notebook.columns, ["size", "3", ATTR_ID, _this.getDomId(ID_LAYOUT_COLUMNS)]);
+            //            menu += HU.input(colId, this.notebook.columns, [ATTR_SIZE, 3, ATTR_ID, _this.getDomId(ID_LAYOUT_COLUMNS)]);
 	    menu+=close;
 	    menu+=open;
             menu += HU.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [], _this.showOutput,"Output enabled") + HU.br();
@@ -1326,16 +1327,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "savewithout"], "Save notebook") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "savewithout"], "Save notebook") + HU.br();
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "delete"], "Delete cell") + HU.br();
-            menu += HU.div([ATTR_CLASS, "ramadda-link", "what", "help"], "Help") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "delete"], "Delete cell") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "help"], "Help") + HU.br();
             menu = HU.div([ATTR_CLASS, "display-notebook-menu"], menu);
 	    menu+=close;
             var popup = this.getPopup();
             this.dialogShown = true;
-            popup.html(HU.div([ATTR_CLASS, "ramadda-popup-inner"], menu));
+            popup.html(HU.div([ATTR_CLASS, CLASS_POPUP_INNER], menu));
             popup.show();
             popup.position({
                 of: src,
@@ -1506,12 +1507,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let _this = this;
             var menu = "";
             menu += "Are you sure you want to delete this cell?<br>";
-            menu += HU.span([ATTR_CLASS, "ramadda-link", "what", "yes"], "Yes");
+            menu += HU.span([ATTR_CLASS, CLASS_LINK, "what", "yes"], "Yes");
             menu += HU.span([ATTR_STYLE, HU.css(CSS_MARGIN_LEFT,HU.px(50)),
-				    ATTR_CLASS, "ramadda-link", "what", "cancel"], "No");
+				    ATTR_CLASS, CLASS_LINK, "what", "cancel"], "No");
             var popup = this.getPopup();
 
-            popup.html(HU.div([ATTR_CLASS, "ramadda-popup-inner"], menu));
+            popup.html(HU.div([ATTR_CLASS, CLASS_POPUP_INNER], menu));
             popup.show();
             var src = this.input;
             if (!src.is(":visible")) {
@@ -2315,7 +2316,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var call = "getHandler('" + id + "').cdEntry('" + entry.getId() + "')";
             return HU.div([ATTR_STYLE, HU.css(CSS_PADDING_RIGHT,HU.px(4)),
 				  ATTR_TITLE, "cd to entry", ATTR_ONCLICK, call,
-				  ATTR_CLASS, "ramadda-link"], HU.image(ramaddaBaseUrl + "/icons/go.png"));
+				  ATTR_CLASS, CLASS_LINK], HU.image(ramaddaBaseUrl + "/icons/go.png"));
         },
         displayEntries: function(entries, div) {
             if (div == null) div = new Div();

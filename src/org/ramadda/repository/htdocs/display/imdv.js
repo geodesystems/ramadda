@@ -65,6 +65,7 @@ var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
 var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 
 var ATTR_BUTTON_COMMAND='buttoncommand';
+var ATTR_GLYPH_ID='glyphid';
 
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
@@ -123,7 +124,7 @@ var ROUTE_BICYCLE ='bicycle';
 var ROUTE_PEDESTRIAN ='pedestrian';
 
 
-var ATTR_GLYPH_ID='glyphid';
+
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
 var ID_MAPRESOURCE = 'mapresource';
@@ -522,9 +523,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	handleNewRoute:function(cmd,pts) {
 	    let html = this.createRouteForm();
-	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_TOP,HU.px(5))], buttons);
+	    let buttons  =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)],
+				 LABEL_OK) + SPACE2 +
+		HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)],
+		       LABEL_CANCEL);	    
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_TOP,HU.px(5))],
+			 buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',
 					header:true,my:'left top',at:'left bottom',
@@ -545,8 +549,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    cmd.activate();
 		}
 	    };
-	    dialog.find('.ramadda-button-ok').button().click(ok);
-	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		dialog.remove();
 	    });
 	},
@@ -558,9 +562,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(this.getProperty('googleRoutingEnabled')) providers.push('google');
 		if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
 		html+=HU.formEntryLabel('Provider',
-					HU.select('',[ATTR_ID,this.domId('routeprovider')],providers,this.routeProvider));
+					HU.select('',[ATTR_ID,this.domId('routeprovider')],
+						  providers,this.routeProvider));
 		html+=HU.formEntryLabel('Route Type' ,
-					HU.select('',[ATTR_ID,this.domId('routetype')],[ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],this.routeType));
+					HU.select('',[ATTR_ID,this.domId('routetype')],
+						  [ROUTE_CAR,ROUTE_BICYCLE,ROUTE_PEDESTRIAN],
+						  this.routeType));
 		if(addSequence) {
 		    if(this.getProperty('hereRoutingEnabled')) {
 			html += HU.formEntry('',HU.checkbox(this.domId('routedosequence'),[],false,
@@ -746,11 +753,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     [ATTR_ID,this.domId('isolinevalue'),ATTR_SIZE,5]) +
 				    HU.space(2)+
 				    HU.select('',[ATTR_ID,this.domId('isolinetype')],
-					      [{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],
+					      [{label:'Time (minutes)',value:'time'},
+					       {label:'Distance (miles)',value:'distance'}],
 					      this.isolineType));	    
 	    html+=HU.formTableClose();
-	    let buttons  =HU.div([ATTR_CLASS, 'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		HU.div([ATTR_CLASS, 'ramadda-button-cancel display-button'], 'Cancel');	    
+	    let buttons  =HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 	    html+=HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_TOP,HU.px(5))], buttons);
 	    html=HU.div([ATTR_STYLE, HU.css(CSS_MARGIN,HU.px(5))],html);
 	    let dialog = HU.makeDialog({content:html,
@@ -767,8 +775,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,Utils.getDefined(center.y,center.lat),Utils.getDefined(center.x,center.lon),{});
 	    };
-	    dialog.find('.ramadda-button-ok').button().click(ok);
-	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		dialog.remove();
 	    });
 	},
@@ -985,7 +993,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let html = '';
 		    data.result.forEach((loc,idx)=>{
 			html+=HU.div([ATTR_INDEX,idx,
-				      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-menu-item')],loc.name);
+				      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM)],loc.name);
 		    });
 		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
@@ -995,7 +1003,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						my:'left top',
 						at:'left bottom'});
 		    let _this = this;
-		    dialog.find('.ramadda-menu-item').click(function() {
+		    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 			let loc = data.result[$(this).attr('index')];
 			dialog.remove();
 			add(loc);
@@ -1320,8 +1328,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		let buttons = HU.buttons([
-		    HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 		html+=buttons;
 		contents.push({label:'WMS/WMTS',contents:html});
 
@@ -1419,8 +1427,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 
 		}
-		dialog.find('.ramadda-button-ok').button().click(ok);
-		dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		    dialog.hide();
 		});
 		return;
@@ -1663,8 +1671,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						CSS_PADDING_BOTTOM,HU.px(8),
 						CSS_MARGIN_BOTTOM,HU.px(8),
 						CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY))],
-			     HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-			     HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
+			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
 		html+=HU.b('Select Icon');
 		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
@@ -1704,8 +1712,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.showCommandMessage('New Marker');
 		    cmd.activate();
 		}
-		dialog.find('.ramadda-button-ok').button().click(ok);
-		dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		    closeDialog();
 		});
 		return;
@@ -1844,11 +1852,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    HU.input('',this.osm.limit??'100',
 					     [ATTR_ID,this.domId('osmlimit'),ATTR_SIZE,10]));	    
 	    html += HU.formTableClose();	    
-	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes('ramadda-button-ok',CLASS_BUTTON)], 'Search'),
+	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], 'Search'),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_BUTTON)], 'Clear Markers'),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-add',CLASS_BUTTON),
 					     ATTR_TITLE,'Add markers as glyphs'], 'Add'),
-				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-cancel',CLASS_BUTTON)], 'Close')],
+				     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], 'Close')],
 				    SPACE1);
 
 	    html+=HU.vspace();
@@ -1856,7 +1864,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(150))],
 			 SPACE +
 			 HU.span([ATTR_ID,this.domId(ID_OSM_LABEL)],SPACE));
-	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
+	    html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
 	    this.osm.dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_NEW),
 					     callback:()=>{this.osm.dialog=null;},
 					     draggable:true,title:'OpenStreetMap Query',header:true});
@@ -1867,7 +1875,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.doOSMSearch();
 		}
 	    });
-	    this.osm.dialog.find('.ramadda-button-cancel').button().click(function() {
+	    this.osm.dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(function() {
 		_this.osm.dialog.remove();
 		_this.osm.dialog=null;
 	    });
@@ -1877,7 +1885,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.osm.dialog.find('.ramadda-button-clear').button().click(() =>{
 		this.clearOSMMarkers();
 	    });
-	    this.osm.dialog.find('.ramadda-button-ok').button().click(() =>{
+	    this.osm.dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(() =>{
 		this.doOSMSearch();
 	    });
 	},
@@ -2060,8 +2068,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))])+' ' +link;
 		    let html = HU.b('STAC  Catalog URL: ') + input;
 		    html+= HU.buttons([
-			HU.div([ATTR_CLASS,'stac-add-ok display-button'], 'OK'),
-			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], 'Cancel')]);
+			HU.div([ATTR_CLASS,'stac-add-ok display-button'], LABEL_OK),
+			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], LABEL_CANCEL)]);
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
 						   CSS_MARGIN_TOP,HU.px(10))],html);	
 		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
@@ -2111,7 +2119,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		let html = '';
 		let title = (data.title??baseUrl)+HU.space(1) +
-		    HU.href(baseUrl,HU.getIconImage('fas fa-link',[],[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9))]),
+		    HU.href(baseUrl,HU.getIconImage(ICON_LINK,[],[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9))]),
 			    [ATTR_TARGET,'_stac']);
 		html+=HU.center(HU.b(title));
 		if(data.description) {
@@ -2136,7 +2144,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let label = link.title;
 			if(!label)
 			    label  = url.replace(/.*\/([^\/]+$)/,"$1");
-			let href = HU.href(url,HU.getIconImage('fas fa-link',[],
+			let href = HU.href(url,HU.getIconImage(ICON_LINK,[],
 							       [ATTR_TITLE,link.summary??'',
 								ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9))])+
 					   ' '+label+(link.rel?' ('+link.rel+')':''),
@@ -2180,13 +2188,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let asset = data.assets[key];
 			if(!Utils.stringDefined(asset.href)) return;
 			if(table=='') {
-			    table+=HU.b('Assets: ')+'note: the IMDV does not handle all projections. Try the thumbnail<br>';
+			    table+=HU.b('Assets: ')+'note: the IMDV does not handle all projections. Try the thumbnail' + HU.br();
 			    table +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
 			}
 
 			let label = asset.name??asset.title??key;
 			let assetUrl = new URL(asset.href,baseUrl).href;
-			let link = HU.href(assetUrl,HU.getIconImage('fas fa-link',[],
+			let link = HU.href(assetUrl,HU.getIconImage(ICON_LINK,[],
 								    [ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9))])+
 					   ' ' +label +' ('+ asset.type+')',
 					   [ATTR_TITLE,assetUrl,
@@ -2314,8 +2322,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))]);
 		    let html = HU.b('DATACUBE  Catalog URL: ') + input;
 		    html+= HU.buttons([
-			HU.div([ATTR_CLASS,'datacube-add-ok display-button'], 'OK'),
-			HU.div([ATTR_CLASS,'datacube-add-cancel display-button'], 'Cancel')]);
+			HU.div([ATTR_CLASS,'datacube-add-ok display-button'], LABEL_OK),
+			HU.div([ATTR_CLASS,'datacube-add-cancel display-button'], LABEL_CANCEL)]);
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
 						   CSS_MARGIN_TOP,HU.px(10))],html);
 		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
@@ -2395,8 +2403,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.close(TAG_TABLE);
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html+= HU.buttons([
-		    HU.div([ATTR_CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
+		    HU.div([ATTR_CLASS,'ramadda-button-ok-datacube display-button'], LABEL_OK),
+		    HU.div([ATTR_CLASS,'ramadda-button-cancel-datacube display-button'], LABEL_CANCEL)]);
 		
 		let datacubeDialog=this.jq('datacube_output');
 		datacubeDialog.html(html);
@@ -2583,7 +2591,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				      ATTR_TITLE,'Delete',
 				      ATTR_GLYPH_ID,mapGlyph.getId(),
-				      ATTR_BUTTON_COMMAND,ID_DELETE],icon('fas fa-eraser')));
+				      ATTR_BUTTON_COMMAND,ID_DELETE],icon(ICON_ERASER)));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,
@@ -2676,8 +2684,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							    ATTR_ROWS,10,
 							    ATTR_COLS, 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
-		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], LABEL_OK) + SPACE2 +
-					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], LABEL_CANCEL));
+		let buttons  =HU.center(HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+					HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
 		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],
 				widget+HU.br()+andZoom + buttons);
@@ -2689,14 +2697,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     draggable:true,
 					     remove:false});
 		
-		dialog.find('.ramadda-button-ok').button().click(()=>{
+		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    displayAttrs.pointDataUrl = pointDataUrl;
 		    let mapGlyph = this.handleNewFeature(null,null,mapOptions);
 		    mapGlyph.addData(displayAttrs,this.jq("andzoom").is(":checked"));
 		    dialog.remove();
 		});
-		dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		    dialog.remove();
 		});		
 	    };
@@ -2736,7 +2744,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    clazz+= " " + LIST_SELECTED_CLASS;
 		}
 		features+=HU.openTag(TAG_TR,[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,
-					     ATTR_VALIGN,'top',
+					     ATTR_VALIGN,ALIGN_TOP,
 					     ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY)),
 					     ATTR_GLYPH_ID,mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
@@ -2802,10 +2810,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+=HU.open(TAG_CENTER);
 	    html +=HU.div([ATTR_ID,this.domId(ID_LIST_DELETE),
-			   ATTR_CLASS,'display-button'], 'Delete Selected');
+			   ATTR_CLASS,CLASS_DISPLAY_BUTTON], 'Delete Selected');
 	    html += SPACE2;	    
 	    html +=HU.div([ATTR_ID,this.domId(ID_LIST_CANCEL),
-			   ATTR_CLASS,'display-button'], 'Close');	    
+			   ATTR_CLASS,CLASS_DISPLAY_BUTTON], 'Close');	    
 	    html+=HU.close(TAG_CENTER);
 	    html  = HU.div([ATTR_CLASS,'wiki-editor-popup'], html);
 	    let dialog = this.listDialog  =
@@ -2897,7 +2905,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	initSideHelp:function(dialog) {
 	    dialog.find('.imdv-property').click(function(){
-		let value = $(this).attr('value');
+		let value = $(this).attr(ATTR_VALUE);
 		if(!value) return;
 		value = value.replace(/\\n/g,'\n');
 		let target = $(this).attr(ATTR_TARGET);		
@@ -2936,7 +2944,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    help+=HU.div([],line);
 		    return;
 		}
-		attrs.push('value',props.prefix + line + props.suffix);
+		attrs.push(ATTR_VALUE,props.prefix + line + props.suffix);
 		help+=HU.div(attrs,line);
 	    });
 	    help = HU.div([ATTR_CLASS,'imdv-side-help',
@@ -3265,7 +3273,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    /*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot',
 						    ATTR_STYLE,HU.css(CSS_BACKGROUND,Utils.stringDefined(v)?v:COLOR_TRANSPARENT)]) +
 						    HU.space(2)+widget;
-						    //			    widget  = HU.table([ATTR_CELLPADDING,'0',ATTR_CELLSPACING,'0'],HU.tr([ATTR_VALIGN,'top'],HU.tds([],[widget,bar])));
+						    //			    widget  = HU.table([ATTR_CELLPADDING,'0',ATTR_CELLSPACING,'0'],HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.tds([],[widget,bar])));
 						    */
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
@@ -3312,7 +3320,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    ATTR_SLIDER_VALUE,v,
 				    'slider-id',domId,
 				    ATTR_ID,domId+'_slider',
-				    ATTR_CLASS,'ramadda-slider',
+				    ATTR_CLASS,CLASS_SLIDER,
 				    ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 						      CSS_WIDTH,HU.px(200))],"");
 
@@ -3324,7 +3332,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					ATTR_SLIDER_VALUE,v,
 					'slider-id',domId,
 					ATTR_ID,domId+'_slider',
-					ATTR_CLASS,'ramadda-slider',
+					ATTR_CLASS,CLASS_SLIDER,
 					ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 							  CSS_WIDTH,HU.px(200))],"");
 			} else  if (rows>1) {
@@ -3417,15 +3425,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
-	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_APPLY], "Apply");
+	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
 	    buttons += SPACE2;
-	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_OK], "Ok");
+	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_OK], LABEL_OK);
 	    buttons += SPACE2;
 	    if(mapGlyph) {
-		buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_DELETE], "Delete");
+		buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_DELETE], LABEL_DELETE);
 		buttons += SPACE2;
 	    }
-	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
+	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_CANCEL], LABEL_CANCEL);	   
 	    buttons+="</center>";
 	    let content =[];
 	    if(mapGlyph) {
@@ -3649,7 +3657,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    insert("colorTable="+$(this).attr('colortable'));
 		    dialog.remove();
 		});
-		dialog.find('.ramadda-menu-item').click(function() {
+		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 		    insert($(this).attr('data-attribute'));
 		    dialog.remove();
 		});
@@ -3671,8 +3679,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						ATTR_CLASS,'theimage',
 						ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,
 								  CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY))]));
-		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
-					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+					      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 
 		    let tryIt = true;
 		    html = buttons+
@@ -3737,12 +3745,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			tryIt=true;
 			clear();
 		    });
-		    dialog.find('.ramadda-button-ok').button().click(()=>{
+		    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 			let val = output.val();
 			dialog.remove();
 			input.val(val);
 		    });
-		    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 			dialog.remove();
 		    });		    
 
@@ -3783,7 +3791,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    this.setLevelRangeTick();
-	    dialog.find('.ramadda-slider').each(function() {
+	    dialog.find(HU.dotClass(CLASS_SLIDER)).each(function() {
 		let min = $(this).attr(ATTR_SLIDER_MIN);
 		let max = $(this).attr(ATTR_SLIDER_MAX);
 		let step = $(this).attr(ATTR_SLIDER_STEP)??0.01;
@@ -3835,7 +3843,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	    dialog.find('.display-button').button().click(function() {
-		let command = $(this).attr("command");
+		let command = $(this).attr(ATTR_COMMAND);
 		switch(command) {
 		case ID_OK: 
 		    myApply(true);
@@ -4137,13 +4145,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     ATTR_SIZE,6,
 					     ATTR_PLACEHOLDER,'South']));
 	    
-	    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
-				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 	    html+=buttons;
-	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
+	    html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
 	    let dialog = HU.makeDialog({content:html,anchor:this.domId(ID_MENU_NEW),draggable:true,
 					title:'Make box',header:true});
-	    dialog.find('.ramadda-button-ok').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 		let r = this.dialogRectangle = {
 		    n:this.jq('_north').val(),
 		    w:this.jq('_west').val(),		    		    
@@ -4154,7 +4162,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.createBox(r.n,r.w,r.s,r.e,type);
 		dialog.remove();
 	    });
-	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		dialog.remove();
 	    });	    
 	},
@@ -4293,9 +4301,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
 
-	    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply'),
-				      HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
-				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
+				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 	    let cbxs = [
 		HU.checkbox(this.domId('showopacityslider'),[],
 			    this.getMapProperty(PROP_SHOWOPACITYSLIDER,this.getShowOpacitySlider()),'Show Opacity Slider'),
@@ -4424,14 +4432,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			      {target:'#'+this.domId('propsearch')});
 
 
-	    dialog.find('.ramadda-button-apply').button().click(()=>{
+	    
+	    dialog.find(HU.dotClass(CLASS_BUTTON_APPLY)).button().click(()=>{
 		apply();
 	    });
-	    dialog.find('.ramadda-button-ok').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 		apply();
 		close();
 	    });
-	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		close();
 	    });
 
@@ -4701,11 +4710,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  ATTR_CLASS,CLASS_CLICKABLE]));
 		html+=HU.formEntryLabel('Zoom Level',zoomButton);
 		html+=HU.formTableClose();
-		let buttons =HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply') + SPACE2 +
-		    HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+		let buttons =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) + SPACE2 +
+		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 		html+=HU.center(buttons);
-		html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
+		html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
 		let dialog = HU.makeDialog({content:html,anchor:anchor??$(this),draggable:true,
 					    title:'Set Location/Zoom',header:true});
 		let zoomDialog;
@@ -4722,7 +4731,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 		});
 		dialog.find('.display-button').button().click(function(){
-		    if($(this).hasClass('ramadda-button-ok') || $(this).hasClass('ramadda-button-apply')) {
+		    if($(this).hasClass(CLASS_BUTTON_OK) || $(this).hasClass(CLASS_BUTTON_APPLY)) {
 			let lat = _this.jq('choose_latitude').val().trim();
 			let lon = _this.jq('choose_longitude').val().trim();			
 			if(lat!='' && lon!='') {
@@ -4731,7 +4740,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 			_this.getMap().setZoom(parseInt(_this.jq('choose_zoom_value').val()));
 		    }
-		    if($(this).hasClass('ramadda-button-apply'))  return;
+		    if($(this).hasClass(CLASS_BUTTON_APPLY))  return;
 		    if(zoomDialog) zoomDialog.remove();
 		    dialog.remove();
 		});
@@ -6261,7 +6270,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				ATTR_ID,this.domId(ID_ADDRESS_CLEAR),
 				ATTR_TITLE,'Clear',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)])) +
+			       HU.getIconImage(ICON_ERASER,[],[ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)])) +
 			' ' +
 			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),
 				ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
@@ -6291,7 +6300,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				    ATTR_WIDTH,HU.perc(100)],
-				   HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
+				   HU.tr([ATTR_VALIGN,ALIGN_BOTTOM],HU.td([],menuBar) +
 					 HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					 HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
@@ -6299,7 +6308,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				   ATTR_WIDTH,HU.perc(100)],
-				  HU.tr([ATTR_VALIGN,'bottom'],HU.td([],'') +
+				  HU.tr([ATTR_VALIGN,ALIGN_BOTTOM],HU.td([],'') +
 					HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 					       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
@@ -6917,15 +6926,15 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     let svgId = 'pattern_'+(window.olPatternBaseId++);
     let patternNode = ol.nodeFactory(null, "pattern");
     patternNode.setAttributeNS(null, ATTR_ID,svgId);
-    patternNode.setAttributeNS(null, "width",p.width);
-    patternNode.setAttributeNS(null, "height",p.height);
+    patternNode.setAttributeNS(null, ATTR_WIDTH,p.width);
+    patternNode.setAttributeNS(null, ATTR_HEIGHT,p.height);
     patternNode.setAttributeNS(null, "patternUnits","userSpaceOnUse");
     let imageNode = ol.nodeFactory(null, "image");
     patternNode.appendChild(imageNode);
     imageNode.setAttributeNS(null, "x",0);	    
     imageNode.setAttributeNS(null, "y",0);
-    imageNode.setAttributeNS(null, "width",p.width);
-    imageNode.setAttributeNS(null, "height",p.height);
+    imageNode.setAttributeNS(null, ATTR_WIDTH,p.width);
+    imageNode.setAttributeNS(null, ATTR_HEIGHT,p.height);
     imageNode.setAttributeNS(null, ATTR_HREF,p.url);
     ol.defs.appendChild(patternNode);
     ol.idToSvgId[id] = svgId;
@@ -7067,8 +7076,8 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 	} else {
 	    bg.setAttribute("x", bbox.x-pad);
 	    bg.setAttribute("y", bbox.y-pad);
-	    bg.setAttribute("width", bbox.width+pad*2);
-	    bg.setAttribute("height", bbox.height+pad*2);
+	    bg.setAttribute(ATTR_WIDTH, bbox.width+pad*2);
+	    bg.setAttribute(ATTR_HEIGHT, bbox.height+pad*2);
 	    if(style.textBackgroundRadius) {
 		bg.setAttribute("rx", style.textBackgroundRadius);
 	    }

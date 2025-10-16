@@ -258,8 +258,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(!minField.val() || !maxField.val()) return;
 		let minValue = parseFloat(minField.val().trim());
 		let maxValue = parseFloat(maxField.val().trim());
-		let dfltMinValue = parseFloat(minField.attr("data-min"));
-		let dfltMaxValue = parseFloat(maxField.attr("data-max"));
+		let dfltMinValue = parseFloat(minField.attr(ATTR_DATA_MIN));
+		let dfltMaxValue = parseFloat(maxField.attr(ATTR_DATA_MAX));
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
@@ -1044,13 +1044,15 @@ function RecordFilter(display,filterFieldId, properties) {
 					    this.getProperty('filterWidgetSize', HU.px(60)));
 		minStyle+=HU.css(CSS_WIDTH,size);
 		maxStyle+=HU.css(CSS_WIDTH,size);
-                widget = HU.input('',dfltValueMin,[ATTR_STYLE,minStyle,'data-type',this.getFieldType(),
+                widget = HU.input('',dfltValueMin,[ATTR_STYLE,minStyle,
+						   ATTR_DATA_TYPE,this.getFieldType(),
 						   ATTR_DATA_MIN,min,
 						   ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
 						   ATTR_ID,widgetId+'_min',
 						   ATTR_FIELDID,this.getId()]);
 		widget += '-';
-                widget += HU.input('',dfltValueMax,[ATTR_STYLE,maxStyle,'data-type',this.getFieldType(),
+                widget += HU.input('',dfltValueMax,[ATTR_STYLE,maxStyle,
+						    ATTR_DATA_TYPE,this.getFieldType(),
 						    ATTR_DATA_MAX,max,
 						    ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
 						    ATTR_ID,widgetId+'_max',

@@ -107,7 +107,7 @@ var Utils =  {
 		}
 		let url = HU.url(RamaddaUtil.getUrl('/loglicense'),
 				 ["licenseid",required,
-				  "name",name,"email",email,
+				  ATTR_NAME,name,"email",email,
 				  "entryid",opts.entryid]);
 		$.getJSON(url, data=>{});
 		Utils.setLocalStorage(key, true);
@@ -521,7 +521,7 @@ var Utils =  {
 			       ATTR_CLASS,CLASS_CLICKABLE,
 			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_RIGHT,HU.px(pos),
-						 CSS_TOP,HU.px(5))], HU.getIconImage("fas fa-clipboard"));
+						 CSS_TOP,HU.px(5))], HU.getIconImage(ICON_CLIPBOARD));
 	    pos+=20;
 	    jqid(id).append(copy);
 	}
@@ -1080,11 +1080,13 @@ var Utils =  {
         script.src = url;
         document.getElementsByTagName( "head" )[0].appendChild( script );
     },
+
     importJS: async function(path, callback, err, noCache) {
         path =this.replaceRoot(path);
         let _this = this;
         var key = "js:" + path;
-        if (!noCache && this.imports[key]) return Utils.call(callback);
+        if (!noCache && this.imports[key])
+	    return Utils.call(callback);
         try {
             //Some urls fail  with getScript so we do a getText then eval
             //            throw new Error();
@@ -2987,7 +2989,7 @@ var Utils =  {
         headings.mouseenter(function(){
             let id = $(this).attr(ATTR_ID);
             if(!id) return;
-            $("#" + id +"-hover").html(HU.getIconImage("fa-link",null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
+            $("#" + id +"-hover").html(HU.getIconImage(ICON_LINK,null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
             $("#" + id +"-hover").show();
         });
         headings.click(function(){
@@ -3133,8 +3135,8 @@ var Utils =  {
 					 HU.getIconImage(value.icon||icon_blank16,
 							 [ATTR_WIDTH,ramaddaGlobals.iconWidth]) + SPACE+name,
 					 [ATTR_TITLE,"View entry",
-					  'data-type',value.typeName,
-					  'data-name',value.name,
+					  ATTR_DATA_TYPE,value.typeName,
+					  ATTR_DATA_NAME,value.name,
 					  'data-icon',value.icon,
 					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100)),
 					  ATTR_CLASS,CLASS_HIGHLIGHTABLE]);
@@ -3159,11 +3161,11 @@ var Utils =  {
 		    duration: 300
 		},
 		content: function() {
-		    let name = $(this).attr('data-name');
+		    let name = $(this).attr(ATTR_DATA_NAME);
 		    return 'Click to view entry<br>'+
 			HU.image($(this).attr('data-icon'),[ATTR_WIDTH,ramaddaGlobals.iconWidth])+' ' +
 			HU.b(name)+
-			HU.div([],'Type: ' + $(this).attr('data-type'));
+			HU.div([],'Type: ' + $(this).attr(ATTR_DATA_TYPE));
 		}});
 
             if(submitForm) {
@@ -3186,7 +3188,7 @@ var Utils =  {
     searchLink:function() {
         let input = $("#popup_search_input");
         let val = input.val().trim();
-        let url = $(this).attr('url');
+        let url = $(this).attr(ATTR_URL);
         if (val != "") {
             url += "?text=" + encodeURIComponent(val);
         }
@@ -3198,7 +3200,7 @@ var Utils =  {
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
-        let searchInput = HU.tag(TAG_INPUT,['value', value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',
+        let searchInput = HU.tag(TAG_INPUT,[ATTR_VALUE, value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',
 					  ATTR_ID,'popup_search_input',ATTR_CLASS, 'ramadda-search-input',
 					    ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),
 							      CSS_PADDING,HU.px(2),
@@ -3209,7 +3211,7 @@ var Utils =  {
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			   ATTR_TITLE,"Search under this entry"],
-			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +
+			  HU.checkbox("popup_search_here",[ATTR_NAME,'ancestor', ATTR_VALUE,ramaddaThisEntry],false) +
 			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE, ATTR_FOR,"popup_search_here"],
 				 HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
 					HU.getIconImage('fas fa-folder-tree'))));
@@ -3237,7 +3239,7 @@ var Utils =  {
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
         let icon = $("#" + id);
         let dialog = this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
-        $("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
+        $("#" + linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
         let input = $("#popup_search_input");
         input.mousedown(function(evt) {
             evt.stopPropagation();
@@ -4135,7 +4137,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		if(linksDiv && args.linkSelector) {
 		    let links = $(this).find(args.linkSelector);
 		    if(links.length) {
-			let name = links.attr('name');
+			let name = links.attr(ATTR_NAME);
 			if(name)
 			    linkNames.push(name);
 		    }
@@ -4219,7 +4221,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initRadioToggle(radios,values) {
 	$(radios).find('input[type=radio]').change(function() {
 	    for(a in values) {
-		if(a==$(this).attr('value'))
+		if(a==$(this).attr(ATTR_VALUE))
 		    $( values[a]).show();
 		else
 		    $( values[a]).hide();
@@ -4328,7 +4330,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return true;
     },
     jqname:function(value) {
-	return this.jqattr('name',value);
+	return this.jqattr(ATTR_NAME,value);
     },
     jqattr:function(name,value) {
 	let sel =  '[' + name+'="'+ value+'"]';
@@ -4666,6 +4668,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     isFontAwesome:function(icon) {
         return icon.startsWith("fa-") || icon.startsWith("fas ") || icon.startsWith("far ")
             || icon.startsWith("fab ");     
+    },
+    thinLine: function() {
+	return '<thin_hr></thin_hr>';
     },
     getIconImage: function(url,attrs,attrs2) {
         if(HU.isFontAwesome(url)) {
@@ -5694,12 +5699,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             });
             if(!topMost) return;
-            if(lastTop && lastTop.attr("name") == topMost.attr("name")) return;
+            if(lastTop && lastTop.attr(ATTR_NAME) == topMost.attr(ATTR_NAME)) return;
             lastTop = topMost;
             links.removeClass("ramadda-nav-link-active");
             let activeLink = null;
             links.each(function() {
-                if($(this).attr("navlink") == topMost.attr("name")) {
+                if($(this).attr("navlink") == topMost.attr(ATTR_NAME)) {
                     $(this).addClass("ramadda-nav-link-active");
                     activeLink = $(this);
                 }
@@ -6027,12 +6032,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         for (i in attrs)
             a.push(attrs[i]);
         attrs = a;
-        attrs.push("url");
-        attrs.push(url);
-        attrs.push(ATTR_CLASS);
-        attrs.push("ramadda-link");
+        attrs.push(ATTR_URL,url);
+        attrs.push(ATTR_CLASS, CLASS_LINK);
         if (attrs.style) attrs.style += HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
-        else attrs.style = "style='display:inline-block;'";
+        else attrs.style = HU.attr(ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK));
         return this.div(attrs, label);
     },
     getEntryImage: function(entryId, tag) {
@@ -6109,9 +6112,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         attrs.push(id);
         attrs.push("type");
         attrs.push("checkbox");
-	if(!attrs.includes("value")) {
-            attrs.push("value");
-            attrs.push("true");
+	if(!attrs.includes(ATTR_VALUE)) {
+            attrs.push(ATTR_VALUE,true);
 	}
         if (checked) {
             attrs.push("checked");
@@ -6289,8 +6291,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 					      HU.span([ATTR_ID,'clipboard',
 						       ATTR_CLASS,CLASS_CLICKABLE,
 						       ATTR_TITLE,'Copy URL to clipboard'],
-						      HU.getIconImage('fas fa-clipboard')) + SPACE2+
-					      HU.href(url, HU.getIconImage('fas fa-link'),[ATTR_TITLE,'Form URL']));
+						      HU.getIconImage(ICON_CLIPBOARD)) + SPACE2+
+					      HU.href(url, HU.getIconImage(ICON_LINK),[ATTR_TITLE,'Form URL']));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -6385,7 +6387,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let category='';
 	    let radioName = HU.getUniqueId('radio');
 	    select.find(TAG_OPTION).each(function() {
-		let value = $(this).attr('value');
+		let value = $(this).attr(ATTR_VALUE);
 		if(!Utils.stringDefined(value)) {
 		    if($(this).attr(ATTR_CATEGORY) && opts.showCategories) {
 			category = 	 $(this).html();
@@ -6437,7 +6439,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action',
 					     ATTR_DATA_ACTION,'showall'],'Show all');	   
 		input+=HU.div([ATTR_STYLE,
-			       HU.css(CSS_BORDER_BOTTOM,'var(--basic-border)',CSS_PADDING,HU.px(6))],buttons);
+			       HU.css(CSS_BORDER_BOTTOM,CSS_BASIC_BORDER,CSS_PADDING,HU.px(6))],buttons);
 	    }
 
 	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], HU.center(input) + cbxInner);
@@ -6573,7 +6575,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    //		    console.log(tt);
 		}
 	    }
-	    attrs.push(ATTR_TITLE,tt,extra,null,'value',value);
+	    attrs.push(ATTR_TITLE,tt,extra,null,ATTR_VALUE,value);
 	    let option = HU.tag(TAG_OPTION,attrs,label);
             options+=option;
         });
@@ -6636,13 +6638,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     input: function(name, value, attrs) {
-        return "<input " + HU.attrs(attrs) + HU.attrs(["value", value]) +(name==null?'':HU.attrs("name", name))  + ">";
+        return "<input " + HU.attrs(attrs) + HU.attrs([ATTR_VALUE, value]) +(name==null?'':HU.attrs(ATTR_NAME, name))  + ">";
     },
     hidden: function(name, value, attrs) {
-        return "<input type=hidden " + HU.attrs(attrs) + HU.attrs(["name", name, "value", value]) + ">";
+        return "<input type=hidden " + HU.attrs(attrs) + HU.attrs([ATRR_NAME, name, ATTR_VALUE, value]) + ">";
     },    
     textarea: function(name, value, attrs) {
-        return "<textarea " + HU.attrs(attrs) + HU.attrs(["name", name]) + ">" + value + "</textarea>";
+        return "<textarea " + HU.attrs(attrs) + HU.attrs([ATTR_NAME, name]) + ">" + value + "</textarea>";
     },
     initSelect: function(selector, args) {
         if(selector.length==0) return;

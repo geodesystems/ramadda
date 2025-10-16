@@ -889,7 +889,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		buttons+=HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space;
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ATTR_ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
-	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],"Cancel");
+	    buttons+=  HU.div([ATTR_ID,this.getDomId(ID_CANCEL)],LABEL_CANCEL);
 	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),
 								  ATTR_TITLE,'Select # records to download',
 								  ATTR_SIZE,4]) +" records");

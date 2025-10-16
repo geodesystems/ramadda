@@ -19,7 +19,8 @@ function RamaddaReader(id,args,data) {
     let left = '';
     if(opts.showSearch) {
 	left +=HU.div([],HU.input('','',[ATTR_ID,sid,
-					 ATTR_PLACEHOLDER,'Search','size','12']));
+					 ATTR_PLACEHOLDER,'Search',
+					 ATTR_SIZE,12]));
 
     }
     data.forEach((d,idx)=>{
