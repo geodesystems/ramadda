@@ -889,8 +889,9 @@ function RecordField(props, source) {
                 type="fa-list";
             }
             let tt = this.getType();
-            return  HU.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,
-				    ATTR_STYLE,"color:rgb(169, 169, 169);font-size:12pt;"]);
+            return  HU.span([ATTR_TITLE,tt,
+			     ATTR_CLASS,"fa " +type,
+			     ATTR_STYLE,HU.css(CSS_COLOR,'rgb(169, 169, 169)',CSS_FONT_SIZE,HU.pt(12))]);
         },
         getUnitLabel: function() {
             return this.getLabel() + this.getUnitSuffix();
@@ -3558,7 +3559,8 @@ RequestMacro.prototype = {
 	if(debug)console.log(this.getId() +'.getWidget:' + label +' type:' + this.type);
 	if(this.type=='bounds') {
 	    widget = HU.checkbox(this.display.getDomId(this.getId()),[ATTR_TITLE,title??'Reload with current bounds',
-								      ATTR_ID,this.display.getDomId(this.getId())], false, 'In bounds');
+								      ATTR_ID,this.display.getDomId(this.getId())],
+				 false, 'In bounds');
 	    label = null;
 	} else if(this.isSkip()) {
 	    widget = '';
@@ -3572,7 +3574,8 @@ RequestMacro.prototype = {
 			 ATTR_CLASS, CLASS_CLICKABLE,
 			 ATTR_ID,this.display.getDomId(this.getId()+'_prev')],
 			HU.getIconImage('fas fa-angle-left')) +
-		HU.span([ATTR_TITLE,'Show next',ATTR_STYLE,bstyle,
+		HU.span([ATTR_TITLE,'Show next',
+			 ATTR_STYLE,bstyle,
 			 ATTR_CLASS, CLASS_CLICKABLE,
 			 ATTR_ID,this.display.getDomId(this.getId()+'_next')],
 			HU.getIconImage('fas fa-angle-right'));
@@ -3586,8 +3589,10 @@ RequestMacro.prototype = {
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
 		let widgetId = this.display.getDomId(this.getId());
-		let attrs = [ATTR_TITLE,title??'',ATTR_STYLE, style,
-			     ATTR_ID,widgetId,ATTR_CLASS,'display-filter-input'];
+		let attrs = [ATTR_TITLE,title??'',
+			     ATTR_STYLE, style,
+			     ATTR_ID,widgetId,
+			     ATTR_CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -3601,10 +3606,8 @@ RequestMacro.prototype = {
 		}
 
 		if(this.multiple) {
-		    attrs.push(ATTR_MULTIPLE);
-		    attrs.push(null);
-		    attrs.push(ATTR_SIZE);
-		    attrs.push(Math.min(this.rows,values.length));
+		    attrs.push(ATTR_MULTIPLE,null);
+		    attrs.push(ATTR_SIZE, Math.min(this.rows,values.length));
 		} else {
 		    //		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
 		}
@@ -3623,13 +3626,15 @@ RequestMacro.prototype = {
 	    widget = HU.input('','',[ATTR_TITLE,title??'',
 				     ATTR_DATA_MIN, this.dflt_min,
 				     ATTR_STYLE, style,
-				     ATTR_ID,minId,ATTR_SIZE,4,
+				     ATTR_ID,minId,
+				     ATTR_SIZE,4,
 				     ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
 		HU.input('','',[ATTR_TITLE,title??'',
 				ATTR_DATA_MAX, this.dflt_max,
 				ATTR_STYLE, style,
-				ATTR_ID,maxId,ATTR_SIZE,4,
+				ATTR_ID,maxId,
+				ATTR_SIZE,4,
 				ATTR_CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
 	} else if(this.type=='daterange') {
@@ -3637,24 +3642,34 @@ RequestMacro.prototype = {
 	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
-						      ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,fromId]) +
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',
+						      ATTR_CLASS,'display-filter-input',
+						      ATTR_STYLE, style,
+						      ATTR_NAME,'',
+						      ATTR_ID,fromId]) +
 		' - ' +
-		HU.datePicker('',this.dflt_to,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
-					       ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,toId])
+		HU.datePicker('',this.dflt_to,[ATTR_TITLE,title??'',
+					       ATTR_CLASS,'display-filter-input',
+					       ATTR_STYLE, style,
+					       ATTR_NAME,'',
+					       ATTR_ID,toId])
 	    label = label+' range';
 	} else if(this.type=='date') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    dateIds.push(fromId);
-	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',ATTR_CLASS,'display-filter-input',
-						      ATTR_STYLE, style, ATTR_NAME,'',ATTR_ID,fromId]);
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',
+						      ATTR_CLASS,'display-filter-input',
+						      ATTR_STYLE, style,
+						      ATTR_NAME,'',
+						      ATTR_ID,fromId]);
 	} else {
 	    let size = '10';
 	    if(this.type=='number')
 		size = '4';
 	    size = this.getProperty("request." +this.name+".size",size),
 
-	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',ATTR_STYLE, style,
+	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',
+					    ATTR_STYLE, style,
 					    ATTR_ID,this.display.getDomId(this.getId()),
 					    ATTR_SIZE,size,
 					    ATTR_CLASS,'display-filter-input']);
@@ -3788,7 +3803,7 @@ RequestMacro.prototype = {
 
 
 function makeInlineData(display, src) {
-    let div = $("#"+src);
+    let div = jqid(src);
     if(div.length==0) throw new Error("No inline data available:" + src);
     let html = div.html();
     if(!Utils.stringDefined(html)) throw new Error("No inline data available:" + src);

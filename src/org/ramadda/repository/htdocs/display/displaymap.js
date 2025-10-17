@@ -2230,8 +2230,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         getPosition: function() {
-            let lat = $("#" + this.domId(ID_LATFIELD)).val();
-            let lon = $("#" + this.domId(ID_LONFIELD)).val();
+            let lat = jqid(this.domId(ID_LATFIELD)).val();
+            let lon = jqid(this.domId(ID_LONFIELD)).val();
             if (lat == null)
                 return null;
             return [lat, lon];
@@ -3954,7 +3954,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.htmlPopupLayerId) {
 		jqid(this.htmlPopupLayerId).html(this.htmlPopup);
 	    }
-	    $('#'+ this.htmlLayerId).html(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],this.htmlLayer));
+	    jqid(this.htmlLayerId).html(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],this.htmlLayer));
 	    
 
 
@@ -4078,9 +4078,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						     ATTR_WIDTH,cw,
 						     ATTR_HEIGHT, ch]);
 			if(idx==0)
-			    $("#" + info.id).html(pie);
+			    jqid(info.id).html(pie);
 			else
-			    $("#" + info.hoverId).html(pie);
+			    jqid(info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
 			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):fillColor;
 			let ctx = canvas.getContext("2d");
@@ -4126,7 +4126,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    min = this.getHtmlLayerMin(min);
 		    max = this.getHtmlLayerMax(max);		    
 		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,min,max,colorBy,props1);
-		    $('#' + info.hoverId).css(CSS_BACKGROUND,COLOR_WHITE).css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
+		    jqid(info.hoverId).css(CSS_BACKGROUND,COLOR_WHITE).css(CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY));
 		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,min,max,colorBy,props2);
 		}
 	    });
@@ -4136,15 +4136,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    
 	    items.mouseenter(function() {
 		hitems.hide();
-		let popup = 	$('#'+$(this).attr(ATTR_ID)+'_hover');
+		let popup = jqid($(this).attr(ATTR_ID)+'_hover');
 		popup.show();
-		//		$('#'+$(this).attr(ATTR_ID)+'_hover').fadeIn(1000);
+		//		jqid($(this).attr(ATTR_ID)+'_hover').fadeIn(1000);
 	    });
 	    items.mouseleave(function() {
 		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$('#'+ $(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,DISPLAY_BLOCK);
+		jqid($(this).attr(ATTR_ID).replace('_hover','')).css(CSS_DISPLAY,DISPLAY_BLOCK);
 		$(this).css(CSS_DISPLAY,DISPLAY_NONE);
 	    });
 	    if(colorBy.hasField()) {
@@ -5390,7 +5390,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.propagateEventRecordSelection({record:record});
 		let displayDiv = this.getProperty("displayDiv", null);
 		if(displayDiv && this.textGetter) {
-		    $("#" + displayDiv).html(this.textGetter({record:record}));
+		    jqid(displayDiv).html(this.textGetter({record:record}));
 		}
 		let marker =  this.markers[record.getId()];
 		if(marker) {
@@ -5668,7 +5668,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getDeclutterLabels()) {
 		this.declutterLabels();
 	    }
-	    $("#" + this.map.labelLayer.id).css(CSS_Z_INDEX,900);
+	    jqid(this.map.labelLayer.id).css(CSS_Z_INDEX,900);
         },
 
 

@@ -1460,7 +1460,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	},
         loadAncestors: function(ancestors) {
-	    let url = ramaddaBaseUrl+ '/wiki/getentries?entries=' + ancestors;
+	    let url = HU.url(RamaddaUtil.getUrl('/wiki/getentries'),'entries',ancestors);
             let entryList = new EntryList(this.getRamadda(), url, this, false);
 	    let success=list=>{
 		this.loadAncestorsList(list.getEntries());
@@ -2944,7 +2944,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			    let entryId = records[0].data[8];
 			    this.wikify(entryType.mapwiki,entryId,null,null,uid);
 			    return HU.div([ATTR_ID,uid],
-					  HU.center(HU.image(ramaddaCdn + '/icons/mapprogress.gif',
+					  HU.center(HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
 							     [ATTR_WIDTH,HU.px(80)])));
 			};
 		    }

@@ -619,7 +619,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
             let html = HU.div([ATTR_ID, this.domId(ID_FIELDS),
-			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, HU.px(height))], "  ");
+			       ATTR_STYLE, HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, HU.px(height))],
+			      "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -1183,7 +1184,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 									 ATTR_MULTIPLE,"true",
 									 ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],
 								     seriesValues,highlightFields)]);
-		    let select =  HU.span([ATTR_CLASS,"display-filter",ATTR_STYLE,""],highlightWidget);
+		    let select =  HU.span([ATTR_CLASS,"display-filter",
+					   ATTR_STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
@@ -1423,7 +1425,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style+=HU.css(CSS_MAX_WIDTH,HU.px(maxHeaderWidth),CSS_OVERFLOW_X,OVERFLOW_AUTO);
 		    if(headerStyle)
 			style+=headerStyle;
-		    headerLabel = HU.div([ATTR_TITLE,orig,ATTR_STYLE,style], headerLabel);
+		    headerLabel = HU.div([ATTR_TITLE,orig,
+					  ATTR_STYLE,style], headerLabel);
 		} 
                 if (colIdx == 0 && props.includeIndex) {
                     //This might be a number or a date
@@ -1484,7 +1487,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(addStyle) {
 			if(debug)
 			    console.log("\tadd style column");
-			dataTable.addColumn({ type: 'string', role: ATTR_STYLE });
+			dataTable.addColumn({ type: 'string', role: 'style'});
 		    }
 		    if(colIdx>0 && fixedValueS) {
 			break;
@@ -2145,8 +2148,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     style += HU.css(CSS_HEIGHT, HU.perc(100));
 		}
 	    }
-            divAttrs.push(ATTR_STYLE,style);
-	    divAttrs.push(ATTR_CLASS,"ramadda-expandable-target");
+            divAttrs.push(ATTR_STYLE,style,
+			  ATTR_CLASS,"ramadda-expandable-target");
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
 	    if(isExpanded) {
@@ -4672,8 +4675,8 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if((typeof height)=="number") height = HU.px(height);
 	    if((typeof width)=="number") width = HU.px(width);
 
-            $("#" + chartDiv.id).css(CSS_WIDTH, width);
-            $("#" + chartDiv.id).css(CSS_HEIGHT, height);
+            jqid(chartDiv.id).css(CSS_WIDTH, width);
+            jqid(chartDiv.id).css(CSS_HEIGHT, height);
             return new google.visualization.ScatterChart(chartDiv);
         },
 

@@ -9,10 +9,9 @@ var OUTPUT_CSV = "default.csv";
 var OUTPUT_CHOOSE = "default.ids";
 var OUTPUT_ZIP = "zip.tree";
 var OUTPUT_EXPORT = "zip.export";
-
 var VALUE_ANY_TYPE="_any_";
-
 var DEFAULT_MAX = 100;
+var ENTRY_NONGEO = -9999;
 
 var OUTPUTS = [
     {id: OUTPUT_CHOOSE,name: "Select Output"},
@@ -133,7 +132,7 @@ function Repository(repositoryRoot) {
             return this.repositoryRoot;
         },
         getIconUrl: function(entry) {
-            return ramaddaCdn + "/icons/page.png";
+            return RamaddaUtil.getCdnUrl("/icons/page.png");
         },
         getEntryTypes: function(callback) {
             return new Array();
@@ -174,7 +173,7 @@ function Repository(repositoryRoot) {
             }
             let url = this.repositoryRoot;
             //Do the a trick
-            let parser = document.createElement('a');
+            let parser = document.createElement(TAG_A);
             parser.href = url;
             let host = parser.hostname;
             let path = parser.pathname;
@@ -424,16 +423,17 @@ function RamaddaRepository(repositoryRoot) {
 		let output = OUTPUTS[i];
 		if(check && !check(output)) continue;
 		if(makeSpan) {
-                    urls.push(HtmlUtils.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
-					      ATTR_TITLE, Utils.delimMsg('Click to download')+
-					      '; '+Utils.delimMsg('Shift-click to copy URL'),
-					      ATTR_DATA_NAME,output.name,
-					      'data-format',output.id,
-					      'data-url',
-					      this.getSearchUrl(searchSettings, output.id)],
-					     output.name));
+                    urls.push(HU.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
+				       ATTR_TITLE,
+				       Utils.delimMsg('Click to download')+
+				       '; '+Utils.delimMsg('Shift-click to copy URL'),
+				       ATTR_DATA_NAME,output.name,
+				       'data-format',output.id,
+				       'data-url',
+				       this.getSearchUrl(searchSettings, output.id)],
+				      output.name));
 		} else {
-                    urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, output.id),
+                    urls.push(HU.href(this.getSearchUrl(searchSettings, output.id),
 					     output.name,[ATTR_CLASS,'ramadda-search-link']));
 		}
             }
@@ -731,7 +731,7 @@ function EntryType(props) {
 }
 
 
-var ENTRY_NONGEO = -9999;
+
 
 
 //class:Entry
@@ -841,11 +841,13 @@ function Entry(props) {
 		return this.getName();
 	    }
 	    if(what=="fromdate") {
-		return HU.span([ATTR_CLASS,'ramadda-datetime',ATTR_TITLE,this.startDate],this.startDateFormat);
+		return HU.span([ATTR_CLASS,'ramadda-datetime',
+				ATTR_TITLE,this.startDate],this.startDateFormat);
 	    }
 	    
 	    if(what=="time") {
-		return HU.span([ATTR_CLASS,'ramadda-datetime',ATTR_TITLE,this.startDate],this.hhmm);
+		return HU.span([ATTR_CLASS,'ramadda-datetime',
+				ATTR_TITLE,this.startDate],this.hhmm);
 	    }
 
 	    if(what=="download") {
@@ -866,7 +868,7 @@ function Entry(props) {
 						 ATTR_DATA_FIELD,'entryorder']);
 	    }
 	    if(what=="creator") {
-		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');
+		let searchUrl = HU.url(RamaddaUtil.getUrl('/search/do'),'user_id',this.creator,'search.submit','true');
 		let created = HU.href(searchUrl,
 				      Utils.stringDefined(this.creatorName)?this.creatorName:this.creator,
 				      [ATTR_TITLE,'Search for entries of this type created by this user']);
@@ -883,8 +885,10 @@ function Entry(props) {
 	    if(what=="altitude") {
 		return this.getAltitude();
 	    }	    
-	    if(what=="createdate") return HU.span(['class','ramadda-datetime',ATTR_TITLE,this.createDate],this.createDateFormat);
-	    if(what=="changedate") return HU.span(['class','ramadda-datetime',ATTR_TITLE,this.changeDate],this.changeDateFormat);
+	    if(what=="createdate") return HU.span([ATTR_CLASS,'ramadda-datetime',
+						   ATTR_TITLE,this.createDate],this.createDateFormat);
+	    if(what=="changedate") return HU.span([ATTR_CLASS,'ramadda-datetime',
+						   ATTR_TITLE,this.changeDate],this.changeDateFormat);
 	    if(what=="size") {
 		return this.getFilesize()?this.getFormattedFilesize():"---";
 	    }
@@ -1080,10 +1084,12 @@ function Entry(props) {
         },
         getIconImage: function(attrs) {
 	    attrs = attrs??[];
-	    if(!attrs.includes(ATTR_WIDTH))attrs.push(ATTR_WIDTH,ramaddaGlobals.iconWidth);
+	    if(!attrs.includes(ATTR_WIDTH)) {
+		attrs.push(ATTR_WIDTH,ramaddaGlobals.iconWidth);
+	    }
 	    if(this.iconRelative)
-		return HtmlUtils.image(this.iconRelative, attrs);
-            return HtmlUtils.image(this.getIconUrl(), attrs);
+		return HU.image(this.iconRelative, attrs);
+            return HU.image(this.getIconUrl(), attrs);
         },
         getColumns: function() {
             if (this.type.getColumns() == null) {
@@ -1228,11 +1234,11 @@ function Entry(props) {
 	    attrs.push("href", this.getEntryUrl());
 	    if(includeIcon)
 		label  = this.getIconImage() + SPACE +label;
-            return HtmlUtils.tag("a", attrs, label);
+            return HU.tag(TAG_A, attrs, label);
         },
         getResourceLink: function(label) {
             if (!label) label = this.getName();
-            return HtmlUtils.tag("a", ["href", this.getResourceUrl()], label);
+            return HU.tag(TAG_A, ["href", this.getResourceUrl()], label);
         },
         toString: function() {
             return "entry:" + this.getName()+" id:" + this.getId();

@@ -8,6 +8,8 @@ var FILTER_ALL = "-all-";
 
 var ATTR_FIELDID = 'fieldId';
 
+
+
 //class: BaseFilter
 function BaseFilter(display,properties) {
     this.display = display;
@@ -38,7 +40,8 @@ function BoundsFilter(display, properties) {
 	    let id = this.display.getDomId("boundsfilter");
 	    return HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),
 					      CSS_MARGIN_RIGHT,HU.px(4)),
-			    ATTR_ID,id,ATTR_CLASS,CLASS_CLICKABLE,
+			    ATTR_ID,id,
+			    ATTR_CLASS,CLASS_CLICKABLE,
 			    ATTR_TITLE,"Filter records on map view. Shift-click to clear"],
 			   HU.getIconImage("fas fa-globe-americas"));
 	},
@@ -1047,22 +1050,24 @@ function RecordFilter(display,filterFieldId, properties) {
                 widget = HU.input('',dfltValueMin,[ATTR_STYLE,minStyle,
 						   ATTR_DATA_TYPE,this.getFieldType(),
 						   ATTR_DATA_MIN,min,
-						   ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
+						   ATTR_CLASS,
+						   HU.classes('display-filter-range',CLASS_FILTER_INPUT),
 						   ATTR_ID,widgetId+'_min',
 						   ATTR_FIELDID,this.getId()]);
 		widget += '-';
                 widget += HU.input('',dfltValueMax,[ATTR_STYLE,maxStyle,
 						    ATTR_DATA_TYPE,this.getFieldType(),
 						    ATTR_DATA_MAX,max,
-						    ATTR_CLASS,HU.classes('display-filter-range','display-filter-input'),
+						    ATTR_CLASS,
+						    HU.classes('display-filter-range',CLASS_FILTER_INPUT),
 						    ATTR_ID,widgetId+'_max',
 						    ATTR_FIELDID,this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
-                widget =HU.datePicker('','',[ATTR_CLASS,'display-filter-input',
+                widget =HU.datePicker('','',[ATTR_CLASS,CLASS_FILTER_INPUT,
 					     ATTR_STYLE,widgetStyle,
 					     ATTR_ID,widgetId+'_date_from',
 					     ATTR_FIELDID,this.getId()]) +'-' +
-		    HU.datePicker('','',[ATTR_CLASS,'display-filter-input',
+		    HU.datePicker('','',[ATTR_CLASS,CLASS_FILTER_INPUT,
 					 ATTR_STYLE,widgetStyle,
 					 ATTR_ID,widgetId+'_date_to',
 					 ATTR_FIELDID,this.getId()]);
@@ -1107,7 +1112,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let attrs =[ATTR_STYLE,widgetStyle+HU.css(CSS_WIDTH,HU.getDimension(width)),
 			    ATTR_ID,widgetId,
 			    ATTR_FIELDID,this.getId(),
-			    ATTR_CLASS,"display-filter-input"];
+			    ATTR_CLASS,CLASS_FILTER_INPUT];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push(ATTR_WIDTH);
 		attrs.push(width);

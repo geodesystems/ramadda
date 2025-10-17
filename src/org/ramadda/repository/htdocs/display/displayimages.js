@@ -4,11 +4,12 @@
 */
 
 
-const DISPLAY_SLIDES = "slides";
-const DISPLAY_IMAGES = "images";
-const DISPLAY_IMAGEZOOM = "imagezoom";
-const DISPLAY_CARDS = "cards";
+var DISPLAY_SLIDES = "slides";
+var DISPLAY_IMAGES = "images";
+var DISPLAY_IMAGEZOOM = "imagezoom";
+var DISPLAY_CARDS = "cards";
 
+var ID_GALLERY = "gallery";
 
 addGlobalDisplayType({
     type: DISPLAY_IMAGES,
@@ -167,8 +168,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 	    const colorThief = new ColorThief();
 	    var cnt = 0;
 	    while(true) {
-		var img = document.querySelector('#' + this.domId("gallery")+"img" + cnt);
-		var div = $('#' + this.domId("gallery")+TAG_DIV + cnt);
+		var img = document.querySelector('#' + this.domId(ID_GALLERY)+"img" + cnt);
+		var div = jqid(this.domId(ID_GALLERY)+TAG_DIV + cnt);
 		cnt++;
 		if(!img) {
 		    return;
@@ -307,17 +308,18 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 } 
                 
                 var  imgAttrs= [ATTR_CLASS,"display-cards-popup",
-				ATTR_DATA_FANCYBOX,this.domId("gallery"),
+				ATTR_DATA_FANCYBOX,this.domId(ID_GALLERY),
 				ATTR_DATA_CAPTION,caption];
 		if(img) img = img.trim();
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
-			img = ramaddaBaseUrl+"/proxy?url=" + img;
-                    img =  HU.href(img, HU.div([ATTR_ID,this.domId("gallery")+'div' + imgCnt],
+			img = RamaddaUtil.getUrl("/proxy?url=" + img);
+                    img =  HU.href(img, HU.div([ATTR_ID,this.domId(ID_GALLERY)+'div' + imgCnt],
 					       HU.image(img,[ATTR_WIDTH,width,
-							     ATTR_ID,this.domId("gallery")+"img" + imgCnt])),imgAttrs)+label;
+							     ATTR_ID,this.domId(ID_GALLERY)+"img" + imgCnt])),imgAttrs)+label;
 		    imgCnt++;
-                    html = HU.div([ATTR_CLASS,"display-cards-item", ATTR_TITLE, tooltip,
+                    html = HU.div([ATTR_CLASS,"display-cards-item",
+				   ATTR_TITLE, tooltip,
 				   ATTR_STYLE,HU.css(CSS_MARGIN, HU.px(margin))], img);
                 } else {
                     var style = "";
@@ -395,7 +397,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 });
                 var width = group.members.length==0?HU.perc(100):100/group.members.length;
                 html +=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100),
-					  ATTR_BORDER,0]) +HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
+					  ATTR_BORDER,0]) +
+		    HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
@@ -421,7 +424,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 
 function RamaddaImagesDisplay(displayManager, id, properties) {
-    const ID_GALLERY = "gallery";
     const ID_IMAGES = "images";
     //never want to do this
     properties.tooltipClick=null;
@@ -648,7 +650,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    HU.div([ATTR_STYLE, style,
 			    ATTR_RECORD_ID,record.getId(),
 			    ATTR_RECORD_INDEX,recordIndex++,
-			    ATTR_ID,base+TAG_DIV+  rowIdx,
+			    ATTR_ID,base+'div'+  rowIdx,
 			    ATTR_CLASS, class1,
 			    ATTR_TITLE,tt],
 			   recordContents);
@@ -680,7 +682,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    css+=HU.css(CSS_MIN_HEIGHT,HU.getDimension(this.getPropertyMinHeightGallery()));
 		if(this.getPropertyMinHeightGallery())
 		    css+= HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.getPropertyMaxHeightGallery()));
-		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO)], contents);
+		contents = HU.div([ATTR_ID,this.domId(ID_IMAGES),
+				   ATTR_STYLE,css+HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				  contents);
 	    }
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
@@ -813,7 +817,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 							    CSS_TOP,HU.px(0),
 							    CSS_LEFT, HU.px(imageWidth))],""));
 
-	    let contents = HU.table([ATTR_BORDER,0,ATTR_WIDTH,HU.perc(100)],
+	    let contents = HU.table([ATTR_BORDER,0,
+				     ATTR_WIDTH,HU.perc(100)],
 				    HU.tr([ATTR_VALIGN,CSS_TOP],
 					  HU.td([ATTR_WIDTH,HU.perc(2)],
 						HU.div([ATTR_ID,this.domId(ID_THUMBS),
@@ -832,8 +837,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		}
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
-		thumbsHtml += HU.image(thumb,[ATTR_RECORD_INDEX,rowIdx,ATTR_ID,this.domId(ID_THUMB)+rowIdx,
-					      ATTR_WIDTH, thumbWidth,ATTR_CLASS,"display-imagezoom-thumb"])+HU.br()+"\n";
+		thumbsHtml += HU.image(thumb,[ATTR_RECORD_INDEX,rowIdx,
+					      ATTR_ID,this.domId(ID_THUMB)+rowIdx,
+					      ATTR_WIDTH, thumbWidth,
+					      ATTR_CLASS,"display-imagezoom-thumb"])+HU.br()+"\n";
 	    }
             this.setContents(contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
@@ -884,8 +891,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.jq(ID_POPUP).css(CSS_DISPLAY,DISPLAY_BLOCK);
 	    let imageAttrs = [ATTR_ID,this.domId(ID_POPUPIMAGE)];
 	    if(this.getPopupImageWidth()) {
-		imageAttrs.push(ATTR_WIDTH);
-		imageAttrs.push(this.getPopupImageWidth());
+		imageAttrs.push(ATTR_WIDTH, this.getPopupImageWidth());
 	    } 
 	    this.jq(ID_POPUP).html(HU.image(image,imageAttrs));
 	},
@@ -906,8 +912,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
                     }
 		}
 	    }
-	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",ATTR_STYLE,HU.css(CSS_Z_INDEX,1000),
-					ATTR_WIDTH, width,ATTR_ID,this.domId(ID_IMAGEINNER)]);
+	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",
+					ATTR_STYLE,HU.css(CSS_Z_INDEX,1000),
+					ATTR_WIDTH, width,
+					ATTR_ID,this.domId(ID_IMAGEINNER)]);
 	    if(label!="")
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_BLACK)],label);
 	    this.jq(ID_IMAGE).html(html);
@@ -1061,7 +1069,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-slides-arrow-right fas fa-angle-right')]);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
 				ATTR_STYLE,HU.css(CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MAX_HEIGHT, height),
-				ATTR_ID, this.domId(ID_SLIDE), ATTR_CLASS,'display-slides-slide']);
+				ATTR_ID, this.domId(ID_SLIDE),
+				ATTR_CLASS,'display-slides-slide']);
 
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
@@ -1121,7 +1130,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 							   CSS_MIN_WIDTH,width,
 							   CSS_WIDTH,width,
 							   CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
-					 ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx],label);
+					 ATTR_CLASS,clazz,
+					 ATTR_RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -1205,17 +1215,19 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		} else if(url.match('.mp3')) {
 		    html =HU.center( Utils.embedAudio(url));
 		} else if(url.match('soundcloud')) {
-		    html = HU.center("<iframe scrolling='no' src='https://w.soundcloud.com/player/?visual=true&url=" +
-				     url +"&maxwidth=450' width='450' height='390' frameborder='no'></iframe>");
+		    html = HU.center(HU.open(TAG_IFRAME,['scrolling','no',
+							 ATTR_SRC,HU.url('https://w.soundcloud.com/player/','visual','true','url', url, 'maxwidth',450),
+							 ATTR_WIDTH,450,ATTR_HEIGHT,390,'frameborder']));
 		} else {
 		    if(url.match(/youtube.com\/watch/)||url.match(/youtu.be/)) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
 			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,640,ATTR_HEIGHT,351,
-							    'frameborder','0',
+							    'frameborder',0,
 							    'webkitallowfullscreen',true,
-							    'mozallowfullscreen','true','allowfullscreen','true']));
+							    'mozallowfullscreen','true',
+							    'allowfullscreen','true']));
 		    }
 		}
 		if(html&&mainUrl && !this.topLabelTemplate)
@@ -1238,9 +1250,6 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.labelTemplate);
 		    html=html+HU.div([ATTR_CLASS,'display-slides-label'], label);
 		}
-		
-
-		
 	    }
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);

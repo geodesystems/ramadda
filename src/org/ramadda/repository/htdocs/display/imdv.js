@@ -195,7 +195,7 @@ let ImdvUtils = {
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
     this.mapProperties = {};
-    Utils.importJS(ramaddaBaseHtdocs+'/wiki.js');
+    Utils.importJS(RamaddaUtil.getCdnUrl('/wiki.js'));
     MapUtils.initMapResources();
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	CLASS_NAME:'IMDV Image Handler',
@@ -3802,7 +3802,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    value:$(this).attr(ATTR_SLIDER_VALUE),
 		    slide: function( event, ui ) {
 			let id = $(this).attr('slider-id');
-			$("#"+ id).val(ui.value);
+			jqid(id).val(ui.value);
 			ifApply();
 		    }});
 	    });
@@ -3810,8 +3810,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dialog.find('.ramadda-imdv-color-hidden').on('input',function() {
 		let id = $(this).attr('baseid');
 		let val = $(this).val();
-		$("#"+ id).val(val);
-		$("#"+ id+'_display').css(CSS_BACKGROUND,val);
+		jqid(id).val(val);
+		jqid(id+'_display').css(CSS_BACKGROUND,val);
 		ifApply();
 	    });
 	    dialog.find('.ramadda-imdv-color-select').click(function() {
@@ -3837,7 +3837,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dialog.find('.ramadda-imdv-color').change(function() {
 		let c = $(this).val();
 		let id = $(this).attr(ATTR_ID);
-		$("#"+ id+'_display').css(CSS_BACKGROUND,c);
+		jqid(id+'_display').css(CSS_BACKGROUND,c);
 		ifApply();
 	    });
 
@@ -5090,7 +5090,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = Ramadda.getUrl("/entry/get?entryid="+opts.entryId);
+		url = HU.url(Ramadda.getUrl("/entry/get"),ARGENTRYID,opts.entryId);
 	    }
 	    url = url.replace(/\${root}/,ramaddaBaseUrl);
 	    mapGlyph.setDownloadUrl(url);
@@ -5244,7 +5244,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(this.mapLegendToggleId) {
 			    if(Utils.isDefined(this.getMapProperty('mapLegendOpen'))) {
 				if(!this.getMapProperty('mapLegendOpen')) {
-				    $("#" + this.mapLegendToggleId).css(CSS_DISPLAY,DISPLAY_NONE);
+				    jqid(this.mapLegendToggleId).css(CSS_DISPLAY,DISPLAY_NONE);
 				}
 			    }
 			}
@@ -5875,7 +5875,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let legendContainer;
 	    if(legendDiv) {
-		legendContainer = $('#'+legendDiv);
+		legendContainer = jqid(legendDiv);
 	    } else if(legendPosition=='left') {
 		legendContainer=leftLegend;
 	    } else if(legendPosition=='editor') {
@@ -6931,8 +6931,8 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     patternNode.setAttributeNS(null, "patternUnits","userSpaceOnUse");
     let imageNode = ol.nodeFactory(null, "image");
     patternNode.appendChild(imageNode);
-    imageNode.setAttributeNS(null, "x",0);	    
-    imageNode.setAttributeNS(null, "y",0);
+    imageNode.setAttributeNS(null, ATTR_X,0);	    
+    imageNode.setAttributeNS(null, ATTR_Y,0);
     imageNode.setAttributeNS(null, ATTR_WIDTH,p.width);
     imageNode.setAttributeNS(null, ATTR_HEIGHT,p.height);
     imageNode.setAttributeNS(null, ATTR_HREF,p.url);
@@ -7074,8 +7074,8 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 	    bg.setAttribute("rx", (bbox.width/2)+(+pad));
 	    bg.setAttribute("ry", (bbox.height/2)+(+pad));	    	    				
 	} else {
-	    bg.setAttribute("x", bbox.x-pad);
-	    bg.setAttribute("y", bbox.y-pad);
+	    bg.setAttribute(ATTR_X, bbox.x-pad);
+	    bg.setAttribute(ATTR_Y, bbox.y-pad);
 	    bg.setAttribute(ATTR_WIDTH, bbox.width+pad*2);
 	    bg.setAttribute(ATTR_HEIGHT, bbox.height+pad*2);
 	    if(style.textBackgroundRadius) {

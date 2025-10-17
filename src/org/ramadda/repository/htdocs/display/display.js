@@ -34,6 +34,9 @@ var ATTR_FIELD_VALUE='field-value';
 var ATTR_METADATA_VALUE='metadata-value';
 var ATTR_METADATA_TYPE='metadata-type';
 var ATTR_METADATA_INDEX='metadata-index';
+var ATTR_RECORD_INDEX = "recordindex";
+var ATTR_RECORD_ID = "recordid";
+
 
 var ramaddaDoingWiki = 0;
 
@@ -123,13 +126,12 @@ var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
 
-var ATTR_RECORD_INDEX = "recordindex";
-var ATTR_RECORD_ID = "recordid";
 var TEXT_HIGHLIGHT_COLOR = "yellow";
 var HIGHLIGHT_COLOR = "#436EEE";
 
 var VALUE_NONE = "--none--";
 
+var CLASS_FILTER_INPUT="display-filter-input";
 var CLASS_HEADER_SPAN = "display-header-span";
 var CLASS_HEADER_LABEL = "display-header-label";
 var CLASS_DISPLAY_BUTTON='display-button';
@@ -696,7 +698,7 @@ function DisplayThing(argId, argProperties) {
 	    return this.jq(ID_DISPLAY_CONTAINER);
 	},		
         jq: function(componentId) {
-            return $("#" + this.getDomId(componentId));
+            return jqid(this.getDomId(componentId));
         },
 	selectboxit: function(selector, args) {
 	    let opts = {
@@ -6407,7 +6409,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }):"";
 	    //See if we are drawing the header somewhere else
 	    if(this.getHeaderDiv()) {
-		$('#'+ this.getHeaderDiv()).html(top);
+		jqid(this.getHeaderDiv()).html(top);
 		top='';
 	    }
 
@@ -6887,9 +6889,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		};
 
 		jqid(this.getDomId(macro.getId())+"," +
-		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_max")).keyup(function(e){
-		      keyup(e,null,$(this).val())});
+		     "#" + this.getDomId(macro.getId()+"_min")+ "," +
+		     "#" + this.getDomId(macro.getId()+"_max")).keyup(function(e){
+			 keyup(e,null,$(this).val())});
 		if(macro.type == "bounds") {
 		    this.jq(macro.getId()).change(function(e) {
 			macroChange(macro,$(this).is(':checked'));
@@ -7637,7 +7639,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 	    });
-	    this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
+	    this.jq(ID_FILTERBAR).find(HU.dotClass(CLASS_FILTER_INPUT)).keyup(function(e) {
 		if($(this).attr("istext")) return;
 		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}

@@ -595,7 +595,7 @@ var Utils =  {
         return ramaddaUser =="anonymous";
     },
     getIcon: function(icon) {
-        return ramaddaCdn + "/icons/" + icon;
+        return RamaddaUtil.getCdnUrl("/icons/" + icon);
     },
     imports: {},
     get: function(list,idx,dflt) {
@@ -748,13 +748,13 @@ var Utils =  {
             let success=json=>{
                 let msg = "";
                 if(json.message) msg= json.message.replace(/\n/g,HU.br());
-                $("#" + id).html(msg);
+                jqid(id).html(msg);
                 if(json.status=="running") {
                     Utils.handleActionResults(id,url);
                 }
             };
             let fail=json=>{
-                $("#" + id).html("Error:" + json);
+		jqid(id).html("Error:" + json);
             };             
             $.getJSON(url, success).fail(fail);
         },1000);
@@ -1236,8 +1236,8 @@ var Utils =  {
         return this.formatJsonBlob(blob,null, 0,levelsShown);
     },
     formatJsonClick: function(imageid,innerid) {
-        var inner = $("#"+innerid);
-        var image = $("#"+imageid);
+        var inner = jqid(innerid);
+        var image = jqid(imageid);
         if (inner.is(":visible")) {
             inner.hide();
             image.attr(ATTR_SRC,icon_tree_closed);
@@ -2533,7 +2533,7 @@ var Utils =  {
     },
 
     toggleShowMore: function(id) {
-        let toggle = $("#" + id);
+        let toggle = jqid( id);
         let open = toggle.attr('open');
         open = !open;
         toggle.attr('open',open);
@@ -2724,9 +2724,9 @@ var Utils =  {
             let toId = $(this).attr("to-id");
             let val = $(this).val();
             if(val=="between")
-                $("#"+toId).show();
+                jqid(toId).show();
             else
-                $("#"+toId).hide();
+                jqid(toId).hide();
 
         };
         select.each(func);
@@ -2758,8 +2758,8 @@ var Utils =  {
     },
 
     initPageReload:function(time, id, showLabel) {
-        let cbx = $("#" + id);
-        let label = $("#" + id+"_label");
+        let cbx = jqid( id);
+        let label = jqid(id+"_label");
         if(cbx.length>0) {
             cbx.change(()=>{
                 let text = "Reload" +HU.span([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_TRANSPARENT)]," in 00  seconds")
@@ -2775,8 +2775,8 @@ var Utils =  {
     },
     checkPageReloadPending: false,
     checkPageReload:function(time, id, showLabel) {
-        let cbx = $("#" + id);
-        let label = $("#" + id+"_label");
+        let cbx = jqid(id);
+        let label = jqid(id+"_label");
         if(cbx.length>0  &&!cbx.is(':checked')) {
             return;
         }
@@ -2989,8 +2989,8 @@ var Utils =  {
         headings.mouseenter(function(){
             let id = $(this).attr(ATTR_ID);
             if(!id) return;
-            $("#" + id +"-hover").html(HU.getIconImage(ICON_LINK,null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
-            $("#" + id +"-hover").show();
+            jqid(id +"-hover").html(HU.getIconImage(ICON_LINK,null,[ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(10))]));
+            jqid(id +"-hover").show();
         });
         headings.click(function(){
             let id = $(this).attr(ATTR_ID);
@@ -3001,7 +3001,7 @@ var Utils =  {
         headings.mouseleave(function(){
             let id = $(this).attr(ATTR_ID);
             if(!id) return;
-            $("#" + id +"-hover").hide();
+            jqid(id +"-hover").hide();
         });     
         //menuize
         /*
@@ -3039,8 +3039,8 @@ var Utils =  {
     searchAscending:false,
     searchCnt:0,
     searchSuggestInit:function(id, hereId, type, icon, resultsId) {
-        let input = $("#"+ id);
-        let here = $("#"+ hereId);      
+        let input = jqid(id);
+        let here = jqid(hereId);      
         if(!Utils.isDefined(icon)) icon = true;
         let submitForm = false;
         if(!resultsId) {
@@ -3055,7 +3055,7 @@ var Utils =  {
             input.parent().append(results);
         }
 
-        let results = $("#" + resultsId);
+        let results = jqid(resultsId);
         let closer = () =>{
             results.slideUp(250);
         };
@@ -3237,9 +3237,9 @@ var Utils =  {
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
-        let icon = $("#" + id);
+        let icon = jqid(id);
         let dialog = this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
-        $("#" + linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
+        jqid(linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
         let input = $("#popup_search_input");
         input.mousedown(function(evt) {
             evt.stopPropagation();
@@ -3784,7 +3784,7 @@ var GuiUtils = {
         return filesize;
     },
     inputLengthOk: function(domId, length, doMin) {
-        var value = $("#" + domId).val();
+        var value = jqid(domId).val();
         if (value == null) return true;
         if (doMin) {
             if (value.length < length) {
@@ -3800,7 +3800,7 @@ var GuiUtils = {
         return true;
     },
     inputValueOk: function(domId, rangeValue, min) {
-        var value = $("#" + domId).val();
+        var value = jqid(domId).val();
         if (value == null) return true;
         if (min && value < rangeValue) {
             Utils.closeFormLoadingDialog();
@@ -3813,7 +3813,7 @@ var GuiUtils = {
         return true;
     },
     inputIsRequired: function(domId, rangeValue, min) {
-        var value = $("#" + domId).val();
+        var value = jqid(domId).val();
         if (value == null || value.trim().length == 0) {
             Utils.closeFormLoadingDialog();
             return false;
@@ -4312,8 +4312,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(items.length>0 && Utils.isDefined(items.attr('data-order'))) {
 	    items = items.sort((a, b) => $(a).data('order') - $(b).data('order'));
 	}
-        HU.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
-                                [ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
+        HU.loadJqueryLib('fancybox',
+			 [RamaddaUtil.getCdnUrl("/lib/fancybox-3/jquery.fancybox.min.css")],
+                         [RamaddaUtil.getCdnUrl("/lib/fancybox-3/jquery.fancybox.min.js")],
                                 selector,()=>{
 				    $(items).fancybox(args);
                                 });
@@ -4463,8 +4464,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if (HU.lastCbxClicked) {
                 let pos1 = GuiUtils.getTop(cbx);
                 let pos2 = GuiUtils.getTop(HU.lastCbxClicked);
-                let lastCbx = $("#" + HU.lastCbxIdClicked);
-                let thisCbx = $("#" + id);
+                let lastCbx = jqid(HU.lastCbxIdClicked);
+                let thisCbx = jqid(id);
 
                 if (lastCbx.position()) {
                     pos2 = lastCbx.offset().top;
@@ -4479,7 +4480,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     pos2 = tmp;
                 }
                 for (i = 0; i < checkBoxes.length; i++) {
-                    let top = $("#" + checkBoxes[i].id).offset().top;
+                    let top = jqid(checkBoxes[i].id).offset().top;
                     if (top >= pos1 && top <= pos2) {
                         checkBoxes[i].checked = value;
                     }
@@ -4592,7 +4593,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    variableWidth:true
         };
         if(args) $.extend(opts,args);
-        $("#" + id).slick(opts);
+        jqid(id).slick(opts);
         HU.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
         setTimeout(()=>{
@@ -4600,7 +4601,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let items = header.find(".ramadda-slides-header-item");
             items.click(function() {
                 let index = +$(this).attr("slideindex");
-                $("#" + id).slick('slickGoTo', index);
+                jqid(id).slick('slickGoTo', index);
             });
             jqid(id).on('afterChange', function(event, slick, currentSlide){
                 items.removeClass("ramadda-slides-header-item-selected");
@@ -4630,37 +4631,37 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     applyMarkdown:function(srcId,targetId) {
         let f = ()=>{
-            let src = $("#"+ srcId).html();
+            let src = jqid(srcId).html();
             try {
                 var converter = new showdown.Converter();
 		src = src.replace(/```{r([^}]*)}/g, (match,t)=>{
 		    return     "```r\n##" + t});
                 var html = converter.makeHtml(src);
-                $("#" + targetId).html(html);
+                jqid(targetId).html(html);
             } catch(e) {
-                $("#" + targetId).html("Error processing markdown:" + e);
+                jqid(targetId).html("Error processing markdown:" + e);
             }
         }
         let e = ()=> {
-            $("#" + targetId).html("Error loading showdown");
+            jqid(targetId).html("Error loading showdown");
         };
-        let imports = "<script src='" +ramaddaCdn + "/lib/showdown.min.js'/>";
+        let imports = HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/showdown.min.js")]);
         HU.loadAndWait("showdown",imports,f,e);
     },
     applyLatex:function(srcId,targetId) {
         let f = ()=>{
-            let src = $("#"+ srcId).html();
+            let src = jqid(srcId).html();
             try {
                 var html = katex.renderToString(src, {
                     throwOnError: true
                 });
-                $("#" + targetId).html(html);
+                jqid(targetId).html(html);
             } catch(e) {
-                $("#" + targetId).html("Error processing markdown:" + e);
+                jqid(targetId).html("Error processing markdown:" + e);
             }
         }
         let e = ()=> {
-            $("#" + targetId).html("Error loading katex");
+            jqid(targetId).html("Error loading katex");
         };
         HU.loadKatex(f,e);
     },
@@ -4707,7 +4708,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
-        let bc = jQuery("#" + id);
+        let bc = jqid(id);
         let num = bc.find("li").length
         let begin = 0;
         let end = 4;
@@ -4727,7 +4728,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     tooltipInit: function(openerId, id) {
-        $("#" + id).dialog({
+        jqid(id).dialog({
             autoOpen: false,
             //                draggable: true,
             minWidth: 650,
@@ -4743,8 +4744,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
         });
 
-        $("#" + openerId).click(function() {
-            $("#" + id).dialog("open");
+        jqid(openerId).click(function() {
+            jqid(id).dialog("open");
         });
     },
 
@@ -4816,7 +4817,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return {
 	    contents:html,
 	    init:()=>{
-		$("#" +id ).tabs();
+		jqid(id ).tabs();
 	    }};
     },
     makeAccordionHtml(list) {
@@ -5121,7 +5122,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.anchor && (typeof opts.anchor=="string")) {
-            opts.anchor = $("#"  + opts.anchor);
+            opts.anchor = jqid( opts.anchor);
         }
 
         if(opts.anchor && opts.anchor.length==0) {
@@ -5145,7 +5146,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             html = opts.content;
             if(html == null) {
                 if(opts.contentId) {
-                    html = $("#" + opts.contentId).html();
+                    html = jqid(opts.contentId).html();
                 } else {
                     html = "No html provided";
                 }
@@ -5204,8 +5205,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             popup.attr("removeonclose","true");
         }
         if(opts.inPlace) {
-            let src =  $("#" + opts.contentId);
-            let dest = $("#"+ parentId);
+            let src =  jqid(opts.contentId);
+            let dest = jqid(parentId);
             dest.css(CSS_DISPLAY,DISPLAY_BLOCK).css(ATTR_WIDTH,"fit-content").css(CSS_HEIGHT,"fit-content");
             src.appendTo(dest);
             src.show();
@@ -5248,7 +5249,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.resizable) {
             if(opts.modal) {
-                $("#" + innerId).resizable();
+                jqid(innerId).resizable();
             } else {
                 popup.resizable();
                 //          popup.resizable({containment: "parent",handles: 'se',});
@@ -5258,7 +5259,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.draggable) {
             if(opts.modal) {
-                $("#" + innerId).draggable();
+                jqid(innerId).draggable();
             } else {
                 popup.draggable();
                 //          popup.resizable({containment: "parent",handles: 'se',});
@@ -5273,7 +5274,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.header) {
-	    $("#" + id +"_close").click(function() {
+	    jqid(id +"_close").click(function() {
                 popup.hide();
                 if(opts.callback) {
 		    opts.callback(popup);
@@ -5512,8 +5513,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     formatTable: function(id, args, callback) {
-        HU.loadJqueryLib('DataTable',[ramaddaCdn +'/lib/datatables-1.13.1/datatables.min.css'],
-                                [ramaddaCdn + '/lib/datatables-1.13.1/datatables.min.js'],
+        HU.loadJqueryLib('DataTable',
+			 [RamaddaUtil.getCdnUrl('/lib/datatables-1.13.1/datatables.min.css')],
+                         [RamaddaUtil.getCdnUrl('/lib/datatables-1.13.1/datatables.min.js')],
                                 id,()=>{
                                     $(id).each(function() {
                                         if($.fn.dataTable.isDataTable(this)) {
@@ -5603,8 +5605,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             align:ALIGN_LEFT
         };
         if(args) $.extend(opts, args);
-        $("#"+id).click(function() {
-            let popup = HU.setPopupObject($("#"+ id+"-popup"));
+        jqid(id).click(function() {
+            let popup = HU.setPopupObject(jqid(id+"-popup"));
             let my,at;
             if(opts.align==ALIGN_RIGHT) {
                 my = "right top";
@@ -5628,7 +5630,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     navLinkClicked: function(id,offset) {
         let links =     $(".ramadda-nav-left-link");    
         links.removeClass("ramadda-nav-link-active");
-        $("#" + id+"_href").parent().addClass("ramadda-nav-link-active");
+        jqid(id+"_href").parent().addClass("ramadda-nav-link-active");
         HU.scrollToAnchor(id,offset);
     },
     initNavLinks: function(args) {
@@ -5716,10 +5718,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     setFormValue: function(id, val) {
-        $("#" + id).val(val);
+        jqid(id).val(val);
     },
     setHtml: function(id, val) {
-        $("#" + id).html(val);
+        jqid(id).html(val);
     },
     formTable: function() {
         return this.openTag("table", [ATTR_CLASS, "formtable",
@@ -5763,18 +5765,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         url += HU.urlArg(arg, value);
         return url;
-    },
-    getUrl: function(path, args) {
-        if (args.length > 0) {
-            path += "?";
-        }
-        for (let i = 0; i < args.length; i += 2) {
-            if (i > 0) {
-                path += "&";
-            }
-            path += this.urlArg(args[i], args[i + 1]);
-        }
-        return path;
     },
 
     b: function(inner) {
@@ -5946,7 +5936,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let html= HU.div([ATTR_ID,id,ATTR_TITLE,"Expand", ATTR_CLASS,"ramadda-expandable-link",
 				 ATTR_STYLE,style],icon);
         $(selector).append(html);
-        let btn = $("#"+id);
+        let btn = jqid(id);
         let expandNow = $(selector).hasClass("ramadda-expand-now");
         btn.attr("data-expanded",expandNow);
         let origBackground = $(selector).css(CSS_BACKGROUND);
@@ -6000,7 +5990,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 ramaddaMapCheckLayout();
             }
         };
-        $("#" +id).click(expandIt);
+        jqid(id).click(expandIt);
         if(expandNow) {
             expandIt();
         }
@@ -6056,6 +6046,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                        content,extra);
 
     },
+    getUrl: function(path, args) {
+        if (args.length > 0) {
+            path += "?";
+        }
+        for (let i = 0; i < args.length; i += 2) {
+            if (i > 0) {
+                path += "&";
+            }
+            path += this.urlArg(args[i], args[i + 1]);
+        }
+        return path;
+    },
+
     url:function(path,...varargs) {
 	let args=[];
 	let url = path;
@@ -6181,9 +6184,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (skip == null) {
             skip = [".*OpenLayers_Control.*", "authtoken"];
         }
-        let url = $("#" + formId).attr("action") + "?";
+        let url = jqid(formId).attr("action") + "?";
 	url = url.replace(/ +/g,'_');
-        let inputs = $("#" + formId + " :input");
+        let inputs = jqid(formId + " :input");
         let cnt = 0;
         let pairs = [];
 	let args = "";
@@ -6301,7 +6304,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 itemValuePairs: pairs
             });
         }
-        $("#" + outputId).html(html);
+        jqid(outputId).html(html);
 	jqid('argscopy').click(()=>{
 	    Utils.copyToClipboard(args);
 	    alert('args for subset are copied to clipboard');
@@ -6491,8 +6494,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    select.change();
 		}
 	    });
-	    $("#"+inputId).focus();
-	    $("#"+inputId).keyup(function(event) {
+	    jqid(inputId).focus();
+	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() { 
 		    if(text=='') {
@@ -6603,7 +6606,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return clear;
     },
     datePickerInit: function(id) {
-        $("#" + id).datepicker({
+        jqid(id).datepicker({
 	    onSelect:function(d,i) {
 		if(d!==i.lastVal) {
 		    $(this).change();
@@ -6621,7 +6624,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     rangeInputInit: function(id) {
-        $("#" + id ).slider({
+        jqid(id).slider({
             min: 0,
             max: 100,
             step: 1,
@@ -6641,7 +6644,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<input " + HU.attrs(attrs) + HU.attrs([ATTR_VALUE, value]) +(name==null?'':HU.attrs(ATTR_NAME, name))  + ">";
     },
     hidden: function(name, value, attrs) {
-        return "<input type=hidden " + HU.attrs(attrs) + HU.attrs([ATRR_NAME, name, ATTR_VALUE, value]) + ">";
+        return "<input type=hidden " + HU.attrs(attrs) + HU.attrs([ATTR_NAME, name, ATTR_VALUE, value]) + ">";
     },    
     textarea: function(name, value, attrs) {
         return "<textarea " + HU.attrs(attrs) + HU.attrs([ATTR_NAME, name]) + ">" + value + "</textarea>";
@@ -6683,23 +6686,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeToggle: function(imageId,blockId,visible) {
         if(visible===null) visible = true;
-        let img1 = ramaddaCdn + "/icons/togglearrowdown.gif";
-        let img2 = ramaddaCdn + "/icons/togglearrowright.gif";
-        $("#" + imageId).attr("state","open");
-        $("#" + imageId).attr(ATTR_SRC,img1);
-        $("#" + imageId).css(CSS_CURSOR,CURSOR_POINTER);       
+        let img1 = RamaddaUtil.getCdnUrl("/icons/togglearrowdown.gif");
+        let img2 = RamaddaUtil.getCdnUrl("/icons/togglearrowright.gif");
+        jqid(imageId).attr(ATTR_STATE,"open");
+        jqid(imageId).attr(ATTR_SRC,img1);
+        jqid(imageId).css(CSS_CURSOR,CURSOR_POINTER);       
         let open = (img) =>{
-            img.attr("state","open");
+            img.attr(ATTR_STATE,"open");
             img.attr(ATTR_SRC,img1);
-            $("#" + blockId).show();
+            jqid(blockId).show();
         };
         let close = (img) =>{
-            img.attr("state","close");
+            img.attr(ATTR_STATE,"close");
             img.attr(ATTR_SRC,img2);
-            $("#" + blockId).hide();
+            jqid(blockId).hide();
         };
-        $("#" + imageId).click(function(e){
-            let state = $(this).attr("state");
+        jqid(imageId).click(function(e){
+            let state = $(this).attr(ATTR_STATE);
             if(state=="open") {
                 close($(this));
             } else {
@@ -6708,7 +6711,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             e.preventDefault();
         });
         if(!visible) {
-            close($("#" + imageId));
+            close(jqid(imageId));
         }
     },
     makeSplash: function(message,args) {
@@ -6719,7 +6722,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         };
         if(args) $.extend(opts,args);
         if(opts.src) {
-            message = $("#" + opts.src).html();
+            message = jqid(opts.src).html();
 	    
         }
         if(message == null || message.trim()=="") return;
@@ -6749,10 +6752,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         container.click( (event) => {
 	    //          closer();
         }); 
-        $("#"+ closeId).click(() =>{
+        jqid(closeId).click(() =>{
             closer();
         });
-        $("#"+ closeId+"_button").button().click(() =>{
+        jqid(closeId+"_button").button().click(() =>{
             closer();
         });     
 
@@ -6770,16 +6773,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(!Utils.isDefined(visible)) visible = true;
 	if (toggleVisibility(id, 'block',anim,forceVisible)) {
             if(HU.isFontAwesome(showimg)) {
-		$("#" + imgid).html(HU.makeToggleImage(showimg));
+		jqid(imgid).html(HU.makeToggleImage(showimg));
             } else {
-		$("#" + imgid).attr(ATTR_SRC, showimg);
+		jqid(imgid).attr(ATTR_SRC, showimg);
             }
 	} else {
 	    visible = false;
             if(HU.isFontAwesome(showimg)) {
-		$("#" + imgid).html(HU.makeToggleImage(hideimg));
+		jqid(imgid).html(HU.makeToggleImage(hideimg));
             } else {
-		$("#" + imgid).attr(ATTR_SRC, hideimg);
+		jqid(imgid).attr(ATTR_SRC, hideimg);
             }
 	}
 	Utils.ramaddaUpdateMaps();
@@ -6997,7 +7000,7 @@ function Div(contents, clazz) {
         return this.id;
     }
     this.jq = function() {
-        return $("#" + this.id)
+        return jqid(this.id)
     }
     this.set = function(html, attrs) {
         if (attrs) this.extra = HU.attrs(attrs);
@@ -7008,7 +7011,7 @@ function Div(contents, clazz) {
     this.append = function(html) {
         if (!this.content) this.content = html;
         else this.content += html;
-        $("#" + this.id).append(html);
+        jqid(this.id).append(html);
     }
     this.msg = function(msg) {
         return this.set(HU.div([ATTR_CLASS, "display-message"], msg));

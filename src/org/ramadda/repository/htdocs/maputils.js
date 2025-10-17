@@ -60,7 +60,7 @@ var MapUtils =  {
     MAP_RESOURCES_MAP:null,
     initMapResources:function() {
 	if(!this.MAP_RESOURCES) {
-            $.getJSON(Ramadda.getUrl('/mapresources.json'), data=>{
+            $.getJSON(RamaddaUtil.getUrl('/mapresources.json'), data=>{
 		this.MAP_RESOURCES_MAP={};
 		this.MAP_RESOURCES = data;
 		this.MAP_RESOURCES.forEach((r,idx)=>{this.MAP_RESOURCES_MAP[idx] = r;});
@@ -89,7 +89,7 @@ var MapUtils =  {
 
     loadTurf: function(callback) {
 	if(!window.turf) {
-	    let url = ramaddaCdn+"/lib/turf.min.js";
+	    let url = RamaddaUtil.getCdnUrl("/lib/turf.min.js");
 	    Utils.loadScript(url,callback);
 	    return false;
 	}
@@ -817,10 +817,12 @@ new MapLayer('esri.worldphysical','ESRI World Physical','https://server.arcgison
 
 
 new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',
-	     {attribution:'Map courtesy of Caltopo',isOverlay:true,legend:ramaddaBaseUrl+'/images/publiclands.png'});
+	     {attribution:'Map courtesy of Caltopo',
+	      isOverlay:true,
+	      legend:RamaddaUtil.getUrl('/images/publiclands.png')});
 
 new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}'],
-	     {legend:ramaddaBaseUrl+'/images/federallands.png',
+	     {legend:RamaddaUtil.getUrl('/images/federallands.png'),
 	      attribution:'Map courtesy of BLM'});
 
 new MapLayer('seafloor','Seafloor',['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}']);

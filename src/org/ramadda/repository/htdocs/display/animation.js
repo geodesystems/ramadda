@@ -317,7 +317,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
-	    let element = $("#" + this.display.getId()+"-"+args.record.getId());
+	    let element = jqid(this.display.getId()+"-"+args.record.getId());
 	    if(this.ticks)
 		this.ticks.removeClass("display-animation-tick-highlight");
 	    if(args.highlight) {
@@ -377,7 +377,8 @@ function DisplayAnimation(display, enabled,attrs) {
 		    style+=HU.css(CSS_CURSOR,"move");
 		}
 		buttons +=   HU.div([ATTR_CLASS,"display-animation-slider",
-				     ATTR_STYLE,style,ATTR_ID,this.getDomId(ID_SLIDER)],
+				     ATTR_STYLE,style,
+				     ATTR_ID,this.getDomId(ID_SLIDER)],
 				    tooltip + HU.div([ATTR_STYLE, tickContainerStyle,
 						      ATTR_CLASS,"display-animation-ticks",
 						      ATTR_TABINDEX,0,
@@ -484,10 +485,13 @@ function DisplayAnimation(display, enabled,attrs) {
 			    ATTR_CLASS,clazz], "Show all");
 		if(window) {
 		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Window:"+ HU.br() +SPACE2 + HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
-									     ATTR_SIZE,"10"]));
+				 "Window:"+ HU.br() +SPACE2 +
+				 HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
+						     ATTR_SIZE,10]));
 		    html+=HU.div([ATTR_TITLE, "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Step:" + HU.br() +SPACE2+ HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),ATTR_SIZE,"10"]));
+				 "Step:" + HU.br() +SPACE2+
+				 HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),
+						   ATTR_SIZE,10]));
 		}
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({content:html,anchor:$(this),draggable:false,header:false});
@@ -802,7 +806,8 @@ function DisplayAnimation(display, enabled,attrs) {
 			       ATTR_CLASS,clazz,
 			       ATTR_STYLE,HU.css(CSS_HEIGHT,this.tickHeight,
 						 CSS_LEFT, HU.perc(perc))+tickStyle,
-			       ATTR_TITLE,tt,ATTR_RECORD_ID,record.getId()],"");
+			       ATTR_TITLE,tt,
+			       ATTR_RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);

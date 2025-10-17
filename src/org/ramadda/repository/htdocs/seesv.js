@@ -74,7 +74,7 @@ function  SeesvForm(inputId, entry,params) {
 	    return this.baseId+"_"+id;
 	},
 	jq: function(id) {
-	    return $("#"+this.domId(id));
+	    return jqid(this.domId(id));
 	},
 	checkChanged: function(e) {
 	    e = e || window.event;
@@ -867,7 +867,10 @@ function  SeesvForm(inputId, entry,params) {
 	getUrl:function(cmds,rawInput) {
 	    let input = '';
 	    if(rawInput || rawInput==='') input = '&lastinput=' + encodeURIComponent(rawInput);
-	    let url = ramaddaBaseUrl + '/entry/show?output=convert_process&entryid=' + this.entry+'&commands=' + encodeURIComponent(cmds) + input;
+	    let url = HU.getUrl(RamaddaUtils.getUrl('/entry/show'),
+				ARG_OUTPUT,'convert_process',
+				ARG_ENTRYID,this.entry,
+				'commands',cmds) + input;
 	    return url;
 	},
 	makeDbMenu:function(field,value,label) {
@@ -908,13 +911,13 @@ function  SeesvForm(inputId, entry,params) {
 	    } else {
 		value = " " + value +" ";
 	    }
-	    if(this.dbInput && $("#" + this.dbInput).length>0) {
-		let v = $("#" + this.dbInput).val()||"";
+	    if(this.dbInput && jqid(this.dbInput).length>0) {
+		let v = jqid(this.dbInput).val()||"";
 		v = v.trim();
 		if(v.length>0)
 		    v = v +"\n";
 		v+=field+" " +value;
-		$("#" + this.dbInput).val(v);	    
+		jqid(this.dbInput).val(v);	    
 		return;
 	    }
 	    this.insertCommand(field +value);
@@ -1553,7 +1556,7 @@ function  SeesvForm(inputId, entry,params) {
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
-			help=HU.br()+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',
+			help=HU.br()+HU.href(RamaddaUtils.getUrl('/userguide/seesv.html#help_columns'),
 					     HU.getIconImage(ICON_HELP),
 					     [ATTR_TARGET,'_help',ATTR_TITLE,'Columns Help']);
 		    desc+=help;
@@ -1623,7 +1626,7 @@ function  SeesvForm(inputId, entry,params) {
 		}
 	    });
 	    inner+=HU.formTableClose();
-	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
+	    let help = RamaddaUtils.getUrl('/userguide/seesv.html#' + cmd.command);
 	    help = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 			   ATTR_ID,this.domId('showhelp')], HU.href(help,'Help',
 								    [ATTR_TITLE,'Command Help',ATTR_TARGET,'_help']));

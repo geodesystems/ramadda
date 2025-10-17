@@ -53,7 +53,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		data.append("addthumbnail","true");
 		data.append("filename","screencapture.png");
 		data.append("file", dataUrl);
-		data.append("entryid",entryId);
+		data.append(ARG_ENTRYID,entryId);
 		let dialog;
 		let url = RamaddaUtil.getUrl("/entry/addfile");
 		$.ajax({
@@ -264,10 +264,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
         let inputWidget = jqid(getId("_input"));
 	let doSearch = ()=>{
             let value =  inputWidget.val()??'';
-            let searchLink =  HU.url(ramaddaBaseUrl + "/search/do",
+            let searchLink =  HU.url(RamaddaUtil.getUrl("/search/do"),
 				     [ARG_ORDERBY,'createdate',
 				      ARG_ASCENDING,'false',
-				      'text',value,'output','json']);
+				      'text',value,
+				      'output','json']);
 	    let theType = entryType;
 	    if(addTypesSelector) {
 		let type = jqid(getId('types_select')).val();
@@ -393,7 +394,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	return ramaddaCdn+url;
     },
     getEntryUrl:function(entryId) {
-	return RamaddaUtil.getUrl("/entry/show?entryid=" + entryId);
+	return HU.url(RamaddaUtil.getUrl("/entry/show"),ARG_ENTRYID,entryId);
     },
 
     fileDrops:{
@@ -865,7 +866,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entryId = comp.attr(ATTR_ENTRYID);
 	    let value = comp.val().trim();
 	    let what = comp.attr('data-field');
-	    let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=' + what+'&value='+ value;
+	    let url = HU.url(RamaddaUtil.getUrl("/entry/changefield"),ARG_ENTRYID, entryId,'what',what,'value',value);
 	    $.getJSON(url, function(data) {
 		if(data.error) {
 		    alert('An error has occurred: '+data.error);
@@ -1443,7 +1444,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	inputs.keyup(function(event) {
 	    HU.hidePopupObject();
 	    let val = $(this).val();
-	    if(val=="") return;
+	    if(!Utils.stringDefined(val)) return;
 	    let url = HU.getUrl(RamaddaUtil.getUrl("/metadata/suggest"),[ATTR_VALUE,val.trim()]);
 	    let input = $(this);
 	    $.getJSON(url, data=>{
@@ -1638,7 +1639,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 	    });
 	    let html = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_PADDING,HU.px(5))],
-			      "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',
+			      "Creating entry<br>"+HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
 							    [ATTR_WIDTH,HU.px(50)]));
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}

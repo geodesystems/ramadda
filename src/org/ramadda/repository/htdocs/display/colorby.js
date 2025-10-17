@@ -413,9 +413,9 @@ ColorByInfo.prototype = {
 	    let legend = "";
 	    this.compareFields.forEach((f,idx)=>{
 		legend += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-							   CSS_WIDTH,HU.px(15),
-							   CSS_HEIGHT,HU.px(15),
-							   CSS_BACKGROUND, this.colors[idx])]) +" " +
+						    CSS_WIDTH,HU.px(15),
+						    CSS_HEIGHT,HU.px(15),
+						    CSS_BACKGROUND, this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId);
@@ -437,7 +437,9 @@ ColorByInfo.prototype = {
 		    else if(step==steps-1)
 			contents =s.max;		    
 		    let fg = Utils.getForegroundColor(c);
-		    html+=HU.tag(TAG_TD,[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,
+		    html+=HU.tag(TAG_TD,[ATTR_CLASS,'display-colorscale-item',
+					 ATTR_TITLE,value,
+					 ATTR_WIDTH,w,
 					 ATTR_STYLE,HU.css(CSS_COLOR,fg,CSS_BACKGROUND,c)],contents);		    
 		}
 	    });

@@ -804,7 +804,9 @@ let Gfx = {
 	opts.w*=opts.scale;
 	opts.h*=opts.scale;
 	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
-						   ATTR_ID,id,ATTR_WIDTH,opts.w,ATTR_HEIGHT,opts.h]));
+						   ATTR_ID,id,
+						   ATTR_WIDTH,opts.w,
+						   ATTR_HEIGHT,opts.h]));
 	let canvas = document.getElementById(id);
 	let ctx = canvas.getContext("2d");
 	let cnt = 0;

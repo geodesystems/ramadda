@@ -484,25 +484,30 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 				      ATTR_ID, this.getDomId(ID_RESULTS)], "");
                 var download = HU.div([ATTR_STYLE, HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				       ATTR_ID, this.getDomId(ID_DOWNLOADURL)]);
-                var searchDiv = HU.div([ATTR_ID, this.getDomId(ID_SEARCH_DIV), ATTR_CLASS, "ramadda-xls-search-form"]);
+                var searchDiv = HU.div([ATTR_ID, this.getDomId(ID_SEARCH_DIV),
+					ATTR_CLASS, "ramadda-xls-search-form"]);
 
 
                 var search = "";
                 search += HU.openTag(TAG_FORM, ["action", "#", ATTR_ID, this.getDomId(ID_SEARCH_FORM)]);
                 search += HU.image(icon_tree_closed, [ATTR_ID, this.getDomId(ID_SEARCH + "_open")]);
                 search += "\n";
-                search += HU.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(), [ATTR_SIZE, 60,
-										   ATTR_ID, this.getDomId(ID_SEARCH_TEXT),
-										   ATTR_PLACEHOLDER, "Search"]);
+                search += HU.input(ID_SEARCH_TEXT, this.jq(ID_SEARCH_TEXT).val(),
+				   [ATTR_SIZE, 60,
+				    ATTR_ID, this.getDomId(ID_SEARCH_TEXT),
+				    ATTR_PLACEHOLDER, "Search"]);
                 search += "<input type=submit name='' style='display:none;'>";
 
-                search += HU.openTag(TAG_DIV, [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA), ATTR_CLASS, "ramadda-xls-search-extra"], "");
+                search += HU.openTag(TAG_DIV, [ATTR_ID, this.getDomId(ID_SEARCH_EXTRA),
+					       ATTR_CLASS, "ramadda-xls-search-extra"], "");
                 if (this.columns) {
                     var extra = HU.openTag(TAG_TABLE, [ATTR_CLASS, CLASS_FORMTABLE]);
                     for (var i = 0; i < this.columns.length; i++) {
                         var col = this.columns[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
-                        var widget = HU.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), ATTR_PLACEHOLDER, "Search"]);
+                        var widget = HU.input(id, this.jq(id).val(),
+					      [ATTR_ID, this.getDomId(id),
+					       ATTR_PLACEHOLDER, "Search"]);
                         extra += HU.formEntry(col.name.replace("_", " ") + ":", widget);
                     }
                     extra += HU.closeTag(TAG_TABLE);
@@ -515,7 +520,9 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                     for (var i = 0; i < this.searchFields.length; i++) {
                         var col = this.searchFields[i];
                         var id = ID_SEARCH_PREFIX + "_" + col.name;
-                        var widget = HU.input(id, this.jq(id).val(), [ATTR_ID, this.getDomId(id), ATTR_PLACEHOLDER, "Search"]);
+                        var widget = HU.input(id, this.jq(id).val(),
+					      [ATTR_ID, this.getDomId(id),
+					       ATTR_PLACEHOLDER, "Search"]);
                         extra += HU.formEntry(col.label + ":", widget);
                     }
                     extra += HU.closeTag(TAG_TABLE);
@@ -599,7 +606,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             if (!icon) {
                 icon = icon_information;
             }
-            var html = HU.hbox([HU.image(icon, [ATTR_ALIGN, "left"]),
+            var html = HU.hbox([HU.image(icon, [ATTR_ALIGN, ALIGN_LEFT]),
 				HU.inset(msg, 10, 10, 5, 10)]);
             html = HU.div([ATTR_CLASS, "note"], html);
             this.jq(ID_TABLE_HOLDER).html(html);
@@ -651,8 +658,8 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
 	    let  load = async function() {
 		if(!this.loadedJS) {
-		    await Utils.importJS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.js");
-		    await Utils.importCSS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.css");
+		    await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/jquery.handsontable.full.min.js"));
+		    await Utils.importCSS(RamaddaUtil.getCdnUrl("/lib/jquery.handsontable.full.min.css"));
 		    this.loadedJS = true;
 		}
 		var jqxhr = $.getJSON(url, function(data) {

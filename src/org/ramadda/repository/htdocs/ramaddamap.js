@@ -884,7 +884,7 @@ RepositoryMap.prototype = {
         this.addBaseLayers();
 
         if (this.kmlLayer) {
-            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
+            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),'output','shapefile.kml',ARG_ENTRYID,this.kmlLayer);
             this.addKMLLayer(this.kmlLayerName, url, false, null, null, null, null);
         }
         if (this.geojsonLayer) {
@@ -1473,13 +1473,13 @@ RepositoryMap.prototype = {
         if (type != "geo_kml" && type != "geo_json" && type != "geo_shapefile") return null;
         var layer;
         if (type == "geo_kml") {
-            var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/get"),ARG_ENTRYID,id);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
         } else if (type == "geo_json") {
-            var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+	    var url = HU.getUrl(RamaddaUtil.getUrl("/entry/get"),ARG_ENTRYID,id);
             layer = this.addGeoJsonLayer(name, url, true, null, null, null, null, true);
         } else {
-            let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
+            let url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),"output","shapefile.kml",ARG_ENTRYID,id);
 	    console.log(url);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
         }
@@ -3466,7 +3466,7 @@ RepositoryMap.prototype = {
             let lonlat = MapUtils.createLonLat(result.longitude, result.latitude);
             let icon = result.icon;
             if (!icon)
-                icon = ramaddaCdn + "/icons/green-dot.png";
+                icon = RamaddaUtil.getCdnUrl("/icons/green-dot.png");
             this.searchMarkerList.push(this.addMarker("search", lonlat, icon, "", result.name, 20, 20));
             east = i == 0 ? result.longitude : Math.max(east, result.longitude);
             west = i == 0 ? result.longitude : Math.min(west, result.longitude);
@@ -3516,7 +3516,7 @@ RepositoryMap.prototype = {
                 return;
             }
             wait.html(HU.image(icon_wait));
-            let url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
+            let url = HU.getUrl(RamaddaUtil.getUrl("/geocode"),"query",searchInput.val());
             if (bounds.is(':checked')) {
                 let b = _this.transformProjBounds(_this.getMap().getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
@@ -3534,7 +3534,7 @@ RepositoryMap.prototype = {
                         let n = data.result[i].name.replace("\"", "'");
                         let icon = data.result[i].icon;
                         if (!icon)
-                            icon = ramaddaCdn + "/icons/green-dot.png";
+                            icon = RamaddaUtil.getCdnUrl("/icons/green-dot.png");
                         result += HU.div([ATTR_CLASS, "ramadda-map-loc",
 					  ATTR_NAME, n,
 					  "icon", icon,
@@ -3609,7 +3609,8 @@ RepositoryMap.prototype = {
 		    let ll = _this.transformProjPoint(centroid);
 		    let id  = this.feature.ramaddaId;
 		    id = id.replace(/_/g,'-');
-		    let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + id+'&what=location&latitude='+ ll.y+"&longitude=" + ll.x;
+		    let url = HU.getUrl(RamaddaUtil.getUrl("/entry/changefield"),ARG_ENTRYID,id,'what',location,
+					'latitude',ll.y,'longitude',ll.x);
 		    $.getJSON(url, function(data) {
 			if(data.error) {
 			    alert('An error has occurred: '+data.error);
@@ -4469,7 +4470,7 @@ RepositoryMap.prototype = {
         this.loadingImage = MapUtils.createImage("loadingimage",
 						 position,
 						 sz,
-						 ramaddaCdn + '/icons/mapprogress.gif');
+						 RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'));
         this.loadingImage.style.zIndex = 1010;
         this.getMap().viewPortDiv.appendChild(this.loadingImage);
     },
@@ -4600,7 +4601,7 @@ RepositoryMap.prototype = {
             this.addVectorLayer(this.markers, canSelect);
         }
         if (!Utils.stringDefined(iconUrl)) {
-            iconUrl = ramaddaCdn + '/icons/marker.png';
+            iconUrl = RamaddaUtil.getCdnUrl('/icons/marker.png');
         }
 
         let sz = MapUtils.createSize(width,height);

@@ -42,7 +42,7 @@ addGlobalDisplayType({
 
 
 
-
+var CLASS_MENU_BLOCK = 'ramadda-menu-block';
 //
 //This will get the currently created global displaymanager or will create a new one
 //
@@ -242,8 +242,7 @@ function DisplayManager(argId, argProperties) {
                 }
 		let menuAttrs = [ATTR_ONCLICK, get + ".userCreateDisplay('" + type.type + "');"];
 		if(type.desc) {
-		    menuAttrs.push(ATTR_TITLE);
-		    menuAttrs.push(type.desc);
+		    menuAttrs.push(ATTR_TITLE,type.desc);
 		}
                 newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
             }
@@ -270,34 +269,35 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Titles: " +
+            var titles = HU.tag(TAG_DIV, [ATTR_CLASS, CLASS_MENU_BLOCK],
+				"Titles: " +
 				HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
+            var dates = HU.tag(TAG_DIV, [ATTR_CLASS, CLASS_MENU_BLOCK],
 			       "Set date range: " +
 			       HU.onClick(layout + ".askMinDate();", "Min") + "/" +
 			       HU.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, CLASS_MENU_BLOCK],
 					  "Set axis range :" +
 					  HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
 					  HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
                 HU.tag(TAG_LI, [], dates) +
                 HU.tag(TAG_LI, [], titles) + "\n" +
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Details: " +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, CLASS_MENU_BLOCK], "Details: " +
 					  HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
 					  HU.onClick(layout + ".detailsOff();", "Off", []))) +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
-            var table = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Table: " +
+            var table = HU.tag(TAG_DIV, [ATTR_CLASS, CLASS_MENU_BLOCK], "Table: " +
 			       HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
 			       HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
 			       HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
 			       HU.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
                 HU.tag(TAG_LI, [], table) +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout(ATTR_ROWS);", "Rows")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
 
@@ -310,7 +310,8 @@ function DisplayManager(argId, argProperties) {
 
             var menu = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE,CSS_Z_INDEX,1000),
 			       ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, 'sf-menu'], menuBar));
+			      HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER),
+					      ATTR_CLASS, 'sf-menu'], menuBar));
 
             html += menu;
             return html;

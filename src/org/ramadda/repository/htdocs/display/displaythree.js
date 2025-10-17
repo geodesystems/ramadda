@@ -61,42 +61,42 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     }
 
     let positions = {
-"Base":{
-position: {x:6.048899205465489e-21,y:1.832130202344028e-20,z:250},
-up: {x:1.546799663044268e-22,y:1,z:-7.328520809376114e-23}
-},
-"North America":{
-position: {x:-185.0051316412852,y:166.36750886777244,z:-24.391663730099083},
-up: {x:0.6540380289233074,y:0.7458336330441189,z:0.12635841302550785}
-},
-"South America":{
-position: {x:-220.53665870332205,y:-71.90185405284046,z:93.24004264123046},
-up: {x:-0.2051500901346411,y:0.9474654144116881,z:0.24540319682399764}
-},
-"Europe":{
-position: {x:76.01040670390248,y:193.37167151814756,z:139.03170403539133},
-up: {x:-0.286288586763548,y:0.6309644429890481,z:-0.7210566668247681}
-},
-"Asia":{
-position: {x:215.9418144948879,y:118.22041784669743,z:-43.50937320632211},
-up: {x:-0.4872587496088534,y:0.8718613869731202,z:-0.04936226124191964}
-},
-"Africa":{
-position: {x:82.50264441171257,y:6.133419606337622,z:235.91459223415376},
-up: {x:-0.005217856566188513,y:0.9996943480371796,z:-0.024165770738191875}
-},
-"Australia":{
-position: {x:166.64046097372514,y:-104.10022198889281,z:-154.57716696953614},
-up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
-},
-"Pacific":{
-position: {x:-50.02109926067879,y:70.1629622786457,z:-293.1352563989274},
-up: {x:0.578136747554258,y:0.8103545388010297,z:0.09530699120186392}
-},
-"North Atlantic":{
-position: {x:-137.7219663374266,y:134.93931772927482,z:159.1352899859414},
-up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
-},
+	"Base":{
+	    position: {x:6.048899205465489e-21,y:1.832130202344028e-20,z:250},
+	    up: {x:1.546799663044268e-22,y:1,z:-7.328520809376114e-23}
+	},
+	"North America":{
+	    position: {x:-185.0051316412852,y:166.36750886777244,z:-24.391663730099083},
+	    up: {x:0.6540380289233074,y:0.7458336330441189,z:0.12635841302550785}
+	},
+	"South America":{
+	    position: {x:-220.53665870332205,y:-71.90185405284046,z:93.24004264123046},
+	    up: {x:-0.2051500901346411,y:0.9474654144116881,z:0.24540319682399764}
+	},
+	"Europe":{
+	    position: {x:76.01040670390248,y:193.37167151814756,z:139.03170403539133},
+	    up: {x:-0.286288586763548,y:0.6309644429890481,z:-0.7210566668247681}
+	},
+	"Asia":{
+	    position: {x:215.9418144948879,y:118.22041784669743,z:-43.50937320632211},
+	    up: {x:-0.4872587496088534,y:0.8718613869731202,z:-0.04936226124191964}
+	},
+	"Africa":{
+	    position: {x:82.50264441171257,y:6.133419606337622,z:235.91459223415376},
+	    up: {x:-0.005217856566188513,y:0.9996943480371796,z:-0.024165770738191875}
+	},
+	"Australia":{
+	    position: {x:166.64046097372514,y:-104.10022198889281,z:-154.57716696953614},
+	    up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
+	},
+	"Pacific":{
+	    position: {x:-50.02109926067879,y:70.1629622786457,z:-293.1352563989274},
+	    up: {x:0.578136747554258,y:0.8103545388010297,z:0.09530699120186392}
+	},
+	"North Atlantic":{
+	    position: {x:-137.7219663374266,y:134.93931772927482,z:159.1352899859414},
+	    up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
+	},
 	"South Pole":{
 	    position: {x:0,y:-249.99925472592855,z:-0.6104395794518828},
 	    up: {x:0.9999999999999998,y:0,z:0}
@@ -208,7 +208,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(!window["THREE"]) {
 		if(!ramaddaLoadedThree) {
                     ramaddaLoadedThree = true;
-//		    Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
+		    //		    Utils.importJS(RamaddaUtil.getCdnUrl("/lib/three/three.min.js"));
 		    Utils.importJS("//unpkg.com/three@0.160");		    
 		}
 		setTimeout(()=>{this.updateUI()},100);
@@ -358,7 +358,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    .arcStroke(+this.getLineWidth())
 		    .arcAltitude(this.getLineAltitude())
 		    .arcColor('color')
-//		    .arcDashLength(() => Math.random())
+		//		    .arcDashLength(() => Math.random())
 		    .arcDashGap(0);
 	    } else if(polygonField) {
 		let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
@@ -378,7 +378,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			color=polygonColorTable[cidx++];
 		    }
 
-//		    if(idx>=5) return;
+		    //		    if(idx>=5) return;
 		    let poly = [];
 		    let polyObj = {
 			points:poly,
@@ -458,13 +458,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			    Object.assign(obj.position, this.globe.getCoords(d.lat, d.lng, d.height+0.01));
 			});
 		} else if(this.getShowPoints()) {
-		  this.globe.pointsData(pointData)
+		    this.globe.pointsData(pointData)
 			.pointAltitude('height')
 			.pointColor('color')
 			.pointRadius('radius')
 			.pointResolution(this.getPointResolution());
 		} else {
-//		    console.log("Not showing spheres or points");
+		    //		    console.log("Not showing spheres or points");
 		}
 	    }
 
@@ -505,7 +505,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(pos.zoom)
 		scope.object.zoom = pos.zoom;
 	    scope.object.updateProjectionMatrix();
-//	    _eye.subVectors( scope.object.position, scope.target );
+	    //	    _eye.subVectors( scope.object.position, scope.target );
 	    scope.object.lookAt( scope.target );
 	},
 	getDataObjects: function(recordMap) {
@@ -541,13 +541,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.getScene().children.filter(obj=>{
 		return obj.type=="DirectionalLight" || obj.type=="AmbientLight";
 	    }).forEach(obj=>{
-//		console.log("removing " + obj.type);
+		//		console.log("removing " + obj.type);
 		this.getScene().remove(obj);
 	    });
 
 	    let ambientLight = this.getAmbientLight();
 	    if(ambientLight && ambientLight!="none") {
-//		console.log("adding ambient light:" + ambientLight);
+		//		console.log("adding ambient light:" + ambientLight);
 		this.getScene().add(new THREE.AmbientLight(this.parseInt(ambientLight), this.getAmbientIntensity()));
 	    }
 	    
@@ -556,7 +556,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		if(!Utils.isDefined(light) || light=="none") {
 		    continue;
 		}
-//		console.log("adding directional light:" + light);
+		//		console.log("adding directional light:" + light);
 		let dl = new THREE.DirectionalLight(this.parseInt(light),
 						    this.getProperty("directionalIntensity"+ i,
 								     this.getDirectionalIntensity()));
@@ -602,7 +602,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.jq(ID_POPUP).click(()=>{
 		this.jq(ID_POPUP).hide();
 	    });
-		
+	    
 
 	    this.jq(ID_ROTATE_BUTTON).click(()=>{
 		let scope = this.getControls();
@@ -673,7 +673,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			let attrs = ["x","y","z"];
 			let  pos =  "{position: {";
 			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
-			    pos+="},\nup: {";
+			pos+="},\nup: {";
 			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
 			pos+="}}";
 			let state = '"'+name+'":' + pos;
@@ -762,7 +762,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    if(this.getAutoRotate()) {
 		this.getControls().autoRotate = true;
-//		console.dir(this.getControls())
+		//		console.dir(this.getControls())
 	    }
 
 	    this.callHook("createGlobe");
@@ -818,7 +818,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		if(nameField) {
 		    records.forEach(record=>{
 			let name = nameField.getValue(record);
-//			console.log("name:" +name);
+			//			console.log("name:" +name);
 			nameMap[name] = record;
 			nameMap[name.toLowerCase()] = record;
 			nameMap[name.toUpperCase()] = record;			    			    
@@ -859,7 +859,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 
 		    if(!record) {
-//			this.handleLog("Could not find record for feature:" +names);
+			//			this.handleLog("Could not find record for feature:" +names);
 			return;
 		    }
 		    f.record=record;
@@ -893,7 +893,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			    this.globe
 				.polygonAltitude(d => d === hoverD ? 0.08 : alt)
 			})
-			    .polygonsTransitionDuration(300);
+			.polygonsTransitionDuration(300);
 		    //				.polygonCapColor(d => d === hoverD ? 'steelblue' : d.color)
 		}
 
@@ -906,7 +906,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	},
 	getImageUrl:function(image) {
 	    if(!image) return null;
-	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseHtdocs+"/images/maps/" + image;
+	    if(!image.startsWith("http") && !image.startsWith("/")) {
+		image = RamaddaUtil.getCdnUrl("/images/maps/") + image;
+	    }
 	    return image;
 	},
 	getMapUrl:function(url) {
@@ -917,7 +919,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 		    url = ramaddaBaseUrl +'/entry/get?entryid=' + url;
 		} else {
-		    url = ramaddaBaseHtdocs+"/resources/" + url;
+		    url = RamaddaUtil.getCdnUrl("/resources/") + url;
 		}
 	    }
 	    return url;
@@ -981,8 +983,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
         updateUI: async function() {
             if(!ramaddaLoadedThree) {
                 ramaddaLoadedThree = true;
-		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
-		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/controls/OrbitControls.js");
+		await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/three/three.min.js"));
+		await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/three/controls/OrbitControls.js"));
             }
 	    if(!window["THREE"]) {
 		setTimeout(()=>{this.updateUI()},100);
@@ -1007,8 +1009,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    this.filteredRecords = records;
 
-//	    records = [...records,...records,...records,...records,...records]
-//	    records = [...records,...records,...records,...records,...records]	    
+	    //	    records = [...records,...records,...records,...records,...records]
+	    //	    records = [...records,...records,...records,...records,...records]	    
 
 
 
@@ -1023,7 +1025,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		this.initCamera = true;
 		let h = (rectWidth/2)/Math.tan(Utils.toRadians(CAMERA_ANGLE/2));
 		this.camera.position.set(0,0,h*2);
-//		this.addChecker(rectWidth);
+		//		this.addChecker(rectWidth);
 	    }
 	    let initX = ((cubeWidth+cubeSpace)*-sqrt/2);
 	    let initY = -initX;
@@ -1036,7 +1038,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    if(this.colorByFields) {
 		let fields = this.getFields();
 		this.colorByFields.forEach(field=>{
-//		    function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
+		    //		    function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
 		    let cb = new ColorByInfo(this,fields,records,null,null,null,null,field);
 		    colorBys.push(cb);
 		})
@@ -1075,8 +1077,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    const materials = [];
 		    imageFields.forEach(f=>{
 			let image = f.getValue(record);
-//			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
-//			image = 'https://localhost:8430/repository/images/logo.png';
+			//			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
+			//			image = 'https://localhost:8430/repository/images/logo.png';
 			if(Utils.stringDefined(image)) {
 			    materials.push(new THREE.MeshBasicMaterial({map: loader.load(image)}));
 			}
@@ -1088,13 +1090,13 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    this.shapes.push(cube); 
 		} else {
 		    let materials = [];
-/*
-		    for(let i=0;i<colorBys.length;i++) {
-			let color = colorBys[i].getColorFromRecord(record, null);
-			let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
-			materials.push(this.parseInt(color,0xff0000));
-		    }
-*/
+		    /*
+		      for(let i=0;i<colorBys.length;i++) {
+		      let color = colorBys[i].getColorFromRecord(record, null);
+		      let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
+		      materials.push(this.parseInt(color,0xff0000));
+		      }
+		    */
 		    let color = colorBy.getColorFromRecord(record, null);
 		    let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
 		    let height = cubeWidth;
@@ -1117,7 +1119,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    } else {
 			cube.rotation.x = Utils.toRadians(90);
 		    }
-//		    cube.position.set(x,y,0);
+		    //		    cube.position.set(x,y,0);
 		    cube.position.x=x;
 		    cube.position.y = y;		
 		    cube.position.z = height/2;
@@ -1128,17 +1130,17 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		x+=cubeWidth+cubeSpace;
 	    });
 	    /*
-	    var geometry = new THREE.CylinderBufferGeometry( 0, 10, 30, 4, 1 );
-	    var material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
-	    for ( var i = 0; i < 500; i ++ ) {
-		var mesh = new THREE.Mesh( geometry, material );
-		mesh.position.x = ( Math.random() - 0.5 ) * 1000;
-		mesh.position.y = ( Math.random() - 0.5 ) * 1000;
-		mesh.position.z = ( Math.random() - 0.5 ) * 1000;
-		mesh.updateMatrix();
-		mesh.matrixAutoUpdate = false;
-		this.scene.add( mesh );
-	    }
+	      var geometry = new THREE.CylinderBufferGeometry( 0, 10, 30, 4, 1 );
+	      var material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
+	      for ( var i = 0; i < 500; i ++ ) {
+	      var mesh = new THREE.Mesh( geometry, material );
+	      mesh.position.x = ( Math.random() - 0.5 ) * 1000;
+	      mesh.position.y = ( Math.random() - 0.5 ) * 1000;
+	      mesh.position.z = ( Math.random() - 0.5 ) * 1000;
+	      mesh.updateMatrix();
+	      mesh.matrixAutoUpdate = false;
+	      this.scene.add( mesh );
+	      }
 	    */
 
 	    if(colorBy.isEnabled()) {
@@ -1161,7 +1163,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		side: THREE.DoubleSide,
 	    });
 	    const mesh = new THREE.Mesh(planeGeo, planeMat);
-//	    mesh.rotation.x = Math.PI * -.5;
+	    //	    mesh.rotation.x = Math.PI * -.5;
 	    this.scene.add(mesh);
 	},
 
@@ -1205,19 +1207,19 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    let addLight=(v,x,y,z,i) =>{
 		i=0.01;
 		if(!Utils.isDefined(i)) i=1;
-//		var light = new THREE.PointLight(this.parseInt(v),i);
+		//		var light = new THREE.PointLight(this.parseInt(v),i);
 		let light = new THREE.DirectionalLight(this.parseInt(v));
 		light.position.set(x,y,z);
 		this.getScene().add(light);
 	    }
 	    addLight(0xffffff,-1,1,1);
-//	    addLight(0xffffff,1,1,1);
-//	    addLight(0xffffff,-1,-1,1);
-//	    addLight(0xffffff,1,-1,1);	    
+	    //	    addLight(0xffffff,1,1,1);
+	    //	    addLight(0xffffff,-1,-1,1);
+	    //	    addLight(0xffffff,1,-1,1);	    
 	    var light = new THREE.AmbientLight( 0xffffff,0.5);
 	    this.scene.add( light );
 	    light = new THREE.HemisphereLight( 0xffffff,0xffffbb,1.0);
-//	    this.scene.add( light );	    
+	    //	    this.scene.add( light );	    
 
 
 	    let _this = this;
@@ -1225,25 +1227,25 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    canvas.attr(ATTR_TABINDEX,'1');
 	    canvas.css("border",this.getCanvasBorder());
 	    this.renderer.domElement.addEventListener('keydown', (e) => {
-		    if(e.code=="KeyP") {
-			let name = prompt("Name:");
-			if(!name) return;
-			let attrs = ["x","y","z"];
-			let  pos =  "{position: {";
-			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
-			    pos+="},\nup: {";
-			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
-			pos+="}}";
-			let state = '"'+name+'":' + pos;
-			Utils.copyToClipboard(pos.replace(/\n/g,""));
-		    }
+		if(e.code=="KeyP") {
+		    let name = prompt("Name:");
+		    if(!name) return;
+		    let attrs = ["x","y","z"];
+		    let  pos =  "{position: {";
+		    attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
+		    pos+="},\nup: {";
+		    attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
+		    pos+="}}";
+		    let state = '"'+name+'":' + pos;
+		    Utils.copyToClipboard(pos.replace(/\n/g,""));
+		}
 
-		    if(e.code=="KeyR") {
-			_this.controls.reset();
-//			let pos = positions[this.getInitialPosition() || "North America"];
-//			if(pos) {			    this.setPosition(pos);			}
-		    }
-		});
+		if(e.code=="KeyR") {
+		    _this.controls.reset();
+		    //			let pos = positions[this.getInitialPosition() || "North America"];
+		    //			if(pos) {			    this.setPosition(pos);			}
+		}
+	    });
 
 
 
@@ -1271,7 +1273,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 			minDistance = o.distance;
 		    }
 		});
-//		console.dir(minObject);
+		//		console.dir(minObject);
 		let getRecord = o=>{
 		    if(o.__record) return o.__record;
 		    if(o.parent) return getRecord(o.parent);
@@ -1303,9 +1305,9 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    requestAnimationFrame( animate );
 		    _this.controls.update();
 		    _this.shapes.forEach((shape,idx)=>{
-//			shape.rotation.x+=0.01
-//			shape.rotation.y+=0.01
-//			if(idx==0) console.log(shape.rotation.x);
+			//			shape.rotation.x+=0.01
+			//			shape.rotation.y+=0.01
+			//			if(idx==0) console.log(shape.rotation.x);
 		    });
 		    _this.renderer.render( _this.scene, _this.camera );
 		}

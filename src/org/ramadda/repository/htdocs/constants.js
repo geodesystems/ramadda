@@ -30,6 +30,9 @@ var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
 var ARG_PAGESEARCH='pagesearch';
 var ARG_MAPBOUNDS='map_bounds';
+var ARG_ENTRYID='entryid';
+var ARG_OUTPUT='output';
+
 
 var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
@@ -222,6 +225,9 @@ var COLOR_LIGHT_GRAY='#ccc';
 var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
 
 
+
+
+
 var ATTR_SRC = 'src';
 var ATTR_ENTRYID='entryid';
 var ATTR_TAG='tag';
@@ -249,6 +255,8 @@ var ATTR_DATA_FIELD = 'data-field';
 
 
 
+var ATTR_X='x';
+var ATTR_Y='y';
 var ATTR_IMGSRC='img-src';
 var ATTR_WIDTH = 'width';
 var ATTR_HEIGHT = 'height';
@@ -284,6 +292,7 @@ var ATTR_METHOD='method';
 var ATTR_MULTIPLE = 'multiple';
 var ATTR_SELECTED='selected';
 var ATTR_SIZE = 'size';
+var ATTR_STATE='state';
 var ATTR_STROKE = 'stroke';
 var ATTR_STROKE_WIDTH = 'stroke-width';
 var ATTR_FILL="fill";

@@ -1104,7 +1104,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                 sets.push(obj);
             }
             this.setContents(HU.div([ATTR_ID, this.getDomId(ID_VENN),
-					    ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], ""));
+				     ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))], ""));
             var chart = venn.VennDiagram()
                 .width(600)
                 .height(400);
@@ -1212,9 +1212,9 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 	    if(!groupByField) {
 		let data = groups["all"];
 		this.setContents(HU.div([ATTR_CLASS,"display-minidots-dots",
-						ATTR_ID, this.getDomId(ID_MINIDOTS),
-						ATTR_STYLE, HU.css(ATTR_HEIGHT,HU.getDimension(dotsHeight),
-								   ATTR_WIDTH,HU.getDimension(dotsWidth))], ""));
+					 ATTR_ID, this.getDomId(ID_MINIDOTS),
+					 ATTR_STYLE, HU.css(ATTR_HEIGHT,HU.getDimension(dotsHeight),
+							    ATTR_WIDTH,HU.getDimension(dotsWidth))], ""));
 		drawDots(this,"#"+ this.getDomId(ID_MINIDOTS),dotsWidth,dotsHeight,data.list,range,null/*colorBy*/);
 	    } else {
 		let container = this.jq(ID_MINIDOTS);
@@ -1225,9 +1225,9 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 		    table += HU.td([],key +" (" + data.total+")");
 		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
 		    table += HU.td([],HU.div([ATTR_CLASS,"display-minidots-dots",
-						     ATTR_ID, id,
-						     ATTR_STYLE, HU.css(CSS_HEIGHT,HU.getDimension(dotsHeight),
-									CSS_WIDTH,HU.getDimension(dotsWidth))], ""));
+					      ATTR_ID, id,
+					      ATTR_STYLE, HU.css(CSS_HEIGHT,HU.getDimension(dotsHeight),
+								 CSS_WIDTH,HU.getDimension(dotsWidth))], ""));
 		    table+=HU.close(TAG_TR);
 		});
 		this.setContents(table);
@@ -1455,8 +1455,8 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             var height = this.getProperty("height", HU.px(400));
             if (!height.endsWith("px")) height += "px";
             this.setContents(legend + HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT,height),
-						     ATTR_CLASS, "display-chernoff-container",
-						     ATTR_ID, this.getDomId("chernoff")], html));
+					      ATTR_CLASS, "display-chernoff-container",
+					      ATTR_ID, this.getDomId("chernoff")], html));
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var div = "#" + this.getDomId("chernoff") + "_" + rowIdx;
                 this.makeFace(div, data[rowIdx].faceData, data[rowIdx].color);
@@ -1582,8 +1582,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    if(colorByField)
 		this.setProperty("sortFields",colorByField.getId());
 	    let html = HU.tag(TAG_SVG, [ATTR_ID, this.getDomId(ID_BUBBLES),
-					      ATTR_WIDTH,HU.perc(100),ATTR_HEIGHT,700,
-					      "font-family","sans-serif","font-size","10", "text-anchor","middle"])
+					ATTR_WIDTH,HU.perc(100),ATTR_HEIGHT,700,
+					"font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.setContents(html);
 	    let values;
 	    let min = 0;

@@ -1350,8 +1350,8 @@ MapGlyph.prototype = {
 
 	    try {
 		let img = canvas.toDataURL();
-		if($('#testimg').length) 
-		    $("#testimg").html(HU.tag(TAG_IMG,[ATTR_SRC,img]));
+		if(jqid('testimg').length) 
+		    jqid("testimg").html(HU.tag(TAG_IMG,[ATTR_SRC,img]));
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
@@ -2825,7 +2825,7 @@ MapGlyph.prototype = {
 	}
 
 	if(this.showFeatureTableId) {
-	    $('#'+ this.showFeatureTableId).click(function() {
+	    jqid(this.showFeatureTableId).click(function() {
 		_this.showFeaturesTable($(this));
 	    });
 	}
@@ -4809,7 +4809,7 @@ MapGlyph.prototype = {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
-		if($("#"+this.zoomonchangeid).is(':checked')) {
+		if(jqid(this.zoomonchangeid).is(':checked')) {
 		    this.panMapTo();
 		}
 		this.updateFeaturesTable();
@@ -4860,7 +4860,7 @@ MapGlyph.prototype = {
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
 		this.updateFeaturesTable();
-		if($("#"+this.zoomonchangeid).is(':checked')) {
+		if(jqid(this.zoomonchangeid).is(':checked')) {
 		    this.panMapTo();
 		}
 	    });

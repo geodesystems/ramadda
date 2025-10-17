@@ -30,9 +30,9 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     }
 
     this.getUrl = function(what) {
-        var url = ramaddaBaseUrl + "/entry/show?entryid=" + this.entryId;
+        var url = HU.getUrl(RamaddaUtils.getUrl("/entry/show"),ARG_ENTRYID,this.entryId);
         var theForm = this;
-        var inputs = $('#' + this.id + ' :input');
+        var inputs = jqid( this.id + ' :input');
         //        $(':input[id*=\"' + this.id +'\"]')
         inputs.each(function() {
             //if(this.name == "entryselect" && !this.attr('checked')) {
@@ -65,7 +65,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 
     //This sets the request input to what and submits the form
     this.formSubmit = function(what, event) {
-	$("#"+this.id).find("input[name=request]").val(what);
+	jqid(this.id).find("input[name=request]").val(what);
 	document.getElementById(this.id).submit();
 	if(event)event.preventDefault();
     }
@@ -91,7 +91,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("timeseries");
         var theForm = this;
-        $("#" + this.outputDivPrefix + "image").html("<img alt=\"Generating Image....\" src=\"" + url + "\">");
+        jqid(this.outputDivPrefix + "image").html("<img alt=\"Generating Image....\" src=\"" + url + "\">");
         return false;
     }
 
@@ -100,8 +100,8 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("search");
         var theForm = this;
-        $("#" + this.outputDivPrefix + "list").html("<img src=" + icon_progress + "> Searching...");
-        $("#" + this.outputDivPrefix + "image").html("");
+        jqid(this.outputDivPrefix + "list").html("<img src=" + icon_progress + "> Searching...");
+        jqid(this.outputDivPrefix + "image").html("");
         theForm.totalSize = 0;
         $.getJSON(url, function(data) {
             theForm.processEntryJson(data);
@@ -115,8 +115,8 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("image");
         var theForm = this;
-        //        $("#" + this.outputDivPrefix+"image").html("<img src=" + icon_progress +"> Creating image");
-        $("#" + this.outputDivPrefix + "image").html("<img alt=\"Generating Image....\" src=\"" + url + "\">");
+        //        jqid(this.outputDivPrefix+"image").html("<img src=" + icon_progress +"> Creating image");
+        jqid(this.outputDivPrefix + "image").html("<img alt=\"Generating Image....\" src=\"" + url + "\">");
         //        theForm.totalSize = 0;
         return false;
     }
@@ -182,14 +182,14 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
             html +=  HtmlUtils.leftRight("",GuiUtils.size_format(totalSize));
 	}
         this.totalSize = totalSize;
-        $("#" + this.outputDivPrefix + "list").html(html);
+        jqid(this.outputDivPrefix + "list").html(html);
 
         HtmlUtils.formatTable("#"+ tableId,{
             scrollY: "250",
             ordering:true,
         });
         var theForm = this;
-        var cbx = $("#" + checkboxId);
+        var cbx = jqid(checkboxId);
 
         this.getEntryCheckboxes().change(function(event) {
             theForm.listUpdated();
@@ -321,9 +321,9 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     }
 
     this.submit = function() {
-        var valueField = $('#' + this.id + '_value');
-        var image = $('#' + this.id + '_image');
-        image.attr("src", ramaddaBaseUrl + "/icons/" + valueField.val());
+        var valueField = jqid(this.id + '_value');
+        var image = jqid(this.id + '_image');
+        image.attr(ATTR_SRC, RamaddaUtils.getUrl("/icons/" + valueField.val()));
         return false;
     }
 
