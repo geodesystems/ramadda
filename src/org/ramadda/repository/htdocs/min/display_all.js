@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 18 07:53:03 MDT 2025";
+var build_date="RAMADDA build date: Sat Oct 18 07:54:14 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -56494,7 +56494,7 @@ MapGlyph.prototype = {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	}	    
 	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
-	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_RAMADDA_BUTTON),
+	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_BUTTON),
 			    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 			    ATTR_GLYPH_ID,this.getId(),
 			    ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
