@@ -2005,7 +2005,10 @@ public class HtmlOutputHandler extends OutputHandler {
 		HU.addPageSearch(sb,".entry-list-row-data",null,"Find in page");
 		if(doingInfo) {
 		    props.put("showEntryOrder","true");
-		    props.put("inlineEdit","true");		    
+		    boolean canEdit = getAccessManager().canDoEdit(request, group);
+		    if(canEdit) {
+			props.put("inlineEdit","true");
+		    }
 		}
                 sb.append(getWikiManager().makeTableTree(request, null,
                         props, myChildren));
