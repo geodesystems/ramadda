@@ -38,16 +38,21 @@ NwsAlerts.prototype = {
 	if(this.opts.debug) console.log(msg);
     },
     writeEvents:function() {
-	let txt='<table>\n';
+	let txt=HU.open(TAG_TABLE);
 	txt+=HU.tr([],HU.td([],HU.b('ID'))+
-		   HU.td([ATTR_STYLE,HU.css('padding-left','1em','padding-right','1em')],HU.b('Event Type'))+HU.td([],HU.b('Description'))) +'\n';
+		   HU.td([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'1em',
+					    CSS_PADDING_RIGHT,'1em')],
+			 HU.b('Event Type'))+HU.td([],HU.b('Description'))) +'\n';
 	Object.keys(this.phenomena).forEach(key=>{
 	    let info = this.phenomena[key];
 	    txt+=HU.tr(['class','search-component'],
 		       HU.td([ATTR_CLASS,'eventtype'],key)+
-		       HU.td([ATTR_CLASS,'eventtype',ATTR_STYLE,HU.css('padding-left','1em','padding-right','1em')],info.type??'')+HU.td(['align','left'],info.label)) +'\n';
+		       HU.td([ATTR_CLASS,'eventtype',
+			      ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'1em',
+						CSS_PADDING_RIGHT,'1em')],
+			     info.type??'')+HU.td([ATTR_ALIGN,ALIGN_LEFT],info.label)) +'\n';
 	});
-	txt+='</table>';
+	txt+=HU.close(TAG_TABLE);
 	Utils.makeDownloadFile('wx.html',txt);
 
     },
@@ -65,11 +70,12 @@ NwsAlerts.prototype = {
 	return jqid(this.div);
     },
     init:function() {
-//	this.writeEvents();
+	//	this.writeEvents();
 	this.uid =HU.getUniqueId();
 	this.headerID =HU.getUniqueId();
 	let loading = HU.center(
-	    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:50px;'])+
+	    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
+		     [ATTR_STYLE,HU.css(CSS_WIDTH,'50px')])+
 		HU.div('Loading alerts'));
 	this.getDiv().append(HU.div([ATTR_ID,this.domId('progress')],loading));
 	this.getDiv().append(HU.div([ATTR_ID,this.headerID],''));
@@ -104,7 +110,7 @@ NwsAlerts.prototype = {
 	this.pending = 0;
 	this.tbdUrls = [];
 
-//	setTimeout(()=>{
+	//	setTimeout(()=>{
 	this.allUrls.forEach(item=>{
 	    if(Utils.stringDefined(item.url)) {
 		let loadFirst = Utils.getProperty(this.getFullProperty('loadFirst',item.type,item.value,true));
@@ -129,7 +135,7 @@ NwsAlerts.prototype = {
 	    }
 	    setTimeout(check,50);
 	}
-//	},2000);
+	//	},2000);
 
     },
     loadAlert:function(url,type,value,multiples) {    
@@ -155,7 +161,7 @@ NwsAlerts.prototype = {
 	    let watches = [];
 	    let other = [];
 	    let myAlertCount=0;
-//	    console.dir(data);
+	    //	    console.dir(data);
 	    let severeCount=0;
 	    let fmt = (t)=>{
 		return  HU.b('&bull; '+t+': ');
@@ -206,7 +212,7 @@ NwsAlerts.prototype = {
 			//console.log(code,phenon,significance);
 			title = phenon +' '+ title;
 		    }
-//		    title=HU.span([ATTR_STYLE,"xdisplay:inline-block;background:red"], title);
+		    //		    title=HU.span([ATTR_STYLE,"xdisplay:inline-block;background:red"], title);
 
 		    this.debug('alert: type='+ type +' value:' + value +' phenomena:' + phenon +(info.label?' ' + info.label:'') +' event:'+ props.event);
 		    let headerMessage=this.getProperty('headerMessage.'+phenon,
@@ -229,16 +235,17 @@ NwsAlerts.prototype = {
 		}
 
 		contents += pre;
-		contents+=HU.div([ATTR_STYLE,HU.css('font-size','80%','text-align','right')],footer);
+		contents+=HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,'80%',
+						    CSS_TEXT_ALIGN,ALIGN_RIGHT)],footer);
 		contents = HU.div([ATTR_CLASS,'alerts-contents'],contents);
 		let l = (significance=='W'?warnings:(significance=='A'?watches:other));
 		if(code=='SPS') l=warnings;
-		let headerStyle=HU.css('margin-left','10px','margin-bottom','5px');		
+		let headerStyle=HU.css(CSS_MARGIN_LEFT,'10px',CSS_MARGIN_BOTTOM,'5px');		
 		let headerClass='';
 		if(props.severity=='Severe' || props.severity=='Extreme') {
 		    severeCount++;
 		    l = warnings;
-		    headerStyle+=HU.css('background','#f8d7da');
+		    headerStyle+=HU.css(CSS_BACKGROUND,'#f8d7da');
 		}
 		
 
