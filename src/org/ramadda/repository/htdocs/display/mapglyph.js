@@ -2376,7 +2376,7 @@ MapGlyph.prototype = {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	}	    
 	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
-	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_RAMADDA_BUTTON),
+	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_BUTTON),
 			    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 			    ATTR_GLYPH_ID,this.getId(),
 			    ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
