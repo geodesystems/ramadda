@@ -509,8 +509,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	let colList = Utils.split(props.columns??'name,entryorder,creator,date,time,createdate,download,size,type,attachments',',',true,true);
-
+	let colString = props.columns;
+	if(!colString) {
+	    colString ='name,entryorder,creator,date,time,createdate,download,size,type,attachments';
+	    if(props.inlineEdit) {
+		colString+=',editcolumns';
+	    }
+	}
+	let colList = Utils.split(colString,',',true,true);
 	let dateWidth = 130;
 	let typeWidth = 100;	
 	let sizeWidth  =80;
@@ -519,7 +525,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:"name",label:"Name",width:props.nameWidth});
 	    else if(c=='date' && props.showDate)
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
-	    else if(c=='geo') {
+	    else if(c=='editcolumns') {
+		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:200});
+	    }   else if(c=='geo') {
 		cols.push({id:"latitude",label:"Latitude",width:100});
 		cols.push({id:"longitude",label:"Longitude",width:100});
 		cols.push({id:"altitude",label:"Altitude",width:100});
@@ -561,10 +569,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_CELLPADDING,0,
 				     ATTR_CLASS,'entry-list-header',
 				     ATTR_WIDTH,tableWidth]);
-	    let hdrAttrs = [ATTR_CLASS,HU.classes('entry-list-header-column',CLASS_CLICKABLE)];
+	    let hdrAttrs = [ATTR_CLASS,HU.classes('entry-list-header-column','entry-list-header-column-sortable',CLASS_CLICKABLE)];
+	    let noSortHdrAttrs = [ATTR_CLASS,HU.classes('entry-list-header-column')];
 	    cols.forEach((col,idx)=> {
-
-		let attrs = hdrAttrs;
+		let attrs = noSortHdrAttrs;
+		if(!Utils.isDefined(col.cansort) || col.cansort) {
+		    attrs = hdrAttrs;
+		}
 		let width = col.width;
 		if(idx==0 && props.showForm) {
 		    html+=HU.td([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(3),CSS_WIDTH,HU.px(10))],
@@ -579,8 +590,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    attrs = Utils.mergeLists(attrs,[ATTR_WIDTH,col.width]);
 		}
 		attrs.push(ATTR_STYLE,HU.css(CSS_PADDING_LEFT,col.paddingLeft??HU.px(0)))
-		attrs = Utils.mergeLists(attrs,[ARG_ORDERBY,col.id=='download'?'size':col.id,
-						ATTR_TITLE,'Sort by '+ (col.id=='download'?'Size':col.label)]);
+		if(!Utils.isDefined(col.cansort) || col.cansort) {
+		    attrs = Utils.mergeLists(attrs,
+					     [ARG_ORDERBY,col.id=='download'?'size':col.id,
+					      ATTR_TITLE,'Sort by '+ (col.id=='download'?'Size':col.label)]);
+
+		}
 		let v = col.label;
 		v=HU.span([ATTR_STYLE,this.props.headerStyle??''], v);
 		if(col.id==props.orderby || (props.orderby=='size' && col.id=='download')) {
@@ -654,8 +669,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	}
 
+	main.find(HU.dotClass('entry-list-header-column-sortable')).click(function() {
 
-	main.find('.entry-list-header-column').click(function() {
 	    let orderby = $(this).attr(ARG_ORDERBY);
 	    let url;
 	    if(props.orderby == orderby) {

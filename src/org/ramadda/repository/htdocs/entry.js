@@ -830,7 +830,6 @@ function Entry(props) {
         },
         getProperty: function(what,props,inlineEdit) {
 	    props = props??{};
-	    console.dir(this.attributes);
 	    if(what=="name") {
 		if(this.canEdit() && inlineEdit) {
 		    return HU.input(null,this.getName(),[ATTR_SIZE,30,
@@ -894,6 +893,24 @@ function Entry(props) {
 		return this.getFilesize()?this.getFormattedFilesize():"---";
 	    }
 	    if(what=="type") return this.typeName;
+
+	    if(what=='editcolumns') {
+		if(!this.attributes) return '';
+		let inputs = '';
+		this.attributes.forEach(attr=>{
+		    if(this.canEdit() && attr.caninlineedit) {
+			inputs+=HU.div([],Utils.msgLabel(attr.label) +
+				       HU.input(null,attr.value,
+						[ATTR_SIZE,8,
+						 ATTR_ENTRYID,this.getId(),
+						 ATTR_TITLE,'Edit '+ attr.label,
+						 ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
+						 ATTR_DATA_FIELD,attr.id]));
+		    }
+		});
+		return inputs;
+	    }
+
 	    return "Unknown:" + what;
 	},
 
