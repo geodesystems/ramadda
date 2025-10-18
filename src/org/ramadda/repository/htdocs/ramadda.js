@@ -527,7 +527,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else if(c=='date' && props.showDate)
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='editcolumns') {
-		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:300});
+		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:200});
 	    }   else if(c=='geo') {
 		cols.push({id:"latitude",label:"Latitude",width:100});
 		cols.push({id:"longitude",label:"Longitude",width:100});
