@@ -712,9 +712,14 @@ public class EntryUtil extends RepositoryManager {
 	Entry e2=w2.entry;
 	
 	if(on.column!=null) {
-	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
-		Object v1 = e1.getValue(request, on.column);
-		Object v2 = e2.getValue(request, on.column);
+	    Object v1 = null;
+	    Object v2 = null;
+	    //make sure the type is right
+	    if(e1.getTypeHandler().isType(on.column.getTypeHandler())) 
+	       v1 = e1.getValue(request, on.column);
+	    if(e2.getTypeHandler().isType(on.column.getTypeHandler()))
+	       v2  = e2.getValue(request, on.column);
+	    if(e1.getTypeHandler().equals(e2.getTypeHandler()) && v1!=null && v2 !=null) {
 		if(on.column.isDate()) {
 		    return compare((Date)v1,(Date)v2);
 		}
@@ -726,11 +731,17 @@ public class EntryUtil extends RepositoryManager {
 		    return compare((Double)v1,(Double)v2);
 		}		
 		if(on.column.isString() || on.column.isEnumeration()) {
-		    return compare(v1==null?null:v1.toString(),
-				   v2==null?null:v2.toString());
+		    int result = compare(v1==null?null:v1.toString(),
+					 v2==null?null:v2.toString());
+		    //		    System.err.println("v1: "+ v1+" v2:" + v2+ " r:" + result);
+		    return result;
 		}
-		return 0;
 	    }
+	    if(v1==null && v2==null) return 0;
+	    if(v1!=null)
+		return 0;
+	    if(v1!=null) return -1;
+	    return 1;
 	}
         if (on.is(ORDERBY_DATE) || on.is(ORDERBY_FROMDATE)) {
             return compare(e1.getStartDate(), e2.getStartDate());
@@ -784,7 +795,8 @@ public class EntryUtil extends RepositoryManager {
     public  List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
-	if(debugSort)    System.err.println("sort on: "+  ons +" entries:" + entries);
+	if(debugSort) 
+	    System.err.println("sort on: "+  ons +" entries:" + entries);
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
 	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
     }
@@ -795,8 +807,12 @@ public class EntryUtil extends RepositoryManager {
 	    Column column=null;
 	    if(on.startsWith("field:")) {
 		on=on.substring("field:".length());
-		if(entries.size()>0)
-		    column = entries.get(0).getTypeHandler().findColumn(on);
+		for(Entry entry: entries) {
+		    column = entry.getTypeHandler().findColumn(on);
+		    if(column!=null) break;
+		}
+		//If there are no entries with this column then skip this sort field
+		if(column==null) continue;
 	    }
 	    compareOns.add(new CompareOn(on,column));
 	}
