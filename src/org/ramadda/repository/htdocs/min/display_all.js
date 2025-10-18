@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 18 07:20:21 MDT 2025";
+var build_date="RAMADDA build date: Sat Oct 18 07:53:03 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -52116,7 +52116,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = HU.url(Ramadda.getUrl("/entry/get"),ARGENTRYID,opts.entryId);
+		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
 	    }
 	    url = url.replace(/\${root}/,ramaddaBaseUrl);
 	    mapGlyph.setDownloadUrl(url);
@@ -52315,6 +52315,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 	handleError:function(err,url) {
+	    if(err.message) console.error(err.message);
 	    if(err.stack) console.error(err.stack);
 	    let message;
 	    let responseText = err.responseText??err?.priv?.responseText;
