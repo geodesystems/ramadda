@@ -1920,6 +1920,10 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public boolean isType(TypeHandler that) {
+	return isType(that.getType());
+    }
+
     public boolean isType(String type) {
         if (this.type.equals(type)) {
             return true;
