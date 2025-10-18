@@ -630,12 +630,12 @@ public class JsonOutputHandler extends OutputHandler {
 		    extraColumns.add(JU.map(Utils.makeListFromValues(columnName,
 									   JU.quote(value))));
 		    ids.add(columnName);
-		    attrs.add(JU.map(Utils.makeListFromValues("id",
-								    JU.quote(columnName), "type",
-								    JU.quote("attribute"), "label",
-								    JU.quote(column.getLabel()), "value",
-								    JU.quote(value), "canshow",
-								    Boolean.toString(column.getCanShow()))));
+		    attrs.add(JU.map(Utils.makeListFromValues("id",JU.quote(columnName),
+							      "type", JU.quote("attribute"),
+							      "label",  JU.quote(column.getLabel()),
+							      "value", JU.quote(value),
+							      "caninlineedit", Boolean.toString(column.getDoInlineEdit()),
+							      "canshow", Boolean.toString(column.getCanShow()))));
 		}
             }
         }
