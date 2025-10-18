@@ -3143,7 +3143,7 @@ public class TypeHandler extends RepositoryManager {
 	    //	    addEntryProperty(request, sb, getFormLabel(null,null,"startdate","Start Date")),startDate);
 	    //addEntryProperty(request, sb,msgLabel(getFormLabel(null,null,"enddate","End Date")),endDate);
 	    boolean dateSeparate = getDateRangeSeparate();
-	    System.err.println(dateSeparate);
+	    //	    System.err.println(dateSeparate);
 	    if(!dateSeparate) {
 		addEntryProperty(request, sb,getFormLabel(null,null,"date","Date"),
 				 startDate +" - "+ endDate);
