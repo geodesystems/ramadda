@@ -514,6 +514,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    colString ='name,entryorder,creator,date,time,createdate,download,size,type,attachments';
 	    if(props.inlineEdit) {
 		colString+=',editcolumns';
+		props.nameWidth=400;
 	    }
 	}
 	let colList = Utils.split(colString,',',true,true);
@@ -526,7 +527,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else if(c=='date' && props.showDate)
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='editcolumns') {
-		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:200});
+		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:300});
 	    }   else if(c=='geo') {
 		cols.push({id:"latitude",label:"Latitude",width:100});
 		cols.push({id:"longitude",label:"Longitude",width:100});

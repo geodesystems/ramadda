@@ -899,15 +899,18 @@ function Entry(props) {
 		let inputs = '';
 		this.attributes.forEach(attr=>{
 		    if(this.canEdit() && attr.caninlineedit) {
-			inputs+=HU.div([],Utils.msgLabel(attr.label) +
-				       HU.input(null,attr.value,
-						[ATTR_SIZE,8,
-						 ATTR_ENTRYID,this.getId(),
-						 ATTR_TITLE,'Edit '+ attr.label,
-						 ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
-						 ATTR_DATA_FIELD,attr.id]));
+			if(inputs=='')
+			    inputs = HU.formTable();
+			inputs+=HU.formEntryLabel(attr.label,
+					     HU.input(null,attr.value,
+						      [ATTR_SIZE,8,
+						       ATTR_ENTRYID,this.getId(),
+						       ATTR_TITLE,'Edit '+ attr.label,
+						       ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
+						       ATTR_DATA_FIELD,attr.id]));
 		    }
 		});
+		if(inputs!='') inputs+=HU.formTableClose();
 		return inputs;
 	    }
 
