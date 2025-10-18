@@ -125,7 +125,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     this.processEntryJson = function(data) {
         var totalSize = 0;
         var html = "";
-        var tableId = HtmlUtils.getUniqueId("");
+        var tableId = HU.getUniqueId("");
         if (data.length == 0) {
             html = "Nothing found";
         } else {
@@ -155,7 +155,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 		            //A terrible hack to not show the collection id
 		            if(labels[colIdx] == "Collection ID") continue;
                     var value = entry.getAttributeValue(columnNames[colIdx]);
-                    listHtml += "<td>" + HtmlUtils.div(["class","selectform-table-entry"], value) + "</td>";
+                    listHtml += "<td>" + HU.div([ATTR_CLASS,"selectform-table-entry"], value) + "</td>";
                 }
 
                 listHtml += "</td><td align=right>";
@@ -166,25 +166,28 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
                 listHtml += "</tr>";
             }
 
-	    var table = HtmlUtils.openTag("table", ["border",0,"class", "selectform-table stripe rowborder ramadda-table", "id", tableId]);
+	    var table = HU.openTag(TAG_TABLE,
+					  [ATTR_BORDER,0,
+					   ATTR_CLASS, "selectform-table stripe rowborder ramadda-table",
+					   ATTR_ID, tableId]);
             var checkboxId = this.id + "_listcbx";
             header = "<tr><th style='padding-left:4px;padding-right:4px;' width=1><input type=checkbox checked value=true id=\"" + checkboxId + "\"\></th><th> " +
 		"<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
 
-            table += HtmlUtils.openTag("thead", []);
+            table += HU.openTag("thead", []);
   	    table += header;
-            table += HtmlUtils.closeTag("thead");
-            table += HtmlUtils.openTag("tbody", []);
+            table += HU.closeTag("thead");
+            table += HU.openTag("tbody", []);
 	    table += listHtml;
-            table += HtmlUtils.closeTag("tbody");
-	    table += HtmlUtils.closeTag("table");
+            table += HU.closeTag("tbody");
+	    table += HU.closeTag("table");
 	    html += table;
-            html +=  HtmlUtils.leftRight("",GuiUtils.size_format(totalSize));
+            html +=  HU.leftRight("",GuiUtils.size_format(totalSize));
 	}
         this.totalSize = totalSize;
         jqid(this.outputDivPrefix + "list").html(html);
 
-        HtmlUtils.formatTable("#"+ tableId,{
+        HU.formatTable("#"+ tableId,{
             scrollY: "250",
             ordering:true,
         });
@@ -317,7 +320,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     }
 
     this.getSelect = function(i) {
-        return $('#' + this.id + '_' + this.arg + i);
+        return jqid(this.id + '_' + this.arg + i);
     }
 
     this.submit = function() {

@@ -117,34 +117,40 @@ RamaddaAnnotation.prototype = {
 		title  = HU.b(title);
 	    let body = title;
 	    if(contents.length>0) {
-		body += HU.div(['class','ramadda-annotation-body'],Utils.join(contents,"<br>"));
+		body += HU.div([ATTR_CLASS,'ramadda-annotation-body'],Utils.join(contents,"<br>"));
 	    }
-	    body = HU.div(['tabindex','1'],body);
+	    body = HU.div([ATTR_TABINDEX,1],body);
 	    let tt = 'Click to view&#013;Shift-click to zoom to';
 	    if(this.canEdit) tt+='&#013;Control-e:edit&#013;Control-d:delete&#013;Control-f:move forward&#013;Control-b:move back';
 	    if(this.top) 
-		html+=HU.td(['title',tt,'width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+		html+=HU.td([ATTR_TITLE,tt,
+			     ATTR_WIDTH,width,
+			     ATTR_CLASS,'ramadda-clickable ramadda-hoverable ramadda-annotation',
+			     ATTR_INDEX,aidx], body);
 	    else
-		html+=HU.div(['title',tt,'width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+		html+=HU.div([ATTR_TITLE,tt,
+			      ATTR_WIDTH,width,
+			      ATTR_CLASS,'ramadda-clickable ramadda-hoverable ramadda-annotation',ATTR_INDEX,aidx], body);
 	});
 
 	if(this.top)
-	    html = HU.div(['class','ramadda-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));
+	    html = HU.div([ATTR_CLASS,'ramadda-annotation-bar'],
+			  HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],html)));
 	else
-	    html = HU.div(['class','ramadda-annotation-bar'], html);
+	    html = HU.div([ATTR_CLASS,'ramadda-annotation-bar'], html);
 	this.div.html(html);
 	if(annotations.length>0) {
 	    this.div.show();
-	    this.div.parent().attr('width','150px');
+	    this.div.parent().attr(ATTR_WIDTH,'150px');
 	} else {
-	    this.div.parent().attr('width','1px');
+	    this.div.parent().attr(ATTR_WIDTH,'1px');
 	    this.div.hide();
 	}
 	let _this = this;
 	this.div.find('.ramadda-annotation').keydown(function(event) {
 	    if(!event.ctrlKey)
 		return;
-	    let annotation = 	_this.annotations[$(this).attr('index')];
+	    let annotation = 	_this.annotations[$(this).attr(ATTR_INDEX)];
 	    if(!annotation) return;
 	    if(event.key=='e')  {
 		_this.annotorius.selectAnnotation(annotation);
@@ -178,7 +184,7 @@ RamaddaAnnotation.prototype = {
 	    }
 	});
 	this.div.find('.ramadda-annotation').click(function(event) {
-	    let annotation = 	annotations[$(this).attr('index')];
+	    let annotation = 	annotations[$(this).attr(ATTR_INDEX)];
 	    if(!annotation) return;
             if (event.shiftKey && _this.getAnno().fitBounds) {
 		_this.getAnno().fitBounds(annotation)
@@ -300,14 +306,18 @@ RamaddaAnnotationFormatter.prototype = {
 		    const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
 		    // Overflow is set to visible, but the foreignObject needs >0 zero size,
 		    // otherwise FF doesn't render...
-		    foreignObject.setAttribute('width', '1px');
-		    foreignObject.setAttribute('height', '1px');
-		    let html = '<div xmlns="http://www.w3.org/1999/xhtml" class="a9s-shape-label-wrapper">';
+		    foreignObject.setAttribute(ATTR_WIDTH, '1px');
+		    foreignObject.setAttribute(ATTR_HEIGHT, '1px');
+		    let html = HU.open(TAG_DIV,['xmlns',
+						'http://www.w3.org/1999/xhtml',
+						ATTR_CLASS,'a9s-shape-label-wrapper']);
 		    let style='';
-		    if(state.bg) style+=HU.css('background',state.bg);
-		    if(state.border) style+=HU.css('border',state.border);		    
-		    html +=HU.div(['style',style,'class','a9s-shape-label'],HU.div([ATTR_STYLE,HU.css('padding','2px')],label));
-		    html+="</div>";
+		    if(state.bg) style+=HU.css(CSS_BACKGROUND,state.bg);
+		    if(state.border) style+=HU.css(CSS_BORDER,state.border);		    
+		    html +=HU.div([ATTR_STYLE,style,
+				   ATTR_CLASS,'a9s-shape-label'],
+				  HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2))],label));
+		    html+=HU.close(TAG_DIV);
 		    foreignObject.innerHTML = html;
 		    result.element= foreignObject;
 		}

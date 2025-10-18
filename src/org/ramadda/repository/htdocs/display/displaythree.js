@@ -789,7 +789,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getSelectedDiv()) {
 		let html = this.getRecordHtml(record,null,this.getProperty("tooltip"));
-		$("#" + this.getSelectedDiv()).html(html);
+		jqid(this.getSelectedDiv()).html(html);
 	    }
 	},
 
@@ -1293,7 +1293,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		}
 		if(this.getSelectedDiv()) {
 		    let html = this.getRecordHtml(record);
-		    $("#" + this.getSelectedDiv()).html(html);
+		    jqid(this.getSelectedDiv()).html(html);
 		}
 	    };
 	    this.renderer.domElement.addEventListener( 'mouseup', handleMouseEvent, false );

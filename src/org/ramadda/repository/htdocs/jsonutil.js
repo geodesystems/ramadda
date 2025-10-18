@@ -7,7 +7,7 @@ RamaddaJsonUtil = {
     init:function(id) {
 	let brackets = jqid(id).find('.ramadda-json-openbracket');
 	brackets.each(function() {
-	    $(this).append(HU.span(['visible','true','class','ramadda-json-toggle'],HU.getIconImage(icon_folderopen)));
+	    $(this).append(HU.span(['visible','true',ATTR_CLASS,'ramadda-json-toggle'],HU.getIconImage(icon_folderopen)));
 	});
 	let toggles = 	brackets.find('.ramadda-json-toggle');
 	toggles.css(CSS_CURSOR,CURSOR_POINTER);

@@ -2538,12 +2538,12 @@ var Utils =  {
         open = !open;
         toggle.attr('open',open);
         if(open) {
-            $('#'+id+'_ellipsis').hide();
-            $('#'+id+'_post').show();       
+            jqid(id+'_ellipsis').hide();
+            jqid(id+'_post').show();       
             toggle.html("Show Less " + HU.getIconImage("fas fa-sort-up"));                      
         } else {
-            $('#'+id+'_ellipsis').show();
-            $('#'+id+'_post').hide();       
+            jqid(id+'_ellipsis').show();
+            jqid(id+'_post').hide();       
             toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));                    
         }
     },
@@ -3909,7 +3909,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return "&#10;";
     },
     hide:function(id) {
-	$('#' + id).hide();
+	jqid(id).hide();
     },
     writeHtmlHere:function(html) {
 	document.currentScript.insertAdjacentHTML("afterend",  html);
@@ -4516,16 +4516,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(!Utils.isDefined(pause)) pause = 0;
         $(document).ready(function(){   
             if(immediate) {
-                $('#' + id).html(value);
+                jqid(id).html(value);
                 return;
             }
             setTimeout(function(){
                 if(HU.elementScrolled('#' + id)) {
-                    setTimeout(function() {$('#' + id).html(value);},pause);
+                    setTimeout(function() {jqid(id).html(value);},pause);
                 } else {
                     $(window).scroll(function(){
                         if(HU.elementScrolled('#' + id)) {
-                            setTimeout(function() {$('#' + id).html(value);},pause);
+                            setTimeout(function() {jqid(id).html(value);},pause);
                         }});
                 }},1000);
         });
@@ -5900,9 +5900,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
     makeEnlargableInner:function(id,enlargeMsg,shrinkMsg) {
-	let outer = $('#'+id);
-	let inner = $('#'+id+'_inner');
-	let contents = $('#'+id+'_contents');	
+	let outer = jqid(id);
+	let inner = jqid(id+'_inner');
+	let contents = jqid(id+'_contents');	
 	let enlarged = false;
 	let shrunkHeight= contents.height();
 	enlargeMsg = Utils.getStringDefined(enlargeMsg,'Show more');
@@ -6869,9 +6869,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let visible = $(this).attr('toggle-block-visible')==='true';
 	    visible=!visible;
 	    $(this).attr('toggle-block-visible',''+visible);
-	    $('#'+imgid).html(HU.makeToggleImage(visible?img1:img2));
-	    if(visible) $('#'+id).show();
-	    else $('#'+id).hide();	    
+	    jqid(imgid).html(HU.makeToggleImage(visible?img1:img2));
+	    if(visible) jqid(id).show();
+	    else jqid(id).hide();	    
 	    if(callback) callback(id,visible,$(this));
 	});
     }

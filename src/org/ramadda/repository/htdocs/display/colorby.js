@@ -440,7 +440,8 @@ ColorByInfo.prototype = {
 		    html+=HU.tag(TAG_TD,[ATTR_CLASS,'display-colorscale-item',
 					 ATTR_TITLE,value,
 					 ATTR_WIDTH,w,
-					 ATTR_STYLE,HU.css(CSS_COLOR,fg,CSS_BACKGROUND,c)],contents);		    
+					 ATTR_STYLE,
+					 HU.css(CSS_COLOR,fg,CSS_BACKGROUND,c)],contents);		    
 		}
 	    });
 	    html += HU.close(TAG_TR, TAG_TABLE);

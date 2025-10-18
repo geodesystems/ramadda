@@ -1149,14 +1149,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var menu = HU.div([ATTR_ID, this.getDomId(ID_MENU), ATTR_CLASS, CLASS_POPUP], "");
             var html = header + input;
             html = HU.div([ATTR_ID, this.getDomId(ID_CELL)], html);
-            $("#" + this.id + "_cellinput").html(html);
-            $("#" + this.id + "_celloutput").html(output);
+            jqid(this.id + "_cellinput").html(html);
+            jqid(this.id + "_celloutput").html(output);
             var url = ramaddaBaseUrl + "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
             url += "&extrahelp=" + ramaddaBaseUrl + "/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url, h => {
                 this.inputToolbar = h;
                 this.jq(ID_INPUT_TOOLBAR).html(h);
-                $("#" + this.editId + "_prefix").html(HU.span([ATTR_ID, this.getDomId("toolbar_notebook"),
+                jqid(this.editId + "_prefix").html(HU.span([ATTR_ID, this.getDomId("toolbar_notebook"),
 								      ATTR_STYLE, HU.css(CSS_BORDER_RIGHT,HU.border(1,COLOR_LIGHT_GRAY)),
                     ATTR_CLASS, "ramadda-menubar-button"
                 ], "Notebook"));

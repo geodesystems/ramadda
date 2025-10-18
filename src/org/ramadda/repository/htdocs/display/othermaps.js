@@ -166,7 +166,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		}
 		table+=HU.close(TAG_TR);
 	    }
-	    table +=HU.tr([],HU.td(["colspan", maxx],HU.br() +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
+	    table +=HU.tr([],HU.td([ATTR_COLSPAN, maxx],HU.br() +   HU.div([ATTR_ID,this.domId(ID_COLORTABLE)])));
 	    table+=HU.close(TAG_TABLE);
 	    this.setContents(HU.center(table));
 
@@ -189,7 +189,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    //		    console.log("Could not find cell:" + state);
 		    continue;
 		}
-		$("#"+cellId).attr(ATTR_RECORD_INDEX,i);
+		jqid(cellId).attr(ATTR_RECORD_INDEX,i);
 
 		if(!stateData[state]) {
 		    states.push(state);
@@ -239,7 +239,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let innerId = s.cellId+"_inner";
 		    let cellWidth = width;
 		    if(cellWidth==0) {
-			cellWidth = $("#" + s.cellId).width();
+			cellWidth = jqid(s.cellId).width();
 		    }
 		    let style = HU.css(CSS_WIDTH,HU.px(cellWidth),
 				       CSS_HEIGHT, HU.px(height-vOffset),
@@ -247,7 +247,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 				       CSS_LEFT,HU.px(0),
 				       CSS_TOP, HU.px(vOffset));
 		    let innerDiv = HU.div([ATTR_ID, innerId, ATTR_STYLE,style]);
-		    $("#" + s.cellId).append(innerDiv);
+		    jqid(s.cellId).append(innerDiv);
 		    drawSparkline(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }

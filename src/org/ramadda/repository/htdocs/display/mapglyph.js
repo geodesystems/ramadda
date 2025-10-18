@@ -506,8 +506,9 @@ MapGlyph.prototype = {
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
 		    extra += HU.formEntry("WMS Layer:",
-					  HU.input('',this.attrs.wmsLayer,[ATTR_ID,this.domId('wmslayer'),
-									   ATTR_SIZE,20]));
+					  HU.input('',this.attrs.wmsLayer,
+						   [ATTR_ID,this.domId('wmslayer'),
+						    ATTR_SIZE,20]));
 		}
 		return extra;
 	    }
@@ -582,7 +583,8 @@ MapGlyph.prototype = {
 	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
 	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,
 							ATTR_ROWS,4,
-							ATTR_COLS, 40]),HU.space(2),help]);
+							ATTR_COLS, 40]),
+			  SPACE2,help]);
 	    return h;
 	}
 	html+=makePopup('popupText','Popup Text:');
@@ -1462,8 +1464,8 @@ MapGlyph.prototype = {
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,[ATTR_TARGET,'_entry']);
 	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
-				 CSS_MAX_WIDTH,HU.px(180),
-				 CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
+					     CSS_MAX_WIDTH,HU.px(180),
+					     CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
 	    let add = '';
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
@@ -4208,7 +4210,7 @@ MapGlyph.prototype = {
 		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
 		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +SPACE2+
 				     HU.boldLabel('Range') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),
-																									 ATTR_SIZE,'6',ATTR_TITLE,'min value']) +' -- '+
+										       ATTR_SIZE,'6',ATTR_TITLE,'min value']) +' -- '+
 				     HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),ATTR_SIZE,'6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
 		let ct = Utils.getColorTablePopup({label:'Select',showToggle:true,attr:'prefix',value:prefix});

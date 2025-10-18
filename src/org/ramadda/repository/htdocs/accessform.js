@@ -7,11 +7,11 @@
 
 Ramadda.initAccessForm = function() {
     let index = 0;
-    let form = $("#accessform");
+    let form = jqid("accessform");
     let roles = form.find("#roles");
     form.find("textarea").focus(function() {
 	index = $(this).attr('roleindex');
-	let holder = $("#holder_" + index);
+	let holder = jqid("holder_" + index);
 	roles.appendTo(holder);
     });
     roles.change(function() {
@@ -19,7 +19,7 @@ Ramadda.initAccessForm = function() {
 	if(role=="") return;
 	roles.val("");
 	role="\n"+role+"\n";
-	let textarea = $("#textarea_" + index);
+	let textarea = jqid("textarea_" + index);
 	let val = (textarea.val()||"").trim();
 
         let start = textarea[0].selectionStart;

@@ -44,7 +44,7 @@ function D3Graph(div, nodes, links, width, height) {
             .attr("viewBox", "0 -5 10 10")
             .attr("refX", 15)
             .attr("refY", -1.5)
-            .attr("class", "graph-arrow")
+            .attr(ATTR_CLASS, "graph-arrow")
             .attr("markerWidth", 8)
             .attr("markerHeight", 10)
             .attr("orient", "auto")
@@ -59,7 +59,7 @@ function D3Graph(div, nodes, links, width, height) {
             });
 
             var linkEnter = link.enter();
-            linkEnter.insert("line").attr("class", "graph-link")
+            linkEnter.insert("line").attr(ATTR_CLASS, "graph-link")
                 .attr("marker-end", function(d) {
                     return "url(#arrow)";
                 });
@@ -71,7 +71,7 @@ function D3Graph(div, nodes, links, width, height) {
             });
             var pathEnter = path.enter();
             pathEnter.append("svg:path")
-                .attr("class", function(d) {
+                .attr(ATTR_CLASS, function(d) {
                     return "graph-path"
                 })
                 .attr("marker-end", function(d) {
@@ -87,11 +87,11 @@ function D3Graph(div, nodes, links, width, height) {
         });
 
         var nodeEnter = node.enter().append("g")
-            .attr("class", "graph-node")
+            .attr(ATTR_CLASS, "graph-node")
             .call(force.drag);
 
         nodeEnter.append("image")
-            .attr("class", "graph-circle")
+            .attr(ATTR_CLASS, "graph-circle")
             .attr("xlink:href", function(d) {
                 return theGraph.getNodeIcon(d);
             })
@@ -102,7 +102,7 @@ function D3Graph(div, nodes, links, width, height) {
 
 
         nodeEnter.append("text")
-            .attr("class", function(d) {
+            .attr(ATTR_CLASS, function(d) {
                 if (d.graphurl) return "graph-node-text-unvisited";
                 else return "graph-node-text-visited";
             })
@@ -113,7 +113,7 @@ function D3Graph(div, nodes, links, width, height) {
             });
 
         nodeEnter.append("text")
-            .attr("class", function(d) {
+            .attr(ATTR_CLASS, function(d) {
                 if (d.graphurl) return "graph-node-text-unvisited";
                 else return "graph-node-text-visited";
             })
@@ -161,7 +161,7 @@ function D3Graph(div, nodes, links, width, height) {
         });
 
         var allNodes = svg.selectAll("text");
-        allNodes.attr("class", function(d) {
+        allNodes.attr(ATTR_CLASS, function(d) {
             if (d.graphurl) return "graph-node-text-unvisited";
             else return "graph-node-text-visited";
         });

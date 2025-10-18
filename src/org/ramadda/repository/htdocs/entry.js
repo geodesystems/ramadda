@@ -830,6 +830,7 @@ function Entry(props) {
         },
         getProperty: function(what,props,inlineEdit) {
 	    props = props??{};
+	    console.dir(this.attributes);
 	    if(what=="name") {
 		if(this.canEdit() && inlineEdit) {
 		    return HU.input(null,this.getName(),[ATTR_SIZE,30,

@@ -212,7 +212,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
         let html = input +HU.div([ATTR_CLASS,"ramadda-select-search-results",
 				  ATTR_ID,id+"_results"]);
-        $("#" +id).html(html);
+        jqid(id).html(html);
 	if(addTypesSelector) {
 	    let addTypes = (types)=>{
 		let options=[];
@@ -326,7 +326,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
 	jqid(getId('button')).click(doSearch);
-        let results = $("#" + id +"_results");
+        let results =jqid(id +"_results");
         inputWidget.keyup(function(event){
             let value =  $(this).val();
             if(!Utils.isReturnKey(event) && value=="") {
@@ -685,9 +685,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 	//Don't do this as it screws up the width of the menu sometimes
-	//	    HU.initSelect($("#"+id+"_form_action"));
+	//	    HU.initSelect(jqid(id+"_form_action"));
 
-	$('#'+ id+'_form_cbx').click(function() {
+	jqid(id+'_form_cbx').click(function() {
             let on = $(this).is(':checked');
 	    jqid(id).find('.entry-form-select').prop('checked',on);
 	});
@@ -711,7 +711,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 
 	}
-	$('#' + id+'_formarrow').click(function() {
+	jqid(id+'_formarrow').click(function() {
 	    props.formOpen = !props.formOpen;
 	    checkForm();
 	});
@@ -942,13 +942,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
-	let main = $('#'+ mainId);
+	let main = jqid(mainId);
 	let html = '';
 	let space = '';
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
 	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.props.metadataDisplay);
 	let hasMetadata=false;
-
 	entries.forEach((entry,entryIdx)=>{
 	    let line = '';
 	    let rowId = Utils.getUniqueId('row_');
@@ -1186,12 +1185,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	container.find('.ramadda-breadcrumb-toggle').click(function() {
 	    let id = $(this).attr('breadcrumbid');
-	    let crumbs = $('#'+ id);
+	    let crumbs = jqid(id);
 	    if(crumbs.css(CSS_DISPLAY)==DISPLAY_NONE) {
-		$('#breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-minus-square"));
+		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-minus-square"));
 		crumbs.css(CSS_DISPLAY,DISPLAY_INLINE);
 	    } else {
-		$('#breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-plus-square"));
+		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-plus-square"));
 		crumbs.css(CSS_DISPLAY,DISPLAY_NONE);
 	    }
 	});
@@ -1200,7 +1199,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	container.find('.entry-arrow').click(function() {
 	    let entryId = $(this).attr(ATTR_ENTRYID);
 	    let innerId = $(this).attr('innerid');	    
-	    let inner = $("#"+innerId);
+	    let inner = jqid(innerId);
 	    let filled = $(this).attr("filled");
 	    let open = $(this).attr("open");
 	    $(this).html(_this.getToggleIcon(!open));
@@ -1270,11 +1269,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.simple) return;
 	container.find('.entry-form-select').click(function(event) {
             let on  = $(this).is(':checked');
-	    let row = $('#' + $(this).attr('rowid'));
+	    let row = jqid($(this).attr('rowid'));
 	    HU.checkboxClicked(event,'entry_',$(this).attr(ATTR_ID));
 	    main.find('.entry-form-select').each(function() {
 		let on  = $(this).is(':checked');
-		let row = $('#' + $(this).attr('rowid'));
+		let row = jqid($(this).attr('rowid'));
 		if(on) row.addClass('entry-list-row-selected');
 		else row.removeClass('entry-list-row-selected');	    
 	    });
@@ -1344,7 +1343,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!entry) return;
 	    let source = $(this);
 	    let entries = [entry];
-	    $('#'+mainId).find('.entry-list-row-selected').each(function() {
+	    jqid(mainId).find('.entry-list-row-selected').each(function() {
 		let selectedEntry = entryMap[$(this).attr(ATTR_ENTRYID)];
 		if(!selectedEntry) return;
 		if(selectedEntry.getId()!=entry.getId()) {
@@ -1437,7 +1436,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     initFormTags: function(formId) {
-	let form = $('#'+formId);
+	let form = jqid(formId);
 	let inputs = form.find('.metadata-tag-input');
 	form.attr('autocomplete','off');
 	inputs.attr('autocomplete','off');
@@ -1466,7 +1465,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		err=>{console.log("url failed:" + url +"\n" + err)});
 	});
 
-	let tags = $('#'+formId).find('.metadata-tag');
+	let tags = jqid(formId).find('.metadata-tag');
 	tags.attr(ATTR_TITLE,'Click to remove');
 	tags.click(function() {
 	    let input = form.find("#" + $(this).attr('metadata-id'));
@@ -1481,7 +1480,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
     initFormUpload:function(argPrefix,fileInputId, targetId,multiple) {
 	if(!argPrefix) argPrefix = 'upload';
-	let input = $("#"+ fileInputId);
+	let input = jqid(fileInputId);
 	if(multiple)
 	    input.attr('multiple','');
 	let form = input.closest('form');
@@ -1492,8 +1491,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					   ATTR_CLASS,"fileinput_label"]));
 	input.after(custom);
 	input.hide();
-	let inputWrapper = $("#" +fileInputId+"_filewrapper");
-	let inputLabel = $("#" +fileInputId+"_filename");
+	let inputWrapper = jqid(fileInputId+"_filewrapper");
+	let inputLabel = jqid(fileInputId+"_filename");
 	inputWrapper.click(()=>{input.trigger('click');});
 	let inputChanger = ()=>{
 	    let clean = name=>{
@@ -1518,13 +1517,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	    if(fileName=="")
 		fileName = HU.span([ATTR_CLASS,"fileinput_label_empty"],"Click to select a file");
-	    $('#' + fileInputId+"_filename").html(fileName); 
+	    jqid(fileInputId+"_filename").html(fileName); 
 	};
 	input.bind('change', inputChanger);
 	inputChanger();
 
 	if(Utils.stringDefined(targetId)) {
-	    let target = $("#" + targetId);
+	    let target = jqid(targetId);
 	    let fileDrop = {
 		files:{},
 		cnt:0,
@@ -1532,7 +1531,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    };
 	    target.append(HU.div([ATTR_CLASS,"ramadda-dnd-target-files",
 				  ATTR_ID,fileInputId+"_dnd_files"]));
-	    let files=$("#" +fileInputId+"_dnd_files");
+	    let files=jqid(fileInputId+"_dnd_files");
 	    Utils.initDragAndDrop(target,
 				  event=>{},
 				  event=>{},
@@ -1573,12 +1572,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
 								    ATTR_NAME,nameName,
 								    ATTR_ID,nameInputId]));				  
-				      $("#"+inputId).val(result);
-				      $("#"+nameInputId).val(name);				  
-				      $("#"+listId+"_trash").click(function(){
-					  $("#"+listId).remove();
-					  $("#"+inputId).remove();
-					  $("#"+nameInputId).remove();				      
+				      jqid(inputId).val(result);
+				      jqid(nameInputId).val(name);				  
+				      jqid(listId+"_trash").click(function(){
+					  jqid(listId).remove();
+					  jqid(inputId).remove();
+					  jqid(nameInputId).remove();				      
 				      });
 				  },null, true);
 	}			      
@@ -1704,7 +1703,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     showEntryPopupInner:function(id,entryId,label,html,extraLink) {
-	let anchor = $("#" + id);
+	let anchor = jqid(id);
 	let headerRight=null;
 	/*
 	  if(Utils.isAnonymous()) {
@@ -1744,11 +1743,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     folderClick:function(uid, url, changeImg) {
 	RamaddaUtil.changeImages[uid] = changeImg;
-	let jqBlock = $("#" + uid);
+	let jqBlock = jqid(uid);
 	if (jqBlock.length == 0) {
             return;
 	}
-	let jqImage = $("#img_" + uid);
+	let jqImage = jqid("img_" + uid);
 	let showing = jqBlock.css(CSS_DISPLAY) != DISPLAY_NONE;
 	if (!showing) {
             RamaddaUtil.originalImages[uid] = jqImage.html();
@@ -1785,7 +1784,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		html = getChildText(xmlDoc);
             }
             if (html) {
-		$("#" + uid).html(HU.div([],html));
+		jqid(uid).html(HU.div([],html));
 		Utils.checkTabs(html);
             }
             if (script) {
@@ -1794,17 +1793,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	
 	if (RamaddaUtil.changeImages[uid]) {
-            $("#img_" + uid).attr('src', icon_folderopen);
+            jqid("img_" + uid).attr('src', icon_folderopen);
 	} else {
-            $("#img_" + uid).attr('src', RamaddaUtil.originalImages[uid]);
+            jqid("img_" + uid).attr('src', RamaddaUtil.originalImages[uid]);
 	}
     },
 
 
     Components: {
 	init: function(id) {
-	    let container = $("#" + id);
-	    let header = $("#" + id +"_header");
+	    let container = jqid(id);
+	    let header = jqid(id +"_header");
 	    let hasTags = false;
 	    let hasLocations = false;
 	    let components = container.find(".ramadda-component");
@@ -1878,7 +1877,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		$(this).detach();
 	    });
 	    if(container.mapId)
-		$("#"+ container.mapId).detach();
+		jqid(container.mapId).detach();
 	    if(container.ramaddaMap) {
 		ramaddaMapRemove(container.ramaddaMap);
 		container.ramaddaMap = null;
@@ -1991,11 +1990,11 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     this.cbxWrapperId = cbxWrapperId;
     this.showDetails = showDetails;
     this.getRow = function() {
-        return $("#" + this.rowId);
+        return jqid(this.rowId);
     }
 
     this.getCbx = function() {
-        return $("#" + this.cbxId);
+        return jqid(this.cbxId);
     }
 
     let form = this.getCbx().closest('form');
@@ -2029,13 +2028,13 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
     this.mouseOver = function(event) {
-        $("#" + "entrymenuarrow_" + rowId).attr('src', icon_menuarrow);
+        jqid("entrymenuarrow_" + rowId).attr('src', icon_menuarrow);
         this.getRow().addClass("entry-row-hover");
 	//        this.getRow().css('background-color', this.overColor);
     }
 
     this.mouseOut = function(event) {
-        $("#entrymenuarrow_" + rowId).attr('src', icon_blank);
+        jqid("entrymenuarrow_" + rowId).attr('src', icon_blank);
         this.setRowColor();
     }
 
@@ -2237,7 +2236,7 @@ Selector.prototype = {
 	jqid(closeId).click(()=>{
 	    this.cancel(true);
 	});
-	$("#" + pinId).click(function() {
+	jqid(pinId).click(function() {
 	    _this.pinned = !_this.pinned;
 	    if(!_this.pinned) {
 		$(this).removeClass("ramadda-popup-pin-pinned");
@@ -2293,7 +2292,7 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
         icon = hideimg;
 
     if(StringUtil.startsWith(icon,"fa-")) {
-        $("#" + imgid).attr(ATTR_CLASS,icon);
+        jqid(imgid).attr(ATTR_CLASS,icon);
     } else {
         if(img) img.obj.src = icon;
     }
@@ -2302,40 +2301,40 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
 
 
 function toggleVisibility(id, style,anim,forceVisible) {
-    let display = $("#" + id).css(CSS_DISPLAY);
+    let display = jqid(id).css(CSS_DISPLAY);
     if(Utils.isDefined(forceVisible)) {
 	if(forceVisible)
-	    $("#" + id).show();
+	    jqid(id).show();
 	else
-	    $("#" + id).hide();	
+	    jqid(id).hide();	
 	return forceVisible;
     }
-    $("#" + id).toggle(anim);
+    jqid(id).toggle(anim);
     return display != DISPLAY_BLOCK;
 }
 
 function hide(id) {
-    $("#" + id).hide();
+    jqid(id).hide();
 }
 
 function hideObject(obj) {
     if (!obj) {
         return 0;
     }
-    $("#" + obj.id).hide();
+    jqid(obj.id).hide();
     return 1;
 }
 
 
 function showObject(obj, display) {
     if (!obj) return 0;
-    $("#" + obj.id).show();
+    jqid(obj.id).show();
     return;
 }
 
 function toggleVisibilityOnObject(obj, display) {
     if (!obj) return 0;
-    $("#" + obj.id).toggle();
+    jqid(obj.id).toggle();
 }
 
 

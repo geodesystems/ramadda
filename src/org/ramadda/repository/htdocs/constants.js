@@ -102,6 +102,7 @@ var CLASS_SLIDER = 'ramadda-slider';
 var CLASS_POPUP='ramadda-popup';
 var CLASS_POPUP_INNER='ramadda-popup-inner';
 var CLASS_PULLDOWN='ramadda-pulldown';
+
 var CLASS_TABLE='ramadda-table';
 var CLASS_TABLE_STRIPE='stripe';
 var CLASS_TABLE_NOWRAP='nowrap';
@@ -111,6 +112,7 @@ var CLASS_TABLE_ROWBORDER='row-border';
 
 
 
+var CURSOR_MOVE='move';
 var CURSOR_POINTER='pointer';
 var CURSOR_DEFAULT='default';
 var CURSOR_TEXT='text';
@@ -322,6 +324,7 @@ var POS_RIGHT='right';
 var POSITION_ABSOLUTE='absolute';
 var POSITION_RELATIVE='relative';
 
+var DISPLAY_FLEX = 'flex';
 var DISPLAY_NONE = 'none';
 var DISPLAY_RELATIVE = 'relative';
 var DISPLAY_BLOCK='block';

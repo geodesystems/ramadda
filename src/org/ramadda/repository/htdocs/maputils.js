@@ -934,7 +934,7 @@ function CollisionHandler(map,opts) {
     this.opts = opts;
     let mapBounds= this.map.getBounds();
     let mapW= mapBounds.right-mapBounds.left;
-    let divW =  $("#" + this.map.mapDivId).width();
+    let divW =  jqid(this.map.mapDivId).width();
     let baseOffset= mapW*0.025;
     let pointSize= opts.pointSize??16;
     let pixelsPer= divW/mapW;

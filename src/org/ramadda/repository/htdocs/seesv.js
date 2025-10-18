@@ -102,7 +102,7 @@ function  SeesvForm(inputId, entry,params) {
 	    this.allColumns = [];
 
 	    let _this  =this;
-	    let text = $('#' + this.baseId +'_lastinput').html();
+	    let text = jqid(this.baseId +'_lastinput').html();
 	    if(text!=null) {
 		text = text.replace(/_escnl_/g,'\n').replace(/_escquote_/g,'&quot;').replace(/_escslash_/g,'\\').replace(/\"/g,'&quot;').replace(/_esclt_/g,'&lt;').replace(/_escgt_/g,'&gt;');
 	    }  else {
@@ -132,7 +132,8 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 	    
 	    let makeToolbarLink = (v,style) =>{
-		return  HU.span([ATTR_TITLE,v[0],ATTR_ID,this.domId(v[1]),
+		return  HU.span([ATTR_TITLE,v[0],
+				 ATTR_ID,this.domId(v[1]),
 				 ATTR_STYLE,style??HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
 				 ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-highlightable')],
 				HU.getIconImage(v[2]));
@@ -796,14 +797,14 @@ function  SeesvForm(inputId, entry,params) {
 	},
 	insertColumnIndex:function(index,plain,id) {
 	    if(!id) id = this.columnInput;
-	    if(id && $('#' + id).length>0) {
-		let v = $('#' + id).val()||'';
+	    if(id && jqid(id).length>0) {
+		let v = jqid(id).val()||'';
 		v = v.trim();
 		if(v!='') v+='\n';
 		if(v!='' && !v.endsWith(',')) v +=plain?'':',';
 		index = String(index).split(',').join('\n');
 		v+=index+'\n';
-		$('#' + id).val(v);	    
+		jqid(id).val(v);	    
 		return;
 	    }
 	    if(!plain) index = index+',';
@@ -885,14 +886,14 @@ function  SeesvForm(inputId, entry,params) {
 			    ATTR_CLASS,HU.classes('ramadda-menuitem-link',CLASS_CLICKABLE)],(label||field));
 	},
 	insertHeader:function(field,value) {
-	    if(this.headerInput && $('#' + this.headerInput).length>0) {
-		let v = $('#' + this.headerInput).val()||'';
+	    if(this.headerInput && jqid(this.headerInput).length>0) {
+		let v = jqid(this.headerInput).val()||'';
 		value = field +'  '+ value;
 		v = v.trim();
 		if(v.length>0)
 		    v = v +'\n';
 		v+=value;
-		$('#' + this.headerInput).val(v);	    
+		jqid(this.headerInput).val(v);	    
 		return;
 	    }
 
@@ -1633,7 +1634,7 @@ function  SeesvForm(inputId, entry,params) {
 
 
 	    let buttons = HU.buttons([HU.div([ATTR_ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
-				      HU.div([ATTR_ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
+				      HU.div([ATTR_ID,this.domId(ID_CANCELCOMMAND)],LABEL_CANCEL),help]);
 
 	    inner+=buttons;
 	    if(this.addDialog) {

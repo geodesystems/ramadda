@@ -336,20 +336,26 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(showButtons) {
 		let short = display.getProperty("animationWidgetShort",false);
 		buttons +=   HU.span([ATTR_ID, this.getDomId(ID_SETTINGS),
-				      ATTR_TITLE,"Settings"], HU.getIconImage("fas fa-cog")); 
+				      ATTR_TITLE,"Settings"],
+				     HU.getIconImage("fas fa-cog")); 
 		if(!short)
 		    buttons +=   HU.span([ATTR_ID, this.getDomId(ID_BEGIN),
-					  ATTR_TITLE,"Go to beginning"], HU.getIconImage("fa-fast-backward")); 
+					  ATTR_TITLE,"Go to beginning"],
+					 HU.getIconImage("fa-fast-backward")); 
 		buttons += HU.span([ATTR_ID, this.getDomId(ID_ANIM_PREV),
-				    ATTR_TITLE,"Previous"], HU.getIconImage("fa-step-backward")); 
+				    ATTR_TITLE,"Previous"],
+				   HU.getIconImage("fa-step-backward")); 
 		if(!short)
 		    buttons +=HU.span([ATTR_ID, this.getDomId(ID_RUN),
-				       ATTR_TITLE,"Run/Stop"], HU.getIconImage(ICON_PLAY)); 
+				       ATTR_TITLE,"Run/Stop"],
+				      HU.getIconImage(ICON_PLAY)); 
 		buttons +=HU.span([ATTR_ID, this.getDomId(ID_ANIM_NEXT),
-				   ATTR_TITLE,"Next"], HU.getIconImage("fa-step-forward"));
+				   ATTR_TITLE,"Next"],
+				  HU.getIconImage("fa-step-forward"));
 		if(!short)
 		    buttons +=HU.span([ATTR_ID, this.getDomId(ID_END),
-				       ATTR_TITLE,"Go to end"], HU.getIconImage("fa-fast-forward"));
+				       ATTR_TITLE,"Go to end"],
+				      HU.getIconImage("fa-fast-forward"));
 	    }
 
 	    if(showLabel) {
@@ -371,10 +377,11 @@ function DisplayAnimation(display, enabled,attrs) {
 				       ATTR_CLASS,"display-animation-tooltip"],"");
 		let tickContainerStyle = HU.css(CSS_HEIGHT,this.tickHeight);
 		if(!this.makeSlider) {
-		    tickContainerStyle += HU.css(CSS_BACKGROUND,"#efefef",CSS_BORDER,HU.border(1,'#aaa'));
+		    tickContainerStyle += HU.css(CSS_BACKGROUND,"#efefef",
+						 CSS_BORDER,HU.border(1,'#aaa'));
 		}
 		if(!this.makeSlider) {
-		    style+=HU.css(CSS_CURSOR,"move");
+		    style+=HU.css(CSS_CURSOR,CURSOR_MOVE);
 		}
 		buttons +=   HU.div([ATTR_CLASS,"display-animation-slider",
 				     ATTR_STYLE,style,
@@ -488,13 +495,18 @@ function DisplayAnimation(display, enabled,attrs) {
 				 "Window:"+ HU.br() +SPACE2 +
 				 HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
 						     ATTR_SIZE,10]));
-		    html+=HU.div([ATTR_TITLE, "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
+		    html+=HU.div([ATTR_TITLE,
+				  "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
 				 "Step:" + HU.br() +SPACE2+
 				 HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),
 						   ATTR_SIZE,10]));
 		}
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
-		_this.dialog = HU.makeDialog({content:html,anchor:$(this),draggable:false,header:false});
+		_this.dialog = HU.makeDialog({
+		    content:html,
+		    anchor:$(this),
+		    draggable:false,
+		    header:false});
 
 		let key = (e)=>{
 		    if(Utils.isReturnKey(e)) {

@@ -40,7 +40,7 @@ function editImageClick(event, imgId, pt1x, pt1y, pt2x, pt2y) {
         }
         var box = GuiUtils.getDomObject("image_edit_box");
         if (box) {
-            var b = $("#image_edit_box");
+            var b = jqid("image_edit_box");
             var x2 = parseInt(fldx2.obj.value);
             var y2 = parseInt(fldy2.obj.value);
             var width = x2 - parseInt(fldx1.obj.value);

@@ -565,7 +565,7 @@ function DisplayManager(argId, argProperties) {
 	    if(jqid(targetDiv).length==0) {
 		console.log("Error: display group could not find targetDiv:" + targetDiv);
 	    } else {
-		$("#" + targetDiv).html(displaysHtml);
+		jqid(targetDiv).html(displaysHtml);
 		_this.getLayoutManager().doLayout();
 	    }
 	});
@@ -574,7 +574,7 @@ function DisplayManager(argId, argProperties) {
     }
     html += HU.closeTag(TAG_DIV);
     let divid = this.getProperty("divId",this.getId());
-    $("#" + divid).html(html)
+    jqid(divid).html(html)
     this.initializeEntriesMenu();
 
     this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[ATTR_TITLE,"Display menu"],

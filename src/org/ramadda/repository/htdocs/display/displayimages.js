@@ -313,10 +313,11 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		if(img) img = img.trim();
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
-			img = RamaddaUtil.getUrl("/proxy?url=" + img);
+			img = HU.url(RamaddaUtil.getUrl("/proxy"),"url",img);
                     img =  HU.href(img, HU.div([ATTR_ID,this.domId(ID_GALLERY)+'div' + imgCnt],
 					       HU.image(img,[ATTR_WIDTH,width,
-							     ATTR_ID,this.domId(ID_GALLERY)+"img" + imgCnt])),imgAttrs)+label;
+							     ATTR_ID,this.domId(ID_GALLERY)+"img" + imgCnt])),
+				   imgAttrs)+label;
 		    imgCnt++;
                     html = HU.div([ATTR_CLASS,"display-cards-item",
 				   ATTR_TITLE, tooltip,
@@ -563,9 +564,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let cnt = 1;
 
 	    let includeNonImages = this.getIncludeNonImages();
-	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(RamaddaUtil.getCdnUrl('/images/placeholder.png'),
-									[ATTR_WIDTH,HU.perc(100)]):
-		HU.space(1);
+	    let blankImage =this.getShowPlaceholderImage(true)?
+		HU.image(RamaddaUtil.getCdnUrl('/images/placeholder.png'),
+			 [ATTR_WIDTH,HU.perc(100)]):SPACE;
 	    
 	    let anyNoImages= false;
 	    records.forEach((record,rowIdx)=>{
@@ -611,7 +612,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    if(this.hideNoImages) return;
 		}
 		let img = !hasImage?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
-		let topLbl = (topLabel!=null?HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-images-toplabel')], topLabel):"");
+		let topLbl = (topLabel!=null?
+			      HU.div([ATTR_CLASS,
+				      HU.classes(CLASS_CLICKABLE,'display-images-toplabel')], topLabel):"");
 		let lbl = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'display-images-label')], label.trim());
 		if(urlField) {
 		    if(topLbl!="")
@@ -807,7 +810,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 					  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE) ]) +
 				  HU.div([ATTR_ID,this.domId(ID_POPUP),
 					  ATTR_CLASS,"display-imagezoom-popup",
-					  ATTR_STYLE,HU.css(CSS_Z_INDEX,"100",
+					  ATTR_STYLE,HU.css(CSS_Z_INDEX,100,
 							    CSS_DISPLAY,DISPLAY_NONE,
 							    CSS_WIDTH,HU.px(this.popupWidth),
 							    CSS_HEIGHT,HU.px(this.popupHeight),
@@ -1216,14 +1219,18 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    html =HU.center( Utils.embedAudio(url));
 		} else if(url.match('soundcloud')) {
 		    html = HU.center(HU.open(TAG_IFRAME,['scrolling','no',
-							 ATTR_SRC,HU.url('https://w.soundcloud.com/player/','visual','true','url', url, 'maxwidth',450),
-							 ATTR_WIDTH,450,ATTR_HEIGHT,390,'frameborder']));
+							 ATTR_SRC,
+							 HU.url('https://w.soundcloud.com/player/','visual','true','url', url, 'maxwidth',450),
+							 ATTR_WIDTH,450,
+							 ATTR_HEIGHT,390,'frameborder']));
 		} else {
 		    if(url.match(/youtube.com\/watch/)||url.match(/youtu.be/)) {
 			
 			html = HU.center(Utils.embedYoutube(url));
 		    } else {
-			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,ATTR_WIDTH,640,ATTR_HEIGHT,351,
+			html = HU.center(HU.tag(TAG_IFRAME,[ATTR_SRC,url,
+							    ATTR_WIDTH,640,
+							    ATTR_HEIGHT,351,
 							    'frameborder',0,
 							    'webkitallowfullscreen',true,
 							    'mozallowfullscreen','true',

@@ -566,8 +566,8 @@ RepositoryMap.prototype = {
         this.setViewToBounds(bounds);
     },
     initRegionSelector:function(selectId,div,forSelection) {
-	this.regionSelector = $('#' + selectId);
-	this.mapWidgetDiv = $('#' + div);
+	this.regionSelector = jqid(selectId);
+	this.mapWidgetDiv = jqid(div);
 	//Hide it to start
 	this.mapWidgetDiv.hide();
 
@@ -823,7 +823,7 @@ RepositoryMap.prototype = {
 	let getId = id=>{
 	    return this.mapDivId+"_" + id;
 	};
-	let html = HU.open("table",[ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100)),
+	let html = HU.open(TAG_TABLE,[ATTR_STYLE,HU.css(CSS_HEIGHT,HU.perc(100)),
 				    ATTR_WIDTH,HU.perc(100),
 				    ATTR_BORDER,0]);
 	let theMap = HU.div([ATTR_CLASS, "ramadda-map-inner",
@@ -884,7 +884,9 @@ RepositoryMap.prototype = {
         this.addBaseLayers();
 
         if (this.kmlLayer) {
-            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),'output','shapefile.kml',ARG_ENTRYID,this.kmlLayer);
+            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),
+				ARG_OUTPUT,'shapefile.kml',
+				ARG_ENTRYID,this.kmlLayer);
             this.addKMLLayer(this.kmlLayerName, url, false, null, null, null, null);
         }
         if (this.geojsonLayer) {
@@ -900,7 +902,9 @@ RepositoryMap.prototype = {
 			ATTR_STYLE,HU.css(CSS_DISPLAY, DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.px(150))],"");
 
 	    slider = HU.span([ATTR_ID,this.mapDivId+'_opacity_slider',
-			      ATTR_STYLE, (this.params.showOpacitySlider)?HU.css(CSS_DISPLAY,DISPLAY_INLINE):HU.css(CSS_DISPLAY,DISPLAY_NONE)], slider);	    
+			      ATTR_STYLE, (this.params.showOpacitySlider)?
+			      HU.css(CSS_DISPLAY,DISPLAY_INLINE):
+			      HU.css(CSS_DISPLAY,DISPLAY_NONE)], slider);	    
 
 	    jqid(this.mapDivId+"_header").append(slider);
 	    jqid(this.mapDivId +"_opacity_slider_div").slider({
@@ -953,9 +957,9 @@ RepositoryMap.prototype = {
     showOpacitySlider:function(visible) {
 	this.params.showOpacitySlider = visible;
 	if(visible)
-	    $('#'+this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_INLINE);
+	    jqid(this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_INLINE);
 	else
-	    $('#'+this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_NONE);	
+	    jqid(this.mapDivId+'_opacity_slider').css(CSS_DISPLAY,DISPLAY_NONE);	
     },
     getBounds: function() {
 	return  this.transformProjBounds(this.getMap().getExtent());
@@ -1479,7 +1483,8 @@ RepositoryMap.prototype = {
 	    var url = HU.getUrl(RamaddaUtil.getUrl("/entry/get"),ARG_ENTRYID,id);
             layer = this.addGeoJsonLayer(name, url, true, null, null, null, null, true);
         } else {
-            let url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),"output","shapefile.kml",ARG_ENTRYID,id);
+            let url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),
+				ARG_OUTPUT,"shapefile.kml",ARG_ENTRYID,id);
 	    console.log(url);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
         }
@@ -3021,10 +3026,10 @@ RepositoryMap.prototype = {
 
 
     getVisibilityCheckbox:function(ramaddaId) { 
-	let cbx =  $('#' + "visible_" + this.mapId + "_" + ramaddaId);
+	let cbx =  jqid("visible_" + this.mapId + "_" + ramaddaId);
 	//Check for the _ id problem
 	if(cbx.length==0) {
-	    cbx =  $('#' + "visible_" + this.mapId + "_" + ramaddaId.replace(/-/g,'_'));
+	    cbx =  jqid("visible_" + this.mapId + "_" + ramaddaId.replace(/-/g,'_'));
 	}
 	return cbx;
     },
@@ -3043,7 +3048,7 @@ RepositoryMap.prototype = {
                 marker = list[idx];
                 let visible = true;
                 let cbx = this.getVisibilityCheckbox(marker.ramaddaId);
-                let block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
+                let block = jqid("block_" + this.mapId + "_" + marker.ramaddaId);
                 let name = marker.name;
                 if (all) visible = true;
                 else if (!Utils.isDefined(name)) {
@@ -3172,7 +3177,7 @@ RepositoryMap.prototype = {
 	    if(el) {
 		el.onwheel = (event)=>{
 		    if(!this.baseLayerDiv) {
-			let div = $('#'+this.mapDivId).find('.layersDiv');		    
+			let div = jqid(this.mapDivId).find('.layersDiv');		    
 			if(div.length>0) {
 			    this.baseLayerDiv = div;
 			}
@@ -3485,7 +3490,8 @@ RepositoryMap.prototype = {
             HU.checkbox(this.mapDivId + "_loc_bounds", [ATTR_TITLE, "Search in map bounds"], false) +
 	    HU.span([ATTR_TITLE, "Search in map bounds"], " In view ") +
             HU.input("", "", [ATTR_CLASS, "ramadda-map-loc-input",
-			      ATTR_TITLE, "^string - matches beginning", "size", "30",
+			      ATTR_TITLE, "^string - matches beginning",
+			      ATTR_SIZE, 30,
 			      ATTR_PLACEHOLDER, "Search location",
 			      ATTR_ID, this.mapDivId + "_loc_search"])
         jqid(this.mapDivId + "_footer2").html(input);
@@ -3523,8 +3529,9 @@ RepositoryMap.prototype = {
             }
             let jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
-                let result = HU.openTag(TAG_DIV, [ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(400),
-								     CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
+                let result = HU.openTag(TAG_DIV,
+					[ATTR_STYLE, HU.css(CSS_MAX_HEIGHT,HU.px(400),
+							    CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
                 if (data.result.length == 0) {
                     wait.html("Nothing found");
                     return;
@@ -3538,8 +3545,8 @@ RepositoryMap.prototype = {
                         result += HU.div([ATTR_CLASS, "ramadda-map-loc",
 					  ATTR_NAME, n,
 					  "icon", icon,
-					  "latitude", data.result[i].latitude,
-					  "longitude", data.result[i].longitude],
+					  ATTR_LATITUDE, data.result[i].latitude,
+					  ATTR_LONGITUDE, data.result[i].longitude],
 					 HU.tag(TAG_IMG,[ATTR_WIDTH,16,ATTR_SRC,icon]) +' '  + data.result[i].name);
                     }
                     result += HU.div([ATTR_CLASS, "ramadda-map-loc",
@@ -3609,8 +3616,10 @@ RepositoryMap.prototype = {
 		    let ll = _this.transformProjPoint(centroid);
 		    let id  = this.feature.ramaddaId;
 		    id = id.replace(/_/g,'-');
-		    let url = HU.getUrl(RamaddaUtil.getUrl("/entry/changefield"),ARG_ENTRYID,id,'what',location,
-					'latitude',ll.y,'longitude',ll.x);
+		    let url = HU.getUrl(RamaddaUtil.getUrl("/entry/changefield"),ARG_ENTRYID,id,
+					'what',location,
+					'latitude',ll.y,
+					'longitude',ll.x);
 		    $.getJSON(url, function(data) {
 			if(data.error) {
 			    alert('An error has occurred: '+data.error);
@@ -3650,7 +3659,8 @@ RepositoryMap.prototype = {
 	if(!id) return true;
         //        let cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
         let cbx = this.getVisibilityCheckbox(id);
-        if (cbx.length == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
+        if (cbx.length == 0 && parentId != null)
+	    cbx = jqid("visible_" + this.mapId + "_" + parentId);
         if (cbx.length == 0) return true;
         return cbx.is(':checked');
     },
@@ -4128,7 +4138,8 @@ RepositoryMap.prototype = {
                     _this.fldSouth.obj.value = MapUtils.formatLocationValue(bounds.bottom);
                     _this.fldWest.obj.value = MapUtils.formatLocationValue(bounds.left);
                     _this.fldEast.obj.value = MapUtils.formatLocationValue(bounds.right);
-		    HU.addToDocumentUrl(ARG_MAPBOUNDS,bounds.top+"," + bounds.left+"," + bounds.bottom +","+bounds.right);
+		    HU.addToDocumentUrl(ARG_MAPBOUNDS,
+					bounds.top+"," + bounds.left+"," + bounds.bottom +","+bounds.right);
                 }
             }
         });
@@ -5396,9 +5407,10 @@ RepositoryMap.prototype = {
         if (marker.locationKey != null) {
             let markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
-		let div = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
-						    CSS_MARGIN_TOP,HU.px(8),
-						    CSS_MARGIN_BOTTOM,HU.px(8))]);
+		let div = HU.div([ATTR_STYLE,
+				  HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ccc'),
+					 CSS_MARGIN_TOP,HU.px(8),
+					 CSS_MARGIN_BOTTOM,HU.px(8))]);
 		if(debugPopup)
 		    console.log('showMarkerPopup: seenMarkers:', markers.length);
 		let textList = [];
@@ -5425,9 +5437,10 @@ RepositoryMap.prototype = {
 			    markerText+=HU.open(TAG_DIV,[ATTR_CLASS,'row row-tight']);
 			}
 			let open = HU.open(TAG_DIV,[ATTR_CLASS, clazz,
-						    ATTR_STYLE,HU.css(CSS_PADDING_BOTTOM,HU.important(HU.px(8)),
-								      CSS_PADDING_RIGHT,HU.important(HU.px(8)),
-								     )]);
+						    ATTR_STYLE,
+						    HU.css(CSS_PADDING_BOTTOM,HU.important(HU.px(8)),
+							   CSS_PADDING_RIGHT,HU.important(HU.px(8)),
+							  )]);
 			markerText+=open;
 		    }
 		    markerText+=t;

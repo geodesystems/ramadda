@@ -21,9 +21,9 @@ var RamaddaLicense =  {
 	let agreed =Utils.getProperty(Utils.getLocalStorage(key));
 	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
 	if(!agreed) {
-	    let buttonList = [HU.div(['action','ok','class',HU.clases(CLASS_BUTTON,CLASS_CLICKABLE)],
+	    let buttonList = [HU.div(['action','ok',ATTR_CLASS,HU.clases(CLASS_BUTTON,CLASS_CLICKABLE)],
 				     "Yes"),
-			      HU.div(['action','no','class',HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],"No")]
+			      HU.div(['action','no',ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],"No")]
 
 	    let buttons = HU.buttons(buttonList);
 	    let html =  opts.message;

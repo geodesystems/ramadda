@@ -643,7 +643,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
                 q = q.replace(/[[\r\n]/g,"\n");
                 q = HU.div([ATTR_CLASS, "display-skewt-text"],q);
-                $("#" + this.skewt.textBoxId).html(q);
+                jqid(this.skewt.textBoxId).html(q);
             });
         }
     });

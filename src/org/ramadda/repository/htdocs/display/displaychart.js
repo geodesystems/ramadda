@@ -5,26 +5,26 @@
 
 
 
-const DISPLAY_LINECHART = "linechart";
-const DISPLAY_AREACHART = "areachart";
-const DISPLAY_BARCHART = "barchart";
-const DISPLAY_BARTABLE = "bartable";
-const DISPLAY_BARSTACK = "barstack";
-const DISPLAY_PIECHART = "piechart";
-const DISPLAY_TIMERANGECHART = "timerangechart";
-const DISPLAY_SANKEY = "sankey";
-const DISPLAY_CALENDAR = "calendar";
-const DISPLAY_SCATTERPLOT = "scatterplot";
-const DISPLAY_HISTOGRAM = "histogram";
-const DISPLAY_BUBBLE = "bubble";
-const DISPLAY_GAUGE = "gauge";
-const DISPLAY_TABLE = "table";
-const DISPLAY_WORDTREE = "wordtree";
-const DISPLAY_TREEMAP = "treemap";
-const DISPLAY_ORGCHART = "orgchart";
-const ID_CHART = "chart";
-const ID_CHARTS = "charts";
-const ID_CHARTS_INNER = "chartsinner";
+var DISPLAY_LINECHART = "linechart";
+var DISPLAY_AREACHART = "areachart";
+var DISPLAY_BARCHART = "barchart";
+var DISPLAY_BARTABLE = "bartable";
+var DISPLAY_BARSTACK = "barstack";
+var DISPLAY_PIECHART = "piechart";
+var DISPLAY_TIMERANGECHART = "timerangechart";
+var DISPLAY_SANKEY = "sankey";
+var DISPLAY_CALENDAR = "calendar";
+var DISPLAY_SCATTERPLOT = "scatterplot";
+var DISPLAY_HISTOGRAM = "histogram";
+var DISPLAY_BUBBLE = "bubble";
+var DISPLAY_GAUGE = "gauge";
+var DISPLAY_TABLE = "table";
+var DISPLAY_WORDTREE = "wordtree";
+var DISPLAY_TREEMAP = "treemap";
+var DISPLAY_ORGCHART = "orgchart";
+var ID_CHART = "chart";
+var ID_CHARTS = "charts";
+var ID_CHARTS_INNER = "chartsinner";
 
 
 var ramaddaChartInfo = {
@@ -1181,11 +1181,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    });
 		    let highlightWidget = SPACE + HU.vbox(["Highlight",
 							   HU.select("",[ATTR_ID,this.domId(ID_HIGHLIGHTFIELDS),
-									 ATTR_MULTIPLE,"true",
+									 ATTR_MULTIPLE,true,
 									 ATTR_SIZE,this.getProperty("highlightShowFieldsSize","3")],
 								     seriesValues,highlightFields)]);
-		    let select =  HU.span([ATTR_CLASS,"display-filter",
-					   ATTR_STYLE,""],highlightWidget);
+		    let select =  HU.span([ATTR_CLASS,CLASS_DISPLAY_FILTER],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());

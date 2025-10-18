@@ -1,4 +1,6 @@
 
+var ATTR_POINT_INDEX='point-index';
+
 function RamaddaMediaTranscript(attrs) {
     this.media = attrs.media;
     this.attrs = attrs;
@@ -32,9 +34,9 @@ RamaddaMediaTranscript.prototype = {
 	
 	this.player = func;
 
-	   
+	
 	if(!this.points) this.points = [];
-//	this.points = [{time:30,title:"30 seconds in"}]
+	//	this.points = [{time:30,title:"30 seconds in"}]
 	if(this.player.gotoTime && this.points)  {
 	    this.makePoints();
 	}
@@ -49,7 +51,7 @@ RamaddaMediaTranscript.prototype = {
 	    if(time!=this.lastPlayTime) {
 		this.lastPlayTime = time;
 		let closest = null;
-//		console.log("tick:" + this.formatTime(time));
+		//		console.log("tick:" + this.formatTime(time));
 		this.points.every(p=>{
 		    if(time <p.time) {
 			return false;
@@ -59,18 +61,18 @@ RamaddaMediaTranscript.prototype = {
 		});
 		let lastClosest = this.lastClosest;
 		if(closest && closest==this.lastClosest) {
-//		    console.dir("\tthe same:" + closest.title +" " +this.lastClosest.title);
+		    //		    console.dir("\tthe same:" + closest.title +" " +this.lastClosest.title);
 		    closest=lastClosest=null;
 		} 
 		if(lastClosest) {
-//		    console.log("\tHAD LAST:" + lastClosest.title);
+		    //		    console.log("\tHAD LAST:" + lastClosest.title);
 		    jqid(lastClosest.rowId).removeClass("ramadda-media-point-inplay");
 		    this.lastClosest=null;
 		}
 		if(closest) {
 		    jqid(closest.rowId).addClass("ramadda-media-point-inplay");
 		    this.lastClosest = closest;
-//		    console.log("\tclosest:" + this.lastClosest.title);
+		    //		    console.log("\tclosest:" + this.lastClosest.title);
 		}
 	    }
 	    setTimeout(()=>{
@@ -144,40 +146,65 @@ RamaddaMediaTranscript.prototype = {
 	    let time = this.formatTime(p.time);
 	    let prefix = "";
 	    if(canAdd) {
-		prefix = HU.span(['title','Delete transcription','point-index',idx,'class','ramadda-clickable ramadda-media-point-delete'], HU.getIconImage('fas fa-eraser'));
-		prefix+= HU.span(['title','Edit transcription','point-index',idx,'class','ramadda-clickable ramadda-media-point-edit'], HU.getIconImage('fas fa-edit'));		
-		prefix = HU.td(['width','1%',ATTR_CLASS,'ramadda-media-point-header',ATTR_STYLE,HU.css('white-space','nowrap')],prefix);
+		prefix = HU.span([ATTR_TITLE,'Delete transcription',
+				  ATTR_POINT_INDEX,idx,
+				  ATTR_CLASS,'ramadda-clickable ramadda-media-point-delete'],
+				 HU.getIconImage('fas fa-eraser'));
+		prefix+= HU.span([ATTR_TITLE,'Edit transcription',
+				  ATTR_POINT_INDEX,idx,
+				  ATTR_CLASS,'ramadda-clickable ramadda-media-point-edit'],
+				 HU.getIconImage('fas fa-edit'));		
+		prefix = HU.td([ATTR_WIDTH,HU.perc(1),
+				ATTR_CLASS,'ramadda-media-point-header',
+				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')],prefix);
 	    }
 	    p.detailsId =  this.searchId +"_details_" + idx;
 	    p.rowId = HU.getUniqueId("row_");
-	    table+=HtmlUtils.tr([ATTR_CLASS,'ramadda-hoverable','valign','top','id',p.rowId,'point-index',idx], 
-				prefix+
-				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','5%','style',HU.css('white-space','nowrap')], time) +
-				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','95%'], HU.div([ATTR_STYLE,HU.css('margin-left','10px')],p.title)));
+	    table+=HU.tr([ATTR_CLASS,'ramadda-hoverable',
+			  ATTR_VALIGN,ALIGN_TOP,
+			  ATTR_ID,p.rowId,
+			  ATTR_POINT_INDEX,idx], 
+			 prefix+
+			 HU.td([ATTR_POINT_INDEX,idx,
+				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
+				ATTR_WIDTH,HU.perc(5),
+				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], time) +
+			 HU.td([ATTR_POINT_INDEX,idx,
+				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
+				ATTR_WIDTH,HU.perc(95)],
+			       HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))],p.title)));
 
-	    let details =  HU.div([ATTR_CLASS,'ramadda-clickable ramadda-media-play','data-player-time',p.time],
+	    let details =  HU.div([ATTR_CLASS,'ramadda-clickable ramadda-media-play',
+				   'data-player-time',p.time],
 				  HU.getIconImage(ICON_PLAY) + ' ' +
 				  'Play Segment' );
 
 	    if(Utils.stringDefined(p.synopsis)) {
-		details+=HU.div([],HU.b("Synopsis: ") + p.synopsis);
+		details+=HU.div([],HU.boldLabel("Synopsis") +p.synopsis);
 	    }
 	    if(p.keywords && p.keywords.length>0) {
-		details+=HU.div([],HU.b("Keywords: ") + p.keywords.join(" "));
+		details+=HU.div([],HU.boldLabel("Keywords") +
+				p.keywords.join(" "));
 	    }
 	    if(p.subjects && p.subjects.length>0) {
-		details+=HU.div([],HU.b("Subjects: ") + p.subjects.join(" "));
+		details+=HU.div([],HU.boldLabel("Subjects") +
+				p.subjects.join(" "));
 	    }
 	    details = HU.div([ATTR_CLASS,'ramadda-media-point-details-inner'],
 			     details);
-	    let detailsDiv = HU.div([ATTR_ID,p.detailsId,ATTR_CLASS,'ramadda-media-point-details',ATTR_STYLE,HU.css('display','none')],details);
-	    table+=HtmlUtils.tr([], HU.td(['colspan','3'], detailsDiv));
+	    let detailsDiv = HU.div([ATTR_ID,p.detailsId,
+				     ATTR_CLASS,'ramadda-media-point-details',
+				     ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],details);
+	    table+=HU.tr([], HU.td([ATTR_COLSPAN,3], detailsDiv));
 	});
-	table+="</table>";
+	table+=HU.close(TAG_TABLE);
 	let extra = '';
 	if(canAdd && this.player.getTime) {
-	    extra =HU.span([ATTR_TITLE,'Add transcription',ATTR_ID,this.domId('_addtranscription'),
-			    ATTR_STYLE,HU.css('margin-right','10px'),ATTR_CLASS,'ramadda-clickable'], HU.getIconImage('fas fa-plus'));
+	    extra =HU.span([ATTR_TITLE,'Add transcription',
+			    ATTR_ID,this.domId('_addtranscription'),
+			    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
+			    ATTR_CLASS,'ramadda-clickable'],
+			   HU.getIconImage('fas fa-plus'));
 	}
 
 
@@ -186,12 +213,24 @@ RamaddaMediaTranscript.prototype = {
 	this.searchInputId = HU.getUniqueId("search_");
 	let exportId =HU.getUniqueId("export_");
 	if(this.points.length>0) {
-	    search = HU.span([ATTR_ID, exportId,ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,'Export'],HU.getIconImage('fas fa-file-export'))+HU.space(2);
-	    search += HU.input("","",[ATTR_CLASS,'ramadda-media-search', "placeholder","Search",ATTR_ID,this.searchInputId]) + " " + HU.span([ATTR_TITLE,'Clear search',ATTR_ID,this.searchInputId+"_clear",ATTR_CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser'));
+	    search = HU.span([ATTR_ID, exportId,
+			      ATTR_CLASS,'ramadda-clickable',
+			      ATTR_TITLE,'Export'],
+			     HU.getIconImage('fas fa-file-export'))+SPACE2;
+	    search += HU.input("","",
+			       [ATTR_CLASS,'ramadda-media-search',
+				ATTR_PLACEHOLDER,"Search",
+				ATTR_ID,this.searchInputId]) + " " +
+		HU.span([ATTR_TITLE,'Clear search',
+			 ATTR_ID,this.searchInputId+"_clear",
+			 ATTR_CLASS,"ramadda-clickable"],
+			HU.getIconImage('fas fa-eraser'));
 	    search+=
-		HU.div([ATTR_ID,this.searchId+"_results",ATTR_STYLE,HU.css('max-width','300px','overflow-x','auto')]) ;
+		HU.div([ATTR_ID,this.searchId+"_results",
+			ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
+					  CSS_OVERFLOW_X,'auto')]);
 	}
-	search =HU.div([ATTR_STYLE,HU.css('margin-left','10px')], extra+search);
+	search =HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))], extra+search);
 	jqid(this.searchId).html(search);
 	jqid(exportId).click(()=>{
 	    let csv ='';
@@ -223,7 +262,7 @@ RamaddaMediaTranscript.prototype = {
 	});
 	jqid(this.div).find('.ramadda-media-point-delete').click(function(event) {
 	    event.stopPropagation();
-	    let index = +$(this).attr('point-index');
+	    let index = +$(this).attr(ATTR_POINT_INDEX);
 	    let point = _this.points[index];
 	    if(!confirm('Are you sure you want to delete the transcription:' + point.title+'?')) return;
 	    _this.points.splice(index,1);
@@ -232,12 +271,12 @@ RamaddaMediaTranscript.prototype = {
 	});
 	jqid(this.div).find('.ramadda-media-point-edit').click(function(event) {
 	    event.stopPropagation();
-	    let index = +$(this).attr('point-index');
+	    let index = +$(this).attr(ATTR_POINT_INDEX);
 	    _this.addOrEditTranscription($(this),index);
 	});
 
 	jqid(this.div).find('.ramadda-media-point').click(function(){
-	    let point = _this.points[+$(this).attr('point-index')];
+	    let point = _this.points[+$(this).attr(ATTR_POINT_INDEX)];
 	    let details = jqid(point.detailsId);
 	    if(details.is(':visible')) {
 		details.hide(300);
@@ -265,24 +304,37 @@ RamaddaMediaTranscript.prototype = {
 	    point = this.points[index];
 	}
 
-	let form = "<table class=formtable>";
-	form+=HU.formEntry("Title:",HU.input("",point.title,['size','60','id',this.domId('edit_title')]));
-	form+=HU.formEntry("Synopsis:",HU.textarea("",point.synopsis||"",['rows','5','cols','60','id',this.domId('edit_synopsis')]));
-	let timeSpan = HU.span(['id',this.domId('_timespan')]);
+	let form = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']);
+	form+=HU.formEntryLabel("Title",
+				HU.input("",point.title,[ATTR_SIZE,60,
+							 ATTR_ID,this.domId('edit_title')]));
+	form+=HU.formEntryLabel("Synopsis",
+				HU.textarea("",point.synopsis||"",[ATTR_ROWS,5,
+								   ATTR_COLS,60,
+								   ATTR_ID,this.domId('edit_synopsis')]));
+	let timeSpan = HU.span([ATTR_ID,this.domId('_timespan')]);
 	if(!add) {
-	    form+=HU.formEntry("",HU.checkbox("",['id',this.domId('edit_settime')],false,"Set time to: " +
+	    form+=HU.formEntry("",HU.checkbox("",
+					      [ATTR_ID,this.domId('edit_settime')],false,"Set time to: " +
 					      timeSpan));
 	} else {
-	    form+=HU.formEntry("","Current time: " + timeSpan);
+	    form+=HU.formEntry("",HU.msgLabel("Current time") + timeSpan);
 	}
-	form+="</table>";
-	form+="<br>";
-	form+=HU.span(['id',this.domId('edit_ok')],add?'Add Transcription':'Save Transcription');
+	form+=HU.close(TAG_TABLE);
+	form+=HU.br();
+	form+=HU.span([ATTR_ID,this.domId('edit_ok')],add?'Add Transcription':'Save Transcription');
 	form+=HU.space(3);
-	form+=HU.span(['id',this.domId('edit_cancel')],'Cancel');
-	form=HU.div(['style',HU.css('margin','10px')], form);
+	form+=HU.span([ATTR_ID,this.domId('edit_cancel')],LABEL_CANCEL);
+	form=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], form);
 
-	this.editDialog = HU.makeDialog({content:form,my:"left top",at:"left bottom",anchor:widget,draggable:true,header:true,xinPlace:false});
+	this.editDialog = HU.makeDialog({
+	    content:form,
+	    my:"left top",
+	    at:"left bottom",
+	    anchor:widget,
+	    draggable:true,
+	    header:true,
+	    xinPlace:false});
 	//getTime is async
 	this.player.getTime(t=>{
 	    this.jq('_timespan').html(this.formatTime(t));
@@ -330,7 +382,7 @@ RamaddaMediaTranscript.prototype = {
 	    edit_type_media_transcriptions_json:json
 	};
 	let success = r=>{
-//	    console.log("success");
+	    //	    console.log("success");
 	};
 	let error = r=>{
 	    let e = r;
@@ -406,13 +458,13 @@ RamaddaMediaTranscript.prototype = {
 	    } catch {
 	    }
 	};
-//	console.dir(player);
+	//	console.dir(player);
 	return {gotoTime:gotoTime,
 		getTime:(cb,debug)=> {
 		    cb(player.currentTime);
 		},
 		pause:()=>{player.pause()}
-};
+	       };
     },
 
 

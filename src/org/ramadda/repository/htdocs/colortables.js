@@ -82,7 +82,7 @@ $.extend(Utils,{
         html+='</table>';
 
         //        Utils.makeDownloadFile('colortables.java',code);
-        $('#' + domId).html(html);
+        jqid(domId).html(html);
         cnt = 0;
 	Utils.AllColorTables.forEach(ct=>{
             if(ct.category) {

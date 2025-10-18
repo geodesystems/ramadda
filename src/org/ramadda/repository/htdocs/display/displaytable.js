@@ -105,7 +105,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
         loadSheet: function(sheetIdx) {
 
             var all = $("[id^=" + this.getDomId("sheet_") + "]");
-            var sel = $("#" + this.getDomId("sheet_") + sheetIdx);
+            var sel = jqid(this.getDomId("sheet_") + sheetIdx);
 
             all.css(CSS_FONT_WEIGHT, 'normal');
             sel.css(CSS_FONT_WEIGHT, FONT_BOLD);
@@ -355,7 +355,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
         addNewChartListener: function(makeChartId, chartType) {
             var _this = this;
-            $("#" + makeChartId + "-" + chartType).button().click(function(event) {
+            jqid(makeChartId + "-" + chartType).button().click(function(event) {
                 console.log("make chart:" + chartType);
                 _this.makeChart(chartType);
             });
@@ -363,7 +363,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
         makeSheetButton: function(id, index) {
             var _this = this;
-            $("#" + id).button().click(function(event) {
+            jqid(id).button().click(function(event) {
                 _this.loadSheet(index);
             });
         },

@@ -235,10 +235,11 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		this.loadedJq = true;
 		let includes = HU.tag(TAG_LINK,[ATTR_REL,'stylesheet',
 						ATTR_HREF,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")]);
-		includes += HU.tag(TAG_SCRIPT,[ATTR_SRC,RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")]);
+		includes += HU.tag(TAG_SCRIPT,[ATTR_SRC,
+					       RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")]);
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
-		let tmp = $("body");
+		let tmp = $(TAG_BODY);
 		let func = function() {
 		    if(!tmp.jQCloud) {
 			setTimeout(func, 100);
@@ -327,7 +328,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		}
                 this.setContents(HU.div([ATTR_ID, this.domId('words'),
 					 ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))]));
-                $("#" + this.domId("words")).jQCloud(info, options);
+                jqid(this.domId("words")).jQCloud(info, options);
 		return
 	    }
             let strings = this.getFieldsByType(fields, "string");
@@ -411,12 +412,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (this.getProperty("combined", false)) {
                 this.setContents(HU.div([ATTR_ID, this.domId("words"),
 					 ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))]));
-                $("#" + this.domId("words")).jQCloud(words, options);
+                jqid(this.domId("words")).jQCloud(words, options);
             } else {
                 this.setContents(divs);
                 for (a in fieldInfo) {
                     let fi = fieldInfo[a];
-                    $("#" + fi.divId).jQCloud(fi.words, options);
+                    jqid(fi.divId).jQCloud(fi.words, options);
                 }
             }
         },
@@ -493,9 +494,10 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
-                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix +
-							    HU.div([ATTR_ID, this.domId('table'),
-								    ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))])));
+                this.writeHtml(ID_DISPLAY_BOTTOM,
+			       HU.center(prefix +
+					 HU.div([ATTR_ID, this.domId('table'),
+						 ATTR_STYLE, HU.css(CSS_HEIGHT,HU.px(300))])));
 		let step2=()=>{
                     let dataTable = google.visualization.arrayToDataTable(data);
                     this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
@@ -855,12 +857,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let f = filter.getField();
 		    let fid = "filter_" + f.getId();
 		    if(f.isNumeric()) {
-			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val()?.trim();
-			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val()?.trim();
+			let min = jqid(this.domId("filterby_" + f.getId()+"_min")).val()?.trim();
+			let max = jqid(this.domId("filterby_" + f.getId()+"_max")).val()?.trim();
 			attrs[fid +"_min"] = min;
 			attrs[fid +"_max"] = max;
 		    } else {
-			let widget =$("#" + this.domId("filterby_" + f.getId())); 
+			let widget =jqid(this.domId("filterby_" + f.getId())); 
 			if(!widget.val || widget.val()==null) continue;
 			let value = widget.val();
 			if(!value) continue;
@@ -1234,7 +1236,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
             var fields = this.getData().getNonGeoFields();
 	    var labelField = this.getFieldById(fields,this.getProperty("labelField"));
 	    if(labelField==null) {
-		labelField = this.getFieldById(fields, ATTR_TITLE);
+		labelField = this.getFieldById(fields, 'title');
 	    }
 	    if(labelField==null) {
 		labelField = this.getFieldById(fields, "name");
@@ -1630,8 +1632,10 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.br()
                 }
                 if (this.getProperty("showCounts", true)) {
-		    html += HU.openTag(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE_NOWRAP,CLASS_TABLE),
-						   ATTR_ID, this.domId("table_counts")]);
+		    html += HU.openTag(TAG_TABLE,
+				       [ATTR_CLASS,
+					HU.classes(CLASS_TABLE_ROWBORDER,CLASS_TABLE_NOWRAP,CLASS_TABLE),
+					ATTR_ID, this.domId("table_counts")]);
                     html += HU.openTag(TAG_THEAD, []);
                     html += HU.tr([], HU.th([ATTR_WIDTH, td1Width], "Word Length") +
 				  HU.th([ATTR_WIDTH, td2Width], "Count") + (showBars ? HU.th([], "") : ""));
@@ -1900,7 +1904,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    let count = showCount? HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,HU.perc(20)],
 						 HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Count")):"";
 		    let percent  = showPercent?HU.th([ATTR_ALIGN,ALIGN_RIGHT,ATTR_WIDTH,HU.perc(20)],
-						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],"Percent")):"";
+						     HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],
+							    "Percent")):"";
 		    let bars = showBars? HU.th([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_WIDTH,barWidth],
 					       HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],SPACE)):"";
@@ -2480,7 +2485,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 				  HU.getIconImage("fa-caret-right",null,
 						  [ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.px(0))]));
 		    }
-		    r+= HU.td([ATTR_WIDTH, labelWidth], HU.tag(TAG_A,[ATTR_NAME,'line_' + lineCnt]),
+		    r+= HU.td([ATTR_WIDTH, labelWidth],
+			      HU.tag(TAG_A,[ATTR_NAME,'line_' + lineCnt]),
 			      HU.tag(TAG_A,[ATTR_HREF,'#line_' + lineCnt], label)+ SPACE) +
 			HU.td([], line);
 		    corpus += HU.tr(rowAttrs, r);
