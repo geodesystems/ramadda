@@ -4176,7 +4176,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },				  
     initScreenshot: function(img) {
 	img.width/=2
-	$(img).css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK).css(CSS_MAX_WIDTH,HU/vw(90));
+	$(img).css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK).css(CSS_MAX_WIDTH,HU.vw(90));
     },
     insertIntoTextarea:function(myField, value,newLine) {
 	if(typeof myField=='string') {
