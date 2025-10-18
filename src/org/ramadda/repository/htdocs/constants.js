@@ -73,6 +73,7 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_ROW='row';
 var CLASS_BUTTON_BAR = 'ramadda-button-bar';
 var CLASS_FORMTABLE = 'formtable';
 var CLASS_FORMLABEL = 'formlabel';
