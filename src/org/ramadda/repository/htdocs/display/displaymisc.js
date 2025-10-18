@@ -3403,7 +3403,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 						      ATTR_HEIGHT,10],
 					     HU.tag(TAG_RECT,[ATTR_WIDTH,10,
 							      ATTR_HEIGHT,10,
-							      ATTR_FILE,COLOR_WHITE],
+							      ATTR_FILL,COLOR_WHITE],
 						    HU.tag(TAG_PATH,['d','M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2',
 								     ATTR_STROKE,'#ddd',
 								     ATTR_STROKE_WIDTH,1])));
