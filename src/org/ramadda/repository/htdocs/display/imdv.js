@@ -5090,7 +5090,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = HU.url(Ramadda.getUrl("/entry/get"),ARGENTRYID,opts.entryId);
+		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
 	    }
 	    url = url.replace(/\${root}/,ramaddaBaseUrl);
 	    mapGlyph.setDownloadUrl(url);
@@ -5289,6 +5289,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 	handleError:function(err,url) {
+	    if(err.message) console.error(err.message);
 	    if(err.stack) console.error(err.stack);
 	    let message;
 	    let responseText = err.responseText??err?.priv?.responseText;
