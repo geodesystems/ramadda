@@ -759,7 +759,7 @@ new MapLayer('esri.street','ESRI Streets','https://server.arcgisonline.com/ArcGI
 new MapLayer('esri.natgeoworldmap','ESRI NatGeo World Map','https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- National Geographic, Esri, DeLor'});
 
 
-new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png}',
+new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png',
 	    {attribution:'Map courtesy of OpenTopo'});
 
 new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
