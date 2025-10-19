@@ -6046,7 +6046,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                        content,extra);
 
     },
-    getUrl: function(path, args) {
+    getUrl: function(path, ...varargs) {
+	let args = this.convertVarArgs(varargs);
         if (args.length > 0) {
             path += "?";
         }
@@ -6059,9 +6060,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return path;
     },
 
-    url:function(path,...varargs) {
+    convertVarArgs:function(varargs) {
 	let args=[];
-	let url = path;
 	varargs.forEach(arg=>{
             if(!Array.isArray(arg)) {
 		args.push(arg);
@@ -6069,6 +6069,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		args.push(...arg);
 	    }
 	});
+	return args;
+    },
+    url:function(path,...varargs) {
+	let url = path;
+	let args=this.convertVarArgs(varArgs);
 	for(let i=0;i<args.length;i+=2) {
 	    if(i==0 && url.indexOf("?")<0) url+="?";
 	    else url+="&";
@@ -6101,6 +6106,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag(TAG_A, myAttrs, html);
     },
 
+    isChecked:function(cbx) {
+	return $(cbx).is(':checked');
+    },
     checkbox: function(id, attrs, checked,label) {
 	attrs = attrs||[];
 	if(!Utils.stringDefined(id)) {
