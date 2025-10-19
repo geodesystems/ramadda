@@ -16,7 +16,7 @@ function RamaddaAnnotatedImage(attrs,id) {
 function RamaddaZoomableImage(attrs,id) {
     attrs.zoomable = true;
     if(!attrs.annotationsField)
-	attrs.annotationsField = "media_zoomify_annotations_json";
+	attrs.annotationsField = "annotations_json";
 
     if(!Utils.isDefined(attrs.showToolbar)) attrs.showToolbar= true;
     let osd =this.osd = OpenSeadragon(attrs);
