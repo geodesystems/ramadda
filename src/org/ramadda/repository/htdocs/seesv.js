@@ -1140,8 +1140,6 @@ function  SeesvForm(inputId, entry,params) {
 			let preId = HU.getUniqueId();
 			let id2 = HU.getUniqueId();
 			let html = printHeader?result:HU.span([ATTR_ID,id2])+
-			    SPACE2+
-			    'Command-click/right-click in commands area above to show command dialog'+
 			    HU.tag(TAG_PRE,[ATTR_ID,preId], result);
 			output.html(html);
 			HU.initPageSearch('#' + preId +' .seesv-help-line',null,'Search help',null,{target:'#'+id2});
