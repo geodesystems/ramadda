@@ -22,7 +22,7 @@ var LINETYPE_STEPPED='stepped';
 
 var ATTR_COMMAND='command';
 var ID_INMAP_LABEL='inmaplabel';
-
+var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
 var ID_IMAGEID='imageid';
 
@@ -53,6 +53,9 @@ var ID_MAPLEGEND = 'maplegend';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
+
+
+
 
     if(!type) {
 	console.log("no type given for MapGlyph");
@@ -136,9 +139,6 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
     this.checkDataIconMenu();
 }
-
-
-
 
 
 MapGlyph.prototype = {
@@ -600,7 +600,6 @@ MapGlyph.prototype = {
 	content.push({header:'Properties',contents:html});
 
 	html='';
-	//	html=  this.getHelp('#miscproperties')+HU.br();
 	let miscLines =[...IMDV_PROPERTY_HINTS];
 	if(this.canHaveChildren()) {
 	    miscLines.push(...IMDV_GROUP_PROPERTY_HINTS);
@@ -620,14 +619,14 @@ MapGlyph.prototype = {
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
 
-	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),
+	let miscHelp =this.display.makeSideHelp(miscLines,this.domId(ID_MISCPROPERTIES),
 						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
 						 suffix:'\n'});
 	let ex = HU.boldLabel('Add property') +
 	    HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
-				     [ATTR_ID,this.domId('miscproperties'),
+				     [ATTR_ID,this.domId(ID_MISCPROPERTIES),
 				      ATTR_ROWS,16,
 				      ATTR_COLS, 40]),
 			 HU.space(2),ex]);
@@ -803,7 +802,7 @@ MapGlyph.prototype = {
 	}
 
 	this.parsedProperties = null;
-	this.attrs.properties = this.jq('miscproperties').val();
+	this.attrs.properties = this.jq(ID_MISCPROPERTIES).val();
 	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
 	    this.setVisibleLevelRange(this.display.jq(ID_LEVEL_RANGE_MIN).val(),
 				      this.display.jq(ID_LEVEL_RANGE_MAX).val());
@@ -811,8 +810,7 @@ MapGlyph.prototype = {
 	    this.attrs.visibleLevelRange = null;
 	    this.checkVisible();
 	}
-	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
-
+	this.setShowMarkerWhenNotVisible(HU.isChecked(this.display.jq(PROP_LEVELRANGE_SHOWMARKER)));
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
@@ -3653,7 +3651,7 @@ MapGlyph.prototype = {
 
     initPropertiesComponent: function(dialog) {
 
-	HU.initPageSearch('.imdv-property',
+	HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			  null,null,true,
 			  {target:'#'+this.domId('propsearch')});
 
@@ -6146,16 +6144,16 @@ MapGlyph.prototype = {
     },    
 
     checkVisible: function() {
+	let level = this.display.getCurrentLevel();
 	let showMarker = this.getShowMarkerWhenNotVisible();
 	let range = this.getVisibleLevelRange()??{};
-	let displayRange = this.display.getMapProperty('visibleLevelRange');
+	let displayRange = this.display.getMapProperty(PROP_LEVELRANGE_RANGE);
 	if(!range || (displayRange && !Utils.stringDefined(range.min) && !Utils.stringDefined(range.max))) {
 	    range = displayRange;
-	    showMarker  = this.display.getMapProperty('showMarkerWhenNotVisible');
+	    showMarker  = this.display.getMapProperty(PROP_LEVELRANGE_SHOWMARKER);
 	}
 
 
-	let level = this.display.getCurrentLevel();
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	let visible=  this.getVisible() && (level>=min && level<=max);

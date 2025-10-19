@@ -48,8 +48,11 @@ var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_la
 
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY,CSS_FONT_SIZE,HU.pt(9))];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)];
+
+var CLASS_IMDV_PROPERTY= 'imdv-property';
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+
 var PROP_DONT_SHOW_IN_LEGEND='dontShowInLegend';
 var PROP_SHOW_LAYER_SELECT_IN_LEGEND = "showLayerSelectInLegend";
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
@@ -57,6 +60,10 @@ var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+
+var PROP_LEVELRANGE_SHOWMARKER = 'showMarkerWhenNotVisible';
+var PROP_LEVELRANGE_RANGE = 'visibleLevelRange';
+
 
 var PROP_SHOWOPACITYSLIDER='showOpacitySlider';
 
@@ -125,9 +132,11 @@ var ROUTE_PEDESTRIAN ='pedestrian';
 
 
 
+
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
 var ID_MAPRESOURCE = 'mapresource';
+
 
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
 var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
@@ -1264,7 +1273,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(glyphType.isZoom() || glyphType.isFixed() || glyphType.isGroup()) {
 		let text = args.text;
-		if(!text) text = prompt(glyphType.isZoom()?'Enter zoom to label':glyphType.isFixed()?'Text:':'Name:');
+		if(!text) text = prompt(glyphType.isZoom()?'Enter viewpoint label':glyphType.isFixed()?'Text:':'Name:');
 		if(!text) return;
 		let style = Utils.clone({},tmpStyle);
 		let mapOptions = Utils.clone({},tmpMapOptions);
@@ -2684,7 +2693,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							    ATTR_ROWS,10,
 							    ATTR_COLS, 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
-		let buttons  =HU.center(HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		let buttons  =HU.center(HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) +
+					SPACE2 +
 					HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
 		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],
@@ -2904,7 +2914,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	initSideHelp:function(dialog) {
-	    dialog.find('.imdv-property').click(function(){
+	    dialog.find(HU.dotClass(CLASS_IMDV_PROPERTY)).click(function(){
 		let value = $(this).attr(ATTR_VALUE);
 		if(!value) return;
 		value = value.replace(/\\n/g,'\n');
@@ -2931,7 +2941,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  'info-id',line.info], line.title);
 		    return;
 		}
-		let attrs = [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-property'),
+		let attrs = [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_IMDV_PROPERTY),
 			     ATTR_TARGET,target];
 		if(line.title) {
 		    attrs.push(ATTR_TITLE,line.title);
@@ -3372,15 +3382,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
 	    let visibleCbx =
-		HU.checkbox(this.domId('showmarkerwhennotvisible'),
-			    [ATTR_ID,this.domId('showmarkerwhennotvisible')],
+		HU.checkbox(this.domId(PROP_LEVELRANGE_SHOWMARKER),
+			    [ATTR_ID,this.domId(PROP_LEVELRANGE_SHOWMARKER)],
 			    showMarkerToo,'Show marker instead');
 	    let min = level.min??this.minLevel;
 	    let max = level.max??this.maxLevel;	    
 	    let current = this.getCurrentLevel();
 	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
 	    let width = HU.px(400);
-	    let widget =   HU.b("Visible between levels:") + HU.space(3) +visibleCbx +HU.br();
+	    let widget =   HU.boldLabel('Visible between levels') + HU.space(3) +visibleCbx +HU.br();
 	    widget+=HU.hidden('',level.min??this.minLevel,
 			      [ATTR_ID,this.domId(ID_LEVEL_RANGE_MIN)]) +
 		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
@@ -3602,39 +3612,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.insertIntoTextarea(textarea,icon);
 	    });
 
-	    let setLevelRange = (min,max)=>{		    
-		this.jq(ID_LEVEL_RANGE_CHANGED).val('changed');
-		this.jq(ID_LEVEL_RANGE_MIN).val(min);
-		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
-		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr(ATTR_SRC,
-							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
-		
-		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr(ATTR_SRC,
-							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
-	    }
-	    
-
-	    this.jq(ID_LEVEL_RANGE_CLEAR).click(()=>{
-		setLevelRange(this.minLevel,this.maxLevel);
-		this.jq(ID_LEVEL_RANGE_CHANGED).val('cleared');
-		this.jq(ID_LEVEL_RANGE_SLIDER).slider('values',[this.minLevel,this.maxLevel]);
-	    });
-	    this.jq(ID_LEVEL_RANGE_SLIDER).slider({
-		range:true,
-		min:this.minLevel,
-		max:this.maxLevel,
-		values:[
-		    parseInt(this.jq(ID_LEVEL_RANGE_MIN).val()??this.minLevel),
-		    parseInt(this.jq(ID_LEVEL_RANGE_MAX).val()??this.maxLevel)],		
-		slide:(event,ui)=>{
-		    let min = ui.values[0];
-		    let max = ui.values[1];		    
-		    setLevelRange(min,max);
-		}
-
-	    });
-
-	    
+	    this.initLevelRangeSlider();	    
 	    this.jq('displayattrsmenubar').find('.' + CLASS_CLICKABLE).click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
@@ -3863,6 +3841,41 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
+	initLevelRangeSlider:function() {	   
+	    let setLevelRange = (min,max)=>{		    
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('changed');
+		this.jq(ID_LEVEL_RANGE_MIN).val(min);
+		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr(ATTR_SRC,
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
+		
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr(ATTR_SRC,
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+	    }
+	    
+
+	    this.jq(ID_LEVEL_RANGE_CLEAR).click(()=>{
+		setLevelRange(this.minLevel,this.maxLevel);
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('cleared');
+		this.jq(ID_LEVEL_RANGE_SLIDER).slider('values',[this.minLevel,this.maxLevel]);
+	    });
+	    this.jq(ID_LEVEL_RANGE_SLIDER).slider({		
+		range:true,
+		min:this.minLevel,
+		max:this.maxLevel,
+		values:[
+		    parseInt(this.jq(ID_LEVEL_RANGE_MIN).val()??this.minLevel),
+		    parseInt(this.jq(ID_LEVEL_RANGE_MAX).val()??this.maxLevel)],		
+		slide:(event,ui)=>{
+		    let min = ui.values[0];
+		    let max = ui.values[1];		    
+		    setLevelRange(min,max);
+		}
+
+	    });
+
+	},
+
 	initIconSelection:function(icons, callback) {
 	    let _this = this;
 	    icons.each(function() {
@@ -4301,7 +4314,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
 
-	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
 				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
 				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 	    let cbxs = [
@@ -4342,8 +4355,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    basic=HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],
 				    HU.td([],basic) + HU.td([ATTR_WIDTH,HU.perc(50)], right)));
 	    basic+=HU.p();
-	    basic+=this.getLevelRangeWidget(this.getMapProperty('visibleLevelRange'),
-					    this.getMapProperty('showMarkerWhenNotVisible'));
+	    basic+=this.getLevelRangeWidget(this.getMapProperty(PROP_LEVELRANGE_RANGE),
+					    this.getMapProperty(PROP_LEVELRANGE_SHOWMARKER));
 
 	    accords.push({header:'Basic', contents:basic});
 	    accords.push({header:'Header/Footer',
@@ -4352,12 +4365,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  HU.textarea('',this.getMapProperty('topWikiText',''),
 				      [ATTR_ID,this.domId('topwikitext_input'),
 				       ATTR_ROWS,4,
-				       ATTR_COLS,80]) +HU.br() +
+				       ATTR_COLS,70]) +HU.br() +
 			  HU.b('Bottom Wiki Text:') +HU.br() +
 			  HU.textarea('',this.getMapProperty('bottomWikiText',''),
 				      [ATTR_ID,this.domId('bottomwikitext_input'),
 				       ATTR_ROWS,4,
-				       ATTR_COLS,80]) +HU.br()
+				       ATTR_COLS,70]) +HU.br()
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
@@ -4385,14 +4398,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //	    let accord = HU.makeAccordionHtml(accords);
 	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
-	    html  = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(700),
-					      CSS_MIN_HEIGHT,HU.px(300),
+	    html  = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(800),
+					      CSS_MIN_HEIGHT,HU.px(350),
 					      CSS_MARGIN,HU.px(10))],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
 					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
 
 	    this.initSideHelp(dialog);
+	    this.initLevelRangeSlider();	    
 	    accord.init();
 	    //	    HU.makeAccordion('#'+accord.id);
 	    let close=()=>{
@@ -4415,19 +4429,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
-		let min = this.jq("minlevel").val()?.trim();
-		let max = this.jq("maxlevel").val()?.trim();
-		if(min=="") min = null;
-		if(max=="") max = null;	
-		this.setMapProperty('visibleLevelRange', {min:min,max:max},
-				    'showMarkerWhenNotVisible', this.jq('showmarkerwhennotvisible').is(':checked'));
+		let min = null;
+		let max = null;
+		if(this.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
+		    console.log('changed');
+		    min = this.jq(ID_LEVEL_RANGE_MIN).val();
+		    max = this.jq(ID_LEVEL_RANGE_MAX).val();
+		    if(min=="") min = null;
+		    if(max=="") max = null;	
+		    this.setMapProperty(PROP_LEVELRANGE_RANGE, {min:min,max:max});
+		}
+		if(this.jq(ID_LEVEL_RANGE_CHANGED).val()=='cleared') {
+		    this.setMapProperty(PROP_LEVELRANGE_RANGE, null);
+		}
+		this.setMapProperty(PROP_LEVELRANGE_SHOWMARKER, HU.isChecked(this.jq(PROP_LEVELRANGE_SHOWMARKER)));
 		this.checkMapProperties();
 		this.makeLegend();
 		this.featureChanged(true);
 
 	    };
 
-	    HU.initPageSearch('.imdv-property',
+	    HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			      this.domId('otherproperties_input'),null,true,
 			      {target:'#'+this.domId('propsearch')});
 
@@ -4650,7 +4672,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+= make(this.domId(ID_MAP_REGIONS+suffix),"Regions","fas fa-map");
 	    html+= make(this.domId(ID_MAP_CHOOSE+suffix),"Set Location/Zoom","fas fa-compass");
-	    html+='<thin_hr></thin_hr>';
+	    html+=HU.thinLine();
 	    html+= make(this.domId(ID_MAP_TOGGLE_OFF+suffix),"Toggle all off","fas fa-toggle-off");
 	    html+= make(this.domId(ID_MAP_TOGGLE_ON+suffix),"Toggle all on","fas fa-toggle-on");
 	    
@@ -4679,8 +4701,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_MAP_CHOOSE+suffix).click(function(){
 		clear();
 		let html = HU.formTable();
-		html+=HU.formEntryLabel('Latitude',HU.input('','',[ATTR_ID,_this.domId('choose_latitude')]));
-		html+=HU.formEntryLabel('Longitude',HU.input('','',[ATTR_ID,_this.domId('choose_longitude')]));		
+		html+=HU.formEntryLabel('Latitude',
+					HU.input('','',[ATTR_ID,_this.domId('choose_latitude')]));
+		html+=HU.formEntryLabel('Longitude',
+					HU.input('','',[ATTR_ID,_this.domId('choose_longitude')]));		
 
 		let opts = [2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18].map(v=>{
 		    return {label:v,value:v,
@@ -4710,8 +4734,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  ATTR_CLASS,CLASS_CLICKABLE]));
 		html+=HU.formEntryLabel('Zoom Level',zoomButton);
 		html+=HU.formTableClose();
-		let buttons =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) + SPACE2 +
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		let buttons =
+		    HU.div([ATTR_CLASS,
+			    HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) +
+		    SPACE2 +
+		    HU.div([ATTR_CLASS,
+			    HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) +
+		    SPACE2 +
 		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 		html+=HU.center(buttons);
 		html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
@@ -4730,7 +4759,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			zoomDialog=null;
 		    });
 		});
-		dialog.find('.display-button').button().click(function(){
+
+		dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function(){
 		    if($(this).hasClass(CLASS_BUTTON_OK) || $(this).hasClass(CLASS_BUTTON_APPLY)) {
 			let lat = _this.jq('choose_latitude').val().trim();
 			let lon = _this.jq('choose_longitude').val().trim();			
@@ -5476,7 +5506,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
 			   newHelp:'Click and drag to create a new triangle',			   
-			   icon:Ramadda.getUrl("/icons/triangle_blue.png")});				
+			   icon:Ramadda.getUrl("/icons/triangle.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			  Utils.clone(lineStyle,{
 			      fillColor:COLOR_TRANSPARENT,
@@ -5484,7 +5514,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
 			   newHelp:'Click and drag to create a new hexagon',			   
-			   icon:Ramadda.getUrl("/icons/hexagon_blue.png")});		
+			   icon:Ramadda.getUrl("/icons/hexagon.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  Utils.clone(lineStyle,
 				      {fillColor:COLOR_TRANSPARENT,
