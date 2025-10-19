@@ -318,7 +318,7 @@ RamaddaMediaTranscript.prototype = {
 					      [ATTR_ID,this.domId('edit_settime')],false,"Set time to: " +
 					      timeSpan));
 	} else {
-	    form+=HU.formEntry("",HU.msgLabel("Current time") + timeSpan);
+	    form+=HU.formEntry("",Utils.msgLabel("Current time") + timeSpan);
 	}
 	form+=HU.close(TAG_TABLE);
 	form+=HU.br();
