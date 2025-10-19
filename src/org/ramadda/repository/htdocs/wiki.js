@@ -1099,7 +1099,7 @@ WikiEditor.prototype = {
 		args.promptprefix = prompt;
 	    } else {
 		args.promptprefix=this.lastPromptPrefix=this.jq(ID_LLM_PROMPT_PREFIX).val();
-		args.promptsuffix=this.lastPromptSuffix=this.jq(ID_LLM_PROMPT_SUFFFIX).val();
+		args.promptsuffix=this.lastPromptSuffix=this.jq(ID_LLM_PROMPT_SUFFIX).val();
 	    }
 	    $.post(url,args,
 		   data=>{
