@@ -78,10 +78,14 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
     public static final String ARG_EXTRACT_LATLON = "extract_latlon";
 
-    public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
-    public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
-    public static final String URL_GEMINI_PRO="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
-    public static final String URL_GEMINI_FLASH="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";    
+    public static final String URL_OPENAI_TRANSCRIPTION =
+	"https://api.openai.com/v1/audio/transcriptions";
+    public static final String URL_OPENAI_COMPLETION =
+	"https://api.openai.com/v1/chat/completions";
+    public static final String URL_GEMINI_PRO=
+	"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent";
+    public static final String URL_GEMINI_FLASH=
+	"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";    
 
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
 
@@ -672,21 +676,24 @@ public class LLMManager extends  AdminHandlerImpl {
 			try {
 			    JSONObject obj = new JSONObject(response);
 			    JSONObject errorObj = obj.optJSONObject("error");
-			    response="LLM Error";
+			    //			    response="LLM Error";
 			    if(errorObj!=null) {
 				String message = errorObj.optString("message", null);
 				if(message!=null) response = message;
 			    }
 			} catch(Exception ignore) {}
-			getSessionManager().addSessionMessage(request,"An error has occurred:" + response);
+			getSessionManager().addSessionMessage(request,"An error has occurred: " + response);
 			System.err.println("\tLLMManager: Error calling LLM. Unknown error code:" + response);
-			return null;
+			throw new LLMException(response);
 		    }
 		    info.tokenLimit-=1000;
 		    if(debug)
 			System.err.println("\ttoo many tokens. Trying again with limit:" + info.tokenLimit);
 		    continue;
+		} catch(LLMException exc) {
+		    throw new RuntimeException("Unable to process GPT request:" + exc.getMessage());
 		} catch(Exception exc) {
+
 		    //		    exc.printStackTrace();
 		    String msg = result.getResult();
 		    if(result.getCode()==429)   msg = "Too many requests";
@@ -813,7 +820,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	return makeJsonErrorResult("An error occurred:" + results);
     }
 
-    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus,SessionMessage...sessionMessage)
+    public boolean applyEntryExtract(final Request request,
+				     final Entry entry,
+				     final String llmCorpus,
+				     SessionMessage...sessionMessage)
 	throws Exception {
 	if(true) {
 	    try {
@@ -1029,6 +1039,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public Result processDocumentChat(Request request, Entry entry,boolean document)
 	throws Exception {	
+	request.setResponseAsJson();
 	String pageUrl =request.toString();
 	String subTitle = document?"Document Chat":entry.getTypeHandler().getDescription() +" - LLM";
 
@@ -1072,7 +1083,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    } catch(Exception exc) {
 		Throwable     inner     = LogUtil.getInnerException(exc);
 		getLogManager().logError("Error running document chat:" + entry.getName(),exc);
-		return makeJsonError("An error has occurred:" + inner);
+		return makeJsonError("An error has occurred: " + inner.getMessage());
 	    }
 	} 
 
@@ -1116,6 +1127,12 @@ public class LLMManager extends  AdminHandlerImpl {
     private Result makeJsonError(String msg) {
 	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+    }
+
+    private static class LLMException extends RuntimeException {
+	LLMException(String msg) {
+	    super(msg);
+	}
     }
 
     private static class WordCount {
