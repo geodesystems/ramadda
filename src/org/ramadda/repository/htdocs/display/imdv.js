@@ -5122,7 +5122,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
 	    }
-	    url = url.replace(/\${root}/,ramaddaBaseUrl);
+	    url = url.replace(/\${root}/,RamaddUtil.getBaseUrl());
 	    mapGlyph.setDownloadUrl(url);
 	    let selectCallback = (feature,layer,event)=>{
 		//Don't handle the feature selected if we have a drawing command

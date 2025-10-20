@@ -623,6 +623,9 @@ function MetadataType(type, label, value) {
 }
 
 
+var COLUMN_TYPE_STRING='string';
+var COLUMN_TYPE_LIST='list';
+
 function EntryTypeColumn(props) {
     $.extend(this, props);
     RamaddaUtil.defineMembers(this, {

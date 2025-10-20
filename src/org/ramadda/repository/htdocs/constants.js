@@ -31,8 +31,9 @@ var ARG_ORDERBY='orderby';
 var ARG_PAGESEARCH='pagesearch';
 var ARG_MAPBOUNDS='map_bounds';
 var ARG_ENTRYID='entryid';
+var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';
-
+var ARG_ELEMENT='element';
 
 var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
@@ -105,13 +106,15 @@ var CLASS_POPUP='ramadda-popup';
 var CLASS_POPUP_MENU='ramadda-popup-menu';
 var CLASS_POPUP_INNER='ramadda-popup-inner';
 var CLASS_PULLDOWN='ramadda-pulldown';
+var CLASS_INPUT='input';
+
 
 var CLASS_TABLE='ramadda-table';
 var CLASS_TABLE_STRIPE='stripe';
 var CLASS_TABLE_NOWRAP='nowrap';
 var CLASS_TABLE_HOVER='hover';
 var CLASS_TABLE_ROWBORDER='row-border';
-
+var CLASS_TABLE_CELLBORDER='cell-border';
 
 
 

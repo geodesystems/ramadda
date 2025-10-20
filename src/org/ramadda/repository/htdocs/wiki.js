@@ -416,7 +416,8 @@ WikiEditor.prototype = {
 	this.getEditor().session.insert(this.getEditor().getCursorPosition(), val.trim());
     },
     handleEntryLink:function(entryId, name,pos,isNew,opts) {
-        $.getJSON(RamaddaUtil.getUrl('/wiki/getmacros?entryid=' + entryId), data=>{
+        $.getJSON(HU.url(RamaddaUtil.getUrl('/wiki/getmacros'),
+			 ARG_ENTRYID,entryId), data=>{
 	    let extra = [];
 	    data.forEach(macro=>{
 		if(!macro.macro && macro.tag) {

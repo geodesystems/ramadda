@@ -916,8 +916,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!url.startsWith("http") && !url.startsWith("/")) {
 		//entry id e.g., 41d9b105-d61b-4fc1-8198-8e75c49b1a24
 		if(url.trim().match(/.*[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+.*/)) {
-
-		    url = ramaddaBaseUrl +'/entry/get?entryid=' + url;
+		    url = HU.url(RamaddaUtil.getUrl('/entry/get'), ARG_ENTRYID,url);
 		} else {
 		    url = RamaddaUtil.getCdnUrl("/resources/") + url;
 		}

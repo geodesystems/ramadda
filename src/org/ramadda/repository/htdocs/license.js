@@ -11,7 +11,7 @@ var RamaddaLicense =  {
 	    showLicense:true,
 	    suffix:'',
 	    onlyAnonymous:false,
-	    redirect:ramaddaBaseUrl,
+	    redirect:RamaddUtil.getBaseUrl(),
 	    logName:false
 	}
 	if(args) $.extend(opts,args);

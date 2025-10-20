@@ -5022,7 +5022,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             if (image.indexOf("http") == 0) {
 				url = image;
                             } else {
-				url = RamaddaUtil.getUrl("/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + metadata[i].id + "&thumbnail=false");
+				url = HU.url(RamaddaUtil.getUrl("/metadata/view/" + image),
+					     ARG_ELEMENT,1,
+					     ARG_ENTRYID,entry.getId(),
+					     ARG_METADATAID, metadata[i].id,
+					     "thumbnail","false");
                             }
                             html += HU.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
 			}

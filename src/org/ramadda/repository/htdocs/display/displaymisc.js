@@ -1957,7 +1957,8 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	},
 	updateUI: function() {
 	    if(!this.votingData) {
-		let url = ramaddaBaseUrl + "/entry/vote?entryid=" + this.getProperty("entryId", "");
+		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
+				 ARG_ENTRYID,this.getProperty("entryId", ""));
 		$.getJSON(url, (data) =>{
 		    this.votingData = data;
 		    this.updateUI();
@@ -2050,7 +2051,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		let field =$(this).attr(ATTR_FIELD_ID);
 		let record =$(this).attr('record-index');		
 		let id = _this.getProperty("entryId", "");
-		let url = ramaddaBaseUrl + "/entry/vote?xreturnvotes=true&entryid=" + id;
+		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
+				 "xreturnvotes",true,
+				 ARG_ENTRYID,id);
 		let key = record+'--'+field;
 		url = HU.url(url,['key',key,'vote',vote]);
 		$.getJSON(url, function(data) {
@@ -2088,7 +2091,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_SHOW_VOTES).html('Hide Votes');
 	    let id = this.getProperty("entryId", "");
-	    let url = ramaddaBaseUrl + "/entry/vote?entryid=" + id;
+	    let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),ARG_ENTRYID,id);
 	    $.getJSON(url, function(data) {
 		this.votingData = data;
 		let blocks = _this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-block');

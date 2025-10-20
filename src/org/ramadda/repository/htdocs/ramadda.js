@@ -1312,7 +1312,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[$(this).attr(ATTR_ENTRYID)];
 	    if(!entry) return;
             eventX = GuiUtils.getEventX(event);
-            let url = RamaddaUtil.getUrl("/entry/show?entryid=" + entry.getId() + "&output=metadataxml");
+            let url = HU.url(RamaddaUtil.getUrl("/entry/show"),
+			     ARG_ENTRYID,entry.getId(),
+			     ARG_OUTPUT,"metadataxml");
 	    let handleTooltip = function(request) {
 		let xmlDoc = request.responseXML.documentElement;
 		text = getChildText(xmlDoc);
@@ -1337,7 +1339,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HU.makeOkCancelDialog($('.ramadda-header'),
 				  'New entry has been created: ' +name+'<br>Do you want to view it?',
 				  ()=>{
-				      let url =  RamaddaUtil.getUrl('/entry/show?entryid=' +newEntryId);
+				      let url =  HU.url(RamaddaUtil.getUrl('/entry/show'),
+							ARG_ENTRYID,newEntryId);
 				      document.location = url;
 				  },
 				  null,null,{okLabel:'Yes',cancelLabel:'No',at:'middle bottom',my:'middle top',
@@ -1703,7 +1706,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(html) {
 	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
 	} else {
-	    let url = RamaddaUtil.getUrl("/entry/menu?entryid=" + entryId);
+	    let url = HU.url(RamaddaUtil.getUrl("/entry/menu"),ARG_ENTRYID,entryId);
             $.ajax({
                 url: url,
                 dataType: 'text',
@@ -2061,7 +2064,9 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         //Don't pick up clicks on the left side
         if (eventX - position.left < 150) return;
         this.lastClick = eventX;
-        let url = RamaddaUtil.getUrl("/entry/show?entryid=" + entryId + "&output=metadataxml");
+        let url = HU.url(RamaddaUtil.getUrl("/entry/show"),
+			 ARG_ENTRYID,entryId,
+			 ARG_OUTPUT,"metadataxml");
         if (this.showDetails) {
             url += "&details=true";
         } else {

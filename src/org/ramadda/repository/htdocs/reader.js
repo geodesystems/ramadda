@@ -10,7 +10,7 @@ function RamaddaReader(id,args,data) {
 	showSearch:true,
 	ppi:100,
 	ui:'full',
-	imagesBaseURL:ramaddaBaseUrl+'/lib/bookreader/images/',
+	imagesBaseURL:RamaddUtil.getBaseUrl()+'/lib/bookreader/images/',
 	enableSearch:true,
 	data:data
     }
