@@ -17,11 +17,19 @@ var ID_CV_DISPLAYS = 'cv_displays';
 var ID_CV_DISPLAYSBAR = 'cv_displays_bar';
 var ID_CV_DISPLAYS_ADD='cv_displays_add';
 
+var ACTION_CV_UP='up';
+var ACTION_CV_DOWN='down';
+var ACTION_CV_GALLERY='gallery';
+var ACTION_CV_SETTINGS='settings';
+var ACTION_CV_FILE='file';
+var ACTION_CV_HOME='home';
+var ACTION_CV_ADD='add';
 var ACTION_CV_ZOOMOUT='zoomout';
 var ACTION_CV_ZOOMIN='zoomin';
 
 
 var ATTR_CV_COLLECTION_INDEX='collection-index';
+
 var ID_CV_MEASURE = 'measure';
 var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'doRotation';
@@ -40,10 +48,12 @@ var ID_CV_SHOWPIECES='showPieces';
 var ID_CV_GOTO = 'goto';
 var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
-var CV_LINE_COLOR='#aaa';
-var CV_HIGHLIGHT_COLOR = 'red';
-var CV_SAMPLE_COLOR = 'red';
-var CV_BOX_COLOR = 'red';
+
+var CV_COLOR_LINE='#aaa';
+var CV_COLOR_HIGHLIGHT = 'red';
+var CV_COLOR_SAMPLE = 'red';
+var CV_COLOR_BOX = 'red';
+
 var CV_STROKE_WIDTH = 0.4;
 var CV_AXIS_WIDTH=100;
 var CV_ANNOTATIONS_WIDTH=200;
@@ -135,7 +145,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    let row1 = HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.td([],displaysBarContainer)+
 			     HU.td([],menuBarContainer));
 
-	    let row2 = HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.td([],displays)+
+	    let row2 = HU.tr([ATTR_VALIGN,ALIGN_TOP],
+			     HU.td([],displays)+
 			     HU.td([],main));
 
 	    let html=HU.table([ATTR_CELLPADDING,HU.px(0),
@@ -143,10 +154,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 			       ATTR_WIDTH,HU.perc(100)],row1+row2);
 
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-	    let divider= SPACE1;
-	    divider=HU.div([ATTR_CLASS,'cv-menubar-divider'],'');
-
+	    let divider= HU.div([ATTR_CLASS,'cv-menubar-divider'],'');
 	    let clazz= HU.classes(CLASS_CLICKABLE,'cv-toolbar-button');
 	    let displaysBar = HU.div([ATTR_TITLE,'Add data display',
 				      ATTR_ACTION,ID_CV_DISPLAYS_ADD,
@@ -156,8 +164,6 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
 
 	    let add = item=>{
-		item = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(30),
-						 CSS_MARGIN_BOTTOM,HU.px(30))],item);
 		menuItemsLeft.push(item);
 	    };
 	    let icon = (icon) =>{
@@ -172,14 +178,14 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	    }
 	    if(this.canSave()) {
-		button('File menu','file','fas fa-file');
+		button('File menu',ACTION_CV_FILE,'fas fa-file');
 		menuItemsLeft.push(divider);
 	    }
-	    button('Reset zoom (\'=\')','home','fas fa-house');
+	    button('Reset zoom (\'=\')',ACTION_CV_HOME,'fas fa-house');
 	    button('Zoom out (\'-\')',ACTION_CV_ZOOMOUT,'fas fa-magnifying-glass-minus');
 	    button('Zoom in (\'+\')',ACTION_CV_ZOOMIN,'fas fa-magnifying-glass-plus');
-	    button('Pan down','down','fas fa-arrow-down');
-	    button('Pan up','up','fas fa-arrow-up');
+	    button('Pan down',ACTION_CV_DOWN,'fas fa-arrow-down');
+	    button('Pan up',ACTION_CV_UP,'fas fa-arrow-up');
 	    menuItemsLeft.push(divider);
 	    add(HU.input('','',[ATTR_SIZE,10,
 				ATTR_ID,this.domId(ID_CV_GOTO),
@@ -188,21 +194,23 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    button('Measure','measure', 'fas fa-ruler-vertical',this.domId(ID_CV_MEASURE));
 	    button('Sample @ depth','sample','fas fa-eye-dropper',this.domId(ID_CV_SAMPLE));	
 	    menuItemsLeft.push(divider);
-	    button('Show Gallery','gallery','fas fa-images');
-	    button('Settings','settings','fas fa-cog');
+	    button('Show Gallery',ACTION_CV_GALLERY,'fas fa-images');
+	    button('Settings',ACTION_CV_SETTINGS,'fas fa-cog');
 
 	    let menuLeft = Utils.join(menuItemsLeft,SPACE1);
 	    let message = HU.span([ATTR_ID,this.domId(ID_CV_MESSAGE),
 				   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
 				   ATTR_CLASS,'cv-message']);
-	    let menuBar = HU.div([ATTR_CLASS,HU.classes(CLASS_MENUBAR,'cv-menubar')],menuLeft+message);
+	    let menuBar = HU.div([ATTR_CLASS,HU.classes(CLASS_MENUBAR,'cv-menubar')],
+				 menuLeft+message);
 	    let collectionSection =
 		HU.div([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
 			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 					  CSS_MARGIN_LEFT,HU.px(10),
 					  CSS_VERTICAL_ALIGN,ALIGN_TOP)]);
-	    let addLink= HU.span([ATTR_ID,this.domId('add'),
-				  ATTR_TITLE,'Add image collection',ATTR_ACTION,'add',
+	    let addLink= HU.span([ATTR_ID,this.domId(ACTION_CV_ADD),
+				  ATTR_TITLE,'Add image collection',
+				  ATTR_ACTION,ACTION_CV_ADD,
 				  ATTR_CLASS,CLASS_CLICKABLE],
 				 HU.getIconImage('fas fa-plus'));
 
@@ -210,7 +218,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		HU.div([ATTR_CLASS,'cv-collections',
 			ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(50),
 					  CSS_VERTICAL_ALIGN,ALIGN_TOP)],
-		      addLink + collectionSection);	    
+		       addLink + collectionSection);	    
 
 
 	    if(!this.opts.showMenuBar)menuBar='';
@@ -222,7 +230,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		selectClick:function(type,id,entryId,value) {
 		    _this.loadCollection(entryId);
 		}
-	    },this.domId('add'));
+	    },this.domId(ACTION_CV_ADD));
 
 	    addHandler({
 		selectClick:(type,id,entryId,value) =>{
@@ -246,38 +254,37 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	    this.jq(ID_DISPLAY_CONTENTS).find(HU.dotClass(CLASS_CLICKABLE)).click(function(event){
 		let action = $(this).attr(ATTR_ACTION);
-		if(action=='settings') {
+		if(action==ACTION_CV_SETTINGS) {
 		    _this.showSettings($(this));
-		} else	if(action=='file') {
+		} else	if(action==ACTION_CV_FILE) {
 		    _this.showFileMenu($(this));
-		} else	if(action=='home') {
+		} else	if(action==ACTION_CV_HOME) {
 		    _this.resetZoomAndPan();
 		} else if(action==ACTION_CV_ZOOMIN) {
 		    _this.zoom(1.1);
 		} else	if(action==ACTION_CV_ZOOMOUT) {
 		    _this.zoom(0.9);
 		} else	if(action==ID_CV_DISPLAYS_ADD) {
-		    let id = $(this).attr('id');
+		    let id = $(this).attr(ATTR_ID);
 		    let localeId = _this.opts.mainEntry;
-		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);	    
-		} else	if(action=='add') {
-		    let id = $(this).attr('id');
+		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);
+		} else	if(action==ACTION_CV_ADD) {
+		    let id = $(this).attr(ATTR_ID);
 		    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 		    let localeId = _this.opts.mainEntry;
 		    let types = 'type_borehole_coreimage,type_geo_borehole_images,isgroup';
-		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null);	    
-		} else	if(action=='gallery') {
+		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null);	   
+		} else	if(action==ACTION_CV_GALLERY) {
 		    _this.showGallery($(this));
-		} else	if(action=='down') {
+		} else	if(action==ACTION_CV_DOWN) {
 		    let pos = _this.stage.position();
 		    _this.stage.position({x:pos.x,y:pos.y-50});
 		    _this.positionChanged();
-		} else	if(action=='up') {
+		} else	if(action==ACTION_CV_UP) {
 		    let pos = _this.stage.position();
 		    _this.stage.position({x:pos.x,y:pos.y+50});
 		    _this.positionChanged();
 		}
-		
 	    })
 
 	    this.jq(ID_CV_MEASURE).click(function() {
@@ -293,7 +300,6 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		let depth = obj.val().trim();
 		_this.goToWorld(depth);
 	    });
-
 
 	    let container = this.container = this.jq(ID_CV_CANVAS).get(0);
 
@@ -319,24 +325,9 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.stage.add(this.annotationLayer);
 
 	    this.addEventListeners();
-	    this.collections = [];
 	    
 	    this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
-
-	    let collections ;
-	    let data = this.opts.dataVar;
-	    if(data && data.collectionIds && data.collectionIds.length) {
-		collections = data.collectionIds;
-	    } else {
-		if(this.opts.collectionIds) {
-		    collections = Utils.split(this.opts.collectionIds,",",true,true);
-		}
-	    }
-
-	    if(collections) {
-		this.loadCollections(collections,data);
-	    }
-
+	    this.initCollections();
 	    this.drawLegend();
 	    this.layer.draw();
 
@@ -379,19 +370,21 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	imageWidthScale:1.0,
 	legendWidth:0,
 	hadLegendWidth:Utils.isDefined(args.legendWidth),
-
 	showAnnotations:true,	
 	axisWidth:CV_AXIS_WIDTH,
 	measureStyle:{
 	    outline:'#aaa',
 	    fontSize: 12,
 	    background:'#efefef',
-	    fill: 'black'},
+	    fill: COLOR_BLACK},
 	hadAxisWidth:Utils.isDefined(args.axisWidth),	
 	top:0,
 	range: {
 	},
-	boxLabelStyle: {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL},
+	boxLabelStyle: {
+	    background:'rgb(224, 255, 255)',
+	    fill:COLOR_BLACK,
+	    fontSize:CV_FONT_SIZE_SMALL},
 
 	showLegend:true,
 	showLabels:true,
@@ -418,7 +411,6 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	}
     }
-
 
 
     $.extend(this.opts,args);
@@ -451,6 +443,25 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 
 RamaddaCoreDisplay.prototype = {
+    initCollections:function() {
+	this.collections = [];
+	this.resetZoomAndPan();
+	let collections ;
+	let data = this.opts.dataVar;
+	if(data && data.collections && data.collections.length) {
+	    collections = data.collections;
+	} else {
+	    if(this.opts.collectionIds) {
+		collections = Utils.split(this.opts.collectionIds,",",true,true).map(collectionId=>{
+		    return {id:collectionId}
+		});
+	    }
+	}
+	if(collections) {
+	    this.loadCollections(collections,data);
+	}
+    },
+
     needsData: function() {
         return false;
     },
@@ -585,14 +596,14 @@ RamaddaCoreDisplay.prototype = {
 	let y = this.worldToCanvas(depth);	    
 	let displays = this.getDisplayManager().getDisplays();
 	let html =
-	    HU.div([],HU.b('Selected depth: ') + this.formatDepth(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
+	    HU.div([],HU.b('Selected depth: ') + this.formatDepth(depth))  +HU.thinLine();
 	if(!this.recordSelect) {
 	    this.recordSelect={
 	    }
 	}
 	this.recordSelect.line = new Konva.Line({
 	    points: [this.getAxisWidth(), y, 2000,y],
-	    stroke: CV_SAMPLE_COLOR,
+	    stroke: CV_COLOR_SAMPLE,
 	    strokeWidth: 2,
 	    lineCap: 'round',
 	    lineJoin: 'round',
@@ -602,34 +613,44 @@ RamaddaCoreDisplay.prototype = {
 	this.drawLayer.draw();
 
 	let colors  = ['red','green','blue'];
-
-	let maxHeight='100px;';
-	if(displays.length<=2)
-	    maxHeight='400px';
+	let maxHeight=HU.px(100);
+	if(displays.length<=2) {
+	    maxHeight=HU.px(400);
+	}
 	
+	let colorCnt=0;
 	displays.forEach((display,idx)=>{
 	    if(display==this) return;
-	    if(display.addAnnotation) display.addAnnotation(depth);
+	    let color = COLOR_BLACK;
+	    if(display.addAnnotation) {
+		display.addAnnotation({
+		    value:depth,
+		    color:color=colors[colorCnt%colors.length]});
+		colorCnt++;
+	    }
 	    let records = display.getRecords();
 	    if(records==null || records.length==0) return;
-	    let closest = null;
+	    let closestRecord = null;
 	    let min = 0;
 	    let depthField = this.findDepthField(records[0]);
 	    if(depthField==null) return;
 	    records.forEach(record=>{
 		let v = depthField.getValue(record);
 		let diff  = Math.abs(v-depth);
-		if(closest==null || diff<min) {
+		if(closestRecord==null || diff<min) {
 		    min =diff;
-		    closest=record;
+		    closestRecord=record;
 		}
 	    });
-	    if(!closest) return;
-	    if(html!='')
+	    if(!closestRecord) return;
+	    if(html!='') {
 		html+=HU.div([ATTR_CLASS,'ramadda-thin-hr']);
-	    html += HU.div([],HU.b(display.getTitle()));
-	    let recordHtml = this.applyRecordTemplate(closest,null,null, '${default}');
-	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,maxHeight,
+	    }
+	    html += HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,color))],
+			   HU.b(display.getTitle()));
+	    let recordHtml = this.applyRecordTemplate(closestRecord,null,null, '${default}');
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20),
+					    CSS_MAX_HEIGHT,maxHeight,
 					    CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 			 recordHtml);
 	});
@@ -689,7 +710,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.measureState.start = pos;
 	    this.measureState.line = new Konva.Line({
 		points: [pos.x, pos.y, pos.x, pos.y],
-		stroke: CV_SAMPLE_COLOR,
+		stroke: CV_COLOR_SAMPLE,
 		strokeWidth: 2,
 		lineCap: 'round',
 		lineJoin: 'round',
@@ -788,8 +809,8 @@ RamaddaCoreDisplay.prototype = {
 	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),
 							ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400)),
 							ATTR_ROWS,5]);
-	let buttons = [HU.div([ATTR_ID,this.domId(ACTION_CANCEL)],'Cancel'),	
-		       ' '+   HU.div([ATTR_ID,this.domId('add_display')],'Create Display')];
+	let buttons = [HU.div([ATTR_ID,this.domId('add_display')],'Create Display'),
+		       HU.div([ATTR_ID,this.domId(ACTION_CANCEL)],LABEL_CANCEL)];	
 	html+=HU.buttons(buttons);
 	html=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5))], html);
 	
@@ -824,19 +845,19 @@ RamaddaCoreDisplay.prototype = {
     parseDisplayProps:function(toks) {
 	let props = {
 	    'displayType':'profile',
-	    "profileMode":"lines",
-	    "indexField":"depth|section_depth",
+	    'profileMode':'lines',
+	    'indexField':'depth|section_depth',
 	    //Use second numeric field
-	    "fields":"@2",
-	    "showLegend":false,
-	    "showTitle":true,
-	    "width":"100%",
-	    "height":"500px",
-	    "yAxisReverse":true,
-	    "marginTop":"0",
-	    "marginRight":"0",
-	    "showMenu":true,
-	    "max":"10000",
+	    'fields':'@2',
+	    'showLegend':false,
+	    'showTitle':true,
+	    'width':'100%',
+	    'height':'500px',
+	    'yAxisReverse':true,
+	    'marginTop':'0',
+	    'marginRight':'0',
+	    'showMenu':true,
+	    'max':'10000',
 
 	};
 	for(let i=0;i<toks.length;i++) {
@@ -950,31 +971,31 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 	this.jq(ID_CV_SHOWLABELS).change(function(){
-	    _this.setCoreProperty(ID_CV_SHOWLABELS, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_SHOWLABELS, HU.isChecked($(this)));
 	    _this.toggleLabels();
 	});
 	this.jq(ID_CV_DOROTATION).change(function(){
-	    _this.setCoreProperty(ID_CV_DOROTATION, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_DOROTATION, HU.isChecked($(this)));
 	    _this.drawCollections({forceNewImages:true});
 	});	
 	this.jq(ID_CV_ASFEET).change(function(){
-	    _this.setCoreProperty(ID_CV_ASFEET, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_ASFEET, HU.isChecked($(this)));
 	    _this.drawCollections({forceNewImages:true,resetZoom:true});
 	});
 	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
-	    _this.setCoreProperty(ID_CV_SHOWALLDEPTHS, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_SHOWALLDEPTHS, HU.isChecked($(this)));
 	    _this.toggleBoxes();
 	});		
 	this.jq(ID_CV_SHOWPIECES).change(function(){
-	    _this.setCoreProperty(ID_CV_SHOWPIECES, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_SHOWPIECES, HU.isChecked($(this)));
 	    _this.drawCollections({forceNewImages:true,resetZoom:true});
 	});
 	this.jq(ID_CV_SHOWBOXES).change(function(){
-	    _this.setCoreProperty(ID_CV_SHOWBOXES, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_SHOWBOXES, HU.isChecked($(this)));
 	    _this.toggleBoxes();
 	});
 	this.jq(ID_CV_SHOWHIGHLIGHT).change(function(){
-	    _this.setCoreProperty(ID_CV_SHOWHIGHLIGHT, $(this).is(':checked'));
+	    _this.setCoreProperty(ID_CV_SHOWHIGHLIGHT, HU.isChecked($(this)));
 	    _this.toggleHighlight();
 	});
     },
@@ -1063,7 +1084,7 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	    let tick = new Konva.Line({
 		points: [x+pad, y, this.opts.axisWidth, y],
-		stroke: lineColor??CV_LINE_COLOR,
+		stroke: lineColor??CV_COLOR_LINE,
 		strokeWidth: lineWidth,
 	    });
 	    this.annotationLayer.add(tick);
@@ -1087,22 +1108,31 @@ RamaddaCoreDisplay.prototype = {
     },
 
     showGallery: function(anchor) {
+	let _this=this;
 	let contents=[];
+	let entryMap={};
+	let entryCnt=0;
 	this.collections.forEach(c=>{
 	    let html = '';
 	    let sorted = c.data.sort((e1,e2)=>{
 		return e1.topDepth-e2.topDepth;
 	    });
 	    sorted.forEach(entry=>{
+		entryCnt++;
+		entryMap[entryCnt] = entry;
 		let label = entry.label;
-		label+=' ' +this.formatDepth(entry.topDepth) +' - ' +this.formatDepth(entry.bottomDepth);
+		label+=SPACE1 +this.formatDepth(entry.topDepth) +' - ' +this.formatDepth(entry.bottomDepth);
 		let url = RamaddaUtil.getEntryUrl(entry.entryId);
-		label = HU.href(url,label,[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']);
+		label = HU.span([ATTR_TITLE, 'Scroll to',
+				 ATTR_ENTRYID,entryCnt,
+				 ATTR_CLASS,CLASS_CLICKABLE],
+				HU.getIconImage('fas fa-binoculars') + SPACE +label);
 		html+=HU.div([],HU.b(label));
 		html+=HU.div([],HU.href(url,HU.image(entry.url,[ATTR_WIDTH,HU.px(400)]),
 					[ATTR_TITLE,'View entry',ATTR_TARGET,'_entry']));
+		html+=HU.vspace('1em');
 	    });
-	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(600),
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(500),
 					     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 	    contents.push({label:c.name,contents:html});
 	});
@@ -1126,6 +1156,13 @@ RamaddaCoreDisplay.prototype = {
 				     header:true,
 				     content:gallery,
 				     draggable:true});
+
+	dialog.find('['+ATTR_ENTRYID+']').click(function() {
+	    let entry = entryMap[+$(this).attr(ATTR_ENTRYID)];
+	    if(!entry) return;
+	    if(!Utils.isDefined(entry.topDepth)) return;
+	    _this.goToWorld(entry.topDepth);
+	});
 	if(tabs) {
 	    tabs.init();
 	}
@@ -1186,7 +1223,12 @@ RamaddaCoreDisplay.prototype = {
 	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'save'],'Save State');
 	html+=HU.div([ATTR_CLASS,clazz,
-		      ATTR_ACTION,'clear'],'Clear State');	    
+		      ATTR_ACTION,'reload'],'Reload');	    	
+
+	html+=HU.thinLine();
+	html+=HU.div([ATTR_TITLE,'Delete the saved state',
+		      ATTR_CLASS,clazz,
+		      ATTR_ACTION,'clear'],'Clear State');
 	let opts = {anchor:target,
 		    decorate:true,
 		    at:'left bottom',
@@ -1197,7 +1239,12 @@ RamaddaCoreDisplay.prototype = {
 	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='save') _this.doSave();
-	    else if(action=='clear') _this.doClear();
+	    else if(action=='reload') {
+		_this.displayEntries.forEach((e,idx)=>{
+		    _this.deleteDisplay(e);
+		});
+		_this.initCollections();
+	    }     else if(action=='clear') _this.doClear();
 	});
     },
     doClear: function() {
@@ -1228,9 +1275,9 @@ RamaddaCoreDisplay.prototype = {
     },
     getJson: function() {
 	let json ={};
-	json.collectionIds = [];
+	json.collections = [];
 	this.collections.forEach((collection,idx)=>{
-	    json.collectionIds.push(collection.entryId);
+	    json.collections.push({id:collection.entryId,visible:collection.visible});
 	});
 	json.stage = {
 	    scale:this.stage.scale(),
@@ -1244,7 +1291,7 @@ RamaddaCoreDisplay.prototype = {
 	    if(Utils.isDefined(value)) {
 		json.settings[prop] = value;
 	    }
-	 });
+	});
 
 	if(this.displayEntries.length) {
 	    json.displayEntries = [];
@@ -1268,8 +1315,10 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	}
 
-	for (const entryId of collections) {
-	    await   this.loadCollection(entryId);
+	for (const collection of collections) {
+	    let id = collection.id;
+	    let visible = Utils.isDefined(collection.visible)?collection.visible:true;
+	    await   this.loadCollection(id,visible);
 	}
 	if(opts) {
 	    if(opts?.stage?.scale) {
@@ -1279,22 +1328,21 @@ RamaddaCoreDisplay.prototype = {
 		this.stage.position(opts.stage.position);
 	    }	    
 	    this.scaleChanged();
-	}
-
-	if(opts.displayEntries) {
-	    this.displayEntries = [];
-	    opts.displayEntries.forEach(entry=>{
-		this.displayEntries.push({
-		    display:null,
-		    entryId:entry.entryId,
-		    props:entry.props
+	    if(opts.displayEntries) {
+		this.displayEntries = [];
+		opts.displayEntries.forEach(entry=>{
+		    this.displayEntries.push({
+			display:null,
+			entryId:entry.entryId,
+			props:entry.props
+		    });
 		});
-	    });
-	    this.loadDisplays();
+		this.loadDisplays();
+	    }
 	}
     },
 
-    loadCollection:async function(entryId) {
+    loadCollection:async function(entryId,visible) {
 	let _this = this;
 	let url = RamaddaUtils.getUrl('/core/entries');
 	url =HU.url(url,'entryid', entryId);
@@ -1303,7 +1351,7 @@ RamaddaCoreDisplay.prototype = {
 		console.log('Error loading collection:' + entryId +' error:' + data.error);
 		return;
 	    }
-	    _this.addCollection(data);
+	    _this.addCollection(data,visible);
 	}).fail((data)=>{
 	    window.alert('Failed to load entries');
 	});
@@ -1415,6 +1463,7 @@ RamaddaCoreDisplay.prototype = {
 		_this.removeCollection(collection);
 	    } else if(action=='toggle') {
 		collection.visible=!collection.visible;
+		_this.resetZoomAndPan();
 		_this.drawCollections();
 	    } else if(action=='goto') {
 		let y = _this.worldToCanvas(collection.range.min)-50;
@@ -1426,7 +1475,9 @@ RamaddaCoreDisplay.prototype = {
 		y = y*scale;
 		x=0;
 		_this.stage.position({x:-x,y:-y});
+		_this.stage.scale({ x: 1, y: 1 });
 		_this.positionChanged();
+		_this.scaleChanged();
 	    } else if(action=='view') {
 		let url = RamaddaUtils.getEntryUrl(collection.entryId);
 		window.open(url, '_entry');
@@ -1435,8 +1486,8 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-    addCollection:function(collection) {
-	collection.visible= true;
+    addCollection:function(collection,visible) {
+	collection.visible= Utils.isDefined(visible)?visible:true;
 	if(!Utils.isDefined(window.cv_collection_id))
 	    window.cv_collection_id = 0;
 	window.cv_collection_id++;
@@ -1454,7 +1505,8 @@ RamaddaCoreDisplay.prototype = {
 	let x = this.getXOffset(column);
 	let l = this.makeText(this.layer,collection.name,x,
 			      this.worldToCanvas(collection.range.min)-20,
-			      {fontStyle:'bold',background:'white'});
+			      {fontStyle:'bold',
+			       background:'white'});
 	collection.nameText = l;
 	l.collectionId = collection.collectionId;
 	this.addClickHandler(l,(event)=>{
@@ -1523,7 +1575,7 @@ RamaddaCoreDisplay.prototype = {
 	this.entries.forEach(e=>{
 	    if(!e.highlight) return;
 	    if(show) {
-		e.highlight.stroke(CV_HIGHLIGHT_COLOR);
+		e.highlight.stroke(CV_COLOR_HIGHLIGHT);
 	    } else {
 		e.highlight.stroke('transparent');
 	    }		
@@ -1591,8 +1643,6 @@ RamaddaCoreDisplay.prototype = {
 	}
 	this.stage.find('Rect').forEach(scaleLines);
 	this.stage.find('Line').forEach(scaleLines);	
-
-
 	textNodes.forEach(text=>{
 	    if(!text.scaleInfo) {
 		text.scaleInfo = {
@@ -1911,8 +1961,6 @@ RamaddaCoreDisplay.prototype = {
 
 
 
-
-
 	//	console.log('legend:',haveLegend,this.opts.legendWidth,'axis:',haveAnnotation,this.opts.axisWidth);
     },
 
@@ -1948,13 +1996,13 @@ RamaddaCoreDisplay.prototype = {
 	    this.legendText.push(l1);
 	    let tick1 = new Konva.Line({
 		points: [axisWidth-tickWidth, y, axisWidth, y],
-		stroke: CV_LINE_COLOR,
+		stroke: CV_COLOR_LINE,
 		strokeWidth: CV_STROKE_WIDTH,
 	    });
 	    this.legendLayer.add(tick1);
 	    let tick2 = new Konva.Line({
 		points: [axisWidth, y, axisWidth+3000, y],
-		stroke: CV_LINE_COLOR,
+		stroke: CV_COLOR_LINE,
 		strokeWidth: CV_STROKE_WIDTH,
 		dash: [5, 10],
 	    });
@@ -1965,7 +2013,7 @@ RamaddaCoreDisplay.prototype = {
 
 	let line = new Konva.Line({
 	    points: [axisWidth, y1, axisWidth, y2],
-	    stroke: CV_LINE_COLOR,
+	    stroke: CV_COLOR_LINE,
 	    strokeWidth: 1,
 	});
 	this.legendLayer.add(line);
@@ -2006,7 +2054,7 @@ RamaddaCoreDisplay.prototype = {
 	html+=HU.formTableClose();
 	let buttonList =[
 	    HU.div([ATTR_ACTION,ACTION_CANCEL,
-		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],"Cancel"),
+		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL),
 	    HU.div([ATTR_ACTION,ACTION_APPLY,
 		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
 		   "Change Entry")];
@@ -2130,7 +2178,7 @@ RamaddaCoreDisplay.prototype = {
 			       x-tickWidth,y1,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick1 = new Konva.Line({
 	    points: [x-tickWidth, y1, x, y1],
-	    stroke: CV_LINE_COLOR,
+	    stroke: CV_COLOR_LINE,
 	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick1);
@@ -2138,7 +2186,7 @@ RamaddaCoreDisplay.prototype = {
 			       x-tickWidth,y2, {doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick2 = new Konva.Line({
 	    points: [x-tickWidth, y2, x, y2],
-	    stroke: CV_LINE_COLOR,
+	    stroke: CV_COLOR_LINE,
 	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick2);
@@ -2206,6 +2254,9 @@ RamaddaCoreDisplay.prototype = {
 	image.setAttrs(imageAttrs);
 	let imageRect = image.getClientRect();
 	let imageScale = canvasHeight/imageRect.height;
+
+	//	console.log(entry.label,this.getRange(),'scale',imageScale,canvasY1,canvasY2,canvasHeight);
+
 	image.scale({x:imageScale,y:imageScale});
 	imageRect = image.getClientRect({ relativeTo: this.layer});
 
@@ -2224,23 +2275,28 @@ RamaddaCoreDisplay.prototype = {
 	    x:imageRect.x-imageX,
 	    y:imageRect.y-imageY,
 	}
+
 	if(!showPieces || !entry.hasBoxes) {
 	    group.add(image);
+	    let showExtra = imageScale>0.5;
+	    let rect;
+	    //	    if(showExtra) {
 	    group.ticks = this.makeTicks(entry,group,entry.topDepth,entry.bottomDepth,imageX,imageY,imageY+newHeight);
+	    //	    }
 	    let ir = image.getClientRect({relativeTo: this.layer});
-	    let rect = new Konva.Rect({
+	    rect = new Konva.Rect({
 		x: ir.x,
 		y: ir.y,
 		width:ir.width,
 		height:ir.height,
-		stroke: CV_HIGHLIGHT_COLOR,
+		stroke: CV_COLOR_HIGHLIGHT,
 		strokeWidth: 2,
 	    });
 	    group.add(rect);
 	    if(!this.getShowHighlight()) {
 		rect.stroke('transparent');
 	    }
-	    if(entry.boxes) {
+	    if(/*showExtra &&*/ entry.boxes ) {
 		entry.boxes.forEach(box=>{
 		    //		    if(!this.opts.showBoxes) return;
 		    if(showPieces && this.isValidBox(box)) {
@@ -2263,7 +2319,7 @@ RamaddaCoreDisplay.prototype = {
 			}
 			const polygon = new Konva.Line({
 			    points: convertedPolygon,
-			    stroke: CV_BOX_COLOR,
+			    stroke: CV_COLOR_BOX,
 			    strokeWidth: 2,
 			    closed: true,
 			});
@@ -2275,7 +2331,7 @@ RamaddaCoreDisplay.prototype = {
 			    y: imageY+scale(box.y),
 			    width: scaleX(box.width),
 			    height:scale(box.height),
-			    stroke: CV_BOX_COLOR,
+			    stroke: CV_COLOR_BOX,
 			    strokeWidth: 1,
 			}
 			if(box.stroke) boxAttrs.stroke = box.stroke;
@@ -2289,10 +2345,10 @@ RamaddaCoreDisplay.prototype = {
 			//			boxAttrs.x*=imageScale;
 			let mark;
 			let labelOffset=0;
-			if(box.marker) {
+			if(showExtra && box.marker) {
 			    let b = boxAttrs;
 			    let h = 16;
-			    let w=16;
+			    let w = 16;
 			    labelOffset=w;
 			    boxAttrs.points = [
 				b.x+w, b.y+h/2,                    
@@ -2307,7 +2363,6 @@ RamaddaCoreDisplay.prototype = {
 				fill:boxAttrs.fill,
 				strokeWidth:0				
 			    }
-
 			    mark = new Konva.Line(markerAttrs);
 			} else {
 			    mark = new Konva.Rect(boxAttrs);
@@ -2338,9 +2393,14 @@ RamaddaCoreDisplay.prototype = {
 		});
 	    }
 
-	    this.definePopup(rect,entry.label,entry.text);
+	    if(rect) {
+		this.definePopup(rect,entry.label,entry.text);
+	    }
 	    let imageLabel = this.makeText(group,entry.label,imageX+4,imageY+4,
-					   {strokeWidth:0.4,outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
+					   {strokeWidth:0.4,
+					    outline:'#000',
+					    fontSize:CV_FONT_SIZE_SMALL,
+					    background:'#fff'});
 	    this.definePopup(imageLabel,entry.label,entry.text);
 	    this.toggleLabels();
 	    this.toggle(imageLabel,this.getShowLabels());
@@ -2376,7 +2436,7 @@ RamaddaCoreDisplay.prototype = {
 		});
 		width = width*this.getImageWidthScale();
 		let imageRect = new Konva.Rect({
-		    stroke:CV_BOX_COLOR,
+		    stroke:CV_COLOR_BOX,
 		    strokeWidth:1,
 		    x: x,
 		    y: y,

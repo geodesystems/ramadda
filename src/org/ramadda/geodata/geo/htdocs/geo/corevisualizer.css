@@ -57,6 +57,8 @@
 .cv-displays {
     display:flex;
     flex-wrap:nowrap;
+    max-width:400px;
+    overflow-x:auto;
 }
 
 .cv-gallery-collection {
