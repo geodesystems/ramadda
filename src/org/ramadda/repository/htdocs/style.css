@@ -4204,11 +4204,17 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-menu-item {
-    padding-left:4px;
-    padding-right:4px;
+    padding-left:8px;
+    padding-right:8px;
     cursor:pointer;
+    border-top:1px solid transparent;
+    border-bottom:1px solid transparent;
 }
 
+.ramadda-menu-item:hover {
+    border-top:var(--basic-border);
+    border-bottom:var(--basic-border);
+}
 
 
 .ui-button span i {

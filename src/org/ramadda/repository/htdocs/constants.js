@@ -80,6 +80,7 @@ var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
 
 
+var CLASS_SESSION_ERROR = 'ramadda-session-error';
 var CLASS_BUTTON = 'ramadda-button';
 var CLASS_BUTTONS = 'ramadda-buttons';
 var CLASS_BUTTON_SMALL = 'ramadda-button-small';
@@ -101,6 +102,7 @@ var CLASS_MENU_BUTTON = 'ramadda-menu-button';
 var CLASS_MENUBAR = 'ramadda-menubar';
 var CLASS_SLIDER = 'ramadda-slider';
 var CLASS_POPUP='ramadda-popup';
+var CLASS_POPUP_MENU='ramadda-popup-menu';
 var CLASS_POPUP_INNER='ramadda-popup-inner';
 var CLASS_PULLDOWN='ramadda-pulldown';
 

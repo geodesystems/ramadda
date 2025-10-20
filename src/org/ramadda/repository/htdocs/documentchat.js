@@ -168,8 +168,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	    toggleProgress(false,true);
 	}
 	if(this.jq('button_clearalways').is(':checked')) output.html('');
-	let url =ramaddaBaseUrl+'/entry/action';
-
+	let url =Ramadda.getUrl('/entry/action');
 	let offset = 0;
 	if(this.opts.showOffset) {
 	    offset = this.jq('chatoffset').val().trim();
@@ -198,7 +197,6 @@ function DocumentChat(id,entryId,action,models,args) {
 	    let r;
             if (result.error) {
                 r="Error: " + result.error;
-
             } else {
 		let tt='';
 		if(Utils.isDefined(result.corpusLength)) {
@@ -300,8 +298,8 @@ function DocumentChat(id,entryId,action,models,args) {
 	
 	_this.dialog.find('.ramadda-document-history').click(function() {
 	    _this.dialog.remove();
-	    input.val($(this).html());
-	    input.focus();
+	    _this.getInput().val($(this).html());
+	    _this.getInput().focus();
 	});
     });
 
@@ -312,8 +310,8 @@ function DocumentChat(id,entryId,action,models,args) {
 
     let clear = ()=>{
 	let input = this.getInput();
-	input.prop(ATTR_DISABLED,false);
-	input.css(CSS_BACKGROUND,COLOR_WHITE);
+	this.getInput().prop(ATTR_DISABLED,false);
+	this.getInput().css(CSS_BACKGROUND,COLOR_WHITE);
 	toggleProgress();
 	step++;
     };

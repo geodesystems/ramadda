@@ -469,6 +469,9 @@ var Utils =  {
         B = (B + 360) % 360;
         return B;
     },
+    isEscapeKey: function(event) {
+	return event.key === 'Escape' || event.keyCode === 27;
+    },
     isReturnKey: function(e) {
         var keyCode = e.keyCode || e.which;
         return keyCode == 13;
@@ -1442,8 +1445,9 @@ var Utils =  {
 	}
     },
 
-
-
+    clearSessionMessage:function() {
+	$(HU.dotClass(CLASS_SESSION_ERROR)).remove();
+    },
     join: function(l, delimiter, offset) {
 
         if ((typeof offset) == "undefined") offset = 0;
@@ -5069,7 +5073,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
 
-
     makeDialog: function(args) {
         let opts  = {
 	    hidePopup:true,
@@ -5159,10 +5162,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if(opts.header) {
-            let closeImage = HU.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
-					   HU.jsLink('',HU.getIconImage(ICON_CLOSE),
-						     [ATTR_ID,id+'_close',
-						      ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
+            let closeImage = HU.div([ATTR_TITLE,'Close',
+				     ATTR_CLASS,'ramadda-popup-close'],
+				    HU.jsLink('',HU.getIconImage(ICON_CLOSE),
+					      [ATTR_ID,id+'_close',
+					       ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER)]));
 	    if(!opts.showCloseIcon) closeImage='';
             let title = HU.div([ATTR_CLASS,'ramadda-popup-title'],opts.title);
 	    if(opts.rightSideTitle)
@@ -5177,9 +5181,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if(opts.decorate || opts.header) {
-            html = HU.div([ATTR_CLASS,"ramadda-popup"], html);
+            html = HU.div([ATTR_CLASS,CLASS_POPUP], html);
         }
-
 
         let innerId = HU.getUniqueId("model_inner");
         if(opts.modal || opts.modalStrict) {
@@ -6073,7 +6076,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     url:function(path,...varargs) {
 	let url = path;
-	let args=this.convertVarArgs(varArgs);
+	let args=this.convertVarArgs(varargs);
 	for(let i=0;i<args.length;i+=2) {
 	    if(i==0 && url.indexOf("?")<0) url+="?";
 	    else url+="&";
@@ -7237,6 +7240,7 @@ function jqid(id) {
 function jqname(name) {
     return $('[name="' + name+'"]')
 }
+
 
 
 
