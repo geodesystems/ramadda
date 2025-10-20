@@ -405,7 +405,11 @@ public class SessionManager extends RepositoryManager {
 	return addSessionMessage(request, message, key,true,true);
     }    
 
-    public synchronized SessionMessage addSessionMessage(Request request, String message,Object key,boolean raw,boolean sticky)  {
+    public synchronized SessionMessage
+	addSessionMessage(Request request, String message,Object key,boolean raw,boolean sticky)  {
+	    //Don't add session messages if the request was from an API call
+	    if(request.responseAsJson())
+		return  new SessionMessage("","");
 	try {
 	    if(!raw) {
 		message = HU.strictSanitizeString(message);
