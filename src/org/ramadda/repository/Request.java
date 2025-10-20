@@ -2162,6 +2162,10 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
     }
 
+    public void setResponseAsJson() {
+	put(ARG_RESPONSE,RESPONSE_JSON);
+    }
+
     public boolean responseAsJson() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_JSON)
 	    || getString(ARG_OUTPUT).equals("json");
