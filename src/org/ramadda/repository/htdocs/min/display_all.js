@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 18 07:59:13 MDT 2025";
+var build_date="RAMADDA build date: Mon Oct 20 07:55:33 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -4008,7 +4008,7 @@ Glyph.prototype = {
 		src =  args.record.getValue(props.imageField.getIndex());
 	    }
 	    if(src) {
-		src= src.replace('\${root}',ramaddaBaseUrl);
+		src= src.replace('\${root}',RamaddUtil.getBaseUrl());
 		props.width = +(props.width??50);
 		props.height = +(props.height??50);		
 		let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
@@ -9267,7 +9267,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             if (image.indexOf("http") == 0) {
 				url = image;
                             } else {
-				url = RamaddaUtil.getUrl("/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + metadata[i].id + "&thumbnail=false");
+				url = HU.url(RamaddaUtil.getUrl("/metadata/view/" + image),
+					     ARG_ELEMENT,1,
+					     ARG_ENTRYID,entry.getId(),
+					     ARG_METADATAID, metadata[i].id,
+					     "thumbnail","false");
                             }
                             html += HU.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
 			}
@@ -27748,7 +27752,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
-                    await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
+                    await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/showdown.min.js");
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
                     $(imports).appendTo("head");
                     setTimeout(() => this.fetchNotebook(1), 10);
@@ -27767,7 +27771,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 return;
             }
             var dttm = new Date().getTime();
-            ace.config.set('basePath', ramaddaBaseUrl + "/htdocs_v" + dttm + "/lib/ace/src-min");
+            ace.config.set('basePath', RamaddUtil.getBaseUrl() + "/htdocs_v" + dttm + "/lib/ace/src-min");
             let _this = this;
             this.fetchedNotebook = true;
             await this.getEntry(this.getProperty("entryId", ""), entry => {
@@ -27777,7 +27781,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.rootEntry = entry;
             });
             var id = this.getProperty("entryId", "");
-            var url = ramaddaBaseUrl + "/getnotebook?entryid=" + id;
+            var url = RamaddUtil.getBaseUrl() + "/getnotebook?entryid=" + id;
             url += "&notebookId=" + this.getProperty("notebookId", "default_notebook");
             var jqxhr = $.getJSON(url, function(data) {
                 _this.loadJson(data);
@@ -27978,7 +27982,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 notebookId: this.getProperty("notebookId", "default_notebook"),
                 notebook: json
             };
-            var url = ramaddaBaseUrl + "/savenotebook";
+            var url = RamaddUtil.getBaseUrl() + "/savenotebook";
             $.post(url, args, (result) => {
                 if (result.error) {
                     alert("Error saving notebook: " + result.error);
@@ -28610,7 +28614,7 @@ function NotebookState(cell, div) {
             if (entry == null)
                 await this.cell.getCurrentEntry(e => entry = e);
             if ((typeof entry) != "string") entry = entry.getId();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
+            await GuiUtils.loadHtml(RamaddUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
                 callback);
         },
         //These are for the iodiode mimic
@@ -28776,8 +28780,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             html = HU.div([ATTR_ID, this.getDomId(ID_CELL)], html);
             jqid(this.id + "_cellinput").html(html);
             jqid(this.id + "_celloutput").html(output);
-            var url = ramaddaBaseUrl + "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
-            url += "&extrahelp=" + ramaddaBaseUrl + "/userguide/notebook.html|Notebook Help";
+            var url = RamaddUtil.getBaseUrl()+ "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
+            url += "&extrahelp=" + RamaddUtil.getBaseUrl() + "/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url, h => {
                 this.inputToolbar = h;
                 this.jq(ID_INPUT_TOOLBAR).html(h);
@@ -29090,7 +29094,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (command == "savewithout") {
                 this.notebook.saveNotebook(false);
             } else if (command == "help") {
-                var win = window.open(ramaddaBaseUrl + "/userguide/notebook.html", '_blank');
+                var win = window.open(RamaddUtil.getBaseUrl() + "/userguide/notebook.html", '_blank');
                 win.focus();
             } else if (command == "delete") {
                 this.askDelete();
@@ -29485,16 +29489,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             url = Utils.replaceRoot(url);
 
             if (url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
-                return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
+                return Utils.call(callback, RamaddUtil.getBaseUrl() + "/entry/get?entryid=" + url);
             } else {
                 if (!url.startsWith("http")) {
-                    if ((url.startsWith("/") && !url.startsWith(ramaddaBaseUrl)) || url.startsWith("..") || !url.startsWith("/")) {
+                    if ((url.startsWith("/") && !url.startsWith(RamaddUtil.getBaseUrl())) || url.startsWith("..") || !url.startsWith("/")) {
                         var entry;
                         await this.getEntryFromPath(url, e => entry = e);
                         if (!entry) {
                             return Utils.call(callback, null);
                         }
-                        return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + entry.getId());
+                        return Utils.call(callback, RamaddUtil.getBaseUrl() + "/entry/get?entryid=" + entry.getId());
                     }
                 }
                 return Utils.call(callback, url);
@@ -29591,8 +29595,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processMd: async function(chunk) {
-            //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
-            //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
+            //            await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.css");
+            //            await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.js");
 
             var content = chunk.getContent();
             this.rawOutput += content + "\n";
@@ -29670,7 +29674,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.output = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
+            await GuiUtils.loadHtml(RamaddUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
                 wikiCallback);
         },
         processSh: async function(chunk) {
@@ -29930,10 +29934,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         addToToolbar: function(id, entry, toolbarItems) {
             var call = "getHandler('" + id + "').setId('" + entry.getId() + "')";
-            var icon = HU.image(ramaddaBaseUrl + "/icons/setid.png", ["border", 0, ATTR_TITLE, "Set ID in Input"]);
+            var icon = HU.image(RamaddUtil.getBaseUrl() + "/icons/setid.png", ["border", 0, ATTR_TITLE, "Set ID in Input"]);
             toolbarItems.unshift(HU.tag(TAG_A, [ATTR_ONCLICK, call], icon));
             var call = "getHandler('" + id + "').selectEntry('" + entry.getId() + "')";
-            var icon = HU.image(ramaddaBaseUrl + "/icons/circle-check.png", ["border", 0, ATTR_TITLE, "Select Entry"]);
+            var icon = HU.image(RamaddUtil.getBaseUrl() + "/icons/circle-check.png", ["border", 0, ATTR_TITLE, "Select Entry"]);
             toolbarItems.unshift(HU.tag(TAG_A, [ATTR_ONCLICK, call], icon));
         },
         getEntryPrefix: function(id, entry) {
@@ -29941,7 +29945,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var call = "getHandler('" + id + "').cdEntry('" + entry.getId() + "')";
             return HU.div([ATTR_STYLE, HU.css(CSS_PADDING_RIGHT,HU.px(4)),
 				  ATTR_TITLE, "cd to entry", ATTR_ONCLICK, call,
-				  ATTR_CLASS, CLASS_LINK], HU.image(ramaddaBaseUrl + "/icons/go.png"));
+				  ATTR_CLASS, CLASS_LINK], HU.image(RamaddUtil.getBaseUrl() + "/icons/go.png"));
         },
         displayEntries: function(entries, div) {
             if (div == null) div = new Div();
@@ -34818,7 +34822,8 @@ var ID_SEARCH_HIDEFORM = "searchhideform";
 var ATTR_TEXT_INPUT='data-text-input';
 
 var CLASS_SEARCH_TAG = 'display-search-tag';
-
+var CLASS_SIMPLESEARCH_INPUT='display-simplesearch-input';
+var CLASS_SEARCH_TEXTINPUT = 'display-search-textinput';
 
 addGlobalDisplayType({
     type: DISPLAY_SIMPLESEARCH,
@@ -35002,7 +35007,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
             let html = '';
             html += HU.openTag(TAG_TABLE, [ATTR_ID, this.getDomId(TAG_TABLE),
-					   ATTR_CLASS, 'cell-border stripe ramadda-table',
+					   ATTR_CLASS, HU.classes(CLASS_TABLE_CELLBORDER,
+								  CLASS_TABLE_STRIPE,
+								  CLASS_TABLE),
 					   ATTR_WIDTH, HU.perc(100),
 					   ATTR_CELLPADDING, 5,
 					   ATTR_CELLSPACING, 0]);
@@ -35067,9 +35074,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                             let item = null;
                             if (m.type == "content.thumbnail" || m.type == "content.logo") {
                                 let url = HU.url(this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1,
-						 ['element','1',
-						  ATTR_ENTRYID,entry.getId(),
-						  'metadata_id',m.id]);
+						 [ARG_ELEMENT,1,
+						  ARG_ENTRYID,entry.getId(),
+						  ARG_METADATAID,m.id]);
                                 item = HU.image(url, [ATTR_WIDTH, 100]);
                             } else if (m.type == "content.url" || m.type == "dif.related_url") {
                                 let label = m.value.attr2;
@@ -35081,7 +35088,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                                 let toks = m.value.attr1.split("_file_");
                                 let filename = toks[1];
                                 let url = HU.url(this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1,
-						 ['element','1','entryid',entry.getId(), 'metadata_id',m.id]);
+						 [ARG_ELEMENT,1,
+						  ARG_ENTRYID,entry.getId(),
+						  ARG_METADATAID,m.id]);
                                 item = HU.href(url, filename);
                             } else {
                                 item = m.value.attr1;
@@ -35111,7 +35120,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     let add = HU.tag(TAG_A, [ATTR_STYLE, HU.css(CSS_COLOR,COLOR_BLACK),
 					     ATTR_HREF,
 					     HU.url(this.getRamadda().getRoot() + "/metadata/addform",
-						    ['entryid',entry.getId(),'metadata_type',mdt]),
+						    [ARG_ENTRYID,entry.getId(),'metadata_type',mdt]),
 					     ATTR_TARGET, "_blank",
 					     ATTR_TITLE, "Add metadata"
 					    ], "+");
@@ -35982,7 +35991,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				  key,value],label)).appendTo(searchBar);
 	    }
 
-	    this.getContents().find('.display-search-textinput').each(function() {
+	    this.getContents().find(HU.dotClass(CLASS_SEARCH_TEXTINPUT)).each(function() {
 		let arg = $(this).attr(ATTR_TEXT_INPUT);
 		if(!arg) return;
 		let val = $(this).val();
@@ -35996,6 +36005,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(tag.length==0) {
 		    tag =makeTag(ATTR_TEXT_INPUT,arg,label);
 		    tag.click(()=>{
+			console.log('clear');
 			$(this).val('');
 			_this.submitSearchForm();
 		    });
@@ -36095,7 +36105,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    } else {
 			tag.remove();
 		    }
-
 		} else {
                     let value = this.jq(id).val();
                     if (value == null || value==VALUE_NONE) {
@@ -36111,7 +36120,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			continue;
 		    }
 
-		    if(col.getType()=="string" || col.isDate() || col.isLatLon()) {
+		    if(col.getType()==COLUMN_TYPE_STRING ||
+		       col.getType()==COLUMN_TYPE_LIST ||
+		       col.isDate() ||
+		       col.isLatLon()) {
 			if(value=="") {
 			    tag.remove();
 			    continue;
@@ -36320,8 +36332,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    }
 			    let img = provider.icon;
 			    if(img) {
-				img = img.replace(/\${urlroot}/g, ramaddaBaseUrl);
-				img = img.replace(/\${root}/g, ramaddaBaseUrl);
+				img = img.replace(/\${urlroot}/g, RamaddaUtil.getBaseUrl());
+				img = img.replace(/\${root}/g, RamaddaUtil.getBaseUrl());
 				extraAttrs += " data-iconurl=\"" + img + "\" ";
 			    }
 			    buff += "<option  title='" + label+"' class=display-search-provider " + extraAttrs + " value=\"" + id + "\">" + label + "</option>\n";
@@ -36380,7 +36392,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let text  = this.getFormText();
 	    if(!Utils.stringDefined(text)) 
 		text = HU.getUrlArgument(ID_TEXT_FIELD);
-	    let textInputClass = "display-simplesearch-input display-search-textinput"
+	    let textInputClass = HU.classes(CLASS_SIMPLESEARCH_INPUT,CLASS_SEARCH_TEXTINPUT);
 	    let attrs  = [ATTR_PLACEHOLDER, this.getEgText("Search text"),
 			  ATTR_TITLE,Utils.noMsg("e.g. name:, contents:,path:"),
 			  ATTR_CLASS, textInputClass,
@@ -36530,7 +36542,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             extra +=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.em(1),CSS_BORDER_TOP,CSS_BASIC_BORDER),
 			    ATTR_CLASS,'display-search-widget'],
 			   HU.b(recordsLabel) +' '+
-			   HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
+			   HU.input("",  DEFAULT_MAX, [ATTR_CLASS,CLASS_SIMPLESEARCH_INPUT,
 						       ATTR_ID,this.domId(ID_SEARCH_MAX),
 						       ATTR_SIZE,5]));
 
@@ -37043,12 +37055,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let widget = "";
 		let label="";
 		let help = "";
-		if(col.getSuffix()) {
+		/** don't do this since the suffix can be used for editing help, etc
+		if(Utils.stringDefined(col.getSuffix())) {
 		    help = HU.span([ATTR_STYLE,HU.css(CSS_CURSOR,'help',
 						      CSS_MARGIN_LEFT,HU.px(10)),
 				    ATTR_TITLE,col.getSuffix()], HU.getIconImage('fas fa-info'));
 		}		
-		
+		*/
 
                 if (col.isEnumeration()) {
 		    let showCheckboxes=col.showCheckboxes()
@@ -37128,11 +37141,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
 		} else if (col.isNumeric()) {
 		    let from = HU.input("", "", [ATTR_TITLE,"greater than",
-						 ATTR_CLASS, "input display-simplesearch-input",
+						 ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 						 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
 						 ATTR_ID, id+"_from"]);
 		    let to = HU.input("", "", [ATTR_TITLE,"less than",
-					       ATTR_CLASS, "input display-simplesearch-input",
+					       ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
 					       ATTR_ID, id+"_to"]);		    
 		    label = col.getSearchLabel();
@@ -37141,10 +37154,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let areaWidget= col.areaWidget = new AreaWidget(this,col.getName());
 		    label = this.makeLabel(col.getSearchLabel());
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
-                } else if(col.getType()=='string') {
+                } else if(col.getType()==COLUMN_TYPE_STRING ||
+			  col.getType()==COLUMN_TYPE_LIST) {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()),
 				     [ATTR_PLACEHOLDER,col.getSearchLabel(),
-				      ATTR_CLASS, "input display-simplesearch-input",
+				      ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 				      ATTR_SIZE, this.getTextInputSize(),
 				      ATTR_ID, id]);
 		    label = col.getSearchLabel();
@@ -37693,8 +37707,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		let records = [];
 		let defaultImage = this.getDefaultImage();
 		if(defaultImage) {
-		    if(defaultImage.startsWith("http"))
-			defaultImage = ramaddaBaseUrl+ defaultImage;
+		    if(!defaultImage.startsWith("http"))
+			defaultImage = RamaddaUtil.getUrl(defaultImage);
 		}
 		let makeData = entries=>{
 		    let records = [];
@@ -37727,7 +37741,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		this.myDisplays.forEach(info=> {
 		    let data = info.entries?new  PointData("pointdata", fields, makeData(info.entries)):baseData;
 		    let dialogListener = (display, dialog)=>{
-			dialog.find('.'+ CLASS_SEARCH_TAG).click(function() {
+			dialog.find(HU.dotClass(CLASS_SEARCH_TAG)).click(function() {
 			    let type = $(this).attr(ATTR_METADATA_TYPE);
 			    let value = $(this).attr(ATTR_METADATA_VALUE);			    
 			    if(!_this.addMetadataTag(type,type, value)) return;
@@ -38398,7 +38412,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(thumb) attrs.push("thumbnail",thumb);
 		let link = HU.href(this.getRamadda().getEntryUrl(entry),entry.getIconImage() +"  "+ entry.getName());
 		if(showParent && entry.getParentName()) {
-		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
+		    let url = HU.url(RamaddaUtil.getUrl("/entry/show"),	ARG_ENTRYID,entry.parent);
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
 		    link = HU.hbox([plink,HU.span([ATTR_STYLE,
 						   HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_LEFT,HU.px(4))],"&raquo;"), link]);
@@ -39628,9 +39642,19 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             }
             let pointDataList = [];
 
-            pointDataList.push(new PointData(entry1.getName(), null, null, ramaddaBaseUrl + "/entry/show?&output=points.product&product=points.json&numpoints=1000&entryid=" + entry1.getId()));
+            pointDataList.push(new PointData(entry1.getName(), null, null,
+					     HU.url(RamaddaUtil.getUrl("/entry/show"),
+						    ARG_OUTPUT,'points.product',
+						    'product','points.json',
+						    'numpoints',1000,
+						    ARG_ENTRYIDentry1.getId())));
             if (entry2 != null) { 
-		pointDataList.push(new PointData(entry2.getName(), null, null, ramaddaBaseUrl + "/entry/show?&output=points.product&product=points.json&numpoints=1000&entryid=" + entry2.getId()));
+		pointDataList.push(new PointData(entry2.getName(), null, null,
+						 HU.url(RamaddaUtil.getUrl("/entry/show"),
+							ARG_OUTPUT,'points.product',
+							'product','points.json',
+							'numpoints',1000,
+							ARG_ENTRYID,entry2.getId())));
             }
 
             //Make up some functions
@@ -39848,8 +39872,11 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 	    return jqid(this.inputId).val();
 	},
 	makeInput:function() {
-	    this.inputId = this.display.getMetadataFieldId(this.metadata.getType())+'_element_' + this.getIndex()+'_input';
-	    let input = HU.input('','',[ATTR_CLASS,'display-simplesearch-input',
+	    this.inputId = this.display.getMetadataFieldId(this.metadata.getType())+
+		'_element_' +
+		this.getIndex()+
+		'_input';
+	    let input = HU.input('','',[ATTR_CLASS,CLASS_SIMPLESEARCH_INPUT,
 					ATTR_ID,this.inputId,
 					ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
 					ATTR_PLACEHOLDER,this.getName()]);
@@ -47074,8 +47101,11 @@ var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_la
 
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY,CSS_FONT_SIZE,HU.pt(9))];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)];
+
+var CLASS_IMDV_PROPERTY= 'imdv-property';
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+
 var PROP_DONT_SHOW_IN_LEGEND='dontShowInLegend';
 var PROP_SHOW_LAYER_SELECT_IN_LEGEND = "showLayerSelectInLegend";
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
@@ -47083,6 +47113,10 @@ var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+
+var PROP_LEVELRANGE_SHOWMARKER = 'showMarkerWhenNotVisible';
+var PROP_LEVELRANGE_RANGE = 'visibleLevelRange';
+
 
 var PROP_SHOWOPACITYSLIDER='showOpacitySlider';
 
@@ -47151,9 +47185,11 @@ var ROUTE_PEDESTRIAN ='pedestrian';
 
 
 
+
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
 var ID_MAPRESOURCE = 'mapresource';
+
 
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
 var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
@@ -48290,7 +48326,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(glyphType.isZoom() || glyphType.isFixed() || glyphType.isGroup()) {
 		let text = args.text;
-		if(!text) text = prompt(glyphType.isZoom()?'Enter zoom to label':glyphType.isFixed()?'Text:':'Name:');
+		if(!text) text = prompt(glyphType.isZoom()?'Enter viewpoint label':glyphType.isFixed()?'Text:':'Name:');
 		if(!text) return;
 		let style = Utils.clone({},tmpStyle);
 		let mapOptions = Utils.clone({},tmpMapOptions);
@@ -49710,7 +49746,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							    ATTR_ROWS,10,
 							    ATTR_COLS, 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
-		let buttons  =HU.center(HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		let buttons  =HU.center(HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) +
+					SPACE2 +
 					HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
 		widget = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))],
@@ -49930,7 +49967,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	initSideHelp:function(dialog) {
-	    dialog.find('.imdv-property').click(function(){
+	    dialog.find(HU.dotClass(CLASS_IMDV_PROPERTY)).click(function(){
 		let value = $(this).attr(ATTR_VALUE);
 		if(!value) return;
 		value = value.replace(/\\n/g,'\n');
@@ -49957,7 +49994,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  'info-id',line.info], line.title);
 		    return;
 		}
-		let attrs = [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-property'),
+		let attrs = [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_IMDV_PROPERTY),
 			     ATTR_TARGET,target];
 		if(line.title) {
 		    attrs.push(ATTR_TITLE,line.title);
@@ -50398,15 +50435,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
 	    let visibleCbx =
-		HU.checkbox(this.domId('showmarkerwhennotvisible'),
-			    [ATTR_ID,this.domId('showmarkerwhennotvisible')],
+		HU.checkbox(this.domId(PROP_LEVELRANGE_SHOWMARKER),
+			    [ATTR_ID,this.domId(PROP_LEVELRANGE_SHOWMARKER)],
 			    showMarkerToo,'Show marker instead');
 	    let min = level.min??this.minLevel;
 	    let max = level.max??this.maxLevel;	    
 	    let current = this.getCurrentLevel();
 	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
 	    let width = HU.px(400);
-	    let widget =   HU.b("Visible between levels:") + HU.space(3) +visibleCbx +HU.br();
+	    let widget =   HU.boldLabel('Visible between levels') + HU.space(3) +visibleCbx +HU.br();
 	    widget+=HU.hidden('',level.min??this.minLevel,
 			      [ATTR_ID,this.domId(ID_LEVEL_RANGE_MIN)]) +
 		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
@@ -50628,39 +50665,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.insertIntoTextarea(textarea,icon);
 	    });
 
-	    let setLevelRange = (min,max)=>{		    
-		this.jq(ID_LEVEL_RANGE_CHANGED).val('changed');
-		this.jq(ID_LEVEL_RANGE_MIN).val(min);
-		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
-		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr(ATTR_SRC,
-							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
-		
-		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr(ATTR_SRC,
-							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
-	    }
-	    
-
-	    this.jq(ID_LEVEL_RANGE_CLEAR).click(()=>{
-		setLevelRange(this.minLevel,this.maxLevel);
-		this.jq(ID_LEVEL_RANGE_CHANGED).val('cleared');
-		this.jq(ID_LEVEL_RANGE_SLIDER).slider('values',[this.minLevel,this.maxLevel]);
-	    });
-	    this.jq(ID_LEVEL_RANGE_SLIDER).slider({
-		range:true,
-		min:this.minLevel,
-		max:this.maxLevel,
-		values:[
-		    parseInt(this.jq(ID_LEVEL_RANGE_MIN).val()??this.minLevel),
-		    parseInt(this.jq(ID_LEVEL_RANGE_MAX).val()??this.maxLevel)],		
-		slide:(event,ui)=>{
-		    let min = ui.values[0];
-		    let max = ui.values[1];		    
-		    setLevelRange(min,max);
-		}
-
-	    });
-
-	    
+	    this.initLevelRangeSlider();	    
 	    this.jq('displayattrsmenubar').find('.' + CLASS_CLICKABLE).click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
@@ -50889,6 +50894,41 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
+	initLevelRangeSlider:function() {	   
+	    let setLevelRange = (min,max)=>{		    
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('changed');
+		this.jq(ID_LEVEL_RANGE_MIN).val(min);
+		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr(ATTR_SRC,
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
+		
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr(ATTR_SRC,
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+	    }
+	    
+
+	    this.jq(ID_LEVEL_RANGE_CLEAR).click(()=>{
+		setLevelRange(this.minLevel,this.maxLevel);
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('cleared');
+		this.jq(ID_LEVEL_RANGE_SLIDER).slider('values',[this.minLevel,this.maxLevel]);
+	    });
+	    this.jq(ID_LEVEL_RANGE_SLIDER).slider({		
+		range:true,
+		min:this.minLevel,
+		max:this.maxLevel,
+		values:[
+		    parseInt(this.jq(ID_LEVEL_RANGE_MIN).val()??this.minLevel),
+		    parseInt(this.jq(ID_LEVEL_RANGE_MAX).val()??this.maxLevel)],		
+		slide:(event,ui)=>{
+		    let min = ui.values[0];
+		    let max = ui.values[1];		    
+		    setLevelRange(min,max);
+		}
+
+	    });
+
+	},
+
 	initIconSelection:function(icons, callback) {
 	    let _this = this;
 	    icons.each(function() {
@@ -51327,7 +51367,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
 
-	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
 				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
 				      HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 	    let cbxs = [
@@ -51368,8 +51408,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    basic=HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],
 				    HU.td([],basic) + HU.td([ATTR_WIDTH,HU.perc(50)], right)));
 	    basic+=HU.p();
-	    basic+=this.getLevelRangeWidget(this.getMapProperty('visibleLevelRange'),
-					    this.getMapProperty('showMarkerWhenNotVisible'));
+	    basic+=this.getLevelRangeWidget(this.getMapProperty(PROP_LEVELRANGE_RANGE),
+					    this.getMapProperty(PROP_LEVELRANGE_SHOWMARKER));
 
 	    accords.push({header:'Basic', contents:basic});
 	    accords.push({header:'Header/Footer',
@@ -51378,12 +51418,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  HU.textarea('',this.getMapProperty('topWikiText',''),
 				      [ATTR_ID,this.domId('topwikitext_input'),
 				       ATTR_ROWS,4,
-				       ATTR_COLS,80]) +HU.br() +
+				       ATTR_COLS,70]) +HU.br() +
 			  HU.b('Bottom Wiki Text:') +HU.br() +
 			  HU.textarea('',this.getMapProperty('bottomWikiText',''),
 				      [ATTR_ID,this.domId('bottomwikitext_input'),
 				       ATTR_ROWS,4,
-				       ATTR_COLS,80]) +HU.br()
+				       ATTR_COLS,70]) +HU.br()
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
@@ -51411,14 +51451,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //	    let accord = HU.makeAccordionHtml(accords);
 	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
-	    html  = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(700),
-					      CSS_MIN_HEIGHT,HU.px(300),
+	    html  = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(800),
+					      CSS_MIN_HEIGHT,HU.px(350),
 					      CSS_MARGIN,HU.px(10))],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
 					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
 
 	    this.initSideHelp(dialog);
+	    this.initLevelRangeSlider();	    
 	    accord.init();
 	    //	    HU.makeAccordion('#'+accord.id);
 	    let close=()=>{
@@ -51441,19 +51482,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
-		let min = this.jq("minlevel").val()?.trim();
-		let max = this.jq("maxlevel").val()?.trim();
-		if(min=="") min = null;
-		if(max=="") max = null;	
-		this.setMapProperty('visibleLevelRange', {min:min,max:max},
-				    'showMarkerWhenNotVisible', this.jq('showmarkerwhennotvisible').is(':checked'));
+		let min = null;
+		let max = null;
+		if(this.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
+		    console.log('changed');
+		    min = this.jq(ID_LEVEL_RANGE_MIN).val();
+		    max = this.jq(ID_LEVEL_RANGE_MAX).val();
+		    if(min=="") min = null;
+		    if(max=="") max = null;	
+		    this.setMapProperty(PROP_LEVELRANGE_RANGE, {min:min,max:max});
+		}
+		if(this.jq(ID_LEVEL_RANGE_CHANGED).val()=='cleared') {
+		    this.setMapProperty(PROP_LEVELRANGE_RANGE, null);
+		}
+		this.setMapProperty(PROP_LEVELRANGE_SHOWMARKER, HU.isChecked(this.jq(PROP_LEVELRANGE_SHOWMARKER)));
 		this.checkMapProperties();
 		this.makeLegend();
 		this.featureChanged(true);
 
 	    };
 
-	    HU.initPageSearch('.imdv-property',
+	    HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			      this.domId('otherproperties_input'),null,true,
 			      {target:'#'+this.domId('propsearch')});
 
@@ -51676,7 +51725,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+= make(this.domId(ID_MAP_REGIONS+suffix),"Regions","fas fa-map");
 	    html+= make(this.domId(ID_MAP_CHOOSE+suffix),"Set Location/Zoom","fas fa-compass");
-	    html+='<thin_hr></thin_hr>';
+	    html+=HU.thinLine();
 	    html+= make(this.domId(ID_MAP_TOGGLE_OFF+suffix),"Toggle all off","fas fa-toggle-off");
 	    html+= make(this.domId(ID_MAP_TOGGLE_ON+suffix),"Toggle all on","fas fa-toggle-on");
 	    
@@ -51705,8 +51754,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_MAP_CHOOSE+suffix).click(function(){
 		clear();
 		let html = HU.formTable();
-		html+=HU.formEntryLabel('Latitude',HU.input('','',[ATTR_ID,_this.domId('choose_latitude')]));
-		html+=HU.formEntryLabel('Longitude',HU.input('','',[ATTR_ID,_this.domId('choose_longitude')]));		
+		html+=HU.formEntryLabel('Latitude',
+					HU.input('','',[ATTR_ID,_this.domId('choose_latitude')]));
+		html+=HU.formEntryLabel('Longitude',
+					HU.input('','',[ATTR_ID,_this.domId('choose_longitude')]));		
 
 		let opts = [2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18].map(v=>{
 		    return {label:v,value:v,
@@ -51736,8 +51787,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  ATTR_CLASS,CLASS_CLICKABLE]));
 		html+=HU.formEntryLabel('Zoom Level',zoomButton);
 		html+=HU.formTableClose();
-		let buttons =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) + SPACE2 +
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+		let buttons =
+		    HU.div([ATTR_CLASS,
+			    HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) +
+		    SPACE2 +
+		    HU.div([ATTR_CLASS,
+			    HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) +
+		    SPACE2 +
 		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 		html+=HU.center(buttons);
 		html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
@@ -51756,7 +51812,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			zoomDialog=null;
 		    });
 		});
-		dialog.find('.display-button').button().click(function(){
+
+		dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function(){
 		    if($(this).hasClass(CLASS_BUTTON_OK) || $(this).hasClass(CLASS_BUTTON_APPLY)) {
 			let lat = _this.jq('choose_latitude').val().trim();
 			let lon = _this.jq('choose_longitude').val().trim();			
@@ -52118,7 +52175,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
 	    }
-	    url = url.replace(/\${root}/,ramaddaBaseUrl);
+	    url = url.replace(/\${root}/,RamaddUtil.getBaseUrl());
 	    mapGlyph.setDownloadUrl(url);
 	    let selectCallback = (feature,layer,event)=>{
 		//Don't handle the feature selected if we have a drawing command
@@ -52502,7 +52559,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
 			   newHelp:'Click and drag to create a new triangle',			   
-			   icon:Ramadda.getUrl("/icons/triangle_blue.png")});				
+			   icon:Ramadda.getUrl("/icons/triangle.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			  Utils.clone(lineStyle,{
 			      fillColor:COLOR_TRANSPARENT,
@@ -52510,7 +52567,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
 			   newHelp:'Click and drag to create a new hexagon',			   
-			   icon:Ramadda.getUrl("/icons/hexagon_blue.png")});		
+			   icon:Ramadda.getUrl("/icons/hexagon.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  Utils.clone(lineStyle,
 				      {fillColor:COLOR_TRANSPARENT,
@@ -54140,7 +54197,7 @@ var LINETYPE_STEPPED='stepped';
 
 var ATTR_COMMAND='command';
 var ID_INMAP_LABEL='inmaplabel';
-
+var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
 var ID_IMAGEID='imageid';
 
@@ -54171,6 +54228,9 @@ var ID_MAPLEGEND = 'maplegend';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
+
+
+
 
     if(!type) {
 	console.log("no type given for MapGlyph");
@@ -54254,9 +54314,6 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
     this.checkDataIconMenu();
 }
-
-
-
 
 
 MapGlyph.prototype = {
@@ -54718,7 +54775,6 @@ MapGlyph.prototype = {
 	content.push({header:'Properties',contents:html});
 
 	html='';
-	//	html=  this.getHelp('#miscproperties')+HU.br();
 	let miscLines =[...IMDV_PROPERTY_HINTS];
 	if(this.canHaveChildren()) {
 	    miscLines.push(...IMDV_GROUP_PROPERTY_HINTS);
@@ -54738,14 +54794,14 @@ MapGlyph.prototype = {
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
 
-	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),
+	let miscHelp =this.display.makeSideHelp(miscLines,this.domId(ID_MISCPROPERTIES),
 						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
 						 suffix:'\n'});
 	let ex = HU.boldLabel('Add property') +
 	    HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
-				     [ATTR_ID,this.domId('miscproperties'),
+				     [ATTR_ID,this.domId(ID_MISCPROPERTIES),
 				      ATTR_ROWS,16,
 				      ATTR_COLS, 40]),
 			 HU.space(2),ex]);
@@ -54921,7 +54977,7 @@ MapGlyph.prototype = {
 	}
 
 	this.parsedProperties = null;
-	this.attrs.properties = this.jq('miscproperties').val();
+	this.attrs.properties = this.jq(ID_MISCPROPERTIES).val();
 	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
 	    this.setVisibleLevelRange(this.display.jq(ID_LEVEL_RANGE_MIN).val(),
 				      this.display.jq(ID_LEVEL_RANGE_MAX).val());
@@ -54929,8 +54985,7 @@ MapGlyph.prototype = {
 	    this.attrs.visibleLevelRange = null;
 	    this.checkVisible();
 	}
-	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
-
+	this.setShowMarkerWhenNotVisible(HU.isChecked(this.display.jq(PROP_LEVELRANGE_SHOWMARKER)));
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
@@ -57771,7 +57826,7 @@ MapGlyph.prototype = {
 
     initPropertiesComponent: function(dialog) {
 
-	HU.initPageSearch('.imdv-property',
+	HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			  null,null,true,
 			  {target:'#'+this.domId('propsearch')});
 
@@ -60264,16 +60319,16 @@ MapGlyph.prototype = {
     },    
 
     checkVisible: function() {
+	let level = this.display.getCurrentLevel();
 	let showMarker = this.getShowMarkerWhenNotVisible();
 	let range = this.getVisibleLevelRange()??{};
-	let displayRange = this.display.getMapProperty('visibleLevelRange');
+	let displayRange = this.display.getMapProperty(PROP_LEVELRANGE_RANGE);
 	if(!range || (displayRange && !Utils.stringDefined(range.min) && !Utils.stringDefined(range.max))) {
 	    range = displayRange;
-	    showMarker  = this.display.getMapProperty('showMarkerWhenNotVisible');
+	    showMarker  = this.display.getMapProperty(PROP_LEVELRANGE_SHOWMARKER);
 	}
 
 
-	let level = this.display.getCurrentLevel();
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	let visible=  this.getVisible() && (level>=min && level<=max);
@@ -63041,7 +63096,8 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	},
 	updateUI: function() {
 	    if(!this.votingData) {
-		let url = ramaddaBaseUrl + "/entry/vote?entryid=" + this.getProperty("entryId", "");
+		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
+				 ARG_ENTRYID,this.getProperty("entryId", ""));
 		$.getJSON(url, (data) =>{
 		    this.votingData = data;
 		    this.updateUI();
@@ -63134,7 +63190,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		let field =$(this).attr(ATTR_FIELD_ID);
 		let record =$(this).attr('record-index');		
 		let id = _this.getProperty("entryId", "");
-		let url = ramaddaBaseUrl + "/entry/vote?xreturnvotes=true&entryid=" + id;
+		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
+				 "xreturnvotes",true,
+				 ARG_ENTRYID,id);
 		let key = record+'--'+field;
 		url = HU.url(url,['key',key,'vote',vote]);
 		$.getJSON(url, function(data) {
@@ -63172,7 +63230,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_SHOW_VOTES).html('Hide Votes');
 	    let id = this.getProperty("entryId", "");
-	    let url = ramaddaBaseUrl + "/entry/vote?entryid=" + id;
+	    let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),ARG_ENTRYID,id);
 	    $.getJSON(url, function(data) {
 		this.votingData = data;
 		let blocks = _this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-block');
@@ -64487,7 +64545,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 						      ATTR_HEIGHT,10],
 					     HU.tag(TAG_RECT,[ATTR_WIDTH,10,
 							      ATTR_HEIGHT,10,
-							      ATTR_FILE,COLOR_WHITE],
+							      ATTR_FILL,COLOR_WHITE],
 						    HU.tag(TAG_PATH,['d','M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2',
 								     ATTR_STROKE,'#ddd',
 								     ATTR_STROKE_WIDTH,1])));
@@ -70139,8 +70197,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!url.startsWith("http") && !url.startsWith("/")) {
 		//entry id e.g., 41d9b105-d61b-4fc1-8198-8e75c49b1a24
 		if(url.trim().match(/.*[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+.*/)) {
-
-		    url = ramaddaBaseUrl +'/entry/get?entryid=' + url;
+		    url = HU.url(RamaddaUtil.getUrl('/entry/get'), ARG_ENTRYID,url);
 		} else {
 		    url = RamaddaUtil.getCdnUrl("/resources/") + url;
 		}
