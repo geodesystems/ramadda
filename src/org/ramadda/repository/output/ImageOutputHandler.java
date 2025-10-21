@@ -809,7 +809,7 @@ public class ImageOutputHandler extends OutputHandler {
         } else if (output.equals(OUTPUT_FLIPCARDS)) {
             getPageHandler().entrySectionOpen(request, group, sb,
                     "Flip Cards");
-            String template ="{{flipcards  tag=card  height=150  width=150  includeChildren=false  addTags=false showSnippet=false  showSnippetHover=true  showLink=false  showHeading=true  showDate=true}}"; 
+            String template ="{{flipcards  showPlaceholderImage=true tag=card  height=150  width=150  includeChildren=false  addTags=false showSnippet=false  showSnippetHover=true  showLink=false  showHeading=true  showDate=true}}"; 
             sb.append(getWikiManager().wikifyEntry(request, group,
                     template));
             getPageHandler().entrySectionClose(request, group, sb);
