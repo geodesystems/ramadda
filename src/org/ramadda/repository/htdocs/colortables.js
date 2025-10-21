@@ -118,22 +118,25 @@ $.extend(Utils,{
 	Utils.AllColorTables.forEach(colortable=>{
             if(colortable.category) {
 		if(category!='') {
-		    popup+='</div>';
+		    popup+=HU.close(TAG_DIV);
 		}
 		category  =colortable.category;
-		item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
-                popup+=HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-colortable-category'])+item;
+		item = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_DECORATION,'underline',
+						 CSS_FONT_WEIGHT,FONT_BOLD)],
+			       colortable.category);
+                popup+=HU.open(TAG_DIV,[ATTR_CLASS,CLASS_COLORTABLE_CATEGORY])+item;
                 items.push(item);
 		return;
             }
             let ct = Utils.getColorTableDisplay(colortable,  0, 1, {
                 showRange: false,
-                height: "20px"
+                height: HU.px(20)
             });
 	    let attrs = [ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(2),CSS_WIDTH,HU.px(400)),
 			 ATTR_TITLE,colortable.id,
 			 'data-corpus',colortable.id +' '+ category,
-			 ATTR_CLASS, "ramadda-colortable-select","colortable",colortable.id];
+			 ATTR_CLASS, CLASS_COLORTABLE_SELECT,
+			 ATTR_COLORTABLE,colortable.id];
 	    if(opts.attr) attrs.push(opts.attr,opts.value);
 	    ct = HU.div(attrs,ct);
 	    

@@ -55,7 +55,6 @@ var DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS,CATEGORY_
 
 //Ids of DOM components
 var ID_BOTTOM = "bottom";
-var ID_COLORTABLE = "colortable";
 var ID_LEGEND = "legend";
 var ID_FIELDS = "fields";
 var ID_HEADER = "header";
@@ -2469,8 +2468,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 
-		dialog.find('.ramadda-colortable-select').click(function() {
-		    let ct = $(this).attr('colortable');
+		dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
+		    let ct = $(this).attr(ATTR_COLORTABLE);
 		    if(ct) {
 			_this.setProperty('colorTable',ct);
 			_this.forceUpdateUI();

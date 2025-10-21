@@ -4214,6 +4214,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-menu-item:hover {
     border-top:var(--basic-border);
     border-bottom:var(--basic-border);
+    background:var(--highlight-background) !important;
 }
 
 
@@ -6848,15 +6849,15 @@ a.wiki-link-noexist {
     display:inline-block;
 }
 
-.wiki-editor-popup-colortable, .wiki-editor-popup-items {
+.wiki-editor-popup-colortable {
     margin-left:10px;
     max-width:400px;
-    overflow-x:overlay;
-    overflow-y:auto;
 }
 
 .wiki-editor-popup-items {
     max-height:200px;
+    overflow-x:overlay;
+    overflow-y:auto;
 }
 
 

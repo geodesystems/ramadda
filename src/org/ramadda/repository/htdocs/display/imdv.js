@@ -381,9 +381,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LIST_CANCEL = 'listcancel';
     const ID_DELETE  ='delete';
     const ID_SELECT  ='select';
-    const ID_OK  ='ok';
-    const ID_APPLY  ='apply';
-    const ID_CANCEL = 'cancel';
     const ID_MENU_NEW = 'new_file';
     const ID_MENU_FILE = 'menu_file';
     const ID_MENU_EDIT = 'menu_edit';    
@@ -3632,7 +3629,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    _this.jq('displayattrs').val(v);
 		};
 		dialog.find('[colortable]').click(function() {
-		    insert("colorTable="+$(this).attr('colortable'));
+		    insert("colorTable="+$(this).attr(ATTR_COLORTABLE));
 		    dialog.remove();
 		});
 		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {

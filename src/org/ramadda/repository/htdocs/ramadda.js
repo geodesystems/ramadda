@@ -85,7 +85,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     initToggleTable:function(container) {
-	$(container).find('.entry-arrow').click(function() {
+	$(container).find(HU.dotClass('entry-arrow')).click(function() {
 	    let url = $(this).attr('data-url');
 	    if(!url) return;
 	    let title = $(this).attr('data-title')??'';
@@ -144,7 +144,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	
     },
-    selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+    selectInitialClick:function(event, selectorId, elementId,
+				allEntries, selecttype, localeId,
+				entryType,baseUrl,props) {
 	if(RamaddaUtils.currentSelector) {
 	    RamaddaUtils.currentSelector.cancel();
 	}
@@ -152,7 +154,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	//	setTimeout(()=>{RamaddaUtils.handleEntryCreated(selectorId);},2000);
 	return false;
     },
-    selectCreate:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
+    selectCreate:function(event, selectorId, elementId,
+			  allEntries, selecttype, localeId, entryType, baseUrl,props) {
 	let key = selectorId + (baseUrl??"");
 	if (true || !selectors[key]) {
             return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
@@ -705,12 +708,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	jqid(id+'_form_cbx').click(function() {
             let on = $(this).is(':checked');
-	    jqid(id).find('.entry-form-select').prop('checked',on);
+	    jqid(id).find(HU.dotClass('entry-form-select')).prop('checked',on);
 	});
 	
 	let initFunc = (id)=>{
 	    if(props.formOpen) {
-		jqid(id).find('.entry-form-select').show();
+		jqid(id).find(HU.dotClass('entry-form-select')).show();
 	    }
 	}
 
@@ -718,11 +721,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let checkForm = ()=>{
 	    if(props.formOpen) {
 		jqid(id+'_form').show();
-		jqid(id).find('.entry-form-select').show();
+		jqid(id).find(HU.dotClass('entry-form-select')).show();
 		formArrow.html(HU.getIconImage("fas fa-caret-down"));
 	    } else {
 		jqid(id+'_form').hide();
-		jqid(id).find('.entry-form-select').hide();
+		jqid(id).find(HU.dotClass('entry-form-select')).hide();
 		formArrow.html(HU.getIconImage("fas fa-caret-right"));
 	    }
 
@@ -1152,18 +1155,18 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html = $(html).appendTo(container);
 	Translate.translate(html);
 	if(hasMetadata) {
-	    html.find('.ramadda-metadata-bigtext').each(function() {
+	    html.find(HU.dotClass('ramadda-metadata-bigtext')).each(function() {
 		Utils.initBigText($(this));
 	    });
 	}
 
 
-	let inlineEdit =        main.find('.ramadda-entry-inlineedit');
-	let entryOrder =        main.find('.ramadda-entry-inlineedit-entryorder');
+	let inlineEdit =        main.find(HU.dotClass('ramadda-entry-inlineedit'));
+	let entryOrder =        main.find(HU.dotClass('ramadda-entry-inlineedit-entryorder'));
 	this.applyInlineEdit(inlineEdit,entryOrder)
 
 	if(true ||!props.inlineEdit) {
-	    html.find('.entry-row').tooltip({
+	    html.find(HU.dotClass('entry-row')).tooltip({
 		show: { effect: 'slideDown', delay: 1500, duration: 300 },
 		position: { my: "right top", at: "right bottom" },
 		content: function () {
@@ -1199,7 +1202,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],title);
 		}});	    
 	}
-	container.find('.ramadda-breadcrumb-toggle').click(function() {
+	container.find(HU.dotClass('ramadda-breadcrumb-toggle')).click(function() {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = jqid(id);
 	    if(crumbs.css(CSS_DISPLAY)==DISPLAY_NONE) {
@@ -1212,7 +1215,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	let _this=this;
-	container.find('.entry-arrow').click(function() {
+	container.find(HU.dotClass('entry-arrow')).click(function() {
 	    let entryId = $(this).attr(ATTR_ENTRYID);
 	    let innerId = $(this).attr('innerid');	    
 	    let inner = jqid(innerId);
@@ -1283,11 +1286,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	if(props.simple) return;
-	container.find('.entry-form-select').click(function(event) {
+	container.find(HU.dotClass('entry-form-select')).click(function(event) {
             let on  = $(this).is(':checked');
 	    let row = jqid($(this).attr('rowid'));
 	    HU.checkboxClicked(event,'entry_',$(this).attr(ATTR_ID));
-	    main.find('.entry-form-select').each(function() {
+	    main.find(HU.dotClass('entry-form-select')).each(function() {
 		let on  = $(this).is(':checked');
 		let row = jqid($(this).attr('rowid'));
 		if(on) row.addClass('entry-list-row-selected');
@@ -1295,14 +1298,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	});
 
-	container.find('.ramadda-thumbnail-image').click(function() {
+	container.find(HU.dotClass('ramadda-thumbnail-image')).click(function() {
 	    let src = $(this).attr(ATTR_SRC);	
 	    let url = $(this).attr('entry-url');
 	    let contents = HU.href(url,HU.image(src),[ATTR_TITLE,'Click to view entry']);
 	    HU.makeDialog({content:contents,my:'left top',at:'left bottom',anchor:this,header:true,draggable:true});
 	});
 
-	container.find('.ramadda-attachment').tooltip({
+	container.find(HU.dotClass('ramadda-attachment')).tooltip({
 	    show: { effect: 'slideDown', delay: 500, duration: 1000 },
 	    content: function () {return $(this).prop(ATTR_TITLE);}});
 
@@ -2122,7 +2125,8 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
 var selectors = new Array();
-function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
+function Selector(event, selectorId, elementId, allEntries,
+		  selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
     this.id = selectorId;
     this.elementId = elementId;
@@ -2177,7 +2181,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	}
 
         HU.hidePopupObject(event);
-	let container = $(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)])).appendTo("body");
+	let container = $(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)])).appendTo(TAG_BODY);
         $(HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
 		  ATTR_CLASS,'ramadda-selectdiv',
 		  ATTR_ID,this.domId])).appendTo(container);
@@ -2237,8 +2241,9 @@ Selector.prototype = {
 	let xmlDoc = request.responseXML.documentElement;
 	text = getChildText(xmlDoc);
 	let pinId = this.domId +"-pin";
-	let pin = HU.jsLink("",HU.getIconImage(icon_pin), [ATTR_CLASS,"ramadda-popup-pin",
-							   ATTR_ID,pinId]); 
+	let pin = HU.jsLink("",HU.getIconImage(icon_pin),
+			    [ATTR_CLASS,"ramadda-popup-pin",
+			     ATTR_ID,pinId]); 
 	let closeImage = HU.getIconImage(ICON_CLOSE, []);
 	let closeId = id+'_close';
 	let close = HU.span([ATTR_ID,closeId,
@@ -2249,7 +2254,9 @@ Selector.prototype = {
 	    title = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))], title);
 	}
 	let header = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT),
-				    ATTR_CLASS,"ramadda-popup-header"],SPACE+close+SPACE+pin+title);
+			     ATTR_CLASS,"ramadda-popup-header"],
+			    SPACE+close+SPACE+pin+title);
+
 	let popup = HU.div([ATTR_ID,id+"-popup"], header + extra+text);
 	this.div.html(popup);
 	this.showDiv();

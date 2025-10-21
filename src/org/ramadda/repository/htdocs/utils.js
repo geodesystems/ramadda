@@ -4341,8 +4341,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let sel =  '[' + name+'="'+ value+'"]';
 	return $(sel);
     },
+    findClass:function(element,clazz) {
+	if(!element) return $(HU.dotClass(clazz));
+	return element.find(HU.dotClass(clazz));
+    },
     jqid:function(id) {
-        return $("#"+id);
+        return $('#'+id);
     },
     initInteractiveInput:function(id,url) {
         let input = HU.jqid(id);
@@ -6695,6 +6699,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     squote: function(s) {
         return "'" + s + "'";
     },
+    quote: function(s) {
+        return "\"" + s + "\"";
+    },    
     makeToggle: function(imageId,blockId,visible) {
         if(visible===null) visible = true;
         let img1 = RamaddaUtil.getCdnUrl("/icons/togglearrowdown.gif");

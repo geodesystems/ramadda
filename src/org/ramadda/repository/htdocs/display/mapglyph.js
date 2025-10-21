@@ -3522,7 +3522,8 @@ MapGlyph.prototype = {
 	    showRange:showRange,
 	    showLabels:showLabels
         });
-	let attrs = [ATTR_TITLE,id,ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4)),"colortable",id]
+	let attrs = [ATTR_TITLE,id,ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4)),
+		     ATTR_COLORTABLE,id]
         return  HU.div(attrs,display);
     },
     initColorTables: function(currentColorbar) {
@@ -3547,7 +3548,7 @@ MapGlyph.prototype = {
 	    });
 	});
 	let url = image?('data:image/png;base64,' + image):null;
-	this.jq('colortableproperties').html(HU.div([ATTR_ID,this.domId('colortable'),
+	this.jq('colortableproperties').html(HU.div([ATTR_ID,this.domId(ID_COLORTABLE),
 						     ATTR_CLASS,CLASS_CLICKABLE,
 						     ATTR_TITLE,'Click to select color bar'],
 						    url? HU.image(url,[ATTR_HEIGHT,HU.px(20),ATTR_WIDTH,HU.px(256)]):'No image'));
@@ -3556,7 +3557,7 @@ MapGlyph.prototype = {
 	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8),
 					 CSS_MAX_HEIGHT,HU.px(200),
 					 CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
-	this.jq('colortable').click(function() {
+	this.jq(ID_COLORTABLE).click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
 					     my:'left top',
 					     at:'left bottom',
@@ -3777,9 +3778,9 @@ MapGlyph.prototype = {
 
 	decorate('fill');
 	decorate('stroke');	
-	dialog.find(HU.dotClass('ramadda-colortable-select')).click(function() {
+	dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
 	    let prefix = $(this).attr('prefix');
-	    let ct = $(this).attr("colortable");
+	    let ct = $(this).attr(ATTR_COLORTABLE);
 	    _this.jq(prefix+'colorby_colortable').val(ct);
 	    decorate(prefix);
 	});

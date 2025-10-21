@@ -81,23 +81,22 @@ if(!window.WikiUtil) {
 	    value = value.replace(/&quot;/g,'').replace(/"/g,'');
 	    let values=value.split('|');
 	    let html = '';
-	    
 	    values.forEach(v=>{
-		let link =HU.div([ATTR_CLASS,CLASS_CLICKABLE,
+		let link =HU.div([ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),
 				  'data-id',id,
 				  'data-attr',attr,
 				  ATTR_DATA_VALUE,v],v);
 		html+=link;
 	    });
 	    html = HU.div([ATTR_STYLE,
-			   HU.css(CSS_PADDING,HU.px(4),CSS_MIN_WIDTH,HU.px(200),
+			   HU.css(CSS_MIN_WIDTH,HU.px(200),
 				  CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 			  html);
-	    let dialog =HU.makeDialog({content:html,title:"Select value for " + attr,
+	    let dialog =HU.makeDialog({content:html,title:'Select value for ' + attr,
 				       header:true,sticky:true,draggable:true,modal:true});
-	    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function(){
-		WikiUtil.insertText(id,$(this).attr('data-attr')+'=\"'+
-				    $(this).attr(ATTR_DATA_VALUE)+'\"');
+	    HU.findClass(dialog,CLASS_CLICKABLE).click(function(){
+		WikiUtil.insertText(id,$(this).attr('data-attr')+'=' +
+				    HU.quote($(this).attr(ATTR_DATA_VALUE)));
 		dialog.remove();
 	    });
 	},
@@ -513,13 +512,13 @@ WikiEditor.prototype = {
 
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
 	html += HU.p();
-	html += HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-			ATTR_CLASS,CLASS_BUTTON,
-			ATTR_ID,this.domId("addok")],LABEL_OK)+
-	    SPACE3 +
+	html += HU.buttons([
 	    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 		    ATTR_CLASS,CLASS_BUTTON,
-		    ATTR_ID,this.domId("addcancel")],LABEL_CANCEL);
+		    ATTR_ID,this.domId("addok")],LABEL_OK),
+	    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+		    ATTR_CLASS,CLASS_BUTTON,
+		    ATTR_ID,this.domId("addcancel")],LABEL_CANCEL)]);
 	html = HU.div([ATTR_STYLE,
 		       HU.css(CSS_PADDING,HU.px(10),CSS_WIDTH,HU.px(400))],html);
 	let dialog = this.addDialog = HU.makeDialog({
@@ -530,13 +529,13 @@ WikiEditor.prototype = {
 	    sticky:true,
 	    draggable:true,
 	    modal:true});
-	let menu = dialog.find("#"+this.domId("addtype"));
+	let menu = jqid(this.domId("addtype"));	
 	HU.initSelect(menu);
-	dialog.find("#" +this.domId("addcancel")).button().click(()=>{
+	jqid(this.domId("addcancel")).button().click(()=>{
 	    this.addDialog.remove();
 	});
 
-	dialog.find("#" +this.domId("addok")).button().click(()=>{
+	jqid(this.domId("addok")).button().click(()=>{
 	    this.addDialog.remove();
 	    let what=this.lastWhat=menu.val();
 	    what = Utils.convertText(what);
@@ -643,7 +642,7 @@ WikiEditor.prototype = {
     },
 
     getScroller:function() {
-	return this.getBlock().find(".ace_scroller");
+	return HU.findClass(this.getBlock(),'ace_scroller');
     },
     getSession:function() {
 	return this.getEditor().session;
@@ -661,9 +660,9 @@ WikiEditor.prototype = {
 		popup.focus();
 		//We do this because the  SF menu stays popped up after clicking so we hide it
 		//then after a second we remove the style so subsequent menu clicks will work
-		this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css(CSS_DISPLAY,DISPLAY_NONE);
+		this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass("wiki-popup-menu-item")).css(CSS_DISPLAY,DISPLAY_NONE);
 		setTimeout(()=> {
-		    this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr(ATTR_STYLE);
+		    this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass("wiki-popup-menu-item")).removeAttr(ATTR_STYLE);
 		},1000);
 		return;
 	    }
@@ -1033,10 +1032,10 @@ WikiEditor.prototype = {
 	*/
 	let html= 
 	    HU.formTable() +
-	    HU.formEntry(Utils.msgLabel('Prompt'),
+	    HU.formEntryLabel('Prompt',
 			 HU.div([ATTR_ID,promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
-	    HU.formEntry(Utils.msgLabel('Prompt prefix'),
+	    HU.formEntryLabel('Prompt prefix',
 			 HU.textarea('',this.lastPromptPrefix??'',
 				     [ATTR_CLASS,'wiki-llm-input',
 				      ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
@@ -1052,26 +1051,28 @@ WikiEditor.prototype = {
 				      ATTR_STYLE,textAreaStyle]);
 
 	html+=   HU.formTable() +
-	    HU.formEntry('Prompt suffix:',
-			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input',
-								ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
-								ATTR_ID,this.domId(ID_LLM_PROMPT_SUFFIX)])) +
+	    HU.formEntryLabel('Prompt suffix',
+			 HU.input('',this.lastPromptSuffix??'',
+				  [ATTR_CLASS,'wiki-llm-input',
+				   ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
+				   ATTR_ID,this.domId(ID_LLM_PROMPT_SUFFIX)])) +
 	    HU.formTableClose();	    
 
 	html+=HU.span([ATTR_ID,this.domId('llm-call')],'Evaluate');	    
 	html+=HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
-		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results',
-					ATTR_ID,this.domId('rewrite-results'),
-					ATTR_ROWS,6,
-					ATTR_COLS,80,
-					ATTR_STYLE,textAreaStyle])+
-		     HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
-					       CSS_POSITION,POSITION_ABSOLUTE,
-					       CSS_TOP, HU.perc(50),
-					       CSS_LEFT,HU.perc(50),
-					       '-ms-transform',
-					       HU.translate('-50%', '-50%'),
-					       CSS_TRANSFORM, HU.translate('-50%', '-50%')),
+		     HU.textarea('','',
+				 [ATTR_PLACEHOLDER,'Results',
+				  ATTR_ID,this.domId('rewrite-results'),
+				  ATTR_ROWS,6,
+				  ATTR_COLS,80,
+				  ATTR_STYLE,textAreaStyle])+
+		     HU.div([ATTR_STYLE,
+			     HU.css(CSS_DISPLAY,DISPLAY_NONE,
+				    CSS_POSITION,POSITION_ABSOLUTE,
+				    CSS_TOP, HU.perc(50),
+				    CSS_LEFT,HU.perc(50),
+				    '-ms-transform',   HU.translate('-50%', '-50%'),
+				    CSS_TRANSFORM, HU.translate('-50%', '-50%')),
 			     ATTR_ID,this.domId(ID_LLM_LOADING)],
 			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
 				     [ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100))])));
@@ -1080,10 +1081,11 @@ WikiEditor.prototype = {
 			    HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],'Append'),
 			    HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,
 				     ATTR_CANCEL,true,
-				     ATTR_ID,this.domId('cancel')],LABEL_CANCEL)]);
+				     ATTR_ID,this.domId(ID_CANCEL)],LABEL_CANCEL)]);
 	html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 
-	let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+	let dialog = this.llmDialog = HU.makeDialog({content:html,
+						     anchor:this.getScroller(),
 						     my: 'left bottom',     
 						     at: 'left+200' +' top-50',
 						     title:'LLM',
@@ -1137,7 +1139,7 @@ WikiEditor.prototype = {
 	makePromptMenu();
 
 
-	dialog.find('.wiki-llm-input').keypress(function(e){
+	dialog.find(HU.dotClass('wiki-llm-input')).keypress(function(e){
 	    if(e.keyCode == 13) {
 		call();
 	    }
@@ -1146,7 +1148,7 @@ WikiEditor.prototype = {
 	    call();
 	});
 	let _this = this;
-	dialog.find('.ramadda-dialog-button').button().click(function() {
+	dialog.find(HU.dotClass(CLASS_DIALOG_BUTTON)).button().click(function() {
 	    _this.llmReplacing = true;	    
 	    if ($(this).attr(ATTR_CANCEL)) {
 		dialog.remove();
@@ -1369,11 +1371,12 @@ WikiEditor.prototype = {
 					  title:'Color Tables',
 					  header:true,sticky:false,
 					  draggable:true,modal:false});	
-	    HU.initPageSearch('.ramadda-colortable-select',
-			      '.ramadda-colortable-category','Find colortable',false,{target:jqid(guid)});
+	    HU.initPageSearch(HU.dotClass(CLASS_COLORTABLE_SELECT),
+			      HU.dotClass(CLASS_COLORTABLE_CATEGORY),
+			      'Find colortable',false,{target:jqid(guid)});
 
-	    ctDialog.find('.ramadda-colortable-select').click(function() {
-		let colorTable =$(this).attr('colortable');
+	    ctDialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
+		let colorTable =$(this).attr(ATTR_COLORTABLE);
                 WikiUtil.insertText(_this.getId()," colorTable=" + colorTable);
 		ctDialog.remove();
 	    });
@@ -1520,7 +1523,7 @@ WikiEditor.prototype = {
 			   sticky:true,
 			   draggable:true,
 			   modal:false});	
-	dialog.find('.wiki-editor-popup-header').click(function() {
+	dialog.find(HU.dotClass('wiki-editor-popup-header')).click(function() {
 	    let block = blockMap[$(this).attr('data-block')];
 	    if(!block) {
 		alert('Could not find block');
@@ -1538,7 +1541,7 @@ WikiEditor.prototype = {
 		$(document).on("click", handler);
 	    },1);
 	});
-	dialog.find('.ramadda-block-link').click(function() {
+	HU.findClass(dialog,'ramadda-block-link').click(function() {
 	    let block = blockMap[$(this).attr('data-block')];
 	    if(!block) {
 		alert('Could not find block');
@@ -1737,7 +1740,8 @@ WikiEditor.prototype = {
 
 
 	let commands = jqid(_this.domId('allsearch_corpus')).find(TAG_SPAN);
-	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
+	let headers = jqid(_this.domId('allsearch_corpus')).find(HU.dotClass('wiki-searchheader'));
+	
 
 	_this.jq('searchshowall').change(function() {
 	    if ($(this).is(':checked')) {
@@ -1745,7 +1749,7 @@ WikiEditor.prototype = {
 		    let span = $(this);
 		    let title  = span.attr(ATTR_TITLE);
 		    if(!Utils.stringDefined(title)) return;
-		    let a = span.find('a');
+		    let a = span.find(TAG_A);
 		    if(a.length>0) {
 			span = a;
 		    }
@@ -1761,7 +1765,7 @@ WikiEditor.prototype = {
 	    } else {
 		commands.each(function(){
 		    let span = $(this);
-		    let a = span.find('a');
+		    let a = span.find(TAG_A);
 		    if(a.length>0) {
 			span = a;
 		    }
@@ -2149,8 +2153,8 @@ WikiEditor.prototype = {
 	    this.jq('displaysearch').keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		let seen = {};
-		let displayLinks = popup.find('.wiki-editor-popup-link');
-		let headers = popup.find('.wiki-editor-display-category');
+		let displayLinks = popup.find(HU.dotClass('wiki-editor-popup-link'));
+		let headers = popup.find(HU.dotClass('wiki-editor-display-category'));
 		displayLinks.each(function() {
 		    if(text=='') {
 			$(this).show();
@@ -2208,7 +2212,7 @@ WikiEditor.prototype = {
 	let popup = '';
 	if(!this.toolbar) return;
 	if(!this.formId) return;
-	this.toolbar.find(HU.dotClass('wiki-menubar-tags')).each(function(){
+	HU.findClass(this.toolbar,'wiki-menubar-tags').each(function(){
 	    if(popup!='')popup+=HU.thinLine();
 	    popup+=HU.center(HU.b($(this).attr(ATTR_DATA_TITLE)));
 	    popup+=$(this).html();
@@ -2241,7 +2245,7 @@ WikiEditor.prototype = {
 		header:true,
 		draggable:true});
 	    _this.jq('tagsearch').focus();
-	    this.tagSelectDialog.find('a').tooltip({
+	    this.tagSelectDialog.find(TAG_A).tooltip({
 		classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		content: function () {
 		    return $(this).prop(ATTR_TITLE);
@@ -2251,9 +2255,9 @@ WikiEditor.prototype = {
 	    });
 
 
-	    this.tagSelectDialog.find('.wiki-editor-popup-category').css(CSS_DISPLAY,DISPLAY_NONE);
-	    let tags = this.tagSelectDialog.find('.wiki-editor-popup-link');
-	    //	    let tags = this.tagSelectDialog.find('a');	    
+	    HU.findClass(this.tagSelectDialog,'wiki-editor-popup-category').css(CSS_DISPLAY,DISPLAY_NONE);
+	    let tags = this.tagSelectDialog.find(HU.dotClass('wiki-editor-popup-link'));
+	    //	    let tags = this.tagSelectDialog.find(TAG_A);	    
 	    _this.jq('tagsearch').keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		HU.doPageSearch(text,tags);
@@ -2729,7 +2733,9 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
     let menu  = '';
     menu += HU.tag(TAG_LI, [],
 		   HU.div([ATTR_ID,ID_SEARCH_ATTRIBUTES,
-			   ATTR_CLASS,HU.classes('wiki-popup-menu-header wiki-popup-menu-link',CLASS_CLICKABLE),
+			   ATTR_CLASS,
+			   HU.classes('wiki-popup-menu-header wiki-popup-menu-link',
+				      CLASS_CLICKABLE),
 			   ATTR_TITLE,'Search attributes'],
 			  HU.getIconImage('fa-binoculars')));
     blocks.forEach((block,idx)=>{
@@ -2753,8 +2759,10 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 	    sub = block.items;
 	}
 	menu += HU.tag(TAG_LI, [],
-		       HU.div([ATTR_CLASS,'wiki-popup-menu-header wiki-popup-menu-link '],title) +
-		       HU.tag(TAG_UL, [ATTR_CLASS,'wiki-popup-menu-item'], sub));
+		       HU.div([ATTR_CLASS,
+			       'wiki-popup-menu-header wiki-popup-menu-link '],title) +
+		       HU.tag(TAG_UL,
+			      [ATTR_CLASS,'wiki-popup-menu-item'], sub));
     });
     let menubar = HU.div([ATTR_CLASS,'wiki-popup-menubar',
 			  ATTR_ID, id],
@@ -2948,9 +2956,10 @@ Transcriber.prototype = {
 				 ATTR_ID,this.domId(ID_TRANSCRIBE_LOADING)],
 				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
 					 [ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100))])));
-	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),
+	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],
+				      this.opts.appendLabel),
 			      HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,
-				       ATTR_ID,this.domId('cancel')],LABEL_CANCEL)]);
+				       ATTR_ID,this.domId(ID_CANCEL)],LABEL_CANCEL)]);
 	    html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 	    let closeCallback =()=>{
 		this.transcribeClear();
@@ -2991,7 +3000,7 @@ Transcriber.prototype = {
 
 
 	    let _this = this;
-	    dialog.find('.ramadda-dialog-button').button().click(function() {
+	    dialog.find(HU.dotClass(CLASS_DIALOG_BUTTON)).button().click(function() {
 		let val = _this.jq(ID_TRANSCRIBE_TEXT).val()??'';
 		if ($(this).attr('append')) {
 		    _this.appendText(val);

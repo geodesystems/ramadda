@@ -26,6 +26,11 @@ var LABEL_APPLY="Apply";
 var LABEL_DELETE="Delete";
 
 
+var ID_CANCEL = 'cancel';
+var ID_OK  ='ok';
+var ID_APPLY  ='apply';
+
+
 var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
 var ARG_PAGESEARCH='pagesearch';
@@ -81,6 +86,10 @@ var CLASS_FORMLABEL = 'formlabel';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
 
 
+var CLASS_COLORTABLE_SELECT = 'ramadda-colortable-select';
+var CLASS_COLORTABLE_CATEGORY = 'ramadda-colortable-category';
+
+
 var CLASS_SESSION_ERROR = 'ramadda-session-error';
 var CLASS_BUTTON = 'ramadda-button';
 var CLASS_BUTTONS = 'ramadda-buttons';
@@ -93,6 +102,7 @@ var CLASS_BUTTON_DISABLED = 'ramadda-button-disabled';
 var CLASS_LINK = 'ramadda-link';
 var CLASS_MENU_ITEM = 'ramadda-menu-item';
 var CLASS_DIALOG = 'ramadda-dialog';
+
 var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
 var CLASS_COPYABLE = 'ramadda-copyable';
 var CLASS_CLICKABLE = 'ramadda-clickable';
@@ -203,6 +213,10 @@ var TAG_TR = 'tr';
 var TAG_TD = 'td';
 var TAG_UL = 'ul';
 var TAG_OL = 'ol';
+
+var ATTR_COLORTABLE='colortable';
+var ID_COLORTABLE = 'colortable';
+
 
 var ATTR_X='x';
 var ATTR_Y = 'y';

@@ -2425,7 +2425,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             let get = this.getGet();
             let tmp = HU.formTable();
             let colorTable = this.getColorTableName();
-            let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId("colortable")]);
+            let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId(ID_COLORTABLE)]);
             for (table in Utils.ColorTable) {
                 if (table == colorTable)
                     ct += HU.tag(TAG_OPTION,[ATTR_SELECTED,null], table);
@@ -2452,13 +2452,13 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
             };
             let func2 = function() {
-                _this.colorTable = _this.jq("colortable").val();
+                _this.colorTable = _this.jq(ID_COLORTABLE).val();
                 _this.updateUI();
 
             };
             this.jq("colorbymin").blur(updateFunc);
             this.jq("colorbymax").blur(updateFunc);
-            this.jq("colortable").change(func2);
+            this.jq(ID_COLORTABLE).change(func2);
         },
 
         handleEventPointDataLoaded: function(source, pointData) {
@@ -3086,7 +3086,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let get = this.getGet();
             let tmp = HU.formTable();
             let colorTable = this.getColorTableName();
-            let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId("colortable")]);
+            let ct = HU.open(TAG_SELECT,[ATTR_ID,this.domId(ID_COLORTABLE)]);
             for (table in Utils.ColorTables) {
                 if (table == colorTable)
                     ct += HU.tag(TAG_OPTION,[ATTR_SELECTED,null],table);
@@ -3114,13 +3114,13 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
             };
             let func2 = function() {
-                _this.colorTable = _this.jq("colortable").val();
+                _this.colorTable = _this.jq(ID_COLORTABLE).val();
                 _this.updateUI();
 
             };
             this.jq("colorbymin").blur(updateFunc);
             this.jq("colorbymax").blur(updateFunc);
-            this.jq("colortable").change(func2);
+            this.jq(ID_COLORTABLE).change(func2);
         },
 
         handleEventPointDataLoaded: function(source, pointData) {
