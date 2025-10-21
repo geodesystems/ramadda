@@ -900,7 +900,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + type);
-        String event = getSelectEvent(request, elementId, allEntries, type, entry);
+        String event = getSelectEvent(request, elementId, allEntries, type, entry,entryType);
 	String clazz=HU.attrs("class","ramadda-clickable");
 	if(linkExtra!=null && linkExtra.indexOf("class")>0) clazz="";
         String link = (label == null)
@@ -976,15 +976,22 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                         boolean allEntries, String selectType,
                                         Entry entry,String...entryType)
             throws Exception {
+
         boolean hasType    = Utils.stringDefined(selectType);
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + selectType);
 	String type = entryType.length>0?entryType[0]:"";
+	List<String> props = new ArrayList<String>();
 	if(type==null) type="";
+	if(Utils.stringDefined(type)) {
+	    TypeHandler typeHandler = request.getRepository().getTypeHandler(type,false);
+	    if(typeHandler!=null) Utils.add(props,"title",JU.quote("Select " + typeHandler.getLabel()));
+	}
         String event = HU.call(
                            "RamaddaUtils.selectInitialClick",
-			   "event", HU.squote(selectorId),
+			   "event",
+			   HU.squote(selectorId),
 			   HU.squote(elementId),
 			   HU.squote(Boolean.toString(allEntries)),
 			   ( !hasType? "null"
@@ -994,7 +1001,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 			    : "null"),
 			   HU.squote((request == null)
 				     ? ""
-				     : request.getString(ARG_ENTRYTYPE, type)));
+				     : request.getString(ARG_ENTRYTYPE, type)),
+			   "null",
+			   JU.map(props));
         return event;
     }
 
