@@ -570,7 +570,9 @@ WikiEditor.prototype = {
 		text = "{{grid entry=" + entryId+" }}";			
 	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
 		      what=="Children Links") {
-		let url = HU.url(RamaddaUtils.getUrl("/entry/wikitext"),ARG_ENTRYID,entryId,'response','json');
+		let url = HU.url(RamaddaUtils.getUrl("/entry/wikitext"),
+				 ARG_ENTRYID,entryId,
+				 'response','json');
 		if(what==what_description) url=HU.url(url,"what","description");
 		else if(what==what_children_links) url=HU.url(url,"what","children_links");
 		else if(what==what_children_ids) url=HU.url(url,"what","children_ids");				
@@ -2850,7 +2852,7 @@ Transcriber.prototype = {
 	this.jq(ID_TRANSCRIBE_LOADING).show();
 	data.append('mimetype', this.transcribeMime);
 	data.append('audio-file', file);
-	data.append('entryid',this.entryId);
+	data.append(ARG_ENTRYID,this.entryId);
 	if(this.jq('transcribe_sendtochat').is(':checked')) {
 	    data.append('sendtochat','true');	    
 	}

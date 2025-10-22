@@ -123,9 +123,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
-                    await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/showdown.min.js");
+                    await Utils.importJS(RamaddaUtil.getBaseUrl() + "/lib/showdown.min.js");
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
-                    $(imports).appendTo("head");
+                    $(imports).appendTo(TAG_HEAD);
                     setTimeout(() => this.fetchNotebook(1), 10);
                 }
             } else {
@@ -142,7 +142,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 return;
             }
             var dttm = new Date().getTime();
-            ace.config.set('basePath', RamaddUtil.getBaseUrl() + "/htdocs_v" + dttm + "/lib/ace/src-min");
+            ace.config.set('basePath', RamaddaUtil.getBaseUrl() + "/htdocs_v" + dttm + "/lib/ace/src-min");
             let _this = this;
             this.fetchedNotebook = true;
             await this.getEntry(this.getProperty("entryId", ""), entry => {
@@ -152,7 +152,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.rootEntry = entry;
             });
             var id = this.getProperty("entryId", "");
-            var url = RamaddUtil.getBaseUrl() + "/getnotebook?entryid=" + id;
+            var url = RamaddaUtil.getBaseUrl() + "/getnotebook?entryid=" + id;
             url += "&notebookId=" + this.getProperty("notebookId", "default_notebook");
             var jqxhr = $.getJSON(url, function(data) {
                 _this.loadJson(data);
@@ -353,7 +353,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 notebookId: this.getProperty("notebookId", "default_notebook"),
                 notebook: json
             };
-            var url = RamaddUtil.getBaseUrl() + "/savenotebook";
+            var url = RamaddaUtil.getBaseUrl() + "/savenotebook";
             $.post(url, args, (result) => {
                 if (result.error) {
                     alert("Error saving notebook: " + result.error);
@@ -985,7 +985,7 @@ function NotebookState(cell, div) {
             if (entry == null)
                 await this.cell.getCurrentEntry(e => entry = e);
             if ((typeof entry) != "string") entry = entry.getId();
-            await GuiUtils.loadHtml(RamaddUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
+            await GuiUtils.loadHtml(RamaddaUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
                 callback);
         },
         //These are for the iodiode mimic
@@ -1151,8 +1151,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             html = HU.div([ATTR_ID, this.getDomId(ID_CELL)], html);
             jqid(this.id + "_cellinput").html(html);
             jqid(this.id + "_celloutput").html(output);
-            var url = RamaddUtil.getBaseUrl()+ "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
-            url += "&extrahelp=" + RamaddUtil.getBaseUrl() + "/userguide/notebook.html|Notebook Help";
+            var url = RamaddaUtil.getBaseUrl()+ "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
+            url += "&extrahelp=" + RamaddaUtil.getBaseUrl() + "/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url, h => {
                 this.inputToolbar = h;
                 this.jq(ID_INPUT_TOOLBAR).html(h);
@@ -1465,7 +1465,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (command == "savewithout") {
                 this.notebook.saveNotebook(false);
             } else if (command == "help") {
-                var win = window.open(RamaddUtil.getBaseUrl() + "/userguide/notebook.html", '_blank');
+                var win = window.open(RamaddaUtil.getBaseUrl() + "/userguide/notebook.html", '_blank');
                 win.focus();
             } else if (command == "delete") {
                 this.askDelete();
@@ -1860,16 +1860,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             url = Utils.replaceRoot(url);
 
             if (url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
-                return Utils.call(callback, RamaddUtil.getBaseUrl() + "/entry/get?entryid=" + url);
+                return Utils.call(callback, RamaddaUtil.getBaseUrl() + "/entry/get?entryid=" + url);
             } else {
                 if (!url.startsWith("http")) {
-                    if ((url.startsWith("/") && !url.startsWith(RamaddUtil.getBaseUrl())) || url.startsWith("..") || !url.startsWith("/")) {
+                    if ((url.startsWith("/") && !url.startsWith(RamaddaUtil.getBaseUrl())) || url.startsWith("..") || !url.startsWith("/")) {
                         var entry;
                         await this.getEntryFromPath(url, e => entry = e);
                         if (!entry) {
                             return Utils.call(callback, null);
                         }
-                        return Utils.call(callback, RamaddUtil.getBaseUrl() + "/entry/get?entryid=" + entry.getId());
+                        return Utils.call(callback, RamaddaUtil.getBaseUrl() + "/entry/get?entryid=" + entry.getId());
                     }
                 }
                 return Utils.call(callback, url);
@@ -1966,8 +1966,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processMd: async function(chunk) {
-            //            await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.css");
-            //            await Utils.importJS(RamaddUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.js");
+            //            await Utils.importJS(RamaddaUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.css");
+            //            await Utils.importJS(RamaddaUtil.getBaseUrl() + "/lib/katex/lib/katex/katex.min.js");
 
             var content = chunk.getContent();
             this.rawOutput += content + "\n";
@@ -2045,7 +2045,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.output = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
-            await GuiUtils.loadHtml(RamaddUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
+            await GuiUtils.loadHtml(RamaddaUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
                 wikiCallback);
         },
         processSh: async function(chunk) {
@@ -2305,10 +2305,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         addToToolbar: function(id, entry, toolbarItems) {
             var call = "getHandler('" + id + "').setId('" + entry.getId() + "')";
-            var icon = HU.image(RamaddUtil.getBaseUrl() + "/icons/setid.png", ["border", 0, ATTR_TITLE, "Set ID in Input"]);
+            var icon = HU.image(RamaddaUtil.getBaseUrl() + "/icons/setid.png", ["border", 0, ATTR_TITLE, "Set ID in Input"]);
             toolbarItems.unshift(HU.tag(TAG_A, [ATTR_ONCLICK, call], icon));
             var call = "getHandler('" + id + "').selectEntry('" + entry.getId() + "')";
-            var icon = HU.image(RamaddUtil.getBaseUrl() + "/icons/circle-check.png", ["border", 0, ATTR_TITLE, "Select Entry"]);
+            var icon = HU.image(RamaddaUtil.getBaseUrl() + "/icons/circle-check.png", ["border", 0, ATTR_TITLE, "Select Entry"]);
             toolbarItems.unshift(HU.tag(TAG_A, [ATTR_ONCLICK, call], icon));
         },
         getEntryPrefix: function(id, entry) {
@@ -2316,7 +2316,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var call = "getHandler('" + id + "').cdEntry('" + entry.getId() + "')";
             return HU.div([ATTR_STYLE, HU.css(CSS_PADDING_RIGHT,HU.px(4)),
 				  ATTR_TITLE, "cd to entry", ATTR_ONCLICK, call,
-				  ATTR_CLASS, CLASS_LINK], HU.image(RamaddUtil.getBaseUrl() + "/icons/go.png"));
+				  ATTR_CLASS, CLASS_LINK], HU.image(RamaddaUtil.getBaseUrl() + "/icons/go.png"));
         },
         displayEntries: function(entries, div) {
             if (div == null) div = new Div();

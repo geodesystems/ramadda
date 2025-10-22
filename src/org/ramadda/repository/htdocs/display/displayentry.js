@@ -3389,7 +3389,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	},
 
 	getPageSearchSelectors:function() {
-	    let top = this.getPageSearchParent() || "body";
+	    let top = this.getPageSearchParent() || TAG_BODY;
 	    let parent = $(top);
 	    //Try with "#" id
 	    if(parent.length==0 && this.getPageSearchParent()) {
@@ -3471,7 +3471,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    let html = Utils.stripTags($(this).html());
 		    let corpus = $(this).attr(ATTR_DATA_CORPUS)??' ';
 		    html+=corpus+' ';
-		    html+=$(this).attr('entryid')??' ';		    
+		    html+=$(this).attr(ATTR_ENTRYID)??' ';		    
 		    html = html.toLowerCase();
 		    textOk = true;
 		    values.every(v=>{
@@ -3607,7 +3607,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			map[e.getId()]=true;
 		    });
 		    sel.each(function() {
-			let entryId = $(this).attr('entryid');
+			let entryId = $(this).attr(ATTR_ENTRYID);
 			if(!entryId) return;
 			if(map[entryId]) {
 			    $(this).show();

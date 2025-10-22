@@ -11,7 +11,7 @@ var RamaddaLicense =  {
 	    showLicense:true,
 	    suffix:'',
 	    onlyAnonymous:false,
-	    redirect:RamaddUtil.getBaseUrl(),
+	    redirect:RamaddaUtil.getBaseUrl(),
 	    logName:false
 	}
 	if(args) $.extend(opts,args);
@@ -65,8 +65,9 @@ var RamaddaLicense =  {
 		}
 		let url = HU.url(RamaddaUtil.getUrl('/loglicense'),
 				 ["licenseid",required,
-				  "name",name,"email",email,
-				  "entryid",opts.entryid]);
+				  ARG_NAME,name,
+				  "email",email,
+				  ARG_ENTRYID,opts.entryid]);
 		$.getJSON(url, data=>{});
 		Utils.setLocalStorage(key, true);
 		dialog.remove();

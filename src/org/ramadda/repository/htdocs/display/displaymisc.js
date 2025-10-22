@@ -482,14 +482,17 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		    image = HU.image(on?icon_downdart:icon_rightdart,[ATTR_ID,baseId+"_toggle_image" + cnt]) + " ";
 		}
 		html+=HU.div([ATTR_CLASS,"display-tree-toggle",
-			      ATTR_ID,baseId+"_toggle" + cnt,"toggle-state",on,"block-count",cnt], image +  node.label);
+			      ATTR_ID,baseId+"_toggle" + cnt,"toggle-state",on,"block-count",cnt],
+			     image +  node.label);
 		html+=HU.open(TAG_DIV,[ATTR_ID, baseId+"_block"+cnt,
 				       ATTR_CLASS,"display-tree-block",
 				       ATTR_STYLE,HU.css(CSS_DISPLAY, (on?DISPLAY_BLOCK:DISPLAY_NONE))]);
 		if(details && details!="") {
 		    if(node.children.length>0) {
 			html+= HU.div([ATTR_CLASS,"display-tree-toggle-details",
-				       ATTR_ID,baseId+"_toggle_details" + cnt,"toggle-state",false,"block-count",cnt],
+				       ATTR_ID,baseId+"_toggle_details" + cnt,
+				       "toggle-state",false,
+				       "block-count",cnt],
 				      HU.image(icon_rightdart,
 					       [ATTR_ID,baseId+"_toggle_details_image" + cnt]) + " Details");
 			html+=HU.div([ATTR_ID, baseId+"_block_details"+cnt,
@@ -586,7 +589,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     //css =  RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.css");
     $(HU.tag(TAG_LINK,[ATTR_REL,'stylesheet',
 		       ATTR_HREF, css,
-		       ATTR_TYPE,'text/css'] )).appendTo("head");
+		       ATTR_TYPE,'text/css'] )).appendTo(TAG_HEAD);
     
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
@@ -2433,8 +2436,8 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                     ct += HU.tag(TAG_OPTION,[], table);
             }
             ct += HU.close(TAG_SELECT);
-            tmp += HU.formEntry("Color Table:", ct);
-            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin,
+            tmp += HU.formEntryLabel("Color Table", ct);
+            tmp += HU.formEntryLabel("Color By Range", HU.input("", this.colorByMin,
 							    [ATTR_SIZE, 7,
 							     ATTR_ID, this.domId("colorbymin")]) + " - " +
 				HU.input("", this.colorByMax, [ATTR_SIZE, 7,
@@ -3094,8 +3097,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     ct += HU.tag(TAG_OPTION,[], table);
             }
             ct += HU.close(TAG_SELECT);
-            tmp += HU.formEntry("Color Bar:", ct);
-            tmp += HU.formEntry("Color By Range:", HU.input("", this.colorByMin,
+            tmp += HU.formEntryLabel("Color Bar", ct);
+            tmp += HU.formEntryLabel("Color By Range", HU.input("", this.colorByMin,
 							    [ATTR_SIZE, 7,
 							     ATTR_ID, this.domId("colorbymin")]) + " - " +
 				HU.input("", this.colorByMax,

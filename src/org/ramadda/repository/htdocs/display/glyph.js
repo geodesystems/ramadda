@@ -314,7 +314,7 @@ Glyph.prototype = {
 		src =  args.record.getValue(props.imageField.getIndex());
 	    }
 	    if(src) {
-		src= src.replace('\${root}',RamaddUtil.getBaseUrl());
+		src= src.replace('\${root}',RamaddaUtil.getBaseUrl());
 		props.width = +(props.width??50);
 		props.height = +(props.height??50);		
 		let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});

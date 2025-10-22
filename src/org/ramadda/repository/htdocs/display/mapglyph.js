@@ -473,42 +473,42 @@ MapGlyph.prototype = {
     },
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
-	    return HU.formEntry('Rings Radii:',
-				HU.input('',Utils.join(this.getRadii(),','),
-					 [ATTR_ID,this.domId('radii'),
-					  ATTR_SIZE,40])+
-				' e.g., 1km, 2mi (miles), 100ft') +
-		HU.formEntryTop('Rings Labels:',
-				HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
-						  [ATTR_ID,this.domId('rangeringlabels'),
-						   ATTR_SIZE,40]),
-					 'Use ${d} macro for the distance e.g.:<br> Label 1 ${d}, ..., Label N ${d}  '])) +
+	    return HU.formEntryLabel('Rings Radii',
+				     HU.input('',Utils.join(this.getRadii(),','),
+					      [ATTR_ID,this.domId('radii'),
+					       ATTR_SIZE,40])+
+				     ' e.g., 1km, 2mi (miles), 100ft') +
+		HU.formEntryTopLabel('Rings Labels',
+				     HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
+						       [ATTR_ID,this.domId('rangeringlabels'),
+							ATTR_SIZE,40]),
+					      'Use ${d} macro for the distance e.g.:<br> Label 1 ${d}, ..., Label N ${d}  '])) +
 
-	    HU.formEntry('Ring label angle:',
-			 HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-			     ATTR_ID,this.domId('rangeringangle'),
-			     ATTR_SIZE,4]) +' Leave blank to not show labels') +
-		HU.formEntryTop('Ring Styles:',
-				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',
-						     [ATTR_ID,this.domId('rangeringstyle'),
-						      ATTR_ROWS,5,
-						      ATTR_COLS, 40]),
-					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
+	    HU.formEntryLabel('Ring label angle',
+			      HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
+				  ATTR_ID,this.domId('rangeringangle'),
+				  ATTR_SIZE,4]) +' Leave blank to not show labels') +
+		HU.formEntryTopLabel('Ring Styles',
+				     HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',
+							  [ATTR_ID,this.domId('rangeringstyle'),
+							   ATTR_ROWS,5,
+							   ATTR_COLS, 40]),
+					      'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
 	}
 	if(this.isMapServer()) {
 	    let url = this.getMapServerUrl();
 	    if(Utils.stringDefined(url)) {
-		let extra = HU.formEntry("Server URL:",
-					 HU.input('',url,
-						  [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
-						   ATTR_ID,this.domId('serverurl'),
-						   ATTR_SIZE,60]));
+		let extra = HU.formEntryLabel("Server URL",
+					      HU.input('',url,
+						       [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
+							ATTR_ID,this.domId('serverurl'),
+							ATTR_SIZE,60]));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
-		    extra += HU.formEntry("WMS Layer:",
-					  HU.input('',this.attrs.wmsLayer,
-						   [ATTR_ID,this.domId('wmslayer'),
-						    ATTR_SIZE,20]));
+		    extra += HU.formEntryLabel("WMS Layer",
+					       HU.input('',this.attrs.wmsLayer,
+							[ATTR_ID,this.domId('wmslayer'),
+							 ATTR_SIZE,20]));
 		}
 		return extra;
 	    }
@@ -517,17 +517,18 @@ MapGlyph.prototype = {
 
 
 	if(this.isMapServer() && this.getDatacubeVariable()) {
-	    return HU.formEntry('Color Table:',HU.div([ATTR_ID,this.domId('colortableproperties')]));
+	    return HU.formEntryLabel('Color Table',
+				     HU.div([ATTR_ID,this.domId('colortableproperties')]));
 	}	    
 
 	if(this.isStraightLine()) {
-	    return HU.formEntry('Line type:',
-				HU.select('',[ATTR_ID,this.domId(ID_LINETYPE)],[
-				    {value:LINETYPE_STRAIGHT,label:'Straight'},
-				    {value:LINETYPE_STEPPED,label:'Stepped'},
-				    {value:LINETYPE_CURVE,label:'Curve'},
-				    {value:LINETYPE_GREATCIRCLE,label:'Great Circle'}],
-					  this.attrs.lineType)) +
+	    return HU.formEntryLabel('Line type',
+				     HU.select('',[ATTR_ID,this.domId(ID_LINETYPE)],[
+					 {value:LINETYPE_STRAIGHT,label:'Straight'},
+					 {value:LINETYPE_STEPPED,label:'Stepped'},
+					 {value:LINETYPE_CURVE,label:'Curve'},
+					 {value:LINETYPE_GREATCIRCLE,label:'Great Circle'}],
+					       this.attrs.lineType)) +
 		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),
 					    [ATTR_ID,this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
 	}
@@ -548,17 +549,19 @@ MapGlyph.prototype = {
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.formTable();
-	html+=HU.formEntry('Name:',nameWidget);
+	html+=HU.formEntryLabel('Name',nameWidget);
 	if(this.isMap()) {
 	    if(this.attrs.entryId) {
-		html+=HU.formEntry('Entry ID:',HU.input('',this.attrs.entryId,
-							[ATTR_ID,this.domId('entryid'),
-							 ATTR_SIZE,60]));
+		html+=HU.formEntryLabel('Entry ID',
+					HU.input('',this.attrs.entryId,
+						 [ATTR_ID,this.domId('entryid'),
+						  ATTR_SIZE,60]));
 	    }
 	    if(this.attrs.resourceUrl) {
-		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,
-						       [ATTR_ID,this.domId('resourceurl'),
-							ATTR_SIZE,60]));
+		html+=HU.formEntryLabel('Map URL',
+					HU.input('',this.attrs.resourceUrl,
+						 [ATTR_ID,this.domId('resourceurl'),
+						  ATTR_SIZE,60]));
 	    }
 	}	    
 	html+=HU.formTableClose();
@@ -1149,7 +1152,10 @@ MapGlyph.prototype = {
 	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
 
 	let sampleCount = props.sampleCount??1;
-	let url = Ramadda.getUrl("/entry/data?record.last="+ sampleCount+"&max=" + sampleCount+"&entryid=" + opts.entryId);
+	let url = HU.url(Ramadda.getUrl("/entry/data"),
+			 "record.last",sampleCount,
+			 "max",sampleCount,
+			 ARG_ENTRYID,opts.entryId);
 	//	console.log('url',url);
 	let pointData = new PointData("",  null,null,url, {entryId:opts.entryId});
 
@@ -2333,7 +2339,7 @@ MapGlyph.prototype = {
 	    buttons =  HU.span([ATTR_ID,this.setLocationId,
 				ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.image(Ramadda.getUrl('/nps/binoculars_medium_gray.svg'),
+			       HU.image(Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg'),
 					[ATTR_WIDTH,HU.px(16)])
 			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
@@ -2933,10 +2939,14 @@ MapGlyph.prototype = {
 	    case 'settings':
 		let html = HU.formTable();
 
-		html+=HU.formEntry('Time Pause:', HU.input("",_this.attrs.timeAnimationPause??4000,
-							   [ATTR_ID,_this.domId('timeanimation_pause'),ATTR_SIZE,'4']) +' (ms)');
-		html+=HU.formEntry('Time Step:', HU.input("",_this.attrs.timeAnimationStep??1,
-							  [ATTR_ID,_this.domId('timeanimation_step'),ATTR_SIZE,'4']) +' Time steps to skip');		
+		html+=HU.formEntryLabel('Time Pause',
+					HU.input("",_this.attrs.timeAnimationPause??4000,
+						 [ATTR_ID,_this.domId('timeanimation_pause'),
+						  ATTR_SIZE,'4']) +' (ms)');
+		html+=HU.formEntryLabel('Time Step',
+					HU.input("",_this.attrs.timeAnimationStep??1,
+						 [ATTR_ID,_this.domId('timeanimation_step'),
+						  ATTR_SIZE,'4']) +' Time steps to skip');		
 		html+=HU.close(TAG_TABLE);
 
 		let buttons = HU.buttons([
@@ -3287,7 +3297,9 @@ MapGlyph.prototype = {
 	    if(this.attrs.entryType=='geo_imdv') {
 		this.dontSaveChildren=true;
 		if(this.mapLoaded) return;
-		let url =Ramadda.getUrl("/entry/get?entryid=" + this.attrs.entryId+"&fileinline=true");
+		let url =HU.url(Ramadda.getUrl("/entry/get"),
+				ARG_ENTRYID,this.attrs.entryId,
+				"fileinline",true);
 		let finish = (data)=>{
 		    this.mapLoaded = true;
 		    this.makeLegend();
@@ -4092,7 +4104,8 @@ MapGlyph.prototype = {
     },
     getHelp:function(url,label) {
 	if(!url.startsWith('#')) url = '/userguide/imdv/' + url;
-	return HU.href(Ramadda.getUrl(url),HU.getIconImage(icon_help) +' ' +(label??'Help'),[ATTR_TARGET,'_help']);
+	return HU.href(Ramadda.getUrl(url),
+		       HU.getIconImage(icon_help) +' ' +(label??'Help'),[ATTR_TARGET,'_help']);
     },
     getCentroid: function() {
 	if(this.features && this.features.length) {
@@ -4207,13 +4220,18 @@ MapGlyph.prototype = {
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
 		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
-		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +SPACE2+
-				     HU.boldLabel('Range') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),
-										       ATTR_SIZE,'6',ATTR_TITLE,'min value']) +' -- '+
-				     HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),ATTR_SIZE,'6',ATTR_TITLE,'max value']));
+		comp += HU.formEntryLabel('Property',
+					  HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],
+						    numericProperties,obj.property) +SPACE2+
+					  HU.boldLabel('Range') + HU.input('',obj.min??'',
+									   [ATTR_ID,this.domId(prefix+'colorby_min'),
+									    ATTR_SIZE,6,
+									    ATTR_TITLE,'min value']) +' -- '+
+					  HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),ATTR_SIZE,'6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
 		let ct = Utils.getColorTablePopup({label:'Select',showToggle:true,attr:'prefix',value:prefix});
-		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+ct);
+		comp+=HU.formEntryLabel('Color table',
+					HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+ct);
 		comp+=HU.close(TAG_TABLE);
 		return comp;
 	    };
@@ -4351,10 +4369,10 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    let subset = HU.b('Feature Subset')+HU.br();
 	    subset += HU.open(TAG_TABLE);
-	    subset+=HU.formEntry('Skip:',
- 				 HU.input('',this.attrs.subsetSkip??'0',
-					  [ATTR_ID,this.domId('subsetSkip'),ATTR_SIZE,'6'])+
-				 ' ' +'Prunes features');
+	    subset+=HU.formEntryLabel('Skip',
+ 				      HU.input('',this.attrs.subsetSkip??'0',
+					       [ATTR_ID,this.domId('subsetSkip'),ATTR_SIZE,'6'])+
+				      ' ' +'Prunes features');
 	    subset+=HU.formEntry('',
 				 HU.checkbox(this.domId('subsetReverse'),
 					     [ATTR_ID,this.domId('subsetReverse')],
@@ -6444,7 +6462,8 @@ MapGlyph.prototype = {
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
 	let entryId = this.getEntryId();
-	let pointDataUrl = displayAttrs.pointDataUrl ||Ramadda.getUrl("/entry/data?max=50000&entryid=" + entryId);
+	let pointDataUrl = displayAttrs.pointDataUrl ||
+	    HU.url(Ramadda.getUrl("/entry/data"),"max",50000,ARG_ENTRYID,entryId);
 	let pointData = new PointData(this.attrs.name,  null,null,
 				      pointDataUrl,
 				      {entryId:entryId});
@@ -6470,7 +6489,7 @@ MapGlyph.prototype = {
 		     "pointDataCacheOK":false,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
-		     "fileUrl":Ramadda.getUrl("/entry/get?entryid=" + entryId+"&fileinline=true")};
+		     "fileUrl":HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,entryId,"fileinline",true)};
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();

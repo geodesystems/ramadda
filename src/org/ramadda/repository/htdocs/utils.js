@@ -70,10 +70,10 @@ var Utils =  {
 		html+=HU.vspace(HU.em(1));
 		html+=HU.div([],'Please enter your contact information');
 		html+=HU.formTable();
-		html+=HU.formEntry("Name:",HU.input('','',[ATTR_TABINDEX,1,
+		html+=HU.formEntryLabel('Name',HU.input('','',[ATTR_TABINDEX,1,
 							   ATTR_ID,'licenseagreename',
 							   ATTR_SIZE,30]));
-		html+=HU.formEntry("Email:",HU.input('','',[ATTR_TABINDEX,2,
+		html+=HU.formEntryLabel('Email',HU.input('','',[ATTR_TABINDEX,2,
 							    ATTR_ID,'licenseagreeemail',
 							    ATTR_SIZE,30]));		
 		html+=HU.formTableClose();
@@ -107,8 +107,9 @@ var Utils =  {
 		}
 		let url = HU.url(RamaddaUtil.getUrl('/loglicense'),
 				 ["licenseid",required,
-				  ATTR_NAME,name,"email",email,
-				  "entryid",opts.entryid]);
+				  ARG_NAME,name,
+				  "email",email,
+				  ARG_ENTRYID,opts.entryid]);
 		$.getJSON(url, data=>{});
 		Utils.setLocalStorage(key, true);
 		dialog.remove();
@@ -556,7 +557,7 @@ var Utils =  {
     },
     copyToClipboardOld:function(text) {
         let temp = $("<textarea></textarea>");
-        $("body").append(temp);
+        $(TAG_BODY).append(temp);
         temp.val(text).select();
         if(!document.execCommand("copy")) {
 	    console.error('Copy to clipboard failed');
@@ -1081,7 +1082,7 @@ var Utils =  {
         }
         info.callback=[];
         script.src = url;
-        document.getElementsByTagName( "head" )[0].appendChild( script );
+        document.getElementsByTagName(TAG_HEAD)[0].appendChild( script );
     },
 
     importJS: async function(path, callback, err, noCache) {
@@ -1146,7 +1147,7 @@ var Utils =  {
                     if (!noCache)
                         this.imports[key] = true;
                     //              console.log("loaded:" + data);
-                    $('<style type="text/css">\n' + data + '</style>').appendTo("head");
+                    $('<style type="text/css">\n' + data + '</style>').appendTo(TAG_HEAD);
                     Utils.call(callback);
                 }
             }).fail(err);
@@ -3840,7 +3841,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		event.returnValue= 'Changes have been made. Are you sure you want to exit?';
 	    }
 	});
-	let form = formId?jqid(formId):$('body');
+	let form = formId?jqid(formId):$(TAG_BODY);
 	form.find("input[type='submit']").on("click", function() {
 	    changed=false;
 	});
@@ -4286,13 +4287,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             css.forEach(url=>{
 		if(debug) console.log('\tcss: ' + url);
                 let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
-                $(css).appendTo("head");
+                $(css).appendTo(TAG_HEAD);
             });
             js.forEach(url=>{
 		if(debug) console.log('\tjs: ' + url);
                 let html = 
                     "<script src='" + url +"'  type=text/JavaScript></script>";
-                $(html).appendTo("head");
+                $(html).appendTo(TAG_HEAD);
             });
             HU.loaded[name] = true;
         }
@@ -4570,7 +4571,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loadAndWait: function(what,load, callback,error) {
         if (!window[what]) {
             let imports = load;
-            $(imports).appendTo("head");
+            $(imports).appendTo(TAG_HEAD);
         }
         HU.waitForIt(what,callback, error);
     },
@@ -4620,9 +4621,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     loadSlides: async function() {
         if(!HU.slidesLoaded) {
-	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
+	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
 					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
-	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
+	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
 					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
             await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/slick/slick.min.js"));
             HU.slidesLoaded = true;
@@ -4633,7 +4634,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loadKatex: function(callback, error) {
         if (!window["katex"]) {
             let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
-            $(imports).appendTo("head");
+            $(imports).appendTo(TAG_HEAD);
         }
         HU.waitForIt("katex",callback, error);
     },
@@ -5195,7 +5196,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             html = HU.div([ATTR_CLASS,'ramadda-modal ' + (opts.modalStrict?'ramadda-modal-strict':'')],html);
         }
 
-        let popup=   $(html).appendTo("body");
+        let popup=   $(html).appendTo(TAG_BODY);
 
 	if(true || opts.tooltip) {
 	    popup.find('a,div').tooltip({
@@ -5738,6 +5739,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     formTableClose: function() {
         return this.closeTag("table");
     },
+    formEntryTopLabel: function(label, value, value2) {
+	return HU.formEntryTop(HU.span([],label)+':',
+			       value,value2);
+    },
+
     formEntryTop: function(label, value, value2) {
         if(value2) 
             return HU.tag(TAG_TR, [ATTR_VALIGN, ALIGN_TOP],
@@ -6760,10 +6766,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                         ATTR_STYLE,HU.css(ATTR_WIDTH,opts.width)+ opts.style],
                        inner);
 
-        let container = $(HU.div([ATTR_CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
-        $('body').addClass("ramadda-splash-body");
+        let container = $(HU.div([ATTR_CLASS,"ramadda-splash-container"],inner)).appendTo($(TAG_BODY));
+        $(TAG_BODY).addClass("ramadda-splash-body");
         let closer = () =>{
-            $('body').removeClass("ramadda-splash-body");           
+            $(TAG_BODY).removeClass("ramadda-splash-body");           
             container.remove();
         };
 

@@ -71,7 +71,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			}
 			let html  = data.message+HU.br()+HU.image(data.imageurl,[ATTR_WIDTH,HU.px(600)]);
 			let dialog =  HU.makeDialog({content:html,my:"left top",at:"left top",
-						     title:'',anchor:$('body'),
+						     title:'',anchor:$(TAG_BODY),
 						     draggable:true,header:true,inPlace:false,stick:true});
 			//			alert(data.message);
 		    },
@@ -1625,7 +1625,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let data = new FormData();
 	    data.append("filename",fileName);
 	    if(authToken)
-		data.append("authtoken",authToken);
+		data.append(ARG_AUTHTOKEN,authToken);
 	    //A hack for shapefiles and geojson
 	    if(file.type=='application/zip') 
 		data.append("filetype",'geo_shapefile');
@@ -1633,10 +1633,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		data.append("filetype",'geo_geojson');	
 	    else
 		data.append("filetype",file.type);
-	    data.append("name",name);
+	    data.append(ARG_NAME,name);
 	    data.append("group",entryId);
 	    data.append("description",desc);
-	    data.append("file", result);
+	    data.append(ARG_FILE, result);
 	    let dialog;
 	    $.ajax({
 		url: url,

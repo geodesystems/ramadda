@@ -4964,8 +4964,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 from += entry.getId() + ",";
             }
 
-
-            let url = RamaddaUtil.getUrl("/entry/copy?action.force=copy&from=" + from);
+            let url = HU.url(RamaddaUtil.getUrl("/entry/copy"),"action.force","copy","from",from);
             window.open(url, '_blank');
 
         },
@@ -5041,14 +5040,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (props.showDetails) {
                 if (entry.url) {
-                    html += HU.formEntry("URL:", HU.href(entry.url, entry.url));
+                    html += HU.formEntryLabel("URL",
+					      HU.href(entry.url, entry.url));
                 }
 
                 if (entry.remoteUrl) {
-                    html += HU.formEntry("URL:", HU.href(entry.remoteUrl, entry.remoteUrl));
+                    html += HU.formEntryLabel("URL",
+					      HU.href(entry.remoteUrl, entry.remoteUrl));
                 }
                 if (entry.remoteRepository) {
-                    html += HU.formEntry("From:", HU.href(entry.remoteRepository.url, entry.remoteRepository.name));
+                    html += HU.formEntryLabel("From",
+					      HU.href(entry.remoteRepository.url, entry.remoteRepository.name));
                 }
             }
 
@@ -5056,7 +5058,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (entry.getFilesize() > 0) {
 		let link =  entry.getFilename() + " " +HU.getIconImage('fas fa-download');
-                html += HU.formEntry("File:", 
+                html += HU.formEntryLabel("File", 
 				     HU.href(entry.getResourceUrl(), link,["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
@@ -5082,7 +5084,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                     columnValue = tmp;
                 }
-                html += HU.formEntry(column.label + ":", columnValue);
+                html += HU.formEntryLabel(column.label, columnValue);
             }
 
             html += HU.close(TAG_TABLE);
@@ -6102,7 +6104,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		" Details " +
                 SPACE3 +
                 HU.onClick(get + ".askSetTitle();", "Set Title");
-            menu += HU.formTable() + HU.formEntry("Show:", tmp) + HU.close(TAG_TABLE);
+            menu += HU.formTable() + HU.formEntryLabel("Show", tmp) + HU.close(TAG_TABLE);
             return menu;
         },
         loadInitialData: function() {

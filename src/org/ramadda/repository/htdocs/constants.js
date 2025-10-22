@@ -31,10 +31,14 @@ var ID_OK  ='ok';
 var ID_APPLY  ='apply';
 
 
+
+var ARG_AUTHTOKEN='authtoken';
 var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
 var ARG_PAGESEARCH='pagesearch';
+var ARG_FILE='file';
 var ARG_MAPBOUNDS='map_bounds';
+var ARG_NAME='name';
 var ARG_ENTRYID='entryid';
 var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';
@@ -175,6 +179,7 @@ var VALUE = 'value';
 
 
 
+var TAG_HEAD='head';
 var TAG_H1='h1';
 var TAG_H2='h2';
 var TAG_H3='h3';
