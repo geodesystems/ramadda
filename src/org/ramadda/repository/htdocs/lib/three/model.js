@@ -46,10 +46,16 @@ function Ramadda3DDisplayManager(models,props) {
     let height = this.opts.height;	
     this.models.forEach((model,idx)=>{
 	let contents = '';
-	html+= HU.div(['id',this.getSubDivId(idx),
-		       'class','ramadda-model-3ddisplay','tabindex','0','style',HU.css('position','relative','display','none','width',HU.getDimension(width),'height',HU.getDimension(height))],contents);
+	html+= HU.div([ATTR_ID,this.getSubDivId(idx),
+		       ATTR_CLASS,'ramadda-model-3ddisplay',
+		       ATTR_TABINDEX,0,
+		       ATTR_STYLE,
+		       HU.css(CSS_POSITION,POSITION_RELATIVE,
+			      CSS_DISPLAY,DISPLAY_NONE,
+			      CSS_WIDTH,HU.getDimension(width),
+			      CSS_HEIGHT,HU.getDimension(height))],contents);
     });
-    jqid(this.divId).css('width',this.opts.width).css('height',this.opts.height).css('max-width',this.opts.width).css('max-height',this.opts.height).css('overflow-y','hide');
+    jqid(this.divId).css(CSS_WIDTH,this.opts.width).css(CSS_HEIGHT,this.opts.height).css(CSS_MAX_WIDTH,this.opts.width).css(CSS_MAX_HEIGHT,this.opts.height).css(CSS_OVERFLOW_Y,OVERFLOW_HIDDEN);
     jqid(this.divId).html(html);
     this.displays = [];
     props.manager = this;
@@ -93,29 +99,39 @@ Ramadda3DDisplayManager.prototype = {
 	    let clazz = model.visible?'ramadda-model-toc-item-on':'ramadda-model-toc-item-off';
 	    let prefix ="";
 	    if(model.entryid) {
-		prefix = HU.div(['style',HU.css('margin-right','4px')],
-				HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,
+		prefix = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4))],
+				HU.href(HU.url(ramaddaBaseUrl + URL_ENTRY_SHOW,
+					       ARG_ENTRYID,model.entryid),
 					HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png',
-							["width",ramaddaGlobals.iconWidth]),
-					['title','View entry:' + model.name,'target','_entry']));
+							[ATTR_WIDTH,ramaddaGlobals.iconWidth]),
+					[ATTR_TITLE,'View entry:' + model.name,'target','_entry']));
 	    }
 	    let label = model.name;
 	    if(model.thumbnail) {
-		label +="<br>" + HU.image(model.thumbnail,['width','100px']);
+		label +=HU.br() + HU.image(model.thumbnail,[ATTR_WIDTH,'100px']);
 	    }
 
 	    let extra = "";
 	    if(model.description) {
-		extra +=HU.div(['model-index',idx,'class','ramadda-model-toc-item-description',
-				'style',HU.css('display',model.visible?'block':'none')], model.description);
+		extra +=HU.div(['model-index',idx,
+				ATTR_CLASS,'ramadda-model-toc-item-description',
+				ATTR_STYLE,
+				HU.css(CSS_DISPLAY,model.visible?DISPLAY_BLOCK:DISPLAY_NONE)], model.description);
 	    }
 
-	    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz,'id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],
+	    html+=HU.div(['model-index',idx,
+			  ATTR_CLASS,'ramadda-model-toc-item ' + clazz,
+			  ATTR_ID,this.divId+'_model_' + idx,
+			  ATTR_TITLE,'Toggle '+ model.name],
 			 '<table width=100%><tr valign=top><td>' +prefix+'</td><td width=99%>'+
-			 HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name  ramadda-clickable', 'model-index',idx],label)+
+			 HU.div([ATTR_STYLE,
+				 HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+					CSS_WIDTH,HU.perc(100)),
+				 ATTR_CLASS,'ramadda-model-toc-item-name  ramadda-clickable',
+				 'model-index',idx],label)+
 			 '</td></tr></table>'+extra);
 	});
-	toc.css('height',this.opts.height+"px");
+	toc.css(CSS_HEIGHT,HU.px(this.opts.height));
 	toc.html(html);
 	toc.find('.ramadda-model-toc-item-name').click(function() {
 	    let item = $(this).closest('.ramadda-model-toc-item');
@@ -176,11 +192,11 @@ Ramadda3DDisplayManager.prototype = {
 	    let subDiv = jqid(this.getSubDivId(model.index));
 	    cnt++;
 	    subDiv.show();
-	    subDiv.css('width',width).css('height',height+2).css('display','inline-block');
+	    subDiv.css(CSS_WIDTH,width).css(CSS_HEIGHT,height+2).css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
 	    if(visibleModels.length==1) {
-		subDiv.css('border','0px solid #eee');
+		subDiv.css(CSS_BORDER,HU.border(0,'#eee'));
 	    } else {
-		subDiv.css('border','1px solid #eee');
+		subDiv.css(CSS_BORDER,HU.border(1,'#eee'));
 	    }
 	    model.display.resize(width,height);
 	});
@@ -225,10 +241,18 @@ Ramadda3DDisplay.prototype = {
 	this.visible = true;
 	this.divId = this.opts.divId;
 	this.threeId = this.domId("_three");
-	jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
-	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars',[],['style',HU.css('color','#000')]));
-	let background=HU.div(['id',this.domId('_background'),'style',HU.css('position','relative','width','100%')]);
-	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
+	jqid(this.divId).css(CSS_BACKGROUND,"#"+this.opts.background).css(CSS_POSITION,POSITION_RELATIVE);
+	let menuButton = HU.div([ATTR_STYLE,
+				 HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+					CSS_RIGHT,HU.px(0),
+					CSS_TOP,HU.px(0)),
+				 ATTR_CLASS,'ramadda-clickable ramadda-model-toolbar',
+				 ATTR_ID,this.domId('_menu')],
+				HU.getIconImage('fas fa-bars',[],
+						[ATTR_STYLE,HU.css(CSS_COLOR,'#000')]));
+	let background=HU.div([ATTR_ID,this.domId('_background'),
+			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,CSS_WIDTH,HU.perc(100))]);
+	let extra = HU.div([ATTR_ID,this.domId('_background')], background)   +   menuButton;
 
 	if(this.models[0]) {
 	    if(this.models[0].watermark1) {
@@ -240,7 +264,7 @@ Ramadda3DDisplay.prototype = {
 	}
 	
 
-	let html = HU.div(['id',this.threeId]) +  extra;
+	let html = HU.div([ATTR_ID,this.threeId]) +  extra;
 	
 
 	jqid(this.divId).html(html);
@@ -265,8 +289,8 @@ Ramadda3DDisplay.prototype = {
 
         let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,1000);
 
-//	const helper = new THREE.CameraHelper(camera)
-//	scene.add(helper)
+	//	const helper = new THREE.CameraHelper(camera)
+	//	scene.add(helper)
 
         let controls = this.controls = new THREE.OrbitControls(camera,this.renderer.domElement );
         controls.addEventListener('change', (event)=>{
@@ -313,7 +337,7 @@ Ramadda3DDisplay.prototype = {
 	}
 	this.addLights();
 	let debug = false;
-//	let debug = this.models[0].name.indexOf("Burden")>=0;
+	//	let debug = this.models[0].name.indexOf("Burden")>=0;
 	if(this.getProperty("showGrid",false,debug)) {
 	    this.toggleGrid();
 	}
@@ -347,28 +371,34 @@ Ramadda3DDisplay.prototype = {
     showMenu:function(button) {
 	let _this =  this;
 	let icon=(i,lbl)=>{
-	    return HU.getIconImage(i,[],['style','color:#ccc']) +" " + (lbl||"");
+	    return HU.getIconImage(i,[],[ATTR_STYLE,HU.css(CSS_COLOR,'#ccc')]) +" " + (lbl||"");
 	};
 	let buttons = [];
 	if(this.models.length==1 && this.models[0].entryid) {
-	    buttons.push(HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + this.models[0].entryid,
+	    buttons.push(HU.href(HU.url(ramaddaBaseUrl + URL_ENTRY_SHOW,ARG_ENTRYID,this.models[0].entryid),
 				 HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png',
-						["width",ramaddaGlobals.iconWidth]) +" " + "View entry",
-				 ['target','_entry','title','View entry','class','ramadda-clickable']));
+						 [ATTR_WIDTH,ramaddaGlobals.iconWidth]) +" " + "View entry",
+				 [ATTR_TARGET,'_entry',
+				  ATTR_TITLE,'View entry',
+				  ATTR_CLASS,CLASS_CLICKABLE]));
 
 
 	}
 	
-	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?ICON_STOP:ICON_PLAY,'Auto-rotate')));
+	buttons.push(HU.span([ATTR_ID,this.domId('_play')],icon(_this.opts.rotating?ICON_STOP:ICON_PLAY,'Auto-rotate')));
 	buttons.push(HU.checkbox(this.domId('_sharing'), [],this.getManager().shareCameraPosition,"Share position"));
-	buttons.push(HU.span(['id',this.domId('_grid')],icon('fas fa-table-cells','Show grid')));
-	buttons.push(HU.span(['id',this.domId('_light')],icon('fas fa-lightbulb','Set ambient light')));
-	buttons.push(HU.span(['id',this.domId('_home')],icon('fas fa-house','Reset view')));
+	buttons.push(HU.span([ATTR_ID,this.domId('_grid')],icon('fas fa-table-cells','Show grid')));
+	buttons.push(HU.span([ATTR_ID,this.domId('_light')],icon('fas fa-lightbulb','Set ambient light')));
+	buttons.push(HU.span([ATTR_ID,this.domId('_home')],icon('fas fa-house','Reset view')));
 	if(this.canEdit()) {
-	    buttons.push(HU.span(['id',this.domId('_setcamera')],icon('fas fa-camera','Set default camera position')));
+	    buttons.push(HU.span([ATTR_ID,this.domId('_setcamera')],icon('fas fa-camera','Set default camera position')));
 	}
 
-	let toolbar = HU.div(['class',''], Utils.wrap(buttons,"<div class='ramadda-clickable' style='margin:4px;'>","</div>"));
+	let toolbar = HU.div([ATTR_CLASS,''],
+			     Utils.wrap(buttons,
+					HU.open(TAG_DIV,[ATTR_CLASS,CLASS_CLICKABLE,
+							 ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))]),
+					HU.close(TAG_DIV)));
 	let dialog = HU.makeDialog({content:toolbar,anchor:button});
 	jqid(this.domId('_grid')).click(()=> {
 	    this.toggleGrid();
@@ -514,21 +544,24 @@ Ramadda3DDisplay.prototype = {
 	    let btns = "";
 	    if(canEdit) {
 		btns =
-		    HU.span(['annotation-index',idx,'title','Edit annotation','class','ramadda-clickable ramadda-model-annotation-edit'],
+		    HU.span(['annotation-index',idx,ATTR_TITLE,'Edit annotation',ATTR_CLASS,'ramadda-clickable ramadda-model-annotation-edit'],
 			    HU.getIconImage("fas fa-pen")) +" " +
-		    HU.span(['annotation-index',idx,'title','Delete annotation','class','ramadda-clickable ramadda-model-annotation-delete'],
+		    HU.span(['annotation-index',idx,ATTR_TITLE,'Delete annotation',ATTR_CLASS,'ramadda-clickable ramadda-model-annotation-delete'],
 			    HU.getIconImage("fas fa-trash-can"));
 	    }
-	    let label = HU.span(['3dposition',pos,'class','ramadda-clickable ramadda-model-annotation'], toks[3]);
+	    let label = HU.span(['3dposition',pos,ATTR_CLASS,'ramadda-clickable ramadda-model-annotation'], toks[3]);
 	    html+=HU.div([],btns +label);
 	});
 	if(canEdit || html!="") {
 	    let div = this.getAnnotationsDiv();
 	    let topLabel = HU.b("Annotations");
 	    if(canEdit) {
-		topLabel+=" " + HU.span(['class','ramadda-clickable ramadda-model-annotation-add','title','Add annotation'],HU.getIconImage('fas fa-plus'));
+		topLabel+=" " + HU.span([ATTR_CLASS,'ramadda-clickable ramadda-model-annotation-add',
+					 ATTR_TITLE,'Add annotation'],HU.getIconImage('fas fa-plus'));
 	    }
-	    div.html(HU.div(['style',HU.css('height',this.getManager().opts.height+'px'),'class','ramadda-model-annotations'], topLabel + html));
+	    div.html(HU.div([ATTR_STYLE,
+			     HU.css(CSS_HEIGHT,HU.px(this.getManager().opts.height)),
+			     ATTR_CLASS,'ramadda-model-annotations'], topLabel + html));
 	    div.find('.ramadda-model-annotation').click(function() {
 		_this.setCameraPosition($(this).attr('3dposition'));
 	    });
@@ -607,7 +640,7 @@ Ramadda3DDisplay.prototype = {
 		c = hc.getHex();
 	    }
 	    let mesh = new THREE.Mesh(new THREE.PlaneGeometry(meshSize,meshSize), new THREE.MeshBasicMaterial( {color: c,
-														   side: THREE.DoubleSide }));
+														side: THREE.DoubleSide }));
 
 	    this.scene.add(mesh);
 	    mesh.receiveShadow = this.castShadows();
@@ -658,7 +691,7 @@ Ramadda3DDisplay.prototype = {
 
 
     addLights: function() {
-//	return
+	//	return
 	this.lights.forEach(light=>{
 	    this.scene.remove(light);
 	});
@@ -682,21 +715,21 @@ Ramadda3DDisplay.prototype = {
 	let addLight=(v,x,y,z,i) =>{
 	    if(!Utils.isDefined(i)) i=1;
 	    let c = new THREE.Color(v);
-//	    let light = new THREE.PointLight(c.getHex(),i,0,2);
+	    //	    let light = new THREE.PointLight(c.getHex(),i,0,2);
 	    let light = new THREE.DirectionalLight(c.getHex());
 	    light.position.set(+x,+y,+z);
 	    this.lights.push(light);
 	    this.scene.add(light);
 	    if(this.castShadows()) {
-//		const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
-//		this.scene.add(cameraHelper);
+		//		const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
+		//		this.scene.add(cameraHelper);
 		light.castShadow =true;
-//		light.shadow.camera.top = 2;
-//		light.shadow.camera.bottom = - 2;
-//		light.shadow.camera.left = - 2;
-//		light.shadow.camera.right = 2;
-//		light.shadow.camera.near = 0.1;
-//		light.shadow.camera.far = 400;
+		//		light.shadow.camera.top = 2;
+		//		light.shadow.camera.bottom = - 2;
+		//		light.shadow.camera.left = - 2;
+		//		light.shadow.camera.right = 2;
+		//		light.shadow.camera.near = 0.1;
+		//		light.shadow.camera.far = 400;
 	    }
 	    if(this.addLightHelper()) {
 		const sphereSize = 10;
@@ -757,13 +790,29 @@ Ramadda3DDisplay.prototype = {
 	let loading = "";
 	if(this.models.length>0 && this.models[0].thumbnail) {
 	    let thumbnail = this.models[0].thumbnail
-	    loading+=HU.div(['id',this.domId('_loadingbg'),'style',HU.css('max-height',HU.getDimension(this.opts.height),'overflow-y','hidden','margin','1px','position','absolute','left','0px','right','0px')],
-			    HU.image(thumbnail,['width','100%','style','filter: blur(3px);-webkit-filter: blur(3px);']));
+	    loading+=HU.div([ATTR_ID,this.domId('_loadingbg'),
+			     ATTR_STYLE,
+			     HU.css(CSS_MAX_HEIGHT,HU.getDimension(this.opts.height),
+				    CSS_OVERFLOW_Y,OVERFLOW_HIDDEN,
+				    CSS_MARGIN,HU.px(1),
+				    CSS_POSITION,POSITION_ABSOLUTE,
+				    CSS_LEFT,HU.px(0),
+				    CSS_RIGHT,HU.px(0))],
+			    HU.image(thumbnail,[ATTR_WIDTH,HU.perc(100),
+						ATTR_STYLE,
+						HU.css('filter','blur(3px)',
+						       '-webkit-filter','blur(3px)')]));
 	}
 
-	loading += HU.div(['style',HU.css('width','100px','text-align','center','position','absolute','left','10px','top','10px')],
-			     "Loading..." +"<br>" +
-			     HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]));
+	loading += HU.div([ATTR_STYLE,
+			   HU.css(CSS_WIDTH,HU.px(100),
+				  CSS_TEXT_ALIGN,ALIGN_CENTER,
+				  CSS_POSITION,POSITION_ABSOLUTE,
+				  CSS_LEFT,HU.px(10),
+				  CSS_TOP,HU.px(10))],
+			  "Loading..." +HU.br() +
+			  HU.image(RamaddaUtils.getCdnUrl("/icons/mapprogress.gif"),
+				   [ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(60))]));
 	
 	this.jq('_background').html(loading);
 
@@ -840,7 +889,7 @@ Ramadda3DDisplay.prototype = {
 		console.dir(geometry)
 		const mesh = new THREE.Mesh(geometry, material)
 		this.scene.add( mesh);
-//		this.initObject(model,player);
+		//		this.initObject(model,player);
 	    });
 
 	} else  if(url.match(/\.obj/gi)) {
