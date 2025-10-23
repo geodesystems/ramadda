@@ -1,0 +1,81 @@
+
+.ramadda-model {
+    display:inline-block;
+    padding:1px;
+    border:var(--basic-border);
+    margin:1px;
+}    
+
+
+.ramadda-model-watermark ,.ramadda-model-watermark-right {
+    position:absolute;
+    opacity:0.75;
+    width:100px;
+    bottom:10px;
+    background:#fff;
+}
+
+.ramadda-model-watermark {
+    left:10px;
+}
+
+.ramadda-model-watermark-right {
+    right:10px;
+}
+
+.ramadda-model-display {
+    line-height:0px;
+}
+
+.ramadda-model-3ddisplay {
+}
+
+.ramadda-model-3ddisplay:focus {
+ outline: none;
+}
+
+.ramadda-model-annotations {
+    padding:5px;
+    max-width:200px;
+    width:200px;    
+}
+
+.ramadda-model-annotation-delete {
+    margin-right:4px;
+}
+
+.ramadda-model-toc {
+    width:250px;
+    max-width:250px;
+    overflow-x:hidden;
+    //border:1px solid #ccc;
+    border-right:1px solid #ccc;    
+}
+
+.ramadda-model-toc-item {
+    white-space:nowrap;
+    padding:2px;
+    border-bottom:1px solid #efefef;
+}
+
+.ramadda-model-toc-item-description {
+    white-space:normal;
+}
+
+.ramadda-model-toc-item-description {
+}
+
+.ramadda-model-toc-item-off {
+}
+
+.ramadda-model-toc-item-on {
+    background:#f4f4f4;
+    xborder-top:1px solid #ccc;
+    border-bottom:1px solid #ccc;    
+}
+
+.ramadda-model-toolbar {
+    padding-top:6px;    
+    margin-right:6px;    
+}
+

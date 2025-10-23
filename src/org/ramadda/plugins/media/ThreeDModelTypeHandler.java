@@ -279,7 +279,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
                 HU.importJS(sb, js);
 		sb.append("\n");
             }
-	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/three/model.css"));
+	    HU.cssLink(sb,getRepository().getHtdocsUrl("/media/model.css"));
             request.putExtraProperty("3dmodeljs", "true");
 	}
 
@@ -302,7 +302,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	}	
 
 	//Now the model.js
-	linkJS(request, sb, getRepository().getHtdocsUrl("/lib/three/model.js"));
+	linkJS(request, sb, getRepository().getHtdocsUrl("/media/model.js"));
 
 	int cnt = 0;
 	for(Entry entry: entries) {
