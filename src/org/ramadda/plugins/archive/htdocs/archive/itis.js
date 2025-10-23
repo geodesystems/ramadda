@@ -10,7 +10,8 @@ var Itis = {
 	let _this=this;
 	if(!v) v = this.nameInput.val();
 	if(!Utils.stringDefined(v)) return;
-        let url = this.getUrl('searchByCommonName?srchKey=' + encodeURIComponent(v));
+        let url = HU.url(this.getUrl('searchByCommonName'),
+			 'srchKey',v);
 	let success=(data)=>{
 	    _this.showNamesPopup(fromNameInput,data,v);
 	};
@@ -49,8 +50,13 @@ var Itis = {
 	    extra+=HU.span([ATTR_ID,uid],"Search Taxonomy");
 	    extra += " From <a target=_other href=https://www.itis.gov/>Integrated Taxonomic Information System</a>";
 	    extra += HU.span([ATTR_ID, puid, ATTR_STYLE,
-				 'margin-left:5px;height:20px;width:25px;padding:5px;min-width:25px;'],this.spacer);
-	    this.nameInput.after(HU.div([ATTR_STYLE,HU.css('margin-top','4px')],extra));
+			      HU.css(CSS_MARGIN_LEFT,HU.px(5),
+				     CSS_HEIGHT,HU.px(20),
+				     CSS_WIDTH,HU.px(25),
+				     CSS_PADDING,HU.px(5),
+				     CSS_MIN_WIDTH,HU.px(25))],
+			     this.spacer);
+	    this.nameInput.after(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4))],extra));
 	    this.searchButton =    jqid(uid);
 	    this.searchButton.button().click(() =>{
 		let v = prompt("Search term:",this.nameInput.val());
@@ -62,8 +68,8 @@ var Itis = {
 	});
     },
     fetch:function(url,callback) {
-	let _url = RamaddaUtil.getUrl('/proxy?url='+encodeURIComponent(url));
-	this.progress.html(HU.image(ramaddaBaseUrl+'/icons/progress.gif'));
+	let _url = HU.url(RamaddaUtil.getUrl('/proxy'),  'url',url);
+	this.progress.html(HU.image(RamaddaUtils.getUrl('/icons/progress.gif')));
 	let ok = data=>{
 	    this.progress.html(this.spacer);
 	    callback(data);
@@ -91,25 +97,33 @@ var Itis = {
 	    }
 	    return
 	}
-	let html=HU.div([ATTR_STYLE,HU.css('text-weight','bold')],'Select an item to set the taxonomy:');
+	let html=HU.div([ATTR_STYLE,HU.css(CSS_FONT_WEIGHT,FONT_BOLD)],
+			'Select an item to set the taxonomy:');
 	this.items = {};
 	data.commonNames.forEach((item,idx)=>{
 	    this.items[idx] = item;
 	    let name = item.commonName;
-	    let link = HU.href('https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + item.tsn,
-			       HU.image(RamaddaUtils.getUrl('/archive/itis.png'),[ATTR_WIDTH,'24px']),
+	    let link = HU.href(HU.url('https://www.itis.gov/servlet/SingleRpt/SingleRpt',
+				      'search_topic','TSN','search_value',item.tsn),
+			       HU.image(RamaddaUtils.getUrl('/archive/itis.png'),
+					[ATTR_WIDTH,HU.px(24)]),
 			       [ATTR_TITLE,
-				'View record for TSN ' + item.tsn +' at itis.gov','target','itis']);
+				'View record for TSN ' + item.tsn +' at itis.gov',
+				ATTR_TARGET,'itis']);
 
-	    html+=HU.div([ATTR_CLASS,'ramadda-hoverable'],
-			 HU.leftRightTable(HU.div(['index',idx,ATTR_CLASS,'ramadda-clickable'],name),link,null,'30px'));
+	    html+=HU.div([ATTR_CLASS,CLASS_HOVERABLE],
+			 HU.leftRightTable(HU.div([ATTR_INDEX,idx,
+						   ATTR_CLASS,CLASS_CLICKABLE],name),
+					   link,null,HU.px(30)));
 	});
-        html=HU.div([ATTR_STYLE,HU.css('margin','5px','max-height','400px','overflow-y','auto')],html);
+        html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
+				       CSS_MAX_HEIGHT,HU.px(400),
+				       CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
         let dialog= HU.makeDialog({content:html,my:"left top",at:"left bottom",	
-			   anchor:this.searchButton,draggable:true,header:true,inPlace:false});
-	dialog.find('.ramadda-clickable').click(function(){
+				   anchor:this.searchButton,draggable:true,header:true,inPlace:false});
+	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function(){
 	    dialog.remove();
-	    let item = _this.items[$(this).attr('index')];
+	    let item = _this.items[$(this).attr(ATTR_INDEX)];
 	    if(!item) return;
 	    if(fromNameInput) {
 		_this.nameInput.val(item.commonName);
@@ -118,12 +132,12 @@ var Itis = {
 	});
     },
     color:function(input) {
-	input.css('background','yellow');
+	input.css(CSS_BACKGROUND,'yellow');
 	input.animate({ backgroundColor: "#fff" }, 2000);
     },
     loadTsn:function(item) {
 	let handleFullHierarchy=(data)=>{
-//	    console.dir('hierarchy',data);
+	    //	    console.dir('hierarchy',data);
 	    if(!data.hierarchyList) {
 		alert('No results');
 		return;
@@ -137,7 +151,7 @@ var Itis = {
 		let rank = hierarchyElement.rankName.toLowerCase();
 		let input = this.getInput('taxon_'+rank);
 		if(input.length==0) {
-//		    console.error('could not find input for:' + 'taxon_' + rank);
+		    //		    console.error('could not find input for:' + 'taxon_' + rank);
 		    return;
 		}
 		input.val(hierarchyElement.taxonName??'');
@@ -150,14 +164,14 @@ var Itis = {
 	    });
 	};
 	let handleScientificName=(data)=>{
-//	    console.dir('sciname',data);
+	    //	    console.dir('sciname',data);
 	    if(Utils.stringDefined(data.combinedName)) {
 		this.getInput('scientific_name',true).val(data.combinedName);
 		this.applyBirdCodes(data.combinedName,null);
 	    }
 	};
 	let handleCommonNames=(data)=>{
-//	    console.dir('commonNames',data);
+	    //	    console.dir('commonNames',data);
 	    if(!data.commonNames) return
 	    let name = this.nameInput.val().trim();
 	    let names = [];
@@ -204,7 +218,7 @@ var Itis = {
 	    if(code.sciname && code.sciname==name) return true;
 	    return false;
 	}
-//	if(sciname) console.dir('sciname:',sciname);
+	//	if(sciname) console.dir('sciname:',sciname);
 	let theCode = null;
 	if(sciname) {
 	    this.birdCodes.every(code=>{
@@ -216,7 +230,7 @@ var Itis = {
 	    })
 	}
 	if(!theCode && commonNames && commonNames.length>0) {
-//	    console.dir('common:',commonNames);	
+	    //	    console.dir('common:',commonNames);	
 	    commonNames.every(name=>{
 		this.birdCodes.every(code=>{
 		    if(match(code,name)) {
