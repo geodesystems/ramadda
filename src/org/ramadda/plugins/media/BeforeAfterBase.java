@@ -137,21 +137,21 @@ public class BeforeAfterBase extends GenericTypeHandler {
         if ( !tag.equals(TAG_BEFOREAFTER)) {
             url = request.getUrl(except, null);
             url += "&" + ARG_IMAGELAYOUT + "=" + TAG_BEFOREAFTER;
-            sb.append(HtmlUtils.href(url, "Switch to Before/After"));
+            sb.append(HtmlUtils.href(url, "Switch to Before/After",HU.attrs("class","ramadda-button")));
             sb.append(HtmlUtils.space(2));
         }
 
         if ( !tag.equals(TAG_IMAGEOVERLAY)) {
             url = request.getUrl(except, null);
             url += "&" + ARG_IMAGELAYOUT + "=" + TAG_IMAGEOVERLAY;
-            sb.append(HtmlUtils.href(url, "Switch to Overlay"));
+            sb.append(HtmlUtils.href(url, "Switch to Overlay",HU.attrs("class","ramadda-button")));
             sb.append(HtmlUtils.space(2));
         }
 
         if ( !tag.equals(TAG_LEFTRIGHT)) {
             url = request.getUrl(except, null);
             url += "&" + ARG_IMAGELAYOUT + "=" + TAG_LEFTRIGHT;
-            sb.append(HtmlUtils.href(url, "Switch to Side by Side"));
+            sb.append(HtmlUtils.href(url, "Switch to Side by Side",HU.attrs("class","ramadda-button")));
             sb.append(HtmlUtils.space(2));
         }
 
