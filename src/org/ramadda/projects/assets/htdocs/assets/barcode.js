@@ -1,8 +1,8 @@
 
 function barcodeDebug() {
-//    let s = Utils.join(arguments,' ');
-//    jqid('barcodedebug').append(HU.div([],s));
-//    console.log(s);
+    //    let s = Utils.join(arguments,' ');
+    //    jqid('barcodedebug').append(HU.div([],s));
+    //    console.log(s);
 }
 function barcodeInfo() {
     let s = Utils.join(arguments,' ');
@@ -12,7 +12,7 @@ function barcodeInfo() {
 
 function barcodeError() {
     let s = Utils.join(arguments,' ');
-    jqid('barcodedebug').append(HU.div([ATTR_STYLE,HU.css('background','red')],s));
+    jqid('barcodedebug').append(HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'red')],s));
     console.error(s);
 }
 
@@ -47,7 +47,7 @@ function BarcodeReader (videoId,callback,args) {
     videoElement.muted = true;
     videoElement.setAttribute('webkit-playsinline', '');
 
-//    videoElement.setAttribute('autoplay', '');    videoElement.setAttribute('muted', '');    videoElement.setAttribute('playsinline', '');
+    //    videoElement.setAttribute('autoplay', '');    videoElement.setAttribute('muted', '');    videoElement.setAttribute('playsinline', '');
 
     barcodeDebug('making ZXing reader');
     this.startScanner(callback,videoElement);
@@ -76,20 +76,20 @@ BarcodeReader.prototype = {
 	    });
 
 
-//	    Object.keys(ZXing.BarcodeFormat).forEach(key=>{onsole.log(key);});
+	    //	    Object.keys(ZXing.BarcodeFormat).forEach(key=>{onsole.log(key);});
 
 
 	    const hints = new Map();
-//	    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13]);
+	    //	    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13]);
 	    videoInputDevices.forEach((device,index)=>{
-//		console.dir(device);
-//		barcodeInfo('video index:',index, ' kind:',device.kind, 'id:',device.deviceId);
+		//		console.dir(device);
+		//		barcodeInfo('video index:',index, ' kind:',device.kind, 'id:',device.deviceId);
 	    });
 	    const selectedDeviceId = videoInputDevices[0].deviceId;
 	    const codeReader = this.codeReader = new ZXing.BrowserMultiFormatReader();
 	    let readerDevices = await codeReader.listVideoInputDevices();
 	    readerDevices.forEach((device, index) => {
-//		barcodeInfo('index:',index, ' label:',device.label, 'id:',device.deviceId,'kind:',device.kind);
+		//		barcodeInfo('index:',index, ' label:',device.label, 'id:',device.deviceId,'kind:',device.kind);
 	    });
 
 	    const constraints = {
@@ -98,7 +98,7 @@ BarcodeReader.prototype = {
 
 	    let cnt = 0;
 	    let seen = {};
-//	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
+	    //	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
 	    this.codeReader.decodeFromConstraints(constraints,videoElement, (result, error, controls) => {
 		if (result) {
 		    if(!callback(result,controls)) {
@@ -107,7 +107,7 @@ BarcodeReader.prototype = {
 		} else if(error) {
 		    let s = error+'';
 		    if(!seen[s]) {
-//			barcodeInfo('barcode: ', error);
+			//			barcodeInfo('barcode: ', error);
 			seen[s] = true;
 		    }
 		}
@@ -183,8 +183,13 @@ AssetHandler.prototype = {
 	this.assetIdInput.after(HU.space(2)+HU.span([ATTR_ID,buttonId],'Scan Bar Code'));
 	jqid(buttonId).button().click(()=>{
 	    let html='';
-	    html=HU.div([ATTR_STYLE,HU.css('text-align','center','margin','5px'),ATTR_ID,this.id+'_cancel'],'Cancel');
-	    html+=HU.center("<video class=assets_editmode_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
+	    html=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_MARGIN,HU.px(5)),
+			 ATTR_ID,this.id+'_cancel'],'Cancel');
+	    html+=HU.center(HU.tag(TAG_VIDEO,[ATTR_CLASS,'assets_editmode_barcode_video',
+					      ATTR_ID,this.videoId,
+					      'autoplay',null,
+					      'muted',null,
+					      'playsinline',null]));
 	    let dialog = this.dialog = HU.makeDialog({content:html,
 						      anchor:jqid(buttonId),at:'left top',
 						      draggable:true,
@@ -226,7 +231,7 @@ AssetHandler.prototype = {
 	var ID_SCAN_RESULTS ='scanresults';
 	let rows =[];
 	rows.push(HU.b('Barcode: ') +
-		  HU.input('',this.opts.code,[ATTR_STYLE,HU.css('width','300px'),
+		  HU.input('',this.opts.code,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(300)),
 					      ATTR_ID,ID_ASSETS_CODE,
 					      ATTR_PLACEHOLDER,'Enter bar code']));
 	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Find Asset') +
@@ -234,8 +239,8 @@ AssetHandler.prototype = {
 	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
 	rows.push(HU.center(buttons));
 	rows.push(HU.div([ATTR_ID,ID_SCAN_RESULTS]));
-	let html = Utils.wrap(rows,'<div style="margin-bottom:8px;">','</div>');
-        html=HU.div([ATTR_STYLE,HU.css('margin','8px')],html);
+	let html = Utils.wrap(rows,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(8))]),HU.close(TAG_DIV));
+        html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8))],html);
 	let anchor = jqid(this.videoId);
 	let title = 'Find Asset';
 	let dialog = this.dialog = HU.makeDialog({content:html,
@@ -249,9 +254,9 @@ AssetHandler.prototype = {
 	setTimeout(() => {
 	    input.focus();
 	    input.scrollIntoView({ block: "center" });
-	    }, 300);
+	}, 300);
 
-//	this.hideVideo();
+	//	this.hideVideo();
 	document.body.style.position = 'static';
 	let doSearch = () =>{
 	    let code = jqid(ID_ASSETS_CODE).val();
@@ -259,13 +264,21 @@ AssetHandler.prototype = {
 		alert('Please enter a bar code');
 		return;
 	    }
-	    let url = RamaddaUtil.getUrl('/search/do?forsearch=true&output=json&type=type_assets_base&max=100&skip=0&search.type_assets_base.asset_id='+ code);
+	    let url = HU.url(RamaddaUtil.getUrl('/search/do'),
+			     'forsearch','true',
+			     ARG_OUTPUT,'json',
+			     'type','type_assets_base',
+			     'max',100,
+			     'skip','0',
+			     'search.type_assets_base.asset_id',code);
 	    jqid(ID_SCAN_RESULTS).html('');
 	    let callback = {
 		entryListChanged:(list) => {
 		    let entries = list.getEntries();
 		    if(entries.length==0) {
-			let msg = HU.div([ATTR_STYLE,HU.css('border-top','var(--basic-border)','padding','5px')],'No assets found. Do you want to create a new asset?');
+			let msg = HU.div([ATTR_STYLE,
+					  HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,ATTR_PADDING,HU.px(5))],
+					 'No assets found. Do you want to create a new asset?');
 			msg+=HU.center(HU.div([ATTR_ID,"newasset"],"Yes"));
 			jqid(ID_SCAN_RESULTS).html(msg);
 			jqid("newasset").button().click(()=>{
@@ -279,7 +292,7 @@ AssetHandler.prototype = {
 		    entries.forEach(entry=>{
 			html+=HU.div([],entry.getLink(null,true,[ATTR_CLASS,'ramadda-decor ramadda-clickable']));
 		    });
-		    jqid(ID_SCAN_RESULTS).html(HU.div([ATTR_STYLE,HU.css('border-top','var(--basic-border)','padding','5px')],html));
+		    jqid(ID_SCAN_RESULTS).html(HU.div([ATTR_STYLE,HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,CSS_PADDING,HU.px(5))],html));
 		}
 	    }
 	    let entryList = new EntryList(getGlobalRamadda(), url,callback,true);
@@ -305,8 +318,11 @@ AssetHandler.prototype = {
     makeVideo:function(args) {
 	let html = HU.center(HU.div([ATTR_ID,this.headerId]));
 	this.videoId= this.id+'_video';
-	html+=HU.center("<video class=assets_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
-		
+	html+=HU.center(HU.tag(TAG_VIDEO,[ATTR_CLASS,'assets_editmode_barcode_video',
+					  ATTR_ID,this.videoId,
+					  'autoplay',null,
+					  'muted',null,
+					  'playsinline',null]));
 	jqid(this.id).append(HU.div([ATTR_ID,this.contentsId],html));
 	try {
 	    this.initVideo(args);
@@ -320,8 +336,9 @@ AssetHandler.prototype = {
 	let title = 'create an asset';
 	if(this.opts.defaultTypeLabel)
 	    title = 'create a ' + this.opts.defaultTypeLabel;
-	let header = args.header ?? 'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
-							       ATTR_CLASS,'assets-create-link'],title);
+	let header = args.header ?? 'Scan a bar code or directly ' +
+	    HU.span([ATTR_ID,'create',
+		     ATTR_CLASS,'assets-create-link'],title);
 	jqid(this.headerId).html(header);
 	jqid('create').click(()=>{
 	    return this.handleBarcode('');
@@ -359,7 +376,7 @@ AssetHandler.prototype = {
 	this.opts.code = code;
 	let rows =[];
 	rows.push(HU.b('Barcode: ') +
-		  HU.input('',code,[ATTR_STYLE,HU.css('width','300px'),
+		  HU.input('',code,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(300)),
 				    ATTR_ID,ID_ASSETS_CODE,
 				    ATTR_PLACEHOLDER,'Enter bar code']));
 
@@ -370,15 +387,15 @@ AssetHandler.prototype = {
 	    
 	}
 
-	rows.push(HU.input('','',[ATTR_STYLE,HU.css('width','300px'),
+	rows.push(HU.input('','',[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(300)),
 				  ATTR_ID,ID_ASSETS_NAME,
 				  ATTR_PLACEHOLDER,'Enter name']));
 	rows.push(HU.checkbox('',[ATTR_ID,ID_ASSETS_ADDGEOLOCATION],true,'Add map location'));
 	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Create Asset') + SPACE2 +
 	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
 	rows.push(HU.center(buttons));
-	let html = Utils.wrap(rows,'<div style="margin-bottom:8px;">','</div>');
-        html=HU.div([ATTR_STYLE,HU.css('margin','8px')],html);
+	let html = Utils.wrap(rows,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(8))]),HU.close(TAG_DIV));
+        html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8))],html);
 	let anchor = jqid(this.videoId);
 	let title = 'Create Asset';
 	if(this.opts.defaultTypeLabel)
@@ -394,7 +411,7 @@ AssetHandler.prototype = {
 	setTimeout(() => {
 	    input.focus();
 	    input.scrollIntoView({ block: "center" });
-	    }, 300);
+	}, 300);
 
 	this.hideVideo();
 	document.body.style.position = 'static';
