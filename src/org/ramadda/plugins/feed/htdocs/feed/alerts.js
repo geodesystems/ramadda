@@ -40,16 +40,16 @@ NwsAlerts.prototype = {
     writeEvents:function() {
 	let txt=HU.open(TAG_TABLE);
 	txt+=HU.tr([],HU.td([],HU.b('ID'))+
-		   HU.td([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'1em',
-					    CSS_PADDING_RIGHT,'1em')],
+		   HU.td([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.em(1),
+					    CSS_PADDING_RIGHT,HU.em(1))],
 			 HU.b('Event Type'))+HU.td([],HU.b('Description'))) +'\n';
 	Object.keys(this.phenomena).forEach(key=>{
 	    let info = this.phenomena[key];
-	    txt+=HU.tr(['class','search-component'],
+	    txt+=HU.tr([ATTR_CLASS,'search-component'],
 		       HU.td([ATTR_CLASS,'eventtype'],key)+
 		       HU.td([ATTR_CLASS,'eventtype',
-			      ATTR_STYLE,HU.css(CSS_PADDING_LEFT,'1em',
-						CSS_PADDING_RIGHT,'1em')],
+			      ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.em(1),
+						CSS_PADDING_RIGHT,HU.em(1))],
 			     info.type??'')+HU.td([ATTR_ALIGN,ALIGN_LEFT],info.label)) +'\n';
 	});
 	txt+=HU.close(TAG_TABLE);
@@ -75,7 +75,7 @@ NwsAlerts.prototype = {
 	this.headerID =HU.getUniqueId();
 	let loading = HU.center(
 	    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
-		     [ATTR_STYLE,HU.css(CSS_WIDTH,'50px')])+
+		     [ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(50))])+
 		HU.div('Loading alerts'));
 	this.getDiv().append(HU.div([ATTR_ID,this.domId('progress')],loading));
 	this.getDiv().append(HU.div([ATTR_ID,this.headerID],''));
@@ -229,18 +229,19 @@ NwsAlerts.prototype = {
 		if(props?.geocode?.UGC) {
 		    let zone = props.geocode.UGC['0'];
 		    if(zone) {
-			let link = HU.href('https://forecast.weather.gov/MapClick.php?zoneid='+zone,'View Forecast',['target','_forecast']);
+			let link = HU.href(HU.url('https://forecast.weather.gov/MapClick.php','zoneid',zone),
+					   'View Forecast',[ATTR_TARGET,'_forecast']);
 			contents += HU.center(link);
 		    }
 		}
 
 		contents += pre;
-		contents+=HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,'80%',
+		contents+=HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80),
 						    CSS_TEXT_ALIGN,ALIGN_RIGHT)],footer);
 		contents = HU.div([ATTR_CLASS,'alerts-contents'],contents);
 		let l = (significance=='W'?warnings:(significance=='A'?watches:other));
 		if(code=='SPS') l=warnings;
-		let headerStyle=HU.css(CSS_MARGIN_LEFT,'10px',CSS_MARGIN_BOTTOM,'5px');		
+		let headerStyle=HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_BOTTOM,HU.px(5));
 		let headerClass='';
 		if(props.severity=='Severe' || props.severity=='Extreme') {
 		    severeCount++;
