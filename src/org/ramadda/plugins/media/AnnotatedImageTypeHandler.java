@@ -5,51 +5,29 @@
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
-
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
-
-
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- */
 public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
-
     private static final String ANN_PATH = "/lib/annotorius";
-
-    /**  */
     private static int IDX = ImageTypeHandler.IDX_LAST+1;
-
     private static final int IDX_ANNOTATIONS = IDX++;    
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public AnnotatedImageTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
         super(repository, entryNode);
@@ -113,20 +91,7 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 	return id;
     }
     
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
