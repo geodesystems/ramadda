@@ -2424,9 +2424,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			   HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
 			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
 		items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   'what','reset'],'Reset range'),
+				   ATTR_WHAT,'reset'],'Reset range'),
 			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   'what','ussedata'],'Use data range'));
+				   ATTR_WHAT,'ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
@@ -2476,11 +2476,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }		    
 		});
 		dialog.find('#colortableuselog').change(function() {
-		    _this.setProperty('colorByLog',$(this).is(':checked'));
+		    _this.setProperty('colorByLog',HU.isChecked($(this)));
 		    _this.forceUpdateUI();
 		});
 		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
-		    let what = $(this).attr('what');
+		    let what = $(this).attr(ATTR_WHAT);
 		    _this.setProperty('useDataForColorRange', false);
 		    if(what == 'reset') {
 			_this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
@@ -2781,7 +2781,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 };
 		let oldUrl=  this.properties.theData.url;
 		if(!oldUrl) {
-		    oldUrl = this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&output=points.product&product=points.json&max=5000";
+		    oldUrl = HU.url(this.getRamadda().getRoot() + URL_ENTRY_SHOW,
+				    ARG_ENTRYID,entry.getId(),
+				    ARG_OUTPUT,'points.product',
+				    'product','points.json',
+				    'max',5000);
 		} else {
 		    //this should work
 		    oldUrl = oldUrl.replace(/entryid=.*?&/,"entryid=" + entry.getId()+"&");
@@ -3283,7 +3287,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.userHasSelectedAField=true;
 	    let fields = [];
 	    this.fieldCheckboxes.each(function() {
-                if ($(this).is(':checked')) {
+                if (HU.isChecked($(this))) {
 		    let fieldId = $(this).attr(ATTR_DATA_FIELDID);
 		    if(fieldId)
 			fields.push(fieldId);
@@ -6939,7 +6943,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			 keyup(e,null,$(this).val())});
 		if(macro.type == "bounds") {
 		    this.jq(macro.getId()).change(function(e) {
-			macroChange(macro,$(this).is(':checked'));
+			macroChange(macro,HU.isChecked($(this)));
 		    });
 		}
 		if(macro.type=="enumeration") {
@@ -7538,7 +7542,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(input.attr("isCheckbox")) {
 		    let on = input.attr("onValue")||true;
 		    let off = input.attr("offValue")||false;
-		    if (input.is(':checked')) {
+		    if (HU.isChecked(input)) {
 			value = on;
 			console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
 		    } else {
@@ -8217,10 +8221,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             this.jq("showtitle").change(function() {
-                _this.setShowTitle(_this.jq("showtitle").is(':checked'));
+                _this.setShowTitle(HU.isChecked(_this.jq("showtitle")));
             });
             this.jq("showdetails").change(function() {
-                _this.setShowDetails(_this.jq("showdetails").is(':checked'));
+                _this.setShowDetails(HU.isChecked(_this.jq("showdetails")));
             });
             this.jq(ID_DIALOG_TABS).tabs();
 
@@ -8398,7 +8402,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
 		tmp = tmp.replace(/\\n/g,HU.br());
                 error = tmp;
-                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,"nowrap",
+                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 							    CSS_MAX_HEIGHT,HU.px(300),
 							    CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 							    CSS_MAX_WIDTH,HU.px(600),

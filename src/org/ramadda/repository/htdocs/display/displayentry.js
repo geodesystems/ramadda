@@ -1302,7 +1302,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let cbxValues=[];
 		    let cbxs = $('[checkbox-id='+ fullId+']');
 		    cbxs.each(function() {
-			if($(this).is(':checked')) {
+			if(HU.isChecked($(this))) {
 			    let value = $(this).attr(ATTR_DATA_VALUE);
 			    extra += '&' + arg + '=' + encodeURIComponent(value);
 			    cbxValues.push(value);
@@ -1445,7 +1445,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		});
 	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
-		if($(this).is(':checked')) {
+		if(HU.isChecked($(this))) {
 		    let id = $(this).attr('data-entryid');
 		    jsonUrl+='&ancestor='+ id;
 		}
@@ -1900,7 +1900,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let value  = $(this).attr(ATTR_METADATA_VALUE);
 		let type  = $(this).attr(ATTR_METADATA_TYPE);
 		let index  = $(this).attr(ATTR_METADATA_INDEX);				
-		let on = $(this).is(':checked');
+		let on = HU.isChecked($(this));
 		let cbx = $(this);
 		let element  = _this.idToElement[$(this).attr(ATTR_ID)];
 		if(on) {
@@ -2020,7 +2020,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    let cbx = jqid(this.metadataBoxes[metadata.type][metadata.value.attr1]);
-	    if(cbx.is(':checked')) return;
+	    if(HU.isChecked(cbx)) return;
 	    cbx.click();
 	},
         getMetadataFieldId: function(metadataType) {
@@ -3652,7 +3652,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(thumb) attrs.push("thumbnail",thumb);
 		let link = HU.href(this.getRamadda().getEntryUrl(entry),entry.getIconImage() +"  "+ entry.getName());
 		if(showParent && entry.getParentName()) {
-		    let url = HU.url(RamaddaUtil.getUrl("/entry/show"),	ARG_ENTRYID,entry.parent);
+		    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_ENTRYID,entry.parent);
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
 		    link = HU.hbox([plink,HU.span([ATTR_STYLE,
 						   HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_LEFT,HU.px(4))],"&raquo;"), link]);
@@ -3919,7 +3920,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let _this = this;
             let cbx = this.jq(ID_SETTINGS + " :checkbox");
             cbx.click(function() {
-                _this.setProperty($(this).attr("attr"), $(this).is(':checked'));
+                _this.setProperty($(this).attr("attr"), HU.isChecked($(this)));
                 _this.makeGrid(_this.entries);
             });
             let input = this.jq(ID_SETTINGS + " :input");
@@ -4883,14 +4884,14 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             let pointDataList = [];
 
             pointDataList.push(new PointData(entry1.getName(), null, null,
-					     HU.url(RamaddaUtil.getUrl("/entry/show"),
+					     HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 						    ARG_OUTPUT,'points.product',
 						    'product','points.json',
 						    'numpoints',1000,
 						    ARG_ENTRYIDentry1.getId())));
             if (entry2 != null) { 
 		pointDataList.push(new PointData(entry2.getName(), null, null,
-						 HU.url(RamaddaUtil.getUrl("/entry/show"),
+						 HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 							ARG_OUTPUT,'points.product',
 							'product','points.json',
 							'numpoints',1000,

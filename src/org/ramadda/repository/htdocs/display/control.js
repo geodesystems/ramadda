@@ -875,7 +875,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	applyFieldSelection: function() {
 	    this.getData().getRecordFields().forEach(f=>{
 		let cbx = this.jq("cbx_" + f.getId());
-		let on = cbx.is(':checked');
+		let on = HU.isChecked(cbx);
 		this.fieldOn[f.getId()] = on;
 	    });
 	},
@@ -987,7 +987,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		let init = ()=>{
 		    let _this = this;
 		    this.jq("cbx_toggle_all").click(function() {
-			let on = $(this).is(':checked');
+			let on = HU.isChecked($(this));
 			dialog.find(".display-downloader-field-cbx").each(function() {
 			    $(this).prop("checked",on);
 			});
@@ -1070,7 +1070,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
             this.clearDisplayMessage();
 	    this.jq(ID_CHECKBOX).change(()=>{
 		let cbx = this.jq(ID_CHECKBOX);
-		if(cbx.is(':checked')) {
+		if(HU.isChecked(cbx)) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
@@ -1085,7 +1085,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	okToRun: function() {
 	    let cbx = this.jq(ID_CHECKBOX);
 	    if(cbx.length==0) return true;
-	    return cbx.is(':checked');
+	    return HU.isChecked(cbx);
 	},
 	getCountdownLabel: function(time) {
 	    let pad = "";

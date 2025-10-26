@@ -2256,7 +2256,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             this.writeHtml(ID_TOP_RIGHT, HU.span([ATTR_ID,this.domId(ID_LABEL)]," ") + input);
             let _this = this;
 	    this.jq(ID_SHRINK).click(function() {
-		_this.doShrink = _this.jq(ID_SHRINK).is(':checked');
+		_this.doShrink = HU.isChecked(_this.jq(ID_SHRINK));
 		_this.setProperty("initialShrink",_this.doShrink);
 		_this.updateUI();
 	    });

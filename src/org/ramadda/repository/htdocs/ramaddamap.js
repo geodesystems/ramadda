@@ -884,7 +884,7 @@ RepositoryMap.prototype = {
         this.addBaseLayers();
 
         if (this.kmlLayer) {
-            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),
+            var url = HU.getUrl(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 				ARG_OUTPUT,'shapefile.kml',
 				ARG_ENTRYID,this.kmlLayer);
             this.addKMLLayer(this.kmlLayerName, url, false, null, null, null, null);
@@ -1477,13 +1477,13 @@ RepositoryMap.prototype = {
         if (type != "geo_kml" && type != "geo_json" && type != "geo_shapefile") return null;
         var layer;
         if (type == "geo_kml") {
-            var url = HU.getUrl(RamaddaUtil.getUrl("/entry/get"),ARG_ENTRYID,id);
+            var url = HU.getUrl(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID,id);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
         } else if (type == "geo_json") {
-	    var url = HU.getUrl(RamaddaUtil.getUrl("/entry/get"),ARG_ENTRYID,id);
+	    var url = HU.getUrl(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID,id);
             layer = this.addGeoJsonLayer(name, url, true, null, null, null, null, true);
         } else {
-            let url = HU.getUrl(RamaddaUtil.getUrl("/entry/show"),
+            let url = HU.getUrl(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 				ARG_OUTPUT,"shapefile.kml",ARG_ENTRYID,id);
 	    console.log(url);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
@@ -1953,7 +1953,7 @@ RepositoryMap.prototype = {
         let bounds = null;
         let toks = null;
         let doHelp = false;
-        let download = jqid(this.searchDiv + "_download").is(':checked');
+        let download = HU.isChecked(jqid(this.searchDiv + "_download"));
         let attrs = [];
         let doOr = true;
         if (searchFor) {
@@ -2814,7 +2814,7 @@ RepositoryMap.prototype = {
 					     CSS_BACKGROUND,color)], cbx);
 	    jqid(this.mapDivId+"_header").append(" " +cbx);
 	    jqid(this.mapDivId + "_layertoggle"+idx).change(function() {
-		if($(this).is(':checked')) {
+		if(HU.isChecked($(this))) {
 		    layer.setVisibility(true);
 		} else {
 		    layer.setVisibility(false);
@@ -3288,7 +3288,7 @@ RepositoryMap.prototype = {
         cbx.change(event =>{toggle();});
         let cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
         cbxall.change(event=> {
-            cbx.prop("checked", cbxall.is(':checked'));
+            cbx.prop("checked", HU.isChecked(cbxall));
 	    toggle();
         });
 
@@ -3523,7 +3523,7 @@ RepositoryMap.prototype = {
             }
             wait.html(HU.image(icon_wait));
             let url = HU.getUrl(RamaddaUtil.getUrl("/geocode"),"query",searchInput.val());
-            if (bounds.is(':checked')) {
+            if (HU.isChecked(bounds)) {
                 let b = _this.transformProjBounds(_this.getMap().getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
@@ -3662,7 +3662,7 @@ RepositoryMap.prototype = {
         if (cbx.length == 0 && parentId != null)
 	    cbx = jqid("visible_" + this.mapId + "_" + parentId);
         if (cbx.length == 0) return true;
-        return cbx.is(':checked');
+        return HU.isChecked(cbx);
     },
 
     initForDrawing:  function() {
@@ -5566,7 +5566,12 @@ RepositoryMap.prototype = {
             "fields": fields,
             "vAxisMinValue": props.vAxisMinValue,
             "vAxisMaxValue": props.vAxisMaxValue,
-            "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=10000", pointDataProps)
+            "data": new PointData(title, null, null,
+				  HU.url(getRamadda().getRoot() + URL_ENTRY_SHOW,
+					 ARG_ENTRYID,props.entryId,
+					 ARG_OUTPUT,'points.product',
+					 'product','points.json',
+					 'numpoints',10000), pointDataProps)
         };
 	if(props.chartArgs) {
 	    let toks = props.chartArgs.split(",");

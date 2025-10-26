@@ -37,6 +37,9 @@ var Utils =  {
     tooltipObject:null,
     entryDragInfo:null,
     globalEntryRows:{},
+    isSafari: function () {
+	return  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    },
     defineGlobal: function(id,what) {
 	if(!Utils.isDefined(window[id])) {
 	    window[id] = what;
@@ -1242,7 +1245,7 @@ var Utils =  {
     formatJsonClick: function(imageid,innerid) {
         var inner = jqid(innerid);
         var image = jqid(imageid);
-        if (inner.is(":visible")) {
+	if (HU.isVisible(inner)) {
             inner.hide();
             image.attr(ATTR_SRC,icon_tree_closed);
         } else {
@@ -2152,7 +2155,7 @@ var Utils =  {
 						   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 								     CSS_POSITION,POSITION_RELATIVE)],
                                                   starsbase+
-                                                  HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,"nowrap",
+                                                  HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 									    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
 									    CSS_POSITION,POSITION_ABSOLUTE,
 									    CSS_LEFT,HU.px(0),
@@ -2464,7 +2467,7 @@ var Utils =  {
 
                         if(has("maxWidth")) {
                             value =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-							       CSS_WHITE_SPACE,"nowrap",
+							       CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 							       CSS_MAX_WIDTH,HU.getDimension(get('maxWidth')),
 							       CSS_OVERFLOW_X,OVERFLOW_AUTO)],value);
                         }
@@ -2746,7 +2749,7 @@ var Utils =  {
 	if(args) $.extend(opts,args);
 	jqid(id).click(function(){
 	    let popup = jqid(id+"_popup");
-	    if(popup.is(':visible')) {
+	    if(HU.isVisible(popup)) {
 		popup.hide();
 		return
 	    }		
@@ -2769,12 +2772,12 @@ var Utils =  {
             cbx.change(()=>{
                 let text = "Reload" +HU.span([ATTR_STYLE,HU.css(CSS_COLOR,COLOR_TRANSPARENT)]," in 00  seconds")
                 label.html(text);
-                if(cbx.is(':checked')) {
+                if(HU.isChecked(cbx)) {
                     Utils.checkPageReload(time,id,showLabel);
                 }
             });
         }
-        if(cbx.length==0  || cbx.is(':checked')) {
+        if(cbx.length==0  || HU.isChecked(cbx)) {
             Utils.checkPageReload(time,id,showLabel);
         }
     },
@@ -2782,7 +2785,7 @@ var Utils =  {
     checkPageReload:function(time, id, showLabel) {
         let cbx = jqid(id);
         let label = jqid(id+"_label");
-        if(cbx.length>0  &&!cbx.is(':checked')) {
+        if(cbx.length>0  &&!HU.isChecked(cbx)) {
             return;
         }
         if(time<=0) {
@@ -3112,7 +3115,7 @@ var Utils =  {
         Utils.searchLastInput = newVal;
         let url = RamaddaUtil.getUrl("/search/suggest?text=" + encodeURIComponent(newVal));
         if (type) url += "&type=" + type;
-        if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
+        if(here.length>0 && HU.isChecked(here) && ramaddaThisEntry)
             url +="&ancestor=" + ramaddaThisEntry;
         url+="&ascending=" + Utils.searchAscending;
         url+="&orderby=createdate";
@@ -3136,7 +3139,7 @@ var Utils =  {
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
 		
-                let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),
+                let entryLink =  HU.href(HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,id),
 					 HU.getIconImage(value.icon||icon_blank16,
 							 [ATTR_WIDTH,ramaddaGlobals.iconWidth]) + SPACE+name,
 					 [ATTR_TITLE,"View entry",
@@ -4236,7 +4239,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     initToggleAll:function(cbx,selector,notHidden) {
 	jqid(cbx).change(function(){
-	    let on = $(this).is(':checked');
+	    let on = HU.isChecked($(this));
 	    $(selector).each(function() {
 		if(notHidden && $(this).is(':hidden')) return;
 		$(this).prop('checked',on);
@@ -4887,7 +4890,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		event.stopPropagation(); 
 		let header = ele.closest('.ui-accordion-header');
 		let cbx = header.find(':checkbox');
-		if(cbx.is(':checked')) header.css(CSS_BACKGROUND,'#fffeec');
+		if(HU.isChecked(cbx)) header.css(CSS_BACKGROUND,'#fffeec');
 		else  header.css(CSS_BACKGROUND,COLOR_TRANSPARENT);		
 	    }
 
@@ -5119,7 +5122,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	//Check if there is a toggleid and the popup is visible
 	if(opts.toggleid && this.toggleDialogs[opts.toggleid]) {
 	    let dialog = this.toggleDialogs[opts.toggleid];
-	    if(dialog.is(":visible")) {
+	    if(HU.isVisible(dialog)) {
 		//If it is then hide it and return
 		dialog.hide();
 		this.toggleDialogs[opts.toggleid] = null;
@@ -5875,7 +5878,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 		*/
             let value = list[i + 1];
-            if (value == null) {
+            if (value === null) {
                 html += " " + name + " ";
             } else {
                 html += this.attr(name, value);
@@ -5891,6 +5894,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     classAttr: function(s) {
         return this.attr(ATTR_CLASS, s);
     },
+    
     makeFullScreen:function(elem) {
         if(elem==null) {
             console.log("HU.makeFullScreen: null elem argument");
@@ -6049,7 +6053,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 entryId = toks[0].trim();
             }
             var attach = toks[1].trim();
-            return RamaddaUtil.getUrl( "/metadata/view/" + attach + "?entryid=" + entryId);
+            return HU.url(RamaddaUtil.getUrl( "/metadata/view/" + attach),ARG_ENTRYID,entryId);
         }
         return tag;
     },
@@ -6122,6 +6126,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     isChecked:function(cbx) {
 	return $(cbx).is(':checked');
     },
+    isVisible:function(element) {
+	return $(element).is(':visible');
+    },    
     checkbox: function(id, attrs, checked,label) {
 	attrs = attrs||[];
 	if(!Utils.stringDefined(id)) {
@@ -6388,7 +6395,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
 	    if(!option) return;
-	    let selected=cbx.is(':checked');
+	    let selected=HU.isChecked(cbx);
 	    option.prop('selected',selected);
 	    if(trigger) {
 		select.change();
@@ -6485,7 +6492,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			if(cbx.length==0) {
 			    cbx = $(this).find(':radio');
 			}
-			let selected=cbx.is(':checked');
+			let selected=HU.isChecked(cbx);
 			if(!selected) $(this).hide();
 		    });
 		    return
@@ -6493,7 +6500,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 		if(action=='selectshown') {
 		    tags.each(function() {
-			if($(this).is(':visible')) {
+			if(HU.isVisible($(this))) {
 			    let cbx = $(this).find(':checkbox');
 			    if(cbx.length==0) {
 				cbx = $(this).find(':radio');
@@ -6987,7 +6994,7 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 	if(!item.element.attr("isheader")) {
             label = HU.span([ATTR_TITLE,label,ATTR_STYLE,
 			     HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100),
-				    CSS_MARGIN_LEFT,img?HU.px(32):HU.px(4),CSS_WHITE_SPACE,'nowrap')], label);
+				    CSS_MARGIN_LEFT,img?HU.px(32):HU.px(4),CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], label);
         } else {
 	    wrapper.css(CSS_PADDING_LEFT,HU.px(0)).css(CSS_POINTER_EVENTS,'none');
 	    li.css(CSS_POINTER_EVENTS,'none');

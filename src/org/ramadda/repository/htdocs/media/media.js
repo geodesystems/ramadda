@@ -156,7 +156,7 @@ RamaddaMediaTranscript.prototype = {
 				 HU.getIconImage('fas fa-edit'));		
 		prefix = HU.td([ATTR_WIDTH,HU.perc(1),
 				ATTR_CLASS,'ramadda-media-point-header',
-				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')],prefix);
+				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)],prefix);
 	    }
 	    p.detailsId =  this.searchId +"_details_" + idx;
 	    p.rowId = HU.getUniqueId("row_");
@@ -168,7 +168,7 @@ RamaddaMediaTranscript.prototype = {
 			 HU.td([ATTR_POINT_INDEX,idx,
 				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
 				ATTR_WIDTH,HU.perc(5),
-				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], time) +
+				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], time) +
 			 HU.td([ATTR_POINT_INDEX,idx,
 				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
 				ATTR_WIDTH,HU.perc(95)],
@@ -278,7 +278,7 @@ RamaddaMediaTranscript.prototype = {
 	jqid(this.div).find('.ramadda-media-point').click(function(){
 	    let point = _this.points[+$(this).attr(ATTR_POINT_INDEX)];
 	    let details = jqid(point.detailsId);
-	    if(details.is(':visible')) {
+	    if(HU.isVisible(details)) {
 		details.hide(300);
 		details.attr('displayed',false);
 	    } else {
@@ -361,7 +361,7 @@ RamaddaMediaTranscript.prototype = {
 	point.title = this.jq('edit_title').val();
 	point.synopsis = this.jq('edit_synopsis').val();	
 	let cb = time=>{
-	    if(add || this.jq('edit_settime').is(':checked')) {
+	    if(add || HU.isChecked(this.jq('edit_settime'))) {
 		point.time = Math.floor(time);
 	    }
 	    this.closeEditDialog();

@@ -916,7 +916,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!url.startsWith("http") && !url.startsWith("/")) {
 		//entry id e.g., 41d9b105-d61b-4fc1-8198-8e75c49b1a24
 		if(url.trim().match(/.*[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+.*/)) {
-		    url = HU.url(RamaddaUtil.getUrl('/entry/get'), ARG_ENTRYID,url);
+		    url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET), ARG_ENTRYID,url);
 		} else {
 		    url = RamaddaUtil.getCdnUrl("/resources/") + url;
 		}
@@ -1076,8 +1076,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    const materials = [];
 		    imageFields.forEach(f=>{
 			let image = f.getValue(record);
-			//			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
-			//			image = 'https://localhost:8430/repository/images/logo.png';
 			if(Utils.stringDefined(image)) {
 			    materials.push(new THREE.MeshBasicMaterial({map: loader.load(image)}));
 			}

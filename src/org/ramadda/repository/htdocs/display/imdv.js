@@ -976,7 +976,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    pointRadius:12		    
 		};
 
-		let addIt = this.jq(ID_ADDRESS_ADD).is(':checked');
+		let addIt = HU.isChecked(this.jq(ID_ADDRESS_ADD));
 		let points = [loc.latitude,loc.longitude];
 		style.externalGraphic=Ramadda.getCdnUrl(addIt?'/icons/map/marker-blue.png':'/icons/map/marker.png');
 		let mapGlyph = this.createMapMarker(GLYPH_MARKER,{type:GLYPH_MARKER,name:loc.name}, style,points,addIt)
@@ -1549,14 +1549,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let entry  = attrs.entry;
 			if(entry) {
 			    if(entry.getIsEntryImage()) {
-				imageUrl = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entry.getId());
+				imageUrl = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entry.getId());
 			    } else {
 				imageUrl = entry.getThumbnail();
 			    }
 			} else if(!attrs.isImage) {
 			    imageUrl = attrs.thumbnailUrl;
 			} else {
-			    imageUrl = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+			    imageUrl = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 			}
 			if(!imageUrl) {
 			    alert("Selected entry does not have an image");
@@ -1596,7 +1596,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    return;
 				}
 			    } else {
-				url = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+				url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 			    }
 			}
 			style.imageUrl = url;
@@ -1704,7 +1704,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let ok = ()=>{
 		    let style = Utils.clone({},tmpStyle);
 		    style.mapOptions = Utils.clone({},tmpMapOptions);
-		    let doIcon = this.lastIncludeIcon  = this.jq('includeicon').is(':checked');
+		    let doIcon = this.lastIncludeIcon  = HU.isChecked(this.jq('includeicon'));
 		    if(!doIcon) {
 			style.externalGraphic=icon_blank;
 		    } else {
@@ -2569,7 +2569,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						   ATTR_CLASS,''],false,'Don\'t ask again');
 			HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
 					      ()=>{
-						  _this.dontAskDelete  = _this.jq('dontask').is(':checked');
+						  _this.dontAskDelete  = HU.isChecked(_this.jq('dontask'));
 						  _this.removeMapGlyphs([mapGlyph]);},null,dontAsk);
 		    }
 		}
@@ -2715,7 +2715,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    displayAttrs.pointDataUrl = pointDataUrl;
 		    let mapGlyph = this.handleNewFeature(null,null,mapOptions);
-		    mapGlyph.addData(displayAttrs,this.jq("andzoom").is(":checked"));
+		    mapGlyph.addData(displayAttrs,HU.isChecked(this.jq("andzoom")));
 		    dialog.remove();
 		});
 		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
@@ -2777,7 +2777,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    console.error("No map glyph from id:" + id);
 		    return;
 		}
-		mapGlyph.setVisible($(this).is(':checked'),true);
+		mapGlyph.setVisible(HU.isChecked($(this)),true);
 	    });
 	    this.jq(ID_LIST).find(".imdv-feature").click(function(event) {
 		let clazz  = LIST_SELECTED_CLASS;
@@ -2991,7 +2991,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    v = v.replace(/\\n/g,'\n');
 			}
 			if(prop=='showLabels') {
-			    v = this.jq(id).is(':checked');
+			    v = HU.isChecked(this.jq(id));
 			}
 			style[prop] = v;
 		    });
@@ -3571,7 +3571,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let ifApply = () =>{
-		if(this.jq('styledialogactive').is(':checked')) {
+		if(HU.isChecked(this.jq('styledialogactive'))) {
 		    myApply();
 		}
 	    };
@@ -4088,7 +4088,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doImport: function() {
 	    let callback = (entryId) =>{
-		let url = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+		let url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 		this.showProgress("Importing map...");
 		let finish = ()=>{
 		    this.clearMessage2();
@@ -4420,15 +4420,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    let apply = ()=>{
-		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
-				    PROP_SHOWOPACITYSLIDER, this.jq('showopacityslider').is(':checked'),
-				    'showGraticules',this.jq('showgraticules').is(':checked'),
-				    'showOverviewMap',this.jq('showoverviewmap').is(':checked'),				    
-				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
-				    'showAddress', this.jq('showaddress').is(':checked'),
+		this.setMapProperty('userCanChange', HU.isChecked(this.jq('usercanchange')),
+				    PROP_SHOWOPACITYSLIDER, HU.isChecked(this.jq('showopacityslider')),
+				    'showGraticules',HU.isChecked(this.jq('showgraticules')),
+				    'showOverviewMap',HU.isChecked(this.jq('showoverviewmap')),				    
+				    'showMousePosition', HU.isChecked(this.jq('showmouseposition')),
+				    'showAddress', HU.isChecked(this.jq('showaddress')),
 				    'legendPosition',this.jq('legendposition').val(),
 				    'legendWidth',this.jq('legendwidth').val(),
-				    'showBaseMapSelect',this.jq('showbasemapselect').is(':checked'),
+				    'showBaseMapSelect',HU.isChecked(this.jq('showbasemapselect')),
 				    'topWikiText', this.jq('topwikitext_input').val(),
 				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
 				    'otherProperties', this.jq('otherproperties_input').val());		
@@ -5126,7 +5126,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,opts.entryId);
 	    }
 	    url = url.replace(/\${root}/,RamaddaUtil.getBaseUrl());
 	    mapGlyph.setDownloadUrl(url);
@@ -5185,7 +5185,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		break;
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
-		url = HU.url(Ramadda.getUrl('/entry/show'),
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_SHOW),
 			     ARG_ENTRYID,opts.entryId,ARG_OUTPUT,'geojson.geojson',
 			     'formap',true);
 		//fall thru to geojson
@@ -5203,7 +5203,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    loadCallback(map,layer);
 		};
-		url =  HU.url(Ramadda.getUrl("/entry/show"),
+		url =  HU.url(Ramadda.getUrl(URL_ENTRY_SHOW),
 			      ARG_ENTRYID,opts.entryId,
 			      ARG_OUTPUT,'kml.doc',
 			      'converthref',true);
@@ -5223,7 +5223,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
 	    if(!url && entryId)
-		url = HU.url(Ramadda.getUrl("/entry/get"),
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),
 			     ARG_ENTRYID,entryId);
 	    if(!url) return;
 	    this.showProgress("Loading map...");
@@ -6332,7 +6332,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						     ATTR_TITLE,'Add marker to map'],false);
 	    }
 	    address=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))], address);
-	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						CSS_DISPLAY,DISPLAY_NONE,
 						CSS_POSITION,POSITION_RELATIVE),
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
@@ -6986,75 +6986,91 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
 };
 
 
-var IMDV_PATTERNS = {
-    "diagonal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/></svg> "},
-    "diagonal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
-    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/></svg>"},
-    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/></svg>"},
-    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/></svg>"},
-    "subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
-    "sparse-rect-1":{
-	width:30,height:30,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },
-    "sparse-rect-2":{
-	width:40,height:40,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },    
-    "sparse-rect-3":{
-	width:50,height:50,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },
-    "sparse-rect-4":{
-	width:60,height:60,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },    
+ 
 
+var IMDV_PATTERNS = {}
 
-    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
-    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/></svg> "},
-    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/></svg> "},
-    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
-    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/></svg>"},
-    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/></svg>"},
-    "vertical-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='10' fill='<%= foreground %>' /></svg>"},
-    "circles-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3.5' cy='3.5' r='3.5' fill='<%= foreground %>'/></svg> "},
-    "circles-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4' cy='4' r='4' fill='<%= foreground %>'/></svg>"},
-    "circles-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3' cy='3' r='3' fill='<%= foreground %>'/></svg> "},
-    "circles-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2.5' cy='2.5' r='2.5' fill='<%= foreground %>'/></svg>"},
-    "circles-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1' cy='1' r='1' fill='<%= foreground %>'/></svg>"},
-    "circles-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2' cy='2' r='2' fill='<%= foreground %>'/></svg>"},
-    "circles-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1.5' cy='1.5' r='1.5' fill='<%= foreground %>'/></svg> "},
-    "circles-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='5' cy='5' r='5' fill='<%= foreground %>'/></svg>"},
-    "circles-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4.5' cy='4.5' r='4.5' fill='<%= foreground %>'/></svg>"},
-    "horizontal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='6' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='7' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='5' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='4' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='1' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='3' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='2' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='9' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='8' fill='<%= foreground %>' /></svg>"},
-    "dots-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='8' fill='<%= foreground %>' /></svg>"},
-    "dots-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='9' fill='<%= foreground %>' /></svg>"},
-    "dots-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='4' fill='<%= foreground %>' /></svg>"},
-    "dots-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='5' fill='<%= foreground %>' /></svg>"},
-    "dots-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='7' fill='<%= foreground %>' /></svg>"},
-    "dots-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='6' fill='<%= foreground %>' /></svg>"},
-    "dots-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='2' fill='<%= foreground %>' /></svg>"},
-    "dots-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='3' fill='<%= foreground %>' /></svg> "},
-    "dots-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='1' fill='<%= foreground %>' /></svg>"},
+function makeImdvPatterns() {
+    let svg = (c,w,h)=>{
+	if(!Utils.isDefined(w)) w=10;
+	if(!Utils.isDefined(h)) h=10;	
+	return   HU.tag(TAG_SVG,[ATTR_WIDTH,w,ATTR_HEIGHT,h,ATTR_XMLNS,NAMESPACE_SVG],c);
+    }
+
+    let svg2 = (c,w,h)=>{
+	if(!Utils.isDefined(w)) w=10;
+	if(!Utils.isDefined(h)) h=10;	
+	return   {width:w,
+		  height:h,
+		  svg:svg(c,w,h)}
+    }    
+
+    IMDV_PATTERNS = {
+	"diagonal-stripe-1": svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/>"),
+	"diagonal-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/>"),
+	"diagonal-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/>"),
+	"diagonal-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/>"),
+	"diagonal-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/>"),
+	"diagonal-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/>"),
+	"subtle-patch":svg2("<rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' />",5,5),
+	"sparse-rect-1":svg2("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30),
+	"sparse-rect-2": {width:40,height:40,
+			  svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},    
+	"sparse-rect-3":{width:50,height:50,
+			 svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},
+	"sparse-rect-4":{
+	    width:60,height:60,
+	    svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},    
+	"whitecarbon":{width:6,height:6,
+		       svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
+	"crosshatch":svg2("<rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/>",8,8),
+	"houndstooth":svg2("<path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/>",10,10),
+	"verticalstripe":svg2("<rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/>",6,49),
+	"smalldot":svg2("<rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/>",5,5),
+	"lightstripe":svg2("<rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/>",5,5),
+	"vertical-stripe-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='10' fill='<%= foreground %>' />"),
+	"circles-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='3.5' cy='3.5' r='3.5' fill='<%= foreground %>'/>"),
+	"circles-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='4' cy='4' r='4' fill='<%= foreground %>'/>"),
+	"circles-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='3' cy='3' r='3' fill='<%= foreground %>'/>"),
+	"circles-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='2.5' cy='2.5' r='2.5' fill='<%= foreground %>'/>"),
+	"circles-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='1' cy='1' r='1' fill='<%= foreground %>'/>"),
+	"circles-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='2' cy='2' r='2' fill='<%= foreground %>'/>"),
+	"circles-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='1.5' cy='1.5' r='1.5' fill='<%= foreground %>'/>"),
+	"circles-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='5' cy='5' r='5' fill='<%= foreground %>'/>"),
+	"circles-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='4.5' cy='4.5' r='4.5' fill='<%= foreground %>'/>"),
+	"horizontal-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='6' fill='<%= foreground %>' />"),
+	"horizontal-stripe-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='7' fill='<%= foreground %>' />"),
+	"horizontal-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='5' fill='<%= foreground %>' />"),
+	"horizontal-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='4' fill='<%= foreground %>' />"),
+	"horizontal-stripe-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='1' fill='<%= foreground %>' />"),
+	"horizontal-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='3' fill='<%= foreground %>' />"),
+	"horizontal-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='2' fill='<%= foreground %>' />"),
+	"horizontal-stripe-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='9' fill='<%= foreground %>' />"),
+	"horizontal-stripe-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='8' fill='<%= foreground %>' />"),
+	"dots-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='8' fill='<%= foreground %>' />"),
+	"dots-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='9' fill='<%= foreground %>' />"),
+	"dots-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='4' fill='<%= foreground %>' />"),
+	"dots-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='5' fill='<%= foreground %>' />"),
+	"dots-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='7' fill='<%= foreground %>' />"),
+	"dots-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='6' fill='<%= foreground %>' />"),
+	"dots-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='2' fill='<%= foreground %>' />"),
+	"dots-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='3' fill='<%= foreground %>' />"),
+	"dots-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='1' fill='<%= foreground %>' />"),
+    }
 }
+
+makeImdvPatterns();
 
 
 

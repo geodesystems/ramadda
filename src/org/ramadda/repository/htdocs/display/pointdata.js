@@ -291,8 +291,6 @@ function PointData(name, recordFields, records, url, properties) {
             let cacheObject = getPointDataCacheObject(url);
             this.lon = lon;
             this.lat = lat;
-	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
-	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(url)) {
 		this.loadData(myDisplay, true);
                 return true;
@@ -3289,7 +3287,7 @@ var DataUtils = {
 	    if(label) {
 		var cbx =  display.jq("datafilterenabled_" + filterId);
 		if(cbx.length) {
-		    enabled = cbx.is(':checked');
+		    enabled = HU.isChecked(cbx);
 		} 
 	    }
 	    if(type=="match" || type=="notmatch")
@@ -3715,7 +3713,7 @@ RequestMacro.prototype = {
     },
     apply: function(url) {
 	if(this.type == "bounds") {
-	    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
+	    if(this.display.getBounds && HU.isChecked(this.display.jq(this.getId()))) {
 		let bounds = this.display.getBounds();
 		if(bounds) {
 		    bounds = RecordUtil.convertBounds(bounds);

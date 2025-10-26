@@ -30,7 +30,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     }
 
     this.getUrl = function(what) {
-        var url = HU.getUrl(RamaddaUtils.getUrl("/entry/show"),ARG_ENTRYID,this.entryId);
+        var url = HU.getUrl(RamaddaUtils.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,this.entryId);
         var theForm = this;
         var inputs = jqid( this.id + ' :input');
         //        $(':input[id*=\"' + this.id +'\"]')
@@ -42,13 +42,13 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 	    }
 
             if (this.name == "entryselect") {
-                if (!$(this).is(':checked')) {
+                if (!HU.isChecked($(this))) {
                     return;
                 }
             }
             //A hack for now but 
             if (this.type == 'radio') {
-                if (!$(this).is(':checked')) {
+                if (!HU.isChecked($(this))) {
                     return;
                 }
             }
@@ -200,7 +200,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 
 
         cbx.change(function(event) {
-            let value = cbx.is(':checked');
+            let value = HU.isChecked(cbx);
             theForm.getEntryCheckboxes().attr("checked", value);
             theForm.listUpdated();
 	    event.stopPropagation();

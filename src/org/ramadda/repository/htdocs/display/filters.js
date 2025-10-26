@@ -432,7 +432,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let element =jqid(this.display.getDomId("filterby_" + this.getId()));
 	    let value=null;
 	    if(element.attr("isCheckbox")) {
-		if(element.is(':checked')) {
+		if(HU.isChecked(element)) {
 		    value = element.attr("onValue");
 		} else {
 		    value = element.attr("offValue");
@@ -562,7 +562,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			    let _rv = rv.toLowerCase();
 			    if(_rv.indexOf(v)>0) {
 				html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
-					      ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+					      ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 								CSS_MAX_WIDTH,HU.px(400),
 								CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],
 					     rv);
@@ -641,7 +641,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let _this = this;
 		let cbxChange = function() {
         	    let cbx = $(this);
-	            let on = cbx.is(':checked');
+	            let on = HU.isChecked(cbx);
 		    let value  = $(this).attr(ATTR_METADATA_VALUE);
 		    _this.toggleTag(value,on,cbx,true);
 		}
@@ -982,7 +982,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let clickId = this.getFilterId()+"_popup";
 		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
 		    label = label.replace(/ /g,SPACE);
-		    let style = HU.css(CSS_WHITE_SPACE,"nowrap",
+		    let style = HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 				       CSS_LINE_HEIGHT,HU.em(1.5),
 				       CSS_MARGIN_TOP,HU.px(6),
 				       CSS_PADDING_RIGHT,HU.px(5));

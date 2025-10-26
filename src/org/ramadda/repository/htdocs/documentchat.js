@@ -87,7 +87,7 @@ function DocumentChat(id,entryId,action,models,args) {
     text=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 				   CSS_DISPLAY,DISPLAY_FLEX,
 				   CSS_ALIGN_ITEMS,'flex-start',
-				   CSS_WHITE_SPACE,'nowrap',
+				   CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 				   CSS_VERTICAL_ALIGN,ALIGN_TOP)],
 		text+holder);
     let change = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
@@ -99,7 +99,7 @@ function DocumentChat(id,entryId,action,models,args) {
     text = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 				     CSS_DISPLAY,DISPLAY_FLEX,
 				     CSS_ALIGN_ITEMS,'flex-start',
-				     CSS_WHITE_SPACE,'nowrap',
+				     CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 				     CSS_VERTICAL_ALIGN,ALIGN_TOP)],text);
     
     let makeProgress = (id,width,top) => {
@@ -167,7 +167,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	} else {
 	    toggleProgress(false,true);
 	}
-	if(this.jq('button_clearalways').is(':checked')) output.html('');
+	if(HU.isChecked(this.jq('button_clearalways'))) output.html('');
 	let url =Ramadda.getUrl('/entry/action');
 	let offset = 0;
 	if(this.opts.showOffset) {
@@ -250,7 +250,7 @@ function DocumentChat(id,entryId,action,models,args) {
 			      ATTR_TITLE,  'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div([ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#eee'),
-					 CSS_PADDING,HU.px(4),CSS_MARGIN_TOP,HU.px(8))], out);
+					    CSS_PADDING,HU.px(4),CSS_MARGIN_TOP,HU.px(8))], out);
 	    output.prepend(HU.div([],out));
 	    Utils.initCopyable('#'+guid,{
 		addLink:true,

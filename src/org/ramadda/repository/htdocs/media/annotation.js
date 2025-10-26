@@ -1,3 +1,13 @@
+
+
+var CLASS_ANNOTATION_TOP = 'ramadda-annotation-top';
+var CLASS_ANNOTATION = 'ramadda-annotation';
+var CLASS_ANNOTATION_BAR = 'ramadda-annotation-bar';
+var CLASS_ANNOTATION_BAR_TOP = 'ramadda-annotation-bar-top';
+var CLASS_ANNOTATION_BAR_SIDE = 'ramadda-annotation-bar-side';
+
+
+
 function RamaddaAnnotatedImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
@@ -50,36 +60,77 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
 	if(attrs.showToolbar) {
 	    let uid = HU.getUniqueId('toolbar_');
 	    let toolbar = HU.div([ATTR_ID,uid]);
-	    let tt = 'Special tags:&#013;width:line width (or w:)&#013;color:line color (or c:)&#013;label:Some label&#013;bg:label background color&#013;border:label border, e.g. 1px solid red&#013;default:Make this color the default';
-	    jqid(topDivId).html(HU.hbox([toolbar,HU.space(1),
-					 HU.div([ATTR_TITLE,tt],
-						HU.getIconImage('fas fa-question-circle'))]));
+	    jqid(topDivId).html(toolbar);
 	    Annotorious.Toolbar(annotorius, document.getElementById(uid));
 	}
-	let changed = (a) =>{
-	    this.handleChange();
-	};
-	annotorius.on('createAnnotation', changed);
-	annotorius.on('updateAnnotation', changed);
-	annotorius.on('deleteAnnotation', changed);		
+	['selectAnnotation','createSelection'].forEach(event=>{
+	    annotorius.on(event, (annotation) => {
+		this.addHelpField();
+	    });
+	});
+
+	annotorius.on('createAnnotation', annotation=>{
+	    this.annotations.push(annotation);
+	    this.setAnnotations(this.annotations,true);
+	});
+	annotorius.on('updateAnnotation', annotation=>{
+	    const i = this.findIndex(annotation.id);
+	    if(i<0) return;
+	    this.annotations[i] = annotation;
+	    this.setAnnotations(this.annotations,true);
+	});
+	annotorius.on('deleteAnnotation', annotation=>{
+	    const i = this.findIndex(annotation.id);
+	    if(i<0) return;
+	    this.annotations.splice(i, 1);
+	    this.setAnnotations(this.annotations,true);
+	});		
     }
 
     setTimeout(()=>{
-	this.showAnnotations(attrs.annotations);
+	this.showAnnotations(this.annotations);
     },200);
 
 
 }
 
+function printAnnotations(label,l) {
+    console.log(label);
+    l.forEach(a=>{
+	console.dir('\t',a.body[0].value);
+    })
+}
+
 RamaddaAnnotation.prototype = {
-    handleChange: function() {
-	this.annotations = this.getAnno().getAnnotations();
-	this.doSave();
-	this.showAnnotations();
+    findIndex:function(id) {
+	return  this.annotations.findIndex(a => a.id === id);
     },
+    addHelpField:function() {
+	setTimeout(() => {
+	    const footer =$('.r6o-tag');
+	    if (footer.length==0) return;
+	    let help = 'Special tags: <b>label:</b>Some label <b>color:</b>line color<br> <b>width:</b>line width <b>bg:</b>background color  <br><b>border</b>:label border, e.g. 1px solid red<br><b>default:</b>Make this color the default';
+	    const extra =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5),
+						   CSS_FONT_SIZE,HU.pt(9),CSS_LINE_HEIGHT,HU.em(1))],help);
+	    footer.after(extra);
+	}, 0);
+    },
+    handleChange: function(list) {
+	if(list) this.annotations =  list;
+	this.doSave(this.annotations);
+	this.showAnnotations(this.annotations);
+    },
+    setAnnotations:function(list,dontUpdate) {
+	this.annotations= list;
+	if(!dontUpdate) {
+	    this.getAnno().setAnnotations(this.annotations);
+	}
+	this.handleChange();
+    },
+
     getAnnotations:function() {
-	if(this.annotations) return this.annotations;
-	return this.getAnno().getAnnotations();
+	if(!this.annotations)this.annotations=this.getAnno().getAnnotations();
+	return this.annotations;
     },
     showAnnotations: function(annotations) {
 	let html = "";
@@ -89,12 +140,16 @@ RamaddaAnnotation.prototype = {
 	annotations.forEach((annotation,aidx)=>{
 	    let contents = [];
 	    let title = "";
+	    annotation.body.forEach(function(b) {
+		if(b.purpose != 'tagging' || !b.value) return;
+		if(b.value.startsWith("label:")) {
+		    title =  b.value.replace("label:","");
+		}
+	    });
+
 	    annotation.body.forEach((body,bidx)=>{
-		if(body.purpose=="tagging") return;
-		let value = body.value;
-		if(!value) return;
-		let lines = value.trim().split("\n");
-		lines.forEach((line,idx)=>{
+		if(body.purpose=="tagging" || !body.value) return;
+		Utils.split(body.value.trim(),'\n',true,true).forEach((line,idx)=>{
 		    if(title=="") {
 			title = line;
 		    } else {
@@ -102,89 +157,90 @@ RamaddaAnnotation.prototype = {
 		    }
 		});
 	    });
-	    if(title=="") {
-		annotation.body.forEach(function(b) {
-		    if(b.purpose != 'tagging' || !b.value) return false;
-		    if(b.value.startsWith("label:")) {
-			title =  b.value.replace("label:","");
-		    }
-		});
-	    }
-	    if(title=="") title = "&lt;annotation&gt;"
+	    if(title=="") title = "Annotation"
 	    if(this.top) 
 		title  = HU.b(title.replace(/ /g,"&nbsp;"));
 	    else
 		title  = HU.b(title);
 	    let body = title;
 	    if(contents.length>0) {
-		body += HU.div([ATTR_CLASS,'ramadda-annotation-body'],Utils.join(contents,"<br>"));
+		body += HU.div([ATTR_CLASS,'ramadda-annotation-body'],Utils.join(contents,HU.br()));
 	    }
-	    body = HU.div([ATTR_TABINDEX,1],body);
-	    let tt = 'Click to view&#013;Shift-click to zoom to';
-	    if(this.canEdit) tt+='&#013;Control-e:edit&#013;Control-d:delete&#013;Control-f:move forward&#013;Control-b:move back';
-	    if(this.top) 
-		html+=HU.td([ATTR_TITLE,tt,
-			     ATTR_WIDTH,width,
-			     ATTR_CLASS,'ramadda-clickable ramadda-hoverable ramadda-annotation',
-			     ATTR_INDEX,aidx], body);
-	    else
+//	    body = HU.div([ATTR_TABINDEX,1],body);
+	    let tt = this.canEdit?'Click to edit':'Click to view&#013;Shift-click to zoom to';
+	    if(this.top)  {
 		html+=HU.div([ATTR_TITLE,tt,
+			     ATTR_TABINDEX,0,
+			     ATTR_WIDTH,width,
+			     ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_ANNOTATION,CLASS_ANNOTATION_TOP),
+			     ATTR_INDEX,aidx], body);
+	    }  else  {
+		html+=HU.div([ATTR_TITLE,tt,
+			     ATTR_TABINDEX,0,
 			      ATTR_WIDTH,width,
-			      ATTR_CLASS,'ramadda-clickable ramadda-hoverable ramadda-annotation',ATTR_INDEX,aidx], body);
+			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_ANNOTATION),
+			      ATTR_INDEX,aidx], body);
+	    }
 	});
 
 	if(this.top)
-	    html = HU.div([ATTR_CLASS,'ramadda-annotation-bar'],
-			  HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],html)));
+	    html = HU.div([ATTR_CLASS,HU.classes(CLASS_ANNOTATION_BAR,CLASS_ANNOTATION_BAR_TOP) ],html);
 	else
-	    html = HU.div([ATTR_CLASS,'ramadda-annotation-bar'], html);
+	    html = HU.div([ATTR_CLASS,HU.classes(CLASS_ANNOTATION_BAR,CLASS_ANNOTATION_BAR_SIDE)], html);
 	this.div.html(html);
 	if(annotations.length>0) {
 	    this.div.show();
-	    this.div.parent().attr(ATTR_WIDTH,'150px');
+	    this.div.parent().attr(ATTR_WIDTH,HU.px(150));
 	} else {
-	    this.div.parent().attr(ATTR_WIDTH,'1px');
+	    this.div.parent().attr(ATTR_WIDTH,HU.px(1));
 	    this.div.hide();
 	}
+
+/*
+	HU.findClass(this.div,CLASS_ANNOTATION).mouseover(function(event) {
+	    $(this).focus();
+	    });
+	    */
+
 	let _this = this;
-	this.div.find('.ramadda-annotation').keydown(function(event) {
-	    if(!event.ctrlKey)
-		return;
-	    let annotation = 	_this.annotations[$(this).attr(ATTR_INDEX)];
+	let handleMenu = (action,annotation) =>{
 	    if(!annotation) return;
-	    if(event.key=='e')  {
+	    if(action=='z') {
+		_this.getAnno().fitBounds(annotation)
+		return;
+	    }
+	    if(action=='p') {
+		_this.getAnno().panTo(annotation);
+		return;
+	    }	    
+
+	    if(action=='e')  {
 		_this.annotorius.selectAnnotation(annotation);
-	    } else if(event.key=='f' || event.key=='b')  {
-		let list = [..._this.getAnno().getAnnotations()];
-		let index = -1;
-		list.every((a,idx)=>{
-		    if(a.id==annotation.id) {
-			index=idx;
-			return false;
-		    }
-		    return true;
-		});
-		if(event.key=='b' && index>=1) {
+		_this.addHelpField();
+		return;
+	    }
+	    let index =   this.findIndex(annotation.id);
+	    if(index<0) return;
+	    let list = [...this.annotations];
+	    if(action=='f' || action=='b')  {
+		if(action=='b' && index>=1) {
 		    let o=list[index-1];
 		    list[index-1]=annotation;
 		    list[index] = o;
-		} else 	if(event.key=='f' && index<list.length-1) {
+		} else 	if(action=='f' && index<list.length-1) {
 		    let o=list[index+1];
 		    list[index+1]=annotation;
 		    list[index] = o;
 		} else {
 		    return;
 		}
-		_this.getAnno().setAnnotations(list);
-		_this.handleChange();
-
-	    } else if(event.key=='d')  {
-		_this.annotorius.removeAnnotation(annotation);
-		_this.handleChange();
+		_this.setAnnotations(list,true);
+	    } else if(action=='d')  {
+		this.annotations.splice(index, 1);
+		_this.setAnnotations(this.annotations);
 	    }
-	});
-	this.div.find('.ramadda-annotation').click(function(event) {
-	    let annotation = 	annotations[$(this).attr(ATTR_INDEX)];
+	};
+	let popup = (event,annotation) => {
 	    if(!annotation) return;
             if (event.shiftKey && _this.getAnno().fitBounds) {
 		_this.getAnno().fitBounds(annotation)
@@ -194,13 +250,54 @@ RamaddaAnnotation.prototype = {
 	    if (event.metaKey || !_this.zoomable) {
 		_this.getAnno().selectAnnotation(annotation);                                      
 	    }
+	}
+	HU.findClass(this.div,CLASS_ANNOTATION).click(function(event) {
+	    let index = $(this).attr(ATTR_INDEX);
+	    let annotation = 	annotations[index];
+	    if(!_this.canEdit) {
+		popup(event,annotation);
+		return;
+	    }
+	    let menu = '';
+	    let clazz = HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE);
+	    let menuItem = (action,label)=>{
+		menu+=HU.div([ATTR_CLASS,clazz,ATTR_INDEX,index, ATTR_ACTION,action],label);
+	    }
+	    if(_this.getAnno().fitBounds) {
+		menuItem('p','Pan to');
+		menuItem('z','Zoom to');
+		menu+=HU.thinLine();
+	    }
+	    menuItem('e','Edit');	    
+	    menuItem('f','Move forward');
+	    menuItem('b','Move back');	    
+	    menu+=HU.thinLine();
+	    menuItem('d','Delete');
+	    let opts = {anchor:$(this),
+			decorate:true,
+			at:'left bottom',
+			my:'left top',
+			content:menu,
+			draggable:false};
+	    let dialog =  HU.makeDialog(opts);
+	    HU.findClass(dialog,CLASS_CLICKABLE).click(function() {
+		let index = $(this).attr(ATTR_INDEX);
+		let annotation = 	annotations[index];
+		handleMenu($(this).attr(ATTR_ACTION),annotation);
+		dialog.remove();
+	    });
+
+
 	});
     },
     getAnno:function() {
 	return this.annotorius;
     },
-    doSave:function() {
-	let annotations = JSON.stringify(this.getAnno().getAnnotations());
+    doSave:function(list) {
+	list = list ??this.getAnnotations();
+	this.annotations = list;
+//	printAnnotations('dosave',list);
+	let annotations = JSON.stringify(list);
 	let success = r=>{
 	    if(r && r.error) {
 		alert('An error has occurred:' + r.error);
@@ -235,7 +332,6 @@ RamaddaAnnotationFormatter.prototype = {
 
 	    let bg = null;
 	    let border = null;	    
-
 	    let getTags = annotation=>{
 		return  getBodies(annotation).filter(b=>{
 		    if(b.purpose != 'tagging' || !b.value) return false;
@@ -279,7 +375,9 @@ RamaddaAnnotationFormatter.prototype = {
 	    tags.forEach(function(b) {
 		let v = b.value;
 		if(v.startsWith("bg:")) {
-		    state.bg = v.replace("bg:","");		    
+		    state.bg = v.replace("bg:","");
+		} else 	if(v.startsWith("labelcolor:")) {
+		    state.labelcolor = v.replace("labelcolor:","");		    
 		} else if(v.startsWith("b:")) {
 		    state.border = v.replace("b:","");
 		} else if(v.startsWith("border:")) {
@@ -288,7 +386,7 @@ RamaddaAnnotationFormatter.prototype = {
 	    });
 
 	    let result = {};
-	    tags.forEach(function(b) {
+	    tags.forEach((b) =>{
 		let v = b.value;
 		if(v.startsWith("c:")) {
 		    state.color = v.replace("c:","");
@@ -300,51 +398,54 @@ RamaddaAnnotationFormatter.prototype = {
 		    state.width = v.replace("width:","");		    
 		} else if(v.startsWith("label:")) {
 		    let label =  v.replace("label:","");
-		    //original from the shapelabel plugin
-		    //https://github.com/recogito/recogito-client-plugins/blob/main/plugins/annotorious-shape-labels
-		    //modified to check for the label: tag
-		    const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-		    // Overflow is set to visible, but the foreignObject needs >0 zero size,
-		    // otherwise FF doesn't render...
-		    foreignObject.setAttribute(ATTR_WIDTH, '1px');
-		    foreignObject.setAttribute(ATTR_HEIGHT, '1px');
-		    let html = HU.open(TAG_DIV,['xmlns',
-						'http://www.w3.org/1999/xhtml',
-						ATTR_CLASS,'a9s-shape-label-wrapper']);
-		    let style='';
-		    if(state.bg) style+=HU.css(CSS_BACKGROUND,state.bg);
-		    if(state.border) style+=HU.css(CSS_BORDER,state.border);		    
-		    html +=HU.div([ATTR_STYLE,style,
-				   ATTR_CLASS,'a9s-shape-label'],
-				  HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2))],label));
-		    html+=HU.close(TAG_DIV);
-		    foreignObject.innerHTML = html;
-		    result.element= foreignObject;
+		    if(Utils.isSafari()) {
+			const text = document.createElementNS(NAMESPACE_SVG, 'text');
+			text.setAttribute('x', 0);
+			text.setAttribute('y',  -4);
+			text.setAttribute('fill', '#fff');
+			text.setAttribute('font-size', '12');
+			text.textContent = label;
+			result.element=text;
+		    } else {
+			const fo = document.createElementNS(NAMESPACE_SVG, 'foreignObject');
+			fo.setAttribute(ATTR_WIDTH, '1px');
+			fo.setAttribute(ATTR_HEIGHT, '1px');
+			let html = HU.open(TAG_DIV,[ATTR_CLASS,'a9s-shape-label-wrapper']);
+			let style='';
+			if(state.bg) style+=HU.css(CSS_BACKGROUND,state.bg);
+			if(state.labelcolor) style+=HU.css(CSS_COLOR,state.labelcolor);
+			if(state.border) style+=HU.css(CSS_BORDER,state.border);		    
+			html +=HU.div([ATTR_STYLE,style,
+				       ATTR_CLASS,'a9s-shape-label'],
+				      HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2))],label));
+			html+=HU.close(TAG_DIV);
+			fo.innerHTML = html;
+			result.element= fo;
+		    }
 		}
 	    });
 	    
 	    let classes = "";
 	    if (state.color) {
-		classes+= this.checkColor(state.color) +" ";
+		classes= HU.classes(classes,this.checkColor(state.color));
 	    }
 	    if(state.width) {
-		classes+= this.checkWidth(state.width) +" ";
+		classes= HU.classes(classes,this.checkWidth(state.width));
 	    }
 	    result.className  =classes;
 	    return result;
 	};
     },
 
-
     checkColor:function(color) {
 	if(!this.colorMap) this.colorMap = {};
 	if(color.startsWith("c:")) color = color.replace("c:","");
-	let name = color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
+	let name = 'ramadda-annotation-'+ color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
 	if(this.colorMap[color]) return name;
 	this.colorMap[color] = true;
 	let template = ".a9s-annotationlayer .a9s-annotation.{name} .a9s-inner, .a9s-annotationlayer .a9s-annotation.{name}.editable.selected .a9s-inner {stroke:{value} !important;}\n.a9s-annotationlayer .a9s-annotation.{name}:hover .a9s-inner  {stroke:yellow !important;}";
 	let css = template.replace(/{name}/g,name).replace(/{value}/g,color);
-	$("<style type='text/css'>" + css+"</css>").appendTo(document.body);
+	$(HU.tag(TAG_STYLE,[ATTR_TYPE,'text/css'], css)).appendTo(document.body);
 	return   name;
     },
     checkWidth:function(width) {

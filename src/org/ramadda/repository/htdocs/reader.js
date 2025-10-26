@@ -10,7 +10,7 @@ function RamaddaReader(id,args,data) {
 	showSearch:true,
 	ppi:100,
 	ui:'full',
-	imagesBaseURL:RamaddaUtil.getBaseUrl()+'/lib/bookreader/images/',
+	imagesBaseURL:RamaddaUtil.getUrl('/lib/bookreader/images/'),
 	enableSearch:true,
 	data:data
     }
@@ -27,11 +27,12 @@ function RamaddaReader(id,args,data) {
 	d = d[0];
 	let label = Utils.makeLabel(d.name);
 	label = label.replace(/\.[^\.]+$/,'');
-	let href =HU.href(RamaddaUtils.getEntryUrl(d.entryid),'#'+(idx+1),['target','entry']);
+	let href =HU.href(RamaddaUtils.getEntryUrl(d.entryid),'#'+(idx+1),[ATTR_TARGET,'entry']);
 	label = href +': '+label;
-	left+=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),CSS_WHITE_SPACE,'nowrap'),
+	left+=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP),
 		      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE),
-		      'data-entryid',d.entryid,'data-index',idx],label);
+		      ATTR_ENTRYID,d.entryid,
+		      ATTR_INDEX,idx],label);
     });
 
 
@@ -45,16 +46,17 @@ function RamaddaReader(id,args,data) {
 				     CSS_MAX_HEIGHT,height,
 				     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],left);
     left = HU.div([ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
-				     CSS_DISPLAY,'table-cell',
+				     CSS_DISPLAY,DISPLAY_TABLE_CELL,
 				     CSS_MAX_WIDTH,w,CSS_WIDTH,w)],left);
     if(!opts.showToc) 
 	left=HU.div([ATTR_STYLE,HU.css(CSS_VERTICAL_ALIGN,ALIGN_TOP,
-				       CSS_DISPLAY,'table-cell',
+				       CSS_DISPLAY,DISPLAY_TABLE_CELL,
 				       CSS_MAX_WIDTH,HU.px(1),
 				       CSS_WIDTH,HU.px(1))],'');
     let rid = HU.getUniqueId('reader_');
-    let main = HU.div([ATTR_ID,rid,ATTR_STYLE,HU.css(CSS_WIDTH,width,CSS_HEIGHT,height)]);
-    main = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'table-cell',CSS_WIDTH,width)], main);
+    let main = HU.div([ATTR_ID,rid,
+		       ATTR_STYLE,HU.css(CSS_WIDTH,width,CSS_HEIGHT,height)]);
+    main = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_TABLE_CELL,CSS_WIDTH,width)], main);
     let html = left+main;
     jqid(id).append(html);
     opts.el='#'+rid;
@@ -64,7 +66,7 @@ function RamaddaReader(id,args,data) {
     let tocItems =  jqid(leftId).find(HU.dotClass(CLASS_CLICKABLE));
     let map = {};
     tocItems.each(function() {
-	map[$(this).attr('data-entryid')] = $(this);
+	map[$(this).attr(ATTR_ENTRYID)] = $(this);
     });
 
     jqid(sid).keyup(function(event) {
@@ -102,7 +104,7 @@ function RamaddaReader(id,args,data) {
     });
 
     tocItems.click(function() {
-	_this.br.jumpToIndex(+$(this).attr('data-index'));
+	_this.br.jumpToIndex(+$(this).attr(ATTR_INDEX));
     });
 }
 

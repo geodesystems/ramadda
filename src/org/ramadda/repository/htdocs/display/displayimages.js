@@ -701,7 +701,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             this.setContents(contents);
 	    if(anyNoImages) {
 		this.jq('onlyimages').change(function() {
-		    _this.hideNoImages = $(this).is(':checked');
+		    _this.hideNoImages = HU.isChecked($(this));
 		    _this.forceUpdateUI();
 		});
 	    }

@@ -497,12 +497,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
             this.jq(ID_TRENDS_CBX).click(function() {
-                _this.setProperty('showTrendLines', _this.jq(ID_TRENDS_CBX).is(':checked'));
+                _this.setProperty('showTrendLines', HU.isChecked(_this.jq(ID_TRENDS_CBX)));
                 _this.displayData();
 
             });
             this.jq(ID_PERCENT_CBX).click(function() {
-                _this.showPercent = _this.jq(ID_PERCENT_CBX).is(':checked');
+                _this.showPercent = HU.isChecked(_this.jq(ID_PERCENT_CBX));
                 _this.displayData();
 
             });

@@ -5,6 +5,8 @@
 
 
 
+var URL_ENTRY_SHOW='/entry/show';
+var URL_ENTRY_GET='/entry/get';
 
 var RamaddaUtils;
 var RamaddaUtil;
@@ -397,7 +399,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	return ramaddaCdn+url;
     },
     getEntryUrl:function(entryId) {
-	return HU.url(RamaddaUtil.getUrl("/entry/show"),ARG_ENTRYID,entryId);
+	return HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,entryId);
     },
 
     fileDrops:{
@@ -707,7 +709,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	//	    HU.initSelect(jqid(id+"_form_action"));
 
 	jqid(id+'_form_cbx').click(function() {
-            let on = $(this).is(':checked');
+            let on = HU.isChecked($(this));
 	    jqid(id).find(HU.dotClass('entry-form-select')).prop('checked',on);
 	});
 	
@@ -1088,7 +1090,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
 		    v = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,col.paddingLeft??HU.px(5),
-						  CSS_WHITE_SPACE,'nowrap',
+						  CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						  CSS_WIDTH,HU.getDimension(col.width),
 						  CSS_TEXT_ALIGN,col.align??ALIGN_RIGHT,
 						  CSS_MAX_WIDTH,HU.getDimension(maxWidth),
@@ -1235,7 +1237,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[entryId];
 	    $(this).attr('filled',true);
 	    $(this).attr('open',true);	    
-	    let url = RamaddaUtil.getUrl('/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId);
+	    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+			     ARG_OUTPUT,'json',
+			     'includeproperties','false',
+			     'includedescription','false',
+			     'includeservices','false',
+			     'children','true',
+			     ARG_ENTRYID,entryId);
 	    if(props.sortby) url=HU.url(url,[ARG_ORDERBY,props.sortby]);
 	    if(props.orderby) url=HU.url(url,[ARG_ORDERBY,props.orderby]);	    
 	    if(props.ascending) url=HU.url(url,[ARG_ASCENDING,props.ascending]);	    
@@ -1287,11 +1295,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	if(props.simple) return;
 	container.find(HU.dotClass('entry-form-select')).click(function(event) {
-            let on  = $(this).is(':checked');
+            let on  = HU.isChecked($(this));
 	    let row = jqid($(this).attr('rowid'));
 	    HU.checkboxClicked(event,'entry_',$(this).attr(ATTR_ID));
 	    main.find(HU.dotClass('entry-form-select')).each(function() {
-		let on  = $(this).is(':checked');
+		let on  = HU.isChecked($(this));
 		let row = jqid($(this).attr('rowid'));
 		if(on) row.addClass('entry-list-row-selected');
 		else row.removeClass('entry-list-row-selected');	    
@@ -1315,7 +1323,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[$(this).attr(ATTR_ENTRYID)];
 	    if(!entry) return;
             eventX = GuiUtils.getEventX(event);
-            let url = HU.url(RamaddaUtil.getUrl("/entry/show"),
+            let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 			     ARG_ENTRYID,entry.getId(),
 			     ARG_OUTPUT,"metadataxml");
 	    let handleTooltip = function(request) {
@@ -1342,7 +1350,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HU.makeOkCancelDialog($('.ramadda-header'),
 				  'New entry has been created: ' +name+'<br>Do you want to view it?',
 				  ()=>{
-				      let url =  HU.url(RamaddaUtil.getUrl('/entry/show'),
+				      let url =  HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 							ARG_ENTRYID,newEntryId);
 				      document.location = url;
 				  },
@@ -2036,7 +2044,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
     this.isSelected = function() {
-        return this.getCbx().is(':checked');
+        return HU.isChecked(this.getCbx());
     }
 
     this.setRowColor = function() {
@@ -2067,7 +2075,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         //Don't pick up clicks on the left side
         if (eventX - position.left < 150) return;
         this.lastClick = eventX;
-        let url = HU.url(RamaddaUtil.getUrl("/entry/show"),
+        let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 			 ARG_ENTRYID,entryId,
 			 ARG_OUTPUT,"metadataxml");
         if (this.showDetails) {
@@ -2202,7 +2210,7 @@ function Selector(event, selectorId, elementId, allEntries,
 	};
 
 
-        let url =  HU.url('/entry/show',['output','selectxml','noredirect','true','firstclick',true]);
+        let url =  HU.url(URL_ENTRY_SHOW,ARG_OUTPUT,'selectxml','noredirect','true','firstclick',true);
 	if(this.selecttype) 
 	    url = HU.url(url,['selecttype',this.selecttype]);
 	url= HU.url(url,'allentries', this.allEntries,'target', this.id);

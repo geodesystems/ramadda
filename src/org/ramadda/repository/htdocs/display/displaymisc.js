@@ -482,7 +482,9 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		    image = HU.image(on?icon_downdart:icon_rightdart,[ATTR_ID,baseId+"_toggle_image" + cnt]) + " ";
 		}
 		html+=HU.div([ATTR_CLASS,"display-tree-toggle",
-			      ATTR_ID,baseId+"_toggle" + cnt,"toggle-state",on,"block-count",cnt],
+			      ATTR_ID,baseId+"_toggle" + cnt,
+			      "toggle-state",on,
+			      "block-count",cnt],
 			     image +  node.label);
 		html+=HU.open(TAG_DIV,[ATTR_ID, baseId+"_block"+cnt,
 				       ATTR_CLASS,"display-tree-block",
@@ -1197,8 +1199,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!aggByField) {
 		let attrs=[...tdAttrs];
 		attrs.push(ATTR_FIELD_ID,field.getId(),
-			   'record-id',record.getId(),
-			   'record-index',record.rowIndex);
+			   ATTR_RECORD_ID,record.getId(),
+			   ATTR_RECORD_INDEX,record.rowIndex);
 		if(matchers) {
 		    let sv = String(v);
 		    matchers.forEach(h=>{
@@ -1342,7 +1344,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 					 ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
 	    let maxColumns = this.getMaxColumns(-1);
-	    let headerAttrs = [ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    let headerAttrs = [ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						 CSS_BACKGROUND,'#efefef',
 						 CSS_PADDING,HU.px(5),
 						 CSS_FONT_WEIGHT,FONT_BOLD)];
@@ -1845,7 +1847,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let handleChange = dom=>{
 		let val;
 		if(dom.attr('inputtype')=="checkbox") {
-		    val = dom.is(':checked');
+		    val = HU.isChecked(dom);
 		} else {
 		    val = dom.val();
 		}
@@ -2027,16 +2029,19 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 
 		let c = $(this).html().trim();
 		if(c=='' || $(this).attr('nullvalue')==='true') return
-		let record =$(this).attr('record-index');		
+		let record =$(this).attr(ATTR_RECORD_INDEX);		
 		$(this).append(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.em(2)),
 				       ATTR_CLASS,'display-polltable-padding']));
-		let contents = HU.leftRightTable(HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','yes',
+		let contents = HU.leftRightTable(HU.div([ATTR_FIELD_ID,field,
+							 ATTR_RECORD_INDEX,record,'vote','yes',
 							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Up vote'],HU.getIconImage('fa-regular fa-thumbs-up')),
-						 HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','no',
+						 HU.div([ATTR_FIELD_ID,field,
+							 ATTR_RECORD_INDEX,record,'vote','no',
  							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Down vote'],HU.getIconImage('fa-regular fa-thumbs-down')));
-		$(this).append(HU.div([ATTR_FIELD_ID,field,'record-index',record,
+		$(this).append(HU.div([ATTR_FIELD_ID,field,
+				       ATTR_RECORD_INDEX,record,
 				       ATTR_CLASS,'display-polltable-block',
 				       ATTR_STYLE,HU.css(CSS_BORDER_TOP,HU.border(1,COLOR_LIGHT_GRAY),
 							 CSS_POSITION,POSITION_ABSOLUTE,
@@ -2052,7 +2057,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let field =$(this).attr(ATTR_FIELD_ID);
-		let record =$(this).attr('record-index');		
+		let record =$(this).attr(ATTR_RECORD_INDEX);		
 		let id = _this.getProperty("entryId", "");
 		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
 				 "xreturnvotes",true,
@@ -2140,7 +2145,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		}
 		blocks.each(function() {
 		    let field =$(this).attr(ATTR_FIELD_ID);
-		    let record =$(this).attr('record-index');		
+		    let record =$(this).attr(ATTR_RECORD_INDEX);		
 		    let key = record+'--'+field;
 		    let voteObj = data[key];
 		    let yes = 0, no = 0;
@@ -2162,9 +2167,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 			else
 			    percentNo = 100
 		    }		    
-		    let label = HU.open(TAG_TABLE,[ATTR_CELLPADDING,'0',
-						   ATTR_CELLSPACING,'0',
-						   ATTR_BORDER,'0',
+		    let label = HU.open(TAG_TABLE,[ATTR_CELLPADDING,0,
+						   ATTR_CELLSPACING,0,
+						   ATTR_BORDER,0,
 						   ATTR_WIDTH,HU.perc(100)]);
 		    let style = HU.css(CSS_PADDING,HU.important(HU.px(0)),
 				       CSS_PADDING_RIGHT,HU.important(HU.px(4)),
@@ -2181,7 +2186,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    }
 		    let line = (vote,percent,i)=>{
 			let title = c?'Controversial':'';
-			label += HU.tr([ATTR_TITLE,title],HU.td([CSS_WIDTH,HU.px(5),
+			label += HU.tr([ATTR_TITLE,title],HU.td([ATTR_WIDTH,HU.px(5),
 								 ATTR_STYLE,style,
 								 ATTR_ALIGN,ALIGN_RIGHT], icon(i))+
 				       HU.td([ATTR_STYLE,style], vote+' (' + HU.perc(percent)+') ' +(c?'*':'')));
@@ -2244,7 +2249,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             if (String(height).endsWith("px")) height = String(height).replace("px", "");
             height = parseInt(height);
             //            height-=30;
-            let details = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT, HU.px(height),CSS_MAX_HEIGHT, HU.px(height)),
+            let details = HU.div([ATTR_STYLE,
+				  HU.css(CSS_HEIGHT, HU.px(height),CSS_MAX_HEIGHT, HU.px(height)),
 				  ATTR_CLASS, "display-tnse-details",
 				  ATTR_ID, this.domId(ID_DETAILS)], "");
             let canvas = HU.div([ATTR_CLASS, "display-tnse-canvas-outer",
@@ -2253,13 +2259,13 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 					ATTR_ID, this.domId(ID_CANVAS)], ""));
             let buttons = HU.div([ATTR_ID, this.domId(ID_RUN),
 				  ATTR_CLASS, CLASS_BUTTON,
-				  "what", "run"], "Stop") + SPACE +
+				  ATTR_WHAT, "run"], "Stop") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_STEP),
 			ATTR_CLASS, CLASS_BUTTON,
-			"what", "step"], "Step") + SPACE +
+			ATTR_WHAT, "step"], "Step") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_RESET),
 			ATTR_CLASS, CLASS_BUTTON,
-			"what", "reset"], "Reset") + SPACE +
+			ATTR_WHAT, "reset"], "Reset") + SPACE +
                 HU.input("", "", [ATTR_ID, this.domId(ID_SEARCH),
 				  ATTR_PLACEHOLDER, "search"]);
 
@@ -2372,7 +2378,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                         title.length = 10;
                     }
                     this.nameToIndex[title] = i;
-                    this.canvas.append(HU.div([ATTR_TITLE, title, "index", i,
+                    this.canvas.append(HU.div([ATTR_TITLE, title,
+					       ATTR_INDEX, i,
 					       ATTR_ID, this.domId("element-" + i),
 					       ATTR_CLASS, "display-tnse-mark",
 					       ATTR_STYLE, HU.css(CSS_LEFT, HU.perc(px), CSS_TOP,HU.perc(py))], title));
@@ -2394,7 +2401,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                     for (let i = 0; i < _this.fields.length; i++) {
                         let field = _this.fields[i];
                         details += HU.tr([],HU.td([ATTR_ALIGN,ALIGN_RIGHT,
-						   ATTR_CLASS,'formlabel'], this.getFieldLabel(field) + ':') + HU.td([],tuple[field.getIndex()]));
+						   ATTR_CLASS,CLASS_FORMLABEL],
+						  this.getFieldLabel(field) + ':') + HU.td([],tuple[field.getIndex()]));
                     }
                     details += HU.close(TAG_TABLE);
                     _this.details.html(details);
@@ -2437,11 +2445,12 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             }
             ct += HU.close(TAG_SELECT);
             tmp += HU.formEntryLabel("Color Table", ct);
-            tmp += HU.formEntryLabel("Color By Range", HU.input("", this.colorByMin,
-							    [ATTR_SIZE, 7,
-							     ATTR_ID, this.domId("colorbymin")]) + " - " +
-				HU.input("", this.colorByMax, [ATTR_SIZE, 7,
-							       ATTR_ID, this.domId("colorbymax")]));
+            tmp += HU.formEntryLabel("Color By Range",
+				     HU.input("", this.colorByMin,
+					      [ATTR_SIZE, 7,
+					       ATTR_ID, this.domId("colorbymin")]) + " - " +
+				     HU.input("", this.colorByMax, [ATTR_SIZE, 7,
+								    ATTR_ID, this.domId("colorbymax")]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
         },
@@ -2821,7 +2830,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		}
 		html += HU.tr([ATTR_VALIGN,ALIGN_TOP,
 			       ATTR_CLASS,'display-ranking-row',
-			       'what',record.getId()],
+			       ATTR_WHAT,record.getId()],
 			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +
 			      HU.td([ATTR_ALIGN,ALIGN_RIGHT], SPACE + value));
             }
@@ -2829,7 +2838,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             this.setContents(html);
             let _this = this;
             this.jq(ID_TABLE).find(".display-ranking-row").click(function(e) {
-		let record = _this.idToRecord[$(this).attr("what")];
+		let record = _this.idToRecord[$(this).attr(ATTR_WHAT)];
 		_this.propagateEventRecordSelection({record:record});
             });
 	    HU.initSelect(this.jq("sortfields"));
@@ -3051,6 +3060,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     const ID_SLIDER_HIGH_MAX = "sliderhighmax"    
     const ID_TABLE = "table";
     const ID_LASTROW = "lastrow";
+    const ATTR_COLFIELD="colfield";
+    const ATTR_ROWFIELD="rowfield";    
+
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
@@ -3308,7 +3320,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		label = HU.div([ATTR_CLASS,'display-correlation-header',
 				ATTR_STYLE,labelStyle], label);
 
-                html += HU.td(["colfield", field.getId(),
+                html += HU.td([ATTR_COLFIELD, field.getId(),
 			       ATTR_ALIGN,ALIGN_CENTER,
 			       ATTR_WIDTH,width],
 			      HU.div([ATTR_CLASS, "display-correlation-heading display-correlation-heading-top"], label));
@@ -3352,7 +3364,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		label = HU.div([ATTR_CLASS,'display-correlation-header',
 				ATTR_STYLE,labelStyle], label);
                 html += HU.open(TAG_TR, [ATTR_VALIGN,ALIGN_CENTER]);
-		html += HU.td(["rowfield",field1.getId(),
+		html += HU.td([ATTR_ROWFIELD,field1.getId(),
 			       ATTR_CLASS, "display-correlation-heading"],
 			      HU.div([ATTR_STYLE,sideHeadingStyle,
 				      ATTR_CLASS, "display-correlation-heading-side"], label));
@@ -3404,7 +3416,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                             style = HU.css(CSS_BACKGROUND_COLOR, colors[index]);
 			} else {
                             style = HU.css(CSS_BACKGROUND_COLOR, "#eee");
-			    let svg = HU.tag(TAG_SVG,['xmlns','http://www.w3.org/2000/svg',
+			    let svg = HU.tag(TAG_SVG,[ATTR_XMLNS,NAMESPACE_SVG,
 						      ATTR_WIDTH,10,
 						      ATTR_HEIGHT,10],
 					     HU.tag(TAG_RECT,[ATTR_WIDTH,10,
@@ -3435,8 +3447,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 			cellContents = HU.div([ATTR_CLASS, "display-correlation-element",
 					       ATTR_TITLE, "&rho;(" + rowName + "," + colName + ") = " + value], label);
 		    }
-                    html += HU.td(["colfield", field2.getId(),
-				   "rowfield",field1.getId(),
+                    html += HU.td([ATTR_COLFIELD, field2.getId(),
+				   ATTR_ROWFIELD,field1.getId(),
 				   ATTR_CLASS,"display-correlation-cell",
 				   ATTR_ALIGN, align,
 				   ATTR_STYLE,style], cellContents);
@@ -3451,8 +3463,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    let selectedRow;
 	    let selectedCol;
 	    this.jq(ID_TABLE).find(TAG_TD).click(function(event) {
-		let rowField = _this.getFieldById(null, $(this).attr("rowfield"));
-		let colField = _this.getFieldById(null, $(this).attr("colfield"));
+		let rowField = _this.getFieldById(null, $(this).attr(ATTR_ROWFIELD));
+		let colField = _this.getFieldById(null, $(this).attr(ATTR_COLFIELD));
 		if(event.shiftKey && _this.canEdit()) {
 		    let label = prompt("Label:",  _this.getCellLabel(rowField, colField));
 		    if(label) {
@@ -4309,7 +4321,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    if(template) {
 		html= headerTemplate;
 	    } else {
-		html += HU.open(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE,CLASS_TABLE_STRIPE,'nowrap'),
+		html += HU.open(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE,CLASS_TABLE_STRIPE,CLASS_TABLE_NOWRAP),
 					    ATTR_ID, this.domId("percentchange")]);
 		html += HU.open(TAG_THEAD, []);
 		html += HU.tr([], HU.th([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)],
@@ -6164,7 +6176,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    let stripes =   this.getContents().find('.display-stripes-stripe');
 	    this.makeTooltips(stripes,allRecords);
 	    stripes.click(function() {
-		let record = recordMap[$(this).attr('record-id')];
+		let record = recordMap[$(this).attr(ATTR_RECORD_ID)];
 		_this.propagateEventRecordSelection({record: record});
 	    });
 

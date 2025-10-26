@@ -499,7 +499,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    let mapFile = this.getPropertyMapFile();
 		    let mapEntry = this.getMapEntry();
 		    if(mapEntry!=null) {
-			mapFile = RamaddaUtil.getUrl("/entry/get?entryid=" + mapEntry);
+			mapFile = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID, mapEntry);
 		    } else {
 			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
 			    mapFile =RamaddaUtil.getCdnUrl("/resources/" + mapFile);

@@ -80,12 +80,12 @@ RamaddaCanvas.prototype = {
 						 ATTR_ID,getId('_arrow')],false,'Arrow'));
 	let left = Utils.wrap(header,HU.open(TAG_SPAN,[ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8)]),HU.close(TAG_SPANE));
 			      let right = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
-								    CSS_OVERFLOW_X,'hidden',
-								    CSS_WHITE_SPACE,'nowrap'),
+								    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
+								    CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP),
 						  ATTR_ID,getId('_message')]);
 	jqid(this.divId+"_header").html(HU.leftRightTable(left,right));
 	jqid(getId('_toggle')).change(function() {
-	    _this.toggleVisibility($(this).is(':checked'));
+	    _this.toggleVisibility(HU.isChecked($(this)));
 	});
 	jqid(getId('_listmenu')).click(function() {
 	    let menu = "";
@@ -122,7 +122,7 @@ RamaddaCanvas.prototype = {
 		} else {
 		    glyph.width = jqid(getId('_width')).val();
 		    glyph.color = jqid(getId('_color')).val();
-		    glyph.arrow = jqid(getId('_arrow')).is(':checked');
+		    glyph.arrow = HU.isChecked(jqid(getId('_arrow')));
 		}
 		_this.redraw();
 		_this.dialog.remove();
@@ -166,8 +166,8 @@ RamaddaCanvas.prototype = {
 		_this.currentGlyph = null;
 	    } else if(c=='t') {
 		let cbx = jqid(_this.getId('_toggle'));
-		cbx.prop('checked',!cbx.is(':checked'));
-		_this.toggleVisibility(cbx.is(':checked'));
+		cbx.prop('checked',!HU.isChecked(cbx));
+		_this.toggleVisibility(HU.isChecked(cbx));
 	    } else if(c=='p') {
 		_this.print();
 	    }
@@ -209,7 +209,7 @@ RamaddaCanvas.prototype = {
 		_this.currentGlyph = _this.makeGlyph();
 		_this.currentGlyph.color =jqid(getId('_color')).val()??'red';
 		_this.currentGlyph.width=jqid(getId('_width')).val()??1;
-		_this.currentGlyph.arrow = jqid(getId('_arrow')).is(':checked');
+		_this.currentGlyph.arrow = HU.isChecked(jqid(getId('_arrow')));
 		_this.glyphs.push(_this.currentGlyph);
 		_this.currentGlyph.points.push(x,y);
 	    }

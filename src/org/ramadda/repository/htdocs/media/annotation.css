@@ -1,25 +1,40 @@
 
 
 .ramadda-annotation-wrapper {
-    border:1px solid #ccc;
 }
 
 .ramadda-annotation-bar {
-    vertical-align:top;
-//    border-bottom:1px solid #ccc;
-    overflow-x:auto;
+}
+
+.ramadda-annotation-bar-top {
+    display: flex;
+    align-items: stretch;
+}
+
+.ramadda-annotation-bar-side {
 }
 
 
 .ramadda-annotation {
-    border-right:1px solid #eee;
     border-bottom:1px solid #ccc;
-/*    min-width:150px;*/
-    max-width:150px;
-    overflow-x:auto;
+    max-width:100%;
+    vertical-align: top;
+    overflow-x:hidden;    
     padding-left:5px;
     padding-right:5px;
+
 }
+
+.ramadda-annotation-top {
+    display:inline-block;
+    flex: 0 0 auto;
+    border:var(--basic-border);
+    max-width:300px;
+    overflow-x:hidden;
+    white-space: normal;   /* allow wrapping */
+    word-wrap: break-word;
+}
+
 
 .ramadda-annotation-body {
     max-height:80px;
@@ -86,9 +101,9 @@ https://github.com/recogito/recogito-client-plugins/blob/main/plugins/annotoriou
 
 .a9s-annotationlayer .a9s-formatter-el foreignObject .a9s-shape-label-wrapper .a9s-shape-label {
   display:table;
-  padding:3px 5px;
+  padding:2px 4px;
   white-space:nowrap;
   background-color:rgba(255, 255, 255, 0.85);
-  border-radius:3px;
+  border-radius:4px;
   font-size:14px;
 }

@@ -25,7 +25,7 @@ if(!window.WikiUtil) {
             let wikiBlock = wikiId +"_block";
             jqid(cbxId).click(() => {
 		let editor = WikiUtil.getWikiEditor(wikiId);
-		let on  = jqid(cbxId).is(':checked');
+		let on  = HU.isChecked(jqid(cbxId));
 		if(on) {
                     jqid(textBlock).css(CSS_DISPLAY,DISPLAY_NONE);
                     jqid(wikiBlock).css(CSS_DISPLAY,DISPLAY_BLOCK);
@@ -90,10 +90,16 @@ if(!window.WikiUtil) {
 	    });
 	    html = HU.div([ATTR_STYLE,
 			   HU.css(CSS_MIN_WIDTH,HU.px(200),
-				  CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				  CSS_MAX_HEIGHT,HU.px(200),
+				  CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 			  html);
-	    let dialog =HU.makeDialog({content:html,title:'Select value for ' + attr,
-				       header:true,sticky:true,draggable:true,modal:true});
+	    let dialog =HU.makeDialog(
+		{content:html,
+		 title:'Select value for ' + attr,
+		 header:true,
+		 sticky:true,
+		 draggable:true,
+		 modal:true});
 	    HU.findClass(dialog,CLASS_CLICKABLE).click(function(){
 		WikiUtil.insertText(id,$(this).attr('data-attr')+'=' +
 				    HU.quote($(this).attr(ATTR_DATA_VALUE)));
@@ -122,15 +128,12 @@ if(!window.WikiUtil) {
 	    }
 	},
 
-
-
 	insertAtCursor:function(id, myField, value,newLine) {
 	    let editor = WikiUtil.getWikiEditor(id);
 	    if(value.entryId && editor) {
 		editor.handleEntryLink(value.entryId, value.name,null,false,value);
 		return;
 	    }
-
 
 	    if (editor) {
 		value = Utils.decodeText(value);    
@@ -140,8 +143,6 @@ if(!window.WikiUtil) {
 
 	    HU.insertIntoTextarea(myField,value,newLine);
 	},
-
-
 
 	insertTags:function(id, tagOpen, tagClose, sampleText) {
 	    HU.hidePopupObject();
@@ -157,8 +158,6 @@ if(!window.WikiUtil) {
 	    }
 	    console.log("Could not find editor:" + id);
 	},
-
-
 
 	// apply tagOpen/tagClose to selection in textarea,
 	// use sampleText instead of selection if there is none
@@ -207,7 +206,6 @@ if(!window.WikiUtil) {
 		txtarea.scrollTop = textScroll;
 		return;
 	    }
-
 
 	    if (document.selection && document.selection.createRange) { // IE/Opera
 		//save window scroll position
@@ -361,9 +359,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 
     });
 
-    this.getBlock().find("#" + this.id).append(HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
-						       ATTR_CLASS,"wiki-editor-message",
-						       ATTR_ID,this.domId(this.ID_WIKI_MESSAGE)]));
+    this.getBlock().find("#" + this.id).append(
+	HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
+		ATTR_CLASS,"wiki-editor-message",
+		ATTR_ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
     this.initTagSearch();
 
@@ -403,7 +402,6 @@ WikiEditor.prototype = {
 	return this.id;
     },
 
-
     domId:function(suffix) {
 	return this.getId() +"_"+ suffix;
     },
@@ -417,27 +415,27 @@ WikiEditor.prototype = {
     handleEntryLink:function(entryId, name,pos,isNew,opts) {
         $.getJSON(HU.url(RamaddaUtil.getUrl('/wiki/getmacros'),
 			 ARG_ENTRYID,entryId), data=>{
-	    let extra = [];
-	    data.forEach(macro=>{
-		if(!macro.macro && macro.tag) {
-		    extra.push({label:macro.label,
-				value:macro.tag});
-		    return;
-		}
+			     let extra = [];
+			     data.forEach(macro=>{
+				 if(!macro.macro && macro.tag) {
+				     extra.push({label:macro.label,
+						 value:macro.tag});
+				     return;
+				 }
 
-		extra.push({label:macro.label+ ' - macro',
-			    value:'{{macro name=\"' + macro.name+'\" ' +
-			    (macro.properties??'')+'  entry=\"${entryid}\"}}'});
-		let m = macro.macro.trim();
-		let  parts = m.split('#entry="${entry}"');
-		m = parts.join('entry='+entryId);
-		extra.push({label:macro.label+ ' - wiki text', value:m});
-	    });
-	    this.handleEntryLinkInner(entryId, name,pos,isNew,opts,extra);
-	}).fail(data=>{
-	    console.log('failed to get macros');
-	    this.handleEntryLinkInner(entryId, name,pos,isNew,opts);
-	});
+				 extra.push({label:macro.label+ ' - macro',
+					     value:'{{macro name=\"' + macro.name+'\" ' +
+					     (macro.properties??'')+'  entry=\"${entryid}\"}}'});
+				 let m = macro.macro.trim();
+				 let  parts = m.split('#entry="${entry}"');
+				 m = parts.join('entry='+entryId);
+				 extra.push({label:macro.label+ ' - wiki text', value:m});
+			     });
+			     this.handleEntryLinkInner(entryId, name,pos,isNew,opts,extra);
+			 }).fail(data=>{
+			     console.log('failed to get macros');
+			     this.handleEntryLinkInner(entryId, name,pos,isNew,opts);
+			 });
     },
     handleEntryLinkInner:function(entryId, name,pos,isNew,opts,extra) {	
 	let html =  HU.center(HU.b(name));
@@ -572,10 +570,11 @@ WikiEditor.prototype = {
 		      what=="Children Links") {
 		let url = HU.url(RamaddaUtils.getUrl("/entry/wikitext"),
 				 ARG_ENTRYID,entryId,
-				 'response','json');
-		if(what==what_description) url=HU.url(url,"what","description");
-		else if(what==what_children_links) url=HU.url(url,"what","children_links");
-		else if(what==what_children_ids) url=HU.url(url,"what","children_ids");				
+				 ARG_RESPONSE,'json');
+		if(what==what_description) url=HU.url(url,ATTR_WHAT,"description");
+		else if(what==what_children_links) url=HU.url(url,ATTR_WHAT,"children_links");
+		else if(what==what_children_ids) url=HU.url(url,ATTR_WHAT,"children_ids");
+		
 		$.get(url, (data) =>{
 		    data = String(data).replace(/^ *<wiki>\s/,'');
 		    data=data.replace(/{{description}}/g,'').replace(/{{description +wikify=\"?true\"?}}/g,'');
@@ -604,8 +603,6 @@ WikiEditor.prototype = {
 	});
     },
 
-
-
     clearDragAndDrop:function() {
 	if(this.dragMarker)    this.getEditor().session.removeMarker(this.dragMarker);
     },
@@ -613,7 +610,6 @@ WikiEditor.prototype = {
     getDiv:function() {
 	return this.myDiv;
     },
-
 
     jq:function(suffix) {
 	return jqid(this.domId(suffix));
@@ -995,7 +991,6 @@ WikiEditor.prototype = {
 	}
 	
 
-
 	let llmText = this.getEditor().getSelectedText()??'';
 	let options = [{value:'',label:'Select prompt'}];
 	//Some of these prompts are from https://github.com/f/awesome-chatgpt-prompts
@@ -1035,14 +1030,14 @@ WikiEditor.prototype = {
 	let html= 
 	    HU.formTable() +
 	    HU.formEntryLabel('Prompt',
-			 HU.div([ATTR_ID,promptMenuContainerId]))+
+			      HU.div([ATTR_ID,promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntryLabel('Prompt prefix',
-			 HU.textarea('',this.lastPromptPrefix??'',
-				     [ATTR_CLASS,'wiki-llm-input',
-				      ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
-				      ATTR_ID,this.domId(ID_LLM_PROMPT_PREFIX),
-				      ATTR_ROWS,3])) +
+			      HU.textarea('',this.lastPromptPrefix??'',
+					  [ATTR_CLASS,'wiki-llm-input',
+					   ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
+					   ATTR_ID,this.domId(ID_LLM_PROMPT_PREFIX),
+					   ATTR_ROWS,3])) +
 	    HU.formTableClose();
 	let textAreaStyle = HU.css(CSS_BORDER,CSS_BASIC_BORDER,CSS_PADDING,HU.px(4),
 				   CSS_MARGIN,HU.px(4),CSS_FONT_STYLE,FONT_ITALIC);
@@ -1054,10 +1049,10 @@ WikiEditor.prototype = {
 
 	html+=   HU.formTable() +
 	    HU.formEntryLabel('Prompt suffix',
-			 HU.input('',this.lastPromptSuffix??'',
-				  [ATTR_CLASS,'wiki-llm-input',
-				   ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
-				   ATTR_ID,this.domId(ID_LLM_PROMPT_SUFFIX)])) +
+			      HU.input('',this.lastPromptSuffix??'',
+				       [ATTR_CLASS,'wiki-llm-input',
+					ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(500)),
+					ATTR_ID,this.domId(ID_LLM_PROMPT_SUFFIX)])) +
 	    HU.formTableClose();	    
 
 	html+=HU.span([ATTR_ID,this.domId('llm-call')],'Evaluate');	    
@@ -1269,12 +1264,12 @@ WikiEditor.prototype = {
 
 		right="";
 		let bar = HU.div([ATTR_CLASS,CLASS_MENUBAR,
-					 ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5),CSS_WIDTH,HU.perc(100),
-							   CSS_BORDER,CSS_BASIC_BORDER)],
-					HU.leftRight(left,right));
+				  ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5),CSS_WIDTH,HU.perc(100),
+						    CSS_BORDER,CSS_BASIC_BORDER)],
+				 HU.leftRight(left,right));
 
 		html = HU.div([ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_INNER),
-				      ATTR_CLASS,'wiki-editor-preview-inner'], html);
+			       ATTR_CLASS,'wiki-editor-preview-inner'], html);
 		html = bar + html;
 		let preview = jqid(this.domId(this.ID_WIKI_PREVIEW));
 		try {
@@ -1300,7 +1295,7 @@ WikiEditor.prototype = {
 		    Utils.makeDownloadFile('preview.html',s);
 		});				
 		this.jq(this.ID_WIKI_PREVIEW_LIVE).click(function() {
-		    _this.previewLive = $(this).is(':checked');
+		    _this.previewLive = HU.isChecked($(this));
 		});
 		this.jq(this.ID_WIKI_PREVIEW_OPEN).click(() =>{
 		    this.doPreview(entry,true);
@@ -1420,7 +1415,7 @@ WikiEditor.prototype = {
 		let html = prefix??'';
 		data.forEach(d=>{
 		    html+=(d.icon?HU.getIconImage(d.icon,[ATTR_WIDTH,HU.px(24)])+HU.space(1):'')+
-			HU.href(HU.url(RamaddaUtil.getUrl("/entry/show"),ARG_ENTRYID,d.id),
+			HU.href(HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,d.id),
 				d.name,[ATTR_TITLE,d.id,ATTR_TARGET,'_entries'])+HU.br();
 		});
 		jqid(id).html(html);
@@ -1551,7 +1546,7 @@ WikiEditor.prototype = {
 	    }
 	    block.callback(dialog, $(this),block);
 	});
-//	HU.setPopupObject(dialog);
+	//	HU.setPopupObject(dialog);
 
 	jqid(this.domId('edittag')).click(()=>{
 	    dialog.remove();
@@ -1746,7 +1741,7 @@ WikiEditor.prototype = {
 	
 
 	_this.jq('searchshowall').change(function() {
-	    if ($(this).is(':checked')) {
+	    if (HU.isChecked($(this))) {
 		commands.each(function(){
 		    let span = $(this);
 		    let title  = span.attr(ATTR_TITLE);
@@ -2114,8 +2109,8 @@ WikiEditor.prototype = {
 			    let td=HU.tag(TAG_TD,
 					  ['data-category',cat,
 					   ATTR_ONCLICK,click,
-					  ATTR_CLASS,HU.classes(CLASS_HOVERABLE,'wiki-editor-popup-link'),
-					  ATTR_WIDTH,HU.perc(33),
+					   ATTR_CLASS,HU.classes(CLASS_HOVERABLE,'wiki-editor-popup-link'),
+					   ATTR_WIDTH,HU.perc(33),
 					   ATTR_STYLE,HU.css(CSS_BORDER,CSS_BASIC_BORDER,
 							     CSS_MARGIN,HU.px(6),
 							     CSS_PADDING,HU.px(4))],div);
@@ -2129,7 +2124,7 @@ WikiEditor.prototype = {
 								   CSS_MARGIN_TOP,HU.px(10),
 								   CSS_FONT_WEIGHT,FONT_BOLD)], cat)) +inner;
 		    });
-//		    exDiv=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(50),CSS_WIDTH,HU.px(500))],exDiv);
+		    //		    exDiv=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(50),CSS_WIDTH,HU.px(500))],exDiv);
 		    exDiv=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(500),
 						    CSS_OVERFLOW_Y,OVERFLOW_AUTO,CSS_MIN_WIDTH,HU.px(700),
 						    CSS_MAX_WIDTH,HU.px(700),CSS_OVERFLOW_X,OVERFLOW_AUTO)],
@@ -2853,11 +2848,11 @@ Transcriber.prototype = {
 	data.append('mimetype', this.transcribeMime);
 	data.append('audio-file', file);
 	data.append(ARG_ENTRYID,this.entryId);
-	if(this.jq('transcribe_sendtochat').is(':checked')) {
+	if(HU.isChecked(this.jq('transcribe_sendtochat'))) {
 	    data.append('sendtochat','true');	    
 	}
 
-	if(this.jq('transcribe_addfile').is(':checked')) {
+	if(HU.isChecked(this.jq('transcribe_addfile'))) {
 	    data.append('addfile','true');	    
 	}
 	$.ajax({

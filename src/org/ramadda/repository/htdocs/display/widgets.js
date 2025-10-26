@@ -62,7 +62,7 @@ function AreaWidget(display,arg) {
 	    this.settingsDialog = HU.makeDialog(
 		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
-		_this.areaContains = $(this).is(':checked');
+		_this.areaContains = HU.isChecked($(this));
 	    });
 	    this.jq(ID_SET_LOCATION).click(()=>{
 		this.settingsDialog.remove();
@@ -186,7 +186,7 @@ function AreaWidget(display,arg) {
             jqid(this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
 	getContains: function() {
-	    return this.jq(ID_CONTAINS).is(':checked');
+	    return HU.isChecked(this.jq(ID_CONTAINS));
 	},
         getValues: function(settings) {
 	    return {

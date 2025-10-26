@@ -164,8 +164,8 @@ var Translate = {
 	    return;
 	}	    
 	Translate.pending[lang] = [];
-	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
-	if(ramaddaCurrentEntry)   url += '&entryid=' + ramaddaCurrentEntry;
+	let url  = HU.url(RamaddaUtil.getUrl('/getlanguage'),'language', lang);
+	if(ramaddaCurrentEntry)   url = HU.url(url,ARG_ENTRYID,ramaddaCurrentEntry);
         $.ajax({
             url: url,
             dataType: 'text',

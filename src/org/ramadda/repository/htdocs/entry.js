@@ -250,7 +250,9 @@ function RamaddaRepository(repositoryRoot) {
             return true;
         },
         getJsonUrl: function(entryId) {
-            return this.repositoryRoot + "/entry/show?entryid=" + entryId + "&output=json";
+            return HU.url(this.repositoryRoot + URL_ENTRY_SHOW,
+			  ARG_ENTRYID,entryId,
+			  ARG_OUTPUT,'json');
         },
 	
 
@@ -387,7 +389,8 @@ function RamaddaRepository(repositoryRoot) {
             let id;
             if ((typeof entry) == "string") id = entry;
             else id = entry.id;
-            let url = this.getRoot() + "/entry/show?entryid=" + id;
+            let url = HU.url(this.getRoot() + URL_ENTRY_SHOW,
+			     ARG_ENTRYID,id);
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
                     url += "&";
@@ -407,7 +410,8 @@ function RamaddaRepository(repositoryRoot) {
 		    return  Ramadda.getUrl('/proxy?url=' + encodeURIComponent(id));
 		return id;
 	    }
-            let url = this.getRoot() + "/entry/get?entryid=" + id;
+            let url = HU.url(this.getRoot() + URL_ENTRY_GET,
+			     ARG_ENTRYID,id);
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
                     url += "&";
@@ -844,12 +848,12 @@ function Entry(props) {
 		return this.getName();
 	    }
 	    if(what=="fromdate") {
-		return HU.span([ATTR_CLASS,'ramadda-datetime',
+		return HU.span([ATTR_CLASS,CLASS_DATETIME,
 				ATTR_TITLE,this.startDate],this.startDateFormat);
 	    }
 	    
 	    if(what=="time") {
-		return HU.span([ATTR_CLASS,'ramadda-datetime',
+		return HU.span([ATTR_CLASS,CLASS_DATETIME,
 				ATTR_TITLE,this.startDate],this.hhmm);
 	    }
 
@@ -888,9 +892,9 @@ function Entry(props) {
 	    if(what=="altitude") {
 		return this.getAltitude();
 	    }	    
-	    if(what=="createdate") return HU.span([ATTR_CLASS,'ramadda-datetime',
+	    if(what=="createdate") return HU.span([ATTR_CLASS,CLASS_DATETIME,
 						   ATTR_TITLE,this.createDate],this.createDateFormat);
-	    if(what=="changedate") return HU.span([ATTR_CLASS,'ramadda-datetime',
+	    if(what=="changedate") return HU.span([ATTR_CLASS,CLASS_DATETIME,
 						   ATTR_TITLE,this.changeDate],this.changeDateFormat);
 	    if(what=="size") {
 		return this.getFilesize()?this.getFormattedFilesize():"---";
@@ -991,7 +995,10 @@ function Entry(props) {
 	    let okMetadata;
 	    let getUrl=metadata=>{
 		if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
-		let url = this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getAbsoluteId() + "&metadata_id=" + metadata.id;
+		let url = HU.url(this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1,
+				 ARG_ELEMENT,1,
+				 ARG_ENTRYID,this.getAbsoluteId(),
+				 "metadata_id",metadata.id);
 		return url;
 	    }
             for (let i = 0; i < this.metadata.length; i++) {
@@ -1244,13 +1251,14 @@ function Entry(props) {
                 return this.url;
             }
 	    if(this.remoteRepository) {
-		return this.remoteRepository.url + "/entry/get?entryid=" + this.getAbsoluteId();
+		return HU.url(this.remoteRepository.url + URL_ENTRY_GET,
+			      ARG_ENTRYID,this.getAbsoluteId());
 	    }
-            let rurl = this.getRamadda().getRoot() + "/entry/get";
+            let rurl = this.getRamadda().getRoot() + URL_ENTRY_GET;
             if (this.getFilename() != null) {
                 rurl += "/" + this.getFilename();
             }
-            return rurl + "?entryid=" + this.id;
+            return HU.url(rurl,ARG_ENTRYID,this.id);
         },
         getLink: function(label, includeIcon, attrs) {
             if (!label) label = this.getName();

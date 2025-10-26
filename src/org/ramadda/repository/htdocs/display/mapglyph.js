@@ -784,13 +784,13 @@ MapGlyph.prototype = {
 
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
-	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
-	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
-	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
+	    this.setUseEntryName(HU.isChecked(this.jq("useentryname")));
+	    this.setUseEntryLabel(HU.isChecked(this.jq("useentrylabel")));
+	    this.setUseEntryLocation(HU.isChecked(this.jq("useentrylocation")));
 	}
-	this.setVisible(this.jq('visible').is(':checked'),true,null,true);
+	this.setVisible(HU.isChecked(this.jq('visible')),true,null,true);
 	if(this.jq(ID_CANSELECT).length) {
-	    this.attrs.canSelect = this.jq(ID_CANSELECT).is(':checked');
+	    this.attrs.canSelect = HU.isChecked(this.jq(ID_CANSELECT));
 	    if(this.getMapLayer()) {
 		this.getMapLayer().canSelect = this.attrs.canSelect;
 	    }
@@ -859,7 +859,7 @@ MapGlyph.prototype = {
 	    if(this.jq(ID_SHOWDATAICONS).length) {
 		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).val());
 	    }
-	    this.setAttribute(ID_DATAICON_USEENTRY,this.jq(ID_DATAICON_USEENTRY).is(':checked'));
+	    this.setAttribute(ID_DATAICON_USEENTRY,HU.isChecked(this.jq(ID_DATAICON_USEENTRY)));
 	    let dataIconInfo = this.getDataIconInfo();
 	    [ID_DATAICON_MARKERS, ID_DATAICON_FIELDS,ID_DATAICON_INIT_FIELD,
 	     ID_DATAICON_WIDTH, ID_DATAICON_HEIGHT, ID_DATAICON_SIZE,
@@ -1467,7 +1467,7 @@ MapGlyph.prototype = {
 	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,[ATTR_TARGET,'_entry']);
-	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 					     CSS_MAX_WIDTH,HU.px(180),
 					     CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
@@ -1492,7 +1492,7 @@ MapGlyph.prototype = {
 	    if(add!='') {
 		link = HU.leftRightTable(link,add);
 	    }
-	    html+=HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')],link);
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)],link);
 	});
 	if(html!='') {
 	    html = HU.div([ATTR_CLASS,'ramadda-cleanscroll',
@@ -2036,10 +2036,10 @@ MapGlyph.prototype = {
 		'Click to toggle visibility<br>Shift-click to select';
 	    label = HU.div([ATTR_TITLE,title,
 			    ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
-					      CSS_WHITE_SPACE,'nowrap')], label);	    
+					      CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], label);	    
 	}
 	if(right!='') {
-	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], right);
+	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], right);
 	}
 	if(args.forLegend) {
 	    let clazz = CLASS_LEGEND_LABEL;
@@ -2699,7 +2699,7 @@ MapGlyph.prototype = {
 	if(inMapLegend!='') {
 	    inMapLegend=
 		HU.div([ATTR_TITLE,this.getName(),
-			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 					  CSS_MAX_WIDTH,HU.px(150),
 					  CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],HU.b(this.getName())) +
 		inMapLegend;
@@ -2779,7 +2779,7 @@ MapGlyph.prototype = {
 
 	if(this.imageLayers) {
 	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
-		let visible = $(this).is(':checked');
+		let visible = HU.isChecked($(this));
 		let id = $(this).attr(ID_IMAGEID);
 		let obj = _this.imageLayerMap[id]??{id:id};
 		_this.setImageLayerVisible(obj,visible);
@@ -3297,7 +3297,7 @@ MapGlyph.prototype = {
 	    if(this.attrs.entryType=='geo_imdv') {
 		this.dontSaveChildren=true;
 		if(this.mapLoaded) return;
-		let url =HU.url(Ramadda.getUrl("/entry/get"),
+		let url =HU.url(Ramadda.getUrl(URL_ENTRY_GET),
 				ARG_ENTRYID,this.attrs.entryId,
 				"fileinline",true);
 		let finish = (data)=>{
@@ -3411,7 +3411,7 @@ MapGlyph.prototype = {
 	this.style=newStyle;
 	if(this.isStraightLine()) {
 	    let changed = false;
-	    let dots=  this.jq(ID_ADDDOTS).is(':checked');
+	    let dots=  HU.isChecked(this.jq(ID_ADDDOTS));
 	    if(dots!=this.attrs.addDots) {
 		this.attrs.addDots= dots;
 		changed=true;
@@ -3442,11 +3442,11 @@ MapGlyph.prototype = {
 
 	if(this.isMap()) {
 	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
-	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
-	    this.attrs.subsetSimplify= jqid(this.domId('subsetSimplify')).is(':checked');
+	    this.attrs.subsetReverse = HU.isChecked(jqid(this.domId('subsetReverse')));
+	    this.attrs.subsetSimplify= jqid(HU.isChecked(this.domId('subsetSimplify')));
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
-	    this.attrs.declutter_labels=this.jq('declutter_labels').is(':checked');
+	    this.attrs.declutter_labels=HU.isChecked(this.jq('declutter_labels'));
 	    ['labels_maxlength','labels_maxlinelength',
 	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
 		 let v=this.jq(id).val();
@@ -3482,7 +3482,7 @@ MapGlyph.prototype = {
 	}	    
 
 	if(!this.canDoMapStyle()) return;
-	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
+	this.attrs.fillColors = HU.isChecked(this.jq('fillcolors'));
 	let getColorBy=(prefix)=>{
 	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
@@ -3582,7 +3582,7 @@ MapGlyph.prototype = {
 	});
     },
     groupMakeGeoJson:function() {
-	let separateFeatures = !this.jq('mergepolygons').is(':checked');
+	let separateFeatures = !HU.isChecked(this.jq('mergepolygons'));
 	let data=[];
 	this.applyChildren(child=>{
 	    let geometry=child.getGeometry();
@@ -3875,7 +3875,7 @@ MapGlyph.prototype = {
 	let selectCbxs = dialog.find('.feature-select');
 
 	let cbxToggle = cbx=>{
-	    let visible = cbx.is(':checked');
+	    let visible = HU.isChecked(cbx);
 	    let index = cbx.attr('feature-index');
 	    let feature = _this.indexToFeature[index];
 	    if(!feature) return;
@@ -3889,9 +3889,9 @@ MapGlyph.prototype = {
 	};
 
 	this.jq('features_select_all').change(function() {
-	    let visible = $(this).is(':checked');
+	    let visible = HU.isChecked($(this));
 	    selectCbxs.each(function() {
-		if($(this).is(':visible')) {
+		if(HU.isVisible($(this))) {
 		    $(this).prop('checked',visible);
 		}
 	    });
@@ -3899,9 +3899,9 @@ MapGlyph.prototype = {
 
 
 	this.jq('features_visible_all').change(function() {
-	    let visible = $(this).is(':checked');
+	    let visible = HU.isChecked($(this));
 	    visCbxs.each(function() {
-		if($(this).is(':visible')) {
+		if(HU.isVisible($(this))) {
 		    $(this).prop('checked',visible);
 		    cbxToggle($(this));
 		}
@@ -3934,7 +3934,7 @@ MapGlyph.prototype = {
 	this.jq('dialog_features_makemap').button().click(()=>{
 	    let data=[];
 	    visCbxs.each(function() {
-		if(!$(this).is(':checked'))return;
+		if(!HU.isChecked($(this)))return;
 		let feature = getFeature($(this));
 		if(!feature)return;
 		data.push({
@@ -4118,7 +4118,7 @@ MapGlyph.prototype = {
 	return null;
     },
     makeGroupRoute: function() {
-	let doSequence = this.display.jq('routedosequence').is(':checked');
+	let doSequence = HU.isChecked(this.display.jq('routedosequence'));
 	let pts = [];
 	this.applyChildren(child=>{
 	    if(!child.isVisible()) return;
@@ -4828,7 +4828,7 @@ MapGlyph.prototype = {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
-		if(jqid(this.zoomonchangeid).is(':checked')) {
+		if(HU.isChecked(jqid(this.zoomonchangeid))) {
 		    this.panMapTo();
 		}
 		this.updateFeaturesTable();
@@ -4871,7 +4871,7 @@ MapGlyph.prototype = {
 
 
 	    jqid(this.zoomonchangeid).change(function() {
-		_this.setZoomOnChange($(this).is(':checked'));
+		_this.setZoomOnChange(HU.isChecked($(this)));
 	    });
 
 	    this.findFilter('.imdv-legend-clearall').click(()=>{
@@ -4879,7 +4879,7 @@ MapGlyph.prototype = {
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
 		this.updateFeaturesTable();
-		if(jqid(this.zoomonchangeid).is(':checked')) {
+		if(HU.isChecked(jqid(this.zoomonchangeid))) {
 		    this.panMapTo();
 		}
 	    });
@@ -6489,7 +6489,8 @@ MapGlyph.prototype = {
 		     "pointDataCacheOK":false,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
-		     "fileUrl":HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,entryId,"fileinline",true)};
+		     "fileUrl":HU.url(Ramadda.getUrl(URL_ENTRY_GET),
+				      ARG_ENTRYID,entryId,"fileinline",true)};
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();

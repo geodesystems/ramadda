@@ -311,13 +311,13 @@ function  SeesvForm(inputId, entry,params) {
 		});
 
 		_this.jq(ID_SAVE).click(function() {
-		    _this.save =  $(this).is(':checked');
+		    _this.save =  HU.isChecked($(this));
 		});
 		_this.jq(ID_APPLY_TO_SIBLINGS).click(function() {
-		    _this.applyToSiblings =  $(this).is(':checked');
+		    _this.applyToSiblings =  HU.isChecked($(this));
 		});
 		_this.jq(ID_DO_COMMANDS).click(function() {
-		    _this.doCommands =  $(this).is(':checked');
+		    _this.doCommands =  HU.isChecked($(this));
 		    if(_this.editor) {
 			if(_this.doCommands) {
 			    _this.editor.container.classList.remove('ace_editor_disabled')
@@ -513,7 +513,7 @@ function  SeesvForm(inputId, entry,params) {
 		}
 	    };
 	    jqid(cbxId).change(function() {
-		let on =  $(this).is(':checked');
+		let on =  HU.isChecked($(this));
 		if(!on) {
 		    dialog.find('.seesv_extra').remove();
 		    return;
@@ -868,7 +868,7 @@ function  SeesvForm(inputId, entry,params) {
 	getUrl:function(cmds,rawInput) {
 	    let input = '';
 	    if(rawInput || rawInput==='') input = '&lastinput=' + encodeURIComponent(rawInput);
-	    let url = HU.getUrl(RamaddaUtils.getUrl('/entry/show'),
+	    let url = HU.getUrl(RamaddaUtils.getUrl(URL_ENTRY_SHOW),
 				ARG_OUTPUT,'convert_process',
 				ARG_ENTRYID,this.entry,
 				'commands',cmds) + input;

@@ -128,7 +128,7 @@ var CreateType  = {
 	    jqid(ID_CT_BULKTEXT).focus();
 	    dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function() {
 		if($(this).attr(ATTR_ACTION)==ACTION_OK) {
-		    if(jqid('clearrows').is(':checked')) {
+		    if(HU.isChecked(jqid('clearrows'))) {
 			_this.clearColumns();
 		    }
 		    _this.handleBulkUpload(jqid(ID_CT_BULKTEXT).val());
@@ -299,7 +299,7 @@ var CreateType  = {
 
     handleBulkUpload:function(v) {
 	if(!v) return;
-	let above = jqid('insertabove').is(':checked');
+	let above = HU.isChecked(jqid('insertabove'));
 	let idx=0;
 	let theIdx=0;
 	for(;true;idx++) {

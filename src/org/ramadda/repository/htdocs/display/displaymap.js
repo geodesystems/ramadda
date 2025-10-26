@@ -731,7 +731,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
 			ids.forEach((id,idx)=>{
 			    id = getId(id);
-			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+					     ARG_OUTPUT,'shapefile.kml',
+					     ARG_ENTRYID,id);
 			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label,true,match);
 			});
@@ -770,7 +772,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let process=(layer)=>{
 			    let url
 			    if(layer.type=='shapefile')
-				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
+				url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+					     ARG_OUTPUT,'shapefile.kml',
+					     ARG_ENTRYID,layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
 			    if(layer.match)
@@ -810,7 +814,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    } else if(url.startsWith("/resources")) {
 			url = RamaddaUtil.getUrl(url);			
 		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
-			url = RamaddaUtil.getUrl("/entry/get?entryid=" + url);
+			url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID,url);
 		    }
 		    return url;
 		};
@@ -1491,7 +1495,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.layerVisible = visible;
 	    let show = true;
 	    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
-		show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
+		show = HU.isChecked(this.jq(ID_SHOWMARKERSTOGGLE));
 	    }
 	    if(show) {
 		if(this.myFeatureLayer) {
@@ -1729,7 +1733,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let toks = this.layerEntries.split(",");
                 for (let i = 0; i < toks.length; i++) {
                     let tok = toks[i];
-                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + tok);
+                    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_OUTPUT,'shapefile.kml',
+				     ARG_ENTRYID,tok);
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -1962,7 +1968,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let url = entry.getRamadda().getEntryDownloadUrl(entry);
                     layer = this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
-                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + entry.getId());
+                    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_OUTPUT,'shapefile.kml',
+				     ARG_ENTRYID,entry.getId());
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
                 }
                 this.addedLayers[entry.getId()] = layer;
@@ -2175,8 +2183,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(Utils.isAnonymous()) return;
 		let text = prompt("Marker text", "");
 		if(!text) return;
-		let url = RamaddaUtil.getUrl("/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
-					     encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon); 
+		let url = HU.url(RamaddaUtil.getUrl("/metadata/addform"),
+				 AEG_ENTRYID,this.getProperty("entryId"),
+				 "metadata_type","map_marker",
+				 "metadata_attr1",text,
+				 "metadata_attr2",lat +"," + lon); 
 		window.location = url;
 		if(debug) console.log("\tclick:shift");
 		return
@@ -3114,7 +3125,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				      'Show track');
 		this.jq(ID_HEADER2_PREPREFIX).append(HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10))],cbx));
 		this.jq('togglepath').click(function() {
-		    let on = $(this).is(':checked');
+		    let on = HU.isChecked($(this));
 		    _this.setProperty('isPath',on);
 		    _this.setProperty('showPoints',!on);			
 		    _this.haveCalledUpdateUI = false;
@@ -3158,7 +3169,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    this.jq(ID_SHOWMARKERSTOGGLE).change(function() {
-		let visible = $(this).is(':checked');
+		let visible = HU.isChecked($(this));
 		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
 	    this.jq("showVectorLayerToggle").change(function() {
@@ -3539,7 +3550,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    this.jq('collisiontoggle').change(function(){
-		let on = $(this).is(':checked');
+		let on = HU.isChecked($(this));
 		_this.setProperty('handleCollisions',!on);
 		_this.haveCalledUpdateUI = false;
 		_this.updateUI();
@@ -3911,7 +3922,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let reload =  HU.getIconImage("fa-sync",[ATTR_CLASS,CLASS_ANIM_BUTTON,
 							 ATTR_TITLE,"Reload heatmap",
 							 ATTR_ID,this.domId("heatmapreload")])+SPACE2;
-		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
+		this.heatmapVisible= cbx.length==0 ||HU.isChecked(cbx);
 
 		let toggle = reload +
 		    HU.checkbox("",[ATTR_ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
@@ -3939,7 +3950,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	getHeatmapVisible:function() {
 	    let toggle = this.jq(ID_HEATMAP_TOGGLE);
-	    return toggle.length==0 || toggle.is(':checked');
+	    return toggle.length==0 || HU.isChecked(toggle);
 	},
 	updateHtmlLayers: function() {
 	    if(this.htmlLayerInfo) {
@@ -4053,7 +4064,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    label = popupLabelField.getValue(record);
 		}
 		if(Utils.stringDefined(label)) {
-		    label  = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+		    label  = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						       CSS_POSITION,POSITION_ABSOLUTE,
 						       CSS_FONT_SIZE,HU.pt(8),
 						       CSS_TOP,HU.px(25),
@@ -4397,7 +4408,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getHmShowPoints() || this.getShowPoints()) {
 		    let show = true;
 		    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
-			show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
+			show = HU.isChecked(this.jq(ID_SHOWMARKERSTOGGLE));
 		    }
 		    if(show) {
 			this.createPoints(records, fields, points, bounds,debug);
