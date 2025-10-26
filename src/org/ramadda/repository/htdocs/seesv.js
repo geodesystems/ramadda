@@ -1407,7 +1407,7 @@ function  SeesvForm(inputId, entry,params) {
 			    $(this).attr(ATTR_STYLE,HU.css(CSS_COLOR,'black'));
 			    let label = $(this).attr("label");
 			    if(!label) {
-				let index = $(this).attr("index");
+				let index = $(this).attr(ATTR_INDEX);
 				if(index) label = index.replace("#","").trim();
 			    } else {
 				label = Utils.makeId(label);
@@ -1484,7 +1484,7 @@ function  SeesvForm(inputId, entry,params) {
 			}
 			let html = printHeader?result:HU.tag(TAG_PRE,[], result);
 			if(isDb) {
-			    html+=HU.div([ATTR_ID,this.domId(ID_POPUP), ATTR_CLASS,"ramadda-popup"]);
+			    html+=HU.div([ATTR_ID,this.domId(ID_POPUP), ATTR_CLASS,CLASS_POPUP]);
 			} else if(!printHeader) {
 			    writePre(result);
 			    return;
@@ -1492,7 +1492,7 @@ function  SeesvForm(inputId, entry,params) {
 			output.html(html);
 			if(printHeader) {
 			    output.find(HU.dotClass('csv_header_field')).click(function(event) {
-				let index = $(this).attr("index").replace("#","").trim();
+				let index = $(this).attr(ATTR_INDEX).replace("#","").trim();
 				_this.insertColumnIndex(index,$(this).attr("plain"));
 			    });
 			}			

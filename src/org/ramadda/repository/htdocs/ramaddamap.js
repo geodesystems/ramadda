@@ -4,6 +4,8 @@
 */
 
 
+var ATTR_FEATURE_INDEX='feature-index';
+
 function    mobileMapDebug(msg) {
     let debug = jqid('mapdebug');
     if(debug.length>0)
@@ -2166,7 +2168,7 @@ RepositoryMap.prototype = {
                 if (!onFeature) onFeature = feature;
                 html += HU.div([ATTR_TITLE,'',
 				ATTR_CLASS, 'ramadda-map-feature',
-				'feature-index', '' + i], this.getFeatureName(feature));
+				ATTR_FEATURE_INDEX, '' + i], this.getFeatureName(feature));
                 let geometry = feature.geometry;
                 if (geometry) {
                     let fbounds = geometry.getBounds();
@@ -2185,7 +2187,7 @@ RepositoryMap.prototype = {
 		/****
                      jqid(id + " .ramadda-map-feature").tooltip({
 		     content: function() {
-		     let index = parseInt($(this).attr("feature-index"));
+		     let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
 		     feature =  layer.features[index];
 		     if(feature) {
 		     let p = feature.attributes;
@@ -2199,17 +2201,17 @@ RepositoryMap.prototype = {
 		**/
 
                 jqid(id + " .ramadda-map-feature").click(function(e) {
-                    let index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
 		    _this.dontShowText = true;
                     _this.handleFeatureclick(layer, layer.features[index], true,null,{strokeColor:'red'});
 		    _this.dontShowText = false;
                 });
                 jqid(id + " .ramadda-map-feature").mouseover(function() {
-                    let index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
                     _this.handleFeatureover(layer.features[index], true,{strokeColor:'red'});
                 });
                 jqid(id + " .ramadda-map-feature").mouseout(function() {
-                    let index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
                     _this.handleFeatureout(layer.features[index], true);
                 });
 
@@ -2535,7 +2537,7 @@ RepositoryMap.prototype = {
                     at: "left bottom+2"
                 },
                 classes: {
-                    "ui-tooltip": "ramadda-popup"
+                    "ui-tooltip": CLASS_POPUP
                 }
             });
             tick.mouseover(function() {

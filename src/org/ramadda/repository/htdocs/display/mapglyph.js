@@ -2339,7 +2339,7 @@ MapGlyph.prototype = {
 	    buttons =  HU.span([ATTR_ID,this.setLocationId,
 				ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.image(Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg'),
+			       HU.image(Ramadda.getCdnUrl('/icons/binoculars.png'),
 					[ATTR_WIDTH,HU.px(16)])
 			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
@@ -2816,7 +2816,7 @@ MapGlyph.prototype = {
 		}
 		rows.removeClass(CLASS_IMDV_STYLEGROUP_SELECTED);
 		$(this).addClass(CLASS_IMDV_STYLEGROUP_SELECTED);
-		_this.selectedStyleGroup = _this.getStyleGroups()[$(this).attr('index')];
+		_this.selectedStyleGroup = _this.getStyleGroups()[$(this).attr(ATTR_INDEX)];
 
 	    });
 	}

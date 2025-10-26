@@ -3059,7 +3059,7 @@ var Utils =  {
 				  ATTR_STYLE,HU.css(CSS_BORDER,HU.px(0),
 						    CSS_WIDTH,HU.px(width),
 						    CSS_POSITION,POSITION_ABSOLUTE),
-				  ATTR_CLASS,'ramadda-popup ramadda-search-popup'],"");
+				  ATTR_CLASS,HU.classes(CLASS_POPUP,'ramadda-search-popup')],"");
             input.parent().append(results);
         }
 
@@ -3181,7 +3181,7 @@ var Utils =  {
                 links.css(CSS_CURSOR,CURSOR_POINTER);
                 links.click(function(e) {
                     e.stopPropagation();
-                    let v = data.values[$(this).attr("index")].name;
+                    let v = data.values[$(this).attr(ATTR_INDEX)].name;
                     input.val(v);
                     input.closest("form").submit();
 

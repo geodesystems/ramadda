@@ -1014,7 +1014,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						at:'left bottom'});
 		    let _this = this;
 		    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
-			let loc = data.result[$(this).attr('index')];
+			let loc = data.result[$(this).attr(ATTR_INDEX)];
 			dialog.remove();
 			add(loc);
 		    });
@@ -1685,7 +1685,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
-		html+=HU.b('Select Icon');
+		html+=HU.center(HU.b('Select Icon'));
 		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
@@ -2042,7 +2042,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				     ATTR_TITLE,'Go back'],HU.getIconImage('fas fa-rotate-left'));
 
 		let top = back +' ' + plus+' '+HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-									       CSS_OVERFLOW,OVERFLOW_NONE),
+									       CSS_OVERFLOW_X,OVERFLOW_NONE),
 							     ATTR_ID,this.domId('stac_url')],stacLinks,current,100);
 		top = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ddd'),
 						CSS_PADDING_BOTTOM,HU.px(6),
@@ -3930,15 +3930,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+=HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-imdv-image-category']);
 		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
-			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
-						    ATTR_WIDTH,HU.px(24),
-						    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_BOTTOM,HU.px(2)),
-						    ATTR_LOADING,'lazy',
-						    ATTR_TITLE,image.name]);
+			html+=HU.image(image.image,
+				       [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
+					ATTR_WIDTH,HU.px(24),
+					ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_BOTTOM,HU.px(2)),
+					ATTR_DATA_CORPUS,cat.name,
+					ATTR_LOADING,LOADING_LAZY,
+					ATTR_TITLE,image.name]);
 		    });
 		});
 		html+=HU.close(TAG_DIV);
-		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(400),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
+		html = HU.div([ATTR_STYLE,
+			       HU.css(
+				   CSS_BORDER,CSS_BASIC_BORDER,
+				   CSS_MARGIN_TOP, HU.px(5),
+				   CSS_PADDING,HU.px(5),
+				   CSS_WIDTH,HU.px(400),
+				   CSS_MAX_HEIGHT,HU.px(200),
+				   CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search',
 				       ATTR_PLACEHOLDER,'Search',
 				       ATTR_SIZE,30]) +' ' +
@@ -3966,7 +3975,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let textOk = true;		
 			if(value) {
 			    textOk = false;
-			    let html = $(this).attr(ATTR_TITLE).toLowerCase();
+			    let html = $(this).attr(ATTR_TITLE).toLowerCase()+' ' +
+				($(this).attr(ATTR_DATA_CORPUS)??'').toLowerCase();
 			    if(html.indexOf(value)>=0) {
 				textOk=true;
 			    }
@@ -5429,7 +5439,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					  {fillColor:COLOR_TRANSPARENT,
 					   labelSelect:true},textBackgroundStyle), 
 			      MyPoint,
-			      {icon:Ramadda.getCdnUrl("/map/blue-dot.png")});
+			      {icon:Ramadda.getCdnUrl("/icons/markerblack.png")});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  Utils.clone(
@@ -5443,7 +5453,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  label:''},
 			      textStyle,textBackgroundStyle),
 			  MyPoint,
-			  {icon:Ramadda.getCdnUrl("/icons/dots/blue.png")});
+			  {icon:Ramadda.getCdnUrl("/icons/dotblack.png")});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
 		text:"",
 		right:HU.perc(50),
@@ -5459,7 +5469,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },
 			  MyEntryPoint,
 			  {isFixed:true, tooltip:'Add fixed text',
-			   icon:Ramadda.getCdnUrl("/icons/sticky-note-text.png")});			    
+			   icon:Ramadda.getCdnUrl("/icons/text2.png")});
+	    
 
 	    new GlyphType(this,GLYPH_LINE, "Line",
 			  Utils.clone(lineStyle, dotStyle),
@@ -5566,7 +5577,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {isMapServer:true,
 			   tooltip:"Provide a Web Map Service URL",
-			   icon:Ramadda.getCdnUrl("/icons/drive-globe.png")});	
+			   icon:Ramadda.getCdnUrl("/icons/maps.png")});	
 
 	    new GlyphType(this,GLYPH_ROUTE, "Route",
 			  Utils.clone(lineStyle),						   
@@ -5585,7 +5596,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,
-			   icon:Ramadda.getCdnUrl("/icons/imageicon.png")}
+			   icon:Ramadda.getCdnUrl("/icons/image.png")}
 			 );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
 			  Utils.clone(
@@ -5615,12 +5626,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getCdnUrl("/icons/chart.png")});
 	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
-			  {  externalGraphic:Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg'),
+			  {  externalGraphic:Ramadda.getCdnUrl('/icons/binoculars.png'),
 			  },
 			  MyEntryPoint,
 			  {isZoom:true,
 			   tooltip:'Add a viewpoint location',
-			   icon:Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg')});	    	    
+			   icon:Ramadda.getCdnUrl('/icons/binoculars.png')});	    	    
 
 
 	    new GlyphType(this,GLYPH_OSM_LOCATIONS,"Query OSM",
@@ -6276,7 +6287,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    wiki = '{{mappopup}}';
 		let wikiCallback = html=>{
 		    html = mapGlyph.convertPopupText(html);
-		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 		    doPopup(html,{width:this.getProperty('popupWidth',width),
 				  height:this.getProperty('popupHeight',height)});
 		};

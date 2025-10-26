@@ -2101,7 +2101,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 			       ATTR_ID,"tooltipclose"]);
 	let label = HU.image(entryRow.args.icon)+ SPACE +entryRow.args.name;
 	let header =  HU.div([ATTR_CLASS,"ramadda-popup-header"],close +SPACE2 +label);
-	let html = HU.div([ATTR_CLASS,"ramadda-popup",
+	let html = HU.div([ATTR_CLASS,CLASS_POPUP,
 			   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_BLOCK)],
 			  header + HU.table([], text));
 	let popup =  HU.getTooltip();
