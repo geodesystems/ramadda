@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 22 09:39:20 MDT 2025";
+var build_date="RAMADDA build date: Sun Oct 26 08:19:16 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -614,7 +614,7 @@ function AreaWidget(display,arg) {
 	    this.settingsDialog = HU.makeDialog(
 		{content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.jq(ID_CONTAINS).change(function(e) {
-		_this.areaContains = $(this).is(':checked');
+		_this.areaContains = HU.isChecked($(this));
 	    });
 	    this.jq(ID_SET_LOCATION).click(()=>{
 		this.settingsDialog.remove();
@@ -738,7 +738,7 @@ function AreaWidget(display,arg) {
             jqid(this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
 	getContains: function() {
-	    return this.jq(ID_CONTAINS).is(':checked');
+	    return HU.isChecked(this.jq(ID_CONTAINS));
 	},
         getValues: function(settings) {
 	    return {
@@ -6672,9 +6672,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			   HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
 			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
 		items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   'what','reset'],'Reset range'),
+				   ATTR_WHAT,'reset'],'Reset range'),
 			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   'what','ussedata'],'Use data range'));
+				   ATTR_WHAT,'ussedata'],'Use data range'));
 		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
@@ -6724,11 +6724,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }		    
 		});
 		dialog.find('#colortableuselog').change(function() {
-		    _this.setProperty('colorByLog',$(this).is(':checked'));
+		    _this.setProperty('colorByLog',HU.isChecked($(this)));
 		    _this.forceUpdateUI();
 		});
 		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
-		    let what = $(this).attr('what');
+		    let what = $(this).attr(ATTR_WHAT);
 		    _this.setProperty('useDataForColorRange', false);
 		    if(what == 'reset') {
 			_this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
@@ -7029,7 +7029,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 };
 		let oldUrl=  this.properties.theData.url;
 		if(!oldUrl) {
-		    oldUrl = this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&output=points.product&product=points.json&max=5000";
+		    oldUrl = HU.url(this.getRamadda().getRoot() + URL_ENTRY_SHOW,
+				    ARG_ENTRYID,entry.getId(),
+				    ARG_OUTPUT,'points.product',
+				    'product','points.json',
+				    'max',5000);
 		} else {
 		    //this should work
 		    oldUrl = oldUrl.replace(/entryid=.*?&/,"entryid=" + entry.getId()+"&");
@@ -7531,7 +7535,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.userHasSelectedAField=true;
 	    let fields = [];
 	    this.fieldCheckboxes.each(function() {
-                if ($(this).is(':checked')) {
+                if (HU.isChecked($(this))) {
 		    let fieldId = $(this).attr(ATTR_DATA_FIELDID);
 		    if(fieldId)
 			fields.push(fieldId);
@@ -11187,7 +11191,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			 keyup(e,null,$(this).val())});
 		if(macro.type == "bounds") {
 		    this.jq(macro.getId()).change(function(e) {
-			macroChange(macro,$(this).is(':checked'));
+			macroChange(macro,HU.isChecked($(this)));
 		    });
 		}
 		if(macro.type=="enumeration") {
@@ -11786,7 +11790,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(input.attr("isCheckbox")) {
 		    let on = input.attr("onValue")||true;
 		    let off = input.attr("offValue")||false;
-		    if (input.is(':checked')) {
+		    if (HU.isChecked(input)) {
 			value = on;
 			console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
 		    } else {
@@ -12465,10 +12469,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             this.jq("showtitle").change(function() {
-                _this.setShowTitle(_this.jq("showtitle").is(':checked'));
+                _this.setShowTitle(HU.isChecked(_this.jq("showtitle")));
             });
             this.jq("showdetails").change(function() {
-                _this.setShowDetails(_this.jq("showdetails").is(':checked'));
+                _this.setShowDetails(HU.isChecked(_this.jq("showdetails")));
             });
             this.jq(ID_DIALOG_TABS).tabs();
 
@@ -12646,7 +12650,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
 		tmp = tmp.replace(/\\n/g,HU.br());
                 error = tmp;
-                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,"nowrap",
+                error = HU.tag(TAG_PRE, [ATTR_STYLE, HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 							    CSS_MAX_HEIGHT,HU.px(300),
 							    CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 							    CSS_MAX_WIDTH,HU.px(600),
@@ -14547,17 +14551,6 @@ function DisplayManager(argId, argProperties) {
 		//		console.log("URL:" + jsonUrl);
 	    }
 
-	    /*
-	      if(display.getBounds) {
-	      let b = display.getBounds();
-	      //NWSE
-	      jsonUrl = HU.url(jsonUrl,["bounds",b.top+","+b.right+","+b.bottom+","+b.left]);
-	      console.log(b);
-	      console.log(jsonUrl);
-	      }
-	      //	    https://localhost:8430/repository/entry/show?entryid=89516542-f88f-43cf-98ce-f8ea2d3111b0&map_bounds=63.6307%2C-183.21358%2C29.38993%2C15.41923&zoomLevel=3&mapCenter=49.38817%2C-83.89717
-	      */
-
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
                 var lat = props.lat;
@@ -15220,8 +15213,6 @@ function PointData(name, recordFields, records, url, properties) {
             let cacheObject = getPointDataCacheObject(url);
             this.lon = lon;
             this.lat = lat;
-	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
-	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(url)) {
 		this.loadData(myDisplay, true);
                 return true;
@@ -18218,7 +18209,7 @@ var DataUtils = {
 	    if(label) {
 		var cbx =  display.jq("datafilterenabled_" + filterId);
 		if(cbx.length) {
-		    enabled = cbx.is(':checked');
+		    enabled = HU.isChecked(cbx);
 		} 
 	    }
 	    if(type=="match" || type=="notmatch")
@@ -18644,7 +18635,7 @@ RequestMacro.prototype = {
     },
     apply: function(url) {
 	if(this.type == "bounds") {
-	    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
+	    if(this.display.getBounds && HU.isChecked(this.display.jq(this.getId()))) {
 		let bounds = this.display.getBounds();
 		if(bounds) {
 		    bounds = RecordUtil.convertBounds(bounds);
@@ -19244,7 +19235,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let element =jqid(this.display.getDomId("filterby_" + this.getId()));
 	    let value=null;
 	    if(element.attr("isCheckbox")) {
-		if(element.is(':checked')) {
+		if(HU.isChecked(element)) {
 		    value = element.attr("onValue");
 		} else {
 		    value = element.attr("offValue");
@@ -19374,7 +19365,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			    let _rv = rv.toLowerCase();
 			    if(_rv.indexOf(v)>0) {
 				html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,
-					      ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+					      ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 								CSS_MAX_WIDTH,HU.px(400),
 								CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],
 					     rv);
@@ -19453,7 +19444,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let _this = this;
 		let cbxChange = function() {
         	    let cbx = $(this);
-	            let on = cbx.is(':checked');
+	            let on = HU.isChecked(cbx);
 		    let value  = $(this).attr(ATTR_METADATA_VALUE);
 		    _this.toggleTag(value,on,cbx,true);
 		}
@@ -19794,7 +19785,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let clickId = this.getFilterId()+"_popup";
 		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
 		    label = label.replace(/ /g,SPACE);
-		    let style = HU.css(CSS_WHITE_SPACE,"nowrap",
+		    let style = HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 				       CSS_LINE_HEIGHT,HU.em(1.5),
 				       CSS_MARGIN_TOP,HU.px(6),
 				       CSS_PADDING_RIGHT,HU.px(5));
@@ -20708,12 +20699,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
             this.jq(ID_TRENDS_CBX).click(function() {
-                _this.setProperty('showTrendLines', _this.jq(ID_TRENDS_CBX).is(':checked'));
+                _this.setProperty('showTrendLines', HU.isChecked(_this.jq(ID_TRENDS_CBX)));
                 _this.displayData();
 
             });
             this.jq(ID_PERCENT_CBX).click(function() {
-                _this.showPercent = _this.jq(ID_PERCENT_CBX).is(':checked');
+                _this.showPercent = HU.isChecked(_this.jq(ID_PERCENT_CBX));
                 _this.displayData();
 
             });
@@ -25678,7 +25669,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             this.setContents(contents);
 	    if(anyNoImages) {
 		this.jq('onlyimages').change(function() {
-		    _this.hideNoImages = $(this).is(':checked');
+		    _this.hideNoImages = HU.isChecked($(this));
 		    _this.forceUpdateUI();
 		});
 	    }
@@ -27124,7 +27115,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	applyFieldSelection: function() {
 	    this.getData().getRecordFields().forEach(f=>{
 		let cbx = this.jq("cbx_" + f.getId());
-		let on = cbx.is(':checked');
+		let on = HU.isChecked(cbx);
 		this.fieldOn[f.getId()] = on;
 	    });
 	},
@@ -27236,7 +27227,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		let init = ()=>{
 		    let _this = this;
 		    this.jq("cbx_toggle_all").click(function() {
-			let on = $(this).is(':checked');
+			let on = HU.isChecked($(this));
 			dialog.find(".display-downloader-field-cbx").each(function() {
 			    $(this).prop("checked",on);
 			});
@@ -27319,7 +27310,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
             this.clearDisplayMessage();
 	    this.jq(ID_CHECKBOX).change(()=>{
 		let cbx = this.jq(ID_CHECKBOX);
-		if(cbx.is(':checked')) {
+		if(HU.isChecked(cbx)) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
@@ -27334,7 +27325,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	okToRun: function() {
 	    let cbx = this.jq(ID_CHECKBOX);
 	    if(cbx.length==0) return true;
-	    return cbx.is(':checked');
+	    return HU.isChecked(cbx);
 	},
 	getCountdownLabel: function(time) {
 	    let pad = "";
@@ -27785,7 +27776,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.rootEntry = entry;
             });
             var id = this.getProperty("entryId", "");
-            var url = RamaddaUtil.getBaseUrl() + "/getnotebook?entryid=" + id;
+            var url = HU.url(RamaddaUtil.getBaseUrl() + "/getnotebook",ARG_ENTRYID,id);
             url += "&notebookId=" + this.getProperty("notebookId", "default_notebook");
             var jqxhr = $.getJSON(url, function(data) {
                 _this.loadJson(data);
@@ -28041,7 +28032,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (this.consoleHidden)
                 this.console.hide();
             this.jq(ID_CONSOLE).find(".ramadda-image-link").click(function(e) {
-                var what = $(this).attr("what");
+                var what = $(this).attr(ATTR_WHAT);
                 if (what == "clear") {
                     _this.console.html("");
                 }
@@ -28050,7 +28041,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 
             this.consoleToolbar = this.jq(ID_CONSOLE_TOOLBAR);
             this.consoleToolbar.click(() => {
-                if (this.console.is(":visible")) {
+                if (HU.isVisible(this.console)) {
                     this.console.hide(400);
                     this.consoleHidden = true;
                 } else {
@@ -28072,7 +28063,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 						ATTR_CLASS, "display-notebook-console-toolbar",
 						ATTR_TITLE, "click to hide/show console"],
                 HU.leftRight("",
-                    HU.span([ATTR_CLASS, "ramadda-image-link", ATTR_TITLE, "Clear", "what", "clear"],
+                    HU.span([ATTR_CLASS, "ramadda-image-link", ATTR_TITLE, "Clear", ATTR_WHAT, "clear"],
                         HU.image(Utils.getIcon("clear.png")))));
             return HU.div([ATTR_ID, this.getDomId(ID_CONSOLE), ATTR_CLASS, "display-notebook-console"],
                 consoleToolbar +
@@ -28618,8 +28609,11 @@ function NotebookState(cell, div) {
             if (entry == null)
                 await this.cell.getCurrentEntry(e => entry = e);
             if ((typeof entry) != "string") entry = entry.getId();
-            await GuiUtils.loadHtml(RamaddaUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
-                callback);
+            await GuiUtils.loadHtml(HU.url(RamaddaUtil.getBaseUrl() + "/wikify",
+					   'doImports','false',
+					   ARG_ENTRYID,entry,
+					   'wikitext',s),
+				    callback);
         },
         //These are for the iodiode mimic
         addOutputRenderer: function(renderer) {
@@ -28784,7 +28778,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             html = HU.div([ATTR_ID, this.getDomId(ID_CELL)], html);
             jqid(this.id + "_cellinput").html(html);
             jqid(this.id + "_celloutput").html(output);
-            var url = RamaddaUtil.getBaseUrl()+ "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
+            var url = HU.url(RamaddaUtil.getBaseUrl()+ "/wikitoolbar",
+			     'doImports','false',
+			     ARG_ENTRYID,this.entryId,
+			     'handler',this.editId);
             url += "&extrahelp=" + RamaddaUtil.getBaseUrl() + "/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url, h => {
                 this.inputToolbar = h;
@@ -28824,7 +28821,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.inputMenu = this.cell.find(".display-notebook-input-container");
             this.applyStyle();
             this.header.find(".display-notebook-menu-button").click(function(e) {
-                _this.processCommand($(this).attr("what"));
+                _this.processCommand($(this).attr(ATTR_WHAT));
                 e.stopPropagation();
             });
 
@@ -28903,16 +28900,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         makeButton: function(id, icon, title, command) {
             if (!command) command = "noop";
-            return HU.div(["what", command, ATTR_TITLE, title, ATTR_CLASS, "display-notebook-menu-button", ATTR_ID, this.getDomId(id)], HU.image(icon, []));
+            return HU.div([ATTR_WHAT, command, ATTR_TITLE, title, ATTR_CLASS, "display-notebook-menu-button", ATTR_ID, this.getDomId(id)], HU.image(icon, []));
         },
         makeMenu: function(src, at) {
             if (!src) {
                 src = this.input;
             }
-            if (!src.is(":visible")) {
+            if (!HU.isVisible(src)) {
                 src = this.header;
             }
-            if (!src.is(":visible")) {
+            if (!HU.isVisible(src)) {
                 src = this.output;
             }
             if (!at) at = "left top";
@@ -28928,20 +28925,20 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             menu += open;
             menu += HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]);
             menu += "<tr><td align=right><b>New cell:</b>&nbsp;</td><td>";
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "newabove"], "Above") + space;
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "newbelow"], "Below");
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "newabove"], "Above") + space;
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "newbelow"], "Below");
             menu += HU.close(TAG_TD,TAG_TR);
             menu += "<tr><td align=right><b>Move:</b>&nbsp;</td><td>";
-            menu += HU.div([ATTR_TITLE, "ctrl-^", ATTR_CLASS, CLASS_LINK, "what", "moveup"], "Up") + space;
-            menu += HU.div([ATTR_TITLE, "ctrl-v", ATTR_CLASS, CLASS_LINK, "what", "movedown"], "Down");
+            menu += HU.div([ATTR_TITLE, "ctrl-^", ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "moveup"], "Up") + space;
+            menu += HU.div([ATTR_TITLE, "ctrl-v", ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "movedown"], "Down");
             menu += HU.close(TAG_TD,TAG_TR,TAG_TABLE);
 
 
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_TITLE, "ctrl-return", ATTR_CLASS, CLASS_LINK, "what", "hideall"], "Hide all inputs");
+            menu += HU.div([ATTR_TITLE, "ctrl-return", ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "hideall"], "Hide all inputs");
             menu += HU.br()
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "clearall"], "Clear all outputs");
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "clearall"], "Clear all outputs");
             menu += HU.br();
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
@@ -28960,11 +28957,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "savewithout"], "Save notebook") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "savewithout"], "Save notebook") + HU.br();
 	    menu+=close;
 	    menu+=open;
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "delete"], "Delete cell") + HU.br();
-            menu += HU.div([ATTR_CLASS, CLASS_LINK, "what", "help"], "Help") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "delete"], "Delete cell") + HU.br();
+            menu += HU.div([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "help"], "Help") + HU.br();
             menu = HU.div([ATTR_CLASS, "display-notebook-menu"], menu);
 	    menu+=close;
             var popup = this.getPopup();
@@ -28980,39 +28977,39 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             _this.jq(ID_SHOWHEADER_INPUT).focus();
 
             _this.jq(ID_SHOWCONSOLE).change(function(e) {
-                _this.notebook.showConsole = _this.jq(ID_SHOWCONSOLE).is(':checked');
+                _this.notebook.showConsole = HU.isChecked(_this.jq(ID_SHOWCONSOLE));
                 _this.hidePopup();
                 _this.notebook.layoutCells();
             });
 
 
             _this.jq(ID_SHOWHEADER_INPUT).change(function(e) {
-                _this.showHeader = _this.jq(ID_SHOWHEADER_INPUT).is(':checked');
+                _this.showHeader = HU.isChecked(_this.jq(ID_SHOWHEADER_INPUT));
                 _this.applyStyle();
             });
 
 
             _this.jq(ID_RUNFIRST).change(function(e) {
-                _this.runFirst = _this.jq(ID_RUNFIRST).is(':checked');
+                _this.runFirst = HU.isChecked(_this.jq(ID_RUNFIRST));
             });
 
             _this.jq(ID_SHOW_OUTPUT).change(function(e) {
-                _this.showOutput = _this.jq(ID_SHOW_OUTPUT).is(':checked');
+                _this.showOutput = HU.isChecked(_this.jq(ID_SHOW_OUTPUT));
                 _this.applyStyle();
             });
             _this.jq(ID_RUN_ON_LOAD).change(function(e) {
-                _this.notebook.runOnLoad = _this.jq(ID_RUN_ON_LOAD).is(':checked');
+                _this.notebook.runOnLoad = HU.isChecked(_this.jq(ID_RUN_ON_LOAD));
             });
             _this.jq(ID_DISPLAY_MODE).change(function(e) {
-                _this.notebook.displayMode = _this.jq(ID_DISPLAY_MODE).is(':checked');
+                _this.notebook.displayMode = HU.isChecked(_this.jq(ID_DISPLAY_MODE));
             });
             _this.jq(ID_SHOWEDIT).change(function(e) {
-                _this.showInput = _this.jq(ID_SHOWEDIT).is(':checked');
+                _this.showInput = HU.isChecked(_this.jq(ID_SHOWEDIT));
                 _this.applyStyle();
             });
 
             _this.jq(ID_LAYOUT_TYPE).change(function(e) {
-                if (_this.jq(ID_LAYOUT_TYPE).is(':checked')) {
+                if (HU.isChecked(_this.jq(ID_LAYOUT_TYPE))) {
                     _this.notebook.layout = "horizontal";
                 } else {
                     _this.notebook.layout = "vertical";
@@ -29040,7 +29037,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
             });
             popup.find(".ramadda-link").click(function() {
-                var what = $(this).attr("what");
+                var what = $(this).attr(ATTR_WHAT);
                 _this.processCommand(what);
             });
         },
@@ -29140,18 +29137,18 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let _this = this;
             var menu = "";
             menu += "Are you sure you want to delete this cell?<br>";
-            menu += HU.span([ATTR_CLASS, CLASS_LINK, "what", "yes"], "Yes");
+            menu += HU.span([ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "yes"], "Yes");
             menu += HU.span([ATTR_STYLE, HU.css(CSS_MARGIN_LEFT,HU.px(50)),
-				    ATTR_CLASS, CLASS_LINK, "what", "cancel"], "No");
+				    ATTR_CLASS, CLASS_LINK, ATTR_WHAT, "cancel"], "No");
             var popup = this.getPopup();
 
             popup.html(HU.div([ATTR_CLASS, CLASS_POPUP_INNER], menu));
             popup.show();
             var src = this.input;
-            if (!src.is(":visible")) {
+            if (!HU.isVisible(src)) {
                 src = this.output;
             }
-            if (!src.is(":visible")) {
+            if (!HU.isVisible(src)) {
                 src = this.header;
             }
             popup.position({
@@ -29161,7 +29158,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 collision: "fit fit"
             });
             popup.find(".ramadda-link").click(function() {
-                var what = $(this).attr("what");
+                var what = $(this).attr(ATTR_WHAT);
                 _this.hidePopup();
                 if (what == "yes") {
                     _this.notebook.deleteCell(_this);
@@ -29493,7 +29490,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             url = Utils.replaceRoot(url);
 
             if (url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
-                return Utils.call(callback, RamaddaUtil.getBaseUrl() + "/entry/get?entryid=" + url);
+                return Utils.call(callback, HU.url(RamaddaUtil.getBaseUrl() + URL_ENTRY_GET,ARG_ENTRYID,url));
             } else {
                 if (!url.startsWith("http")) {
                     if ((url.startsWith("/") && !url.startsWith(RamaddaUtil.getBaseUrl())) || url.startsWith("..") || !url.startsWith("/")) {
@@ -29502,7 +29499,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         if (!entry) {
                             return Utils.call(callback, null);
                         }
-                        return Utils.call(callback, RamaddaUtil.getBaseUrl() + "/entry/get?entryid=" + entry.getId());
+                        return Utils.call(callback,
+					  HU.url(RamaddaUtil.getBaseUrl() + URL_ENTRY_GET,ARG_ENTRYID,entry.getId()));
                     }
                 }
                 return Utils.call(callback, url);
@@ -29678,8 +29676,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.output = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
-            await GuiUtils.loadHtml(RamaddaUtil.getBaseUrl() + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
-                wikiCallback);
+            await GuiUtils.loadHtml(HU.url(RamaddaUtil.getBaseUrl() + "/wikify",
+					   'doImports','false',
+					   ARG_ENTRYID,id,
+					   'wikitext',chunk.getContent()),
+				    wikiCallback);
         },
         processSh: async function(chunk) {
             var r = "";
@@ -34252,7 +34253,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             this.writeHtml(ID_TOP_RIGHT, HU.span([ATTR_ID,this.domId(ID_LABEL)]," ") + input);
             let _this = this;
 	    this.jq(ID_SHRINK).click(function() {
-		_this.doShrink = _this.jq(ID_SHRINK).is(':checked');
+		_this.doShrink = HU.isChecked(_this.jq(ID_SHRINK));
 		_this.setProperty("initialShrink",_this.doShrink);
 		_this.updateUI();
 	    });
@@ -36066,7 +36067,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let cbxValues=[];
 		    let cbxs = $('[checkbox-id='+ fullId+']');
 		    cbxs.each(function() {
-			if($(this).is(':checked')) {
+			if(HU.isChecked($(this))) {
 			    let value = $(this).attr(ATTR_DATA_VALUE);
 			    extra += '&' + arg + '=' + encodeURIComponent(value);
 			    cbxValues.push(value);
@@ -36209,7 +36210,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		});
 	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
-		if($(this).is(':checked')) {
+		if(HU.isChecked($(this))) {
 		    let id = $(this).attr('data-entryid');
 		    jsonUrl+='&ancestor='+ id;
 		}
@@ -36664,7 +36665,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let value  = $(this).attr(ATTR_METADATA_VALUE);
 		let type  = $(this).attr(ATTR_METADATA_TYPE);
 		let index  = $(this).attr(ATTR_METADATA_INDEX);				
-		let on = $(this).is(':checked');
+		let on = HU.isChecked($(this));
 		let cbx = $(this);
 		let element  = _this.idToElement[$(this).attr(ATTR_ID)];
 		if(on) {
@@ -36784,7 +36785,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    let cbx = jqid(this.metadataBoxes[metadata.type][metadata.value.attr1]);
-	    if(cbx.is(':checked')) return;
+	    if(HU.isChecked(cbx)) return;
 	    cbx.click();
 	},
         getMetadataFieldId: function(metadataType) {
@@ -38416,7 +38417,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(thumb) attrs.push("thumbnail",thumb);
 		let link = HU.href(this.getRamadda().getEntryUrl(entry),entry.getIconImage() +"  "+ entry.getName());
 		if(showParent && entry.getParentName()) {
-		    let url = HU.url(RamaddaUtil.getUrl("/entry/show"),	ARG_ENTRYID,entry.parent);
+		    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_ENTRYID,entry.parent);
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
 		    link = HU.hbox([plink,HU.span([ATTR_STYLE,
 						   HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_LEFT,HU.px(4))],"&raquo;"), link]);
@@ -38683,7 +38685,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             let _this = this;
             let cbx = this.jq(ID_SETTINGS + " :checkbox");
             cbx.click(function() {
-                _this.setProperty($(this).attr("attr"), $(this).is(':checked'));
+                _this.setProperty($(this).attr("attr"), HU.isChecked($(this)));
                 _this.makeGrid(_this.entries);
             });
             let input = this.jq(ID_SETTINGS + " :input");
@@ -39647,14 +39649,14 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             let pointDataList = [];
 
             pointDataList.push(new PointData(entry1.getName(), null, null,
-					     HU.url(RamaddaUtil.getUrl("/entry/show"),
+					     HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 						    ARG_OUTPUT,'points.product',
 						    'product','points.json',
 						    'numpoints',1000,
 						    ARG_ENTRYIDentry1.getId())));
             if (entry2 != null) { 
 		pointDataList.push(new PointData(entry2.getName(), null, null,
-						 HU.url(RamaddaUtil.getUrl("/entry/show"),
+						 HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 							ARG_OUTPUT,'points.product',
 							'product','points.json',
 							'numpoints',1000,
@@ -40794,7 +40796,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
 			ids.forEach((id,idx)=>{
 			    id = getId(id);
-			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+					     ARG_OUTPUT,'shapefile.kml',
+					     ARG_ENTRYID,id);
 			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label,true,match);
 			});
@@ -40833,7 +40837,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let process=(layer)=>{
 			    let url
 			    if(layer.type=='shapefile')
-				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
+				url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+					     ARG_OUTPUT,'shapefile.kml',
+					     ARG_ENTRYID,layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
 			    if(layer.match)
@@ -40873,7 +40879,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    } else if(url.startsWith("/resources")) {
 			url = RamaddaUtil.getUrl(url);			
 		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
-			url = RamaddaUtil.getUrl("/entry/get?entryid=" + url);
+			url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID,url);
 		    }
 		    return url;
 		};
@@ -41554,7 +41560,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.layerVisible = visible;
 	    let show = true;
 	    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
-		show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
+		show = HU.isChecked(this.jq(ID_SHOWMARKERSTOGGLE));
 	    }
 	    if(show) {
 		if(this.myFeatureLayer) {
@@ -41792,7 +41798,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let toks = this.layerEntries.split(",");
                 for (let i = 0; i < toks.length; i++) {
                     let tok = toks[i];
-                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + tok);
+                    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_OUTPUT,'shapefile.kml',
+				     ARG_ENTRYID,tok);
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -42025,7 +42033,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let url = entry.getRamadda().getEntryDownloadUrl(entry);
                     layer = this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
-                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + entry.getId());
+                    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
+				     ARG_OUTPUT,'shapefile.kml',
+				     ARG_ENTRYID,entry.getId());
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
                 }
                 this.addedLayers[entry.getId()] = layer;
@@ -42238,8 +42248,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(Utils.isAnonymous()) return;
 		let text = prompt("Marker text", "");
 		if(!text) return;
-		let url = RamaddaUtil.getUrl("/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
-					     encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon); 
+		let url = HU.url(RamaddaUtil.getUrl("/metadata/addform"),
+				 AEG_ENTRYID,this.getProperty("entryId"),
+				 "metadata_type","map_marker",
+				 "metadata_attr1",text,
+				 "metadata_attr2",lat +"," + lon); 
 		window.location = url;
 		if(debug) console.log("\tclick:shift");
 		return
@@ -43177,7 +43190,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				      'Show track');
 		this.jq(ID_HEADER2_PREPREFIX).append(HU.span([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10))],cbx));
 		this.jq('togglepath').click(function() {
-		    let on = $(this).is(':checked');
+		    let on = HU.isChecked($(this));
 		    _this.setProperty('isPath',on);
 		    _this.setProperty('showPoints',!on);			
 		    _this.haveCalledUpdateUI = false;
@@ -43221,7 +43234,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    this.jq(ID_SHOWMARKERSTOGGLE).change(function() {
-		let visible = $(this).is(':checked');
+		let visible = HU.isChecked($(this));
 		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
 	    this.jq("showVectorLayerToggle").change(function() {
@@ -43602,7 +43615,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    this.jq('collisiontoggle').change(function(){
-		let on = $(this).is(':checked');
+		let on = HU.isChecked($(this));
 		_this.setProperty('handleCollisions',!on);
 		_this.haveCalledUpdateUI = false;
 		_this.updateUI();
@@ -43974,7 +43987,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let reload =  HU.getIconImage("fa-sync",[ATTR_CLASS,CLASS_ANIM_BUTTON,
 							 ATTR_TITLE,"Reload heatmap",
 							 ATTR_ID,this.domId("heatmapreload")])+SPACE2;
-		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
+		this.heatmapVisible= cbx.length==0 ||HU.isChecked(cbx);
 
 		let toggle = reload +
 		    HU.checkbox("",[ATTR_ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
@@ -44002,7 +44015,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	getHeatmapVisible:function() {
 	    let toggle = this.jq(ID_HEATMAP_TOGGLE);
-	    return toggle.length==0 || toggle.is(':checked');
+	    return toggle.length==0 || HU.isChecked(toggle);
 	},
 	updateHtmlLayers: function() {
 	    if(this.htmlLayerInfo) {
@@ -44116,7 +44129,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    label = popupLabelField.getValue(record);
 		}
 		if(Utils.stringDefined(label)) {
-		    label  = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+		    label  = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						       CSS_POSITION,POSITION_ABSOLUTE,
 						       CSS_FONT_SIZE,HU.pt(8),
 						       CSS_TOP,HU.px(25),
@@ -44460,7 +44473,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getHmShowPoints() || this.getShowPoints()) {
 		    let show = true;
 		    if(this.jq(ID_SHOWMARKERSTOGGLE).length>0) {
-			show = this.jq(ID_SHOWMARKERSTOGGLE).is(":checked");
+			show = HU.isChecked(this.jq(ID_SHOWMARKERSTOGGLE));
 		    }
 		    if(show) {
 			this.createPoints(records, fields, points, bounds,debug);
@@ -46413,7 +46426,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    let mapFile = this.getPropertyMapFile();
 		    let mapEntry = this.getMapEntry();
 		    if(mapEntry!=null) {
-			mapFile = RamaddaUtil.getUrl("/entry/get?entryid=" + mapEntry);
+			mapFile = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET),ARG_ENTRYID, mapEntry);
 		    } else {
 			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
 			    mapFile =RamaddaUtil.getCdnUrl("/resources/" + mapFile);
@@ -48048,7 +48061,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    pointRadius:12		    
 		};
 
-		let addIt = this.jq(ID_ADDRESS_ADD).is(':checked');
+		let addIt = HU.isChecked(this.jq(ID_ADDRESS_ADD));
 		let points = [loc.latitude,loc.longitude];
 		style.externalGraphic=Ramadda.getCdnUrl(addIt?'/icons/map/marker-blue.png':'/icons/map/marker.png');
 		let mapGlyph = this.createMapMarker(GLYPH_MARKER,{type:GLYPH_MARKER,name:loc.name}, style,points,addIt)
@@ -48086,7 +48099,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						at:'left bottom'});
 		    let _this = this;
 		    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
-			let loc = data.result[$(this).attr('index')];
+			let loc = data.result[$(this).attr(ATTR_INDEX)];
 			dialog.remove();
 			add(loc);
 		    });
@@ -48621,14 +48634,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let entry  = attrs.entry;
 			if(entry) {
 			    if(entry.getIsEntryImage()) {
-				imageUrl = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entry.getId());
+				imageUrl = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entry.getId());
 			    } else {
 				imageUrl = entry.getThumbnail();
 			    }
 			} else if(!attrs.isImage) {
 			    imageUrl = attrs.thumbnailUrl;
 			} else {
-			    imageUrl = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+			    imageUrl = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 			}
 			if(!imageUrl) {
 			    alert("Selected entry does not have an image");
@@ -48668,7 +48681,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    return;
 				}
 			    } else {
-				url = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+				url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 			    }
 			}
 			style.imageUrl = url;
@@ -48757,7 +48770,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
-		html+=HU.b('Select Icon');
+		html+=HU.center(HU.b('Select Icon'));
 		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
@@ -48776,7 +48789,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let ok = ()=>{
 		    let style = Utils.clone({},tmpStyle);
 		    style.mapOptions = Utils.clone({},tmpMapOptions);
-		    let doIcon = this.lastIncludeIcon  = this.jq('includeicon').is(':checked');
+		    let doIcon = this.lastIncludeIcon  = HU.isChecked(this.jq('includeicon'));
 		    if(!doIcon) {
 			style.externalGraphic=icon_blank;
 		    } else {
@@ -49114,7 +49127,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				     ATTR_TITLE,'Go back'],HU.getIconImage('fas fa-rotate-left'));
 
 		let top = back +' ' + plus+' '+HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-									       CSS_OVERFLOW,OVERFLOW_NONE),
+									       CSS_OVERFLOW_X,OVERFLOW_NONE),
 							     ATTR_ID,this.domId('stac_url')],stacLinks,current,100);
 		top = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ddd'),
 						CSS_PADDING_BOTTOM,HU.px(6),
@@ -49641,7 +49654,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						   ATTR_CLASS,''],false,'Don\'t ask again');
 			HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
 					      ()=>{
-						  _this.dontAskDelete  = _this.jq('dontask').is(':checked');
+						  _this.dontAskDelete  = HU.isChecked(_this.jq('dontask'));
 						  _this.removeMapGlyphs([mapGlyph]);},null,dontAsk);
 		    }
 		}
@@ -49787,7 +49800,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    displayAttrs.pointDataUrl = pointDataUrl;
 		    let mapGlyph = this.handleNewFeature(null,null,mapOptions);
-		    mapGlyph.addData(displayAttrs,this.jq("andzoom").is(":checked"));
+		    mapGlyph.addData(displayAttrs,HU.isChecked(this.jq("andzoom")));
 		    dialog.remove();
 		});
 		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
@@ -49849,7 +49862,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    console.error("No map glyph from id:" + id);
 		    return;
 		}
-		mapGlyph.setVisible($(this).is(':checked'),true);
+		mapGlyph.setVisible(HU.isChecked($(this)),true);
 	    });
 	    this.jq(ID_LIST).find(".imdv-feature").click(function(event) {
 		let clazz  = LIST_SELECTED_CLASS;
@@ -50063,7 +50076,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    v = v.replace(/\\n/g,'\n');
 			}
 			if(prop=='showLabels') {
-			    v = this.jq(id).is(':checked');
+			    v = HU.isChecked(this.jq(id));
 			}
 			style[prop] = v;
 		    });
@@ -50643,7 +50656,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let ifApply = () =>{
-		if(this.jq('styledialogactive').is(':checked')) {
+		if(HU.isChecked(this.jq('styledialogactive'))) {
 		    myApply();
 		}
 	    };
@@ -51002,15 +51015,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+=HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-imdv-image-category']);
 		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
-			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
-						    ATTR_WIDTH,HU.px(24),
-						    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_BOTTOM,HU.px(2)),
-						    ATTR_LOADING,'lazy',
-						    ATTR_TITLE,image.name]);
+			html+=HU.image(image.image,
+				       [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
+					ATTR_WIDTH,HU.px(24),
+					ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_MARGIN_BOTTOM,HU.px(2)),
+					ATTR_DATA_CORPUS,cat.name,
+					ATTR_LOADING,LOADING_LAZY,
+					ATTR_TITLE,image.name]);
 		    });
 		});
 		html+=HU.close(TAG_DIV);
-		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(400),CSS_MAX_HEIGHT,HU.px(200),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
+		html = HU.div([ATTR_STYLE,
+			       HU.css(
+				   CSS_BORDER,CSS_BASIC_BORDER,
+				   CSS_MARGIN_TOP, HU.px(5),
+				   CSS_PADDING,HU.px(5),
+				   CSS_WIDTH,HU.px(400),
+				   CSS_MAX_HEIGHT,HU.px(200),
+				   CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search',
 				       ATTR_PLACEHOLDER,'Search',
 				       ATTR_SIZE,30]) +' ' +
@@ -51038,7 +51060,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let textOk = true;		
 			if(value) {
 			    textOk = false;
-			    let html = $(this).attr(ATTR_TITLE).toLowerCase();
+			    let html = $(this).attr(ATTR_TITLE).toLowerCase()+' ' +
+				($(this).attr(ATTR_DATA_CORPUS)??'').toLowerCase();
 			    if(html.indexOf(value)>=0) {
 				textOk=true;
 			    }
@@ -51160,7 +51183,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doImport: function() {
 	    let callback = (entryId) =>{
-		let url = HU.url(Ramadda.getUrl('/entry/get'),ARG_ENTRYID,entryId);
+		let url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,entryId);
 		this.showProgress("Importing map...");
 		let finish = ()=>{
 		    this.clearMessage2();
@@ -51492,15 +51515,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    let apply = ()=>{
-		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
-				    PROP_SHOWOPACITYSLIDER, this.jq('showopacityslider').is(':checked'),
-				    'showGraticules',this.jq('showgraticules').is(':checked'),
-				    'showOverviewMap',this.jq('showoverviewmap').is(':checked'),				    
-				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
-				    'showAddress', this.jq('showaddress').is(':checked'),
+		this.setMapProperty('userCanChange', HU.isChecked(this.jq('usercanchange')),
+				    PROP_SHOWOPACITYSLIDER, HU.isChecked(this.jq('showopacityslider')),
+				    'showGraticules',HU.isChecked(this.jq('showgraticules')),
+				    'showOverviewMap',HU.isChecked(this.jq('showoverviewmap')),				    
+				    'showMousePosition', HU.isChecked(this.jq('showmouseposition')),
+				    'showAddress', HU.isChecked(this.jq('showaddress')),
 				    'legendPosition',this.jq('legendposition').val(),
 				    'legendWidth',this.jq('legendwidth').val(),
-				    'showBaseMapSelect',this.jq('showbasemapselect').is(':checked'),
+				    'showBaseMapSelect',HU.isChecked(this.jq('showbasemapselect')),
 				    'topWikiText', this.jq('topwikitext_input').val(),
 				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
 				    'otherProperties', this.jq('otherproperties_input').val());		
@@ -52198,7 +52221,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,opts.entryId);
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),ARG_ENTRYID,opts.entryId);
 	    }
 	    url = url.replace(/\${root}/,RamaddaUtil.getBaseUrl());
 	    mapGlyph.setDownloadUrl(url);
@@ -52257,7 +52280,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		break;
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
-		url = HU.url(Ramadda.getUrl('/entry/show'),
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_SHOW),
 			     ARG_ENTRYID,opts.entryId,ARG_OUTPUT,'geojson.geojson',
 			     'formap',true);
 		//fall thru to geojson
@@ -52275,7 +52298,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    loadCallback(map,layer);
 		};
-		url =  HU.url(Ramadda.getUrl("/entry/show"),
+		url =  HU.url(Ramadda.getUrl(URL_ENTRY_SHOW),
 			      ARG_ENTRYID,opts.entryId,
 			      ARG_OUTPUT,'kml.doc',
 			      'converthref',true);
@@ -52295,7 +52318,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
 	    if(!url && entryId)
-		url = HU.url(Ramadda.getUrl("/entry/get"),
+		url = HU.url(Ramadda.getUrl(URL_ENTRY_GET),
 			     ARG_ENTRYID,entryId);
 	    if(!url) return;
 	    this.showProgress("Loading map...");
@@ -52501,7 +52524,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					  {fillColor:COLOR_TRANSPARENT,
 					   labelSelect:true},textBackgroundStyle), 
 			      MyPoint,
-			      {icon:Ramadda.getCdnUrl("/map/blue-dot.png")});
+			      {icon:Ramadda.getCdnUrl("/icons/markerblack.png")});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  Utils.clone(
@@ -52515,7 +52538,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  label:''},
 			      textStyle,textBackgroundStyle),
 			  MyPoint,
-			  {icon:Ramadda.getCdnUrl("/icons/dots/blue.png")});
+			  {icon:Ramadda.getCdnUrl("/icons/dotblack.png")});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
 		text:"",
 		right:HU.perc(50),
@@ -52531,7 +52554,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },
 			  MyEntryPoint,
 			  {isFixed:true, tooltip:'Add fixed text',
-			   icon:Ramadda.getCdnUrl("/icons/sticky-note-text.png")});			    
+			   icon:Ramadda.getCdnUrl("/icons/text2.png")});
+	    
 
 	    new GlyphType(this,GLYPH_LINE, "Line",
 			  Utils.clone(lineStyle, dotStyle),
@@ -52638,7 +52662,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {isMapServer:true,
 			   tooltip:"Provide a Web Map Service URL",
-			   icon:Ramadda.getCdnUrl("/icons/drive-globe.png")});	
+			   icon:Ramadda.getCdnUrl("/icons/maps.png")});	
 
 	    new GlyphType(this,GLYPH_ROUTE, "Route",
 			  Utils.clone(lineStyle),						   
@@ -52657,7 +52681,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,
-			   icon:Ramadda.getCdnUrl("/icons/imageicon.png")}
+			   icon:Ramadda.getCdnUrl("/icons/image.png")}
 			 );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
 			  Utils.clone(
@@ -52687,12 +52711,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getCdnUrl("/icons/chart.png")});
 	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
-			  {  externalGraphic:Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg'),
+			  {  externalGraphic:Ramadda.getCdnUrl('/icons/binoculars.png'),
 			  },
 			  MyEntryPoint,
 			  {isZoom:true,
 			   tooltip:'Add a viewpoint location',
-			   icon:Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg')});	    	    
+			   icon:Ramadda.getCdnUrl('/icons/binoculars.png')});	    	    
 
 
 	    new GlyphType(this,GLYPH_OSM_LOCATIONS,"Query OSM",
@@ -53348,7 +53372,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    wiki = '{{mappopup}}';
 		let wikiCallback = html=>{
 		    html = mapGlyph.convertPopupText(html);
-		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
+		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
 		    doPopup(html,{width:this.getProperty('popupWidth',width),
 				  height:this.getProperty('popupHeight',height)});
 		};
@@ -53404,7 +53429,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						     ATTR_TITLE,'Add marker to map'],false);
 	    }
 	    address=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))], address);
-	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    address = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						CSS_DISPLAY,DISPLAY_NONE,
 						CSS_POSITION,POSITION_RELATIVE),
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
@@ -54058,75 +54083,91 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
 };
 
 
-var IMDV_PATTERNS = {
-    "diagonal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/></svg> "},
-    "diagonal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
-    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/></svg>"},
-    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/></svg>"},
-    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/></svg>"},
-    "subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
-    "sparse-rect-1":{
-	width:30,height:30,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },
-    "sparse-rect-2":{
-	width:40,height:40,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },    
-    "sparse-rect-3":{
-	width:50,height:50,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },
-    "sparse-rect-4":{
-	width:60,height:60,
-	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
-    },    
+ 
 
+var IMDV_PATTERNS = {}
 
-    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
-    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/></svg> "},
-    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/></svg> "},
-    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
-    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/></svg>"},
-    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/></svg>"},
-    "vertical-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='10' fill='<%= foreground %>' /></svg>"},
-    "vertical-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='10' fill='<%= foreground %>' /></svg>"},
-    "circles-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3.5' cy='3.5' r='3.5' fill='<%= foreground %>'/></svg> "},
-    "circles-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4' cy='4' r='4' fill='<%= foreground %>'/></svg>"},
-    "circles-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3' cy='3' r='3' fill='<%= foreground %>'/></svg> "},
-    "circles-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2.5' cy='2.5' r='2.5' fill='<%= foreground %>'/></svg>"},
-    "circles-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1' cy='1' r='1' fill='<%= foreground %>'/></svg>"},
-    "circles-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2' cy='2' r='2' fill='<%= foreground %>'/></svg>"},
-    "circles-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1.5' cy='1.5' r='1.5' fill='<%= foreground %>'/></svg> "},
-    "circles-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='5' cy='5' r='5' fill='<%= foreground %>'/></svg>"},
-    "circles-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4.5' cy='4.5' r='4.5' fill='<%= foreground %>'/></svg>"},
-    "horizontal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='6' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='7' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='5' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='4' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='1' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='3' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='2' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='9' fill='<%= foreground %>' /></svg>"},
-    "horizontal-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='8' fill='<%= foreground %>' /></svg>"},
-    "dots-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='8' fill='<%= foreground %>' /></svg>"},
-    "dots-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='9' fill='<%= foreground %>' /></svg>"},
-    "dots-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='4' fill='<%= foreground %>' /></svg>"},
-    "dots-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='5' fill='<%= foreground %>' /></svg>"},
-    "dots-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='7' fill='<%= foreground %>' /></svg>"},
-    "dots-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='6' fill='<%= foreground %>' /></svg>"},
-    "dots-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='2' fill='<%= foreground %>' /></svg>"},
-    "dots-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='3' fill='<%= foreground %>' /></svg> "},
-    "dots-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='1' fill='<%= foreground %>' /></svg>"},
+function makeImdvPatterns() {
+    let svg = (c,w,h)=>{
+	if(!Utils.isDefined(w)) w=10;
+	if(!Utils.isDefined(h)) h=10;	
+	return   HU.tag(TAG_SVG,[ATTR_WIDTH,w,ATTR_HEIGHT,h,ATTR_XMLNS,NAMESPACE_SVG],c);
+    }
+
+    let svg2 = (c,w,h)=>{
+	if(!Utils.isDefined(w)) w=10;
+	if(!Utils.isDefined(h)) h=10;	
+	return   {width:w,
+		  height:h,
+		  svg:svg(c,w,h)}
+    }    
+
+    IMDV_PATTERNS = {
+	"diagonal-stripe-1": svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/>"),
+	"diagonal-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/>"),
+	"diagonal-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/>"),
+	"diagonal-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/>"),
+	"diagonal-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/>"),
+	"diagonal-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/>"),
+	"subtle-patch":svg2("<rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' />",5,5),
+	"sparse-rect-1":svg2("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30),
+	"sparse-rect-2": {width:40,height:40,
+			  svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},    
+	"sparse-rect-3":{width:50,height:50,
+			 svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},
+	"sparse-rect-4":{
+	    width:60,height:60,
+	    svg:svg("<rect width='2' height='2' fill='<%= foreground %>' />' />",30,30)
+	},    
+	"whitecarbon":{width:6,height:6,
+		       svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
+	"crosshatch":svg2("<rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/>",8,8),
+	"houndstooth":svg2("<path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/>",10,10),
+	"verticalstripe":svg2("<rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/>",6,49),
+	"smalldot":svg2("<rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/>",5,5),
+	"lightstripe":svg2("<rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/>",5,5),
+	"vertical-stripe-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='10' fill='<%= foreground %>' />"),
+	"vertical-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='10' fill='<%= foreground %>' />"),
+	"circles-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='3.5' cy='3.5' r='3.5' fill='<%= foreground %>'/>"),
+	"circles-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='4' cy='4' r='4' fill='<%= foreground %>'/>"),
+	"circles-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='3' cy='3' r='3' fill='<%= foreground %>'/>"),
+	"circles-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='2.5' cy='2.5' r='2.5' fill='<%= foreground %>'/>"),
+	"circles-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='1' cy='1' r='1' fill='<%= foreground %>'/>"),
+	"circles-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='2' cy='2' r='2' fill='<%= foreground %>'/>"),
+	"circles-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='1.5' cy='1.5' r='1.5' fill='<%= foreground %>'/>"),
+	"circles-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='5' cy='5' r='5' fill='<%= foreground %>'/>"),
+	"circles-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><circle cx='4.5' cy='4.5' r='4.5' fill='<%= foreground %>'/>"),
+	"horizontal-stripe-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='6' fill='<%= foreground %>' />"),
+	"horizontal-stripe-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='7' fill='<%= foreground %>' />"),
+	"horizontal-stripe-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='5' fill='<%= foreground %>' />"),
+	"horizontal-stripe-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='4' fill='<%= foreground %>' />"),
+	"horizontal-stripe-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='1' fill='<%= foreground %>' />"),
+	"horizontal-stripe-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='3' fill='<%= foreground %>' />"),
+	"horizontal-stripe-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='2' fill='<%= foreground %>' />"),
+	"horizontal-stripe-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='9' fill='<%= foreground %>' />"),
+	"horizontal-stripe-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='8' fill='<%= foreground %>' />"),
+	"dots-8":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='8' fill='<%= foreground %>' />"),
+	"dots-9":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='9' fill='<%= foreground %>' />"),
+	"dots-4":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='4' fill='<%= foreground %>' />"),
+	"dots-5":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='5' fill='<%= foreground %>' />"),
+	"dots-7":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='7' fill='<%= foreground %>' />"),
+	"dots-6":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='6' fill='<%= foreground %>' />"),
+	"dots-2":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='2' fill='<%= foreground %>' />"),
+	"dots-3":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='3' fill='<%= foreground %>' />"),
+	"dots-1":svg2("<rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='1' fill='<%= foreground %>' />"),
+    }
 }
+
+makeImdvPatterns();
 
 
 
@@ -54991,13 +55032,13 @@ MapGlyph.prototype = {
 
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
-	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
-	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
-	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
+	    this.setUseEntryName(HU.isChecked(this.jq("useentryname")));
+	    this.setUseEntryLabel(HU.isChecked(this.jq("useentrylabel")));
+	    this.setUseEntryLocation(HU.isChecked(this.jq("useentrylocation")));
 	}
-	this.setVisible(this.jq('visible').is(':checked'),true,null,true);
+	this.setVisible(HU.isChecked(this.jq('visible')),true,null,true);
 	if(this.jq(ID_CANSELECT).length) {
-	    this.attrs.canSelect = this.jq(ID_CANSELECT).is(':checked');
+	    this.attrs.canSelect = HU.isChecked(this.jq(ID_CANSELECT));
 	    if(this.getMapLayer()) {
 		this.getMapLayer().canSelect = this.attrs.canSelect;
 	    }
@@ -55066,7 +55107,7 @@ MapGlyph.prototype = {
 	    if(this.jq(ID_SHOWDATAICONS).length) {
 		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).val());
 	    }
-	    this.setAttribute(ID_DATAICON_USEENTRY,this.jq(ID_DATAICON_USEENTRY).is(':checked'));
+	    this.setAttribute(ID_DATAICON_USEENTRY,HU.isChecked(this.jq(ID_DATAICON_USEENTRY)));
 	    let dataIconInfo = this.getDataIconInfo();
 	    [ID_DATAICON_MARKERS, ID_DATAICON_FIELDS,ID_DATAICON_INIT_FIELD,
 	     ID_DATAICON_WIDTH, ID_DATAICON_HEIGHT, ID_DATAICON_SIZE,
@@ -55674,7 +55715,7 @@ MapGlyph.prototype = {
 	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,[ATTR_TARGET,'_entry']);
-	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    link = HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 					     CSS_MAX_WIDTH,HU.px(180),
 					     CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
@@ -55699,7 +55740,7 @@ MapGlyph.prototype = {
 	    if(add!='') {
 		link = HU.leftRightTable(link,add);
 	    }
-	    html+=HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')],link);
+	    html+=HU.div([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)],link);
 	});
 	if(html!='') {
 	    html = HU.div([ATTR_CLASS,'ramadda-cleanscroll',
@@ -56243,10 +56284,10 @@ MapGlyph.prototype = {
 		'Click to toggle visibility<br>Shift-click to select';
 	    label = HU.div([ATTR_TITLE,title,
 			    ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
-					      CSS_WHITE_SPACE,'nowrap')], label);	    
+					      CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], label);	    
 	}
 	if(right!='') {
-	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap')], right);
+	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], right);
 	}
 	if(args.forLegend) {
 	    let clazz = CLASS_LEGEND_LABEL;
@@ -56546,7 +56587,7 @@ MapGlyph.prototype = {
 	    buttons =  HU.span([ATTR_ID,this.setLocationId,
 				ATTR_TITLE,'Set location to current viewpoint',
 				ATTR_CLASS,CLASS_CLICKABLE],
-			       HU.image(Ramadda.getCdnUrl('/nps/binoculars_medium_gray.svg'),
+			       HU.image(Ramadda.getCdnUrl('/icons/binoculars.png'),
 					[ATTR_WIDTH,HU.px(16)])
 			       /*HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)*/) +buttons;
 	}
@@ -56906,7 +56947,7 @@ MapGlyph.prototype = {
 	if(inMapLegend!='') {
 	    inMapLegend=
 		HU.div([ATTR_TITLE,this.getName(),
-			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+			ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 					  CSS_MAX_WIDTH,HU.px(150),
 					  CSS_OVERFLOW_X,OVERFLOW_HIDDEN)],HU.b(this.getName())) +
 		inMapLegend;
@@ -56986,7 +57027,7 @@ MapGlyph.prototype = {
 
 	if(this.imageLayers) {
 	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
-		let visible = $(this).is(':checked');
+		let visible = HU.isChecked($(this));
 		let id = $(this).attr(ID_IMAGEID);
 		let obj = _this.imageLayerMap[id]??{id:id};
 		_this.setImageLayerVisible(obj,visible);
@@ -57023,7 +57064,7 @@ MapGlyph.prototype = {
 		}
 		rows.removeClass(CLASS_IMDV_STYLEGROUP_SELECTED);
 		$(this).addClass(CLASS_IMDV_STYLEGROUP_SELECTED);
-		_this.selectedStyleGroup = _this.getStyleGroups()[$(this).attr('index')];
+		_this.selectedStyleGroup = _this.getStyleGroups()[$(this).attr(ATTR_INDEX)];
 
 	    });
 	}
@@ -57504,7 +57545,7 @@ MapGlyph.prototype = {
 	    if(this.attrs.entryType=='geo_imdv') {
 		this.dontSaveChildren=true;
 		if(this.mapLoaded) return;
-		let url =HU.url(Ramadda.getUrl("/entry/get"),
+		let url =HU.url(Ramadda.getUrl(URL_ENTRY_GET),
 				ARG_ENTRYID,this.attrs.entryId,
 				"fileinline",true);
 		let finish = (data)=>{
@@ -57618,7 +57659,7 @@ MapGlyph.prototype = {
 	this.style=newStyle;
 	if(this.isStraightLine()) {
 	    let changed = false;
-	    let dots=  this.jq(ID_ADDDOTS).is(':checked');
+	    let dots=  HU.isChecked(this.jq(ID_ADDDOTS));
 	    if(dots!=this.attrs.addDots) {
 		this.attrs.addDots= dots;
 		changed=true;
@@ -57649,11 +57690,11 @@ MapGlyph.prototype = {
 
 	if(this.isMap()) {
 	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
-	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
-	    this.attrs.subsetSimplify= jqid(this.domId('subsetSimplify')).is(':checked');
+	    this.attrs.subsetReverse = HU.isChecked(jqid(this.domId('subsetReverse')));
+	    this.attrs.subsetSimplify= jqid(HU.isChecked(this.domId('subsetSimplify')));
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
-	    this.attrs.declutter_labels=this.jq('declutter_labels').is(':checked');
+	    this.attrs.declutter_labels=HU.isChecked(this.jq('declutter_labels'));
 	    ['labels_maxlength','labels_maxlinelength',
 	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
 		 let v=this.jq(id).val();
@@ -57689,7 +57730,7 @@ MapGlyph.prototype = {
 	}	    
 
 	if(!this.canDoMapStyle()) return;
-	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
+	this.attrs.fillColors = HU.isChecked(this.jq('fillcolors'));
 	let getColorBy=(prefix)=>{
 	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
@@ -57789,7 +57830,7 @@ MapGlyph.prototype = {
 	});
     },
     groupMakeGeoJson:function() {
-	let separateFeatures = !this.jq('mergepolygons').is(':checked');
+	let separateFeatures = !HU.isChecked(this.jq('mergepolygons'));
 	let data=[];
 	this.applyChildren(child=>{
 	    let geometry=child.getGeometry();
@@ -58082,7 +58123,7 @@ MapGlyph.prototype = {
 	let selectCbxs = dialog.find('.feature-select');
 
 	let cbxToggle = cbx=>{
-	    let visible = cbx.is(':checked');
+	    let visible = HU.isChecked(cbx);
 	    let index = cbx.attr('feature-index');
 	    let feature = _this.indexToFeature[index];
 	    if(!feature) return;
@@ -58096,9 +58137,9 @@ MapGlyph.prototype = {
 	};
 
 	this.jq('features_select_all').change(function() {
-	    let visible = $(this).is(':checked');
+	    let visible = HU.isChecked($(this));
 	    selectCbxs.each(function() {
-		if($(this).is(':visible')) {
+		if(HU.isVisible($(this))) {
 		    $(this).prop('checked',visible);
 		}
 	    });
@@ -58106,9 +58147,9 @@ MapGlyph.prototype = {
 
 
 	this.jq('features_visible_all').change(function() {
-	    let visible = $(this).is(':checked');
+	    let visible = HU.isChecked($(this));
 	    visCbxs.each(function() {
-		if($(this).is(':visible')) {
+		if(HU.isVisible($(this))) {
 		    $(this).prop('checked',visible);
 		    cbxToggle($(this));
 		}
@@ -58141,7 +58182,7 @@ MapGlyph.prototype = {
 	this.jq('dialog_features_makemap').button().click(()=>{
 	    let data=[];
 	    visCbxs.each(function() {
-		if(!$(this).is(':checked'))return;
+		if(!HU.isChecked($(this)))return;
 		let feature = getFeature($(this));
 		if(!feature)return;
 		data.push({
@@ -58325,7 +58366,7 @@ MapGlyph.prototype = {
 	return null;
     },
     makeGroupRoute: function() {
-	let doSequence = this.display.jq('routedosequence').is(':checked');
+	let doSequence = HU.isChecked(this.display.jq('routedosequence'));
 	let pts = [];
 	this.applyChildren(child=>{
 	    if(!child.isVisible()) return;
@@ -59035,7 +59076,7 @@ MapGlyph.prototype = {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
-		if(jqid(this.zoomonchangeid).is(':checked')) {
+		if(HU.isChecked(jqid(this.zoomonchangeid))) {
 		    this.panMapTo();
 		}
 		this.updateFeaturesTable();
@@ -59078,7 +59119,7 @@ MapGlyph.prototype = {
 
 
 	    jqid(this.zoomonchangeid).change(function() {
-		_this.setZoomOnChange($(this).is(':checked'));
+		_this.setZoomOnChange(HU.isChecked($(this)));
 	    });
 
 	    this.findFilter('.imdv-legend-clearall').click(()=>{
@@ -59086,7 +59127,7 @@ MapGlyph.prototype = {
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
 		this.updateFeaturesTable();
-		if(jqid(this.zoomonchangeid).is(':checked')) {
+		if(HU.isChecked(jqid(this.zoomonchangeid))) {
 		    this.panMapTo();
 		}
 	    });
@@ -60696,7 +60737,8 @@ MapGlyph.prototype = {
 		     "pointDataCacheOK":false,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
-		     "fileUrl":HU.url(Ramadda.getUrl("/entry/get"),ARG_ENTRYID,entryId,"fileinline",true)};
+		     "fileUrl":HU.url(Ramadda.getUrl(URL_ENTRY_GET),
+				      ARG_ENTRYID,entryId,"fileinline",true)};
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
@@ -61673,7 +61715,9 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		    image = HU.image(on?icon_downdart:icon_rightdart,[ATTR_ID,baseId+"_toggle_image" + cnt]) + " ";
 		}
 		html+=HU.div([ATTR_CLASS,"display-tree-toggle",
-			      ATTR_ID,baseId+"_toggle" + cnt,"toggle-state",on,"block-count",cnt],
+			      ATTR_ID,baseId+"_toggle" + cnt,
+			      "toggle-state",on,
+			      "block-count",cnt],
 			     image +  node.label);
 		html+=HU.open(TAG_DIV,[ATTR_ID, baseId+"_block"+cnt,
 				       ATTR_CLASS,"display-tree-block",
@@ -62388,8 +62432,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!aggByField) {
 		let attrs=[...tdAttrs];
 		attrs.push(ATTR_FIELD_ID,field.getId(),
-			   'record-id',record.getId(),
-			   'record-index',record.rowIndex);
+			   ATTR_RECORD_ID,record.getId(),
+			   ATTR_RECORD_INDEX,record.rowIndex);
 		if(matchers) {
 		    let sv = String(v);
 		    matchers.forEach(h=>{
@@ -62533,7 +62577,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 					 ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
 	    let maxColumns = this.getMaxColumns(-1);
-	    let headerAttrs = [ATTR_STYLE,HU.css(CSS_WHITE_SPACE,'nowrap',
+	    let headerAttrs = [ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 						 CSS_BACKGROUND,'#efefef',
 						 CSS_PADDING,HU.px(5),
 						 CSS_FONT_WEIGHT,FONT_BOLD)];
@@ -63036,7 +63080,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let handleChange = dom=>{
 		let val;
 		if(dom.attr('inputtype')=="checkbox") {
-		    val = dom.is(':checked');
+		    val = HU.isChecked(dom);
 		} else {
 		    val = dom.val();
 		}
@@ -63218,16 +63262,19 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 
 		let c = $(this).html().trim();
 		if(c=='' || $(this).attr('nullvalue')==='true') return
-		let record =$(this).attr('record-index');		
+		let record =$(this).attr(ATTR_RECORD_INDEX);		
 		$(this).append(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,HU.em(2)),
 				       ATTR_CLASS,'display-polltable-padding']));
-		let contents = HU.leftRightTable(HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','yes',
+		let contents = HU.leftRightTable(HU.div([ATTR_FIELD_ID,field,
+							 ATTR_RECORD_INDEX,record,'vote','yes',
 							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Up vote'],HU.getIconImage('fa-regular fa-thumbs-up')),
-						 HU.div([ATTR_FIELD_ID,field,'record-index',record,'vote','no',
+						 HU.div([ATTR_FIELD_ID,field,
+							 ATTR_RECORD_INDEX,record,'vote','no',
  							 ATTR_CLASS,HU.classes('vote',CLASS_CLICKABLE),
 							 ATTR_TITLE,'Down vote'],HU.getIconImage('fa-regular fa-thumbs-down')));
-		$(this).append(HU.div([ATTR_FIELD_ID,field,'record-index',record,
+		$(this).append(HU.div([ATTR_FIELD_ID,field,
+				       ATTR_RECORD_INDEX,record,
 				       ATTR_CLASS,'display-polltable-block',
 				       ATTR_STYLE,HU.css(CSS_BORDER_TOP,HU.border(1,COLOR_LIGHT_GRAY),
 							 CSS_POSITION,POSITION_ABSOLUTE,
@@ -63243,7 +63290,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let field =$(this).attr(ATTR_FIELD_ID);
-		let record =$(this).attr('record-index');		
+		let record =$(this).attr(ATTR_RECORD_INDEX);		
 		let id = _this.getProperty("entryId", "");
 		let url = HU.url(RamaddaUtil.getUrl("/entry/vote"),
 				 "xreturnvotes",true,
@@ -63331,7 +63378,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		}
 		blocks.each(function() {
 		    let field =$(this).attr(ATTR_FIELD_ID);
-		    let record =$(this).attr('record-index');		
+		    let record =$(this).attr(ATTR_RECORD_INDEX);		
 		    let key = record+'--'+field;
 		    let voteObj = data[key];
 		    let yes = 0, no = 0;
@@ -63353,9 +63400,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 			else
 			    percentNo = 100
 		    }		    
-		    let label = HU.open(TAG_TABLE,[ATTR_CELLPADDING,'0',
-						   ATTR_CELLSPACING,'0',
-						   ATTR_BORDER,'0',
+		    let label = HU.open(TAG_TABLE,[ATTR_CELLPADDING,0,
+						   ATTR_CELLSPACING,0,
+						   ATTR_BORDER,0,
 						   ATTR_WIDTH,HU.perc(100)]);
 		    let style = HU.css(CSS_PADDING,HU.important(HU.px(0)),
 				       CSS_PADDING_RIGHT,HU.important(HU.px(4)),
@@ -63372,7 +63419,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    }
 		    let line = (vote,percent,i)=>{
 			let title = c?'Controversial':'';
-			label += HU.tr([ATTR_TITLE,title],HU.td([CSS_WIDTH,HU.px(5),
+			label += HU.tr([ATTR_TITLE,title],HU.td([ATTR_WIDTH,HU.px(5),
 								 ATTR_STYLE,style,
 								 ATTR_ALIGN,ALIGN_RIGHT], icon(i))+
 				       HU.td([ATTR_STYLE,style], vote+' (' + HU.perc(percent)+') ' +(c?'*':'')));
@@ -63435,7 +63482,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             if (String(height).endsWith("px")) height = String(height).replace("px", "");
             height = parseInt(height);
             //            height-=30;
-            let details = HU.div([ATTR_STYLE, HU.css(CSS_HEIGHT, HU.px(height),CSS_MAX_HEIGHT, HU.px(height)),
+            let details = HU.div([ATTR_STYLE,
+				  HU.css(CSS_HEIGHT, HU.px(height),CSS_MAX_HEIGHT, HU.px(height)),
 				  ATTR_CLASS, "display-tnse-details",
 				  ATTR_ID, this.domId(ID_DETAILS)], "");
             let canvas = HU.div([ATTR_CLASS, "display-tnse-canvas-outer",
@@ -63444,13 +63492,13 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 					ATTR_ID, this.domId(ID_CANVAS)], ""));
             let buttons = HU.div([ATTR_ID, this.domId(ID_RUN),
 				  ATTR_CLASS, CLASS_BUTTON,
-				  "what", "run"], "Stop") + SPACE +
+				  ATTR_WHAT, "run"], "Stop") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_STEP),
 			ATTR_CLASS, CLASS_BUTTON,
-			"what", "step"], "Step") + SPACE +
+			ATTR_WHAT, "step"], "Step") + SPACE +
                 HU.div([ATTR_ID, this.domId(ID_RESET),
 			ATTR_CLASS, CLASS_BUTTON,
-			"what", "reset"], "Reset") + SPACE +
+			ATTR_WHAT, "reset"], "Reset") + SPACE +
                 HU.input("", "", [ATTR_ID, this.domId(ID_SEARCH),
 				  ATTR_PLACEHOLDER, "search"]);
 
@@ -63563,7 +63611,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                         title.length = 10;
                     }
                     this.nameToIndex[title] = i;
-                    this.canvas.append(HU.div([ATTR_TITLE, title, "index", i,
+                    this.canvas.append(HU.div([ATTR_TITLE, title,
+					       ATTR_INDEX, i,
 					       ATTR_ID, this.domId("element-" + i),
 					       ATTR_CLASS, "display-tnse-mark",
 					       ATTR_STYLE, HU.css(CSS_LEFT, HU.perc(px), CSS_TOP,HU.perc(py))], title));
@@ -63585,7 +63634,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                     for (let i = 0; i < _this.fields.length; i++) {
                         let field = _this.fields[i];
                         details += HU.tr([],HU.td([ATTR_ALIGN,ALIGN_RIGHT,
-						   ATTR_CLASS,'formlabel'], this.getFieldLabel(field) + ':') + HU.td([],tuple[field.getIndex()]));
+						   ATTR_CLASS,CLASS_FORMLABEL],
+						  this.getFieldLabel(field) + ':') + HU.td([],tuple[field.getIndex()]));
                     }
                     details += HU.close(TAG_TABLE);
                     _this.details.html(details);
@@ -63628,11 +63678,12 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             }
             ct += HU.close(TAG_SELECT);
             tmp += HU.formEntryLabel("Color Table", ct);
-            tmp += HU.formEntryLabel("Color By Range", HU.input("", this.colorByMin,
-							    [ATTR_SIZE, 7,
-							     ATTR_ID, this.domId("colorbymin")]) + " - " +
-				HU.input("", this.colorByMax, [ATTR_SIZE, 7,
-							       ATTR_ID, this.domId("colorbymax")]));
+            tmp += HU.formEntryLabel("Color By Range",
+				     HU.input("", this.colorByMin,
+					      [ATTR_SIZE, 7,
+					       ATTR_ID, this.domId("colorbymin")]) + " - " +
+				     HU.input("", this.colorByMax, [ATTR_SIZE, 7,
+								    ATTR_ID, this.domId("colorbymax")]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
         },
@@ -64012,7 +64063,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		}
 		html += HU.tr([ATTR_VALIGN,ALIGN_TOP,
 			       ATTR_CLASS,'display-ranking-row',
-			       'what',record.getId()],
+			       ATTR_WHAT,record.getId()],
 			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +
 			      HU.td([ATTR_ALIGN,ALIGN_RIGHT], SPACE + value));
             }
@@ -64020,7 +64071,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             this.setContents(html);
             let _this = this;
             this.jq(ID_TABLE).find(".display-ranking-row").click(function(e) {
-		let record = _this.idToRecord[$(this).attr("what")];
+		let record = _this.idToRecord[$(this).attr(ATTR_WHAT)];
 		_this.propagateEventRecordSelection({record:record});
             });
 	    HU.initSelect(this.jq("sortfields"));
@@ -64242,6 +64293,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     const ID_SLIDER_HIGH_MAX = "sliderhighmax"    
     const ID_TABLE = "table";
     const ID_LASTROW = "lastrow";
+    const ATTR_COLFIELD="colfield";
+    const ATTR_ROWFIELD="rowfield";    
+
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
@@ -64499,7 +64553,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		label = HU.div([ATTR_CLASS,'display-correlation-header',
 				ATTR_STYLE,labelStyle], label);
 
-                html += HU.td(["colfield", field.getId(),
+                html += HU.td([ATTR_COLFIELD, field.getId(),
 			       ATTR_ALIGN,ALIGN_CENTER,
 			       ATTR_WIDTH,width],
 			      HU.div([ATTR_CLASS, "display-correlation-heading display-correlation-heading-top"], label));
@@ -64543,7 +64597,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		label = HU.div([ATTR_CLASS,'display-correlation-header',
 				ATTR_STYLE,labelStyle], label);
                 html += HU.open(TAG_TR, [ATTR_VALIGN,ALIGN_CENTER]);
-		html += HU.td(["rowfield",field1.getId(),
+		html += HU.td([ATTR_ROWFIELD,field1.getId(),
 			       ATTR_CLASS, "display-correlation-heading"],
 			      HU.div([ATTR_STYLE,sideHeadingStyle,
 				      ATTR_CLASS, "display-correlation-heading-side"], label));
@@ -64595,7 +64649,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                             style = HU.css(CSS_BACKGROUND_COLOR, colors[index]);
 			} else {
                             style = HU.css(CSS_BACKGROUND_COLOR, "#eee");
-			    let svg = HU.tag(TAG_SVG,['xmlns','http://www.w3.org/2000/svg',
+			    let svg = HU.tag(TAG_SVG,[ATTR_XMLNS,NAMESPACE_SVG,
 						      ATTR_WIDTH,10,
 						      ATTR_HEIGHT,10],
 					     HU.tag(TAG_RECT,[ATTR_WIDTH,10,
@@ -64626,8 +64680,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 			cellContents = HU.div([ATTR_CLASS, "display-correlation-element",
 					       ATTR_TITLE, "&rho;(" + rowName + "," + colName + ") = " + value], label);
 		    }
-                    html += HU.td(["colfield", field2.getId(),
-				   "rowfield",field1.getId(),
+                    html += HU.td([ATTR_COLFIELD, field2.getId(),
+				   ATTR_ROWFIELD,field1.getId(),
 				   ATTR_CLASS,"display-correlation-cell",
 				   ATTR_ALIGN, align,
 				   ATTR_STYLE,style], cellContents);
@@ -64642,8 +64696,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    let selectedRow;
 	    let selectedCol;
 	    this.jq(ID_TABLE).find(TAG_TD).click(function(event) {
-		let rowField = _this.getFieldById(null, $(this).attr("rowfield"));
-		let colField = _this.getFieldById(null, $(this).attr("colfield"));
+		let rowField = _this.getFieldById(null, $(this).attr(ATTR_ROWFIELD));
+		let colField = _this.getFieldById(null, $(this).attr(ATTR_COLFIELD));
 		if(event.shiftKey && _this.canEdit()) {
 		    let label = prompt("Label:",  _this.getCellLabel(rowField, colField));
 		    if(label) {
@@ -65500,7 +65554,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    if(template) {
 		html= headerTemplate;
 	    } else {
-		html += HU.open(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE,CLASS_TABLE_STRIPE,'nowrap'),
+		html += HU.open(TAG_TABLE, [ATTR_CLASS, HU.classes(CLASS_TABLE,CLASS_TABLE_STRIPE,CLASS_TABLE_NOWRAP),
 					    ATTR_ID, this.domId("percentchange")]);
 		html += HU.open(TAG_THEAD, []);
 		html += HU.tr([], HU.th([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)],
@@ -67355,7 +67409,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    let stripes =   this.getContents().find('.display-stripes-stripe');
 	    this.makeTooltips(stripes,allRecords);
 	    stripes.click(function() {
-		let record = recordMap[$(this).attr('record-id')];
+		let record = recordMap[$(this).attr(ATTR_RECORD_ID)];
 		_this.propagateEventRecordSelection({record: record});
 	    });
 
@@ -70252,7 +70306,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!url.startsWith("http") && !url.startsWith("/")) {
 		//entry id e.g., 41d9b105-d61b-4fc1-8198-8e75c49b1a24
 		if(url.trim().match(/.*[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+.*/)) {
-		    url = HU.url(RamaddaUtil.getUrl('/entry/get'), ARG_ENTRYID,url);
+		    url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_GET), ARG_ENTRYID,url);
 		} else {
 		    url = RamaddaUtil.getCdnUrl("/resources/") + url;
 		}
@@ -70412,8 +70466,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    const materials = [];
 		    imageFields.forEach(f=>{
 			let image = f.getValue(record);
-			//			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
-			//			image = 'https://localhost:8430/repository/images/logo.png';
 			if(Utils.stringDefined(image)) {
 			    materials.push(new THREE.MeshBasicMaterial({map: loader.load(image)}));
 			}
