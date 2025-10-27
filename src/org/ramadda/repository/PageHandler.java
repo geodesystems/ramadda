@@ -656,7 +656,8 @@ public class PageHandler extends RepositoryManager {
 	if(extraFooter!=null) theFooter.append(extraFooter);
 
         if (suffix && thisEntry != null) {
-	    String footerScript = "ramaddaThisEntry='" + thisEntry.getId() + "';\n";
+	    String footerScript = "ramaddaThisEntry=" + HU.squote(thisEntry.getId()) + ";\n";
+	    footerScript+="ramaddaThisEntryName=" + HU.squote(thisEntry.getName())+";\n";
 	    if(thisEntry.isGroup() && getAccessManager().canDoNew(request, thisEntry)) {
 		footerScript+=HU.call("RamaddaUtil.initDragAndDropOnHeader",
 				      HU.squote(thisEntry.getId())+"," +
