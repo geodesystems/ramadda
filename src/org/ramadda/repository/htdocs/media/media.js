@@ -148,11 +148,11 @@ RamaddaMediaTranscript.prototype = {
 	    if(canAdd) {
 		prefix = HU.span([ATTR_TITLE,'Delete transcription',
 				  ATTR_POINT_INDEX,idx,
-				  ATTR_CLASS,'ramadda-clickable ramadda-media-point-delete'],
+				  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-media-point-delete')],
 				 HU.getIconImage('fas fa-eraser'));
 		prefix+= HU.span([ATTR_TITLE,'Edit transcription',
 				  ATTR_POINT_INDEX,idx,
-				  ATTR_CLASS,'ramadda-clickable ramadda-media-point-edit'],
+				  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-media-point-edit')],
 				 HU.getIconImage('fas fa-edit'));		
 		prefix = HU.td([ATTR_WIDTH,HU.perc(1),
 				ATTR_CLASS,'ramadda-media-point-header',
@@ -160,21 +160,21 @@ RamaddaMediaTranscript.prototype = {
 	    }
 	    p.detailsId =  this.searchId +"_details_" + idx;
 	    p.rowId = HU.getUniqueId("row_");
-	    table+=HU.tr([ATTR_CLASS,'ramadda-hoverable',
+	    table+=HU.tr([ATTR_CLASS,CLASS_HOVERABLE,
 			  ATTR_VALIGN,ALIGN_TOP,
 			  ATTR_ID,p.rowId,
 			  ATTR_POINT_INDEX,idx], 
 			 prefix+
 			 HU.td([ATTR_POINT_INDEX,idx,
-				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
+				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-media-point-header ramadda-media-point'),
 				ATTR_WIDTH,HU.perc(5),
 				ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], time) +
 			 HU.td([ATTR_POINT_INDEX,idx,
-				ATTR_CLASS,'ramadda-media-point-header ramadda-clickable ramadda-media-point',
+				ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-media-point-header ramadda-media-point'),
 				ATTR_WIDTH,HU.perc(95)],
 			       HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))],p.title)));
 
-	    let details =  HU.div([ATTR_CLASS,'ramadda-clickable ramadda-media-play',
+	    let details =  HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-media-play'),
 				   'data-player-time',p.time],
 				  HU.getIconImage(ICON_PLAY) + ' ' +
 				  'Play Segment' );
@@ -203,7 +203,7 @@ RamaddaMediaTranscript.prototype = {
 	    extra =HU.span([ATTR_TITLE,'Add transcription',
 			    ATTR_ID,this.domId('_addtranscription'),
 			    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
-			    ATTR_CLASS,'ramadda-clickable'],
+			    ATTR_CLASS,CLASS_CLICKABLE],
 			   HU.getIconImage('fas fa-plus'));
 	}
 
@@ -214,7 +214,7 @@ RamaddaMediaTranscript.prototype = {
 	let exportId =HU.getUniqueId("export_");
 	if(this.points.length>0) {
 	    search = HU.span([ATTR_ID, exportId,
-			      ATTR_CLASS,'ramadda-clickable',
+			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_TITLE,'Export'],
 			     HU.getIconImage('fas fa-file-export'))+SPACE2;
 	    search += HU.input("","",
@@ -223,7 +223,7 @@ RamaddaMediaTranscript.prototype = {
 				ATTR_ID,this.searchInputId]) + " " +
 		HU.span([ATTR_TITLE,'Clear search',
 			 ATTR_ID,this.searchInputId+"_clear",
-			 ATTR_CLASS,"ramadda-clickable"],
+			 ATTR_CLASS,CLASS_CLICKABLE],
 			HU.getIconImage('fas fa-eraser'));
 	    search+=
 		HU.div([ATTR_ID,this.searchId+"_results",

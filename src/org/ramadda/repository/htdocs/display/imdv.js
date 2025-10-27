@@ -49,6 +49,7 @@ var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_la
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY,CSS_FONT_SIZE,HU.pt(9))];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)];
 
+var CLASS_IMDV_SIDEHELP= 'imdv-side-help';
 var CLASS_IMDV_PROPERTY= 'imdv-property';
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
@@ -2961,7 +2962,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		attrs.push(ATTR_VALUE,props.prefix + line + props.suffix);
 		help+=HU.div(attrs,line);
 	    });
-	    help = HU.div([ATTR_CLASS,'imdv-side-help',
+	    help = HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP,
 			   ATTR_STYLE,props.style??''], help);
 	    return help;
 	},

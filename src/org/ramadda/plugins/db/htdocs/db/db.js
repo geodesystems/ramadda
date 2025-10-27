@@ -1,19 +1,18 @@
-
 var DB =  {
     applyMapSearch:function(map, formId) {
 	let bounds = map.getBounds();
-	let north = $("#"+formId).find("input[data-dir='north']");
-	let west = $("#"+formId).find("input[data-dir='west']");	
-	let east = $("#"+formId).find("input[data-dir='east']");
-	let south = $("#"+formId).find("input[data-dir='south']");
+	let north = jqid(formId).find("input[data-dir='north']");
+	let west = jqid(formId).find("input[data-dir='west']");	
+	let east = jqid(formId).find("input[data-dir='east']");
+	let south = jqid(formId).find("input[data-dir='south']");
 
 	north.val(bounds.top);
 	west.val(bounds.left);
 	south.val(bounds.bottom);
 	east.val(bounds.right);	
-	let submit = $("#"+formId).find("input[name='db.search']");
+	let submit = jqid(formId).find("input[name='db.search']");
 	submit.click();
-//	$("#"+formId).submit();
+	//	jqid(formId).submit();
     },
 
     doDbSelectAll: function(event,forSearch, value) {
@@ -81,20 +80,24 @@ var DB =  {
     },
 
     doDbSearch: function(sourceName,column,widgetId,otherTable,otherColumn) {
-	console.log("c:" + column +" " + otherTable +" other column:" + otherColumn);
-	let url = HtmlUtils.getUrl("/db/search/list",["sourceName",sourceName,"type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
+	let url = HU.url(RamaddaUtil.getUrl("/db/search/list"),
+			 "sourceName",sourceName,
+			 "type", otherTable,
+			 "widgetId",widgetId,
+			 "column",column,
+			 "otherColumn",otherColumn);
 	window.open(url);
     },
 
     rowOver:function(rowId) {
-	//    $("#"+ rowId).css("background-color",  "#edf5ff");
+	//    jqid(rowId).css("background-color",  "#edf5ff");
     },
     rowOut:function(rowId) {
-	//    $("#"+ rowId).css("background-color",  "#fff");
+	//    jqid(rowId).css("background-color",  "#fff");
     },
     toggleAllInit:function(formId) {
 	if(formId) {
-	    $("#"+formId).find('.ramadda-widgets-enumeration').each(function() {
+	    jqid(formId).find('.ramadda-widgets-enumeration').each(function() {
 		let container = $(this);
 		let changeFunc = function() {
 		    let widgets = container.find('select');
@@ -115,7 +118,7 @@ var DB =  {
 			let html = widget.prop('outerHTML');
 			html = html.replace('display:','xdisplay:');
 			let newWidget = $(html).appendTo(container);
-			$("<span>&nbsp;</span>").appendTo(container);			
+			$(HU.span([],SPACE)).appendTo(container);			
 			newWidget.change(changeFunc);
 			HU.initSelect(newWidget);
 			HU.makeSelectTagPopup(newWidget,{icon:true,single:true,after:true});
@@ -123,70 +126,79 @@ var DB =  {
 		}
 		$(this).change(changeFunc);
 	    });
-	    $("#"+formId).find('.ramadda-widgets-text').each(function() {
+	    HU.findClass(jqid(formId),'ramadda-widgets-text').each(function() {
 		let container = $(this);
-		let last = container.find('input').last();
+		let last = container.find(TAG_INPUT).last();
 		let guid = HU.getUniqueId('plus');
 		let extraFieldsId = HU.getUniqueId('plus');
-		container.append(HU.span(['id',extraFieldsId]));
+		container.append(HU.span([ATTR_ID,extraFieldsId]));
 		let extra = jqid(extraFieldsId);
-		container.append(HU.span(['title','Add search field','id',guid,'class','ramadda-clickable'],HU.getIconImage('fas fa-plus',[],['style','font-size:9pt;color:#ccc;'])));
+		container.append(HU.span([ATTR_TITLE,'Add search field',
+					  ATTR_ID,guid,
+					  ATTR_CLASS,'ramadda-clickable'],
+					 HU.getIconImage('fas fa-plus',[],
+							 [ATTR_STYLE,
+							  HU.css(CSS_FONT_SIZE,HU.pt(9),
+								 CSS_COLOR,'#ccc')])));
 		jqid(guid).click(()=>{
 		    let newWidget = last.clone();
 		    newWidget.val("");
 		    newWidget.appendTo(extra);
-		    extra.append('&nbsp;');
+		    extra.append(SPACE);
 		});
 	    });
 	}
 	$("input[name='showtoggleall']").click(function(){
-            var value  = $(this). prop("checked") == true;
+            let value  = $(this). prop("checked") == true;
             $("input[name^='show_']").prop("checked", value);
         });
     },
 
     rowClick:function(entryId, dbid) {
-	let url = ramaddaBaseUrl +"/entry/show?entryid=" + entryId+"&dbid=" + dbid +"&db.entry=true&result=xml";
+	let url = HU.url(RamaddaUtil.getUrl("/entry/show"),
+			 ARG_ENTRYID,entryId,
+			 "dbid",dbid,"db.entry",true,
+			 "result","xml");
 	GuiUtils.loadXML( url, DB.handleXml,{divId:"div_" + dbid});
     },
     initHeader:function(topId, tmpId) {
-	let html = $("#" + tmpId).html();
-	$("#" + topId).html(html);
-	$("#" + tmpId).remove();
+	let html = jqid(tmpId).html();
+	jqid(topId).html(html);
+	jqid(tmpId).remove();
     },
 
     initTable:function(id) {
-	let table =$("#" + id);
+	let table =jqid(id);
 	let entryId = table.attr("entryid");
 	let even = true;
-	table.find("input").each(function(){
-	    let id = $(this).attr("id");
+	table.find(TAG_INPUT).each(function(){
+	    let id = $(this).attr(ATTR_ID);
 	    $(this).attr("onClick","HtmlUtils.checkboxClicked(event,'dbid_selected','" + id+"')");
 	});
 
-	table.find("tr").each(function(){
-	    $(this).attr("title","Click to view details");
-	    $(this).attr("valign","top");	    
+	table.find(TAG_TR).each(function(){
+	    $(this).attr(ATTR_TITLE,"Click to view details");
+	    $(this).attr(ATTR_VALIGN,ALIGN_TOP);	    
 	    $(this).addClass(even?"ramadda-row-even" :"ramadda-row-odd");
 	    $(this).addClass("dbrow");
 	    even=!even;
 	    let dbRowId = $(this).attr("dbrowid");
 	    if(!dbRowId) return;
-	    let tds=	$(this).find("td");
+	    let tds=	$(this).find(TAG_TD);
 	    tds.click(function() {
 		//Skip the checkbox
-		if($(this).find("input").length>0) return;
+		if($(this).find(TAG_INPUT).length>0) return;
 		DB.rowClick(entryId, dbRowId);
 	    });
 	});
     },
     addUrlShowingForm:function(args) {
-	var embed = "{{db entry=\""+ args.entryId +"\" ";
-	var attrs = "";
+	let embed = "{{db entry=\""+ args.entryId +"\" ";
+	let attrs = "";
 	for(i in args.itemValuePairs) {
-            var tuple = args.itemValuePairs[i];
-            var item = tuple.item;
-            var value = tuple.value;
+            let tuple = args.itemValuePairs[i];
+            let item = tuple.item;
+            let value = tuple.value;
             if(item.type == "hidden") continue;
             //        if(item.name == "db.search"  || item.name == "Boxes" || item.name == "group_by" || item.name.match("group_agg.*") ) {
             if(item.name == "db.search"  || item.name == "Boxes") {
@@ -199,13 +211,17 @@ var DB =  {
 	embed+=" args=\"" + attrs +"\" ";
 	embed+=" }}";
 	embed = embed.replace(/\"/g,"&quot;");
-	var html = "<input style='margin-top:4px;' id=dbwikiembed size=80 value=\"" +embed +"\"/>";
-	return HtmlUtil.div(["class","ramadda-form-url"],  html);
+	let html = HU.tag(TAG_INPUT,
+			  [ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(4)),
+			   ATTR_ID,'dbwikiembed',
+			   ATTR_SIZE,80,
+			   ATTR_VALUE,embed]);
+	return HU.div([ATTR_CLASS,"ramadda-form-url"],  html);
 
     },
 
     hidePopup:function(popupId) {
-	$("#" +popupId).hide();
+	jqid(popupId).hide();
     },
 
     handleDummy:function(event) {
@@ -219,10 +235,14 @@ var DB =  {
     },
 
     handleXml:function(request,args) {
-	var divId = args.divId;
-	var src = $("#" + divId);
-	var xmlDoc=request.responseXML.documentElement;
-	let html = HU.div([STYLE,HU.css("max-height","600px","overflow-y","auto","max-width","500px","overflow-x","auto")],
+	let divId = args.divId;
+	let src = jqid(divId);
+	let xmlDoc=request.responseXML.documentElement;
+	let html = HU.div([ATTR_STYLE,
+			   HU.css(CSS_MAX_HEIGHT,HU.px(600),
+				  CSS_OVERFLOW_Y,OVERFLOW_AUTO,
+				  CSS_MAX_WIDTH,HU.px(500),
+				  CSS_OVERFLOW_X,OVERFLOW_AUTO)],
 			  getChildText(xmlDoc));
 	HU.makeDialog({content:html,anchor:src});
     },
@@ -230,10 +250,9 @@ var DB =  {
     stickyDragEnd:function(id, url) {
 	div  = GuiUtils.getDomObject(id);
 	if(!div) return;
-	url = url +"&posx=" + div.style.left +"&posy=" + div.style.top;
+	url = HU.url(url,"posx",div.style.left, "posy", div.style.top);
 	GuiUtils.loadXML( url, stickyNOOP,id);
     },
-
 
     stickyNOOP:function(request,divId) {
     }

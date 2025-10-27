@@ -581,9 +581,11 @@ MapGlyph.prototype = {
 	let makePopup = (id,label)=> {
 	    let domId = this.display.domId('glyphedit_' +id);
 	    let propsHelp =this.display.makeSideHelp(lines,domId,{prefix:'${',suffix:'}'});
-	    let h = HU.leftRightTable(HU.b(label),
-				      this.getHelp('#popuptext'));
-	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
+	    let popupHelp =  this.getHelp('index.html#popuptext');
+	    popupHelp = '';
+	    let h = HU.leftRightTable(HU.b(label),popupHelp);
+
+	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP],propsHelp);
 	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,
 							ATTR_ROWS,4,
 							ATTR_COLS, 40]),

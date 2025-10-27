@@ -18,28 +18,28 @@ var SqlLite = {
         var values = res[0].values;
         if(!columns || !values) return null;
 
-        var id = HtmlUtils.getUniqueId();
-        var table = HtmlUtils.openTag("table", ["id",id, "width", "100%", "class", "stripe hover "]) + HtmlUtils.openTag("thead", []);
-        columns.forEach(v=>table+="<th>"+Utils.makeLabel(v)+"</th>");
-        table+"</tr>";
-        table += HtmlUtils.closeTag("thead");
-        table += HtmlUtils.openTag("tbody");
+        var id = HU.getUniqueId();
+        var table = HU.open(TAG_TABLE,
+			    [ATTR_ID,id, ATTR_WIDTH, "100%", ATTR_CLASS, "stripe hover "]) +
+	    HU.openTag(TAG_THEAD, []);
+        columns.forEach(v=>{table+=HU.tag(TAG_TH,[],Utils.makeLabel(v))});
+        table += HU.close(TAG_TR,TAG_THEAD);
+        table += HU.open(TAG_TBODY);
         values.forEach(row=>{
-                table+="<tr>";
-                row.forEach(v=>table+="<td>"+v+"</td>");
-                table+="</tr>";
-            });
-        table+"</tr>";
-        table += HtmlUtils.closeTag("tbody");
-        table += HtmlUtils.closeTag("table");
+            table+=HU.open(TAG_TR);
+            row.forEach(v=>{table+=HU.tag(TAG_TD,[],v)});
+            table+=HU.close(TAG_TR);
+        });
+        table+HU.close(TAG_TR);
+        table += HU.close(TAG_TBODY, TAG_TABLE);
         notebook.write(table);
-        //        HtmlUtils.formatTable("#" + id, {scrollY: "300"});
+        //        HU.formatTable("#" + id, {scrollY: "300"});
         var options = {};
         if(values.length>10) options.scrollY = 300;
-        HtmlUtils.formatTable("#" + id, options);
+        HU.formatTable("#" + id, options);
 
         return null;
     }
 }
-    Utils.importJS("/repository/lib/notebook/sql.js",null, (jqxhr, settings, exc)=>console.log("error loading sql.js:" + exc));
+Utils.importJS("/repository/lib/notebook/sql.js",null, (jqxhr, settings, exc)=>console.log("error loading sql.js:" + exc));
 

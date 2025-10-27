@@ -1,7 +1,4 @@
 
-
-
-
 function PlayerImage (url,label, dttm) {
     this.url = url;
     this.label = label;
@@ -18,8 +15,6 @@ PlayerImage.prototype = {
 	return this.ok= v;
     }    
 }
-
-
 
 
 function ImagePlayer(args)  {
@@ -92,27 +87,27 @@ function ImagePlayer(args)  {
 
     this.makeAnimation=()=>{
 	let _this = this;
-	let html = '&nbsp;';
+	let html = SPACE;
 	let lazy = this.getProperty('lazyLoading',this.images.length>10);
 	this.images.forEach((image,idx)=>{
-	    let attrs =    ['id',this.getId('image_' + idx),
-			    'style', HU.css('position','absolute',
-					    'top','0px','left','0px',
-					    'width','100%',
-					    'display',
-					    idx==0?'block':'none')];
-	    if(lazy)    attrs.push('loading','lazy');
+	    let attrs =    [ATTR_ID,this.getId('image_' + idx),
+			    ATTR_STYLE, HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+					       CSS_TOP,'0px',
+					       CSS_LEFT,'0px',
+					       CSS_WIDTH,'100%',
+					       CSS_DISPLAY, idx==0?DISPLAY_BLOCK:DISPLAY_NONE)];
+	    if(lazy)    attrs.push(ATTR_LOADING,LOADING_LAZY);
 	    html+=HU.image(image.url,attrs);
 	    html+='\n';
 	});
 
 	let height= this.getProperty('imageHeight',null);
-	let wrapperCss = HU.css('position','relative',  'width','100%')
+	let wrapperCss = HU.css(CSS_POSITION,DISPLAY_RELATIVE,  CSS_WIDTH,'100%')
 	if(height) {
-	    wrapperCss+=HU.css('height',HU.getDimension(height));
+	    wrapperCss+=HU.css(CSS_HEIGHT,HU.getDimension(height));
 	}
-	html = HU.div(['id',this.getId('imagewrapper'),'style',wrapperCss],
-		      html);
+	html = HU.div([ATTR_ID,this.getId('imagewrapper'),
+		       ATTR_STYLE,wrapperCss],  html);
 
 	this.jq("animation").html(html);
 	let imageWrapper = this.jq('imagewrapper');
@@ -129,7 +124,7 @@ function ImagePlayer(args)  {
 		    let height = image.domElement.height();
 		    if(height>imageHeight) {
 			imageHeight=height;
-			imageWrapper.css('height',height+'px');
+			imageWrapper.css(CSS_HEIGHT,HU.px(height));
 		    }
 		});
 	    }
@@ -150,7 +145,7 @@ function ImagePlayer(args)  {
 		let height = $(this).height();
 		if(height>imageHeight) {
 		    imageHeight=height;
-		    imageWrapper.css('height',height+'px');
+		    imageWrapper.css(CSS_HEIGHT,HU.px(height));
 		}
 	    });
 	});
@@ -158,30 +153,36 @@ function ImagePlayer(args)  {
 
     this.makeHeader=()=>{
 	let compact = this.getProperty('compact',false);
-	let buttons = HU.span(['id',this.getId('buttons')]) +HU.span(['id',this.getId('buttonsSuffix')]);
+	let buttons = HU.span([ATTR_ID,this.getId('buttons')]) +
+	    HU.span([ATTR_ID,this.getId('buttonsSuffix')]);
 	let header = '';
 	if(compact) {
-	    header  = HU.leftRightTable(buttons,HU.div(['id',this.getId('date')]));
+	    header  = HU.leftRightTable(buttons,HU.div([ATTR_ID,this.getId('date')]));
 	} else {
 	    header = buttons;
 	}
 	
 
-	this.jq('header').html(HU.div(['style',HU.css('border-bottom','var(--basic-border)','padding-bottom','0em','margin-bottom','4px')],
+	this.jq('header').html(HU.div([ATTR_STYLE,
+				       HU.css(CSS_BORDER_BOTTOM,CSS_BASIC_BORDER,
+					      CSS_PADDING_BOTTOM,'0em',
+					      CSS_MARGIN_BOTTOM,'4px')],
 				      header));
-	let html = HU.leftRightTable(HU.div(['id',this.getId('label')]),
-				     compact?'':HU.div(['id',this.getId('date')]));
+	let html = HU.leftRightTable(HU.div([ATTR_ID,this.getId('label')]),
+				     compact?'':HU.div([ATTR_ID,this.getId('date')]));
 
 	this.jq('imageheader').html(html);
 
 	let boxesPosition = this.getProperty('boxesPosition',compact?'bottom':'top');
 	let boxesStyle = '';
 	if(boxesPosition=='top') {
-	    boxesStyle+=HU.css('display','inline');
+	    boxesStyle+=HU.css(CSS_DISPLAY,DISPLAY_INLINE);
 	} else 	if(boxesPosition=='bottom') {
-	    boxesStyle+=HU.css('margin-top','2px');
+	    boxesStyle+=HU.css(CSS_MARGIN_TOP,'2px');
 	}
-	let boxesWrapper = HU.div(['style', boxesStyle,'class','imageplayer-boxes','id',this.getId('boxes')])
+	let boxesWrapper = HU.div([ATTR_STYLE, boxesStyle,
+				   ATTR_CLASS,'imageplayer-boxes',
+				   ATTR_ID,this.getId('boxes')])
 	if(boxesPosition=='bottom') {
 	    this.jq('footer').append(boxesWrapper)
 	} else if(boxesPosition=='top') {
@@ -196,26 +197,28 @@ function ImagePlayer(args)  {
 
     this.makeButtons = () =>{
 	if(!this.getProperty('showButtons',true)) return;
-	let clazz='ramadda-clickable'
+	let clazz=CLASS_CLICKABLE;
 	let compact = this.getProperty('compact',false);
 	if(!this.getProperty('smallButtons',compact))
 	    clazz += ' ramadda-button';
-	let html = HU.open('div',['class','imageplayer-buttons']);
+	let html = HU.open('div',[ATTR_CLASS,'imageplayer-buttons']);
 	[['Go to first frame','firstframe','fas fa-backward-step'],
 	 ['One step back','stepback','fas fa-backward'],
 	 ['Start/stop',ID_STARTSTOP,ICON_PLAY],
 	 ['One step forward','stepforward','fas fa-forward'],
 	 ['Go to last frame','lastframe','fas fa-forward-step']].forEach(tuple=>{
-	     html+=HU.span(['id',this.getId(tuple[1]),
-			    'style','margin-right:8px;',
-			    'action',tuple[1],'class',clazz,'title',tuple[0]],
-			   HU.getIconImage(tuple[2],'',['style','color:#000;']));
+	     html+=HU.span([ATTR_ID,this.getId(tuple[1]),
+			    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8)),
+			    ATTR_ACTION,tuple[1],
+			    ATTR_CLASS,clazz,
+			    ATTR_TITLE,tuple[0]],
+			   HU.getIconImage(tuple[2],'',[ATTR_STYLE,HU.css(CSS_COLOR,'#000')]));
 	 });
-	html+=HU.close('div');
+	html+=HU.close(TAG_DIV);
 	this.jq('buttons').html(html);
 	let _this = this;
-	this.jq('buttons').find('.ramadda-clickable').click(function() {
-	    let action = $(this).attr('action');
+	this.jq('buttons').find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='firstframe')
 		_this.setImage(0,1);
 	    else if(action=='stepback')
@@ -236,7 +239,10 @@ function ImagePlayer(args)  {
 	let _this = this;
 	let html = '';
 	let item = (title,id,icon)=>{
-	    html+=HU.span(['action',id,'title',title,'id',this.getId(id),'class','ramadda-clickable'],
+	    html+=HU.span([ATTR_ACTION,id,
+			   ATTR_TITLE,title,
+			   ATTR_ID,this.getId(id),
+			   ATTR_CLASS,CLASS_CLICKABLE],
 			  HU.getIconImage(icon)) + HU.space(1);
 	}
 
@@ -256,10 +262,12 @@ function ImagePlayer(args)  {
 	label('End Dwell:');
 	item('Descrease end dwell','loop_decreaseenddwell','fas fa-caret-down');
 	item('Increase end dwell','loop_increaseenddwell','fas fa-caret-up');
-	html = HU.div(['id',this.getId('controls'),'style','border-top:var(--basic-border);margin-top:0.5em;'], html);
+	html = HU.div([ATTR_ID,this.getId('controls'),
+		       ATTR_STYLE,HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,CSS_MARGIN_TOP,HU.em(0.5))],
+		      html);
 	this.jq('footer').append(html);
-	this.jq('controls').find('.ramadda-clickable').click(function() {
-	    let action = $(this).attr('action');
+	this.jq('controls').find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+	    let action = $(this).attr(ATTR_ACTION);
 	    if(action==ID_LOOP_MODE)
 		_this.toggleMode();
 	    else if(action=='loop_decreasespeed')
@@ -283,7 +291,8 @@ function ImagePlayer(args)  {
     this.start = function() {
         this.running=true;
         HU.addToDocumentUrl("autoPlay", this.running);
-	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_STOP,null,[ATTR_STYLE,'color:#000;']));
+	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_STOP,null,
+						   [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_BLACK)]));
 	if(this.timeout) 
 	    clearTimeout(this.timeout);
         this.timeout =  setTimeout(()=>{
@@ -296,7 +305,8 @@ function ImagePlayer(args)  {
         HU.addToDocumentUrl("autoPlay", this.running);
 	if(this.timeout) 
 	    clearTimeout(this.timeout);
-	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_PLAY,null,[ATTR_STYLE,HU.css(CSS_COLOR,'#000')]));
+	this.jq(ID_STARTSTOP).html(HU.getIconImage(ICON_PLAY,null,
+						   [ATTR_STYLE,HU.css(CSS_COLOR,'#000')]));
     }
     
 
@@ -438,11 +448,11 @@ function ImagePlayer(args)  {
 	    let isActiveImage = false;
 
 	    if(this.images[i].getOk()==0) {
-                hidealt=HU.attr('title','Use image  ' + (i+1) +' in animation'); 
+                hidealt=HU.attr(ATTR_TITLE,'Use image  ' + (i+1) +' in animation'); 
                 color = "red";
                 hidecolor = "red";
 	    } else {
-                hidealt=HU.attr('title',"Don't use image  " + (i+1) +" in animation"); 
+                hidealt=HU.attr(ATTR_TITLE,"Don't use image  " + (i+1) +" in animation"); 
                 if(i == this.currentImage) {
 		    color = "green";
 		    isActiveImage = true;
@@ -452,24 +462,26 @@ function ImagePlayer(args)  {
 	    while(width>1 && this.images.length*width >400) {
                 width--;
 	    }
-	    let imgAttrs =  HU.attr("class","imageplayer-filler") + HU.attr('title',title);
-	    let boxStyle = HU.css("width" ,width+"px");
+	    let imgAttrs =  HU.attr(ATTR_CLASS,"imageplayer-filler") + HU.attr(ATTR_TITLE,title);
+	    let boxStyle = HU.css(CSS_WIDTH ,HU.px(width));
 	    if(this.images.length>400)
-		boxStyle += HU.css('margin-left','0px');
+		boxStyle += HU.css(CSS_MARGIN_LEFT,'0px');
 	    else  if(this.images.length>200)
-		boxStyle += HU.css('margin-left','1px');
+		boxStyle += HU.css(CSS_MARGIN_LEFT,'1px');
 
-	    boxStyle+=HU.css('height',boxHeight);
-	    let filler = HtmlUtil.div(["image-index",i,
-				       "title", title, "class", "ramadda-clickable imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off"),"style",boxStyle]);
+	    boxStyle+=HU.css(CSS_HEIGHT,boxHeight);
+	    let filler = HU.div([ATTR_INDEX,i,
+				       ATTR_TITLE, title,
+				       ATTR_CLASS,
+				       HU.classes(CLASS_CLICKABLE,"imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off")),
+				       ATTR_STYLE,boxStyle]);
 	    boxes+= filler;
         }
         this.jq("boxes").html(boxes);
 	let _this = this;
-	this.jq("boxes").find(".imageplayer-box").click(function() {
-	    _this.setImage($(this).attr("image-index"),-1);
+	HU.findClass(this.jq("boxes"),'imageplayer-box').click(function() {
+	    _this.setImage($(this).attr(ATTR_INDEX),-1);
 	});
-	
     }
 
     this.checkImage = function(status,i) {

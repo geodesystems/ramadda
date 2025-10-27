@@ -39,11 +39,12 @@ var RamaddaJson = {
     },
 
     init:function(id) {
-	var img = HtmlUtils.image(icon_tree_open, ["class", "ramadda-json-button", "title", "shift-click: toggle all"]);
-	var links = HtmlUtils.onClick("RamaddaJson.allOpen('" + id + "')", "All Open", []) +
-            "&nbsp;&nbsp;" +
-            HtmlUtils.onClick("RamaddaJson.allClose('" + id + "')", "All Close", [])
-	$("#" + id).before(links);
+	var img = HU.image(icon_tree_open, [ATTR_CLASS, "ramadda-json-button",
+					    ATTR_TITLE, "shift-click: toggle all"]);
+	var links = HU.onClick("RamaddaJson.allOpen('" + id + "')", "All Open", []) +
+            SPACE2 +
+            HU.onClick("RamaddaJson.allClose('" + id + "')", "All Close", [])
+	jqid(id).before(links);
 	var block = $("#" + id + " .ramadda-json-block");
 	block.prev(".ramadda-json-openbracket").before(img + " ");
 	$("#" + id + " .ramadda-json-button").click(function(evt) {

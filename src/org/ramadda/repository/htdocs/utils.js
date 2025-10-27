@@ -3872,7 +3872,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     //But if the first tab, the active tab,  is empty then this doesn't work as it doesn't show
     //the non culled tabs
     initTabs:function(id,cullThem) {
-	let tabsContainer = jqid(id).tabs({activate: HtmlUtil.tabLoaded});
+	let tabsContainer = jqid(id).tabs({activate: HU.tabLoaded});
 	//If there is one tab then don't hide them
 	if(!cullThem) return;
 	let tabsToHide =[];
