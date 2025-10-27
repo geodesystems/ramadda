@@ -3,8 +3,6 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-
-
 var debugBounds = false;
 var getMapDebug = false;
 var debugPopup = false;
@@ -616,7 +614,7 @@ var MapUtils =  {
     },
     makeDefaultFeatureText:function (attrs,columns,valueFormatter,labelGetter) {
 	if(!columns) columns  = Object.keys(attrs);
-        let html = '<table>';
+        let html = HU.open(TAG_TABLE);
 	let first = [];
 	let middle = [];
 	let last = [];
@@ -646,7 +644,8 @@ var MapUtils =  {
             else if (lclabel == 'enddate') label = 'End Date';
             else if (lclabel == 'aland') label = 'Land Area';
             else if (lclabel == 'awater') label = 'Water Area';
-            html += '<tr valign=top><td align=right><div style=\'margin-right:5px;margin-bottom:3px;\'><b>' + HU.span(['title',attr],label) + ':</b></div></td><td><div style=\'margin-right:5px;margin-bottom:3px;\'>';
+            html += '<tr valign=top><td align=right><div style=\'margin-right:5px;margin-bottom:3px;\'><b>' +
+		HU.span([ATTR_TITLE,attr],label) + ':</b></div></td><td><div style=\'margin-right:5px;margin-bottom:3px;\'>';
             let value;
             if (attrs[attr] != null && (typeof attrs[attr] == 'object' || typeof attrs[attr] == 'Object')) {
                 let o = attrs[attr];
@@ -660,9 +659,9 @@ var MapUtils =  {
             if (value == 'null') return;
 	    if(valueFormatter) value = valueFormatter(attr,value);
 	    html += value;
-            html += '</div></td></tr>';
+            html += HU.close(TAG_DIV,TAG_TD,TAG_TR);
         });
-        html += '</table>';
+        html += HU.close(TAG_TABLE);
 	return html;
     }	
     

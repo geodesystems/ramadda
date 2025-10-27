@@ -569,8 +569,10 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
-				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,CSS_POSITION,POSITION_ABSOLUTE,
-						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
+				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
+						  CSS_POSITION,POSITION_ABSOLUTE,
+						  CSS_LEFT,HU.perc(60),
+						  CSS_TOP,HU.px(0))],"");
 	    let pos = HU.div([ATTR_TITLE,"Select Position",
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_ID,this.domId(ID_POSITION_BUTTON),
@@ -594,7 +596,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
+			       HU.div([ATTR_STYLE,
+				       HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
 				       ATTR_ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
@@ -651,7 +654,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    }
 
 	    try {
-		let canvas = this.jq(ID_GLOBE).find('canvas');
+		let canvas = this.jq(ID_GLOBE).find(TAG_CANVAS);
 		canvas.attr(ATTR_TABINDEX,'1');
 		canvas.mouseover(()=>{
 		    this.mouseOver = true;
@@ -1172,7 +1175,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 			      popup +
-			      HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
+			      HU.div([ATTR_STYLE,
+				      HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
 				      ATTR_ID, this.domId(ID_GRID)]));
 	    let html = HU.center(grid);
 	    this.setContents(html);
@@ -1220,9 +1224,9 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 
 
 	    let _this = this;
-	    let canvas = this.jq(ID_GRID).find('canvas');
+	    let canvas = this.jq(ID_GRID).find(TAG_CANVAS);
 	    canvas.attr(ATTR_TABINDEX,'1');
-	    canvas.css("border",this.getCanvasBorder());
+	    canvas.css(CSS_BORDER,this.getCanvasBorder());
 	    this.renderer.domElement.addEventListener('keydown', (e) => {
 		if(e.code=="KeyP") {
 		    let name = prompt("Name:");

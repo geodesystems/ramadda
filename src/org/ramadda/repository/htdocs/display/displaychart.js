@@ -1548,7 +1548,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
 					    HU.div([ATTR_CLASS, "display-chart-legend"],this.annotations.getLegend())
-					    +"</td></tr></table>");
+					    +HU.close(TAG_TD,TAG_TR,TAG_TABLE));
 		}
 		dataTable.addColumn({
                     type: 'string',

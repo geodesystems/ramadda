@@ -102,7 +102,8 @@ function ImagePlayer(args)  {
 	});
 
 	let height= this.getProperty('imageHeight',null);
-	let wrapperCss = HU.css(CSS_POSITION,DISPLAY_RELATIVE,  CSS_WIDTH,'100%')
+	let wrapperCss = HU.css(CSS_POSITION,DISPLAY_RELATIVE,
+				CSS_WIDTH,'100%')
 	if(height) {
 	    wrapperCss+=HU.css(CSS_HEIGHT,HU.getDimension(height));
 	}
@@ -243,22 +244,22 @@ function ImagePlayer(args)  {
 			   ATTR_TITLE,title,
 			   ATTR_ID,this.getId(id),
 			   ATTR_CLASS,CLASS_CLICKABLE],
-			  HU.getIconImage(icon)) + HU.space(1);
+			  HU.getIconImage(icon)) + SPACE;
 	}
 
 	let label=label=>{
-	    html+=HU.space(3);
+	    html+=SPACE3;
 	    html+=label+' ';
 	};
 	html+='Loop Mode: ';
-	item('Change loop mode',ID_LOOP_MODE, RamaddaUtil.getUrl('/imageplayer/button_norm.gif'));
+	item('Change loop mode',ID_LOOP_MODE, RamaddaUtil.getCdnUrl('/imageplayer/button_norm.gif'));
 	label('Adjust Speed:');
 	item('Decrease speed','loop_decreasespeed','fas fa-caret-down');
 	item('Increase speed','loop_increasespeed','fas fa-caret-up');	
 	label('Start Dwell:');
 	item('Descrease start dwell','loop_decreasestartdwell','fas fa-caret-down');
 	item('Increase start dwell','loop_increasestartdwell','fas fa-caret-up');
-	html+=HU.space(3);
+	html+=SPACE3;
 	label('End Dwell:');
 	item('Descrease end dwell','loop_decreaseenddwell','fas fa-caret-down');
 	item('Increase end dwell','loop_increaseenddwell','fas fa-caret-up');
@@ -425,8 +426,8 @@ function ImagePlayer(args)  {
     
 
     this.changeMode = function(mode) {
-	let modeNormalImage =  RamaddaUtil.getUrl('/imageplayer/button_norm.gif');
-	let modeRockingImage =  RamaddaUtil.getUrl('/imageplayer/button_sweep.gif');
+	let modeNormalImage =  RamaddaUtil.getCdnUrl('/imageplayer/button_norm.gif');
+	let modeRockingImage =  RamaddaUtil.getCdnUrl('/imageplayer/button_sweep.gif');
         this.play_mode = mode;
         let url;
         if(this.play_mode == 0) {
@@ -471,10 +472,10 @@ function ImagePlayer(args)  {
 
 	    boxStyle+=HU.css(CSS_HEIGHT,boxHeight);
 	    let filler = HU.div([ATTR_INDEX,i,
-				       ATTR_TITLE, title,
-				       ATTR_CLASS,
-				       HU.classes(CLASS_CLICKABLE,"imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off")),
-				       ATTR_STYLE,boxStyle]);
+				 ATTR_TITLE, title,
+				 ATTR_CLASS,
+				 HU.classes(CLASS_CLICKABLE,"imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off")),
+				 ATTR_STYLE,boxStyle]);
 	    boxes+= filler;
         }
         this.jq("boxes").html(boxes);

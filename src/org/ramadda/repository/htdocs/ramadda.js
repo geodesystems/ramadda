@@ -37,7 +37,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		userCORS:true,
 		allowTaint:true
 	    }).then(function(originalCanvas) {
-		const borderCanvas = document.createElement('canvas');
+		const borderCanvas = document.createElement(TAG_CANVAS);
 		const borderContext = borderCanvas.getContext('2d');
 		const borderWidth = 10; // Width of the border
 		borderCanvas.width = originalCanvas.width + borderWidth * 2; // Add border space
