@@ -39,7 +39,7 @@ function ramaddaWordCloud(source,target,args) {
 		return {value:t.type,label:t.label};
 	    });
 	    menuId = HU.getUniqueId('menu');
-	    jqid(this.opts.headerId).append(HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
+	    jqid(this.opts.headerId).append(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.em(0.5))],
 						   HU.select('',[ATTR_ID,menuId], options)));
 	    jqid(menuId).change(function() {
 		_this.opts.type=$(this).val();
@@ -54,15 +54,17 @@ function ramaddaWordCloud(source,target,args) {
 	jqid(this.opts.headerId).css('margin-bottom','0.5em');
 	HU.initPageSearch(null,null,'Find',false,{handler:handler,target:'#'+search});
     }
-//    this.create();
+    //    this.create();
 }
 
 ramaddaWordCloud.prototype = {
     loadJson:function() {
-	let icon = RamaddaUtils.getUrl('/icons/mapprogress.gif');
-	jqid(this.target).html(HU.center(HU.image(icon,[ATTR_STYLE,HU.css('margin-top','50px'),
-							ATTR_WIDTH,'150px'])));
-	let jsonUrl = RamaddaUtils.getUrl('/metadata/list?response=json&metadata_type=' + this.opts.type);
+	let icon = RamaddaUtils.getCdnUrl('/icons/mapprogress.gif');
+	jqid(this.target).html(HU.center(HU.image(icon,[ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(50)),
+							ATTR_WIDTH,HU.px(150)])));
+	let jsonUrl = HU.url(RamaddaUtils.getUrl('/metadata/list'),
+			     'response','json',
+			     'metadata_type',this.opts.type);
 	$.getJSON(jsonUrl, data=>{
 	    this.metadata = data;
 	    this.create();
@@ -72,7 +74,8 @@ ramaddaWordCloud.prototype = {
     },
     create:function(match) {
 	let cloudId = HU.getUniqueId('cloud');
-	jqid(this.target).html(HU.div([ATTR_ID,cloudId,ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.perc(100))]));
+	jqid(this.target).html(HU.div([ATTR_ID,cloudId,
+				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.perc(100))]));
 	let words = [];
 	if(match) match=match.toLowerCase();
 	if(this.metadata) {
@@ -91,8 +94,8 @@ ramaddaWordCloud.prototype = {
 		return
 	    }
 	    element.values.forEach(v=>{
-		let url = RamaddaUtil.getUrl('/search/do?metadata_attr' + element.index+'_' + this.opts.type+'=' +
-				   encodeURIComponent(v.value));
+		let url = HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
+				 'metadata_attr' + element.index+'_' + this.opts.type, v.value);
 		let handlers = null;
 		if(url)
 		    handlers ={click: function() {window.open(url, "_word");}};

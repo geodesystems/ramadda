@@ -1497,7 +1497,7 @@ WikiEditor.prototype = {
 		title = HU.div(['data-block',blockCnt,
 				ATTR_CLASS,
 				HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,'wiki-editor-popup-header')],
-			       HU.getIconImage("fas fa-caret-right") +SPACE+title)
+			       HU.getIconImage('fas fa-caret-right') +SPACE+title)
 
 		let contents  = block.items.join('');
 		contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items'],contents);
@@ -1844,7 +1844,7 @@ WikiEditor.prototype = {
 
     getEntryNames:function(ids, callback, immediate) {
 	let func = ()=>{
-	    let url = RamaddaUtil.getUrl("/entry/names?entryids=" + Utils.join(ids,","));
+	    let url = HU.url(RamaddaUtil.getUrl('/entry/names'),'entryids', Utils.join(ids,','));
 	    this.getNamesPending = true;
 	    $.getJSON(url, (data) =>{
 		this.getNamesPending = false;
@@ -1868,7 +1868,7 @@ WikiEditor.prototype = {
 
 	this.showMessage(message);
 	this.showingEntryPopup=true;
-	this.handleEntriesPopup([entryId],entryDiv,HU.br('Shift-click to view:'));
+	this.handleEntriesPopup([entryId],entryDiv,HU.div([],'Shift-click to view:'));
     },
 
     setInContext:function(c,type,chunk,tagInfo) {
@@ -2015,7 +2015,7 @@ WikiEditor.prototype = {
 	    let click = "WikiUtil.insertDisplayText('" + id + "','" + type.type+"')";
 	    let link = HU.div(['data-category',category,
 			       ATTR_DATA_CORPUS,type.label+' ' + tooltip,
-			       ATTR_CLASS,"wiki-editor-popup-link"],
+			       ATTR_CLASS,'wiki-editor-popup-link'],
 			      HU.href("#",type.label,[ATTR_CLASS,"display-link ",
 						      ATTR_TITLE,tooltip,"onclick", click]));
 	    links[category].push(link);

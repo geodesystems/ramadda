@@ -35,6 +35,7 @@ var ID_APPLY  ='apply';
 
 
 
+var ARG_ANCESTOR='ancestor';
 var ARG_AUTHTOKEN='authtoken';
 var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
@@ -47,6 +48,8 @@ var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';
 var ARG_ELEMENT='element';
 var ARG_RESPONSE='response';
+var ARG_TYPE='type';
+var ARG_TEXT='text';
 
 var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
@@ -120,6 +123,7 @@ var CLASS_ROW='row';
 var CLASS_SEARCHABLE = 'ramadda-searchable';
 var CLASS_SESSION_ERROR = 'ramadda-session-error';
 var CLASS_SLIDER = 'ramadda-slider';
+var CLASS_SEARCH_INPUT = 'ramadda-search-input';
 var CLASS_TABLE='ramadda-table';
 var CLASS_TABLE_CELLBORDER='cell-border';
 var CLASS_TABLE_HOVER='hover';

@@ -74,11 +74,11 @@ var Utils =  {
 		html+=HU.div([],'Please enter your contact information');
 		html+=HU.formTable();
 		html+=HU.formEntryLabel('Name',HU.input('','',[ATTR_TABINDEX,1,
-							   ATTR_ID,'licenseagreename',
-							   ATTR_SIZE,30]));
+							       ATTR_ID,'licenseagreename',
+							       ATTR_SIZE,30]));
 		html+=HU.formEntryLabel('Email',HU.input('','',[ATTR_TABINDEX,2,
-							    ATTR_ID,'licenseagreeemail',
-							    ATTR_SIZE,30]));		
+								ATTR_ID,'licenseagreeemail',
+								ATTR_SIZE,30]));		
 		html+=HU.formTableClose();
 	    }
 
@@ -2535,8 +2535,8 @@ var Utils =  {
 				'frameborder','0',
 				ATTR_WIDTH,attrs[ATTR_WIDTH]||640,
 				ATTR_HEIGHT,attrs['height']||360, 
-                              SRC,embedUrl
-                             ]);
+				SRC,embedUrl
+                               ]);
 	return s;
     },
 
@@ -3113,12 +3113,11 @@ var Utils =  {
         let _this = this;
         let newVal = input.val()||"";
         Utils.searchLastInput = newVal;
-        let url = RamaddaUtil.getUrl("/search/suggest?text=" + encodeURIComponent(newVal));
-        if (type) url += "&type=" + type;
+        let url = HU.url(RamaddaUtil.getUrl("/search/suggest"),ARG_TEXT,newVal);
+        if (type) url = HU.url(url,ARG_TYPE,type);
         if(here.length>0 && HU.isChecked(here) && ramaddaThisEntry)
-            url +="&ancestor=" + ramaddaThisEntry;
-        url+="&ascending=" + Utils.searchAscending;
-        url+="&orderby=createdate";
+            url = HU.url(url,ARG_ANCESTOR,ramaddaThisEntry);
+        url= HU.url(url,"ascending",Utils.searchAscending,ARG_ORDERBY,"createdate");
         let jqxhr = $.getJSON(url, function(data) {
             if(searchCnt!=_this.searchCnt) {
                 return;
@@ -3138,26 +3137,29 @@ var Utils =  {
                 let name = value.name;
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
-		
                 let entryLink =  HU.href(HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,id),
-					 HU.getIconImage(value.icon||icon_blank16,
+					 HU.getIconImage(value.icon??icon_blank16,
 							 [ATTR_WIDTH,ramaddaGlobals.iconWidth]) + SPACE+name,
 					 [ATTR_TITLE,"View entry",
 					  ATTR_DATA_TYPE,value.typeName,
 					  ATTR_DATA_NAME,value.name,
 					  'data-icon',value.icon,
+					  'data-thumbnail',value.thumbnail?value.thumbnail:'',
 					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100)),
 					  ATTR_CLASS,CLASS_HIGHLIGHTABLE]);
                 let searchLink;
                 if(submitForm) {
-                    searchLink =  HU.span([ATTR_CLASS,HU.classes(CLASS_HIGHLIGHTABLE,'ramadda-search-input'),
+                    searchLink =  HU.span([ATTR_CLASS,HU.classes(CLASS_HIGHLIGHTABLE,CLASS_SEARCH_INPUT),
 					   ATTR_INDEX,i,
 					   ATTR_TITLE,"Search for"],HU.getIconImage("fa-search"));
                 } else {
-                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HU.getIconImage("fa-search"),[ATTR_TITLE,"Search for text: " + value.name]);
+                    searchLink =  HU.href(HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO), ARG_TEXT,v),
+					  HU.getIconImage("fa-search"),
+					  [ATTR_TITLE,"Search for text: " + value.name]);
                 }
+		//Don't show the search link for now
+		searchLink='';
                 let row =  searchLink +  SPACE + entryLink;
-                //                      html += HU.div([ATTR_CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
                 html += HU.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
                 html +="\n";
                 even = !even;
@@ -3170,20 +3172,26 @@ var Utils =  {
 		},
 		content: function() {
 		    let name = $(this).attr(ATTR_DATA_NAME);
-		    return 'Click to view entry<br>'+
+		    let thumb = $(this).attr('data-thumbnail');
+		    let contents =  HU.div([],'Click to view entry')+
 			HU.image($(this).attr('data-icon'),[ATTR_WIDTH,ramaddaGlobals.iconWidth])+' ' +
 			HU.b(name)+
-			HU.div([],'Type: ' + $(this).attr(ATTR_DATA_TYPE));
+			HU.div([],Utils.msgLabel('Type') + $(this).attr(ATTR_DATA_TYPE));
+		    if(Utils.stringDefined(thumb)) {
+			contents+=HU.thinLine();
+			contents +=HU.image(thumb,[ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5)),ATTR_WIDTH,240]);
+		    }
+		    return contents;
 		}});
 
             if(submitForm) {
-                let links = results.find(".ramadda-search-input");
+                let links = HU.findClass(results,CLASS_SEARCH_INPUT);
                 links.css(CSS_CURSOR,CURSOR_POINTER);
                 links.click(function(e) {
                     e.stopPropagation();
                     let v = data.values[$(this).attr(ATTR_INDEX)].name;
                     input.val(v);
-                    input.closest("form").submit();
+                    input.closest(TAG_FORM).submit();
 
                 });
             }
@@ -3194,11 +3202,11 @@ var Utils =  {
     },
 
     searchLink:function() {
-        let input = $("#popup_search_input");
+        let input = jqid('popup_search_input');
         let val = input.val().trim();
         let url = $(this).attr(ATTR_URL);
-        if (val != "") {
-            url += "?text=" + encodeURIComponent(val);
+        if (Utils.stringDefined(val)) {
+            url = HU.url(url,ARG_TEXT,val);
         }
         window.location = url;
     },
@@ -3207,18 +3215,22 @@ var Utils =  {
         anchor = id;
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
-        let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
-        let searchInput = HU.tag(TAG_INPUT,[ATTR_VALUE, value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',
-					  ATTR_ID,'popup_search_input',ATTR_CLASS, 'ramadda-search-input',
+        let form = HU.open(TAG_FORM,[ATTR_ACTION,RamaddaUtil.getUrl(URL_SEARCH_DO)]);
+        let searchInput = HU.tag(TAG_INPUT,[ATTR_VALUE, value,
+					    ATTR_PLACEHOLDER,'Search text',
+					    'autocomplete','off',
+					    ATTR_AUTOFOCUS,'true',
+					    ATTR_ID,'popup_search_input',
+					    ATTR_CLASS, CLASS_SEARCH_INPUT,
 					    ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),
 							      CSS_PADDING,HU.px(2),
 							      CSS_WIDTH,HU.px(250),
 							      CSS_BORDER,HU.px(0)),
-					  ATTR_NAME,'text']);
+					    ATTR_NAME,'text']);
 	let right = '';
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
-			   ATTR_TITLE,"Search under this entry"],
+			   ATTR_TITLE,Utils.delimMsg("Search under") + ": "+ ramaddaThisEntryName],
 			  HU.checkbox("popup_search_here",[ATTR_NAME,'ancestor', ATTR_VALUE,ramaddaThisEntry],false) +
 			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE, ATTR_FOR,"popup_search_here"],
 				 HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
@@ -3248,7 +3260,7 @@ var Utils =  {
         let icon = jqid(id);
         let dialog = this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
         jqid(linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
-        let input = $("#popup_search_input");
+        let input =jqid('popup_search_input');
         input.mousedown(function(evt) {
             evt.stopPropagation();
         });
@@ -3284,7 +3296,7 @@ var Utils =  {
         event = GuiUtils.getEvent(event);
         Utils.mouseIsDown = false;
         GuiUtils.setCursor('default');
-        let obj = $("#ramadda-floatdiv");
+        let obj = jqid('ramadda-floatdiv');
         if (obj.length) {
             let dragSourceObj = Utils.entryDragInfo?GuiUtils.getDomObject(Utils.entryDragInfo.dragSource):null;
             if (dragSourceObj) {
@@ -3326,7 +3338,7 @@ var Utils =  {
         event = GuiUtils.getEvent(event);
         if (Utils.entryDragInfo && Utils.mouseIsDown) {
             Utils.mouseMoveCnt++;
-            var obj = $("#ramadda-floatdiv");
+            var obj = jqid('ramadda-floatdiv');
             if (Utils.mouseMoveCnt == 6) {
                 GuiUtils.setCursor('move');
             }
@@ -3353,7 +3365,7 @@ var Utils =  {
 				 c));
     },
     moveFloatDiv:function(x, y) {
-        let obj = $("#ramadda-floatdiv");
+        let obj = jqid('ramadda-floatdiv');
         if (obj.length) {
             let visible = obj.css(CSS_DISPLAY)!=DISPLAY_NONE;
             if (!visible) {
@@ -3588,8 +3600,7 @@ var Utils =  {
 
 var GuiUtils = {
     getProxyUrl: function(url) {
-        let base = RamaddaUtil.getUrl( "/proxy?trim=true&url=");
-        return base + encodeURIComponent(url);
+        return  HU.url(RamaddaUtil.getUrl( "/proxy"), "trim",true,"url",url);
     },
 
     showingError: false,
@@ -4323,9 +4334,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.loadJqueryLib('fancybox',
 			 [RamaddaUtil.getCdnUrl("/lib/fancybox-3/jquery.fancybox.min.css")],
                          [RamaddaUtil.getCdnUrl("/lib/fancybox-3/jquery.fancybox.min.js")],
-                                selector,()=>{
-				    $(items).fancybox(args);
-                                });
+                         selector,()=>{
+			     $(items).fancybox(args);
+                         });
     },
     checkToHidePopup:function() {
         if (this.popupTime) {
@@ -4382,7 +4393,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     getTooltip: function() {
-        return $("#ramadda-popupdiv");
+        return jqid('ramadda-popupdiv');
     },
     getPopupObject: function() {
         return this.popupObject;
@@ -4625,9 +4636,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loadSlides: async function() {
         if(!HU.slidesLoaded) {
 	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
-					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
+						 href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
 	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
-					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
+						 href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
             await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/slick/slick.min.js"));
             HU.slidesLoaded = true;
 	    return false;
@@ -5184,7 +5195,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		hdr = hdr+HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,HU.px(0),CSS_RIGHT,HU.px(0))], opts.headerRight);
 	    }
             let header = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,CSS_TEXT_ALIGN,ALIGN_LEFT),
-					ATTR_CLASS,'ramadda-popup-header'],hdr);
+				 ATTR_CLASS,'ramadda-popup-header'],hdr);
             html = header + html;
         }
 
@@ -5527,15 +5538,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.loadJqueryLib('DataTable',
 			 [RamaddaUtil.getCdnUrl('/lib/datatables-1.13.1/datatables.min.css')],
                          [RamaddaUtil.getCdnUrl('/lib/datatables-1.13.1/datatables.min.js')],
-                                id,()=>{
-                                    $(id).each(function() {
-                                        if($.fn.dataTable.isDataTable(this)) {
-                                            return;
-                                        }
-                                        let table = HU.formatTableInner($(this),args);
-                                        if(callback) callback($(this),table);
-                                    });
-                                });
+                         id,()=>{
+                             $(id).each(function() {
+                                 if($.fn.dataTable.isDataTable(this)) {
+                                     return;
+                                 }
+                                 let table = HU.formatTableInner($(this),args);
+                                 if(callback) callback($(this),table);
+                             });
+                         });
     },
     formatTableInner: function(table, args) {
         let options = {
@@ -5660,7 +5671,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			       ATTR_ID,"ramadda-nav-left-toggle",
 			       ATTR_CLASS,"ramadda-nav-left-toggle"], HU.getIconImage("fa-bars"));
             $(menu).appendTo(right);
-            $("#ramadda-nav-left-toggle").click(function() {
+            jqid('ramadda-nav-left-toggle').click(function() {
                 let closed = $(this).attr("toggle-state")==="closed";
                 if(closed) {
                     left.show();
@@ -5843,7 +5854,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     urlArg: function(name, value) {
-        return name + "=" + encodeURIComponent(value);
+        return encodeURIComponent(name) + "=" + encodeURIComponent(value);
     },
     attrSelect: function(name, value) {
         if(!Utils.isDefined(value)) return "[" + name +"]";
@@ -5860,7 +5871,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return " " + name + "=" + this.qt(value) + " ";
     },
 
-//    seenAttr:{},
+    //    seenAttr:{},
     attrs: function(list) {
         if (!list) return "";
 	if(typeof list=="string") return list;
@@ -5871,12 +5882,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let name = list[i];
             if (!name) continue;
 	    /*
-	    let test = "ATTR_" + name.toUpperCase();
-	    if(!Utils.isDefined(window[test]) &&!HU.seenAttr[test]) {
-		HU.seenAttr[test]=true;
-		console.log(test);
-		}
-		*/
+	      let test = "ATTR_" + name.toUpperCase();
+	      if(!Utils.isDefined(window[test]) &&!HU.seenAttr[test]) {
+	      HU.seenAttr[test]=true;
+	      console.log(test);
+	      }
+	    */
             let value = list[i + 1];
             if (value === null) {
                 html += " " + name + " ";
@@ -5951,7 +5962,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	else style+=HU.css(CSS_RIGHT,opts.right);
 	style+=HU.css(CSS_TOP,opts.top);		
         let html= HU.div([ATTR_ID,id,ATTR_TITLE,"Expand", ATTR_CLASS,"ramadda-expandable-link",
-				 ATTR_STYLE,style],icon);
+			  ATTR_STYLE,style],icon);
         $(selector).append(html);
         let btn = jqid(id);
         let expandNow = $(selector).hasClass("ramadda-expand-now");
@@ -6310,20 +6321,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         url = base + url;
 
         let input = opts.showInputField?HU.input("formurl", url,
-							[ATTR_SIZE, 80,ATTR_ID,"formurl"]):
+						 [ATTR_SIZE, 80,ATTR_ID,"formurl"]):
 	    HU.hidden("formurl", url, [ATTR_SIZE, 80,ATTR_ID,"formurl"]);
         let html = HU.vspace() +HU.div([ATTR_CLASS, "ramadda-form-url"], 
-					      input+SPACE2+
-					      (opts.includeCopyArgs?
-					       HU.span([ATTR_ID,'argscopy',
-							ATTR_CLASS,CLASS_CLICKABLE,
-							ATTR_TITLE,'Copy json for subset action'],
-						       HU.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
-					      HU.span([ATTR_ID,'clipboard',
-						       ATTR_CLASS,CLASS_CLICKABLE,
-						       ATTR_TITLE,'Copy URL to clipboard'],
-						      HU.getIconImage(ICON_CLIPBOARD)) + SPACE2+
-					      HU.href(url, HU.getIconImage(ICON_LINK),[ATTR_TITLE,'Form URL']));
+				       input+SPACE2+
+				       (opts.includeCopyArgs?
+					HU.span([ATTR_ID,'argscopy',
+						 ATTR_CLASS,CLASS_CLICKABLE,
+						 ATTR_TITLE,'Copy json for subset action'],
+						HU.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
+				       HU.span([ATTR_ID,'clipboard',
+						ATTR_CLASS,CLASS_CLICKABLE,
+						ATTR_TITLE,'Copy URL to clipboard'],
+					       HU.getIconImage(ICON_CLIPBOARD)) + SPACE2+
+				       HU.href(url, HU.getIconImage(ICON_LINK),[ATTR_TITLE,'Form URL']));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -6475,7 +6486,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], HU.center(input) + cbxInner);
 	    dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
-					draggable:true,header:true});
+				    draggable:true,header:true});
 
 	    dialog.find(":checkbox").change(cbxChange);
 	    dialog.find(":radio").change(cbxChange);
@@ -6665,7 +6676,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
         $("input.sliderValue").change(function() {
             var $this = $(this);
-            $("#slider").slider("values", $this.data("index"), $this.val());
+            jqid('slider').slider("values", $this.data("index"), $this.val());
         });
     },
     input: function(name, value, attrs) {
@@ -6690,15 +6701,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(args) $.extend(opts,args);
 	$(document).ready(function() {
             HU.loadJqueryLib('selectBoxIt',
-				    [RamaddaUtil.getCdnUrl("/lib/selectboxit/stylesheets/jquery.selectBoxIt.css")],
-                                    [RamaddaUtil.getCdnUrl("/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js")],
-                                    selector, ()=>{
-					//Call later. This somehow fixes a major performance problem with
-					//menus that are hidden
-					setTimeout(()=>{
-					    $(selector).selectBoxIt(opts);
-					},100);
-				    });
+			     [RamaddaUtil.getCdnUrl("/lib/selectboxit/stylesheets/jquery.selectBoxIt.css")],
+                             [RamaddaUtil.getCdnUrl("/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js")],
+                             selector, ()=>{
+				 //Call later. This somehow fixes a major performance problem with
+				 //menus that are hidden
+				 setTimeout(()=>{
+				     $(selector).selectBoxIt(opts);
+				 },100);
+			     });
 	});
     },
     valueDefined: function(value) {
@@ -6854,7 +6865,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let style = (visible ? HU.css(CSS_DISPLAY,DISPLAY_BLOCK,
 				      CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,DISPLAY_NONE));
         let body = HU.div([ATTR_CLASS, 'hideshowblock', ATTR_ID, id, ATTR_STYLE, style],
-                                 contents);
+                          contents);
 
 	if(opts.listener)
 	    HU.toggleBlockListeners[id] = opts.listener;
@@ -6886,7 +6897,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let style = (visible ? HU.css(CSS_DISPLAY,DISPLAY_BLOCK,
 				      CSS_VISIBILITY,'visible') : HU.css(CSS_DISPLAY,DISPLAY_NONE));
         let body = HU.div([ATTR_CLASS, "hideshowblock", ATTR_ID, id, ATTR_STYLE, style],
-                                 contents);
+                          contents);
 	if(opts.separate)
 	    return {header:header,body:body,id:id};
         return header + body;

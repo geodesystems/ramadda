@@ -498,7 +498,7 @@ function RamaddaRepository(repositoryRoot) {
                 url += "&maxlongitude=" + settings.getEast();
 
 	    if(settings.ancestor) 
-		url += "&ancestor=" + encodeURIComponent(settings.ancestor);
+		url = HU.url(url,ARG_ANCESTOR,settings.ancestor);
 
             for (let i = 0; i < settings.metadata.length; i++) {
                 let metadata = settings.metadata[i];

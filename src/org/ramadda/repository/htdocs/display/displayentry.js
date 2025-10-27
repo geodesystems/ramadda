@@ -40,14 +40,11 @@ var ID_SEARCH_DATE_CREATE = "search_createdate";
 var ID_SEARCH_DATE_CHANGE = "search_changedate";
 var ID_SEARCH_TAGS = "search_tags";
 var ID_SEARCH_ANCESTOR = "search_ancestor";
-
 var ID_SEARCH_ANCESTORS = "search_ancestors";
 var ID_SEARCH_ANCESTORS_MENU = "search_ancestors_menu";
 var ID_TREE_LINK = "treelink";
-
 var ID_SEARCH = "search";
 var ID_FORM = "form";
-
 var ID_TEXT_FIELD = "textfield";
 var ID_NAME_FIELD = "namefield";
 var ID_DESCRIPTION_FIELD = "descriptionfield";
@@ -59,6 +56,7 @@ var ID_TYPEFIELDS = "typefields";
 var ID_METADATA_FIELD = "metadatafield";
 var ID_COLUMN = "column";
 var ID_SEARCH_HIDEFORM = "searchhideform";
+
 var ATTR_TEXT_INPUT='data-text-input';
 
 var CLASS_SEARCH_TAG = 'display-search-tag';
@@ -1441,13 +1439,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let selectedAncestors  =this.jq(ID_SEARCH_ANCESTORS_MENU).val();
 	    if(selectedAncestors) {
 		selectedAncestors.forEach(id=>{
-		    jsonUrl+='&ancestor='+ id;
+		    jsonUrl=HU.url(jsonUrl,ARG_ANCESTOR,id);
 		});
 	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
 		if(HU.isChecked($(this))) {
 		    let id = $(this).attr('data-entryid');
-		    jsonUrl+='&ancestor='+ id;
+		    jsonUrl=HU.url(jsonUrl,ARG_ANCESTOR,id);
 		}
 	    });
 	    
@@ -2041,7 +2039,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (newTypes == null) {
 		let ancestor = this.getAncestor();
 		let extraArgs=null;
-		if(ancestor) extraArgs='ancestor='+ ancestor;
+		if(ancestor) extraArgs=HU.urlArg(ARG_ANCESTOR,ancestor);
                 newTypes = this.getRamadda().getEntryTypes((ramadda, types) =>{
                     this.addTypes(types);
                 },this.getEntryTypes(),extraArgs);

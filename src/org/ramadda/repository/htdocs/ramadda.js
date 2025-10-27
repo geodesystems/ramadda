@@ -7,6 +7,7 @@
 
 var URL_ENTRY_SHOW='/entry/show';
 var URL_ENTRY_GET='/entry/get';
+var URL_SEARCH_DO='/search/do';
 
 var RamaddaUtils;
 var RamaddaUtil;
@@ -269,11 +270,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
         let inputWidget = jqid(getId("_input"));
 	let doSearch = ()=>{
             let value =  inputWidget.val()??'';
-            let searchLink =  HU.url(RamaddaUtil.getUrl("/search/do"),
+            let searchLink =  HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
 				     [ARG_ORDERBY,'createdate',
 				      ARG_ASCENDING,'false',
-				      'text',value,
-				      'output','json']);
+				      ARG_TEXT,value,
+				      ARG_OUTPUT,'json']);
 	    let theType = entryType;
 	    if(addTypesSelector) {
 		let type = jqid(getId('types_select')).val();
@@ -392,7 +393,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     isRamaddaUrl:function(url) {
 	return url.startsWith(ramaddaBaseUrl);
     },
-    getUrl:function(url) {
+    getUrl:function(url,extra) {
+	if(extra) {
+	    console.error('RamaddaUtils.getUrl passed extra argument:' + extra);
+	    console.trace();
+	}
 	return RamaddaUtil.getBaseUrl()+url;
     },
     getCdnUrl:function(url) {
@@ -887,7 +892,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entryId = comp.attr(ATTR_ENTRYID);
 	    let value = comp.val().trim();
 	    let what = comp.attr('data-field');
-	    let url = HU.url(RamaddaUtil.getUrl("/entry/changefield"),ARG_ENTRYID, entryId,'what',what,'value',value);
+	    let url = HU.url(RamaddaUtil.getUrl("/entry/changefield"),
+			     ARG_ENTRYID, entryId,'what',what,'value',value);
 	    $.getJSON(url, function(data) {
 		if(data.error) {
 		    alert('An error has occurred: '+data.error);
@@ -1275,7 +1281,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    table+=HU.formEntry(Utils.delimMsg('Kind'),
 					HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),entry.typeName,
 						[ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + entry.typeName]));
-		    let searchUrl = RamaddaUtil.getUrl('/search/type/' + entry.getType().id+'?user_id='+ entry.creator+'&search.submit=true');
+		    let searchUrl = HU.url(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),
+					   'user_id',entry.creator,'search.submit',true);
 		    let created = HU.href(searchUrl,entry.creator,
 					  [ATTR_TITLE,
 					   Utils.delimMsg('Search for entries of this type created by') +' ' + entry.creator]);
@@ -1447,7 +1454,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!Utils.entryDragInfo) return;
 	    $(this).css("background", "");
 	    if(isTarget($(this))) {
-		let url =  RamaddaUtil.getUrl('/entry/getentries?output=' + $(this).attr('target-type'));
+		let url =  HU.url(RamaddaUtil.getUrl('/entry/getentries'),
+				  ARG_OUTPUT,$(this).attr('target-type'));
 		Utils.entryDragInfo.getIds().split(',').forEach(id=>{
 		    url+='&selentry=' + id;
 		});
@@ -1459,7 +1467,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!entry) return;
 	    if(Utils.entryDragInfo.hasEntry(entry)) return;
 	    if(!Utils.entryDragInfo.hasEntry(entry)) {
-		url = RamaddaUtil.getUrl("/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entry.getId());
+		url = HU.url(RamaddaUtil.getUrl('/entry/copy'),
+			     'action','action.move',
+			     'from', Utils.entryDragInfo.getIds(),
+			     'to',entry.getId());
 		document.location = url;
 	    }
 	});
@@ -1474,7 +1485,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HU.hidePopupObject();
 	    let val = $(this).val();
 	    if(!Utils.stringDefined(val)) return;
-	    let url = HU.getUrl(RamaddaUtil.getUrl("/metadata/suggest"),[ATTR_VALUE,val.trim()]);
+	    let url = HU.url(RamaddaUtil.getUrl("/metadata/suggest"),
+			     ATTR_VALUE,val.trim());
 	    let input = $(this);
 	    $.getJSON(url, data=>{
 		if(data.length==0) return;
@@ -2225,16 +2237,16 @@ function Selector(event, selectorId, elementId, allEntries,
 	    url = RamaddaUtil.getUrl(url);
 	}
         if (this.localeId) {
-            url = url + "&localeid=" + this.localeId;
+            url = HU.url(url,"localeid",this.localeId);
         }
         if (this.entryType) {
-            url = url + "&entrytype=" + this.entryType;
+            url = HU.url(url,'entrytype', this.entryType);
         }
 	if(this.props.typeLabel) {
-            url = url + "&typelabel=" + this.props.typeLabel;
+            url =HU.url(url,'typelabel',this.props.typeLabel);
 	}
 	if(Utils.isDefined(this.props.showTypeSelector)) {
-            url = url + "&showtypeselector=" + this.props.showTypeSelector;
+            url = HU.url(url,'showtypeselector',this.props.showTypeSelector);
 	}	
         GuiUtils.loadXML(url, (request,id)=>{_this.handleSelect(request,id)}, this.id);
         return false;

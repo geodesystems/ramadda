@@ -87,8 +87,8 @@ function RamaddaReader(id,args,data) {
 	    return 
 	}
 
-        let url = RamaddaUtil.getUrl("/search/suggest?text=" + encodeURIComponent(v));
-        url +="&ancestor=" + _this.args.entryid;
+        let url = HU.url(RamaddaUtil.getUrl("/search/suggest"), ARG_TEXT,v);
+        url =HU.url(url, ARG_ANCESTOR, _this.args.entryid);
         let jqxhr = $.getJSON(url, function(data) {
 	    tocItems.hide();
 	    if(!data.values) return;

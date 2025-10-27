@@ -1878,7 +1878,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     return;
                 }
                 //If args was defined then default to search
-                this.layerSelectPath = "/search/do";
+                this.layerSelectPath = URL_SEARCH_DO;
             }
             let url = RamaddaUtil.getUrl(this.layerSelectPath);
             if (args) {
@@ -2155,7 +2155,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    Utils.copyToClipboard(loc+"\n");
 		    console.log(loc);
 		} else  {
-		    let url = RamaddaUtil.getUrl("/map/getaddress?latitude=" + lat +"&longitude=" + lon);
+		    let url = HU.url(RamaddaUtil.getUrl('/map/getaddress'),'latitude',lat,'longitude', lon);
 		    $.getJSON(url, data=>{
 			if(data.length==0) {
 			    console.log(loc+",,,,,");
@@ -4538,8 +4538,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 							    tpoints[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
-			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
-			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
+			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],
+								 RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
+			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],
+								 RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
 		    }
 		    let poly = this.map.createPolygon(ATTR_ID, "", tpoints, attrs, null,true);
 		    poly.noSelect = true;
