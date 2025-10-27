@@ -1130,12 +1130,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
 	for(Entry entry:  getEntryManager().searchEntries(request)) {
-	    String obj = JsonUtil.map(Utils.makeListFromValues("name", JsonUtil.quote(entry.getName()), "id",
-						     JsonUtil.quote(entry.getId()),
-						     "type",JsonUtil.quote(entry.getTypeHandler().getType()),
-						     "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
-						     "icon",
-						     JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
+            List<String> urls =  getMetadataManager().getThumbnailUrls(request, entry, null);
+	    String obj = JsonUtil.map(Utils.makeListFromValues("name", JsonUtil.quote(entry.getName()),
+							       "id",  JsonUtil.quote(entry.getId()),
+							       "type",JsonUtil.quote(entry.getTypeHandler().getType()),
+							       "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
+							       "thumbnail",
+							       Utils.notEmpty(urls)?JU.quote(urls.get(0)):"null",
+							       "icon",JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}
 	String json = JsonUtil.map(Utils.makeListFromValues("values", JsonUtil.list(names)));
