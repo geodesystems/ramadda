@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Oct 27 08:15:25 MDT 2025";
+var build_date="RAMADDA build date: Mon Oct 27 10:30:01 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -387,7 +387,7 @@ $.extend(Utils,{
         html += HU.close(TAG_DIV);
         html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
         if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
-            let tdw = Hu.perc(100 / ct.length);
+            let tdw = HU.perc(100 / ct.length);
             html += HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 						       CSS_VERTICAL_ALIGN,ALIGN_TOP,
 						       CSS_TEXT_ALIGN,ALIGN_CENTER)]);
