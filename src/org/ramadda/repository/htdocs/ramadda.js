@@ -1042,7 +1042,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    }
 
 		    if(props.showThumbnails && entry.getThumbnail()) {
-			v+= '<br>'+HU.div([ATTR_CLASS,'ramadda-thumbnail',
+			v+= HU.br()+HU.div([ATTR_CLASS,'ramadda-thumbnail',
 					   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 					  HU.image(entry.getThumbnail(),[ATTR_LOADING,'lazy',
 									 ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-thumbnail-image'),
@@ -1068,7 +1068,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				
 				if(m.type=='content.thumbnail' || Utils.isImage(f)) {
 				    imgUrl = mUrl;
-				    name+='<br>'+HU.image(imgUrl,[ATTR_WIDTH,HU.px(290)]).replace(/"/g,"'");
+				    name+=HU.br()+HU.image(imgUrl,[ATTR_WIDTH,HU.px(290)]).replace(/"/g,"'");
 				} else {
 				    f = f.toLowerCase();
 				    let icon  = null;
@@ -1192,11 +1192,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			title+=HU.div([],val);
 
 		    let type = $(this).attr(ATTR_DATA_TYPE);		
-		    if(type) title=title+ 'Type: ' + type+'<br>';
+		    if(type) title=title+ 'Type: ' + type+HU.br();
 		    let filename = $(this).attr('data-filename');		
-		    if(filename) title=title+ 'File: ' + filename+'<br>';
+		    if(filename) title=title+ 'File: ' + filename+HU.br();
 		    let remote = $(this).attr('remote-repository');		
-		    if(remote) title=title+ 'Remote: ' + remote+'<br>';
+		    if(remote) title=title+ 'Remote: ' + remote+HU.br();
 		    title = title+
 			HU.div([],'Right-click to see entry menu') +
 			HU.div([],'Shift-drag to copy/move');
@@ -1355,7 +1355,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     initDragAndDropOnHeader:function(entryId,authToken) {
 	let success = (data, newEntryId, name,isImage)=>{
 	    HU.makeOkCancelDialog($('.ramadda-header'),
-				  'New entry has been created: ' +name+'<br>Do you want to view it?',
+				  'New entry has been created: ' +name+HU.div([],'Do you want to view it?'),
 				  ()=>{
 				      let url =  HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 							ARG_ENTRYID,newEntryId);
@@ -1680,8 +1680,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 	    });
 	    let html = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_PADDING,HU.px(5))],
-			      "Creating entry<br>"+HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
-							    [ATTR_WIDTH,HU.px(50)]));
+			      HU.div([],'Creating entry')+
+			      HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
+				       [ATTR_WIDTH,HU.px(50)]));
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}
 

@@ -3374,7 +3374,7 @@ var Utils =  {
                 if (Utils.entryDragInfo) {
                     html = Utils.entryDragInfo.getHtml();
                 }               
-                obj.html(html + "<br>Drag to a group to copy/move/associate");
+                obj.html(html + HU.div([],'Drag to a group to copy/move/associate'));
             }
             obj.css(CSS_TOP,y).css(CSS_LEFT,x+10);
         }
@@ -3565,7 +3565,7 @@ var Utils =  {
         return this.enumColors[type];
     },
 
-    hexToRgb:function(hex) {
+     hexToRgb:function(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
             r: parseInt(result[1], 16),
