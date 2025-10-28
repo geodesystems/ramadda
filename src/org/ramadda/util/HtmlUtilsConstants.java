@@ -29,6 +29,9 @@ public interface HtmlUtilsConstants {
 
     /** _more_ */
     public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+    public static final String HTTP_CONTENT_RANGE="Content-Range";
+    public static final String HTTP_ACCEPT_RANGES="Accept-Ranges";
+
 
     /** _more_ */
     public static final String HTTP_CONTENT_DESCRIPTION =
