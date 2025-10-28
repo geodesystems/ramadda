@@ -43,6 +43,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
+import org.apache.commons.io.input.BoundedInputStream;
 /**
  * A collection of utilities for IO
  *
@@ -178,6 +179,29 @@ public class IO {
 
         return true;
     }
+
+    public static InputStream makeBoundedStream(InputStream in, long byteStart, long byteEnd) throws IOException {
+	long skipped=0;
+	//	System.err.println("makeBoundedStream start:" + byteStart +" end:" + byteEnd);
+	if(byteStart>0) {
+	    skipped = in.skip(byteStart);
+	    //	    System.err.println("\tskipping:" +byteStart +" skipped:" + skipped);
+	    while (skipped < byteStart) {
+		long s = in.skip(byteStart - skipped);
+		if (s <= 0) break;
+		skipped += s;
+		//		System.err.println("\tskipping:" +byteStart +" skipped:" + skipped);
+	    }
+	}
+	if(byteEnd>0) {
+	    long length = byteEnd - byteStart + 1;
+	    //	    System.err.println("\tlength:" + length);
+	    return new BoundedInputStream(in, length);
+	}
+	return in;
+	      
+    }
+
 
     public static InputStream getInputStream(String filename)
 	throws FileNotFoundException, Exception {
