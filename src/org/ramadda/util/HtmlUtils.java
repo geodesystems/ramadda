@@ -153,6 +153,28 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
+    public static String voidTag(String comp,String attrs) {
+        StringBuilder sb = new StringBuilder();
+        voidTag(sb, comp,attrs);
+        return sb.toString();
+    }
+
+    public static Appendable voidTag(Appendable sb, String tag,String attrs) {
+        try {
+            sb.append("<");
+            sb.append(tag);
+	    sb.append(" ");
+	    sb.append(attrs);
+            sb.append("/>");
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+
+        return sb;
+    }
+
+
+
     public static String tag(String comp, String attrs) {
         StringBuilder sb = new StringBuilder();
         tag(sb, comp, attrs);
