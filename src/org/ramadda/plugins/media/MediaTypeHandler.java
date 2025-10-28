@@ -22,39 +22,19 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 @SuppressWarnings("unchecked")
 public class MediaTypeHandler extends GenericTypeHandler {
-
-
-    /** _more_ */
     private static int IDX = 0;
-
-    /**  */
     public static final String AUDIO_HEIGHT = "40";
-
-    /** _more_ */
     public static final int IDX_WIDTH = IDX++;
-
-    /** _more_ */
     public static final int IDX_HEIGHT = IDX++;
-
-    /**  */
     public static final int IDX_TRANSCRIPTIONS = IDX++;
-
-    /**  */
     public static final int IDX_LAST = IDX - 1;
-
 
     public MediaTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-
-
-
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -67,13 +47,14 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	    String mediaUrl    = entry.getResource().getPath();
 	    if (entry.getResource().isFile()) {
 		mediaUrl = getEntryManager().getEntryResourceUrl(request, entry);
+		//For some reason this does not encode the space so we need to do this here
+		mediaUrl = mediaUrl.replace(" ","%20");
 	    }
 	    String player =  getMediaPlayer(request, entry, props,  sb,
 					    new ArrayList<String>(),
 					    "", mediaType,mediaUrl);
 	    return player;
 	}
-
 
         if ( !tag.equals("video") && !tag.equals("annotated_media")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
@@ -82,21 +63,9 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
         StringBuilder sb = new StringBuilder();
         getMediaHtml(request, entry, props, sb);
-
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param props _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getSimpleDisplay(Request request, Hashtable props,
                                    Entry entry)
@@ -105,30 +74,20 @@ public class MediaTypeHandler extends GenericTypeHandler {
                               new Hashtable());
     }
 
-
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void getMediaHtml(Request request, Entry entry, Hashtable props,
                               Appendable sb)
             throws Exception {
         String url    = entry.getResource().getPath();
         if (entry.getResource().isFile()) {
-           url = getEntryManager().getEntryResourceUrl(request, entry);
+	    url = getEntryManager().getEntryResourceUrl(request, entry);
+	    //For some reason this does not encode the space so we need to do this here
+	    url = url.replace(" ","%20");
         }
         String embed = addMedia(request, entry, props,
                                 getWikiManager().getMediaType(request, entry), null, url,
                                 null);
         sb.append(embed);
     }
-
 
     public String getMediaWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
@@ -139,7 +98,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
         return width;
     }
-
 
     public String getMediaHeight(Request request, Entry entry, Hashtable props) {
         String height = Utils.getProperty(props, "height",
@@ -249,8 +207,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	return null;    
     }
 
-
-
     /**
      *
      * @param request _more_
@@ -273,9 +229,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
             throws Exception {
         return (String) entry.getValue(request,"transcriptions_json");
     }
-
-
-
 
     /**
      *
@@ -316,7 +269,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
         return embed;
     }
-
 
     /**
      *
@@ -376,8 +328,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
                + "&maxwidth=450' width='450' height='390' frameborder='no'></iframe>";
     }
 
-
-
     public String embedMedia(Request request, Entry entry, Hashtable props,
                              StringBuilder sb, List attrs, String embed,
                              String mediaUrl) {
@@ -394,13 +344,13 @@ public class MediaTypeHandler extends GenericTypeHandler {
             if (_mediaUrl.endsWith(".mp3") || _path.endsWith(".mp3") ||
 		_path.endsWith(".m4a") || _mediaUrl.endsWith(".webm") ||
 		_path.endsWith(".webm")	 || _path.endsWith("ogg") || _path.endsWith("wav")) {
-                player = HU.tag("audio", HU.attrs(new String[] {
-                    "controls", "", "id", mediaId, "style",
-                    HU.css("max-width","100%","height", HU.makeDim(AUDIO_HEIGHT, "px"), "width",
-                           HU.makeDim(width, "px"))
-                }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
-                        "type",
-                        "audio/mpeg" }), "Your browser does not support the audio tag."));
+		String type = "audio/mpeg";
+		if(_path.endsWith(".m4a") || _mediaUrl.endsWith(".webm")) type = "audio/mp4";
+                player = HU.tag("audio", HU.attrs(new String[] {"controls", "", "id", mediaId, "style",
+								HU.css("max-width","100%","height", HU.makeDim(AUDIO_HEIGHT, "px"),
+								       "width", HU.makeDim(width, "px"))}),
+		    HU.voidTag("source", HU.attrs(new String[] { "src", mediaUrl,"type",type}))+
+		    "Your browser does not support the audio tag.");
                 Utils.add(attrs, "media", JU.quote("media"));
             } else if (_mediaUrl.endsWith(".m4v") ||
 		       _mediaUrl.endsWith(".mp4")
