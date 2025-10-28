@@ -1774,7 +1774,7 @@ public class UserManager extends RepositoryManager {
 	usersHtml.append(HU.select(ARG_USER_ACTION,actions,""));
 	usersHtml.append(HU.vspace("1em"));
 
-	String searchButtons ="[{\"label\":\"Status:\"},{\"label\":\"Active\", \"value\":\"status:active\"},{\"label\":\"Inactive\", \"value\":\"status:inactive\"},{\"label\":\"Pending\", \"value\":\"status:pending\"},{\"label\":\"&nbsp;&nbsp;Type:\"},	{\"label\":\"Admin\", \"value\":\"admin\"},{\"label\":\"Guest\", \"value\":\"guest\"},{\"label\":\"&nbsp;&nbsp;\"},{\"label\":\"Show all\",\"clear\":true}]";
+	String searchButtons ="[{\"label\":\"Status:\"},{\"label\":\"Active\", \"value\":\"status:active\"},{\"label\":\"Inactive\", \"value\":\"status:inactive\"},{\"label\":\"Pending\", \"value\":\"status:pending\"},{\"label\":\"&nbsp;&nbsp;Type:\"},	{group:\"type\",\"label\":\"Admin\", \"value\":\"admin\"},{group:\"type\",\"label\":\"Guest\", \"value\":\"guest\"},{\"label\":\"&nbsp;&nbsp;\"},{\"label\":\"Show all\",\"clear\":true}]";
 	String args = JU.map("focus","true","buttons",searchButtons);
 
 	//	usersHtml.append(HU.vspace());
