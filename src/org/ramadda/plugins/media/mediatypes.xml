@@ -94,7 +94,7 @@
 +section title="{{name}}" #
 {{description wikify="true"}}
 :br
-{{annotated_media}}
+{{annotated_media vertical=true}}
 -section
 ]]>
 </wiki>
