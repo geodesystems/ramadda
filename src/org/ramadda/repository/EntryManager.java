@@ -40,6 +40,7 @@ import org.ramadda.util.NamedList;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.geo.Address;
 
+
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.ImageUtils;
@@ -4516,8 +4517,9 @@ public class EntryManager extends RepositoryManager {
 	    inputStream = getStorageManager().getFileInputStream(file);
 
             String range = (String) request.getHttpHeaderArgs().get("Range");
-            long   byteStart = -1;
+            long   byteStart = 0;
             long   byteEnd   = -1;
+	    boolean debug = false;
             if (Utils.stringDefined(range)) {
                 //assume: bytes=start-end
                 List<String> toks1 = Utils.splitUpTo(range, "=", 2);
@@ -4526,23 +4528,34 @@ public class EntryManager extends RepositoryManager {
                 if ((toks.size() > 1) && Utils.stringDefined(toks.get(1))) {
                     byteEnd = Long.decode(toks.get(1)).longValue();
                 }
+		if(debug)
+		    System.err.println("range:"  + range + " start:"+ byteStart +" end:" + byteEnd);
             }
+
+	    if(byteStart<0)  byteStart = 0;
+	    if(byteStart>0 || byteEnd>0) {
+		inputStream = IO.makeBoundedStream(inputStream, byteStart, byteEnd);
+	    }
 
             if (byteStart > 0) {
-                inputStream.skip(byteStart);
                 response = Result.RESPONSE_PARTIAL;
                 if (byteEnd > 0) {
-                    //TODO: how to limit the length
+		    length = byteEnd-byteStart+1;
+                } else {
+		    length -= byteStart;
+		}
+            } else {
+                if (byteEnd > 0) {
+		    length =byteEnd+1;
                 }
-                length -= byteStart;
-            }
-
-	    if(byteEnd<0)  byteEnd = totalLength;
-	    if(byteStart<0)  byteStart = 0;
+	    }
+	    if(byteEnd<0)  byteEnd = totalLength-1;
+	    if(debug)
+		System.err.println("start:" + byteStart +" end:" + byteEnd +" length:" + length);
             Result result = new Result(BLANK, inputStream, mimeType);
             result.setResponseCode(response);
-            result.addHttpHeader("Accept-Ranges", "bytes");
-	    result.addHttpHeader("Content-Range", "bytes " + byteStart +"-"+byteEnd+"/"+totalLength);
+            result.addHttpHeader(HU.HTTP_ACCEPT_RANGES, "bytes");
+	    result.addHttpHeader(HU.HTTP_CONTENT_RANGE, "bytes " + byteStart +"-"+byteEnd+"/"+totalLength);
 	    result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(httpCacheFile);
@@ -8008,6 +8021,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         String fileTail = getStorageManager().getFileTail(entry);
+	//Why the except space
         fileTail = HU.urlEncodeExceptSpace(fileTail);
         //For now use the full entry path ???? why though ???
         if (addPath && fileTail.equals(entry.getName())) {
