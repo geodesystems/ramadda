@@ -3138,6 +3138,8 @@ a.noline {
     background: #fff;
 }
 
+
+
 .entry-list-form {
     padding: 5px;
     border: 1px #ccc solid;
@@ -3349,6 +3351,11 @@ table.dataTable tbody td {
     background: var(--highlight-background);
     transition: background-color .3s ease-in;
 }
+
+.entry-list-form-header:hover {
+    background:none;
+}
+
 
 
 .entry-tree-row {

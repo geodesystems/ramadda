@@ -3982,7 +3982,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     initPageSearch:function(select,parentSelect,label,hideAll,opts) {
-
 	let args = {
 	    focus:false,
 	    inputSize:'15',

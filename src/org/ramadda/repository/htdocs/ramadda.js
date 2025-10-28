@@ -633,6 +633,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	html+=HU.open(TAG_DIV,attrs);
 	let formId;
+	let searchId;
 	if(props.showForm) {
 	    formId = HU.getUniqueId('form_');
 	    html+=HU.open(TAG_FORM,[ATTR_ID,formId,ATTR_METHOD,'post',
@@ -659,7 +660,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_VALUE,'All',
 				     ATTR_CLASS,'submit ui-button ui-corner-all ui-widget',
 				     ATTR_ID,'getall1337','role','button']);
-	    html+=HU.div([ATTR_CLASS,classPrefix +'-row',
+	    searchId = HU.getUniqueId('find');	
+	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20)), ATTR_ID,searchId]);
+	    html+=HU.div([ATTR_CLASS,HU.classes(classPrefix +'-row','entry-list-form-header'),
 			  ATTR_ID,id+'_form',
 			  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
 					    CSS_WIDTH,HU.perc(100))],form);
@@ -671,6 +674,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+=HU.close(TAG_DIV,TAG_TABLE,TAG_DIV);
 	let main = jqid(id);
 	main.html(html);
+	if(searchId) {
+	    HU.initPageSearch('.search-component,.entry-list-row-data',
+			      null,
+			      'Search table',false,{target:jqid(searchId)});
+	}
 	if(formId) {
 	    jqid(formId).submit(( event ) =>{
 		if(!Utils.stringDefined(jqid(id+'_form_action').val())) {
