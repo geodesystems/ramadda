@@ -240,6 +240,7 @@
        id="content.attachment">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
       <element name="Type" />
+      <element name="Label" />
     </type>
 
 <!--
