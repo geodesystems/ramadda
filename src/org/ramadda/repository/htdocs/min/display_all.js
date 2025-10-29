@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Oct 27 10:30:01 MDT 2025";
+var build_date="RAMADDA build date: Wed Oct 29 09:46:02 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -21775,7 +21775,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
 					    HU.div([ATTR_CLASS, "display-chart-legend"],this.annotations.getLegend())
-					    +"</td></tr></table>");
+					    +HU.close(TAG_TD,TAG_TR,TAG_TABLE));
 		}
 		dataTable.addColumn({
                     type: 'string',
@@ -28107,7 +28107,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 					   ATTR_STYLE, HU.css(CSS_WIDTH,HU.perc(100))]);
                 var center = HU.div([], "");
                 left += consoleContainer;
-                html = "<table style='table-layout:fixed;' border=0 width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + "</td></tr></table>";
+                html = "<table style='table-layout:fixed;' border=0 width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + HU.close(TAG_TD,TAG_TR,TAG_TABLE);
             } else {
                 this.jq(ID_CELLS_BOTTOM).html(consoleContainer);
             }
@@ -28233,7 +28233,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 block +
                 "</td><td width=10>" +
                 from +
-                "</td></tr></table>";
+                HU.close(TAG_TD,TAG_TR,TAG_TABLE);
             var item = HU.div([ATTR_CLASS, clazz], html);
             this.console.append(item);
             //200 is defined in display.css
@@ -46368,7 +46368,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    const svg = d3.select("#" + this.domId(ID_BASEMAP)).append(TAG_SVG)
 		  .attr(ATTR_WIDTH, width)
 		  .attr(ATTR_HEIGHT, height)
-		  .append('g')
+		  .append(TAG_G)
 	    let padx = 0;
 	    let pady = padx;
 	    let scaleX  = d3.scaleLinear().domain([this.mapRange.minLon, this.mapRange.maxLon]).range([padx, width-padx]);
@@ -46827,7 +46827,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 		let svg = d3.select("#" + this.domId(ID_MAPBLOCK+"_"+idx)).append(TAG_SVG)
 		    .attr(ATTR_WIDTH, blockWidth)
 		    .attr(ATTR_HEIGHT, blockHeight)
-		    .append('g')
+		    .append(TAG_G)
 		let padx=5;
 		let pady=5;
 		let mapWidth = info.bounds.getWidth();
@@ -69987,8 +69987,10 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    this.imageField = this.getFieldById(null, this.getImageField());
 	    let _this = this;
 	    let popup = HU.div([ATTR_CLASS,"display-three-globe-popup",ATTR_ID,this.domId(ID_POPUP),
-				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,CSS_POSITION,POSITION_ABSOLUTE,
-						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
+				ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
+						  CSS_POSITION,POSITION_ABSOLUTE,
+						  CSS_LEFT,HU.perc(60),
+						  CSS_TOP,HU.px(0))],"");
 	    let pos = HU.div([ATTR_TITLE,"Select Position",
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_ID,this.domId(ID_POSITION_BUTTON),
@@ -70012,7 +70014,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
+			       HU.div([ATTR_STYLE,
+				       HU.css(CSS_WIDTH,HU.px((w+2)))+this.getGlobeStyle(''),
 				       ATTR_ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
@@ -70069,7 +70072,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    }
 
 	    try {
-		let canvas = this.jq(ID_GLOBE).find('canvas');
+		let canvas = this.jq(ID_GLOBE).find(TAG_CANVAS);
 		canvas.attr(ATTR_TABINDEX,'1');
 		canvas.mouseover(()=>{
 		    this.mouseOver = true;
@@ -70590,7 +70593,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 						  CSS_LEFT,HU.perc(60),CSS_TOP,HU.px(0))],"");
 	    let grid = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
 			      popup +
-			      HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
+			      HU.div([ATTR_STYLE,
+				      HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
 				      ATTR_ID, this.domId(ID_GRID)]));
 	    let html = HU.center(grid);
 	    this.setContents(html);
@@ -70638,9 +70642,9 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 
 
 	    let _this = this;
-	    let canvas = this.jq(ID_GRID).find('canvas');
+	    let canvas = this.jq(ID_GRID).find(TAG_CANVAS);
 	    canvas.attr(ATTR_TABINDEX,'1');
-	    canvas.css("border",this.getCanvasBorder());
+	    canvas.css(CSS_BORDER,this.getCanvasBorder());
 	    this.renderer.domElement.addEventListener('keydown', (e) => {
 		if(e.code=="KeyP") {
 		    let name = prompt("Name:");
