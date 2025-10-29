@@ -1246,7 +1246,8 @@ public class WikiManager extends RepositoryManager
 
         String src = getProperty(wikiUtil, props, ATTR_SRC, (String) null);
 	if(src!=null && src.startsWith("/")) {
-	    return getWikiImage(wikiUtil, request, getRepository().getUrlBase()+src,entry,props);
+	    if(!src.startsWith(getRepository().getUrlBase())) src = getRepository().getUrlBase()+src;
+	    return getWikiImage(wikiUtil, request, src,entry,props);
 	}
 
 	if(entry==null) {
@@ -8234,6 +8235,9 @@ public class WikiManager extends RepositoryManager
 			l.call( "PRE", "+pre addCopy=false addDownload=false_newline_", "-pre"),
                         l2.call( "Xml", "Include XML","+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Code", "```_newline__newline_", "```"),
+			l.call( "Markdown", "``` markdown_newline__newline_", "```"),
+			l.call( "Javascript", "``` javascript_newline__newline_", "```"),
+			l.call( "LaTeX", "``` latex_newline__newline_", "```"),						
 			l2.call( "Property", "Name value properties",
 				 "{{property name=value", "}}"),
 			l.call( "Page search", ":pagesearch focus=true #selector=\"\" #hideAll=true ", "")
@@ -8257,7 +8261,6 @@ public class WikiManager extends RepositoryManager
 			l2.call("Vertical space", "Add vertical space","\\n:vspace 1em", ""),
 			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
 			l.call("Italic text", "\\'\\'", "\\'\\'"),
-			l.call("Code", "```\\n", "\\n```"),
 			l2.call("FA icon","Font Awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
