@@ -1099,7 +1099,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 		    } else  if(col.id=='type') {
 			v = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),v,
-				    [ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + _v]);
+				    [ATTR_DATA_CORPUS,'type:'+ entry.getType() + ' ' + _v,
+				     ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + _v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    

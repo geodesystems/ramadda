@@ -3981,70 +3981,107 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },
 
-    initPageSearch:function(select,parentSelect,label,hideAll,opts) {
-	let args = {
+    initPageSearch:function(select,parentSelect,label,hideAll,args) {
+	let opts = {
 	    focus:false,
 	    inputSize:'15',
 	    target:null,
 	    hideAll:hideAll,
-	    linkSelector:null
+	    linkSelector:null,
+	    widgets:[]
 	};
-	if(opts) $.extend(args,opts);
+	if(args) {
+	    $.extend(opts,args);
+	    if(args.buttons) opts.widgets=args.buttons;
+	}
+
+
 	let id = HU.getUniqueId('search_');
 	let initValue = HU.getUrlArgument(ARG_PAGESEARCH)??'';
 	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
 					   ATTR_ID,id,
 					   ATTR_PLACEHOLDER,label??'Search',
-					   ATTR_SIZE,args.inputSize]);
-	let buttonMap ={};
-	if(args.buttons) {
-	    args.buttons.forEach(b=>{
-		b.id = HU.getUniqueId('button');
-		buttonMap[b.id] =b;
-		if(b.clear) {
-		    input+=HU.span([ATTR_ID,b.id,'clear',true],b.label);
-		    return
-		}
-
-		if(!b.value) {
-		    input+=SPACE1;
-		    input+=HU.b(b.label);
-		    return
-		}
-
-		input+=SPACE1;
-		input+=HU.span([ATTR_ID,b.id],b.label);
-	    });
-	}
-	if(args.linkSelector) {
-	    args.linksDivId = HU.getUniqueId('links');
-	    input+=HU.div([ATTR_ID,args.linksDivId]);
-	}
-
-
-	if(args.target) {
-	    if($(args.target).length==0) {
-		console.log('initPageSearch: no target div found:' + args.target);
+					   ATTR_SIZE,opts.inputSize]);
+	let activeClass='ramadda-button-active';
+	let widgetMap ={};
+	opts.widgets.forEach(widget=>{
+	    widget.id = HU.getUniqueId('button');
+	    widgetMap[widget.id] =widget;
+	    if(widget.clear) {
+		input+=HU.span([ATTR_ID,widget.id,'clear',true],widget.label);
+		return
 	    }
-	    $(args.target).html(input);
+
+	    if(!widget.value) {
+		input+=SPACE1;
+		input+=HU.b(widget.label);
+		return
+	    }
+
+	    input+=SPACE1;
+	    input+=HU.span([ATTR_ID,widget.id],widget.label);
+	});
+    
+	if(opts.linkSelector) {
+	    opts.linksDivId = HU.getUniqueId('links');
+	    input+=HU.div([ATTR_ID,opts.linksDivId]);
+	}
+
+	if(opts.target) {
+	    if($(opts.target).length==0) {
+		console.log('initPageSearch: no target div found:' + opts.target);
+	    }
+	    $(opts.target).html(input);
 	} else {
 	    HU.writeHtmlHere(input);
 	}
-	if(args.buttons) {
-	    args.buttons.forEach(b=>{
-		jqid(b.id).button().click(function() {
-		    let button = buttonMap[$(this).attr(ATTR_ID)];
-		    if(button.clear) {
-			HU.doPageSearch('',select,parentSelect,args.hideAll,args);
+	let doSearch = ()=>{
+	    let values =[];
+	    values.push(jqid(id).val());
+	    opts.widgets.forEach(widget=>{
+		if(!widget.element) return;
+		if(!widget.element.hasClass(activeClass)) return;
+		if(!widget.clear) {
+		    values.push(widget.value);
+		}
+	    });
+
+	    HU.doPageSearch(values,select,parentSelect,opts.hideAll,args);
+	};
+	let buttons =[];
+	opts.widgets.forEach(widget=>{
+	    widget.element= jqid(widget.id).button();	
+	    widget.element.click(function() {
+		let id = $(this).attr(ATTR_ID);
+		let widget = widgetMap[id];
+		if(!widget) return;
+		if($(this).hasClass(activeClass)) {
+		    $(this).removeClass(activeClass);
+		} else {
+		    $(this).addClass(activeClass);
+		    if(widget.group) {
+			opts.widgets.forEach(other=>{
+			    if(other.id!=id && other.group==widget.group && other.element) {
+				other.element.removeClass(activeClass);
+			    }
+			});
 		    }
-		    HU.doPageSearch(button.value,select,parentSelect,args.hideAll,args);
-		});
-	    })
-	}
+		}
+		if(widget.clear) {
+		    opts.widgets.forEach(otherWidget=>{
+			if(otherWidget.element) {
+			    otherWidget.element.removeClass(activeClass);
+			}
+		    });
+		    HU.doPageSearch('',select,parentSelect,opts.hideAll,args);
+		    return;
+		}
+		doSearch();
+		//		    HU.doPageSearch(button.value,select,parentSelect,opts.hideAll,args);
+	    });
+	});
 
-
-
-	if(args.focus) {
+	if(opts.focus) {
 	    jqid(id).focus();
 	}
 	jqid(id).keydown(function(event) {
@@ -4059,8 +4096,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		event.preventDefault(); 
 		return
 	    }
+
+	    doSearch();
 	    let value = $(this).val();
-	    HU.doPageSearch(value,select,parentSelect,args.hideAll,args);
 	    if(Utils.stringDefined(value)) {
 		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
 	    } else {
@@ -4070,7 +4108,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
 
 	if(Utils.stringDefined(initValue)) {
-	    HU.doPageSearch(initValue,select,parentSelect,args.hideAll,args);
+	    HU.doPageSearch(initValue,select,parentSelect,opts.hideAll,opts);
 	}
 
 
@@ -4092,60 +4130,76 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    linksDiv.html('');
 	}
 
+	let values=value;
+	if(!Array.isArray(value)) values=[value];
 	let s  = $(select);
+	let hasValue =false;
+	values = values.map(v=>{
+	    let pre=null;
+	    let post=null;
+	    if(Utils.stringDefined(v)) {
+		v = v.toLowerCase();
+		let idx = v.indexOf(":");
+		if(idx>=0) {
+		    pre = v.substring(0,idx+1);
+		    post = v.substring(idx+1);		
+		}
+	    }
+	    if(Utils.stringDefined(v)) hasValue=true;
+	    return {value:v,pre:pre,post:post};
+	});
+	
 	if(hideAll) {
-	    if(Utils.stringDefined(value)) {
+	    if(hasValue) {
 		$(hideAll).hide();
 	    } else {
 		$(hideAll).show();
 	    }
 	}
 
-	let pre;
-	let post;
-	if(Utils.stringDefined(value)) {
-	    value = value.toLowerCase();
-	    let idx = value.indexOf(":");
-	    if(idx>=0) {
-		pre = value.substring(0,idx+1);
-		post = value.substring(idx+1);		
-
-	    }
-	}
-
-	s.each(function() {
-	    let textOk = true;
-	    if(Utils.stringDefined(value)) {
-		textOk = false;
-		let html = $(this).html();
-		let category = $(this).attr('data-category');
-		if(category) html+=' ' +category;
-		let corpus = $(this).attr(ATTR_DATA_CORPUS);
-		if(corpus) html+=' ' +corpus;		
-		//check for title
-		let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
-		if(match) {
-		    html = html+' ' + match[2];
-		} 
-		html = Utils.stripTags(html);
-		html = html.toLowerCase();
-		if(pre && post) {
-		    let i1 = html.indexOf(pre);
-		    if(i1>=0) {
-			let h = html.substring(i1+pre.length);
-			let i2 = h.indexOf(":");
-			if(i2>=0) {
-			    h = h.substring(0,i2).trim();
-			    if(h.startsWith(post)) 
-				textOk = true;
-			}
+	let search=(v,element) =>{
+	    value = v.value;
+	    if(!Utils.stringDefined(value)) return true;
+	    let textOk = false;
+	    let html = element.html();
+	    let category = element.attr('data-category');
+	    if(category) html+=' ' +category;
+	    let corpus = element.attr(ATTR_DATA_CORPUS);
+	    if(corpus) html+=' ' +corpus;		
+	    //check for title
+	    let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
+	    if(match) {
+		html = html+' ' + match[2];
+	    } 
+	    html = Utils.stripTags(html);
+	    html = html.toLowerCase();
+	    if(v.pre && v.post) {
+		let i1 = html.indexOf(v.pre);
+		if(i1>=0) {
+		    let h = html.substring(i1+v.pre.length);
+		    let i2 = h.indexOf(":");
+		    if(i2>=0) {
+			h = h.substring(0,i2).trim();
+			if(h.startsWith(v.post)) 
+			    textOk = true;
 		    }
 		}
-
-		if(html.indexOf(value)>=0) {
-		    textOk=true;
-		} 
 	    }
+	    if(html.indexOf(value)>=0) {
+		textOk=true;
+	    } 
+	    return textOk;
+	};
+	s.each(function() {
+	    let textOk = true;
+	    values.every(v=>{
+		let ok = search(v,$(this));
+		if(!ok) {
+		    textOk = false;
+		    return false;
+		}
+		return true;
+	    });
 	    if(!textOk) {
 		$(this).attr('isvisible','false');
 		$(this).fadeOut();
@@ -5825,7 +5879,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     open: function(tagName, attrs, extra) {
-        let html = '<' + tagName + ' ' + this.attrs(attrs) + '>';
+        let html = '<' + tagName + ' ' + (attrs?this.attrs(attrs):'') + '>';
         if(extra) html+= extra;
         return html;
     },
@@ -5870,9 +5924,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return " " + name + "=" + this.qt(value) + " ";
     },
 
-    //    seenAttr:{},
-    attrs: function(list) {
-        if (!list) return "";
+    attrs: function(...varargs) {
+	if(varargs==null)  return "";
+	let list = this.convertVarArgs(varargs);
+        if (list.length==0) return "";
+	//check for null
+	if(list.length==1 && !Utils.isDefined(list[0])) {
+	    return "";
+	}
+
 	if(typeof list=="string") return list;
         let html = "";
         if (list == null) return html;

@@ -1015,6 +1015,31 @@ function Entry(props) {
             return null;
         },
 
+        getImageProperties: function() {
+	    let images = [];
+            if (!this.metadata) return images;
+	    let okMetadata;
+	    let getUrl=metadata=>{
+		let filename =  metadata.value.attr1.replace(/.*_file_/,'');
+		if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
+		let url = HU.url(this.getRamadda().getRoot() + "/metadata/view/" + filename,
+				 ARG_ELEMENT,1,
+				 ARG_ENTRYID,this.getAbsoluteId(),
+				 "metadata_id",metadata.id);
+		return url;
+	    }
+            for (let i = 0; i < this.metadata.length; i++) {
+                let metadata = this.metadata[i];
+                if (metadata.type != "content.thumbnail" && metadata.type != "content.attachment") continue;
+                if (!Utils.stringDefined(metadata.value.attr1)) continue;
+		images.push({metadata:metadata,
+			    label:metadata.value.attr3,
+			    url:getUrl(metadata)});
+            }
+	    return images;
+        },
+
+
         getMetadata: function() {
             return this.metadata;
         },

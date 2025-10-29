@@ -461,6 +461,7 @@ WikiEditor.prototype = {
 	const what_children_ids = "Children IDS";
 	const what_children_links = "Children Links";
 	const what_nothing="nothing";
+	const what_thumbnail = "Thumbnail";
 
 
 	if(extra) {
@@ -491,6 +492,7 @@ WikiEditor.prototype = {
 	    if(opts.isImage) {
 		what.push(what_image);
 	    }
+	    what.push(what_thumbnail);
 	    if(opts.isGeo) 
 		what.push(what_map);
 	    if(opts.entryType=="geo_editable_json") 
@@ -566,6 +568,65 @@ WikiEditor.prototype = {
 		text = "{{import entry=" + entryId+" showTitle=false}}";		
 	    } else  if(what==what_grid) {
 		text = "{{grid entry=" + entryId+" }}";			
+	    } else if(what==what_thumbnail) {
+		getGlobalRamadda().getEntry(entryId,entry=>{
+		    let images = entry.getImageProperties();
+		    if(images.length==0) {
+			alert("No image properties are available");
+			return;
+		    }
+
+
+		    let addImage=(image)=>{
+			console.log(image.url);
+			insert("{{image src=" + HU.quote(image.url) +
+			       "\n #caption=" + HU.quote((image.label??'')) +
+			       "\n #width=75% #screenshot=true bordercolor=\"#ccc\" align=center  }} ");
+		    };
+					    
+
+		    if(images.length==1) {
+			addImage(images[0]);
+			return;
+		    }
+		    let buttonList =[
+			HU.div([ATTR_ACTION,ACTION_OK,
+				ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_OK),
+			HU.div([ATTR_ACTION,ACTION_CANCEL,
+				ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL)];
+		    let html=HU.buttons(buttonList);
+		    let imageList = HU.open(TAG_FORM);
+		    images.forEach((image,index)=>{
+			let i = HU.image(image.url,[ATTR_WIDTH,HU.px(250)]);
+			let input = HU.radio('image', 'image', 'imageselect','true',index==0,HU.attrs(ATTR_INDEX,index));
+			imageList+=HU.div([ATTR_CLASS,CLASS_MENU_ITEM],input + SPACE+i);
+		    });
+		    imageList += HU.close(TAG_FORM);
+		    html+=HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				 imageList);
+		    let opts = {anchor:this.toolbar,
+				decorate:true,
+				title:'Select Image',
+				header:true,
+				at:'left bottom',
+				my:'left top',
+				content:html,
+				draggable:true}
+		    let dialog =  HU.makeDialog(opts);		    
+		    dialog.find(HU.dotClass(CLASS_CLICKABLE)).button().click(function() {
+			if($(this).attr(ATTR_ACTION)==ACTION_OK) {
+			    dialog.find('.imageselect').each(function() {
+				if(HU.isChecked($(this))) {
+				    console.log($(this).attr(ATTR_INDEX));
+				    let index = +$(this).attr(ATTR_INDEX);
+				    addImage(images[index]);
+				};
+			    });
+			}
+			dialog.remove();
+		    });
+		});
+		return;
 	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
 		      what=="Children Links") {
 		let url = HU.url(RamaddaUtils.getUrl("/entry/wikitext"),
