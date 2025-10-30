@@ -598,7 +598,8 @@ WikiEditor.prototype = {
 		    let imageList = HU.open(TAG_FORM);
 		    images.forEach((image,index)=>{
 			let i = HU.image(image.url,[ATTR_WIDTH,HU.px(250)]);
-			let input = HU.radio('image', 'image', 'imageselect','true',index==0,HU.attrs(ATTR_INDEX,index));
+			let input = HU.radio('image', 'image', 'imageselect',
+					     'true',index==0,HU.attrs(ATTR_INDEX,index));
 			imageList+=HU.div([ATTR_CLASS,CLASS_MENU_ITEM],input + SPACE+i);
 		    });
 		    imageList += HU.close(TAG_FORM);
@@ -628,13 +629,13 @@ WikiEditor.prototype = {
 		});
 		return;
 	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
-		      what=="Children Links") {
-		let url = HU.url(RamaddaUtils.getUrl("/entry/wikitext"),
+		      what=='Children Links') {
+		let url = HU.url(RamaddaUtils.getUrl('/entry/wikitext'),
 				 ARG_ENTRYID,entryId,
 				 ARG_RESPONSE,'json');
-		if(what==what_description) url=HU.url(url,ATTR_WHAT,"description");
-		else if(what==what_children_links) url=HU.url(url,ATTR_WHAT,"children_links");
-		else if(what==what_children_ids) url=HU.url(url,ATTR_WHAT,"children_ids");
+		if(what==what_description) url=HU.url(url,ATTR_WHAT,'description');
+		else if(what==what_children_links) url=HU.url(url,ATTR_WHAT,'children_links');
+		else if(what==what_children_ids) url=HU.url(url,ATTR_WHAT,'children_ids');
 		
 		$.get(url, (data) =>{
 		    data = String(data).replace(/^ *<wiki>\s/,'');
@@ -647,15 +648,15 @@ WikiEditor.prototype = {
 		    }
 		    console.log(url);
 		    console.dir(error);
-		    alert("An error occurred processing the URL:" + message);
+		    alert('An error occurred processing the URL:' + message);
 		});
 		return;
 	    } else if(what==what_link) {
-		text = "[[" + entryId +"|" + name+"]] ";
+		text = '[[' + entryId +'|' + name+']] ';
 	    } else if(what==what_nothing) {
 		return;
 	    } else {
-		if(what.indexOf("${entryid}")>=0) {
+		if(what.indexOf('${entryid}')>=0) {
 		    what =  what.replace(/\${entryid}/g,entryId);
 		} 
 		text=what.trim();
@@ -697,7 +698,7 @@ WikiEditor.prototype = {
     },    
     
     getBlock:function() {
-	return jqid(this.getId()+"_block");
+	return jqid(this.getId()+'_block');
     },
 
     getScroller:function() {
@@ -719,9 +720,9 @@ WikiEditor.prototype = {
 		popup.focus();
 		//We do this because the  SF menu stays popped up after clicking so we hide it
 		//then after a second we remove the style so subsequent menu clicks will work
-		this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass("wiki-popup-menu-item")).css(CSS_DISPLAY,DISPLAY_NONE);
+		this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass('wiki-popup-menu-item')).css(CSS_DISPLAY,DISPLAY_NONE);
 		setTimeout(()=> {
-		    this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass("wiki-popup-menu-item")).removeAttr(ATTR_STYLE);
+		    this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass('wiki-popup-menu-item')).removeAttr(ATTR_STYLE);
 		},1000);
 		return;
 	    }
@@ -737,10 +738,10 @@ WikiEditor.prototype = {
 	tagClose = Utils.decodeText(tagClose);
 	sampleText = Utils.decodeText(sampleText);    	
 	let sel = this.getEditor().getSelectedText();
-        let text = (tagOpen??'') + (sel?sel+'\n':'') + (tagClose??'') + " ";
+        let text = (tagOpen??'') + (sel?sel+'\n':'') + (tagClose??'') + ' ';
         let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(text);
-        if (tagOpen.endsWith("\n")) {
+        if (tagOpen.endsWith('\n')) {
             cursor.row++;
             cursor.column = 0;
         } else {
@@ -807,7 +808,7 @@ WikiEditor.prototype = {
 	    gotBracket=false;
 	    tmp = left;
 	    while(tmp<text.length) {
-		if (text[tmp] == "}") {
+		if (text[tmp] == '}') {
 		    if(gotBracket) {
 			right = tmp;
 			break;
@@ -829,20 +830,20 @@ WikiEditor.prototype = {
 	    let tmp  = chunk.match(/\{\{ *([^ \n\}]+)/);
 	    if(tmp && tmp.length>1)  tag = tmp[1];
 	    if(tag) {
-		let type="";
+		let type='';
 		let attrs =  chunk.trim().substring(2);
-		let idx1 = attrs.indexOf(" ");
-		let idx2 = attrs.indexOf("}}");
+		let idx1 = attrs.indexOf(' ');
+		let idx2 = attrs.indexOf('}}');
 		if(idx1!=-1 &&idx1<idx2) attrs = attrs.substring(idx1).trim();
 		else attrs = attrs.substring(idx2).trim();
-		if(attrs.endsWith("}}")) attrs = attrs.replace(/}}$/,"");
-		//		console.log("chunk:" + chunk+": tag:" + tag +" attrs:" + attrs);
-		if(tag=="group") {
-		    type="group"
-		    tag = "display";
-		}  else if(tag.startsWith("display_")) {
+		if(attrs.endsWith('}}')) attrs = attrs.replace(/}}$/,'');
+		//		console.log('chunk:' + chunk+': tag:' + tag +' attrs:' + attrs);
+		if(tag=='group') {
+		    type='group'
+		    tag = 'display';
+		}  else if(tag.startsWith('display_')) {
 		    type = tag.substring(8);
-		    tag = "display";
+		    tag = 'display';
 		} else {
 		    tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
 		    if(tmp && tmp.length>1) type=tmp[1];
@@ -864,7 +865,7 @@ WikiEditor.prototype = {
 		let  endRow=-1;
 		let  startCol=-1;
 		let  endCol=-1;				
-		//		console.log(left  +" "+ right);
+		//		console.log(left  +' '+ right);
 		let startChar = left+1;
 		let endChar = right+1;		
 		lines.every(line=>{
@@ -872,12 +873,12 @@ WikiEditor.prototype = {
 		    if(startRow == -1 && nextCnt>=startChar) {
 			startRow=row;
 			startCol = startChar-cnt-1;
-			//			console.log("start: " +startRow +" " + startCol  +" line:" + line);
+			//			console.log('start: ' +startRow +' ' + startCol  +' line:' + line);
 		    }
 		    if(startRow!=-1 && endRow == -1 && nextCnt>=endChar) {
 			endRow=row;
 			endCol = endChar-cnt;
-			//			console.log("end: " +endRow +" " + endCol  +" line:" + line);
+			//			console.log('end: ' +endRow +' ' + endCol  +' line:' + line);
 			return false;
 		    }		    
 		    row++;
@@ -906,33 +907,33 @@ WikiEditor.prototype = {
 
 
 	let prevIndex=index;
-	if(text[prevIndex]=="\n") prevIndex--;
-	while(prevIndex>=0 && text[prevIndex]!=="\n") {
+	if(text[prevIndex]=='\n') prevIndex--;
+	while(prevIndex>=0 && text[prevIndex]!=='\n') {
 	    prevIndex--;
 	}
 
-	if(prevIndex<0 && text[prevIndex+1]=="+") {
+	if(prevIndex<0 && text[prevIndex+1]=='+') {
 	    prevIndex=0;
 	}
 	if(prevIndex>=0) {
 	    let substring = text.substring(prevIndex).trim();
 	    //Check for the +<tag> 
-	    if(substring.startsWith("+")) {
-		let nlIndex = substring.indexOf("\n");
+	    if(substring.startsWith('+')) {
+		let nlIndex = substring.indexOf('\n');
 		if(nlIndex>=0)  substring = substring.substring(0,nlIndex);
 		let length = substring.length;
-		let attrs = substring.match("[^ ]+([^\n]*)$");
+		let attrs = substring.match('[^ ]+([^\n]*)$');
 		if(attrs) attrs=attrs[1].trim();
 		if(!substring) return null;
-		let match = substring.match("\\+([^ \n]+)[ \n]");
+		let match = substring.match('\\+([^ \n]+)[ \n]');
 		if(!match) return;
 		substring = match[1]
 		let Range = ace.require('ace/range').Range;
 		return {
 		    range:new Range(cursor.row, 0,cursor.row,length),
 		    tag:substring,
-		    type: "plus",
-		    attrs:attrs||"",
+		    type: 'plus',
+		    attrs:attrs||'',
 		};
 	    }
 	}
@@ -948,7 +949,7 @@ WikiEditor.prototype = {
 
     handleSubmit:function() {
 	if(jqid(this.hidden).length==0) {
-	    console.log("WikiEdit.handleSubmit: no hidden value");
+	    console.log('WikiEdit.handleSubmit: no hidden value');
 	}
 	jqid(this.hidden).val(this.getEditor().getValue());
     },
@@ -959,9 +960,9 @@ WikiEditor.prototype = {
     doWordcount:function(s) {
 	if(s==null)
 	    s = this.getEditor().getValue();
-	s = s.replace(/<[^>]+>/g," ").replace(/<\/[^>]>/g," ").replace(/&nbsp;/g," ");
-	s = Utils.split(s.replace(/[<>\n={}]/g," ")," ",true,true);
-	alert("Approximately " + s.length +" words");
+	s = s.replace(/<[^>]+>/g,' ').replace(/<\/[^>]>/g,' ').replace(/&nbsp;/g,' ');
+	s = Utils.split(s.replace(/[<>\n={}]/g,' '),' ',true,true);
+	alert('Approximately ' + s.length +' words');
     },
 
     doTidy:function() {
@@ -979,12 +980,12 @@ WikiEditor.prototype = {
 	let injs = false;
 	let indent = 0;
 	Utils.split(text,'\n').forEach(line=>{
-	    if(line.startsWith("-javascript")) {
+	    if(line.startsWith('-javascript')) {
 		injs = false;
 		append(line);
 		return;
 	    }
-	    if(line.startsWith("+javascript")) {
+	    if(line.startsWith('+javascript')) {
 		injs = true;
 		append(line);
 		return;
@@ -1019,7 +1020,7 @@ WikiEditor.prototype = {
 		append(line);
 		return;
 	    }
-	    if(line.startsWith(":")) {
+	    if(line.startsWith(':')) {
 		append(line);
 		return;
 	    }
@@ -1177,7 +1178,7 @@ WikiEditor.prototype = {
 		   });
 	}
 	let makePromptMenu = () =>{
-	    let promptMenu = HU.select("",[ATTR_ID, this.domId('llmprompts')],options);
+	    let promptMenu = HU.select('',[ATTR_ID, this.domId('llmprompts')],options);
 	    jqid(promptMenuContainerId).html(promptMenu);
 	    this.jq('llmprompts').change(function() {
 		let idx = $(this).val();
@@ -1234,9 +1235,9 @@ WikiEditor.prototype = {
 				     ATTR_TYPE,'color',
 				     ATTR_ID,this.domId('color_picker')]);
 	html+= HU.div([ATTR_CLASS,CLASS_BUTTONS],
-		      HU.span([ATTR_ID,this.domId("color_apply")],"Apply") + SPACE1 +
-		      HU.span([ATTR_ID,this.domId("color_ok")],LABEL_OK) + SPACE1 +
-		      HU.span([ATTR_ID,this.domId("color_cancel")],LABEL_CANCEL));
+		      HU.span([ATTR_ID,this.domId('color_apply')],LABEL_APPLY) + SPACE1 +
+		      HU.span([ATTR_ID,this.domId('color_ok')],LABEL_OK) + SPACE1 +
+		      HU.span([ATTR_ID,this.domId('color_cancel')],LABEL_CANCEL));
 
 	html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 	if(this.colorDialog) {

@@ -49,7 +49,7 @@ function handleGetLatLon(request, map) {
         map.removeMarker(timeSeriesMarker);
     } 
     var location = new OpenLayers.LonLat(point.longitude,point.latitude);
-    timeSeriesMarker = map.addMarker("nlasmarker", location, urlroot+"/point/laser.png");
+    timeSeriesMarker = map.addMarker("nlasmarker", location, RamaddaUtil.getCdnUrl("/point/laser.png"));
     map.addMarker(timeSeriesMarker);
 }
 
@@ -97,17 +97,17 @@ function timeSeriesClick(jqueryObject,event, map, entryId, imgId, boxId, minInde
     }
 
     if(waveformImage) {
-        var waveformUrl = urlroot +"/entry/show?entryid=" + entryId +"&output=" + pointDataDomainBase + ".waveformimage&pointindex=" + pointIndex +"&waveform.name=" + waveformName;
+        var waveformUrl = RamaddaUtil.getUrl("/entry/show?entryid=" + entryId +"&output=" + pointDataDomainBase + ".waveformimage&pointindex=" + pointIndex +"&waveform.name=" + waveformName);
         waveformImage.obj.src = waveformUrl;
     }
 
     if(waveformLink) {
-        var waveformUrl = urlroot +"/entry/show?entryid=" + entryId +"&output=" + pointDataDomainBase + ".waveformcsv&pointindex=" + pointIndex +"&waveform.name=" + waveformName;
+        var waveformUrl = RamaddaUtil.getUrl("/entry/show?entryid=" + entryId +"&output=" + pointDataDomainBase + ".waveformcsv&pointindex=" + pointIndex +"&waveform.name=" + waveformName);
         waveformLink.obj.href= waveformUrl;
     }
 
     if(map) {
-        var url = urlroot +"/entry/show?entryid=" + entryId +"&output="  + pointDataDomainBase + ".getlatlon&pointindex=" + pointIndex;
+        var url = RamaddaUtil.getUrl("/entry/show?entryid=" + entryId +"&output="  + pointDataDomainBase + ".getlatlon&pointindex=" + pointIndex);
         util.loadXML( url, handleGetLatLon,map);
     }
 

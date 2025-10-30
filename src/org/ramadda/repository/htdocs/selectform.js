@@ -174,13 +174,12 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
             header = "<tr><th style='padding-left:4px;padding-right:4px;' width=1><input type=checkbox checked value=true id=\"" + checkboxId + "\"\></th><th> " +
 		"<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
 
-            table += HU.openTag("thead", []);
+            table += HU.open(TAG_THEAD);
   	    table += header;
-            table += HU.closeTag("thead");
-            table += HU.openTag("tbody", []);
+            table += HU.close(TAG_THEAD);
+            table += HU.open(TAG_TBODY);
 	    table += listHtml;
-            table += HU.closeTag("tbody");
-	    table += HU.closeTag("table");
+            table += HU.close(TAG_TBODY,TAG_TABLE);
 	    html += table;
             html +=  HU.leftRight("",GuiUtils.size_format(totalSize));
 	}

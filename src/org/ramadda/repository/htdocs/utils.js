@@ -4646,14 +4646,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<div class='ramadda-message ramadda-message-plain ' id='messageblock'><table width='100%'><tbody><tr valign='top'><td width='5%'><div class='ramadda-message-icon'><span><i class='" + what +"' style='font-size:32pt;'></i></span></div></td><td><div class='ramadda-message-inner'><p>" + msg +"</p></div></td></tr></tbody></table></div>"
     },
     makeErrorMessage: function(msg) {
-        return HU.makeMessage("fas fa-exclamation-triangle text-danger",msg);
+        return HU.makeMessage('fas fa-exclamation-triangle text-danger',msg);
     },
     makeInfoMessage: function(msg) {
-        return HU.makeMessage("fas fa-info",msg);
+        return HU.makeMessage('fas fa-info',msg);
     },    
 
     makeRunningMessage: function(msg) {
-        return HU.makeMessage("fas fa-spinner fa-spin",msg);
+        return HU.makeMessage('fas fa-spinner fa-spin',msg);
     },    
 
     makeSlides: async function(id,args, tries) {
@@ -4670,18 +4670,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         };
         if(args) $.extend(opts,args);
         jqid(id).slick(opts);
-        HU.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
+        HU.swapHtml('#' + id +'_headercontents', '#' + id +'_header');
         //Do this later because of the swapHtml
         setTimeout(()=>{
-            let header = jqid(id +"_header");
-            let items = header.find(".ramadda-slides-header-item");
+            let header = jqid(id +'_header');
+            let items = header.find('.ramadda-slides-header-item');
             items.click(function() {
-                let index = +$(this).attr("slideindex");
+                let index = +$(this).attr('slideindex');
                 jqid(id).slick('slickGoTo', index);
             });
             jqid(id).on('afterChange', function(event, slick, currentSlide){
-                items.removeClass("ramadda-slides-header-item-selected");
-                header.find(HU.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
+                items.removeClass('ramadda-slides-header-item-selected');
+                header.find(HU.attrSelect('slideindex',currentSlide)).addClass('ramadda-slides-header-item-selected');
             });
         });
 
@@ -4689,21 +4689,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loadSlides: async function() {
         if(!HU.slidesLoaded) {
 	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
-						 href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
+						 href: RamaddaUtil.getCdnUrl('/lib/slick/slick.css')});
 	    $('<link>').appendTo(TAG_HEAD).attr({type: 'text/css', rel: 'stylesheet',
-						 href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
-            await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/slick/slick.min.js"));
+						 href: RamaddaUtil.getCdnUrl('/lib/slick/slick-theme.css')});
+            await Utils.importJS(RamaddaUtil.getCdnUrl('/lib/slick/slick.min.js'));
             HU.slidesLoaded = true;
 	    return false;
 	}
 	return true;
     },
     loadKatex: function(callback, error) {
-        if (!window["katex"]) {
-            let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
+        if (!window['katex']) {
+	    let version = '0.16.25';
+            let imports = `<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@${version}/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@${version}/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@${version}/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@${version}/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@${version}/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@${version}/dist/katex.min.js' crossorigin='anonymous'></script>`;
             $(imports).appendTo(TAG_HEAD);
         }
-        HU.waitForIt("katex",callback, error);
+        HU.waitForIt('katex',callback, error);
     },
     applyMarkdown:function(srcId,targetId) {
         let f = ()=>{
@@ -5267,22 +5268,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	if(true || opts.tooltip) {
 	    popup.find('a,div').tooltip({
-		classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
 		content: function () {
 		    return $(this).prop(ATTR_TITLE);
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
-		position: { my: "left top", at: "right top" }
+		position: { my: 'left top', at: 'right top' }
 	    });
 	}
 
         if(opts.remove) {
-            popup.attr("removeonclose","true");
+            popup.attr('removeonclose','true');
         }
         if(opts.inPlace) {
             let src =  jqid(opts.contentId);
             let dest = jqid(parentId);
-            dest.css(CSS_DISPLAY,DISPLAY_BLOCK).css(ATTR_WIDTH,"fit-content").css(CSS_HEIGHT,"fit-content");
+            dest.css(CSS_DISPLAY,DISPLAY_BLOCK).css(ATTR_WIDTH,'fit-content').css(CSS_HEIGHT,'fit-content');
             src.appendTo(dest);
             src.show();
         }
@@ -5296,23 +5297,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 of: opts.anchor,
                 my: opts.my,
                 at: opts.at,
-                collision:opts.fit?"fit fit":null
+                collision:opts.fit?'fit fit':null
             });
-	    //          console.log(opts.my +" " + opts.at);
+	    //          console.log(opts.my +' ' + opts.at);
         }
 
-        if(opts.animate && opts.animate!=="false") {
+        if(opts.animate && opts.animate!=='false') {
 	    opts.animateSpeed = +opts.animateSpeed;
 	    popup.hide();
 	    if(opts.slideLeft) {
-		let at = "right bottom";
+		let at = 'right bottom';
 		popup.position({
                     of: opts.anchor,
                     my: opts.my,
                     at: at,
-                    collision:opts.fit?"fit fit":null
+                    collision:opts.fit?'fit fit':null
 		});
-		popup.show("slide", { direction: "right" }, +opts.animateSpeed);
+		popup.show('slide', { direction: 'right' }, +opts.animateSpeed);
 	    } else {
 		popup.show(opts.animateSpeed);
 	    }
@@ -5327,7 +5328,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 jqid(innerId).resizable();
             } else {
                 popup.resizable();
-                //          popup.resizable({containment: "parent",handles: 'se',});
+                //          popup.resizable({containment: 'parent',handles: 'se',});
             }
 	}
 
@@ -5337,7 +5338,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 jqid(innerId).draggable();
             } else {
                 popup.draggable();
-                //          popup.resizable({containment: "parent",handles: 'se',});
+                //          popup.resizable({containment: 'parent',handles: 'se',});
             }
         } else if(!opts.sticky) {
 	    //Only set this if we don't have a toggleid cause if we
@@ -5349,7 +5350,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.header) {
-	    jqid(id +"_close").click(function() {
+	    jqid(id +'_close').click(function() {
                 popup.hide();
                 if(opts.callback) {
 		    opts.callback(popup);
@@ -5362,7 +5363,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.initCall) {
-            if(typeof opts.initCall == "string") {
+            if(typeof opts.initCall == 'string') {
 		window.ramaddaGlobalDialog=popup;
                 eval(opts.initCall);
             } else {
@@ -5390,10 +5391,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 url.searchParams.set(name,value);
             }
             //      let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
-            //      url = url.replace(regex,"");
+            //      url = url.replace(regex,'');
         } else  {
-            if (!url.includes("?")) url += "?";
-            url += "&" + HU.urlArg(name,value);
+            if (!url.includes('?')) url += '?';
+            url += '&' + HU.urlArg(name,value);
         }
 
         try {
@@ -5715,29 +5716,30 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             leftWidth:HU.px(250)
         }
         if(args) $.extend(opts,args);
-        let left = $(".ramadda-nav-left");
-        let right = $(".ramadda-nav-right");    
+        let left = $('.ramadda-nav-left');
+        let right = $('.ramadda-nav-right');    
         
         if(opts.showToggle) {
-            let menu = HU.div(["toggle-state",opts.leftOpen?"open":"closed",
-			       ATTR_TITLE,"Toggle left",
-			       ATTR_ID,"ramadda-nav-left-toggle",
-			       ATTR_CLASS,"ramadda-nav-left-toggle"], HU.getIconImage("fa-bars"));
+            let menu = HU.div(['toggle-state',opts.leftOpen?'open':'closed',
+			       ATTR_TITLE,'Toggle left',
+			       ATTR_ID,'ramadda-nav-left-toggle',
+			       ATTR_CLASS,'ramadda-nav-left-toggle'],
+			      HU.getIconImage('fa-bars'));
             $(menu).appendTo(right);
             jqid('ramadda-nav-left-toggle').click(function() {
-                let closed = $(this).attr("toggle-state")==="closed";
+                let closed = $(this).attr('toggle-state')==='closed';
                 if(closed) {
                     left.show();
-                    right.animate({"margin-left":opts.leftWidth});
+                    right.animate({'margin-left':opts.leftWidth});
                 } else {
                     left.hide();
-                    right.animate({"margin-left":HU.px(0)});
+                    right.animate({'margin-left':HU.px(0)});
                 }
-                $(this).attr("toggle-state",closed?"open":"closed");
+                $(this).attr('toggle-state',closed?'open':'closed');
             });
         }
 
-        let linksContainer = $(".ramadda-nav-left-links");
+        let linksContainer = $('.ramadda-nav-left-links');
         linksContainer.mouseenter(function() {
             Utils.linksMouseIn = true;
         });
@@ -5745,8 +5747,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             Utils.linksMouseIn = false;
         });     
 
-        let anchors =   $(".ramadda-nav-anchor");
-        let links =     $(".ramadda-nav-left-link");    
+        let anchors =   $('.ramadda-nav-anchor');
+        let links =     $('.ramadda-nav-left-link');    
         let lastTop = null;
         $(window).scroll(function(){
             if(Utils.linksMouseIn) return;
@@ -5762,7 +5764,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             anchors.each(function() {
                 let elemTop = $(this).offset().top;     
                 let elemBottom = elemTop + $(this).outerHeight(true); 
-                //      console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
+                //      console.log('doc:' + docTop + ' ' + docBottom +'  '+ elemTop +' ' + elemBottom);
                 let inView = ((elemTop <= docBottom) && (elemTop >= docTop)) ||
                     ((elemBottom <= docBottom) && (elemBottom >= docTop)) ||
                     ((elemBottom >= docBottom) && (elemTop <= docTop));
@@ -5778,11 +5780,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if(!topMost) return;
             if(lastTop && lastTop.attr(ATTR_NAME) == topMost.attr(ATTR_NAME)) return;
             lastTop = topMost;
-            links.removeClass("ramadda-nav-link-active");
+            links.removeClass('ramadda-nav-link-active');
             let activeLink = null;
             links.each(function() {
-                if($(this).attr("navlink") == topMost.attr(ATTR_NAME)) {
-                    $(this).addClass("ramadda-nav-link-active");
+                if($(this).attr('navlink') == topMost.attr(ATTR_NAME)) {
+                    $(this).addClass('ramadda-nav-link-active');
                     activeLink = $(this);
                 }
             });
@@ -5799,12 +5801,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         jqid(id).html(val);
     },
     formTable: function() {
-        return this.openTag("table", [ATTR_CLASS, "formtable",
-				      ATTR_CELLSPACING, "0",
-				      ATTR_CELLSPACING, "0"]);
+        return this.openTag(TAG_TABLE, [ATTR_CLASS, CLASS_FORMTABLE,
+				      ATTR_CELLSPACING, '0',
+				      ATTR_CELLSPACING, '0']);
     },
     formTableClose: function() {
-        return this.closeTag("table");
+        return this.closeTag(TAG_TABLE);
     },
     formEntryTopLabel: function(label, value, value2) {
 	return HU.formEntryTop(HU.span([],label)+':',

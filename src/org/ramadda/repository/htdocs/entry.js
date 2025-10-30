@@ -100,7 +100,6 @@ function getGlobalRamadda(forceNew) {
 
 
 function Repository(repositoryRoot) {
-    //    console.log("root:" + repositoryRoot);
     let hostname = null;
     let match = repositoryRoot.match("^(http.?://[^/]+)/");
     if (match && match.length > 0) {
@@ -407,7 +406,8 @@ function RamaddaRepository(repositoryRoot) {
 	    if(id.startsWith('http')) {
 		//If the remote URL us ramadda.org then use the proxy so we don't have the SAME_ORIGIN problem
 		if(id.indexOf('ramadda.org')>=0)
-		    return  Ramadda.getUrl('/proxy?url=' + encodeURIComponent(id));
+		    return  HU.url(Ramadda.getUrl('/proxy'),'url',id);
+
 		return id;
 	    }
             let url = HU.url(this.getRoot() + URL_ENTRY_GET,
@@ -504,12 +504,11 @@ function RamaddaRepository(repositoryRoot) {
                 let metadata = settings.metadata[i];
 		let index = metadata.index;
 		if(!Utils.isDefined(index)) index=1;
-                url += "&metadata_attr" + index+"_" + metadata.type + "=" + encodeURIComponent(metadata.value);
+                url = HU.url(url,"metadata_attr" + index+"_" + metadata.type,metadata.value);
             }
-            url += "&max=" + settings.getMax();
-            url += "&skip=" + settings.getSkip();
+            url = HU.url(url,"max",settings.getMax(),"skip", settings.getSkip());
 	    if(settings.rootEntry)
-		url += "&rootEntry=" + encodeURIComponent(settings.rootEntry);
+		url = HU.url(url, "rootEntry",settings.rootEntry);
             url += settings.getExtra();
             return url;
         },

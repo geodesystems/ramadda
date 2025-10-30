@@ -10,8 +10,6 @@ var ramaddaGlobals = {
     iconWidth:'18px'
 }
 var root = ramaddaBaseUrl;
-var urlroot = ramaddaBaseUrl;
-
 
 var NAMESPACE_SVG='http://www.w3.org/2000/svg';
 
@@ -20,13 +18,13 @@ var ACTION_NO='no';
 var ACTION_CANCEL='cancel';
 var ACTION_APPLY='apply';
 
-var LABEL_SUBMIT="Submit";
-var LABEL_OK="OK";
-var LABEL_YES="Yes";
-var LABEL_NO="No";
-var LABEL_CANCEL ="Cancel";
-var LABEL_APPLY="Apply";
-var LABEL_DELETE="Delete";
+var LABEL_SUBMIT='Submit';
+var LABEL_OK='OK';
+var LABEL_YES='Yes';
+var LABEL_NO='No';
+var LABEL_CANCEL ='Cancel';
+var LABEL_APPLY='Apply';
+var LABEL_DELETE='Delete';
 
 
 var ID_CANCEL = 'cancel';
@@ -229,108 +227,94 @@ var COLOR_MELLOW_YELLOW='var(--color-mellow-yellow)';
 
 
 
-var ATTR_X='x';
-var ATTR_Y = 'y';
-var ATTR_COLORTABLE='colortable';
-var ATTR_XMLNS='xmlns';
-
-var ATTR_NORTH='north';
-var ATTR_WEST = 'west';
-var ATTR_SOUTH = 'south';
-var ATTR_EAST = 'east';
-var ATTR_LATITUDE='latitude';
-var ATTR_LONGITUDE='longitude';
-
-
-var ATTR_WHAT='what';
-var ATTR_FOR='for';
-var ATTR_AUTOFOCUS='autofocus';
 var ATTR_ACTION= 'action';
+var ATTR_ALIGN = 'align';
+var ATTR_ALT = 'alt';
+var ATTR_AUTOFOCUS='autofocus';
 var ATTR_BACKGROUND = 'background';
-
-
-var ATTR_SLIDER_MIN='slider-min';
-var ATTR_SLIDER_MAX='slider-max';
-var ATTR_SLIDER_STEP='slider-step';
-var ATTR_SLIDER_VALUE='slider-value';
-
-
-
-
-
-
-var ATTR_SRC = 'src';
-var ATTR_ENTRYID='entryid';
-var ATTR_TAG='tag';
-var ATTR_TABLE_HEIGHT = 'table-height';
-var ATTR_TABINDEX = 'tabindex';
-var ATTR_TYPE = 'type';
-var ATTR_TRANSFORM = 'transform';
-var ATTR_LAYOUT='layout';
-var ATTR_LOADING= 'loading';
-var ATTR_DISABLED='disabled';
-
-var ATTR_DATA_CAPTION = 'data-caption';
-var ATTR_DATA_FANCYBOX = 'data-fancybox';
-var ATTR_DATA_URL = 'data-url';
-var ATTR_DATA_CORPUS='data-corpus';
-var ATTR_DATA_TITLE='data-title';
-var ATTR_DATA_NAME='data-name';
-var ATTR_DATA_ACTION='data-action';
-var ATTR_DATA_MIN='data-min';
-var ATTR_DATA_MAX='data-max';
-var ATTR_DATA_VALUE='data-value';
-var ATTR_DATA_TYPE='data-type';
-var ATTR_DATA_FIELDID = 'data-fieldid';
-var ATTR_DATA_FIELD = 'data-field';
-
-
-
-var ATTR_X='x';
-var ATTR_Y='y';
-var ATTR_IMGSRC='img-src';
-var ATTR_WIDTH = 'width';
-var ATTR_HEIGHT = 'height';
-var ATTR_HREF = 'href';
-var ATTR_URL = 'url';
-var ATTR_ONMOUSEDOWN  = 'onmousedown';
-var ATTR_ONCLICK  = 'onclick';
-var ATTR_ONCHANGE  = 'onchange';
-var ATTR_PLACEHOLDER = 'placeholder';
 var ATTR_BORDER = 'border';
 var ATTR_CANCEL='cancel';
 var ATTR_CATEGORY = 'category';
-var ATTR_CURSOR='cursor';
-var ATTR_COMMAND='command';
-var ATTR_COLS = 'cols';
-var ATTR_REL = 'rel';
-var ATTR_READONLY='readonly';
-var ATTR_ROWS='rows';
-var ATTR_COLSPAN = 'colspan';
 var ATTR_CELLPADDING = 'cellpadding';
 var ATTR_CELLSPACING = 'cellspacing';
-var ATTR_VALUE = 'value';
-var ATTR_TITLE = 'title';
-var ATTR_POSITION='position';
-var ATTR_ALT = 'alt';
+var ATTR_CLASS = 'class';
+var ATTR_COLORTABLE='colortable';
+var ATTR_COLS = 'cols';
+var ATTR_COLSPAN = 'colspan';
+var ATTR_COMMAND='command';
+var ATTR_CURSOR='cursor';
+var ATTR_DATA_ACTION='data-action';
+var ATTR_DATA_CAPTION = 'data-caption';
+var ATTR_DATA_CORPUS='data-corpus';
+var ATTR_DATA_FANCYBOX = 'data-fancybox';
+var ATTR_DATA_FIELD = 'data-field';
+var ATTR_DATA_FIELDID = 'data-fieldid';
+var ATTR_DATA_MAX='data-max';
+var ATTR_DATA_MIN='data-min';
+var ATTR_DATA_NAME='data-name';
+var ATTR_DATA_TITLE='data-title';
+var ATTR_DATA_TYPE='data-type';
+var ATTR_DATA_URL = 'data-url';
+var ATTR_DATA_VALUE='data-value';
+var ATTR_DISABLED='disabled';
+var ATTR_EAST = 'east';
+var ATTR_ENTRYID='entryid';
+var ATTR_FILL='fill';
+var ATTR_FOR='for';
+var ATTR_HEIGHT = 'height';
+var ATTR_HREF = 'href';
 var ATTR_ID = 'id';
 var ATTR_IDX = 'idx';
+var ATTR_IMGSRC='img-src';
 var ATTR_INDEX = 'index';
-var ATTR_CLASS = 'class';
-var ATTR_NAME = 'name';
-var ATTR_NOWRAP = 'nowrap';
+var ATTR_LATITUDE='latitude';
+var ATTR_LAYOUT='layout';
+var ATTR_LOADING= 'loading';
+var ATTR_LONGITUDE='longitude';
 var ATTR_METHOD='method';
 var ATTR_MULTIPLE = 'multiple';
+var ATTR_NAME = 'name';
+var ATTR_NORTH='north';
+var ATTR_NOWRAP = 'nowrap';
+var ATTR_ONCHANGE  = 'onchange';
+var ATTR_ONCLICK  = 'onclick';
+var ATTR_ONMOUSEDOWN  = 'onmousedown';
+var ATTR_PLACEHOLDER = 'placeholder';
+var ATTR_POSITION='position';
+var ATTR_READONLY='readonly';
+var ATTR_REL = 'rel';
+var ATTR_ROWS='rows';
 var ATTR_SELECTED='selected';
 var ATTR_SIZE = 'size';
+var ATTR_SLIDER_MAX='slider-max';
+var ATTR_SLIDER_MIN='slider-min';
+var ATTR_SLIDER_STEP='slider-step';
+var ATTR_SLIDER_VALUE='slider-value';
+var ATTR_SOUTH = 'south';
+var ATTR_SRC = 'src';
 var ATTR_STATE='state';
 var ATTR_STROKE = 'stroke';
 var ATTR_STROKE_WIDTH = 'stroke-width';
-var ATTR_FILL="fill";
 var ATTR_STYLE = 'style';
+var ATTR_TABINDEX = 'tabindex';
+var ATTR_TABLE_HEIGHT = 'table-height';
+var ATTR_TAG='tag';
 var ATTR_TARGET = 'target';
-var ATTR_ALIGN = 'align';
+var ATTR_TITLE = 'title';
+var ATTR_TRANSFORM = 'transform';
+var ATTR_TYPE = 'type';
+var ATTR_URL = 'url';
 var ATTR_VALIGN = 'valign';
+var ATTR_VALUE = 'value';
+var ATTR_WEST = 'west';
+var ATTR_WHAT='what';
+var ATTR_WIDTH = 'width';
+var ATTR_X='x';
+var ATTR_X='x';
+var ATTR_XMLNS='xmlns';
+var ATTR_Y = 'y';
+var ATTR_Y='y';
+
 
 var SPACE = '&nbsp;';
 var SPACE1 = '&nbsp;';
@@ -367,11 +351,12 @@ var OVERFLOW_AUTO = 'auto';
 var OVERFLOW_HIDDEN = 'hidden';
 
 
-var CSS_BASIC_BORDER='var(--basic-border)';
+
 
 var FONT_BOLD='bold';
 var FONT_ITALIC='italic';
 var WHITE_SPACE_NOWRAP = 'nowrap';
+var CSS_BASIC_BORDER='var(--basic-border)';
 
 
 var CSS_ALIGN='align';
@@ -433,7 +418,7 @@ var CSS_TOP='top';
 var CSS_TRANSFORM = 'transform';
 var CSS_VERTICAL_ALIGN='vertical-align';
 var CSS_VISIBILITY = 'visibility';
-var CSS_WEBKIT_TRANSFORM="-webkit-transform";
+var CSS_WEBKIT_TRANSFORM='-webkit-transform';
 var CSS_WHITE_SPACE='white-space';
 var CSS_WIDTH='width';
 var CSS_WORD_BREAK='word-break';

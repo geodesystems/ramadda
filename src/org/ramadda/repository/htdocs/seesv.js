@@ -867,7 +867,7 @@ function  SeesvForm(inputId, entry,params) {
 	},
 	getUrl:function(cmds,rawInput) {
 	    let input = '';
-	    if(rawInput || rawInput==='') input = '&lastinput=' + encodeURIComponent(rawInput);
+	    if(rawInput || rawInput==='') input = '&' +HU.urlArg('lastinput',rawInput);
 	    let url = HU.getUrl(RamaddaUtils.getUrl(URL_ENTRY_SHOW),
 				ARG_OUTPUT,'convert_process',
 				ARG_ENTRYID,this.entry,
@@ -1147,7 +1147,7 @@ function  SeesvForm(inputId, entry,params) {
 		    } else if(isDb) {
 			let db = result.replace(/<tables>[ \n]/,"Database:");
 			//			let doc = (new DOMParser()).parseFromString(result, "application/xml");
-			//			let table = doc.getElementsByTagName('table')[0];
+			//			let table = doc.getElementsByTagName(TAG_TABLE)[0];
 			db = db.replace(/<property[^>]+>/g,"");
 			db = db.replace(/> *<\/column>/g,"/>");
 			db = db.replace(/\n *\n/g,"\n");
