@@ -31,6 +31,7 @@ var ACTION_CV_ZOOMIN='zoomin';
 var ATTR_CV_COLLECTION_INDEX='collection-index';
 
 var ID_CV_MEASURE = 'measure';
+var ID_CV_EDIT = 'edit';
 var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'doRotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
@@ -49,6 +50,7 @@ var ID_CV_GOTO = 'goto';
 var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
 
+var CV_COLOR_BUTTON_HIGHLIGHT='rgba(25, 118, 210, 0.16)';
 var CV_COLOR_LINE='#aaa';
 var CV_COLOR_HIGHLIGHT = 'red';
 var CV_COLOR_SAMPLE = 'red';
@@ -166,8 +168,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	updateUI:  function() {
 	    if(this.haveDrawn) return;
 	    this.haveDrawn = true;
-	    let menuItemsLeft = [];
-	    let menuItemsRight = [];    	    
+	    let toolbarItems = [];
 	    let canvas =
 		HU.div([ATTR_CLASS,'cv-canvas',
 			ATTR_ID,this.domId(ID_CV_CANVAS)]);
@@ -204,7 +205,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
 
 	    let add = item=>{
-		menuItemsLeft.push(item);
+		toolbarItems.push(item);
 	    };
 	    let icon = (icon) =>{
 		return HU.getIconImage(icon);
@@ -219,25 +220,28 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    }
 	    if(this.canSave()) {
 		button('File menu',ACTION_CV_FILE,'fas fa-file');
-		menuItemsLeft.push(divider);
+		toolbarItems.push(divider);
 	    }
 	    button('Reset zoom (\'=\')',ACTION_CV_HOME,'fas fa-house');
 	    button('Zoom out (\'-\')',ACTION_CV_ZOOMOUT,'fas fa-magnifying-glass-minus');
 	    button('Zoom in (\'+\')',ACTION_CV_ZOOMIN,'fas fa-magnifying-glass-plus');
 	    button('Pan down',ACTION_CV_DOWN,'fas fa-arrow-down');
 	    button('Pan up',ACTION_CV_UP,'fas fa-arrow-up');
-	    menuItemsLeft.push(divider);
+	    toolbarItems.push(divider);
 	    add(HU.input('','',[ATTR_SIZE,10,
 				ATTR_ID,this.domId(ID_CV_GOTO),
 				ATTR_PLACEHOLDER,"Go to depth"]));
-	    menuItemsLeft.push(divider);
+	    toolbarItems.push(divider);
+	    if(this.canSave()) {
+		button('Edit','edit', 'fas fa-pen-to-square',this.domId(ID_CV_EDIT));
+	    }
 	    button('Measure','measure', 'fas fa-ruler-vertical',this.domId(ID_CV_MEASURE));
 	    button('Sample @ depth','sample','fas fa-eye-dropper',this.domId(ID_CV_SAMPLE));	
-	    menuItemsLeft.push(divider);
+	    toolbarItems.push(divider);
 	    button('Show Gallery',ACTION_CV_GALLERY,'fas fa-images');
 	    button('Settings',ACTION_CV_SETTINGS,'fas fa-cog');
 
-	    let menuLeft = Utils.join(menuItemsLeft,SPACE1);
+	    let menuLeft = Utils.join(toolbarItems,SPACE1);
 	    let message = HU.span([ATTR_ID,this.domId(ID_CV_MESSAGE),
 				   ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
 				   ATTR_CLASS,'cv-message']);
@@ -279,19 +283,6 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    },this.domId(ID_CV_DISPLAYS_ADD));	
 	    this.jq(ID_CV_DISPLAYS_ADD).button();
 
-	    $(document).on(EVENT_KEYDOWN, (event) =>{
-		if(event.key=='=') {
-		    this.resetZoomAndPan();
-		} else    if(event.key=='+') {
-		    this.zoom(1.1);
-		} else  if(event.key=='-') {
-		    this.zoom(0.9);
-		} else if (event.key === 'Escape' || event.keyCode === 27) {
-		    this.clearRecordSelection();
-		    this.toggleSampling(false);
-		    this.toggleMeasure(false);
-		}
-	    });
 
 	    this.jq(ID_DISPLAY_CONTENTS).find(HU.dotClass(CLASS_CLICKABLE)).click(function(event){
 		let action = $(this).attr(ATTR_ACTION);
@@ -328,12 +319,19 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		}
 	    })
 
+	    this.jq(ID_CV_EDIT).click(function() {
+		_this.toggleSampling(false);
+		_this.toggleMeasure(false);
+		_this.toggleEditing();
+	    });
 	    this.jq(ID_CV_MEASURE).click(function() {
 		_this.toggleSampling(false);
+		_this.toggleEditing(false);
 		_this.toggleMeasure();
 	    });
 	    this.jq(ID_CV_SAMPLE).click(function() {
 		_this.toggleMeasure(false);
+		_this.toggleEditing(false);
 		_this.toggleSampling();
 	    });	
 
@@ -572,6 +570,7 @@ RamaddaCoreDisplay.prototype = {
 	let h=this.getCanvasHeight();
 	let world =  (r*c)/h;
 	world = world/this.opts.scaleY;
+//	console.log('canvasToWorld',c,world);
 	return world;
     },
     calculateDistance:function(x1, y1, x2, y2) {
@@ -597,6 +596,14 @@ RamaddaCoreDisplay.prototype = {
 	return this.sampling;
     },
 
+    buttonOn:function(button) {
+	button.css(CSS_BACKGROUND,CV_COLOR_BUTTON_HIGHLIGHT);
+	button.css(CSS_BORDER,HU.border(1,'#ccc'));
+    },
+    buttonOff:function(button) {
+	button.css(CSS_BACKGROUND,COLOR_TRANSPARENT);
+	button.css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT));
+    },    
     toggleSampling:function(s) {
 	if(Utils.isDefined(s)) {
 	    this.sampling = s;
@@ -606,14 +613,14 @@ RamaddaCoreDisplay.prototype = {
 
     	if(this.isSampling()) {
 	    this.getContainer().style.cursor = CURSOR_CROSSHAIR;
-	    this.jq(ID_CV_SAMPLE).css(CSS_BACKGROUND,COLOR_LIGHT_GRAY);
+	    this.buttonOn(this.jq(ID_CV_SAMPLE));
 	} else {
 	    if(this.sampleDialog) this.sampleDialog.remove();
 	    this.clearRecordSelection();
 	    this.sampleDialog=null;
 	    if(this.getContainer().style.cursor == CURSOR_CROSSHAIR)
 		this.getContainer().style.cursor = CURSOR_DEFAULT;
-	    this.jq(ID_CV_SAMPLE).css(CSS_BACKGROUND,COLOR_TRANSPARENT);
+	    this.buttonOff(this.jq(ID_CV_SAMPLE));
 	    return;
 	}
 
@@ -648,7 +655,7 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	}
 	this.recordSelect.line = new Konva.Line({
-	    points: [this.getAxisWidth(), y, 2000,y],
+	    points: [0, y, 4000,y],	    
 	    stroke: CV_COLOR_SAMPLE,
 	    strokeWidth: 2,
 	    lineCap: 'round',
@@ -718,11 +725,37 @@ RamaddaCoreDisplay.prototype = {
 
 	}
     },
+    isEditing: function() {
+	return this.editing;
+    },    
+
+    toggleEditing:function(s) {
+	if(Utils.isDefined(s)) {
+	    this.editing = s;
+	}  else {
+	    this.editing = !this.editing;
+	}
+    	if(this.isEditing()) {
+	    this.buttonOn(this.jq(ID_CV_EDIT));
+	    this.getContainer().style.cursor = CURSOR_MOVE;
+	} else {
+	    if(this.editInfo && this.editInfo.dialog) {
+		this.editInfo.dialog.remove();
+		this.editInfo.dialog=null;
+	    }
+	    if(this.getContainer().style.cursor == CURSOR_MOVE)
+		this.getContainer().style.cursor = CURSOR_DEFAULT;
+	    this.buttonOff(this.jq(ID_CV_EDIT));
+	}
+	this.applyToEntries(f=>{
+	    if(f.group) {
+		f.group.setAttrs({draggable: this.editing});
+	    }
+	});
+    },
     isMeasuring: function() {
 	return this.measuring;
     },
-
-
     toggleMeasure:function(s) {
 	if(Utils.isDefined(s)) {
 	    this.measuring = s;
@@ -731,13 +764,13 @@ RamaddaCoreDisplay.prototype = {
 	}
 
     	if(this.isMeasuring()) {
-	    this.jq(ID_CV_MEASURE).css(CSS_BACKGROUND,COLOR_LIGHT_GRAY);
+	    this.buttonOn(this.jq(ID_CV_MEASURE));
 	    this.getContainer().style.cursor = CURSOR_ROW_RESIZE;
 	    this.setDraggable(false);
 	} else {
 	    if(this.getContainer().style.cursor == CURSOR_ROW_RESIZE)
 		this.getContainer().style.cursor = CURSOR_DEFAULT;
-	    this.jq(ID_CV_MEASURE).css(CSS_BACKGROUND,COLOR_TRANSPARENT);
+	    this.buttonOff(this.jq(ID_CV_MEASURE));
 	    this.clearMeasure();
 	    this.setDraggable(true);
 	    return;
@@ -1254,6 +1287,7 @@ RamaddaCoreDisplay.prototype = {
 		this.destroy(obj);
 	    });
 	}	
+	this.resetZoomAndPan();
 	this.drawCollections();
     },
 
@@ -1543,6 +1577,13 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
+    applyToEntries:function(f) {
+	this.collections.forEach(collection=>{
+	    collection.data.forEach((entry,idx)=>{
+		f(entry,collection);
+	    });
+	});
+    },
     addCollection:function(collection,visible) {
 	collection.visible= Utils.isDefined(visible)?visible:true;
 	if(!Utils.isDefined(window.cv_collection_id))
@@ -1652,7 +1693,7 @@ RamaddaCoreDisplay.prototype = {
 				     my:(left?'left top':'right top'),
 				     header:true,
 				     content:div,
-				     draggable:true});
+				     draggable:this.canSave()});
 
 	
 	dialog.find('.wiki-image img').css(CSS_CURSOR,CURSOR_POINTER);
@@ -1846,13 +1887,28 @@ RamaddaCoreDisplay.prototype = {
 	    this.scaleChanged();
 	});
 
-
 	document.addEventListener(EVENT_KEYDOWN, (e) => {
+	    if (Utils.isEscapeKey(event)) {
+		this.clearRecordSelection();
+		this.toggleSampling(false);
+		this.toggleMeasure(false);
+		return;
+	    }
+
 	    const scrollSpeed = 20;
 	    const stagePos = this.getPosition();
 	    switch (e.key) {
+	    case '=':
+		this.resetZoomAndPan();
+		break;
+		
+	    case '+':
+		this.zoom(1.1);
+		break;
+	    case '-':
+		this.zoom(0.9);
+		break;
             case 'ArrowUp':
-
 		this.setPosition({
 		    x: stagePos.x,
 		    y: stagePos.y + scrollSpeed
@@ -1880,7 +1936,6 @@ RamaddaCoreDisplay.prototype = {
 		return;
 	    }
 	    e.preventDefault();
-	    this.redraw();
 	});
     },
     resetZoomAndPan:function() {
@@ -2041,13 +2096,7 @@ RamaddaCoreDisplay.prototype = {
 		this.opts.axisWidth=CV_AXIS_WIDTH+this.opts.legendWidth;
 	    }
 	}
-
-
-
-	//	console.log('legend:',haveLegend,this.opts.legendWidth,'axis:',haveAnnotation,this.opts.axisWidth);
     },
-
-
 
     getAxisX:function() {
 	const axisWidth = this.getAxisWidth();
@@ -2061,7 +2110,7 @@ RamaddaCoreDisplay.prototype = {
 	this.checkRange();
 	const axisWidth = this.getAxisWidth();
 	const axisX=this.getAxisX();
-	let h = this.getCanvasHeight()-this.opts.top;
+	const h = this.getCanvasHeight()-this.opts.top;
 	let step = h/100;
 	let cnt = 10;
 	while(cnt-->0) {
@@ -2129,68 +2178,91 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-
     editEntry:function(entry,y1,y2) {
 	let _this = this;
-	let html = '';
+	let editInfo = this.editInfo;
+	if(!editInfo) {
+	    this.editInfo = editInfo = {}
+	}
+	if(editInfo.dialog) {
+	    if(!HU.isVisible(editInfo.dialog)) {
+		editInfo.dialog=null;
+	    }
+	}
+	let redrawEntry= () =>{
+	    if(editInfo.currentEntry) {
+		this.removeEntry(editInfo.currentEntry);
+		this.addCoreEntry(editInfo.currentEntry,false);
+		this.entryLayer.draw();
+	    }
+	}
+	if(editInfo.currentEntry && editInfo.currentEntry!=entry) {
+	    redrawEntry();
+	}
+	editInfo.currentEntry=entry;
 	y1 = this.formatDepth(y1);
 	y2 = this.formatDepth(y2);	
-	html+=HU.formTable();
-	html+=HU.formEntry('Name:',HU.input('',entry.label,  [ATTR_ID,this.domId('editname')]));
-	html+=HU.formEntry('Top:',HU.input('',y1,  [ATTR_ID,this.domId('edittop')]));
-	html+=HU.formEntry('Bottom:',HU.input('',y2, [ATTR_ID,this.domId('editbottom')]));		
-	html+=HU.formTableClose();
-	let buttonList =[
-	    HU.div([ATTR_ACTION,ACTION_CANCEL,
-		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL),
-	    HU.div([ATTR_ACTION,ACTION_APPLY,
-		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
-		   "Change Entry")];
-	html+=HU.buttons(buttonList);
-
-
-	if(this.editDialog) {
-	    this.editDialog.remove();
+	let applyEdit=()=>{
+	    let name = _this.jq('editname').val();
+	    let top = _this.jq('edittop').val();
+	    let bottom = _this.jq('editbottom').val();		
+	    editInfo.currentEntry.label = name;
+	    editInfo.currentEntry.topDepth = top;
+	    editInfo.currentEntry.bottomDepth = bottom;
+	    let what = 'name';
+	    let value = name;
+	    let url = HU.url(RamaddaUtils.getUrl('/entry/changefield'),
+			     [ARG_ENTRYID,editInfo.currentEntry.entryId,
+			      'what1','name','value1',name,
+			      'what2','top_depth','value2',top,
+			      'what3','bottom_depth','value3',bottom]);			     				     
+	    $.getJSON(url, function(data) {
+		if(data.error) {
+		    alert('An error has occurred: '+data.error);
+		    return;
+		}
+		alert('Entry has changed');
+	    }).fail(data=>{
+		console.dir(data);
+		alert('An error occurred:' + data);
+	    });
 	}
-	let dialog = this.editDialog =  HU.makeDialog({anchor:this.mainDiv,
-						       decorate:true,
-						       at:'left top',
-						       my:'left top',
-						       header:true,
-						       content:html,
-						       draggable:true});
-	dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function(){
-	    let apply = $(this).attr(ATTR_ACTION)==ACTION_APPLY;
-	    if(apply) {
-		let name = _this.jq('editname').val();
-		let top = _this.jq('edittop').val();
-		let bottom = _this.jq('editbottom').val();		
-		entry.label = name;
-		entry.topDepth = top;
-		entry.bottomDepth = bottom;
-		let what = 'name';
-		let value = name;
-		let url = HU.url(ramaddaBaseUrl + '/entry/changefield',
-				 ['entryid',entry.entryId,
-				  'what1','name','value1',name,
-				  'what2','top_depth','value2',top,
-				  'what3','bottom_depth','value3',bottom]);			     				     
-		$.getJSON(url, function(data) {
-		    if(data.error) {
-			alert('An error has occurred: '+data.error);
-			return;
-		    }
-		}).fail(data=>{
-		    console.dir(data);
-		    alert('An error occurred:' + data);
-		});
 
-	    }
-	    _this.removeEntry(entry);
-	    _this.addCoreEntry(entry,false);
-	    _this.entryLayer.draw();
-	    dialog.remove();
-	});
+	if(editInfo.dialog==null) {
+	    let html = '';
+	    html+=HU.formTable();
+	    html+=HU.formEntryLabel('Name',HU.input('',entry.label,  [ATTR_ID,this.domId('editname')]));
+	    html+=HU.formEntryLabel('Top',HU.input('',y1,  [ATTR_ID,this.domId('edittop')]));
+	    html+=HU.formEntryLabel('Bottom',HU.input('',y2, [ATTR_ID,this.domId('editbottom')]));		
+	    html+=HU.formTableClose();
+	    let buttonList =[
+		HU.div([ATTR_ACTION,ACTION_CANCEL,
+			ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL),
+		HU.div([ATTR_ACTION,ACTION_APPLY,
+			ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
+		       'Change Entry')];
+	    html+=HU.buttons(buttonList);
+	    let dialog = editInfo.dialog =
+		HU.makeDialog({anchor:this.mainDiv,
+			       decorate:true,
+			       at:'left top',
+			       my:'left top',
+			       header:true,
+			       content:html,
+			       draggable:true});
+	    dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function(){
+		let apply = $(this).attr(ATTR_ACTION)==ACTION_APPLY;
+		if(apply) {
+		    applyEdit();
+		}
+		redrawEntry();
+		dialog.remove();
+	    });
+	}
+
+	this.jq('editname').val(entry.label);
+	this.jq('edittop').val(y1);
+	this.jq('editbottom').val(y2);			    
     },
 
     removeEntry:function(entry) {
@@ -2307,13 +2379,13 @@ RamaddaCoreDisplay.prototype = {
 	let newWidth = newHeight * aspectRatio;
 
 	let group = new Konva.Group({
+	    draggable:this.isEditing(),
 	    xclip: {
 		x: imageX-100,
 		y: imageY-100,
 		width: 100+maxWidth,
 		height: 10000,
             },
-	    //	    draggable: this.opts.canEdit,
 	    dragBoundFunc: function(pos) {
 		return {
 		    x: this.getAbsolutePosition().x,  
@@ -2597,25 +2669,42 @@ RamaddaCoreDisplay.prototype = {
 	}
 
 	let getPos = (obj)=>{
-	    let y1 = obj.getAbsolutePosition().y;
+	    const box = obj.getClientRect({ relativeTo: this.stage});
 	    let scale = this.getScaleY();
-	    let y2 = y1+scale*obj.getHeight();
-	    
+	    let y1 = box.y;
+	    let y2 = y1+scale*box.height;
 	    let top = this.canvasToWorld(y1);
 	    let bottom = this.canvasToWorld(y2);		
 	    return {top:top,bottom:bottom};
 	}
+	let lastPos;
 	group.on(EVENT_DRAGMOVE, (e)=> {
+	    let event = e.evt;
+	    event.stopPropagation();
 	    let pos  = getPos(e.target);
-	    group.ticks.l1.text(this.formatDepth(pos.top));
-	    group.ticks.l2.text(this.formatDepth(pos.bottom));	    
+	    if(!lastPos) lastPos = pos;
+	    let top = pos.top;
+	    let bottom = pos.bottom;	    
+	    if(event.shiftKey) {
+//		bottom=top;
+//		top=lastPos.top;
+	    }
+	    group.ticks.l1.text(this.formatDepth(top));
+	    group.ticks.l2.text(this.formatDepth(bottom));	    
+	    this.editEntry(entry,top,bottom);
+	    lastPos = pos;
 	});
 
+/*
 	group.on(EVENT_DRAGEND, (e)=> {
+	    let event = e.evt;
+	    event.stopPropagation();
+	    console.dir(event.shiftKey);
 	    let pos  = getPos(e.target);
-	    console.log(pos);
 	    this.editEntry(entry,pos.top,pos.bottom);
-	});
+	    });
+	    */
+
     }
 }
 

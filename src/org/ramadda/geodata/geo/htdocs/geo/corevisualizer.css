@@ -82,7 +82,16 @@
 
 .cv-toolbar-button {
     display:inline-block;
-    margin-right:4px;
+    text-align:center;
+    padding-right:2px;
+    padding-left:2px;    
+    margin-right:1px;
+    min-width:20px;
+    border:1px solid transparent;
+}
+
+.cv-toolbar-button:hover {
+    border:1px solid #ccc;
 }
 
 .cv-sortable-placeholder {
