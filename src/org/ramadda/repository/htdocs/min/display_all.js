@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 29 09:46:02 MDT 2025";
+var build_date="RAMADDA build date: Fri Oct 31 09:22:23 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -10766,7 +10766,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let h0 = 	HU.div([ATTR_ID,this.getDomId(ID_HEADER0),
 				ATTR_CLASS,"display-header-block display-header0"], "");
 	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
-            let table =   h0+HU.open('table', [ATTR_STYLE,
+            let table =   h0+HU.open(TAG_TABLE, [ATTR_STYLE,
 					       this.isGoogleChart?HU.css(CSS_BORDER,HU.border(1,COLOR_TRANSPARENT)):'',
 					       ATTR_CLASS, 'display-ui-table',
 					       ATTR_WIDTH,HU.perc(100),
@@ -10791,7 +10791,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			      HU.td([ATTR_WIDTH,centerWidth],bottom) +
 			      HU.td([ATTR_WIDTH,sideWidth]));
 	    }
-	    table+=HU.close('table');
+	    table+=HU.close(TAG_TABLE);
 	    let message= HU.div([ATTR_ID,this.domId(ID_DISPLAY_MESSAGE),
 				 ATTR_CLASS,"display-output-message",
 				 ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
