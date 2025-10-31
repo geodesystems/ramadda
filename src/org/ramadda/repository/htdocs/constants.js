@@ -146,6 +146,7 @@ var EVENT_MOUSEMOVE='mousemove';
 var EVENT_KEYDOWN='keydown';
 var EVENT_WHEEL='wheel';
 var EVENT_DBLCLICK='dblclick';
+var EVENT_DRAGSTART='dragstart';
 var EVENT_DRAGMOVE='dragmove';
 var EVENT_DRAGEND='dragend';
 

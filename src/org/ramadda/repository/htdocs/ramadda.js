@@ -537,7 +537,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else if(c=='date' && props.showDate)
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='editcolumns') {
-		cols.push({cansort:false,id:"editcolumns",label:"Edit Columns",width:200});
+		cols.push({align:ALIGN_LEFT,overflowX:OVERFLOW_AUTO,
+			   cansort:false,id:"editcolumns",label:"Edit Columns",width:300});
 	    }   else if(c=='geo') {
 		cols.push({id:"latitude",label:"Latitude",width:100});
 		cols.push({id:"longitude",label:"Longitude",width:100});
@@ -893,12 +894,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     applyInlineEdit:function(inlineEdit,entryOrder) {
+
 	if(typeof inlineEdit=='string') {
 	    inlineEdit = $(inlineEdit);
 	}
-	let applyEdit = comp=>{
+	let applyEdit = (comp,value)=>{
 	    let entryId = comp.attr(ATTR_ENTRYID);
-	    let value = comp.val().trim();
+	    value = value ?? comp.val().trim();
 	    let what = comp.attr('data-field');
 	    let url = HU.url(RamaddaUtil.getUrl("/entry/changefield"),
 			     ARG_ENTRYID, entryId,'what',what,'value',value);
@@ -946,8 +948,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	
 	inlineEdit.each(function() {
 	    let tag = $(this).prop('tagName')??'';
+	    let type = $(this).prop(ATTR_TYPE);
 	    tag = tag.toLowerCase();
-	    if(tag=='select') {
+	    if(type=='checkbox') {
+		$(this).change(function() {
+		    applyEdit($(this),HU.isChecked($(this)));
+		});
+	    } else    if(tag=='select') {
 		$(this).change(function() {
 		    applyEdit($(this));
 		});
@@ -1109,7 +1116,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 						  CSS_WIDTH,HU.getDimension(col.width),
 						  CSS_TEXT_ALIGN,col.align??ALIGN_RIGHT,
 						  CSS_MAX_WIDTH,HU.getDimension(maxWidth),
-						  CSS_OVERFLOW_X,OVERFLOW_HIDDEN)+(last?HU.css(CSS_PADDING_LEFT,HU.px(4)):'')],v);
+						  CSS_OVERFLOW_X,col.overflowX??OVERFLOW_HIDDEN)+(last?HU.css(CSS_PADDING_LEFT,HU.px(4)):'')],v);
 		    attrs.push(ATTR_ALIGN,col.align??ALIGN_RIGHT);
 		}
 		if(Utils.isDefined(col.width)) {
@@ -1179,6 +1186,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 	let inlineEdit =        main.find(HU.dotClass('ramadda-entry-inlineedit'));
+
 	let entryOrder =        main.find(HU.dotClass('ramadda-entry-inlineedit-entryorder'));
 	this.applyInlineEdit(inlineEdit,entryOrder)
 

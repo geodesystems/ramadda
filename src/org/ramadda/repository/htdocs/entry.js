@@ -907,13 +907,17 @@ function Entry(props) {
 		    if(this.canEdit() && attr.caninlineedit) {
 			if(inputs=='')
 			    inputs = HU.formTable();
-			inputs+=HU.formEntryLabel(attr.label,
-					     HU.input(null,attr.value,
-						      [ATTR_SIZE,8,
-						       ATTR_ENTRYID,this.getId(),
-						       ATTR_TITLE,'Edit '+ attr.label,
-						       ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
-						       ATTR_DATA_FIELD,attr.id]));
+			let input;
+			let inputAttrs = [ATTR_ENTRYID,this.getId(),ATTR_DATA_FIELD,attr.id,
+					  ATTR_TITLE,'Edit '+ attr.label,
+					  ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder'];
+			if(attr.value===true || attr.value===false) {
+			    input = HU.checkbox('',inputAttrs,attr.value);
+			} else {
+			    inputAttrs.push(ATTR_SIZE,8);
+			    input = HU.input(null,attr.value,inputAttrs);
+			}
+			inputs+=HU.formEntryLabel(attr.label,input);
 		    }
 		});
 		if(inputs!='') inputs+=HU.formTableClose();
