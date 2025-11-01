@@ -18,6 +18,7 @@ var ACTION_NO='no';
 var ACTION_CANCEL='cancel';
 var ACTION_APPLY='apply';
 
+var LABEL_EDIT='Edit';
 var LABEL_SUBMIT='Submit';
 var LABEL_OK='OK';
 var LABEL_YES='Yes';
