@@ -1,5 +1,7 @@
 <types>
 <type name="type_geo_borehole_images"  description="Geo Image Collection" 
+      metadata="geo_core_annotation,geo_core_legend"
+
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       childtypes="type_borehole_coreimage"
       >

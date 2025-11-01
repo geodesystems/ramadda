@@ -232,8 +232,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 				ATTR_ID,this.domId(ID_CV_GOTO),
 				ATTR_PLACEHOLDER,"Go to depth"]));
 	    toolbarItems.push(divider);
-	    if(this.canSave()) {
-		button('Edit','edit', 'fas fa-pen-to-square',this.domId(ID_CV_EDIT));
+	    if(this.canEdit()) {
+		button(LABEL_EDIT,'edit', 'fas fa-pen-to-square',this.domId(ID_CV_EDIT));
 	    }
 	    button('Measure','measure', 'fas fa-ruler-vertical',this.domId(ID_CV_MEASURE));
 	    button('Sample @ depth','sample','fas fa-eye-dropper',this.domId(ID_CV_SAMPLE));	
@@ -370,7 +370,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	    this.addEventListeners();
 	    
-	    this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
+	    this.loadingMessage= this.makeText(this.annotationLayer,
+					       "Loading...",50,50, {fontSize:45});
 	    this.initCollections();
 	    this.drawLegend();
 	    this.entryLayer.draw();
@@ -438,9 +439,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	showBoxes:true,
 	showHighlight:false,
 	showMenuBar:true,
-
 	bgPaddingX:4,
-	bgPaddingY:2	
+	bgPaddingY:6	
     }
 
     //check for numbers as strings
@@ -1160,9 +1160,10 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	    if(styleObj.fontColor && !styleObj.fill) styleObj.fill = styleObj.fontColor;
 	    styleObj.flag=true;
+	    styleObj.cornerRadius=4;
 	    let pad =5;
 	    let l = this.makeText(this.annotationLayer,label,x+pad,y-5, styleObj);
-	    if(Utils.stringDefined(desc)) {
+	    if(l && Utils.stringDefined(desc)) {
 		this.addClickHandler(l,(e,obj)=>{
 		    let y = l.getAbsolutePosition().y;
 		    let world = this.canvasToWorld(y);
@@ -1293,7 +1294,10 @@ RamaddaCoreDisplay.prototype = {
 
     canSave:function() {
 	return this.getProperty('mainEntryType')=='type_geo_borehole_images' &&
-	    this.getProperty('canEdit');
+	    this.canEdit();
+    },
+    canEdit:function() {
+	return  this.getProperty('canEdit');
     },
     showMessage: function(msg) {
 	this.jq(ID_CV_MESSAGE).html(msg);
@@ -1693,7 +1697,7 @@ RamaddaCoreDisplay.prototype = {
 				     my:(left?'left top':'right top'),
 				     header:true,
 				     content:div,
-				     draggable:this.canSave()});
+				     draggable:this.canEdit()});
 
 	
 	dialog.find('.wiki-image img').css(CSS_CURSOR,CURSOR_POINTER);
@@ -1770,17 +1774,31 @@ RamaddaCoreDisplay.prototype = {
 	    if(text.backgroundRect) {
 		let rect= text.backgroundRect;
 		let doOffsetWidth = rect.doOffsetWidth;
-		let dim = this.getBackgroundRectDimensions(text,doOffsetWidth);
-		if(rect.debug) {
-		    const box = text.getClientRect();
-//		    console.log(box);
-		}
-
+		let dim = this.getBackgroundRectDimensions(text,doOffsetWidth,rect.opts);
 		rect.x(dim.x);
 		rect.y(dim.y);
 		rect.width(dim.width);		
 		rect.height(dim.height);
 		rect.scale(newScale);
+		if(doOffsetWidth) {
+		    const textWidth = text.width();
+		    const textHeight = text.height();
+		    let paddingX=rect?.opts?.bgPaddingX??this.opts.bgPaddingX;
+		    let paddingY=rect?.opts?.bgPaddingY??this.opts.bgPaddingY;
+		    let x = text.x();
+		    rect.setAttrs({
+			x: x - newScale.x*textWidth - paddingX / 2,
+			y: text.y() - paddingY / 2,
+			width: textWidth + paddingX,
+			height: textHeight + paddingY,
+		    });
+		}
+		if(rect.debug) {
+		    const box = text.getClientRect();
+//		    console.log('client',box.x,box.y,				'rect',dim.x,dim.y);
+
+		}
+
 	    }
 	});
 
@@ -1805,17 +1823,13 @@ RamaddaCoreDisplay.prototype = {
     },
     rescaleLegendLayer: function() {
 	let axisWidth = this.getAxisWidth();
-//	axisWidth=0;
 	let scale = this.stage.scaleX();
-	const pos = this.stage.position();
-	let legendX=(-pos.x) / scale;
-	axisWidth=axisWidth/2;
-	legendX+=axisWidth/scale;
-//	this.legendLayer.scale({ x: 1 / scale, y: 1 / scale });
+	let offset = this.stage.x();
+	let legendX=(-offset)/scale
 	this.legendLayer.x(legendX);
-	//	    this.legendLayer.y(-pos.y / scale);
-	//	    this.legendLayer.scaleX(1 / scale);
 	this.legendLayer.batchDraw();
+
+
     },
     updateCollectionLabels:function() {
 	//Keep the collection labels at the top of the viewport
@@ -1946,16 +1960,22 @@ RamaddaCoreDisplay.prototype = {
 	this.scaleChanged();
 	this.positionChanged();
     },
-    getBackgroundRectDimensions:function(text,doOffsetWidth){
+    getBackgroundRectDimensions:function(text,doOffsetWidth,args){
+	let opts = {
+	    bgPaddingX:this.opts.bgPaddingX,
+	    bgPaddingY:this.opts.bgPaddingY	    
+	};
+	let scale = this.getScaleX();
+	if(args) $.extend(opts,args);
 	let textX  = text.x();
 	if(doOffsetWidth) {
 	    textX-=text.width();
 	}
 	return {
-	    x: textX-this.opts.bgPaddingX,
-	    y: text.y()-this.opts.bgPaddingY,
-	    width: text.width()+this.opts.bgPaddingX*2,
-	    height: text.height()+this.opts.bgPaddingY*2
+	    x: textX-scale*opts.bgPaddingX,
+	    y: text.y()-scale*opts.bgPaddingY,
+	    width: text.width()+scale*opts.bgPaddingX*2,
+	    height: text.height()+scale*opts.bgPaddingY*2
 	};
     },
 
@@ -1967,9 +1987,12 @@ RamaddaCoreDisplay.prototype = {
 	    background:null,
 	    fontStyle:'',
 	    strokeWidth:1,
-	    flag:null
+	    flag:null,
+	    cornerRadius:0
 	}
+
 	if(args) $.extend(opts,args);
+
 	let text=  new Konva.Text({
 	    x: x,
 	    y: y,
@@ -1993,15 +2016,16 @@ RamaddaCoreDisplay.prototype = {
 	    textX-=text.width();
 	}
 	if(opts.background || opts.outline)  {
-	    let dim = this.getBackgroundRectDimensions(text,opts.doOffsetWidth);
+	    let dim = this.getBackgroundRectDimensions(text,opts.doOffsetWidth,opts);
 	    let bgAttrs = {
 		fill: opts.background,
 		stroke:opts.outline,
 		strokeWidth: opts.strokeWidth,
-		cornerRadius: 0 
+		cornerRadius: opts.cornerRadius ,
 	    };
 	    $.extend(bgAttrs,dim);
 	    let bg = new Konva.Rect(bgAttrs);
+	    bg.opts = opts;
 	    bg.debug = opts.debug;
 	    bg.doOffsetWidth=opts.doOffsetWidth;
 	    bg.scale({
