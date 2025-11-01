@@ -18,7 +18,9 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+
 
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -132,6 +134,7 @@ public class UserManager extends RepositoryManager {
     public static final String PROP_PASSWORD_SALT2 =    "ramadda.password.hash.salt2";
     public static final String PROP_USER_AGREE = "ramadda.user.agree";
 
+    public static final String ACTIVITY_FAILED_LOGIN = "failed.login";
     public static final String ACTIVITY_LOGIN = "login";
     public static final String ACTIVITY_LOGOUT = "logout";
     public static final String ACTIVITY_PASSWORD_CHANGE = "password.change";
@@ -184,9 +187,12 @@ public class UserManager extends RepositoryManager {
     private String userPreface;
     private String userAgree;    
 
+
+
     /** store the number of bad login attempts for each user */
-    private static Hashtable<String, Integer> badPasswordCount =
-        new Hashtable<String, Integer>();
+    private TTLCache<String, Integer> badPasswordCount =
+    	new TTLCache<String,Integer>(Utils.daysToMillis(1));
+
 
     /** how many login tries before we blow up */
     private static int MAX_BAD_PASSWORD_COUNT = 50;
@@ -2937,6 +2943,7 @@ public class UserManager extends RepositoryManager {
 					       + count + ") for user " + user
 					       + " has exceeded the maximum allowed");
         }
+	addActivity(request, user, ACTIVITY_FAILED_LOGIN, "");
         //If the login failed then sleep for 1 second. This will keep bots 
         //from repeatedly trying passwords though maybe not needed with the above checks
         Misc.sleepSeconds(1);
@@ -3209,12 +3216,19 @@ public class UserManager extends RepositoryManager {
         return roles;
     }
 
-    private void addActivity(Request request, User user, String what,
-                             String extra)
-	throws Exception {
-        getDatabaseManager().executeInsert(Tables.USER_ACTIVITY.INSERT,
-                                           new Object[] { user.getId(),
-					       new Date(), what, extra, request.getIp() });
+    private void addActivity(Request request, User user, String what, String extra) {
+	addActivity(request,user!=null?user.getId():"unknown user", what, extra);
+    }
+
+
+    private void addActivity(Request request, String user, String what, String extra) {
+	try {
+	    getDatabaseManager().executeInsert(Tables.USER_ACTIVITY.INSERT,
+					       new Object[] { user,
+						   new Date(), what, extra, request.getIp() });
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     public Result processActivityLog(Request request) throws Exception {
