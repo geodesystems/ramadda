@@ -57,7 +57,7 @@ var CV_COLOR_SAMPLE = 'red';
 var CV_COLOR_BOX = 'red';
 
 var CV_STROKE_WIDTH = 0.4;
-var CV_AXIS_WIDTH=100;
+var CV_AXIS_WIDTH=60;
 var CV_ANNOTATIONS_WIDTH=200;
 var CV_LEGEND_WIDTH=150;
 var CV_OFFSET_X=170;
@@ -117,7 +117,6 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	setScale:function(s) {
 	    this.stage.scale(s);
 	},
-
 	getPosition: function()  {
 	    return this.stage.position();
 	},
@@ -440,7 +439,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	showHighlight:false,
 	showMenuBar:true,
 	bgPaddingX:4,
-	bgPaddingY:6	
+	bgPaddingY:4	
     }
 
     //check for numbers as strings
@@ -533,7 +532,7 @@ RamaddaCoreDisplay.prototype = {
     },
     getXOffset:function(column) {
 	let max = +this.opts.maxColumnWidth*this.getImageWidthScale();
-	return this.getAxisWidth()+100+column*(max+100);
+	return 3*this.getAxisWidth()+column*(max+100);
     },
     getAxisWidth:function() {
 	return this.opts.axisWidth;
@@ -629,7 +628,7 @@ RamaddaCoreDisplay.prototype = {
 	this.samplingInit=true;
 	this.stage.on(EVENT_MOUSEDOWN, (e) => {
 	    if(!this.isSampling()) return;
-	    const pos = this.stage.getRelativePointerPosition();
+	    let pos = this.stage.getRelativePointerPosition();
 	    let depth = this.canvasToWorld(pos.y);
 	    this.sampleAtDepth(depth);
 	});
@@ -816,7 +815,8 @@ RamaddaCoreDisplay.prototype = {
 						    pos.y,
 						    this.opts.measureStyle);
 	    this.drawLayer.add(this.measureState.text2);
-	    this.measureState.line.points([this.measureState.start.x, this.measureState.start.y, this.measureState.start.x, pos.y]);
+	    this.measureState.line.points([this.measureState.start.x, this.measureState.start.y,
+					   this.measureState.start.x, pos.y]);
 	    this.drawLayer.draw();
 	});
 
@@ -971,7 +971,8 @@ RamaddaCoreDisplay.prototype = {
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
-				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.getCoreProperty(ID_CV_SHOWBOXES),'Show Boxes'));    
+				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],
+				 this.getShowBoxes(),'Show Boxes'));    
 
 	html+=HU.div([],HU.space(2) +
 		     HU.checkbox(this.domId(ID_CV_SHOWALLDEPTHS),
@@ -1603,7 +1604,6 @@ RamaddaCoreDisplay.prototype = {
     addEntries:function(collection,forceNewImages) {
 	let column = collection.displayIndex;
 	collection.xPosition =  this.getXOffset(column);
-
 	let x = this.getXOffset(column);
 	let l = this.makeText(this.entryLayer,collection.name,x,
 			      this.worldToCanvas(collection.range.min)-20,
@@ -1657,19 +1657,27 @@ RamaddaCoreDisplay.prototype = {
 	this.toggleLabels(entry);	
     },
 
-    toggleBoxes: function(entry) {
+    toggleBoxes: function(entry,force) {
 	let show = this.opts.showBoxes;
+	if(Utils.isDefined(force)) {
+	    show = force;
+	}
 	let entries = entry?[entry]:this.entries;
 	entries.forEach(e=>{
 	    this.toggleAll(e.boxShapes,show);
+	    this.toggleAll(e.boxLabels,show);	    
 	});
     },
 
-    toggleLabels: function(entry) {
+    toggleLabels: function(entry,force) {
 	let show = this.getShowLabels();
+	if(Utils.isDefined(force)) {
+	    show = force;
+	}
 	let entries = entry?[entry]:this.entries;
 	entries.forEach(e=>{
 	    this.toggleAll(e.labels,show);
+	    this.toggleAll(e.boxLabels,show);	    
 	});
     },
     toggleHighlight: function() {
@@ -1755,12 +1763,23 @@ RamaddaCoreDisplay.prototype = {
 	    y:inverseScale
 	};
 
+	if(stageScale<0.3) {
+	    this.toggleLabels(null,false);
+	    this.toggleBoxes(null, false);
+	} else {
+	    this.toggleLabels(null);
+	    this.toggleBoxes(null);
+	}
+
 	const scaleLines = obj=>{
 	    this.scaleLine(obj);
 	}
 	this.stage.find('Rect').forEach(scaleLines);
 	this.stage.find('Line').forEach(scaleLines);	
 	textNodes.forEach(text=>{
+	    if(text.isLegendText) {
+		return;
+	    }
 	    if(!text.scaleInfo) {
 		text.scaleInfo = {
 		    x:text.x(),
@@ -1802,6 +1821,33 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	});
 
+	this.rescaleLegendLayer();
+	this.updateCollectionLabels();
+    },
+    rescaleLegendLayer: function() {
+	const stage = this.stage;
+	const axisWidth = this.getAxisWidth();
+	const legendLayer=this.legendLayer;
+	const scale = stage.scaleX();
+	const stagePos = stage.position();
+	// Fix x position at axisWidth in screen coordinates
+	const newX = (axisWidth - stagePos.x) / scale;
+	legendLayer.x(newX);
+	// Counteract x-axis zoom, but keep y-axis zoom
+	legendLayer.scaleX(1 / scale);
+	legendLayer.scaleY(1);
+  
+	if(this.legendLine) {
+	    this.legendLine.attrs.strokeWidth =  1/(scale*2);
+	}
+
+	const stageScale = this.getScaleX();
+	const inverseScale = 1/stageScale;
+	const newScale = {
+	    x: inverseScale,
+	    y:inverseScale
+	};
+
 	if(this.legendText) {
 	    let skip=1;
 	    for(let i=0;i<this.legendScales.length;i+=2) {
@@ -1817,17 +1863,23 @@ RamaddaCoreDisplay.prototype = {
 		    text.visible(idx % skip === 0);
 		}
 	    });
+	    this.legendText.forEach(text => {
+		text.scaleX(newScale.x*scale);
+		text.scaleY(newScale.y);
+	    });
+
+
 	}
-	this.rescaleLegendLayer();
-	this.updateCollectionLabels();
-    },
-    rescaleLegendLayer: function() {
-	let axisWidth = this.getAxisWidth();
-	let scale = this.stage.scaleX();
-	let offset = this.stage.x();
-	let legendX=(-offset)/scale
-	this.legendLayer.x(legendX);
-	this.legendLayer.batchDraw();
+
+
+	/*
+	const scale = stage.scaleX();  // assuming uniform scale
+	const pos = stage.position();
+	let offset = -pos.x / scale + axisWidth / scale;
+	this.legendLayer.x(offset);
+	*/
+
+	this.legendLayer.batchDraw();	
 
 
     },
@@ -1990,6 +2042,7 @@ RamaddaCoreDisplay.prototype = {
 	    flag:null,
 	    cornerRadius:0
 	}
+
 
 	if(args) $.extend(opts,args);
 
@@ -2156,6 +2209,7 @@ RamaddaCoreDisplay.prototype = {
 				   this.formatDepth(i),
 				   axisX,y,
 				   {doOffsetWidth:true});
+	    l1.isLegendText = true;
 	    this.legendText.push(l1);
 	    let tick1 = new Konva.Line({
 		points: [axisX, y, axisWidth, y],
@@ -2172,7 +2226,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.legendLayer.add(tick2);
 	}
 
-	let line = new Konva.Line({
+	let line = this.legendLine = new Konva.Line({
 	    points: [axisWidth, y1, axisWidth, y2],
 	    stroke: CV_COLOR_LINE,
 	    strokeWidth: 1,
@@ -2382,6 +2436,7 @@ RamaddaCoreDisplay.prototype = {
 	if(isNaN(entry.topDepth)|| isNaN(entry.bottomDepth)) return;
 	entry.labels = [];
 	entry.boxShapes = [];
+	entry.boxLabels = [];	
 	let addBoxShape =(shape)=> {
 	    shape.isScalable = true;
 	    entry.boxShapes.push(shape);
@@ -2555,22 +2610,22 @@ RamaddaCoreDisplay.prototype = {
 			group.add(mark);
 			if(Utils.stringDefined(box.label)) {
 			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
-			    entry.boxShapes.push(l);
+			    entry.boxLabels.push(l);
 			} else	if(box.marker) {
 			    let label = this.formatDepth(box.top);
 			    let l = this.makeText(group,label,boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
-			    entry.boxShapes.push(l);
+			    entry.boxLabels.push(l);
 			} else {
 			    let l = this.makeText(group,this.formatDepth(box.top),boxAttrs.x+labelOffset+2,boxAttrs.y, this.opts.boxLabelStyle);
 			    l.isDepthLabel = true;
-			    entry.boxShapes.push(l);
+			    entry.boxLabels.push(l);
 			    this.toggle(l,this.getShowAllDepths());
 			    l = this.makeText(group,this.formatDepth(box.bottom),
 					      boxAttrs.x+labelOffset+2,
 					      boxAttrs.y+boxAttrs.height,
 					      this.opts.boxLabelStyle);
 			    l.isDepthLabel = true;
-			    entry.boxShapes.push(l);
+			    entry.boxLabels.push(l);
 			    this.toggle(l,this.getShowAllDepths())
 			}
 		    }
