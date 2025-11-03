@@ -362,10 +362,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.drawLayer = new Konva.Layer();
 	    this.annotationLayer = new Konva.Layer();
 
+	    this.stage.add(this.annotationLayer);
 	    this.stage.add(this.legendLayer);
 	    this.stage.add(this.entryLayer);
 	    this.stage.add(this.drawLayer);
-	    this.stage.add(this.annotationLayer);
+
 
 	    this.addEventListeners();
 	    
@@ -1104,6 +1105,7 @@ RamaddaCoreDisplay.prototype = {
 		    let newWidth = newHeight * aspectRatio;
 		    image.setAttrs({
 			x: this.opts.legendWidth-newWidth,
+//			x: -newWidth+10,
 			y: y1,
 			width:newWidth,
 			height:newHeight});
@@ -1114,6 +1116,10 @@ RamaddaCoreDisplay.prototype = {
 		    return;
 		}
 
+		if(!Utils.stringDefined(l.url)) {
+		    console.log('no legend url defined for collection');
+		}
+
 		if(Utils.stringDefined(l.url)) {
 		    if(l.pending) {return;}
 		    l.pending=true;
@@ -1121,6 +1127,7 @@ RamaddaCoreDisplay.prototype = {
 			l.image = image;
 			setPosition(image);
 			this.annotationLayer.add(image);
+			image.moveToBottom();
 			collection.legendObjects.push(image);
 		    });
 		}
@@ -1137,6 +1144,7 @@ RamaddaCoreDisplay.prototype = {
 	
 
 	Utils.split(collection.annotations,",",true,true).forEach(a=>{
+	    let layer = this.legendLayer;
 	    let tuple = a.split(';');
 	    let depth = tuple[0];
 	    let label = tuple[1]??'';
@@ -1161,9 +1169,8 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	    if(styleObj.fontColor && !styleObj.fill) styleObj.fill = styleObj.fontColor;
 	    styleObj.flag=true;
-	    styleObj.cornerRadius=4;
 	    let pad =5;
-	    let l = this.makeText(this.annotationLayer,label,x+pad,y-5, styleObj);
+	    let l = this.makeText(layer,label,x+pad,y-5, styleObj);
 	    if(l && Utils.stringDefined(desc)) {
 		this.addClickHandler(l,(e,obj)=>{
 		    let y = l.getAbsolutePosition().y;
@@ -1177,14 +1184,14 @@ RamaddaCoreDisplay.prototype = {
 		stroke: lineColor??CV_COLOR_LINE,
 		strokeWidth: lineWidth,
 	    });
-	    this.annotationLayer.add(tick);
+	    layer.add(tick);
 	    if(lineColor) {
 		let line = new Konva.Line({
 		    points: [this.opts.axisWidth, y,this.opts.axisWidth+10000,y],
 		    stroke: lineColor,
 		    strokeWidth: lineWidth,
 		});
-		this.annotationLayer.add(line);
+		layer.add(line);
 		
 	    }
 
@@ -1763,13 +1770,14 @@ RamaddaCoreDisplay.prototype = {
 	    y:inverseScale
 	};
 
-	if(stageScale<0.3) {
+	/*
+	  if(stageScale<0.3) {
 	    this.toggleLabels(null,false);
 	    this.toggleBoxes(null, false);
 	} else {
 	    this.toggleLabels(null);
 	    this.toggleBoxes(null);
-	}
+	}*/
 
 	const scaleLines = obj=>{
 	    this.scaleLine(obj);
@@ -1791,33 +1799,7 @@ RamaddaCoreDisplay.prototype = {
 	    let info  = text.scaleInfo;
 	    text.scale(newScale);
 	    if(text.backgroundRect) {
-		let rect= text.backgroundRect;
-		let doOffsetWidth = rect.doOffsetWidth;
-		let dim = this.getBackgroundRectDimensions(text,doOffsetWidth,rect.opts);
-		rect.x(dim.x);
-		rect.y(dim.y);
-		rect.width(dim.width);		
-		rect.height(dim.height);
-		rect.scale(newScale);
-		if(doOffsetWidth) {
-		    const textWidth = text.width();
-		    const textHeight = text.height();
-		    let paddingX=rect?.opts?.bgPaddingX??this.opts.bgPaddingX;
-		    let paddingY=rect?.opts?.bgPaddingY??this.opts.bgPaddingY;
-		    let x = text.x();
-		    rect.setAttrs({
-			x: x - newScale.x*textWidth - paddingX / 2,
-			y: text.y() - paddingY / 2,
-			width: textWidth + paddingX,
-			height: textHeight + paddingY,
-		    });
-		}
-		if(rect.debug) {
-		    const box = text.getClientRect();
-//		    console.log('client',box.x,box.y,				'rect',dim.x,dim.y);
-
-		}
-
+		this.setBackgroundRectDimensions(text,text.backgroundRect);
 	    }
 	});
 
@@ -1832,6 +1814,7 @@ RamaddaCoreDisplay.prototype = {
 	const stagePos = stage.position();
 	// Fix x position at axisWidth in screen coordinates
 	const newX = (axisWidth - stagePos.x) / scale;
+//	console.log(axisWidth,stagePos.x,newX);
 	legendLayer.x(newX);
 	// Counteract x-axis zoom, but keep y-axis zoom
 	legendLayer.scaleX(1 / scale);
@@ -1863,25 +1846,17 @@ RamaddaCoreDisplay.prototype = {
 		    text.visible(idx % skip === 0);
 		}
 	    });
-	    this.legendText.forEach(text => {
-		text.scaleX(newScale.x*scale);
-		text.scaleY(newScale.y);
-	    });
-
-
 	}
 
-
-	/*
-	const scale = stage.scaleX();  // assuming uniform scale
-	const pos = stage.position();
-	let offset = -pos.x / scale + axisWidth / scale;
-	this.legendLayer.x(offset);
-	*/
-
+	const textNodes = this.legendLayer.find('Text');
+	textNodes.forEach(text => {
+	    text.scaleX(newScale.x*scale);
+	    text.scaleY(newScale.y);
+	    if(text.backgroundRect) {
+		this.setBackgroundRectDimensions(text,text.backgroundRect);
+	    }
+	});
 	this.legendLayer.batchDraw();	
-
-
     },
     updateCollectionLabels:function() {
 	//Keep the collection labels at the top of the viewport
@@ -2012,23 +1987,18 @@ RamaddaCoreDisplay.prototype = {
 	this.scaleChanged();
 	this.positionChanged();
     },
-    getBackgroundRectDimensions:function(text,doOffsetWidth,args){
-	let opts = {
-	    bgPaddingX:this.opts.bgPaddingX,
-	    bgPaddingY:this.opts.bgPaddingY	    
-	};
-	let scale = this.getScaleX();
-	if(args) $.extend(opts,args);
-	let textX  = text.x();
-	if(doOffsetWidth) {
-	    textX-=text.width();
-	}
-	return {
-	    x: textX-scale*opts.bgPaddingX,
-	    y: text.y()-scale*opts.bgPaddingY,
-	    width: text.width()+scale*opts.bgPaddingX*2,
-	    height: text.height()+scale*opts.bgPaddingY*2
-	};
+    setBackgroundRectDimensions:function(text,backgroundRect) {
+	let paddingX=backgroundRect?.opts?.bgPaddingX??this.opts.bgPaddingX;
+	let paddingY=backgroundRect?.opts?.bgPaddingY??this.opts.bgPaddingY;
+	const offsetX = text.offsetX() || 0;
+	const offsetY = text.offsetY() || 0;
+	backgroundRect.setAttrs({
+	    x: text.x() - (offsetX+paddingX) * text.scaleX(),
+	    y: text.y() - (offsetY+paddingY) * text.scaleY(),
+	    width: (text.width() + paddingX * 2) * text.scaleX(),
+	    height: (text.height() + paddingY * 2) * text.scaleY(),
+	    rotation: text.rotation(),
+	});
     },
 
     makeText:function(layer,t,x,y,args) {
@@ -2069,24 +2039,19 @@ RamaddaCoreDisplay.prototype = {
 	    textX-=text.width();
 	}
 	if(opts.background || opts.outline)  {
-	    let dim = this.getBackgroundRectDimensions(text,opts.doOffsetWidth,opts);
 	    let bgAttrs = {
 		fill: opts.background,
 		stroke:opts.outline,
 		strokeWidth: opts.strokeWidth,
 		cornerRadius: opts.cornerRadius ,
 	    };
-	    $.extend(bgAttrs,dim);
 	    let bg = new Konva.Rect(bgAttrs);
 	    bg.opts = opts;
 	    bg.debug = opts.debug;
 	    bg.doOffsetWidth=opts.doOffsetWidth;
-	    bg.scale({
-		x: 1 / scale,
-		y: 1 / scale,
-	    });
 	    layer.add(bg);
 	    text.backgroundRect = bg;
+	    this.setBackgroundRectDimensions(text,bg);
 	}
 
 	layer.add(text);
@@ -2168,9 +2133,13 @@ RamaddaCoreDisplay.prototype = {
 
 	if(!this.opts.hadAxisWidth) {
 	    if(haveAnnotation) {
-		this.opts.axisWidth=CV_ANNOTATIONS_WIDTH+(haveLegend?this.opts.legendWidth:0);
+//		this.opts.axisWidth=CV_ANNOTATIONS_WIDTH+(haveLegend?this.opts.legendWidth:0);
+		this.opts.axisWidth=CV_AXIS_WIDTH+100;
+
 	    } else if(haveLegend) {
-		this.opts.axisWidth=CV_AXIS_WIDTH+this.opts.legendWidth;
+//		this.opts.axisWidth=CV_AXIS_WIDTH+this.opts.legendWidth;
+//		this.opts.axisWidth=CV_AXIS_WIDTH+this.opts.legendWidth;
+		this.opts.axisWidth=CV_AXIS_WIDTH+100;
 	    }
 	}
     },
