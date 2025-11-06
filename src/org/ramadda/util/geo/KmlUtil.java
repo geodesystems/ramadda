@@ -7,6 +7,8 @@ package org.ramadda.util.geo;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.JsonUtil;
+import org.ramadda.util.XmlUtils;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -1436,29 +1438,21 @@ public class KmlUtil {
     public static void main(String[] args) throws Exception {
         Element root = XmlUtil.getRoot(IOUtil.readContents(args[0],
                            KmlUtil.class));
-        System.out.println("source ~/bin/utils.tcl\n");
-        System.out.println("set ::type community_resource;");
-        System.out.println("set ::resource other;");
         List placemarks = XmlUtil.findDescendants(root, TAG_PLACEMARK);
 	int cnt = 0;
+	StringBuilder sb = new StringBuilder();
+	sb.append("{\"type\": \"FeatureCollection\",\n\"features\": [\n");
         for (Element placemark : (List<Element>) placemarks) {
-	    cnt++;
-            StringBuilder sb = new StringBuilder();
-            String        id = XmlUtil.getGrandChildText(placemark, "name");
+
+
+            String        name = XmlUtil.getGrandChildText(placemark, "name");
             String desc = XmlUtil.getGrandChildText(placemark, "description",
                               "");
             desc = desc.replaceAll(" + ", " ");
             desc = desc.replaceAll("\n+\n", "\n");
-            sb.append("Util::placemark ");
-            sb.append(" {" + id + "} ");
-            sb.append(" {" + desc + "} ");
-
-            double north = -90,
-                   west  = 180,
-                   south = 90,
-                   east  = -180;
+	    List<double[]> points = new ArrayList<double[]>();
             List coords  = XmlUtil.findDescendants(placemark,
-                               TAG_COORDINATES);
+						   TAG_COORDINATES);
             for (Element coord : (List<Element>) coords) {
                 String c = XmlUtil.getChildText(coord);
 		List<String> locToks = Utils.split(c, " ");
@@ -1467,33 +1461,50 @@ public class KmlUtil {
                     if (toks.size() < 2) {
                         continue;
                     }
-                    double lon = Double.parseDouble(toks.get(0));
-                    double lat = Double.parseDouble(toks.get(1));
-                    north = Math.max(lat, north);
-                    south = Math.min(lat, north);
-                    east  = Math.max(lon, east);
-                    west  = Math.min(lon, west);
-                    //                    sb.append(",");
-                    //                    sb.append(toks.get(0));
-                    //                    sb.append(",");
-                    //                    sb.append(toks.get(1));
+		    double lon = Double.parseDouble(toks.get(0));
+		    double lat = Double.parseDouble(toks.get(1));
+		    points.add(new double[]{lat,lon});
+
                 }
             }
-            double centerLat = south + (north - south) / 2;
-            double centerLon = west + (east - west) / 2;
-            sb.append(" {" + centerLat + "}");
-            sb.append(" {" + centerLon + "}");
-
-	    List simpleData = XmlUtil.findDescendants(placemark, TAG_SIMPLEDATA);
-            for (Element data : (List<Element>) simpleData) {
-		String name = XmlUtil.getAttribute(data,"name");
-		sb.append(" {{" + name+"} {"+ XmlUtil.getChildText(data) +" }} ");
+	    if(points.size()==0) {
+		coords = XmlUtil.findDescendants(placemark,"coord");
+		for (Element coord : (List<Element>) coords) {
+		    String c = XmlUtil.getChildText(coord);
+		    List<String> toks = Utils.split(c," ");
+		    double lon = Double.parseDouble(toks.get(0));
+		    double lat = Double.parseDouble(toks.get(1));
+		    points.add(new double[]{lat,lon});
+		}
 	    }
+	    if(cnt++>0) {
+		sb.append(",\n");
+	    }
+	    cnt++;
 
-            System.out.println(sb);
-
+	    List<String> props = new ArrayList<String>();
+	    Utils.add(props,"name",JsonUtil.quote(name),
+		      "description",JsonUtil.quote(desc));
+	    sb.append("{\"type\":\"Feature\",\"properties\":"+JsonUtil.map(props)+"\n");
+	    props = new ArrayList<String>();
+	    StringBuilder cb=new StringBuilder();
+	    cb.append("[\n");
+	    int ptcnt = 0;
+	    for(double[]point: points) {
+		if(ptcnt++>0)cb.append("\n,");
+		cb.append("["+point[1]+"," + point[0]+"]");
+	    }
+	    cb.append("]\n");
+	    Utils.add(props,"type",JsonUtil.quote("LineString"),
+		      "coordinates",
+		      cb);
+	    sb.append("\n,\"geometry\":" + JsonUtil.map(props));
+	    //	    System.out.println(name +" desc:" + desc +" " + points.size());
+	    sb.append("}\n");
         }
-        System.out.println("Util::placemarkEnd");
+	sb.append("]}");
+	System.out.println(sb);
+	//        System.out.println("Util::placemarkEnd");
 	Utils.exitTest(0);
     }
 
