@@ -472,8 +472,13 @@ public class Entry implements Cloneable {
         if ( !hasAreaDefined(request)) {
             return null;
         }
-	if(addLabel)
-	    return "North: " +getNorth(request) + " West: " + getWest(request) + " South: " + getSouth(request) + " East: " + getEast(request);
+	if(addLabel) {
+	    return
+		RepositoryManager.msgLabel("North") +getNorth(request) + HU.br() +
+		RepositoryManager.msgLabel("West") + getWest(request) + HU.br() +
+		RepositoryManager.msgLabel("South") + getSouth(request) + HU.br() +
+		RepositoryManager.msgLabel("East") + getEast(request);
+	}
         return getNorth(request) + "," + getWest(request) + "," + getSouth(request) + "," + getEast(request);
     }
 
