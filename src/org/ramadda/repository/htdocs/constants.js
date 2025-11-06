@@ -31,6 +31,7 @@ var LABEL_DELETE='Delete';
 var ID_CANCEL = 'cancel';
 var ID_OK  ='ok';
 var ID_APPLY  ='apply';
+var ID_COLORTABLE = 'colortable';
 
 
 
@@ -218,7 +219,7 @@ var TAG_TR = 'tr';
 var TAG_UL = 'ul';
 var TAG_VIDEO='video';
 
-var ID_COLORTABLE = 'colortable';
+
 
 var COLOR_TRANSPARENT='transparent';
 var COLOR_BLACK='#000';
@@ -282,6 +283,7 @@ var ATTR_ONCHANGE  = 'onchange';
 var ATTR_ONCLICK  = 'onclick';
 var ATTR_ONMOUSEDOWN  = 'onmousedown';
 var ATTR_PLACEHOLDER = 'placeholder';
+var ATTR_PROPERTY='property';
 var ATTR_POSITION='position';
 var ATTR_READONLY='readonly';
 var ATTR_REL = 'rel';
