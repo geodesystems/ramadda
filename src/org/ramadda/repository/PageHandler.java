@@ -416,8 +416,8 @@ public class PageHandler extends RepositoryManager {
     }
 
     public String getEntryTooltip(Entry entry) {
-        return noMsg(entry.getName()) + HU.NL + " - "
-	    + msg(entry.getTypeHandler().getLabel());
+        return entry.getName() + HU.NL + " - "
+	    + HU.msgChar(entry.getTypeHandler().getLabel());
     }
 
     public void decorateResult(Request request, Result result)
@@ -651,7 +651,7 @@ public class PageHandler extends RepositoryManager {
 				       HU.span("", HU.attrs("id", "popupanchor", "style", "position:relative;"))));
         }
 
-	pageLinks.add(HU.span("",HU.attrs("style","display:block;","id","ramadda_links_prefix")));
+	pageLinks.add(HU.span("",HU.attrs("style","display:table-cell;","id","ramadda_links_prefix")));
         StringBuilder theFooter = new StringBuilder(footer);
 	if(extraFooter!=null) theFooter.append(extraFooter);
 
@@ -714,7 +714,8 @@ public class PageHandler extends RepositoryManager {
 		String link = HU.href(_link.getUrl(),_link.getLabel());
 		link = link.replace("${tooltip}", Utils.getNonNull(_link.getTooltip(),"").toString());
 		//		link = link.replace("${extra}", "");
-		pageLinks.add("<span class='ramadda-button ramadda-page-link-simple'>" +link+"</span>");
+		pageLinks.add("<span class='ramadda-page-link-simple'>" +link+"</span>");
+		//pageLinks.add(wrapPageLink(link));
 	    }
 	}
 
@@ -726,7 +727,8 @@ public class PageHandler extends RepositoryManager {
 	    pageLinks.add(wrapPageLink(extra.toString()));
 	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
 	//        menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
-        menuHtml = HU.table(HU.row(HU.tds(pageLinks,HU.cssClass(""))),HU.clazz("ramadda-user-menu"));
+	menuHtml = HU.div(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
+	//        menuHtml = HU.table(HU.row(HU.tds(pageLinks,HU.cssClass(""))),HU.clazz("ramadda-user-menu"));
 	
 
         String[] macros = new String[] {
@@ -1537,7 +1539,7 @@ public class PageHandler extends RepositoryManager {
     }
 
     public static String noMsg(String msg) {
-	String s =  HU.span(msg,HU.clazz("ramadda-notranslate"));
+	String s =  HU.span(msg,HU.clazz("ramadda-text"));
 	return s;
     }
 
