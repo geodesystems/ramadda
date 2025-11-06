@@ -1,7 +1,12 @@
 var LANGUAGE_ENGLISH = 'en';
 var LANGUAGE_SPANISH = 'es';
+var ATTR_DATA_LANGUAGE='data-language';
+var CLASS_LANGUAGE_BLOCK='ramadda-language-block';
+
+
 
 var Translate = {
+    trackMissing:false,
     packs:{},
     missing:{},
     language:null,
@@ -23,7 +28,7 @@ var Translate = {
 			  switchPrefix+'Clear');
 
 	    ramaddaLanguages.forEach(lang=>{
-		html+= HU.div(['data-language',lang.id,
+		html+= HU.div([ATTR_DATA_LANGUAGE,lang.id,
 			       ATTR_TITLE,'Switch language',
 			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
 			      switchPrefix+lang.label);
@@ -42,7 +47,7 @@ var Translate = {
 	Translate.translate();
     },
     switcherClicked:function(link) {
-	let lang = link.attr('data-language');
+	let lang = link.attr(ATTR_DATA_LANGUAGE);
 	if(lang=='showmissing') {
 	    Translate.showMissing();
 	    return;
@@ -67,7 +72,7 @@ var Translate = {
     checkSwitcher: function() {
 	let lang = this.language;
 	$('.ramadda-language-switch').each(function() {
-	    let selected = $(this).attr('data-language');
+	    let selected = $(this).attr(ATTR_DATA_LANGUAGE);
 	    if(selected==lang) {
 		$(this).addClass('ramadda-link-bar-item-active');
 	    } else {
@@ -112,6 +117,9 @@ var Translate = {
 	Translate.disable();
     },
     addSwitcher:function(id,langs,addDownload,opts) {
+	if(addDownload) {
+	    this.trackMissing=true;
+	}
 	opts = opts??{}
 	if(this.disabled) return;
 	if(langs) langs=Utils.split(langs,",",true,true);
@@ -125,7 +133,7 @@ var Translate = {
 	    if(opts.skipEnglish && langId==LANGUAGE_ENGLISH) return;
 	    ramaddaLanguages.forEach(lang=>{
 		if(lang.id!= langId) return;
-		html+= HU.span(['data-language',lang.id,
+		html+= HU.span([ATTR_DATA_LANGUAGE,lang.id,
 				ATTR_TITLE,'Switch language',
 				ATTR_CLASS,
 				HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],lang.label);
@@ -133,7 +141,7 @@ var Translate = {
 	    })});
 	if(addDownload) {
 	    Translate.downloadMode= true;
-	    html+= HU.span(['data-language','showmissing',
+	    html+= HU.span([ATTR_DATA_LANGUAGE,'showmissing',
 			    ATTR_CLASS,
 			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],'Download missing');
 	}
@@ -144,7 +152,7 @@ var Translate = {
 	let _this = this;
 	block.find('.ramadda-language-switch').click(function() {
 	    if(opts.callback) {
-		let lang = $(this).attr('data-language');
+		let lang = $(this).attr(ATTR_DATA_LANGUAGE);
 		opts.callback(lang);
 		return;
 	    }
@@ -248,7 +256,7 @@ var Translate = {
 	if(Translate.downloadMode) {
 	    if(tag.hasClass('display-metadatalist-item')) return false;
 	}
-	if(tag.hasClass('ramadda-notranslate')|| tag.hasClass('ramadda-language-block')) {
+	if(tag.hasClass('ramadda-notranslate')|| tag.hasClass(CLASS_LANGUAGE_BLOCK)) {
 	    return false;
 	}
 	if(!t || t.indexOf('<')>=0) {
@@ -267,14 +275,14 @@ var Translate = {
 	let blocks;
 	if(selector) {
 	    all = $(selector).find('*');	   
-	    blocks = $(selector).find('.ramadda-language-block');	    
+	    blocks = $(selector).find(HU.dotClass(CLASS_LANGUAGE_BLOCK));	    
 	} else {
 	    all = $('*');
-	    blocks = $('.ramadda-language-block');	    
+	    blocks = $(HU.dotClass(CLASS_LANGUAGE_BLOCK));	    
 	}	    
 
 	blocks.each(function() {
-	    if($(this).attr('data-lang')==lang) {
+	    if($(this).attr(ATTR_DATA_LANGUAGE)==lang) {
 		$(this).show();
 	    } else {
 		$(this).hide();
@@ -302,7 +310,7 @@ var Translate = {
 	}	
 
 	let translate = (a,text,suffix)=>{
-	    if(a.prop('tagName')=='I' && suffix!='title') {
+	    if(suffix!='title' && a.prop('tagName')=='I') {
 		return null;
 	    }
 	    if(useDflt) {
@@ -354,9 +362,37 @@ var Translate = {
 		return pack[text];
 	    }
 
-	    //	    if(!Translate.missing[text])console.log('missing:'+text+':');
+	    if(this.trackMissing) {
+		let trackMissing = true;
+		if(a) {
+		    if(a.hasClass('olButton') || a.hasClass('ramadda-text')) {
+			trackMissing = false;
+		    } 
+		}
+		let tagName = a.prop('tagName');
+		if(tagName=='OPTION') {
+		    let parent = a.parent();
+		    if(parent.hasClass('ramadda-text')) {
+			trackMissing=false;
+		    }
+		}
+		if(tagName=='TITLE') {
+		    if(ramaddaThisEntry) trackMissing=false;
+		}
+		if(trackMissing ) {
+		    trackMissing = !Utils.isNoMsg(origText);
+		}		    
+		if(trackMissing) {
+		    if(origText=='toplevel_folders') {
+			console.log(origText);
+			console.dir(a);
+		    }
+		    Translate.missing[origText] = true;
+		} 
 
-	    Translate.missing[origText] = true;
+	    }
+
+
 	    return  a.attr(origValueFlag(suffix));
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
