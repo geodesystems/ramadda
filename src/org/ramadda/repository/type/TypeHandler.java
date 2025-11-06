@@ -2358,7 +2358,8 @@ public class TypeHandler extends RepositoryManager {
 	sb.append("</table>\n");
     }
 
-    public void addEntryProperty(Request request, Appendable sb, String label,String value) throws Exception {
+    public void addEntryProperty(Request request, Appendable sb, String label,String value)
+	throws Exception {
 	label = msgLabel(label);
         if (request.isMobile()) {
 	    sb.append(formEntry(request, label, value));
@@ -2367,7 +2368,7 @@ public class TypeHandler extends RepositoryManager {
 	sb.append("<tr valign=top><td class=\"ramadda-entry-property-label\">");
 	sb.append(label);
 	sb.append("</td><td>");
-	sb.append(value);
+	sb.append(HU.wrapText(value));
 	sb.append("</td></tr>");
     }
 
@@ -2768,7 +2769,8 @@ public class TypeHandler extends RepositoryManager {
 			       request.makeUrl(
 					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
 					       entry.getId(), ARG_TYPE, type), icon,
-			       getIconImage("fa-solid fa-plus") +HU.SPACE + typeHandler.getDescription(),
+			       getIconImage("fa-solid fa-plus") +HU.SPACE +
+			       msg(typeHandler.getDescription()),
 			       OutputType.TYPE_FILE));
         }
 
@@ -5344,7 +5346,7 @@ public class TypeHandler extends RepositoryManager {
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
         if (true || (typeHandlers.size() > 1)) {
             List tmp = new ArrayList();
-	    String attr = HU.cssClass("ramadda-notranslate");
+	    String attr = HU.cssClass("ramadda-text");
             for (TypeHandler typeHandler : typeHandlers) {
                 if ( !typeHandler.getForUser()) {
                     continue;
@@ -5815,7 +5817,6 @@ public class TypeHandler extends RepositoryManager {
                               Tables.ENTRIES.COL_SOUTH,
                               Tables.ENTRIES.COL_EAST };
         boolean[]    areaLE = { true, false, false, true };
-        String[] areaNames  = { "North", "West", "South", "East" };
         Clause       areaClause;
         List<Clause> areaClauses = new ArrayList<Clause>();
         List<SelectionRectangle> rectangles =
