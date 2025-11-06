@@ -1002,7 +1002,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    v ='NA'
 		let _v = v;
 		let title = null;
-		v  = HU.span([ATTR_CLASS,this.props.textClass??'',
+		let classes = this.props.textClass??'';
+		if(col.id=='name') {
+		    classes=HU.classes('ramadda-text',classes);
+		}
+		v  = HU.span([ATTR_CLASS,classes,
 			      ATTR_STYLE,this.props.textStyle??''],v);
 		if(col.id=='name') {
 		    let icon = '';
@@ -1147,7 +1151,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!props.simple) {
 		let img = entry.getIconImage([ATTR_WIDTH,HU.px(32)]).replace(/"/g,"'");
 		//			attrs.push('data-icon',entry.getIconUrl());
-		title = entry.getName();
+		title = Utils.noMsg(entry.getName());
+		
 		if(entry.remoteRepository) rowAttrs.push('remote-repository', entry.remoteRepository.name);
 
 		let type = entry.getType();
@@ -1160,6 +1165,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(file)
 		    rowAttrs.push('data-filename', file);
 		
+
 		rowAttrs.push(ATTR_TITLE,title,'data-icon',entry.getIconUrl());
 	    }
 	    row+=HU.open(TAG_TR,rowAttrs);
