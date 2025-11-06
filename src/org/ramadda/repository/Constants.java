@@ -781,8 +781,7 @@ public interface Constants {
     public static final String CSS_CLASS_MENUBUTTON_SEPARATOR =
         "ramadda-menubutton-separator";
     public static final String CSS_CLASS_DATETIME = "ramadda-datetime";
-    public static final String CSS_CLASS_MENUITEM_LINK =
-        "ramadda-menuitem-link";
+    public static final String CSS_CLASS_MENUITEM_LINK =    "ramadda-menuitem-link";
     public static final String CSS_CLASS_MENUITEM_SEPARATOR =
         "ramadda-menuitem-separator";
     public static final String CSS_CLASS_MENUITEM = "ramadda-menuitem";
