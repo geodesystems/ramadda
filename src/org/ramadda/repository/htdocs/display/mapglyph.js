@@ -3088,7 +3088,8 @@ MapGlyph.prototype = {
 	    if(ctProps.length>1) {
 		let menu = HU.select('',[ATTR_ID,this.domId('colortableproperty')],
 				     ctProps.map(info=>{return {
-					 value:info.id,label:info.getLabel()}}),this.attrs.fillColorBy.property);
+					 value:info.id,label:info.getLabel()}}),
+				     this.attrs.fillColorBy.property);
 		this.jq('legendcolortableprops').html(HU.boldLabel('Color by') + menu);
 		this.jq('colortableproperty').change(()=>{
 		    let val = this.jq('colortableproperty').val();
@@ -3445,7 +3446,7 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
 	    this.attrs.subsetReverse = HU.isChecked(jqid(this.domId('subsetReverse')));
-	    this.attrs.subsetSimplify= jqid(HU.isChecked(this.domId('subsetSimplify')));
+	    this.attrs.subsetSimplify= HU.isChecked(jqid(this.domId('subsetSimplify')));
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
 	    this.attrs.declutter_labels=HU.isChecked(this.jq('declutter_labels'));
@@ -3786,7 +3787,8 @@ MapGlyph.prototype = {
 
 
 	let decorate = (prefix) =>{
-	    let div = this.getColorTableDisplay(this.jq(prefix+'colorby_colortable').val(),NaN,NaN,false);
+	    let div = this.getColorTableDisplay(this.jq(prefix+'colorby_colortable').val(),
+						NaN,NaN,false);
 	    this.jq(prefix+'colorby_colortable_label').html(div);
 	};
 
@@ -3798,8 +3800,8 @@ MapGlyph.prototype = {
 	    _this.jq(prefix+'colorby_colortable').val(ct);
 	    decorate(prefix);
 	});
-	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
-	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
+//	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
+//	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
 	Utils.initCopyable(dialog.find(HU.dotClass(CLASS_COPYABLE)));
 
 	let initColor  = prefix=>{
@@ -4326,11 +4328,18 @@ MapGlyph.prototype = {
 	    let group = styleGroups[i];
 	    let prefix = 'mapstylegroups_' + i;
 	    styleGroupsUI+=HU.tr([],HU.tds([],[
-		HU.input('',group?.label??'',[ATTR_ID,prefix+'_label',ATTR_SIZE,'10']),
-		HU.input('',group?.style.fillColor??'',[ATTR_CLASS,'ramadda-imdv-color',ATTR_ID,prefix+'_fillcolor',ATTR_SIZE,'6']),
-		HU.input('',group?.style.fillOpacity??'',[ATTR_TITLE,'0-1',ATTR_ID,prefix+'_fillopacity',ATTR_SIZE,'2']),		
-		HU.input('',group?.style.strokeColor??'',[ATTR_CLASS,'ramadda-imdv-color',ATTR_ID,prefix+'_strokecolor',ATTR_SIZE,'6']),
-		HU.input('',group?.style.strokeWidth??'',[ATTR_ID,prefix+'_strokewidth',ATTR_SIZE,'6']),
+		HU.input('',group?.label??'',[ATTR_ID,prefix+'_label',ATTR_SIZE,10]),
+		HU.input('',group?.style.fillColor??'',[ATTR_CLASS,CLASS_IMDV_COLOR,
+							ATTR_ID,prefix+'_fillcolor',
+							ATTR_SIZE,6]),
+		HU.input('',group?.style.fillOpacity??'',[ATTR_TITLE,'0-1',
+							  ATTR_ID,prefix+'_fillopacity',
+							  ATTR_SIZE,2]),		
+		HU.input('',group?.style.strokeColor??'',[ATTR_CLASS,CLASS_IMDV_COLOR,
+							  ATTR_ID,prefix+'_strokecolor',
+							  ATTR_SIZE,6]),
+		HU.input('',group?.style.strokeWidth??'',[ATTR_ID,prefix+'_strokewidth',
+							  ATTR_SIZE,6]),
 		this.display.getFillPatternSelect(prefix+'_fillpattern',group?.style.fillPattern??''),
 		Utils.join(group?.indices??[],',')]));
 	}
@@ -4346,7 +4355,9 @@ MapGlyph.prototype = {
 
 	let input = (id,label,dflt) =>{
 	    return SPACE2 + HU.boldLabel(label)+
-		HU.input('', this.attrs[id]??'', [ATTR_PLACEHOLDER,dflt,ATTR_ID,this.domId(id),ATTR_SIZE,'5']);
+		HU.input('', this.attrs[id]??'', [ATTR_PLACEHOLDER,dflt,
+						  ATTR_ID,this.domId(id),
+						  ATTR_SIZE,5]);
 	}
 	let space =  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(5))]);
 	let extra = '';
@@ -4373,7 +4384,8 @@ MapGlyph.prototype = {
 	    subset += HU.open(TAG_TABLE);
 	    subset+=HU.formEntryLabel('Skip',
  				      HU.input('',this.attrs.subsetSkip??'0',
-					       [ATTR_ID,this.domId('subsetSkip'),ATTR_SIZE,'6'])+
+					       [ATTR_ID,this.domId('subsetSkip'),
+						ATTR_SIZE,6])+
 				      ' ' +'Prunes features');
 	    subset+=HU.formEntry('',
 				 HU.checkbox(this.domId('subsetReverse'),
@@ -4436,7 +4448,9 @@ MapGlyph.prototype = {
 				'feature-index',idx,
 				ATTR_TITLE,'Click to center',
 				ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10),CSS_MARGIN_LEFT,HU.px(10))], name);
-		row+=HU.td(HU.checkbox(id2,[ATTR_ID,id2,ATTR_CLASS,'feature-visible','feature-index',idx],
+		row+=HU.td(HU.checkbox(id2,[ATTR_ID,id2,
+					    ATTR_CLASS,'feature-visible',
+					    'feature-index',idx],
 				       !feature.forceHidden && feature.isVisible)+name);
 		row+='<td>';
 		if(distance) {
@@ -4705,13 +4719,17 @@ MapGlyph.prototype = {
 	    let label = HU.span([ATTR_TITLE,info.property],HU.b(info.getLabel()));
 	    if(info.isString())  {
 		filter.type="string";
-		let attrs =['filter-property',info.property,ATTR_ID,this.domId('string_'+ id),ATTR_SIZE,20];
-		attrs.push(ATTR_PLACEHOLDER,this.getProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
+		let attrs =['filter-property',info.property,
+			    ATTR_ID,this.domId('string_'+ id),
+			    ATTR_SIZE,20];
+		attrs.push(ATTR_PLACEHOLDER,
+			   this.getProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
 		let widget;
 		let rows = this.getProperty(info.id+'.filter.rows');
 		if(Utils.stringDefined(rows)) {
 		    attrs.push(ATTR_ROWS,rows);
-		    let buttonAttrs = ['textareaid',this.domId('string_'+id),ATTR_CLASS,CLASS_FILTER_STRINGS];
+		    let buttonAttrs = ['textareaid',this.domId('string_'+id),
+				       ATTR_CLASS,CLASS_FILTER_STRINGS];
 		    widget =     HU.div(buttonAttrs,'Search')+
 			HU.textarea("",filter.stringValue??"",attrs);
 		} else {
@@ -4750,7 +4768,8 @@ MapGlyph.prototype = {
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      ATTR_CLASS,'imdv-filter-enum',
-				      ATTR_ID,this.domId('enum_'+ id),ATTR_MULTIPLE,null,
+				      ATTR_ID,this.domId('enum_'+ id),
+				      ATTR_MULTIPLE,null,
 				      ATTR_SIZE,size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+HU.br();
 		    add(info,'enums',line);
 		}
@@ -4770,8 +4789,10 @@ MapGlyph.prototype = {
 					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.min,min))),
 				      HU.div([ATTR_ID,this.domId('slider_max_'+ id),
 					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.max,max))));
-		if(showTop) line = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,HU.px(120))], line);
-		let slider =  HU.div([ATTR_SLIDER_MIN,min,ATTR_SLIDER_MAX,max,'slider-isint',info.isInt(),
+		if(showTop) line = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(120))], line);
+		let slider =  HU.div([ATTR_SLIDER_MIN,min,
+				      ATTR_SLIDER_MAX,max,
+				      'slider-isint',info.isInt(),
 				      'slider-value-min',Utils.getDefined(filter.min,info.min),
 				      'slider-value-max',Utils.getDefined(filter.max,info.max),
 				      'filter-property',info.property,'feature-id',info.id,
@@ -4850,7 +4871,8 @@ MapGlyph.prototype = {
 	    let filtersHeader ='';
 	    if(this.getProperty('filter.zoomonchange.show',true)) {
 		filtersHeader = HU.checkbox(this.zoomonchangeid,
-					    [ATTR_TITLE,'Zoom on change',ATTR_ID,this.zoomonchangeid],
+					    [ATTR_TITLE,'Zoom on change',
+					     ATTR_ID,this.zoomonchangeid],
 					    this.getZoomOnChange(),
 					    HU.span([ATTR_TITLE,'Zoom on change',
 						     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(12))],
@@ -5688,7 +5710,8 @@ MapGlyph.prototype = {
 	//	debug = true;
 	if(!Utils.stringDefined(text)) { text=null;}
 	else text = text.toLowerCase();
-	//	debug=true;
+//	debug=true;
+
 	features.forEach((f,idx)=>{
 	    let visible = true;
 	    if(debug && idx<5) console.log("feature check filter:");
@@ -6592,7 +6615,8 @@ MapGlyph.prototype = {
 		css.push(CSS_HEIGHT,dim);
 		css.push(CSS_WIDTH,dim);
 	    }		    
-	    return HU.div([ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css(css)]);
+	    return HU.div([ATTR_CLASS,'ramadda-dot',
+			   ATTR_STYLE,HU.css(css)]);
 	} else if(type==GLYPH_LINE ||
 		  type==GLYPH_POLYLINE ||
 		  type==GLYPH_POLYGON ||

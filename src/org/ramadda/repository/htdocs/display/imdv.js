@@ -47,12 +47,8 @@ var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TR
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','type_wmts_layer','type_wms_layer'];
 
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY,CSS_FONT_SIZE,HU.pt(9))];
-var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_COLOR,COLOR_LIGHT_GRAY)];
+var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4),CSS_COLOR,COLOR_LIGHT_GRAY)];
 
-var CLASS_IMDV_SIDEHELP= 'imdv-side-help';
-var CLASS_IMDV_PROPERTY= 'imdv-property';
-var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
-var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 
 var PROP_DONT_SHOW_IN_LEGEND='dontShowInLegend';
 var PROP_SHOW_LAYER_SELECT_IN_LEGEND = "showLayerSelectInLegend";
@@ -74,6 +70,9 @@ var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 
 var ATTR_BUTTON_COMMAND='buttoncommand';
 var ATTR_GLYPH_ID='glyphid';
+var ATTR_WIDGET_ID='widget-id';
+var ATTR_SLIDER_ID='slider-id';
+var ATTR_COLOR='color';
 
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
@@ -109,6 +108,13 @@ var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
 
 
 
+var CLASS_IMDV_SIDEHELP= 'imdv-side-help';
+var CLASS_IMDV_PROPERTY= 'imdv-property';
+var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
+var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+var CLASS_IMDV_COLOR='ramadda-imdv-color';
+
+
 var CLASS_LEGEND_LABEL = 'imdv-legend-label';
 var CLASS_LEGEND_LABEL_INVISIBLE = 'imdv-legend-label-invisible';
 var CLASS_LEGEND_LABEL_HIGHLIGHT = 'imdv-legend-label-highlight';
@@ -134,6 +140,8 @@ var ROUTE_PEDESTRIAN ='pedestrian';
 
 
 
+
+
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
 var ID_MAPRESOURCE = 'mapresource';
@@ -149,6 +157,9 @@ var ID_LEVEL_RANGE_SAMPLE_MIN = 'level_range_sample_min';
 var ID_LEVEL_RANGE_SAMPLE_MAX = 'level_range_sample_max';
 var ID_OSM_LABEL = 'osmlabel';
 var ID_OSM_TEXT = 'osmtext';
+
+var ID_STYLE_DIALOG='styledialog';
+var ID_STYLE_DIALOG_ACTIVE='styledialogactive';
 
 let ImdvUtils = {
     getImdv: function(id) {
@@ -1344,8 +1355,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=buttons;
 		contents.push({label:'WMS/WMTS',contents:html});
 
-		let datacube = HU.div([ATTR_ID,this.domId('datacube_contents')],'Loading...');
-		//		contents.push({label:'Data Cubes',contents:datacube});
 
 		let showStac = false;
 		let tabs;
@@ -1375,7 +1384,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(showStac) {
 		    tabs.init();
 		}
-		this.initDatacube(dialog);
+
 		this.initStac(dialog);
 		let cancel = ()=>{
 		    dialog.hide();
@@ -1668,7 +1677,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
 		let input =  HU.textarea('',this.lastText??'',[ATTR_ID,this.domId('labeltext'),
-							       ATTR_ROWS,3,ATTR_COLS, 40]);
+							       ATTR_ROWS,3,
+							       ATTR_COLS, 40]);
 		let html =  HU.formTable();
 		html += HU.formEntryTopLabel('Label',input);
 		let prop = 'externalGraphic';
@@ -1845,7 +1855,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		widgets.push(HU.boldLabel(label)+HU.br()+
 			     HU.select('',[ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200)),
 					   ATTR_ID,this.domId('osm' + id),
-					   ATTR_MULTIPLE,'true',ATTR_SIZE,3],
+					   ATTR_MULTIPLE,true,
+					   ATTR_SIZE,3],
 				       list,null));
 	    }
 	    widget('tourism','Tourism',tourism);
@@ -1862,7 +1873,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html += HU.formTable();	    
 	    html+=HU.formEntryLabel('Limit',
 				    HU.input('',this.osm.limit??'100',
-					     [ATTR_ID,this.domId('osmlimit'),ATTR_SIZE,10]));	    
+					     [ATTR_ID,this.domId('osmlimit'),
+					      ATTR_SIZE,10]));	    
 	    html += HU.formTableClose();	    
 	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], 'Search'),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_BUTTON)], 'Clear Markers'),
@@ -2075,7 +2087,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		this.jq('stac_add').click(function() {
 		    let link = HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),
-				       [ATTR_TARGET,'_stacindex',ATTR_TITLE,'Look for catatalogs on stacindex.org']);
+				       [ATTR_TARGET,'_stacindex',
+					ATTR_TITLE,'Look for catatalogs on stacindex.org']);
 		    let input = HU.input('','',[ATTR_ID,_this.domId('stac_add_url'),
 						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))])+' ' +link;
 		    let html = HU.b('STAC  Catalog URL: ') + input;
@@ -2160,7 +2173,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							       [ATTR_TITLE,link.summary??'',
 								ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.pt(9))])+
 					   ' '+label+(link.rel?' ('+link.rel+')':''),
-					   [ATTR_TARGET,'_stactarget',ATTR_CLASS,CLASS_CLICKABLE]);
+					   [ATTR_TARGET,'_stactarget',
+					    ATTR_CLASS,CLASS_CLICKABLE]);
 
 			let isJson;
 			if(Utils.isDefined(link.variables)) {
@@ -2304,193 +2318,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 	    }
 	},
-	initDatacube:function(dialog) {
-	    let _this = this;
-	    let datacube= HU.div([ATTR_ID,this.domId('datacube_top')]) +
-		HU.div([ATTR_ID,this.domId('datacube_output')]);
-	    this.jq('datacube_contents').html(datacube);
-
-	    let load;
-	    let datacubeLinks = [{value:'',label:'Select'}];
-	    MapUtils.getMapProperty('datacubeservers','').split(',').forEach(c=>{
-		datacubeLinks.push(c);
-	    });
-
-	    let makeTop=(current)=>{ 
-		let input = this.jq('datacube_input').val()??'';
-		let plus = HU.span([ATTR_ID,this.domId('datacube_add'),
-				    ATTR_CLASS,CLASS_CLICKABLE,
-				    ATTR_TITLE,'Add a Data Cube server URL'],HU.getIconImage('fas fa-plus'));
-		let top =plus +' ' +HU.select("",[ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(500),
-								    CSS_OVERFLOW_X,OVERFLOW_NONE),
-						  ATTR_ID,this.domId('datacube_url')],datacubeLinks,current,100);
-		top = HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,'#ddd'),
-						CSS_PADDING_BOTTOM,HU.px(6),
-						CSS_MARGIN_BOTTOM,HU.px(6))], top);
-		this.jq('datacube_top').html(top);
-
-		this.jq('datacube_add').click(function() {
-		    let input = HU.input('','',[ATTR_ID,_this.domId('datacube_add_url'),
-						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))]);
-		    let html = HU.b('DATACUBE  Catalog URL: ') + input;
-		    html+= HU.buttons([
-			HU.div([ATTR_CLASS,'datacube-add-ok display-button'], LABEL_OK),
-			HU.div([ATTR_CLASS,'datacube-add-cancel display-button'], LABEL_CANCEL)]);
-		    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
-						   CSS_MARGIN_TOP,HU.px(10))],html);
-		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
-
-		    let add = ()=>{
-			let url = _this.jq('datacube_add_url').val();
-			if(Utils.stringDefined(url)) {
-			    load(url);
-			    if(!datacubeLinks.includes(url)) {
-				datacubeLinks.push(url);
-				makeTop(url);
-			    }
-			}
-			dialog.remove();
-		    }
-		    _this.jq('datacube_add_url').keypress((event)=>{
-			if (event.which == 13) {
-			    add();
-			}
-		    });
-		    dialog.find('.display-button').button().click(function() {
-			if($(this).hasClass('datacube-add-ok')) {
-			    add();
-			}
-			dialog.remove();
-		    });
-		});
-
-
-		this.jq('datacube_url').change(()=>{
-		    let url = this.jq('datacube_url').val();
-		    if(Utils.stringDefined(url)) {
-			load(url);
-		    }
-		});
-	    };
-	    makeTop();
-	    let showDatacube=(data,baseUrl)=>{
-		let html='';
-		html += HU.formTable();
-		let selects = [];
-		let variableMap = {}
-		let idToMaps = {}	    
-		let selectStyle=HU.css(CSS_MAX_WIDTH,HU.px(300),CSS_OVERFLOW_X,OVERFLOW_HIDDEN);
-		data.datasets.forEach((dataset,idx)=>{
-		    let variables  = {};
-		    variableMap[''+idx] = variables;
-		    if(!dataset.variables) return;
-		    let items = [{label:'Select Variable',value:''}];
-		    dataset.variables.forEach(v=>{
-			variables[v.id] =v;
-			items.push({label:v.title,value:v.id});
-		    });
-		    let selectId = HU.getUniqueId('select_');
-		    selects.push(selectId);	
-		    html+=HU.formEntryLabel(dataset.title,
-					    HU.select("",[ATTR_STYLE,selectStyle,
-							  ATTR_ID,selectId,
-							  'dataset',idx],items));
-		    if(dataset.placeGroups) {
-			let maps=[{value:'',label:'Select'}];
-			dataset.placeGroups.forEach((group,idx)=>{
-			    let url = baseUrl+'/places/' + group.id
-			    let uid  = Utils.getUniqueId('map');
-			    idToMaps[uid] = {label:group.title,value:group.id,url:url};
-			    maps.push({label:group.title,value:uid});
-			});
-			if(maps.length>1) {
-			    let selectId = HU.getUniqueId('mapselect_');
-			    selects.push(selectId);	
-			    html+=HU.formEntryLabel("Maps",
-						    HU.select("",
-							      ['ismap','true',
-							       ATTR_STYLE,selectStyle,
-							       ATTR_ID,selectId],maps));
-			}
-		    }
-		});
-		html+=HU.close(TAG_TABLE);
-		html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
-		html+= HU.buttons([
-		    HU.div([ATTR_CLASS,'ramadda-button-ok-datacube display-button'], LABEL_OK),
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel-datacube display-button'], LABEL_CANCEL)]);
-		
-		let datacubeDialog=this.jq('datacube_output');
-		datacubeDialog.html(html);
-		datacubeDialog.find('.ramadda-button-ok-datacube').button().click(()=>{
-		    let variable;
-		    let mapInfo
-		    selects.every(sid=>{
-			let select=jqid(sid);
-			let id = select.val();
-			if(Utils.stringDefined(id)) {
-			    if(select.attr('ismap')) {
-				mapInfo  = idToMaps[id];
-			    } else {
-				variable=variableMap[select.attr('dataset')][id];
-			    }
-			    return false;
-			}
-			return true;
-		    });
-		    dialog.hide();
-		    if(mapInfo) {
-			let glyphType = this.getGlyphType(GLYPH_MAP);
-			let attrs = {
-			    type:GLYPH_MAP,
-			    entryType:'geo_geojson',
-			    icon:'/repository/icons/mapfile.png',
-			    name:mapInfo.label,
-			    resourceUrl:mapInfo.url,
-			}
-			let mapGlyph = this.handleNewFeature(null,glyphType.getStyle(),attrs);
-			mapGlyph.checkMapLayer();
-			return
-		    }		    
-		    if(variable) {
-			let url = variable.tileUrl;
-			url = url.replace('http:','https:');
-			url=HU.url(url,['crs','EPSG:3857'])+'&cbar={colorbar}&vmin={vmin}&vmax={vmax}&time={time}';
-			delete variable.htmlRepr;
-			let mapOptions = {name:variable.title,
-					  variable:variable};
-			this.clearCommands();
-			mapOptions.icon = Ramadda.getCdnUrl('/icons/xcube.png');
-			mapOptions.type=GLYPH_MAPSERVER;
-			let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, mapOptions, null,{});
-			mapGlyph.setMapServerUrl(url,'','','');
-			mapGlyph.checkMapServer();
-			this.addGlyph(mapGlyph);
-			this.clearMessage2(1000);
-		    }
-		});
-		datacubeDialog.find('.ramadda-button-cancel-datacube').button().click(()=>{
-		    dialog.hide();
-		});
-	    };
-
-	    load = (url) => {
-		if(!Utils.stringDefined(url)) return;
-		let baseUrl = url
-		//https://api.earthsystemdatalab.net/api/datasets?details=1
-		if(url.indexOf('/api/datasets')<0) {
-		    url = url +'/datasets?details=1';
-		}
-		this.jq('datacube_output').html('Loading...');
-		console.log(url);
-		$.getJSON(url, data=>{
-		    showDatacube(data,baseUrl);
-		}).fail(err=>{
-		    console.error('Failed loading datacube datasets:' + err);
-		});
-	    };
-	},
-
 	createMapMarker:function(glyphType, glyphAttrs,style,points,andAdd) {
 	    let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Point', style, points);
 	    feature.style = style;
@@ -3017,9 +2844,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		mapGlyph.applyPropertiesComponent(style);
 		mapGlyph.applyPropertiesDialog(style);
-
-
-		//		mapGlyph.applyStyle(style);
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
@@ -3068,8 +2892,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let cnt = 0;
 	    colors.forEach(color=>{
 		bar += HU.div([ATTR_TITLE,color,
-			       'color',color,
-			       'widget-id',domId,
+			       ATTR_COLOR,color,
+			       ATTR_WIDGET_ID,domId,
 			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-color-select','ramadda-dot'),
 			       ATTR_STYLE,HU.css(CSS_BACKGROUND,color)]) +SPACE;
 		cnt++;
@@ -3270,11 +3094,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     [ATTR_TARGET,'_help']);
 			}
 			if(prop.indexOf("Color")>=0) {
-			    widget =  HU.input("",v,[ATTR_CLASS,'ramadda-imdv-color',ID,domId,
+			    widget =  HU.input("",v,[ATTR_CLASS,CLASS_IMDV_COLOR,
+						     ATTR_ID,domId,
 						     ATTR_SIZE,8]);
 			    widget+=SPACE1;
 			    widget +=  HU.input("",v,[ATTR_STYLE,HU.css(CSS_BORDER_RADIUS,'var(--default-radius)'),
-						      ATTR_TYPE,'color','baseid',domId,
+						      ATTR_TYPE,'color',
+						      'baseid',domId,
 						      ATTR_CLASS,'ramadda-imdv-color-hidden',
 						      ATTR_ID,domId+'colorinput',
 						      ATTR_SIZE,8]);
@@ -3333,7 +3159,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    ATTR_SLIDER_MAX,max,
 				    ATTR_SLIDER_STEP,1,
 				    ATTR_SLIDER_VALUE,v,
-				    'slider-id',domId,
+				    ATTR_SLIDER_ID,domId,
 				    ATTR_ID,domId+'_slider',
 				    ATTR_CLASS,CLASS_SLIDER,
 				    ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -3345,7 +3171,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				HU.div([ATTR_SLIDER_MIN,0,
 					ATTR_SLIDER_MAX,1,
 					ATTR_SLIDER_VALUE,v,
-					'slider-id',domId,
+					ATTR_SLIDER_ID,domId,
 					ATTR_ID,domId+'_slider',
 					ATTR_CLASS,CLASS_SLIDER,
 					ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -3363,7 +3189,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(isGroup && shared) {
 		    suffix=HU.span([ATTR_TITLE,'Apply this style to children glyphs',
 				    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-style-suffix'),
-				    'widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
+				    ATTR_WIDGET_ID,domId,ATTR_PROPERTY,prop],HU.getIconImage('fas fa-folder-tree'));
 		}
 		if(label=='') label='Label';
 
@@ -3497,10 +3323,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let div =
 		HU.leftRightTable('',
 				  HU.span([ATTR_TITLE,'Apply style actively'],
-					  HU.checkbox(this.domId('styledialogactive'),
-						      [ATTR_ID,this.domId('styledialogactive')], false,
+					  HU.checkbox(this.domId(ID_STYLE_DIALOG_ACTIVE),
+						      [ATTR_ID,this.domId(ID_STYLE_DIALOG_ACTIVE)],
+						      false,
 						      'Active'))) +r.html;
-	    content.push({header:"Style",contents:HU.div([ATTR_ID,this.domId('styledialog')],div)});
+	    content.push({header:"Style",contents:HU.div([ATTR_ID,
+							  this.domId(ID_STYLE_DIALOG)],div)});
 	    props = r.props;
 	    //	    }
 	    if(mapGlyph) {
@@ -3572,28 +3400,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let ifApply = () =>{
-		if(HU.isChecked(this.jq('styledialogactive'))) {
+		if(HU.isChecked(this.jq(ID_STYLE_DIALOG_ACTIVE))) {
 		    myApply();
 		}
 	    };
 
-	    this.jq('styledialog').find('select').change(function() {
+	    this.jq(ID_STYLE_DIALOG).find(TAG_SELECT).change(function() {
 		ifApply();
 	    });
-	    this.jq('styledialog').find('input').change(function(event) {
-		if($(this).attr(ATTR_ID)!=_this.domId('styledialogactive')) {
+	    this.jq(ID_STYLE_DIALOG).find(TAG_INPUT).change(function(event) {
+		if($(this).attr(ATTR_ID)!=_this.domId(ID_STYLE_DIALOG_ACTIVE)) {
 		    ifApply();
 		}
 	    });
-	    this.jq('styledialog').find('input').keypress(function(event) {
-		if(event.keyCode == 13) {
-		    ifApply();
+	    /*
+	    this.jq(ID_STYLE_DIALOG).find(TAG_INPUT).keypress(function(event) {
+		if(Utils.isReturnKey(event)) {
+//		    ifApply();
 		}
-	    });
+		});
+		*/
 
-	    dialog.find('.imdv-style-suffix').click(function() {
-		let prop = $(this).attr('property');
-		let id = $(this).attr('widget-id');
+	    dialog.find(HU.dotClass('imdv-style-suffix')).click(function() {
+		let prop = $(this).attr(ATTR_PROPERTY);
+		let id = $(this).attr(ATTR_WIDGET_ID);
 		let value = jqid(id).val();
 		if(!value) {
 		    value = jqid(id+'_image').val();
@@ -3784,10 +3614,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    step:+step,
 		    value:$(this).attr(ATTR_SLIDER_VALUE),
 		    slide: function( event, ui ) {
-			let id = $(this).attr('slider-id');
+			let id = $(this).attr(ATTR_SLIDER_ID);
 			jqid(id).val(ui.value);
+		    },
+		    stop: function( event, ui ) {
 			ifApply();
-		    }});
+		    }
+		});
 	    });
 
 	    dialog.find('.ramadda-imdv-color-hidden').on('input',function() {
@@ -3801,13 +3634,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let base = $(this).attr('baseid');
 		jqid(base+'colorinput').click();
 	    });
-	    dialog.find('.ramadda-imdv-color').focus(function() {
+	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).focus(function() {
 		let id = $(this).attr(ATTR_ID);
 		let bar = _this.makeColorBar(id);
 		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
 		dialog.find('.ramadda-color-select').click(function(){
-		    let c = $(this).attr('color');
-		    let id = $(this).attr('widget-id');
+		    let c = $(this).attr(ATTR_COLOR);
+		    let id = $(this).attr(ATTR_WIDGET_ID);
 		    jqid(id).val(c);
 		    jqid(id+'_display').css(CSS_BACKGROUND,c);
 		    jqid(id+'colorinput').val(c);
@@ -3817,7 +3650,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    });
 
-	    dialog.find('.ramadda-imdv-color').change(function() {
+	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).change(function() {
 		let c = $(this).val();
 		let id = $(this).attr(ATTR_ID);
 		jqid(id+'_display').css(CSS_BACKGROUND,c);
@@ -5202,7 +5035,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		//fall thru to geojson
 
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true,
+						     selectCallback, unselectCallback,
+						     style,loadCallback,andZoom,errorCallback);
 		break;		
 
 	    case 'geo_kml': 
