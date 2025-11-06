@@ -221,25 +221,25 @@ public class MetadataHandler extends RepositoryManager {
 
     protected String formEntry(String[] cols) {
         if (cols.length == 2) {
-            //            return HtmlUtils.rowTop(HtmlUtils.cols(cols[0])+"<td colspan=2>" + cols[1] +"</td>");
-            //            return HtmlUtils.rowTop(HtmlUtils.cols(cols[0])
+            //            return HU.rowTop(HU.cols(cols[0])+"<td colspan=2>" + cols[1] +"</td>");
+            //            return HU.rowTop(HU.cols(cols[0])
             //                                   + "<td xxcolspan=2>" + cols[1] + "</td>");
         }
         StringBuffer sb = new StringBuffer();
 
-        sb.append(HtmlUtils.rowTop("<td colspan=2>" + cols[0] + "</td>"));
+        sb.append(HU.rowTop("<td colspan=2>" + cols[0] + "</td>"));
         for (int i = 1; i < cols.length; i += 2) {
             if (false && (i == 1)) {
                 sb.append(
-                    HtmlUtils.rowTop(
-                        HtmlUtils.cols(cols[0])
+                    HU.rowTop(
+                        HU.cols(cols[0])
                         + "<td class=\"formlabel\" align=right>" + cols[i]
                         + "</td>" + "<td>" + cols[i + 1]));
             } else {
-                //                sb.append(HtmlUtils.rowTop("<td></td><td class=\"formlabel\" align=right>" + cols[i] +"</td>" +
+                //                sb.append(HU.rowTop("<td></td><td class=\"formlabel\" align=right>" + cols[i] +"</td>" +
                 //                                          "<td>" + cols[i+1]));
                 sb.append(
-                    HtmlUtils.rowTop(
+                    HU.rowTop(
                         "<td class=\"formlabel\" align=right>" + cols[i]
                         + "</td>" + "<td>" + cols[i + 1]));
             }
@@ -429,17 +429,17 @@ public class MetadataHandler extends RepositoryManager {
         args.add(ARG_METADATA_ATTR1 + "_" + type.getId());
         args.add(value);
 
-        return HtmlUtils.url(
+        return HU.url(
             request.makeUrl(
                 getRepository().getSearchManager().URL_ENTRY_SEARCH), args);
     }
 
     public String getSearchLink(Request request, Metadata metadata, String text) {
-        return HtmlUtils.href(
+        return HU.href(
             getSearchUrl(request, metadata),
              text,
 	    HU.attr("title","Search for entries with this metadata") +
-	    HU.cssClass("metadata-search-link ramadda-clickable"));
+	    HU.cssClass("metadata-search-link ramadda-clickable ramadda-text"));
     }
 
     public void addToSearchForm(Request request, Appendable sb,
@@ -457,7 +457,10 @@ public class MetadataHandler extends RepositoryManager {
             List<TwoFacedObject> existingValues =
                 trimValues((List<String>) Misc.toList(values));
             List selectList = new ArrayList();
-            selectList.add(new TwoFacedObject("-" + msg("all") + "-", ""));
+	    HtmlUtils.Selector all = new HtmlUtils.Selector("-"+msg("all")+"-","");
+	    all.setTooltip("all");
+            selectList.add(all);
+	    //            selectList.add(new TwoFacedObject(TypeHandler.ALL, ""));
             MetadataElement element    = type.getChildren().get(0);
             List            enumValues = element.getValues();
             if (enumValues == null) {
@@ -474,16 +477,16 @@ public class MetadataHandler extends RepositoryManager {
                 }
                 String value = request.getString(argName, "");
                 String size  = (selectList.size() >= 4)
-                               ? HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "6")
+                               ? HU.attr(HU.ATTR_SIZE, "6")
                                : "";
-                sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                        HtmlUtils.select(argName, selectList, value,
-                                         size + HtmlUtils.ATTR_MULTIPLE,
+                sb.append(HU.formEntry(msgLabel(type.getLabel()),
+                        HU.select(argName, selectList, value,
+				  HU.clazz("ramadda-text") + size + HU.ATTR_MULTIPLE,
                                          100)));
             }
         } else {
-            sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                                          HtmlUtils.input(argName, "")));
+            sb.append(HU.formEntry(msgLabel(type.getLabel()),
+                                          HU.input(argName, "")));
         }
     }
 
@@ -507,14 +510,14 @@ public class MetadataHandler extends RepositoryManager {
 
         boolean doSelect = true;
         String cloudLink =
-            HtmlUtils.href(
+            HU.href(
                 request.makeUrl(
                     getRepository().getMetadataManager().URL_METADATA_LIST,
-                    ARG_METADATA_TYPE, type.toString()), HtmlUtils.img(
+                    ARG_METADATA_TYPE, type.toString()), HU.img(
                         getRepository().getIconUrl(ICON_LIST),
                         "View Listing"));
 
-        cloudLink = HtmlUtils.href(
+        cloudLink = HU.href(
             request.makeUrl(
                 getRepository().getMetadataManager().URL_METADATA_LIST,
                 ARG_METADATA_TYPE, type.toString()), msg("View Listing"));
@@ -528,12 +531,12 @@ public class MetadataHandler extends RepositoryManager {
         }
         StringBuffer content = new StringBuffer();
         content.append(cloudLink);
-        content.append(HtmlUtils.p());
-        content.append(HtmlUtils.h3(msg("Search")));
+        content.append(HU.p());
+        content.append(HU.h3(msg("Search")));
         int          rowNum = 1;
         List<String> rows   = new ArrayList<String>();
         for (int i = 0; i < values.length; i++) {
-            String browseUrl = HtmlUtils.url(url,
+            String browseUrl = HU.url(url,
                                              ARG_METADATA_TYPE + "_"
                                              + type.getId(), type.getId(),
                                                  ARG_METADATA_ATTR1 + "_"
@@ -542,8 +545,8 @@ public class MetadataHandler extends RepositoryManager {
             if (value.length() == 0) {
                 value = "-blank-";
             }
-            rows.add(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
-                                   HtmlUtils.cssClass("listrow" + rowNum)));
+            rows.add(HU.div(HU.href(browseUrl, value),
+                                   HU.cssClass("listrow" + rowNum)));
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
@@ -558,7 +561,7 @@ public class MetadataHandler extends RepositoryManager {
         }
         titles.add(type.getLabel());
         contents.add(content.toString());
-        sb.append(HtmlUtils.makeShowHideBlock(type.getLabel(),
+        sb.append(HU.makeShowHideBlock(type.getLabel(),
                 content.toString(), false));
 
     }
@@ -596,27 +599,27 @@ public class MetadataHandler extends RepositoryManager {
                 sb, getMetadataManager().URL_METADATA_ADD,
                 HU.attr("name", "metadataform") + HU.id(formId));
             sb.append("\n");
-            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");
-            sb.append(HtmlUtils.formTable());
+            sb.append(HU.formTable());
             sb.append("\n");
         } else {
             sb.append("\n");
-            sb.append(HtmlUtils.formTable());
+            sb.append(HU.formTable());
             sb.append("\n");
-            sb.append(HtmlUtils.row(HtmlUtils.colspan(header(html[0]), 2)));
+            sb.append(HU.row(HU.colspan(header(html[0]), 2)));
         }
 
         sb.append("\n");
         sb.append(html[1]);
         sb.append("\n");
         sb.append("\n");
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
         sb.append("\n");
 
         if (entry != null) {
             formInfo.addToForm(sb);
-            sb.append(HtmlUtils.formClose());
+            sb.append(HU.formClose());
             sb.append("\n");
         }
     }
