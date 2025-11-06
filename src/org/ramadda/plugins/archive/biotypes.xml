@@ -91,7 +91,7 @@
 
 
 <wiki><![CDATA[
-+section  title="{{typename}}: {{name}}"
++section  title="{{typename wrap=true}}: {{name wrap=true}}"
 +row
 +col-8
 {{description wikify="true"}}

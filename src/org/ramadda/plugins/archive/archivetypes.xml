@@ -33,7 +33,7 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
     <property name="form.area.show" value="false"/>    
     <property name="form.tags.show" value="false"/>    
 <wiki><![CDATA[
-+section  title="{{typename}}: {{name}}"
++section  title="{{typename wrap=true}}: {{name wrap=true}}"
 +center
 {{display_simplesearch width=200px  inputSize=100% 
 ancestor=this 
@@ -63,7 +63,7 @@ inherited="false"  }}
 
 
 <wiki><![CDATA[
-+section  title="{{typename}}: {{name}}"
++section  title="{{typename wrap=true}}: {{name wrap=true}}"
 +center
 {{display_simplesearch width=200px  inputSize=100% 
 ancestor=this 
@@ -255,7 +255,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <xwiki><![CDATA[
-+section  title="{{typename}}: {{name}}"
++section  title="{{typename wrap=true}}: {{name wrap=true}}"
 +row
 +col-8
 {{description wikify="true"}}
@@ -364,7 +364,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <wiki><![CDATA[
-+section  title="Book: {{name}}"
++section  title="<span>Book</span>: {{name wrap=true}}"
 +row
 +col-8
 {{description wikify="true" prefix="+callout" suffix="-callout"}}
@@ -454,7 +454,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <wiki><![CDATA[
-+section  title="Object: {{name}}"
++section  title="<span>Object</span>: {{name wrap=true}}"
 +row
 +col-8
 {{description wikify="true"}}
