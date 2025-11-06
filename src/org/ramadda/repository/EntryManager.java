@@ -6743,7 +6743,7 @@ public class EntryManager extends RepositoryManager {
             }
 	    sb.append(HU.SPACE);
 	    String tooltip = link.getTooltip();
-	    if(!Utils.stringDefined(tooltip)) tooltip = link.getLabel();
+	    if(!Utils.stringDefined(tooltip)) tooltip = "";
 	    HU.href(sb,
 		    link.getUrl(), msg(link.getLabel()),
 		    HU.attrs("title",tooltip,"class",
@@ -6794,7 +6794,8 @@ public class EntryManager extends RepositoryManager {
                     String linkLabel = noMsg(child.getName());
                     linkLabel =
                         getPageHandler().getEntryIconImage(request, child) + HU.space(1) + linkLabel;
-                    String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
+                    String href = HU.href(url, linkLabel,HU.attrs("class","ramadda-text",
+								  "title",getPageHandler().getEntryTooltip(child)));
 		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }
 		HU.tag(menu,
