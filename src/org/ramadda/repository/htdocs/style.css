@@ -4766,9 +4766,10 @@ td .ramadda-role {
 .ramadda-page-link {
     transition: transform .3s ease-in-out;
     padding-right:5px;
-    display:inline-block;
     display: table-cell;
     vertical-align: middle;
+    padding-right:4px;
+    padding-left:4px;    
 }
 
 .ramadda-page-link-simple a {
@@ -4858,10 +4859,12 @@ img.ramadda-user-menu-image:hover {
     cursor:pointer;
 }
 
+/*
 .ramadda-text a, .ramadda-text a:visited {
     text-decoration: underline;
     color: black;
 }
+*/
 
 .ramadda-user-link a {
     color: black;
