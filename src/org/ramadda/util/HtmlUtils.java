@@ -26,6 +26,10 @@ import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
 public class HtmlUtils implements HtmlUtilsConstants {
+    public static final String NOMSGCHAR= "\u2063";
+    public static final String MSGCHAR= "\u200B";
+
+
     public static final String NL = "&#013;";
     public static final String SPACE = "&nbsp;";
     public static final String SPACE2 = "&nbsp;&nbsp;";
@@ -50,6 +54,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
+    }
+
+    public static String msgChar(String msg) {
+	return MSGCHAR + msg + MSGCHAR;
     }
 
     public static String open(String comp) {
@@ -1471,6 +1479,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
+    public static String wrapText(String t) {
+	return HtmlUtils.span(t,"class=ramadda-text");
+    }
+
     public static String formHelp(String html) {
 	return span(html,clazz("ramadda-form-help"));
 
@@ -2195,6 +2207,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     public static String formEntryTop(String[] cols) {
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.length; i += 2) {
             sb.append(formEntryTop(cols[i], cols[i + 1]));
