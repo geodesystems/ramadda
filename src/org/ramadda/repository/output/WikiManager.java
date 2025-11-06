@@ -2945,7 +2945,12 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return  contents;
         } else if (theTag.equals(WIKI_TAG_TYPENAME)) {
-	    return entry.getTypeHandler().getDescription();
+	    String typeName =  entry.getTypeHandler().getDescription();
+	    boolean wrap = getProperty(wikiUtil, props, "wrap", false);
+	    if(wrap) {
+		typeName = HU.span(typeName,"");
+	    }
+	    return typeName;
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
         } else if (theTag.equals(WIKI_TAG_TOPENTRY)) {
@@ -3004,6 +3009,10 @@ public class WikiManager extends RepositoryManager
 	    return HU.script("HtmlUtils.toggleAllInit();");
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
+	    boolean wrap = getProperty(wikiUtil, props, "wrap", false);
+	    if(wrap) {
+		name = HU.wrapText(name);
+	    }
             if (getProperty(wikiUtil, props, "link", false)) {
 		//In case we are making a snapshot we use the overrideurl
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
@@ -5286,6 +5295,7 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
+	    linkLabel  = HU.wrapText(linkLabel);
 	    String snippet =  showSnippet?getSnippet(request,  child, true,""):showDescription?child.getDescription():null;
 
 	    String href = HU.href(url, linkLabel,
