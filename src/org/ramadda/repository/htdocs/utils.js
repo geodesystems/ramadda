@@ -4030,6 +4030,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.target) {
 	    if($(opts.target).length==0) {
 		console.log('initPageSearch: no target div found:' + opts.target);
+//		console.trace();
 	    }
 	    $(opts.target).html(input);
 	} else {
