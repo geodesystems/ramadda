@@ -105,7 +105,9 @@ $.extend(Utils,{
 	Utils.initCopyable('.colortable-id',{title:'Click to copy color table ID',ack:'Color table ID copied to clipboard'});
 	HU.initPageSearch(HU.dotClass('ramadda-colortable'),
 			  null,
-			  'Find colortable',false,{target:jqid(guid)});
+			  'Find colortable',
+			  false,
+			  {target:jqid(guid)});
 
     },
     //wikiEditor, itemize,label,showToggle,attr,value
