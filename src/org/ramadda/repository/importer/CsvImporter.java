@@ -123,12 +123,14 @@ public class CsvImporter extends ImportHandler {
 			    headerRow = row;
 			    for(int i=0;i<row.size();i++) {
 				String field = row.getString(i);
-				field = field.replace("\uFEFF", "");
+				field = field.replace("\uFEFF", "").trim();
 				String _field=field.toLowerCase().trim();
-				_field = _field.replace(":","_semicolon");
+				_field = _field.replace(":","_semicolon_");
+				_field = _field.replace(".","_dot_");				
 				_field=Utils.makeID(_field);
-				_field = _field.replace("_semicolon",":");
-				//				System.err.println("FIELD:" + _field +" " + _field.length());
+				_field = _field.replace("_semicolon_",":");
+				_field = _field.replace("_dot_",".");				
+
 				if(_field.equals("name")) {
 				    nameIdx=i;
 				} else if(_field.equals("type")) {
@@ -151,7 +153,6 @@ public class CsvImporter extends ImportHandler {
 				    idIdx=i;
 				} else if(_field.equals("parent")) {
 				    parentIdx=i;
-
 				} else if(_field.startsWith("new:")) {
 				    String type= _field.substring("new:".length()).trim();
 				    newIdx.put(type,i);				    
@@ -176,6 +177,7 @@ public class CsvImporter extends ImportHandler {
 			    if(nameIdx==-1) throw new IllegalArgumentException("input data must have a \"name\" column");			    
 			    return row;
 			}	
+
 			if(!row.indexOk(typeIdx)) {
 			    if(!hadBadType) {
 				hadBadType=true;
@@ -236,6 +238,7 @@ public class CsvImporter extends ImportHandler {
 			}			
 
 
+			
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
 			    if(Utils.stringDefined(parent)) {
@@ -276,6 +279,7 @@ public class CsvImporter extends ImportHandler {
 			    Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
 			    if(column==null) {
 				if(!seenMessage.contains(prop)) {
+				    System.err.println("PROP:" + prop + " type:" + currentTypeHandler);
 				    String message= "";
 				    if(currentTypeHandler!=null)
 					message+="Type:" + currentTypeHandler.getLabel()+" ";
