@@ -24,8 +24,10 @@ var ATTR_COMMAND='command';
 var ID_INMAP_LABEL='inmaplabel';
 var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
-var ID_IMAGEID='imageid';
+var ATTR_IMAGEID='imageid';
 
+var ID_FILLCOLORS = 'fillcolors';
+var ID_STROKECOLORS = 'strokecolors';
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
@@ -179,7 +181,7 @@ MapGlyph.prototype = {
 
 	    items.forEach(item=>{
 		let label = item.replace('=.*','');
-		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(px)),
+		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5)),
 			      ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),'item',item],item);
 	    });
 
@@ -515,12 +517,6 @@ MapGlyph.prototype = {
 
 	}
 
-
-	if(this.isMapServer() && this.getDatacubeVariable()) {
-	    return HU.formEntryLabel('Color Table',
-				     HU.div([ATTR_ID,this.domId('colortableproperties')]));
-	}	    
-
 	if(this.isStraightLine()) {
 	    return HU.formEntryLabel('Line type',
 				     HU.select('',[ATTR_ID,this.domId(ID_LINETYPE)],[
@@ -827,13 +823,7 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.isMapServer()  && this.getDatacubeVariable()) {
-	    if(this.currentColorbar!=this.getDatacubeVariable().colorBarName) {
-		this.getDatacubeVariable().colorBarName = this.currentColorbar;
-		this.mapServerLayer.url = this.getMapServerUrl();
-		this.mapServerLayer.redraw();
-	    }
-	}
+
 	if(this.isRings()) {
 	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
 	    this.attrs.rangeRingLabels =this.jq('rangeringlabels').val();
@@ -1048,7 +1038,8 @@ MapGlyph.prototype = {
 	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
 	let contents = HU.div([ATTR_CLASS,clazz,
-			       ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],HU.boldLabel(label)+HU.space(1)+menu);
+			       ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],
+			      HU.boldLabel(label)+HU.space(1)+menu);
 	jqid(this.dataIconContainer).html(contents);
 
 	jqid(this.dataIconFieldsId).change(function(){
@@ -1474,21 +1465,22 @@ MapGlyph.prototype = {
 					     CSS_OVERFLOW_X,OVERFLOW_HIDDEN),
 			   ATTR_TITLE,entry.getName()], link);
 	    let add = '';
+	    let plusIcon = HU.getIconImage('fas fa-plus');
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			       ATTR_TITLE,'add map',
 			       ATTR_ENTRYID,entry.getId(),
-			       ATTR_COMMAND,GLYPH_MAP],HU.getIconImage('fas fa-plus'));
+			       ATTR_COMMAND,GLYPH_MAP],plusIcon);
 	    } else if(entry.isPoint) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			       ATTR_TITLE,'add data',
 			       ATTR_ENTRYID,entry.getId(),
-			       ATTR_COMMAND,GLYPH_DATA],HU.getIconImage('fas fa-plus'));
+			       ATTR_COMMAND,GLYPH_DATA],plusIcon);
 	    } else if(entry.isGroup) {
 		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			       ATTR_TITLE,'add multi entry',
 			       ATTR_ENTRYID,entry.getId(),
-			       ATTR_COMMAND,GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
+			       ATTR_COMMAND,GLYPH_MULTIENTRY],plusIcon);
 	    } else {
 	    }		
 	    if(add!='') {
@@ -1803,11 +1795,6 @@ MapGlyph.prototype = {
 	}
 
 	if(this.isMapServer()) {
-	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
-		let attrs = this.getDatacubeAttrs();
-		bounds= MapUtils.createBounds(attrs.geospatial_lon_min, attrs.geospatial_lat_min, attrs.geospatial_lon_max, attrs.geospatial_lat_max);
-		bounds= this.display.getMap().transformLLBounds(bounds);
-	    }
 	} else if(this.getMapLayer()) {
 	    if(this.getMapLayer().getVisibility()) {
 		bounds =  this.display.getMap().getFeaturesBounds(this.getMapLayer().features);
@@ -1929,9 +1916,6 @@ MapGlyph.prototype = {
     hasBounds:function() {
 	if(this.isMapServer()) {
 	    if(this.attrs.bounds) return true;
-	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
-		return true;
-	    }
 	    return false;
 	}
 
@@ -2007,7 +1991,6 @@ MapGlyph.prototype = {
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
 			     ATTR_GLYPH_ID,this.getId(),
 			     ATTR_TITLE,'Click:Move to; Shift-click:Zoom in'],
-			    //<i class="fa-regular fa-eye"></i>
 			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    if(args.addIcon) {
@@ -2034,8 +2017,7 @@ MapGlyph.prototype = {
 	    
 	    let title = HU.b(HU.center(theLabel))+
 		HU.div([],typeLabel) +
-		(extra??'') +
-		'Click to toggle visibility<br>Shift-click to select';
+		(extra??'') + HU.div([],'Click to toggle visibility') + HU.div([],'Shift-click to select');
 	    label = HU.div([ATTR_TITLE,title,
 			    ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
 					      CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], label);	    
@@ -2221,7 +2203,7 @@ MapGlyph.prototype = {
 	    let cbx='';
 	    if(this.getMapLayer() && this.getMapLayer().features.length) {
 		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),
-					   [ID_IMAGEID,'main',
+					   [ATTR_IMAGEID,'main',
 					    ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible({id:'main'}),
 					   'Main Layer'));
@@ -2230,7 +2212,7 @@ MapGlyph.prototype = {
 	    this.imageLayers.forEach(obj=>{
 		this.imageLayerMap[obj.id] = obj;
 		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),
-					   [ID_IMAGEID,obj.id,
+					   [ATTR_IMAGEID,obj.id,
 					    ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible(obj),
 					   obj.name));
@@ -2513,53 +2495,6 @@ MapGlyph.prototype = {
 
 
 	let showAnimation = false;
-	if(this.isMapServer() && this.getDatacubeVariable() && this.getDatacubeVariable().dims && this.getDatacubeVariable().shape && this.getDatacubeAttr('time_coverage_start')) {
-	    let v = this.getDatacubeVariable();
-	    body+='Time: ' + HU.span([ATTR_ID,this.domId('time_current')],this.getCurrentTimeStep()??'')+HU.br();
-	    let idx=v.dims.indexOf('time');
-	    let numTimes = v.shape[idx];
-	    let start =new Date(v.attrs.time_coverage_start);
-	    let end =new Date(v.attrs.time_coverage_end);
-	    let value = end.getTime();
-	    if(this.attrs.currentTimeStep) {
-		value = new Date(this.attrs.currentTimeStep).getTime();
-	    }
-
-	    let slider = 
-		HU.div([ATTR_TITLE,'Set time',
-			ATTR_SLIDER_MIN,start.getTime(),
-			ATTR_SLIDER_MAX,end.getTime(),
-			ATTR_SLIDER_VALUE,value,
-			ATTR_ID,this.domId('time_slider'),
-			ATTR_CLASS,CLASS_SLIDER,
-			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-					  CSS_WIDTH,HU.perc(90))],'');
-
-	    let anim = HU.join([
-		['Settings','fa-cog','settings'],
-		['Go to start','fa-backward','start'],
-		['Step backward','fa-step-backward','stepbackward'],
-		['Play',ICON_PLAY,'play'],
-		['Step forward','fa-step-forward','stepforward'],
-		['Go to end','fa-forward','end']
-	    ].map(t=>{
-		return HU.span([ATTR_CLASS,HU.classes('imdv-time-anim',CLASS_CLICKABLE),
-				ATTR_TITLE,t[0],
-				ATTR_ACTION,t[2]],HU.getIconImage(t[1]));
-	    }),HU.space(2));
-
-	    if(this.getProperty('showAnimation',true)) {
-		showAnimation  = true;
-		body+=HU.center(anim);
-		body+=slider;
-		let fstart = this.formatDate(start);
-		let fend = this.formatDate(end);
-		body+=HU.leftRightTable(HU.span([ATTR_ID,this.domId('time_min')],fstart),
-					HU.span([ATTR_ID,this.domId('time_max')],fend));
-	    }
-	}
-
-
 
 	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl) || this.imageLayers || this.image) {
 	    if(this.getProperty(PROP_SHOWOPACITYSLIDER,true)) {
@@ -2780,9 +2715,9 @@ MapGlyph.prototype = {
 
 
 	if(this.imageLayers) {
-	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
+	    this.getLegendDiv().find(HU.dotClass('imdv-imagelayer-checkbox')).change(function() {
 		let visible = HU.isChecked($(this));
-		let id = $(this).attr(ID_IMAGEID);
+		let id = $(this).attr(ATTR_IMAGEID);
 		let obj = _this.imageLayerMap[id]??{id:id};
 		_this.setImageLayerVisible(obj,visible);
 	    });
@@ -2790,7 +2725,7 @@ MapGlyph.prototype = {
 
 
 	if(this.display.canEdit()) {
-	    let label = this.getLegendDiv().find('.' + CLASS_LEGEND_LABEL);
+	    let label = this.getLegendDiv().find(HU.dotClass(CLASS_LEGEND_LABEL));
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
 	    if(this.canDrag()) {
@@ -2864,14 +2799,7 @@ MapGlyph.prototype = {
 	let getStep = ()=>{
 	    let min =  +this.jq('time_slider').attr(ATTR_SLIDER_MIN);
 	    let max= +this.jq('time_slider').attr(ATTR_SLIDER_MAX);
-	    let temp = this.getDatacubeAttr('temporal_resolution');
 	    let msPerDay = 1000*60*60*24;
-	    if(temp) {
-		let match = temp.match(/(\d+)D/);
-		if(match) {
-		    return +match[1]*msPerDay;
-		}
-	    }
 	    return msPerDay;
 	}	    
 	let timeSliderStop=v=>{
@@ -2888,102 +2816,6 @@ MapGlyph.prototype = {
 	}
 
 
-	this.getLegendDiv().find('.imdv-time-anim').click(function() {
-	    let action = $(this).attr(ATTR_ACTION);
-	    let slider=	_this.jq('time_slider');
-	    let current = +slider.slider('value');
-	    let min = +slider.attr(ATTR_SLIDER_MIN);
-	    let max = +slider.attr(ATTR_SLIDER_MAX);	    
-	    let step = +slider.slider('option','step');
-	    let change = (v)=>{
-		v = Math.min(max,Math.max(min,v));
-		slider.slider('value',v);
-		timeSliderStop(v);
-	    }
-
-	    switch(action) {
-	    case 'play':
-		if(_this.timeAnimationTimeout)
-		    clearTimeout(_this.timeAnimationTimeout);
-		_this.timeAnimationTimeout=null;
-		if(_this.timeAnimationRunning) {
-		    $(this).html(HU.getIconImage(ICON_PLAY));
-		} else {
-		    $(this).html(HU.getIconImage(ICON_STOP));
-		    let stepTime = () =>{
-			let current = +slider.slider('value');
-			current = current+(_this.attrs.timeAnimationStep??1)*step;
-			change(current);
-			//			console.log("current time: " +new Date(current) +' step:' + _this.attrs.timeAnimationStep);
-			if(current>=max) {
-			    $(this).html(HU.getIconImage(ICON_PLAY));
-			    _this.timeAnimationRunning = false;
-			    return
-			}
-			_this.timeAnimationTimeout=setTimeout(stepTime,_this.attrs.timeAnimationPause??4000);
-		    }
-		    stepTime();
-		}
-		_this.timeAnimationRunning = !_this.timeAnimationRunning;
-		break;
-	    case 'start': 
-		change(min);
-		break;
-	    case 'end': 
-		change(max);
-		break;		
-	    case 'stepforward': 
-		change(current+step);
-		break;
-	    case 'stepbackward': 
-		change(current-step);
-		break;		
-	    case 'settings':
-		let html = HU.formTable();
-
-		html+=HU.formEntryLabel('Time Pause',
-					HU.input("",_this.attrs.timeAnimationPause??4000,
-						 [ATTR_ID,_this.domId('timeanimation_pause'),
-						  ATTR_SIZE,'4']) +' (ms)');
-		html+=HU.formEntryLabel('Time Step',
-					HU.input("",_this.attrs.timeAnimationStep??1,
-						 [ATTR_ID,_this.domId('timeanimation_step'),
-						  ATTR_SIZE,'4']) +' Time steps to skip');		
-		html+=HU.close(TAG_TABLE);
-
-		let buttons = HU.buttons([
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
-		html+=buttons;
-		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(6))], html);
-		let dialog = HU.makeDialog({content:html,title:'Time Animation Settings',draggable:true,header:true,my:"left top",at:"left bottom",anchor:$(this)});
-		
-		dialog.find('.display-button').button().click(function() {
-		    if($(this).hasClass(CLASS_BUTTON_OK)) {
-			_this.attrs.timeAnimationPause = parseFloat(_this.jq('timeanimation_pause').val());
-			_this.attrs.timeAnimationStep = parseFloat(_this.jq('timeanimation_step').val());
-			if($(this).hasClass(CLASS_BUTTON_APPLY)) return;
-		    }
-		    dialog.remove();
-		});
-
-		break
-	    }
-	});
-
-	this.jq('time_slider').slider({
-	    min: +this.jq('time_slider').attr(ATTR_SLIDER_MIN),
-	    max: +this.jq('time_slider').attr(ATTR_SLIDER_MAX),
-	    step:getStep(),
-	    value:+this.jq('time_slider').attr(ATTR_SLIDER_VALUE),
-	    slide: ( event, ui )=> {
-		let current = getSliderTime(ui.value);
-		this.jq('time_current').html(current.format('isoDate'));
-	    },
-	    stop: ( event, ui )=> {
-		timeSliderStop(ui.value);
-	    }});
 
 	this.jq('image_rotation_slider').slider({
 	    min: -360,
@@ -3318,35 +3150,13 @@ MapGlyph.prototype = {
 	let url=this.attrs.mapServerUrl;
 	//Convert malformed TMS url
 	url = url.replace(/\/{/g,"/${");
-	if(this.getDatacubeVariable()) {
-	    let variable = this.getDatacubeVariable();
-	    url = url.replace(/\{colorbar\}/,variable.colorBarName);
-	    url = url.replace(/\{vmin\}/,variable.colorBarMin);
-	    url = url.replace(/\{vmax\}/,variable.colorBarMax);	    	    
-	    if(variable.attrs.time_coverage_start) {
-		let time = this.getCurrentTimeStep();
-		url = url.replace(/\{time\}/,encodeURIComponent(time));
-	    }
-	}
 	return url;
     },
 
-    getDatacubeVariable:function() {
-	return  this.attrs.variable;
-    },
-    getDatacubeAttrs:function() {
-	return this.getDatacubeVariable()?.attrs;
-    },
-    getDatacubeAttr:function(attr) {
-	let attrs =  this.getDatacubeAttrs();
-	return attrs?attrs[attr]:null;
-    },    
     getCurrentTimeStep:function() {
 	if(Utils.isDefined(this.attrs.currentTimeStep)) {
 	    return  this.formatDate(new Date(this.attrs.currentTimeStep));
 	}
-	if(!this.getDatacubeAttr('time_coverage_end')) return null;		
-	return this.formatDate(new Date(this.getDatacubeAttr('time_coverage_end')));
     },
 
     formatDate: function(date) {
@@ -3485,7 +3295,8 @@ MapGlyph.prototype = {
 	}	    
 
 	if(!this.canDoMapStyle()) return;
-	this.attrs.fillColors = HU.isChecked(this.jq('fillcolors'));
+	this.attrs.fillColors = HU.isChecked(this.jq(ID_FILLCOLORS));
+	this.attrs.strokeColors = HU.isChecked(this.jq(ID_STROKECOLORS));	
 	let getColorBy=(prefix)=>{
 	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
@@ -3542,9 +3353,7 @@ MapGlyph.prototype = {
         return  HU.div(attrs,display);
     },
     initColorTables: function(currentColorbar) {
-	if(!currentColorbar)
-	    this.currentColorbar=this.getDatacubeVariable()?.colorBarName;
-	currentColorbar = currentColorbar??this.getDatacubeVariable()?.colorBarName;
+//	if(!currentColorbar)	    this.currentColorbar=this.getDatacubeVariable()?.colorBarName;
 	let items = [];
 	let image;
 	let html = '';
@@ -3743,20 +3552,6 @@ MapGlyph.prototype = {
 
 
 	let _this = this;
-	if(this.isMapServer() && this.getDatacubeVariable()) {
-	    if(!this.display.colorbars) {
-		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
-		let url = dataCubeServers[0]+'/colorbars';
-		$.getJSON(url, (data)=> {
-		    this.display.colorbars = data;
-		    this.initColorTables();
-		});
-	    } else {
-		this.initColorTables();
-	    }
-	}	    	
-
-
 	let clearElevations = this.jq('clearelevations');
 	clearElevations.button().click(function(){
 	    _this.attrs.elevations = null;
@@ -4197,7 +3992,8 @@ MapGlyph.prototype = {
 	    let html = makeMapHelp;
 	    html += HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
 	    html+=SPACE;
-	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
+	    html+= HU.checkbox(this.domId('mergepolygons'),
+			       [ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
 
 	    html+=HU.p();
 	    html += HU.div([ATTR_ID,this.domId('makecsv')],'Make CSV File');	    
@@ -4214,8 +4010,13 @@ MapGlyph.prototype = {
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
 	let enums = featureInfo.filter(info=>{return info.isEnumeration();});
 	let colorBy = '';
-	colorBy+=HU.leftRightTable(HU.checkbox(this.domId('fillcolors'),[ATTR_ID,this.domId('fillcolors')],
-					       this.attrs.fillColors,'Fill Colors'),
+	let colorCbxs = HU.checkbox(this.domId(ID_FILLCOLORS),
+				    [ATTR_ID,this.domId(ID_FILLCOLORS)],
+				    this.attrs.fillColors,'Fill Colors') + SPACE+
+	    HU.checkbox(this.domId(ID_STROKECOLORS),
+			[ATTR_ID,this.domId(ID_STROKECOLORS)],
+			this.attrs.strokeColors,'Stroke Colors')
+	colorBy+=HU.leftRightTable(colorCbxs,
 				   this.getHelp('mapfiles.html#mapstylerules'));
 
 	numeric = featureInfo;
@@ -4231,8 +4032,12 @@ MapGlyph.prototype = {
 									   [ATTR_ID,this.domId(prefix+'colorby_min'),
 									    ATTR_SIZE,6,
 									    ATTR_TITLE,'min value']) +' -- '+
-					  HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),ATTR_SIZE,'6',ATTR_TITLE,'max value']));
-		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
+					  HU.input('',obj.max??'',
+						   [ATTR_ID,this.domId(prefix+'colorby_max'),
+						    ATTR_SIZE,6,
+						    ATTR_TITLE,'max value']));
+		comp += HU.hidden('',obj.colorTable||'blues',
+				  [ATTR_ID,this.domId(prefix+'colorby_colortable')]);
 		let ct = Utils.getColorTablePopup({label:'Select',showToggle:true,attr:'prefix',value:prefix});
 		comp+=HU.formEntryLabel('Color table',
 					HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+ct);
@@ -4290,18 +4095,23 @@ MapGlyph.prototype = {
 	    }
 	    if(info?.isEnumeration()) {
 		valueInput = HU.select('',[ATTR_ID,'mapvalue_' + index],info.getSamplesForMenu(),value,20); 
-		valueInput+= HU.div([],HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,ATTR_SIZE,'15',
+		valueInput+= HU.div([],HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,
+							     ATTR_SIZE,15,
 							     ATTR_PLACEHOLDER,'pattern']));
 		
 	    } else {
-		valueInput = HU.input('',value,[ATTR_ID,'mapvalue_' + index,ATTR_SIZE,'15']);
+		valueInput = HU.input('',value,[ATTR_ID,'mapvalue_' + index,
+						ATTR_SIZE,15]);
 	    }
 	    let propSelect =HU.select('',[ATTR_ID,'mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
 	    let opSelect =HU.select('',[ATTR_ID,'maptype_' + index],operators,rule.type);	    
 	    valueInput =HU.span([ATTR_ID,'mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea('',s,[ATTR_ID,'mapstyle_' + index,ATTR_ROWS,'3',ATTR_COLS,'30',ATTR_TITLE,styleTitle]);
-	    rulesTable+=HU.tr([ATTR_VALIGN,'top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
+	    let styleInput = HU.textarea('',s,[ATTR_ID,'mapstyle_' + index,
+					       ATTR_ROWS,3,
+					       ATTR_COLS,30,
+					       ATTR_TITLE,styleTitle]);
+	    rulesTable+=HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	rulesTable += HU.close(TAG_TABLE);
 	let table = HU.div([ATTR_CLASS,'formgroupheader'],'Style Rules')+HU.div([ATTR_CLASS,'imdv-properties-section'], rulesTable);
@@ -4941,7 +4751,6 @@ MapGlyph.prototype = {
 
 	    let sliderMap = {};
 	    
-	    
 	    this.findFilter(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
 		let featureInfo = _this.getFeatureInfo(theFeatureId);
@@ -4958,6 +4767,7 @@ MapGlyph.prototype = {
 			    filter.max = ui.value;
 		    }
 		    filter.property=id;
+//		    console.dir(filter);
 		    _this.jq('slider_min_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.min,filter.minValue)));
 		    _this.jq('slider_max_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.max,filter.maxValue)));
 		    
@@ -5628,7 +5438,6 @@ MapGlyph.prototype = {
 
 
 	if(this.attrs.fillColors) {
-	    //	let ct = Utils.getColorTable('googlecharts',true);
 	    let ct = Utils.getColorTable('d3_schemeCategory20',true);	
 	    let cidx=0;
 	    features.forEach((f,idx)=>{
@@ -5640,6 +5449,18 @@ MapGlyph.prototype = {
 	    });
 	}
 
+	if(this.attrs.strokeColors) {
+	    let ct = Utils.getColorTable('gpt50',true);	
+	    let cidx=0;
+	    features.forEach((f,idx)=>{
+		f.style = f.style??{};
+		cidx++;
+		if(cidx>=ct.length) cidx=0;
+		if(f.originalStyle) f.originalStyle.strokeColor=ct[cidx];
+		f.style.strokeColor=ct[cidx]
+	    });
+	}
+	
 
 	let indexToGroup = {
 	};
@@ -5718,8 +5539,13 @@ MapGlyph.prototype = {
 	    rangeFilters.every(filter=>{
 		let value=this.getFeatureValue(f,filter.property);
 		if(Utils.isDefined(value)) {
-		    if(Utils.isDefined(filter.min) && value <filter.min) visible=false;
-		    if(Utils.isDefined(filter.max) && value >filter.min) visible=false;		    
+		    value = +value;
+		    if(Utils.isDefined(filter.min) && value <filter.min) {
+			visible=false;
+		    }
+		    if(visible && Utils.isDefined(filter.max) && value >filter.max) {
+			visible=false;
+		    }
 		    if(debug && idx<5) console.log("\trange:",filter,value,visible);
 		}
 		return visible;
@@ -5747,6 +5573,7 @@ MapGlyph.prototype = {
 		    return visible;
 		});
 	    }
+
 	    if(visible && text) {
 		if(f.attributes) {
 		    let numStrings = 0;
@@ -6899,6 +6726,7 @@ FeatureInfo.prototype= {
     },
     show: function() {
 	return  this.getProperty('show',this.mapGlyph.getProperty('feature.show',true));
+
     },
     showFilter: function() {
 	let dflt = this.mapGlyph.getProperty('filter.show',this.show());
