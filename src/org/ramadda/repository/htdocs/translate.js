@@ -122,23 +122,37 @@ var Translate = {
 	}
 	opts = opts??{}
 	if(this.disabled) return;
-	if(langs) langs=Utils.split(langs,",",true,true);
-	else {
+	if(langs) {
+	    langs=Utils.split(langs,",",true,true);
+	} else {
 	    langs = [];
 	    ramaddaLanguages.forEach(lang=>{langs.push(lang.id)});
 	}
 	let html = HU.open(TAG_DIV,[ATTR_CLASS,'ramadda-link-bar']);
-	let cnt = 0;
 	langs.forEach(langId=>{
 	    if(opts.skipEnglish && langId==LANGUAGE_ENGLISH) return;
+	    let label;
 	    ramaddaLanguages.forEach(lang=>{
 		if(lang.id!= langId) return;
-		html+= HU.span([ATTR_DATA_LANGUAGE,lang.id,
-				ATTR_TITLE,'Switch language',
-				ATTR_CLASS,
-				HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],lang.label);
-		cnt++;
-	    })});
+		label = lang.label;
+	    });
+	    if(!label) {
+		label = langId;
+		let toks = Utils.split(label,':');
+		if(toks.length>=2) {
+		    langId=toks[0];
+		    label=toks[1].replace('_',' ');
+		} else {
+		    label=Utils.makeLabel(langId);
+		}
+		
+	    }
+	    html+= HU.span([ATTR_DATA_LANGUAGE,langId,
+			    ATTR_TITLE,'Switch language',
+			    ATTR_CLASS,
+			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],label);
+
+	});
 	if(addDownload) {
 	    Translate.downloadMode= true;
 	    html+= HU.span([ATTR_DATA_LANGUAGE,'showmissing',
