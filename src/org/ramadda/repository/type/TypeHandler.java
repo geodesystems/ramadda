@@ -2675,41 +2675,48 @@ public class TypeHandler extends RepositoryManager {
     }
 
     private void addImportExportLinks(Request request, Entry entry,List<Link>links, boolean canDoNew)  throws Exception {
+        //Add an import link if they have the right privileges
+        if (canDoNew) {
+            links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
+					       entry.getId()), ICON_IMPORT, "Import",
+			       OutputType.TYPE_FILE));
+	    //            links.add(makeHRLink(OutputType.TYPE_FILE));
+        }
+
+
         if (getAccessManager().canDoExport(request, entry)) {
-            links.add(new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
-				      + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
-					  ARG_ENTRYID,
-					  entry.getId() }), ICON_EXPORT,
-			       "Export", OutputType.TYPE_FILE));
-	    Link l = new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
-				     + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
-					 ARG_EXPORT_SHALLOW,"true",
-					 ARG_ENTRYID,
-					 entry.getId() }), ICON_EXPORT,
-			      "Shallow Export", OutputType.TYPE_FILE);
+            links.add(makeHRLink(OutputType.TYPE_FILE));
+	    String path = getRepository().URL_ENTRY_EXPORT.toString() + "/"
+		+ IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip";
+	    Link l;
+	    l = new Link(HU.url(path, new String[] {ARG_ENTRYID, entry.getId() }),
+			 ICON_EXPORT,
+			 "Export", OutputType.TYPE_FILE);
+	    l.setTooltip("Export this entry and its children");
+	    links.add(l);
+
+
+	    l = new Link(HU.url(path, new String[] {ARG_EXPORT_CHILDREN,"true",ARG_ENTRYID,entry.getId() }),
+			 ICON_EXPORT,
+			 "Children Export", OutputType.TYPE_FILE);
+	    l.setTooltip("Just export the children");
+            links.add(l);	    
+
+	    l = new Link(HU.url(path, new String[] {ARG_EXPORT_SHALLOW,"true", ARG_ENTRYID,entry.getId() }),
+			 ICON_EXPORT,
+			 "Shallow Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Just export this entry, not it's children");
             links.add(l);	    
-	    l = new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
-				+ IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
-				    ARG_EXPORT_DEEP,"true",
-				    ARG_ENTRYID,
-				    entry.getId() }), ICON_EXPORT,
+
+
+
+	    l = new Link(HU.url(path, new String[] {ARG_EXPORT_DEEP,"true",ARG_ENTRYID,	entry.getId() }),
+			 ICON_EXPORT,
 			 "Deep Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Include entries this entry links to");
             links.add(l);	    
-
         }
 
-        //Add an import link if they have the right privileges
-        if (canDoNew) {
-            links.add(
-		      new Link(
-			       request.makeUrl(
-					       getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-					       entry.getId()), ICON_IMPORT, "Import",
-			       OutputType.TYPE_FILE));
-            links.add(makeHRLink(OutputType.TYPE_FILE));
-        }
     }
 
     private Link makeHRLink(int mask) {

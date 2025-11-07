@@ -2638,11 +2638,6 @@ thin_hr,.ramadda-thin-hr {
 }
 
 
-.ramadda-navbar-separator {
-    display:inline-block;
-    margin-left:5px;
-    margin-right:5px;    
-}
 .ramadda-doc-nav-container {
 }
 
@@ -5075,11 +5070,18 @@ a.ramadda-entries-link {
     font-weight: bold;
 }
 
+.ramadda-navbar-separator {
+    display:inline-block;
+    margin-left:5px;
+    margin-right:5px;    
+}
+
+
 .ramadda-menuitem {
-    margin-left:10px;
-    margin-right:10px;
-    margin-top:3px;
-    margin-bottom:3px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:3px;
+    padding-bottom:3px;
     min-width:150px;
 }
 
@@ -5094,11 +5096,11 @@ a.ramadda-entries-link {
 }
 
 .ramadda-menuitem-separator {
-    margin:2px;
+    min-width:150px;
+    margin-top:3px;
     margin-bottom:3px;
+    margin-right:4px;
     padding:0px;
-    color:black;
-    margin-right:30px;
     border-bottom: var(--basic-border);
 }
 

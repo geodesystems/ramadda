@@ -77,7 +77,9 @@ public class CsvImporter extends ImportHandler {
 
 	boolean isMine  = request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV);
 	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
-	    isMine = fileName.toLowerCase().endsWith(".csv");
+	    isMine = fileName.toLowerCase().endsWith(".csv") ||
+		fileName.toLowerCase().endsWith(".xlsx");
+	    
 	}
 
         if (!isMine){
@@ -279,7 +281,6 @@ public class CsvImporter extends ImportHandler {
 			    Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
 			    if(column==null) {
 				if(!seenMessage.contains(prop)) {
-				    System.err.println("PROP:" + prop + " type:" + currentTypeHandler);
 				    String message= "";
 				    if(currentTypeHandler!=null)
 					message+="Type:" + currentTypeHandler.getLabel()+" ";

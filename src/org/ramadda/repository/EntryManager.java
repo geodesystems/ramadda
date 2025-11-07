@@ -5433,11 +5433,18 @@ public class EntryManager extends RepositoryManager {
             throw new IllegalArgumentException("Cannot export entry");
         }
 
-        List<Entry> entries = new ArrayList<Entry>();
-        entries.add(entry);
+        List<Entry> entries;
 
+	if(request.get(ARG_EXPORT_CHILDREN,false)) {
+	    entries= getChildren(request, entry);
+	} else {
+	    entries = new ArrayList<Entry>();
+	    entries.add(entry);
+	}
         return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
-							   entries, !request.get(ARG_EXPORT_SHALLOW,false), true,false,
+							   entries,
+							   !request.get(ARG_EXPORT_SHALLOW,false),
+							   true,false,
 							   request.get(ARG_EXPORT_DEEP,false));
     }
 
@@ -6674,7 +6681,7 @@ public class EntryManager extends RepositoryManager {
         int     cnt         = 0;
         boolean needToAddHr = false;
         for (Link link : links) {
-            if ( !link.isType(typeMask)) {
+            if ( !link.isType(typeMask) && !link.getHr()) {
                 continue;
             }
             StringBuilder sb;

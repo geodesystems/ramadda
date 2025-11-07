@@ -119,6 +119,7 @@ public interface Constants {
     public static final String ARG_AGREE = "agree";
     public static final String ARG_SERVICEID = "serviceid";
     public static final String ARG_EXPORT_SHALLOW = "exportshallow";
+    public static final String ARG_EXPORT_CHILDREN = "exportchildren";    
     public static final String ARG_EXPORT_DEEP = "exportdeep";    
     public static final String ARG_TARGET_ENTRY = "targetentry";
     public static final String ARG_SHOWCATEGORIES = "showCategories";

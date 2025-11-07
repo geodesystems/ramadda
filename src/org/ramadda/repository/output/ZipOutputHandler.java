@@ -83,6 +83,11 @@ public class ZipOutputHandler extends OutputHandler {
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
                        "fa-file-export");
 
+    public static final OutputType OUTPUT_EXPORT_CHILDREN =
+        new OutputType("Children Export", "zip.export.children",
+                       OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
+                       "fa-file-export");    
+
     public static final OutputType OUTPUT_EXPORT_DEEP =
         new OutputType("Deep Export", "zip.export.deep",
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
@@ -99,6 +104,7 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_EXPORT);
         addType(OUTPUT_EXPORT_SHALLOW);
         addType(OUTPUT_EXPORT_DEEP);		
+        addType(OUTPUT_EXPORT_CHILDREN);
     }
 
     public AuthorizationMethod getAuthorizationMethod(Request request) {
@@ -125,6 +131,7 @@ public class ZipOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT_DEEP));
+                links.add(makeLink(request, state.entry, OUTPUT_EXPORT_CHILDREN));
             }
         }
 
