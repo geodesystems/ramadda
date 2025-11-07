@@ -2715,6 +2715,7 @@ public class TypeHandler extends RepositoryManager {
 			 "Deep Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Include entries this entry links to");
             links.add(l);	    
+            links.add(makeHRLink(OutputType.TYPE_FILE));
         }
 
     }
