@@ -384,6 +384,13 @@ var Translate = {
 		    } 
 		}
 		let tagName = a.prop('tagName');
+		if(this.trackMissing) {
+		    if(tagName=='A') {
+			if(a.parent().hasClass('ramadda-text')) {
+			    trackMissing=false;
+			}
+		    }
+		}
 		if(tagName=='OPTION') {
 		    let parent = a.parent();
 		    if(parent.hasClass('ramadda-text')) {
@@ -397,10 +404,6 @@ var Translate = {
 		    trackMissing = !Utils.isNoMsg(origText);
 		}		    
 		if(trackMissing) {
-		    if(origText=='toplevel_folders') {
-			console.log(origText);
-			console.dir(a);
-		    }
 		    Translate.missing[origText] = true;
 		} 
 

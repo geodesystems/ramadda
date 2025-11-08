@@ -1,4 +1,4 @@
-es.pack
-fr.pack
+es.pack.txt
+fr.pack.txt
 #ar.pack
 #zh.pack
