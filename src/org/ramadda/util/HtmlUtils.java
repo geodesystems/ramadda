@@ -870,7 +870,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String section(String content, String title) {
         if (title != null) {
             StringBuilder sb = new StringBuilder();
-            open(sb, TAG_DIV, "class", "ramadda-section");
+            open(sb, TAG_DIV, ATTR_CLASS, "ramadda-section");
             tag(sb, TAG_DIV, cssClass("ramadda-page-heading"), title);
             sb.append(content);
             close(sb, TAG_DIV);
@@ -883,7 +883,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     public static String sectionOpen() {
-        return open(TAG_DIV, "class", "ramadda-section");
+        return open(TAG_DIV, ATTR_CLASS, "ramadda-section");
     }
 
     public static String sectionOpen(String label) {
@@ -947,7 +947,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable sectionOpen(Appendable sb, String label,
                                          boolean line)
             throws Exception {
-        open(sb, TAG_DIV, "class", line
+        open(sb, TAG_DIV, ATTR_CLASS, line
                                    ? "ramadda-section"
                                    : "ramadda-section ramadda-section-noline");
         sectionHeader(sb, label);
@@ -2805,7 +2805,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 			   : showImg, "",
 			   attrs("align","bottom")), 
 		       id(id + "img"));
-	    img =span(img,attrs("class","ramadda-clickable ramadda-toggle-link"));
+	    img =span(img,attrs(ATTR_CLASS,"ramadda-clickable ramadda-toggle-link"));
         }
 	String imageId = id + "img";
         String mouseEvent = onMouseClick(
@@ -2814,7 +2814,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 					      squote(imageId),
 					      squote(hideImg),
 					      squote(showImg)));
-        String link = img + space(1) + label;
+        String link = img + space(1) + span(label,"");
         sb.append(open("div",blockExtra));
         sb.append("<div " + clazz("hideshowblock")
                   + id(id)
@@ -2915,7 +2915,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 		link = HtmlUtils.span(link,HtmlUtils.attrs(extraAttrs));
 	    }
             sb.append(link);
-            open(sb, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
+            open(sb, TAG_SPAN, ATTR_CLASS, "hideshowblock", "id", id, "style",
                  "display:inline;visibility:visible");
             if ( !visible) {
                 HtmlUtils.script(sb,
@@ -2947,7 +2947,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         String link = HtmlUtils.jsLink(
                           mouseEvent, clickHtml,
                           clazz("toggleblocklabellink")) + label;
-        open(contents, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
+        open(contents, TAG_SPAN, ATTR_CLASS, "hideshowblock", "id", id, "style",
              "display:block;visibility:visible");
         if ( !visible) {
             HtmlUtils.script(contents,call("HtmlUtils.hide", HtmlUtils.squote(id)));
@@ -3525,8 +3525,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    */
 	    player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
 			"id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
-			HtmlUtils.ATTR_CLASS, "ramadda-video-embed",
-			HtmlUtils.ATTR_WIDTH, width, HtmlUtils.ATTR_HEIGHT,
+			ATTR_CLASS, "ramadda-video-embed",
+			ATTR_WIDTH, width, HtmlUtils.ATTR_HEIGHT,
 			height,
 		    }) + " controls ", HtmlUtils.tag("source",
 						     HtmlUtils.attrs(new String[] { HtmlUtils.ATTR_SRC,
@@ -3548,7 +3548,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	}
 
 	sb.append(open("iframe",attrs("src",url,
-					    "class","ramadda-iframe-pdf",
+					    ATTR_CLASS,"ramadda-iframe-pdf",
 					    "type","application/pdf",
 					    "style",
 					    Utils.getProperty(props,"style","border:1px solid #ccc;"),
@@ -3924,7 +3924,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 HtmlUtils.jsLink(
                     HtmlUtils.onMouseClick(
                         "HtmlUtils.hidePopupObject(event);"), getIconImage(
-                        ICON_CLOSE, "title", "Close", "class",
+                        ICON_CLOSE, "title", "Close", ATTR_CLASS,
                         "ramadda-popup-close"), "");
             if (header != null) {
                 contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>"
