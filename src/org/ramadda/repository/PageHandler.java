@@ -875,6 +875,9 @@ public class PageHandler extends RepositoryManager {
 	type=type.replace(".pack","");	
         String       name    = type;
         for (String line : lines) {
+            if (line.startsWith("#quit")) {
+		break;
+	    }
             if (line.startsWith("#")) {
                 continue;
             }
