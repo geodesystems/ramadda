@@ -572,7 +572,7 @@ public class HtmlOutputHandler extends OutputHandler {
             typeRow.put(group, Boolean.valueOf( !even));
             //      even=true;
 
-            String  rowClass = "metadata-row "+
+            String  rowClass = "metadata-row ramadda-text"+
 		(!stripe
 		 ? "metadata-row"
 		 : "metadata-row-" + (even
