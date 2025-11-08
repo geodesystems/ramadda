@@ -1080,7 +1080,8 @@ public class UserManager extends RepositoryManager {
 	sb.append(HU.formHelp("Preferences",true));
         sb.append(formEntry(request, msgLabel("Page Style"),
                             HU.select(ARG_USER_TEMPLATE, templates,
-				      request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,user.getTemplate()))));
+				      request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,user.getTemplate()),
+				      HU.clazz("ramadda-text"))));
 
         String popupArgs = "{label:'Select page template',makeButtons:false,after:true,single:true,icon:true}";
 	sb.append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
