@@ -1,5 +1,22 @@
-Attached is a text file with english phrases from a web application. I want to translate each english phrase into lakota.
-The result should be a text file of the form <english phrase=<lakota phrase>.
-I want you to try very hard to come up with a reasonable translation. expand the lakota dictionary and try
+You are an expert linguist and a native speaker of the LANG language.
+Attached is a text file with english phrases from a web application for a data repository,
+document management system and library archive system.
+The file is of the form:
+<english phrase>=
+I want you to translate each english phrase into the corresponding LANG phrase.
+Try to use a more concise UI-style for the translations
+as this is for an interactive web application user interface
+Do  make translations for  technical or computer-interface terms if you can find a reasonable translation
+If you cannot find a translation then don't include any loan words
+Do not translate into any english terms
+The result should be a text file of the form <english phrase>=<LANG phrase>.
+Do attempt to use the appropriate diacritical marks for the translated phrases
+Use UTF-8 as the encoding so that diacritical and other marks are preserved
+Retain the same order and spacing as the original file
+Do not in any way change the original english phrase. It should be included in the output verbatim.
+The only thing you should do is add the LANG phrase.
+I want you to try very hard to come up with a reasonable translation. Expand the dictionary and try
 very hard to cover all of the phrases.
-if you can't then use the phrase NA. I want you to  translate all phrases and return a text file.
+If you can't then leave the line blank but still include the English phrase.
+Directly generate and return the translated .txt file for download
+
