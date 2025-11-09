@@ -3010,6 +3010,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                         if(!what.startsWith("heading2") && !noNav)
 			    defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
+			blob = HU.span(blob,HU.attrs("class","ramadda-text"));
 			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
 			attrs = HU.attrs("id",id);
 			clazz+=" ramadda-linkable ";
