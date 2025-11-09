@@ -9,18 +9,17 @@ RAMADDA has support for multiple languages
 Language translations are defined in a set of language pack phrase files.
 These files are installed as RAMADDA plugins and should be called:
 +pre
-&lt;language id&gt;.pack
-or
 &lt;language id&gt;.pack.txt
 -pre
-Where &lt;language id&gt; is the short identifier for the language, e.g. 
-
+Where &lt;language id&gt; is the short identifier for the language, e.g. "es.pack.txt".
+:p
 There are a number of pre-defined language phrase files. 
 You can view these files on
 <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages>Github</a>.
 :p
-You can view the list of available languages and their phrase translations 
+You can view an interactive page showing the available languages and their phrase translations 
 <a href="{{root}}/languages">here</a>.
+
 
 
 :heading Language Switcher
@@ -50,8 +49,6 @@ property.
 
   
 
-
-
 :heading Language Blocks
 The wiki text of an entry can have any number of language blocks.  This lets you have long form
 text for different languages.
@@ -72,6 +69,16 @@ This is the English
 This is the Spanish
 -lang  
 
+You can also define or overwrite a translation for a particular phrase on a page with:
++pre
+<x>:phrase ID "English phrase" "Translation"
+e.g.:
+<x>:phrase es "Language Blocks" "Some Spanish translation for Language Blocks"
+-pre
+:phrase es "Language Blocks" "Some Spanish translation for Language Blocks"
+
+
+
 :heading Setting the Language
 To set the language on a page add the following wiki text:
 +pre
@@ -84,14 +91,10 @@ e.g. for Spanish:
 -pre
 
 
-
 :heading Adding new phrases
-You can add to the set of translations to your RAMADDA with a 
+You can add to the set of translations in your RAMADDA with a 
 "Language Phrases File" property file added to any entry.
 This enables you to add new phrases and/or overwrite the existing translation.
-:p
-Add this property to the top-level entry and set its inherited flag to true
-and these phrases can be used  throughout your RAMADDA entries.
 :p
 This file is of the form:
 +pre
@@ -100,32 +103,41 @@ Another English phrase=&lt;translation&gt;
 ...
 -pre
 
-Upload the file and set its language to the appropriate ID, e.g. "es", "fr", "lkt", etc.
+
+Go to Add Properties of your top-level entry and look for the Add Language Phrases File
+[ht::screenshot images/addlang1.png]
+
+Then specify the language ID (e.g., "lkt") and upload your phrases file.
+Setting the inherited flag to true will enable these phrases to be used  throughout your entires RAMADDA.
+[ht::screenshot images/addlang2.png]
+
+:p
+And here are the available languages:
+* \[https://ramadda.org/repository/languages/es.pack.txt  Spanish\]
+* \[https://ramadda.org/repository/languages/fr.pack.txt French\]
+* \[https://ramadda.org/repository/languages/lkt.pack.txt Lakota (Note this is a placeholder for now)\]
 
 
 :heading Defining new languages
-To define a new language, e.g, with ID "es" download the set of phrases  from:
-<a href="https://ramadda.org/languages/base.pack.txt">
-https://ramadda.org/languages/base.pack.txt
-</a>
+To define a new language, e.g, with ID "foo" download the base set of phrases  from:
+\[https://ramadda.org/languages/base.pack.txt https://ramadda.org/languages/base.pack.txt\]
 :p
 Change the name to use the language identifier and copy the file into the plugins directory
 under your RAMADDA home directory, e.g.
 +pre
-es.pack.txt
+foo.pack.txt
 -pre
 
 You will then need to edit the file. Change the type and name to the appropriate values:
 +pre
-language.type=es
-language.name=Español
+language.type=foo
+language.name=Foo Language
 -pre
 
-Then, for every phrase provide a translation, e. g.:
+Then, for every phrase provide a translation, e.g.:
 +pre
-Date = Fecha
+Date=Fecha
 -pre
-
 
 
 [ht::foot]
