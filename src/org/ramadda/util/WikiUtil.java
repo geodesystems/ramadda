@@ -1843,6 +1843,26 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
 
+                if (tline.startsWith(":iframe")) {
+                    List<String>  toks  = Utils.splitUpTo(tline, " ", 3);
+		    if(toks.size()==1) {
+			wikiError(buff, "Badly formed :iframe tag:" + tline);
+			continue;
+		    }
+		    String url = toks.get(1);
+		    String attrs = HU.attrs(ATTR_WIDTH,"100%");
+		    if(toks.size()==3) {
+			attrs+=" " + toks.get(2);
+		    }
+		    if(attrs.indexOf(" height")<0) attrs+=HU.attrs("height","600px");
+		    if(attrs.indexOf(" class")<0) attrs+=HU.attrs("class","ramadda-iframe-progress");
+		    if(attrs.indexOf(" style")<0) attrs+=HU.attrs("style","border:1px solid #ccc;");
+		    buff.append(HU.tag(TAG_IFRAME,
+				       HU.attrs("src",url) + attrs,
+				       ""));
+		    continue;
+		}
+
                 if (tline.startsWith(":phrase")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 3);
 		    if(toks.size()==3) {
