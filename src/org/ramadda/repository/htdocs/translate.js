@@ -335,6 +335,7 @@ var Translate = {
 
 	    //	    let debug = text.indexOf("toggle")>=0;
 	    let debug = false;
+	    if(debug) console.log('translating',text,suffix);
 	    //	    debug = text.indexOf("largest")>=0;
 	    if(text.indexOf(Utils.MSGCHAR)>=0) {
 		//		if(debug) console.log(suffix +" has delim:" + text);
@@ -350,15 +351,15 @@ var Translate = {
 		    if(translated) accum+=translated;
 		    else accum+=chunk.value;
 		});
+		if(debug) {
+		    console.log('accum:',accum);
+		}		    
 		return accum;
 	    }
 
 	    if(debug) {
 		console.log('text:'+suffix,':',text,a.prop('tagName'));
-		//		if(!suffix && text.indexOf('xx')>=0) console.tr
-
 	    }
-	    //	    if(debug)		console.log('text:',suffix,':',text);
 
 	    text = text.trim();
 	    if(!Translate.canTranslate(a,text,suffix)) {
@@ -375,6 +376,7 @@ var Translate = {
 		a.attr(origValueFlag(suffix),origText);
 		return pack[text];
 	    }
+
 
 	    if(this.trackMissing) {
 		let trackMissing = true;
