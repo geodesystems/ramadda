@@ -1,4 +1,5 @@
 es.pack.txt
 fr.pack.txt
+lkt.pack.txt
 #ar.pack
 #zh.pack

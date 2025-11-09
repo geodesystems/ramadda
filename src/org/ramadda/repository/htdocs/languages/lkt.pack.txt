@@ -1,0 +1,18 @@
+##
+##this is the language translation RAMADDA plugin file for Lakota
+##It should be copied into your RAMADDA home/plugins directory
+##
+
+##
+##define the language ID and name
+##
+language.id=lkt
+language.name=Lakota
+
+##
+##Add or edit translations to any of the below phrases
+##Leave the english phrase exactly as is
+##You can also add new english phrases and their translations
+##
+
+#...
