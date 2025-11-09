@@ -1237,6 +1237,7 @@ public class PageHandler extends RepositoryManager {
 		getLogManager().logInfoAndPrint("RAMADDA: could not read:" + path);
 		continue;
 	    }
+	    System.err.println(path);
 	    Object[]   result     = parsePhrases(path, content);
 	    String     type       = (String) result[0];
 	    String     name       = (String) result[1];
