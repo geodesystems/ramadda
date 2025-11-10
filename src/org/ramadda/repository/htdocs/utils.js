@@ -4191,7 +4191,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    } 
 	    return textOk;
 	};
+	let totalCount=0;
+	let visibleCount=0;	
 	s.each(function() {
+	    totalCount++;
 	    let textOk = true;
 	    values.every(v=>{
 		let ok = search(v,$(this));
@@ -4205,6 +4208,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		$(this).attr('isvisible','false');
 		$(this).fadeOut();
 	    } else {
+		visibleCount++;
 		$(this).attr('isvisible','true');
 		$(this).show();
 		if(linksDiv && args.linkSelector) {
@@ -4243,7 +4247,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 
 	if(args.callback) {
-	    args.callback();
+	    args.callback({
+		total:totalCount,
+		visible:visibleCount,
+		selector:s
+	    });
 	}
 	
     },				  

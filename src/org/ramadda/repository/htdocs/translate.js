@@ -84,6 +84,7 @@ var Translate = {
     showLanguages:function(id,lang) {
 	let sid = HU.getUniqueId('switcher');
 	let lid = HU.getUniqueId('contents');
+	let cbxid = HU.getUniqueId('cbx');	
 	let html  = HU.center(HU.div([ATTR_ID,sid])) +
 	    HU.div([ATTR_ID,lid]);
 	jqid(id).html(html);
@@ -94,19 +95,42 @@ var Translate = {
 		HU.addToDocumentUrl('language',lang);
 	    Translate.loadPack(lang,(pack)=>{
 		let searchId  = HU.getUniqueId('search');
-		let html = HU.div([ATTR_ID,searchId]);
+		let html = HU.span([ATTR_ID,searchId]);
+		let labelId = HU.getUniqueId('label');
+		html+=SPACE2;
+		html+=HU.span([ATTR_ID,labelId]);
+		
+		html+=HU.br();
 		html +=HU.open(TAG_TABLE);
 		html+=HU.tr([],HU.tds([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400))],
 				      
 				      [HU.b('English'),HU.b('Translated - ' + lang)]));
 		Object.keys(pack).sort((a,b)=>{return a.length-b.length}).forEach(key=>{
 		    if(key.startsWith('language.')) return;
-		    html+=HU.tr([ATTR_CLASS,'phrase'],HU.tds([],[key,pack[key]]));
+		    let trans = pack[key];
+		    let corpus='';
+		    if(Utils.stringDefined(trans)) {
+			corpus+=' hastranslation ';
+		    } else {
+			corpus+=' notranslation ';
+		    }
+		    html+=HU.tr([ATTR_CLASS,'phrase',ATTR_DATA_CORPUS,corpus],HU.tds([],[key,pack[key]]));
 		});
 
 		html+=HU.close(TAG_TABLE);
 		jqid(lid).html(html);
-		HU.initPageSearch('.phrase',null,null,false,{target:'#'+searchId,focus:true});
+		HU.initPageSearch('.phrase',null,
+				  null,false,
+				  {target:'#'+searchId,focus:true,
+				   callback:(args)=>{
+				       jqid(labelId).html('Total: '+ args.total +' Shown: '+ args.visible);
+				   },
+				   widgets:[
+				       {group:'toggle',
+					label:'Has translation',value:'hastranslation'},
+				       {group:'toggle',
+					label:'Does not have translation',value:'notranslation'}
+				   ]});
 	    })
 	};
 
