@@ -2225,6 +2225,15 @@ public class TypeHandler extends RepositoryManager {
         return html;
     }
 
+    public String getEntryLinkLabel(Request request, Entry entry) throws Exception {
+	String template = getTypeProperty("html.entrylinklabel",null);
+	if(template!=null) {
+	    return getWikiManager().wikifyEntry(request, entry,template,false);
+
+	}
+	return entry.getName();
+    }
+
     public final void getEntryContent(Request request, Entry entry,
 				      boolean showDescription,
 				      boolean showResource,

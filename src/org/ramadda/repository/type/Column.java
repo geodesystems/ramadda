@@ -1210,11 +1210,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 		
                 if (theEntry != null) {
                     try {
-                        String link =
-                            getRepository().getEntryManager().getAjaxLink(
-									  request, theEntry,
-									  theEntry.getName()).toString();
-			
 			EntryLink entryLink = getRepository().getEntryManager().getAjaxLink(request, theEntry, theEntry.getName());
 			String clickId = HU.getUniqueId("click");
 			HU.span(result,   HU.span(getRepository().getIconImage("fas fa-circle-info"),
@@ -1224,10 +1219,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 							   "data-url",entryLink.getFolderClickUrl())),
 				HU.attrs("id",clickId));
 
-			result.append(getRepository().getEntryManager().getEntryLink(request, theEntry,true,""));
+			String label = theEntry.getTypeHandler().getEntryLinkLabel(request, theEntry);
+			result.append(getRepository().getEntryManager().getEntryLink(request, theEntry,label,true,""));
 			result.append(HU.script("RamaddaUtils.initToggleTable('#" + clickId+"');"));
-				      //                        result.append(link);
-
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
                     }
@@ -2656,7 +2650,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 					"defaultgroup",parentGroup,
 					ARG_TARGET_ENTRY,urlArg),
 				 getRepository().getIconImage(ICON_NEW),
-				 HU.attrs("target","_newentry","title","Create new " +getLabel()))
+				 HU.attrs("class","ramadda-button",
+					  "target","_newentry","title","Create new " +getLabel()))
 		    +HU.space(1);
 
 	    }
