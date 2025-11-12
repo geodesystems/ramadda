@@ -1128,17 +1128,25 @@ public class EntryManager extends RepositoryManager {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
 		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type',null,{focus:true})");
-		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td><td class=ramadda-table-heading>Parent Type</td></tr>");
+		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td class=ramadda-table-heading>Parent Type</td><td xwidth=33% class=ramadda-table-heading>Category</td></tr>");
 		for (TypeHandler typeHandler : typeHandlers) {
 		    icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
 		    String url = getRepository().getUrlPath("/entry/types.html?type="  + typeHandler.getType());
 		    String category = typeHandler.getSuperCategory();
 		    if(typeHandler.getCategory()!=null)category += " - " + typeHandler.getCategory();
 		    TypeHandler parent  = typeHandler.getParent();
+		    String parentHtml="";
+		    if(parent!=null) {
+			String parentIcon = HU.img(parent.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+			String parentUrl = getRepository().getUrlPath("/entry/types.html?type="  + parent.getType());
+			parentHtml = HU.href(parentUrl,
+					     parentIcon+HU.space(1) +
+					     parent.getDescription(),HU.attrs("title",parent.getType()));
+		    }
 		    sb.append(HU.tr(HU.td(HU.href(url,icon+" "+  typeHandler.getDescription()))+
 				    HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
-				    HU.td(category)+
-				    (parent==null?"":HU.td(HU.span(parent.getType(),HU.attr("class","ramadda-type-id")))),
+				    HU.td(parentHtml) +
+				    HU.td(category),
 				    HU.attr("class","ramadda-type")));
 		}
 		sb.append("</table>");
