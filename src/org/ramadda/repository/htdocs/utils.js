@@ -4136,6 +4136,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let s  = $(select);
 	let hasValue =false;
 	values = values.map(v=>{
+	    v = String(v);
+	    v = v.trim();
 	    let pre=null;
 	    let post=null;
 	    if(Utils.stringDefined(v)) {
