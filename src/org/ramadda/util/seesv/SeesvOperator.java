@@ -147,6 +147,7 @@ public class SeesvOperator {
         colId = colId.toLowerCase().replaceAll(" ",
 					       "_").replaceAll("[^a-z0-9]", "_");
         colId = colId.replaceAll("_+_", "_");
+        colId = colId.replaceAll("#", "");	
         colId = colId.replaceAll("_$", "");
 
         return colId;

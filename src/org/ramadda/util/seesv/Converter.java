@@ -1367,9 +1367,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class PrintHeader extends Converter {
-
-        /* */
-
         private boolean asPoint = false;
 
         public PrintHeader() {}
@@ -1407,7 +1404,9 @@ public abstract class Converter extends Processor {
                         attrs.append("unit=\"" + unit + "\" ");
 
                     }
-                    String id = label.replaceAll(
+                    String id = Utils.makeID(label,false);
+		    /*
+		      label.replaceAll(
 						 "\\([^\\)]+\\)", "").replaceAll(
 										 "-", "_").trim().toLowerCase().replaceAll(
 															   " ", "_").replaceAll(":", "_");
@@ -1416,6 +1415,8 @@ public abstract class Converter extends Processor {
                     id = id.replaceAll("_+_", "_");
                     id = id.replaceAll("_+$", "");
                     id = id.replaceAll("^_+", "");
+		    */
+
                     if (id.indexOf("date") >= 0) {
                         attrs.append("type=\"date\" format=\"\" ");
                     }
