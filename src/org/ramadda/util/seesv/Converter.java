@@ -2450,10 +2450,12 @@ public abstract class Converter extends Processor {
             String       contents = IO.readContents(file);
             List<String> lines    = Utils.split(contents, "\n");
             for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i).trim();
-                if ((line.length() == 0) || line.startsWith("#")) {
+                String line = lines.get(i);
+                if ((line.trim().length() == 0) || line.trim().startsWith("#")) {
                     continue;
                 }
+		line = line.replace("_space_"," ");
+		line = line.replace("_dot_",".");		
                 List<String> toks;
                 if (line.indexOf("::") >= 0) {
                     toks = Utils.splitUpTo(line, "::", 2);
@@ -5494,18 +5496,16 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnSetter extends Converter {
-
-        /* */
-
         private List<Integer> cols;
-
-        /* */
-
         private List<Integer> rows;
-
-        /* */
-
         private String value;
+
+        public ColumnSetter(List<String> cols,  String value) {
+            super(cols);
+            this.value = value;
+        }
+
+
 
         public ColumnSetter(List<String> cols, List<String> rows,
                             String value) {
@@ -5520,18 +5520,21 @@ public abstract class Converter extends Processor {
                 cols = getIndices(ctx);
             }
 
-            boolean gotRow = false;
-            for (int rowIdx : rows) {
-                if (rowCnt == rowIdx) {
-                    gotRow = true;
-
-                    break;
-                }
-            }
-            rowCnt++;
-            if ( !gotRow) {
-                return row;
-            }
+	    if(rows!=null) {
+		boolean gotRow = false;
+		for (int rowIdx : rows) {
+		    if (rowCnt == rowIdx) {
+			gotRow = true;
+			break;
+		    }
+		}
+		rowCnt++;
+		if ( !gotRow) {
+		    return row;
+		}
+	    } else {
+		if(rowCnt++==0) return row;
+	    }
 
             List values = row.getValues();
             for (int col : cols) {

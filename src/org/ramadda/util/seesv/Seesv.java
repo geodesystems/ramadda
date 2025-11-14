@@ -2141,6 +2141,9 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("rows", "", ATTR_TYPE, TYPE_LIST),
 		new Arg("value")),
+        new Cmd(CMD_PUT, "Write the value into the cells",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("value")),	
         new Cmd(CMD_CLEANWHITESPACE, "Clean whitespace",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_MACRO,
@@ -4980,6 +4983,10 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ColumnSetter(getCols(args.get(++i)),getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_PUT, 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnSetter(getCols(args.get(++i)),args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction(CMD_FAKER, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Faker(ctx,args.get(++i),getCols(args.get(++i))));

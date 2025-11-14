@@ -190,6 +190,7 @@ public interface SeesvCommands {
     public static final String CMD_MAKENUMBER="-makenumber";
     public static final String CMD_REPLACE="-replace";
     public static final String CMD_SET="-set";
+    public static final String CMD_PUT="-put";    
     public static final String CMD_MACRO="-macro";
     public static final String CMD_SETCOL="-setcol";
     public static final String CMD_COPYIF="-copyif";
