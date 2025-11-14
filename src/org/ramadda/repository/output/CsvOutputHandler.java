@@ -661,7 +661,7 @@ public class CsvOutputHandler extends OutputHandler {
     }
 
     public void listXlsx(final Request request,
-			 OutputStream outputStream,final List<Entry> allEntries)
+			 OutputStream outputStream, List<Entry> entriesList)
             throws Exception {
 	String NA = "";
 	Hashtable props = new Hashtable();
@@ -682,6 +682,11 @@ public class CsvOutputHandler extends OutputHandler {
 	List<String> useTypes= null;
 	if(stringDefined(typesArgument)) useTypes = Utils.split(typesArgument);
 	String title = request.getString(ARG_TITLE,null);
+	entriesList = getEntryManager().applyOperators(request, entriesList);
+
+	final List<Entry> allEntries = entriesList;
+
+
         boolean showColumns = Utils.getProperty(props, ARG_SHOWCOLUMNS, true);
         boolean showLink = request.get(ARG_SHOWLINK,true);
         boolean showId = request.get(ARG_SHOWID,true);

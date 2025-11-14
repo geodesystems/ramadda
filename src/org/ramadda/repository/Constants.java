@@ -407,6 +407,12 @@ public interface Constants {
     public static final String ARG_TEXT = "text";
     public static final String ARG_TITLE = "title";
     public static final String ARG_THUMBNAIL = "thumbnail";
+
+
+    public static final String ARG_OPERATOR="operator";    
+    public static final String ARG_OPERATOR_COLUMN="operatorcolumn";
+    public static final String ARG_OPERATOR_VALUE="operatorvalue";
+
     public static final String ARG_TO = "to";
     public static final String ARG_TODATE = "todate";
     public static final String ARG_TODATE_TIME = ARG_TODATE + ".time";
