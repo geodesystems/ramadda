@@ -216,6 +216,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean editable;
     private boolean canList;
     private boolean canDisplay;
+    private String enumerationSpecificToType;
     private List<HtmlUtils.Selector> enumValues;
     private List<String> icons;
     private List<TwoFacedObject> jsonValues;
@@ -412,6 +413,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         canExport      = getAttributeOrTag(element, ATTR_CANEXPORT, canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
+	enumerationSpecificToType = getAttributeOrTag(element, "enumerationspecifictotype",null);
+
 	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:	isType(DATATYPE_ENTRY_LIST)?5000:size);
 	entryType = getAttributeOrTag(element,"entryType",
 				      getAttributeOrTag(element,"entrytype",null));
@@ -483,6 +486,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
 	setValue( entry,  values, v);
 
+    }
+
+    public String getEnumerationSpecificToType() {
+	return enumerationSpecificToType;
     }
 
     public String getDisplayAttribute(String attr, Object v) {
