@@ -1,5 +1,10 @@
 @charset "UTF-8";
 :root {
+    --theme-background-color: #ffffff;
+    --theme-color:#000;
+    --theme-href-color:#000;
+    --theme-background-highlight: #efefef;
+
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;
     --basic-border:1px #ddd solid;
@@ -13,10 +18,9 @@
     --highlight-border:1px #aaa solid;
     --highlight-background: #f4f4f4;
     --header-background:  #eaeaea;
-    --href-color: var(--highlight-color);
     --href-decoration:none;   
     --href-decoration:underline;
-    --href-color: #000;
+    --href-color: var(--theme-href-color);
     --color-mellow-yellow:#fffeec;
     --default-radius:6px;
     --nav-hover-color:var(--highlight-color);
@@ -55,6 +59,20 @@
    --heading-weight:400;
 }
 
+/*:root[data-theme="dark"] {*/
+/*
+:root {
+    --theme-background-color: #0b0d12;
+    --theme-text-color:#fff;
+    --theme-text-color: #f9fafb;
+    --theme-href-color:#fff;
+    --theme-background-highlight:#60a5fa;
+
+    --text-muted: #9ca3af;
+    --border: #1f2933;
+    --accent: #60a5fa;
+}
+*/
 
 
 
@@ -64,6 +82,9 @@
 
 
 body {
+    background:var(--theme-background-color);
+    color:var(--theme-text-color);
+
     position:relative;
     font-family: var(--font-family);
     font-size: var(--font-size) !important;
@@ -1271,7 +1292,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-page-title  a , .ramadda-page-title  a:visited, .ramadda-page-heading a, .ramadda-page-heading  a:visited,.ramadda-heading a,.ramadda-lheading a, .ramadda-heading  a:visited, .ramadda-lheading  a:visited, .ramadda-page-heading-small a, .ramadda-page-heading-small  a:visited, .ramadda-page-blurb a, .ramadda-page-blurb  a:visited {
-    color: black;
+    color: var(--theme-text-color);
 }
 
 
@@ -5307,6 +5328,16 @@ snippet-hide {
     font-size:140% !important;
 }
 
+.ramadda-header-link a  {
+    border:1px solid transparent;
+    border-radius: var(--default-radius);
+}
+
+.ramadda-header-link a:hover  {
+    border:1px solid var(--highlight-color);
+}
+
+
 .ramadda-header-link a {
     text-decoration:none;
 }
@@ -5349,8 +5380,7 @@ snippet-hide {
 }
 
 .ramadda-linksheader-on {
-    background:#efefef;
-    border-radius: var(--default-radius);
+    background:var(--theme-background-highlight);
 }
 
 
