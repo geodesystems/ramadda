@@ -968,15 +968,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 	gotoAddress:function(widget,address) {
             let url = Ramadda.getUrl(HU.url('/geocode',['query',address]));
-	    let add = loc=> {
+	    let add = (loc,ignoreComma)=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
 		let label = '';
-		let toks = Utils.split(loc.name,',',true,true);
 		let offset = -10;
-		for(let i=0;i<toks.length;i++) {
-		    label +=toks[i]+'\n';
-		    offset-=6;
+		if(!ignoreComma) {
+		    let toks = Utils.split(loc.name,',',true,true);
+		    for(let i=0;i<toks.length;i++) {
+			label +=toks[i]+'\n';
+			offset-=6;
+		    }
+		} else {
+		    label=loc.name;
 		}
 		offset = -12;
 		label = label.trim();
@@ -997,6 +1001,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.panMapTo();
 	    };
 	    
+	    address=String(address).trim()
+	    //check for lat,lon
+	    if(address.match(/^\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?\s*$/)) {
+		let toks = address.split(',');
+		if(toks.length==2) {
+		    add({latitude:+toks[0],longitude:+toks[1],name:address},true);
+		    return;
+		}
+	    }
+
 	    let clear = ()=>{
 		widget.css(CSS_BACKGROUND,COLOR_WHITE);
 		this.jq(ID_ADDRESS_WAIT).html('');
@@ -6171,8 +6185,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  CSS_MARGIN_RIGHT,HU.px(2),
 						  CSS_WIDTH,HU.px(20))])+
 			HU.input('','',[ATTR_ID,this.domId(ID_ADDRESS_INPUT),
-					ATTR_PLACEHOLDER,'Search for address',
-					ATTR_SIZE,20]));
+					ATTR_PLACEHOLDER,'Search for address or lat,lon',
+					ATTR_SIZE,25]));
 
 	    if(this.canChange()) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),
