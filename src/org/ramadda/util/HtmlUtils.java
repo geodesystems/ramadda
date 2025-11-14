@@ -258,12 +258,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     public static String makeHeader1(List links) {
-	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link ramadda-header-link-1'>","</span>");
+	List<String> wrapped = Utils.wrapItems(links,"<span class='xxramadda-link ramadda-header-link ramadda-header-link-1'>","</span>");
 	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-1\">" + WikiUtil.NAVDELIM+"</span>");
     }
 
     public static String makeHeader2(List links) {
-	List<String> wrapped = Utils.wrapItems(links,"<span class='ramadda-link ramadda-header-link  ramadda-header-link-2'>","</span>");
+	List<String> wrapped = Utils.wrapItems(links,"<span class='xxxramadda-link ramadda-header-link  ramadda-header-link-2'>","</span>");
 	return  Utils.join(wrapped,"<span class=\"ramadda-separator ramadda-separator-2\">" + WikiUtil.NAVDELIM+"</span>");
     }
 
