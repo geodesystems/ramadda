@@ -272,6 +272,86 @@ public class EntryManager extends RepositoryManager {
 
     }
 
+    public static class EntryOperator {
+	String column;
+	String operator;
+	String value;
+	double dvalue=Double.NaN;
+	EntryOperator(String column, String operator, String value) {
+	    this.column=column;
+	    this.operator = operator;
+	    this.value= value;
+	    try {
+		this.dvalue=Double.parseDouble(value);
+	    } catch(NumberFormatException nfe) {}
+	}
+    }
+
+    public List<Entry> applyOperators(Request request, List<Entry> entries) throws Exception {
+	List<EntryOperator> operators = null;
+	int opCnt = 1;
+
+	while(true) {
+	    String op = request.getString(ARG_OPERATOR+opCnt,null);
+	    String column = request.getString(ARG_OPERATOR_COLUMN+opCnt,null);
+	    String value = request.getString(ARG_OPERATOR_VALUE+opCnt,null);	    
+	    if(!stringDefined(op) || !stringDefined(column) || !stringDefined(value)) break;
+	    if(operators==null) operators=new ArrayList<EntryOperator>();
+	    operators.add(new EntryOperator(column,op,value));
+	    opCnt++;
+	}
+
+	if(operators==null) return entries;
+
+	List<Entry> filteredEntries = new ArrayList<Entry>();
+	for(Entry entry: entries) {
+	    boolean ok = true;
+	    for(EntryOperator entryOperator:operators) {
+		if(!ok)break;
+		Object entryValue = entry.getValue(request, entryOperator.column,null);
+		if(entryValue==null) {
+		    //		    System.err.println("NO VALUE:" + entryOperator.column +" for entry:" + entry);
+		    ok = false;
+		    break;
+		}
+		String op=entryOperator.operator;
+		double d=Double.NaN;
+		if(entryValue instanceof Double) {
+		    d = (Double) entryValue;
+		} else 	if(entryValue instanceof Integer) {
+		    d = (Integer)entryValue;
+		} else {
+		    //		    System.err.println("NOT NUMERIC:" + entryOperator.column +" for entry:" + entry + " value:" + entryValue);
+		    ok = false;
+		    break;
+		}
+		if(op.equals("<")) {
+		    ok = d<entryOperator.dvalue;
+		} else if(op.equals("<=")) {
+		    ok = d<=entryOperator.dvalue;
+		} else if(op.equals(">")) {
+		    ok = d>entryOperator.dvalue;
+		} else if(op.equals(">=")) {
+		    ok = d>=entryOperator.dvalue;		    		    
+		} else if(op.equals("!=")) {
+		    ok = d!=entryOperator.dvalue;		    
+		} else if(op.equals("==")) {
+		    ok = d==entryOperator.dvalue;		    
+		} else {
+		    System.err.println("Unknown operator:" + op);
+		    ok=false;
+		}
+		if(!ok) break;
+	    }
+	    if(ok) {
+		//		System.err.println("ok:" + entry + " value:" + entry.getValue(request,"acquisition_cost",null));
+		filteredEntries.add(entry);
+	    }
+	}
+
+	return filteredEntries;
+    }
+
     public List<Entry> getParents(Request request, Entry entry)
 	throws Exception {
         Entry root = request.getRootEntry();
