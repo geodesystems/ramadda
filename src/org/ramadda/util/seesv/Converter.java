@@ -154,12 +154,11 @@ public abstract class Converter extends Processor {
 			row.set(index,name);
 		    }
 		}
-		
+
 	    }
 	    return row;
 	}
     }
-
 
     public static class Roller extends Converter {
 
@@ -1543,7 +1542,7 @@ public abstract class Converter extends Processor {
 
             defaultType = Seesv.getDbProp(props, "default", "type",
 					  defaultType);
-	    
+
             defaultTypeFromProperties = Seesv.getDbProp(props, "default",
 							"type", null);
             defaultChartable = Seesv.getDbProp(props, "default",
@@ -1805,8 +1804,6 @@ public abstract class Converter extends Processor {
                 }
 
                 attrs.append(" type=\"" + type + "\"");
-
-		
 
                 String enumeratedValues = Seesv.getDbProp(props, id, i,
 							  "enumeratedValues", null);
@@ -5505,8 +5502,6 @@ public abstract class Converter extends Processor {
             super(cols);
             this.value = value;
         }
-
-
 
         public ColumnSetter(List<String> cols, List<String> rows,
                             String value) {

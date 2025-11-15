@@ -14,13 +14,6 @@ import java.io.*;
  */
 public class StripNull {
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         BufferedReader reader = new BufferedReader(
                                     new InputStreamReader(

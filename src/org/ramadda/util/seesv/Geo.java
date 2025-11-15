@@ -261,7 +261,6 @@ public abstract class Geo extends Processor {
 	    this.lonCol= lonCol;	    
         }
 
-
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) {
@@ -288,8 +287,6 @@ public abstract class Geo extends Processor {
         }
 
     }
-
-
 
     public static class StateNamer extends Geo {
 
@@ -486,10 +483,6 @@ public abstract class Geo extends Processor {
         }
 
     }
-
-
-
-
 
     public static class Neighborhood extends Geo {
 

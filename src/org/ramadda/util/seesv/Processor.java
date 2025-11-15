@@ -347,13 +347,12 @@ public abstract class Processor extends SeesvOperator {
 	    }
         }
 
-
 	private String printWidths(TextReader ctx, List<Integer> widths, boolean decorate, Row r) {
 	    StringBuilder sb = new StringBuilder();
             List<Integer> indices = getIndices(ctx);
 	    int cnt=0;
 	    int lastWidth=10;
-	    
+
 	    sb.append("|");
 	    for(int idx:indices) {
 		String v = r.indexOk(idx)?r.getString(idx):"";
@@ -376,7 +375,6 @@ public abstract class Processor extends SeesvOperator {
 	    }
 	    return sb.toString();
 	}
-
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
@@ -417,7 +415,6 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
     public static class Error extends Processor {
 
 	private String message;
@@ -425,7 +422,6 @@ public abstract class Processor extends SeesvOperator {
         public Error(TextReader ctx, String message) {
             this.message = message;
         }
-
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
@@ -436,8 +432,6 @@ public abstract class Processor extends SeesvOperator {
         }
 
     }
-
-
 
     public static class Propper extends Processor {
 
@@ -1917,8 +1911,6 @@ public abstract class Processor extends SeesvOperator {
             String dfltShowEnumerationPopup  = getDbProp("table", "showenumerationpopup", null);
             String dfltSearchRows  = getDbProp("table", "searchrows", null);	    
 
-	    
-
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
             String displayFormat = getDbProp("table", "displayFormat", (String)null);
             String numberFormat = getDbProp("table", "numberFormat", (String)null);
@@ -2452,18 +2444,17 @@ public abstract class Processor extends SeesvOperator {
         private int maxWidth = 0;
 	private boolean bold = false;
 	private boolean interactive=false;
-	
+
 	public Prettifier(TextReader ctx) {
 	    bold = Misc.equals(ctx.getProperty("label.bold"),"true");
 	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
 	}
 
-
         public Prettifier(TextReader ctx,boolean interactive) {
 	    this(ctx);
 	    this.interactive = interactive;
 	}
-	
+
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
@@ -2601,7 +2592,7 @@ public abstract class Processor extends SeesvOperator {
                         delimiter = ",";
                     }
                 }
-		
+
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
                     operator = new SeesvOperator();

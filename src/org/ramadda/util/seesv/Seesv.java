@@ -910,7 +910,7 @@ public class Seesv implements SeesvCommands {
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
-    
+
 	    if(row==null) break;
 	    if(rowCnt++==0 && fileCnt>0) {
 		continue;
@@ -1549,7 +1549,7 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_ERROR, "throw an error",
 		new Arg("message", "Error message")),
-	
+
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
 	new Cmd(CMD_INPUTCOMMENT,"Input comment prefix",new Arg("comment")),
@@ -1684,7 +1684,6 @@ public class Seesv implements SeesvCommands {
                 new Arg(ATTR_VALUES,"comma separated values"),		
                 new Arg("number_rows","Number of rows",ATTR_TYPE,TYPE_NUMBER)),
 
-
         new Cmd(CMD_NOHEADER, "Strip off the header"),
         new Cmd(CMD_DEHEADER, "Strip off the RAMADDA point header"),
         new Cmd(CMD_HEADERNAMES, "Make the header proper capitalization",
@@ -1710,7 +1709,6 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"File Pattern",
 		new Arg(ARG_NAME,"Macro name"),
 		new Arg(ARG_PATTERN,HELP_PATTERN,ATTR_TYPE, TYPE_PATTERN)),		
-
 
         new Cmd(CMD_FILENAMEPATTERN, "Extract strings from the file name and add them as new columns",
 		ARG_LABEL,"Filename Pattern",
@@ -2668,7 +2666,7 @@ public class Seesv implements SeesvCommands {
                 new Arg("utm_zone", "UTM Zone"),
                 new Arg("easting", "Easting column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("northing", "Northing column", ATTR_TYPE, TYPE_COLUMN)),	
-	
+
         new Cmd(CMD_MERCATOR, "Convert x/y to lon/lat",
 		ARG_LABEL,"Convert Mercator",
 		new Arg(ARG_COLUMNS,"x and y columns")),
@@ -3131,8 +3129,6 @@ public class Seesv implements SeesvCommands {
 	pw.append(html);
 	pw.append("\n<script  type='text/JavaScript'>try {\nUtils.initCopyable('seesv',{addLink:true,addLinkToParent:false});\n} catch(err){}\n</script>\n");
 
-
-
 	pw.append("</body>\n");
 	pw.append("</html>\n");	
         pw.flush();
@@ -3310,14 +3306,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_CHANGELINE,2,(ctx,args,i) -> {
 		ctx.setChangeString(args.get(++i), args.get(++i));
 		return i;
 	    });
-
-
-
 
 	defineFunction(CMD_APPENDROWS,3, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowAppender(parseInt(args.get(++i)),
@@ -3358,7 +3350,6 @@ public class Seesv implements SeesvCommands {
 		    return i;
 		});		
 
-
 	    defineFunction(CMD_DOWNLOAD,2, (ctx,args,i) -> {
 		    ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
 		    return i;
@@ -3369,7 +3360,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new RowCollector.CountUnique(ctx, getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_FILENAMEPATTERN,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.FileNamePattern(ctx, args.get(++i),args.get(++i)));
@@ -3820,7 +3810,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_DELIMITER,1,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
@@ -3871,8 +3860,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
 	defineFunction(CMD_CUT,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.RowCutter(ctx,Utils.getNumbers(args.get(++i)), true));
 		return i;
@@ -3906,7 +3893,7 @@ public class Seesv implements SeesvCommands {
 		else endSheet = Integer.parseInt(s);
 		return i;
 	    });
-	
+
 	defineFunction(CMD_PROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Propper(args.get(++i), args.get(++i)));
 		return i;
@@ -4023,7 +4010,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_WIKIDESC,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.WikiDescSearch(getCols(args.get(++i)), args.get(++i)));
@@ -4608,7 +4594,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_MAXROWS,1,(ctx,args,i) -> {
 		ctx.setMaxRows(parseInt(args.get(++i)));
 		return i;
@@ -5085,25 +5070,20 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_ISNOTNUMBER, 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNotNumber(ctx,getCols(args.get(++i))));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_ISNAN, 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNan(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 
-
 	defineFunction(CMD_ISNOTNAN, 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNotNan(ctx,getCols(args.get(++i))));
 		return i;
 	    });
-	
-
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
@@ -5133,7 +5113,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.PrintColumns(ctx, getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
@@ -5253,9 +5232,6 @@ public class Seesv implements SeesvCommands {
 		}
 		return -1;
 	    });
-
-
-
 
 	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
 		String cnt = args.get(++i);
@@ -5568,7 +5544,6 @@ public class Seesv implements SeesvCommands {
 	    }
 	}
 
-
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
 	    if(arg.equals("-ignore")) {
@@ -5717,7 +5692,6 @@ public class Seesv implements SeesvCommands {
 		    continue;
 		}
 
-
 		CsvFunctionHolder func = getFunction(arg);
 		if(func!=null) {
 		    int idx = func.run(ctx, args,i);
@@ -5758,7 +5732,6 @@ public class Seesv implements SeesvCommands {
 		    System.err.println("Seesv args:" + this.args);
 		    continue;
 		}
-
 
 		if (arg.startsWith("-") ||arg.length() == 0) {
 		    throw new IllegalArgumentException("Unknown argument: args[" + i+"]=" +
@@ -5923,7 +5896,7 @@ public class Seesv implements SeesvCommands {
 		    suffix = key.substring(lastDotIndex);
 		    key = key.substring(0,lastDotIndex-2);
 		}
-		
+
 		for(String subkey: Utils.split(key,",",true,true)) {
 		    if(suffix!=null) subkey = subkey+suffix;
 		    props.put(subkey,value);

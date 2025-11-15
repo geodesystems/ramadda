@@ -26,9 +26,6 @@ public class TestCommand1 extends ExtCommand {
 
     List<Row> rows;
 
-    /**
-     * _more_
-     */
     public TestCommand1() {
 	//If this command collects the rows then finishes them we use this to hold the rows
 	rows = new ArrayList<Row>();

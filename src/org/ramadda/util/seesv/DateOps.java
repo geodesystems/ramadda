@@ -244,10 +244,8 @@ public abstract class DateOps extends Processor {
      */
     public static class DateExtracter extends Converter {
 
-        /** _more_ */
         private String whatLabel = "Hour";
 
-        /** _more_ */
         private int what = GregorianCalendar.HOUR_OF_DAY;
 
         /**  */
@@ -334,7 +332,6 @@ public abstract class DateOps extends Processor {
 
     public static class FormatDateOffset extends Converter {
 
-        /** _more_ */
         private int what = GregorianCalendar.HOUR_OF_DAY;
 	private String name;
 
@@ -411,12 +408,10 @@ public abstract class DateOps extends Processor {
      */
     public static class DateBefore extends Converter {
 
-        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_ */
         private Date date;
 
         /* */
@@ -472,12 +467,10 @@ public abstract class DateOps extends Processor {
      */
     public static class DateAfter extends Converter {
 
-        /** _more_ */
         private int col=-1;
 
         /* */
 
-        /** _more_ */
         private Date date;
 
         public DateAfter(String col,  Date date) {
@@ -745,7 +738,6 @@ public abstract class DateOps extends Processor {
      */
     public static class CompareDate extends Converter {
 
-        /** _more_ */
         private String op;
 
 	private String scol1;

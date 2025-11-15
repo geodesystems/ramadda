@@ -17,9 +17,6 @@ import java.util.Properties;
  */
 public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlugin {
 
-    /**
-     * _more_
-     */
     public ExtCommand() {}
 
     /**
@@ -66,30 +63,10 @@ public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlu
         return (ExtCommand) this.clone();
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Row processRow(TextReader ctx, Row row) throws Exception {
         return row;
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param rows _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception On badness
-     */
     public void finish(TextReader ctx) throws Exception {}
 
 }

@@ -32,7 +32,6 @@ import java.net.URL;
 
 import java.sql.*;
 
-
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -1848,7 +1847,6 @@ public abstract class DataProvider extends SeesvOperator {
 	    double amplitude = 10.0;     // Amplitude of sine wave
 	    double period = 50.0;        // Number of steps for one full wave (in x units)
 	    double noiseLevel = 1.0;
-
 
 	    public Value(String s) {
 		if(s.startsWith("range:")) {

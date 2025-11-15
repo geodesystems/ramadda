@@ -44,7 +44,6 @@ import java.text.DecimalFormat;
 @SuppressWarnings("unchecked")
 public class RowCollector extends Processor {
 
-
     private List<Row> rows = new ArrayList<Row>();
 
     public RowCollector() {}

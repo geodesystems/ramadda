@@ -29,27 +29,14 @@ import java.util.List;
  */
 public class EntryXmlProcessor extends RowCollector {
 
-    /** _more_ */
     SimpleDateFormat fsdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    /** _more_ */
     SimpleDateFormat sdf1 = new SimpleDateFormat("MM/yyyy");
 
-    /** _more_ */
     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy");
 
-    /**
-     * _more_
-     */
     public EntryXmlProcessor() {}
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     *
-     * @throws Exception _more_
-     */
     public void finish(TextReader ctx) throws Exception {
 
         String template = null;

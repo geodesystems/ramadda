@@ -26,13 +26,9 @@ import java.util.Properties;
 public abstract  class DataSink extends Processor implements SeesvPlugin {
 
     public static class ToJson extends Processor {
-
-        /** _more_ */
         private Row headerRow;
-
 	String objCol;
 	int objIndex=-1;
-
         /**
          * ctor
          */
@@ -43,16 +39,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    }
 	}
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerRow == null) {
@@ -69,29 +55,12 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             return row;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
             ctx.getWriter().println("]");
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param writer _more_
-         * @param row _more_
-         *
-         * @throws Exception _more_
-         */
         private void handleRow(TextReader ctx, PrintWriter writer, Row row)
                 throws Exception {
             rowCnt++;
@@ -126,7 +95,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
      */
     public static class Write extends Processor {
 
-        /** _more_ */
         private Row headerRow;
 
 	private String fileNameTemplate;
@@ -144,16 +112,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    this.contentTemplate = contentTemplate;	    
 	}
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerRow == null) {
@@ -177,16 +135,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             return row;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param writer _more_
-         * @param row _more_
-         *
-         * @throws Exception _more_
-         */
         private void handleRow(TextReader ctx, PrintWriter writer, Row row)
                 throws Exception {
             rowCnt++;
@@ -214,23 +162,15 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
      */
     public static class ToXml extends Processor {
 
-        /** _more_ */
         Row header = null;
 
 	List<String> ids;
 
-        /** _more_ */
         String tag;
 
         /**  */
         String tag2;
 
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         * @param tag2 _more_
-         */
         public ToXml(String tag, String tag2) {
             super();
             if ((tag == null) || (tag.trim().length() == 0)) {
@@ -243,32 +183,12 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             this.tag2 = tag2;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             PrintWriter writer = ctx.getWriter();
             writer.println("</" + tag + ">");
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             PrintWriter writer = ctx.getWriter();
@@ -351,16 +271,7 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    s = s.replace("\"","\\\"");
 	    return JsonUtil.quote(s);
 	}
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             PrintWriter writer = ctx.getWriter();
@@ -441,18 +352,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         /**  */
         String insert;
 
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         * @param tag2 _more_
-         * @param db _more_
-         * @param columns _more_
-         *
-         * @param seesv _more_
-         * @param table _more_
-         * @param props _more_
-         */
         public ToDb(Seesv seesv, String db, String table, String columns,
                     Dictionary<String, String> props) {
             super(seesv);
@@ -473,16 +372,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             this.table = table;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
@@ -566,16 +455,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -632,10 +511,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
     public static class ToUrl extends Processor {
 	List<String> ids;
 
-        /**
-         * _more_
-         *
-         */
         public ToUrl() {
         }
 
@@ -646,16 +521,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    writer.close();
 	}
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {

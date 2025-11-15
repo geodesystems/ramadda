@@ -22,42 +22,18 @@ import java.util.List;
 
 public class ShapefileProvider extends DataProvider.BulkDataProvider {
 
-    /** _more_ */
     private boolean addPoints = true;
 
-    /** _more_ */
     private boolean addShapes = false;
 
-    /**
-     * _more_
-     *
-     * @param props _more_
-     */
     public ShapefileProvider(Dictionary props) {
         addPoints = Utils.getProperty(props, "addPoints", true);
         addShapes = Utils.getProperty(props, "addShapes", false);
 
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param s _more_
-     *
-     * @throws Exception _more_
-     */
     public void tokenize(TextReader ctx, String s) throws Exception {}
 
-    /**
-     * _more_
-     *
-     *
-     * @param seesv _more_
-     * @param textReader _more_
-     *
-     * @throws Exception _more_
-     */
     public void initialize(Seesv seesv, TextReader textReader)
             throws Exception {
         List<IO.Path> files = seesv.getInputFiles();

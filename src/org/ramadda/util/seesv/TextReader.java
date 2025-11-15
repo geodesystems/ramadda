@@ -521,7 +521,6 @@ public class TextReader implements Cloneable {
 	    seenStartPattern = true;
 	}
 
-
         if (lineFilters != null) {
             for (Utils.StringPattern f : lineFilters) {
                 if (f.matches(line)) {

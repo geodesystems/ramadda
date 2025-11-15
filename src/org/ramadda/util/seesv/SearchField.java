@@ -9,49 +9,25 @@ package org.ramadda.util.seesv;
  */
 public class SearchField {
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String label;
 
-    /** _more_ */
     private String value;
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     */
     public SearchField(String name) {
         this.name = name;
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     */
     public SearchField(String name, String value) {
         this.name  = name;
         this.value = value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return "search field: name=" + name + " value=" + value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUrlArg() {
         return "search_table_" + name;
     }

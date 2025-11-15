@@ -31,37 +31,15 @@ import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
 public class Filter extends Processor {
-
-    /** _more_ */
     private String commentPrefix = "#";
-
-    /** _more_ */
     protected int cnt = 0;
 
-    /**
-     * _more_
-     */
     public Filter() {}
 
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     */
     public Filter(List<String> cols) {
         super(cols);
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Row processRow(TextReader ctx, Row row) throws Exception {
         ctx.setCurrentOperator(this);
@@ -72,102 +50,41 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     */
     public boolean rowOk(TextReader ctx, Row row) {
         return true;
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public abstract static class ColumnFilter extends Filter {
-
-        /** _more_ */
         private int col = -1;
-
-        /** _more_ */
         private String scol;
-
-        /** _more_ */
         protected boolean negate = false;
 
-        /**
-         * _more_
-         *
-         * @param col _more_
-         */
         public ColumnFilter(int col) {
             this.col = col;
         }
 
-        /**
-         * _more_
-         *
-         * @param scol _more_
-         */
         public ColumnFilter(String scol) {
             this.scol = scol;
         }
 
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         */
         public ColumnFilter(List<String> cols) {
             super(cols);
         }
 
-        /**
-         *
-         *
-         * @param cols _more_
-         * @param negate _more_
-         */
         public ColumnFilter(List<String> cols, boolean negate) {
             super(cols);
             this.negate = negate;
         }
 
-        /**
-         * _more_
-         *
-         * @param scol _more_
-         * @param negate _more_
-         */
         public ColumnFilter(String scol, boolean negate) {
             this(scol);
             this.negate = negate;
         }
 
-        /**
-         *
-         *
-         * @param negate _more_
-         */
         public ColumnFilter(boolean negate) {
             this.negate = negate;
         }
 
-        /**
-         * _more_
-         *
-         * @param b _more_
-         *
-         * @return _more_
-         */
         public boolean doNegate(boolean b) {
             if (negate) {
                 return !b;
@@ -176,13 +93,6 @@ public class Filter extends Processor {
             return b;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         *
-         * @return _more_
-         */
         public int getIndex(TextReader ctx) {
             if (col >= 0) {
                 return col;
@@ -199,57 +109,20 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class FilterGroup extends Filter {
-
-        /** _more_ */
         List<Filter> filters = new ArrayList<Filter>();
-
-        /** _more_ */
         private boolean andLogic = true;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public FilterGroup(TextReader ctx) {}
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param andLogic _more_
-         */
         public FilterGroup(TextReader ctx, boolean andLogic) {
             this.andLogic = andLogic;
         }
 
-        /**
-         * _more_
-         *
-         * @param filter _more_
-         */
         public void addFilter(Filter filter) {
             filters.add(filter);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (filters.size() == 0) {
@@ -275,40 +148,13 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class IfIn extends Filter {
-
-        /**  */
-        private boolean in;
-
-        /**  */
+	private boolean in;
         private HashSet seen;
-
-        /**  */
         private int idx1;
-
-        /**  */
         private int idx2;
-
-        /**  */
         private String column2;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param in _more_
-         * @param column1 _more_
-         * @param file _more_
-         * @param column2 _more_
-         */
         public IfIn(TextReader ctx, boolean in, String column1, String file,
                     String column2) {
             this.in = in;
@@ -323,13 +169,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         *
-         * @param file _more_
-         * @param col1 _more_
-         *
-         * @throws Exception _more_
-         */
         private void init(String file, String col1) throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
@@ -365,15 +204,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -392,34 +222,10 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Length extends Filter {
-
-        /**  */
         private boolean greater;
-
-        /**  */
         private int length;
 
-        /**
-         * _more_
-         *
-         * @param in _more_
-         * @param column1 _more_
-         * @param file _more_
-         * @param column2 _more_
-         *
-         * @param ctx _more_
-         * @param greater _more_
-         * @param cols _more_
-         * @param length _more_
-         */
         public Length(TextReader ctx, boolean greater, List<String> cols,
                       int length) {
             super(cols);
@@ -427,15 +233,6 @@ public class Filter extends Processor {
             this.length  = length;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -479,7 +276,6 @@ public class Filter extends Processor {
                 return true;
             }
 
-
             for (int idx : getIndices(ctx)) {
 		if(!row.indexOk(idx)) continue;
 		String  s  = row.getString(idx).trim();
@@ -506,7 +302,6 @@ public class Filter extends Processor {
             if (cnt++ == 0) {
                 return true;
             }
-
 
             for (int idx : getIndices(ctx)) {
 		if(!row.indexOk(idx)) continue;
@@ -567,38 +362,15 @@ public class Filter extends Processor {
 
     }
 
-
     public static class Has extends Filter {
 	List<String> cols;
 
 	boolean has = false;
 
-        /**
-         * _more_
-         *
-         * @param in _more_
-         * @param column1 _more_
-         * @param file _more_
-         * @param column2 _more_
-         *
-         * @param ctx _more_
-         * @param greater _more_
-         * @param cols _more_
-         * @param length _more_
-         */
         public Has(TextReader ctx,  List<String> cols) {
 	    this.cols  = cols;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -647,44 +419,14 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class MatchesFile extends Filter {
-
-        /**  */
         private boolean in;
-
-        /**  */
         private List<String> strings;
-
-        /**  */
         private List<Pattern> patterns;
-
-        /**  */
         private int idx1;
-
-        /**  */
         private int idx2;
-
-        /**  */
         private String column2;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param in _more_
-         * @param pattern _more_
-         * @param column1 _more_
-         * @param file _more_
-         * @param column2 _more_
-         */
         public MatchesFile(TextReader ctx, boolean in, String pattern,
                            String column1, String file, String column2) {
             this.in = in;
@@ -699,14 +441,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         *
-         * @param file _more_
-         * @param pattern _more_
-         * @param col1 _more_
-         *
-         * @throws Exception _more_
-         */
         private void init(String file, String pattern, String col1)
                 throws Exception {
             BufferedReader br = new BufferedReader(
@@ -749,15 +483,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -785,47 +510,16 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class PatternFilter extends ColumnFilter {
-
-        /**  */
         List<String> strings;
-
-        /** _more_ */
         String spattern;
-
-        /** _more_ */
         Pattern pattern;
-
-        /** _more_ */
         boolean not = false;
-
-        /** _more_ */
         boolean isTemplate = false;
-
-        /** _more_ */
         boolean blank;
-
-        /** _more_ */
         boolean debug = false;
-
 	boolean isEquals = false;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param negate _more_
-         */
         public PatternFilter(TextReader ctx, List<String> cols,
                              String pattern, boolean negate) {
             super(cols, negate);
@@ -836,14 +530,6 @@ public class Filter extends Processor {
 
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param pattern _more_
-         */
         public PatternFilter(TextReader ctx, List<String> cols,
                              String pattern) {
             super(cols);
@@ -853,35 +539,18 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param idx _more_
-         * @param pattern _more_
-         */
         public PatternFilter(TextReader ctx, int idx, String pattern) {
             super(idx);
             setPattern(pattern);
             setIndex(idx);
         }
 
-        /**
-         *
-         * @param idx _more_
-         */
         private void setIndex(int idx) {
             List<Integer> indices = new ArrayList<Integer>();
             indices.add(idx);
             setIndices(indices);
         }
 
-        /**
-         * _more_
-         *
-         * @param pattern _more_
-         */
         public void setPattern(String pattern) {
             spattern = pattern;
             if (pattern.startsWith("=")) {
@@ -911,15 +580,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1033,37 +693,12 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class FuzzyFilter extends ColumnFilter {
-
-        /**  */
         int threshold;
-
-        /** _more_ */
         String spattern;
-
-        /** _more_ */
         boolean not = false;
-
-        /** _more_ */
         boolean debug = false;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param threshold _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param negate _more_
-         */
         public FuzzyFilter(TextReader ctx, int threshold, List<String> cols,
                            String pattern, boolean negate) {
             super(cols, negate);
@@ -1074,12 +709,6 @@ public class Filter extends Processor {
             }
         }
 
-        /**
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
         private boolean matches(String s) {
             int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(spattern, s);
             if (score > threshold) {
@@ -1089,25 +718,12 @@ public class Filter extends Processor {
             return false;
         }
 
-        /**
-         *
-         * @param idx _more_
-         */
         private void setIndex(int idx) {
             List<Integer> indices = new ArrayList<Integer>();
             indices.add(idx);
             setIndices(indices);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1173,36 +789,12 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Same extends ColumnFilter {
-
-        /** _more_ */
         String scol1;
-
-        /**  */
         String scol2;
-
-        /**  */
         int col1 = -1;
-
-        /**  */
         int col2 = -1;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param col1 _more_
-         * @param col2 _more_
-         * @param negate _more_
-         */
         public Same(TextReader ctx, String col1, String col2,
                     boolean negate) {
             super(negate);
@@ -1210,15 +802,6 @@ public class Filter extends Processor {
             scol2 = col2;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1235,7 +818,6 @@ public class Filter extends Processor {
 
     }
 
-
     public static class RowRange extends Filter {
 	int  start;
 	int  end;	
@@ -1245,7 +827,6 @@ public class Filter extends Processor {
 	    this.end=end;
         }
 
-
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
 	    int index = rowCnt++;
@@ -1254,44 +835,17 @@ public class Filter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 23, '19
-     * @author         Enter your name here...
-     */
     public static class CountValue extends ColumnFilter {
 
-        /** _more_ */
         int count;
 
-        /** _more_ */
         Hashtable<Object, Integer> map = new Hashtable<Object, Integer>();
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param col _more_
-         * @param count _more_
-         */
         public CountValue(TextReader ctx, String col, int count) {
             super(col);
             this.count = count;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1314,43 +868,15 @@ public class Filter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Decimate extends Filter {
-
-        /** _more_ */
         private int start;
-
-        /** _more_ */
         private int skip;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param start _more_
-         * @param skip _more_
-         */
         public Decimate(TextReader ctx, int start, int skip) {
             this.start = start;
             this.skip  = skip;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (start > 0) {
@@ -1366,42 +892,15 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class Stop extends Filter {
-
-        /** _more_ */
         private String pattern;
-
-        /** _more_ */
         private boolean seenStop;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param pattern _more_
-         */
         public Stop(TextReader ctx, String pattern) {
             this.pattern  = pattern;
             this.seenStop = false;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (seenStop) {
@@ -1418,45 +917,17 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class Start extends Filter {
-
-        /** _more_ */
         private String pattern;
-
-        /** _more_ */
         private boolean seenStart;
-
 	private boolean isRegexp = false;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param pattern _more_
-         */
         public Start(TextReader ctx, String pattern) {
             this.pattern   = pattern;
             this.seenStart = false;
 	    isRegexp  =  StringUtil.containsRegExp(pattern);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (seenStart) {
@@ -1478,38 +949,13 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class MinColumns extends Filter {
-
-        /** _more_ */
         private int cnt;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param cnt _more_
-         */
         public MinColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
 	    if(cnt<0) {
@@ -1523,37 +969,13 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class MaxColumns extends Filter {
-
-        /** _more_ */
         private int cnt;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param cnt _more_
-         */
         public MaxColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
 	    if(cnt<0) {
@@ -1568,30 +990,10 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jan 12, '15
-     * @author         Enter your name here...
-     */
     public static class ValueFilter extends ColumnFilter {
-
-        /** _more_ */
         private int op;
-
-        /** _more_ */
         private double value;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param op _more_
-         * @param value _more_
-         */
         public ValueFilter(TextReader ctx, List<String> cols, int op,
                            double value) {
             super(cols);
@@ -1599,15 +1001,6 @@ public class Filter extends Processor {
             this.value = value;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1638,28 +1031,10 @@ public class Filter extends Processor {
 
     public static class EnsureNumeric extends Filter {
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param op _more_
-         * @param value _more_
-         */
         public EnsureNumeric(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
@@ -1675,35 +1050,11 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jan 12, '15
-     * @author         Enter your name here...
-     */
     public static class RangeFilter extends ColumnFilter {
-
-        /**  */
         private boolean between;
-
-        /** _more_ */
         private double min;
-
-        /**  */
         private double max;
 
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param between _more_
-         * @param cols _more_
-         * @param min _more_
-         * @param max _more_
-         */
         public RangeFilter(TextReader ctx, boolean between,
                            List<String> cols, double min, double max) {
             super(cols);
@@ -1712,15 +1063,6 @@ public class Filter extends Processor {
             this.max     = max;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1758,38 +1100,13 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jan 12, '15
-     * @author         Enter your name here...
-     */
     public static class BetweenString extends ColumnFilter {
-
 	private boolean not;
-
-        /**  */
         private boolean between;
-
-        /** _more_ */
         private String start;
-
-        /**  */
         private String end;
 	private boolean inside = false;
 
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param between _more_
-         * @param cols _more_
-         * @param min _more_
-         * @param max _more_
-         */
         public BetweenString(TextReader ctx,  boolean not,
 			     String col, String start, String end) {
             super(col);
@@ -1798,15 +1115,6 @@ public class Filter extends Processor {
             this.end = end;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1836,55 +1144,20 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class RowCutter extends Filter {
-
-        /** _more_ */
         private boolean cut = true;
-
-        /** _more_ */
         private List<Integer> rows;
-
-        /** _more_ */
         private boolean cutOne = false;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         */
         public RowCutter(TextReader ctx, List<Integer> rows) {
             this.rows = rows;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         * @param cut _more_
-         */
         public RowCutter(TextReader ctx, List<Integer> rows, boolean cut) {
             this(ctx, rows);
             this.cut = cut;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             boolean inRange = false;
@@ -1915,13 +1188,6 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Unique extends Filter {
     	private static final int MODE_EXACT = 0;
 	private static final int MODE_CLEAN = 1;
@@ -1930,17 +1196,10 @@ public class Filter extends Processor {
 	private int mode;
 	private int fuzzyThreshold=100;
 	private boolean debug = false;
-        /** _more_ */
+
         private HashSet<String> seen = new HashSet<String>();
         private List<String> past = new ArrayList<String>();
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param toks _more_
-         */
         public Unique(TextReader ctx, List<String> toks, String mode) {
             super(toks);
 	    if(mode.equals("") || mode.equals("exact")) this.mode = MODE_EXACT;    
@@ -1958,14 +1217,6 @@ public class Filter extends Processor {
 
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
 	    if(rowCnt++==0) return true;
@@ -2032,44 +1283,19 @@ public class Filter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Sample extends Filter {
-
-        /**  */
         private double prob;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param prob _more_
-         */
         public Sample(TextReader ctx, double prob) {
             this.prob = prob;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 return true;
             }
             double r = Math.random();
-
             return r <= prob;
         }
     }
