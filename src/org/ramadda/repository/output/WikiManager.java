@@ -894,6 +894,7 @@ public class WikiManager extends RepositoryManager
 		if(type!=null) {
 		    if (parent.getTypeHandler().isType(type)) {
 			lastEntry = parent;
+			break;
 		    }
 		} else {
 		    lastEntry = parent;
