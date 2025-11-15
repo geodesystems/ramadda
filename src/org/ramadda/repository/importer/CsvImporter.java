@@ -305,7 +305,7 @@ public class CsvImporter extends ImportHandler {
 				List<Entry> columnEntries = getEntryManager().getEntriesFromDb(lookupRequest);
 				lookupRequest.remove(ARG_NAME_EXACT,ARG_TYPE,ARG_EXACT);
 				if(columnEntries.size()==0) {
-				    myMessage2.append(HU.div("Could not find linked entry:" + v));
+				    myMessage2.append(HU.div("Could not find linked entry:" + entryType+" name:" +v));
 				} else {
 				    v = columnEntries.get(0).getId();
 				}
@@ -428,7 +428,7 @@ public class CsvImporter extends ImportHandler {
 	    message.append(getPageHandler().showDialogWarning(myMessage2.toString()));
 	}
 
-	message.append(HU.div("New entries:"));
+	message.append(HU.div(HU.b("New entries:")));
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 
