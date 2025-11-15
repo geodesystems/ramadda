@@ -36,14 +36,20 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TYPE_BUILDING = "type_assets_building";
     public static final String TYPE_EQUIPMENT = "type_assets_equipment";
     public static final String TYPE_IT = "type_assets_it";        
+    public static final String TYPE_FIXTURE = "type_assets_fixture";
+    public static final String TYPE_INTANGIBLE = "type_assets_intangible";
+
     public static final String TYPE_LICENSE = "type_assets_license";
     public static final String TYPE_DEPARTMENT = "type_assets_department";
     public static final String TYPE_VENDOR = "type_assets_vendor";
     public static final String TYPE_PERSONNEL = "type_assets_personnnel";        
+    public static final String TYPE_LOCATION = "type_assets_location";
 
     public static final String ARG_REPORT="report";
     public static final String ARG_ALLCOLUMNS = "allcolumns";
     
+    public static final String ARG_MIN_COST="mincost";
+    public static final String ARG_MAX_COST="maxcost";    
     public static final String ARG_DOWNLOAD = "download";
     public static final String ACTION_SEARCH="assets_search";
     public static final String ACTION_REPORT="assets_report";
@@ -88,7 +94,10 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	}	
 	if(entry.isType(TYPE_VENDOR)) {
 	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
-	}	
+	}
+	if(entry.isType(TYPE_LOCATION)) {
+	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"location_entry");
+	}		
 
 	String types = Utils.getProperty(props,"types","super:" + TYPE_BASE+"%2C"+ TYPE_LICENSE);
 	String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
@@ -108,7 +117,12 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
 	    getSearchManager().processSearchUrl(request, entries,searchUrl);
 	    return entries;
-	}	
+	}
+	if(entry.isType(TYPE_LOCATION)) {
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"location_entry");
+	    getSearchManager().processSearchUrl(request, entries,searchUrl);
+	    return entries;
+	}		
 
 	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
 	getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
@@ -344,6 +358,25 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		}	    
 	    }
 
+	    int op = 0;
+	    String minCost = request.getString(ARG_MIN_COST,"");
+	    if(stringDefined(minCost)) {
+		op++;
+		minCost = minCost.replace(",","");
+		xlsUrl= HU.url(xlsUrl, ARG_OPERATOR+op,">=",
+			       ARG_OPERATOR_COLUMN+op,"acquisition_cost",
+			       ARG_OPERATOR_VALUE+op,minCost);
+	    }
+	    String maxCost = request.getString(ARG_MAX_COST,"");
+	    if(stringDefined(maxCost)) {
+		op++;
+		maxCost = maxCost.replace(",","");
+		xlsUrl= HU.url(xlsUrl, ARG_OPERATOR+op,"<=",
+			       ARG_OPERATOR_COLUMN+op,"acquisition_cost",
+			       ARG_OPERATOR_VALUE+op,maxCost);
+	    }
+
+
 	    return new Result(xlsUrl);
 	}
 	String url =  request.makeUrl(getRepository().URL_ENTRY_ACTION);
@@ -361,10 +394,13 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	options.add(new HtmlUtils.Selector("Equipment",TYPE_EQUIPMENT));	
 	options.add(new HtmlUtils.Selector("Buildings",TYPE_BUILDING));	
 	options.add(new HtmlUtils.Selector("IT",TYPE_IT));
+	options.add(new HtmlUtils.Selector("Furniture and Fixtures",TYPE_FIXTURE));
+	options.add(new HtmlUtils.Selector("Intangible",TYPE_INTANGIBLE));
 	options.add(new HtmlUtils.Selector("Licenses",TYPE_LICENSE));		
-	//	options.add(new HtmlUtils.Selector("",TYPE_));	
-	//	options.add(new HtmlUtils.Selector("",TYPE_));	
 	HU.formEntry(sb,"",HU.select(ARG_TYPES,options,"","multiple rows=4"));
+	HU.formEntry(sb,"Cost Range:",
+		     HU.input(ARG_MIN_COST,"",HU.attrs("size","10","placeholder","Min value")) +" - "+
+		     HU.input(ARG_MAX_COST,"",HU.attrs("size","10","placeholder","Max value")));
 	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_ALLCOLUMNS,"true",true,"All Fields"));
 	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_SEPARATETYPES,"true",true,"Separate asset types"));	
 
@@ -717,6 +753,12 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	return getEntryManager().getEntry(request, id,true);
     }
 
+    private Entry getLocation(Request request, Entry entry) throws Exception {
+	String id = entry.getStringValue(request, "location_entry",null);
+	if(!stringDefined(id)) return null;
+	return getEntryManager().getEntry(request, id,true);
+    }
+    
     private Entry getDepartment(Request request, Entry entry) throws Exception {
 	String id = entry.getStringValue(request, "department",null);
 	if(!stringDefined(id)) return null;

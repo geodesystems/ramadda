@@ -12,35 +12,39 @@ contact_phone,Contact Phone,string
 asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
 department,Department,entry, entrytype="type_assets_department"  cansearch="true" tags="reportable" 
 assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
-location,Location,enumerationplus,  cansearch="true" 
+location_entry,Location,entry, entrytype="type_assets_location" cansearch="true" 
+site,Site,enumerationplus, cansearch="true"  enumerationspecifictotype="false"
+program,Program,enumerationplus, cansearch="true"  enumerationspecifictotype="false"
+category,Category,enumerationplus, cansearch="true"  enumerationspecifictotype="true"
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" \
 values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
 vendor,Vendor,entry, entrytype="type_assets_vendor"  cansearch="true"
 purchase_order,,string
+account_number,,string
 check_number,,string
 acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"  tags="reportable" 
-awarranty_expiration,,date, default="none"  cansearch="true" 	      
+warranty_expiration,,date, default="none"  cansearch="true" 	      
 status,Status,enumerationplus, cansearch="true"  subgroup="Status" \
 values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
-condition,,enumerationplus, values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
+condition,,enumerationplus, \
+values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
 disposal_date,,date, default="none"    cansearch="true" 
 disposal_method,,string,size="2000" rows="5"
 disposed_comment,,string, size="5000" rows="5"
 
 #physical asset
-model,,enumerationplus,size="400" cansearch="true"
-manufacturer,,enumerationplus,
+super:type_assets_base
+manufacturer,,enumerationplus, enumerationspecifictotype="true" cansearch="true" 
+model,Model,enumerationplus,size="400" cansearch="true" enumerationspecifictotype="true"
+model_year,Model year,int, cansearch="true" 
+serial_number,,string,size="400"
 
 
 #Vehicles
-super:type_assets_base
-make,,enumerationplus,size="600" group="Vehicle Information" cansearch="true" 
-model,,enumerationplus,size="600" cansearch="true" 
-model_year,,int, cansearch="true" 
-color,,enumerationplus, values="Black\, White\, Gray\, Silver\, Red\, Blue\, Green\, Yellow\, Brown\, Beige"
-serial_number,,string,size="400"
-vin,,string,size="600" cansearch="true" 
+super:type_assets_physical
+vin,,string,group="Vehicle Information" size="600" cansearch="true" 
 license_number,,string,size="600"
+color,,enumerationplus, values="Black\, White\, Gray\, Silver\, Red\, Blue\, Green\, Yellow\, Brown\, Beige"
 fuel_type,,enumerationplus,values="regular:Regular\,diesel:Diesel\,premium:Premium" default="regular"
 mileage,,int,
 last_service_date,,date,default="none"	     
@@ -134,7 +138,7 @@ phone_number,Phone Number,string
 email,Email Address,email
 employment_status,Employment Status,enumeration, \
 values="Active\,On Leave\,Contractor\,Intern\,Terminated\,Retired\,Suspended\,Pending Hire"
-termination_date,Termination Date,date
+
 
 
 
@@ -158,6 +162,9 @@ business_license_number,Business License Number,string
 #preferred_vendor,Preferred Vendor
 payment_terms,Payment Terms,enumerationplus, values="\
 Net 15\,Net 30\,Net 45\,Net 60\,Due on Receipt\,COD\,CIA\,EOM\,2/10 Net 30\,1/10 Net 30\,50% Upfront / 50% on Delivery\,Milestone-Based\,Prepaid\,Installments\,Progress Billing"
+
+
+#location
 
 
 

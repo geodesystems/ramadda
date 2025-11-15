@@ -1,0 +1,48 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_location.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_location" 
+ description="Location" 
+ handler="org.ramadda.projects.assets.AssetBaseTypeHandler" 
+ super="type_assets_thing" 
+ supercategory="General" 
+ category="Assets" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/location.png" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.resource.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Location: {{name}}"
++center
+{{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
+-center
+{{description wikify=true}}
++toggleopen Location Information
++row
++col-8
+{{information  showBase=false}}
+-col
++col-4
+{{information   showDetails=false}}
+-col
+-row
+-toggle
+
+{{embed message=""  }} 
+
+{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;location_entry"}}
+
+{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
+showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
+ captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
+ showPlaceholderImage=true}} 
+-section]]></wiki>
+</type>

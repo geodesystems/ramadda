@@ -1,0 +1,17 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_assets_intangible.xml"/>
+into some types.xml file
+-->
+<type  name="type_assets_intangible" 
+ description="Intangible Asset" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_assets_base" 
+ supercategory="General" 
+ category="Assets" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/assets/cloud.png" />
+<property  name="date.nullok"  value="true" />
+</type>

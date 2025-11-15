@@ -7,9 +7,13 @@
 <import resource="type_assets_vehicle.xml"/>
 <import resource="type_assets_building.xml"/>
 <import resource="type_assets_equipment.xml"/>
+<import resource="type_assets_equipment_construction.xml"/>
 <import resource="type_assets_it.xml"/>
+<import resource="type_assets_fixture.xml"/>
+<import resource="type_assets_intangible.xml"/>
 <import resource="type_assets_license.xml"/>
 <import resource="type_assets_personnel.xml"/>
 <import resource="type_assets_department.xml"/>
 <import resource="type_assets_vendor.xml"/>
+<import resource="type_assets_location.xml"/>
 </types>
