@@ -25,24 +25,9 @@ into some types.xml file
 {{entrylink  link=""  icon="fas fa-list" title="Asset Reports"  makeButton=true showIcon="false"  action="assets_report"  }}
 -center
 {{description wikify=true}}
-+toggleopen Location Information
-+row
-+col-8
-{{information  showBase=false}}
--col
-+col-4
-{{information   showDetails=false}}
--col
--row
--toggle
-
-{{embed message=""  }} 
-
-{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;location_entry"}}
-
-{{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
-showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
- captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 
- showPlaceholderImage=true}} 
+{{information  showDetails=true }}
++center
+{{map  hideIfNoLocations=true  detailed=true width=80% height=500px}} 
+-center
 -section]]></wiki>
 </type>

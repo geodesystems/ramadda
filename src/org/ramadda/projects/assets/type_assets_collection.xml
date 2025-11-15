@@ -14,10 +14,11 @@ childtypes="type_assets_collection,super:type_assets_base,type_assets_license,su
 <!-- Columns-->
 <column  name="asset_type"  label="Asset Type"  type="enumeration"  values=":Select,type_assets_building:Building,type_assets_vehicle:Vehicle" />
 <column  name="organization"  label="Organization Name"  type="enumerationplus" />
-<column  name="department"  label="Department"  type="enumerationplus" />
-<column  name="contact_person"  label="Contact Person"  type="enumerationplus" />
-<column  name="contact_email"  label="Contact Email"  type="email" />
-<column  name="contact_phone"  label="Contact Phone"  type="string" />
+<column  name="department_entry"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" />
+<column  name="contact_person"  label="Contact"  type="entry"  entrytype="type_assets_personnel" cansearch="true" />
+<column  name="show_links"  label="Show Links"  type="boolean"  subgroup="Display" showinhtml="false" default="true" />
+<column  name="show_summary"  label="Show Summary"  type="boolean"  showinhtml="false" default="true" />
+<column  name="show_map"  label="Show Map"  type="boolean"  showinhtml="false" default="false" />
 <action name="assets_report" label="Assets Report" 
 canedit="true" icon="fas fa-file-lines" foruser="true" category="view"/>
 <action name="assets_new" label="New Asset" 
@@ -31,10 +32,13 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
++if property=show_links
 {{assets_header}}
+-if
++if property=show_summary
+{{assets_summary}}
+-if
 {{description wikify=true}}
-:vspace 1em
-----
 :heading List
 +center
 {{display_simplesearch width=310px                                                                            
@@ -46,11 +50,18 @@ orderBy=name
 #pageSearchParent=.ramadda-grid-container                                                                     
 }} 
 -center
-{{tabletree    typeWidth=300px
+{{tabletree    typeWidth=300px orderby="entryorder,name"
 message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
 +skip
 {{assets_report_table}}
 -skip
++if property=show_map                                                                                           
+:vspace 1em                                                                                                     
+:heading Map
++center                                                                                                         
+{{map  hideIfNoLocations=true  detailed=true width=80% height=500px}}                                 
+-center                                                                                                         
+-if 
 :vspace 1em
 :heading Collection Information
 {{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 

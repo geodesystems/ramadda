@@ -63,6 +63,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String REPORT_COSTS = "assets_report_costs";
     public static final String REPORT_DOWNLOAD = "assets_report_download";    
     public static final String TAG_HEADER= "assets_header";
+    public static final String TAG_SUMMARY= "assets_summary";    
 
 
     public AssetBaseTypeHandler(Repository repository, Element node)
@@ -74,6 +75,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
 	tags.add(new String[]{"Asset Group Header",TAG_HEADER});
+	tags.add(new String[]{"Asset Summary",TAG_SUMMARY});	
 
         tags.add(new String[]{"Assets Report Table",REPORT_TABLE+" #types=\"type_assets_it,type_assets_equipment,...\" showHeader=true"});
         tags.add(new String[]{"Assets Report Counts",REPORT_COUNTS +" "});
@@ -274,6 +276,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
 
     private String assetHeaderWiki;
+    private String assetSummaryWiki;    
+
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -286,6 +290,13 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    }
 	    return getWikiManager().wikifyEntry(request, entry,assetHeaderWiki);
 	}
+	if(tag.equals(TAG_SUMMARY)) {
+	    if(assetSummaryWiki==null) {
+		assetSummaryWiki =
+		    getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetsummary.txt");
+	    }
+	    return getWikiManager().wikifyEntry(request, entry,assetSummaryWiki);
+	}	
         if (tag.equals("assets_report_link")) {
 	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
 	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));

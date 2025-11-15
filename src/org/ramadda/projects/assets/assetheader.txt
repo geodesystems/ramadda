@@ -6,11 +6,3 @@
 {{entrylink  link=""  icon="fas fa-plus" title="New Asset"  makeButton=true showIcon="false"  action="assets_new"  }}
 -if
 -center
-+center
-{{typecount  typecountPrefix=":heading Summary" 
-typecountSuffix="" types="super:type_assets_base,super:type_assets_thing"  iconWidth=24px
-doColor=true ancestor="${this}" addAncestor=true
-addSearchLink=true  topCount=100
-hero="false"  template="${icon} ${label}<br>${count}"  
-addSearchLink="true"  animated="true" }} 
--center

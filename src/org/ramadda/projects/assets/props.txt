@@ -2,11 +2,11 @@
 asset_type,Asset Type,enumeration,\
 values=":Select\,type_assets_building:Building\,type_assets_vehicle:Vehicle"
 organization,Organization Name,enumerationplus,
-department,Department,entry, entrytype="type_assets_department"  cansearch="true"
-contact_person,Contact Person,enumerationplus,
-contact_email,Contact Email,email
-contact_phone,Contact Phone,string
-
+department_entry,Department,entry, entrytype="type_assets_department"  cansearch="true"
+contact_person,Contact,entry, entrytype="type_assets_personnel" cansearch="true" 
+show_links,,boolean,subgroup="Display" showinhtml="false" default="true"
+show_summary,,boolean, showinhtml="false" default="true"
+show_map,,boolean, showinhtml="false" default="false"
 
 #base asset class
 asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
