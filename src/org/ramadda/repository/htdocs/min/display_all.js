@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Nov 10 06:25:48 MST 2025";
+var build_date="RAMADDA build date: Sat Nov 15 06:25:33 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36116,10 +36116,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		} else if(col.isEntry()) {		    
 		    //this gets handled below with the date widgets
                     let value = this.jq(id+'_hidden').val();
+		    let label = this.jq(id).val();
 		    if(Utils.stringDefined(value)) {
 			extra += "&" + arg + "=" + encodeURIComponent(value);
 			if(tag.length==0) {
-			    tag = makeTag("column",col.getName(),value);
+			    tag = makeTag("column",col.getName(),col.getLabel()+'='+label);
 			    tag.click(()=>{
 				let obj=this.jq(id);
 				if(obj.data && obj.data('selectBox-selectBoxIt')) {
@@ -36130,7 +36131,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				this.submitSearchForm();
 			    });
 			} else {
-			    tag.html(label);
+//			    tag.html(label);
+			    tag.remove();
 			}
 		    } else {
 			tag.remove();
@@ -37142,8 +37144,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                             let extraAttr = "";
                             if (value === savedValue || value===searchValue) {
 				extraAttr = " selected ";
-				console.log(value,savedValue,searchValue);
-
                             }
 
 			    if(value=="") {
@@ -37201,20 +37201,19 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    widget=dateWidget.getHtml();
 		} else if(col.isEntry()) {
 		    let name = col.getName();
-
 		    let clear = HU.href("javascript:void(0);",HU.getIconImage(ICON_ERASER),
 					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
 					 ATTR_TITLE,"Clear selection"]);
 		    let input = HU.input("","",[ATTR_READONLY,null,
 						ATTR_PLACEHOLDER,'Select',
-						ATTR_STYLE,HU.css('cursor',CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
+						ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
 						ATTR_ID,id,
 						ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		    label = col.getSearchLabel();
 		    widget = HU.hidden("","",[ATTR_ID,id+"_hidden"]);
 		    widget+= HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
-				    HU.leftRightTable(clear,input,HU.perc(5), HU.perc(95)));
+				    HU.leftRightTable(clear,input,HU.perc(10), HU.perc(90)));
 		} else {
 		    console.log('unknown column type:',col.getName(),col.getType());
 		}
@@ -48080,15 +48079,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 	gotoAddress:function(widget,address) {
             let url = Ramadda.getUrl(HU.url('/geocode',['query',address]));
-	    let add = loc=> {
+	    let add = (loc,ignoreComma)=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
 		let label = '';
-		let toks = Utils.split(loc.name,',',true,true);
 		let offset = -10;
-		for(let i=0;i<toks.length;i++) {
-		    label +=toks[i]+'\n';
-		    offset-=6;
+		if(!ignoreComma) {
+		    let toks = Utils.split(loc.name,',',true,true);
+		    for(let i=0;i<toks.length;i++) {
+			label +=toks[i]+'\n';
+			offset-=6;
+		    }
+		} else {
+		    label=loc.name;
 		}
 		offset = -12;
 		label = label.trim();
@@ -48109,6 +48112,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.panMapTo();
 	    };
 	    
+	    address=String(address).trim()
+	    //check for lat,lon
+	    if(address.match(/^\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?\s*$/)) {
+		let toks = address.split(',');
+		if(toks.length==2) {
+		    add({latitude:+toks[0],longitude:+toks[1],name:address},true);
+		    return;
+		}
+	    }
+
 	    let clear = ()=>{
 		widget.css(CSS_BACKGROUND,COLOR_WHITE);
 		this.jq(ID_ADDRESS_WAIT).html('');
@@ -53283,8 +53296,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  CSS_MARGIN_RIGHT,HU.px(2),
 						  CSS_WIDTH,HU.px(20))])+
 			HU.input('','',[ATTR_ID,this.domId(ID_ADDRESS_INPUT),
-					ATTR_PLACEHOLDER,'Search for address',
-					ATTR_SIZE,20]));
+					ATTR_PLACEHOLDER,'Search for address or lat,lon',
+					ATTR_SIZE,25]));
 
 	    if(this.canChange()) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),
