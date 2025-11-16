@@ -9,6 +9,7 @@ package org.ramadda.plugins.mail;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
@@ -131,11 +132,18 @@ public class MailTypeHandler extends GenericTypeHandler {
             return;
         }
 
+
 	boolean addProperties = request.get(ARG_METADATA_ADD,false) ||
 	    request.get("fromharvester",false);
 	boolean addAddresses = request.get("addaddresses",false);
 	if(!addAddresses) addProperties=false;
         System.setProperty("mail.mime.address.strict", "false");
+
+	if(entry.getFile().toString().endsWith("txt")) {
+	    initializeTextFile(request, entry);
+	    return;
+	}
+
 
         //Extract out the mail message metadata
         MimeMessage message = new MimeMessage(this.session,
@@ -234,6 +242,30 @@ public class MailTypeHandler extends GenericTypeHandler {
         }
     }
 
+    private void    initializeTextFile(Request request, Entry entry) throws Exception {
+        Object[] values = getEntryValues(entry);
+	for(String line: Utils.split(IO.readInputStream(getStorageManager().getFileInputStream(entry.getFile().toString())),"\n",true,true)) {
+	    System.err.println("line:" + line);
+	    if(line.startsWith("Sent:")) {
+		String date = line.substring("Sent:".length()).trim();
+		Date fromDttm = Utils.parseDate(date);
+		System.err.println(date + "  "+ fromDttm);
+		if (fromDttm != null) {
+		    entry.setStartDate(fromDttm.getTime());
+		}
+	    }
+
+	    if(line.startsWith("Subject:")) {
+		String subject = line.substring("Subject:".length()).trim();
+		values[IDX_SUBJECT] =subject;
+		entry.setName(entry.getName() +" - " + subject);
+		continue;
+	    }
+
+	}
+
+	
+    }
 
     /**
      * _more_
