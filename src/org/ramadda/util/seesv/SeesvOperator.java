@@ -134,6 +134,27 @@ public class SeesvOperator {
 	return v;
     }
 
+    public String getValue(TextReader ctx, Row row, String value,
+			   List<Utils.Macro> macros) {
+	if(macros==null || macros.size()==0)  return value;
+	StringBuilder sb = new StringBuilder();
+	for(Utils.Macro macro: macros) {
+	    if(macro.isText()) {
+		sb.append(macro.getText());
+	    } else {
+		int index = getIndex(ctx,macro.getId());
+		if(row.indexOk(index)) {
+		    sb.append(row.get(index));
+		} else {
+		}
+	    }
+	}
+	return sb.toString();
+
+	
+    }
+
+
     public String getProperty(String name) {
         if (seesv != null) {
             return seesv.getProperty(name);

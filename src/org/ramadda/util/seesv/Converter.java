@@ -5497,10 +5497,16 @@ public abstract class Converter extends Processor {
         private List<Integer> cols;
         private List<Integer> rows;
         private String value;
+	private List<Utils.Macro> macros;
 
         public ColumnSetter(List<String> cols,  String value) {
             super(cols);
             this.value = value;
+	    if(value.indexOf("${")>=0) {
+		macros = Utils.splitMacros(value);
+	    } else {
+		macros = null;
+	    }
         }
 
         public ColumnSetter(List<String> cols, List<String> rows,
@@ -5535,7 +5541,7 @@ public abstract class Converter extends Processor {
             List values = row.getValues();
             for (int col : cols) {
                 if (col < values.size()) {
-                    values.set(col, value);
+		    values.set(col, getValue(ctx,row,value,macros));
                 }
             }
 
