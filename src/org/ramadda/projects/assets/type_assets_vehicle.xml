@@ -1,24 +1,26 @@
 <!-- 
 Since this is for import add a:
-<import resource="type_assets_physical.xml"/>
+<import resource="type_assets_vehicle.xml"/>
 into some types.xml file
 -->
-<type  name="type_assets_physical" 
- description="Physical Asset" 
+<type  name="type_assets_vehicle" 
+ description="Vehicle Asset" 
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
- super="type_assets_base" 
+ super="type_assets_physical" 
  supercategory="General" 
  category="Assets" 
-foruser="false"
 >
 
 <!-- Columns-->
-<column  name="manufacturer"  label="Manufacturer"  type="enumerationplus"  enumerationspecifictotype="true" />
-<column  name="model"  label="Model"  type="enumerationplus"  size="400" cansearch="true" enumerationspecifictotype="true" />
-<column  name="model_year"  label="Model year"  type="int"  cansearch="true" />
-<column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
+<column  name="vin"  label="Vin"  type="string"  group="Vehicle Information" size="600" cansearch="true" />
+<column  name="license_number"  label="License Number"  type="string"  size="600" />
+<column  name="color"  label="Color"  type="enumerationplus"  values="Black, White, Gray, Silver, Red, Blue, Green, Yellow, Brown, Beige" />
+<column  name="fuel_type"  label="Fuel Type"  type="enumerationplus"  values="regular:Regular,diesel:Diesel,premium:Premium" default="regular" />
+<column  name="mileage"  label="Mileage"  type="int" />
+<column  name="last_service_date"  label="Last Service Date"  type="date"  default="none" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="icon"  value="/assets/physical.png" />
+<property  name="icon"  value="/assets/vehicle.png" />
 <property  name="date.nullok"  value="true" />
+<property  name="asset.type"  value="VEH" />
 </type>
