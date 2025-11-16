@@ -32,13 +32,13 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
+{{description wikify=true}}
 +if property=show_links
 {{assets_header}}
 -if
 +if property=show_summary
 {{assets_summary}}
 -if
-{{description wikify=true}}
 :heading List
 +center
 {{display_simplesearch width=310px                                                                            
