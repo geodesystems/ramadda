@@ -6078,7 +6078,7 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
 
         boolean doAnonymousUpload = false;
-        String name = EntryUtil.cleanupEntryName(Utils.getAttributeOrTag(node,
+        String name = EntryUtil.clipEntryName(Utils.getAttributeOrTag(node,
 							       ATTR_NAME, ""));
 
         String originalId = XmlUtil.getAttribute(node, ATTR_ID,

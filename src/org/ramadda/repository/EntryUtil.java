@@ -1075,12 +1075,16 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public static String cleanupEntryName(String name) {
+	name = clipEntryName(name);
+        name = name.replaceAll(Entry.PATHDELIMITER, "-");
+        return name;
+    }
+
+    public static String clipEntryName(String name) {
         if (name.length() > 200) {
             name = name.substring(0, 195) + "...";
         }
-        name = name.replaceAll(Entry.PATHDELIMITER, "-");
-
-        return name;
+	return name;
     }
 
     public static void main(String[] args) throws Exception {}
