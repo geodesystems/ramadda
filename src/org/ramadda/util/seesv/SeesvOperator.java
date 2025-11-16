@@ -134,7 +134,7 @@ public class SeesvOperator {
 	return v;
     }
 
-    public String getValue(TextReader ctx, Row row, String value,
+    public String getColumnValue(TextReader ctx, Row row, String value,
 			   List<Utils.Macro> macros) {
 	if(macros==null || macros.size()==0)  return value;
 	StringBuilder sb = new StringBuilder();

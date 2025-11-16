@@ -5541,7 +5541,7 @@ public abstract class Converter extends Processor {
             List values = row.getValues();
             for (int col : cols) {
                 if (col < values.size()) {
-		    values.set(col, getValue(ctx,row,value,macros));
+		    values.set(col, getColumnValue(ctx,row,value,macros));
                 }
             }
 
