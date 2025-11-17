@@ -1737,6 +1737,12 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd("-if ... -endif",
 		"Next N args specify a filter command followed by any change commands followed by an -endif.",ARG_LABEL,"If"),
+        new Cmd(CMD_REPEATING,
+                "Pass through rows that have repeated words",
+		ARG_LABEL,"Check repeating words",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+
+
         new Cmd(CMD_RAWLINES, "",
 		ARG_LABEL,"Print raw lines",
                 new Arg("lines",
@@ -5052,6 +5058,10 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(new String[]{CMD_MATCH,CMD_FIND,CMD_PATTERN}, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });
+	defineFunction(CMD_REPEATING, 2,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.Repeating(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_ROWRANGE, 2,(ctx,args,i) -> {

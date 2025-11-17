@@ -1514,7 +1514,7 @@ public abstract class Converter extends Processor {
 		    String pattern = key.replace(".type","");
 		    if(StringUtil.containsRegExp(pattern)) {
 			String v  =props.get(key);
-			pattern = pattern.replace("_space_"," ");
+			pattern = pattern.replace("_space_"," ").replace("_comma_",",");
 			//			System.err.println("PATTERN:" + pattern +  " value:" + v);
 			typePatterns.add(new String[]{pattern,v});
 		    }

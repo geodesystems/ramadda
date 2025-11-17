@@ -264,6 +264,34 @@ public class Filter extends Processor {
 
     }
 
+    public static class Repeating extends Filter {
+        public Repeating(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+            for (int idx : getIndices(ctx)) {
+                if ((idx < 0) || (idx >= row.size())) {
+                    continue;
+                }
+		HashSet seen = new HashSet();
+                for(String tok: Utils.split(row.getString(idx)," ",true,true)) {
+		    if(seen.contains(tok)) return true;
+		    seen.add(tok);
+		}
+            }
+            return false;
+        }
+
+    }
+
+
+
     public static class IsNumber extends Filter {
 
         public IsNumber(TextReader ctx, List<String> cols) {
