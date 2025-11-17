@@ -1874,6 +1874,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
 	{p:'numberTemplate',ex:'${number}%'},
+	{p:'formatNumberComma',ex:true,tt:'Add commas to number format'},
 	{p:'nanValue',d:'--',canCache:true},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
