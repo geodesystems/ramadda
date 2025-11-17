@@ -74,12 +74,8 @@ public abstract class DataProvider extends SeesvOperator {
         rowCnt = 0;
     }
 
-    /**  */
     private int rowCnt = 0;
 
-    /**
-      * @return _more_
-     */
     public Row makeRow() {
         Row row = new Row();
         row.setRowCount(rowCnt++);
@@ -90,11 +86,6 @@ public abstract class DataProvider extends SeesvOperator {
 	rowCnt++;
     }
 
-    /**
-     *
-     * @param values _more_
-      * @return _more_
-     */
     public Row makeRow(List values) {
         Row row = new Row(values);
         row.setRowCount(rowCnt++);
@@ -107,13 +98,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     public void finish() {}
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public abstract static class BulkDataProvider extends DataProvider {
 
         private List<Row> rows = new ArrayList<Row>();
@@ -155,13 +139,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class HtmlDataProvider extends BulkDataProvider {
 
         private int skip;
@@ -183,31 +160,11 @@ public abstract class DataProvider extends SeesvOperator {
 
         }
 
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Thu, Nov 4, '21
-         * @author         Enter your name here...
-         */
         private static class ColInfo {
-
-            /**  */
             int index;
-
-            /**  */
             boolean extractUrls;
-
-            /**  */
             boolean stripTags;
 
-            /**
-             *
-             *
-             * @param index _more_
-             * @param extractUrls _more_
-             * @param stripTags _more_
-             */
             ColInfo(int index, boolean extractUrls, boolean stripTags) {
                 this.index       = index;
                 this.extractUrls = extractUrls;
@@ -379,15 +336,7 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Harvester extends BulkDataProvider {
-
         private String pattern;
 
         public Harvester(String pattern) {
@@ -419,21 +368,10 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class HtmlPatternDataProvider extends BulkDataProvider {
-
         private String cols;
-
         private String start;
-
         private String end;
-
         private String pattern;
 
         public HtmlPatternDataProvider(String cols, String start, String end,
@@ -503,17 +441,8 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class JsonDataProvider extends BulkDataProvider {
-
         private String arrayPath;
-
         private String objectPath;
 
         public JsonDataProvider(String arrayPath, String objectPath) {
@@ -810,19 +739,8 @@ public abstract class DataProvider extends SeesvOperator {
 	}
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class GeoJsonDataProvider extends DataProvider {
-
-        /**  */
         boolean addPolygon;
-
-        /**  */
         GeoJson.Iterator iterator;
 
         public GeoJsonDataProvider(boolean addPolygon) {
@@ -830,13 +748,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.addPolygon = addPolygon;
         }
 
-        /**
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
@@ -844,11 +755,7 @@ public abstract class DataProvider extends SeesvOperator {
                                             addPolygon);
         }
 
-        /**
-          * @return _more_
-         *
-         * @throws Exception _more_
-         */
+
         public Row readRow() throws Exception {
             List<String> values = iterator.next();
             if (values == null) {
@@ -860,41 +767,20 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Feb 21, '21
-     * @author         Enter your name here...
-     */
     public static class SqlDataProvider extends DataProvider {
-
         private String db;
-
         private String table;
-
-        /**  */
         private String columns;
-
-        /**  */
         private String where;
-
         private Dictionary<String, String> props;
-
         private Connection connection;
-
         private Statement statement;
-
         private SqlUtil.Iterator iter;
-
         private int columnCount;
-
         private Row headerRow;
-
         private int rowCnt = 0;
-
-        private int maxRows;
-
+	private int maxRows;
+	
         public SqlDataProvider(String db, String table, String columns,
                                String where,
                                Dictionary<String, String> props) {
@@ -999,13 +885,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class XmlDataProvider extends BulkDataProvider {
 
         private String arrayPath;
@@ -1124,26 +1003,12 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class KmlDataProvider extends BulkDataProvider {
 
         public KmlDataProvider() {
             super();
         }
 
-        /**
-         *
-         * @param seesv _more_
-         * @param textReader _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public void initialize(Seesv seesv, TextReader textReader)
                 throws Exception {
@@ -1157,13 +1022,6 @@ public abstract class DataProvider extends SeesvOperator {
             read(root);
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {}
 
         private void read(Element root) throws Exception {
@@ -1185,12 +1043,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-        /**
-         *
-         * @param lookAts _more_
-         *
-         * @throws Exception _more_
-         */
         private void readLookAts(List<Element> lookAts) throws Exception {
             /*
               <LookAt>
@@ -1219,12 +1071,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-        /**
-         *
-         * @param nodes _more_
-         *
-         * @throws Exception _more_
-         */
         private void readGroundOverlays(List<Element> nodes)
                 throws Exception {
             /*
@@ -1283,12 +1129,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-        /**
-         *
-         * @param placemarks _more_
-         *
-         * @throws Exception _more_
-         */
         private void readPlacemarks(List<Element> placemarks)
                 throws Exception {
             Row header = makeRow();
@@ -1315,19 +1155,9 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class PatternDataProvider extends BulkDataProvider {
-
         private List<String> header;
-
         private String pattern;
-
         private String objectPath;
 
         public PatternDataProvider(List<String> header, String pattern) {
@@ -1361,19 +1191,9 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class Pattern2DataProvider extends BulkDataProvider {
-
         String header;
-
         String chunkPattern;
-
         String tokenPattern;
 
         public Pattern2DataProvider(String header, String chunkPattern,
@@ -1436,18 +1256,8 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
-
     public static class PatternExtractDataProvider extends BulkDataProvider {
-
         String header;
-
         String tokenPattern;
 
         public PatternExtractDataProvider(String header,
@@ -1512,19 +1322,10 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
+
     public static class TextDataProvider extends BulkDataProvider {
-
         String header;
-
         String chunkPattern;
-
         String tokenPattern;
 
         public TextDataProvider(String header, String chunkPattern,
@@ -1598,28 +1399,13 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Feb 16, '21
-     * @author         Enter your name here...
-     */
     public static class CsvDataProvider extends DataProvider {
-
         int cnt = 0;
-
         int rawLines = 0;
-
         int rowCnt = 0;
-
         boolean deHeader = false;
-
-        /**  */
         private StringTokenizer tokenizer;
-
 	private boolean doingSpaces = false;
-
 	private boolean guessDelimiter = false;	
 	private List<String> delimiters;
 
@@ -1632,11 +1418,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.rawLines = rawLines;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         *  @return _more_
-         */
         private StringTokenizer getTokenizer(TextReader ctx) {
             if (tokenizer == null) {
                 tokenizer = StringTokenizer.getCSVInstance();
@@ -1767,16 +1548,7 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Lines extends DataProvider {
-
-        /**  */
         boolean didFirst = false;
 
         public Lines() {}
@@ -1804,28 +1576,11 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...
-     */
     public static class Synthetic extends DataProvider {
-
-        /**  */
         TextReader ctx;
-
-        /**  */
         List<String> header;
-
-        /**  */
         List<Value> values;
-
-        /**  */
         int rows = 10;
-
-        /**  */
         int count = 0;
 
         public Synthetic(String header, String values, int rows) {
@@ -1928,31 +1683,12 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Pdf extends DataProvider {
-
-        /**  */
         StringTokenizer tokenizer;
-
-        /**  */
         boolean didFirst = false;
-
-        /**  */
         BufferedReader stdInput;
-
-        /**  */
         TextReader ctx;
-
-        /**  */
         String tabula;
-
-        /**  */
         private int rowCnt = 0;
 
         public Pdf(Seesv seesv) {

@@ -1972,7 +1972,7 @@ public class Seesv implements SeesvCommands {
 	new Cmd(CMD_CONCAT, "Create a new column from the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("delimiter"),
-		new Arg(ARG_NAME,"Name of new colums")),
+		new Arg(ARG_NAME,"Name of new column")),
         new Cmd(CMD_CONCATROWS, "Concatenate multiple rows into a single row",
                 new Arg("num_rows", "Number of rows", ATTR_TYPE, TYPE_NUMBER)), 
         new Cmd(CMD_COMBINE,

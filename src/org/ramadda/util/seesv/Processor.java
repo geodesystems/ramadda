@@ -2413,14 +2413,8 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Logger extends Processor {
-
         private int total;
-
         private int rowCount;
-
-        /*
-         * _more_
-         */
 
         public Logger(TextReader ctx) {}
 

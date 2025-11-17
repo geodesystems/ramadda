@@ -58,6 +58,8 @@ import javax.script.*;
 @SuppressWarnings("unchecked")
 public abstract class Converter extends Processor {
 
+    public List<Utils.Macro> macros;
+    
     public Converter() {}
 
     public Converter(String col) {
@@ -289,11 +291,8 @@ public abstract class Converter extends Processor {
     public static class Editor extends Converter {
 	private static String CLEAR = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
 	private Row header;
-
 	private BufferedReader br;
-
 	private boolean done = false;
-
 	private Hashtable<String,String> seen = new Hashtable<String,String>();
 
         public Editor(List<String> cols) {
@@ -445,15 +444,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class Faker extends Converter {
-
         private String what;
-
         com.github.javafaker.Faker faker = new com.github.javafaker.Faker();
-
         private double v1 = Double.NaN;
-
         private double v2 = Double.NaN;
-
         private double v3 = Double.NaN;
 
         public Faker(TextReader ctx, String what, List<String> cols) {
@@ -740,7 +734,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnFirst extends Converter {
-
         private HashSet<Integer> firstSeen;
 
         public ColumnFirst(TextReader ctx, List<String> cols) {
@@ -777,9 +770,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnLast extends Converter {
-
         private HashSet<Integer> firstSeen;
-
         public ColumnLast(TextReader ctx, List<String> cols) {
             super(cols);
         }
@@ -814,13 +805,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnsBefore extends Converter {
-
         private HashSet<Integer> set;
-
         private String col;
-
         private int colIdx = -1;
-
         public ColumnsBefore(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
@@ -864,13 +851,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnsAfter extends Converter {
-
         private HashSet<Integer> set;
-
         private String col;
-
         private int colIdx = -1;
-
         public ColumnsAfter(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
@@ -933,19 +916,11 @@ public abstract class Converter extends Processor {
 
     }
 
-    /* */
-
-    private static Hashtable<String, String> imageMap = new Hashtable<String,
-	String>();
+    private static Hashtable<String, String> imageMap = new Hashtable<String,String>();
 
     public static class ImageSearch extends Converter {
-
-        /* */
-
         private String suffix;
-
         private String imageColumn;
-
         private int imageColumnIndex = -1;
 
         public ImageSearch(TextReader ctx, List<String> cols, String suffix) {
@@ -1043,9 +1018,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class Embed extends Converter {
-
         private String imageColumn;
-
         private int imageColumnIndex = -1;
 
         public Embed(TextReader ctx, String col) {
@@ -1096,13 +1069,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class Fetch extends Converter {
-
         private Row headerRow;
-
         private String name;
-
         private String urlTemplate;
-
 	private boolean ignoreErrors;
 
         public Fetch(TextReader ctx, String name, boolean ignoreErrors, String urlTemplate) {
@@ -1148,9 +1117,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class WikiDescSearch extends Converter {
-
-        /* */
-
         private String suffix;
 
         public WikiDescSearch(List<String> cols, String suffix) {
@@ -1223,9 +1189,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnWidth extends Converter {
-
-        /* */
-
         int size;
 
         public ColumnWidth(List<String> cols, int size) {
@@ -1253,9 +1216,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnFormatter extends Converter {
-
-        /* */
-
         private DecimalFormat format;
 
         public ColumnFormatter(List<String> cols, String fmt) {
@@ -1281,13 +1241,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class Padder extends Converter {
-
-        /* */
-
         private int count;
-
-        /* */
-
         private String pad;
 
         public Padder(int count, String s) {
@@ -1310,9 +1264,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Prefixer extends Converter {
-
-        /* */
-
         private String pad;
 
         public Prefixer(List<String> cols, String s) {
@@ -1338,9 +1289,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Suffixer extends Converter {
-
-        /* */
-
         private String pad;
 
         public Suffixer(List<String> cols, String s) {
@@ -1367,7 +1315,6 @@ public abstract class Converter extends Processor {
 
     public static class PrintHeader extends Converter {
         private boolean asPoint = false;
-
         public PrintHeader() {}
 
         public PrintHeader(boolean asPoint) {
@@ -1917,11 +1864,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnIncrease extends Converter {
-
         int step;
-
-        /* */
-
         List<Double> values = new ArrayList<Double>();
 
         public ColumnIncrease(String col, int step) {
@@ -1962,11 +1905,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnDiff extends Converter {
-
         int step;
-
-        /* */
-
         List<Double> values = new ArrayList<Double>();
 
         public ColumnDiff(String col, int step) {
@@ -2047,7 +1986,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class And extends Converter {
-
         private String name;
 
         public And(String name, List<String> cols) {
@@ -2081,7 +2019,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Or extends Converter {
-
         private String name;
 
         public Or(String name, List<String> cols) {
@@ -2119,7 +2056,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Not extends Converter {
-
         private String name;
 
         public Not(String name, String col) {
@@ -2143,25 +2079,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnAverage extends Converter {
-
-        /* */
-
         public static final int MA = 0;
-
-        /* */
-
         int what;
-
-        /* */
-
         int period;
-
-        /* */
-
         List<List<Double>> values = new ArrayList<List<Double>>();
-
-        /* */
-
         String label;
 
         public ColumnAverage(int what, List<String> cols, int period,
@@ -2601,7 +2522,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Ascii extends Converter {
-
         private String value;
 
         public Ascii(List<String> cols, String value) {
@@ -2627,7 +2547,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Cropper extends Converter {
-
         private List<String> patterns;
 
         public Cropper(List<String> cols, List<String> patterns) {
@@ -2665,7 +2584,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnEndsWith extends Converter {
-
         private String value;
 
         public ColumnEndsWith(List<String> cols, String value) {
@@ -2699,23 +2617,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnExtracter extends Converter {
-
-        /* */
-
         private int col = -1;
-
         private String scol;
-
-        /* */
-
         private String pattern;
-
-        /* */
-
         private String replace;
-
-        /* */
-
         private String name;
 
         public ColumnExtracter(String col, String pattern, String replace,
@@ -2756,11 +2661,8 @@ public abstract class Converter extends Processor {
 
     public static class HtmlExtracter extends Converter {
 	private String scol;
-
 	private int col;
-
         private List<String> names;
-
         private Pattern pattern;
 
         public HtmlExtracter(String col, List<String> names, String pattern) {
@@ -2810,7 +2712,6 @@ public abstract class Converter extends Processor {
 
     public static class HtmlInfo extends Converter {
 	private String scol;
-
 	private int col;
 
         public HtmlInfo(String col) {
@@ -2996,7 +2897,6 @@ public abstract class Converter extends Processor {
 
     public static class CheckMissing extends Converter {
 	private String scol;
-
 	private int col;
 	private String replace;
 
@@ -3043,9 +2943,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class UrlArg extends Converter {
-
         private String name;
-
         private int index = -1;
 
         public UrlArg(String col, String name) {
@@ -3154,11 +3052,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class Truncater extends Converter {
-
         private int col;
-
         private int length;
-
         private String suffix;
 
         public Truncater(int col, int length, String suffix) {
@@ -3181,7 +3076,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class RowChanger extends Changer {
-
         private HashSet<Integer> rows;
 
         public RowChanger(TextReader ctx, List<Integer> rowList,
@@ -3215,11 +3109,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class Shifter extends Converter {
-
         private HashSet<Integer> rows;
-
         private int column;
-
         private int count;
 
         public Shifter(List<Integer> rowList, int column, int count) {
@@ -3255,21 +3146,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class RowMerger extends Converter {
-
-        /* */
-
         HashSet<Integer> rows = new HashSet<Integer>();
-
-        /* */
-
         private String delimiter;
-
-        /* */
-
         private String close;
-
-        /* */
-
         private Row firstRow;
 
         public RowMerger(List<Integer> rows, String delimiter, String close) {
@@ -3329,9 +3208,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnDebugger extends Converter {
-
-        /* */
-
         private String pattern;
 
         public ColumnDebugger(List<String> cols, String pattern) {
@@ -3365,11 +3241,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnMapper extends Converter {
-
         private String name;
-
 	private boolean replace;
-
         private Hashtable<String, String> map = new Hashtable();
 	private List<String> toks;
 
@@ -3433,13 +3306,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnSplitter extends Converter {
-
-        /* */
-
         private String delimiter;
-
-        /* */
-
         private List<String> names;
 
         public ColumnSplitter(String col, String delimiter,
@@ -3479,17 +3346,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnConcatter extends Converter {
-
-        /* */
-
         private String delimiter;
-
-        /* */
-
         private String name;
-
-        /* */
-
         private boolean inPlace;
 
         public ColumnConcatter(List<String> indices, String delimiter,
@@ -3547,11 +3405,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnMerger extends Converter {
-
         private String name;
-
         private List<String> what;
-
         private boolean inPlace;
 
         public ColumnMerger(List<String> indices, String name, String what) {
@@ -3615,14 +3470,9 @@ public abstract class Converter extends Processor {
 
     }
 
-    /* */
-
     private static Properties genderProperties;
 
     public static class Genderizer extends Converter {
-
-        /* */
-
         private boolean doneHeader = false;
 
         public Genderizer(String col) {
@@ -3674,25 +3524,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class Denormalizer extends Converter {
-
-        /* */
-
         private Hashtable map = new Hashtable();
-
-        /* */
-
         int destCol;
-
-        /* */
-
         String newColName;
-
-        /* */
-
         String mode;
-
-        /* */
-
         boolean doDelete;
 
         public Denormalizer(String mapFile, int col1, int col2, String col,
@@ -3780,17 +3615,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnScaler extends Converter {
-
-        /* */
-
         private double delta1;
-
-        /* */
-
         private double delta2;
-
-        /* */
-
         private double scale;
 
         public ColumnScaler(List<String> cols, double delta1, double scale,
@@ -3862,11 +3688,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class Decimals extends Converter {
-
-        /* */
-
         private int tens;
-
         private int decimals;
 
         public Decimals(List<String> cols, int decimals) {
@@ -3901,11 +3723,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class Fuzzer extends Converter {
-
         private int places;
-
         private int numRandomDigits;
-
         private int tens;
 
         public Fuzzer(List<String> cols, int places, int numRandomDigits) {
@@ -3974,7 +3793,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Ceil extends Converter {
-
         private double value;
 
         public Ceil(List<String> cols, double value) {
@@ -4005,7 +3823,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Floor extends Converter {
-
         private double value;
 
         public Floor(List<String> cols, double value) {
@@ -4036,9 +3853,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnCopier extends Converter {
-
-        /* */
-
         private String name;
 
         public ColumnCopier(String col, String name) {
@@ -4064,11 +3878,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnNewer extends Converter {
-
-        /* */
-
         private String delimiter;
-
         private String name;
 
         public ColumnNewer(List<String> indices, String delimiter,
@@ -4106,7 +3916,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class RowConcat extends Converter {
-
         private int num;
 	private List<Row> rows = new ArrayList<Row>();
 
@@ -4158,19 +3967,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnMathOperator extends Converter {
-
-        /* */
-
         private String name;
-
-        /* */
-
         private String op;
-
 	private String replaceCol;
-
 	private int replaceIdx=-1;
-
         String foo;
 
         public ColumnMathOperator(List<String> indices, String name,
@@ -4249,9 +4049,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class CompareNumber extends Converter {
-
         private String op;
-
 	private String scol1;
 	private String scol2;
 	private int col1;
@@ -4290,14 +4088,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class Delta extends Converter {
-
         List<String> keys;
-
-        private Hashtable<String, Row> prevRows = new Hashtable<String,
-	    Row>();
-
+        private Hashtable<String, Row> prevRows = new Hashtable<String,  Row>();
         List<Integer> indices;
-
         List<Integer> keyindices;
 
         public Delta(List<String> keys, List<String> indices) {
@@ -4643,7 +4436,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Bytes extends Converter {
-
         private String unit;
 
         public Bytes(String unit, List<String> indices) {
@@ -4771,9 +4563,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Case extends Converter {
-
-        /* */
-
         String action;
 
         public Case(List<String> indices, String action) {
@@ -4888,11 +4677,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class PadLeftRight extends Converter {
-
         private int length;
-
         private String c;
-
         private boolean left;
 
         public PadLeftRight(boolean left, List<String> indices, String c,
@@ -5019,7 +4805,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class MD extends Converter {
-
         private MessageDigest md;
 
         public MD(TextReader ctx, List<String> indices, String type) {
@@ -5100,7 +4885,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class SoundexMaker extends Converter {
-
         private Soundex soundex;
 
         public SoundexMaker(List<String> indices) {
@@ -5176,18 +4960,16 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnInserter extends Converter {
-
         private String name;
-
         private List<String> values;
-
 	private String value;
 
         public ColumnInserter(String col, String name, String value) {
             super(col);
-            this.values = Utils.split(value, ",", false, false);
 	    this.value = value;
             this.name   = name;
+	    //	    macros = Utils.splitMacros(value);
+            this.values = Utils.split(value, ",", false, false);
         }
 
         @Override
@@ -5219,9 +5001,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnAdder extends Converter {
-
         private List<String> names;
-
         private List<String> values;
 
         public ColumnAdder(String names, String values) {
@@ -5245,13 +5025,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class Generator extends Converter {
-
         private String label;
-
         private double start;
-
         private double step;
-
         private double value;
 
         public Generator(String label, double start, double step) {
@@ -5280,15 +5056,10 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnMacro extends Converter {
-
 	private  String spattern;
-
         private Pattern pattern;
-
         private String template;
-
         private String label;
-
         private String value;
 
         public ColumnMacro(String pattern, String template, String label) {
@@ -5422,17 +5193,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnNudger extends Converter {
-
-        /* */
-
         private int col;
-
-        /* */
-
         private int rowIdx;
-
-        /* */
-
         private String value;
 
         public ColumnNudger(int row, int col, String value) {
@@ -5459,13 +5221,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnUnNudger extends Converter {
-
-        /* */
-
         private List<Integer> cols;
-
-        /* */
-
         private int rowIdx;
 
         public ColumnUnNudger(int row, List<String> cols) {
@@ -5497,16 +5253,13 @@ public abstract class Converter extends Processor {
         private List<Integer> cols;
         private List<Integer> rows;
         private String value;
-	private List<Utils.Macro> macros;
 
         public ColumnSetter(List<String> cols,  String value) {
             super(cols);
             this.value = value;
 	    if(value.indexOf("${")>=0) {
 		macros = Utils.splitMacros(value);
-	    } else {
-		macros = null;
-	    }
+	    } 
         }
 
         public ColumnSetter(List<String> cols, List<String> rows,
@@ -5544,15 +5297,12 @@ public abstract class Converter extends Processor {
 		    values.set(col, getColumnValue(ctx,row,value,macros));
                 }
             }
-
             return row;
         }
     }
 
     public static class FillDown extends Converter {
-
-        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
-	    String>();
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,  String>();
 
         public FillDown(List<String> cols) {
             super(cols);
@@ -5582,10 +5332,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class FillAcross extends Converter {
-
-        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
-	    String>();
-
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,  String>();
 	private HashSet<Integer> rows;
 
         public FillAcross(List<String> cols,List<Integer> rows) {
@@ -5615,9 +5362,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class Unfill extends Converter {
-
-        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
-	    String>();
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer, String>();
 
         public Unfill(List<String> cols) {
             super(cols);
@@ -5666,13 +5411,9 @@ public abstract class Converter extends Processor {
     }
 
     public static class PriorPrefixer extends Converter {
-
         private int col;
-
         private String pattern;
-
         private String delim;
-
         private String prefix;
 
         public PriorPrefixer(int col, String pattern, String delim) {
@@ -5704,9 +5445,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Letter extends Converter {
-
-        /* */
-
         int cnt = 0;
 
         public Letter(TextReader ctx) {}
@@ -5725,9 +5463,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Number extends Converter {
-
-        /* */
-
         int cnt = 0;
 
         public Number(TextReader ctx) {}
@@ -5929,21 +5664,11 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnPatternSetter extends Converter {
-
-        /* */
-
         private int patternCol = -1;
-
         private String spatternCol;
-
         private String pattern;
-
-        /* */
-
         private int writeCol = -1;
-
         private String swriteCol;
-
         private String what;
 
         public ColumnPatternSetter(String col1, String pattern, String col2,

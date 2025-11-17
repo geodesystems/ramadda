@@ -289,7 +289,6 @@ public abstract class Geo extends Processor {
     }
 
     public static class StateNamer extends Geo {
-
         private int col = -1;
 
         public StateNamer(String col) {
@@ -321,15 +320,10 @@ public abstract class Geo extends Processor {
     }
 
     public static class Elevation extends Geo {
-
         private int rowIdx = 0;
-
         private String lat;
-
         private String lon;
-
         private int latColumn = -1;
-
         private int lonColumn = -1;
 
         public Elevation(String lat, String lon) {
@@ -373,13 +367,9 @@ public abstract class Geo extends Processor {
     }
 
     public static class LatLonToUtm extends Geo {
-
         private String lat;
-
         private String lon;
-
         private int latColumn = -1;
-
         private int lonColumn = -1;
 
         public LatLonToUtm(String lat, String lon) {
@@ -431,11 +421,9 @@ public abstract class Geo extends Processor {
     }
 
     public static class UtmToLatLon extends Geo {
-
         private String zone;
         private String easting;
         private String northing;
-
         private int zoneColumn = -1;
         private int eastingColumn = -1;
         private int northingColumn = -1;
@@ -485,17 +473,11 @@ public abstract class Geo extends Processor {
     }
 
     public static class Neighborhood extends Geo {
-
         private int rowIdx = 0;
-
         private String lat;
-
         private String lon;
-
         private int latColumn = -1;
-
         private int lonColumn = -1;
-
 	private String dflt;
 
         public Neighborhood(String lat, String lon, String dflt) {
@@ -534,19 +516,12 @@ public abstract class Geo extends Processor {
     }
 
     public static class GeoNamer extends Geo {
-
         private int rowIdx = 0;
-
         private String where;
-
         private String lat;
-
         private String lon;
-
         private int latColumn = -1;
-
         private int lonColumn = -1;
-
         private List<String> fields;
 
         public GeoNamer(String where, String what, String lat, String lon) {
@@ -616,17 +591,11 @@ public abstract class Geo extends Processor {
     }
 
     public static class GeoContains extends Geo {
-
         private String file;
-
         private String name;
-
         private String lat;
-
         private String lon;
-
         private int latColumn = -1;
-
         private int lonColumn = -1;
 
         public GeoContains(String file, String name, String lat, String lon) {
@@ -693,13 +662,9 @@ public abstract class Geo extends Processor {
     }
 
     public static class GetAddress extends Geo {
-
         private String lat;
-
         private String lon;
-
         private int latColumn;
-
         private int lonColumn;
 
         public GetAddress(String lat, String lon) {
@@ -747,37 +712,14 @@ public abstract class Geo extends Processor {
     }
 
     public static class Populator extends Geo {
-
-        /* */
-
         private HashSet seen = new HashSet();
-
         private int badCnt = 0;
-
-        /* */
-
         private int nameIndex;
-
-        /* */
-
         private int latIndex;
-
-        /* */
-
         private int lonIndex;
-
-        /* */
-
         private Hashtable<String, double[]> map;
-
-        /* */
-
         private boolean doneHeader = false;
-
         private String prefix;
-
-        /* */
-
         private String suffix;
 
         public Populator(List<String> cols, String prefix, String suffix) {
@@ -884,9 +826,7 @@ public abstract class Geo extends Processor {
     }
 
     public static class Regionator extends Geo {
-
         private boolean doneHeader = false;
-
         private Properties props;
 
         public Regionator(List<String> cols) {

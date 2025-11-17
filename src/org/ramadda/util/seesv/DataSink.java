@@ -86,26 +86,13 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Apr 3, '21
-     * @author         Enter your name here...
-     */
+
     public static class Write extends Processor {
-
         private Row headerRow;
-
 	private String fileNameTemplate;
-
 	private  String contentTemplate;
-
 	private Seesv seesv;
 
-        /**
-         * ctor
-         */
         public Write(Seesv seesv, String fileNameTemplate, String contentTemplate) {
 	    this.seesv = seesv;
 	    this.fileNameTemplate = fileNameTemplate;
@@ -153,22 +140,10 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ToXml extends Processor {
-
         Row header = null;
-
 	List<String> ids;
-
         String tag;
-
-        /**  */
         String tag2;
 
         public ToXml(String tag, String tag2) {
@@ -247,8 +222,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	private boolean all;
 	private List<Integer> indices;
 
-        /**
-         */
         public ToGeojson(String slat, String slon,List<String> cols) {
             super(cols);
 	    all = cols.size()==1 && cols.get(0).equals("*");
@@ -256,8 +229,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    this.slon = slon;
         }
 
-        /**
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             PrintWriter writer = ctx.getWriter();
@@ -321,35 +292,15 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
     }
 
     public static class ToDb extends Processor {
-
-        /**  */
         Connection connection;
-
-        /**  */
         PreparedStatement statement;
-
-        /**  */
         Hashtable<String, String> info;
-
-        /**  */
-        Row header;
-
-        /**  */
+	Row header;
         String db;
-
-        /**  */
         String table;
-
-        /**  */
         Dictionary<String, String> props;
-
-        /**  */
         List<String[]> columns;
-
-        /**  */
         List<String> dbColumns;
-
-        /**  */
         String insert;
 
         public ToDb(Seesv seesv, String db, String table, String columns,
@@ -383,14 +334,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             }
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *  @return _more_
-         *
-         * @throws Exception _more_
-         */
         private void init(TextReader ctx, Row row) throws Exception {
             this.header = row;
             this.connection = seesv.getDbConnection(ctx, this, props, db,
