@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 16 09:20:04 MST 2025";
+var build_date="RAMADDA build date: Mon Nov 17 14:59:01 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6149,6 +6149,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
 	{p:'numberTemplate',ex:'${number}%'},
+	{p:'formatNumberComma',ex:true,tt:'Add commas to number format'},
 	{p:'nanValue',d:'--',canCache:true},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
@@ -18766,9 +18767,22 @@ function makeCsvData(display, csv,src) {
     let latField  =null, lonField=null,dateField=null;
     lines[0].split(",").forEach((tok,idx)=>{
 	tok = tok.trim();
+	let label;
+	let type;
+	let bracketIdx;
+	if((bracketIdx=tok.indexOf("["))>=0) {
+	    let rest = tok.substring(bracketIdx+1);
+	    tok = tok.substring(0,bracketIdx);
+	    rest = rest.replace(']','');
+	    let attrs = Utils.parseAttributes(rest);
+	    type = attrs.type;
+	    label=attrs.label;
+	}
+	if(!label) {
+	    label = Utils.makeLabel(tok);
+	}
+
 	let id = Utils.makeId(tok);
-	let label = Utils.makeLabel(tok);
-	let type = "string";
 	let sample = samples[idx]??'';
 	if(display.getProperty(id+".label")) {
 	    label =display.getProperty(id+".label");
@@ -18776,7 +18790,7 @@ function makeCsvData(display, csv,src) {
 	if(display.getProperty(id+".type")) {
 	    type =  display.getProperty(id+".type");
 	    if(type=="enum") type = "enumeration";
-	} else {
+	} else if(!type) {
 	    if(id=="date") {
 		type="date";
 	    } else {
@@ -18784,6 +18798,7 @@ function makeCsvData(display, csv,src) {
 		//check for numeric
 	    }
 	}
+	if(!type) type='string';
 	let field = new RecordField({
             id:id,
 	    index:idx,
