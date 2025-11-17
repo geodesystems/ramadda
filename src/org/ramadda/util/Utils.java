@@ -1985,13 +1985,33 @@ public class Utils extends IO {
 
         StringBuilder result = new StringBuilder();
         boolean capitalizeNext = true;
-
-        for (char c : input.toCharArray()) {
+	char[]array  =input.toCharArray(); 
+        for (int idx=0;idx<array.length;idx++) {
+	    char c  =array[idx];
 	    if(c=='\'') {
 		result.append(c);
 		continue;
 	    }
             if (Character.isLetter(c)) {
+		//		System.err.println("is char:" + c);
+		boolean lookAheadOk = true;
+		for(int lookAheadIdx=idx+1;lookAheadIdx<array.length;lookAheadIdx++) {
+		    char nextChar = array[lookAheadIdx];
+		    if(nextChar=='\'' ||
+		       nextChar=='-' || nextChar=='/' || nextChar==':' || nextChar==')' || nextChar=='.') {
+			break;
+		    }
+		    if(Character.isWhitespace(nextChar)) {
+			break;
+		    }
+		    if (!Character.isLetter(nextChar)) {
+			capitalizeNext = false;
+			lookAheadOk = false;
+			result.append(c);
+			break;
+		    }
+		}
+		if(!lookAheadOk) continue;
                 if (capitalizeNext) {
                     result.append(Character.toUpperCase(c));
                     capitalizeNext = false;
@@ -1999,6 +2019,7 @@ public class Utils extends IO {
                     result.append(Character.toLowerCase(c));
                 }
             } else {
+		//		System.err.println("not char:" + c);
                 result.append(c);
                 capitalizeNext = true; // next word starts after any non-letter
             }
@@ -4771,7 +4792,7 @@ public class Utils extends IO {
     public static void main(String[] args) throws Exception {
 	if(true) {
 	    for(String s: args)
-		System.err.println(s +" = " +      parseSize(s));
+		System.err.println(nameCase(s));
 	    return;
 	}
 
