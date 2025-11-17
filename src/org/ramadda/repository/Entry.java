@@ -1036,6 +1036,10 @@ public class Entry implements Cloneable {
         return (startDate != 0L);
     }
 
+    public boolean hasEndDate() {
+        return (endDate != 0L);
+    }    
+
     /**
      * Does this entry have a location defined
      *
