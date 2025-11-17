@@ -731,7 +731,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    addCount(types,child.getTypeHandler().getLabel());
 	    Entry departmentEntry = getDepartment(request,child);
 	    addCount(department,departmentEntry==null?"NA":departmentEntry.getName());
-	    addCount(location,child.getEnumValue(request,"location",""));
+	    Entry locationEntry = getLocation(request,child);
+	    addCount(location,locationEntry==null?"NA":locationEntry.getName());
 	    String assignedTo = child.getEnumValue(request,"assigned_to","");
 	    Entry personnel = getEntryManager().getEntry(request, assignedTo,true);
 	    addCount(assignedto,personnel!=null?personnel.getName():"NA");
@@ -796,7 +797,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     
 
     private boolean makeCsvCosts(Request request, Entry entry, StringBuilder csv,Hashtable props ) throws Exception {
-	csv.append("Name,Cost,Asset Type,Department,Vendor,Url,Icon\n");
+	csv.append("Name[type=string],Cost[type=double],Asset Type[type=enumeration],Department[type=enumeration],Vendor[type=enumeration],Url,Icon\n");
 	List<Entry> entries = getEntries(request, entry,props);
 	if(entries.size()==0) {
 	    return false;

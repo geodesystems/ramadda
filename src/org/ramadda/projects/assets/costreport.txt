@@ -1,7 +1,7 @@
 {{group inlineDataSrc="${costdata}" filterFields="name,department,vendor,asset_type,cost"
-department.filterMultiple=true
+filterMultiple=true
 name.filterLive=true  hideFilterWidget=true
-department.type=enumeration asset_type.type=enumeration vendor.type=enumeration}}
+xdepartment.type=enumeration xasset_type.type=enumeration xvendor.type=enumeration}}
 {{display_filter inlineDataSrc="${costdata}" }}
 <costs_summary>
 :vspace 1em
