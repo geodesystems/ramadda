@@ -7609,6 +7609,7 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 
         String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
+        String height = getProperty(wikiUtil, props, ATTR_HEIGHT,null);
         int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
                                            -1);
 
@@ -7619,11 +7620,18 @@ public class WikiManager extends RepositoryManager
         boolean thumbnail = getProperty(wikiUtil, props, ATTR_USE_THUMBNAIL,
 					getProperty(wikiUtil,props,"thumbnail",
 						    false));
-        String caption = getProperty(wikiUtil, props, ATTR_CAPTION,
-                                     "${name}");
+        String caption = getProperty(wikiUtil, props, ATTR_CAPTION, "${name}");
 	if(!Utils.stringDefined(caption)) caption=null;
+	List<Utils.Macro> macros=null;
+	if(caption!=null) {
+	    macros=Utils.splitMacros(caption);
+	}
         String popupCaption = getProperty(wikiUtil, props, "popupCaption",caption!=null?caption:"");
-        String imageStyle = getProperty(wikiUtil, props, "imageStyle",null);
+	List<Utils.Macro> popupMacros=null;
+	if(Utils.stringDefined(popupCaption)) 
+	    popupMacros=Utils.splitMacros(popupCaption);
+        String imageStyle = getProperty(wikiUtil, props, "imageStyle","");
+	String outerStyle="";
         String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
                                         "none");
         String padding = getProperty(wikiUtil, props, "padding","10px");
@@ -7643,10 +7651,17 @@ public class WikiManager extends RepositoryManager
             imageEntries.add(randomEntry);
         }
 
-        StringBuilder[] colsSB = new StringBuilder[columns];
-        for (int i = 0; i < columns; i++) {
-            colsSB[i] = new StringBuilder();
-        }
+        StringBuilder[] colsSB;
+	if(columns>0) {
+	    colsSB = new StringBuilder[columns];
+	} else {
+	    colsSB = new StringBuilder[1];
+	    outerStyle = "display:inline-block;";
+	}
+	for (int i = 0; i < colsSB.length; i++) {
+	    colsSB[i] = new StringBuilder();
+	}
+
         int    num      = 0;
         int    colCnt   = 0;
         String idPrefix = "gallery";
@@ -7656,7 +7671,12 @@ public class WikiManager extends RepositoryManager
             if (colCnt >= columns) {
                 colCnt = 0;
             }
-            StringBuilder buff = colsSB[colCnt];
+            StringBuilder buff;
+	    if(colsSB.length==1) {
+		buff= colsSB[0];
+	    } else {		
+		buff= colsSB[colCnt];
+	    }
             colCnt++;
             String url = null;
 
@@ -7688,37 +7708,27 @@ public class WikiManager extends RepositoryManager
             }
 
             String extra = "";
-	    if(width.startsWith("-")) {
-                extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (width.substring(1)) + "%");
+	    if(stringDefined(height)) {
+		extra = HU.attr(HU.ATTR_HEIGHT,HU.makeDim(height));
 	    } else {
-                extra = extra + HU.attr(HU.ATTR_WIDTH, "" + width);
-            }
-            String name       = getEntryDisplayName(child);
-            String theCaption = caption;
-	    if(theCaption!=null) {
-		theCaption = theCaption.replace("${count}", "" + num);
-		theCaption =
-		    theCaption.replace("${date}",
-				       formatDate(request,
-						  new Date(child.getStartDate())));
-		theCaption = theCaption.replace("${name}", child.getLabel());
-		theCaption = theCaption.replace("${description}",
-						child.getDescription());
-
+		if(width.startsWith("-")) {
+		    extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (width.substring(1)) + "%");
+		} else {
+		    extra = extra + HU.attr(HU.ATTR_WIDTH, "" + width);
+		}
 	    }
-
+            String name       = getEntryDisplayName(child);
+	    String theCaption = applyMacros(request, child,macros,num);
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HU.attr(HU.ATTR_ALT, name);
             }
             extra = extra + HU.attr("id", idPrefix + "img" + num) +
-		HU.attr("loading","lazy");
+		HU.attrs("loading","lazy","style",imageStyle);
             String img = HU.img(url, "", extra);
-
-	    if(imageStyle!=null) {
-		img = HU.div(img,HU.attrs("style",imageStyle));
-	    }
+	    //	    if(imageStyle!=null) {img = HU.div(img,HU.attrs("style",imageStyle)); }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
+	    buff.append(HU.open("div",HU.attrs("style",outerStyle)));
 	    if(decorate) {
 		buff.append(HU.open("div",HU.attrs("class","image-outer search-component","entryid",child.getId())));
 		buff.append("<div class=\"image-inner\">");
@@ -7726,22 +7736,14 @@ public class WikiManager extends RepositoryManager
 		buff.append("<div style='padding:" + HU.makeDim(padding)+";'>");
 	    }
             if (popup) {
-		String thePopupCaption = popupCaption;
-		thePopupCaption = thePopupCaption.replace("${count}", "" + num);
-		thePopupCaption =
-		    thePopupCaption.replace("${date}",
-					    formatDate(request,
-						       new Date(child.getStartDate())));
-		thePopupCaption = thePopupCaption.replace("${name}", child.getLabel());
-		thePopupCaption = thePopupCaption.replace("${description}",
-							  child.getDescription());
+		String thePopupCaption = applyMacros(request, child,popupMacros,num);
                 String popupExtras = HU.attrs("class","popup_image","data-order",""+num)
 		    + HU.attr("width", "100%");
 		//                if ( !captionPos.equals("none")) {
 		if(theCaption!=null)
 		    popupExtras += HU.attr("title", theCaption);
 		//                }
-		String dataCaption = HU.href(entryUrl,thePopupCaption).replace("\"","'");
+		String dataCaption = HU.href(entryUrl,thePopupCaption!=null?thePopupCaption:child.getName()).replace("\"","'");
                 popupExtras += HU.attr("data-fancybox", idPrefix)
 		    + HU.attr("data-caption", dataCaption);
 		String popupUrl = child.getResource().isImage()?child.getTypeHandler().getEntryResourceUrl(request, child):url;
@@ -7759,9 +7761,9 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    if(theCaption!=null) {
-		theCaption = HU.href(entryUrl, theCaption,
+		String captionLink = HU.href(entryUrl, theCaption,
 				     HU.style("color:#666;font-size:10pt;"));
-		buff.append(HU.div(theCaption, HU.cssClass("image-caption")));
+		buff.append(HU.div(captionLink, HU.cssClass("image-caption")));
 	    }
             if (showDesc) {
                 if (Utils.stringDefined(child.getDescription())) {
@@ -7775,21 +7777,76 @@ public class WikiManager extends RepositoryManager
 	    } else {
 		buff.append("</div>");
 	    }
+	    buff.append("</div>");
 
         }
-        int    colInt   = 12 / Math.min(12, columns);
-        String colClass = "col-md-" + colInt;
-        HU.open(sb, "div", HU.cssClass("row"));
-        for (StringBuilder buff : colsSB) {
-            HU.open(sb, "div",
-                    HU.cssClass(colClass + " ramadda-col")
-                    + (decorate?HU.style("padding-left:5px; padding-right:5px;"):HU.style("padding-left:0px; padding-right:0px;")));
-            sb.append(buff);
-            HU.close(sb, "div");
-        }
-        HU.close(sb, "div");
+	if(columns<=0) {
+	    sb.append(colsSB[0]);
+	} else {
+	    int    colInt   = 12 / Math.min(12, columns);
+	    String colClass = "col-md-" + colInt;
+	    HU.open(sb, "div", HU.cssClass("row"));
+	    for (StringBuilder buff : colsSB) {
+		HU.open(sb, "div",
+			HU.cssClass(colClass + " ramadda-col")
+			+ (decorate?HU.style("padding-left:5px; padding-right:5px;"):HU.style("padding-left:0px; padding-right:0px;")));
+		sb.append(buff);
+		HU.close(sb, "div");
+	    }
+	    HU.close(sb, "div");
+	}
 
     }
+
+    public String applyMacros(Request request, Entry entry,List<Utils.Macro> macros,int num) throws Exception {
+	if(macros==null) return null;
+	StringBuilder sb = new StringBuilder();
+	for(Utils.Macro macro: macros) {
+	    if(macro.isText()) {
+		sb.append(macro.getText());
+		continue;
+	    }
+	    String id = macro.getId();
+	    if(id.equals("count")) {
+		sb.append(num);
+		continue;
+	    }
+	    if(id.equals("date") || id.equals("startdate")) {
+		if(entry.hasStartDate()) {
+		    String dttm = getDateHandler().formatDate(request,entry,
+							      new Date(entry.getStartDate()),
+							      (String)macro.getProperty("format"));
+		    sb.append(dttm);
+
+		} else {
+		    sb.append("NA");
+		}
+		continue;
+	    }
+	    if(id.equals("enddate")) {
+		if(entry.hasEndDate()) {
+		    String dttm = getDateHandler().formatDate(request,entry,
+							      new Date(entry.getEndDate()),
+							      (String)macro.getProperty("format"));
+		    sb.append(dttm);
+		} else {
+		    sb.append("NA");
+		}
+		continue;
+	    }
+
+	    if(id.equals("name")) {
+		sb.append(entry.getLabel());
+		continue;
+	    }
+	    if(id.equals("description")) {
+		sb.append(entry.getDescription());
+		continue;
+	    }
+	}
+	return sb.toString();
+    }
+	
 
     public void makeReader(Request request, WikiUtil wikiUtil, Entry entry,
                             List<Entry> imageEntries, Hashtable props,
