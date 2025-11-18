@@ -58,6 +58,8 @@ candisplay="false"
 
 #can search
 cansearch="true"
+searchgroup="Misc."
+
 
 displaylabel=
 htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"
