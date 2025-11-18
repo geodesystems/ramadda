@@ -37,7 +37,7 @@ super:type_assets_base
 manufacturer,,enumerationplus, enumerationspecifictotype="true" cansearch="true" 
 model,Model,enumerationplus,size="400" cansearch="true" enumerationspecifictotype="true"
 model_year,Model year,int, cansearch="true" 
-serial_number,,string,size="400"
+serial_number,,string,size="400" cansearch="true" 
 
 
 #Vehicles

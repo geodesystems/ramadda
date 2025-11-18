@@ -16,7 +16,7 @@ foruser="false"
 <column  name="manufacturer"  label="Manufacturer"  type="enumerationplus"  enumerationspecifictotype="true" cansearch="true" />
 <column  name="model"  label="Model"  type="enumerationplus"  size="400" cansearch="true" enumerationspecifictotype="true" />
 <column  name="model_year"  label="Model year"  type="int"  cansearch="true" />
-<column  name="serial_number"  label="Serial Number"  type="string"  size="400" />
+<column  name="serial_number"  label="Serial Number"  type="string"  size="400" cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/physical.png" />
