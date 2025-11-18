@@ -2786,6 +2786,9 @@ public class Seesv implements SeesvCommands {
                 new Arg("latitude", "latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("longitude", "longitude column", ATTR_TYPE, TYPE_COLUMN),		
 		new Arg(ARG_COLUMNS, "property columns - use * for all", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_TOXLSX, "Generate XLSX",
+		ARG_LABEL,"To XLSX",
+		new Arg("sheet title")),
         new Cmd(CMD_TOURL, "Generate DB publish urls",
 		ARG_LABEL,"To Publish URLS"),
 	new Cmd(CMD_TODB, "Write to Database",
@@ -5327,7 +5330,12 @@ public class Seesv implements SeesvCommands {
 							args.get(++i),
 							getCols(args.get(++i))));
 		return i;
-	    });	
+	    });
+	defineFunction(CMD_TOXLSX,1,(ctx,args,i) -> {
+		hasSink = true;
+		ctx.addProcessor(new DataSink.ToXlsx(args.get(++i)));
+		return i;
+	    });		
 
 	defineFunction(CMD_TODB,4,(ctx,args,i) -> {
 		//		hasSink = true;

@@ -19,6 +19,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+import java.awt.Color;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.util.CellRangeAddress;
+
+
 /**
  *
  * @author Jeff McWhirter
@@ -486,5 +494,77 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
+
+    public static class ToXlsx extends Processor {
+        Row header = null;
+	Workbook workbook;
+	CreationHelper creationHelper;
+	CellStyle dateStyle;
+	CreationHelper createHelper;
+	CellStyle headerStyle;
+	Sheet sheet;
+        public ToXlsx(String title) {
+            super();
+	    workbook = new XSSFWorkbook(); 
+	    creationHelper = workbook.getCreationHelper();
+	    dateStyle = workbook.createCellStyle();
+	    dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
+	    createHelper = workbook.getCreationHelper();
+	    headerStyle = workbook.createCellStyle();
+	    CellStyle titleStyle = workbook.createCellStyle();
+	    titleStyle.setAlignment(HorizontalAlignment.CENTER);
+	    titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+	    
+	    // Fill background
+	    XSSFColor lightGray = new XSSFColor(new Color(0xEE, 0xEE, 0xEE), null);
+	    //        titleStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    ((XSSFCellStyle) titleStyle).setFillForegroundColor(lightGray);
+	    titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    
+	    // Optionally add a border
+	    titleStyle.setBorderTop(BorderStyle.THIN);
+	    titleStyle.setBorderBottom(BorderStyle.THIN);
+	    Font font = workbook.createFont();
+	    font.setFontHeightInPoints((short)16); 
+	    font.setBold(true);
+	    titleStyle.setFont(font);
+
+	    font = workbook.createFont();
+	    font.setBold(true);
+	    headerStyle.setFont(font);
+	    sheet = workbook.createSheet(title);
+        }
+
+        @Override
+        public void finish(TextReader ctx) throws Exception {
+	    workbook.write(ctx.getOutput());
+	    workbook.close();
+        }
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    org.apache.poi.ss.usermodel.Row xlsxRow = sheet.createRow(rowCnt++);
+            if (header == null) {
+                header = row;
+		for(int i=0;i<row.size();i++) {
+		    Cell cell = xlsxRow.createCell(i);
+		    String header = row.getString(i);
+		    cell.setCellValue(Utils.makeLabel(header));
+		    cell.setCellStyle(headerStyle);
+		}
+                return row;
+            }
+	    for(int i=0;i<row.size();i++) {
+		Cell cell = xlsxRow.createCell(i);
+		String value = row.getString(i);
+		cell.setCellValue(value);
+	    }
+            return row;
+        }
+
+    }
+    
+
+
 
 }
