@@ -1933,6 +1933,7 @@ RamaddaCoreDisplay.prototype = {
 		this.clearRecordSelection();
 		this.toggleSampling(false);
 		this.toggleMeasure(false);
+		this.toggleEditing(false);
 		return;
 	    }
 
