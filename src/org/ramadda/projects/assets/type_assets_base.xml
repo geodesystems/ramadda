@@ -16,19 +16,19 @@ childtypes="type_assets_license"
 
 <!-- Columns-->
 <column  name="asset_id"  label="Asset ID"  type="string"  size="400"  cansearch="true"  tokenizesearch="false" />
-<column  name="department"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" tags="reportable" />
+<column  name="department"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" tags="reportable"  searchgroup="Organization" />
 <column  name="assigned_to"  label="Assigned To"  type="entry"  entrytype="type_assets_personnel" cansearch="true" />
 <column  name="location_entry"  label="Location"  type="entry"  entrytype="type_assets_location" cansearch="true" />
 <column  name="site"  label="Site"  type="enumerationplus"  cansearch="true"  enumerationspecifictotype="false" />
 <column  name="program"  label="Program"  type="enumerationplus"  cansearch="true"  enumerationspecifictotype="false" />
 <column  name="category"  label="Category"  type="enumerationplus"  cansearch="true"  enumerationspecifictotype="true" />
-<column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true"  values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
+<column  name="acquisition_method"  label="Acquisition Method"  type="enumerationplus"  cansearch="true" searchgroup="Purchase"   values="Purchased,Transferred,Donated,Other" subgroup="Acquisiton" />
 <column  name="vendor"  label="Vendor"  type="entry"  entrytype="type_assets_vendor"  cansearch="true" />
 <column  name="purchase_order"  label="Purchase Order"  type="string" />
 <column  name="account_number"  label="Account Number"  type="string" />
 <column  name="check_number"  label="Check Number"  type="string" />
 <column  name="acquisition_cost"  label="Acquisition Cost"  type="double"  cansearch="true"  cansort="true"  tags="reportable" />
-<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true" />
+<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true"       searchgroup="Misc." />
 <column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"  subgroup="Status"   values="active:Active,inrepair:In Repair,disposed:Disposed,retired:Retired,lost:Lost" />
 <column  name="condition"  label="Condition"  type="enumerationplus"  values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
 <column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"    cansearch="true" />
