@@ -1174,7 +1174,7 @@ public class EntryManager extends RepositoryManager {
 		List<Column> columns = typeHandler.getColumns();
 		if (columns != null && columns.size()>0) {
 		    StringBuilder tmp = new StringBuilder();
-		    tmp.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td><td></td></tr>");
+		    tmp.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td><td><b>Searchable</b></td><td></td></tr>");
 		    for(Column column: columns) {
 			String extra = "";
 			String chelp = column.getHelp();
@@ -1188,6 +1188,7 @@ public class EntryManager extends RepositoryManager {
 			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;") +
 					HU.td(column.getLabel()+"&nbsp;&nbsp;") +
 					 HU.td(column.getType()) +
+					 HU.td(column.getCanSearch()+"") +				 
 					 HU.td(extra),"valign=top"));
 		    }
 		    tmp.append(HU.close("table"));
