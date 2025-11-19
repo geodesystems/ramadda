@@ -1,7 +1,6 @@
 <type name="type_borehole_wellcad"
       super="type_borehole_base"
       description="WellCAD Log File"
-      pattern=".*\.wcl"
-      handler="org.ramadda.repository.type.GenericTypeHandler">            
+      pattern=".*\.wcl">
   <property name="icon" value="/geo/wcl.png"/>
 </type>

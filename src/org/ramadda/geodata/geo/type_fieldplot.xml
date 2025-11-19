@@ -1,18 +1,9 @@
 <!-- field plot PDF -->
 <type name="type_borehole_fieldplot"
       description="Borehole Field Plot"
-      handler="org.ramadda.repository.type.GenericTypeHandler">            
-<property name="inheritlocationfromtype" value="type_geo_site"/>
-<property name="icon" value="/geo/drilling-rig.png"/>
-<property name="form.area.show" value="false"/>
-<property name="form.location.show" value="true"/>
-<action name="applyllm" label="Apply LLM" canedit="true"
-        icon="fas fa-font" foruser="true" category="edit"/>
-<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
-<column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
+      super="type_borehole_base">            
+  <action name="applyllm" label="Apply LLM" canedit="true"
+          icon="fas fa-font" foruser="true" category="edit"/>
 <wiki>
 <![CDATA[
 +section title="Borehole Field Plot: {{name}}"

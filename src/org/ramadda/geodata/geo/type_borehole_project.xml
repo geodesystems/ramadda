@@ -1,5 +1,6 @@
 <types supercategory="Geoscience" category="Borehole Data">
-  <type name="type_geo_project"  description="Geo Project" 
+  <type name="type_geo_project"
+	description="Geo Project" 
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
 	>
@@ -68,7 +69,8 @@ includeNonImages=false
 
 </type>
 
-<type name="type_geo_site"  description="Geo Site" 
+<type name="type_geo_site"
+      description="Geo Site" 
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       childtypes="type_geo_borehole_images,type_point_collection"
       >

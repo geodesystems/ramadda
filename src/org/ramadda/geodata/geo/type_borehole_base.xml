@@ -1,5 +1,6 @@
 <type name="type_borehole_base"
       description="Borehole Data"
+      handler="org.ramadda.repository.type.GenericTypeHandler"
       foruser="false">
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="date.nullok" value="true"/>

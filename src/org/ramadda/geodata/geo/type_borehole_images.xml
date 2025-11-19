@@ -1,9 +1,9 @@
 <types>
-  <type name="type_geo_borehole_images"  description="Geo Image Collection"
-      metadata="geo_core_annotation,geo_core_legend"
-      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-      childtypes="type_borehole_coreimage"
-      >
+  <type name="type_geo_borehole_images"
+	description="Geo Image Collection"
+	metadata="geo_core_annotation,geo_core_legend"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	childtypes="type_borehole_coreimage">
     <property name="icon" value="/media/album.png"/>
     <property name="form.area.show" value="false"/>
     <property name="date.nullok" value="true"/>
@@ -40,7 +40,8 @@ displayEntries="${property:displays}"
 
 </type>
 
-<type name="type_borehole_image"   description="Borehole Image"
+<type name="type_borehole_image"
+      description="Borehole Image"
       handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
   <property name="icon" value="/geo/drilling-rig.png"/>
   <property name="date.nullok" value="true"/>
@@ -86,7 +87,9 @@ useAttachmentIfNeeded=true
 </wiki>
 </type>
 
-<type name="type_borehole_coreimage"   description="Geo Core Image" isgroup="true"
+<type name="type_borehole_coreimage"
+      description="Geo Core Image"
+      isgroup="true"
       childtypes="type_geo_corebox_breeze_xml,type_geo_corebox_json"
       pattern="(?i).*annotated-core-photo.*\.jpg"
       handler="org.ramadda.geodata.geo.CoreImageTypeHandler">      
@@ -189,6 +192,7 @@ includeTitle="false"  separator=""  decorate="false" inherited="true"  }}
 </type>
 
 
+<!-- for backwards compat. -->
 <type name="type_borehole_registeredcoreimage" super="type_borehole_coreimage" foruser="false"
       description="Registered Core Image">
 </type>

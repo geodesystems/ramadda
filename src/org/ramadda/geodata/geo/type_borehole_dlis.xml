@@ -1,10 +1,6 @@
 <type name="type_borehole_dlis"
       super="type_borehole_base"
       description="Digital Log Interchange Standard"
-      pattern=".*\.dlis"
-      handler="org.ramadda.repository.type.GenericTypeHandler">            
+      pattern=".*\.dlis">            
   <property name="icon" value="/geo/dlis.png"/>
-  <property name="date.nullok" value="true"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.location.show" value="true"/>
 </type>
