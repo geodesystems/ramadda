@@ -2450,7 +2450,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     let id = this.getDomId(ID_COLUMN + col.getName());
 		    jqid(id).click((event) =>{
 			let root = this.getRamadda().getRoot();
-			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,col.entrytype,root);
+			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,
+							col.entrytype,
+							root,
+							{title:'Select ' + col.getLabel()});
 		    });
 		}
 	    });
