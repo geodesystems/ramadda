@@ -1,12 +1,9 @@
 <types>
 <type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
       metadata="geo_stratigraphy,geo_measurement">      
-  <column  name="hole"  label="Hole" type="enumerationplus"
-	   cansearch="true" group="Borehole Metadata"/>
-  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
+<!-- These match up with the file header -->
   <property name="record.patterns"
-	    value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
+	    value="hole:HOLE:\s*([^\s]+),top_depth:TOP:\s*([\d.]+),bottom_depth:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
 <property name="record.properties">
 picky=false
 csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
@@ -49,8 +46,8 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}
 <table class="formtable">
 {{field name="tool"  row.label="Tool:"}}
 {{field name="hole"  row.label="Hole:"}}
-{{field name="top"  row.label="Top:"}}
-{{field name="bottom"  row.label="Bottom:"}}
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
 </table>
 :vspace 1em
 {{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"

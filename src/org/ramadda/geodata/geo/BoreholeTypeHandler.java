@@ -8,6 +8,9 @@ package org.ramadda.geodata.geo;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.point.PointMetadataHarvester;
+import org.ramadda.data.services.RecordEntry;
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
@@ -40,6 +43,34 @@ public class BoreholeTypeHandler extends PointTypeHandler {
             throws Exception {
         super(repository, node);
 
+    }
+
+
+    protected void handleHarvestedMetadata(Request request, RecordEntry recordEntry,
+                                           PointMetadataHarvester metadata)
+            throws Exception {
+	super.handleHarvestedMetadata(request, recordEntry, metadata);
+	int depthIndex=-1;
+	int index=0;
+	//	System.err.println("harvest metadata");
+	for(RecordField field: metadata.getFields()) {
+	    String id = field.getName().toLowerCase();
+	    System.err.println("\tid:" + id);
+	    if(id.equals("depth")) {
+		depthIndex=index;
+		break;
+	    }
+	    index++;
+	}
+	Entry entry = recordEntry.getEntry();
+	if(depthIndex>=0) {
+	    double[]range =metadata.getRange(depthIndex);
+	    if(range!=null) {
+		//		System.err.println("range:" + range[0] +" " + range[1]);
+		entry.setValue("top_depth",range[0]);
+		entry.setValue("bottom_depth",range[1]);		
+	    }
+	}
     }
 
 

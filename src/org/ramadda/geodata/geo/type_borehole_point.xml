@@ -1,3 +1,4 @@
+
 <type name="type_borehole_point"
       super="type_point"
       description="Borehole Log File"
@@ -16,12 +17,19 @@
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
   <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true"
+	  group="Borehole Metadata"	  
 	  suffix="meters" default="NaN"
 	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"/>
   <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true"
 	  suffix="meters" default="NaN"
 	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"	  
 />
+  <column  name="hole"  showempty="false" label="Hole" type="enumerationplus"  cansearch="true"
+	   />
+  <column  name="tool"  showempty="false"  label="Tool" type="enumerationplus"  cansearch="true"
+	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>	   
+
+
   <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
 	   suffix="Comma separated list of fields, e.g., #2,#3"
 	   showinhtml="false"   candisplay="false" canlist="false"/>     

@@ -8,11 +8,8 @@ Provides support for the
 <property name="record.pattern.date.format" value="MM/dd/yy"/>
 <property name="record.patterns"
 	  value="field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)"/>
-<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"/>
-<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>	   
-<column  name="state"  label="State" type="enumerationplus"  cansearch="true" />
-<column  name="field"  label="Field" type="enumerationplus"  cansearch="true"/>
+<column  name="state"  label="State" type="enumerationplus"  cansearch="true" showempty="false"/>
+<column  name="field"  label="Field" type="enumerationplus"  cansearch="true" showempty="false"/>
 
 <property name="record.properties">
 picky=false
@@ -67,8 +64,8 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 {{field name="field"  row.label="Field:"}}
 {{field name="tool"  row.label="Tool:"}}
 {{field name="hole"  row.label="Hole:"}}
-{{field name="top"  row.label="Top:"}}
-{{field name="bottom"  row.label="Bottom:"}}
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
 </table>
 </table>
 +center

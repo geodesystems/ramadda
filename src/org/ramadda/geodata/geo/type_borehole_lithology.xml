@@ -7,6 +7,7 @@
 <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
 <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
 <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
+
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
 csvcommands1=-map,color,color_description,resource:/org/ramadda/geodata/geo/resources/lithology_color.txt
