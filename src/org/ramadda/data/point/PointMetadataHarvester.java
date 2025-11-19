@@ -1,166 +1,75 @@
 /**
-   Copyright (c) 2008-2021 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.util.grid.LatLonGrid;
 
 import java.io.*;
-
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.HashSet;
-
 import java.util.List;
 import java.util.Properties;
 
-
-/**
- * Class description
- *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
- */
 public class PointMetadataHarvester extends RecordVisitor {
-
-    /** _more_ */
     private int cnt = 0;
-
-    /** _more_ */
     private int badCnt = 0;
-
     private boolean force = false;
-    
-    /** _more_ */
     private double minElevation = Double.NaN;
-
-    /** _more_ */
     private double maxElevation = Double.NaN;
-
-    /** _more_ */
     private double minLatitude = Double.NaN;
-
-    /** _more_ */
     private double maxLatitude = Double.NaN;
-
-    /** _more_ */
     private double minLongitude = Double.NaN;
-
-    /** _more_ */
     private double maxLongitude = Double.NaN;
-
-    /** _more_ */
     private long minTime = Long.MAX_VALUE;
-
-    /** _more_ */
     private long maxTime = Long.MIN_VALUE;
-
-    /** _more_ */
     private LatLonGrid llg;
-
-    /** _more_ */
     private Properties properties;
-
-    /** _more_ */
     private double[][] ranges;
-
-    /** _more_ */
     List<RecordField> fields;
-
     Hashtable<String,HashSet<String>> enumSamples = new Hashtable<String,HashSet<String>>();
 
-    /**
-     * _more_
-     */
     public PointMetadataHarvester() {}
 
-
-    /**
-     * _more_
-     *
-     * @param llg _more_
-     */
     public PointMetadataHarvester(LatLonGrid llg) {
         this.llg = llg;
     }
 
-
-    /**
-       Set the Force property.
-
-       @param value The new value for Force
-    **/
     public void setForce (boolean value) {
 	force = value;
     }
 
-    /**
-       Get the Force property.
-
-       @return The Force
-    **/
     public boolean getForce () {
 	return force;
     }
-
 
     public HashSet<String> getSamples(String field) {
 	return enumSamples.get(field);
     }
 
-    /**
-     *  @return _more_
-     */
     public List<RecordField> getFields() {
         return fields;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasTimeRange() {
         return minTime != Long.MAX_VALUE;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public long getMinTime() {
         return minTime;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public long getMaxTime() {
         return maxTime;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                BaseRecord record) {
-
 
         PointRecord pointRecord = (PointRecord) record;
         double      lat         = pointRecord.getLatitude();
@@ -200,7 +109,6 @@ public class PointMetadataHarvester extends RecordVisitor {
 
             return true;
         }
-
 
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
@@ -264,7 +172,6 @@ public class PointMetadataHarvester extends RecordVisitor {
             maxTime = Math.max(maxTime, time);
         }
 
-
         minLatitude  = getMin(minLatitude, pointRecord.getLatitude());
         maxLatitude  = getMax(maxLatitude, pointRecord.getLatitude());
         minLongitude = getMin(minLongitude, pointRecord.getLongitude());
@@ -275,16 +182,6 @@ public class PointMetadataHarvester extends RecordVisitor {
         return true;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param value1 _more_
-     * @param value2 _more_
-     *
-     * @return _more_
-     */
     private double getMin(double value1, double value2) {
         if (Double.isNaN(value1)) {
             return value2;
@@ -296,14 +193,6 @@ public class PointMetadataHarvester extends RecordVisitor {
         return Math.min(value1, value2);
     }
 
-    /**
-     * _more_
-     *
-     * @param value1 _more_
-     * @param value2 _more_
-     *
-     * @return _more_
-     */
     private double getMax(double value1, double value2) {
         if (Double.isNaN(value1)) {
             return value2;
@@ -315,21 +204,10 @@ public class PointMetadataHarvester extends RecordVisitor {
         return Math.max(value1, value2);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getCount() {
         return cnt;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("latitude:" + minLatitude + " - " + maxLatitude);
@@ -339,13 +217,11 @@ public class PointMetadataHarvester extends RecordVisitor {
         sb.append("elevation:" + minElevation + " - " + maxElevation);
         sb.append("\n");
 
-
         if (hasTimeRange()) {
             sb.append("time:" + " " + new Date(getMinTime()) + " -- "
                       + new Date(getMaxTime()));
             sb.append("\n");
         }
-
 
         if (fields != null) {
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
@@ -365,13 +241,14 @@ public class PointMetadataHarvester extends RecordVisitor {
             }
         }
 
-
         return sb.toString();
 
     }
 
-
-
+    public double[]getRange(int index) {
+	if(index<0 || index>=ranges.length) return null;
+	return ranges[index];
+    }
 
     /**
      * Get the MinLatitude property.
@@ -382,8 +259,6 @@ public class PointMetadataHarvester extends RecordVisitor {
         return this.minLatitude;
     }
 
-
-
     /**
      * Get the MaxLatitude property.
      *
@@ -392,7 +267,6 @@ public class PointMetadataHarvester extends RecordVisitor {
     public double getMaxLatitude() {
         return this.maxLatitude;
     }
-
 
     /**
      * Get the MinLongitude property.
@@ -403,7 +277,6 @@ public class PointMetadataHarvester extends RecordVisitor {
         return this.minLongitude;
     }
 
-
     /**
      * Get the MaxLongitude property.
      *
@@ -413,25 +286,13 @@ public class PointMetadataHarvester extends RecordVisitor {
         return this.maxLongitude;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public double getMinElevation() {
         return this.minElevation;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public double getMaxElevation() {
         return this.maxElevation;
     }
-
 
     /**
      *  Get the Properties property.
@@ -441,7 +302,5 @@ public class PointMetadataHarvester extends RecordVisitor {
     public Properties getProperties() {
         return properties;
     }
-
-
 
 }

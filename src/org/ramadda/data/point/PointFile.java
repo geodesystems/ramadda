@@ -1,11 +1,9 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
-
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
@@ -19,17 +17,14 @@ import org.ramadda.util.geo.GeoUtils;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 
 import java.awt.geom.*;
 
 import java.io.*;
-
 
 import java.text.SimpleDateFormat;
 
@@ -41,179 +36,62 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 
-
-
-
-/**
- */
 @SuppressWarnings("unchecked")
-public abstract class PointFile extends RecordFile implements Cloneable,
-        Fields {
+public abstract class PointFile extends RecordFile
+    implements Cloneable,  Fields {
 
-    /** _more_ */
     public static final String DFLT_PROPERTIES_FILE = "point.properties";
-
-    /** _more_ */
     public static final String ACTION_TIME = "action.time";
-
-    /** _more_ */
     public static final String ACTION_GRID = "action.grid";
-
-    /** _more_ */
     public static final String ACTION_DECIMATE = "action.decimate";
-
-    /** _more_ */
     public static final String ACTION_TRACKS = "action.tracks";
-
-    /** _more_ */
     public static final String ACTION_WAVEFORM = "action.waveform";
-
-    /** _more_ */
     public static final String ACTION_TRAJECTORY = "action.trajectory";
-
-    /** _more_ */
     public static final String ACTION_BOUNDINGPOLYGON =
         "action.bounding_polygon";
-
-    /** _more_ */
     public static final String ACTION_MAPINCHART = "action.map_in_chart";
-
-    /** _more_ */
     public static final String ACTION_AREAL_COVERAGE =
         "action.areal_coverage";
-
-
-    /** _more_ */
-    private static final org.ramadda.data.point.LatLonPointRecord dummyField1 =
-        null;
-
-
-
-    /** _more_ */
+    private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
     public static final String CRS_GEOGRAPHIC = "geographic";
-
-    /** _more_ */
     public static final String CRS_UTM = "utm";
-
-    /** _more_ */
     public static final String CRS_EPSG = "epsg:";
-
-    /** _more_ */
     public static final String CRS_WGS84 = "wgs84";
-
-    /** _more_ */
     public static final String CRS_ECEF = "ecef";
-
-    /** _more_ */
     public static final String PROP_CRS = "crs";
-
-    /** _more_ */
     public static final String PROP_DESCRIPTION = "description";
-
-    /** _more_ */
     public static final String PROP_UTM_ZONE = "utm.zone";
-
-    /** _more_ */
     public static final String PROP_UTM_NORTH = "utm.north";
-
-    /** _more_ */
     public static final int IDX_LAT = 0;
-
-    /** _more_ */
     public static final int IDX_LON = 1;
-
-    /** _more_ */
     public static final int IDX_ALT = 2;
-
-
-    /** _more_ */
     private String crs = CRS_GEOGRAPHIC;
-
-
-    /** _more_ */
     boolean isGeographic = true;
-
-    /** _more_ */
     boolean isUtm = false;
-
-    /** _more_ */
     boolean isWgs84 = false;
-
-
-    /** _more_ */
     private Projection projection;
-
-    /** _more_ */
     private com.jhlabs.map.proj.Projection jhProjection;
-
-
-    /** _more_ */
     private String description = "";
-
-    /** _more_ */
     private double lat = Double.NaN;
-
-    /** _more_ */
     private double lon = Double.NaN;
-
-    /** _more_ */
     private double elevation = Double.NaN;
 
-
-
-    /**
-     * _more_
-     */
     public PointFile() {}
 
-
-
-    /**
-     * ctor
-     *
-     *
-     * @throws IOException _more_
-     */
     public PointFile(IO.Path path) throws IOException {
         super(path);
     }
 
-
-    /**
-     * ctor
-     *
-     *
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
     public PointFile(IO.Path path, Hashtable properties)
             throws IOException {
         super(path, properties);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param context _more_
-     * @param properties _more_
-     */
     public PointFile(IO.Path path, RecordFileContext context,
                      Hashtable properties) {
         super(path, context, properties);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initClassProperties(Hashtable<String, String> props)
             throws Exception {
@@ -224,27 +102,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                     "/org/ramadda/data/point/PointFile.properties", "")));
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getPropertiesFileName() {
         return DFLT_PROPERTIES_FILE;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
     public boolean isCapable(String action) {
         if (action.equals(ACTION_BOUNDINGPOLYGON)) {
             return true;
@@ -256,35 +118,17 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return super.isCapable(action);
     }
 
-    /**
-     * _more_
-     *
-     * @param that _more_
-     *
-     * @return _more_
-     */
     public boolean sameDataType(PointFile that) {
         return getClass().equals(that.getClass());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     */
     public void setProperties(Hashtable properties) {
         super.setProperties(properties);
         initProperties();
     }
 
-    /** _more_ */
     static int printCnt = 0;
 
-
-    /**
-     * _more_
-     */
     protected void initProperties() {
         //        System.err.println ("PointFile.initProperties:" + getProperties());
         description  = getProperty(PROP_DESCRIPTION, description);
@@ -322,36 +166,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         }
     }
 
-
-    /** _more_ */
     static int cnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     * @param elevation _more_
-     */
     public void setLocation(double lat, double lon, double elevation) {
         this.lat       = lat;
         this.lon       = lon;
         this.elevation = elevation;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param pointRecord _more_
-     * @param y _more_
-     * @param x _more_
-     * @param z _more_
-     * @param work _more_
-     *
-     * @return _more_
-     */
     public double[] getLatLonAlt(PointRecord pointRecord, double y, double x,
                                  double z, double[] work) {
         if (work == null) {
@@ -395,33 +217,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return work;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isCRS3D() {
         return isWgs84;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isGeographic() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void printData() throws Exception {
         final PrintWriter pw = new PrintWriter(
                                    new BufferedOutputStream(
@@ -443,26 +246,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         pw.close();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isTrajectory() {
         return false;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void xmain(String[] args) throws Exception {
         String s = "label=\"Height\" type=double missing=99999";
         System.err.println(parseAttributes(s));
@@ -470,7 +257,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         if (true) {
             return;
         }
-
 
         String epsg = "32610";
         epsg = "2955";
@@ -497,11 +283,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         System.err.println("jhproj nad83 result: " + dst.getY() + " "
                            + dst.getX());
 
-
         if (true) {
             return;
         }
-
 
         /*
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
@@ -544,37 +328,16 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasWaveform() {
         String[] waveforms = getWaveformNames();
 
         return (waveforms != null) && (waveforms.length > 0);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String[] getWaveformNames() {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param pointIndex _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Waveform getWaveform(int pointIndex, String name)
             throws Exception {
         PointRecord record = (PointRecord) getRecord(pointIndex);
@@ -582,15 +345,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return record.getWaveform(name);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void runCheck(String file, StringBuffer sb) throws Exception {
         long                         t1       = System.currentTimeMillis();
         final int[]                  cnt      = { 0 };
@@ -609,7 +363,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             this.setProperties(properties);
         }
 
-
         this.visit(metadata);
         long t2 = System.currentTimeMillis();
         sb.append("# records:" + cnt[0]);
@@ -617,14 +370,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         sb.append("" + metadata);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param pointFileClass _more_
-     */
     public static void test(String[] args, Class pointFileClass) {
         boolean verbose = true;
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
@@ -656,15 +401,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
     //Cough, cough
 
-    /** _more_ */
     private static Hashtable<String, Hashtable<String, Station>> stationsMapMap =
         new Hashtable<String, Hashtable<String, Station>>();
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Hashtable<String, Station> getStationMap() {
         String path = getStationsPath();
         if (path == null) {
@@ -679,11 +418,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return stations;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getStationsPath() {
         String path = getClass().getCanonicalName();
         path = path.replaceAll("\\.", "/");
@@ -692,14 +426,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return path;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public Station getStation(String id) {
         Station station = getStationMap().get(id);
         if (station == null) {
@@ -712,16 +438,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return station;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param siteId _more_
-     *
-     * @return _more_
-     */
     public Station setLocation(String siteId) {
         Station station = getStation(siteId);
 
@@ -738,16 +454,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return station;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public Hashtable<String, Station> readStations(String path) {
         try {
             Hashtable<String, Station> stations = new Hashtable<String,
@@ -772,16 +478,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param year _more_
-     * @param julianDay _more_
-     *
-     * @return _more_
-     */
     public Date getDateFromJulianDay(int year, double julianDay) {
         int    day       = (int) julianDay;
         double remainder = julianDay - day;
@@ -799,24 +495,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return gc.getTime();
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public double decodeLatLon(String s) {
         return GeoUtils.decodeLatLon(s);
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public double decodeElevation(String s) {
         if (s.endsWith("m")) {
             s = s.substring(0, s.length() - 1);
@@ -825,58 +507,34 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return Double.parseDouble(s);
     }
 
-    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_ */
     public static final String ATTR_MISSING = "missing";
 
-
-    /** _more_ */
     public static final String ATTR_SORTORDER = "sortorder";
 
-    /** _more_ */
     public static final String ATTR_SCALE = "scale";
 
-    /** _more_ */
     public static final String ATTR_OFFSET = "offset";
 
-    /** _more_ */
     public static final String ATTR_OFFSET1 = "offset1";
 
-    /** _more_ */
     public static final String ATTR_OFFSET2 = "offset2";
 
-    /** _more_ */
     public static final String ATTR_VALUE = "value";
 
-    /** _more_ */
     public static final String ATTR_FORMAT = "format";
 
-    /** _more_ */
     public static final String ATTR_UNIT = "unit";
 
-    /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
-    /** _more_ */
     public static final String ATTR_CHARTABLE = "chartable";
 
-    /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
 
-
-
-    /**
-     * _more_
-     *
-     * @param fieldString _more_
-     *
-     * @return _more_
-     */
     public static List<String> tokenizeFields(String fieldString) {
         List<String>  toks    = new ArrayList<String>();
         boolean       inQuote = false;
@@ -907,25 +565,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return toks;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         tokenizeFields(
             "entity[label=\"Entity\"  type=\"string\"] ,code[label=\"Code\"  type=\"string\"] ,year[label=\"Year\"  type=\"date\" format=\"yyyy\" ] ,plastic_waste_generation[label=\"Plastic Waste Generation\" unit=\"tonnes, total\"  type=\"integer\" chartable=\"true\" ]");
     }
 
-    /**
-     * _more_
-     *
-     * @param fieldString _more_
-     *
-     * @return _more_
-     */
     public List<RecordField> doMakeFields(String fieldString) {
         String defaultMissing = getProperty(ATTR_MISSING, (String) null);
         //      entity[label="Entity"  type="string"] ,code[label="Code"  type="string"] ,year[label="Year"  type="date" format="yyyy" ] ,plastic_waste_generation[label="Plastic Waste Generation" unit="tonnes, total"  type="integer" chartable="true" ] 
@@ -1059,12 +703,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 field.setMissingValue(Double.parseDouble(missing));
             }
 
-
             String group = getProperty(field, properties, "group", null);
             if (group != null) {
                 field.setGroup(group);
             }
-
 
             String fmt = getProperty(field, properties, "fmt", (String) null);
             if (fmt == null) {
@@ -1181,14 +823,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return fields;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param attrs _more_
-     *
-     * @return _more_
-     */
     public static Hashtable parseAttributes(String attrs) {
         if (true) {
             return HtmlUtils.parseHtmlProperties(attrs);
@@ -1277,36 +911,15 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return ht;
     }
 
-
-    /** _more_ */
     private static FileReader fileReader;
 
-    /**
-     * _more_
-     *
-     * @param fileReader _more_
-     */
     public static void setFileReader(FileReader fileReader) {
         PointFile.fileReader = fileReader;
     }
 
-    /**
-     * Interface description
-     *
-     *
-     * @author         Enter your name here...
-     */
-    public static interface FileReader {
 
-        /**
-         * _more_
-         *
-         * @param path _more_
-         *
-         * @return _more_
-         */
+    public static interface FileReader {
         public String readPointFileContents(String path);
     }
-
 
 }

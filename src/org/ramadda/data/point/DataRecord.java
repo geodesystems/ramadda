@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
-
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
@@ -17,72 +16,26 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-
-
-
-/**
- * Class description
- *
- *
- * @version        $version$, Thu, Oct 31, '13
- * @author         Enter your name here...
- */
 public class DataRecord extends PointRecord {
-
-    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-    /** _more_ */
     protected List<RecordField> fields;
-
-    /** _more_ */
     protected double[] values;
-
-    /** _more_ */
     protected Object[] objectValues;
-
-    /** _more_ */
     protected int numDataFields = 0;
-
-    /** _more_ */
     protected boolean[] hasDefault;
-
-    /** _more_ */
     protected boolean[] skip;
-
-    /** _more_ */
     protected boolean[] synthetic;
-
-    /** _more_ */
     private boolean positionRequired = true;
-
-    /** _more_ */
     protected boolean dataHasLocation = false;
-
-    /** _more_ */
     protected int idxX;
-
-    /** _more_ */
     protected int idxY;
-
-    /** _more_ */
     protected int idxZ;
-
-    /** _more_ */
     protected int idxTime;
 
-    /**
-     * _more_
-     */
     public DataRecord() {}
 
-
-    /**
-     * _more_
-     *
-     * @param that _more_
-     */
     public DataRecord(DataRecord that) {
         super(that);
         this.fields  = that.fields;
@@ -90,39 +43,17 @@ public class DataRecord extends PointRecord {
         objectValues = null;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
     public DataRecord(RecordFile file) {
         super(file);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fields _more_
-     */
     public DataRecord(RecordFile file, List<RecordField> fields) {
         super(file);
         this.fields = fields;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     */
     @Override
     public void initFields(List<RecordField> fields) {
-
         super.initFields(fields);
         this.fields = fields;
         if (values != null) {
@@ -157,7 +88,6 @@ public class DataRecord extends PointRecord {
             { "day", "dom", "dd" }, { "hour", "hr", "hh" },
             { "minute", "mm" }, { "second" },
         };
-
 
         positionRequired = getRecordFile().getProperty("position.required",
                 "false").equals("true");
@@ -263,7 +193,6 @@ public class DataRecord extends PointRecord {
 
         //timeField
 
-
         if ((dateIndex >= 0) || (timeIndex >= 0)) {
             getRecordFile().setDateTimeIndex(dateIndex, timeIndex);
         }
@@ -288,15 +217,8 @@ public class DataRecord extends PointRecord {
         }
         checkIndices();
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param field _more_
-     */
     public static void initField(RecordField field) {
         field.setValueGetter(new ValueGetter() {
             public double getValue(BaseRecord record, RecordField field,
@@ -315,21 +237,10 @@ public class DataRecord extends PointRecord {
         });
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean needsValidPosition() {
         return positionRequired;
     }
 
-
-    /**
-     * _more_
-     */
     public void checkIndices() {
         if (positionRequired) {
             if (idxX == -1) {
@@ -343,11 +254,6 @@ public class DataRecord extends PointRecord {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean hasRecordTime() {
         if (super.hasRecordTime()) {
@@ -357,12 +263,6 @@ public class DataRecord extends PointRecord {
         return idxTime >= 0;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public long getRecordTime() {
         if ((idxTime >= 0) && (objectValues != null)) {
@@ -378,21 +278,10 @@ public class DataRecord extends PointRecord {
         return super.getRecordTime();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getLastAttribute() {
         return fields.get(fields.size() - 1).getParamId();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     */
     protected void addFields(List<RecordField> fields) {
         super.addFields(fields);
         if ((fields.size() == 0) && (this.fields != null)) {
@@ -400,14 +289,6 @@ public class DataRecord extends PointRecord {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
     public double getValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
@@ -419,13 +300,6 @@ public class DataRecord extends PointRecord {
         return super.getValue(attrId);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     * @param value _more_
-     */
     public void setValue(int attrId, double value) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
@@ -433,13 +307,6 @@ public class DataRecord extends PointRecord {
         values[idx] = value;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     * @param value _more_
-     */
     public void setValue(int attrId, Object value) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
@@ -447,23 +314,14 @@ public class DataRecord extends PointRecord {
         objectValues[idx] = value;
     }
 
-    /**  */
-    static int xcnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getStringValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
         idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
-            boolean debug = xcnt++ < 100;
+            boolean debug = false;
             //Maybe just a number
             if (objectValues[idx] == null) {
                 return "" + values[idx];
@@ -478,14 +336,6 @@ public class DataRecord extends PointRecord {
         return super.getStringValue(attrId);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
     @Override
     public Object getObjectValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
@@ -499,13 +349,6 @@ public class DataRecord extends PointRecord {
         return super.getObjectValue(attrId);
     }
 
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean hasObjectValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
@@ -519,13 +362,8 @@ public class DataRecord extends PointRecord {
         return false;
     }
 
-
-    /** _more_ */
     private boolean convertedXYZToLatLonAlt = false;
 
-    /**
-     * _more_
-     */
     public void convertXYZToLatLonAlt() {
         convertedXYZToLatLonAlt = true;
         if (idxX >= 0) {
@@ -539,14 +377,6 @@ public class DataRecord extends PointRecord {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param pw _more_
-     *
-     * @return _more_
-     */
     public int doPrintCsv(VisitInfo visitInfo, PrintWriter pw) {
         int superCnt = super.doPrintCsv(visitInfo, pw);
         if (superCnt > 0) {
@@ -585,7 +415,6 @@ public class DataRecord extends PointRecord {
                 continue;
             }
 
-
             if (fieldCnt == idxX) {
                 value = getLongitude();
             } else if (fieldCnt == idxY) {
@@ -594,7 +423,6 @@ public class DataRecord extends PointRecord {
                 value = getAltitude();
             }
 
-
             double roundingFactor = recordField.getRoundingFactor();
             if (roundingFactor > 0) {
                 double nv = Math.round(value * roundingFactor)
@@ -602,23 +430,12 @@ public class DataRecord extends PointRecord {
                 value = nv;
             }
 
-
             pw.print(value);
         }
 
         return fields.size() + superCnt;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param pw _more_
-     *
-     * @return _more_
-     */
     public int doPrintCsvHeader(VisitInfo visitInfo, PrintWriter pw) {
         int superCnt = super.doPrintCsvHeader(visitInfo, pw);
         int myCnt    = 0;
@@ -658,15 +475,6 @@ public class DataRecord extends PointRecord {
         return fields.size() + superCnt;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param buff _more_
-     *
-     * @throws Exception _more_
-     */
     public void print(Appendable buff) throws Exception {
         super.print(buff);
         for (int i = 0; i < fields.size(); i++) {
@@ -678,11 +486,6 @@ public class DataRecord extends PointRecord {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public double[] getValues() {
         return values;
     }
