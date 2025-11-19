@@ -28,9 +28,9 @@ childtypes="type_assets_license"
 <column  name="account_number"  label="Account Number"  type="string" />
 <column  name="check_number"  label="Check Number"  type="string" />
 <column  name="acquisition_cost"  label="Acquisition Cost"  type="double"  cansearch="true"  cansort="true"  tags="reportable" />
-<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true"       searchgroup="Misc." />
+<column  name="warranty_expiration"  label="Warranty Expiration"  type="date"  default="none"  cansearch="true"       searchgroup="Miscellaneous" />
 <column  name="status"  label="Status"  type="enumerationplus"  cansearch="true"  subgroup="Status"   values="active:Active,inrepair:In Repair,disposed:Disposed,retired:Retired,lost:Lost" />
-<column  name="condition"  label="Condition"  type="enumerationplus"  values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  cansearch="true"   values="operational:Operational,needs_repair:Needs Repair,damaged:Damaged,totaled:Totaled" />
 <column  name="disposal_date"  label="Disposal Date"  type="date"  default="none"    cansearch="true" />
 <column  name="disposal_method"  label="Disposal Method"  type="string"  size="2000" rows="5" />
 <column  name="disposed_comment"  label="Disposed Comment"  type="string"  size="5000" rows="5" />

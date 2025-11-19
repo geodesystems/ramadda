@@ -24,7 +24,7 @@ purchase_order,,string
 account_number,,string
 check_number,,string
 acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"  tags="reportable" 
-warranty_expiration,,date, default="none"  cansearch="true" 	  searchgroup="Misc."     
+warranty_expiration,,date, default="none"  cansearch="true" 	  searchgroup="Miscellaneous"     
 status,Status,enumerationplus, cansearch="true"  subgroup="Status" \
 values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
 condition,,enumerationplus, cansearch="true" \
