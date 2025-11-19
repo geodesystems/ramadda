@@ -27,7 +27,7 @@ acquisition_cost,Acquisition Cost, double, cansearch="true"  cansort="true"  tag
 warranty_expiration,,date, default="none"  cansearch="true" 	  searchgroup="Misc."     
 status,Status,enumerationplus, cansearch="true"  subgroup="Status" \
 values="active:Active\,inrepair:In Repair\,disposed:Disposed\,retired:Retired\,lost:Lost" 
-condition,,enumerationplus, \
+condition,,enumerationplus, cansearch="true" \
 values="operational:Operational\,needs_repair:Needs Repair\,damaged:Damaged\,totaled:Totaled"
 disposal_date,,date, default="none"    cansearch="true" 
 disposal_method,,string,size="2000" rows="5"
