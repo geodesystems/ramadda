@@ -1495,8 +1495,14 @@ public class MapInfo {
      * @return  the href tag
      */
     public String getHiliteHref(String id, String label) {
+	/*
         return "<a href=\"javascript:" + getVariableName() + ".hiliteMarker("
 	    + HU.squote(Utils.makeID(id)) + ");\">" + label + "</a>";
+	*/
+
+
+        return "<a href=\"javascript:" + getVariableName() + ".hiliteMarker("
+	    + HU.squote(id) + ");\">" + label + "</a>";	
     }
 
     /**
