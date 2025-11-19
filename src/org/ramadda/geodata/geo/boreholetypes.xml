@@ -2,30 +2,31 @@
 
 <import resource="type_borehole_project.xml"/>
 
-<type name="type_borehole"  foruser="false" description="Borehole Data">
-  <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-</type>
-
-
 <import resource="type_borehole_images.xml"/>
 
 <!-- The base point type -->
 <import resource="type_borehole_point.xml"/>
-
 <import resource="type_geo_mscl.xml"/>
 <import resource="type_borehole_log.xml"/>
 <import resource="type_borehole_las.xml"/>
+
+<import resource="type_borehole_xrf.xml"/>
+
+<!-- Base type for non point data -->
+<import resource="type_borehole_base.xml"/>
 <import resource="type_borehole_dlis.xml"/>
 <import resource="type_wellcad.xml"/>
-<import resource="type_borehole_xrf.xml"/>
-<import resource="type_geo_lithology.xml"/>
 
-<import resource="type_breeze.xml"/>
-<import resource="type_corebox.xml"/>
+
+<!--Rutgers/Columbia lithology CSV -->
+<import resource="type_geo_lithology.xml"/>
 
 <!-- field plot PDF -->
 <import resource="type_fieldplot.xml"/>
 
+<!-- Prediktera Breeze metadata -->
+<import resource="type_breeze.xml"/>
 
+<import resource="type_corebox.xml"/>
 
 </types>

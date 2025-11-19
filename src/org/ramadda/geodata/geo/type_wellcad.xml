@@ -1,9 +1,7 @@
-
-<type name="type_borehole_wcl"  super="type_borehole" description="WellCAD Log File" pattern=".*\.wcl"
+<type name="type_borehole_wellcad"
+      super="type_borehole_base"
+      description="WellCAD Log File"
+      pattern=".*\.wcl"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
-  <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="icon" value="/geo/wcl.png"/>
-  <property name="date.nullok" value="true"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.location.show" value="true"/>
 </type>

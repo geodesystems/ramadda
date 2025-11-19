@@ -1,4 +1,5 @@
-<type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"
+<type  name="type_geo_mscl"
+       description="Multi-Sensor Core Logging"
        super="type_borehole_point" 
        pattern="(?i).*mscl.*csv">
 
@@ -14,7 +15,7 @@ csvcommands3=NaN,-addheader,section.type enumeration
 +section title={{name}}
 :rem The navtop stands for navigation top - this shows the link to the Information section below
 :navtop
-:rem Only show at most 10000 records
+:rem Only show at most 20000 records
 {{property max=20000}}
 
 :rem The group tag groups the display tag. We can have properties in the group that get in inherited by all of the displays
