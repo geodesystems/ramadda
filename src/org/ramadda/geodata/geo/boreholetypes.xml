@@ -8,7 +8,7 @@
 
 <!-- The base point type -->
 <import resource="type_borehole_point.xml"/>
-<import resource="type_geo_mscl.xml"/>
+<import resource="type_borehole_mscl.xml"/>
 <import resource="type_borehole_log.xml"/>
 <import resource="type_borehole_las.xml"/>
 <import resource="type_borehole_xrf.xml"/>
@@ -21,7 +21,7 @@
 
 
 <!--Rutgers/Columbia lithology CSV -->
-<import resource="type_geo_lithology.xml"/>
+<import resource="type_borehole_lithology.xml"/>
 
 <!-- field plot PDF -->
 <import resource="type_fieldplot.xml"/>

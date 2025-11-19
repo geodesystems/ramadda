@@ -1,4 +1,5 @@
-<type  name="type_geo_lithology"
+<types>
+<type  name="type_borehole_lithology"
        super="type_borehole_point"
        description="Borehole Lithology"
        pattern=".*lith.csv">
@@ -43,3 +44,8 @@ inherited="true"  }}
 -section]]></wiki>
 </type>
 
+
+<!-- for backwards compatibility -->
+<type  name="type_geo_lithology" super="type_borehole_lithology" foruser="false"/>
+
+</types>
