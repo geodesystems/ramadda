@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 18 11:28:45 MST 2025";
+var build_date="RAMADDA build date: Wed Nov 19 11:32:12 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -37257,7 +37257,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     let id = this.getDomId(ID_COLUMN + col.getName());
 		    jqid(id).click((event) =>{
 			let root = this.getRamadda().getRoot();
-			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,col.entrytype,root);
+			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,
+							col.entrytype,
+							root,
+							{title:'Select ' + col.getLabel()});
 		    });
 		}
 	    });
