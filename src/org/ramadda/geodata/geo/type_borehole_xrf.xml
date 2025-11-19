@@ -1,9 +1,7 @@
-<!--  This gets imported by the boreholetypes.xml-->
-<type name="type_borehole_xrf"  super="type_point" description="Core XRF File" 
+<type name="type_borehole_xrf"  super="type_borehole_point" description="Core XRF File" 
       pattern="(?i).*core(_|-)xrf.*\.csv"
       newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
-      editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"      
-      handler="org.ramadda.geodata.geo.BoreholeTypeHandler">      
+      editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default">
   <data_dictionary><![CDATA[
   This is the description of the Core XRF data type
 ]]></data_dictionary>
@@ -19,12 +17,8 @@ instrument=metadata2:property
 *=metadata2:property
     ]]>
   </header_metadata>     
-
-  <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="icon" value="/geo/xray.png"/>
-  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.date.label" value="Scan Date"/>
-  <property name="form.properties.show" value="false"/>
   <property name="form.todate.show" value="false"/>
   <property name="form.url.show" value="false"/>  
   <property name="form.resource.extra.show" value="false"/>  
@@ -41,10 +35,6 @@ instrument=metadata2:property
   <column  name="xrf_voltage"  default="" label="Voltage" type="double" unit="kV" suffix="kV"
 	   initpattern="(?i)(\d+)kV"	   />
   <column  name="scan_rate"    default="" label="Scan Rate" type="double" suffix="cm/s" initpattern="scan_?(\d+)"/>    
-  <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
-	   suffix="Comma separated list of fields, e.g., k_wt,fe_wt,ca_wt,si_wt"
-	   showinhtml="false"   candisplay="false" canlist="false"/>     
-
 <property name="record.properties">
 xccsvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
 xcsvcommands2=-addheader,

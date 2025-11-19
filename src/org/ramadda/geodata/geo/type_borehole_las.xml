@@ -1,25 +1,14 @@
-<types>
-  <!--  This gets imported by the boreholetypes.xml-->
-  <type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" 
+<type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" 
       pattern=".*\.las"
-   
-      metadata="geo_stratigraphy,geo_measurement"
       handler="org.ramadda.geodata.geo.LasTypeHandler">      
   <help><![CDATA[
 Provides support for the 
 <a target=_help href=https://en.wikipedia.org/wiki/Log_ASCII_standard>Log ASCII Standard</a> file format.
 ]]></help>
-<property name="icon" value="/geo/drilling-rig.png"/>
-<property name="form.area.show" value="false"/>
-<property name="form.location.show" value="true"/>
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property name="form.properties.show" value="false"/>
 <property name="record.pattern.date.format" value="MM/dd/yy"/>
 <property name="record.patterns"
 	  value="field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"/>
-<column  name="top"  label="Top" type="double" />
-<column  name="bottom"  label="Bottom" type="double" />
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>	   
 <column  name="state"  label="State" type="enumerationplus"  cansearch="true" />
@@ -91,4 +80,4 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 ]]>
 </wiki>
 </type>
-</types>
+

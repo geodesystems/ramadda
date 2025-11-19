@@ -1,0 +1,28 @@
+<type name="type_borehole_point"
+      super="type_point"
+      description="Borehole Log File"
+      foruser="false"
+      supercategory="Geoscience" 
+      category="Borehole Data" 
+      handler="org.ramadda.geodata.geo.BoreholeTypeHandler"
+      metadata="geo_stratigraphy,geo_measurement"
+      >      
+
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
+  <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true"
+	  suffix="meters" default="NaN"
+	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"/>
+  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true"
+	  suffix="meters" default="NaN"
+	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"	  
+/>
+  <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
+	   suffix="Comma separated list of fields, e.g., #2,#3"
+	   showinhtml="false"   candisplay="false" canlist="false"/>     
+</type>

@@ -1,0 +1,69 @@
+<types>
+<type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
+      metadata="geo_stratigraphy,geo_measurement">      
+  <column  name="hole"  label="Hole" type="enumerationplus"
+	   cansearch="true" group="Borehole Metadata"/>
+  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
+  <property name="record.patterns"
+	    value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
+<property name="record.properties">
+picky=false
+csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
+csvcommands2=-addheader,
+</property>
+<property name="bubble">
+<![CDATA[
++section  title="Borehole Log: {{name}}"
+{{group}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}         
+]]></property>
+
+<wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
+   <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}]]></wikimacro>
+
+<wiki>
+<![CDATA[
++section title="Borehole log: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}         
+
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+<table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
+{{field name="hole"  row.label="Hole:"}}
+{{field name="top"  row.label="Top:"}}
+{{field name="bottom"  row.label="Bottom:"}}
+</table>
+:vspace 1em
+{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
+</types>

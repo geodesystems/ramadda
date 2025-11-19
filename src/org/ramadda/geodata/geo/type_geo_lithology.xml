@@ -1,21 +1,11 @@
-<types>
-<!--  This gets imported by the boreholetypes.xml-->
 <type  name="type_geo_lithology"
-pattern=".*lith.csv"      
-description="Borehole Lithology"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
+       super="type_borehole_point"
+       description="Borehole Lithology"
+       pattern=".*lith.csv">
 <!-- Properties-->
 <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
 <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
 <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
-
-<property name="inheritlocationfromtype" value="type_geo_site"/>
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="icon"  value="/geo/drilling-rig.png" />
-<property  name="form.area.show"  value="false" />
-<property  name="form.location.show"  value="true" />
-<property  name="form.properties.show"  value="false" />
-<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
-
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
 csvcommands1=-map,color,color_description,resource:/org/ramadda/geodata/geo/resources/lithology_color.txt
@@ -52,4 +42,4 @@ inherited="true"  }}
 -row       
 -section]]></wiki>
 </type>
-</types>
+

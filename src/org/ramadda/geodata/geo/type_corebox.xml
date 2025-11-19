@@ -1,7 +1,8 @@
 <types>
-<type  name="type_geo_corebox_csv"  description="Geo Corebox CSV"  handler="org.ramadda.data.services.PointTypeHandler"
-       pattern=".*corebox.cblog"
-  super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
+  <type  name="type_geo_corebox_csv"  description="Geo Corebox CSV"
+	 handler="org.ramadda.data.services.PointTypeHandler"
+	 pattern=".*corebox.cblog"
+	 super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />

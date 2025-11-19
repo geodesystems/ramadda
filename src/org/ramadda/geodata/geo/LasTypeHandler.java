@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.geo;
-
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -18,48 +17,31 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.*;
-
 import java.io.*;
-
 import java.text.SimpleDateFormat;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import java.util.Hashtable;
 
-
-/**
- */
 public class LasTypeHandler extends BoreholeTypeHandler {
-
-
-
-
     public LasTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
-
-
 
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
         return new LasRecordFile(getRepository(), entry, new IO.Path(getPathForEntry(request, entry,true)));
     }
 
-
     public static class LasRecordFile extends CsvFile {
         Repository repository;
-
         Entry entry;
-
 	List<String> fields  = new ArrayList<String>();
         public LasRecordFile(Repository repository, Entry entry, IO.Path path)
 	    throws IOException {
@@ -68,12 +50,9 @@ public class LasTypeHandler extends BoreholeTypeHandler {
             this.entry      = entry;
         }
 
-
-
-
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws Exception {
+	    throws Exception {
 	    InputStream input = makeInputStream(false);
 	    BufferedReader br   = new BufferedReader(new InputStreamReader(input));
 	    String line;
@@ -112,18 +91,10 @@ public class LasTypeHandler extends BoreholeTypeHandler {
         }
 
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
-                throws Exception {
+	    throws Exception {
             super.prepareToVisit(visitInfo);
 	    putFields(fields);
             return visitInfo;
         }
-
-
-
-
     }
-
-
-
-
 }

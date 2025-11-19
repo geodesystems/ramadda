@@ -1,0 +1,110 @@
+<types supercategory="Geoscience" category="Borehole Data">
+  <type name="type_geo_project"  description="Geo Project" 
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
+	>
+    <property name="icon" value="/geo/project.png"/>
+    <property name="search.metadatatypes"      value=""/>
+    <property name="form.area.show" value="true"/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
+    <children><![CDATA[
+<entries>
+<entry  name="Sites"  type="type_map_folder" entryorder="10"/>
+<entry  name="Documents"  type="type_document_collection" entryorder="20"/>
+<entry  name="Private"  type="group" entryorder="30" description="{{access_status}}">
+<permissions>
+<permission action="view">
+<role role="none"/>
+</permission>
+</permissions>
+</entry>
+</entries>
+]]>
+</children>
+
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
++row 
++col-8
+:heading Sites
+{{map listentries="true" entry="child:type:type_map_folder" orderby=name}}
+:heading Contents
+{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false orderby=entryorder ascending=true}} 
+-col
++col-4
++center
+{{image  inherited="false" showCaption=true multiples=true popup=true
+message="" width="80%"  useThumbnail="true" }}
+-center
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{properties message="" inherited="true" metadata.types="project_pi" includeTitle=true}}
+-center
+-col
+-row
+:vspace 1em
+----
+:vspace 1em
+:heading Search Project
+{{display_entrylist   startWithAny=true
+showAncestor=false ancestor=this
+metadataTypes=""
+entryTypes="type_borehole_coreimage,type_borehole_log,type_borehole_las,type_borehole_image,type_borehole_xrf,type_geo_lithology,type_borehole_fieldplot,type_borehole_wcl,type_borehole_dlis"  
+orderByTypes="name,relevant,createdate,date,size"  
+displayTypes="list,map,images" 
+includeNonImages=false
+}} 
+
+
+:heading Project Information
+{{information showDetails="true"  showTitle="false" details="true"}} 
+-section
+]]></wiki>
+
+
+</type>
+
+<type name="type_geo_site"  description="Geo Site" 
+      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+      childtypes="type_geo_borehole_images,type_point_collection"
+      >
+    <property name="icon" value="/geo/site.png"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <property name="form.altitude.show" value="true"/>    
+    <property name="search.metadatatypes"      value=""/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
+     <wiki><![CDATA[
++section title={{name}}
+:navtop
++row
++col-8
+{{description wikify="true"}}
+:heading Data
+{{tabletree  message="No data available" orderby=name ascending=true showType=false showSize=false}}
+-col
++col-4
++center
+{{image  inherited="false" showCaption=true multiples="true" popup=true
+message="" width="80%"  useThumbnail="true" }}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+-col
+-row
+----
+:heading Information
+{{information details=true}}
+-section
+]]></wiki>
+
+</type>
+</types>

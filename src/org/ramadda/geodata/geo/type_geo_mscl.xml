@@ -1,20 +1,6 @@
-<types>
-<!--  This gets imported by the boreholetypes.xml-->
 <type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"
-       handler="org.ramadda.data.services.PointTypeHandler"  super="type_point" 
-       supercategory="Geoscience" 
-       category="Borehole Data" 
-       pattern="(?i).*mscl.*csv" 
->
-
-<!-- Properties-->
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property name="inheritlocationfromtype" value="type_geo_site"/>
-<property  name="icon"  value="/geo/drilling-rig.png" />
-<property  name="form.area.show"  value="false" />
-<property  name="form.location.show"  value="false" />
-<property  name="form.properties.show"  value="false" />
-<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+       super="type_borehole_point" 
+       pattern="(?i).*mscl.*csv">
 
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
@@ -83,4 +69,3 @@ The group tag keeps the scatter plots separate from the above filters
 {{information}}
 -section]]></wiki>
 </type>
-</types>

@@ -1,4 +1,5 @@
-<type name="type_borehole_fieldplot"   description="Borehole Field Plot"
+<type name="type_borehole_fieldplot"
+      description="Borehole Field Plot"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
 <property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="icon" value="/geo/drilling-rig.png"/>
