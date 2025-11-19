@@ -688,7 +688,10 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
    }
 
-    public void handleHeaderPatternValue(Request request, Entry entry,Hashtable state, String field, String value) throws Exception {
+    public void handleHeaderPatternValue(Request request,
+					 Entry entry,
+					 Hashtable state,
+					 String field, String value) throws Exception {
 	if (field.equals("latitude")) {
 	    entry.setLatitude(decode(value));
 	} else if (field.equals("longitude")) {
