@@ -23,6 +23,7 @@ style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }}
 ]]></wiki>
 </type>
 
+<!-- for backwards compat. -->
 <type  name="type_geo_corebox_prediktera_xml"  super="type_geo_corebox_breeze_xml"
        foruser="false" description="Geo Prediktera XML">
 </type>

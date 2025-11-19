@@ -20,7 +20,7 @@
 <import resource="type_borehole_base.xml"/>
 <import resource="type_borehole_dlis.xml"/>
 <import resource="type_borehole_wellcad.xml"/>
-<import resource="type_fieldplot.xml"/>
+<import resource="type_borehole_fieldplot.xml"/>
 
 <!-- Prediktera Breeze metadata -->
 <import resource="type_breeze.xml"/>
