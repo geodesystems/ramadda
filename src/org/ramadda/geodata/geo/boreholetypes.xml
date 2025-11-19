@@ -1,7 +1,9 @@
 <types supercategory="Geoscience" category="Borehole Data">
 
+<!-- project and site -->
 <import resource="type_borehole_project.xml"/>
 
+<!-- images -->
 <import resource="type_borehole_images.xml"/>
 
 <!-- The base point type -->
@@ -9,13 +11,13 @@
 <import resource="type_geo_mscl.xml"/>
 <import resource="type_borehole_log.xml"/>
 <import resource="type_borehole_las.xml"/>
-
 <import resource="type_borehole_xrf.xml"/>
+
 
 <!-- Base type for non point data -->
 <import resource="type_borehole_base.xml"/>
 <import resource="type_borehole_dlis.xml"/>
-<import resource="type_wellcad.xml"/>
+<import resource="type_borehole_wellcad.xml"/>
 
 
 <!--Rutgers/Columbia lithology CSV -->

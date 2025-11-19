@@ -1,4 +1,6 @@
-<type name="type_borehole_xrf"  super="type_borehole_point" description="Core XRF File" 
+<type name="type_borehole_xrf"
+      super="type_borehole_point"
+      description="Core XRF File" 
       pattern="(?i).*core(_|-)xrf.*\.csv"
       newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
       editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default">

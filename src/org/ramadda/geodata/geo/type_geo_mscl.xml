@@ -1,4 +1,5 @@
-<type  name="type_geo_mscl"
+<types>
+<type  name="type_borehole_mscl"
        description="Multi-Sensor Core Logging"
        super="type_borehole_point" 
        pattern="(?i).*mscl.*csv">
@@ -70,3 +71,7 @@ The group tag keeps the scatter plots separate from the above filters
 {{information}}
 -section]]></wiki>
 </type>
+
+<type  name="type_geo_mscl" foruser="false" super="type_borehole_mscl"/>
+
+</types>
