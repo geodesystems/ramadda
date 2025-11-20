@@ -3113,7 +3113,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             tmp += HU.formEntryLabel("Color By Range", HU.input("", this.colorByMin,
 							    [ATTR_SIZE, 7,
 							     ATTR_ID, this.domId("colorbymin")]) + " - " +
-				HU.input("", this.colorByMax,
+				     HU.input("", this.colorByMax,
 					 [ATTR_SIZE, 7,
 					  ATTR_ID, this.domId("colorbymax")]));
             tmp += HU.close(TAG_TABLE);

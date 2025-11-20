@@ -1301,12 +1301,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		} else {
 		    let table = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']);
 		    if(entry.getIsUrl()) {
-			table+=HU.formEntry('URL:',HU.href(entry.getResourceUrl(),entry.getResourceUrl()));
+			table+=HU.formEntryLabel('URL',
+						 HU.href(entry.getResourceUrl(),entry.getResourceUrl()));
 		    } else if(entry.getIsFile()) {
 			let url = entry.getResourceUrl();
-			table+=HU.formEntry('File:',HU.href(url,entry.getFilename()) +' ' +
-					    ' (' + entry.getFormattedFilesize()+')' +
-					    ' ' + HU.href(url,HU.getIconImage('fas fa-download')));
+			table+=HU.formEntryLabel('File',
+						 HU.href(url,entry.getFilename()) +' ' +
+						 ' (' + entry.getFormattedFilesize()+')' +
+						 ' ' + HU.href(url,HU.getIconImage('fas fa-download')));
 		    }
 		    
 		    table+=HU.formEntry(Utils.delimMsg('Kind'),

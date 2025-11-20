@@ -544,24 +544,26 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             let tmp = HU.formTable();
-            tmp += HU.formEntry("Axis Range:", HU.input("", min,
-							[ATTR_SIZE, 7,
-							 ATTR_ID, this.domId("vaxismin")]) + " - " +
-				HU.input("", max,
-					 [ATTR_SIZE, 7,
-					  ATTR_ID, this.domId("vaxismax")]));
-            tmp += HU.formEntry("Date Range:", HU.input("", this.minDate,
-							[ATTR_SIZE, 10,
-							 ATTR_ID, this.domId("mindate")]) + " - " +
-				HU.input("", this.maxDate,
-					 [ATTR_SIZE, 10,
-					  ATTR_ID, this.domId("maxdate")]));
+            tmp += HU.formEntryLabel("Axis Range",
+				     HU.input("", min,
+					      [ATTR_SIZE, 7,
+					       ATTR_ID, this.domId("vaxismin")]) + " - " +
+				     HU.input("", max,
+					      [ATTR_SIZE, 7,
+					       ATTR_ID, this.domId("vaxismax")]));
+            tmp += HU.formEntryLabel("Date Range",
+				     HU.input("", this.minDate,
+					      [ATTR_SIZE, 10,
+					       ATTR_ID, this.domId("mindate")]) + " - " +
+				     HU.input("", this.maxDate,
+					      [ATTR_SIZE, 10,
+					       ATTR_ID, this.domId("maxdate")]));
+	    
 
-
-            tmp += HU.formEntry("Colors:",
-				HU.input("", this.getColorList().join(","),
-					 [ATTR_SIZE, 35,
-					  ATTR_ID, this.domId(ID_COLORS)]));
+            tmp += HU.formEntryLabel("Colors",
+				     HU.input("", this.getColorList().join(","),
+					      [ATTR_SIZE, 35,
+					       ATTR_ID, this.domId(ID_COLORS)]));
             tmp += HU.close(TAG_TABLE);
             menuItems.push(tmp);
 

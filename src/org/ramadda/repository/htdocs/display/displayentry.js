@@ -1339,7 +1339,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				this.submitSearchForm();
 			    });
 			} else {
-//			    tag.html(label);
+			    //			    tag.html(label);
 			    tag.remove();
 			}
 		    } else {
@@ -2296,11 +2296,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let label="";
 		let help = "";
 		/** don't do this since the suffix can be used for editing help, etc
-		if(Utils.stringDefined(col.getSuffix())) {
+		    if(Utils.stringDefined(col.getSuffix())) {
 		    help = HU.span([ATTR_STYLE,HU.css(CSS_CURSOR,'help',
-						      CSS_MARGIN_LEFT,HU.px(10)),
-				    ATTR_TITLE,col.getSuffix()], HU.getIconImage('fas fa-info'));
-		}		
+		    CSS_MARGIN_LEFT,HU.px(10)),
+		    ATTR_TITLE,col.getSuffix()], HU.getIconImage('fas fa-info'));
+		    }		
 		*/
 
                 if (col.isEnumeration()) {
@@ -2809,9 +2809,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    if(!dontAsk) {
 		if(format==OUTPUT_CHOOSE) {
 		    let html = HU.formTable();
-		    html += HU.formEntry('Number of Records:',
-					 HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),
-							   ATTR_SIZE,5]));
+		    html += HU.formEntryLabel('Number of Records',
+					      HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),
+								ATTR_SIZE,5]));
 		    let select= [['xlsx','XLSX'],
 				 ['csv','CSV'],
 				 ['json','JSON'],
@@ -2821,8 +2821,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 ['wrapper_r','R Wrapper'],
 				 ['wrapper_python','Python Wrapper'],
 				 ['wrapper_matlab','Matlab Wrapper']];
-		    html+= HU.formEntry('What to download:',
-					HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
+		    html+= HU.formEntryLabel('What to download',
+					     HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
 		    let buttons = HU.buttons([
 			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
 			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
@@ -3950,27 +3950,27 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 				 HU.checkbox(this.getDomId(ID_SHOW_NAME),
 					     ["attr", ID_SHOW_NAME],
 					     this.getProperty(ID_SHOW_NAME, "true")) + " Show Name");
-            html += HU.formEntry("X-Axis:",
-				 HU.checkbox(this.getDomId(ID_XAXIS_ASCENDING),
-					     ["attr", ID_XAXIS_ASCENDING],
-					     this.getXAxisAscending()) + " Ascending" +
-				 SPACE2 +
-				 HU.checkbox(this.getDomId(ID_XAXIS_SCALE),
-					     ["attr", ID_XAXIS_SCALE],
-					     this.getXAxisScale()) + " Scale Width");
-            html += HU.formEntry("Y-Axis:",
-				 HU.checkbox(this.getDomId(ID_YAXIS_ASCENDING),
-					     ["attr", ID_YAXIS_ASCENDING],
-					     this.getYAxisAscending()) + " Ascending" +
-				 SPACE2 +
-				 HU.checkbox(this.getDomId(ID_YAXIS_SCALE),
-					     ["attr", ID_YAXIS_SCALE],
-					     this.getYAxisScale()) + " Scale Height");
+            html += HU.formEntryLabel("X-Axis",
+				      HU.checkbox(this.getDomId(ID_XAXIS_ASCENDING),
+						  ["attr", ID_XAXIS_ASCENDING],
+						  this.getXAxisAscending()) + " Ascending" +
+				      SPACE2 +
+				      HU.checkbox(this.getDomId(ID_XAXIS_SCALE),
+						  ["attr", ID_XAXIS_SCALE],
+						  this.getXAxisScale()) + " Scale Width");
+            html += HU.formEntryLabel("Y-Axis",
+				      HU.checkbox(this.getDomId(ID_YAXIS_ASCENDING),
+						  ["attr", ID_YAXIS_ASCENDING],
+						  this.getYAxisAscending()) + " Ascending" +
+				      SPACE2 +
+				      HU.checkbox(this.getDomId(ID_YAXIS_SCALE),
+						  ["attr", ID_YAXIS_SCALE],
+						  this.getYAxisScale()) + " Scale Height");
 
-            html += HU.formEntry("Box Color:",
-				 HU.input(this.getDomId(ID_COLOR),
-					  this.getProperty(ID_COLOR, "lightblue"),
-					  ["attr", ID_COLOR]));
+            html += HU.formEntryLabel("Box Color",
+				      HU.input(this.getDomId(ID_COLOR),
+					       this.getProperty(ID_COLOR, "lightblue"),
+					       ["attr", ID_COLOR]));
 
             html += HU.formTableClose();
             html += HU.closeTag(TAG_DIV);
@@ -4837,7 +4837,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
 
                 }
                 select += HU.closeTag(TAG_SELECT);
-                html += HU.formEntry("Data:", select);
+                html += HU.formEntryLabel("Data", select);
             }
 
             let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_CHARTTYPE)]);
@@ -4860,7 +4860,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
 					  ATTR_VALUE, "scatterplot"],
 			     "Scatter Plot");
             select += HU.closeTag(TAG_SELECT);
-            html += HU.formEntry("Chart Type:", select);
+            html += HU.formEntryLabel("Chart Type", select);
 
             html += HU.closeTag(TAG_TABLE);
             html += HU.p();
