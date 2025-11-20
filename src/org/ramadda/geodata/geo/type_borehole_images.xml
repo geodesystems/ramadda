@@ -38,22 +38,23 @@ displayEntries="${property:displays}"
 ]]></wiki>
 
 
-</type>
+  </type>
 
-<type name="type_borehole_image"
-      description="Borehole Image"
-      handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
-  <property name="icon" value="/geo/drilling-rig.png"/>
-  <property name="date.nullok" value="true"/>
-  <property name="inheritlocationfromtype" value="type_geo_site"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.location.show" value="true"/>
-  <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
-  <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
-	   values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
-  <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
+  <type name="type_borehole_image"
+	description="Borehole Image"
+	handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
+    <property name="icon" value="/geo/drilling-rig.png"/>
+    <property name="date.nullok" value="true"/>
+    <property name="inheritlocationfromtype" value="type_geo_site"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
+    <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	     values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
+    <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
+	     values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
+    <column name="annotations_json" type="clob"
+	    label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
 
 <wiki>
 <![CDATA[
