@@ -11,6 +11,9 @@ var ID_UNEXPANDED_WIKI_MENU = 'unexpandedwikimenu';
 var ID_LLM_LOADING='llm-loading';
 var ID_LLM_PROMPT_PREFIX = 'llm-prompt-prefix';
 var ID_LLM_PROMPT_SUFFIX = 'llm-prompt-suffix';
+var ID_TRANSCRIBE_ADD_FILE='transcribe_addfile';
+var ID_TRANSCRIBE_LABEL='transcribe_label';
+var ID_TRANSCRIBE_PEN='transcribe_pen';
 var ID_TRANSCRIBE_PLAY='transcribe_play';
 var ID_TRANSCRIBE_DELETE='transcribe_delete';
 var ID_TRANSCRIBE_TEXT='transcribe_text';
@@ -388,7 +391,9 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     });
     this.jq("transcribe").click(()=>{
 	HU.hidePopupObject();
-	if(!this.transcriber) this.transcriber = new Transcriber(this,{});
+	if(!this.transcriber) {
+	    this.transcriber = new Transcriber(this,{entryId:this.entryId});
+	}
 	this.transcriber.doTranscribe();
     });    
     this.jq("tidy").click(()=>{
@@ -609,8 +614,8 @@ WikiEditor.prototype = {
 				decorate:true,
 				title:'Select Image',
 				header:true,
-				at:'left bottom',
-				my:'left top',
+				at:POS_LEFT_BOTTOM,
+				my:POS_LEFT_TOP,
 				content:html,
 				draggable:true}
 		    let dialog =  HU.makeDialog(opts);		    
@@ -1145,10 +1150,13 @@ WikiEditor.prototype = {
 
 	let dialog = this.llmDialog = HU.makeDialog({content:html,
 						     anchor:this.getScroller(),
-						     my: 'left bottom',     
+						     my: POS_LEFT_BOTTOM,     
 						     at: 'left+200' +' top-50',
 						     title:'LLM',
-						     header:true,sticky:true,draggable:true,modal:false});	
+						     header:true,
+						     sticky:true,
+						     draggable:true,
+						     modal:false});	
 
 
 	let call = (prompt) =>{
@@ -1244,10 +1252,13 @@ WikiEditor.prototype = {
 	    this.colorDialog.remove();
 	}
 	this.colorDialog = HU.makeDialog({content:html,anchor:this.getDiv(),
-					  my: "left bottom",     
+					  my: POS_LEFT_BOTTOM,     
 					  at: "left+200" +" top-50",
 					  title:"Select Color",
-					  header:true,sticky:true,draggable:true,modal:false});	
+					  header:true,
+					  sticky:true,
+					  draggable:true,
+					  modal:false});	
 	let picker = this.jq('color_picker');
 	let close = () =>{
 	    picker.attr(ATTR_TYPE,'text').attr(ATTR_TYPE,'color');
@@ -1425,7 +1436,7 @@ WikiEditor.prototype = {
 	    let ctDialog = HU.makeDialog({content:contents,
 					  anchor:$(window),
 					  xhidePopup:false,
-					  my: 'right top',
+					  my: POS_RIGHT_TOP,
 					  at: 'left+' +event.x +' top+' + (event.y),
 					  title:'Color Tables',
 					  header:true,sticky:false,
@@ -1514,7 +1525,7 @@ WikiEditor.prototype = {
 	let search =  HU.span([ATTR_ID,this.domId(ID_SEARCH_ATTRIBUTES),
 			       ATTR_CLASS,HU.classes('wiki-popup-menu-header',CLASS_CLICKABLE),
 			       ATTR_TITLE,'Search attributes'],
-			      HU.getIconImage('fa-binoculars'));
+			      HU.getIconImage(ICON_SEARCH));
 	let edit =  HU.span([ATTR_ID,this.domId('edittag'),
 			     ATTR_CLASS,HU.classes('wiki-popup-menu-header',CLASS_CLICKABLE),
 			     ATTR_TITLE,'Edit tag'],
@@ -1575,7 +1586,7 @@ WikiEditor.prototype = {
 	let dialog = this.tagDialog =
 	    HU.makeDialog({content:menu,
 			   anchor:$(window),
-			   my: 'left top',
+			   my: POS_LEFT_TOP,
 			   at: 'left+' +event.x +' top+' + (event.y),
 			   title:title,
 			   header:true,
@@ -1593,8 +1604,8 @@ WikiEditor.prototype = {
 	    contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items'],contents);
 	    let popup = HU.makeDialog({content:contents,anchor:$(this),
 				       hidePopup:false,
-				       my: 'left top',
-				       at: 'left bottom'});
+				       my: POS_LEFT_TOP,
+				       at: POS_LEFT_BOTTOM});
 	    setTimeout(()=>{
 		let handler  = () =>{popup.hide();$(document).off('click',handler);};
 		$(document).on("click", handler);
@@ -2124,7 +2135,7 @@ WikiEditor.prototype = {
 			return $(this).prop(ATTR_TITLE);
 		    },
 		    show: { effect: 'slide', delay: 500, duration: 400 },
-		    position: { my: "left top", at: "right top" }		
+		    position: { my: POS_LEFT_TOP, at: POS_RIGHT_TOP }		
 		});
 	    };
 
@@ -2132,7 +2143,7 @@ WikiEditor.prototype = {
 	    let popup = this.wikiDisplayPopup =
 		HU.makeDialog({
 		    content:contents,
-		    my:"left top",
+		    my:POS_LEFT_TOP,
 		    at:"left-200px bottom",
 		    title:"",
 		    anchor:button,
@@ -2310,7 +2321,7 @@ WikiEditor.prototype = {
 		    return $(this).prop(ATTR_TITLE);
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
-		position: { my: "left top", at: "right top" }
+		position: { my: POS_LEFT_TOP, at: POS_RIGHT_TOP }
 	    });
 
 
@@ -2326,7 +2337,7 @@ WikiEditor.prototype = {
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'orderby',ex:'name|date|changedate|createdate|entryorder|size|number',
+	    {p:'orderby',ex:'name|date|changedate|createdate|entryorder|size|number|folder|type|field:<column>',
 	     tt:'sort type: name, date, change date, create date, etc'},
 	    {p:'ascending',ex:'true',tt:'direction of sort.'},
 	    /*
@@ -2796,7 +2807,7 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 			   HU.classes('wiki-popup-menu-header wiki-popup-menu-link',
 				      CLASS_CLICKABLE),
 			   ATTR_TITLE,'Search attributes'],
-			  HU.getIconImage('fa-binoculars')));
+			  HU.getIconImage(ICON_SEARCH)));
     blocks.forEach((block,idx)=>{
 	if(typeof block=='string') {
 	    //	    console.log(block);
@@ -2867,7 +2878,7 @@ Transcriber.prototype = {
 	    let diff = now.getTime()-this.transcribeStartTime.getTime();
 	    
 	    let seconds = parseInt((this.transcribeElapsedTime+diff)/1000);
-	    this.jq('transcribe_label').html(seconds +' seconds');
+	    this.jq(ID_TRANSCRIBE_LABEL).html(seconds +' seconds');
 	    this.transcribeMonitor = setTimeout(updateTime,500);
 	};
 	this.transcribeMonitor = setTimeout(updateTime,500);
@@ -2909,12 +2920,13 @@ Transcriber.prototype = {
 	this.jq(ID_TRANSCRIBE_LOADING).show();
 	data.append('mimetype', this.transcribeMime);
 	data.append('audio-file', file);
-	data.append(ARG_ENTRYID,this.entryId);
+	data.append(ARG_ENTRYID,this.opts.entryId);
+	data.append(ARG_GROUP,this.opts.entryId);
 	if(HU.isChecked(this.jq('transcribe_sendtochat'))) {
 	    data.append('sendtochat','true');	    
 	}
 
-	if(HU.isChecked(this.jq('transcribe_addfile'))) {
+	if(HU.isChecked(this.jq(ID_TRANSCRIBE_ADD_FILE))) {
 	    data.append('addfile','true');	    
 	}
 	$.ajax({
@@ -2928,7 +2940,7 @@ Transcriber.prototype = {
 	    success: (data)=>{
 		this.jq(ID_TRANSCRIBE_LOADING).hide();
 		this.transcribeClear();
-		this.jq('transcribe_label').html('0 seconds');
+		this.jq(ID_TRANSCRIBE_LABEL).html('0 seconds');
 		let results = data.results??data.error;
 		if(!Utils.stringDefined(results)) results = 'No results'
 		this.jq(ID_TRANSCRIBE_TEXT).val(results);
@@ -2969,13 +2981,13 @@ Transcriber.prototype = {
 			HU.getIconImage('fa-solid fa-microphone fa-gray')),
 		HU.span([ATTR_TITLE,'Transcribe recording',
 			 ATTR_CLASS,CLASS_CLICKABLE,
-			 ATTR_ID,this.domId('transcribe_pen')],
+			 ATTR_ID,this.domId(ID_TRANSCRIBE_PEN)],
 			HU.getIconImage('fa-solid fa-pen fa-gray')),
 		HU.boldLabel('Time')+
 		    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
 					      CSS_TEXT_ALIGN,ALIGN_RIGHT,
 					      CSS_WIDTH,HU.px(150)),
-			    ATTR_ID,this.domId('transcribe_label')],'0 seconds'),
+			    ATTR_ID,this.domId(ID_TRANSCRIBE_LABEL)],'0 seconds'),
 		HU.span([ATTR_TITLE,'Delete recording',
 			 ATTR_CLASS,CLASS_CLICKABLE,
 			 ATTR_ID,this.domId(ID_TRANSCRIBE_DELETE)],
@@ -2987,8 +2999,8 @@ Transcriber.prototype = {
 					ATTR_TITLE,'Apply LLM to transcription'],
 				       false,'Apply LLM to transcription');
 	    right+=SPACE2;
-	    right+= HU.checkbox(this.domId('transcribe_addfile'),
-				[ATTR_ID,this.domId('transcribe_addfile'),
+	    right+= HU.checkbox(this.domId(ID_TRANSCRIBE_ADD_FILE),
+				[ATTR_ID,this.domId(ID_TRANSCRIBE_ADD_FILE),
 				 ATTR_TITLE,'Add audio file as entry'],
 				false,'Add as entry');
 	    if(this.opts.addExtra)
@@ -3025,7 +3037,7 @@ Transcriber.prototype = {
 	    };
 	    let dialog = this.transcribeDialog =
 		HU.makeDialog({content:html,anchor:this.getAnchor(),
-			       my: 'left bottom',     
+			       my: POS_LEFT_BOTTOM,     
 			       at: 'left+200 top-50',
 			       title:'Transcribe',
 			       callback:closeCallback,
@@ -3034,7 +3046,7 @@ Transcriber.prototype = {
 			       draggable:true,
 			       modal:false});	
 	    this.transcribeElapsedTime = 0;
-	    this.jq('transcribe_pen').button().click(()=>{
+	    this.jq(ID_TRANSCRIBE_PEN).button().click(()=>{
 		if(this.transcribePlaying) {
 		    this.callDoIt = true;
 		    this.transcribeStop();
@@ -3054,7 +3066,7 @@ Transcriber.prototype = {
 		this.jq(ID_TRANSCRIBE_TEXT).val('');
 		this.transcribeStop();	
 		this.transcribeClear();
-		this.jq('transcribe_label').html('0 seconds');
+		this.jq(ID_TRANSCRIBE_LABEL).html('0 seconds');
 	    });
 
 
