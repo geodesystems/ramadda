@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov 19 11:32:12 MST 2025";
+var build_date="RAMADDA build date: Thu Nov 20 05:57:48 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1967,7 +1967,7 @@ function DisplayAnimation(display, enabled,attrs) {
 			_this.tooltip.show();
 			_this.tooltip.position({
 			    of: e.target,
-			    my: "left top",
+			    my: POS_LEFT_TOP,
 			    at: "left+" + e.offsetX +" bottom",
 			    collision: "fit fit"
 			});
@@ -4836,8 +4836,8 @@ function DisplayThing(argId, argProperties) {
         popup: function(srcId, popupId, srcObj, popup) {
             popup = popup || jqid(popupId);
             let src = srcObj || jqid(srcId);
-            let myalign = 'left top';
-            let atalign = 'left bottom';
+            let myalign = POS_LEFT_TOP;
+            let atalign = POS_LEFT_BOTTOM;
             popup.show();
 	    //	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
             popup.position({
@@ -6118,7 +6118,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipEffect',d:'fadeIn'},
 	{p:'tooltipDuration',d:500},	
 	{p:'tooltipImmediate',d:false,ex:'true',tt:'Show tooltip immediately'},	
-	{p:'tooltipPositionMy',ex:'left top'},
+	{p:'tooltipPositionMy',ex:POS_LEFT_TOP},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
 	{p:'tooltipShowUnit',d:true,ex:'false'},
@@ -9590,7 +9590,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let toolbar = jqid(toolbarId);
                 toolbar.show();
                 let myalign = 'right top+1';
-                let atalign = 'right top';
+                let atalign = POS_RIGHT_TOP;
                 let srcId = theDisplay.getDomId(ID_DETAILS_MAIN + domEntryId);
                 toolbar.position({
                     of: jqid(srcId),
@@ -11332,7 +11332,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		popup.position({
 		    of: min,
-		    my: "left top",
+		    my: POS_LEFT_TOP,
 		    at: "left bottom+2",
 		    collision: "fit fit"
                 });
@@ -12016,8 +12016,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			popup.show();
 			popup.position({
 			    of: $(this),
-			    my: "left top",
-			    at: "left bottom",
+			    my: POS_LEFT_TOP,
+			    at: POS_LEFT_BOTTOM,
 			});
 			$(".display-filter-popup-item").click(function(){
 			    HU.hidePopupObject();
@@ -12356,7 +12356,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:false,record: record});
 		},
 		position: {
-		    my: _this.getTooltipPositionMy("left top"),
+		    my: _this.getTooltipPositionMy(POS_LEFT_TOP),
 		    at: _this.getTooltipPositionAt("left bottom+2"),
 		    collision: _this.getTooltipCollision("flip")
 		},
@@ -12426,7 +12426,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    popup.show();
 	    popup.position({
 		of: element,
-		my: _this.getProperty("popupPositionMy", "left top"),
+		my: _this.getProperty("popupPositionMy", POS_LEFT_TOP),
 		at: _this.getProperty("popupPositionAt", "left bottom+2"),
 		collision: _this.getProperty("popupCollision", "none none")
 	    });
@@ -12516,13 +12516,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html =this.getProperty('dialogHook')('contents',html);
 	    }
 
-	    let at = 'left bottom';
+	    let at = POS_LEFT_BOTTOM;
 	    if(!from && this.jq(ID_MENU_BUTTON).length) {
 		from=this.jq(ID_MENU_BUTTON);
 	    }
 	    if(!from) {
 		from=this.jq(ID_DISPLAY_CONTENTS);
-		at = 'left top';
+		at = POS_LEFT_TOP;
 	    }
 
 	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from,at:at,draggable:true,header:true});
@@ -14797,8 +14797,8 @@ function DisplayManager(argId, argProperties) {
 						     this.dialog = HU.makeDialog({
 							 content:html,
 							 title:"Displays",
-							 my:"left top",
-							 at:"left bottom",
+							 my:POS_LEFT_TOP,
+							 at:POS_LEFT_BOTTOM,
 							 anchor:_this.jq(ID_MENU_BUTTON)});
 						     _this.jq(ID_MENU_INNER).superfish({
 							 //Don't set animation - it is broke on safari
@@ -19418,7 +19418,7 @@ function RecordFilter(display,filterFieldId, properties) {
 							     CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 							     CSS_PADDING,HU.px(5))], html);
 			    _this.suggestDialog =
-				HU.makeDialog({content:html,my:'left top',at:'left bottom',anchor:input});
+				HU.makeDialog({content:html,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:input});
 			    _this.suggestDialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 				_this.suggestDialog.remove();
 				_this.suggestDialog=null;
@@ -25611,7 +25611,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let imgAttrs = [ATTR_STYLE,imageStyle,
 				ATTR_TITLE,galleryLabel,
 				ATTR_ID,base+"image" + rowIdx,
-				ATTR_LOADING,"lazy"];
+				ATTR_LOADING,LOADING_LAZY];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
 		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
@@ -26119,7 +26119,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,[ATTR_LOADING,'lazy',
+			strip += HU.div([],HU.image(url,[ATTR_LOADING,LOADING_LAZY,
 							 ATTR_TITLE,tt,
 							 ATTR_WIDTH,width,
 							 ATTR_CLASS,clazz,
@@ -26954,8 +26954,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
                     edit.css('z-index', '9999');
                     edit.position({
                         of: src,
-                        my: "left top",
-                        at: "left top",
+                        my: POS_LEFT_TOP,
+                        at: POS_LEFT_TOP,
                         collision: "none none"
                     });
                     theDisplay.jq(ID_TEXT).html("");
@@ -28938,7 +28938,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         showNotebookMenu: function() {
             var link = this.jq("toolbar_notebook");
-            this.makeMenu(link, "left bottom");
+            this.makeMenu(link, POS_LEFT_BOTTOM);
         },
         makeButton: function(id, icon, title, command) {
             if (!command) command = "noop";
@@ -28954,7 +28954,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!HU.isVisible(src)) {
                 src = this.output;
             }
-            if (!at) at = "left top";
+            if (!at) at = POS_LEFT_TOP;
             let _this = this;
             let space = SPACE2;
             let menu = "";
@@ -29012,7 +29012,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             popup.show();
             popup.position({
                 of: src,
-                my: "left top",
+                my: POS_LEFT_TOP,
                 at: at,
                 collision: "fit fit"
             });
@@ -29195,8 +29195,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             popup.position({
                 of: src,
-                my: "left top",
-                at: "left top",
+                my: POS_LEFT_TOP,
+                at: POS_LEFT_TOP,
                 collision: "fit fit"
             });
             popup.find(".ramadda-link").click(function() {
@@ -29912,7 +29912,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 msg.show();
                 msg.position({
                     of: this.getOutput(),
-                    my: "left top",
+                    my: POS_LEFT_TOP,
                     at: "left+4 top+4",
                     collision: "none none"
                 });
@@ -35229,7 +35229,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 					      ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    link = link.replace(/"/g,"'");
 		    let imageUrl =entry.getImageUrl();
-                    let img = HU.image(imageUrl, [ATTR_LOADING,"lazy",
+                    let img = HU.image(imageUrl, [ATTR_LOADING,LOADING_LAZY,
 						  ATTR_WIDTH, HU.perc(100),
 						  ATTR_ID, this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(),
@@ -35711,11 +35711,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 this.hideEntryDetails(entryId);
                 return;
             }
-            let myloc = 'right top';
-            let atloc = 'right bottom';
+            let myloc = POS_RIGHT_TOP;
+            let atloc = POS_RIGHT_BOTTOM;
             if (leftAlign) {
-                myloc = 'left top';
-                atloc = 'left bottom';
+                myloc = POS_LEFT_TOP;
+                atloc = POS_LEFT_BOTTOM;
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
@@ -38875,14 +38875,14 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 _this.gridPopup.show();
                 _this.gridPopup.position({
                     of: $(this),
-                    at: "left bottom",
-                    my: "left top",
+                    at: POS_LEFT_BOTTOM,
+                    my: POS_LEFT_TOP,
                     collision: "none none"
                 });
                 _this.gridPopup.position({
                     of: $(this),
-                    my: "left top",
-                    at: "left bottom",
+                    my: POS_LEFT_TOP,
+                    at: POS_LEFT_BOTTOM,
                     collision: "none none"
                 });
             });
@@ -40347,7 +40347,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
-						 my:'left top',at:'left bottom',anchor:button});
+						 my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:button});
 	    _this.regionsDialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 		let region = MapUtils.regions[+$(this).attr(ATTR_IDX)];
 		_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
@@ -43165,8 +43165,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 		let dialog = HU.makeDialog({content:html,
-					    my:'left top',
-					    at:'left bottom',
+					    my:POS_LEFT_TOP,
+					    at:POS_LEFT_BOTTOM,
 					    anchor:$(this),
 					    decorate:true,
 					    draggable:false,
@@ -47678,7 +47678,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',
-					header:true,my:'left top',at:'left bottom',
+					header:true,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 					anchor:this.jq(ID_MENU_NEW)});
 	    let message = 'New Route';
 	    let ok = ()=>{
@@ -47912,8 +47912,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					title:'Select Isoline Type',
 					draggable:true,
 					header:true,
-					my:'left top',
-					at:'left bottom',
+					my:POS_LEFT_TOP,
+					at:POS_LEFT_BOTTOM,
 					anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
@@ -48165,8 +48165,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let dialog = HU.makeDialog({content:html,
 						header:false,
 						anchor:widget,
-						my:'left top',
-						at:'left bottom'});
+						my:POS_LEFT_TOP,
+						at:POS_LEFT_BOTTOM});
 		    let _this = this;
 		    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 			let loc = data.result[$(this).attr(ATTR_INDEX)];
@@ -48518,7 +48518,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let dialog = this.mapServerDialog =
 		    HU.makeDialog({remove:false,content:html,title:'Map Server',
-				   header:true,my:'left top',at:'left bottom',
+				   header:true,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 				   draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
 		dialog.remove= () =>{
@@ -48844,7 +48844,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,
-					     my:'left top',at:'left bottom',
+					     my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 					     draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
 		let closeDialog = () =>{
@@ -50654,7 +50654,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',
 						draggable:true,header:true,
-						anchor:$(this),my:"left top",at:"left bottom"});
+						anchor:$(this),my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM});
 		    let output = dialog.find('.pathoutput');
 		    let image = dialog.find('.theimage');
 		    let canvas;
@@ -50780,7 +50780,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).focus(function() {
 		let id = $(this).attr(ATTR_ID);
 		let bar = _this.makeColorBar(id);
-		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
+		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM});
 		dialog.find('.ramadda-color-select').click(function(){
 		    let c = $(this).attr(ATTR_COLOR);
 		    let id = $(this).attr(ATTR_WIDGET_ID);
@@ -51396,7 +51396,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					      CSS_MARGIN,HU.px(10))],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
-					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
+					my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,draggable:true,anchor:anchor});
 
 	    this.initSideHelp(dialog);
 	    this.initLevelRangeSlider();	    
@@ -56824,8 +56824,8 @@ MapGlyph.prototype = {
 	this.jq('legendimage').tooltip({
 	    show: { delay: 500 },
 	    position: {
-		my: 'left top',
-		at:'right top',
+		my: POS_LEFT_TOP,
+		at:POS_RIGHT_TOP,
 		collision: "flipfit"
 	    },
 	    content: function() {
@@ -57039,7 +57039,7 @@ MapGlyph.prototype = {
 											CSS_MARGIN_RIGHT,HU.px(20))],
 								     _this.makeLabel(obj.property,true)+' Legend'),
 							header:true,
-							my:"left top",at:"left bottom",
+							my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 							draggable:true,anchor:$(this)});
 			    HU.initPageSearch('.display-colortable-dot-item',null,'Search',false,{target:'#'+ searchId}); 
 
@@ -57525,8 +57525,8 @@ MapGlyph.prototype = {
 					 CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	this.jq(ID_COLORTABLE).click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
-					     my:'left top',
-					     at:'left bottom',
+					     my:POS_LEFT_TOP,
+					     at:POS_LEFT_BOTTOM,
 					     anchor:$(this)});
 	    colorSelect.find(TAG_IMG).click(function() {
 		_this.currentColorbar = $(this).attr('colorbar');
@@ -58034,8 +58034,8 @@ MapGlyph.prototype = {
 	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], html);
 	this.featuresTableDialog =
 	    HU.makeDialog({content:html,title:this.name,header:true,draggable:true,
-			   my:'left top',
-			   at:'left bottom',
+			   my:POS_LEFT_TOP,
+			   at:POS_LEFT_BOTTOM,
 			   anchor:anchor});
 	
 	this.updateFeaturesTable();
@@ -61918,7 +61918,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		div.show();
 		div.position({
                     of: $(this),
-                    my: "left top",
+                    my: POS_LEFT_TOP,
                     at: "left bottom+2",
                     collision: "none none"
 		});
@@ -62557,7 +62557,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    }
 		    if(f.getType()=="image") {
 			let url = record.getValue(f.getIndex());
-			sv = HU.image(url,[ATTR_LOADING,'lazy',
+			sv = HU.image(url,[ATTR_LOADING,LOADING_LAZY,
 					   ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(150))]);
 		    }
 
