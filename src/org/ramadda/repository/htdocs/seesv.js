@@ -303,7 +303,7 @@ function  SeesvForm(inputId, entry,params) {
 
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],html);
 
-		let dialog = HU.makeDialog({content:html,my:'right top',at:'right bottom',
+		let dialog = HU.makeDialog({content:html,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM,
 					    anchor:$(this),draggable:true,header:true,inPlace:false});
 		HU.onReturnEvent('#' + _this.domId(ID_MAXROWS),input=>{
 	 	    _this.maxRows = input.val();
@@ -477,7 +477,7 @@ function  SeesvForm(inputId, entry,params) {
 	    if(_this.menuDialog) {
 		_this.menuDialog.remove();
 	    }
-	    args = $.extend({my:all?'right top':'left top',at:all?'right bottom':'left bottom',
+	    args = $.extend({my:all?POS_RIGHT_TOP:POS_LEFT_TOP,at:all?POS_RIGHT_BOTTOM:POS_LEFT_BOTTOM,
 			     content:menu,
 			     anchor:anchor,
 			     header:true,
@@ -1640,13 +1640,13 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 
 	    let target = anchor;
-	    let at = "left bottom";
+	    let at = POS_LEFT_BOTTOM;
 	    if(opts.event) {
 		at = "left " + "top+" + (opts.event.offsetY+10);
 		target = $(opts.event.target);
 	    }
 	    inner = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], inner);
-	    let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
+	    let dialog =   HU.makeDialog({content:inner,my:POS_LEFT_TOP,at:at,anchor:target,draggable:true,header:true,inPlace:false});
 
 	    dialog.find("add").addClass(CLASS_CLICKABLE).click(function() {
 		let contents = $(this).html();
@@ -1675,7 +1675,7 @@ function  SeesvForm(inputId, entry,params) {
 		html+=inner;
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(400),
 						 CSS_MARGIN,HU.px(5))], html);
-		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
+		let popup =   HU.makeDialog({content:html,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:$(this)});
 		HU.initPageSearch('#'+contentDiv+' ' +HU.dotClass(CLASS_CLICKABLE),
 				  null,'Search',null,{target:jqid(searchDiv)});
 		popup.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {

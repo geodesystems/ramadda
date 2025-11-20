@@ -171,7 +171,7 @@ function DisplayAnimation(display, enabled,attrs) {
 			_this.tooltip.show();
 			_this.tooltip.position({
 			    of: e.target,
-			    my: "left top",
+			    my: POS_LEFT_TOP,
 			    at: "left+" + e.offsetX +" bottom",
 			    collision: "fit fit"
 			});

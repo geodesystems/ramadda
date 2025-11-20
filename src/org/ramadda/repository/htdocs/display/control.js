@@ -672,8 +672,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
                     edit.css('z-index', '9999');
                     edit.position({
                         of: src,
-                        my: "left top",
-                        at: "left top",
+                        my: POS_LEFT_TOP,
+                        at: POS_LEFT_TOP,
                         collision: "none none"
                     });
                     theDisplay.jq(ID_TEXT).html("");

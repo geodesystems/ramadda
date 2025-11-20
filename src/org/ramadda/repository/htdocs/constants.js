@@ -44,6 +44,7 @@ var ARG_FILE='file';
 var ARG_MAPBOUNDS='map_bounds';
 var ARG_NAME='name';
 var ARG_ENTRYID='entryid';
+var ARG_GROUP='group';
 var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';
 var ARG_ELEMENT='element';
@@ -51,6 +52,10 @@ var ARG_RESPONSE='response';
 var ARG_TYPE='type';
 var ARG_TEXT='text';
 
+var ICON_TOGGLE_CLOSED='fas fa-plus-square';
+var ICON_TOGGLE_OPEN='fas fa-minus-square';
+
+var ICON_SEARCH='fa-magnifying-glass';
 var ICON_CLOSE = 'fas fa-window-close';
 var ICON_STOP='fas fa-stop';
 var ICON_PLAY='fas fa-play';
@@ -332,6 +337,13 @@ var ALIGN_BOTTOM='bottom';
 var ALIGN_LEFT ='left';
 var ALIGN_RIGHT ='right';
 
+
+
+
+var POS_LEFT_TOP='left top';
+var POS_LEFT_BOTTOM='left bottom';
+var POS_RIGHT_TOP='right top';
+var POS_RIGHT_BOTTOM='right bottom';
 
 var POS_TOP='top';
 var POS_LEFT='left';

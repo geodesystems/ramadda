@@ -579,8 +579,8 @@ function DisplayManager(argId, argProperties) {
 						     this.dialog = HU.makeDialog({
 							 content:html,
 							 title:"Displays",
-							 my:"left top",
-							 at:"left bottom",
+							 my:POS_LEFT_TOP,
+							 at:POS_LEFT_BOTTOM,
 							 anchor:_this.jq(ID_MENU_BUTTON)});
 						     _this.jq(ID_MENU_INNER).superfish({
 							 //Don't set animation - it is broke on safari

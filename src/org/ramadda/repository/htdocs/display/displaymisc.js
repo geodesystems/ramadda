@@ -937,7 +937,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		div.show();
 		div.position({
                     of: $(this),
-                    my: "left top",
+                    my: POS_LEFT_TOP,
                     at: "left bottom+2",
                     collision: "none none"
 		});
@@ -1576,7 +1576,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    }
 		    if(f.getType()=="image") {
 			let url = record.getValue(f.getIndex());
-			sv = HU.image(url,[ATTR_LOADING,'lazy',
+			sv = HU.image(url,[ATTR_LOADING,LOADING_LAZY,
 					   ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(150))]);
 		    }
 

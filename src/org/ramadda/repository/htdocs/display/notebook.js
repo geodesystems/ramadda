@@ -1272,7 +1272,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         showNotebookMenu: function() {
             var link = this.jq("toolbar_notebook");
-            this.makeMenu(link, "left bottom");
+            this.makeMenu(link, POS_LEFT_BOTTOM);
         },
         makeButton: function(id, icon, title, command) {
             if (!command) command = "noop";
@@ -1288,7 +1288,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!HU.isVisible(src)) {
                 src = this.output;
             }
-            if (!at) at = "left top";
+            if (!at) at = POS_LEFT_TOP;
             let _this = this;
             let space = SPACE2;
             let menu = "";
@@ -1346,7 +1346,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             popup.show();
             popup.position({
                 of: src,
-                my: "left top",
+                my: POS_LEFT_TOP,
                 at: at,
                 collision: "fit fit"
             });
@@ -1529,8 +1529,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             popup.position({
                 of: src,
-                my: "left top",
-                at: "left top",
+                my: POS_LEFT_TOP,
+                at: POS_LEFT_TOP,
                 collision: "fit fit"
             });
             popup.find(".ramadda-link").click(function() {
@@ -2246,7 +2246,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 msg.show();
                 msg.position({
                     of: this.getOutput(),
-                    my: "left top",
+                    my: POS_LEFT_TOP,
                     at: "left+4 top+4",
                     collision: "none none"
                 });

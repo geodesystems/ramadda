@@ -102,7 +102,7 @@ RamaddaCanvas.prototype = {
 		menu +=line;
 	    });
 	    menu = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4))],menu);
-            _this.dialog = HU.makeDialog({content:menu,my:"left top",at:"left bottom",anchor:$(this)});
+            _this.dialog = HU.makeDialog({content:menu,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:$(this)});
 	    _this.dialog.find(HU.dotClass(CLASS_HOVERABLE)).mouseenter(function(){
 		let glyph = _this.glyphs[+$(this).attr('idx')];
 		glyph.highlight = true;

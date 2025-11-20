@@ -561,8 +561,8 @@ function DisplayThing(argId, argProperties) {
         popup: function(srcId, popupId, srcObj, popup) {
             popup = popup || jqid(popupId);
             let src = srcObj || jqid(srcId);
-            let myalign = 'left top';
-            let atalign = 'left bottom';
+            let myalign = POS_LEFT_TOP;
+            let atalign = POS_LEFT_BOTTOM;
             popup.show();
 	    //	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
             popup.position({
@@ -1843,7 +1843,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipEffect',d:'fadeIn'},
 	{p:'tooltipDuration',d:500},	
 	{p:'tooltipImmediate',d:false,ex:'true',tt:'Show tooltip immediately'},	
-	{p:'tooltipPositionMy',ex:'left top'},
+	{p:'tooltipPositionMy',ex:POS_LEFT_TOP},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
 	{p:'tooltipShowUnit',d:true,ex:'false'},
@@ -5315,7 +5315,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let toolbar = jqid(toolbarId);
                 toolbar.show();
                 let myalign = 'right top+1';
-                let atalign = 'right top';
+                let atalign = POS_RIGHT_TOP;
                 let srcId = theDisplay.getDomId(ID_DETAILS_MAIN + domEntryId);
                 toolbar.position({
                     of: jqid(srcId),
@@ -7057,7 +7057,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		popup.position({
 		    of: min,
-		    my: "left top",
+		    my: POS_LEFT_TOP,
 		    at: "left bottom+2",
 		    collision: "fit fit"
                 });
@@ -7741,8 +7741,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			popup.show();
 			popup.position({
 			    of: $(this),
-			    my: "left top",
-			    at: "left bottom",
+			    my: POS_LEFT_TOP,
+			    at: POS_LEFT_BOTTOM,
 			});
 			$(".display-filter-popup-item").click(function(){
 			    HU.hidePopupObject();
@@ -8081,7 +8081,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:false,record: record});
 		},
 		position: {
-		    my: _this.getTooltipPositionMy("left top"),
+		    my: _this.getTooltipPositionMy(POS_LEFT_TOP),
 		    at: _this.getTooltipPositionAt("left bottom+2"),
 		    collision: _this.getTooltipCollision("flip")
 		},
@@ -8151,7 +8151,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    popup.show();
 	    popup.position({
 		of: element,
-		my: _this.getProperty("popupPositionMy", "left top"),
+		my: _this.getProperty("popupPositionMy", POS_LEFT_TOP),
 		at: _this.getProperty("popupPositionAt", "left bottom+2"),
 		collision: _this.getProperty("popupCollision", "none none")
 	    });
@@ -8241,13 +8241,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html =this.getProperty('dialogHook')('contents',html);
 	    }
 
-	    let at = 'left bottom';
+	    let at = POS_LEFT_BOTTOM;
 	    if(!from && this.jq(ID_MENU_BUTTON).length) {
 		from=this.jq(ID_MENU_BUTTON);
 	    }
 	    if(!from) {
 		from=this.jq(ID_DISPLAY_CONTENTS);
-		at = 'left top';
+		at = POS_LEFT_TOP;
 	    }
 
 	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from,at:at,draggable:true,header:true});

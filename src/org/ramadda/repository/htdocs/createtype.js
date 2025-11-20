@@ -60,8 +60,8 @@ var CreateType  = {
 	    html+=HU.div([ATTR_CLASS,clazz,
 			  ATTR_DATA_ACTION,'delete'],'Delete rows');		
 	    let dialog =  HU.makeDialog({anchor:widget,
-					 at:'left bottom',
-					 my:'left top',
+					 at:POS_LEFT_BOTTOM,
+					 my:POS_LEFT_TOP,
 					 content:html});
 	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 		let action = $(this).attr(ATTR_DATA_ACTION);
@@ -120,7 +120,7 @@ var CreateType  = {
 			   ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(this),
 					 at:'left+100 top+100',
-					 my:'left top',
+					 my:POS_LEFT_TOP,
 					 content:html,
 					 title:'Bulk upload',
 					 header:true,

@@ -549,7 +549,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 buttons);
 	    html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',
-					header:true,my:'left top',at:'left bottom',
+					header:true,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 					anchor:this.jq(ID_MENU_NEW)});
 	    let message = 'New Route';
 	    let ok = ()=>{
@@ -783,8 +783,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					title:'Select Isoline Type',
 					draggable:true,
 					header:true,
-					my:'left top',
-					at:'left bottom',
+					my:POS_LEFT_TOP,
+					at:POS_LEFT_BOTTOM,
 					anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
@@ -1036,8 +1036,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let dialog = HU.makeDialog({content:html,
 						header:false,
 						anchor:widget,
-						my:'left top',
-						at:'left bottom'});
+						my:POS_LEFT_TOP,
+						at:POS_LEFT_BOTTOM});
 		    let _this = this;
 		    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 			let loc = data.result[$(this).attr(ATTR_INDEX)];
@@ -1389,7 +1389,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let dialog = this.mapServerDialog =
 		    HU.makeDialog({remove:false,content:html,title:'Map Server',
-				   header:true,my:'left top',at:'left bottom',
+				   header:true,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 				   draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
 		dialog.remove= () =>{
@@ -1715,7 +1715,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,
-					     my:'left top',at:'left bottom',
+					     my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 					     draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
 		let closeDialog = () =>{
@@ -3525,7 +3525,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',
 						draggable:true,header:true,
-						anchor:$(this),my:"left top",at:"left bottom"});
+						anchor:$(this),my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM});
 		    let output = dialog.find('.pathoutput');
 		    let image = dialog.find('.theimage');
 		    let canvas;
@@ -3651,7 +3651,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).focus(function() {
 		let id = $(this).attr(ATTR_ID);
 		let bar = _this.makeColorBar(id);
-		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
+		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM});
 		dialog.find('.ramadda-color-select').click(function(){
 		    let c = $(this).attr(ATTR_COLOR);
 		    let id = $(this).attr(ATTR_WIDGET_ID);
@@ -4267,7 +4267,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					      CSS_MARGIN,HU.px(10))],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
-					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
+					my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,draggable:true,anchor:anchor});
 
 	    this.initSideHelp(dialog);
 	    this.initLevelRangeSlider();	    

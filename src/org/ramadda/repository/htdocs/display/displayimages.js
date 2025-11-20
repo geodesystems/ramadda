@@ -601,7 +601,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let imgAttrs = [ATTR_STYLE,imageStyle,
 				ATTR_TITLE,galleryLabel,
 				ATTR_ID,base+"image" + rowIdx,
-				ATTR_LOADING,"lazy"];
+				ATTR_LOADING,LOADING_LAZY];
 		if(width) imgAttrs.push(ATTR_WIDTH,width);
 		else if(height) imgAttrs.push(ATTR_HEIGHT,height);		
 		if(!Utils.stringDefined(image) &&!includeNonImages) return;
@@ -1109,7 +1109,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,[ATTR_LOADING,'lazy',
+			strip += HU.div([],HU.image(url,[ATTR_LOADING,LOADING_LAZY,
 							 ATTR_TITLE,tt,
 							 ATTR_WIDTH,width,
 							 ATTR_CLASS,clazz,

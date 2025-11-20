@@ -43,7 +43,7 @@ var RamaddaLicense =  {
 	    html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(window),
 					 at:'left+100 top+100',
-					 my:'left top',
+					 my:POS_LEFT_TOP,
 					 content:html,
 					 remove:false,modalStrict:true,sticky:true});
 

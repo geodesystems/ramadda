@@ -422,7 +422,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 					      ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    link = link.replace(/"/g,"'");
 		    let imageUrl =entry.getImageUrl();
-                    let img = HU.image(imageUrl, [ATTR_LOADING,"lazy",
+                    let img = HU.image(imageUrl, [ATTR_LOADING,LOADING_LAZY,
 						  ATTR_WIDTH, HU.perc(100),
 						  ATTR_ID, this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(),
@@ -904,11 +904,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 this.hideEntryDetails(entryId);
                 return;
             }
-            let myloc = 'right top';
-            let atloc = 'right bottom';
+            let myloc = POS_RIGHT_TOP;
+            let atloc = POS_RIGHT_BOTTOM;
             if (leftAlign) {
-                myloc = 'left top';
-                atloc = 'left bottom';
+                myloc = POS_LEFT_TOP;
+                atloc = POS_LEFT_BOTTOM;
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
@@ -4068,14 +4068,14 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 _this.gridPopup.show();
                 _this.gridPopup.position({
                     of: $(this),
-                    at: "left bottom",
-                    my: "left top",
+                    at: POS_LEFT_BOTTOM,
+                    my: POS_LEFT_TOP,
                     collision: "none none"
                 });
                 _this.gridPopup.position({
                     of: $(this),
-                    my: "left top",
-                    at: "left bottom",
+                    my: POS_LEFT_TOP,
+                    at: POS_LEFT_BOTTOM,
                     collision: "none none"
                 });
             });

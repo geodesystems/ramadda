@@ -573,7 +573,7 @@ function RecordFilter(display,filterFieldId, properties) {
 							     CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 							     CSS_PADDING,HU.px(5))], html);
 			    _this.suggestDialog =
-				HU.makeDialog({content:html,my:'left top',at:'left bottom',anchor:input});
+				HU.makeDialog({content:html,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:input});
 			    _this.suggestDialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 				_this.suggestDialog.remove();
 				_this.suggestDialog=null;

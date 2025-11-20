@@ -88,7 +88,7 @@ var Utils =  {
 	    html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(window),
 					 at:'left+100 top+100',
-					 my:'left top',
+					 my:POS_LEFT_TOP,
 					 content:html,
 					 remove:false,modalStrict:true,sticky:true});
 
@@ -548,7 +548,7 @@ var Utils =  {
 	    let html = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW,CSS_PADDING,HU.px(5))],
 			      'Ok, result is copied');
             let dialog = HU.makeDialog({content:html,anchor:$(this),
-					my:"right top",at:"right bottom"});
+					my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM});
 	    setTimeout(()=>{
 		dialog.hide(1000);
 		setTimeout(()=>{dialog.remove();},1100);
@@ -2313,8 +2313,7 @@ var Utils =  {
                                     attrs.push(ATTR_WIDTH);
                                     attrs.push(t.attrs[ATTR_WIDTH]||HU.perc(100));
                                 }
-                                attrs.push(ATTR_LOADING);
-                                attrs.push("lazy");
+                                attrs.push(ATTR_LOADING,LOADING_LAZY);
                                 let url = value;
                                 value = HU.image(url,attrs);
                                 if(t.attrs['doPopup']) {
@@ -3258,7 +3257,7 @@ var Utils =  {
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
         let icon = jqid(id);
-        let dialog = this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
+        let dialog = this.dialog = HU.makeDialog({content:html,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM,title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
         jqid(linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
         let input =jqid('popup_search_input');
         input.mousedown(function(evt) {
@@ -4444,7 +4443,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 let html = HU.div([ATTR_CLASS,"ramadda-search-popup",
 				   ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
 						     CSS_PADDING,HU.px(4))],suggest);
-                let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
+                let dialog = HU.makeDialog({content:html,my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:input});
                 dialog.find(".ramadda-suggest").click(function() {
                     HU.hidePopupObject();
                     input.val($(this).attr("suggest"));
@@ -5090,7 +5089,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let buttons = HU.buttons(buttonList);
 	let html = msg+HU.vspace() + buttons;
 	html = HU.div([ATTR_STYLE,opts.style??HU.css(CSS_PADDING,HU.px(5))],html);
-	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:opts.my??"left top",at:opts.at??"left bottom",
+	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:opts.my??POS_LEFT_TOP,at:opts.at??POS_LEFT_BOTTOM,
 				    title:opts.title,header:opts.header,draggable:opts.draggable});
 	dialog.find('.' + CLASS_CLICKABLE).button().click(function() {
 	    if($(this).attr(ATTR_ACTION)==ACTION_OK) {
@@ -5174,8 +5173,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    showCloseIcon:true,
 	    headerRight:null,
             remove:true,
-            my: "left top",
-            at: "left bottom",      
+            my: POS_LEFT_TOP,
+            at: POS_LEFT_BOTTOM,      
 	    animate:false,
 	    animateSpeed:300,
             title:"",
@@ -5284,7 +5283,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    return $(this).prop(ATTR_TITLE);
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
-		position: { my: 'left top', at: 'right top' }
+		position: { my: POS_LEFT_TOP, at: POS_RIGHT_TOP }
 	    });
 	}
 
@@ -5317,7 +5316,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    opts.animateSpeed = +opts.animateSpeed;
 	    popup.hide();
 	    if(opts.slideLeft) {
-		let at = 'right bottom';
+		let at = POS_RIGHT_BOTTOM;
 		popup.position({
                     of: opts.anchor,
                     my: opts.my,
@@ -5696,10 +5695,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let popup = HU.setPopupObject(jqid(id+"-popup"));
             let my,at;
             if(opts.align==ALIGN_RIGHT) {
-                my = "right top";
-                at = "right top";
+                my = POS_RIGHT_TOP;
+                at = POS_RIGHT_TOP;
             } else {
-                my = "left top";
+                my = POS_LEFT_TOP;
                 at = "right+5 top";
             }
             popup.show();

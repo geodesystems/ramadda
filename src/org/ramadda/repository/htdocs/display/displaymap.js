@@ -240,7 +240,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 					     CSS_MIN_WIDTH,HU.px(800))],html);
 	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
 						 draggable:true,header:true,
-						 my:'left top',at:'left bottom',anchor:button});
+						 my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,anchor:button});
 	    _this.regionsDialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function() {
 		let region = MapUtils.regions[+$(this).attr(ATTR_IDX)];
 		_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
@@ -3058,8 +3058,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 		let dialog = HU.makeDialog({content:html,
-					    my:'left top',
-					    at:'left bottom',
+					    my:POS_LEFT_TOP,
+					    at:POS_LEFT_BOTTOM,
 					    anchor:$(this),
 					    decorate:true,
 					    draggable:false,

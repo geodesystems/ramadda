@@ -2682,8 +2682,8 @@ MapGlyph.prototype = {
 	this.jq('legendimage').tooltip({
 	    show: { delay: 500 },
 	    position: {
-		my: 'left top',
-		at:'right top',
+		my: POS_LEFT_TOP,
+		at:POS_RIGHT_TOP,
 		collision: "flipfit"
 	    },
 	    content: function() {
@@ -2897,7 +2897,7 @@ MapGlyph.prototype = {
 											CSS_MARGIN_RIGHT,HU.px(20))],
 								     _this.makeLabel(obj.property,true)+' Legend'),
 							header:true,
-							my:"left top",at:"left bottom",
+							my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 							draggable:true,anchor:$(this)});
 			    HU.initPageSearch('.display-colortable-dot-item',null,'Search',false,{target:'#'+ searchId}); 
 
@@ -3383,8 +3383,8 @@ MapGlyph.prototype = {
 					 CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 	this.jq(ID_COLORTABLE).click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
-					     my:'left top',
-					     at:'left bottom',
+					     my:POS_LEFT_TOP,
+					     at:POS_LEFT_BOTTOM,
 					     anchor:$(this)});
 	    colorSelect.find(TAG_IMG).click(function() {
 		_this.currentColorbar = $(this).attr('colorbar');
@@ -3892,8 +3892,8 @@ MapGlyph.prototype = {
 	html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))], html);
 	this.featuresTableDialog =
 	    HU.makeDialog({content:html,title:this.name,header:true,draggable:true,
-			   my:'left top',
-			   at:'left bottom',
+			   my:POS_LEFT_TOP,
+			   at:POS_LEFT_BOTTOM,
 			   anchor:anchor});
 	
 	this.updateFeaturesTable();

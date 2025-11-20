@@ -2533,7 +2533,7 @@ RepositoryMap.prototype = {
                     return $(this).prop('title');
                 },
                 position: {
-                    my: "left top",
+                    my: POS_LEFT_TOP,
                     at: "left bottom+2"
                 },
                 classes: {
@@ -3554,8 +3554,8 @@ RepositoryMap.prototype = {
                     result += HU.div([ATTR_CLASS, "ramadda-map-loc",
 				      ATTR_NAME, "all"], "Show all");
                 }
-                let my = "left bottom";
-                let at = "left top";
+                let my = POS_LEFT_BOTTOM;
+                let at = POS_LEFT_TOP;
                 result += HU.closeTag(TAG_DIV);
                 searchPopup.html(result);
                 HU.setPopupObject(searchPopup);

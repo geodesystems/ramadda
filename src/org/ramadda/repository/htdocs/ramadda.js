@@ -73,10 +73,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    return;
 			}
 			let html  = data.message+HU.br()+HU.image(data.imageurl,[ATTR_WIDTH,HU.px(600)]);
-			let dialog =  HU.makeDialog({content:html,my:"left top",at:"left top",
+			let dialog =  HU.makeDialog({content:html,
+						     my:POS_LEFT_TOP,at:POS_LEFT_TOP,
 						     title:'',anchor:$(TAG_BODY),
 						     draggable:true,header:true,inPlace:false,stick:true});
-			//			alert(data.message);
 		    },
 		    error: function (err) {
 			alert("An error occurred creating entry: "  + err);
@@ -112,8 +112,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
 						     CSS_MAX_HEIGHT,HU.px(300),
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
-		    let dialog =  HU.makeDialog({content:html,my:"left top",at:"left bottom",
-						 title:title,anchor:this,draggable:true,header:true,inPlace:false,stick:true});
+		    let dialog =  HU.makeDialog({content:html,
+						 my:POS_LEFT_TOP,
+						 at:POS_LEFT_BOTTOM,
+						 title:title,
+						 anchor:this,
+						 draggable:true,
+						 header:true,
+						 inPlace:false,
+						 sticky:true});
 
 		    Utils.checkTabs(html);
 		}
@@ -1050,12 +1057,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_TITLE,'Click to show contents',
 				     ATTR_CLASS,HU.classes('entry-arrow',CLASS_CLICKABLE)], this.getToggleIcon(false)));
 
+
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
-			v = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId,
+			v = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId,
+				     'breadcrumbid',crumbId,
 				     ATTR_TITLE,'Show breadcrumbs',
 				     ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-breadcrumb-toggle') ],
-				    HU.getIconImage('fas fa-plus-square')) +SPACE2
+				    HU.getIconImage(ICON_TOGGLE_CLOSED)) +SPACE2
 			    + HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
 				       ATTR_ID,crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;') +v;
 		    }
@@ -1063,7 +1072,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showThumbnails && entry.getThumbnail()) {
 			v+= HU.br()+HU.div([ATTR_CLASS,'ramadda-thumbnail',
 					   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
-					  HU.image(entry.getThumbnail(),[ATTR_LOADING,'lazy',
+					  HU.image(entry.getThumbnail(),[ATTR_LOADING,LOADING_LAZY,
 									 ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-thumbnail-image'),
 									 ATTR_TITLE,'Click to enlarge',
 									 ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100)),
@@ -1199,7 +1208,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(true ||!props.inlineEdit) {
 	    html.find(HU.dotClass('entry-row')).tooltip({
 		show: { effect: 'slideDown', delay: 1500, duration: 300 },
-		position: { my: "right top", at: "right bottom" },
+		position: { my: POS_RIGHT_TOP, at: POS_RIGHT_BOTTOM },
 		content: function () {
 		    if($(this).hasClass('ramadda-edit-input')) return null;
 		    let title = $(this).attr(ATTR_TITLE);
@@ -1237,10 +1246,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = jqid(id);
 	    if(crumbs.css(CSS_DISPLAY)==DISPLAY_NONE) {
-		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-minus-square"));
+		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage(ICON_TOGGLE_OPEN));
 		crumbs.css(CSS_DISPLAY,DISPLAY_INLINE);
 	    } else {
-		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-plus-square"));
+		jqid('breadcrumbtoggle_' +id).html(HU.getIconImage(ICON_TOGGLE_CLOSED));
 		crumbs.css(CSS_DISPLAY,DISPLAY_NONE);
 	    }
 	});
@@ -1276,9 +1285,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(props.sortby) url=HU.url(url,[ARG_ORDERBY,props.sortby]);
 	    if(props.orderby) url=HU.url(url,[ARG_ORDERBY,props.orderby]);	    
 	    if(props.ascending) url=HU.url(url,[ARG_ASCENDING,props.ascending]);	    
-	    if(props.sortdir) {
-		url=HU.url(url,[ARG_ASCENDING,props.sortdir=='up']);
-	    }
+	    if(props.sortdir) url=HU.url(url,[ARG_ASCENDING,props.sortdir=='up']);
+	    if(props.showCrumbs) url=HU.url(url,["includecrumbs",true]);
             $.getJSON(url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
@@ -1340,14 +1348,19 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let src = $(this).attr(ATTR_SRC);	
 	    let url = $(this).attr('entry-url');
 	    let contents = HU.href(url,HU.image(src),[ATTR_TITLE,'Click to view entry']);
-	    HU.makeDialog({content:contents,my:'left top',at:'left bottom',anchor:this,header:true,draggable:true});
+	    HU.makeDialog({content:contents,
+			   my:POS_LEFT_TOP,
+			   at:POS_LEFT_BOTTOM,
+			   anchor:this,
+			   header:true,
+			   draggable:true});
 	});
 
 	container.find(HU.dotClass('ramadda-attachment')).tooltip({
 	    show: { effect: 'slideDown', delay: 500, duration: 1000 },
 	    content: function () {return $(this).prop(ATTR_TITLE);}});
 
-	let rows = container.find('.entry-list-row');
+	let rows = container.find(HU.dotClass('entry-list-row'));
 	rows.bind ('contextmenu', function(event) {
 	    let entryRow = $(this);
 	    let entry = entryMap[$(this).attr(ATTR_ENTRYID)];
@@ -1359,7 +1372,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let handleTooltip = function(request) {
 		let xmlDoc = request.responseXML.documentElement;
 		text = getChildText(xmlDoc);
-		HU.makeDialog({content:text,my:'left top',at:'left bottom',title:entry.getIconImage()+" "+entry.getName(),anchor:entryRow,header:true});
+		HU.makeDialog({content:text,
+			       my:POS_LEFT_TOP,
+			       at:POS_LEFT_BOTTOM,
+			       title:entry.getIconImage()+" "+entry.getName(),
+			       anchor:entryRow,
+			       header:true});
 	    }
             GuiUtils.loadXML(url, handleTooltip, this);
 	    if (event.preventDefault) {
@@ -1521,7 +1539,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let html = HU.div([ATTR_CLASS,"ramadda-search-popup",
 				   ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
 						     CSS_PADDING,HU.px(4))],suggest);
-		let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
+		let dialog = HU.makeDialog({content:html,
+					    my:POS_LEFT_TOP,
+					    at:POS_LEFT_BOTTOM,
+					    anchor:input});
 		dialog.find(".metadata-suggest").click(function() {
 		    HU.hidePopupObject();
 		    input.val($(this).attr("suggest"));
@@ -1780,9 +1801,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 	this.entryPopup =
-	    HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,
+	    HU.makeDialog({content:html,
+			   my:POS_LEFT_TOP,
+			   at:POS_LEFT_BOTTOM,
+			   title:label,
 			   rightSideTitle:extraLink,
-			   anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
+			   anchor:anchor,
+			   draggable:true,
+			   header:true,
+			   inPlace:false,
+			   headerRight:headerRight});    
     },
 
     initEntryListForm:function(formId) {
@@ -2239,8 +2267,8 @@ function Selector(event, selectorId, elementId, allEntries,
             this.div.show();
             this.div.position({
 		of: this.anchor,
-		my: this.props.locationMy??"left top",
-		at: this.props.locationAt??"left bottom",
+		my: this.props.locationMy??POS_LEFT_TOP,
+		at: this.props.locationAt??POS_LEFT_BOTTOM,
 		collision: this.props.collision??"fit fit"
             });
 	};

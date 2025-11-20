@@ -37,7 +37,7 @@ var Translate = {
 	    if(this.menuPopup)
 		this.menuPopup.remove();
 	    
-	    this.menuPopup = HU.makeDialog({content:html,anchor:menu,my:'right top',at:'right bottom'});
+	    this.menuPopup = HU.makeDialog({content:html,anchor:menu,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM});
 	    let _this = this;
 	    this.menuPopup.find('.ramadda-menu-language-switch').click(function() {
 		_this.switcherClicked($(this));
