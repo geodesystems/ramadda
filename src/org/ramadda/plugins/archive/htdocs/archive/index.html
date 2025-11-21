@@ -14,8 +14,19 @@ To set the entry order see the
 :p
 The Archive Gallery is a special purpose Folder that can contain both it's own children entries
 as well as a list of entries from elsewhere in your RAMADDA (e.g., Archive Items, etc.).
-See the <a href="{{root}}/userguide/virtualgroup.html">User Guide</a> for information
-on defining these linked entries.
+See the  User Guide section on
+<a href="{{root}}/userguide/virtualgroup.html">Virtual Entries</a> for information
+on defining these external entries.
+:p
+The defult gallery display sorts the children entries on
+entry order and then on name. There can be an issue in defining the sort order for entries that are remotely
+linked. If changing their entry order is not an issue then you can just set their entry order.
+However, if you can't set their entry order for the needs of the Gallery one workaround is to
+directly add a special Linked Entry entry to the Gallery. The Linked Entry has a reference to another entry
+(e.g. an Archive Item). It's default display is the import of the linked entry. 
+The Linked Entry entry can have its entry order set to the appropriate value for display in the Gallery.
+Any reference to a thumbnail image on the Linked Entry will reference the thumbnail image of the entry
+that is linked.
 :p
 The Gallery has a pre-defined display that, by default, shows the parent
 Archive Exhibit entry as the main section. It then displays the Gallery name

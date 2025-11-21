@@ -9,6 +9,7 @@ into some types.xml file
  super="type_virtual" 
  supercategory="General" 
  category="Archive" 
+childtypes="type_image,wikipage,type_linked"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
