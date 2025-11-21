@@ -6782,7 +6782,13 @@ public class TypeHandler extends RepositoryManager {
         return specialSearch;
     }
 
+    public Entry getLinkedEntry(Request request, Entry entry) {
+	return entry;
+    }
+
+
     public String getEntryName(Entry entry) {
+	System.err.println("getEntryName:" + entry);
         return entry.getName();
     }
 
