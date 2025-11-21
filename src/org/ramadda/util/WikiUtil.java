@@ -4566,29 +4566,29 @@ public class WikiUtil implements HtmlUtilsConstants {
                 TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JS,TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE,TYPE_XML
             };
             String   lookingForClose = null;
-	    boolean ifOk = true;
-	    boolean inIf = false;
+	    List<Boolean> ifStack =null;
+	    boolean currentIf=true;
+	    int inIf = 0;
             for (String line : lines) {
                 if (line.startsWith("+if")) {
                     List<String> toks = Utils.splitUpTo(line, " ", 2);
 		    String ifAttrs = toks.size()>1?toks.get(1):"";
-		    ifOk = wikiUtil.handler.ifBlockOk(wikiUtil, ifAttrs);
-		    inIf = true;
+		    if(ifStack==null) ifStack = new ArrayList<Boolean>();
+		    boolean ifOk = wikiUtil.handler.ifBlockOk(wikiUtil, ifAttrs);
+		    if(ifStack.size()>0) ifOk&=ifStack.get(ifStack.size()-1);
+		    ifStack.add(currentIf = ifOk);
 		    continue;
 		}
                 if (line.startsWith("-if")) {
-		    if(!inIf) {
+		    if(ifStack==null || ifStack.size()==0) {
 			//			wikiError(buff,"Error: no opening +if<br>");
 			continue;
 		    }
-		    inIf=false;
-		    ifOk=true;
+		    ifStack.remove(ifStack.size()-1);
+		    currentIf = ifStack.size()==0?true:ifStack.get(ifStack.size()-1);
 		    continue;
 		} 
-		if(inIf && !ifOk) continue;
-
-
-
+		if(!currentIf) continue;
 
                 int currentType = (chunk != null)
 		    ? chunk.type
