@@ -4108,7 +4108,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
 
 	if(Utils.stringDefined(initValue)) {
-	    HU.doPageSearch(initValue,select,parentSelect,opts.hideAll,opts);
+	    setTimeout(()=>{
+		HU.doPageSearch(initValue,select,parentSelect,opts.hideAll,opts);},500);
 	}
 
 
