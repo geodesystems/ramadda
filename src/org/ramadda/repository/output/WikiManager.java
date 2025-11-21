@@ -97,6 +97,9 @@ public class WikiManager extends RepositoryManager
     private static boolean debugGetEntries = false;
     private boolean debug1 = false;
 
+    private boolean debugSelect= false;
+
+    
     /** output type */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
 								"wiki.view",
@@ -702,6 +705,7 @@ public class WikiManager extends RepositoryManager
 	Request myRequest = request.cloneMe();
 
 	List<String> toks = Utils.split(string,";",true,true);
+	if(debugSelect) System.err.println("getSelectFromString: string:" + string+" toks:" +toks);
 	String orderBy = getProperty(wikiUtil,props,ARG_ORDERBY,null);
 	Boolean ascending = null;
 	String name=null;
@@ -722,8 +726,10 @@ public class WikiManager extends RepositoryManager
 		if(pair.size()>0) {
 		    //check for the case of, e.g. children:entryid
 		    String id = pair.get(0);
+		    if(debugSelect) System.err.println("\tId:" + id);
 		    Entry newEntry = findEntryFromId(request,  entry, wikiUtil, props, id);
 		    if(newEntry!=null) {
+			if(debugSelect) System.err.println("\tgot entry:" + newEntry);
 			entry=newEntry;
 			select.setEntry(entry);
 			continue;
@@ -736,6 +742,7 @@ public class WikiManager extends RepositoryManager
 
 	    String what = pair.get(0).trim();
 	    String value = pair.get(1).trim();		    
+	    if(debugSelect) System.err.println("\twhat:" + what +" value:" + value);
 	    //	    System.err.println("\twhat:" + what +"="+value);
 
 	    if(what.equals(ARG_TYPE)) {
@@ -851,14 +858,23 @@ public class WikiManager extends RepositoryManager
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
+
+
+
+	//	debugSelect= entryId.startsWith("child");
 	if((select = matches.call(entryId,ID_CHILD,PREFIX_CHILD))!=null) { 
+	    debugSelect= false;
 	    if(select.getEntry()==null) return null;
 	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select);
             if (children.size() > 0) {
+		if(select.getOrderBy()!=null) {
+		    children = getEntryUtil().sortEntriesOn(children, select.getOrderBy(),!select.getAscending());
+		}
                 return children.get(0);
             }
 	    return null;
 	}
+	debugSelect= false;
 
 
 	if((select = matches.call(entryId,ID_GRANDCHILD,PREFIX_GRANDCHILD))!=null) { 
@@ -7063,8 +7079,17 @@ public class WikiManager extends RepositoryManager
 		     final Hashtable props) {
 	return  (entryId,baseId,thePrefix)->{
 	    try {
-		if(baseId!=null && entryId.equals(baseId)) entryId = thePrefix;
+		if(debugSelect)
+		    System.err.println("idMatcher: entryID:" +entryId +" baseId:" + baseId +" prefix:" + thePrefix);
+		if(baseId!=null && entryId.equals(baseId)) {
+		    entryId = thePrefix;
+		    if(debugSelect)
+			System.err.println("\tentryId:" + entryId);
+		}
+
 		if(entryId.startsWith(thePrefix)) {
+		    if(debugSelect)
+			System.err.println("\tgetSelectFromString");
 		    return  getSelectFromString(request, entry, wikiUtil,
 						props,Utils.clip(entryId,thePrefix));
 		}
@@ -7635,6 +7660,7 @@ public class WikiManager extends RepositoryManager
         String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
                                         "none");
         String padding = getProperty(wikiUtil, props, "padding","10px");
+        String style = getProperty(wikiUtil, props, "style","");
         boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
                                        false);
         if (popup) {
@@ -7733,7 +7759,8 @@ public class WikiManager extends RepositoryManager
 		buff.append(HU.open("div",HU.attrs("class","image-outer search-component","entryid",child.getId())));
 		buff.append("<div class=\"image-inner\">");
 	    } else {
-		buff.append("<div style='padding:" + HU.makeDim(padding)+";'>");
+		style = "padding:" + HU.makeDim(padding)+";" + style;
+		HU.open(buff,"div",HU.attrs("style",style));
 	    }
             if (popup) {
 		String thePopupCaption = applyMacros(request, child,popupMacros,num);
@@ -8860,6 +8887,14 @@ public class WikiManager extends RepositoryManager
 		if(hasChildren.equals("true")) return children.size()>0;
 		else return children.size()==0;
 	    }
+
+	    String hasThumbnail = (String) props.get("hasthumbnail");
+	    if(hasThumbnail!=null) {
+		List<String> urls = new ArrayList<String>();
+		getMetadataManager().getThumbnailUrls(request, entry, urls);
+		if(hasThumbnail.equals("true")) return urls.size()>0;
+		else return urls.size()==0;
+	    }	    
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
