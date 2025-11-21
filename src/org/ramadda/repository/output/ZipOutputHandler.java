@@ -444,7 +444,6 @@ public class ZipOutputHandler extends OutputHandler {
             if (entry.isGroup() && recurse) {
 		SelectInfo info = new SelectInfo(request, entry,isSynthOk&&!forExport);
                 List<Entry> children = getEntryManager().getChildren(request, entry,info);
-		System.err.println("entry:" + entry +" "+ children);
                 String path = entry.getName();
                 if (prefix.length() > 0) {
                     path = prefix + "/" + path;
