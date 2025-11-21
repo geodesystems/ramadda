@@ -7663,6 +7663,8 @@ public class WikiManager extends RepositoryManager
         String style = getProperty(wikiUtil, props, "style","");
         boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
                                        false);
+	boolean showPlaceholderImage = getProperty(wikiUtil,props,"showPlaceholderImage",true);
+	boolean showNonImages = getProperty(wikiUtil,props,"showNonImages",false);
         if (popup) {
             addImagePopupJS(request, wikiUtil, sb, props);
         }
@@ -7727,10 +7729,16 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    if(url==null) {
-		continue;
+		if(!showNonImages) continue;
 	    }
-            if (serverImageWidth > 0) {
-                url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
+
+	    if(url==null && showPlaceholderImage) {
+		url = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
+	    }
+
+
+            if (url!=null && serverImageWidth > 0) {
+                url = HU.url(url,ARG_IMAGEWIDTH,""+serverImageWidth);
             }
 
             String extra = "";
@@ -7750,7 +7758,7 @@ public class WikiManager extends RepositoryManager
             }
             extra = extra + HU.attr("id", idPrefix + "img" + num) +
 		HU.attrs("loading","lazy","style",imageStyle);
-            String img = HU.img(url, "", extra);
+            String img = url==null?"":HU.img(url, "", extra);
 	    //	    if(imageStyle!=null) {img = HU.div(img,HU.attrs("style",imageStyle)); }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
