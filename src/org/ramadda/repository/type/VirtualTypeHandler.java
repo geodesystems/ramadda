@@ -91,6 +91,11 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         return true;
     }
 
+    @Override
+    public boolean isSynthTypeButHasRealEntries() {
+	return true;
+    }
+
     private String debugLine(String s) {
 	String debugLine = s.replace("\\"," ").replaceAll("(\n|\r)"," ");
 	return  Utils.clip(debugLine,50,"...");

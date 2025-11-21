@@ -1514,6 +1514,11 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
+    public boolean isSynthTypeButHasRealEntries() {
+	return false;
+    }
+
+
     public List<Entry> getSynthEntryTreeForCopy(Request request, Entry entry) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	SelectInfo info = new SelectInfo(request, entry);
