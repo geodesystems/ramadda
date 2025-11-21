@@ -744,11 +744,12 @@ public class MetadataManager extends RepositoryManager {
     }
 
     public void getFullThumbnailUrls(Request request, Entry entry,
-				     List<String[]> urls,boolean checkParent,boolean...mustBeInherited)
+				     List<String[]> urls,
+				     boolean checkParent,
+				     boolean...mustBeInherited)
             throws Exception {
 	int size = urls.size();
-
-        for (Metadata metadata : getMetadata(request,entry)) {
+        for (Metadata metadata : getMetadata(request,entry.getTypeHandler().getLinkedEntry(request, entry))) {
 	    if(mustBeInherited!=null && mustBeInherited.length>0 && mustBeInherited[0]) {
 		if(!metadata.getInherited()) continue;
 	    }
