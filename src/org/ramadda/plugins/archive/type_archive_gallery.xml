@@ -35,6 +35,9 @@ into some types.xml file
 -col
 +col-6
 {{gallery  width="90%" columns="2"   popup="true"  useThumbnail="false" 
+orderby="entryorder,name"
+
+showNonImages=true
  decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
 -col
 -row
