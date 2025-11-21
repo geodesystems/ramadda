@@ -309,7 +309,7 @@ ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-headi
 ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
-    margin-top:0.5em;
+    margin-top:5px;
     text-align: center;
 }
 
@@ -921,8 +921,24 @@ i.fa, i.fas,i.fab {
     line-height:1.5em;
     overflow-x:overlay;
     max-width:100%;
+    width:100%;
     white-space: nowrap;
     color: var(--nav-color);
+}
+
+.ramadda-links-inner-simple {
+    margin-left:5px;
+    line-height:1.5em;
+    max-width:100%;
+    color: var(--nav-color);
+}    
+
+.ramadda-links-inner-simple .ramadda-li {
+    width:100%;
+}
+
+.ramadda-links-inner-simple .ramadda-li:hover {
+    background:var(--highlight-background);
 }
 
 .ramadda-showmore {
