@@ -8517,6 +8517,14 @@ public class EntryManager extends RepositoryManager {
 	if(debug)
 	    getLogManager().logSpecial("EntryManager.getChildIds:" + group);
 
+	if (!select.getSyntheticOk() &&
+	    group.getTypeHandler().isSynthType()  &&
+	    group.getTypeHandler().isSynthTypeButHasRealEntries()) {
+	    List<String> ids = getChildIdsFromDatabase(request,   group, null);
+	    return ids;
+	}
+
+
         if (group.getTypeHandler().isSynthType() || isSynthEntry) {
             List<String> ids       = new ArrayList<String>();
 	    if(!select.getSyntheticOk()) {
