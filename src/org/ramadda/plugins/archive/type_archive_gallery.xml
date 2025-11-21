@@ -1,0 +1,61 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_gallery.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_gallery" 
+ description="Archive Exhibit Gallery" 
+ handler="org.ramadda.repository.type.VirtualTypeHandler" 
+ super="type_virtual" 
+ supercategory="General" 
+ category="Archive" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/archive/gallery.png" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="{{name entry=ancestor:type:type_archive_exhibit}}"
+{{description wikify=true entry=ancestor:type:type_archive_exhibit}}
++row
++col-3
++div style="border:1px solid #ccc;padding:10px;padding-left:0px;min-height:80vh;"
+{{links  #target="link target" entry="parent" orderby="entryorder,name" innerClass="ramadda-links-inner-simple"}} 
+-div
+-col
++col-9
++div style="border:1px solid #ccc;padding:10px;padding-top:0px;"
+:heading {{name link=true }}
++if haschildren=true  
++row tight=true
++col-6
+{{image  useThumbnail=true showCaption=true width="90%"   popup="true"  inDiv="true"    align="center" }}
+{{description wikify=true}}
+-col
++col-6
+{{gallery  width="90%" columns="2"   popup="true"  useThumbnail="false" 
+ decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
+-col
+-row
+-if
++if haschildren=false
++if hasthumbnail=true
++row
++col-6
+{{image   useThumbnail=true showCaption=true   width="90%"   popup="true"  inDiv="true"    align="left" }}
+-col
++col-6
+{{description wikify=true}}
+-col
+-row
+-if
++if hasthumbnail=false
+{{description wikify=true}}
+-if
+-if
+-div
+-col
+-row
+-section]]></wiki>
+</type>
