@@ -6788,7 +6788,6 @@ public class TypeHandler extends RepositoryManager {
 
 
     public String getEntryName(Entry entry) {
-	System.err.println("getEntryName:" + entry);
         return entry.getName();
     }
 
