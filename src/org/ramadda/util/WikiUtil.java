@@ -510,7 +510,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
-        int                  olCnt           = 0;
+	int                  olCnt           = 0;
         StringBuffer         buff            = new StringBuffer();
         StringBuilder        js              = new StringBuilder("\n");
 
@@ -3298,8 +3298,14 @@ public class WikiUtil implements HtmlUtilsConstants {
                         }
                     }
 		    if(doCheckbox) {
+			String id = "";
+			if(Misc.equals(getWikiProperty("checklistActive"),"true")) {
+			    id  ="checklist_" + Utils.makeID(tline);
+			}
 			//			buff.append("<li class='ramadda-bullet'> ");
-			buff.append(HU.div(HU.labeledCheckbox("", "true", checkboxOn, tline)));
+			buff.append(HU.div(HU.labeledCheckbox("", "true", checkboxOn,
+							      HU.attrs("id",id,"class","ramadda-checklist"),
+							      tline)));
 		    } else {
 			buff.append("<li class='ramadda-bullet'> ");
 			buff.append(tline);
@@ -3348,6 +3354,9 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
+	if(Misc.equals(getWikiProperty("checklistActive"),"true")) {
+            HU.script(buff, "Utils.initChecklist();");
+	}
 
 	//Add the menus init calls
 	for(String menuId:menuIds) {

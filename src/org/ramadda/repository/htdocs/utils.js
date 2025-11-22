@@ -269,12 +269,26 @@ var Utils =  {
 	    });
 	});
     },
+    initChecklist:function() {
+	$(HU.dotClass('ramadda-checklist')).each(function() {
+	    let id  =$(this).attr("id");
+	    let value = Utils.getLocalStorage(id,false,true);
+	    if(Utils.isDefined(value)) {
+		value = Utils.getProperty(value);
+                $(this).prop('checked',value);
+	    }
+	    $(this).change(function() {
+		let value = HU.isChecked($(this));
+		Utils.setLocalStorage(id, value,false,true);
+	    });
+	});
+    },
     initPage: function() {
 	
         this.initContent();
         this.pageLoaded = true;
         this.initDisplays();
-	HU.initTooltip('.ramadda-tooltip-element');
+	HU.initTooltip(HU.dotClass('ramadda-tooltip-element'));
         document.onmousemove = Utils.handleMouseMove;
         document.onmousedown = Utils.handleMouseDown;
         document.onmouseup = Utils.handleMouseUp;
@@ -314,6 +328,7 @@ var Utils =  {
             return null;
         }
     },
+
     setLocalStorage: function(key, value, fromJson,addPrefix) {
 	if(!localStorage) return;
 	try {
