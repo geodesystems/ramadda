@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 
@@ -20,18 +19,14 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  */
 @SuppressWarnings("unchecked")
 public class HeaderPointFile extends CsvFile {
-
 
     /**
      * ctor
@@ -44,16 +39,6 @@ public class HeaderPointFile extends CsvFile {
         super(path);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
@@ -96,7 +81,6 @@ public class HeaderPointFile extends CsvFile {
                 String missing = Misc.getProperty(props,
                                      fieldId + ".missing", (String) null);
 
-
                 fields.add(makeField(fieldId, (missing != null)
                         ? attrMissing(missing)
                         : "", attrLabel(label),
@@ -121,11 +105,6 @@ public class HeaderPointFile extends CsvFile {
         return visitInfo;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         PointFile.test(args, HeaderPointFile.class);
     }

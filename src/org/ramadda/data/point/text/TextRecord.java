@@ -5,12 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
-
 import org.ramadda.data.point.*;
-
 import org.ramadda.data.record.*;
 
 import org.ramadda.util.NamedChannel;
@@ -32,138 +29,58 @@ import java.nio.channels.*;
 
 import java.text.SimpleDateFormat;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /** This is generated code from generate.tcl. Do not edit it! */
 public class TextRecord extends DataRecord {
-
     public static final boolean debugDate = false;
-
-
-    /** _more_ */
-    public static final int ATTR_FIRST =
-        org.ramadda.data.point.PointRecord.ATTR_LAST;
-
-    /** _more_ */
+    public static final int ATTR_FIRST =   org.ramadda.data.point.PointRecord.ATTR_LAST;
     private SimpleDateFormat yearFormat = Utils.makeDateFormat("yyyy-MM");
     private SimpleDateFormat sdf;
-
-
-
-    /** _more_ */
     private String delimiter = ",";
-
-    /** _more_ */
     private boolean delimiterIsSpace = false;
-
-    /** _more_ */
     private boolean delimiterIsSpaces = false;
-
-    /** _more_ */
     private boolean delimiterIsCommasOrSpaces = false;
-
-    /** _more_ */
     protected String firstDataLine = null;
-
-
-    /** _more_ */
     private String[] tokens;
-
-    /** _more_ */
     private int[] indices;
-
-    /** _more_ */
     private boolean[] rawOK;
-
-
-    /** _more_ */
     private Date baseDate;
-
-    /** _more_ */
     private String baseDateString;
-
-    /** _more_ */
     private TextReader textReader;
-
-    /** _more_ */
     private int[] fixedWidth = null;
-
-    /** _more_ */
     private String currentLine = "";
-
-    /** _more_ */
     private boolean bePickyAboutTokens = true;
-
-    /** _more_ */
     private boolean lineWrap = false;
-
-    /** _more_ */
     private boolean matchUpColumns = false;
-
-    /**  */
     private StringTokenizer tokenizer;
-
-    /**  */
     private List<String> tokenList = new ArrayList<String>();
-
     private boolean cleanInput = false;
-
-    /** _more_ */
     private int badCnt = 0;
-
     private int dateErrorCnt;
     private int doubleErrorCnt=0;    
-    /**
-     * _more_
-     */
+
     public TextRecord() {}
 
-
-    /**
-     * _more_
-     *
-     * @param that _more_
-     */
     public TextRecord(TextRecord that) {
         super(that);
         tokens  = null;
         indices = null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fields _more_
-     */
     public TextRecord(RecordFile file, List<RecordField> fields) {
         super(file, fields);
         initFields(fields);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
     public TextRecord(RecordFile file) {
         super(file);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param dummyBigEndian _more_
-     */
     public TextRecord(RecordFile file, boolean dummyBigEndian) {
         this(file);
     }
@@ -172,11 +89,6 @@ public class TextRecord extends DataRecord {
 	cleanInput = v;
     }
 
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     */
     @Override
     public void initFields(List<RecordField> fields) {
         super.initFields(fields);
@@ -187,7 +99,6 @@ public class TextRecord extends DataRecord {
             RecordField field = fields.get(i);
             //            System.err.println("  field:" + i +" " + field.getName());
         }
-
 
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
@@ -222,21 +133,10 @@ public class TextRecord extends DataRecord {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String[] getTokens() {
         return tokens;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLine() {
         return currentLine;
     }
@@ -263,15 +163,9 @@ public class TextRecord extends DataRecord {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getFileDelimiter() {
         return delimiter;
     }
-
 
     /**
      *  Get the Delimiter property.
@@ -282,28 +176,11 @@ public class TextRecord extends DataRecord {
         return delimiter;
     }
 
-
-
-
-
-
-
-
-
     private void debugLine(String s){
 	s = s.replace("\n","_N");
 	System.err.println(s+"******");
     }
 
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String readNextLine(RecordIO recordIO) throws Exception {
         boolean debug = false;
         if (textReader == null) {
@@ -345,30 +222,10 @@ public class TextRecord extends DataRecord {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     public boolean isLineValidData(String line) {
         return ((TextFile) getRecordFile()).isLineValidData(line);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
         String line = null;
@@ -396,7 +253,7 @@ public class TextRecord extends DataRecord {
 
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,tokenizer);
-	    
+
                     toks = ((TextFile) getRecordFile()).processTokens(this,
                             toks, true);
                     rawOK = new boolean[toks.size()];
@@ -426,7 +283,6 @@ public class TextRecord extends DataRecord {
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }
-
 
             if (delimiterIsSpace || (fixedWidth != null)) {
                 if ( !split(recordIO, line, fields)) {
@@ -494,7 +350,7 @@ public class TextRecord extends DataRecord {
                     throw new IllegalArgumentException(msg.toString());
                 }
                 int targetIdx = 0;
- 
+
 		for (int i = 0; (i < toks.size()) && (i < tokens.length); i++) {
                     if ((rawOK != null) && !rawOK[i]) {
                         //                        System.err.println(" raw not ok");
@@ -532,7 +388,6 @@ public class TextRecord extends DataRecord {
                 if (synthetic[fieldCnt]) {
                     continue;
                 }
-
 
                 if (indices[tokenCnt] >= 0) {
                     tok = tokens[indices[tokenCnt]];
@@ -592,7 +447,6 @@ public class TextRecord extends DataRecord {
                         }
                     }
 
-
                     if (isMissingValue(field, dValue)) {
                         dValue = Double.NaN;
                     } else {
@@ -620,19 +474,6 @@ public class TextRecord extends DataRecord {
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param field _more_
-     * @param tok _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Date parseDate(RecordField field, String tok) throws Exception {
 	boolean debug = debugDate;
         tok = tok.trim();
@@ -657,7 +498,6 @@ public class TextRecord extends DataRecord {
                 && unit.equals("s since 1970-01-01 00:00:00.000 UTC")) {
             sfmt = "sss";
         }
-
 
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
@@ -744,15 +584,6 @@ public class TextRecord extends DataRecord {
         return date;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param field _more_
-     *
-     * @return _more_
-     */
     private MyDateFormat getDateFormat(RecordField field) {
         MyDateFormat sdf = field.getDateFormat();
         if (sdf == null) {
@@ -763,13 +594,6 @@ public class TextRecord extends DataRecord {
         return sdf;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param station _more_
-     */
     public void setLocation(Station station) {
         this.setLocation(station.getLongitude(), station.getLatitude(),
                          station.getElevation());
@@ -785,15 +609,6 @@ public class TextRecord extends DataRecord {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     public boolean lineOk(String line) {
         if ((line.length() == 0) || line.startsWith("#")) {
             return false;
@@ -802,40 +617,13 @@ public class TextRecord extends DataRecord {
         return true;
     }
 
-
-
-    /** _more_ */
     boolean testing = false;
 
-    /**
-     * _more_
-     *
-     *
-     * @param recordIO _more_
-     * @param sourceString _more_
-     * @param fields _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     int xcnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     * @param sourceString _more_
-     * @param fields _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean split(RecordIO recordIO, String sourceString,
                          List<RecordField> fields)
             throws Exception {
-
 
         if (tokens == null) {
             testing = true;
@@ -1004,7 +792,6 @@ public class TextRecord extends DataRecord {
             return true;
         }
 
-
         if (bePickyAboutTokens && (numTokensRead != tokens.length)) {
             badCnt++;
             //Handle the goofy point cloud text file that occasionally has a single number
@@ -1025,16 +812,10 @@ public class TextRecord extends DataRecord {
 
         return true;
 
-
     }
 
-
-    /** _more_ */
     private boolean convertedXYZToLatLonAlt = false;
 
-    /**
-     * _more_
-     */
     public void convertXYZToLatLonAlt() {
         convertedXYZToLatLonAlt = true;
         if (idxX >= 0) {
@@ -1048,15 +829,6 @@ public class TextRecord extends DataRecord {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         TextRecord record = new TextRecord();
         record.setDelimiter(",");
@@ -1066,15 +838,6 @@ public class TextRecord extends DataRecord {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param pw _more_
-     *
-     * @return _more_
-     */
     public int doPrintCsvHeader(VisitInfo visitInfo, PrintWriter pw) {
         int superCnt = super.doPrintCsvHeader(visitInfo, pw);
         int myCnt    = 0;
@@ -1114,15 +877,6 @@ public class TextRecord extends DataRecord {
         return fields.size() + superCnt;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param buff _more_
-     *
-     * @throws Exception _more_
-     */
     public void print(Appendable buff) throws Exception {
         super.print(buff);
         for (int i = 0; i < fields.size(); i++) {
@@ -1134,43 +888,21 @@ public class TextRecord extends DataRecord {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param picky _more_
-     */
     public void setBePickyAboutTokens(boolean picky) {
         bePickyAboutTokens = picky;
     }
 
-    /**
-     * _more_
-     *
-     * @param b _more_
-     */
     public void setLineWrap(boolean b) {
         lineWrap = b;
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     */
     public void setFirstDataLine(String line) {
         firstDataLine = line;
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
     public void setMatchUpColumns(boolean v) {
         matchUpColumns = v;
     }
-
 
     /**
      * Set the BaseDate property.
@@ -1184,8 +916,6 @@ public class TextRecord extends DataRecord {
         }
     }
 
-
-
     /**
      * Get the BaseDate property.
      *
@@ -1194,8 +924,5 @@ public class TextRecord extends DataRecord {
     public Date getBaseDate() {
         return baseDate;
     }
-
-
-
 
 }

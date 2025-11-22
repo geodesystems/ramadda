@@ -16,7 +16,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
@@ -24,32 +23,20 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  * CSV file supports any form of column delimited files - comma, tab, space, etc
- *
  */
 @SuppressWarnings("unchecked")
 public class CsvFile extends TextFile {
 
-
     public static final String DELIMITER_SPACE = "space";
     public static final String DELIMITER_SPACES = "spaces";    
 
-
     boolean debug             = false;
     boolean debugCsvFile      = false;    
-
-    /** column delimiter */
     private String delimiter = null;
-
-
-    /**  */
     private boolean hasCsvCommands = false;
-
-    /**  */
     private boolean hasAddHeader = false;
-
     static int fcnt = 0;
 
     /**
@@ -57,7 +44,6 @@ public class CsvFile extends TextFile {
      */
     public CsvFile() {
     }
-
 
     /**
      * ctor
@@ -79,20 +65,10 @@ public class CsvFile extends TextFile {
         super(path, properties);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param context _more_
-     * @param properties _more_
-     */
     public CsvFile(IO.Path path, RecordFileContext context,
                    Hashtable properties) {
         super(path, context, properties);
     }
-
-
-
 
     private String convertCsvCommands(String cmd) {
 	if(cmd==null) return null;
@@ -104,13 +80,6 @@ public class CsvFile extends TextFile {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<String> getCsvCommands() throws Exception {
         List<String>  args      = new ArrayList<String>();
         StringBuilder commands  = new StringBuilder();
@@ -151,29 +120,10 @@ public class CsvFile extends TextFile {
         return args;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean shouldCreateCsvFile() {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fos _more_
-     * @param buffered _more_
-     * @param commands _more_
-     *
-     * @throws Exception _more_
-     */
     protected void doCreateCsvFile(File file, OutputStream fos,
                                    boolean buffered, List<String> commands)
             throws Exception {
@@ -196,7 +146,6 @@ public class CsvFile extends TextFile {
         fos.close();
     }
 
-
     public InputStream applySeesv(Entry entry, String[] seesvArgs) throws Exception {
 	File file = getCacheFile();
 	synchronized(this) {
@@ -213,17 +162,6 @@ public class CsvFile extends TextFile {
 	return new FileInputStream(file);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param buffered _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         List<String> commands     = getCsvCommands();
         boolean      shouldCreate = shouldCreateCsvFile();
@@ -245,7 +183,6 @@ public class CsvFile extends TextFile {
 
             return super.doMakeInputStream(buffered);
         }
-
 
         hasAddHeader = commands.contains("-addheader");
         if (debug) {
@@ -295,29 +232,11 @@ public class CsvFile extends TextFile {
         return new BufferedInputStream(new FileInputStream(file));
     }
 
-    /**
-     * _more_
-     *
-     * @param csvUtil _more_
-     * @param buffered _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public InputStream doMakeInputStream(Seesv csvUtil, boolean buffered)
             throws Exception {
         return super.doMakeInputStream(buffered);
     }
 
-    /**
-     * _more_
-     *
-     * @param csvUtil _more_
-     * @param buffered _more_
-     *
-     * @throws Exception _more_
-     */
     public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
 	InputStream inputStream =doMakeInputStream(csvUtil, buffered);
@@ -330,14 +249,6 @@ public class CsvFile extends TextFile {
 	return commands;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     *
-     * @return _more_
-     */
     public boolean canLoad(String filename) {
         String f = filename.toLowerCase();
         //A hack to not include lidar coordinate txt files
@@ -370,13 +281,6 @@ public class CsvFile extends TextFile {
         return super.isCapable(action);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDelimiter() {
         if (delimiter == null) {
             delimiter = getProperty(PROP_DELIMITER, ",");
@@ -392,10 +296,6 @@ public class CsvFile extends TextFile {
         return delimiter;
     }
 
-
-    /**
-     * _more_
-     */
     public void initAfterClone() {
         super.initAfterClone();
         delimiter = null;
@@ -435,14 +335,6 @@ public class CsvFile extends TextFile {
         return  getProperty(PROP_FIELDS, null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param failureOk _more_
-     *
-     * @return _more_
-     */
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getFieldsProperty();
@@ -487,13 +379,6 @@ public class CsvFile extends TextFile {
         return doMakeFields(fieldString);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param visitInfo _more_
-     * @return _more_
-     */
     @Override
     public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields());
@@ -512,21 +397,12 @@ public class CsvFile extends TextFile {
         return record;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception on badness
-     */
     public static void main(String[] args) throws Exception {
         if (true) {
             PointFile.test(args, CsvFile.class);
 
             return;
         }
-
 
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
             String arg = args[argIdx]
@@ -566,10 +442,5 @@ public class CsvFile extends TextFile {
             }
         }
     }
-
-
-
-
-
 
 }

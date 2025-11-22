@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
@@ -19,14 +18,10 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
-
-
 
 /**
  * Class description
@@ -39,43 +34,22 @@ public class MultiMonthRecord extends TextRecord {
 
     // 1948 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90
 
-    /** _more_ */
     private MyDateFormat sdf;
 
-    /** _more_ */
     List<String> toks;
 
-    /** _more_ */
     List<String> noDataLines = new ArrayList<String>();
 
-    /** _more_ */
     int currentMonth;
 
-    /** _more_ */
     double missingValue = 0;
 
-    /** _more_ */
     private List<RecordField> fields;
 
-    /**
-     * _more_
-     *
-     * @param that _more_
-     */
     public MultiMonthRecord(MultiMonthRecord that) {
         super(that);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param shortName _more_
-     * @param longName _more_
-     * @param unit _more_
-     * @param missingValue _more_
-     */
     public MultiMonthRecord(MultiMonthFile file, String shortName,
                             String longName, String unit,
                             double missingValue) {
@@ -99,34 +73,13 @@ public class MultiMonthRecord extends TextRecord {
         initFields(fields);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<RecordField> getFields() {
         return fields;
     }
 
-    /**
-     * _more_
-     */
     @Override
     public void checkIndices() {}
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     * @param howMany _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         RecordIO recordIO = visitInfo.getRecordIO();
@@ -140,15 +93,6 @@ public class MultiMonthRecord extends TextRecord {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
         if ((toks == null) || (currentMonth >= 12)) {
@@ -183,16 +127,8 @@ public class MultiMonthRecord extends TextRecord {
         return ReadStatus.OK;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean needsValidPosition() {
         return false;
     }
-
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -22,15 +21,10 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
 /**
  */
 public abstract class SingleSiteTextFile extends CsvFile {
 
-    /**
-     * _more_
-     */
     public SingleSiteTextFile() {}
 
     /**
@@ -42,18 +36,10 @@ public abstract class SingleSiteTextFile extends CsvFile {
         super(path);
     }
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
     public SingleSiteTextFile(IO.Path path, Hashtable properties)
             throws IOException {
         super(path, properties);
     }
-
 
     /**
      *  Since these are single station files don't do bounds, etc
@@ -72,6 +58,5 @@ public abstract class SingleSiteTextFile extends CsvFile {
 
         return super.isCapable(action);
     }
-
 
 }

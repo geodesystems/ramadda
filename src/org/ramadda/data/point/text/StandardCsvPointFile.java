@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
@@ -23,15 +22,11 @@ import java.util.List;
 
 import javax.swing.*;
 
-
 /**
  *
  */
 public abstract class StandardCsvPointFile extends TextFile {
 
-    /**
-     * _more_
-     */
     public StandardCsvPointFile() {}
 
     /**
@@ -44,39 +39,17 @@ public abstract class StandardCsvPointFile extends TextFile {
         super(path);
     }
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
     public StandardCsvPointFile(IO.Path path, Hashtable properties)
             throws IOException {
         //        super(filename, properties);
         System.err.println("STD");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param context _more_
-     * @param properties _more_
-     */
     public StandardCsvPointFile(IO.Path path, RecordFileContext context,
                                 Hashtable properties) {
         super(path, context, properties);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isHeaderStandard() {
         return true;
     }

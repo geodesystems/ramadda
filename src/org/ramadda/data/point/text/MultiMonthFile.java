@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -22,22 +21,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-
-
 /**
  */
 public class MultiMonthFile extends CsvFile {
 
-    /** _more_ */
     String varName = null;
 
-    /** _more_ */
     String varDesc = null;
 
-    /** _more_ */
     double missing = -99.9;
 
-    /** _more_ */
     String unit = "";
 
     /**
@@ -68,11 +61,6 @@ public class MultiMonthFile extends CsvFile {
         this.missing = missing;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<RecordField> doMakeFields() {
         MultiMonthRecord record = new MultiMonthRecord(this, varName,
                                       varDesc, unit, missing);
@@ -80,14 +68,6 @@ public class MultiMonthFile extends CsvFile {
         return record.getFields();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
     public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         MultiMonthRecord record = new MultiMonthRecord(this, varName,
                                       varDesc, unit, missing);
@@ -96,17 +76,6 @@ public class MultiMonthFile extends CsvFile {
         return record;
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     * @param howMany _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
@@ -115,11 +84,6 @@ public class MultiMonthFile extends CsvFile {
         return mmr.skip(visitInfo, record, howMany);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         PointFile.test(args, MultiMonthFile.class);
     }

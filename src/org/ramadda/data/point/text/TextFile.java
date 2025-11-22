@@ -5,14 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -28,112 +26,42 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.List;
 
-
-/**
- *
- */
 public abstract class TextFile extends PointFile {
-
-    /** _more_ */
     static int cnt = 0;
-
-    /** _more_ */
     int mycnt = cnt++;
 
-    /** _more_ */
     public static final String PROP_FIELDS = "fields";
-
-
-    /** _more_ */
     public static final String DFLT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm Z";
-
-    /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
-
-    /** _more_ */
     public static final String PROP_DATEFORMAT = "dateformat";
-
-    /** _more_ */
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
-
-    /** _more_ */
     public static final String PROP_HEADER_STANDARD = "header.standard";
-
-    /** _more_ */
     public static final String PROP_DELIMITER = "delimiter";
-
-    /** _more_ */
     protected String firstDataLine = null;
-
-
-
-    /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
-
-
-
-    /** _more_ */
     private boolean headerStandard = false;
-
-    /**  */
     private boolean firstLineFields = false;
-
-    /** _more_ */
     String commentLineStart = null;
 
-
-    /**
-     * _more_
-     */
     public TextFile() {}
 
-    /**
-     * ctor
-     *
-     *
-     * @throws IOException _more_
-     */
     public TextFile(IO.Path path) throws IOException {
         super(path);
     }
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
     public TextFile(IO.Path path, Hashtable properties)
             throws IOException {
         super(path, properties);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param context _more_
-     * @param properties _more_
-     */
     public TextFile(IO.Path path, RecordFileContext context,
                     Hashtable properties) {
        super(path, context, properties);
     }
 
-    /** _more_ */
     private static Hashtable<String, String> fieldsMap =
         new Hashtable<String, String>();
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public String getFieldsFileContents(String path) throws IOException {
         String fields = fieldsMap.get(path);
         if (fields == null) {
@@ -145,13 +73,6 @@ public abstract class TextFile extends PointFile {
         return fields;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public String getFieldsFileContents() throws IOException {
         String path = getClass().getCanonicalName();
         path = path.replaceAll("\\.", "/");
@@ -161,140 +82,55 @@ public abstract class TextFile extends PointFile {
         return getFieldsFileContents(path);
     }
 
-
-    /**
-     *  Set the FirstLineFields property.
-     *
-     *  @param value The new value for FirstLineFields
-     */
     public void setFirstLineFields(boolean value) {
         firstLineFields = value;
     }
 
-    /**
-     *  Get the FirstLineFields property.
-     *
-     *  @return The FirstLineFields
-     */
     public boolean getFirstLineFields() {
         return getProperty("firstLineDefinesFields", firstLineFields);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
     public int getSkipLines(VisitInfo visitInfo) {
         int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
         return skipLines;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHeaderDelimiter() {
         return getProperty(PROP_HEADER_DELIMITER, (String) null);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isHeaderStandard() {
         return getProperty(PROP_HEADER_STANDARD, headerStandard);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
     public void setIsHeaderStandard(boolean v) {
         headerStandard = v;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean readHeader() {
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     *
-     */
     @Override
     public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
 
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @throws Exception _more_
-     */
     public void writeHeader(RecordIO recordIO) throws Exception {
         for (String line : headerLines) {
             recordIO.getPrintWriter().println(line);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getHeaderLines() {
         return headerLines;
     }
 
-    /**
-     * _more_
-     *
-     * @param record _more_
-     * @param toks _more_
-     * @param header _more_
-     *
-     * @return _more_
-     */
     public List<String> processTokens(TextRecord record, List<String> toks,
                                       boolean header) {
         return toks;
     }
 
-    /**
-     * _more_
-     *
-     * @param record _more_
-     * @param field _more_
-     * @param tok _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public double parseValue(TextRecord record, RecordField field, String tok)
             throws Exception {
         try {
@@ -325,16 +161,6 @@ public abstract class TextFile extends PointFile {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param siteId _more_
-     * @param record _more_
-     *
-     * @return _more_
-     */
     public Station setLocation(String siteId, TextRecord record) {
         Station station = setLocation(siteId);
         if (station != null) {
@@ -344,58 +170,23 @@ public abstract class TextFile extends PointFile {
         return station;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param lines _more_
-     */
     public void setHeaderLines(List<String> lines) {
         headerLines = lines;
     }
 
-    /**
-     * _more_
-     */
     public void initAfterClone() {
         super.initAfterClone();
         headerLines = new ArrayList<String>();
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     public boolean isHeaderLine(String line) {
 	if(commentLineStart==null)
 	    commentLineStart = getProperty("commentLineStart", "#");
         return line.startsWith(commentLineStart);
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     int xcnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
         boolean debug             = false;
@@ -466,7 +257,6 @@ public abstract class TextFile extends PointFile {
                     putProperty(PROP_FIELDS, fieldsLine);
 		    continue;
 		}
-
 
                 if ( !haveReadHeader) {
                     headerLines.add(line);
@@ -539,7 +329,6 @@ public abstract class TextFile extends PointFile {
 		    }
 		}
 
-
                 if ( !haveReadHeader) {
                     headerLines.add(line);
                 }
@@ -574,7 +363,7 @@ public abstract class TextFile extends PointFile {
                 }
                 skipCnt--;
             }
-	    
+
 	    if(theFieldRow<0) {
 		int idx = headerLines.size()+theFieldRow;
 		if(idx<0 || idx>=headerLines.size()) {
@@ -636,7 +425,7 @@ public abstract class TextFile extends PointFile {
 				isDate = Utils.isDate(sample);
 			    }
 			}
-			
+
 			if(!isDate) {
 			    //A hack for zip codes
 			    if(id.matches("(.*code.*)")) {
@@ -757,20 +546,12 @@ public abstract class TextFile extends PointFile {
             }
         }
 
-
         initProperties();
 
         return visitInfo;
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getTextHeader() {
         if (getHeaderLines().size() == 0) {
@@ -794,35 +575,16 @@ public abstract class TextFile extends PointFile {
         return textHeader.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     */
     public void putFields(String[] fields) {
         String f = makeFields(fields);
         putProperty(PROP_FIELDS, f);
     }
 
-    /**
-     *
-     * @param fields _more_
-     */
     public void putFields(List<String> fields) {
         String f = makeFields(fields);
         putProperty(PROP_FIELDS, f);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     public boolean isLineValidData(String line) {
         if ((commentLineStart != null) && line.startsWith(commentLineStart)) {
             return false;
@@ -831,14 +593,6 @@ public abstract class TextFile extends PointFile {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     *
-     * @return _more_
-     */
     public String makeFields(String[] fields) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < fields.length; i++) {
@@ -854,13 +608,6 @@ public abstract class TextFile extends PointFile {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     *
-     * @return _more_
-     */
     public String makeFields(List<String> fields) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < fields.size(); i++) {
@@ -876,16 +623,6 @@ public abstract class TextFile extends PointFile {
         return sb.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     */
     public static String makeField(String id, String... attrs) {
         StringBuffer asb = new StringBuffer();
         for (String attr : attrs) {
@@ -898,30 +635,10 @@ public abstract class TextFile extends PointFile {
         return id + "[" + asb + "]";
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public PointRecord getRecord(int index) throws Exception {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     * @param howMany _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
@@ -936,150 +653,56 @@ public abstract class TextFile extends PointFile {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public static String attrValue(double d) {
         return attrValue("" + d);
     }
 
-    /**
-     * _more_
-     *
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public static String attrSortOrder(int d) {
         return HtmlUtils.attr(ATTR_SORTORDER, "" + d);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrValue(String v) {
         return HtmlUtils.attr(ATTR_VALUE, v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     *
-     * @return _more_
-     */
     public static String attrPattern(String pattern) {
         return HtmlUtils.attr(ATTR_PATTERN, pattern);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param n _more_
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attr(String n, String v) {
         return HtmlUtils.attr(n, v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrType(String v) {
         return HtmlUtils.attr(ATTR_TYPE, v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrWidth(int v) {
         return HtmlUtils.attr("width", "" + v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrLabel(String v) {
         v = v.replaceAll(",", " ");
 
         return HtmlUtils.attr(ATTR_LABEL, v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrMissing(double v) {
         return HtmlUtils.attr(ATTR_MISSING, "" + v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrMissing(String v) {
         return HtmlUtils.attr(ATTR_MISSING, v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrFormat(String v) {
         return HtmlUtils.attr(ATTR_FORMAT, v);
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String attrUnit(String v) {
         return HtmlUtils.attr(ATTR_UNIT, v);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String attrChartable() {
         return HtmlUtils.attr(ATTR_CHARTABLE, "true");
     }
@@ -1088,11 +711,6 @@ public abstract class TextFile extends PointFile {
 	return attrSearchable(true);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String attrSearchable(boolean  value) {
         return HtmlUtils.attr(ATTR_SEARCHABLE, value+"");
     }
