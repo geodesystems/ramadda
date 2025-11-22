@@ -3280,6 +3280,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                     starCnt++;
                 }
                 if (starCnt > 0) {
+		    boolean doCheckbox =  tline.startsWith("+") || tline.startsWith("-");
+		    boolean checkboxOn = tline.startsWith("+");
+		    if(doCheckbox) tline = tline.substring(1);
                     if (starCnt > ulCnt) {
                         while (starCnt > ulCnt) {
 			    if(ulCnt==0)
@@ -3294,11 +3297,15 @@ public class WikiUtil implements HtmlUtilsConstants {
                             ulCnt--;
                         }
                     }
-                    buff.append("<li class='ramadda-bullet'> ");
-                    buff.append(tline);
-                    buff.append("</li> ");
+		    if(doCheckbox) {
+			//			buff.append("<li class='ramadda-bullet'> ");
+			buff.append(HU.div(HU.labeledCheckbox("", "true", checkboxOn, tline)));
+		    } else {
+			buff.append("<li class='ramadda-bullet'> ");
+			buff.append(tline);
+			buff.append("</li> ");
+		    }
                     buff.append("\n");
-
                     continue;
                 }
                 while (ulCnt > 0) {
