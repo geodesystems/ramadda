@@ -675,7 +675,9 @@ public class PageHandler extends RepositoryManager {
 		String w= getWikiManager().wikifyEntry(request, sourceEntry, mtd.getAttr1());
 		headerSB.append(w);
 	    }
-	    HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
+	    pageHeader = 
+		HU.div(headerSB.toString(),HU.clazz("ramadda-header-floating"));
+	    //HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
 	}
 	
 
