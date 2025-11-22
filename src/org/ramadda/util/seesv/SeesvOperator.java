@@ -258,7 +258,10 @@ public class SeesvOperator {
         if (s.equals("")) {
             return 0;
         }
-
+	//check for unexpanded macro
+	if(s.indexOf("${")>=0) {
+	    return Double.NaN;
+	}
 	try {
 	    return Double.parseDouble(s);
 	} catch(NumberFormatException nfe) {
