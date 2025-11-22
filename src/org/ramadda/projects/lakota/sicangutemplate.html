@@ -33,24 +33,12 @@ ${imports}
 .ramadda-nav-left {
      top:110px;
 }
-.sicangu-pageheader {
-    line-height:0.8em;
-    position:absolute;
-    top:10px;
-    right:20px;
-    font-size: min(2vw, 80%);
-    padding:0px;
-}
-
 .sicangu-title {
     font-size: min(2vw, 120%);
 }
 .sicangu-title a {
     color:#fff;
 }
-
-
-
 .ramadda-user-menu i {
     color:#fff;
 }
@@ -108,8 +96,7 @@ ${headfinal}
 <img class="ramadda-logo-image"  src="${root}/scc/scclogo.png" style="width:var(--sicangu-logo-width);">
 </a>
 </div>
-
-<div class="sicangu-pageheader">${pageheader}</div>
+${pageheader}
 <div class="sicangu-title"
      style="position:absolute;left: 50%;transform: translateX(-50%);xleft:var(--sicangu-logo-width);xmargin-left:20px;bottom:0px;">
 <a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
