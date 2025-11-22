@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.point.text;
 
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.type.Column;
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
@@ -72,6 +74,24 @@ public class CsvFile extends TextFile {
 
     private String convertCsvCommands(String cmd) {
 	if(cmd==null) return null;
+	Entry entry = (Entry) getProperty("entry");
+	if(entry!=null) {
+	    if(cmd.indexOf("${entry.name}")>=0) {
+		cmd = cmd.replace("{entry.name}",entry.getName());
+	    }
+	    List<Column> columns = entry.getTypeHandler().getColumns();
+	    if(columns!=null) {
+		Request request = (Request) getProperty("request");
+		for(Column column: columns) {
+		    String key = "${column:" + column.getName()+"}";
+		    if(cmd.indexOf(key)>=0) {
+			Object value = entry.getValue(request,column);
+			if(value==null) value="";
+			cmd = cmd.replace(key,value.toString());
+		    }
+		}
+	    }
+	}
 	if(cmd.indexOf("${latitude}")>=0) {
 	    cmd = cmd.replace("${latitude}",(String)getProperty("latitude","NaN"));
 	    cmd = cmd.replace("${longitude}",(String)getProperty("longitude","NaN"));		
