@@ -1992,6 +1992,8 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_CREATE = "create";
     public static final String ARG_SAVE = "save";        
     public static final String ARG_COMMENT = "comment";
+    public static final String ARG_EXTRA_XML = "extraxml";
+    public static final String ARG_EXTRA_OUTER_XML = "extraouterxml";
 
     public boolean createTypeOK(Request request) {
 	return !request.isAnonymous();
@@ -2077,7 +2079,8 @@ public class ExtEditor extends RepositoryManager {
 					  HU.attrs("size","30")) +
 				 " Optional. e.g., type_point. "+typeHelp));
 	List typesSel = new ArrayList();
-	for(String tuple:Utils.split("Default:---,TypeHandler - for basic types:TypeHandler,GenericTypeHandler - For columns:GenericTypeHandler,ExtensibleGroupTypeHandler - for columns with groups:ExtensibleGroupTypeHandler,PointTypeHandler - for point data:PointTypeHandler",",")) {
+	for(String tuple:
+		Utils.split("Default:---,Not defined:notdefined,TypeHandler - for basic types:TypeHandler,GenericTypeHandler - For columns:GenericTypeHandler,ExtensibleGroupTypeHandler - for columns with groups:ExtensibleGroupTypeHandler,PointTypeHandler - for point data:PointTypeHandler",",")) {
 	    typesSel.add(new HtmlUtils.Selector(tuple));
 	}
 
@@ -2133,7 +2136,10 @@ public class ExtEditor extends RepositoryManager {
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
 				     HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Extra XML:",
-		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
+		     HU.textArea(ARG_EXTRA_XML,request.getString(ARG_EXTRA_XML,""),4,50));
+	HU.formEntry(extra,"Extra Outer XML:",
+		     HU.textArea(ARG_EXTRA_OUTER_XML,
+				 request.getString(ARG_EXTRA_OUTER_XML,""),4,50));	
 
 	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Map Popup:",
@@ -2184,6 +2190,9 @@ public class ExtEditor extends RepositoryManager {
 	cols.append(HU.script(js.toString()));
 
 	StringBuilder admin = new StringBuilder();
+	Utils.append(admin,HU.div(HU.b("Extra Comment:")),
+		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
+
 	Utils.append(admin,HU.div(HU.b("Comment:")),
 		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
 
@@ -2416,13 +2425,16 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	sb.append(XmlUtil.comment(comment));
+	sb.append("<types>\n");
 	sb.append("<type ");
 	sb.append(XU.attrs("name",id));
 	sb.append("\n");
 	sb.append(XU.attrs("description",name));
 	sb.append("\n");
-	sb.append(XU.attrs("handler",handler));	
-	sb.append("\n");
+	if(!handler.equals("notdefined")) {
+	    sb.append(XU.attrs("handler",handler));	
+	    sb.append("\n");
+	}
 	if(request.defined("supertype")) {
 	    sb.append(XU.attr("super",superType));
 	    sb.append("\n");
@@ -2459,11 +2471,14 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append("]]></property>\n");
 	}
 
-	String extra = request.getString("extraxml","");
+	String extra = request.getString(ARG_EXTRA_XML,"");
 	if(Utils.stringDefined(extra)) {
 	    sb.append(extra.replace("\r\n","\n"));	    
 	    sb.append("\n");	    
 	}
+
+
+
 	sb.append(XU.comment("Properties"));
 	sb.append("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>\n");
 
@@ -2509,6 +2524,12 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	sb.append("</type>\n");
+	String extraOuter = request.getString(ARG_EXTRA_OUTER_XML,"");
+	if(Utils.stringDefined(extraOuter)) {
+	    sb.append(extraOuter.replace("\r\n","\n"));	    
+	    sb.append("\n");	    
+	}
+	sb.append("</types>\n");
 
 	Element root =null;
 	String xml = sb.toString();
