@@ -14,14 +14,8 @@ ${imports}
       --header-height:100px;
  }
 
-.kbocc-pageheader {
-    position:absolute;
-    top:10px;
-    left:50%;    
-    transform: translateX(-50%);
- }
-.ramadda-header-floating .ramadda-navbar, .kbocc-pageheader .ramadda-navbar {
-    font-size:80%;
+
+.ramadda-header-floating .ramadda-navbar {
     padding:2px;
     padding-left:6px;
     padding-right:6px;        
@@ -32,6 +26,8 @@ ${imports}
     text-align:center;
 }
 
+
+  
 .ramadda-logo-image {
     width:var(--kbocc-logo-width);
 }
@@ -50,7 +46,7 @@ ${headfinal}
 <a href="https://www.kbocc.edu/">
 <img class="ramadda-logo-image"  src="${root}/kbocc/kbocclogo.png" ></a>
 </div>
-<div class="kbocc-pageheader">${pageheader}</div>
+${pageheader}
 <div style="position:absolute;left:var(--kbocc-logo-width);margin-left:20px;bottom:0px;">
 <a href="/repository/a/kbocc" style="text-decoration:none;xccolor:#fff;font-size:130%">
 KBOCC RAMADDA Repository</a>
