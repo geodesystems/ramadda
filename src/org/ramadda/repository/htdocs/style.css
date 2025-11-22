@@ -1507,11 +1507,11 @@ a.ramadda-menubar-button:hover {
     position:relative;
 }
 
-
 .ramadda-header-floating {
+    font-size:75%;
     display:inline-block;
     z-index:1000;
-    position:fixed;
+    position:absolute;
     top:5px;
     right:8px;
 }
