@@ -2569,6 +2569,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             return null;
         }
         recordFile.putProperty("entry", entry);
+        recordFile.putProperty("request", request);	
+	
         if (numRecords < 0) {
             numRecords = recordFile.getNumRecords();
         }
