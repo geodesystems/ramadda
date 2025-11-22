@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -58,7 +58,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
     public RecordTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
 
@@ -96,12 +96,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         if (tag.equals("point_metadata")) {
             RecordOutputHandler outputHandler = getRecordOutputHandler();
             StringBuffer        sb            = new StringBuffer();
             outputHandler.getFormHandler().getEntryMetadata(request,
-                    outputHandler.doMakeEntry(request, entry), sb);
+							    outputHandler.doMakeEntry(request, entry), sb);
 
             return sb.toString();
         }
@@ -116,10 +116,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
     public void addToProcessingForm(Request request, Entry entry,
                                     Appendable sb)
-            throws Exception {}
+	throws Exception {}
 
     public boolean includedInRequest(Request request, RecordEntry recordEntry)
-            throws Exception {
+	throws Exception {
         return true;
     }
 
@@ -138,9 +138,9 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 tabTitles.add(msg("File Format"));
                 StringBuffer sb = new StringBuffer();
                 RecordEntry recordEntry = outputHandler.doMakeEntry(request,
-                                              entry);
+								    entry);
                 outputHandler.getFormHandler().getEntryMetadata(request,
-                        recordEntry, sb);
+								recordEntry, sb);
                 tabContents.add(sb.toString());
             }
         } catch (Exception exc) {
@@ -151,7 +151,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
     public void initializeRecordEntry(Entry entry, File originalFile,
                                       boolean force)
-            throws Exception {
+	throws Exception {
 
         if ( !force && anySuperTypesOfThisType()) {
             return;
@@ -186,7 +186,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String makePropertiesString(Hashtable properties) {
         StringBuffer sb = new StringBuffer();
         for (java.util.Enumeration keys = properties.keys();
-                keys.hasMoreElements(); ) {
+	     keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             sb.append(key);
             sb.append("=");
@@ -207,7 +207,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
     @Override
     public void initializeCopiedEntry(Entry entry, Entry originalEntry)
-            throws Exception {
+	throws Exception {
         super.initializeCopiedEntry(entry, originalEntry);
         initializeNewEntry(null, entry, NewType.COPY);
     }
@@ -267,7 +267,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
     public String getCacheFileName(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         String      suffix = "";
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
@@ -292,7 +292,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
     public final RecordFile doMakeRecordFile(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         Hashtable properties = getRecordProperties(entry);
 	if(entry.hasLocationDefined(request)) {
 	    properties.put("latitude",""+entry.getLatitude(request));
@@ -304,7 +304,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	}
 
         RecordFile recordFile = doMakeRecordFile(request, entry, properties,
-                                    request.getDefinedProperties());
+						 request.getDefinedProperties());
         if (recordFile == null) {
             return null;
         }
@@ -315,7 +315,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     protected RecordFile initRecordFile(Request request, Entry entry,
                                         Hashtable properties,
                                         RecordFile recordFile)
-            throws Exception {
+	throws Exception {
         if (okToCacheRecordFile(request, entry)) {
             String filename = getCacheFileName(request, entry);
 	    File file = getRepository().getEntryManager().getCacheFile(entry,filename);
@@ -377,8 +377,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
         if (debug) {
             System.err.println(
-                "RecordTypeHandler.getPathForRecordEntry entry:" + entry
-                + " path:" + thePath + " resource:" + entry.getResource());
+			       "RecordTypeHandler.getPathForRecordEntry entry:" + entry
+			       + " path:" + thePath + " resource:" + entry.getResource());
         }
         return path;
     }
@@ -401,12 +401,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
     public String convertPath(Request request, Entry entry, String path,
 			      Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
 
         if (debug) {
             System.err.println(
-                "RecordTypeHandler.convertPath entry:" + entry
-                + " path:" + path);
+			       "RecordTypeHandler.convertPath entry:" + entry
+			       + " path:" + path);
         }
 	if(path==null) return null;
         List<Macro> macros = getMacros(entry);
@@ -416,11 +416,11 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 //              System.err.println("macro:" + macro.name +" prop:" + prop);
                 if (prop == null) {
                     prop = (macro.dflt != null)
-                           ? macro.dflt
-                           : "";
+			? macro.dflt
+			: "";
                     if ((macro.dflt != null) && (macro.template != null)) {
                         List<String> dflts = Utils.split(macro.dflt, ",",
-                                                 true, true);
+							 true, true);
                         if (dflts.size() > 1) {
                             List<String> values = new ArrayList<String>();
                             for (String s : dflts) {
@@ -428,16 +428,16 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                 values.add(s);
                             }
                             prop = Utils.join(values,
-                                    (macro.delimiter != null)
-                                    ? macro.delimiter
-                                    : "");
+					      (macro.delimiter != null)
+					      ? macro.delimiter
+					      : "");
                             if (macro.multitemplate != null) {
                                 prop = macro.multitemplate.replace(
-                                    "${value}", prop.toString());
+								   "${value}", prop.toString());
                             }
                         } else if (dflts.size() == 1) {
                             prop = macro.template.replace("${value}",
-                                    prop.toString());
+							  prop.toString());
                         }
                     }
 
@@ -459,13 +459,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         //      System.err.println("Path:" + path);
         if (path.indexOf("${latitude}") >= 0) {
             if (Utils.stringDefined(
-                    (String) requestProperties.get("latitude"))) {
+				    (String) requestProperties.get("latitude"))) {
                 path = path.replace(
-                    "${latitude}",
-                    (String) requestProperties.get("latitude"));
+				    "${latitude}",
+				    (String) requestProperties.get("latitude"));
                 path = path.replace(
-                    "${longitude}",
-                    (String) requestProperties.get("longitude"));
+				    "${longitude}",
+				    (String) requestProperties.get("longitude"));
             }
             if (entry.hasLocationDefined(request) || entry.hasAreaDefined(request)) {
                 path = path.replace("${latitude}", entry.getLatitude(request) + "");
@@ -491,24 +491,24 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
-        String recordFileClass = getTypeProperty("record.file.class",
-                                     (String) null);
+	throws Exception {
+        String recordFileClass = getTypeProperty("record.file.class",  (String) null);
 
         if (recordFileClass != null) {
             return doMakeRecordFile(entry, recordFileClass, properties,
                                     requestProperties);
         }
 
-        return (RecordFile) getRecordFileFactory().doMakeRecordFile(
-								    getPathForRecordEntry(request, entry, requestProperties).getPath(), properties,
-            requestProperties);
+        return (RecordFile)
+	    getRecordFileFactory().doMakeRecordFile(
+						    getPathForRecordEntry(request, entry, requestProperties).getPath(), properties,
+						    requestProperties);
     }
 
     public RecordFile doMakeRecordFile(Entry entry, String className,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
         IO.Path path = getPathForRecordEntry(null,entry, requestProperties);
         if (path == null) {
             return null;
@@ -637,7 +637,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                          "request." + macro + ".template",
                                          null);
             multitemplate = Utils.getProperty(props,
-                    "request." + macro + ".multitemplate", null);
+					      "request." + macro + ".multitemplate", null);
             nonetemplate = Utils.getProperty(props,
                                              "request." + macro
                                              + ".nonetemplate", null);
