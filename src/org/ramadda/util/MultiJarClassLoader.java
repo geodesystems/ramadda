@@ -41,7 +41,8 @@ import java.util.regex.*;
 public class MultiJarClassLoader extends ClassLoader {
 
     /** for url plugins */
-    public static final String PLUGIN_PROTOCOL = "idvresource";
+    //    public static final String PLUGIN_PROTOCOL = "idvresource";
+    public static final String PLUGIN_PROTOCOL = "ramaddaresource";    
 
     /** Mapping from path name to class */
     private Hashtable<String, Class> loadedClasses = new Hashtable<String,
