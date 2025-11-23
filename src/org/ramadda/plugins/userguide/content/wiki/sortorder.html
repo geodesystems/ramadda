@@ -2,9 +2,10 @@
 
 :navtop
 
-There are two main ways to define the sort order  entries are displayed - using the Sort Order metadata property
-or explicitly in a wiki tag.
-Both of these ways can specify one or more entry fields to sort on and a sort direction - ascending or descending.
+There are two main ways to define the sort order  entries are displayed - using the
+Sort Order metadata property or explicitly in a wiki tag.
+Both of these ways can specify one or more entry fields to sort
+on and a sort direction - ascending or descending.
 
 :heading Sort fields
 The different entry sort fields are:
@@ -30,7 +31,8 @@ To define the default sort order for the entire repository add a Sort Order prop
 to the top-level entry and check on "Inherited".
 -callout
 
-The "Or:" field in the above form allows you to define one or more  comma separated sort fields, e.g.:
+The "Or:" field in the above form allows you to define one or more  comma separated sort
+fields, e.g.:
 the below would show all folders first, then sort by number then by name.
 +pre
 folder,number,name
@@ -46,7 +48,8 @@ folder_down,number_up,name
 The default display of any entry can be overwritten with
 wiki text. Using this one can specify a sort order and other display components if desired.
 When editing the container entry (e.g., the entry that holds images)
-toggle on the <img width=16px src="{{root}}/icons/wiki.png"> checkbox. This enables the wiki text editor.
+toggle on the <img width=16px src="{{root}}/icons/wiki.png"> checkbox.
+This enables the wiki text editor.
 See <a href=wiki.html#wikidesc>here</a> for more details.
 :p
 Once wiki text is enabled you can add the following wiki text if you wanted to set the
@@ -63,7 +66,18 @@ be based on the entry order.
 In general all of the "collection" tags, e.g. gallery, tabletree, map, links, tabs, etc can
 have their sort order set.
 
+:p
+Note - the orderby can be any number of comma separated values, e.g.:
++pre addCopy=true
+orderby="folder_down,number_up,name"
+-pre
 
+By default, the Sort Order  property takes precedence over the sort order specified
+by the orderyby wiki attribute. To override this and always use the orderby wiki attribute
+add a "!" prefix to the orderby, e.g.:
++pre addCopy=true
+orderby="!folder_down,number_up,name"
+-pre
 
 :heading Examples
 
