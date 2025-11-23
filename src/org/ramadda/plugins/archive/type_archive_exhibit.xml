@@ -3,6 +3,7 @@ Since this is for import add a:
 <import resource="type_archive_exhibit.xml"/>
 into some types.xml file
 -->
+<types>
 <type  name="type_archive_exhibit" 
  description="Archive Exhibit" 
  handler="org.ramadda.plugins.archive.ArchiveExhibitTypeHandler" 
@@ -10,6 +11,7 @@ into some types.xml file
  supercategory="General" 
  category="Archive" 
 childtypes="type_archive_gallery"
+edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exhibits_quote_&gt;Exhibit help&lt;/a&gt;"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -19,3 +21,4 @@ childtypes="type_archive_gallery"
 <wiki><![CDATA[
 {{import entry="child:orderby:entryorder;ascending:true" xshowTitle=false message=""}}]]></wiki>
 </type>
+</types>

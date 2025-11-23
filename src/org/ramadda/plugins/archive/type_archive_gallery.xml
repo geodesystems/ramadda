@@ -3,6 +3,7 @@ Since this is for import add a:
 <import resource="type_archive_gallery.xml"/>
 into some types.xml file
 -->
+<types>
 <type  name="type_archive_gallery" 
  description="Archive Exhibit Gallery" 
  handler="org.ramadda.repository.type.VirtualTypeHandler" 
@@ -10,6 +11,7 @@ into some types.xml file
  supercategory="General" 
  category="Archive" 
 childtypes="type_image,wikipage,type_linked"
+edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exhibits_quote_&gt;Exhibit help&lt;/a&gt;"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -63,3 +65,4 @@ showNonImages=true
 -row
 -section]]></wiki>
 </type>
+</types>
