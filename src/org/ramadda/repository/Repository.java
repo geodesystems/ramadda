@@ -4444,20 +4444,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private String getPropertiesListing(Properties props, String label) {
         StringBuilder sb = null;
+	String clazz = "ramadda-property-" + Utils.makeID(label);
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = (String) props.get(key);
             if (sb == null) {
-                sb = new StringBuilder("<h2>" + label + "</h2>");
+                sb = new StringBuilder();
+		HU.addPageSearch(sb,"."+clazz,null,"Search");
             }
-            sb.append(key + "=" + value + "<br>");
+            HU.div(sb,key + "=" + value,HU.clazz(clazz));
         }
 
         if (sb == null) {
             return "";
         }
-
-        return sb.toString();
+	return HU.makeShowHideBlock(msg(label),
+				    sb.toString(),
+				    false);
     }
 
     public String getPropertiesListing() {

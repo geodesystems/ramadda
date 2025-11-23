@@ -43,6 +43,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -85,7 +86,7 @@ public class PluginManager extends RepositoryManager {
 
     private StringBuffer pluginFilesList = new StringBuffer();
 
-    private StringBuffer pluginsList = new StringBuffer();
+    private List<String[]> pluginsList = new ArrayList<String[]>();    
 
     private List<String> propertyFiles = new ArrayList<String>();
 
@@ -300,7 +301,7 @@ public class PluginManager extends RepositoryManager {
                         toks = null;
                     }
                     Class c = Misc.findClass(classToLoad);
-                    classLoader.checkSpecialClass(c, toks);
+                    classLoader.checkSpecialClass(c, toks,classDefFile);
                 } catch (Exception exc) {
                     System.err.println("Loading class: " + classToLoad
                                        + " from class file: " + classDefFile);
@@ -416,9 +417,22 @@ public class PluginManager extends RepositoryManager {
         return checkFile(file, false);
     }
 
-    private void pluginStat(String desc, Object what) {
-        pluginsList.append("<tr><td></td><td><b>" + desc + "</b></td><td><i>"
-                           + what + "</i></td></tr>");
+    private void pluginStat(String desc, Object what,String ...fromArray) {
+	String w = what.toString();
+	String from = fromArray.length>0?fromArray[0]:"";
+	List<String> toks = Utils.splitUpTo(w,"!",2);
+	if(toks.size()==2) {
+	    w = toks.get(1);
+	    from = toks.get(0);
+	}
+
+
+	String root = getStorageManager().getRepositoryDir().toString();
+	w = w.replace(MultiJarClassLoader.PLUGIN_PROTOCOL+":","");
+	w = w.replace(root,"");
+	from = from.replace(MultiJarClassLoader.PLUGIN_PROTOCOL+":","");	
+	from = from.replace(root,"");
+	pluginsList.add(new String[]{desc,w,from});
     }
 
     public Result adminPluginUpload(Request request) throws Exception {
@@ -505,12 +519,31 @@ public class PluginManager extends RepositoryManager {
         formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
         formBuffer.append(HtmlUtils.formClose());
         */
-        formBuffer.append(HtmlUtils.p());
-        formBuffer.append(HtmlUtils.h2(msg("Main plugin files")));
-        formBuffer.append(HtmlUtils.table(pluginFilesList.toString()));
-        formBuffer.append(HtmlUtils.b(msg("Installed Plugins")));
-        formBuffer.append(HtmlUtils.table(pluginsList.toString()));
-        sb.append(formBuffer.toString());
+	sb.append(HU.makeShowHideBlock(msg("Main plugin files"),
+					       HU.table(pluginFilesList.toString()),
+					       false));
+
+        Comparator comp  = new Utils.StringTupleComparator(0);
+        Object[]   array = pluginsList.toArray();
+        Arrays.sort(array, comp);
+	StringBuilder psb = new StringBuilder();
+	for(Object obj: array) {
+	    String[]tuple = (String[]) obj;
+	    String path = tuple[1];
+	    String from = tuple[2];
+	    if(from==null) from="";
+	    path = path.replace(from,"");
+	    psb.append("<tr valign=top class=installedplugin><td width=200px><b>" + tuple[0] + "</b></td>" +
+		       "<td><div style='padding-left:10px;'>"
+		       + path + "</div></td>" +
+		       "<td><div style='padding-left:10px;'>" + from +"</div></td></tr>");
+	}
+	StringBuilder ppsb = new StringBuilder();
+	HU.addPageSearch(ppsb,".installedplugin",null,"Search");
+	ppsb.append(HU.table(psb.toString()));
+	sb.append(HU.makeShowHideBlock(msg("Installed Plugins"),
+				       ppsb.toString(),
+				       false));
     }
 
     protected boolean checkFile(String file, boolean fromPlugin)
@@ -652,7 +685,7 @@ public class PluginManager extends RepositoryManager {
          *
          * @throws Exception On badness
          */
-        public void checkSpecialClass(Class c, List<String> args)
+        public void checkSpecialClass(Class c, List<String> args,String from)
                 throws Exception {
             String key = c.getName();
             if (args != null) {
@@ -665,7 +698,7 @@ public class PluginManager extends RepositoryManager {
             seenClasses.add(key);
 
             if (SeesvPlugin.class.isAssignableFrom(c)) {
-                pluginStat("SEESV Class", c.getName());
+                pluginStat("SEESV Class", c.getName(),from);
                 seesvClasses.add(c);
                 return;
             }
@@ -675,7 +708,7 @@ public class PluginManager extends RepositoryManager {
 	    }
             if (ImportHandler.class.isAssignableFrom(c)) {
                 //                System.out.println("class:" + c.getName());
-                pluginStat("Import handler", c.getName());
+                pluginStat("Import handler", c.getName(),from);
                 Constructor ctor = Misc.findConstructor(c,
                                        new Class[] { Repository.class });
                 if (ctor != null) {
@@ -691,7 +724,7 @@ public class PluginManager extends RepositoryManager {
 
             if (SearchProvider.class.isAssignableFrom(c)) {
                 String className = c.getName();
-                pluginStat("Search provider", className);
+                pluginStat("Search provider", className,from);
                 String         extra    = null;
                 SearchProvider provider = null;
                 Constructor    ctor     = null;
@@ -722,7 +755,7 @@ public class PluginManager extends RepositoryManager {
 
             if (UserAuthenticator.class.isAssignableFrom(c)) {
                 //                System.out.println("class:" + c.getName());
-                pluginStat("Authenticator", c.getName());
+                pluginStat("Authenticator", c.getName(),from);
                 Constructor ctor = Misc.findConstructor(c,
                                        new Class[] { Repository.class });
                 if (ctor != null) {
@@ -736,16 +769,16 @@ public class PluginManager extends RepositoryManager {
                 }
             } else if (PageDecorator.class.isAssignableFrom(c)) {
                 //                                System.out.println("class:" + c.getName());
-                pluginStat("Page decorator", c.getName());
+                pluginStat("Page decorator", c.getName(),from);
                 PageDecorator pageDecorator = (PageDecorator) c.getDeclaredConstructor().newInstance();
                 pageDecorator.setRepository(getRepository());
                 pageDecorators.add(pageDecorator);
             } else if (AdminHandler.class.isAssignableFrom(c)) {
                 //                                System.out.println("class:" + c.getName());
-                pluginStat("Admin handler", c.getName());
+                pluginStat("Admin handler", c.getName(),from);
                 adminHandlerClasses.add(c);
             } else if (Harvester.class.isAssignableFrom(c)) {
-                pluginStat("Harvester", c.getName());
+                pluginStat("Harvester", c.getName(),from);
                 getHarvesterManager().addHarvesterType(c);
             } else {
                 specialClasses.add(c);
