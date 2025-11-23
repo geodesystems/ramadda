@@ -392,8 +392,9 @@ public class TypeHandler extends RepositoryManager {
             dictionary = Utils.getAttributeOrTag(node, "data_dictionary", null);
 	    String help =  Utils.getAttributeOrTag(node, "help", null);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", help);
-	    if(editHelp!=null)
-		editHelp = editHelp.replace("\\n","\n");
+	    if(editHelp!=null) {
+		editHelp = editHelp.replace("\\n","\n").replace("_quote_","\"");
+	    }
             newHelp = Utils.getAttributeOrTag(node, "newhelp", editHelp);	    
 	    if(newHelp!=null)
 		newHelp = newHelp.replace("\\n","\n");
