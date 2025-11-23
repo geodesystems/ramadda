@@ -728,6 +728,10 @@ public class EntryUtil extends RepositoryManager {
 	List<CompareOn> compareOns = new ArrayList<CompareOn>();
 	for(String on: ons) {
 	    Column column=null;
+	    if(on.startsWith("#")) {
+		continue;
+	    }
+	    
 	    if(on.startsWith("field:")) {
 		on=on.substring("field:".length());
 		for(Entry entry: entries) {
