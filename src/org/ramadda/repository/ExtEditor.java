@@ -2452,6 +2452,7 @@ public class ExtEditor extends RepositoryManager {
 
 	String extraAttributes = request.getString("extraattributes","");
 	if(Utils.stringDefined(extraAttributes)) {
+	    extraAttributes = extraAttributes.replace("<","&lt;").replace(">","&gt;");
 	    for(String line:Utils.split(extraAttributes,"\n",true,true)) {
 		if(line.startsWith("#")) continue;
 		sb.append(line);
