@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
@@ -43,21 +43,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class does most of the work of managing repository content
+ * Sorting entries, etc
  */
 @SuppressWarnings("unchecked")
 public class EntryUtil extends RepositoryManager {
-
     private boolean debugSort = false;
 
     //Cache for 1 hour
-
-    /*
-    private TTLObject<Hashtable<String, Integer>> typeCache =
-        new TTLObject<Hashtable<String, Integer>>(Utils.hoursToMillis(1),
-                      "Entry Type Count Cache");
-    */
-
     private TTLCache<String,Hashtable<String, Integer>> typeCache =
         new TTLCache<String,Hashtable<String, Integer>>(Utils.hoursToMillis(1),
 							"Entry Type Count Cache");    
@@ -66,12 +58,6 @@ public class EntryUtil extends RepositoryManager {
         super(repository);
     }
 
-    /**
-     *
-     * @param repository _more_
-     *
-     * @return _more_
-     */
     public static EntryUtil newEntryUtil(Repository repository) {
         return new EntryUtil(repository);
     }
@@ -91,12 +77,6 @@ public class EntryUtil extends RepositoryManager {
 	return files;
     }
 
-    /**
-     *
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public static List<Entry> getGroups(List<Entry> entries) {
         List<Entry> groups = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -108,12 +88,6 @@ public class EntryUtil extends RepositoryManager {
         return groups;
     }
 
-    /**
-     *
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public static List<Entry> getNonGroups(List<Entry> entries) {
         List<Entry> nongroups = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -156,7 +130,7 @@ public class EntryUtil extends RepositoryManager {
 
     /*
       the metadata needs to be the sort order metadata
-     */
+    */
     public List<Entry> sortEntriesOnMetadata(List<Entry> entries,Metadata metadata) {
 	String by = metadata.getAttr1();
 	boolean descending=!metadata.getAttr2().equals("true");
@@ -164,43 +138,37 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnName(List<Entry> entries,
-            final boolean descending) {
+					  final boolean descending) {
 	if(debugSort)    System.err.println("sort on name:" + entries);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1     = (Entry) o1;
-                Entry e2     = (Entry) o2;
-                int   result = e1.getName().compareToIgnoreCase(e2.getName());
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
+		public int compare(Object o1, Object o2) {
+		    Entry e1     = (Entry) o1;
+		    Entry e2     = (Entry) o2;
+		    int   result = e1.getName().compareToIgnoreCase(e2.getName());
+		    if (descending) {
+			if (result >= 1) {
+			    return -1;
+			} else if (result <= -1) {
+			    return 1;
+			}
 
-                    return 0;
-                }
+			return 0;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     *
-     * @param entries _more_
-     * @param descending _more_
-      * @return _more_
-     */
     public  List<Entry> sortEntriesOnNumber(List<Entry> entries,
-            final boolean descending) {
+					    final boolean descending) {
 	if(debugSort)    System.err.println("sort on number:" + entries);
         List tmp = new ArrayList();
         for (Entry entry : entries) {
@@ -212,32 +180,32 @@ public class EntryUtil extends RepositoryManager {
             tmp.add(new Object[] { entry, v1 });
         }
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Object[] t1     = (Object[]) o1;
-                Object[] t2     = (Object[]) o2;
-                double   v1     = (double) t1[1];
-                double   v2     = (double) t2[1];
-                int      result = (v1 < v2)
-                                  ? -1
-                                  : (v1 == v2)
-                                    ? 0
-                                    : 1;
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
+		public int compare(Object o1, Object o2) {
+		    Object[] t1     = (Object[]) o1;
+		    Object[] t2     = (Object[]) o2;
+		    double   v1     = (double) t1[1];
+		    double   v2     = (double) t2[1];
+		    int      result = (v1 < v2)
+			? -1
+			: (v1 == v2)
+			? 0
+			: 1;
+		    if (descending) {
+			if (result >= 1) {
+			    return -1;
+			} else if (result <= -1) {
+			    return 1;
+			}
 
-                    return 0;
-                }
+			return 0;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = tmp.toArray();
         Arrays.sort(array, comp);
         List<Entry> result = new ArrayList<Entry>();
@@ -249,13 +217,6 @@ public class EntryUtil extends RepositoryManager {
         return result;
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public static Entry getPrev(Entry entry, List<Entry> entries) {
         //      System.err.println("prev:" + entry+" list:" + entries);
         for (int i = 0; i < entries.size(); i++) {
@@ -274,25 +235,9 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /*
-     */
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param root _more_
-     * @param tree _more_
-     * @param sort _more_
-     * @param ascending _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getNext(Request request, Entry entry, Entry root,
                          boolean tree, String sort, boolean ascending)
-            throws Exception {
+	throws Exception {
         if (entry == null) {
             return null;
         }
@@ -302,8 +247,8 @@ public class EntryUtil extends RepositoryManager {
                               sort, !ascending);
 
             return (first.size() > 0)
-                   ? first.get(0)
-                   : null;
+		? first.get(0)
+		: null;
         }
 
         Entry parent = entry.getParentEntry();
@@ -329,22 +274,9 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param root _more_
-     * @param tree _more_
-     * @param sort _more_
-     * @param ascending _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getPrev(Request request, Entry entry, Entry root,
                          boolean tree, String sort, boolean ascending)
-            throws Exception {
+	throws Exception {
         if (entry == null) {
             return null;
         }
@@ -375,13 +307,6 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public static Entry getNext(Entry entry, List<Entry> entries) {
         //      System.err.println("next:" + entry+" list:" + entries);
         for (int i = 0; i < entries.size(); i++) {
@@ -400,13 +325,6 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /**
-     *
-     * @param list _more_
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public static Entry findEntry(List<Entry> list, String id) {
         if (id == null) {
             return null;
@@ -421,70 +339,70 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnPattern(List<Entry> entries,
-            final boolean descending, String p) {
+					     final boolean descending, String p) {
 	if(debugSort)    System.err.println("sort on pattern:" + entries);
         p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
         final Pattern pattern = Pattern.compile(p);
         //      System.err.println("on pattern:" + pattern+":");
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry   e1 = (Entry) o1;
-                Entry   e2 = (Entry) o2;
-                Matcher m1 = pattern.matcher(e1.getName());
-                Matcher m2 = pattern.matcher(e2.getName());
-                if ( !m1.find() || !m2.find()) {
-                    //                    System.err.println("No match: name1: " + e1.getName() + " name2: " + e2.getName());
+		public int compare(Object o1, Object o2) {
+		    Entry   e1 = (Entry) o1;
+		    Entry   e2 = (Entry) o2;
+		    Matcher m1 = pattern.matcher(e1.getName());
+		    Matcher m2 = pattern.matcher(e2.getName());
+		    if ( !m1.find() || !m2.find()) {
+			//                    System.err.println("No match: name1: " + e1.getName() + " name2: " + e2.getName());
 
-                    return 0;
-                }
-                if (m1.groupCount() == 0) {
-                    return 0;
-                }
-                if (m1.groupCount() != m2.groupCount()) {
-                    System.err.println("bad match:");
+			return 0;
+		    }
+		    if (m1.groupCount() == 0) {
+			return 0;
+		    }
+		    if (m1.groupCount() != m2.groupCount()) {
+			System.err.println("bad match:");
 
-                    return 0;
-                }
-                for (int i = 1; i <= m1.groupCount(); i++) {
-                    String v1 = m1.group(i);
-                    String v2 = m2.group(i);
-                    if ((v1 == null) || (v2 == null)) {
-                        return 0;
-                    }
-                    //              System.err.println("#" + i+" v1:" + v1  +" " + v2);
-                    try {
-                        double dv1    = Double.parseDouble(v1);
-                        double dv2    = Double.parseDouble(v2);
-                        int    result = (dv1 < dv2)
-                                        ? -1
-                                        : (dv1 == dv2)
-                                          ? 0
-                                          : 1;
-                        if (descending) {
-                            result = ((result >= 1)
-                                      ? -1
-                                      : (result < 0)
-                                        ? 1
-                                        : 0);
-                        }
-                        if (result != 0) {
-                            return result;
-                        }
-                    } catch (Exception exc) {
-                        System.err.println("Error parsing name:"
-                                           + e1.getName() + " "
-                                           + e2.getName() + " error:" + exc);
+			return 0;
+		    }
+		    for (int i = 1; i <= m1.groupCount(); i++) {
+			String v1 = m1.group(i);
+			String v2 = m2.group(i);
+			if ((v1 == null) || (v2 == null)) {
+			    return 0;
+			}
+			//              System.err.println("#" + i+" v1:" + v1  +" " + v2);
+			try {
+			    double dv1    = Double.parseDouble(v1);
+			    double dv2    = Double.parseDouble(v2);
+			    int    result = (dv1 < dv2)
+				? -1
+				: (dv1 == dv2)
+				? 0
+				: 1;
+			    if (descending) {
+				result = ((result >= 1)
+					  ? -1
+					  : (result < 0)
+					  ? 1
+					  : 0);
+			    }
+			    if (result != 0) {
+				return result;
+			    }
+			} catch (Exception exc) {
+			    System.err.println("Error parsing name:"
+					       + e1.getName() + " "
+					       + e2.getName() + " error:" + exc);
 
-                        return 0;
-                    }
-                }
+			    return 0;
+			}
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -492,33 +410,33 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> doGroupAndNameSort(List<Entry> entries,
-            final boolean descending) {
+					   final boolean descending) {
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1     = (Entry) o1;
-                Entry e2     = (Entry) o2;
-                int   result = 0;
-                if (e1.isGroup()) {
-                    if (e2.isGroup()) {
-                        result = e1.getFullName().compareTo(e2.getFullName());
-                    } else {
-                        result = -1;
-                    }
-                } else if (e2.isGroup()) {
-                    result = 1;
-                } else {
-                    result = e1.getFullName().compareTo(e2.getFullName());
-                }
-                if (descending) {
-                    return -result;
-                }
+		public int compare(Object o1, Object o2) {
+		    Entry e1     = (Entry) o1;
+		    Entry e2     = (Entry) o2;
+		    int   result = 0;
+		    if (e1.isGroup()) {
+			if (e2.isGroup()) {
+			    result = e1.getFullName().compareTo(e2.getFullName());
+			} else {
+			    result = -1;
+			}
+		    } else if (e2.isGroup()) {
+			result = 1;
+		    } else {
+			result = e1.getFullName().compareTo(e2.getFullName());
+		    }
+		    if (descending) {
+			return -result;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -526,29 +444,29 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public List<Entry> sortEntriesOnDate(List<Entry> entries,
-            final boolean descending) {
+					 final boolean descending) {
 	if(debugSort)    System.err.println("sort on date:" + entries);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getStartDate() < e2.getStartDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getStartDate() > e2.getStartDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
+		public int compare(Object o1, Object o2) {
+		    Entry e1 = (Entry) o1;
+		    Entry e2 = (Entry) o2;
+		    if (e1.getStartDate() < e2.getStartDate()) {
+			return (descending
+				? 1
+				: -1);
+		    }
+		    if (e1.getStartDate() > e2.getStartDate()) {
+			return (descending
+				? -1
+				: 1);
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -556,29 +474,29 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
-            final boolean descending) {
+						final boolean descending) {
 	if(debugSort)    System.err.println("sort on create date:" + entries);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getCreateDate() < e2.getCreateDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getCreateDate() > e2.getCreateDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
+		public int compare(Object o1, Object o2) {
+		    Entry e1 = (Entry) o1;
+		    Entry e2 = (Entry) o2;
+		    if (e1.getCreateDate() < e2.getCreateDate()) {
+			return (descending
+				? 1
+				: -1);
+		    }
+		    if (e1.getCreateDate() > e2.getCreateDate()) {
+			return (descending
+				? -1
+				: 1);
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -586,29 +504,29 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
-            final boolean descending) {
+						final boolean descending) {
 	if(debugSort)    System.err.println("sort on entry order:" + entries);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getEntryOrder() < e2.getEntryOrder()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getEntryOrder() > e2.getEntryOrder()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
+		public int compare(Object o1, Object o2) {
+		    Entry e1 = (Entry) o1;
+		    Entry e2 = (Entry) o2;
+		    if (e1.getEntryOrder() < e2.getEntryOrder()) {
+			return (descending
+				? 1
+				: -1);
+		    }
+		    if (e1.getEntryOrder() > e2.getEntryOrder()) {
+			return (descending
+				? -1
+				: 1);
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -616,29 +534,29 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
-            final boolean descending) {
+						final boolean descending) {
 	if(debugSort)    System.err.println("sort on change date:" + entries);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getChangeDate() < e2.getChangeDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getChangeDate() > e2.getChangeDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
+		public int compare(Object o1, Object o2) {
+		    Entry e1 = (Entry) o1;
+		    Entry e2 = (Entry) o2;
+		    if (e1.getChangeDate() < e2.getChangeDate()) {
+			return (descending
+				? 1
+				: -1);
+		    }
+		    if (e1.getChangeDate() > e2.getChangeDate()) {
+			return (descending
+				? -1
+				: 1);
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -716,9 +634,9 @@ public class EntryUtil extends RepositoryManager {
 	    Object v2 = null;
 	    //make sure the type is right
 	    if(e1.getTypeHandler().isType(on.column.getTypeHandler())) 
-	       v1 = e1.getValue(request, on.column);
+		v1 = e1.getValue(request, on.column);
 	    if(e2.getTypeHandler().isType(on.column.getTypeHandler()))
-	       v2  = e2.getValue(request, on.column);
+		v2  = e2.getValue(request, on.column);
 	    if(e1.getTypeHandler().equals(e2.getTypeHandler()) && v1!=null && v2 !=null) {
 		if(on.column.isDate()) {
 		    return compare((Date)v1,(Date)v2);
@@ -743,58 +661,63 @@ public class EntryUtil extends RepositoryManager {
 	    if(v1!=null) return -1;
 	    return 1;
 	}
+	int result=0;
         if (on.is(ORDERBY_DATE) || on.is(ORDERBY_FROMDATE)) {
-            return compare(e1.getStartDate(), e2.getStartDate());
+            result =  compare(e1.getStartDate(), e2.getStartDate());
         } else if (on.is(ORDERBY_TODATE)) {
-            return compare(e1.getEndDate(), e2.getEndDate());
+	    result =  compare(e1.getEndDate(), e2.getEndDate());
         } else if (on.is(ORDERBY_CHANGEDATE)) {
-            return compare(e1.getChangeDate(), e2.getChangeDate());
+            result = compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.is(ORDERBY_CREATEDATE)) {
-            return compare(e1.getCreateDate(), e2.getCreateDate());
+            result =  compare(e1.getCreateDate(), e2.getCreateDate());
         } else if (on.is(ORDERBY_NAME) || on.is(ORDERBY_RELEVANT)) {
-            return e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
+            result =  e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
         } else if (on.is(ORDERBY_ENTRYORDER)) {
-            return e1.getEntryOrder() - e2.getEntryOrder();
+            result =  e1.getEntryOrder() - e2.getEntryOrder();
         } else if (on.is(ORDERBY_TYPE)) {
-            return e1.getTypeHandler().getLabel().compareToIgnoreCase(
-                e2.getTypeHandler().getLabel());
+            result =  e1.getTypeHandler().getLabel().compareToIgnoreCase(
+									 e2.getTypeHandler().getLabel());
         } else if (on.is(ORDERBY_FOLDER)) {
 	    boolean g1 = e1.getTypeHandler().isGroup();
 	    boolean g2 = e2.getTypeHandler().isGroup();	    
-	    if(g1==g2) return 0;
-	    if(g1) return 1;
-	    return -1;
+	    if(g1==g2) result = 0;
+	    else if(g1) result =1;
+	    else result = -1;
         } else if (on.is(ORDERBY_SIZE)) {
-            return compare(e1.getResource().getFileSize(),
-                           e2.getResource().getFileSize());
+            result = compare(e1.getResource().getFileSize(),
+			     e2.getResource().getFileSize());
         } else if (on.is(ORDERBY_NUMBER)) {
-	    return compare(w1.getNumber(),w2.getNumber());
+	    result = compare(w1.getNumber(),w2.getNumber());
 	} else {
+	    System.err.println("Unknown sort order:" + on.on);
 	    //	    if(true) throw new IllegalStateException("SOrt order:" + on.on);
 	    /*
 	      System.err.println("Unknown sort order:" + on.on);
-	    if(!didit) {
-		didit = true;
-		System.err.println("e1:" + e1.getName() +" " + e1.getId());
-		System.err.println("e2:" + e2.getName() +" " + e2.getId());
-		System.err.println(Utils.getStack(20));
-	    }
+	      if(!didit) {
+	      didit = true;
+	      System.err.println("e1:" + e1.getName() +" " + e1.getId());
+	      System.err.println("e2:" + e2.getName() +" " + e2.getId());
+	      System.err.println(Utils.getStack(20));
+	      }
 	    */
 	}
 
-        return 0;
+	if(on.ascending!=null) {
+	    if(!on.ascending && result!=0) result = -result;
+	}
+        return result;
     }
     private static boolean didit = false;
 
     public  List<Entry> sortEntriesOn(List<Entry> entries, String ons,
-                                            boolean descending) {
+				      boolean descending) {
         return sortEntriesOn(entries, Utils.split(ons, ",", true, true),
                              descending);
     }
 
     public  List<Entry> sortEntriesOn(List<Entry> entries,
-                                            final List<String> ons,
-                                            final boolean descending) {
+				      final List<String> ons,
+				      final boolean descending) {
 	if(debugSort) 
 	    System.err.println("sort on: "+  ons +" entries:" + entries);
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
@@ -824,25 +747,25 @@ public class EntryUtil extends RepositoryManager {
 					      final boolean descending) {
 	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                EntryWrapper e1 = (EntryWrapper) o1;
-                EntryWrapper e2 = (EntryWrapper) o2;
-                for (CompareOn on : ons) {
-                    int result = compareEntries(request,e1, e2, on);
-                    if (result != 0) {
-                        if (descending) {
-                            return -result;
-                        }
-                        return result;
-                    }
-                }
+		public int compare(Object o1, Object o2) {
+		    EntryWrapper e1 = (EntryWrapper) o1;
+		    EntryWrapper e2 = (EntryWrapper) o2;
+		    for (CompareOn on : ons) {
+			int result = compareEntries(request,e1, e2, on);
+			if (result != 0) {
+			    if (descending) {
+				return -result;
+			    }
+			    return result;
+			}
+		    }
 
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return 0;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
 	EntryWrapper[]array = new EntryWrapper[entries.size()];
 	
 	for(int i=0;i<array.length;i++) {
@@ -859,7 +782,7 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntries(List<Entry> entries, String sorts,
-                                          final boolean descending) {
+				    final boolean descending) {
         if (sorts.startsWith("number:")) {
             return sortEntriesOnPattern(entries, descending,
                                         sorts.substring(7));
@@ -869,13 +792,6 @@ public class EntryUtil extends RepositoryManager {
                              descending);
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public static int indexOf(Entry entry, List<Entry> entries) {
         for (int i = 0; i < entries.size(); i++) {
             if (entry.getId().equals(entries.get(i).getId())) {
@@ -887,52 +803,52 @@ public class EntryUtil extends RepositoryManager {
     }
 
     public  List<Entry> sortEntriesOnField(List<Entry> entries,
-            final boolean descending, final String type,
-            final int sortOrderFieldIndex) {
+					   final boolean descending, final String type,
+					   final int sortOrderFieldIndex) {
 	if(debugSort)    System.err.println("sort on field:" + entries);
 	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry   e1 = (Entry) o1;
-                Entry   e2 = (Entry) o2;
-                int     result;
-                boolean isType1 = e1.getTypeHandler().isType(type);
-                boolean isType2 = e2.getTypeHandler().isType(type);
-                if (isType1 && isType2) {
-                    Integer i1 =
-                        (Integer) e1.getValue(request, sortOrderFieldIndex);
-                    Integer i2 =
-                        (Integer) e2.getValue(request,  sortOrderFieldIndex);
-                    if ((i1 < 0) && (i2 >= 0)) {
-                        result = 1;
-                    } else if ((i2 < 0) && (i1 >= 0)) {
-                        result = -1;
-                    } else {
-                        result = i1.compareTo(i2);
-                    }
-                } else if (isType1) {
-                    result = -1;
-                } else if (isType2) {
-                    result = 1;
-                } else {
-                    result = e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
-                }
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
+		public int compare(Object o1, Object o2) {
+		    Entry   e1 = (Entry) o1;
+		    Entry   e2 = (Entry) o2;
+		    int     result;
+		    boolean isType1 = e1.getTypeHandler().isType(type);
+		    boolean isType2 = e2.getTypeHandler().isType(type);
+		    if (isType1 && isType2) {
+			Integer i1 =
+			    (Integer) e1.getValue(request, sortOrderFieldIndex);
+			Integer i2 =
+			    (Integer) e2.getValue(request,  sortOrderFieldIndex);
+			if ((i1 < 0) && (i2 >= 0)) {
+			    result = 1;
+			} else if ((i2 < 0) && (i1 >= 0)) {
+			    result = -1;
+			} else {
+			    result = i1.compareTo(i2);
+			}
+		    } else if (isType1) {
+			result = -1;
+		    } else if (isType2) {
+			result = 1;
+		    } else {
+			result = e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
+		    }
+		    if (descending) {
+			if (result >= 1) {
+			    return -1;
+			} else if (result <= -1) {
+			    return 1;
+			}
 
-                    return 0;
-                }
+			return 0;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
@@ -943,8 +859,8 @@ public class EntryUtil extends RepositoryManager {
         try {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-                    new String[] { ContentMetadataHandler.TYPE_TIMEZONE },
-                    true);
+						  new String[] { ContentMetadataHandler.TYPE_TIMEZONE },
+						  true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
 
@@ -1034,31 +950,25 @@ public class EntryUtil extends RepositoryManager {
         return rect;
     }
 
-    /**
-     *
-     * @param bbox _more_
-     *
-     * @return _more_
-     */
     public static List<SelectionRectangle> getSelectionRectangles(
-            SelectionRectangle bbox) {
+								  SelectionRectangle bbox) {
         bbox.normalizeLongitude();
         List<SelectionRectangle> rectangles =
             new ArrayList<SelectionRectangle>();
 
         /*
-   160                 20
-    +------------------+
- ---------+---------+---------+------------
-       180/-180     0      180/-180
+	  160                 20
+	  +------------------+
+	  ---------+---------+---------+------------
+	  180/-180     0      180/-180
         */
 
         //Check for a search crossing the dateline
         if (bbox.crossesDateLine()) {
             rectangles.add(new SelectionRectangle(bbox.getNorth(),
-                    bbox.getWest(), bbox.getSouth(), 180));
+						  bbox.getWest(), bbox.getSouth(), 180));
             rectangles.add(new SelectionRectangle(bbox.getNorth(), -180,
-                    bbox.getSouth(), bbox.getEast()));
+						  bbox.getSouth(), bbox.getEast()));
         } else {
             rectangles.add(bbox);
         }
@@ -1164,7 +1074,15 @@ public class EntryUtil extends RepositoryManager {
     public static class CompareOn {
 	String on;
 	Column column;
+	Boolean ascending;
 	public CompareOn(String on,Column column) {
+	    if(on.endsWith("_up")) {
+		ascending=Boolean.TRUE;
+		on = on.replace("_up","");
+	    } else if(on.endsWith("_down")) {
+		ascending=Boolean.FALSE;
+		on = on.replace("_down","");
+	    }
 	    this.on = on;
 	    this.column = column;
 	}
@@ -1181,9 +1099,5 @@ public class EntryUtil extends RepositoryManager {
 	return Utils.extractPatterns(input,
 				     "\\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\\b");
     }
-
-
-
-
 
 }
