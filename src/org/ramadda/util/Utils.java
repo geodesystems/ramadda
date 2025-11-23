@@ -2273,7 +2273,25 @@ public class Utils extends IO {
         }
     }
 
-    ;
+    public static class StringTupleComparator implements Comparator {
+
+        int index;
+
+        public StringTupleComparator(int index) {
+            this.index = index;
+        }
+
+        public int compare(Object o1, Object o2) {
+            Object[] e1 = (Object[]) o1;
+            Object[] e2 = (Object[]) o2;
+	    return e1[index].toString().compareTo(e2[index].toString());
+        }
+
+        public boolean equals(Object obj) {
+            return obj == this;
+        }
+    }
+    
 
     public static class FloatTupleComparator implements Comparator {
 
