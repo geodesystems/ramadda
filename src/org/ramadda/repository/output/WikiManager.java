@@ -7137,7 +7137,6 @@ public class WikiManager extends RepositoryManager
 	    orderBy = getProperty(wikiUtil, props, "orderby");
 	}	    
 
-	//xxxxx
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
 				     getProperty(wikiUtil,props,ATTR_SORT_ORDER,null));
 
@@ -7157,7 +7156,8 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-	if(orderBy==null) {
+
+	if(orderBy==null || !orderBy.startsWith("!")) {
 	    Metadata sortMetadata =
 		getMetadataManager().getSortOrderMetadata(myRequest, baseEntry,true);
 	    if (sortMetadata != null) {
@@ -7171,6 +7171,9 @@ public class WikiManager extends RepositoryManager
 
 	if(orderBy==null) {
 	    orderBy = ORDERBY_NAME;
+	}
+	if(orderBy.startsWith("!")) {
+	    orderBy = orderBy.substring(1);
 	}
 
 	if(sortDir==null) {
