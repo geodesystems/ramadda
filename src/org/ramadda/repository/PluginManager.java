@@ -591,6 +591,9 @@ public class PluginManager extends RepositoryManager {
             }
             sqlFiles.add(file);
         } else if (file.endsWith(".pack") || file.endsWith(".pack.txt")) {
+            if (fromPlugin) {
+                pluginStat("Language pack", file);
+            }
             packFiles.add(file);	    
         } else if (file.indexOf("licenses.json") >= 0) {
             if (fromPlugin) {
