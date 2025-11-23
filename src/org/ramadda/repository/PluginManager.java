@@ -390,16 +390,17 @@ public class PluginManager extends RepositoryManager {
             zin.close();
         } else if (pluginFile.toLowerCase().endsWith(".jar")) {
             pluginSB.append(
-                "<tr class=\"ramadda-plugin-row\"><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i> "
-                + new Date(tmpPluginFile.lastModified()) + " Length:"
+                "<tr class=\"ramadda-plugin-row\"><td><i>"
+                + pluginFile + "</i></td><td>"
+                + new Date(tmpPluginFile.lastModified()) +
+		"</td><td>"
                 + tmpPluginFile.length() + "</td></tr>");
             classLoader.addJar(pluginFile);
         } else {
             pluginSB.append(
-                "<tr class=\"ramadda-plugin-row\"><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i>   "
-                + new Date(tmpPluginFile.lastModified()) + " Length:"
+                "<tr class=\"ramadda-plugin-row\"><td><i>"
+                + pluginFile + "</i></td><td>"
+                + new Date(tmpPluginFile.lastModified()) + "</td><td>"
                 + tmpPluginFile.length() + "</td></tr>");
             checkFile(pluginFile, true);
         }
@@ -519,8 +520,10 @@ public class PluginManager extends RepositoryManager {
         formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
         formBuffer.append(HtmlUtils.formClose());
         */
+	String table = "<tr><td><b>Plugin File</b></td><td><b>Date</b></td><td><b>Size</b></td></tr>" +
+	    pluginFilesList.toString();
 	sb.append(HU.makeShowHideBlock(msg("Main plugin files"),
-					       HU.table(pluginFilesList.toString()),
+					       HU.table(table),
 					       false));
 
         Comparator comp  = new Utils.StringTupleComparator(0);
