@@ -1375,9 +1375,11 @@ public class Admin extends RepositoryManager {
     }
 
     public Result adminStats(Request request) throws Exception {
+	return adminStats(request,"");
+    }
 
+    public Result adminStats(Request request,String message) throws Exception {	
         DecimalFormat fmt     = new DecimalFormat("#0");
-
         StringBuffer  stateSB = new StringBuffer();
         stateSB.append(HU.formTable());
         getStorageManager().addInfo(stateSB);
@@ -1469,6 +1471,12 @@ public class Admin extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         sb.append(HU.sectionOpen(null, false));
+	if(stringDefined(message)) {
+	    sb.append(message);
+	}
+
+
+
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
 

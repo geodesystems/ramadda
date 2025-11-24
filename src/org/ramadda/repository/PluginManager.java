@@ -438,21 +438,18 @@ public class PluginManager extends RepositoryManager {
 
     public Result adminPluginUpload(Request request) throws Exception {
         String pluginFile = request.getUploadedFile(ARG_PLUGIN_FILE);
-        if ((pluginFile == null) || !new File(pluginFile).exists()) {
+	String message = "";
+	if ((pluginFile == null) || !new File(pluginFile).exists()) {
             return getAdmin().makeResult(
                 request, "Administration",
                 new StringBuffer("No plugin file provided"));
         }
         if (installPlugin(pluginFile)) {
-            return getAdmin().makeResult(
-                request, "Administration",
-                new StringBuffer(
-                    "Plugin has been re-installed.<br><b>Note: Reinstalling a plugin can lead to odd behavior. It is probably best to restart RAMADDA</b>"));
+	    message= "Plugin has been re-installed.<br><b>Note: Reinstalling a plugin can lead to odd behavior. Your RAMADDA may need to be restarted</b>";
         } else {
-            return getAdmin().makeResult(
-                request, "Administration",
-                new StringBuffer("Plugin installed"));
+	    message = "Plugin installed";
         }
+	return getAdmin().adminStats(request, getPageHandler().showDialogNote(message));
     }
 
     public boolean installPlugin(String pluginPath) throws Exception {
@@ -509,17 +506,19 @@ public class PluginManager extends RepositoryManager {
 
     public void addStatusInfo(Request request, StringBuffer sb) {
         StringBuffer formBuffer = new StringBuffer();
-        /*
         request.uploadFormWithAuthToken(formBuffer,
                                         getAdmin().URL_ADMIN_PLUGIN_UPLOAD,
                                         "");
 
-        formBuffer.append(msgLabel("Plugin File"));
-        formBuffer.append(HtmlUtils.fileInput(ARG_PLUGIN_FILE,
-                HtmlUtils.SIZE_60));
+	formBuffer.append(getPageHandler().showDialogNote("Note: uploading plugins can sometimes lead to odd behavior"));
+        formBuffer.append(msgLabel(HU.b("Plugin File")));
+	formBuffer.append(HU.space(1));
+        formBuffer.append(HtmlUtils.fileInput(ARG_PLUGIN_FILE,     HtmlUtils.SIZE_60));
+	formBuffer.append(HU.space(1));
         formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
         formBuffer.append(HtmlUtils.formClose());
-        */
+	sb.append(formBuffer);
+	sb.append(HU.p());
 	String table = "<tr><td><b>Plugin File</b></td><td><b>Date</b></td><td><b>Size</b></td></tr>" +
 	    pluginFilesList.toString();
 	sb.append(HU.makeShowHideBlock(msg("Main plugin files"),
