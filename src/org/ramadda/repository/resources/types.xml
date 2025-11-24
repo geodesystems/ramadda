@@ -86,9 +86,11 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
    <type name="type_linked"  description="Linked Entry"
 	 handler="org.ramadda.repository.type.LinkedTypeHandler" priority="2">
      <property name="icon" value="/icons/chart_organisation.png"/>
-     <property name="form.area.show" value="false"/>
+     <property name="form.area.show" value="true"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.date.show" value="true"/>
+     <property name="form.tags.show" value="false"/>     
+
      <column name="linked_entry" type="entry" 
 	     showinhtml="false"
 	     label="Linked Entry"
