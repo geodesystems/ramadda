@@ -2375,7 +2375,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         if ( !showInForm) {
             return;
         }
-        String widget = getFormWidget(request, entry, sourceTypeHandler, values, formInfo);
+        String widget = getFormWidget(request, parentEntry, entry, sourceTypeHandler, values, formInfo);
         widget = sourceTypeHandler.getFormWidget(request, entry, this, widget);
         if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
@@ -2448,7 +2448,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     /** method */
-    public String getFormWidget(Request request, Entry entry,
+    public String getFormWidget(Request request, Entry parentEntry,
+				Entry entry,
 				TypeHandler sourceTypeHandler,
                                 Object[] values, FormInfo formInfo)
 	throws Exception {
@@ -2665,7 +2666,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 	    String title  = "Entry for " + typeHandler.getDescription()+" property: " +this.getLabel();
             widget = newUrl+
-                getRepository().getEntryManager().getEntryFormSelect(request,   entry, urlArg, value,entryType,title);
+                getRepository().getEntryManager().getEntryFormSelect(request,
+								     entry==null?parentEntry:entry,
+								     urlArg, value,entryType,title);
         } else if (isType(DATATYPE_ENTRY_LIST)) {
 	    //TODO
             String value = "";
