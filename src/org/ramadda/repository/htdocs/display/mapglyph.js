@@ -21,6 +21,7 @@ var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 
 var ATTR_COMMAND='command';
+var ATTR_COLORBAR='colorbar';
 var ID_INMAP_LABEL='inmaplabel';
 var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
@@ -44,6 +45,7 @@ var ID_DATAICON_SIZE='dataicon_size';
 var ID_DATAICON_PROPS='dataicon_props';
 
 
+var CLASS_IMDV_ROUTE_STEP='imdv-route-step';
 //attr flags
 var ID_DATAICON_SHOWING = 'dataIconShowing';
 var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
@@ -2261,7 +2263,7 @@ MapGlyph.prototype = {
 	html+=HU.open(TAG_DIV,[ATTR_ID,this.domId(ID_GLYPH_LEGEND),
 			       ATTR_GLYPH_ID,this.getId(),
 			       ATTR_CLASS,HU.classes(CLASS_LEGEND_ITEM,clazz)]);
-	html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'flex')],
+	html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_FLEX)],
 		     HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4))],block.header)+
 		     HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(80))], label[0])+
 		     HU.div([],label[1]));
@@ -2614,11 +2616,11 @@ MapGlyph.prototype = {
 		    let attrs = [];
 		    if(step.lat) {
 			attrs.push(ATTR_TITLE,'Click to view',
-				   ATTR_CLASS,HU.classes('imdv-route-step',CLASS_CLICKABLE),
+				   ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
 				   ATTR_LATITUDE,step.lat,
 				   ATTR_LONGITUDE,step.lon);
 		    } else {
-			attrs.push(ATTR_CLASS,'imdv-route-step');
+			attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
 		    }
 		    instr+=HU.div(attrs, step.instr);
 		});
@@ -2693,7 +2695,7 @@ MapGlyph.prototype = {
 	    },
 	});
 
-	let steps = this.getLegendDiv().find('.imdv-route-step');
+	let steps = this.getLegendDiv().find(HU.dotClass(CLASS_IMDV_ROUTE_STEP));
 	steps.click(function(){
 	    let lon = $(this).attr(ATTR_LONGITUDE);
 	    let lat = $(this).attr(ATTR_LATITUDE);
@@ -3363,7 +3365,9 @@ MapGlyph.prototype = {
 	    coll[2].forEach(c=>{
 		let name = c[0];
 		let url = 'data:image/png;base64,' + c[1];
-		html+=HU.image(url,[ATTR_CLASS,CLASS_CLICKABLE,'colorbar',name, ATTR_HEIGHT,HU.px(20),
+		html+=HU.image(url,[ATTR_CLASS,CLASS_CLICKABLE,
+				    ATTR_COLORBAR,name,
+				    ATTR_HEIGHT,HU.px(20),
 				    ATTR_WIDTH,HU.px(256),ATTR_TITLE,name]);
 		html+=HU.br();
 		if(name==currentColorbar) {
@@ -3387,7 +3391,7 @@ MapGlyph.prototype = {
 					     at:POS_LEFT_BOTTOM,
 					     anchor:$(this)});
 	    colorSelect.find(TAG_IMG).click(function() {
-		_this.currentColorbar = $(this).attr('colorbar');
+		_this.currentColorbar = $(this).attr(ATTR_COLORBAR);
 		colorSelect.remove();
 		_this.initColorTables(_this.currentColorbar);
 	    });
@@ -4540,7 +4544,7 @@ MapGlyph.prototype = {
 		    attrs.push(ATTR_ROWS,rows);
 		    let buttonAttrs = ['textareaid',this.domId('string_'+id),
 				       ATTR_CLASS,CLASS_FILTER_STRINGS];
-		    widget =     HU.div(buttonAttrs,'Search')+
+		    widget =     HU.div(buttonAttrs,LABEL_SEARCH)+
 			HU.textarea("",filter.stringValue??"",attrs);
 		} else {
 		    attrs.push(ATTR_CLASS,CLASS_FILTER_STRING);

@@ -313,7 +313,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		if(img) img = img.trim();
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
-			img = HU.url(RamaddaUtil.getUrl("/proxy"),"url",img);
+			img = HU.url(RamaddaUtil.getUrl(URL_PROXY),ARG_URL,img);
                     img =  HU.href(img, HU.div([ATTR_ID,this.domId(ID_GALLERY)+'div' + imgCnt],
 					       HU.image(img,[ATTR_WIDTH,width,
 							     ATTR_ID,this.domId(ID_GALLERY)+"img" + imgCnt])),
@@ -1220,7 +1220,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		} else if(url.match('soundcloud')) {
 		    html = HU.center(HU.open(TAG_IFRAME,['scrolling','no',
 							 ATTR_SRC,
-							 HU.url('https://w.soundcloud.com/player/','visual','true','url', url, 'maxwidth',450),
+							 HU.url('https://w.soundcloud.com/player/','visual','true',
+								ARG_URL, url, 'maxwidth',450),
 							 ATTR_WIDTH,450,
 							 ATTR_HEIGHT,390,'frameborder']));
 		} else {

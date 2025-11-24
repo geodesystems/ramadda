@@ -962,11 +962,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		  let url = new URL('https://localhost/' + pointData.getUrl());
 		  if(allFields.length!=fields.length) {
 		  fields.forEach(f=>{
-		  url = HU.url(url.toString(),['field_use',f.getId()]);
+		  url = HU.url(url.toString(),'field_use',f.getId());
 		  });
 		  }
 		  if(!json)
-		  url = HU.url(url.toString(),['product','points.csv']);
+		  url = HU.url(url.toString(),'product','points.csv');
 		  console.log(url);
 		  window.open(url,'_download');
 		  return

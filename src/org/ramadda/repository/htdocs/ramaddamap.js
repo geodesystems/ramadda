@@ -1048,7 +1048,7 @@ RepositoryMap.prototype = {
 		    if($(this).hasClass('ui-tabs-anchor')) {
 			return
 		    }
-		    let src = $(this).attr('href');
+		    let src = $(this).attr(ATTR_HREF);
 		    if(src) {
 			window.open(src,'_link');
 			e.preventDefault();

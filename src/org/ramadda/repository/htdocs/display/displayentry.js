@@ -524,7 +524,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	{label:'Search Form Layout'},
-	{p:'searchHeaderLabel',d: 'Search'},
+	{p:'searchHeaderLabel',d: LABEL_SEARCH},
 	{p:'formHeight',d:'1000px'},
         {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
@@ -1498,9 +1498,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         makeSearchForm: function() {
 	    let toggleClose = this.getToggleClose(!this.getProperty('searchOpen',true));
             let form = HU.openTag(TAG_FORM, [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
-            let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
+            let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, LABEL_SEARCH]);
             let topItems = [];
-	    buttonLabel = "Search";
+	    buttonLabel = LABEL_SEARCH;
             let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 							 CSS_MAX_WIDTH,HU.perc(80)),
 				       ATTR_ID, this.getDomId(ID_SEARCH),
@@ -1811,7 +1811,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function(eg) {
-            eg = this.getProperty(ATTR_PLACEHOLDER,eg||"Search");
+            eg = this.getProperty(ATTR_PLACEHOLDER,eg||LABEL_SEARCH);
             if (this.eg) {
                 eg = " " + this.eg;
             }
@@ -4888,7 +4888,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
 						    ARG_OUTPUT,'points.product',
 						    'product','points.json',
 						    'numpoints',1000,
-						    ARG_ENTRYIDentry1.getId())));
+						    ARG_ENTRYID,entry1.getId())));
             if (entry2 != null) { 
 		pointDataList.push(new PointData(entry2.getName(), null, null,
 						 HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),

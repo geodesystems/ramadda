@@ -967,7 +967,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	gotoAddress:function(widget,address) {
-            let url = Ramadda.getUrl(HU.url('/geocode',['query',address]));
+            let url = HU.url(Ramadda.getUrl('/geocode'),'query',address);
 	    let add = (loc,ignoreComma)=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
@@ -1890,7 +1890,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     [ATTR_ID,this.domId('osmlimit'),
 					      ATTR_SIZE,10]));	    
 	    html += HU.formTableClose();	    
-	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], 'Search'),
+	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], LABEL_SEARCH),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_BUTTON)], 'Clear Markers'),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-add',CLASS_BUTTON),
 					     ATTR_TITLE,'Add markers as glyphs'], 'Add'),
@@ -2296,7 +2296,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let asset =  data.assets[$(this).attr('asset-id')];
 		    let url = new URL(asset.href,baseUrl).href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
-			url =   HU.url(Ramadda.getUrl('/tifftopng'),['url',url]);
+			url =   HU.url(Ramadda.getUrl('/tifftopng'),ARG_URL,url);
 		    }
 		    console.log(url);
 		    let attrs = {
@@ -3797,7 +3797,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				   CSS_MAX_HEIGHT,HU.px(200),
 				   CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search',
-				       ATTR_PLACEHOLDER,'Search',
+				       ATTR_PLACEHOLDER,LABEL_SEARCH,
 				       ATTR_SIZE,30]) +' ' +
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
@@ -4980,7 +4980,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(opts.resourceUrl) {
 		//For now proxy the request through our ramadda
 		if(opts.resourceUrl.indexOf('ramadda.org')>=0)
-		    url =   HU.url(Ramadda.getUrl('/proxy'),['url',opts.resourceUrl]);
+		    url =   HU.url(Ramadda.getUrl(URL_PROXY),ARG_URL,opts.resourceUrl);
 		else
 		    url =   opts.resourceUrl;
 	    } else {

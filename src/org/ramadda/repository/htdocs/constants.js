@@ -19,6 +19,7 @@ var ACTION_CANCEL='cancel';
 var ACTION_APPLY='apply';
 
 var LABEL_EDIT='Edit';
+var LABEL_SEARCH='Search';
 var LABEL_SUBMIT='Submit';
 var LABEL_OK='OK';
 var LABEL_YES='Yes';
@@ -50,6 +51,7 @@ var ARG_OUTPUT='output';
 var ARG_ELEMENT='element';
 var ARG_RESPONSE='response';
 var ARG_TYPE='type';
+var ARG_URL='url';
 var ARG_TEXT='text';
 
 var ICON_TOGGLE_CLOSED='fas fa-plus-square';

@@ -406,7 +406,7 @@ function RamaddaRepository(repositoryRoot) {
 	    if(id.startsWith('http')) {
 		//If the remote URL us ramadda.org then use the proxy so we don't have the SAME_ORIGIN problem
 		if(id.indexOf('ramadda.org')>=0)
-		    return  HU.url(Ramadda.getUrl('/proxy'),'url',id);
+		    return  HU.url(Ramadda.getUrl(URL_PROXY),ARG_URL,id);
 
 		return id;
 	    }
@@ -1291,14 +1291,14 @@ function Entry(props) {
         getLink: function(label, includeIcon, attrs) {
             if (!label) label = this.getName();
 	    attrs = attrs ||[];
-	    attrs.push("href", this.getEntryUrl());
+	    attrs.push(ATTR_HREF, this.getEntryUrl());
 	    if(includeIcon)
 		label  = this.getIconImage() + SPACE +label;
             return HU.tag(TAG_A, attrs, label);
         },
         getResourceLink: function(label) {
             if (!label) label = this.getName();
-            return HU.tag(TAG_A, ["href", this.getResourceUrl()], label);
+            return HU.tag(TAG_A, [ATTR_HREF, this.getResourceUrl()], label);
         },
         toString: function() {
             return "entry:" + this.getName()+" id:" + this.getId();

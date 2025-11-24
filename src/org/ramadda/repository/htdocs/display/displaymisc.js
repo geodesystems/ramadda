@@ -1828,7 +1828,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    //	    console.log('HtmlTable: #cells:' +cellCnt);
 	    let wrapper = this.jq(ID_TABLE+'_wrapper');
 	    if(!opts.paging && cellCnt>3000) {
-		wrapper.css(CSS_MAX_HEIGHT,scrollHeight).css(CSS_HEIGHT,scrollHeight).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_DISPLAY,'flex');
+		wrapper.css(CSS_MAX_HEIGHT,scrollHeight).css(CSS_HEIGHT,scrollHeight).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_DISPLAY,DISPLAY_FLEX);
 		wrapper.find(TAG_TH).css(CSS_TOP,HU.px(0)).css(CSS_POSITION,'sticky').css(CSS_Z_INDEX,'900');
 		this.jq(ID_TABLE).css(CSS_HEIGHT,HU.px(200)).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_BORDER_COLLAPSE,'collapse');
 	    } else {

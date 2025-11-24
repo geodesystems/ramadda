@@ -1832,7 +1832,7 @@ var Utils =  {
     },
     makeDownloadFile: function(filename, text) {
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute(ATTR_HREF, 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
         element.setAttribute('download', filename);
         element.style.display = DISPLAY_NONE;
         document.body.appendChild(element);
@@ -3614,7 +3614,7 @@ var Utils =  {
 
 var GuiUtils = {
     getProxyUrl: function(url) {
-        return  HU.url(RamaddaUtil.getUrl( "/proxy"), "trim",true,"url",url);
+        return  HU.url(RamaddaUtil.getUrl(URL_PROXY), "trim",true,ARG_URL,url);
     },
 
     showingError: false,

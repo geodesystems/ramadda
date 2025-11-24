@@ -8,6 +8,7 @@
 var URL_ENTRY_SHOW='/entry/show';
 var URL_ENTRY_GET='/entry/get';
 var URL_SEARCH_DO='/search/do';
+var URL_PROXY='/proxy';
 
 var RamaddaUtils;
 var RamaddaUtil;
