@@ -591,6 +591,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    buff.append("\n");
 	};
 
+
+	int userInputCnt = 0;
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
 		//                buff.append("<nowiki>");
@@ -3171,6 +3173,48 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
+                if (tline.startsWith(":user-note")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
+							     ? toks.get(1)
+							     : "");
+		    int rows = Utils.getProperty(props,"rows",1);
+		    int size  = Utils.getProperty(props,"size",60);
+		    String id = Utils.getProperty(props,"id",null);
+		    String placeholder = Utils.getProperty(props,"placeholder","");
+		    if(id==null) {
+			if(Utils.stringDefined(placeholder)) {
+			    id  = Utils.makeID(placeholder);
+			} else {
+			    id = "userinput-"+ (userInputCnt++);
+			}
+		    }
+		    boolean buttons = Utils.getProperty(props,"buttons",false);		    
+		    if(buttons) {
+			for(String action: new String[]{"save","download","upload"}) {
+			    String label =
+				Utils.getProperty(props,"label",Utils.makeLabel(action));
+			    buff.append(HU.tag("input",
+					       HU.attrs("style","margin-right:5px;",
+							"class","ramadda-user-note",
+							"type","submit",
+							"action",action,
+							"value",
+							label,
+							"id",id)));
+			}
+		    } else   if(rows<=1) {
+			buff.append(HU.input("","",size,
+					     HU.attrs("class","ramadda-user-note",
+						      "id",id,"placeholder",placeholder)));
+		    } else {
+			buff.append(HU.textArea("","",rows,size,
+						HU.attrs("class","ramadda-user-note",
+							 "id",id,"placeholder",placeholder)));
+		    }
+		    continue;
+		}
+
                 if (tline.startsWith(":comment")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
@@ -3351,11 +3395,18 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 buff.append(line);
                 buff.append("\n");
-            }
-        }
+	    }
+	}
 
+	if(Misc.equals(getWikiProperty("checklistActive"),"true") ||
+	   userInputCnt>0) {
+            buff.append(HU.importJS(handler.getHtdocsUrl("/userinput.js")));
+	}
 	if(Misc.equals(getWikiProperty("checklistActive"),"true")) {
-            HU.script(buff, "Utils.initChecklist();");
+            HU.script(buff, "UserInput.initChecklist();");
+	}
+	if(userInputCnt>0) {
+            HU.script(buff, "UserInput.initUserInput();");
 	}
 
 	//Add the menus init calls
