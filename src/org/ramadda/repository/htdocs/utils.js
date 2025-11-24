@@ -269,20 +269,6 @@ var Utils =  {
 	    });
 	});
     },
-    initChecklist:function() {
-	$(HU.dotClass('ramadda-checklist')).each(function() {
-	    let id  =$(this).attr("id");
-	    let value = Utils.getLocalStorage(id,false,true);
-	    if(Utils.isDefined(value)) {
-		value = Utils.getProperty(value);
-                $(this).prop('checked',value);
-	    }
-	    $(this).change(function() {
-		let value = HU.isChecked($(this));
-		Utils.setLocalStorage(id, value,false,true);
-	    });
-	});
-    },
     initPage: function() {
 	
         this.initContent();
@@ -4994,8 +4980,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     buttons:function(args,clazz,style) {
-	let buttons = Utils.wrap(args,HU.open(TAG_DIV,
-					      [ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),
+	let buttons = Utils.wrap(args,
+				 HU.open(TAG_DIV,
+					 [ATTR_STYLE,
+					  HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),
 				 HU.close(TAG_DIV));
 	return HU.div([ATTR_CLASS,clazz??CLASS_BUTTON_BAR,
 		       ATTR_STYLE,style??''], buttons);

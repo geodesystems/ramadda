@@ -8250,6 +8250,7 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1_nl_* bullet 2_nl_** 2 level_nl_", ""),
 			l2.call( "Checkbox list", "Checkbox list. One per line","*+ on bullet 1_nl_*- off bullet 2_nl_**- 2 level_nl_", ""),
 			l2.call("Active checklist","Make the checklist active",":property checklistActive true_nl_",""),
+			l2.call("User note field","Make a user input field",":user-note rows=1 size=60 #id=\"some id\" #placeholder=\"some label\" #buttons=true_nl_",""),			
 			l2.call( "IFrame", "Iframe",":iframe URL  height=\"600px\" class=\"ramadda-iframe-progress\" #style=\"\" ", ""),
 		
 			l2.call( "Language block","Language block",
