@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Nov 22 16:00:19 MST 2025";
+var build_date="RAMADDA build date: Mon Nov 24 08:09:15 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -25325,7 +25325,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		if(img) img = img.trim();
                 if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
-			img = HU.url(RamaddaUtil.getUrl("/proxy"),"url",img);
+			img = HU.url(RamaddaUtil.getUrl(URL_PROXY),ARG_URL,img);
                     img =  HU.href(img, HU.div([ATTR_ID,this.domId(ID_GALLERY)+'div' + imgCnt],
 					       HU.image(img,[ATTR_WIDTH,width,
 							     ATTR_ID,this.domId(ID_GALLERY)+"img" + imgCnt])),
@@ -26232,7 +26232,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		} else if(url.match('soundcloud')) {
 		    html = HU.center(HU.open(TAG_IFRAME,['scrolling','no',
 							 ATTR_SRC,
-							 HU.url('https://w.soundcloud.com/player/','visual','true','url', url, 'maxwidth',450),
+							 HU.url('https://w.soundcloud.com/player/','visual','true',
+								ARG_URL, url, 'maxwidth',450),
 							 ATTR_WIDTH,450,
 							 ATTR_HEIGHT,390,'frameborder']));
 		} else {
@@ -27246,11 +27247,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		  let url = new URL('https://localhost/' + pointData.getUrl());
 		  if(allFields.length!=fields.length) {
 		  fields.forEach(f=>{
-		  url = HU.url(url.toString(),['field_use',f.getId()]);
+		  url = HU.url(url.toString(),'field_use',f.getId());
 		  });
 		  }
 		  if(!json)
-		  url = HU.url(url.toString(),['product','points.csv']);
+		  url = HU.url(url.toString(),'product','points.csv');
 		  console.log(url);
 		  window.open(url,'_download');
 		  return
@@ -35333,7 +35334,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	{label:'Search Form Layout'},
-	{p:'searchHeaderLabel',d: 'Search'},
+	{p:'searchHeaderLabel',d: LABEL_SEARCH},
 	{p:'formHeight',d:'1000px'},
         {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
@@ -36307,9 +36308,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         makeSearchForm: function() {
 	    let toggleClose = this.getToggleClose(!this.getProperty('searchOpen',true));
             let form = HU.openTag(TAG_FORM, [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
-            let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
+            let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, LABEL_SEARCH]);
             let topItems = [];
-	    buttonLabel = "Search";
+	    buttonLabel = LABEL_SEARCH;
             let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 							 CSS_MAX_WIDTH,HU.perc(80)),
 				       ATTR_ID, this.getDomId(ID_SEARCH),
@@ -36620,7 +36621,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function(eg) {
-            eg = this.getProperty(ATTR_PLACEHOLDER,eg||"Search");
+            eg = this.getProperty(ATTR_PLACEHOLDER,eg||LABEL_SEARCH);
             if (this.eg) {
                 eg = " " + this.eg;
             }
@@ -39697,7 +39698,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
 						    ARG_OUTPUT,'points.product',
 						    'product','points.json',
 						    'numpoints',1000,
-						    ARG_ENTRYIDentry1.getId())));
+						    ARG_ENTRYID,entry1.getId())));
             if (entry2 != null) { 
 		pointDataList.push(new PointData(entry2.getName(), null, null,
 						 HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
@@ -48098,7 +48099,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	gotoAddress:function(widget,address) {
-            let url = Ramadda.getUrl(HU.url('/geocode',['query',address]));
+            let url = HU.url(Ramadda.getUrl('/geocode'),'query',address);
 	    let add = (loc,ignoreComma)=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
@@ -49021,7 +49022,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					     [ATTR_ID,this.domId('osmlimit'),
 					      ATTR_SIZE,10]));	    
 	    html += HU.formTableClose();	    
-	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], 'Search'),
+	    let buttons =Utils.join([HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], LABEL_SEARCH),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_BUTTON)], 'Clear Markers'),
 				     HU.div([ATTR_CLASS,HU.classes('ramadda-button-add',CLASS_BUTTON),
 					     ATTR_TITLE,'Add markers as glyphs'], 'Add'),
@@ -49427,7 +49428,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let asset =  data.assets[$(this).attr('asset-id')];
 		    let url = new URL(asset.href,baseUrl).href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
-			url =   HU.url(Ramadda.getUrl('/tifftopng'),['url',url]);
+			url =   HU.url(Ramadda.getUrl('/tifftopng'),ARG_URL,url);
 		    }
 		    console.log(url);
 		    let attrs = {
@@ -50928,7 +50929,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				   CSS_MAX_HEIGHT,HU.px(200),
 				   CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search',
-				       ATTR_PLACEHOLDER,'Search',
+				       ATTR_PLACEHOLDER,LABEL_SEARCH,
 				       ATTR_SIZE,30]) +' ' +
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
@@ -52111,7 +52112,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(opts.resourceUrl) {
 		//For now proxy the request through our ramadda
 		if(opts.resourceUrl.indexOf('ramadda.org')>=0)
-		    url =   HU.url(Ramadda.getUrl('/proxy'),['url',opts.resourceUrl]);
+		    url =   HU.url(Ramadda.getUrl(URL_PROXY),ARG_URL,opts.resourceUrl);
 		else
 		    url =   opts.resourceUrl;
 	    } else {
@@ -54165,6 +54166,7 @@ var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 
 var ATTR_COMMAND='command';
+var ATTR_COLORBAR='colorbar';
 var ID_INMAP_LABEL='inmaplabel';
 var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
@@ -54188,6 +54190,7 @@ var ID_DATAICON_SIZE='dataicon_size';
 var ID_DATAICON_PROPS='dataicon_props';
 
 
+var CLASS_IMDV_ROUTE_STEP='imdv-route-step';
 //attr flags
 var ID_DATAICON_SHOWING = 'dataIconShowing';
 var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
@@ -56405,7 +56408,7 @@ MapGlyph.prototype = {
 	html+=HU.open(TAG_DIV,[ATTR_ID,this.domId(ID_GLYPH_LEGEND),
 			       ATTR_GLYPH_ID,this.getId(),
 			       ATTR_CLASS,HU.classes(CLASS_LEGEND_ITEM,clazz)]);
-	html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,'flex')],
+	html+=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_FLEX)],
 		     HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4))],block.header)+
 		     HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(80))], label[0])+
 		     HU.div([],label[1]));
@@ -56758,11 +56761,11 @@ MapGlyph.prototype = {
 		    let attrs = [];
 		    if(step.lat) {
 			attrs.push(ATTR_TITLE,'Click to view',
-				   ATTR_CLASS,HU.classes('imdv-route-step',CLASS_CLICKABLE),
+				   ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
 				   ATTR_LATITUDE,step.lat,
 				   ATTR_LONGITUDE,step.lon);
 		    } else {
-			attrs.push(ATTR_CLASS,'imdv-route-step');
+			attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
 		    }
 		    instr+=HU.div(attrs, step.instr);
 		});
@@ -56837,7 +56840,7 @@ MapGlyph.prototype = {
 	    },
 	});
 
-	let steps = this.getLegendDiv().find('.imdv-route-step');
+	let steps = this.getLegendDiv().find(HU.dotClass(CLASS_IMDV_ROUTE_STEP));
 	steps.click(function(){
 	    let lon = $(this).attr(ATTR_LONGITUDE);
 	    let lat = $(this).attr(ATTR_LATITUDE);
@@ -57507,7 +57510,9 @@ MapGlyph.prototype = {
 	    coll[2].forEach(c=>{
 		let name = c[0];
 		let url = 'data:image/png;base64,' + c[1];
-		html+=HU.image(url,[ATTR_CLASS,CLASS_CLICKABLE,'colorbar',name, ATTR_HEIGHT,HU.px(20),
+		html+=HU.image(url,[ATTR_CLASS,CLASS_CLICKABLE,
+				    ATTR_COLORBAR,name,
+				    ATTR_HEIGHT,HU.px(20),
 				    ATTR_WIDTH,HU.px(256),ATTR_TITLE,name]);
 		html+=HU.br();
 		if(name==currentColorbar) {
@@ -57531,7 +57536,7 @@ MapGlyph.prototype = {
 					     at:POS_LEFT_BOTTOM,
 					     anchor:$(this)});
 	    colorSelect.find(TAG_IMG).click(function() {
-		_this.currentColorbar = $(this).attr('colorbar');
+		_this.currentColorbar = $(this).attr(ATTR_COLORBAR);
 		colorSelect.remove();
 		_this.initColorTables(_this.currentColorbar);
 	    });
@@ -58684,7 +58689,7 @@ MapGlyph.prototype = {
 		    attrs.push(ATTR_ROWS,rows);
 		    let buttonAttrs = ['textareaid',this.domId('string_'+id),
 				       ATTR_CLASS,CLASS_FILTER_STRINGS];
-		    widget =     HU.div(buttonAttrs,'Search')+
+		    widget =     HU.div(buttonAttrs,LABEL_SEARCH)+
 			HU.textarea("",filter.stringValue??"",attrs);
 		} else {
 		    attrs.push(ATTR_CLASS,CLASS_FILTER_STRING);
@@ -62811,7 +62816,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    //	    console.log('HtmlTable: #cells:' +cellCnt);
 	    let wrapper = this.jq(ID_TABLE+'_wrapper');
 	    if(!opts.paging && cellCnt>3000) {
-		wrapper.css(CSS_MAX_HEIGHT,scrollHeight).css(CSS_HEIGHT,scrollHeight).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_DISPLAY,'flex');
+		wrapper.css(CSS_MAX_HEIGHT,scrollHeight).css(CSS_HEIGHT,scrollHeight).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_DISPLAY,DISPLAY_FLEX);
 		wrapper.find(TAG_TH).css(CSS_TOP,HU.px(0)).css(CSS_POSITION,'sticky').css(CSS_Z_INDEX,'900');
 		this.jq(ID_TABLE).css(CSS_HEIGHT,HU.px(200)).css(CSS_OVERFLOW_Y,OVERFLOW_AUTO).css(CSS_BORDER_COLLAPSE,'collapse');
 	    } else {
