@@ -1,6 +1,7 @@
 <types>
 <!-- Important: These must be in the order of their entry type inheritance -->
 
+<import resource="type_archive_exhibit_hall.xml"/>
 <import resource="type_archive_exhibit.xml"/>
 <import resource="type_archive_gallery.xml"/>
 

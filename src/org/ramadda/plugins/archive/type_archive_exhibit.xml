@@ -19,6 +19,25 @@ edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exh
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-{{import entry="child:orderby:entryorder;ascending:true" xshowTitle=false message=""}}]]></wiki>
++if haschildren=true 
+{{import entry="child:orderby:entryorder;ascending:true" xshowTitle=false message=""}}
+-if
++if haschildren=false
++section title={{name}}
++if hasthumbnail=true
++row
++col-3
+{{image   useThumbnail=true showCaption=true   width="100%"   popup="true"  inDiv="true"    align="center" }}
+-col
++col-9
+{{description wikify=true}}
+-col
+-row
+-if
++if hasthumbnail=false
+{{description wikify=true}}
+-if
+-section 
+-if]]></wiki>
 </type>
 </types>
