@@ -903,10 +903,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             String extra = "";
             if (getThumbnail()) {
                 extra = "<br>"
-                        + HU.checkbox(
+                        + HU.labeledCheckbox(
                             ARG_THUMBNAIL_SCALEDOWN, "true",
-                            true) + HU.space(1)
-                                  + msg("Scale down image")
+                            true, "Scale down image")
                                   + HU.space(2) + "Width: "
                                   + HU.input(
                                       ARG_THUMBNAIL_WIDTH,
