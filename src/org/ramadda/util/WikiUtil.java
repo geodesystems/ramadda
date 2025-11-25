@@ -2372,7 +2372,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 					    HU.TAG_DIV,
 					    HU.cssClass("ramadda-heading-outer")));
                         buff.append(HU.div(label,
-                                           HU.cssClass("ramadda-heading")));
+                                           HU.cssClass("ramadda-theme-heading ramadda-heading")));
                         buff.append(HU.close(HU.TAG_DIV));
                     }
                     if (title != null) {
@@ -2995,7 +2995,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 			: "";
 		    boolean noNav = what.startsWith("nonavheading");
 		    if(noNav) {
-			clazz="ramadda-heading";
+			clazz="ramadda-theme-heading ramadda-heading";
 			what = "heading";
 		    } else  if ( !clazz.equals(what)) {
                         clazz = "ramadda-" + what + "  ramadda-" + clazz;
