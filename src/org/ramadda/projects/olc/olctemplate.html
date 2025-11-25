@@ -9,24 +9,31 @@ id=olc
 </properties>
 ${imports}
 <style type="text/css">
-  :root {
-      --olc-logo-width:80px;
-      --header-height:100px;
-      --heading-color:#AC143A;
-      --heading-weight:300;      
- }
+:root {
+    --olc-logo-width:80px;
+    --header-height:100px;
 
-.ramadda-heading {
-    color:var(--header-color);
-}
+    --theme-color:#800000;
+    --theme-heading-weight:300;      
+    --theme-heading-color:var(--theme-color);
+    --theme-page-title-color:var(--theme-color);
+    --theme-border:0.75px solid #ccc;
+
+  }
+
+
 .olc-title {
     font-size: min(2vw, 120%);
+}
+
+.ramadda-hr {
+    border-top:1px solid #000;
 }
 
 .ramadda-header-floating .ramadda-navbar, .olc-pageheader .ramadda-navbar {
     padding:4px;
     border-radius:var(--default-radius);
-    border:var(--basic-border);
+    border:var(--theme-border);
     background:#fff;
     opacity:1;
     text-align:center;
