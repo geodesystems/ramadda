@@ -277,7 +277,8 @@ AssetHandler.prototype = {
 		    let entries = list.getEntries();
 		    if(entries.length==0) {
 			let msg = HU.div([ATTR_STYLE,
-					  HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,ATTR_PADDING,HU.px(5))],
+					  HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,
+						 CSS_PADDING,HU.px(5))],
 					 'No assets found. Do you want to create a new asset?');
 			msg+=HU.center(HU.div([ATTR_ID,"newasset"],"Yes"));
 			jqid(ID_SCAN_RESULTS).html(msg);
