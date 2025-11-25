@@ -4304,8 +4304,8 @@ public class WikiManager extends RepositoryManager
             boolean headingSmall = !flipCards && getProperty(wikiUtil, props,
 							     "headingSmall", true);
             String headingClass = headingSmall
-		?    "ramadda-subheading ramadda-subheading-small"
-		: "ramadda-subheading";
+		?    "ramadda-theme-heading ramadda-subheading ramadda-subheading-small"
+		: "ramadda-theme-heading ramadda-subheading";
 
 	    if(embedLink) headingClass+=" ramadda-subheading-embed";
 	    headingClass=HU.cssClass(headingClass);
@@ -4975,7 +4975,7 @@ public class WikiManager extends RepositoryManager
 		sb.append(HU.open("td",HU.attrs("width",textWidth)));
 		sb.append(HU.open("div",HU.attrs("class","ramadda-listing-text")));
 		sb.append(HU.div(HU.href(getEntryManager().getEntryUrl(request, child), child.getName()),
-				 HU.attrs("class","ramadda-listing-header")));
+				 HU.attrs("class","ramadda-theme-heading ramadda-listing-header")));
 		String snippet =  null;
 		if(showSnippet) {
 		    snippet=getSnippet(request,  child, false,"");
@@ -6442,7 +6442,7 @@ public class WikiManager extends RepositoryManager
         if (showHeading) {
             HU.div(card, HU.href(entryUrl, entry.getName()),
                    HU.title(entry.getName())
-                   + HU.cssClass("ramadda-subheading " + (embedLink?"ramadda-subheading-embed":"")));
+                   + HU.cssClass("ramadda-theme-heading ramadda-subheading " + (embedLink?"ramadda-subheading-embed":"")));
         }
 
 	boolean addTags = getProperty(wikiUtil, props, "addTags", false);
@@ -7861,7 +7861,7 @@ public class WikiManager extends RepositoryManager
 
 	    if(theCaption!=null) {
 		String captionLink = HU.href(entryUrl, theCaption,
-				     HU.style("color:#666;font-size:10pt;"));
+				     HU.style("font-size:10pt;"));
 		buff.append(HU.div(captionLink, HU.cssClass("image-caption")));
 	    }
             if (showDesc) {
