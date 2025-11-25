@@ -25,12 +25,12 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 :vspace 1em
 +row
 +col-3
-+div style="border:1px solid #ccc;padding:10px;padding-left:0px;min-height:80vh;"
++div class="ramadda-bordered" style="padding:10px;padding-left:0px;min-height:80vh;"
 {{links  #target="link target" entry="parent" orderby="entryorder,name" innerClass="ramadda-links-inner-simple"}} 
 -div
 -col
 +col-9
-+div style="border:1px solid #ccc;padding:10px;padding-top:0px;"
++div class="ramadda-bordered" style="padding:10px;padding-top:0px;"
 :heading {{name link=true }}
 +if haschildren=true  
 +row tight=true
