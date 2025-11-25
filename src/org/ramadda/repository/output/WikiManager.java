@@ -2824,6 +2824,7 @@ public class WikiManager extends RepositoryManager
 	    return snippet;
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
             boolean showToggle = getProperty(wikiUtil, props, "showToggle",   false);
+            boolean toggleOpen = getProperty(wikiUtil, props, "toggleOpen",   true);
             String toggleLabel = getProperty(wikiUtil, props, "toggleLabel",  "");	    
             String prefix = getProperty(wikiUtil, props,
 					"descriptionPrefix",
@@ -2844,7 +2845,7 @@ public class WikiManager extends RepositoryManager
                     desc += "\n" + suffix;
                 }
 		if(showToggle) {
-		    desc = "+toggleopen " + toggleLabel+"\n" + desc+"\n-toggle";
+		    desc = "+toggle" + (toggleOpen?"open":"")+" " + toggleLabel+"\n" + desc+"\n-toggle";
 		}
             }
             if (wikify) {

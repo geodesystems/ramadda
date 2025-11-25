@@ -20,7 +20,8 @@ edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exh
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title="{{name entry=ancestor:type:type_archive_exhibit}}"
-{{description wikify=true entry=ancestor:type:type_archive_exhibit showToggle=true toggleLabel="Exhibit Information"}}
+{{description wikify=true entry=ancestor:type:type_archive_exhibit 
+showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 :vspace 1em
 +row
 +col-3
