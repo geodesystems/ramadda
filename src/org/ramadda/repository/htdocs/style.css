@@ -282,7 +282,8 @@ h6 {
 
 .ramadda-theme-heading,.ramadda-theme-heading a,
 .ramadda-heading,.ramadda-heading a,
-.image-caption, .image-caption a {
+.image-caption, .image-caption a,
+.ramadda-header-link, .ramadda-header-link a {    
     color:var(--theme-heading-color);
     font-weight:var(--theme-heading-weight);
 }
