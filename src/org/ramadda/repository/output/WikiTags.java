@@ -27,7 +27,12 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
     public static final WikiTagCategory[] WIKITAGS = {
         new WikiTagCategory("Information",
                             new WikiTag(WIKI_TAG_NAME,null,ATTR_TT,"Entry name","link","true"), 
-                            new WikiTag(WIKI_TAG_DESCRIPTION,null,ATTR_TT,"Entry description","wikify","true"),
+                            new WikiTag(WIKI_TAG_DESCRIPTION,null,ATTR_TT,"Entry description",
+					"wikify","true",
+					"#descriptionPrefix","",
+					"#descriptionSuffix","",
+					"#showToggle","true",
+					"#toggleLabel",""),
                             new WikiTag(WIKI_TAG_SNIPPET,null,ATTR_TT,"Entry text snippet"),			    
                             new WikiTag(WIKI_TAG_ICON,null,ATTR_TT,"Entry Icon","#width","16px"),
                             new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_TT,"General entry information",
@@ -96,6 +101,14 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"message","",
 					"simple","false",
 					"#maxHeight","500px"),
+                            new WikiTag(WIKI_TAG_LISTING, "Entry listing",
+					ATTR_TT,"List of entries with text and thumbnails",
+					"showPlaceholderImage","true",
+					"showDescription","false",
+					"showSnippet","true",
+					"#imageWidth","200px",
+					"#textWidth","600px",					
+					"message",""),			    
                             new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree",ATTR_TT,
 					"Show a tree of entries",
 					"depth","5",
@@ -413,7 +426,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_UPLOAD,null, "#type","Some entry type",
 					ATTR_TITLE,"Upload file", ATTR_SHOWICON,"false","showForm","false"), 
                             new WikiTag(WIKI_TAG_ROOT),
-			    new WikiTag("loremipsum","Lorem Ipsum Text",ATTR_TT,"Filler text\nimg:lorem.png")),
+			    new WikiTag("loremipsum","Lorem Ipsum Text",
+					ATTR_TT,"Filler text\nimg:lorem.png","count","1")),
     };
     //J++
 

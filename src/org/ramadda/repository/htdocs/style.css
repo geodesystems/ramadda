@@ -3313,6 +3313,34 @@ table.dataTable tbody td {
     padding-left: 8px;    
 }
 
+.ramadda-listing-row {
+}
+
+.ramadda-listing-image {
+    margin:5px;
+    padding:5px;
+    border: var(--basic-border);
+    margin-bottom:30px;
+}
+
+.ramadda-listing-text {
+    /*padding:10px;*/
+    padding-left:20px;
+    min-height:100px;
+    overflow-y:auto;
+    margin-bottom:30px;
+}
+
+
+.ramadda-listing-header {
+    width:100%;
+    font-size: 120%;
+    margin-bottom:5px;
+}
+.ramadda-listing-header a {
+    text-decoration:none;
+}
+
 .entry-list-noheader {
     border-bottom : 1px #d8d8d8 solid;
 }

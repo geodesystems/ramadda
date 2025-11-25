@@ -272,6 +272,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_STREETVIEW = "streetview";
     public static final String WIKI_TAG_TABLE = "table";
     public static final String WIKI_TAG_TABLETREE = "tabletree";
+    public static final String WIKI_TAG_LISTING = "listing";    
     public static final String WIKI_TAG_TABS = "tabs";
     public static final String WIKI_TAG_TAGCLOUD = "tagcloud";
     public static final String WIKI_TAG_TAGS = "tags";

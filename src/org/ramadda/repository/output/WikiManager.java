@@ -2823,10 +2823,16 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return snippet;
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
-            String prefix = getProperty(wikiUtil, props, "description_prefix",
-                                        (String) null);
-            String suffix = getProperty(wikiUtil, props, "description_suffix",
-                                        (String) null);
+            boolean showToggle = getProperty(wikiUtil, props, "showToggle",   false);
+            String toggleLabel = getProperty(wikiUtil, props, "toggleLabel",  "");	    
+            String prefix = getProperty(wikiUtil, props,
+					"descriptionPrefix",
+					getProperty(wikiUtil, props, "description_prefix",
+						    (String) null));
+            String suffix = getProperty(wikiUtil, props,
+					"descriptionSuffix",
+					getProperty(wikiUtil, props, "description_suffix",
+						    (String) null));
             String desc = entry.getTypeHandler().getEntryText(entry);
             desc = desc.trim();
             //            desc = desc.replaceAll("\r\n\r\n", "\n<p>\n"); 
@@ -2837,6 +2843,9 @@ public class WikiManager extends RepositoryManager
                 if (suffix != null) {
                     desc += "\n" + suffix;
                 }
+		if(showToggle) {
+		    desc = "+toggleopen " + toggleLabel+"\n" + desc+"\n-toggle";
+		}
             }
             if (wikify) {
                 //Pass in the wikiUtil so any state (e.g., headings) gets passed up
@@ -4931,6 +4940,57 @@ public class WikiManager extends RepositoryManager
 	    }
 	    sb.append("\n");
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_LISTING)) {
+            List<Entry> children = getEntries(request, wikiUtil,
+					      originalEntry, entry, props);
+	    boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
+	    boolean showDescription = getProperty(wikiUtil, props,
+						  "showDescription", false);	
+	    boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholderImage",
+						  getProperty(wikiUtil, props, "showPlaceholder", false));
+	    String imageWidth = getProperty(wikiUtil, props, "imageWidth", "200px");
+	    String textWidth = getProperty(wikiUtil, props, "textidth", "600px");	    
+	    if(children.size()==0) {
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
+	    }
+	    sb.append("<table>");
+	    for(Entry child: children) {
+		String imageUrl  = null;
+		String[]tuple = getMetadataManager().getThumbnailUrl(request, child,true);
+		if(tuple!=null)      imageUrl = tuple[0];		
+		if(imageUrl==null && showPlaceholder) {
+		    imageUrl = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
+		}
+		sb.append("<tr class=ramadda-listing-row valign=top>");
+		sb.append(HU.open("td",HU.attrs("style","","width",imageWidth)));
+		if(imageUrl!=null) {
+		    sb.append(HU.image(imageUrl,
+				     HU.attrs("class","ramadda-listing-image",
+					      "style","max-width:100%;height:auto;",
+					      "loading", "lazy")));
+
+		}
+		sb.append(HU.close("td"));
+		sb.append(HU.open("td",HU.attrs("width",textWidth)));
+		sb.append(HU.open("div",HU.attrs("class","ramadda-listing-text")));
+		sb.append(HU.div(HU.href(getEntryManager().getEntryUrl(request, child), child.getName()),
+				 HU.attrs("class","ramadda-listing-header")));
+		String snippet =  null;
+		if(showSnippet) {
+		    snippet=getSnippet(request,  child, false,"");
+		}
+		if(showDescription && !stringDefined(snippet)) {
+		    snippet = child.getDescription();
+		}
+
+		if(snippet!=null) {
+		    sb.append(HU.div(wikifyEntry(request, entry, snippet)));
+		}
+		sb.append(HU.close("div"));
+		sb.append(HU.close("td","tr"));
+	    }
+	    sb.append("</table>");
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)
                    || theTag.equals(WIKI_TAG_CHILDREN_ENTRIES)
                    || theTag.equals(WIKI_TAG_CHILDREN)
