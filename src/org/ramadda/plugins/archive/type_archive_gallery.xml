@@ -31,7 +31,7 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 -col
 +col-9
 +div class="ramadda-bordered" style="padding:10px;padding-top:0px;"
-:heading {{name link=true }}
+:nonavheading {{name link=true }}
 +if haschildren=true  
 +row tight=true
 +col-6
