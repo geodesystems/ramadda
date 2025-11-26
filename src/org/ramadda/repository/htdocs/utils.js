@@ -749,7 +749,7 @@ var Utils =  {
         if(!t) return null;
         t = String(t);
 	t = Utils.convertText(t);
-        return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
+        return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n').replace(/_squote_/g,"'");
     },
     handleActionResults: function(id,url) {
         setTimeout(() =>{
@@ -3983,6 +3983,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     initPageSearch:function(select,parentSelect,label,hideAll,args) {
 	let opts = {
+	    addToUrl:true,
 	    focus:false,
 	    inputSize:'15',
 	    target:null,
@@ -3997,7 +3998,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
 	let id = HU.getUniqueId('search_');
-	let initValue = HU.getUrlArgument(ARG_PAGESEARCH)??'';
+	let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
 	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
 					   ATTR_ID,id,
 					   ATTR_PLACEHOLDER,label??'Search',
@@ -4091,7 +4092,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	});
 
-
 	jqid(id).keyup(function(){
 	    if (event.key === "Enter") {
 		event.preventDefault(); 
@@ -4100,10 +4100,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    doSearch();
 	    let value = $(this).val();
-	    if(Utils.stringDefined(value)) {
-		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
-	    } else {
-		HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+	    if(opts.addToUrl) {
+		if(Utils.stringDefined(value)) {
+		    HU.addToDocumentUrl(ARG_PAGESEARCH,value);
+		} else {
+		    HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+		}
 	    }
 
 	});
@@ -5163,9 +5165,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeDialog: function(args) {
         let opts  = {
 	    hidePopup:true,
+	    closeOnClick:false,
             modal:false,
 	    modalStrict:false,
             modalContentsCss:"",
+	    searchSelector:null,
             sticky:false,
             content:null,
             contentId:null,
@@ -5243,6 +5247,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } 
 	    
         }
+	let searchDivId;
+	if(opts.searchSelector) {
+	    searchDivId=HU.getUniqueId('');
+	    html = HU.div([ATTR_ID,searchDivId,ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))]) +
+		HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,opts.minWidth??HU.px(400))],html);
+	}
+
         let id = HU.getUniqueId();
         if(opts.header) {
             html = HU.div([ATTR_CLASS,"ramadda-popup-inner"], html);
@@ -5336,6 +5347,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             popup.show();
         }
 
+	if(searchDivId) {
+	    HU.initPageSearch(popup.find(opts.searchSelector),
+			      null,null,null,
+			      {addToUrl:false,
+			       target:'#'+searchDivId});
+	}
 
         if(opts.resizable) {
             if(opts.modal) {
@@ -5352,6 +5369,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 jqid(innerId).draggable();
             } else {
                 popup.draggable();
+		if(opts.closeOnClick) {
+		    HU.setPopupObject(popup);
+		}
                 //          popup.resizable({containment: 'parent',handles: 'se',});
             }
         } else if(!opts.sticky) {
