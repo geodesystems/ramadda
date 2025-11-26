@@ -3009,14 +3009,17 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (noNav ||
 			what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
 			String id = "heading-" +Utils.makeID(getHeadingLabel(blob));
-                        if(!what.startsWith("heading2") && !noNav)
+                        if(!what.startsWith("heading2") && !noNav) {
 			    defineHeading.accept(buff, blob, 1);
+			}
 			buff.append(HU.anchorName(id));
 			blob = HU.span(blob,HU.attrs("class","ramadda-text"));
 			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
 			attrs = HU.attrs("id",id);
-			clazz+=" ramadda-linkable ";
-                    }
+			if(!noNav) {
+			    clazz+=" ramadda-linkable ";
+			}
+		    }
 		    if(what.startsWith("noheading")) blob = "";
 		    blob = blob.replace("<label>","").replace("</label>","");
                     buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)+attrs),
