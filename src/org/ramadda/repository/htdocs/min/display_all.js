@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 25 12:07:03 MST 2025";
+var build_date="RAMADDA build date: Wed Nov 26 10:03:54 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -35439,12 +35439,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.jq(ID_SEARCH_FORM).hide();
 	},
 	initHtml: function() {
+	    let _this=this;
 	    this.jq(ID_ANCESTOR).click((event) =>{
 		let aid = this.domId(ID_ANCESTOR);
 		let root = this.getRamadda().getRoot();
 		RamaddaUtils.selectInitialClick(event,aid,aid,true,null,null,'',root);
 	    });
 
+	    this.jq(ID_ANCESTOR+'_clear').click(()=>{
+		RamaddaUtils.clearSelect(this.domId(ID_ANCESTOR));
+		this.setProperty('ancestor',null);
+	    });
 	    this.setFormVisible(this.getFormOpen());
 	    this.jq(ID_SEARCH_HIDEFORM).click(()=>{
 		this.setFormVisible(!this.formShown);
@@ -35815,6 +35820,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    settings.ancestor = this.getAncestor();
+
 	    let orderBy = this.jq(ID_SEARCH_ORDERBY).val();
 	    if(orderBy) {
 		let ascending = orderBy.indexOf("_ascending")>=0;
@@ -36220,6 +36226,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 
 	    let settings = this.getSearchSettings();
+
 	    let mtdTags = searchBar.find(HU.attrSelect("metadata"));
 	    mtdTags.remove();
 	    if(settings.metadata) {
@@ -36241,6 +36248,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
+
 	    if(this.getMainAncestor()) {
 		let main  = this.getMainAncestor();
 		if(main=='this') {
@@ -36248,6 +36256,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 		jsonUrl+='&mainancestor='+ main;
 	    }
+
 	    let selectedAncestors  =this.jq(ID_SEARCH_ANCESTORS_MENU).val();
 	    if(selectedAncestors) {
 		selectedAncestors.forEach(id=>{
@@ -36486,9 +36495,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty('ancestor');
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty('ancestorName');		
 		let aid = this.domId(ID_ANCESTOR);
-		let clear = HU.href('javascript:void(0);',HU.getIconImage(ICON_ERASER),
-				    [ATTR_ONCLICK,'RamaddaUtils.clearSelect(' + HU.squote(aid) +');',
-				     ATTR_TITLE,'Clear selection']);
+		let clear = HU.span([ATTR_TITLE,'Clear selection',
+				     ATTR_CLASS,CLASS_CLICKABLE,
+				     ATTR_ID,this.domId(ID_ANCESTOR+'_clear')],HU.getIconImage(ICON_ERASER));
 		let input = HU.input('',name??'',[ATTR_READONLY,null,
 						  ATTR_PLACEHOLDER,'Select',
 						  ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
@@ -38050,6 +38059,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    } else {
 		this.setContents(this.getDefaultHtml());
 	    }
+
 
 
 	    if(this.getDoPageSearch() && this.getAutoFocus()) {
