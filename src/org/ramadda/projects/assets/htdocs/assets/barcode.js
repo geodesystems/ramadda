@@ -22,8 +22,8 @@ window.onerror = function (message, source, lineno, colno, error) {
     barcodeError(`Error: ${message} at ${source}:${lineno}:${colno}`);
 };
 
-window.addEventListener("unhandledrejection", event => {
-    barcodeError("Unhandled rejection: " + event.reason);
+window.addEventListener('unhandledrejection', event => {
+    barcodeError('Unhandled rejection: ' + event.reason);
 });
 
 var ID_ASSETS_NAME = 'name';
@@ -95,7 +95,7 @@ BarcodeReader.prototype = {
 	    });
 
 	    const constraints = {
-		video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+		video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
 	    };
 
 	    let cnt = 0;
@@ -159,16 +159,16 @@ function AssetHandler (id,args) {
 	return;
     }
 
-    jqid(this.id).append(HU.div([ATTR_ID,this.buttonId],"Scan bar code"));
+    jqid(this.id).append(HU.div([ATTR_ID,this.buttonId],'Scan bar code'));
     this.videoOpen=false;
     jqid(this.buttonId).button().click(()=>{
 	if(this.videoOpen) {
-	    jqid(this.buttonId).html("Scan bar code");
+	    jqid(this.buttonId).html('Scan bar code');
 	    jqid(this.contentsId).hide(500);
 	    if(this.dialog) this.dialog.remove();
 	    this.dialog=null;
 	} else {
-	    jqid(this.buttonId).html("Close");
+	    jqid(this.buttonId).html('Close');
 	    if(this.barcodeReader) {
 		jqid(this.contentsId).show(500);
 		this.showVideo();
@@ -193,9 +193,9 @@ AssetHandler.prototype = {
 				HU.span([ATTR_ID,buttonId],'Scan Bar Code'));
 	jqid(buttonId).button().click(()=>{
 	    let html='';
-	    html=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
-					   CSS_MARGIN,HU.px(5)),
-			 ATTR_ID,this.id+'_cancel'],'Cancel');
+	    html=HU.center(HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
+						     CSS_MARGIN,HU.px(5)),
+				   ATTR_ID,this.id+'_cancel'],LABEL_CANCEL));
 	    html+=HU.center(HU.tag(TAG_VIDEO,
 				   [ATTR_CLASS,'assets_editmode_barcode_video',
 				    ATTR_ID,this.videoId,
@@ -203,7 +203,8 @@ AssetHandler.prototype = {
 				    'muted',null,
 				    'playsinline']));
 	    let dialog = this.dialog = HU.makeDialog({content:html,
-						      anchor:jqid(buttonId),at:'left top',
+						      anchor:jqid(buttonId),
+						      at:POS_LEFT_TOP,
 						      draggable:true,
 						      showCloseIcon:true,
 						      title:'Scan bar code',header:true});	
@@ -272,7 +273,7 @@ AssetHandler.prototype = {
 	const input = document.getElementById(ID_ASSETS_CODE);
 	setTimeout(() => {
 	    input.focus();
-	    input.scrollIntoView({ block: "center" });
+	    input.scrollIntoView({ block: 'center' });
 	}, 300);
 
 	//	this.hideVideo();
@@ -283,8 +284,11 @@ AssetHandler.prototype = {
 		alert('Please enter a bar code');
 		return;
 	    }
-	    let url = HU.url(RamaddaUtil.getUrl('/search/do'),
-			     'forsearch',true,'output','json','type','type_assets_base','max',100,'skip',0,
+	    let url = HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
+			     'forsearch',true,
+			     ARG_OUTPUT,'json',
+			     ARG_TYPE,'type_assets_base',
+			     'max',100,'skip',0,
 			     'search.type_assets_base.asset_id',code);
 	    jqid(ID_SCAN_RESULTS).html('');
 	    let callback = {
@@ -296,19 +300,23 @@ AssetHandler.prototype = {
 						 'var(--basic-border)',
 						 CSS_PADDING,HU.px(5))],
 					 'No assets found. Do you want to create a new asset?');
-			msg+=HU.center(HU.div([ATTR_ID,"newasset"],"Yes"));
+			msg+=HU.center(HU.div([ATTR_ID,'newasset'],'Yes'));
 			jqid(ID_SCAN_RESULTS).html(msg);
-			jqid("newasset").button().click(()=>{
+			jqid('newasset').button().click(()=>{
 			    this.dialog.remove();
 			    this.dialog=null;
 			    this.makeNewDialog(code);
 			});
 			return;
 		    }
-		    let html = HU.center(HU.b('Results'));
+		    let html = '';
 		    entries.forEach(entry=>{
 			html+=HU.div([],entry.getLink(null,true,[ATTR_CLASS,'ramadda-decor ramadda-clickable']));
 		    });
+		    html = HU.center(HU.b('Results')) +
+			HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
+						  CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+			       html);
 		    jqid(ID_SCAN_RESULTS).html(HU.div([ATTR_STYLE,
 						       HU.css(CSS_BORDER_TOP,
 							      'var(--basic-border)',
@@ -427,7 +435,7 @@ AssetHandler.prototype = {
 	const input = document.getElementById(ID_ASSETS_NAME);
 	setTimeout(() => {
 	    input.focus();
-	    input.scrollIntoView({ block: "center" });
+	    input.scrollIntoView({ block: 'center' });
 	}, 300);
 
 	this.hideVideo();
