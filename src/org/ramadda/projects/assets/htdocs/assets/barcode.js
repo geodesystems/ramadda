@@ -10,7 +10,9 @@ function barcodeInfo() {
     console.log(s);
 }
 
+
 function barcodeError() {
+    console.trace()
     let s = Utils.join(arguments,' ');
     jqid('barcodedebug').append(HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,'red')],s));
     console.error(s);
@@ -99,8 +101,9 @@ BarcodeReader.prototype = {
 	    let cnt = 0;
 	    let seen = {};
 	    //	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
-	    this.codeReader.decodeFromConstraints(constraints,videoElement, (result, error, controls) => {
+	    let handleResponse = (result, error, controls) => {
 		if (result) {
+		    //		    barcodeInfo('result',result);
 		    if(!callback(result,controls)) {
 			//		controls.stop();
 		    }
@@ -111,7 +114,13 @@ BarcodeReader.prototype = {
 			seen[s] = true;
 		    }
 		}
-	    },hints);
+	    };
+	    try {
+		await this.codeReader.decodeFromConstraints(constraints,videoElement, handleResponse,hints);
+	    } catch(err) {
+//		console.log('error calling decodeFromConstraints. trying default camera',err);
+		this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, handleResponse,hints);
+	    }
 	} catch(err) {
 	    barcodeError('Barcode error starting scanner: '+ err);
 	}
@@ -180,16 +189,19 @@ AssetHandler.prototype = {
 	let buttonId= HU.getUniqueId('editbutton');
 	this.id = HU.getUniqueId('editmode');
 	this.videoId= this.id+'_video';
-	this.assetIdInput.after(HU.space(2)+HU.span([ATTR_ID,buttonId],'Scan Bar Code'));
+	this.assetIdInput.after(SPACE2+
+				HU.span([ATTR_ID,buttonId],'Scan Bar Code'));
 	jqid(buttonId).button().click(()=>{
 	    let html='';
-	    html=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_MARGIN,HU.px(5)),
+	    html=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,
+					   CSS_MARGIN,HU.px(5)),
 			 ATTR_ID,this.id+'_cancel'],'Cancel');
-	    html+=HU.center(HU.tag(TAG_VIDEO,[ATTR_CLASS,'assets_editmode_barcode_video',
-					      ATTR_ID,this.videoId,
-					      'autoplay',null,
-					      'muted',null,
-					      'playsinline',null]));
+	    html+=HU.center(HU.tag(TAG_VIDEO,
+				   [ATTR_CLASS,'assets_editmode_barcode_video',
+				    ATTR_ID,this.videoId,
+				    'autoplay',null,
+				    'muted',null,
+				    'playsinline']));
 	    let dialog = this.dialog = HU.makeDialog({content:html,
 						      anchor:jqid(buttonId),at:'left top',
 						      draggable:true,
@@ -213,16 +225,21 @@ AssetHandler.prototype = {
 		barcodeInfo('Scanned:', result.getText(), 'Format:', result.getBarcodeFormat());
 		cancel();
 		this.assetIdInput.val(result.getText());
+		this.assetIdInput.css(CSS_BACKGROUND,'yellow');
+		setTimeout(()=>{
+		    this.assetIdInput.css(CSS_BACKGROUND,'#fff');
+		},3000);
+		
 	    };
 	    this.barcodeReader = new BarcodeReader(this.videoId,callback);
 	});
     },
     initScanMode:function() {
 	let header =  'Scan a bar code to search for asset or ' +
-	    HU.span([ATTR_ID,'search',
+	    HU.span([ATTR_ID,'searchasset',
 		     ATTR_CLASS,'assets-create-link'],'search');
 	this.makeVideo({header:header});
-	jqid('search').click(()=>{
+	jqid('searchasset').click(()=>{
 	    return this.handleBarcode('');
 	});
 
@@ -230,20 +247,22 @@ AssetHandler.prototype = {
     handleScanMode:function(code) {
 	var ID_SCAN_RESULTS ='scanresults';
 	let rows =[];
-	rows.push(HU.b('Barcode: ') +
-		  HU.input('',this.opts.code,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(300)),
+	rows.push(HU.boldLabel('Barcode') +
+		  HU.input('',this.opts.code,[ATTR_STYLE,
+					      HU.css(CSS_WIDTH,HU.px(300)),
 					      ATTR_ID,ID_ASSETS_CODE,
 					      ATTR_PLACEHOLDER,'Enter bar code']));
-	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Find Asset') +
+	let buttons  =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,'display-button')], 'Find Asset') +
 	    SPACE2 +
-	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,'display-button')], LABEL_CANCEL);
 	rows.push(HU.center(buttons));
 	rows.push(HU.div([ATTR_ID,ID_SCAN_RESULTS]));
-	let html = Utils.wrap(rows,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(8))]),HU.close(TAG_DIV));
+	let html = Utils.wrap(rows,'<div style="margin-bottom:8px;">',HU.close(TAG_DIV));
         html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8))],html);
 	let anchor = jqid(this.videoId);
 	let title = 'Find Asset';
 	let dialog = this.dialog = HU.makeDialog({content:html,
+						  draggable:true,
 						  anchor:anchor,
 						  at:'center top',
 						  my:'center top',						  
@@ -265,11 +284,7 @@ AssetHandler.prototype = {
 		return;
 	    }
 	    let url = HU.url(RamaddaUtil.getUrl('/search/do'),
-			     'forsearch','true',
-			     ARG_OUTPUT,'json',
-			     'type','type_assets_base',
-			     'max',100,
-			     'skip','0',
+			     'forsearch',true,'output','json','type','type_assets_base','max',100,'skip',0,
 			     'search.type_assets_base.asset_id',code);
 	    jqid(ID_SCAN_RESULTS).html('');
 	    let callback = {
@@ -277,7 +292,8 @@ AssetHandler.prototype = {
 		    let entries = list.getEntries();
 		    if(entries.length==0) {
 			let msg = HU.div([ATTR_STYLE,
-					  HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,
+					  HU.css(CSS_BORDER_TOP,
+						 'var(--basic-border)',
 						 CSS_PADDING,HU.px(5))],
 					 'No assets found. Do you want to create a new asset?');
 			msg+=HU.center(HU.div([ATTR_ID,"newasset"],"Yes"));
@@ -293,7 +309,10 @@ AssetHandler.prototype = {
 		    entries.forEach(entry=>{
 			html+=HU.div([],entry.getLink(null,true,[ATTR_CLASS,'ramadda-decor ramadda-clickable']));
 		    });
-		    jqid(ID_SCAN_RESULTS).html(HU.div([ATTR_STYLE,HU.css(CSS_BORDER_TOP,CSS_BASIC_BORDER,CSS_PADDING,HU.px(5))],html));
+		    jqid(ID_SCAN_RESULTS).html(HU.div([ATTR_STYLE,
+						       HU.css(CSS_BORDER_TOP,
+							      'var(--basic-border)',
+							      CSS_PADDING,HU.px(5))],html));
 		}
 	    }
 	    let entryList = new EntryList(getGlobalRamadda(), url,callback,true);
@@ -307,10 +326,10 @@ AssetHandler.prototype = {
         });
 
 
-	dialog.find('.ramadda-button-ok').button().click(()=>{
+	dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 	    doSearch();
 	});
-        dialog.find('.ramadda-button-cancel').button().click(()=>{
+        dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 	    this.showVideo();
             this.dialog.remove();
 	    this.dialog=null;
@@ -319,11 +338,7 @@ AssetHandler.prototype = {
     makeVideo:function(args) {
 	let html = HU.center(HU.div([ATTR_ID,this.headerId]));
 	this.videoId= this.id+'_video';
-	html+=HU.center(HU.tag(TAG_VIDEO,[ATTR_CLASS,'assets_editmode_barcode_video',
-					  ATTR_ID,this.videoId,
-					  'autoplay',null,
-					  'muted',null,
-					  'playsinline',null]));
+	html+=HU.center("<video class=assets_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
 	jqid(this.id).append(HU.div([ATTR_ID,this.contentsId],html));
 	try {
 	    this.initVideo(args);
@@ -337,9 +352,8 @@ AssetHandler.prototype = {
 	let title = 'create an asset';
 	if(this.opts.defaultTypeLabel)
 	    title = 'create a ' + this.opts.defaultTypeLabel;
-	let header = args.header ?? 'Scan a bar code or directly ' +
-	    HU.span([ATTR_ID,'create',
-		     ATTR_CLASS,'assets-create-link'],title);
+	let header = args.header ?? 'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
+									      ATTR_CLASS,'assets-create-link'],title);
 	jqid(this.headerId).html(header);
 	jqid('create').click(()=>{
 	    return this.handleBarcode('');
@@ -363,13 +377,14 @@ AssetHandler.prototype = {
 	$(this.barcodeReader.videoElement).show();
     },    
     handleBarcode:function(code,controls) {
-	if(this.dialog) return;
+	if(this.dialog) {
+	    this.dialog.remove();
+	}
 	this.opts.code = code;
 	if(this.opts.scanMode) {
 	    this.handleScanMode(code,controls);
 	    return;
 	}
-
 	this.makeNewDialog(code,controls);
     },
 
@@ -392,10 +407,10 @@ AssetHandler.prototype = {
 				  ATTR_ID,ID_ASSETS_NAME,
 				  ATTR_PLACEHOLDER,'Enter name']));
 	rows.push(HU.checkbox('',[ATTR_ID,ID_ASSETS_ADDGEOLOCATION],true,'Add map location'));
-	let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'Create Asset') + SPACE2 +
-	    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');
+	let buttons  =HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,'display-button')], 'Create Asset') + SPACE2 +
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,'display-button')], LABEL_CANCEL);
 	rows.push(HU.center(buttons));
-	let html = Utils.wrap(rows,HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(8))]),HU.close(TAG_DIV));
+	let html = Utils.wrap(rows,'<div style="margin-bottom:8px;">',HU.close(TAG_DIV));
         html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(8))],html);
 	let anchor = jqid(this.videoId);
 	let title = 'Create Asset';
@@ -403,6 +418,7 @@ AssetHandler.prototype = {
 	    title = 'Create '+ this.opts.defaultTypeLabel;
 	let dialog = this.dialog = HU.makeDialog({content:html,
 						  anchor:anchor,
+						  draggable:true,
 						  at:'center top',
 						  my:'center top',
 						  showCloseIcon:false,
@@ -416,7 +432,7 @@ AssetHandler.prototype = {
 
 	this.hideVideo();
 	document.body.style.position = 'static';
-	dialog.find('.ramadda-button-ok').button().click(()=>{
+	dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 	    if(!this.opts.defaultType) {
 		this.opts.type  = jqid(ID_ASSETS_TYPE).val();
 	    }
@@ -435,7 +451,7 @@ AssetHandler.prototype = {
 	    this.dialog=null;
 	    this.createEntry();
 	});
-        dialog.find('.ramadda-button-cancel').button().click(()=>{
+        dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 	    this.showVideo();
             this.dialog.remove();
 	    this.dialog=null;
@@ -444,8 +460,8 @@ AssetHandler.prototype = {
     },
 
     createEntry:function() {
-	let args =['group',this.opts.entryid,
-		   'type',this.opts.type??this.opts.defaultType,
+	let args =['defaultgroup',this.opts.entryid,
+		   ARG_TYPE,this.opts.type??this.opts.defaultType,
 		   'asset_id',this.opts.code];
 	if(Utils.stringDefined(this.opts.name)) {
 	    args.push(ID_ASSETS_NAME,this.opts.name);
@@ -454,7 +470,7 @@ AssetHandler.prototype = {
 	    args.push('latitude',Utils.trimDecimals(this.opts.geolocation.latitude,5),
 		      'longitude',Utils.trimDecimals(this.opts.geolocation.longitude,5));				 
 	}
-	let url = '/repository/entry/form';
+	let url = RamaddaUtil.getUrl('/entry/form');
 	url = HU.url(url,args);
 	window.location.href=url;
 
