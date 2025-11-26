@@ -2017,6 +2017,9 @@ WikiEditor.prototype = {
 	    $.getJSON(url, (data) =>{
 		this.wikiAttributesFromServer= data;
 		callback(merge(this.wikiAttributesFromServer[tagInfo.tag]));
+	    }).fail(data=>{
+		alert("Error loading wiki tags");
+		console.dir(data);
 	    });
 	    return false;
 	}
@@ -2117,10 +2120,10 @@ WikiEditor.prototype = {
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_ID,this.domId(ID_EXPAND_WIKI_MENU)], 
 			     HU.getIconImage("fas fa-maximize"));
-	let header = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search',
+	let header = HU.input('','',[ATTR_PLACEHOLDER,'Search',
 					       ATTR_ID,this.domId('displaysearch'),
 					       ATTR_WIDTH,10])+
-			       HU.space(2) + expand);
+			       HU.space(2) + expand;
 
 
 	let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],

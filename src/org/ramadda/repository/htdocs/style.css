@@ -910,6 +910,7 @@ i.fa, i.fas,i.fab {
 
 .ramadda-links a {
     color: var(--nav-link-color);
+    width:100%;
 }
 
 .ramadda-links a:hover {

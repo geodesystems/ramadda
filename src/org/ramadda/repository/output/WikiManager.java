@@ -1608,8 +1608,24 @@ public class WikiManager extends RepositoryManager
 	String label = Utils.makeLabel(tag.label) + " properties";
 	tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
 	for (int j = 0; j < tag.attrsList.size(); j += 2) {
-	    tmp.add(JU.map(Utils.makeListFromValues("p",JU.quote(tag.attrsList.get(j)),"ex",
-						    JU.quote(tag.attrsList.get(j + 1)))));
+	    String ex = tag.attrsList.get(j + 1);
+	    String tt=null;
+	    if(ex!=null) {
+		int index = ex.indexOf("<tt>");
+		if(index>=0) {
+		    tt=ex.substring(index+"<tt>".length());
+		    tt= tt.replace("</tt>","");
+		    ex  =ex.substring(0,index);
+		}
+	    }		
+	    List attrs = Utils.makeListFromValues("p",
+						  JU.quote(tag.attrsList.get(j)),
+						  "ex",
+						  JU.quote(ex));
+	    if(tt!=null) {
+		Utils.add(attrs,"tt",JU.quote(tt));
+	    }
+	    tmp.add(JU.map(attrs));
 	}
 	tags.add(tag.tag);
 	tags.add(JU.list(tmp));
@@ -2013,10 +2029,34 @@ public class WikiManager extends RepositoryManager
 			   "#FFECEE", // Pale Blush
 			   "#EFEBFA", // Lavender Mist
 			   "#FFF8D9", // Butter Cream
-			   "#F3F0FA", // Cloud Lilac
-			   "#F8E6E0"  // Dusty Rose
+			   "#E9F7DF", // Fresh Pear (pastel yellow-green)
+			   "#E4EAF0", // Soft Slate (cool gray-blue)
+			   "#E7E4FB", // Periwinkle Glaze (soft blue-violet)
+			   "#F5EDDD", // Sand Drift (warm beige)
+			   "#DFF4F4"  // Frosted Teal (mint-teal blend)
 	    };
 
+
+	    final String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
+	    final String style = getProperty(wikiUtil,props,"style","");
+	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",false);
+	    final boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
+	    final boolean addAncestor = getProperty(wikiUtil,props,"addAncestorToSearchLink",
+					      getProperty(wikiUtil,props,"addAncestor",false));		    
+	    Request countRequest = null;
+	    boolean doNewWay = false;
+	    String _ancestor = getProperty(wikiUtil,props,"ancestor",null);
+	    if(_ancestor!=null) {
+		if(entry!=null) _ancestor=_ancestor.replace("${this}",entry.getId());
+		doNewWay = true;
+		countRequest = new Request(getRepository(),request.getUser());
+		countRequest.put(ARG_ANCESTOR,_ancestor);
+	    }
+	    final String  ancestor = _ancestor;
+
+	    String theClass=" ramadda-typecount-block ";
+	    if(addSearch) theClass+=" ramadda-clickable  ramadda-hoverable ";
+	    final String clazz=theClass;
 
 	    Function<List<EntryUtil.EntryCount>,String> apply = (handlers)->{
 		try {
@@ -2032,12 +2072,9 @@ public class WikiManager extends RepositoryManager
 			typeCount++;
 		    }
 		    
-
-		    if(count==0 && getProperty(wikiUtil,props,"hideWhenZero",false)) return "";
+		    if(count==0 && hideWhenZero) return "";
 		    if(typeCount>1) label="Count";	
 		    label = getProperty(wikiUtil,props,"label",label);
-		    String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
-		    String style = getProperty(wikiUtil,props,"style","");
 		    String scount  =""+count;
 		    if(getProperty(wikiUtil,props,"animated",true))  {
 			scount = wikiUtil.getHandler("odometer").handle(wikiUtil, "odometer","count="+scount);
@@ -2045,10 +2082,6 @@ public class WikiManager extends RepositoryManager
 		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
 
 		    String html =  template.replace("${count}",scount).replace("${label}",label);
-		    String clazz=" ramadda-typecount-block ";
-		    boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
-		    boolean addAncestor = getProperty(wikiUtil,props,"addAncestor",false);		    
-		    if(addSearch) clazz+=" ramadda-clickable  ramadda-hoverable ";
 		    if(typeCount==1 && lastCount!=null) {
 			String icon = lastCount.getTypeHandler().getIconProperty(null);
 			if (icon == null) {
@@ -2069,7 +2102,7 @@ public class WikiManager extends RepositoryManager
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"
 			    + lastCount.getTypeHandler().getType();
-			if(addAncestor) url = HU.url(url,"ancestor",entry.getId());
+			if(addAncestor && ancestor!=null) url = HU.url(url,"ancestor",ancestor);
 			html = HU.href(url ,html,HU.title("Search"));
 		    }
 		    return html;
@@ -2080,15 +2113,6 @@ public class WikiManager extends RepositoryManager
 
 	    String types = getProperty(wikiUtil,props,"types","").trim();
 	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
-	    Request countRequest = null;
-	    boolean doNewWay = false;
-	    String ancestor = getProperty(wikiUtil,props,"ancestor",null);
-	    if(ancestor!=null) {
-		if(entry!=null) ancestor=ancestor.replace("${this}",entry.getId());
-		doNewWay = true;
-		countRequest = new Request(getRepository(),request.getUser());
-		countRequest.put(ARG_ANCESTOR,ancestor);
-	    }
 
 	    if(!types.equals("*")) {
 		List<String> tmp = new ArrayList<String>();
@@ -2100,48 +2124,23 @@ public class WikiManager extends RepositoryManager
 		    countRequest.put(ARG_TYPE,Utils.join(tmp,","));
 	    }
 	    
+	    List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
 	    if(doNewWay) {
 		List<EntryUtil.EntryCount> counts = getSearchManager().getEntryCounts(countRequest);
-		if(topCount>0) {
-		    List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
-		    List<EntryUtil.EntryCount>entryCounts = new ArrayList<EntryUtil.EntryCount>();
-		    for(EntryUtil.EntryCount count: counts) {
-			if(except.contains(count.getTypeHandler().getType())) continue;
-			sort.add(new Utils.ObjectSorter(count,count.getCount(),false));
-		    }
-		    Collections.sort(sort);
-		    for(int i=0;i<topCount && i<sort.size();i++) {
-			EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)sort.get(i).getObject();
-			List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
-			tmp.add(entryCount);
-			if(prefix!=null) {
-			    sb.append(wikify(request,prefix.replace("\\n","\n")));
-			    prefix=null;
-			}
-			sb.append(apply.apply(tmp));
-		    }
-		    if(sort.size()>0 && suffix!=null) {
-			sb.append(wikify(request,suffix.replace("\\n","\n")));
-			suffix=null;
-		    }
-		    return sb.toString();
+		for(EntryUtil.EntryCount count: counts) {
+		    if(except.contains(count.getTypeHandler().getType())) continue;
+		    sort.add(new Utils.ObjectSorter(count,count.getCount(),false));
 		}
-	    }
-
-	    List<TypeHandler> handlers = null;
-	    //	    List<EntryUtil.EntryCount> entryCounts=null;
-	    if(types.equals("*")) {
-		handlers=getRepository().getTypeHandlers();
-	    }  else {
-		handlers = new ArrayList<TypeHandler>();
-		for(TypeHandler handler: getRepository().getTypes(types)) {
-		    if(except.contains(handler.getType())) continue;
-		    handlers.add(handler);
+	    } else {
+		List<TypeHandler> handlers = null;
+		if(types.equals("*")) {
+		    handlers=getRepository().getTypeHandlers();
+		}  else {
+		    handlers = new ArrayList<TypeHandler>();
+		    for(TypeHandler handler: getRepository().getTypes(types)) {
+			handlers.add(handler);
+		    }
 		}
-	    }
-	    if(topCount>0) {
-		List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
-		List<EntryUtil.EntryCount>entryCounts = new ArrayList<EntryUtil.EntryCount>();
 		for(TypeHandler handler: handlers) {
 		    if(except.contains(handler.getType())) continue;
 		    int count = getEntryUtil().getEntryCount(request,handler);
@@ -2150,21 +2149,19 @@ public class WikiManager extends RepositoryManager
 			sort.add(new Utils.ObjectSorter(entryCount,count,false));
 		    }
 		}
-		Collections.sort(sort);
-		for(int i=0;i<topCount && i<sort.size();i++) {
-		    EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)sort.get(i).getObject();
-		    List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
-		    tmp.add(entryCount);
-		    sb.append(apply.apply(tmp));
-		}
-		if(sort.size()>0) {
-		    if(suffix!=null) {
-			sb.append(wikify(request,suffix.replace("\\n","\n")));
-			suffix=null;
-		    }
-		}
-	    } else {
-//		sb.append(apply.apply(handlers));
+	    }
+	    Collections.sort(sort);
+	    int count=0;
+	    for(Utils.ObjectSorter obj: sort) {
+		if(topCount>0 && ++count>topCount) break;
+		EntryUtil.EntryCount entryCount = (EntryUtil.EntryCount)obj.getObject();
+		List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
+		tmp.add(entryCount);
+		sb.append(apply.apply(tmp));
+	    }
+	    if(sort.size()>0 && suffix!=null) {
+		sb.append(wikify(request,suffix.replace("\\n","\n")));
+		suffix=null;
 	    }
 	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LINK)) {
@@ -8282,6 +8279,10 @@ public class WikiManager extends RepositoryManager
         StringBuilder tags2 = new StringBuilder();
         StringBuilder tags3 = new StringBuilder();
         StringBuilder tags4 = new StringBuilder();	
+
+	Utils.UniFunction<String,String> hdr = (title)->{
+	    return HU.div(HU.b(title),HU.attrs("class","wiki-editor-popup-link"));
+	};
 	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,"");
 	};
@@ -8297,6 +8298,7 @@ public class WikiManager extends RepositoryManager
 	};
 
         Utils.appendAll(tags1,
+			hdr.call("Layout:"),
 			l2.call("Section", "Section wrapper. use +section-map for a map bg\nimg:section.png","+section title={{name}}_newline__newline_", "-section"),
 			l2.call( "Frame", "Full page framed section","+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
 			l2.call( "Table", "HTML table","+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
@@ -8308,28 +8310,15 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
 			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") ,
-			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1_nl_* bullet 2_nl_** 2 level_nl_", ""),
-			l2.call( "Checkbox list", "Checkbox list. One per line","*+ on bullet 1_nl_*- off bullet 2_nl_**- 2 level_nl_", ""),
-			l2.call("Active checklist","Make the checklist active",":property checklistActive true_nl_",""),
-			l2.call("User note field","Make a user input field",":user-note rows=1 size=60 #id=\"some id\" #placeholder=\"some label\" #buttons=true_nl_",""),			
-			l2.call( "IFrame", "Iframe",":iframe URL  height=\"600px\" class=\"ramadda-iframe-progress\" #style=\"\" ", ""),
-		
-			l2.call( "Language block","Language block",
-				 "+lang en|es|fr_nl__nl_", "-lang"),
-			l2.call( "Set the language","Set the language for a page",
-				 ":setlang en|es|fr", ""),
-			l2.call( "Language switcher","Add language switching widget",
-				 ":langswitcher en,es,fr", ""),
-			l2.call( "Disable translation","Turn off language translations",
-				 ":langdisabled", ""),
-			l2.call( "Comment section","Commented out section",
-				 "+skip_nl__nl_", "-skip"),
-			l2.call( "Inline comment","Inline commented",
-				 ":rem comment", "")			
-
+			l2.call( "IFrame", "Iframe",":iframe URL  height=\"600px\" class=\"ramadda-iframe-progress\" #style=\"\" ", "")
 			); 
 
         Utils.appendAll(tags2,
+			hdr.call("Format:"),
+			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1_nl_* bullet 2_nl_** 2 level_nl_", ""),
+			l2.call( "Checkbox list", "Checkbox list. One per line","*+ on bullet 1_nl_*- off bullet 2_nl_**- 2 level_nl_", ""),
+			l2.call("Active checklist","Make the checklist active",":property checklistActive true_nl_",""),
+
 			l2.call("Center", "Center text","\\n+center\\n","-center"),
 			l2.call("Center div", "Center the block, not the text","\\n+centerdiv\\n","-centerdiv"),			
 			l2.call("Horizontal layout", "","+hbox #space=10 #style=\"\"\\n", "-hbox"),
@@ -8351,7 +8340,31 @@ public class WikiManager extends RepositoryManager
 			l2.call("Draggable", "A draggable section\nimg:draggable.png","+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
 				"-draggable"));
 
+
+        Utils.appendAll(tags3,
+			hdr.call("Callouts:"),			
+			l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"),
+			l.call( "Box", "+box_nl__nl_", "-box"),
+                        l2.call( "Callout", "Callout box\nimg:callout.png", "+callout_nl__nl_", "-callout"),
+                        l2.call( "Callout info", "Callout box\nimg:calloutinfo.png","+callout-info_nl__nl_", "-callout"),
+                        l2.call( "Callout tip", "Callout box\nimg:callouttip.png","+callout-tip_nl__nl_", "-callout"),
+                        l2.call( "Callout question", "Callout box\nimg:calloutquestion.png","+callout-question_nl__nl_", "-callout"),
+                        l2.call( "Callout warning", "Callout box\nimg:calloutwarning.png","+callout-warning_nl__nl_", "-callout"),
+                        l2.call( "Text Balloon", "Text balloon with avatar\nimg:balloon.png","+balloon-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-balloon"),
+			hdr.call("Translation:"),
+			l2.call( "Language block","Language block",
+				 "+lang en|es|fr_nl__nl_", "-lang"),
+			l2.call( "Set the language","Set the language for a page",
+				 ":setlang en|es|fr", ""),
+			l2.call( "Language switcher","Add language switching widget",
+				 ":langswitcher en,es,fr", ""),
+			l2.call( "Disable translation","Turn off language translations",
+				 ":langdisabled", "")
+			);
+
         Utils.appendAll(tags4,
+			hdr.call("Miscellany:"),
+			l.call("If block", "\\n+if #isgeoreferenced=true #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"),
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
 			l.call("Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    
@@ -8359,40 +8372,13 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #isgeoreferenced=true #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l2.call("User note field","Make a user input field",":user-note rows=1 size=60 #id=\"some id\" #placeholder=\"some label\" #buttons=true_nl_",""),			
+			l2.call( "Comment section","Commented out section",
+				 "+skip_nl__nl_", "-skip"),
+			l2.call( "Inline comment","Inline commented",
+				 ":rem comment", "")						
+);			
 
-        Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
-        String[] colors = new String[] {"gray",  "yellow"};
-	/*
-	  for (String color : colors) {
-	  tags3.append(getWikiEditLink(textAreaId, HU.div("Note "
-	  + color, HU.attrs(
-	  "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
-	  + color)), 
-	  "+note-" + color + "_nl__nl_", "-note",""));
-	  }*/
-
-        Utils.appendAll(tags3, l.call( "Box", "+box_nl__nl_", "-box"));
-	/*
-	  for (String color : colors) {
-	  tags3.append(
-	  getWikiEditLink(
-	  textAreaId, HU.div(
-	  "Box "
-	  + color, HU.attrs(
-	  "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
-	  + color)), "+box-" + color
-	  + "_nl__nl_", "-box",""));
-	  }
-	*/
-
-        Utils.appendAll(tags3,
-                        l2.call( "Callout", "Callout box\nimg:callout.png", "+callout_nl__nl_", "-callout"),
-                        l2.call( "Callout info", "Callout box\nimg:calloutinfo.png","+callout-info_nl__nl_", "-callout"),
-                        l2.call( "Callout tip", "Callout box\nimg:callouttip.png","+callout-tip_nl__nl_", "-callout"),
-                        l2.call( "Callout question", "Callout box\nimg:calloutquestion.png","+callout-question_nl__nl_", "-callout"),
-                        l2.call( "Callout warning", "Callout box\nimg:calloutwarning.png","+callout-warning_nl__nl_", "-callout"),
-                        l2.call( "Text Balloon", "Text balloon with avatar\nimg:balloon.png","+balloon-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-balloon"));
 
         StringBuilder misc1 = new StringBuilder();
         StringBuilder misc2 = new StringBuilder();
@@ -8431,8 +8417,8 @@ public class WikiManager extends RepositoryManager
 			l.call("Break", "\\n:br", ""),
 			l.call("Paragraph", "\\n:p", ""),
 			l2.call("Vertical space", "Add vertical space","\\n:vspace 1em", ""),
-			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
-			l.call("Italic text", "\\'\\'", "\\'\\'"),
+			l.call("Bold text", "_squote__squote__squote_", "_squote__squote__squote_"),
+			l.call("Italic text", "_squote__squote_", "_squote__squote_"),
 			l2.call("FA icon","Font Awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
@@ -8455,7 +8441,8 @@ public class WikiManager extends RepositoryManager
 
         wikiMenuTagsButton = makeMenuButton("Tags",
 					    HU.span(HU.hbox(misc1, misc2,misc3),
-						    HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
+						    HU.attrs("data-title","Tags","class","wiki-menubar-tags")),
+					    true);
 
         String previewButton =
 	    HU.href("#", "Preview",
@@ -8494,8 +8481,8 @@ public class WikiManager extends RepositoryManager
 	etc.append(Utils.join(etcLinks,"<br>"));
 	//	help.append("<div class=ramadda-thin-hr></div><b>Help</b><br>");
 
-	BiConsumer<String,String> makeHelp = (p,title)->{
-	    help.append(HU.href(getRepository().getUrlBase()
+	Utils.TriConsumer<StringBuilder,String,String> makeHelp = (sb,p,title)->{
+	    sb.append(HU.href(getRepository().getUrlBase()
 				+ p, title,
 				"target=_help") + "<br>");
 	};
@@ -8512,39 +8499,51 @@ public class WikiManager extends RepositoryManager
 	  }
 	  }*/
 
-	help.append(HU.div(HU.b("Basics")));
-        makeHelp.accept("/userguide/wiki/wiki.html", "Editor");
-        makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
-        makeHelp.accept("/userguide/wiki/wikitext.html#sections", "Sections");
-        makeHelp.accept("/userguide/wiki/wikitext.html#grid_layout", "Grid layout");
-	help.append(HU.div(HU.b("Entries")));
-        makeHelp.accept("/userguide/wiki/wikientries.html",
+	StringBuilder help1=new StringBuilder();
+	StringBuilder help2=new StringBuilder();
+	StringBuilder help3=new StringBuilder();
+	help1.append(HU.div(HU.b("Basics")));
+        makeHelp.accept(help1,"/userguide/wiki/wiki.html", "Editor");
+        makeHelp.accept(help1,"/userguide/wiki/wikitext.html", "Wiki text");
+        makeHelp.accept(help1,"/userguide/wiki/wikitext.html#sections", "Sections");
+        makeHelp.accept(help1,"/userguide/wiki/wikitext.html#grid_layout", "Grid layout");
+	help2.append(HU.div(HU.b("Entries")));
+        makeHelp.accept(help2,"/userguide/wiki/wikientries.html",
                         "Specifying the entry");
-        makeHelp.accept("/userguide/wiki/wikientries.html#entries",
+        makeHelp.accept(help2,"/userguide/wiki/wikientries.html#entries",
                         "Specifying multiple entries");
-        makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
-	help.append(HU.div(HU.b("Listings")));
-        makeHelp.accept("/entry/types.html", "Entry Types");
-        makeHelp.accept("/metadata/types.html", "Metadata Types");
-        makeHelp.accept("/colortables", "Color Tables");
-        makeHelp.accept("/icons.html", "Icons");	
-        makeHelp.accept("/search/providers", "Search Providers");
+        makeHelp.accept(help2,"/userguide/wiki/wikidisplay.html", "Displays and Charts");
+	help3.append(HU.div(HU.b("Listings")));
+        makeHelp.accept(help3,"/entry/types.html", "Entry Types");
+        makeHelp.accept(help3,"/metadata/types.html", "Metadata Types");
+        makeHelp.accept(help3,"/colortables", "Color Tables");
+        makeHelp.accept(help3,"/icons.html", "Icons");	
+        makeHelp.accept(help3,"/search/providers", "Search Providers");
 
-        wikiMenuEtcButton = makeMenuButton("Misc", etc.toString());
-        wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,true);
+        wikiMenuEtcButton = makeMenuButton("Misc", etc.toString(),false);
+	help.append(HU.hbox(help1,HU.insetDiv(help2,0,10,0,10),help3));
+        wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,false,true);
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
-							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")),true);
+							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")),true,true);
 
     }
 
     private static final String BUTTONCLASS = HU.clazz("ramadda-menubar-button");
 
-    public String makeMenuButton(final String title, final String contents,boolean...first) {
+    public String makeMenuButton(final String title, final String contents,
+				 boolean showSearch,
+				 boolean...first) {
 	String clazz = "ramadda-menubar-button " + (first.length>0 && first[0]?"ramadda-menubar-button-first":"");
 	if(first.length>1 && first[1]) clazz+=" ramadda-menubar-button-last";
 	return HU.makePopup(null,HU.div(title,HU.cssClass(clazz)),
 			    HU.div(contents, "class='wiki-editor-popup'"),
+			    new NamedValue("title",title),
+			    new NamedValue("inPlace",""+(!showSearch)),
+			    new NamedValue("searchSelector",showSearch?".wiki-editor-popup-link":null),
+			    new NamedValue("closeOnClick","true"),			    
+			    new NamedValue("header",showSearch+""),			    
+			    new NamedValue("draggable",showSearch+""),
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }
 
@@ -8600,7 +8599,7 @@ public class WikiManager extends RepositoryManager
 
         String entriesButton = makeMenuButton("Entry",
 					      HU.span(makeTagsMenu(entry,textAreaId),
-						      HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
+						      HU.attrs("data-title","Entries","class","wiki-menubar-tags")),true);
 
         String displaysButton = HU.href("javascript:noop()", "Displays",
 					HU.attrs("id", "displays_button" + textAreaId,
@@ -8689,7 +8688,11 @@ public class WikiManager extends RepositoryManager
                 WikiTags.WikiTag tag          = cat.tags[tagIdx];
                 String  textToInsert = tag.tag;
                 if (tag.attrs.length() > 0) {
-                    textToInsert += " " + tag.attrs;
+		    String text = tag.attrs;
+		    if(text.indexOf("<tt>")>=0) {
+			text=text.replaceAll("<tt>.*?</tt>","");
+		    }
+                    textToInsert += " " + text;
                 }
                 String js2 = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote("{{" + textToInsert + " ")

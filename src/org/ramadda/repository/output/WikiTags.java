@@ -44,7 +44,6 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ARK,null,ATTR_TT,"Add the ARK ID if it is enabled","message","","template","<b>ARK ID:</b> ${ark}"), 
                             new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TT,"Link to entry file",ATTR_TITLE,"",ATTR_SHOWICON,"true","simple","false"),
                             new WikiTag(WIKI_TAG_THIS,"Entry ID",ATTR_TT,"The entry ID"),
-                            new WikiTag(WIKI_TAG_THIS,"Entry ID",ATTR_TT,"The entry ID"),
                             new WikiTag(WIKI_TAG_TOPENTRY,"Top level entry ID",ATTR_TT,"The top level entry ID"),
                             new WikiTag(WIKI_TAG_TYPENAME,null,ATTR_TT,"Entry type name"), 
                             new WikiTag(WIKI_TAG_CHILDREN_COUNT,"Children count",ATTR_TT,"Show the # of children",
@@ -215,18 +214,19 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#"+ATTR_ALIGN,"left|center|right",
 					"#cropHeight","50px","#position","top or 0 -40px"), 
                             new WikiTag(WIKI_TAG_GALLERY,null,
+					"#"+ATTR_COLUMNS, "3",
                                         "#width", "300px",
 					"#height","400px",
 					"#showNonImages","true",
 					"#showPlaceholderImage","true",
-					ATTR_COLUMNS, "3",
 					"#columns","0 - for flow layout",
-					ATTR_POPUP, "true", ATTR_USE_THUMBNAIL, "false",
-					"decorate","true",
-					"imageStyle","",
-					"padding","10px",
-					"style","",
-					ATTR_CAPTION,
+					"#"+ATTR_POPUP, "true",
+					"#"+ATTR_USE_THUMBNAIL, "true",
+					"#decorate","false",
+					"#padding","10px",
+					"#imageStyle","",
+					"#style","",
+					"#"+ATTR_CAPTION,
 					"Figure ${count}: ${name} -  ${startdate format=yyyy-MM-dd} - ${enddate format=yyyy-MM-dd}",
 					"#popupCaption",""),
                             new WikiTag(WIKI_TAG_READER,null,
@@ -372,20 +372,18 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ENTRYID),
                             new WikiTag(WIKI_TAG_ALIAS,null,"name","alias","entry","entry id"),
 			    new WikiTag(WIKI_TAG_TYPECOUNT,"Entry Type Count",
-					"types","comma separated list of types",
-					
-					"#except","comma separated list of types to exclude",
-					"hideWhenZero","false",
-					"template","${icon} ${label}<br>${count}",
-					"addSearchLink","true",
-					"#addAncestor","true",
-					"animated","true",
-					"#doColor","true",
-					"#iconWidth","32px",
-					"style","font-size:140%;vertical-align:top;margin-right:10px;min-width:180px;min-height:3em;padding:10px;text-align:center;border:var(--basic-border);",
-					"#label","",
+					"types","comma separated list of types or super:type or * See Help-Entry Types menu",
+					"#except","comma separated list of types to exclude<tt>See Help-Entry Types</tt>",
+					"#hideWhenZero","false",
+					"#template","${icon} ${label}<br>${count}",
+					"#animated","true",
 					"#topCount","5",
-					"#types","Use * if doing topCount"),
+					"#doColor","true",
+					"#addAncestorToSearchLink","true",
+					"#addSearchLink","true",
+					"#iconWidth","32px",
+					"#style","font-size:140%;",
+					"#label",""),
 
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LINK,"Type Search Link","#label","${icon} Search for ${type}","#type",""),
 
@@ -431,8 +429,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
     };
     //J++
 
-    private static void attr(StringBuilder sb, String name, String value) {
-        Utils.append(sb, " ", name, "=", "&quote;", value, "&quote;", " ");
+    private static void attr(StringBuilder sb, boolean addSpace,String name, String value) {
+        Utils.append(sb, addSpace?" ":"", name, "=", "&quote;", value, "&quote;", " ");
     }    
 
     public static class WikiTag {
@@ -459,12 +457,18 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                 this.attrs = attrs[0];
             } else {
                 StringBuilder sb  = new StringBuilder();
-                int           cnt = 0;
+                int     lineLength = 0;
+		int cnt =0;
+		boolean addSpace = true;
                 for (int i = 0; i < attrs.length; i += 2) {
-                    if (cnt > 80) {
+		    cnt++;
+                    if (lineLength > 80 || cnt>3 ||attrs[i].startsWith("#")) {
                         sb.append("_newline_");
-                        cnt = 0;
-                    }
+			addSpace=false;
+                        lineLength = 0;
+			cnt=0;
+                    } 
+
 
 		    if(attrs[i]!=null && attrs[i].equals(ATTR_TT)) {
 			tt = attrs[i+1];
@@ -472,9 +476,10 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 			continue;
 		    }
 
-                    cnt += attrs[i].length() + attrs[i + 1].length();
+                    lineLength += attrs[i].length() + attrs[i + 1].length();
 		    if(debug) System.err.println("attr:" + attrs[i] + "=" + attrs[i+1]);
-                    attr(sb, attrs[i], attrs[i + 1]);
+                    attr(sb, addSpace,attrs[i], attrs[i + 1]);
+		    addSpace=true;
                 }
                 this.attrs = sb.toString();
 		if(debug) System.err.println("attrs:" + this.attrs);
