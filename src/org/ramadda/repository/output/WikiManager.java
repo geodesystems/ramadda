@@ -7009,10 +7009,12 @@ public class WikiManager extends RepositoryManager
 		    : "down";
 
             }
+
             if (dir == null) {
                 dir = getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_DIR,
 				  getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_ORDER, null));
             }
+
             if (dir == null) {
 		String ascending =  getProperty(wikiUtil, props,  attrPrefix + "ascending",null);
 		if(ascending!=null) {
@@ -7020,13 +7022,16 @@ public class WikiManager extends RepositoryManager
 		    else dir="down";
 		}
             }
+
             //If no dir specified then do ascending if we are sorting by name else do descending
             if (dir == null) {
                 if ((sort.indexOf(ORDERBY_NAME) >= 0)
 		    || (sort.indexOf(ORDERBY_ENTRYORDER) >= 0)) {
                     dir = "up";
                 } else {
-                    dir = "down";
+		    //For now always do dir=up since the entryutil.sort can have up and down
+		    dir="up";
+		    //                    dir = "down";
                 }
             }
             boolean descending = dir.equals("down");

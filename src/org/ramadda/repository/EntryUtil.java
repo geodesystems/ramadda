@@ -622,8 +622,6 @@ public class EntryUtil extends RepositoryManager {
 	
 
     }
-    
-    
 
     private  int compareEntries(Request request,EntryWrapper w1,EntryWrapper w2, CompareOn on) {
 	Entry e1=w1.entry;
@@ -690,21 +688,14 @@ public class EntryUtil extends RepositoryManager {
 	    result = compare(w1.getNumber(),w2.getNumber());
 	} else {
 	    System.err.println("Unknown sort order:" + on.on);
-	    //	    if(true) throw new IllegalStateException("SOrt order:" + on.on);
-	    /*
-	      System.err.println("Unknown sort order:" + on.on);
-	      if(!didit) {
-	      didit = true;
-	      System.err.println("e1:" + e1.getName() +" " + e1.getId());
-	      System.err.println("e2:" + e2.getName() +" " + e2.getId());
-	      System.err.println(Utils.getStack(20));
-	      }
-	    */
 	}
 
 	if(on.ascending!=null) {
-	    if(!on.ascending && result!=0) result = -result;
+	    if(!on.ascending && result!=0) {
+		result = -result;
+	    }
 	}
+
         return result;
     }
     private static boolean didit = false;

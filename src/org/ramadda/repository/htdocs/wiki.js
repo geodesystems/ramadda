@@ -2340,7 +2340,7 @@ WikiEditor.prototype = {
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'orderby',ex:'name|date|changedate|createdate|entryorder|size|number|folder|type|field:<column>',
+	    {p:'orderby',ex:'name_up|date_up|changedate_up|createdate_up|entryorder_up|size_up|number_up|folder_up|type_up|field:<column>',
 	     tt:'sort type: name, date, change date, create date, etc'},
 	    {p:'ascending',ex:'true',tt:'direction of sort.'},
 	    /*
