@@ -10180,7 +10180,7 @@ public class WikiManager extends RepositoryManager
 	style += Utils.getProperty(props, "style","");
         style = style.replaceAll("\n", " ");
         String id = HU.getUniqueId("zoomify_div");
-	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
+	String main = HU.div("",HU.attrs("class","ramadda-zoomify","style",mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
 	HU.open(sb,"center");
@@ -10209,6 +10209,15 @@ public class WikiManager extends RepositoryManager
 	String field = (String) props.get("annotationsField");
 	if(field!=null)
 	    Utils.add(jsonProps,  "annotationsField",JU.quote(field));
+	String singleImage = entry.getStringValue(request,"single_image",null);
+	String enabled = getRepository().getProperty("ramadda.image.slicer",null);
+	if(Utils.get(props,"singleFile",null)==null) {
+	    if(stringDefined(singleImage) && singleImage.equals("true")) {
+		props.put("singleFile","true");
+	    } else 	if(enabled==null) {
+		props.put("singleFile","true");
+	    }
+	}
         Utils.add(jsonProps,
 		  "showNavigator", Utils.getProperty(props,"showNavigator","true"),
 		  "maxZoomLevel",Utils.getProperty(props,"maxZoomLevel", "18"),
