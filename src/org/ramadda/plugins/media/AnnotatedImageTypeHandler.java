@@ -33,8 +33,6 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
         super(repository, entryNode);
     }
 
-
-
     private void initImports(Request request, StringBuilder sb) throws Exception {
         if (request.getExtraProperty("annotation_added") == null) {
 	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"));
@@ -45,7 +43,6 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
             request.putExtraProperty("annotation_added", "true");
         }
     }	
-
 
     private List<String> getProperties(Request request, Entry entry,Hashtable props) throws Exception {
 	List<String> jsonProps = new ArrayList<String>();
@@ -90,7 +87,6 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 	//	HU.close(sb,"center");
 	return id;
     }
-    
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -109,6 +105,5 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 	HU.script(sb, "new RamaddaAnnotatedImage(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
         return sb.toString();
     }
-
 
 }

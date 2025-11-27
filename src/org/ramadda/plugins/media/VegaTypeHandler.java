@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.json.*;
 
 import org.ramadda.data.docs.*;
@@ -36,43 +35,18 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  */
 @SuppressWarnings("unchecked")
 public class VegaTypeHandler extends ConvertibleTypeHandler {
 
-
-    /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public VegaTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -82,34 +56,10 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                                   getPathForRecordEntry(request,entry,  requestProperties));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -127,28 +77,11 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean shouldProcessResource(Request request, Entry entry) {
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tabTitles _more_
-     * @param tabContents _more_
-     */
     @Override
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
@@ -176,8 +109,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -187,25 +118,12 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
      */
     public static class VegaRecordFile extends CsvFile {
 
-        /** _more_ */
         private Repository repository;
 
-        /** _more_ */
         private String dataUrl;
 
-        /** _more_ */
         private Entry entry;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param ctx _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
         public VegaRecordFile(Repository repository, VegaTypeHandler ctx,
                               Entry entry, IO.Path path)
                 throws IOException {
@@ -214,15 +132,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
             this.entry      = entry;
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public List<String> getCsvCommands() throws Exception {
 
@@ -330,8 +239,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
 
         }
 
-
-
         /**
          * This makes the InputStream form either the entry's file (if it has embedded data)
          * or from the dataUrl that is extracted from the vega file in getCsvCommands
@@ -355,7 +262,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
             IO.Path path = getNormalizedFilename();
             return IO.doMakeInputStream(path, buffered);
         }
-
 
     }
 }

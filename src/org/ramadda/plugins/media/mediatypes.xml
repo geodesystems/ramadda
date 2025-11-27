@@ -357,6 +357,10 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -->
      <column name="image_width" type="int" label="Image Width"/>
      <column name="image_height" type="int" label="Image Height"/>     
+     <column name="single_image" type="boolean"
+	     label="Single image"
+	     showinhtml="false"   candisplay="false" default="false"
+	     canlist="false"/>     
      <column name="tiles_url" type="string" label="Tiles URL" canlist="false"/>
      <column name="style" type="string" label="Style" rows="5" canlist="false"/>
      <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     

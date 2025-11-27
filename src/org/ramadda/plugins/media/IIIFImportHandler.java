@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.TypeHandler;
@@ -19,11 +18,9 @@ import org.json.*;
 
 import org.w3c.dom.*;
 
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,37 +36,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  */
 public class IIIFImportHandler extends ImportHandler {
 
-
-    /** _more_ */
     public static final String TYPE_IIIF = "iiif";
 
-    /**
-     * _more_
-     */
     public IIIFImportHandler() {
         super(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public IIIFImportHandler(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -78,19 +58,6 @@ public class IIIFImportHandler extends ImportHandler {
                                            TYPE_IIIF));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param uploadedFile _more_
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
@@ -129,7 +96,6 @@ public class IIIFImportHandler extends ImportHandler {
 	if(topDescriptionS!=null) {
 	    desc.append(topDescriptionS);
 	}
-
 
 	String topLabel = root.optString("label");
         for (int i = 0; i < sequences.length(); i++) {
@@ -196,8 +162,6 @@ public class IIIFImportHandler extends ImportHandler {
                 new Result("", sb));
     }
 
-
-
     public static void addMetadata(Repository repository,Request request,Entry entry,List<JSONArray>metadataList) throws Exception {
 	for(JSONArray metadatas: metadataList) {
 	    for (int k = 0; k < metadatas.length(); k++) {
@@ -253,6 +217,5 @@ public class IIIFImportHandler extends ImportHandler {
 	    }
 	}
     }
-
 
 }

@@ -5,20 +5,16 @@
 
 package org.ramadda.plugins.media;
 
-
 import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Office;
 
 import org.apache.tika.metadata.TikaCoreProperties;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.service.*;
-
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
@@ -34,7 +30,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,7 +41,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
@@ -54,20 +48,10 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class TikaTypeHandler extends GenericTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public TikaTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
         super(repository, entryNode);
     }
-
 
     @Override
     public void handleServiceResults(Request request, Entry entry,
@@ -90,7 +74,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
             created = (String) entry.getAndRemoveTransientProperty(
 								   TikaCoreProperties.CREATED.getName());
         }
-
 
         if (created != null) {
             Date dttm = Utils.parseDate(created);
@@ -136,8 +119,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
 							  false, "page_count", pageCount, null, null, null));
         }
 
-
-
         String author = (String) entry.getAndRemoveTransientProperty(
 								     Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
@@ -179,10 +160,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
 							  null));
         }
 
-
-
-
-
         List<Entry> entries = output.getEntries();
         if (entries.size() == 0) {
             return;
@@ -191,7 +168,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
         if ( !serviceEntry.getResource().getPath().endsWith(".txt")) {
             return;
         }
-
 
         String results =
             IOUtil.readContents(serviceEntry.getFile().toString(),
@@ -218,7 +194,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
             }
         }
 
-
         if ((headerLines.size() > 0)
 	    && !Utils.stringDefined(entry.getDescription())) {
             String desc = "<pre class=\"ramadda-pre\">"
@@ -228,20 +203,11 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
     }
 
-
     private Result makeJsonError(String msg) {
 	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private String clean(String s) {
         if (s == null) {
             return s;
@@ -253,6 +219,5 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
         return s;
     }
-
 
 }

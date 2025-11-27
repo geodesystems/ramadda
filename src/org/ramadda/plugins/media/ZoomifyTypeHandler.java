@@ -5,17 +5,14 @@
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -23,61 +20,25 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- *
- *
- */
 public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHandler {
-
-
-
-    /**  */
     private static int IDX = 0;
-
-    /**  */
     private static final int IDX_IMAGE_WIDTH = IDX++;
-
-    /**  */
     private static final int IDX_IMAGE_HEIGHT = IDX++;
-
-    /**  */
     private static final int IDX_TILES_URL = IDX++;
-
-    /**  */
     private static final int IDX_STYLE = IDX++;
     private static final int IDX_ANNOTATIONS = IDX++;    
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ZoomifyTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
         super(repository, entryNode);
     }
 
-
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
@@ -110,10 +71,6 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         }
     }
 
-
- 
-
-    
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -132,7 +89,6 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         return sb.toString();
     }
 
-
     @Override
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	tags.add(new String[]{"zoomify_collection","zoomify_collection"});
@@ -147,6 +103,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     public void addTagDefinition(List<String>  tags) {
     }
 
+    @Override
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
@@ -157,6 +114,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	if(children.size()==0) {
 	    return "No zoomable images";
 	}
+	//ramadda.image.slicer
         StringBuilder sb     = new StringBuilder();
 	getWikiManager().initZoomifyImports(request,sb);
 	String id = getWikiManager().makeZoomifyLayout(request, children.get(0),sb,props);
@@ -165,6 +123,5 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	HU.script(sb, "new RamaddaZoomify(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
         return sb.toString();
     }
-
 
 }

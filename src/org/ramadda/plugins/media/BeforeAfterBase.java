@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -33,7 +31,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-
 /**
  *
  *
@@ -55,47 +52,20 @@ public class BeforeAfterBase extends GenericTypeHandler {
     /**  */
     public static final String TAG_LEFTRIGHT = "leftright";
 
-
-    /** _more_ */
     private Hashtable<String, Dimension> dimensions = new Hashtable<String,
                                                           Dimension>();
 
-
-    /** _more_ */
     private static int cnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public BeforeAfterBase(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isGroup() {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Dimension getDimensions(Entry entry) throws Exception {
         Dimension dim = dimensions.get(entry.getId());
         if (dim == null) {
@@ -108,7 +78,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
 
         return dim;
     }
-
 
     /**
      *
@@ -173,7 +142,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
             beforeAfterTag = TAG_IMAGEOVERLAY;
         }
 
-
         if (beforeAfterTag.equals(TAG_IMAGEOVERLAY)) {
             return getImageOverlay(wikiUtil, request, originalEntry, entry,
                                    tag, props);
@@ -191,16 +159,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                     tag, props);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Entry> getEntries(Request request, Entry entry)
             throws Exception {
         List<Entry> entries = getEntryManager().getChildren(request, entry);
@@ -217,20 +175,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
         return entriesToUse;
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getImageOverlay(WikiUtil wikiUtil, Request request,
                                   Entry originalEntry, Entry entry,
                                   String tag, Hashtable props)
@@ -268,7 +212,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
                               + getStorageManager().getFileTail(
                                   entry2), ARG_ENTRYID, entry2.getId());
 
-
             Dimension dim1 = getDimensions(entry1);
             Dimension dim2 = getDimensions(entry2);
             Dimension dim = new Dimension(Math.max(dim1.width, dim2.width),
@@ -303,21 +246,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
         return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getBeforeAfter(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -374,7 +302,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
                               + getStorageManager().getFileTail(
                                   entry2), ARG_ENTRYID, entry2.getId());
 
-
             divs.append("<img src=\"" + url1 + "\""
                         + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width)
                         + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, height)
@@ -405,22 +332,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
         return sb.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getLeftRight(WikiUtil wikiUtil, Request request,
                                Entry originalEntry, Entry entry, String tag,
                                Hashtable props)
@@ -443,7 +354,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
                               + getStorageManager().getFileTail(
                                   entry2), ARG_ENTRYID, entry2.getId());
 
-
             sb.append("<table width=100%><tr valign=top>\n");
             sb.append("<td width=50%>");
             sb.append("<img src=\"" + url1 + "\""
@@ -459,6 +369,5 @@ public class BeforeAfterBase extends GenericTypeHandler {
 
         return sb.toString();
     }
-
 
 }

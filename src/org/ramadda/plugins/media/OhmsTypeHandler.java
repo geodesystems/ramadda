@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.json.*;
 
 import org.ramadda.repository.*;
@@ -30,7 +29,6 @@ import java.io.*;
 
 import java.net.URL;
 
-
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -38,7 +36,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  */
@@ -80,14 +77,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
     /**  */
     public static final int IDX_MEDIA_URL = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public OhmsTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -108,7 +97,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 
         return root;
     }
-
 
     /**
      *
@@ -242,11 +230,11 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 		    new JSONObject(jsons);
 
 		String thumbnail =  json.optString("artwork_url",null);
-		
+
 		if(!Utils.stringDefined(thumbnail)) {
 		    thumbnail = JsonUtil.readValue(json,"user.avatar_url",null);
 		}
-		
+
 		if(Utils.stringDefined(thumbnail)) {
 		    getMetadataManager().addThumbnailUrl(request, entry,
 							 thumbnail, "thumnail.jpg");
@@ -263,7 +251,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 	    */
 	}
 
-
 	entry.setValue(IDX_MEDIA_URL, mediaUrl);
 
     }
@@ -272,8 +259,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
     public boolean canAddTranscription(Request request, Entry entry) {
 	return false;
     }
-
-
 
     @Override
     public String getTranscriptions(Request request, Entry entry) throws Exception {
@@ -315,7 +300,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 	return JU.list(points);
     }
 
-
     /**
      *
      * @param entry _more_
@@ -343,21 +327,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -371,7 +340,6 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         if ( !getAccessManager().canDownload(request, entry)) {
             return getPageHandler().showAccessRestricted(entry);
         }
-
 
         Element       root   = getRoot(entry);
         Element       record = XmlUtil.findChild(root, "record");
@@ -411,7 +379,5 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         String embed     = XmlUtil.getGrandChildText(record, "kembed", null);
 	return  addMedia(request, entry, props, mediaType,  embed, mediaUrl,  points);
     }
-
-
 
 }

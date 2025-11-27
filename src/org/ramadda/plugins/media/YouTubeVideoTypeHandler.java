@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
@@ -21,7 +20,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -30,50 +28,30 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
  */
 public class YouTubeVideoTypeHandler extends MediaTypeHandler {
 
-    /** _more_ */
     private static int IDX = MediaTypeHandler.IDX_LAST+1;
 
-    /** _more_ */
     public static final int IDX_ID = IDX++;
 
-    /** _more_ */
     public static final int IDX_START = IDX++;
 
-    /** _more_ */
     public static final int IDX_END = IDX++;
 
-    /** _more_ */
     public static final int IDX_DISPLAY = IDX++;
 
-    /** _more_ */
     public static final int IDX_AUTOPLAY = IDX++;
 
-    /** _more_ */
     private static int idCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public YouTubeVideoTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-
-
-
 
     @Override
     public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
@@ -131,7 +109,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         return playerId;
     }
 
-
     /**
      *
      * @param url _more_
@@ -156,16 +133,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         return id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -190,7 +157,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         if (title != null) {
             title = title.replace("- YouTube", "").trim();
         }
-	    
+
 	if(!stringDefined(entry.getName())) {
 	    if(!stringDefined(title)) {
 		title = "Youtube Video";
@@ -218,19 +185,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
                 thumbUrl, "youtubethumb.jpg");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param wikiTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
@@ -238,12 +192,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         return getSimpleDisplay(request, null, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         String pattern = "^(http|https)://www.youtube.com/(watch\\?v=|v/).*";
         String url     = "https://www.youtube.com/v/q2H_fLuGZgo";

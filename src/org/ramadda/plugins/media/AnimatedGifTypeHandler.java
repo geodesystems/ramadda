@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
@@ -16,15 +15,11 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 public class AnimatedGifTypeHandler extends ImageTypeHandler {
-
 
     public static int IDX = ImageTypeHandler.IDX_LAST + 1;
 
@@ -38,20 +33,10 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 
     public static final int IDX_LOOPDELAY = IDX++;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public AnimatedGifTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
 
     /**
      *

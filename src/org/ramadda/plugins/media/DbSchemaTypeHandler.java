@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
@@ -36,36 +35,20 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
 
-
-
 /**
  *
  *
  */
 public class DbSchemaTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public DbSchemaTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean adminOnly() {
         return true;
     }
-
 
 }

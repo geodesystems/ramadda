@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.json.*;
 
 import org.ramadda.data.docs.*;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  */
 @SuppressWarnings("unchecked")
@@ -45,7 +43,6 @@ public class MermaidTypeHandler extends ConvertibleTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -68,14 +65,11 @@ public class MermaidTypeHandler extends ConvertibleTypeHandler {
 	} else {
 	     text  = entry.getStringValue(request, "mermaid_text","");
 	}
-	
+
 	String attrs = HU.cssClass("mermaid preplain");
 	if(width!=null) attrs+=HU.style("width:" + width);
 	sb.append(HU.pre(text,attrs));
         return sb.toString();
     }
-
-
-
 
 }

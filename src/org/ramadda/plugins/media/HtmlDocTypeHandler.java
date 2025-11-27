@@ -5,16 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
-
 
 import org.w3c.dom.*;
 
@@ -22,14 +19,11 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
 
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.List;
-
-
 
 /**
  *
@@ -37,37 +31,15 @@ import java.util.List;
  */
 public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
 
-
-    /** _more_ */
     private static int IDX = 0;
 
-    /** _more_ */
     public static final int IDX_STYLE = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public HtmlDocTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -90,16 +62,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry, Entries children)
 	throws Exception {
@@ -108,7 +70,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
         if (style.equals("none")) {
             return null;
         }
-
 
 	StringBuffer sb = new StringBuffer();
 	//	sb.append("<br>");
@@ -134,11 +95,9 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
 	    return  new Result("Embedded HTML Page", sb);
         }
 
-
         if (entry.getResource().isUrl()) {
             return null;
         }
-
 
         if (style.equals("embed") || style.equals("full")) {
             String content = getContent(request, entry);
@@ -172,18 +131,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param wikiTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
@@ -195,17 +142,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
         return getContent(request, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getContent(Request request, Entry entry) throws Exception {
         File file = entry.getFile();
         if ( !file.exists()) {

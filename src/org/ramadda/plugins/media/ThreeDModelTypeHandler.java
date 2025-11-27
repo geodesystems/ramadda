@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -31,7 +30,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
 
-
 /**
  *
  *
@@ -54,20 +52,10 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     private static final int IDX_PROPERTIES = IDX++;        
     private static final int IDX_ANNOTATIONS = IDX++;        
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ThreeDModelTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-
 
     /**
      *
@@ -106,7 +94,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         System.err.println(modelFile);
         entry.setValue(IDX_MODEL_FILE, modelFile);
     }
-
 
     /**
      *
@@ -215,22 +202,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -246,14 +217,10 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	return get3DModelWiki(wikiUtil, request,originalEntry, entries,props);
     }
 
-
     public String get3DModelWiki(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, List<Entry> entries,
                                  Hashtable props)
             throws Exception {
-
-
-
 
 	List<String> models = new ArrayList<String>();
 	String[] jsImports = new String[]{
@@ -264,7 +231,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    ".3ds","//unpkg.com/three@0.126.0/examples/js/loaders/TDSLoader.js",
 	    ".obj","//unpkg.com/three@0.126.0/examples/js/loaders/OBJLoader.js",
 	    ".dae","//unpkg.com/three@0.126.0/examples/js/loaders/ColladaLoader.js"};
-
 
         StringBuilder sb = new StringBuilder();
         if (request.getExtraProperty("3dmodeljs") == null) {
@@ -321,7 +287,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    List attrs = Utils.makeListFromValues("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
 					"name",JsonUtil.quote(entry.getName()));
 	    String tmp;
-	    
+
 	    tmp = (String)entry.getValue(request,IDX_CAMERA_POSITION);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
@@ -336,14 +302,12 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    if(thumbnail!=null)
 		Utils.add(attrs,"thumbnail",JsonUtil.quote(thumbnail[0]));
 
-
 	    String include = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_texture");
 	    if(include!=null)
 		Utils.add(attrs,"texture",JsonUtil.quote(include));
 	    include = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_normal");
 	    if(include!=null)
 		Utils.add(attrs,"normal",JsonUtil.quote(include));	    
-
 
 	    String background = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_background");
 	    if(background!=null)
@@ -370,12 +334,11 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		}
 	    }
 
-
 	    tmp= (String)entry.getValue(request,IDX_ANNOTATIONS);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    
-	    
+
 	    List<String> watermarks = getMetadataManager().getMetadataUrls(request, entry, "3dmodel_watermark");
 	    if(watermarks!=null) {
 		for(int i=0;i<watermarks.size();i++) {
@@ -402,7 +365,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		return "Unknown file type:" +file;
 	    }
 	}
-
 
         String id = HU.getUniqueId("model_");
 	sb.append("<div class=ramadda-model>");
@@ -448,8 +410,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         return sb.toString();
     }
 
-
-
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	tags.add(new String[]{"3dmodel","3dmodel \n#width=600 #height=400 #background=f4f4f4 \n" +
 			      "#showAxes=true #axesColor=red \n" +
@@ -485,7 +445,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    return getWikiInclude(wikiUtil, request, originalEntry,  entry,
 				  theTag, props);
 	}
-	
+
 	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
 											   originalEntry, entry, props),
 							       getType());
@@ -495,7 +455,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	}
 	return get3DModelWiki(wikiUtil, request,originalEntry, children,props);
     }
-
 
 }
 

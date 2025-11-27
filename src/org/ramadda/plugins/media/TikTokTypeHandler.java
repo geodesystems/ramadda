@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.metadata.*;
@@ -22,7 +21,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -31,29 +29,18 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
  */
 public class TikTokTypeHandler extends MediaTypeHandler {
 
-    /** _more_ */
     private static int IDX = MediaTypeHandler.IDX_LAST+1;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public TikTokTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
 
     public static String embedPlayer(Appendable sb, String id, String width,
                                      String height, double start, double end,
@@ -86,17 +73,6 @@ public class TikTokTypeHandler extends MediaTypeHandler {
 	return "";
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {

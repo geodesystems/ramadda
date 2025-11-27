@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 @SuppressWarnings("unchecked")
 public class MediaTypeHandler extends GenericTypeHandler {
     private static int IDX = 0;

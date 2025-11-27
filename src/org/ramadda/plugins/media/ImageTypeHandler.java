@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
@@ -25,7 +24,6 @@ import java.awt.Image;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class ImageTypeHandler extends GenericTypeHandler {
 
@@ -62,12 +60,9 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	*/
 	sb.append("</div>");
 
-
-
         super.getFileExtras(request, entry,sb);
 
     }
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
@@ -92,7 +87,6 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	File f = new File(theFile);
 	entry.getResource().setFileSize(f.length());
     }
-    
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
@@ -112,7 +106,6 @@ public class ImageTypeHandler extends GenericTypeHandler {
 
         return path;
     }
-
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,

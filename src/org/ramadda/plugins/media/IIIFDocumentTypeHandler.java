@@ -3,9 +3,7 @@ Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-
 package org.ramadda.plugins.media;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -21,8 +19,6 @@ import org.json.*;
 
 import org.w3c.dom.*;
 
-
-
 import java.net.URL;
 import java.io.File;
 import java.io.InputStream;
@@ -32,45 +28,21 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
  *
  *
  */
 public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 
-
-    /** _more_ */
     private static int IDX = 0;
 
-    /** _more_ */
     public static final int IDX_STYLE = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public IIIFDocumentTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -113,7 +85,6 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	    IIIFImportHandler.addMetadata(getRepository(), request,entry,metadataList);
 	}
 
-
     }
 
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -146,7 +117,6 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	HU.div(sb,"",HU.attrs("id",uid,"style",HU.css("position","relative",
 						      "width",Utils.getProperty(props,"width","1000px"),
 
-
 						      "height",Utils.getProperty(props,"height","600px"))));
 	sb.append("\n");
 	sb.append(HU.importJS("https://unpkg.com/mirador@4.0.0-alpha.2/dist/mirador.min.js"));
@@ -168,7 +138,6 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	//	Utils.add(attrs,"manifests",JU.map(url, JU.map("view",JU.quote("gallery"))));
 	Utils.add(attrs,"windows",JU.list(windows));
 
-
 	//Hide the workspace for single IIIF entry
 	if(catalog==null) {
 	    Utils.add(attrs,"workspaceControlPanel",JU.map("enabled",Utils.getProperty(props,"workspaceEnabled","false")));
@@ -189,9 +158,5 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append("\n");
         return sb.toString();
     }
-
-
-
-
 
 }

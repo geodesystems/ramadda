@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.TypeHandler;
@@ -20,7 +19,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -33,7 +31,6 @@ import java.util.List;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 @SuppressWarnings("unchecked")
 public class HtmlImportHandler extends ImportHandler {
@@ -55,11 +52,9 @@ public class HtmlImportHandler extends ImportHandler {
         super(null);
     }
 
-
     public HtmlImportHandler(Repository repository) {
         super(repository);
     }
-
 
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
@@ -141,7 +136,6 @@ public class HtmlImportHandler extends ImportHandler {
 		    continue;
 		}
 	    }
-	    
 
             if ((pageLinks != null) && pageLinks.contains(link)) {
                 continue;
@@ -172,7 +166,6 @@ public class HtmlImportHandler extends ImportHandler {
                 sb.append("\n");
                 continue;
             }
-
 
             try {
                 if (addFile) {
@@ -241,11 +234,9 @@ public class HtmlImportHandler extends ImportHandler {
                                          null));
                 }
 
-
                 entry.getTypeHandler().initializeEntryFromHarvester(request,
                         entry, true);
                 getEntryManager().addNewEntry(request, entry);
-
 
                 sb.append("<li> ");
                 sb.append(
@@ -312,7 +303,6 @@ public class HtmlImportHandler extends ImportHandler {
                                    String url, Entry parentEntry)
             throws Exception {
 
-
         if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_HTML)) {
             return null;
         }
@@ -320,9 +310,7 @@ public class HtmlImportHandler extends ImportHandler {
 	List  <String> okLinks = (List<String>) request.get("linkok",new ArrayList<String>());
 	boolean anySelected = okLinks.size()>0;
 
-
         getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
-
 
         String  pattern = request.getString(ARG_IMPORT_PATTERN, "");
 
@@ -352,7 +340,6 @@ public class HtmlImportHandler extends ImportHandler {
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE,TypeHandler.TYPE_FINDMATCH),false);
 
-
         String buttons =
             HU.buttons(HU.submit("Test it out"),
                               HU.submit("Create entries",
@@ -369,8 +356,6 @@ public class HtmlImportHandler extends ImportHandler {
                                       HU.input(ARG_URL, url,
                                           HU.SIZE_70)));
 
-
-
         HU.formEntry(sb, "",
 		     HU.labeledCheckbox(ARG_IMPORT_RECURSE,
 					"true", recurse,"Recurse"));
@@ -382,18 +367,15 @@ public class HtmlImportHandler extends ImportHandler {
 		     HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
 			      HU.SIZE_50));
 
-
 	HU.formEntry(sb, msgLabel("Recurse Depth"),
 		     HU.input(ARG_IMPORT_RECURSE_DEPTH,
 			      request.getString(ARG_IMPORT_RECURSE_DEPTH, "1"),
 			      HU.SIZE_5));
 
-
 	HU.formEntry(sb, "",HU.div("Link regular expression - e.g. \".*\\.pdf\"",HU.cssClass("ramadda-form-help")));
 
 	HU.formEntry(sb, msgLabel("Entry Pattern"),
 		     HU.input(ARG_IMPORT_PATTERN, pattern, HU.attrs("size","50","placeholder","e.g. .*\\.pdf")));
-
 
         boolean addFile = request.getString(ARG_IMPORT_HANDLE,
                                             "file").equals("file");
@@ -405,7 +387,6 @@ public class HtmlImportHandler extends ImportHandler {
 		     + HU.labeledRadio(ARG_IMPORT_HANDLE, "url", !addFile,
 				       msg("Add the link")));
 
-
 	HU.formEntry(sb,"",
                 HU.labeledCheckbox(ARG_IMPORT_UNCOMPRESS, "true",
 				   request.get(ARG_IMPORT_UNCOMPRESS, false),
@@ -415,8 +396,6 @@ public class HtmlImportHandler extends ImportHandler {
 		     HU.labeledCheckbox("useurl", "true",
 					request.get("useurl",false),
 					"Use URL for name"));
-
-
 
 	HU.formEntry(sb, "",HU.div("What type of entry to create",HU.cssClass("ramadda-form-help")));
 	HU.formEntry(sb, msgLabel("Entry type"),
@@ -431,7 +410,6 @@ public class HtmlImportHandler extends ImportHandler {
 	mtdSb.append("<br>");
 	mtdSb.append(HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from images"));
 	mtdSb.append("<br>");
-
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 	if(stringDefined(extract)) {
@@ -448,7 +426,6 @@ public class HtmlImportHandler extends ImportHandler {
 
 	sb.append(buttons);
 	//        HU.formEntry(sb,"", buttons);
-
 
         sb.append(HU.p());
 
@@ -494,7 +471,7 @@ public class HtmlImportHandler extends ImportHandler {
                     sb.append("<li> ");
 
 		    String lurl = link.getUrl().toString();
-	    
+
 		    String cbxId = HU.getUniqueId("cbx");
 		    String cbxCall =
 			HU.attr(HU.ATTR_ONCLICK,
@@ -502,8 +479,6 @@ public class HtmlImportHandler extends ImportHandler {
 					HU.comma("event",
 						 HU.squote("linkok"),
 						 HU.squote(cbxId))));
-
-
 
 		    sb.append(HU.labeledCheckbox("linkok",lurl,
 						 anySelected?okLinks.contains(lurl):true,
@@ -522,7 +497,6 @@ public class HtmlImportHandler extends ImportHandler {
                     sb.append(HU.br());
                 }
                 sb.append("</ul>");
-
 
             } else {
                 sb.append(
@@ -552,7 +526,5 @@ public class HtmlImportHandler extends ImportHandler {
             System.err.println(href);
         }
     }
-
-
 
 }

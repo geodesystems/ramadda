@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -17,27 +16,16 @@ import org.w3c.dom.*;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
  */
 public class AudioTypeHandler extends MediaTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public AudioTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -54,25 +42,11 @@ public class AudioTypeHandler extends MediaTypeHandler {
         return HtmlUtils.getAudioEmbed(getFileUrl);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param wikiTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
             throws Exception {
         return getSimpleDisplay(request, null, entry);
     }
-
-
 
 }
