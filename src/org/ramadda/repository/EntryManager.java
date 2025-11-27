@@ -8443,13 +8443,21 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> getChildren(Request request, Entry parentEntry, SelectInfo...selects)
 	throws Exception {
-        List<Entry> children = new ArrayList<Entry>();
 	if(parentEntry==null) {
 	    throw new IllegalArgumentException("No parent entry given");
 	}
+        List<Entry> children = new ArrayList<Entry>();
         if ( !parentEntry.isGroup()) {
             return children;
         }
+	//With the VirtualType entries there is the possbility of having an infinite loop
+	//so we add a key here to check for this
+	String key = "getchildren_" + parentEntry.getId();
+	if(request.getExtraProperty(key)!=null) {
+	    return children;
+	}
+	request.putExtraProperty(key,"");
+
 	SelectInfo select = selects.length>0?selects[0]:new SelectInfo(request, parentEntry);
         List<Entry>  entries      = new ArrayList<Entry>();
         List<String> ids          = getChildIds(request, parentEntry, select);
@@ -8503,6 +8511,7 @@ public class EntryManager extends RepositoryManager {
 	    System.err.println(Utils.getStack(15));
 	}
 
+	request.removeExtraProperty(key);
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
     }
