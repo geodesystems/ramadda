@@ -6,6 +6,10 @@
 .ramadda-annotation-bar {
 }
 
+.ramadda-zoomify {
+    border:var(--basic-border);
+}
+
 .ramadda-annotation-bar-top {
     display: flex;
     align-items: stretch;

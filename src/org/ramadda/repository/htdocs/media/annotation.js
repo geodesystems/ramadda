@@ -391,7 +391,9 @@ RamaddaAnnotationFormatter.prototype = {
 		if(v.startsWith("c:")) {
 		    state.color = v.replace("c:","");
 		} else 	if(v.startsWith("color:")) {
-		    state.color = v.replace("color:","");		    
+		    state.color = v.replace("color:","");
+		} else 	if(v.startsWith("bg:")) {
+		    state.bg= v.replace("bg:","");		    		    		    
 		} else if(v.startsWith("w:")) {
 		    state.width = v.replace("w:","");
 		} else if(v.startsWith("width:")) {
@@ -426,6 +428,9 @@ RamaddaAnnotationFormatter.prototype = {
 	    });
 	    
 	    let classes = "";
+	    if(state.bg) {
+		classes= HU.classes(classes,this.checkBg(state.bg));
+	    }
 	    if (state.color) {
 		classes= HU.classes(classes,this.checkColor(state.color));
 	    }
@@ -440,14 +445,28 @@ RamaddaAnnotationFormatter.prototype = {
     checkColor:function(color) {
 	if(!this.colorMap) this.colorMap = {};
 	if(color.startsWith("c:")) color = color.replace("c:","");
-	let name = 'ramadda-annotation-'+ color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
+	let name ='ramadda-annotation-' + Utils.makeID(color);
 	if(this.colorMap[color]) return name;
 	this.colorMap[color] = true;
 	let template = ".a9s-annotationlayer .a9s-annotation.{name} .a9s-inner, .a9s-annotationlayer .a9s-annotation.{name}.editable.selected .a9s-inner {stroke:{value} !important;}\n.a9s-annotationlayer .a9s-annotation.{name}:hover .a9s-inner  {stroke:yellow !important;}";
 	let css = template.replace(/{name}/g,name).replace(/{value}/g,color);
 	$(HU.tag(TAG_STYLE,[ATTR_TYPE,'text/css'], css)).appendTo(document.body);
+
 	return   name;
     },
+    checkBg:function(color) {
+	if(!this.colorMap) this.colorMap = {};
+	if(color.startsWith("c:")) color = color.replace("c:","");
+	let name ='ramadda-annotation-' + Utils.makeID(color);
+	//let name = 'ramadda-annotation-'+ color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
+	if(this.colorMap[color]) return name;
+	this.colorMap[color] = true;
+	let template = ".a9s-annotationlayer .a9s-annotation.{name} .a9s-inner, .a9s-annotationlayer .a9s-annotation.{name}.editable.selected .a9s-inner {fill:{value} !important;}\n.a9s-annotationlayer .a9s-annotation.{name}:hover .a9s-inner  {fill:yellow !important;}";
+	let css = template.replace(/{name}/g,name).replace(/{value}/g,color);
+	$(HU.tag(TAG_STYLE,[ATTR_TYPE,'text/css'], css)).appendTo(document.body);
+	return   name;
+    },
+
     checkWidth:function(width) {
 	let name = "width_" + width;
 	if(!this.widthMap) this.widthMap = {};
