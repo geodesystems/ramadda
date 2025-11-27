@@ -49,9 +49,16 @@ public  class LinkedTypeHandler extends ExtensibleGroupTypeHandler {
 	String entryId = entry.getStringValue(request, "linked_entry",null);
 	String wikiText;
 	if(!stringDefined(entryId)) {
-	    wikiText = "+section title={{name}}\nNo linked entry\n-section";
+	    wikiText = "+section title={{name}}\n{{description wikify=true}}\nNo linked entry\n-section";
 	} else {
-	    wikiText = "+section title={{name}}\n{{import showTitle=false entry=\"" + entryId +"\"}}\n-section";
+	    wikiText = "+section title={{name}}\n";
+	    if(stringDefined(entry.getDescription())) {
+		wikiText+="{{description wikify=true}}\n";
+	    }
+	    if(entry.getBooleanValue(request,"show_breadcrumbs",false)) {
+		wikiText+="+center\n{{breadcrumbs addThis=true fixed=true count=4 entry="+ entryId+"}}\n-center\n";
+	    }
+	    wikiText+="{{import showTitle=false entry=\"" + entryId +"\"}}\n-section";
 	}
 	return getWikiManager().wikifyEntry(request, entry, wikiText);
     }

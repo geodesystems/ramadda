@@ -2461,10 +2461,23 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_BREADCRUMBS)) {
             List<Entry> parents = getEntryManager().getParents(request,
 							       entry);
+	    if(getProperty(wikiUtil,props,"addThis",false)) {
+		parents.add(0,entry);
+	    }
+	    int count = getProperty(wikiUtil,props,"count",-1);
+	    if(count>0) {
+		while(parents.size()>count) {
+		    parents.remove(parents.size()-1);
+		}
+	    }
+
             List<String> breadcrumbs =
                 getPageHandler().makeBreadcrumbList(request, parents, null);
-
-            getPageHandler().makeBreadcrumbs(request, breadcrumbs, sb);
+	    if(getProperty(wikiUtil,props,"fixed",false)) {
+		sb.append(Utils.join(breadcrumbs,"&nbsp;&raquo;&nbsp;"));
+	    } else {
+		getPageHandler().makeBreadcrumbs(request, breadcrumbs, sb);
+	    }
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LABEL)) {
