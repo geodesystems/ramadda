@@ -43,6 +43,19 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+    public boolean convertIdsFromImport(Entry newEntry,
+                                        List<String[]> idList) {
+	boolean changed = super.convertIdsFromImport(newEntry, idList);
+        String idString = (String) newEntry.getStringValue(getRepository().getAdminRequest(),0, "");
+	String newIdString = convertIdsFromImport(idString, idList);
+	if(!newIdString.equals(idString)) {
+	    newEntry.setValue(0,newIdString);
+	    changed = true;
+	}
+        return changed;
+    }
+
+
     public void clearCache() {
         super.clearCache();
         cachedIds.clearCache();
