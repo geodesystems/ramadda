@@ -3291,9 +3291,16 @@ public class EntryManager extends RepositoryManager {
 	boolean isDescriptionWiki= entry==null?false: entry.getTypeHandler().isDescriptionWiki(entry);
 	String dflt = entry!=null?entry.getDescription():BLANK;
 	if(dflt==null) dflt = BLANK;
-        String  description = request.getAnonymousEncodedString(isWiki
-								? ARG_WIKITEXT
-								: ARG_DESCRIPTION, dflt).trim();
+	//check for both
+        String  description = request.getAnonymousEncodedString(isWiki?ARG_WIKITEXT:ARG_DESCRIPTION,null);
+	if(isWiki && description==null) {
+	    description = request.getAnonymousEncodedString(ARG_DESCRIPTION,null);
+	}
+	if(!isWiki && description==null) {
+	    description = request.getAnonymousEncodedString(ARG_WIKITEXT,null);
+	}	
+	if(description==null) description=dflt;
+	description = description.trim();
 
         if (request.get(ARG_ISWIKI, false)) {
             if ( !description.startsWith(WIKI_PREFIX)) {

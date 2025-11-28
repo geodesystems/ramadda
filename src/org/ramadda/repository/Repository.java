@@ -4884,8 +4884,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 							"Any file type"));
         addTypeHandler(TypeHandler.TYPE_GROUP,
                        groupTypeHandler = new GroupTypeHandler(this));
+	anyTypeHandler.putProperty("form.description.iswiki","true");
         groupTypeHandler.putWikiText("simple","{{tabletree showType=false  showSize=false   showCreateDate=false}}");
         groupTypeHandler.setCategory("Documents");
+	groupTypeHandler.putProperty("form.description.iswiki","true");
         groupTypeHandler.putProperty("form.resource.show", "false");
         groupTypeHandler.putProperty("form.ark.show", "true");	
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
