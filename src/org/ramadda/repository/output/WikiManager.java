@@ -269,8 +269,9 @@ public class WikiManager extends RepositoryManager
                                        HashSet notTags) {
 
         try {
-            Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 
+
+            Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request  = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             Entry   theEntry = entry;
             if (tag.equals(WIKI_TAG_IMPORT)) {
@@ -4248,6 +4249,7 @@ public class WikiManager extends RepositoryManager
 	    checkProperties(request,entry,props);
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
+	    //	    System.err.println("ENTRY:" + entry +" CHILDREN:" + children);
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
             if ((children.size() == 0) && (message != null)) {
@@ -4347,6 +4349,10 @@ public class WikiManager extends RepositoryManager
 					       ATTR_LINKRESOURCE, false);
 
             String    tag = getProperty(wikiUtil, props, ATTR_TAG, dfltTag);
+            String    wikiText = getProperty(wikiUtil, props, "wikiText",null);
+	    if(wikiText!=null) {
+		wikiText = Utils.convertPattern(wikiText).replace("\\n","\n");;
+	    }
             Request   newRequest = makeRequest(request, props);
             Hashtable tmpProps   = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
@@ -4393,8 +4399,10 @@ public class WikiManager extends RepositoryManager
 		    title = applyTemplate(request, child,titleTemplate, "${title}",title);
 		}
                 titles.add(title);
-                //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
-
+		if(wikiText!=null) {
+		    contents.add(wikifyEntry(request, child,wikiText));
+		    continue;
+		}
                 urls.add(getEntryManager().getEntryUrl(request, child));
                 tmpProps.put("defaultToCard", "true");
 
@@ -4462,7 +4470,7 @@ public class WikiManager extends RepositoryManager
 		    theContent = content.toString();
 		}
 		contents.add(theContent);
-            }
+	    }
 
             if (theTag.equals(WIKI_TAG_ACCORDIAN)
 		|| theTag.equals(WIKI_TAG_ACCORDION)) {
@@ -8124,12 +8132,18 @@ public class WikiManager extends RepositoryManager
             Request myRequest =
                 new Request(request,
                             getRepository().URL_ENTRY_SHOW.toString()) {
+		    @Override
 		    public void putExtraProperty(Object key, Object value) {
 			request.putExtraProperty(key, value);
 		    }
+		    @Override
 		    public Object getExtraProperty(Object key) {
 			return request.getExtraProperty(key);
 		    }
+		    @Override
+		    public void removeExtraProperty(Object key) {
+			request.removeExtraProperty(key);
+		    }		    
 		};
 	    myRequest.setSessionId(request.getSessionId());
 
