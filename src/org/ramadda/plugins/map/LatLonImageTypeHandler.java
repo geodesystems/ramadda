@@ -160,7 +160,7 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
             throws Exception {
         try {
             if ((entry == null) || !entry.hasAreaDefined(request)) {
-		System.err.println(" no area");
+		System.err.println("Lat lon image has no area defined:" + entry.getName());
                 return false;
             }
 
@@ -189,7 +189,12 @@ public class LatLonImageTypeHandler extends GdalTypeHandler {
                 getRepository().getMapManager().makeInfoBubble(request,
 							       entry, null,true);
 	    String args="{}";
-	    if(rotation!=null) args = "{rotation:" + rotation+"}";
+	    if(rotation!=null) {
+		double r = rotation;
+		if(!Double.isNaN(r)) {
+		    args = "{rotation:" + rotation+"}";
+		}
+	    }
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,
                                          HtmlUtils.squote(entry.getId()),

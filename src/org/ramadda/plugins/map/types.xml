@@ -116,6 +116,7 @@ popupSliderRight=true
      <property name="icon" value="/icons/map.png"/>
      <column name="map_width" label="Map Width" type="int" showinhtml="false" default="-100"/>
      <column name="map_height" label="Map Height" type="int" showinhtml="false" default="600"/>
+     <column name="rotation" label="Rotation"     type="double" default="0" />
      <wiki><![CDATA[
 +section title="{{name}}"
 {{description}}
