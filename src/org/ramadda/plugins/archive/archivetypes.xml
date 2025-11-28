@@ -19,6 +19,7 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
 
     <type name="type_archive_base"  foruser="false" description="Base Archive Type">
       <property name="icon" value="/archive/collection.png"/>
+      <property name="form.description.iswiki" value="true"/>
     </type>
 	  
 
