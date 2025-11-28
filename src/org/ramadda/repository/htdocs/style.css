@@ -5446,6 +5446,7 @@ snippet-hide {
 
 .ramadda-linksheader-on {
     background:var(--theme-background-highlight);
+    border:var(--theme-border) !important;
 }
 
 
