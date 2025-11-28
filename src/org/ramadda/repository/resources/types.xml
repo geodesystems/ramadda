@@ -18,6 +18,7 @@
 	handler="org.ramadda.repository.type.GenericTypeHandler"
 	xhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"
 	help="A collection of documentation pages"	>
+    <property name="form.resource.show" value="false"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="icon" value="/icons/book-solid.png"/>
 <wiki>
