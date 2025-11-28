@@ -4440,8 +4440,24 @@ public class TypeHandler extends RepositoryManager {
 		    if(group!=null)
 			sb.setGroup(group);
 
+		    boolean isTextWiki = isWikiText(desc);
+		    /*
+		      For some reason the FA icon inside the label gets shifted over
+		      So wrap it in a span with margin spacing
+		    */
+		    String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
+
+		    String        cbxId  = "iswiki";
                     if (isWiki) {
 			sb.append("<tr><td colspan=2>");
+
+			if(isTextWiki) {
+			    desc = desc.replaceAll("^"+WIKI_PREFIX+"\n*","");
+			}
+			String cbx = HU.labeledCheckbox(ARG_ISWIKI,
+							"true", isTextWiki,
+							HU.id(cbxId), "Override default display");
+			sb.append(cbx);
                         addWikiEditor(request, entry, sb, formInfo,
                                       ARG_DESCRIPTION, desc, "",
                                       false, Entry.MAX_DESCRIPTION_LENGTH,
@@ -4449,27 +4465,18 @@ public class TypeHandler extends RepositoryManager {
 			sb.append("</td></tr>");
                     } else {
                         desc = desc.trim();
-                        boolean isTextWiki = isWikiText(desc);
                         if (desc.startsWith(WIKI_PREFIX)) {
                             desc = desc.substring(
 						  WIKI_PREFIX.length()).trim();
                         }
-                        String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
                         StringBuilder tmpSB  = new StringBuilder();
-                        /*
-			  For some reason the FA icon inside the label gets shifted over
-			  So wrap it in a span with margin spacing
-                        */
-			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
-
                         String prefix = "";
 
-                        if (getTypeProperty("form.description.showwiki",
-                                            true)) {
+                        if (getTypeProperty("form.description.showwiki", true)) {
                             String cbx = HU.labeledCheckbox(ARG_ISWIKI,
 							    "true", isTextWiki,
-							    HU.id(cbxId), img);
+							    HU.id(cbxId), "Override default display");
                             cbx = HU.span(cbx,
                                           HU.cssClass("ramadda-clickable")
                                           + HU.title("Toggle Wiki Editor"));
