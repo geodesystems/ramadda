@@ -751,6 +751,7 @@ public interface Constants {
     public static final String MIME_TEXT = "text/plain";
     public static final boolean DFLT_INHERITED = false;
     public static final String DEFAULT_SEARCH_SIZE = "100";
+    public static final int DEFAULT_SEARCH_SIZE_INT = 100;    
     public static final String ID_PREFIX_SYNTH = "synth:";
     public static final String MSG_ACCESS_CHANGED = "Permissions Changed";
     public static final String MSG_ASSOCIATION_ADDED =
