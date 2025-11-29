@@ -4884,7 +4884,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 							"Any file type"));
         addTypeHandler(TypeHandler.TYPE_GROUP,
                        groupTypeHandler = new GroupTypeHandler(this));
-	anyTypeHandler.putProperty("form.description.iswiki","true");
         groupTypeHandler.putWikiText("simple","{{tabletree showType=false  showSize=false   showCreateDate=false}}");
         groupTypeHandler.setCategory("Documents");
 	groupTypeHandler.putProperty("form.description.iswiki","true");
@@ -4897,6 +4896,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         addTypeHandler(TypeHandler.TYPE_FILE,
                        fileTypeHandler =typeHandler = new TypeHandler(this, "file", "File",
 								      "Documents"));
+	fileTypeHandler.putProperty("form.description.iswiki","true");
 	fileTypeHandler.setPriority(0);
         typeHandler.setHelp(
 			    "The entry type is figured out by the file extension");

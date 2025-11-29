@@ -237,6 +237,7 @@ public class TypeHandler extends RepositoryManager {
     private List<String> fieldPatternNames;
     /** the wiki tag in types.xml. If defined then use this as the default html display for entries of this type */
     private String wikiTemplate;
+    private boolean defaultIsWiki=false;
     private String nameTemplate;
     private Hashtable<String,String> wikiText = new Hashtable<String,String>();
     private String defaultChildrenEntries;
@@ -456,6 +457,12 @@ public class TypeHandler extends RepositoryManager {
 
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true));
+	    if(wikiTemplate!=null) {
+		String p = StringUtil.findPattern(wikiTemplate,"\\{\\{description(.*?)\\}\\}");
+		if(p!=null) {
+		    defaultIsWiki = p.indexOf("wikify")>=0;
+		}
+	    }
 
 	    List macros = XmlUtil.findChildrenRecurseUp(node,"wikimacro");
 	    for (int i = 0; i < macros.size(); i++) {
@@ -3708,7 +3715,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public boolean isDescriptionWiki(Entry entry) {
-        return getProperty(entry, "form.description.iswiki", false);
+        return getProperty(entry, "form.description.iswiki", defaultIsWiki);
     }
 
     public String getUploadedFile(Request request) {
