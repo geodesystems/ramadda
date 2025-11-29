@@ -3479,7 +3479,7 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
-
+	Utils.initColorTablePopup(dialog);
 	HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			  null,null,true,
 			  {target:'#'+this.domId('propsearch')});
@@ -4042,7 +4042,11 @@ MapGlyph.prototype = {
 						    ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',
 				  [ATTR_ID,this.domId(prefix+'colorby_colortable')]);
-		let ct = Utils.getColorTablePopup({label:'Select',showToggle:true,attr:'prefix',value:prefix});
+		let ct = Utils.getColorTablePopup({label:'Select',
+						   addSearch:true,
+						   showToggle:true,
+						   attr:'prefix',
+						   value:prefix});
 		comp+=HU.formEntryLabel('Color table',
 					HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+ct);
 		comp+=HU.close(TAG_TABLE);

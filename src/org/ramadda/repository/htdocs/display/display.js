@@ -2433,7 +2433,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
 							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
-				Utils.getColorTablePopup({showToggle:false})]);
+				Utils.getColorTablePopup({showToggle:false,addSearch:true})]);
 		html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
 		if(_this.colorTableDialog) _this.colorTableDialog.remove();
 		let dialog =  _this.colorTableDialog =
@@ -2444,6 +2444,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			draggable:true,
 			header:true});
 
+		Utils.initColorTablePopup(dialog);
 		let minInput =dialog.find('.colortable-min');
 		let maxInput =dialog.find('.colortable-max');		
 		minInput.keypress(function(event) {

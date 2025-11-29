@@ -3,6 +3,8 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
+var CLASS_COLORTABLE_SEARCH = 'ramadda-colortable-search';
+
 $.extend(Utils,{
     makeRGBColortable:function() {
 	let rgb = [];
@@ -110,9 +112,19 @@ $.extend(Utils,{
 			  {target:jqid(guid)});
 
     },
+    initColorTablePopup(dialog) {
+	dialog.find(HU.dotClass(CLASS_COLORTABLE_SEARCH)).each(function() {
+	    let id = $(this).attr(ATTR_ID);
+	    let listId = $(this).attr('listid');	    
+	    HU.initPageSearch('#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_SELECT),
+			      null,null,true,
+			      {target:'#'+id});
+	});
+    },
     //wikiEditor, itemize,label,showToggle,attr,value
     getColorTablePopup: function(args) {
 	let opts = {
+	    addSearch:false,
 	    wikiEditor:null,
 	    itemize:false,
 	    label:null,
@@ -122,7 +134,14 @@ $.extend(Utils,{
 	    clazz:'wiki-editor-popup-items',
 	}
 	if(args) $.extend(opts,args);
-        let popup = HU.open(TAG_DIV,[ATTR_CLASS,opts.clazz]);
+	let uid = HU.getUniqueId('');
+	let listId = HU.getUniqueId('');
+        let popup = HU.open(TAG_DIV,[ATTR_ID,listId,
+				     ATTR_CLASS,opts.clazz,
+				     ATTR_STYLE,
+				     HU.css(CSS_PADDING,HU.px(5),
+					    CSS_BORDER,CSS_BASIC_BORDER,
+					    CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)]);
         let items = [];
         let item;
 	showToggle = opts.showToggle;
@@ -164,6 +183,11 @@ $.extend(Utils,{
             }
         });
         popup+=HU.close(TAG_DIV,TAG_DIV);
+	if(opts.addSearch) {
+	    popup = HU.div([ATTR_CLASS,CLASS_COLORTABLE_SEARCH,ATTR_ID,uid,'listid',listId]) +
+		HU.vspace(HU.em(0.25))+
+		popup;
+	}	    
 	if(showToggle)
             popup = HU.toggleBlock(HU.div([ATTR_CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
         if(opts.itemize) return items;
