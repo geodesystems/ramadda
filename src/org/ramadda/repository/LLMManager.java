@@ -52,57 +52,6 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
 
-    private Hashtable<String,Model> modelMap;
-    private List<Model> modelList;
-
-    public  static class Model {
-	String provider;
-	String name;
-	String id;
-	String alias;
-	int tokenLimit=TOKEN_LIMIT_UNDEFINED;
-	Model(String provider,String id,String name) {
-	    this.provider = provider;
-	    this.id = id;
-	    this.name = name;
-	}
-	Model(String provider,String id,String name,int tokenLimit) {
-	    this(provider,id,name);
-	    this.tokenLimit=tokenLimit;
-	}
-	Model(String provider,String id,String alias,String name,int tokenLimit) {
-	    this(provider,id,name,tokenLimit);
-	    this.alias= alias;
-	}	
-
-	public boolean handledBy(String provider) {
-	    return this.provider.equals(provider);
-	}
-
-	public HtmlUtils.Selector getSelector() {
-	    return new HtmlUtils.Selector(name,id);
-	}
-	public String getId() {
-	    return id;
-	}
-	public String getName() {
-	    return name;
-	}	
-	public boolean equals(Object object) {
-	    if(!(object instanceof Model)) return false;
-	    Model that = (Model)object;
-	    return that.id.equals(this.id);
-	}
-	public String toString() {
-	    return name +" " +id;
-	}
-
-    }
-
-    public Model getModel(String id) {
-	return  modelMap.get(id);
-    }
-
     public static final String ARG_USEGPT4  = "usegpt4";
     public static final String ARG_MODEL = "model";
 
@@ -132,6 +81,13 @@ public class LLMManager extends  AdminHandlerImpl {
     private List<String> openAIKeys;
     private int openAIKeyIdx=0;
 
+    private Hashtable<String,Model> modelMap;
+    private List<Model> modelList;
+
+
+
+
+
     public LLMManager(Repository repository) {
         super(repository);
 	openAIJobManager = new JobManager(repository,
@@ -157,6 +113,18 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(model.alias!=null)
 	    modelMap.put(model.alias,model);
     }
+
+    public Model findModel(String provider) {
+	for(Model model: modelList) {
+	    if(model.provider.equals(provider)) return model;
+	}
+	return null;
+    }
+
+    public Model getModel(String id) {
+	return  modelMap.get(id);
+    }
+
 
     private void initModels() {
 	modelMap = new Hashtable<String,Model>();
@@ -477,6 +445,8 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
     public IO.Result  callGemini(Model model, String gptText) throws Exception {
+	if(model==null) model=findModel(PROVIDER_GEMINI);
+	if(model==null) return null;
 	synchronized(model.provider) {
 	    if(!isGeminiEnabled()) return null;
 	    /*{
@@ -751,27 +721,9 @@ public class LLMManager extends  AdminHandlerImpl {
 		    //		    System.err.println("LLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
 		}
 	    }
-	    //Google PALM
-	    if(json.has("candidates")) {
-		/*{
-		  "candidates": [
-		  {
-		  "content": {
-		  "parts": [
-		  {
-		  "text": "AN ANCIENT ROCKY MOUNTAIN CAVER"
-		  }
-		  ],
-		  "role": "model"
-		  },
-		*/
-		JSONArray candidates = json.getJSONArray("candidates");
-		if(candidates.length()==0) return null;
-		JSONObject candidate= candidates.getJSONObject(0);
-		JSONArray parts = candidate.getJSONObject("content").getJSONArray("parts");
-		String t = parts.getJSONObject(0).optString("text",null);
-		return t;
-	    }
+	    String geminiResult = readGeminiResult(json);
+	    if(geminiResult!=null) return geminiResult;
+
 
 	    if(json.has("content")) {
 		JSONArray choices = json.getJSONArray("content");
@@ -800,6 +752,30 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	}
 
+	return null;
+    }
+
+    public String readGeminiResult(JSONObject json) throws Exception {
+	if(json.has("candidates")) {
+	    /*{
+	      "candidates": [
+	      {
+	      "content": {
+	      "parts": [
+	      {
+	      "text": "AN ANCIENT ROCKY MOUNTAIN CAVER"
+	      }
+	      ],
+	      "role": "model"
+	      },
+	    */
+	    JSONArray candidates = json.getJSONArray("candidates");
+	    if(candidates.length()==0) return null;
+	    JSONObject candidate= candidates.getJSONObject(0);
+	    JSONArray parts = candidate.getJSONObject("content").getJSONArray("parts");
+	    String t = parts.getJSONObject(0).optString("text",null);
+	    return t;
+	}
 	return null;
     }
 
@@ -1168,6 +1144,51 @@ public class LLMManager extends  AdminHandlerImpl {
 	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
+
+    public  static class Model {
+	String provider;
+	String name;
+	String id;
+	String alias;
+	int tokenLimit=TOKEN_LIMIT_UNDEFINED;
+	Model(String provider,String id,String name) {
+	    this.provider = provider;
+	    this.id = id;
+	    this.name = name;
+	}
+	Model(String provider,String id,String name,int tokenLimit) {
+	    this(provider,id,name);
+	    this.tokenLimit=tokenLimit;
+	}
+	Model(String provider,String id,String alias,String name,int tokenLimit) {
+	    this(provider,id,name,tokenLimit);
+	    this.alias= alias;
+	}	
+
+	public boolean handledBy(String provider) {
+	    return this.provider.equals(provider);
+	}
+
+	public HtmlUtils.Selector getSelector() {
+	    return new HtmlUtils.Selector(name,id);
+	}
+	public String getId() {
+	    return id;
+	}
+	public String getName() {
+	    return name;
+	}	
+	public boolean equals(Object object) {
+	    if(!(object instanceof Model)) return false;
+	    Model that = (Model)object;
+	    return that.id.equals(this.id);
+	}
+	public String toString() {
+	    return name +" " +id;
+	}
+
+    }
+
 
     private static class LLMException extends RuntimeException {
 	LLMException(String msg) {
