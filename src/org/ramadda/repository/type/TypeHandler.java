@@ -110,9 +110,14 @@ public class TypeHandler extends RepositoryManager {
 
     public static boolean debug = false;
 
+
     public static final int COPY_LIMIT = 5000;
     static int xcnt;
     public String myid = "typehandler-" + (xcnt++);
+
+    public static final String ACTION_ENTRYLLM = "entryllm";
+    public static final String ACTION_APPLYLLM = "applyllm";
+    public static final String ACTION_DOCUMENT_CHAT = "documentchat";
 
     public static final String FIELD_COLUMNS ="_columns";
     public static final String FIELD_HR = "_hr";
@@ -553,7 +558,7 @@ public class TypeHandler extends RepositoryManager {
 
 	    //Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
 	    if(parent==null) {
-		addAction(new Action("entryllm","Entry LLM","/icons/chatbot.png",true,false,false,"view"));
+		addAction(new Action(ACTION_ENTRYLLM,"Entry LLM","/icons/chatbot.png",true,false,false,"view"));
 	    }
 
             List actionNodes = XmlUtil.findChildren(node, "action");
@@ -633,9 +638,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void addAction(Action action) {
-	if(action.getId().equals("documentchat") ||
-	   action.getId().equals("entryllm") ||
-	   action.getId().equals("applyllm")) {
+	if(action.getId().equals(ACTION_DOCUMENT_CHAT) ||
+	   action.getId().equals(ACTION_ENTRYLLM) ||
+	   action.getId().equals(ACTION_APPLYLLM)) {
 	    if(!getRepository().getLLMManager().isLLMEnabled()) {
 		return;
 	    }
@@ -1271,13 +1276,13 @@ public class TypeHandler extends RepositoryManager {
 
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
-        String action = request.getString("action", "");
+        String action = request.getString(ARG_ACTION, "");
 	try {
-	    if (action.equals("entryllm") || action.equals("documentchat")) {
-		return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
+	    if (action.equals(ACTION_ENTRYLLM) || action.equals(ACTION_DOCUMENT_CHAT)) {
+		return getLLMManager().processDocumentChat(request,entry,action.equals(ACTION_DOCUMENT_CHAT));
 	    }
 
-	    if (action.equals("applyllm")) {
+	    if (action.equals(ACTION_APPLYLLM)) {
 		return getLLMManager().applyLLM(request,entry);
 	    }
 	} catch(Exception exc) {
