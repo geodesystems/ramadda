@@ -5812,6 +5812,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return request;
     }
 
+    public Request getAdminRequest(Request request)  {
+	try {
+	    request = request.cloneMe();
+	    User    user    = getUserManager().getAdminUser();
+	    request.setUser(user);
+	    request.setSessionId(getGUID());
+	    return request;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+
     public Request getAdminRequest()  {
 	try {
 	    User    user    = getUserManager().getAdminUser();
