@@ -108,6 +108,7 @@ var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
 
 
 
+var CLASS_IMDV_PROPERTY_POPUP='imdv-property-popup';
 var CLASS_IMDV_SIDEHELP= 'imdv-side-help';
 var CLASS_IMDV_PROPERTY= 'imdv-property';
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
@@ -618,8 +619,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		routeArgs.dosequence=true;
 	    }	    	    
 	    let url = HU.url(Ramadda.getUrl('/map/getroute'), ARG_ENTRYID,this.getProperty('entryId'));
-
-
 	    let reset=  ()=>{
 		this.makingRoute = false;
 		this.finishedWithRoute = false;
@@ -2778,11 +2777,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let help = '';
 	    lines.forEach((line)=>{
 		if(line=='<hr>') {
-		    help+='<thin_hr>';
+		    help+=HU.thinLine();
 		    return
 		}
 		if(line.info) {
-		    help+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-property-popup'),
+		    help+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_IMDV_PROPERTY_POPUP),
 				  ATTR_TARGET,target,
 				  'info-id',line.info], line.title);
 		    return;

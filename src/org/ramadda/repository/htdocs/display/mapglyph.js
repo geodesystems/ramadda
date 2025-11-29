@@ -159,7 +159,7 @@ MapGlyph.prototype = {
     },
     initSideHelp:function(dialog) {
 	let _this = this;
-	dialog.find('.imdv-property-popup').click(function() {
+	dialog.find(HU.dotClass(CLASS_IMDV_PROPERTY_POPUP)).click(function() {
 	    let id  = $(this).attr('info-id');
 	    let target  = $(this).attr(ATTR_TARGET);	    
 	    let info = _this.getFeatureInfo(id);
@@ -189,7 +189,7 @@ MapGlyph.prototype = {
 
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_RIGHT,HU.px(10))],html);
 	    let dialog =  HU.makeDialog({content:html, anchor:$(this)});
-	    dialog.find('.' + CLASS_CLICKABLE).click(function() {
+	    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		dialog.remove();
 		let item = $(this).attr('item');
 		let line = info.id+'.' + item+'\n';
@@ -544,7 +544,7 @@ MapGlyph.prototype = {
 	if(this.isEntry()) {
 	    nameWidget+=HU.br() +
 		HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
-	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
+	    nameWidget+=SPACE3 +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.formTable();
 	html+=HU.formEntryLabel('Name',nameWidget);
@@ -616,7 +616,7 @@ MapGlyph.prototype = {
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
 	    if(idx==0) {
-		miscLines.push({skip:true,line:'<thin_hr></thin_hr>'+
+		miscLines.push({skip:true,line:HU.thinLine()+
 				HU.b('Features')});
 	    }		
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
@@ -644,7 +644,7 @@ MapGlyph.prototype = {
 			  this.attrs[ID_SHOWDATAICONS]??'inherited');
 	    
 	    contents+= HU.leftRightTable(dataIconsSelect,help);
-	    contents+='<thin_hr></thin_hr>';
+	    contents+=HU.thinLine();
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
 		let on = this.getAttribute(ID_DATAICON_USEENTRY);
 		let id = this.domId(ID_DATAICON_USEENTRY);
@@ -6469,8 +6469,10 @@ MapGlyph.prototype = {
 	    }
 	    return HU.div([ATTR_STYLE,HU.css(css)]);
 	}
-	return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_BORDER,HU.border(1,COLOR_TRANSPARENT),
-					 CSS_WIDTH,small?HU.px(10):HU.px(50))]);
+	return HU.div([ATTR_STYLE,
+		       HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+			      CSS_BORDER,HU.border(1,COLOR_TRANSPARENT),
+			      CSS_WIDTH,small?HU.px(10):HU.px(50))]);
     },
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
