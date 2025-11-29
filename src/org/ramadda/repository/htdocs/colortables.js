@@ -118,7 +118,7 @@ $.extend(Utils,{
 	    let listId = $(this).attr('listid');	    
 	    HU.initPageSearch('#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_SELECT),
 			      null,null,true,
-			      {target:'#'+id});
+			      {	    addToUrl:false,target:'#'+id});
 	});
     },
     //wikiEditor, itemize,label,showToggle,attr,value
