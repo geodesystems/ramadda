@@ -90,9 +90,9 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
     public String getMediaWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
-                                         entry.getStringValue(request,"media_width", "640"));
+                                         entry.getStringValue(request,"media_width", "100%"));
         if (!Utils.stringDefined(width) || width.equals("0")) {
-            width = "640";
+            width = "100%";
         }
 
         return width;
@@ -150,6 +150,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
         String width  = getMediaWidth(request, entry, props);
         String height = getMediaHeight(request, entry, props);
 	boolean vertical = Utils.getProperty(props,"vertical",false);
+
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
 	player =  getMediaPlayer(request, entry, props,  sb,

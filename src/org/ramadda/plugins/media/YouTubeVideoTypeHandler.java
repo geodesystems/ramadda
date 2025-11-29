@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -11,8 +11,10 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.WikiManager;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -28,30 +30,104 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- *
- *
- */
+
 public class YouTubeVideoTypeHandler extends MediaTypeHandler {
-
+    private static final String ACTION_EXTRACT_ANNOTATIONS="extractannotations";
     private static int IDX = MediaTypeHandler.IDX_LAST+1;
-
     public static final int IDX_ID = IDX++;
-
     public static final int IDX_START = IDX++;
-
     public static final int IDX_END = IDX++;
-
     public static final int IDX_DISPLAY = IDX++;
-
     public static final int IDX_AUTOPLAY = IDX++;
-
     private static int idCnt = 0;
 
     public YouTubeVideoTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
+
+    @Override
+    public void addAction(Action action) {
+	if(action.getId().equals(ACTION_EXTRACT_ANNOTATIONS)) {
+	    if(!getRepository().getLLMManager().isGeminiEnabled()) {
+		return;
+	    }
+	}
+	super.addAction(action);
+    }
+
+    //Right now gemini fails at this. For some reason it is processing a different YT video
+    @Override
+    public Result processEntryAction(Request request, Entry entry)
+	throws Exception {
+        String action = request.getString(ARG_ACTION, "");
+	if(!action.equals(ACTION_EXTRACT_ANNOTATIONS)) {
+	    return super.processEntryAction(request,entry);
+	}
+	StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Extract Annotations");
+
+	if(request.exists(ARG_OK)) {
+	    String youtubeUrl  = entry.getResourcePath(request);
+	    String text = "**URL_INPUT_START**\n";
+	    text+="URL: " + youtubeUrl+"\n";
+	    text+="**URL_INPUT_END**\n";
+	    //" + entry.getStringValue(request,"video_id","") + "\n"; 	    
+	    text+="**TASK:** Analyze the video content provided in the URL_INPUT section.\n";
+	    text+="**OUTPUT_FORMAT:** Extract the key moments from the video. Return valid JSON and **only valid JSON** of the form:\n[{time:<seconds>, title:<title>, synopsis:<synopsis>},...]\n";
+
+		/*
+		It is imperative that this prompt is applied to the above youtube video URL and Video ID. You are a master at analyzing youtube videos. I want you to extract the key moments from the below youtube video. You should extract the timestamp of the moment, a title for the moment and a short synopsis. You should return  valid JSON and only valid JSON of the form [{time:<time>,title:<title>,synopsis:<synopsis>},....]. The time should be the number of seconds into the video.  It is imperative that you only use the video referenced by the above Youtube URL.";
+		*/
+	    System.out.println(text);
+	    IO.Result result = getLLMManager().callGemini(getLLMManager().getModel("gemini-2.5-flash"),text);
+	    if(result.getError()) {
+		sb.append(HU.b("An error has occurred:"));
+		sb.append(HU.pre(result.getResult()));
+	    } else {
+		String jsonText = result.getResult();
+		try {
+		    JSONObject json = new JSONObject(result.getResult());
+		    jsonText = getLLMManager().readGeminiResult(json);
+		    if(jsonText==null) {
+			sb.append(HU.b("Could not extract results:"));
+			sb.append(HU.pre(jsonText));
+		    } else {
+			jsonText = jsonText.replace("```json","").trim();
+			jsonText = jsonText.replace("```","").trim();
+			JSONArray array = new JSONArray(jsonText);
+			sb.append(HU.div("OK"));
+			sb.append(HU.pre(jsonText));
+			entry.setValue("transcriptions_json",jsonText);
+			getEntryManager().updateEntry(request, entry);
+		    }
+		} catch(Exception exc) {
+		    sb.append(HU.b("There was an error handling the result:"));
+		    sb.append(HU.pre(jsonText));
+		}
+	    }
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result("Extract Annotations", sb));
+	}
+
+	sb.append(HU.pre(entry.getStringValue(request,"transcriptions_json","")));
+	String url = getEntryActionUrl(request,  entry,ACTION_EXTRACT_ANNOTATIONS);
+	sb.append(HU.formPost(url));
+	sb.append(HU.hidden(ARG_ACTION,ACTION_EXTRACT_ANNOTATIONS));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.div("Do you want to submit the Youtube URL to Gemini to extract video annotations?"));
+	sb.append(HU.div(HU.b("Note: this will overwrite any existing annotations")));	
+	sb.append(HU.buttons(HU.submit(LABEL_OK,    ARG_OK),
+			     HU.submit(LABEL_CANCEL, ARG_CANCEL)));
+	sb.append(HU.formClose());
+
+        getPageHandler().entrySectionClose(request, entry, sb);
+
+	return getEntryManager().addEntryHeader(request, entry,new Result("Extract Annotations", sb));
+    }
+
+
 
     @Override
     public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
@@ -67,19 +143,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
 	return 	super.embedYoutube(request, entry, props, sb, attrs, mediaUrl);
     }
 
-    /**
-     *
-     * @param sb _more_
-     * @param id _more_
-     * @param width _more_
-     * @param height _more_
-     * @param start _more_
-     * @param end _more_
-     * @param autoPlay _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String embedPlayer(Appendable sb, String id, String width,
                                      String height, double start, double end,
                                      boolean autoPlay)
@@ -109,11 +172,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         return playerId;
     }
 
-    /**
-     *
-     * @param url _more_
-     *  @return _more_
-     */
     public static String getYouTubeId(String url) {
         String id = id = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
@@ -170,13 +228,6 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         }
     }
 
-    /**
-     *
-     * @param repository _more_
-     * @param request _more_
-     * @param entry _more_
-     * @param id _more_
-     */
     public static void addYoutubeThumbnail(Repository repository, Request request,
                                     Entry entry, String id) {
         //      String thumbUrl = "https://i.ytimg.com/vi/" + id + "/default.jpg";

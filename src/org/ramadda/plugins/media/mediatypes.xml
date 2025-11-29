@@ -1,7 +1,7 @@
 <types category="Media">
   <type name="type_media"   foruser="false"
 	handler="org.ramadda.plugins.media.MediaTypeHandler" >
-   <column name="media_width" type="string" label="Width"  default="640" showinhtml="false"/>
+   <column name="media_width" type="string" label="Width"  default="100%" showinhtml="false"/>
    <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
 	   candisplay="false" editable="false"/>     
@@ -38,6 +38,11 @@
       description="YouTube Video" 
       handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
       pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
+<!--
+  <action name="extractannotations" label="Extract Annotations"
+	  canedit="true"
+          icon="fas fa-font" foruser="true" category="edit"/>
+	  -->
   <property name="icon" value="/media/youtube-new.png"/>
   <property name="form.area.show" value="false"/>
   <property name="form.date.show" value="false"/>
@@ -237,7 +242,7 @@
     <wikimacro name="annotated_image" properties="width=500px" label="Annotated Image">
     <![CDATA[{{annotated_image width="${width}" #entry="${entry}" }}]]></wikimacro>    
     <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
-     <wiki><![CDATA[
+    <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
 +inset left=10px right=10px
