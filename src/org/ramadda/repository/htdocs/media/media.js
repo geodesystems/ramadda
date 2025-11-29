@@ -207,7 +207,13 @@ RamaddaMediaTranscript.prototype = {
 			   HU.getIconImage('fas fa-plus'));
 	}
 
-
+	if(canAdd) {
+	    extra+=HU.span([ATTR_TITLE,'Delete all',
+			    ATTR_ID,this.domId('_deletetranscription'),
+			    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10)),
+			    ATTR_CLASS,CLASS_CLICKABLE],
+			   HU.getIconImage('fas fa-trash-can'));
+	}
 	table = HU.div([ATTR_CLASS,"ramadda-media-points"], table);
 	let search='';
 	this.searchInputId = HU.getUniqueId("search_");
@@ -259,6 +265,13 @@ RamaddaMediaTranscript.prototype = {
 	jqid(this.div).html(html);
 	this.jq('_addtranscription').click(function(){
 	    _this.addOrEditTranscription($(this));
+	});
+	this.jq('_deletetranscription').click(() =>{
+	    if(confirm('Are you sure you want to delete the entire transcription?')) {
+		this.points=[];
+		this.writeTranscription();
+		this.makePoints();
+	    }
 	});
 	jqid(this.div).find('.ramadda-media-point-delete').click(function(event) {
 	    event.stopPropagation();
@@ -482,7 +495,8 @@ RamaddaMediaTranscript.prototype = {
 	if(Utils.isDefined(this.attrs.autoplay))  playerVars.autoplay = this.attrs.autoplay;
 	let player = new YT.Player(this.id, {
             height: Utils.isDefined(this.attrs.height)?this.attrs.height:'390',
-            width: Utils.isDefined(this.attrs.width)?this.attrs.width:'640',
+	    width: Utils.isDefined(this.attrs.width)?this.attrs.width:'100%',
+//            width: Utils.isDefined(this.attrs.width)?this.attrs.width:'640',	    
             videoId: this.attrs.videoId,
             playerVars: playerVars,
             events: {
