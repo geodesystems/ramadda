@@ -45,25 +45,63 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";
     public static final String PROP_CLAUDE_KEY = "claude.api.key";	    
+    public static final String MODEL_WHISPER_1 = "whisper-1";
+    public static final String PROVIDER_CHATGPT= "chatgpt";
+    public static final String PROVIDER_CLAUDE = "claude";
+    public static final String PROVIDER_GEMINI = "gemini";        
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
-    public static final int TOKEN_LIMIT_GEMINI_PRO = 30000;
-    public static final int TOKEN_LIMIT_GEMINI_FLASH = 500_000;
-    public static final int TOKEN_LIMIT_GPT3 = 2000;    
-    public static final int TOKEN_LIMIT_GPT4 = 4000;
-    public static final int TOKEN_LIMIT_CLAUDE = 200000;
 
-    private static final Object MUTEX_GEMINI = new Object();
-    private static final Object MUTEX_CLAUDE = new Object();
-    private static final Object MUTEX_OPENAI = new Object();    
+    private Hashtable<String,Model> modelMap;
+    private List<Model> modelList;
 
-    public static final String MODEL_WHISPER_1 = "whisper-1";
-    public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
-    public static final String MODEL_GPT_4="gpt-4";
-    public static final String MODEL_GPT_VISION  = "gpt-4-vision-preview";
-    public static final String MODEL_GEMINI_PRO = "gemini-pro";
-    public static final String MODEL_GEMINI_FLASH = "gemini-flash";    
-    public static final String MODEL_CLAUDE = "claude";    
+    public  static class Model {
+	String provider;
+	String name;
+	String id;
+	String alias;
+	int tokenLimit=TOKEN_LIMIT_UNDEFINED;
+	Model(String provider,String id,String name) {
+	    this.provider = provider;
+	    this.id = id;
+	    this.name = name;
+	}
+	Model(String provider,String id,String name,int tokenLimit) {
+	    this(provider,id,name);
+	    this.tokenLimit=tokenLimit;
+	}
+	Model(String provider,String id,String alias,String name,int tokenLimit) {
+	    this(provider,id,name,tokenLimit);
+	    this.alias= alias;
+	}	
+
+	public boolean handledBy(String provider) {
+	    return this.provider.equals(provider);
+	}
+
+	public HtmlUtils.Selector getSelector() {
+	    return new HtmlUtils.Selector(name,id);
+	}
+	public String getId() {
+	    return id;
+	}
+	public String getName() {
+	    return name;
+	}	
+	public boolean equals(Object object) {
+	    if(!(object instanceof Model)) return false;
+	    Model that = (Model)object;
+	    return that.id.equals(this.id);
+	}
+	public String toString() {
+	    return name +" " +id;
+	}
+
+    }
+
+    public Model getModel(String id) {
+	return  modelMap.get(id);
+    }
 
     public static final String ARG_USEGPT4  = "usegpt4";
     public static final String ARG_MODEL = "model";
@@ -80,20 +118,19 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String URL_OPENAI_TRANSCRIPTION =
 	"https://api.openai.com/v1/audio/transcriptions";
-    public static final String URL_OPENAI_COMPLETION =
-	"https://api.openai.com/v1/chat/completions";
-    public static final String URL_GEMINI_PRO=
-	"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent";
-    public static final String URL_GEMINI_FLASH=
-	"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";    
+	public static final String URL_OPENAI_COMPLETION =
+	    "https://api.openai.com/v1/chat/completions";
+
+    public static final String URL_GEMINI=
+	"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent";
 
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
 
     private JobManager openAIJobManager;
     private JobManager geminiJobManager;
     private JobManager claudeJobManager;        
-
-    private Object NEXT_MUTEX= new Object();
+    private List<String> openAIKeys;
+    private int openAIKeyIdx=0;
 
     public LLMManager(Repository repository) {
         super(repository);
@@ -105,12 +142,46 @@ public class LLMManager extends  AdminHandlerImpl {
 	claudeJobManager = new JobManager(repository,
 					  repository.getProperty("ramadda.llm.clause.threads",2));	
 	//	geminiJobManager.setDebug(true);	
+	initModels();
     }
 
     public void debug(String msg) {
 	if(debug) System.err.println("LLMManager:" + msg);
     }
 
+
+
+    private void addModel(Model model) {
+	modelMap.put(model.id,model);
+	modelList.add(model);
+	if(model.alias!=null)
+	    modelMap.put(model.alias,model);
+    }
+
+    private void initModels() {
+	modelMap = new Hashtable<String,Model>();
+	modelList = new ArrayList<Model>();
+
+	if(isOpenAIEnabled()) {
+	    addModel(new Model(PROVIDER_CHATGPT, "gpt-3.5-turbo-1106","gpt-3.5","ChatGPT 3.5",2000));
+	    if(isGPT4Enabled()) {
+		addModel(new Model(PROVIDER_CHATGPT,"gpt-4","ChatGPT 4.0",4_000));
+		addModel(new Model(PROVIDER_CHATGPT,"gpt-5","ChatGPT 5.0",100_000));
+		addModel(new Model(PROVIDER_CHATGPT,"gpt-5-mini","ChatGPT 5.0 Mini",100_000));
+		addModel(new Model(PROVIDER_CHATGPT,"gpt-5-nano","ChatGPT 5.0 Nano",100_000));
+	    }
+	}
+	if(isGeminiEnabled()) {
+	    addModel(new Model(PROVIDER_GEMINI,"gemini-2.5-pro","Gemini Pro",30_000));
+	    addModel(new Model(PROVIDER_GEMINI,"gemini-2.5-flash","Gemini Flash",500_000));
+	}
+	if(isClaudeEnabled()) {
+	    addModel(new Model(PROVIDER_CLAUDE,"claude","Claude",200_000));
+	}
+    }
+
+
+    @Override
     public String getId() {
         return "llmmanager";
     }
@@ -119,8 +190,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	return  openAIJobManager;
     }
 
-    private List<String> openAIKeys;
-    private int openAIKeyIdx=0;
     public synchronized String getOpenAIKey() {
 	if(openAIKeys==null) {
 	    String openAIKey = getRepository().getProperty(PROP_OPENAI_KEY);
@@ -136,10 +205,11 @@ public class LLMManager extends  AdminHandlerImpl {
 	return key;
     }
 
-    private boolean isGeminiEnabled() {
+    public boolean isGeminiEnabled() {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_GEMINI_KEY));
     }
-    private boolean isClaudeEnabled() {
+
+    public boolean isClaudeEnabled() {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_CLAUDE_KEY));
     }    
 
@@ -174,10 +244,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
-    public void setModel(Request request, String model) {
-	if(model.equals("gpt3.5")) model=MODEL_GPT_3_5;
-	else if(model.equals("gpt4")) model=MODEL_GPT_4;
-	request.put(ARG_MODEL,model);
+    public void setModel(Request request, String id) {
+	Model model = modelMap.get(id);
+	if(model!=null) {
+	    request.put(ARG_MODEL,model.id);
+	} else {
+	    throw new IllegalArgumentException("Unknown LLM model:" + id);
+	}
     }
 
     public Result applyLLM(final Request request, final Entry entry) throws Exception  {
@@ -278,19 +351,9 @@ public class LLMManager extends  AdminHandlerImpl {
 
     private List<HtmlUtils.Selector> getAvailableModels() {
 	List<HtmlUtils.Selector> models = new ArrayList<HtmlUtils.Selector>();
-	if(isOpenAIEnabled()) {
-	    models.add(new HtmlUtils.Selector("OpenAI GPT3.5",MODEL_GPT_3_5));
-	    if(isGPT4Enabled()) {
-		models.add(new HtmlUtils.Selector("OpenAI GPT4.0",MODEL_GPT_4));
-	    }
+	for(Model model: modelList) {
+	    models.add(model.getSelector());
 	}
-	if(isGeminiEnabled()) {
-	    models.add(new HtmlUtils.Selector("Google Gemini Flash",MODEL_GEMINI_FLASH));	    
-	    models.add(new HtmlUtils.Selector("Google Gemini Pro",MODEL_GEMINI_PRO));
-	}
-	if(isClaudeEnabled()) {
-	    models.add(new HtmlUtils.Selector("Claude",MODEL_CLAUDE));
-	}	
 	return models;
     }
 
@@ -380,7 +443,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(info.offset>0 && info.offset<corpus.length()) {
 		corpus = corpus.substring(info.offset);
 	    }
-	    //	    info.tokenLimit = TOKEN_LIMIT_GPT3;
 	    return callLLM(request, prompt,"",corpus,1000,true, info);
 	} catch(Throwable exc) {
 	    throw new RuntimeException(exc);
@@ -414,14 +476,14 @@ public class LLMManager extends  AdminHandlerImpl {
 	return theResult[0];
     }
 
-    public IO.Result  callGemini(String model, String gptText) throws Exception {
-	synchronized(MUTEX_GEMINI) {
+    public IO.Result  callGemini(Model model, String gptText) throws Exception {
+	synchronized(model.provider) {
 	    if(!isGeminiEnabled()) return null;
 	    /*{
 	      "contents": [{
 	      "parts":[{"text": "Write a story about a magic backpack."}]}]}'
 	    */
-	    String url = model.equals(MODEL_GEMINI_FLASH)?URL_GEMINI_FLASH:URL_GEMINI_PRO;
+	    String url = URL_GEMINI.replace("{model}",model.getId());
 	    String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	    String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
 	    String body = JU.map("contents",contents);
@@ -432,30 +494,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }	
 
-    public IO.Result  callClaude(String model, String gptText) throws Exception {
-	synchronized(MUTEX_CLAUDE) {
+    public IO.Result  callClaude(Model model, String gptText) throws Exception {
+	synchronized(model.provider) {
 	    if(!isClaudeEnabled()) return null;
-	    /*
-	      '{
-	      "model": "claude-3-opus-20240229",
-	      "max_tokens": 1024,
-	      "messages": [
-	      {"role": "user", "content": "Hello, world"}
-	      ]
-	      }'
-	    */
-	    /*
-	      gptText = gptText +"<document>" +
-	      IO.readContents("/Users/jeffmc/test.csv")+"</document>";
-	      System.err.println(gptText);
-	    */
-
+	    /* {"model": "claude-3-opus-20240229",  "max_tokens": 1024,
+	      "messages": [{"role": "user", "content": "Hello, world"}]}  */
 	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
 	    String messages = JU.list(JU.map("role",JU.quote("user"),"content",JU.quote(gptText)));
-	    //
-	    //claude-3-7-sonnet-latest
-	    //claude-3-5-sonnet-latest
-	    //good one: claude-3-5-sonnet-20241022
 	    String body = JU.map("model",JU.quote("claude-3-7-sonnet-latest"),
 				 "max_tokens","1000",
 				 "messages",messages);
@@ -469,22 +514,20 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }	
 
-    private  IO.Result  callOpenAI(Request request, String model,
+    private  IO.Result  callOpenAI(Request request,
+				   Model model,
 				   int maxReturnTokens,
 				   String gptText,String[]extraArgs)
 	throws Throwable {
 	if(!isOpenAIEnabled()) return null;
-	//	synchronized(MUTEX_OPENAI) {
-	boolean useGpt4 = model.equals(MODEL_GPT_4);
-	if(useGpt4 && !isGPT4Enabled()) return null;
-	List<String> args =  Utils.makeListFromValues("temperature", "0",
-						      "max_tokens" ,""+ maxReturnTokens,
+	List<String> args =  Utils.makeListFromValues("temperature", "1",
+						      "max_completion_tokens" ,""+ maxReturnTokens,
 						      "top_p", "1.0");
 	for(int i=0;i<extraArgs.length;i+=2) {
 	    args.add(extraArgs[i]);
 	    args.add(extraArgs[i+1]);
 	}
-	Utils.add(args,"model",JsonUtil.quote(model));
+	Utils.add(args,"model",JsonUtil.quote(model.getId()));
 	Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
 							     "role",JsonUtil.quote("user"),
 							     "content",JsonUtil.quote(gptText))));
@@ -493,6 +536,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
 			      "Content-Type","application/json",
 			      "Authorization","Bearer " +openAIKey);
+
 	//	System.err.println(result.getHeaders());
 	if(result!=null) {
 	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
@@ -517,7 +561,10 @@ public class LLMManager extends  AdminHandlerImpl {
 			   String...extraArgs)
 	throws Throwable {
 
-	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
+	Model model = getModel(request.getString(ARG_MODEL,modelList.get(0).getId()));
+	if(model==null) {
+	    throw new IllegalArgumentException("Unknown model:"+request.getString(ARG_MODEL,"NA"));
+	}
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	if(openAIKey==null && geminiKey==null) {
@@ -526,16 +573,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	if(info.tokenLimit<=0) {
-	    if(model.equals(MODEL_GEMINI_PRO)) 
-		info.tokenLimit = TOKEN_LIMIT_GEMINI_PRO;
-	    else    if(model.equals(MODEL_GEMINI_FLASH)) 
-		info.tokenLimit = TOKEN_LIMIT_GEMINI_FLASH;
-	    else if(model.equals(MODEL_GPT_4)) 
-		info.tokenLimit = TOKEN_LIMIT_GPT4;
-	    else if(model.equals(MODEL_CLAUDE)) 
-		info.tokenLimit = TOKEN_LIMIT_CLAUDE;	    
-	    else
-		info.tokenLimit = TOKEN_LIMIT_GPT3;
+	    info.tokenLimit =model.tokenLimit;
 	} 
 
 
@@ -583,22 +621,24 @@ public class LLMManager extends  AdminHandlerImpl {
 						 " token limit:" + info.tokenLimit);
 
 	    IO.Result  result=null; 
-	    if(model.equals(MODEL_GEMINI_PRO) || model.equals(MODEL_GEMINI_FLASH)) {
+	    if(model.handledBy(PROVIDER_GEMINI)) {
 		long t1 = System.currentTimeMillis();
 		result = callGemini(model,gptText);
 		long t2 = System.currentTimeMillis();
 		//		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");
-	    } else if(model.equals(MODEL_CLAUDE)) {
+	    } else if(model.handledBy(PROVIDER_CLAUDE)) {
 		long t1 = System.currentTimeMillis();
 		result = callClaude(model,gptText);
 		long t2 = System.currentTimeMillis();
 		//		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");		
-	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
+	    } else if(model.handledBy(PROVIDER_CHATGPT)) {
 		long t1 = System.currentTimeMillis();
 		result = callOpenAI(request,model,maxReturnTokens,gptText,extraArgs);
 		//		System.err.println(result.getResult());
 		long t2 = System.currentTimeMillis();
 		//		if(debug)getLogManager().logSpecial("LLMManager:done calling OpenAI:" + (t2-t1)+"ms");
+	    } else {
+		throw new IllegalArgumentException("Unkown model:" + model);
 	    }
 	    if(result==null) {
 		if(debug)
@@ -608,7 +648,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	    //	    System.err.println("RESULT:" + result.getResult());
 	    if(result.getError()) {
-		if(model.equals(MODEL_CLAUDE)) {
+		if(model.handledBy(PROVIDER_CLAUDE)) {
 		    if(result.getCode()==529) {
 			throw new CallException("Claude' API is temporarily overloaded.");
 		    }
@@ -794,7 +834,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	//	mime = "audio/mp4";
 
 	List postArgs   =Utils.add(new ArrayList(),
-				   "model",MODEL_WHISPER_1,"file", new IO.FileWrapper(file,fileName,mime));
+				   "model",MODEL_WHISPER_1,
+				   "file", new IO.FileWrapper(file,fileName,mime));
 
 	URL url =  new URL(URL_OPENAI_TRANSCRIPTION);
 	IO.Result result =  IO.doMultipartPost(url, args,postArgs);
@@ -968,7 +1009,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		}
 		if(extractKeywords) {
 		    JSONArray array = obj.optJSONArray("keywords");
-		    //		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
 		    if(array!=null) {
 			for (int i = 0; i < array.length(); i++) {
 			    if(i>=8) break;
@@ -1146,10 +1186,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
+
     private static class PromptInfo {
 	int tokenLimit=TOKEN_LIMIT_UNDEFINED;
 	int tokenCount;
-
 	int offset;
 	int corpusLength;
 	int segmentLength;
