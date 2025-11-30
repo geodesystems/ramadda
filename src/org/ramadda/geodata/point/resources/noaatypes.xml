@@ -193,7 +193,7 @@ fields=station[type=enumeration label="Station" ],date[type=date label="Date"  f
 <wiki>
 <![CDATA[
 +section # title="NOAA ISD Site:  {{name}} - {{field name=station}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8
@@ -246,7 +246,7 @@ Provided by: [https://www.noaa.gov/ NOAA],
 part of the [https://aws.amazon.com/marketplace/seller-profile?id=e40a6e9c-c840-413d-a235-0a5e458ae0c0 Amazon Sustainability Data Initiative].
 [https://aws.amazon.com/marketplace/pp/prodview-yyq26ae3m6csk?sr=0-3&ref_=beagle&applicationId=AWSMPContessa#resources More information]
 -note
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8

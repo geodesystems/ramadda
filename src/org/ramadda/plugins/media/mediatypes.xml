@@ -206,7 +206,7 @@
      <wiki><![CDATA[
 {{noheading}}
 +section title={{name}}
-{{description}}
+{{description wikify=true}}
 {{imageplayer show_sort_links="true" imagewidth="90%"}}
 -section
 ]]>

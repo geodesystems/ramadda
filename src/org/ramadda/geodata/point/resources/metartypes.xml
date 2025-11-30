@@ -64,7 +64,7 @@ label,pady:10,pos:nw,dx:20,dy:-ch+80,font:36px sans-serif,label:Temp_colon_ ${te
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
 :rem If you use this for a custom wiki then remove the description tag
 :navtop
-{{description}}
+{{description wikify=true}}
 :heading Charts
 +row
 +col-md-9
@@ -137,7 +137,7 @@ label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature de
 <wiki>
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
-{{description}}
+{{description wikify=true}}
 +row
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1"}}

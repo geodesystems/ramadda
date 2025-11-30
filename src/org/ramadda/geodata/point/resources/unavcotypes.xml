@@ -24,7 +24,7 @@ this gets it from the type_point super class
 <table width=100% cellpadding=5>
 <tr valign=top>
 <td width="30%">
-{{description}}
+{{description wikify=true}}
 {{information  details="false"  }}
 
 {{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related===="}}

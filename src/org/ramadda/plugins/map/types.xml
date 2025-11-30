@@ -119,7 +119,7 @@ popupSliderRight=true
      <column name="rotation" label="Rotation"     type="double" default="0" />
      <wiki><![CDATA[
 +section title="{{name}}"
-{{description}}
+{{description wikify=true}}
 {{map width="100%" height="450" details="true" listentries="true" showCheckbox="true" showOpacitySlider=true}}
 {{resource includeicon="true"}}
 -section

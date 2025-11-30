@@ -29,7 +29,7 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
 <wiki>
 <![CDATA[
 +section  title="Stream Gage: {{field name=site_id}} - {{name}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8
@@ -81,7 +81,7 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 <wiki>
 <![CDATA[
 +section  title="RISE Data:  {{name}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8

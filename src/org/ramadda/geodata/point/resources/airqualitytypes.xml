@@ -51,7 +51,7 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.
 <wiki>
 <![CDATA[
 +section  title="Air Quality Station: {{name}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-9
@@ -163,7 +163,7 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 <wiki>
 <![CDATA[
 +section  title="Purple Air Station: {{name}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8

@@ -22,7 +22,7 @@ this gets it from the type_point super class
 
 <tr valign=top>
 <td width="50%">
-{{description}}
+{{description wikify=true}}
 {{information details="true"}}
 </td>
 <td wdith="50%">

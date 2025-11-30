@@ -62,7 +62,7 @@ Change anything inside of the ![CDATA[
 <![CDATA[
 +section  title="{{name}}"
 <div style="max-height:200px; overflow-y:auto;">
-{{description}}
+{{description wikify=true}}
 </div>
 {{information details=true}}
 ----

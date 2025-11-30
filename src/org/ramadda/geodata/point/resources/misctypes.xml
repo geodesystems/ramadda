@@ -403,7 +403,7 @@ lineWrap=true
 <![CDATA[
 +section  title="Daymet Data: {{name}}"
 :navtop
-{{description}}
+{{description wikify=true}}
 ----
 :heading Charts
 +row
