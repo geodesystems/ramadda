@@ -2000,10 +2000,18 @@ public class WikiManager extends RepositoryManager
 	    }
 	    if(types.size()==0)
 		return getProperty(wikiUtil,props,"message","No type specified in new entry tag");
+	    int cnt = 0;
 	    for(String type: types) {
+		if(cnt++>=4) {
+		    sb.append(HU.vspace());
+		    cnt=1;
+		}
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		if(typeHandler==null) return "Not a valid entry type:" + type;
-		String url = request.makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, entry.getId(), ARG_TYPE, type);
+		String url = request.makeUrl(getRepository().URL_ENTRY_FORM,
+					     ARG_GROUP, entry.getId(),
+					     ARG_TYPE, type,
+					     "defaultgroup",entry.getId());
 		String label = getProperty(wikiUtil,props,"label","New " + typeHandler.getLabel());
 		if(getProperty(wikiUtil,props,"addIcon",true)) {
 		    String icon = HU.img(typeHandler.getIconUrl(typeHandler.getIconProperty(ICON_BLANK)),"",
