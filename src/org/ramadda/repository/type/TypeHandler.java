@@ -4462,18 +4462,23 @@ public class TypeHandler extends RepositoryManager {
 		    String        cbxId  = "iswiki";
                     if (isWiki) {
 			sb.append("<tr><td colspan=2>");
-
 			if(isTextWiki) {
 			    desc = desc.replaceAll("^"+WIKI_PREFIX+"\n*","");
 			}
 			String cbx = HU.labeledCheckbox(ARG_ISWIKI,
 							"true", isTextWiki,
 							HU.id(cbxId), "Override default display");
-			sb.append(cbx);
-                        addWikiEditor(request, entry, sb, formInfo,
+			StringBuilder editorSB = new StringBuilder();
+			editorSB.append(cbx);
+			String extra  =msg("Description");
+                        addWikiEditor(request, entry, editorSB, formInfo,
                                       ARG_DESCRIPTION, desc, "",
                                       false, Entry.MAX_DESCRIPTION_LENGTH,
-                                      true);
+                                      true,"height",isTextWiki?"500px":"150px");
+                        sb.append(HU.makeShowHideBlock(extra,
+						       editorSB.toString(),
+						       true));
+
 			sb.append("</td></tr>");
                     } else {
                         desc = desc.trim();
