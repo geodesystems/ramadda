@@ -2028,10 +2028,10 @@ public class EntryManager extends RepositoryManager {
 
             HU.row(sb, HU.colspan(buttons, 2));
 
-	    if(group==null && entry==null) {
+	    String defaultGroup = request.getString("defaultgroup",null);
+	    if((group==null && entry==null) || stringDefined(defaultGroup)) {
 		HU.row(sb,HU.colspan(HU.b("Select a parent entry:"),2));
 		Entry defaultEntry=null;
-		String defaultGroup = request.getString("defaultgroup",null);
 		if(stringDefined(defaultGroup)) defaultEntry=getEntry(request, defaultGroup);
 		HU.row(sb,HU.colspan(OutputHandler.makeEntrySelect(request, ARG_GROUP, true,"",defaultEntry),2));
 	    }
