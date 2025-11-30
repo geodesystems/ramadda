@@ -873,6 +873,21 @@ table.dataTable {
     cursor:pointer;
 }
 
+.display-link-disabled {
+    cursor:default;
+}
+
+.display-link-disabled,.display-link {
+    padding:0.35em !important;
+    padding-top:0em !important;
+    padding-bottom:0em !important;        
+}
+
+.display-link-disabled i,.display-link i {
+    font-size:85%;
+}
+
+
 .display-metadatalist-item {
     max-width: 200px;
 }
@@ -1281,8 +1296,8 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-orderby {
-    font-size:8pt;
-    border:1px solid #ccc;
+    font-size:80%;
+    border:var(--basic-border);
 }
 
 .display-cell {

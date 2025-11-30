@@ -244,13 +244,14 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             }
 
             let html = '';
-            html += HU.openTag(TAG_TABLE, [ATTR_ID, this.getDomId(TAG_TABLE),
-					   ATTR_CLASS, HU.classes(CLASS_TABLE_CELLBORDER,
-								  CLASS_TABLE_STRIPE,
-								  CLASS_TABLE),
-					   ATTR_WIDTH, HU.perc(100),
-					   ATTR_CELLPADDING, 5,
-					   ATTR_CELLSPACING, 0]);
+            html += HU.openTag(TAG_TABLE,
+			       [ATTR_ID, this.getDomId(TAG_TABLE),
+				ATTR_CLASS, HU.classes(CLASS_TABLE_CELLBORDER,
+						       CLASS_TABLE_STRIPE,
+						       CLASS_TABLE),
+				ATTR_WIDTH, HU.perc(100),
+				ATTR_CELLPADDING, 5,
+				ATTR_CELLSPACING, 0]);
             html += HU.open(TAG_THEAD);
             let type = this.findEntryType(this.searchSettings.entryType);
             let typeName = "Entry";
@@ -355,7 +356,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     if (cell == null) {
                         cell = "";
                     }
-                    let add = HU.tag(TAG_A, [ATTR_STYLE, HU.css(CSS_COLOR,COLOR_BLACK),
+                    let add = HU.tag(TAG_A, [ATTR_STYLE,
+					     HU.css(CSS_COLOR,COLOR_BLACK),
 					     ATTR_HREF,
 					     HU.url(this.getRamadda().getRoot() + "/metadata/addform",
 						    [ARG_ENTRYID,entry.getId(),'metadata_type',mdt]),
@@ -367,7 +369,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     if (cell.length > 0) {
                         cellContents += cell;
                     }
-                    row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
+                    row.push(HU.td([],
+				   HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"],
+					  cellContents)));
                 }
                 html += HU.tr([ATTR_VALIGN,ALIGN_TOP], HU.join(row, ""));
                 //Add in the header every 10 rows
@@ -669,12 +673,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			byList.push([getLabel(type,'ascending',"Name A-Z"), type+'_ascending'],
 				    [getLabel(type,'descending',"Name Z-A"),type+'_descending']);
 		    else if(type=='createdate')
-			byList.push([Utils.delimMsg("Record create date")+" - "+ Utils.delimMsg("newest first"),"createdate_descending"],
-				    [Utils.delimMsg("Record create date")+" - "+ Utils.delimMsg("oldest first"),"createdate_ascending"]);
+			byList.push([Utils.delimMsg("Create date")+" - "+ Utils.delimMsg("newest first"),"createdate_descending"],
+				    [Utils.delimMsg("Create date")+" - "+ Utils.delimMsg("oldest first"),"createdate_ascending"]);
 
 		    else if(type=='changedate')
-			byList.push([Utils.delimMsg("Record change date")+" - "+ Utils.delimMsg("newest first"),"changedate_descending"],
-				    [Utils.delimMsg("Record change date")+" - "+ Utils.delimMsg("oldest first"),"changedate_ascending"]);
+			byList.push([Utils.delimMsg("Change date")+" - "+ Utils.delimMsg("newest first"),"changedate_descending"],
+				    [Utils.delimMsg("Change date")+" - "+ Utils.delimMsg("oldest first"),"changedate_ascending"]);
 
 		    else if(type=='date')
 			byList.push([getLabel(type,'descending',
@@ -801,7 +805,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 innerHeight = this.getEntriesHeight();
             }
             if (innerHeight != null) {
-                style = HU.css(CSS_MAX_HEIGHT, HU.getDimension(innerHeight),CSS_OVERFLOW_Y,OVERFLOW_AUTO);
+                style = HU.css(CSS_MAX_HEIGHT,
+			       HU.getDimension(innerHeight),CSS_OVERFLOW_Y,OVERFLOW_AUTO);
             }
 	    style+= entriesStyle;
             entriesDivAttrs.push(ATTR_STYLE,style);	    
@@ -812,8 +817,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 resultsDiv = HU.div([ATTR_CLASS, "display-entries-results",
 				     ATTR_ID, this.getDomId(ID_RESULTS)], SPACE);
             }
-	    resultsDiv = HU.leftRightTable(resultsDiv,HU.div([ATTR_CLASS,"display-search-header",
-							      ATTR_ID,this.domId(ID_SEARCH_HEADER)]),null,null,{valign:POS_BOTTOM});
+	    resultsDiv = HU.leftRightTable(resultsDiv,
+					   HU.div([ATTR_CLASS,"display-search-header",
+						   ATTR_ID,this.domId(ID_SEARCH_HEADER)]),
+					   null,null,{valign:POS_BOTTOM});
 	    let toggle = "";
 	    if(horizontal &&  this.getShowFormToggle()) {
 		toggle = HU.div([ATTR_TITLE, "Toggle form",
@@ -950,24 +957,24 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    //Always show the next/prev because the results might be < max even though there
 	    //are more on the repository because some results might be hidden due to access control
 	    //            if (entries.length < DEFAULT_MAX) return entries.length+" result" +(entries.length>1?"s":"");
-            let left =  (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
-	    if(entries.length==0) left = SPACE3+SPACE3+SPACE3;
+            let range =  HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],
+				(settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length)));
+	    if(entries.length==0) range = '';
             let nextPrev = [];
             let lessMore = [];
-            if (settings.skip > 0) {
-                nextPrev.push(HU.onClick(this.getGet() + ".loadPrevUrl();",
-					 HU.getIconImage("fa-arrow-left",
-							 [ATTR_TITLE, "Previous"]),
-					 [ATTR_CLASS, "display-link"]));
-            }
+            nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
+					   ATTR_TITLE, "Previous",
+					   ATTR_CLASS, (settings.skip <= 0?'display-link-disabled':'display-link')],
+				 HU.getIconImage("fa-arrow-left")));
             let addMore = false;
-            if (entries.length>0 &&(true || entries.length == settings.getMax())) {
-                nextPrev.push(HU.onClick(this.getGet() + ".loadNextUrl();",
-					 HU.getIconImage("fa-arrow-right",
-							 [ATTR_TITLE, "Next"]),
-					 [ATTR_CLASS, "display-link"]));
-                addMore = true;
-            }
+	    //            if (entries.length>0 &&(true || entries.length == settings.getMax())) {
+            nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadNextUrl();",
+					   ATTR_TITLE, "Next",
+					   ATTR_CLASS, (entries.length==0?'display-link-disabled':'display-link')],
+				 HU.getIconImage("fa-arrow-right")));
+	    if(entries.length>0)  {
+		addMore = true;
+	    }
 
 	    if(entries.length>0) {
 		lessMore.push(HU.onClick(this.getGet() + ".loadLess();",
@@ -985,10 +992,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let spacer = SPACE3;
 	    if(includeCloser)
 		results = this.getCloser();
-	    results += SPACE + left + spacer;
             results += 
                 HU.join(nextPrev, SPACE) + spacer +
                 HU.join(lessMore, SPACE);
+	    results += spacer + range + spacer;
             return results+HU.br();
         },
 	makeSearchSettings: function() {
@@ -1099,7 +1106,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             //Call this now because it sets settings
             let theRepository = this.getRamadda()
 
-	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
+	    //	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
+	    this.jq(ID_ENTRIES).html(this.getWaitImage() + " " +"Searching...");
+
             if (theRepository.children) {
                 this.entryList = new EntryListHolder(theRepository, this);
                 this.multiSearch = {
@@ -2172,7 +2181,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
             select += HU.closeTag(TAG_SELECT);
-	    if(this.entryTypes.length==0) {
+	    if(this.entryTypes.length<=1) {
 	    } else  if(false && this.entryTypes.length==1) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
@@ -2884,6 +2893,11 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                return;
             }
 	    this.writeMessage(this.getResultsHeader(entries));
+	    this.jq(ID_RESULTS).find('.display-link').button();
+	    this.jq(ID_RESULTS).find('.display-link-disabled').button();
+	    this.jq(ID_RESULTS).find('.display-link-disabled').button('disable');	    
+
+
             if (entries.length == 0) {
 		return
 	    }
