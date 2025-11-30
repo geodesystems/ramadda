@@ -1517,10 +1517,15 @@ display-text-edit {
 }
 
 .display-metadata-table-add {
-       font-size: 75%;
-       margin:0px; 
-       padding:0px;
-       border: 0px solid red;
+    display:inline;
+    font-size: 90%;
+    margin:0px; 
+    padding:0px;
+    border: 1px solid transparent;
+}
+
+.display-metadata-table-add:hover {
+       border: 1px solid #ccc;
 }
 
 .display-metadata-divider {
@@ -1607,6 +1612,7 @@ display-text-edit {
 .display-entrylist-results {
     max-height:1000px;
     overflow-y:auto;
+    display:grid;
 }
 
 .display-entrylist .formgroupheader {

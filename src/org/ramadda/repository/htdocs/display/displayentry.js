@@ -243,6 +243,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 }
             }
 
+
             let html = '';
             html += HU.openTag(TAG_TABLE,
 			       [ATTR_ID, this.getDomId(TAG_TABLE),
@@ -258,7 +259,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             if (type != null) {
                 typeName = type.getLabel();
             }
-	    this.writeMessage(this.getResultsHeader(entries));
+
             let mdts = null;
             //Get the metadata types to show from either a property or
             //gather them from all of the entries
@@ -498,7 +499,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showName',d: true},
         {p:'showDescription',d: false},		
         {p:'showDate',d: true},
-        {p:'showCreateDate',ex:'true',d: false},
+        {p:'showCreateDate',ex:'false',d: true},
         {p:'showChangeDate',ex:'true',d: false},		
         {p:'showArea',d: true},
 	{p:'textRequired',d:false},
@@ -890,6 +891,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             });
 
             this.jq(ID_FORM).submit(function(event) {
+		//reset the skip
+		let settings = theDisplay.getSearchSettings();
+		settings.skip=0;
                 theDisplay.submitSearchForm();
                 event.preventDefault();
             });
@@ -1258,7 +1262,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(tag.length==0) {
 		    tag =makeTag(ATTR_TEXT_INPUT,arg,label);
 		    tag.click(()=>{
-			console.log('clear');
 			$(this).val('');
 			_this.submitSearchForm();
 		    });
@@ -2768,7 +2771,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 					ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]));
 		} else if(type=='metadata') {		    
 		    titles.push('Metadata');
-		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(800),CSS_MAX_WIDTH,HU.px(800),CSS_OVERFLOW_X,OVERFLOW_AUTO)],this.getEntriesMetadata(entries));
+		    let mtd = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
+							CSS_MAX_WIDTH,HU.perc(100),
+							CSS_OVERFLOW_X,OVERFLOW_AUTO)],this.getEntriesMetadata(entries));
 		    addContents(mtd);
 		} else {
 		    console.log('unknown display:' + type);
