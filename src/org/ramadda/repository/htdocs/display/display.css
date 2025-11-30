@@ -1123,6 +1123,14 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-search-content .ui-tabs .ui-tabs-panel {
+    padding-top:0em;
+    padding-left:0em;
+    padding-right:0em;
+}
+
+
+
 .display-search-footer {
     margin-top:0.5em;
     text-align:right;
