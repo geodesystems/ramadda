@@ -206,10 +206,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     selectorRamaddas:{},
+    searchState:{},
     initEntryPopup:function(id,target,entryType,showTypeSelector) {
 	let getId=(suffix) =>{
 	    return id+suffix;
 	}
+	let state = this.searchState;
         let input = HU.input("","",[ATTR_ID,getId("_input"),
 				    ATTR_CLASS,"input",
 				    ATTR_PLACEHOLDER,"Search",
@@ -256,7 +258,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let typeSelectId = getId('types_select');
 		let select= HU.select('',[ATTR_STYLE,
 					  HU.css(CSS_MAX_WIDTH,HU.px(250),CSS_MARGIN_TOP,HU.px(4)),
-					  ATTR_ID,typeSelectId],options);
+					  ATTR_ID,typeSelectId],options,state.selectedType);
 		select = HU.vspace()+select;
 		jqid(getId('types')).html(select);
 		HU.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true,showCategories:true});
@@ -288,6 +290,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let type = jqid(getId('types_select')).val();
 		if(Utils.stringDefined(type)&& type!='any') {
 		    theType = type;
+		    state.selectedType = type;
 		}
 	    }
 	    if(Utils.stringDefined(theType)) searchLink=HU.url(searchLink,["type",theType]);
