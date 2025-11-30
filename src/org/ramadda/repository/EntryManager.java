@@ -1209,7 +1209,7 @@ public class EntryManager extends RepositoryManager {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
 		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type',null,{focus:true})");
-		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td class=ramadda-table-heading>Parent Type</td><td xwidth=33% class=ramadda-table-heading>Category</td></tr>");
+		sb.append("<table width=100%><tr><td class=ramadda-table-heading>Type name </td><td  class=ramadda-table-heading>Type ID</td><td class=ramadda-table-heading>Parent Type</td><td class=ramadda-table-heading>Category</td></tr>");
 		for (TypeHandler typeHandler : typeHandlers) {
 		    icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
 		    String url = getRepository().getUrlPath("/entry/types.html?type="  + typeHandler.getType());
@@ -1228,7 +1228,8 @@ public class EntryManager extends RepositoryManager {
 				    HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
 				    HU.td(parentHtml) +
 				    HU.td(category),
-				    HU.attr("class","ramadda-type")));
+				    HU.attrs("style",HU.css("border-bottom","1px solid #eee"),
+					     "class","ramadda-type")));
 		}
 		sb.append("</table>");
 		HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
