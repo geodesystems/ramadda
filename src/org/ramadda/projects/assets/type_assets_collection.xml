@@ -3,6 +3,7 @@ Since this is for import add a:
 <import resource="type_assets_collection.xml"/>
 into some types.xml file
 -->
+<types>
 <type  name="type_assets_collection" 
  description="Asset Collection" 
  handler="org.ramadda.projects.assets.AssetCollectionTypeHandler" 
@@ -28,6 +29,8 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/assets/collection.png" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.tags.show"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
@@ -70,3 +73,4 @@ message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=fal
 
 -section]]></wiki>
 </type>
+</types>
