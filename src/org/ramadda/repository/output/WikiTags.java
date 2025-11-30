@@ -98,7 +98,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_TABLETREE, "Entry table/tree",
 					ATTR_TT,"Standard entry table with tree links",
 					"message","",
-					"simple","false",
+					"#simple","false",
 					"#maxHeight","500px"),
                             new WikiTag(WIKI_TAG_LISTING, "Entry listing",
 					ATTR_TT,"List of entries with text and thumbnails",
