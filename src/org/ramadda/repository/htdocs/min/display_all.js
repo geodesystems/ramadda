@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 30 11:41:56 MST 2025";
+var build_date="RAMADDA build date: Sun Nov 30 19:58:23 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -35803,13 +35803,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let lessMore = [];
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
 					   ATTR_TITLE, "Previous",
-					   ATTR_CLASS, (settings.skip <= 0?'display-link-disabled':'display-link')],
+					   ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,
+								  (settings.skip <= 0?'display-link-disabled':'display-link'))],
 				 HU.getIconImage("fa-arrow-left")));
             let addMore = false;
 	    //            if (entries.length>0 &&(true || entries.length == settings.getMax())) {
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadNextUrl();",
 					   ATTR_TITLE, "Next",
-					   ATTR_CLASS, (entries.length==0?'display-link-disabled':'display-link')],
+					   ATTR_CLASS,
+					   HU.classes(CLASS_BUTTON_SMALL,
+						      (entries.length==0?'display-link-disabled':'display-link'))],
 				 HU.getIconImage("fa-arrow-right")));
 	    if(entries.length>0)  {
 		addMore = true;
@@ -35819,12 +35822,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		lessMore.push(HU.onClick(this.getGet() + ".loadLess();",
 					 HU.getIconImage("fa-minus",
 							 [ATTR_TITLE, "View less"]),
-					 [ATTR_CLASS, "display-link"]));
+					 [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
 		if (addMore) {
                     lessMore.push(HU.onClick(this.getGet() + ".loadMore();",
 					     HU.getIconImage("fa-plus",
 							     [ATTR_TITLE, "View more"]),
-					     [ATTR_CLASS, "display-link"]));
+					     [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
 		}
 	    }
             let results = "";
@@ -37782,7 +37785,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			      new RecordField({type: "string", index: (index++),
 					       id: "description",label: "Description"}),
 			      new RecordField({type: "date", index: (index++),
-					       id: "date",label: "Date"}),			      
+					       id: "date",label: "Date"}),
+			      new RecordField({type: "date", index: (index++),
+					       id: "create_date",label: "Create Date"}),			      			      
 			      new RecordField({type: "url", index: (index++),
 					       id: "url",label: "URL"}),
 			      new RecordField({type: "image", index: (index++),
@@ -37821,6 +37826,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let data = [entry.getName(true),
 				    entry.getSnippet()||"",
 				    entry.getStartDate(),
+				    entry.getCreateDate(),				    
 				    entry.getEntryUrl(),
 				    entry.getImageUrl()||defaultImage||"",
 				    entry.getIconUrl(),
@@ -37898,10 +37904,12 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 displayId:info.id,
 				 divid:info.id,
 				 showMenu:false,
+				 showDateMenu:true,
 				 theData:data,
 				 displayStyle:"",
 				 mapHeight:'400',
 				 loadingMessage:''};
+
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 		});
 	    }
@@ -61605,6 +61613,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 
 function RamaddaTimelineDisplay(displayManager, id, properties) {
     const ID_TIMELINE = "timeline";
+    const ID_DATE_MENU = "datemenu";    
     if(!properties.height) properties.height=400;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     let myProps = [
@@ -61616,6 +61625,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
 	{p:'endDateField',ex:''},
+	{p:'showDateMenu',ex:true},
 	{p:'startAtSlide',ex:'0'},
 	{p:'startAtEnd',ex:'true'},
 	{p:'scaleFactor',ex:'10'},
@@ -61651,6 +61661,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
+	    let _this = this;
 	    if(!this.timelineLoaded) {
 		try {
 		    let tmp =  TL.Timeline;
@@ -61668,9 +61679,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
             let records = this.filterData();
 	    if(records==null) return;
-	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.div([ATTR_ID,timelineId]);
-	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
 		timenav_position: this.getTimelinePosition(),
@@ -61709,6 +61717,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let titleLength = this.getTitleLength();
 
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
+	    let dateFields = [];
+	    this.getFields().forEach(f=>{
+		if(f.isFieldDate()) {
+		    dateFields.push(f);
+		}
+	    });
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
 	    let imageField = this.getFieldById(null,this.getPropertyImageField());
@@ -61717,6 +61731,26 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
 	    let timeTo = this.getTimeTo();
 	    let showYears = this.getProperty("showYears",false);
+
+	    let timelineId = this.domId(ID_TIMELINE);
+	    let html = '';
+	    if(this.getShowDateMenu() && dateFields.length>1) {
+		let dates= dateFields.map(f=>{
+		    return {value:f.getId(),label:f.getLabel()};
+		});
+		html+=HU.select("",[ATTR_ID,this.domId(ID_DATE_MENU)],
+				dates,
+				this.getPropertyStartDateField());
+	    }
+	    
+	    html+=HU.div([ATTR_ID,timelineId]);
+	    this.setContents(html);
+	    this.jq(ID_DATE_MENU).change(function() {
+		_this.setProperty('startDateField',$(this).val());
+		_this.updateUI();
+	    });
+
+
 	    this.recordToIndex = {};
 	    this.idToRecord = {};
 	    for(let i=0;i<records.length;i++) {
