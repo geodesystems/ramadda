@@ -116,6 +116,7 @@ public class ExtEditor extends RepositoryManager {
         super(repository);
     }
 
+
     public Result processEntryExtEditEntries(Request request) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	for(Object id: request.get(ARG_ENTRYID, new ArrayList<String>())) {
@@ -1044,6 +1045,16 @@ public class ExtEditor extends RepositoryManager {
 	    buff[0].append(HU.formClose());
 	}
 
+	/*
+	if(extEntries!=null) {
+	    StringBuilder esb = new StringBuilder();
+	    for(Entry child: extEntries) {
+		esb.append(child.toString());
+		esb.append(HU.br());
+	    }
+	    sb.append(esb);
+	}
+	*/
 	if(titles.size()==1) {
 	    String label = titles.get(0);
 	    sb.append(formHeader(HU.span(label,HU.style("font-size:120%;"))));
