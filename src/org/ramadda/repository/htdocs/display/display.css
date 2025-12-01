@@ -877,16 +877,7 @@ table.dataTable {
     cursor:default;
 }
 
-.display-link-disabled,.display-link {
-    padding:0.35em !important;
-    padding-top:0em !important;
-    padding-bottom:0em !important;        
-}
-
-.display-link-disabled i,.display-link i {
-    font-size:85%;
-}
-
+.
 
 .display-metadatalist-item {
     max-width: 200px;

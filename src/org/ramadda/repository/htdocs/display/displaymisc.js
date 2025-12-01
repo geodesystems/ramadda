@@ -558,6 +558,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 
 function RamaddaTimelineDisplay(displayManager, id, properties) {
     const ID_TIMELINE = "timeline";
+    const ID_DATE_MENU = "datemenu";    
     if(!properties.height) properties.height=400;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     let myProps = [
@@ -569,6 +570,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
 	{p:'endDateField',ex:''},
+	{p:'showDateMenu',ex:true},
 	{p:'startAtSlide',ex:'0'},
 	{p:'startAtEnd',ex:'true'},
 	{p:'scaleFactor',ex:'10'},
@@ -604,6 +606,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
+	    let _this = this;
 	    if(!this.timelineLoaded) {
 		try {
 		    let tmp =  TL.Timeline;
@@ -621,9 +624,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
             let records = this.filterData();
 	    if(records==null) return;
-	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.div([ATTR_ID,timelineId]);
-	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
 		timenav_position: this.getTimelinePosition(),
@@ -662,6 +662,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let titleLength = this.getTitleLength();
 
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
+	    let dateFields = [];
+	    this.getFields().forEach(f=>{
+		if(f.isFieldDate()) {
+		    dateFields.push(f);
+		}
+	    });
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
 	    let imageField = this.getFieldById(null,this.getPropertyImageField());
@@ -670,6 +676,26 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
 	    let timeTo = this.getTimeTo();
 	    let showYears = this.getProperty("showYears",false);
+
+	    let timelineId = this.domId(ID_TIMELINE);
+	    let html = '';
+	    if(this.getShowDateMenu() && dateFields.length>1) {
+		let dates= dateFields.map(f=>{
+		    return {value:f.getId(),label:f.getLabel()};
+		});
+		html+=HU.select("",[ATTR_ID,this.domId(ID_DATE_MENU)],
+				dates,
+				this.getPropertyStartDateField());
+	    }
+	    
+	    html+=HU.div([ATTR_ID,timelineId]);
+	    this.setContents(html);
+	    this.jq(ID_DATE_MENU).change(function() {
+		_this.setProperty('startDateField',$(this).val());
+		_this.updateUI();
+	    });
+
+
 	    this.recordToIndex = {};
 	    this.idToRecord = {};
 	    for(let i=0;i<records.length;i++) {

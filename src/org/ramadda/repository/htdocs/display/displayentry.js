@@ -968,13 +968,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let lessMore = [];
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
 					   ATTR_TITLE, "Previous",
-					   ATTR_CLASS, (settings.skip <= 0?'display-link-disabled':'display-link')],
+					   ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,
+								  (settings.skip <= 0?'display-link-disabled':'display-link'))],
 				 HU.getIconImage("fa-arrow-left")));
             let addMore = false;
 	    //            if (entries.length>0 &&(true || entries.length == settings.getMax())) {
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadNextUrl();",
 					   ATTR_TITLE, "Next",
-					   ATTR_CLASS, (entries.length==0?'display-link-disabled':'display-link')],
+					   ATTR_CLASS,
+					   HU.classes(CLASS_BUTTON_SMALL,
+						      (entries.length==0?'display-link-disabled':'display-link'))],
 				 HU.getIconImage("fa-arrow-right")));
 	    if(entries.length>0)  {
 		addMore = true;
@@ -984,12 +987,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		lessMore.push(HU.onClick(this.getGet() + ".loadLess();",
 					 HU.getIconImage("fa-minus",
 							 [ATTR_TITLE, "View less"]),
-					 [ATTR_CLASS, "display-link"]));
+					 [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
 		if (addMore) {
                     lessMore.push(HU.onClick(this.getGet() + ".loadMore();",
 					     HU.getIconImage("fa-plus",
 							     [ATTR_TITLE, "View more"]),
-					     [ATTR_CLASS, "display-link"]));
+					     [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
 		}
 	    }
             let results = "";
@@ -2947,7 +2950,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			      new RecordField({type: "string", index: (index++),
 					       id: "description",label: "Description"}),
 			      new RecordField({type: "date", index: (index++),
-					       id: "date",label: "Date"}),			      
+					       id: "date",label: "Date"}),
+			      new RecordField({type: "date", index: (index++),
+					       id: "create_date",label: "Create Date"}),			      			      
 			      new RecordField({type: "url", index: (index++),
 					       id: "url",label: "URL"}),
 			      new RecordField({type: "image", index: (index++),
@@ -2986,6 +2991,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let data = [entry.getName(true),
 				    entry.getSnippet()||"",
 				    entry.getStartDate(),
+				    entry.getCreateDate(),				    
 				    entry.getEntryUrl(),
 				    entry.getImageUrl()||defaultImage||"",
 				    entry.getIconUrl(),
@@ -3063,10 +3069,12 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 displayId:info.id,
 				 divid:info.id,
 				 showMenu:false,
+				 showDateMenu:true,
 				 theData:data,
 				 displayStyle:"",
 				 mapHeight:'400',
 				 loadingMessage:''};
+
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 		});
 	    }

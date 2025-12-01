@@ -3244,25 +3244,26 @@ var Utils =  {
 
         let linksId = HU.getUniqueId();
 	let formLink = 
-	    HU.link(RamaddaUtil.getUrl('/search/form'),
-		    HU.span([ATTR_CLASS,CLASS_CLICKABLE],
-			    /*HU.getIconImage('fa-solid fa-list-check') +HU.space(1) +*/HU.span([],'Search Form')),
-		    [ATTR_TITLE, 'Go to search form', ATTR_STYLE,HU.css()]);
+	    HU.href(RamaddaUtil.getUrl('/search/form'),
+		    'Search Form',
+		    [ATTR_TITLE, 'Go to search form',
+		     ATTR_CLASS,HU.classes(CLASS_BUTTON_SMALL,CLASS_CLICKABLE)]);
 
 	let typeLink = 
-	    HU.link(RamaddaUtil.getUrl('/search/type'),
-		    HU.span([ATTR_TITLE, 'Go to type search form',
-			     ATTR_CLASS,CLASS_CLICKABLE],  'By Type'));
+	    HU.href(RamaddaUtil.getUrl('/search/type'),
+		    'By Type',
+		    [ATTR_TITLE, 'Go to type search form',
+		     ATTR_CLASS,HU.classes(CLASS_BUTTON_SMALL,CLASS_CLICKABLE)]);
 
         let links =  HU.div([ATTR_ID, linksId,
-			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_FONT_SIZE,HU.px(12))],
-			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
+			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_BOTTOM,HU.px(4))],
+			    formLink+HU.space(1)/*+'|'+HU.space(1)*/+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
         let icon = jqid(id);
         let dialog = this.dialog = HU.makeDialog({content:html,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM,title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
-        jqid(linksId).find(HU.dotClass(CLASS_LINK)).click(Utils.searchLink);
+	this.dialog.find(HU.dotClass(CLASS_BUTTON_SMALL)).button();
         let input =jqid('popup_search_input');
         input.mousedown(function(evt) {
             evt.stopPropagation();

@@ -98,6 +98,7 @@ var UNIT_M='m';
 var UNIT_NM='nm';
 
 var CLASS_BUTTON = 'ramadda-button';
+var CLASS_BUTTON_SMALL = 'ramadda-button-small';
 var CLASS_BUTTONS = 'ramadda-buttons';
 var CLASS_BUTTON_APPLY = 'ramadda-button-apply';
 var CLASS_BUTTON_BAR = 'ramadda-button-bar';
