@@ -4239,11 +4239,12 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ramadda-popup-title {
-    padding-left:20px;
+    padding-left:24px;
     padding-right:10px;    
     width:100%;
     display:inline-block;
     text-align:center;
+    white-space:nowrap; 
 }
 
 .ramadda-popup-title-right {
@@ -4252,6 +4253,7 @@ a.btn-primary:link, a.btn-primary  {
     right:10px;
     
 }
+
 
 .ramadda-popup-link  {
     display:inline-block;
@@ -5737,6 +5739,11 @@ wiki {
 
 .ramadda-search-suggestion a:hover {
     color:#000;
+}
+
+.ramadda-search-div {
+    margin:8px;
+    margin-top:4px;
 }
 
 .ramadda-xls-search-form {
