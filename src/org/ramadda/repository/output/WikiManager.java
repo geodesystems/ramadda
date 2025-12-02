@@ -6881,6 +6881,7 @@ public class WikiManager extends RepositoryManager
 						attrPrefix + ATTR_ENTRIES,
 						ID_CHILDREN);
 
+
         List<Entry> entries  = getEntries(request, wikiUtil, originalEntry, entry,
 					  userDefinedEntries, props, onlyImages, attrPrefix);
 	return entries;
@@ -6914,10 +6915,6 @@ public class WikiManager extends RepositoryManager
 	debugGetEntries = debug.length>0 && debug[0];
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
-
-
-
-
 
 	debugGetEntries = false;
 
@@ -7022,12 +7019,6 @@ public class WikiManager extends RepositoryManager
 	    if(!getProperty(wikiUtil,props,"ignoreRequestOrderBy",false)) {
 		sort = request.getString(ARG_ORDERBY, ORDERBY_NAME);
 	    }
-        }
-        if (sort == null) {
-            sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT_BY,
-			       getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
-					   getProperty(wikiUtil, props,attrPrefix+"orderby",
-						       (String) null)));
         }
 
         if (sort != null) {
@@ -7263,8 +7254,7 @@ public class WikiManager extends RepositoryManager
 
 	if(orderBy==null) {
 	    orderBy = ORDERBY_NAME;
-	}
-	if(orderBy.startsWith("!")) {
+	} else 	if(orderBy.startsWith("!")) {
 	    orderBy = orderBy.substring(1);
 	}
 
@@ -7310,7 +7300,6 @@ public class WikiManager extends RepositoryManager
                 types= entryId.substring("type:".length()).replace("_comma_",",");
                 continue;
             }	    
-
 
             if (entryId.startsWith("entries.max:")) {
                 max = Integer.parseInt(entryId.substring("entries.max:".length()));
@@ -7647,20 +7636,6 @@ public class WikiManager extends RepositoryManager
 
         if (orderBy != null && !orderBy.equals(ORDERBY_NONE)) {
 	    entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
-	    /*
-            if (orderBy.equals(ORDERBY_DATE)) {
-                entries = getEntryUtil().sortEntriesOnDate(entries, descending);
-            } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
-                entries = getEntryUtil().sortEntriesOnCreateDate(entries,descending);
-            } else if (orderBy.equals(ORDERBY_NUMBER)) {
-                entries = getEntryUtil().sortEntriesOnNumber(entries, descending);		
-            } else if (orderBy.equals(ORDERBY_NAME)) {
-                entries = getEntryUtil().sortEntriesOnName(entries, descending);
-		if(debug1)
-		    System.err.println("entries:" + entries);
-            } else {
-                entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
-		}*/
         }
 
 
