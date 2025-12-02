@@ -374,10 +374,10 @@ name_up,size_down
 
       <element
         showinhtml="false"
-         default="fromdate"
+         default="name_up"
          name="Field"
          datatype="enumerationplus"
-         values="name:Name,fromdate:From Date,todate:To Date,createdate:Create Date,changedate:Change Date,entryorder:Entry Order,folder:Folder first,type:Type,size:Size,number:Number (extract number from name),mixed:Mixed,none:None"/>
+         values="name_up:Name Up,name_down:Name Down,fromdate_up:From Date Up,fromdate_down:From Date Down,todate:To Date,createdate_up:Create Date Up,createdate_down:Create Data Down,changedate:Change Date,entryorder:Entry Order,folder:Folder first,type:Type,size_up:Size Up,size_down:Size Down,number:Number (extract number from name),mixed:Mixed,none:None"/>
       <element
          default="true"
          name="Ascending"
