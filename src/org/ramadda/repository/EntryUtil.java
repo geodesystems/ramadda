@@ -709,13 +709,17 @@ public class EntryUtil extends RepositoryManager {
     public  List<Entry> sortEntriesOn(List<Entry> entries,
 				      final List<String> ons,
 				      final boolean descending) {
-	if(debugSort) 
-	    System.err.println("sort on: "+  ons +" entries:" + entries);
+	//	if(debugSort)    System.err.println("sort on: "+  ons +" entries:" + entries);
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
-	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
+	entries = sortEntriesCompareOn(entries,makeCompareOn(ons,entries,descending), descending);
+	if(debugSort) 
+	    System.err.println("sort on: "+  ons +" descending:" + descending+" entries:"  + entries);
+
+	return entries;
+
     }
 
-    private List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries){
+    private List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries,boolean descending){
 	List<CompareOn> compareOns = new ArrayList<CompareOn>();
 	for(String on: ons) {
 	    Column column=null;
@@ -732,7 +736,7 @@ public class EntryUtil extends RepositoryManager {
 		//If there are no entries with this column then skip this sort field
 		if(column==null) continue;
 	    }
-	    compareOns.add(new CompareOn(on,column));
+	    compareOns.add(new CompareOn(on,column,descending));
 	}
 	return compareOns;
     }
@@ -749,7 +753,7 @@ public class EntryUtil extends RepositoryManager {
 			int result = compareEntries(request,e1, e2, on);
 			if (result != 0) {
 			    if (descending) {
-				return -result;
+				//				return -result;
 			    }
 			    return result;
 			}
@@ -1070,13 +1074,18 @@ public class EntryUtil extends RepositoryManager {
 	String on;
 	Column column;
 	Boolean ascending;
-	public CompareOn(String on,Column column) {
+	public CompareOn(String on,Column column,boolean dfltDescending) {
+	    if(on.startsWith("!")) {
+		on = on.substring(1);
+	    }
 	    if(on.endsWith("_up")) {
 		ascending=Boolean.TRUE;
 		on = on.replace("_up","");
 	    } else if(on.endsWith("_down")) {
 		ascending=Boolean.FALSE;
 		on = on.replace("_down","");
+	    } else {
+		ascending = !dfltDescending;
 	    }
 	    this.on = on;
 	    this.column = column;
