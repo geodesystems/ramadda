@@ -80,7 +80,7 @@ if(!window.WikiUtil) {
 	    WikiUtil.insertText(id,t);
 	},
 
-	chooseInsertText:function(id, attr,value) {
+	chooseInsertText:function(id, attr,value,help) {
 	    value = value.replace(/&quot;/g,'').replace(/"/g,'');
 	    let values=value.split('|');
 	    let html = '';
@@ -94,15 +94,26 @@ if(!window.WikiUtil) {
 	    html = HU.div([ATTR_STYLE,
 			   HU.css(CSS_MIN_WIDTH,HU.px(200),
 				  CSS_MAX_HEIGHT,HU.px(200),
-				  CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				  CSS_OVERFLOW_Y,OVERFLOW_AUTO,
+				  CSS_MARGIN_BOTTOM,HU.px(5))],
 			  html);
+	    if(help) {
+		html = HU.center(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],
+					HU.href(RamaddaUtil.getUrl(help),'Help',
+						[ATTR_TARGET,'_help',
+						 ATTR_CLASS,CLASS_BUTTON]))) +
+		    html;
+	    }
 	    let dialog =HU.makeDialog(
 		{content:html,
-		 title:'Select value for ' + attr,
+		 title:'Select value for' + SPACE + attr,
 		 header:true,
 		 sticky:true,
 		 draggable:true,
 		 modal:true});
+		
+	    HU.findClass(dialog,CLASS_BUTTON).button();
+		
 	    HU.findClass(dialog,CLASS_CLICKABLE).click(function(){
 		WikiUtil.insertText(id,$(this).attr('data-attr')+'=' +
 				    HU.quote($(this).attr(ATTR_DATA_VALUE)));
@@ -2340,12 +2351,11 @@ WikiEditor.prototype = {
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'orderby',ex:'name_up|date_up|changedate_up|createdate_up|entryorder_up|size_up|number_up|folder_up|type_up|field:<column>',
-	     tt:'sort type: name, date, change date, create date, etc'},
+	    {p:'orderby',
+	     ex:'name_up|name_down|date_up|date_down|changedate_up|createdate_up|entryorder_up|size_up|number_up|folder_up|type_up|field:<column>',
+	     tt:'sort type: name, date, change date, create date, etc',
+	     help:'/userguide/wiki/sortorder.html#heading-sorting_with_wiki_text'},
 	    {p:'ascending',ex:'true',tt:'direction of sort.'},
-	    /*
-	      {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
-	    */
 	    {label:'Specify entries',p:'entries',ex:'\"entryid1,entryid2,entryid3..\"',tt:'comma separated list of entry ids to use' },
 	    {label:'Specify entries by search',p:'entries',ex:'search:type:<some type>;orderby:date;ascending:false',tt:'comma separated list of entry ids to use' },	    
 	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
@@ -2776,7 +2786,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	    let call
 	    if(attr.indexOf('|')>0 && attr.indexOf('(')<0) {
 		call ='WikiUtil.chooseInsertText('+HU.squote(id)+','+HU.squote(tag.p)+','+
-		    HU.squote(value)+')';
+		    HU.squote(value)+','+ (tag.help?HU.squote(tag.help):'null')+ ')';
 	    } else {
 		call ="WikiUtil.insertText('" + id +"','"+attr+"')";
 	    }
