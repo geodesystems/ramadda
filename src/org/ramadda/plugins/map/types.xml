@@ -122,6 +122,14 @@ popupSliderRight=true
 {{description wikify=true}}
 {{map width="100%" height="450" details="true" listentries="true" showCheckbox="true" showOpacitySlider=true}}
 {{resource includeicon="true"}}
+:br
+----
+:heading Information
+{{information  showBase="true"  showDetails="true" 
+#showAttachments="false" 
+#showMetadata="false" 
+#menus="file,edit,view,feeds,other,service" 
+#menusTitle="Services"  }}
 -section
 ]]>
 </wiki>
