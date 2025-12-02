@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 30 19:58:23 MST 2025";
+var build_date="RAMADDA build date: Tue Dec  2 04:37:22 EST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -9582,7 +9582,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 html += HU.div([ATTR_ID,
 				this.getDomId("entry_" + entryIdForDom),
 				ATTR_ENTRYID, entryId,
-				ATTR_CLASS, "display-entrylist-entry" + rowClass], line);
+				ATTR_CLASS, HU.classes(CLASS_SEARCH_COMPONENT,
+						       'display-entrylist-entry', rowClass)], line);
                 html += "\n";
             }
             return html;
@@ -11405,10 +11406,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return null;
 	},
+	addPageSearch:function(contents) {
+	    let guid1 = HU.getUniqueId();
+	    let guid2 = HU.getUniqueId();			
+	    return  HU.div([ATTR_CLASS,CLASS_SEARCH_DIV,
+			    ATTR_ID,guid1,
+			    ATTR_CONTENTS_ID,guid2]) +
+		HU.div([ATTR_ID,guid2],contents);
+	},
+
         checkSearchBar: function() {
             if (!this.hasData()) {
 		return
 	    }
+	    this.logMsg('csb');
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -11702,6 +11713,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
+
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
@@ -25536,12 +25548,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		*/
 	    }});
             if(!records) return;
-
 	    if(!imageField) {
 		this.setDisplayMessage("No image field in data");
 		return false;
 	    }
-
 	    let urlPrefix = this.getUrlPrefix();
 	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    let tooltipClick = this.getProperty("tooltipClick");
@@ -25572,7 +25582,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let recordIndex = 0;
 	    let columnCnt = -1;
 	    let columnMap = {};
-	    let class1= "display-images-image-outer display-images-block ";
+	    let class1= HU.classes(CLASS_SEARCH_COMPONENT,"display-images-image-outer display-images-block ");
 	    let class2 = "display-images-image-inner";
 	    let class3 = "display-images-image-wrapper";
 	    this.idToRecord = {};
@@ -25729,7 +25739,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
-		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(8))],
+		contents = HU.div([ATTR_STYLE,
+				   HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(0))],
 				  HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
 					      this.hideNoImages,'Show entries with images')) +
 		    contents;
@@ -37564,11 +37575,15 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],html);
 	    }
-
 	    this.getDisplayTypes().split(',').forEach(type=>{
 		if(type=='list') {
 		    titles.push('List');
-		    addContents(makeExpandable(this.getEntriesTree(entries)));
+		    let tree = this.getEntriesTree(entries);
+
+		    if(entries.length>10) {
+			tree= this.addPageSearch(tree);
+		    }
+		    addContents(makeExpandable(tree));
 		} else if(type=='images') {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
@@ -37582,6 +37597,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let images =HU.div([ATTR_ID,id,
 					    ATTR_CLASS,'ramadda-expandable display-entrylist-images',
 					    ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]);
+			if(entries.length>10) {
+			    images= this.addPageSearch(images);
+			}
 			addContents(makeExpandable(images));
 		    }
 		} else if(type=='timeline') {
@@ -37758,6 +37776,13 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
             let entriesHtml = this.makeEntriesDisplay(entries);
 	    let html = entriesHtml;
             this.writeEntries(html, entries);
+	    this.jq(ID_ENTRIES).find(HU.dotClass(CLASS_SEARCH_DIV)).each(function() {
+		let id  =$(this).attr(ATTR_CONTENTS_ID);
+		HU.initPageSearch('#' + id +' .search-component',
+				  null,'Search',false,{addToUrl:false,target:$(this),inputSize:'10'});
+
+	    });
+
 	    this.jq(ID_ENTRIES).find('.ramadda-metadata-bigtext').each(function() {
 		Utils.initBigText($(this));
 	    });
@@ -37946,6 +37971,16 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		});
 		map.centerOnMarkersInit(null);
 	    }
+
+
+	    this.myDisplays.forEach(info=> {
+		if(info.display) {
+//		    info.display.checkSearchBar();
+		}
+	    });
+
+
+
 
         },
     });
@@ -61715,7 +61750,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		titleField = this.getFieldById(null, "name");
 	    }
 	    let titleLength = this.getTitleLength();
-
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
 	    let dateFields = [];
 	    this.getFields().forEach(f=>{
