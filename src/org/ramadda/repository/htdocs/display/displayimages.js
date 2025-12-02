@@ -499,12 +499,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		*/
 	    }});
             if(!records) return;
-
 	    if(!imageField) {
 		this.setDisplayMessage("No image field in data");
 		return false;
 	    }
-
 	    let urlPrefix = this.getUrlPrefix();
 	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    let tooltipClick = this.getProperty("tooltipClick");
@@ -535,7 +533,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let recordIndex = 0;
 	    let columnCnt = -1;
 	    let columnMap = {};
-	    let class1= "display-images-image-outer display-images-block ";
+	    let class1= HU.classes(CLASS_SEARCH_COMPONENT,"display-images-image-outer display-images-block ");
 	    let class2 = "display-images-image-inner";
 	    let class3 = "display-images-image-wrapper";
 	    this.idToRecord = {};
@@ -692,7 +690,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 	    contents  = HU.div([ATTR_CLASS,"ramadda-grid"],contents);
 	    if(this.getShowPlaceholderImage() && anyNoImages) {
-		contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(8))],
+		contents = HU.div([ATTR_STYLE,
+				   HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(0))],
 				  HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
 					      this.hideNoImages,'Show entries with images')) +
 		    contents;

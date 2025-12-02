@@ -5283,7 +5283,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 html += HU.div([ATTR_ID,
 				this.getDomId("entry_" + entryIdForDom),
 				ATTR_ENTRYID, entryId,
-				ATTR_CLASS, "display-entrylist-entry" + rowClass], line);
+				ATTR_CLASS, HU.classes(CLASS_SEARCH_COMPONENT,
+						       'display-entrylist-entry', rowClass)], line);
                 html += "\n";
             }
             return html;
@@ -7106,10 +7107,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return null;
 	},
+	addPageSearch:function(contents) {
+	    let guid1 = HU.getUniqueId();
+	    let guid2 = HU.getUniqueId();			
+	    return  HU.div([ATTR_CLASS,CLASS_SEARCH_DIV,
+			    ATTR_ID,guid1,
+			    ATTR_CONTENTS_ID,guid2]) +
+		HU.div([ATTR_ID,guid2],contents);
+	},
+
         checkSearchBar: function() {
             if (!this.hasData()) {
 		return
 	    }
+	    this.logMsg('csb');
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -7403,6 +7414,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
+
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";

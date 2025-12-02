@@ -660,7 +660,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		titleField = this.getFieldById(null, "name");
 	    }
 	    let titleLength = this.getTitleLength();
-
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
 	    let dateFields = [];
 	    this.getFields().forEach(f=>{

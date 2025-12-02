@@ -2729,11 +2729,15 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',
 			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],html);
 	    }
-
 	    this.getDisplayTypes().split(',').forEach(type=>{
 		if(type=='list') {
 		    titles.push('List');
-		    addContents(makeExpandable(this.getEntriesTree(entries)));
+		    let tree = this.getEntriesTree(entries);
+
+		    if(entries.length>10) {
+			tree= this.addPageSearch(tree);
+		    }
+		    addContents(makeExpandable(tree));
 		} else if(type=='images') {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
@@ -2747,6 +2751,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			let images =HU.div([ATTR_ID,id,
 					    ATTR_CLASS,'ramadda-expandable display-entrylist-images',
 					    ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))]);
+			if(entries.length>10) {
+			    images= this.addPageSearch(images);
+			}
 			addContents(makeExpandable(images));
 		    }
 		} else if(type=='timeline') {
@@ -2923,6 +2930,13 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
             let entriesHtml = this.makeEntriesDisplay(entries);
 	    let html = entriesHtml;
             this.writeEntries(html, entries);
+	    this.jq(ID_ENTRIES).find(HU.dotClass(CLASS_SEARCH_DIV)).each(function() {
+		let id  =$(this).attr(ATTR_CONTENTS_ID);
+		HU.initPageSearch('#' + id +' .search-component',
+				  null,'Search',false,{addToUrl:false,target:$(this),inputSize:'10'});
+
+	    });
+
 	    this.jq(ID_ENTRIES).find('.ramadda-metadata-bigtext').each(function() {
 		Utils.initBigText($(this));
 	    });
@@ -3111,6 +3125,16 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		});
 		map.centerOnMarkersInit(null);
 	    }
+
+
+	    this.myDisplays.forEach(info=> {
+		if(info.display) {
+//		    info.display.checkSearchBar();
+		}
+	    });
+
+
+
 
         },
     });
