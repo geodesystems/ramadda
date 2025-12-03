@@ -1,4 +1,4 @@
 {{description suffix="<p>"}}
-{{tabletree message="" maxHeight=80vh}}
+{{tabletree message="" orderby="entryorder_up,name_up" maxHeight=80vh}}
 
 
