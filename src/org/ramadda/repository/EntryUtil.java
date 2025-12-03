@@ -604,7 +604,6 @@ public class EntryUtil extends RepositoryManager {
     private static class EntryWrapper     {
 	Entry entry;
 	double number= Double.NaN;
-       
 	String s;
 	long l;
 	Object o;
@@ -612,10 +611,10 @@ public class EntryUtil extends RepositoryManager {
 	    this.entry = entry;
 	}
 	
-	public double getNumber() 
-	{
+	public double getNumber() {
 	    if(Double.isNaN(number)) {
-		number   = IO.extractNumber(entry.getName(),0);
+		//		number   = IO.extractNumber(entry.getName(),Double.NEGATIVE_INFINITY);
+		number   = IO.extractNumber(entry.getName(),-100000000);
 	    }
 	    return number;
 	}
@@ -695,7 +694,6 @@ public class EntryUtil extends RepositoryManager {
 		result = -result;
 	    }
 	}
-
         return result;
     }
     private static boolean didit = false;
@@ -712,8 +710,12 @@ public class EntryUtil extends RepositoryManager {
 	//	if(debugSort)    System.err.println("sort on: "+  ons +" entries:" + entries);
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
 	entries = sortEntriesCompareOn(entries,makeCompareOn(ons,entries,descending), descending);
-	if(debugSort) 
-	    System.err.println("sort on: "+  ons +" descending:" + descending+" entries:"  + entries);
+	if(debugSort) { 
+	    if(entries.size()>0) {
+		System.err.println("sort on: "+  ons +" descending:" + descending+" entries:"  + entries.get(0) +" - " +
+				   entries.get(entries.size()-1));
+	    }
+	}
 
 	return entries;
 
