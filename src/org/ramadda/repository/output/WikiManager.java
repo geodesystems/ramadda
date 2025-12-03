@@ -5525,6 +5525,8 @@ public class WikiManager extends RepositoryManager
 		    v =getPageHandler().getEntryIconImage(request, child);
 		} else if(macro.getId().equals(TypeHandler.FIELD_NAME)) {
 		    v = getEntryDisplayName(child);
+		} else if(macro.getId().equals("entryorder")) {
+		    v = ""+child.getEntryOrder();
 		} else if(macro.getId().equals("size")) {
 		    if(!child.isFile()) {
 			v = "NA";
