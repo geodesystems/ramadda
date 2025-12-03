@@ -623,6 +623,17 @@ public class EntryUtil extends RepositoryManager {
     }
 
     private  int compareEntries(Request request,EntryWrapper w1,EntryWrapper w2, CompareOn on) {
+	int result = getResult(request,w1,w2,on);
+	if(on.ascending!=null) {
+	    if(!on.ascending && result!=0) {
+		result = -result;
+	    }
+	}
+	return result;
+    }
+
+
+    private  int getResult(Request request,EntryWrapper w1,EntryWrapper w2, CompareOn on) {
 	Entry e1=w1.entry;
 	Entry e2=w2.entry;
 	
@@ -646,10 +657,8 @@ public class EntryUtil extends RepositoryManager {
 		    return compare((Double)v1,(Double)v2);
 		}		
 		if(on.column.isString() || on.column.isEnumeration()) {
-		    int result = compare(v1==null?null:v1.toString(),
-					 v2==null?null:v2.toString());
-		    //		    System.err.println("v1: "+ v1+" v2:" + v2+ " r:" + result);
-		    return result;
+		    return  compare(v1==null?null:v1.toString(),
+				    v2==null?null:v2.toString());
 		}
 	    }
 	    if(v1==null && v2==null) return 0;
@@ -658,43 +667,35 @@ public class EntryUtil extends RepositoryManager {
 	    if(v1!=null) return -1;
 	    return 1;
 	}
-	int result=0;
         if (on.is(ORDERBY_DATE) || on.is(ORDERBY_FROMDATE)) {
-            result =  compare(e1.getStartDate(), e2.getStartDate());
+            return  compare(e1.getStartDate(), e2.getStartDate());
         } else if (on.is(ORDERBY_TODATE)) {
-	    result =  compare(e1.getEndDate(), e2.getEndDate());
+	    return   compare(e1.getEndDate(), e2.getEndDate());
         } else if (on.is(ORDERBY_CHANGEDATE)) {
-            result = compare(e1.getChangeDate(), e2.getChangeDate());
+            return  compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.is(ORDERBY_CREATEDATE)) {
-            result =  compare(e1.getCreateDate(), e2.getCreateDate());
+            return   compare(e1.getCreateDate(), e2.getCreateDate());
         } else if (on.is(ORDERBY_NAME) || on.is(ORDERBY_RELEVANT)) {
-            result =  e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
+            return  e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
         } else if (on.is(ORDERBY_ENTRYORDER)) {
-            result =  e1.getEntryOrder() - e2.getEntryOrder();
+            return  e1.getEntryOrder() - e2.getEntryOrder();
         } else if (on.is(ORDERBY_TYPE)) {
-            result =  e1.getTypeHandler().getLabel().compareToIgnoreCase(
-									 e2.getTypeHandler().getLabel());
+            return  e1.getTypeHandler().getLabel().compareToIgnoreCase(
+								       e2.getTypeHandler().getLabel());
         } else if (on.is(ORDERBY_FOLDER)) {
 	    boolean g1 = e1.getTypeHandler().isGroup();
 	    boolean g2 = e2.getTypeHandler().isGroup();	    
-	    if(g1==g2) result = 0;
-	    else if(g1) result =1;
-	    else result = -1;
+	    if(g1==g2) return  0;
+	    else if(g1) return 1;
+	    else return  -1;
         } else if (on.is(ORDERBY_SIZE)) {
-            result = compare(e1.getResource().getFileSize(),
-			     e2.getResource().getFileSize());
+            return  compare(e1.getResource().getFileSize(),
+			    e2.getResource().getFileSize());
         } else if (on.is(ORDERBY_NUMBER)) {
-	    result = compare(w1.getNumber(),w2.getNumber());
-	} else {
-	    System.err.println("Unknown sort order:" + on.on);
-	}
-
-	if(on.ascending!=null) {
-	    if(!on.ascending && result!=0) {
-		result = -result;
-	    }
-	}
-        return result;
+	    return compare(w1.getNumber(),w2.getNumber());
+	} 
+	System.err.println("Unknown sort order:" + on.on);
+        return 0;
     }
     private static boolean didit = false;
 
@@ -728,11 +729,15 @@ public class EntryUtil extends RepositoryManager {
 	    if(on.startsWith("#")) {
 		continue;
 	    }
-	    
-	    if(on.startsWith("field:")) {
-		on=on.substring("field:".length());
+
+	    if(on.startsWith("!")) {
+		on = on.substring(1);
+	    }
+	    if(on.startsWith("field:") || on.startsWith("field_up:")||on.startsWith("field_down:")) {
+		String c = on.replaceAll("^field[^:]*:","");
+		on = on.replaceAll(":.*$","");
 		for(Entry entry: entries) {
-		    column = entry.getTypeHandler().findColumn(on);
+		    column = entry.getTypeHandler().findColumn(c);
 		    if(column!=null) break;
 		}
 		//If there are no entries with this column then skip this sort field
