@@ -468,7 +468,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 if (request.get("applysiblings", false)) {
                     entries.add(theEntry);
                     entries.addAll(getWikiManager().getEntries(request, null,
-                            theEntry, WikiManager.ID_SIBLINGS, null));
+							       theEntry,theEntry, WikiManager.ID_SIBLINGS, null));
                 } else {
                     entries.add(theEntry);
                 }
