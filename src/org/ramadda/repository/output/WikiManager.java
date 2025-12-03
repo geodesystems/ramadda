@@ -195,17 +195,15 @@ public class WikiManager extends RepositoryManager
 	return template;
     }
 
-    public String getProperty(WikiUtil wikiUtil, Hashtable props,
-                              String prop) {
+    public String getProperty(WikiUtil wikiUtil, Hashtable props,  String prop) {
         return getProperty(wikiUtil, props, prop, null);
     }
 
     public String getProperty(WikiUtil wikiUtil, Hashtable props,
-                              String prop, String dflt) {
+                              String prop, String dflt,String...tag) {
         String value = Utils.getProperty(props, prop, (String) null);
         if (value == null) {
-            value = Utils.getProperty(props, prop.toLowerCase(),
-                                      (String) null);
+            value = Utils.getProperty(props, prop.toLowerCase(), (String) null);
         }
         if ((value == null) && (wikiUtil != null)) {
             value = (String) wikiUtil.getWikiProperty(prop);
@@ -213,6 +211,11 @@ public class WikiManager extends RepositoryManager
                 value = (String) wikiUtil.getWikiProperty(prop.toLowerCase());
             }
         }
+        if (value == null && tag.length>0 && tag[0]!=null) {
+	    value = getProperty(wikiUtil,props,tag[0]+"."+prop,null);
+	    //	    System.err.println("TAG:" + tag[0]+"."+prop +" value:" + value);
+	}	    
+
         if (value == null) {
             return dflt;
         }
@@ -235,8 +238,8 @@ public class WikiManager extends RepositoryManager
     }
 
     public boolean getProperty(WikiUtil wikiUtil, Hashtable props,
-                               String prop, boolean dflt) {
-        String value = getProperty(wikiUtil, props, prop, null);
+                               String prop, boolean dflt,String...tag) {
+        String value = getProperty(wikiUtil, props, prop, null,tag);
         if (value == null) {
             return dflt;
         }
@@ -245,8 +248,8 @@ public class WikiManager extends RepositoryManager
     }
 
     public int getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
-                           int dflt) {
-        String value = getProperty(wikiUtil, props, prop, null);
+                           int dflt,String...tag) {
+        String value = getProperty(wikiUtil, props, prop, null,tag);
         if (value == null) {
             return dflt;
         }
@@ -255,8 +258,8 @@ public class WikiManager extends RepositoryManager
     }
 
     public double getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
-			      double dflt) {
-        String value = getProperty(wikiUtil, props, prop, null);
+			      double dflt,String...tag) {
+        String value = getProperty(wikiUtil, props, prop, null,tag);
         if (value == null) {
             return dflt;
         }
@@ -1005,6 +1008,11 @@ public class WikiManager extends RepositoryManager
 	//	System.err.println("R:" + select.getRequest().format());
 	List<Entry> entries=  getSearchManager().doSearch(select.getRequest(),select);
 	return getEntryManager().applyFilter(request, entries, select);
+    }
+
+    public String convertText(String s) {
+	s  =  Utils.convertPattern(s).replace("\\n","\n").replace("_space_","&nbsp;");
+	return s;
     }
 
     public String getWikiImage(WikiUtil wikiUtil, Request request,
@@ -3843,7 +3851,8 @@ public class WikiManager extends RepositoryManager
                 } else if (key.equals("_template")) {
                     template = value;
                 } else if (key.equals("_entries")) {
-                    entries = getEntries(request, wikiUtil, entry, value,
+                    entries = getEntries(request, wikiUtil, originalEntry,
+					 entry, value,
                                          props);
                     max = Math.max(max, entries.size());
                 } else if (key.equals("_headers")) {
@@ -5077,14 +5086,13 @@ public class WikiManager extends RepositoryManager
 		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
 	    }
 
-	    String style = getProperty(wikiUtil, props, "style","");
-	    String prefix = getProperty(wikiUtil, props, "before","");
-	    String suffix = getProperty(wikiUtil, props, "after","");
-	    String delimiter = getProperty(wikiUtil, props, "delimiter","");	    
+	    String style = getProperty(wikiUtil, props, "style","",theTag);
+	    String prefix = convertText(getProperty(wikiUtil, props, "before","",theTag));
+	    String suffix = convertText(getProperty(wikiUtil, props, "after","",theTag));
+	    String delimiter = getProperty(wikiUtil, props, "delimiter","",theTag);	    
 	    sb.append(prefix);
-	    String template = getProperty(wikiUtil, props,
-					  "template", "${name link=true}");
-	    template = template.replace("_space_","&nbsp;").replace("_nl_","\n");
+	    String template = convertText(getProperty(wikiUtil, props,
+						      "template", "${name link=true}",theTag));
 
 	    List<Utils.Macro> macros   =  Utils.splitMacros(template);
 	    for (int i=0;i<children.size();i++) {
@@ -5192,8 +5200,8 @@ public class WikiManager extends RepositoryManager
             boolean isList = theTag.equals(WIKI_TAG_LIST);
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
-	    String before = getProperty(wikiUtil, props,"linksBefore",null);
-	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
+	    String before = getProperty(wikiUtil, props,"linksBefore",null,theTag);
+	    String after = getProperty(wikiUtil, props,"linksAfter",null,theTag);	    
             if (children.size() == 0 && before==null && after==null) {
                 if (getProperty(wikiUtil, props, "defaultToCard", false)) {
                     return makeCard(request, wikiUtil, props, entry);
@@ -5204,7 +5212,7 @@ public class WikiManager extends RepositoryManager
 	    List<String> pre = null;
 	    List<String> post = null;
 	    String attrs="";
-	    String target  = getProperty(wikiUtil,props,"target",null);
+	    String target  = getProperty(wikiUtil,props,"target",null,theTag);
 	    if(target!=null) attrs=HU.attrs("target",target);
 	    if(before!=null) {
 		pre = new ArrayList<String>();
@@ -5517,6 +5525,17 @@ public class WikiManager extends RepositoryManager
 		    v =getPageHandler().getEntryIconImage(request, child);
 		} else if(macro.getId().equals(TypeHandler.FIELD_NAME)) {
 		    v = getEntryDisplayName(child);
+		} else if(macro.getId().equals("size")) {
+		    if(!child.isFile()) {
+			v = "NA";
+		    } else {
+			long fileSize = child.getResource().getFileSize();
+			if(macro.getProperty("format",true)) {
+			    v = Utils.formatFileLength((double)fileSize);
+			} else {
+			    v  = ""+fileSize;
+			}
+		    }
 		} else if(macro.getId().equals(TypeHandler.FIELD_SNIPPET)) {
 		    v = getSnippet(request, child,macro.getProperty("wikify",false),
 				   macro.getProperty("default",""));
@@ -6913,7 +6932,7 @@ public class WikiManager extends RepositoryManager
         }
 
 	debugGetEntries = debug.length>0 && debug[0];
-        List<Entry> entries = getEntries(request, wikiUtil, entry,
+        List<Entry> entries = getEntries(request, wikiUtil, originalEntry,entry,
                                          userDefinedEntries, props);
 
 	debugGetEntries = false;
@@ -6971,6 +6990,7 @@ public class WikiManager extends RepositoryManager
 						    getEntryManager().getImageEntries(request, entries,
 										      useAttachment), filter);
         }
+
 
         String excludeEntries = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_EXCLUDE,
@@ -7151,6 +7171,32 @@ public class WikiManager extends RepositoryManager
             entries = tmp;
         }
 
+        String indices = getProperty(wikiUtil, props,
+				     attrPrefix + "indices",
+                                         (String) null);
+	if(indices!=null && entries.size()>0) {
+            List<Entry> tmp = new ArrayList<Entry>();
+	    for(String index:Utils.split(indices,",",true,true)) {
+		if(index.equals("last")) {
+		    tmp.add(entries.get(entries.size()-1));
+		} else 	if(index.startsWith("last")) {
+		    String offset = StringUtil.findPattern(index,"-(.*)");
+		    if(offset!=null) {
+			int i= entries.size()-Integer.parseInt(offset)-1;
+			if(i>=0) 
+			    tmp.add(entries.get(i));
+		    }
+		} else {
+		    int i = Integer.parseInt(index);
+		    if(i>=0 && i<entries.size()) {
+			tmp.add(entries.get(i));
+		    }
+		}
+	    }
+	    entries=tmp;
+	}
+
+
         return entries;
 
     }
@@ -7195,6 +7241,7 @@ public class WikiManager extends RepositoryManager
 
     public List<Entry> getEntries(Request initRequest,
 				  WikiUtil wikiUtil,
+				  Entry originalEntry,
                                   Entry baseEntry, String ids,
                                   Hashtable theProps)
 	throws Exception {
@@ -7239,10 +7286,16 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-
+	//metadata has precedence over wiki orderby unless orderby starts with "!"
 	if(orderBy==null || !orderBy.startsWith("!")) {
 	    Metadata sortMetadata =
-		getMetadataManager().getSortOrderMetadata(myRequest, baseEntry,true);
+		getMetadataManager().getSortOrderMetadata(myRequest, originalEntry,true);
+	    if (baseEntry !=null &&
+		sortMetadata == null &&
+		!originalEntry.equals(baseEntry)) {
+		sortMetadata =
+		    getMetadataManager().getSortOrderMetadata(myRequest, baseEntry,true);
+	    }
 	    if (sortMetadata != null) {
 		orderBy = sortMetadata.getAttr1();
 		if(sortMetadata.getAttr2().equals("true"))
@@ -9778,7 +9831,8 @@ public class WikiManager extends RepositoryManager
                 children = getEntries(request, wikiUtil, originalEntry,
                                       entry, props);
             } else {
-                children = getEntries(request, wikiUtil, entry,
+                children = getEntries(request, wikiUtil, originalEntry,
+				      entry,
                                       changeEntries, props);
             }
 	    Entry first  = getEntryUtil().findEntry(children,  getProperty(wikiUtil, props,"firstEntry"));
