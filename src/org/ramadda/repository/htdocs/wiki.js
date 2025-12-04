@@ -2051,7 +2051,7 @@ WikiEditor.prototype = {
 	    display = new DisplayManager().createDisplay(tagInfo.type,{dummy:true});
 	    if(display) {
 		attrs = display.getWikiEditorTags();
-		if(display.getTypeDef) {
+		if(display.getTypeDef && display.getTypeDef()) {
 		    help = display.getTypeDef().help;
 		}
 

@@ -386,6 +386,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		}
 		if(this.getSortFields(true)) {
 		    fields = fields.sort((f1,f2)=>{
+			if(!f1.getDescription()) return 0;
+			if(!f2.getDescription()) return 0;			
 			return f1.getDescription().localeCompare(f2.getDescription());
 		    });
 		}
