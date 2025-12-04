@@ -114,6 +114,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                            List<String> points)
             throws Exception {
         String        player      = "";
+
         String        id          = HtmlUtils.getUniqueId("player_");
         String        pointsDivId = "pointsdiv_" + id;
         String        searchId    = "search_" + id;
@@ -152,7 +153,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	boolean vertical = Utils.getProperty(props,"vertical",false);
 
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
-
 	player =  getMediaPlayer(request, entry, props,  sb,
 				 attrs, embed, mediaType,mediaUrl);
         if (player == null) {
@@ -163,27 +163,37 @@ public class MediaTypeHandler extends GenericTypeHandler {
 					       "id", searchId));
 
         String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
-	String bottom = HU.div(searchDiv + pointsDiv,HU.style("margin-top","5px","width",HU.makeDim(width,"px")));
+	String bottom = HU.div(searchDiv + pointsDiv,
+			       HU.style("margin-top","5px",
+					"width",HU.makeDim(width,"px")));
+	boolean showAnnotations = entry.getBooleanValue(request,"show_annotations",true);
 	String style = "width:" + HU.makeDim(width,"px")+";";
 	style="";
-	if(vertical)
+	if(vertical) {
 	    style+="display:flex;justify-content:center;";
-	else
+	} else if(!showAnnotations) {
+	    style+="text-align:center;";
+	} else {
 	    //	    style+="display:flex;justify-content:right;";
 	    style+="text-align:right;";
+	}
 	player = HU.div("\n"+player+"\n", HU.attrs("id", id,"style",style));
-	if(!vertical) {
-	    sb.append("<div  class='row'  >");
-	    sb.append("<div  class='col-md-6 ramadda-col wiki-col ramadda-media-player'  >");
-	}
-	sb.append(player);
-	if(!vertical) {
-	    sb.append("</div>");
-	    sb.append("<div  class='col-md-6 ramadda-col wiki-col'  >");
-	}
-	sb.append("<div class=ramadda-media-annotations style=''>" +  bottom    +"</div>");
-	if(!vertical) {
-	    sb.append("</div></div>");
+	if(!showAnnotations) {
+	    sb.append(HU.center(player));
+	} else {
+	    if(!vertical) {
+		sb.append("<div  class='row'  >");
+		sb.append("<div  class='col-md-8 ramadda-col wiki-col ramadda-media-player'  >");
+	    }
+	    sb.append(player);
+	    if(!vertical) {
+		sb.append("</div>");
+		sb.append("<div  class='col-md-4 ramadda-col wiki-col'  >");
+	    }
+	    sb.append("<div class=ramadda-media-annotations style=''>" +  bottom    +"</div>");
+	    if(!vertical) {
+		sb.append("</div></div>");
+	    }
 	}
         sb.append(HtmlUtils.script(js.toString()));
 

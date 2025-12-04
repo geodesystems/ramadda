@@ -1,8 +1,12 @@
 <types category="Media">
   <type name="type_media"   foruser="false"
 	handler="org.ramadda.plugins.media.MediaTypeHandler" >
-   <column name="media_width" type="string" label="Width"  default="100%" showinhtml="false"/>
-   <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
+    <column name="media_width" columns="6"
+	    type="string" label="Width"  default="100%" showinhtml="false"/>
+    <column name="media_height" columns="6"
+	    type="string" label="Height"  default="380" showinhtml="false"/>
+  <column name="show_annotations" type="boolean"
+	  label="Show Annotations" default="true"  showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
 	   candisplay="false" editable="false"/>     
    <embedwiki><![CDATA[{{embedmedia}}]]></embedwiki>
@@ -54,6 +58,7 @@
   <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
   <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
   <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
+
 </type>
 
   <type name="media_tiktok"  
