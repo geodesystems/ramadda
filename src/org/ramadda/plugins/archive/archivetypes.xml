@@ -5,7 +5,7 @@
   
   <wikimacro name="archive_table" label="Archive Table" >
     <![CDATA[
-{{tabletree  orderby="entryorder,field:file_number,date,name"
+{{tabletree  orderby="entryorder,field_up:file_number,date,name"
 message="" showSize="false" showCreateDate="false" showDate="false"
 headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"
 toggleStyle="font-size:22px;"
