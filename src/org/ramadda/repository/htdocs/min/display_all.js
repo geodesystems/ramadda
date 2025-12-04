@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec  4 12:01:49 EST 2025";
+var build_date="RAMADDA build date: Thu Dec  4 16:53:06 EST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34909,6 +34909,8 @@ var ATTR_TEXT_INPUT='data-text-input';
 var CLASS_SEARCH_TAG = 'display-search-tag';
 var CLASS_SIMPLESEARCH_INPUT='display-simplesearch-input';
 var CLASS_SEARCH_TEXTINPUT = 'display-search-textinput';
+var CLASS_SEARCH_HEADER_ENABLED='display-search-header-enabled';
+var CLASS_SEARCH_HEADER_DISABLED='display-search-header-disabled';
 
 addGlobalDisplayType({
     type: DISPLAY_SIMPLESEARCH,
@@ -35816,32 +35818,29 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
 					   ATTR_TITLE, "Previous",
 					   ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,
-								  (settings.skip <= 0?'display-link-disabled':'display-link'))],
+								  (settings.skip <= 0?CLASS_SEARCH_HEADER_DISABLED:CLASS_SEARCH_HEADER_ENABLED))],
 				 HU.getIconImage("fa-arrow-left")));
             let addMore = false;
 	    //            if (entries.length>0 &&(true || entries.length == settings.getMax())) {
+	    let theClass= (entries.length==0?CLASS_SEARCH_HEADER_DISABLED:CLASS_SEARCH_HEADER_ENABLED);
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadNextUrl();",
 					   ATTR_TITLE, "Next",
 					   ATTR_CLASS,
 					   HU.classes(CLASS_BUTTON_SMALL,
-						      (entries.length==0?'display-link-disabled':'display-link'))],
+						      theClass)],
 				 HU.getIconImage("fa-arrow-right")));
 	    if(entries.length>0)  {
 		addMore = true;
 	    }
 
-	    if(entries.length>0) {
-		lessMore.push(HU.onClick(this.getGet() + ".loadLess();",
-					 HU.getIconImage("fa-minus",
-							 [ATTR_TITLE, "View less"]),
-					 [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
-		if (addMore) {
-                    lessMore.push(HU.onClick(this.getGet() + ".loadMore();",
-					     HU.getIconImage("fa-plus",
-							     [ATTR_TITLE, "View more"]),
-					     [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,'display-link')]));
-		}
-	    }
+	    lessMore.push(HU.onClick(this.getGet() + ".loadLess();",
+				     HU.getIconImage("fa-minus",
+						     [ATTR_TITLE, "View less"]),
+				     [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,theClass)]));
+            lessMore.push(HU.onClick(this.getGet() + ".loadMore();",
+				     HU.getIconImage("fa-plus",
+						     [ATTR_TITLE, "View more"]),
+				     [ATTR_CLASS, HU.classes(CLASS_BUTTON_SMALL,theClass)]));
             let results = "";
             let spacer = SPACE3;
 	    if(includeCloser)
@@ -37755,9 +37754,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                return;
             }
 	    this.writeMessage(this.getResultsHeader(entries));
-	    this.jq(ID_RESULTS).find('.display-link').button();
-	    this.jq(ID_RESULTS).find('.display-link-disabled').button();
-	    this.jq(ID_RESULTS).find('.display-link-disabled').button('disable');	    
+	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
+	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
+	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button('disable');	    
 
 
             if (entries.length == 0) {
@@ -38291,9 +38290,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.jq(ID_ENTRIES).html(msg);
 		this.writeMessage(this.getResultsHeader(entries,true));
 		if(this.dialog) {
-		    this.dialog.find('.display-link').button();
-		    this.dialog.find('.display-link-disabled').button();
-		    this.dialog.find('.display-link-disabled').button('disable');	    
+		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
+		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
+		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button('disable');	    
 		}
 	    } else {
 		this.jq(ID_ENTRIES).html("");
@@ -61661,6 +61660,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'titleField',ex:''},
 	{p:'titleLength',ex:'100'},	
 	{p:'imageField',ex:''},
+	{p:'thumbnailField',ex:''},	
+	{p:'thumbnailOk',ex:'false'},
 	{p:'urlField',ex:''},
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
@@ -61765,6 +61766,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
 	    let imageField = this.getFieldById(null,this.getPropertyImageField());
+	    let thumbnailField = this.getFieldById(null,this.getPropertyThumbnailField());	    
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
@@ -61822,10 +61824,21 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    event.group = value;
 		}
 
+		event.media  ={};
+		if(thumbnailField && this.getProperty('thumbnailOk',true)) {
+		    let url = record.getValue(thumbnailField.getIndex());
+		    if(Utils.stringDefined(url)) {
+			event.media.thumbnail =url;
+		    }
+		}
 		if(imageField) {
-		    event.media = {
-			url:record.getValue(imageField.getIndex())
-		    };
+		    if(!event.media.thumbnail && this.getProperty('thumbnailOk',true)) {
+			let url = record.getValue(imageField.getIndex());
+			if(Utils.stringDefined(url)) {
+			    event.media.thumbnail =url;
+			}
+		    }
+		    event.media.url = record.getValue(imageField.getIndex());
 		    if(urlField) {
 			event.media.link = record.getValue(urlField.getIndex());
 			event.media.link_target = "_timelinemedia";
@@ -61842,12 +61855,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 			event.end_date = tuple[endDateField.getIndex()];
 		    }
 		}
-		//		console.log(JSON.stringify(event));
 		events.push(event);
 	    }
-	    //	    console.log(JSON.stringify(json,null,2));
 	    if(jqid(timelineId).length==0) {
-		//		console.info("No timeline div:" + timelineId);
 		return;
 	    }
 
