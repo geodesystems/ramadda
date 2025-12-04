@@ -86,6 +86,39 @@ For example:
 [wiki::text {{<noop>{display_linechart startDate="-13 days" endDate="-5 days"}}}]
 
 
+[ug::wikiheading {Treating entries as data} doentries]
+A group of entries can also be treated as data by adding a "doEntries=true" flag in the
+display. For example, if you had a group entries that you wanted to show in a timeline
+you can do:
++pre
+{<x>{display_timeline 
+doEntries=true  
+imageField="image" 
+textTemplate="${description}"  
+}} 
+-pre
+  
+The data fields that are created for the entries are:
++pre
+id
+name
+description
+id
+typeid
+type
+start_date
+end_date
+create_date
+icon
+entry_url
+thumbnail
+image
+file_url
+latitude
+longitude
+elevation
+-pre
+
 
 [ug::wikiheading {Specifying Fields} fields]
 Most of these displays are based on [ug::link pointdata.html {point data}] in RAMADDA. The point data model
