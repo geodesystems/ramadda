@@ -5527,6 +5527,13 @@ public class WikiManager extends RepositoryManager
 		    v = getEntryDisplayName(child);
 		} else if(macro.getId().equals("entryorder")) {
 		    v = ""+child.getEntryOrder();
+		} else if(macro.getId().equals("extract_number")) {
+		    double number   = IO.extractNumber(child.getName(),Double.NaN);
+		    if(Double.isNaN(number)) {
+			v = "NA";
+		    } else  {
+			v=""+number;
+		    }
 		} else if(macro.getId().equals("size")) {
 		    if(!child.isFile()) {
 			v = "NA";
