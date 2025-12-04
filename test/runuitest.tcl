@@ -120,8 +120,8 @@ if {$groupID!=""} {
     }
 } else {
 #Run with the default ramadda.org entries
+    runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
-    runGroup "Test" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
     runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "RAMADDA Tour" ramadda_tour
