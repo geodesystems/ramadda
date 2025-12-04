@@ -869,9 +869,21 @@ table.dataTable {
 }
 
 
+.display-search-header-enabled {
+    cursor:pointer;
+}
+
+.display-search-header-disabled {
+    cursor:default;
+
+}
+
 .display-link {
     cursor:pointer;
 }
+
+
+
 
 .display-link-disabled {
     cursor:default;
