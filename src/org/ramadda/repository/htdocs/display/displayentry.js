@@ -1003,7 +1003,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.join(nextPrev, SPACE) + spacer +
                 HU.join(lessMore, SPACE);
 	    results += spacer + range + spacer;
-            return results+HU.br();
+            return HU.div([],results);
         },
 	makeSearchSettings: function() {
 	    let settings = this.getSearchSettings();
@@ -3440,10 +3440,14 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    this.makeDialog();
-
 	    if(Utils.stringDefined(msg)) {
 		this.jq(ID_ENTRIES).html(msg);
 		this.writeMessage(this.getResultsHeader(entries,true));
+		if(this.dialog) {
+		    this.dialog.find('.display-link').button();
+		    this.dialog.find('.display-link-disabled').button();
+		    this.dialog.find('.display-link-disabled').button('disable');	    
+		}
 	    } else {
 		this.jq(ID_ENTRIES).html("");
 	    }
