@@ -369,6 +369,7 @@ name,fromdate,size
 Or add '_up' or '_down' e.g.:
 name_up,size_down
 </pre>
+View help <a target=_help href="${root}/userguide/wiki/sortorder.html">here</a>
 ]]>
 </help>
 

@@ -198,6 +198,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.help = Utils.getAttributeOrTag(node, ATTR_HELP, "");
+	    metadataType.help= handler.getRepository().getPageHandler().applyBaseMacros(metadataType.help);
             metadataType.tagStyle = Utils.getAttributeOrTag(node, "tagstyle","");
             metadataType.init(node);
 	    //Is this type ok
