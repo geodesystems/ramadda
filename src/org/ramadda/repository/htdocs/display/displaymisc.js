@@ -566,6 +566,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'titleField',ex:''},
 	{p:'titleLength',ex:'100'},	
 	{p:'imageField',ex:''},
+	{p:'thumbnailField',ex:''},	
+	{p:'thumbnailOk',ex:'false'},
 	{p:'urlField',ex:''},
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
@@ -670,6 +672,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
 	    let imageField = this.getFieldById(null,this.getPropertyImageField());
+	    let thumbnailField = this.getFieldById(null,this.getPropertyThumbnailField());	    
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
@@ -727,10 +730,21 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    event.group = value;
 		}
 
+		event.media  ={};
+		if(thumbnailField && this.getProperty('thumbnailOk',true)) {
+		    let url = record.getValue(thumbnailField.getIndex());
+		    if(Utils.stringDefined(url)) {
+			event.media.thumbnail =url;
+		    }
+		}
 		if(imageField) {
-		    event.media = {
-			url:record.getValue(imageField.getIndex())
-		    };
+		    if(!event.media.thumbnail && this.getProperty('thumbnailOk',true)) {
+			let url = record.getValue(imageField.getIndex());
+			if(Utils.stringDefined(url)) {
+			    event.media.thumbnail =url;
+			}
+		    }
+		    event.media.url = record.getValue(imageField.getIndex());
 		    if(urlField) {
 			event.media.link = record.getValue(urlField.getIndex());
 			event.media.link_target = "_timelinemedia";
@@ -747,12 +761,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 			event.end_date = tuple[endDateField.getIndex()];
 		    }
 		}
-		//		console.log(JSON.stringify(event));
 		events.push(event);
 	    }
-	    //	    console.log(JSON.stringify(json,null,2));
 	    if(jqid(timelineId).length==0) {
-		//		console.info("No timeline div:" + timelineId);
 		return;
 	    }
 
