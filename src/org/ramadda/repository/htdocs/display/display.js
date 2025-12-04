@@ -6383,7 +6383,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(commandText)
 		    this.initCommandText(commandMap,headerDiv);
             } else {
-                console.log("error: no div defined for display:" + this.getType());
+                console.log("error: no div defined for display:",this.getType());
             }
         },
 	getMenuButton:function() {
@@ -7120,7 +7120,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
 		return
 	    }
-	    this.logMsg('csb');
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
