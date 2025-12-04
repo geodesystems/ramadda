@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec  4 08:41:08 EST 2025";
+var build_date="RAMADDA build date: Thu Dec  4 10:52:28 EST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -10682,7 +10682,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(commandText)
 		    this.initCommandText(commandMap,headerDiv);
             } else {
-                console.log("error: no div defined for display:" + this.getType());
+                console.log("error: no div defined for display:",this.getType());
             }
         },
 	getMenuButton:function() {
@@ -11419,7 +11419,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
 		return
 	    }
-	    this.logMsg('csb');
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -26707,6 +26706,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		}
 		if(this.getSortFields(true)) {
 		    fields = fields.sort((f1,f2)=>{
+			if(!f1.getDescription()) return 0;
+			if(!f2.getDescription()) return 0;			
 			return f1.getDescription().localeCompare(f2.getDescription());
 		    });
 		}
