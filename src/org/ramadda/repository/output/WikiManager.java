@@ -7176,7 +7176,7 @@ public class WikiManager extends RepositoryManager
         String indices = getProperty(wikiUtil, props,
 				     attrPrefix + "indices",
                                          (String) null);
-	if(indices!=null && entries.size()>0) {
+	if(stringDefined(indices) && entries.size()>0) {
             List<Entry> tmp = new ArrayList<Entry>();
 	    for(String index:Utils.split(indices,",",true,true)) {
 		if(index.equals("last")) {
