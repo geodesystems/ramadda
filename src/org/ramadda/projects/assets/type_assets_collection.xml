@@ -53,7 +53,7 @@ orderBy=name
 #pageSearchParent=.ramadda-grid-container                                                                     
 }} 
 -center
-{{tabletree    typeWidth=300px orderby="entryorder,name"
+{{tabletree    typeWidth=300px orderby="entryorder_up,name_up"
 message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
 +skip
 {{assets_report_table}}
