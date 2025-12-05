@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec  5 02:53:42 EST 2025";
+var build_date="RAMADDA build date: Fri Dec  5 03:10:04 EST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6125,6 +6125,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'selectUniqueFields',ex:'',tt:'Show list of fields to make data unique'},
 	{p:'dataUrl',tt:'Fixed URL to the JSON data'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'exclude',ex:"entryid1,entryid2,type:some type",tt:'Entries to exclude from doEntries'},	
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
