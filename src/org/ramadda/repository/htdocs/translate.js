@@ -6,20 +6,27 @@ var CLASS_LANGUAGE_BLOCK='ramadda-language-block';
 
 
 var Translate = {
+    initialized:false,
     trackMissing:false,
     packs:{},
     missing:{},
     language:null,
     
     init: function() {
+	if(this.initialized) return;
+	this.initialized = true;
+	if(ramaddaLanguagesEnabled) {
+	    this.initButton();
+	}
+	Translate.translate();
+    },
+    initButton:function() {
 	let icon =HU.getIconImage('fas fa-language ramadda-header-icon');
 	let switchPrefix = icon +HU.space(1);
-
 	let menu = HU.span([ATTR_TITLE,'Change language',
 			    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-page-link'),
 			    ATTR_ID,'ramadda_language_menu'],icon);
 	menu = $(menu).appendTo(jqid('ramadda_links_prefix'));
-	
 	menu.click(()=>{
 	    let html = '';
 	    html+= HU.div([ATTR_TITLE,'Clear language',
@@ -34,6 +41,8 @@ var Translate = {
 			      switchPrefix+lang.label);
 	    });
 	    html = HU.div([],html);
+
+
 	    if(this.menuPopup)
 		this.menuPopup.remove();
 	    
@@ -44,8 +53,7 @@ var Translate = {
 	    });
 	});
 	this.switchLang = jqid('switchlang');
-	Translate.translate();
-    },
+    },	
     switcherClicked:function(link) {
 	let lang = link.attr(ATTR_DATA_LANGUAGE);
 	if(lang=='showmissing') {
@@ -516,10 +524,18 @@ var Translate = {
     }
 };
 
+function initializeTranslate() {
+    if(!Translate.initialized) {
+	$( document ).ready(function() {
+	    Translate.init();
+	});
+    }
+}
+
+
+
 if(ramaddaLanguagesEnabled) {
-    $( document ).ready(function() {
-	Translate.init();
-    });
+    initializeTranslate();
 }
 
 
