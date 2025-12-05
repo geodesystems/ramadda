@@ -1519,10 +1519,14 @@ public class Utils extends IO {
         return list.get(index);
     }
 
-    public static boolean notEmpty(List list) {
+    public static boolean listNotEmpty(List list) {
 	return list!=null && list.size()>0;
     }
 
+    public static boolean listEmpty(List list) {
+	return list==null || list.size()==0;
+    }
+    
     public static boolean isCompressed(String filename) throws IOException {
         filename = filename.toLowerCase();
 
