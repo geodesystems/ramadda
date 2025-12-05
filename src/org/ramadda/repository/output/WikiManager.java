@@ -7332,7 +7332,7 @@ public class WikiManager extends RepositoryManager
 	}
 
 	if(sortDir==null) {
-	    if (orderBy.equals(ORDERBY_NAME)) {
+	    if (orderBy.equals(ORDERBY_NAME) || orderBy.equals(ORDERBY_ENTRYORDER)) {
 		sortDir = DIR_UP;
 	    } else {
 		sortDir = DIR_DOWN;
