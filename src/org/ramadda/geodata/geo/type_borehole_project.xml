@@ -34,7 +34,8 @@
 :heading Sites
 {{map listentries="true" entry="child:type:type_map_folder" orderby=name}}
 :heading Contents
-{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false orderby=entryorder ascending=true}} 
+{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false
+orderby=entryorder_up ascending=true}} 
 -col
 +col-4
 +center

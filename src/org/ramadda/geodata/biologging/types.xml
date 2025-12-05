@@ -44,7 +44,7 @@
 +col-8
 {{description wikify=true}}
 :heading Study Contents
-{{tabletree message="" showCreateDate=false showSize=false showDate=false orderby="entryorder,name"  ascending=true}}
+{{tabletree message="" showCreateDate=false showSize=false showDate=false orderby="entryorder_up,name_up"  ascending=true}}
 :vspace 1em
 ----
 :vspace 1em
