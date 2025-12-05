@@ -170,6 +170,12 @@ public class JsonOutputHandler extends OutputHandler {
                               List<Entry> entries, Appendable sb,boolean sort)
             throws Exception {
 
+	String exclude=request.getString("exclude",null);
+	if(stringDefined(exclude)){
+	    entries = getWikiManager().applyExclude(entries, exclude,null);
+	}
+
+
         String entryTypes = request.getString("entryTypes", null);
         if (entryTypes != null) {
             List<String> types = Utils.split(entryTypes, ",", true, true);

@@ -1792,7 +1792,7 @@ public class WikiManager extends RepositoryManager
 
 	    //	    HU.makeAccordion(tmp,"Add Property", sb.toString(), true,null,null);
 	    //	    return tmp.toString();
-			     //	    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
+	    //	    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
 	}
 
 	return sb.toString();
@@ -2039,18 +2039,18 @@ public class WikiManager extends RepositoryManager
 	    final int[]cnt={0};
 
 	    String[] colors = {
-			   "#E6F4EA", // Soft Mint
-			   "#DCEEFF", // Powder Blue
-			   "#FFEFD6", // Apricot Cream
-			   "#DFF5F0", // Seafoam
-			   "#FFECEE", // Pale Blush
-			   "#EFEBFA", // Lavender Mist
-			   "#FFF8D9", // Butter Cream
-			   "#E9F7DF", // Fresh Pear (pastel yellow-green)
-			   "#E4EAF0", // Soft Slate (cool gray-blue)
-			   "#E7E4FB", // Periwinkle Glaze (soft blue-violet)
-			   "#F5EDDD", // Sand Drift (warm beige)
-			   "#DFF4F4"  // Frosted Teal (mint-teal blend)
+		"#E6F4EA", // Soft Mint
+		"#DCEEFF", // Powder Blue
+		"#FFEFD6", // Apricot Cream
+		"#DFF5F0", // Seafoam
+		"#FFECEE", // Pale Blush
+		"#EFEBFA", // Lavender Mist
+		"#FFF8D9", // Butter Cream
+		"#E9F7DF", // Fresh Pear (pastel yellow-green)
+		"#E4EAF0", // Soft Slate (cool gray-blue)
+		"#E7E4FB", // Periwinkle Glaze (soft blue-violet)
+		"#F5EDDD", // Sand Drift (warm beige)
+		"#DFF4F4"  // Frosted Teal (mint-teal blend)
 	    };
 
 
@@ -2059,7 +2059,7 @@ public class WikiManager extends RepositoryManager
 	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",false);
 	    final boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
 	    final boolean addAncestor = getProperty(wikiUtil,props,"addAncestorToSearchLink",
-					      getProperty(wikiUtil,props,"addAncestor",false));		    
+						    getProperty(wikiUtil,props,"addAncestor",false));		    
 	    Request countRequest = null;
 	    boolean doNewWay = false;
 	    String _ancestor = getProperty(wikiUtil,props,"ancestor",null);
@@ -2548,8 +2548,8 @@ public class WikiManager extends RepositoryManager
 		    return "Unknown link action:" + action;
 		}
 	    } else  if (linkResource
-		&& (entry.getTypeHandler().isType("link")
-		    || entry.isFile() || entry.getResource().isUrl())) {
+			&& (entry.getTypeHandler().isType("link")
+			    || entry.isFile() || entry.getResource().isUrl())) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
 								 entry);
             } else {
@@ -3126,8 +3126,8 @@ public class WikiManager extends RepositoryManager
 		}
 
 		if (( !isTextFile(entry, entry.getResource().getPath())
-			  && !getProperty(wikiUtil, props, ATTR_FORCE,
-					  false))) {
+		      && !getProperty(wikiUtil, props, ATTR_FORCE,
+				      false))) {
 		    return getProperty(wikiUtil,props,"message","Entry is not a text file");
 		}
 	    }
@@ -4622,95 +4622,95 @@ public class WikiManager extends RepositoryManager
                 return sb.toString();
             } else if (doingSlideshow) {
 		/******* old slides code
-                boolean shownav = getProperty(wikiUtil, props, "shownav", false);
-                boolean autoplay = getProperty(wikiUtil, props, "autoplay", false);
-                int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
-                String slideId   = HU.getUniqueId("slides_");
-		sb.append("\n");
-                HU.open(sb, "style", HU.attr("type", "text/css"));
-		sb.append("\n");
-                // need to set the height of the div to include the nav bar
-                Utils.concatBuff(sb, "#", slideId, " { width: ",
-                                 width + "; height:calc(" + height + "+30px);\n", "}\n");
+			 boolean shownav = getProperty(wikiUtil, props, "shownav", false);
+			 boolean autoplay = getProperty(wikiUtil, props, "autoplay", false);
+			 int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
+			 String slideId   = HU.getUniqueId("slides_");
+			 sb.append("\n");
+			 HU.open(sb, "style", HU.attr("type", "text/css"));
+			 sb.append("\n");
+			 // need to set the height of the div to include the nav bar
+			 Utils.concatBuff(sb, "#", slideId, " { width: ",
+			 width + "; height:calc(" + height + "+30px);\n", "}\n");
 
-                int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
-                String borderColor = getProperty(wikiUtil, props,
-						 ATTR_BORDERCOLOR, "#aaa");
-                sb.append(
-			  "#" + slideId + " .slides_container {border: " + border
-			  + "px solid " + borderColor + "; width:" + width
-			  + ";overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
-			  + width + ";height:" + height + ";display:block;}\n");
-                sb.append("</style>\n\n");
-                sb.append("<link rel=\"stylesheet\" href=\"");
-                sb.append(
-			  getRepository().getHtdocsUrl("/lib/slides/paginate.css"));
-                sb.append("\" type=\"text/css\" media=\"screen\" />");
-                sb.append("\n");
+			 int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
+			 String borderColor = getProperty(wikiUtil, props,
+			 ATTR_BORDERCOLOR, "#aaa");
+			 sb.append(
+			 "#" + slideId + " .slides_container {border: " + border
+			 + "px solid " + borderColor + "; width:" + width
+			 + ";overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
+			 + width + ";height:" + height + ";display:block;}\n");
+			 sb.append("</style>\n\n");
+			 sb.append("<link rel=\"stylesheet\" href=\"");
+			 sb.append(
+			 getRepository().getHtdocsUrl("/lib/slides/paginate.css"));
+			 sb.append("\" type=\"text/css\" media=\"screen\" />");
+			 sb.append("\n");
 
-                // user speed is seconds, script uses milliseconds - 0 == no play
-                int startSpeed = (autoplay)
-		    ? playSpeed * 1000
-		    : 0;
-                String slideParams =
-                    "preload: false, preloadImage: "
-                    + HU.squote(
-				getRepository().getHtdocsUrl(
-							     "/lib/slides/img/loading.gif")) + ", play: "
-		    + startSpeed + ", width: \"" + width + "\""
-		    + ", pause: 2500, hoverPause: true"
-		    + ", generatePagination: " + shownav + "\n";
-                StringBuilder js =
-                    new StringBuilder("$(document).ready(function(){\n");
-                js.append("$(function(){\n" +
-			  HU.call("HtmlUtils.initSlides",HU.squote(slideId)) +
-			  "\n});\n");
-                js.append(
-			  "$(function(){\n$(" + HU.squote("#" + slideId)
-			  + ").slides({" + slideParams
-			  + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
-                js.append("\n});\n");
-                HU.open(sb, HU.TAG_DIV, HU.id(slideId));
-                String prevImage =
-                    HU.href("#", "<i style='font-size:32pt;'  class=\"ramadda-clickable  fas fa-angle-left prev\"/>");
+			 // user speed is seconds, script uses milliseconds - 0 == no play
+			 int startSpeed = (autoplay)
+			 ? playSpeed * 1000
+			 : 0;
+			 String slideParams =
+			 "preload: false, preloadImage: "
+			 + HU.squote(
+			 getRepository().getHtdocsUrl(
+			 "/lib/slides/img/loading.gif")) + ", play: "
+			 + startSpeed + ", width: \"" + width + "\""
+			 + ", pause: 2500, hoverPause: true"
+			 + ", generatePagination: " + shownav + "\n";
+			 StringBuilder js =
+			 new StringBuilder("$(document).ready(function(){\n");
+			 js.append("$(function(){\n" +
+			 HU.call("HtmlUtils.initSlides",HU.squote(slideId)) +
+			 "\n});\n");
+			 js.append(
+			 "$(function(){\n$(" + HU.squote("#" + slideId)
+			 + ").slides({" + slideParams
+			 + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
+			 js.append("\n});\n");
+			 HU.open(sb, HU.TAG_DIV, HU.id(slideId));
+			 String prevImage =
+			 HU.href("#", "<i style='font-size:32pt;'  class=\"ramadda-clickable  fas fa-angle-left prev\"/>");
 
-                String nextImage =
-                    HU.href("#", "<i style='font-size:32pt;' class=\"ramadda-clickable  fas fa-angle-right next\"/>");
-                String arrowTDWidth = "20px";
+			 String nextImage =
+			 HU.href("#", "<i style='font-size:32pt;' class=\"ramadda-clickable  fas fa-angle-right next\"/>");
+			 String arrowTDWidth = "20px";
 
-                sb.append(
-			  "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr valign=top>\n");
+			 sb.append(
+			 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr valign=top>\n");
 
-		if(getProperty(wikiUtil,props,"showToc",false)) {
-		    String tocWidth = getProperty(wikiUtil,props,"tocWidth","300px");
-		    HU.open(sb,"td",HU.attrs("width",tocWidth));
-		    String tocId = slideId +"_toc";
-		    HU.open(sb,"div",HU.attrs("id",tocId,
-					      "style",
-					      HU.css("margin-right","10px",
-						     "overflow-x","hidden",
-						     "overflow-y","auto",
-						     "white-space","nowrap",
-						     "max-width",tocWidth,
-						     "max-height",height)));
-		    String tocStyle = HU.attrs("style",HU.css("border-bottom","var(--basic-border)"));
-		    for (int i = 0; i < titles.size(); i++) {
-			sb.append(HU.div(titles.get(i),
-					 HU.attrs("title",titles.get(i),
-						  "class","ramadda-hoverable ramadda-clickable","data-index",(i+1)+"") + tocStyle));
-		    }
-		    sb.append("</div></td>");
-		    //		    js.append("let index  = +$(this).attr('data-index');\n");
-		    //		    js.append("console.dir(jqid(" + HU.squote(slideId) +"));\n");
-		    //		    js.append("jqid(" + HU.squote(slideId) +").goto(index);\n");
-		    js.append("});\n");
-		}
+			 if(getProperty(wikiUtil,props,"showToc",false)) {
+			 String tocWidth = getProperty(wikiUtil,props,"tocWidth","300px");
+			 HU.open(sb,"td",HU.attrs("width",tocWidth));
+			 String tocId = slideId +"_toc";
+			 HU.open(sb,"div",HU.attrs("id",tocId,
+			 "style",
+			 HU.css("margin-right","10px",
+			 "overflow-x","hidden",
+			 "overflow-y","auto",
+			 "white-space","nowrap",
+			 "max-width",tocWidth,
+			 "max-height",height)));
+			 String tocStyle = HU.attrs("style",HU.css("border-bottom","var(--basic-border)"));
+			 for (int i = 0; i < titles.size(); i++) {
+			 sb.append(HU.div(titles.get(i),
+			 HU.attrs("title",titles.get(i),
+			 "class","ramadda-hoverable ramadda-clickable","data-index",(i+1)+"") + tocStyle));
+			 }
+			 sb.append("</div></td>");
+			 //		    js.append("let index  = +$(this).attr('data-index');\n");
+			 //		    js.append("console.dir(jqid(" + HU.squote(slideId) +"));\n");
+			 //		    js.append("jqid(" + HU.squote(slideId) +").goto(index);\n");
+			 js.append("});\n");
+			 }
 
-                HU.col(sb, prevImage,
-		       HU.attrs("width",arrowTDWidth,
-				"style","vertical-align: middle;font-size: 30px;"));
-                HU.open(sb, HU.TAG_TD, HU.attr(HU.ATTR_WIDTH, width));
-                HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-slides-container slides_container"));
+			 HU.col(sb, prevImage,
+			 HU.attrs("width",arrowTDWidth,
+			 "style","vertical-align: middle;font-size: 30px;"));
+			 HU.open(sb, HU.TAG_TD, HU.attr(HU.ATTR_WIDTH, width));
+			 HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-slides-container slides_container"));
 		*/
 		String slidesProps = "";
 		slidesProps+=HU.attr("width",width);
@@ -4733,12 +4733,12 @@ public class WikiManager extends RepositoryManager
 		    sb.append(HU.div(content,HU.style(HU.css("width","calc( " + width+" - 22px)"))));
 		    sb.append("\n-slide\n ");
 		    /*
-                    sb.append("\n");
-                    HU.open(sb, HU.TAG_DIV, HU.cssClass("slide"));
-                    sb.append(content);
-                    //                    sb.append(HU.br());
-                    //                    sb.append(title);
-                    HU.close(sb, HU.TAG_DIV);  // slide
+		      sb.append("\n");
+		      HU.open(sb, HU.TAG_DIV, HU.cssClass("slide"));
+		      sb.append(content);
+		      //                    sb.append(HU.br());
+		      //                    sb.append(title);
+		      HU.close(sb, HU.TAG_DIV);  // slide
 		    */
                 }
 		sb.append("-slides\n");
@@ -4746,22 +4746,22 @@ public class WikiManager extends RepositoryManager
 
 		/********
 
-                HU.close(sb, HU.TAG_DIV);      // slides_container
-                HU.close(sb, HU.TAG_TD);
+			 HU.close(sb, HU.TAG_DIV);      // slides_container
+			 HU.close(sb, HU.TAG_TD);
 
-                HU.col(sb, nextImage,
-		       HU.attrs("width",arrowTDWidth,
-				"style","vertical-align: middle;font-size: 30px;"));
+			 HU.col(sb, nextImage,
+			 HU.attrs("width",arrowTDWidth,
+			 "style","vertical-align: middle;font-size: 30px;"));
 
-                sb.append("</tr></table>");
-                HU.close(sb, HU.TAG_DIV);  
-                sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/jquery.slides.js")));
-		//                sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/slides.min.jquery.js")));
-                sb.append(HU.importJS(getRepository().getHtdocsUrl("/slides.js")));
-                wikiUtil.appendJavascript(js.toString());
-                //                HU.script(sb, js.toString());
+			 sb.append("</tr></table>");
+			 HU.close(sb, HU.TAG_DIV);  
+			 sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/jquery.slides.js")));
+			 //                sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/slides.min.jquery.js")));
+			 sb.append(HU.importJS(getRepository().getHtdocsUrl("/slides.js")));
+			 wikiUtil.appendJavascript(js.toString());
+			 //                HU.script(sb, js.toString());
 
-                return sb.toString();
+			 return sb.toString();
 		*******/
             } else {
                 //TABS
@@ -5001,9 +5001,9 @@ public class WikiManager extends RepositoryManager
 		sb.append(HU.open("td",HU.attrs("style","","width",imageWidth)));
 		if(imageUrl!=null) {
 		    sb.append(HU.image(imageUrl,
-				     HU.attrs("class","ramadda-listing-image",
-					      "style","max-width:100%;height:auto;",
-					      "loading", "lazy")));
+				       HU.attrs("class","ramadda-listing-image",
+						"style","max-width:100%;height:auto;",
+						"loading", "lazy")));
 
 		}
 		sb.append(HU.close("td"));
@@ -5752,6 +5752,10 @@ public class WikiManager extends RepositoryManager
 	    String sortDir = getProperty(wikiUtil, props,"sortdir",null);
 	    if(sortDir!=null)
 		extra+="&ascending=" + sortDir.equals("up");
+
+	    String exclude = getProperty(wikiUtil, props,"exclude",null);
+	    if(exclude!=null)
+		extra+="&exclude=" + exclude;
 
 	    //For now don't do this to avoid the numerous calls out to the other RAMADDA
 	    if(false && serverInfo!=null) {
@@ -7001,44 +7005,15 @@ public class WikiManager extends RepositoryManager
         }
 
 
+
         String excludeEntries = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_EXCLUDE,
                                             (String) null);
 
 
-	List<String> notTypes  = null;
+
         if (excludeEntries != null) {
-            HashSet seen = new HashSet();
-            for (String id : Utils.split(excludeEntries, ",",true,true)) {
-		if(id.startsWith("type:")) {
-		    if(notTypes==null) notTypes=new ArrayList<String>();
-		    notTypes.add(id.substring("type:".length()));
-		    continue;
-		}
-                if (id.equals(ID_THIS)) {
-                    seen.add(originalEntry.getId());
-                } else {
-                    seen.add(id);
-                }
-            }
-            List<Entry> okEntries = new ArrayList<Entry>();
-            for (Entry e : entries) {
-		if(notTypes!=null) {
-		    boolean ok = true;
-		    for(String type: notTypes) {
-			if(e.getTypeHandler().isType(type)) {
-			    ok = false;
-			    break;
-			}
-		    }
-		    if(!ok) continue;
-		}
-                if ( !seen.contains(e.getId())
-		     && !seen.contains(e.getName())) {
-                    okEntries.add(e);
-                }
-            }
-            entries = okEntries;
+	    entries = applyExclude(entries,excludeEntries,originalEntry);
 	}
 
         //Only do the sort if the user has not done an entry sort
@@ -7182,7 +7157,7 @@ public class WikiManager extends RepositoryManager
 
         String indices = getProperty(wikiUtil, props,
 				     attrPrefix + "indices",
-                                         (String) null);
+				     (String) null);
 	if(stringDefined(indices) && entries.size()>0) {
             List<Entry> tmp = new ArrayList<Entry>();
 	    for(String index:Utils.split(indices,",",true,true)) {
@@ -7237,6 +7212,42 @@ public class WikiManager extends RepositoryManager
 	    }
 	};
     }
+
+    public List<Entry> applyExclude(List<Entry> entries, String exclude,Entry originalEntry) throws Exception {
+	List<String> notTypes  = null;
+	HashSet seen = new HashSet();
+	for (String id : Utils.split(exclude, ",",true,true)) {
+	    if(id.startsWith("type:")) {
+		if(notTypes==null) notTypes=new ArrayList<String>();
+		notTypes.add(id.substring("type:".length()));
+		continue;
+	    }
+	    if (id.equals(ID_THIS)) {
+		if(originalEntry!=null)
+		    seen.add(originalEntry.getId());
+	    } else {
+		seen.add(id);
+	    }
+	}
+	List<Entry> okEntries = new ArrayList<Entry>();
+	for (Entry e : entries) {
+	    if(notTypes!=null) {
+		boolean ok = true;
+		for(String type: notTypes) {
+		    if(e.getTypeHandler().isType(type)) {
+			ok = false;
+			break;
+		    }
+		}
+		if(!ok) continue;
+	    }
+	    if ( !seen.contains(e.getId())
+		 && !seen.contains(e.getName())) {
+		okEntries.add(e);
+	    }
+	}
+	return okEntries;
+    }	
 
     public String  makeEntryLinkSearchUrl(Request request, Entry baseEntry,String type,String column) {
 	//search.type_assets_base.vendor=a5255fbe-49c6-4624-9bff-ee7e5b777a3f
@@ -7528,14 +7539,14 @@ public class WikiManager extends RepositoryManager
 								     select.getEntry(),select);
 
 		/*
-		if(children.toString().indexOf("Test3")>=0) {
-		    System.err.println("BEFORE WIKI:");
-		    for(Entry child: children)	System.err.println("\t"+ child.getName());
-		}
+		  if(children.toString().indexOf("Test3")>=0) {
+		  System.err.println("BEFORE WIKI:");
+		  for(Entry child: children)	System.err.println("\t"+ child.getName());
+		  }
 		*/
 		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter))
 
-;
+		    ;
 
                 continue;
             }
@@ -7929,7 +7940,7 @@ public class WikiManager extends RepositoryManager
 
 	    if(theCaption!=null) {
 		String captionLink = HU.href(entryUrl, theCaption,
-				     HU.style("font-size:10pt;"));
+					     HU.style("font-size:10pt;"));
 		buff.append(HU.div(captionLink, HU.cssClass("image-caption")));
 	    }
             if (showDesc) {
@@ -8016,8 +8027,8 @@ public class WikiManager extends RepositoryManager
 	
 
     public void makeReader(Request request, WikiUtil wikiUtil, Entry entry,
-                            List<Entry> imageEntries, Hashtable props,
-                            StringBuilder sb)
+			   List<Entry> imageEntries, Hashtable props,
+			   StringBuilder sb)
 
 	throws Exception {
 	checkProperties(request, entry, props);
@@ -8454,7 +8465,7 @@ public class WikiManager extends RepositoryManager
 				 "+skip_nl__nl_", "-skip"),
 			l2.call( "Inline comment","Inline commented",
 				 ":rem comment", "")						
-);			
+			);			
 
 
         StringBuilder misc1 = new StringBuilder();
@@ -8560,8 +8571,8 @@ public class WikiManager extends RepositoryManager
 
 	Utils.TriConsumer<StringBuilder,String,String> makeHelp = (sb,p,title)->{
 	    sb.append(HU.href(getRepository().getUrlBase()
-				+ p, title,
-				"target=_help") + "<br>");
+			      + p, title,
+			      "target=_help") + "<br>");
 	};
 
 	/*
@@ -8939,7 +8950,7 @@ public class WikiManager extends RepositoryManager
 
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    String canDoEdit = Utils.getProperty(props,"canedit",
-					       Utils.getProperty(props,"candoedit",null));
+						 Utils.getProperty(props,"candoedit",null));
 	    if(canDoEdit !=null) {
 		props.remove("canedit");
 		props.remove("candoedit");		
