@@ -1072,7 +1072,7 @@ RepositoryMap.prototype = {
 
     highlightMarkers:function(selector,  background1, background2, id) {
 	let _this =  this;
-	if(!background1) background1= '#ffffcc';
+	if(!background1) background1= '#f4f4f4';
 	let links = 	    $(selector).find('[data-mapid]');
 	links.mouseenter(function(event) {
 	    //	    _this.closePopup();  HU.hidePopupObject();
