@@ -1136,7 +1136,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 							       "type",JsonUtil.quote(entry.getTypeHandler().getType()),
 							       "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
 							       "thumbnail",
-							       Utils.notEmpty(urls)?JU.quote(urls.get(0)):"null",
+							       Utils.listNotEmpty(urls)?JU.quote(urls.get(0)):"null",
 							       "icon",JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}

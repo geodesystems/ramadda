@@ -1626,7 +1626,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
-        addToMap(request, map, entriesToUse, theProps);
+        addToMap(request, mainEntry, map, entriesToUse, theProps);
 
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
@@ -1830,7 +1830,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     
 
 
-    public void addToMap(Request request, MapInfo map,
+    public void addToMap(Request request, Entry mainEntry, MapInfo map,
                          List<Entry> entriesToUse, Hashtable props)
 	throws Exception {
         boolean detailed    = Misc.getProperty(props, PROP_DETAILED, false);
@@ -1865,54 +1865,56 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    }
 	}
 
-        //            map.addLines(entry, "", polyLine, null);
-        if (entriesToUse.size() >0) {
-	    //        if ((entriesToUse.size() == 1) && detailed) {
-            List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request,
-						  entriesToUse.get(0), "map_displaymap", true);
-            if ((metadataList != null) && (metadataList.size() > 0)) {
-                for (Metadata metadata : metadataList) {
-                    if (!Utils.stringDefined(metadata.getAttr1())) continue;
-		    Entry mapEntry =
-			(Entry) getEntryManager().getEntry(request,
-							   metadata.getAttr1());
-		    if (mapEntry == null) continue;
-		    String fillColor = metadata.getAttr3();
-		    String fillOpacity = metadata.getAttr4();		    
-		    String strokeColor = metadata.getAttr(5);
-		    String strokeWidth = metadata.getAttr(6);
-		    List<String> styles = new ArrayList<String>();
-		    ShapefileOutputHandler.makeMapStyle(request, mapEntry,styles);
-		    if(stringDefined(fillColor)) Utils.add(styles,"fillColor",JU.quote(fillColor));
-		    if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
-		    if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
-		    if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
-		    String strokeStyle = metadata.getAttr(7);    		    
-		    if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
-		    String mapStyle = JU.map(styles);
-		    if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
-			String url =
-			    request.entryUrl(getRepository()
-					     .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
-					     ShapefileOutputHandler.OUTPUT_GEOJSON
-					     .toString(), "formap", "true");
-			map.addGeoJsonUrl(mapEntry.getName(), url, true,mapStyle,false);
-		    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
-			String url =
-			    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
-			map.addGeoJsonUrl(
-					  mapEntry.getName(), url, true,mapStyle,false);
+	List<Metadata> metadataList =null;
+	if(mainEntry!=null) {
+	    metadataList = getMetadataManager().findMetadata(request,
+							    mainEntry, "map_displaymap", true);
+	}
+	if (Utils.listEmpty(metadataList) && entriesToUse.size()>0) {
+	    metadataList= getMetadataManager().findMetadata(request,
+							    entriesToUse.get(0), "map_displaymap", true);
+	}
+	if (Utils.listNotEmpty(metadataList)) {
+	    for (Metadata metadata : metadataList) {
+		if (!Utils.stringDefined(metadata.getAttr1())) continue;
+		Entry mapEntry =
+		    (Entry) getEntryManager().getEntry(request,
+						       metadata.getAttr1());
+		if (mapEntry == null) continue;
+		String fillColor = metadata.getAttr3();
+		String fillOpacity = metadata.getAttr4();		    
+		String strokeColor = metadata.getAttr(5);
+		String strokeWidth = metadata.getAttr(6);
+		List<String> styles = new ArrayList<String>();
+		ShapefileOutputHandler.makeMapStyle(request, mapEntry,styles);
+		if(stringDefined(fillColor)) Utils.add(styles,"fillColor",JU.quote(fillColor));
+		if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
+		if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
+		if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
+		String strokeStyle = metadata.getAttr(7);    		    
+		if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
+		String mapStyle = JU.map(styles);
+		if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
+		    String url =
+			request.entryUrl(getRepository()
+					 .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
+					 ShapefileOutputHandler.OUTPUT_GEOJSON
+					 .toString(), "formap", "true");
+		    map.addGeoJsonUrl(mapEntry.getName(), url, true,mapStyle,false);
+		} else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
+		    String url =
+			request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
+		    map.addGeoJsonUrl(
+				      mapEntry.getName(), url, true,mapStyle,false);
 			
-                    }
-                }
-            }
-        }
+		}
+	    }
+	}
         screenBigRects = false;
         int cnt = 0;
         if (showLines) {
             for (Entry entry : entriesToUse) {
-                List<Metadata> metadataList =
+                metadataList =
                     getMetadataManager().findMetadata(request, entry,
 						      MetadataHandler.TYPE_SPATIAL_POLYGON, true);
 
@@ -1949,9 +1951,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	}
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;
-            List<Metadata> metadataList =
-                getMetadataManager().getMetadata(request,entry);
-
+            metadataList =   getMetadataManager().getMetadata(request,entry);
             boolean rectOK = true;
             if (detailed) {
 		rectOK = entry.getTypeHandler().addToMap(request, entry, map);

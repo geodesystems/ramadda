@@ -350,7 +350,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                           null, "" + contentsWidth, "" + contentsHeight,
                           true, null);
 
-        getMapManager().addToMap(request, map, allEntries,
+        getMapManager().addToMap(request, null, map, allEntries,
                                  Utils.makeMap(MapManager.PROP_DETAILED,
                                      "false", MapManager.PROP_SCREENBIGRECTS,
                                      "true"));

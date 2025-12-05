@@ -1636,7 +1636,7 @@ public class Gtfs implements Constants {
     public static void addToMap(Request request, List<Entry> vehicles,
                                 MapInfo map)
             throws Exception {
-        request.getRepository().getMapManager().addToMap(request, map,
+        request.getRepository().getMapManager().addToMap(request, null, map,
                 vehicles,
                 Utils.makeMap(MapManager.PROP_DETAILED, "true",
                               MapManager.PROP_SCREENBIGRECTS, "true"));
