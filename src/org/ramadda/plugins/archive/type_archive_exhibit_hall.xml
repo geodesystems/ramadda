@@ -23,7 +23,7 @@ edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exh
 ----
 {{description wikify=true}}
 :vspace 1em
-{{listing  showPlaceholderImage="true"  orderby="entryorder"
+{{listing  showPlaceholderImage="true"  orderby="entryorder_up"
 showDescription="true"  showSnippet="true"  #imageWidth="300px"  #textWidth="600px" 
  message=""  }} 
 -section]]></wiki>

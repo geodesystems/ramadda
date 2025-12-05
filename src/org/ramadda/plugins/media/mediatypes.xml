@@ -174,7 +174,7 @@
 :vspace 1em
 +if property=show_table
 :heading Table
-{{tabletree message="" orderby=entryorder ascending=true}}
+{{tabletree message="" orderby=entryorder_up ascending=true}}
 -if
 :vspace 1em
 ----
