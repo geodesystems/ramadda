@@ -579,6 +579,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'initialZoom',ex:'10'},	
 	{p:'timelinePosition',ex:'top|bottom',d:'top'},
 	{p:'navHeight',ex:'150'},
+	{p:'navHeightMin',ex:'150'},
+	{p:'navHeightPercentage',ex:'50'},		
 	{p:'backgroundColor',ex:COLOR_LIGHT_GRAY},
 	{p:'groupField',ex:''},
 	{p:'urlField',ex:''},
@@ -632,7 +634,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		//		debug:true,
 		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
-		timenav_height: this.getPropertyNavHeight(200),
+		timenav_height: +this.getPropertyNavHeight(200),
 		height:300,
 		menubar_height:300,
 		gotoCallback: (slide)=>{
@@ -644,6 +646,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    }
 		}
             };
+	    if(this.getPropertyNavHeightMin(null))
+		opts.timenav_height_min=this.getPropertyNavHeightMin(null);
+	    if(this.getPropertyNavHeightPercentage(null))
+		opts.timenav_height_percentage=this.getPropertyNavHeightPercentage(null);
+
+
 	    if(this.getPropertyBackgroundColor())
 		opts.default_bg_color = this.getPropertyBackgroundColor();
 	    if(this.getPropertyScaleFactor(0))
