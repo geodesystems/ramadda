@@ -1901,6 +1901,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
                 if (tline.startsWith(":langswitcher")) {
+                    buff.append(HU.script("initializeTranslate();\n"));
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String guid = HU.getUniqueId("langs");
                     HU.span(buff,"",HU.id(guid));
