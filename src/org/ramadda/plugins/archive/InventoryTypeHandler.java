@@ -36,6 +36,12 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.util.CellRangeAddress;
+
 @SuppressWarnings("unchecked")
 public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 
@@ -113,27 +119,32 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	    StringBuilder nomatch = new StringBuilder();
 	    List<String> matched = new ArrayList<String>();
 	    StringBuilder csv = new StringBuilder();
-	    csv.append("barcode,entry,url\n");
+	    csv.append("status,barcode,entry,url\n");
 	    for(Entry book: entries) {
 		String barcode = book.getStringValue(request, "barcode","");
 		String link = getEntryManager().getEntryLink(request, book,barcode +" -- " + book.getName(),true,"");
+		String status="found";
 		if(seen.contains(barcode)) {
 		    matched.add(barcode);
 		    hit.add(HU.div(link));
 		} else {
-		    if(download) {
-			csv.append(barcode);
-			csv.append(",");
-			csv.append(Seesv.cleanColumnValue(book.getName()));
-			csv.append(",");
-			csv.append(request.getAbsoluteUrl(getEntryManager().getEntryURL(request, book)));
-			csv.append("\n");
-		    }
 		    miss.add(HU.div(link));
+		    status="missing";
 		}
+		if(download) {
+		    csv.append(status);
+		    csv.append(",");
+		    csv.append(barcode);
+		    csv.append(",");
+		    csv.append(Seesv.cleanColumnValue(book.getName()));
+		    csv.append(",");
+		    csv.append(request.getAbsoluteUrl(getEntryManager().getEntryURL(request, book)));
+		    csv.append("\n");
+		}
+
 	    }
 	    if(download) {
-		request.setReturnFilename("inventory.csv",false);
+		request.setReturnFilename(Utils.makeID(entry.getName())+".csv",false);
 		return new Result("",csv,"text/csv");
 	    }
 	    seen = Utils.makeHashSet(matched);

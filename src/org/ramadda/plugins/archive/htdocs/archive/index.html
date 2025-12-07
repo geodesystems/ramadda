@@ -1,7 +1,7 @@
 <html>
-<title>Archive</title>
+<title>Archive Services</title>
 <body>
-+section  title="Archive"
++section  title="Archive Services"
 :navtop
 
 :heading Archive Exhibits
@@ -44,6 +44,23 @@ The main Archive Library constructs are-
 * Archive Book
 * Archive Object
 
+
+
+
+:heading Book Inventory
+The Archive Inventory entry type allows you to add a number of bar codes then run an
+inventory report. The bar codes you upload would be the ones that you physically
+scan from your shelves. You can upload a file that contains the bar codes and/or manually
+enter the bar codes when you edit the Inventory entry.
+:p
+{{image screenshot=true align=center src=/archive/images/inventory1.png bordercolor=#ccc}}
+When pressing "Run Inventory" a report is generated that  lists:
+* Missing Books - Archive Book entries in your RAMADDA that don't have a corresponding physical bar code
+* Found Books - Archive Book entries in your RAMADDA that do have a corresponding physical bar code
+* Missing Barcodes - These are the physical barcodes that do not have a corresponding Archive Book  entry
+{{image screenshot=true align=center src=/archive/images/inventory2.png bordercolor=#ccc}}
+
+Clicking on "Download CSV"  will produce a spreadsheet of the report.
 
 :heading Natural Science Specimens
 There are a collection natural science specimen entry types, e.g, Ornithology, Insect,
