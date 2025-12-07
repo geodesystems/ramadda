@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -14,7 +13,6 @@ import ucar.unidata.util.Trace;
 import java.io.*;
 
 import java.util.concurrent.*;
-
 
 /**
  * A utility for running a process
@@ -26,14 +24,11 @@ public class ProcessRunner extends Thread {
 
     /** the process */
     ProcessBuilder processBuilder;
-
-    /** _more_ */
     Process process;
 
     /** a flag for whether the process is finished */
     private boolean finished = false;
 
-    /** _more_ */
     private boolean processTimedOut = false;
 
     /** the process exit code */
@@ -42,27 +37,14 @@ public class ProcessRunner extends Thread {
     /** timeout */
     private long timeoutSeconds = 0;
 
-    /** _more_ */
     private PrintWriter stdOutPrintWriter;
 
-    /** _more_ */
     private PrintWriter stdErrPrintWriter;
 
-    /** _more_ */
     private StreamEater isg;
 
-    /** _more_ */
     private StreamEater esg;
 
-
-    /**
-     * _more_
-     *
-     * @param processBuilder _more_
-     * @param timeoutSeconds _more_
-     * @param stdOutPrintWriter _more_
-     * @param stdErrPrintWriter _more_
-     */
     public ProcessRunner(ProcessBuilder processBuilder, long timeoutSeconds,
                          PrintWriter stdOutPrintWriter,
                          PrintWriter stdErrPrintWriter) {
@@ -73,11 +55,6 @@ public class ProcessRunner extends Thread {
         this.stdErrPrintWriter = stdErrPrintWriter;
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void eatUpTheStreams() throws Exception {
         int cnt = 0;
         while (esg.getRunning() && (cnt++ < 100)) {
@@ -136,7 +113,6 @@ public class ProcessRunner extends Thread {
         return this.exitCode;
     }
 
-
     public void kill() {
 	if(!finished) {
 	    process.destroyForcibly();
@@ -182,7 +158,6 @@ public class ProcessRunner extends Thread {
         return exitCode;
     }
 
-
     /**
      *  Get the ProcessTimedOut property.
      *
@@ -191,7 +166,5 @@ public class ProcessRunner extends Thread {
     public boolean getProcessTimedOut() {
         return processTimedOut;
     }
-
-
 
 }

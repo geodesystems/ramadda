@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
@@ -13,7 +12,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.List;
-
 
 /**
  * Class description
@@ -23,32 +21,13 @@ import java.util.List;
  * @author         Enter your name here...
  */
 public class KmlToRamadda implements org.ramadda.repository.Constants {
-
-    /** _more_ */
     static int counter = 0;
-
-    /** _more_ */
     static int count = 0;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String getId() {
         return "id" + (counter++);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     * @param parentId _more_
-     * @param category _more_
-     *
-     * @throws Exception _more_
-     */
     public static void process(Element element, String parentId,
                                String category)
             throws Exception {
@@ -122,14 +101,6 @@ public class KmlToRamadda implements org.ramadda.repository.Constants {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         System.out.println(XmlUtil.XML_HEADER);
         System.out.println("<entries>");

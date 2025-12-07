@@ -97,11 +97,7 @@ public class IO {
         return cacheDir;
     }
 
-    /**
-     *
-     * @param filename _more_
-     * @return _more_
-     */
+    
     public static File getCacheFile(String filename) {
         if (cacheDir == null) {
             throw new IllegalStateException("No Utils.cacheDir defined");
@@ -199,9 +195,8 @@ public class IO {
 	    return new BoundedInputStream(in, length);
 	}
 	return in;
-	      
-    }
 
+    }
 
     public static InputStream getInputStream(String filename)
 	throws FileNotFoundException, Exception {

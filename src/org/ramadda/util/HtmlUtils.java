@@ -29,7 +29,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static final String NOMSGCHAR= "\u2063";
     public static final String MSGCHAR= "\u200B";
 
-
     public static final String NL = "&#013;";
     public static final String SPACE = "&nbsp;";
     public static final String SPACE2 = "&nbsp;&nbsp;";
@@ -180,8 +179,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         return sb;
     }
-
-
 
     public static String tag(String comp, String attrs) {
         StringBuilder sb = new StringBuilder();
@@ -1010,7 +1007,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         tag(sb, TAG_DIV, "", content);
         return sb;
     }
-    
+
     public static String tds(List content,String...attrs) {
 	StringBuilder sb = new StringBuilder();
 	String a = attrs.length>0?attrs[0]:"";
@@ -1793,8 +1790,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 		 Utils.split(labelId,":").get(1));
 	}
 
-
-
         public Selector(String label, String id) {
             this(label, id, null, 0, false);
         }
@@ -1807,7 +1802,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             this(label, id, icon);
 	    this.attr = attr;
         }
-
 
         public Selector(String label, String id, String icon, int margin) {
             this(label, id, icon, margin, false);

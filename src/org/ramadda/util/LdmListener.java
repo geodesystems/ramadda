@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -25,13 +24,6 @@ import java.util.TimeZone;
 import java.util.regex.*;
 
 
-/**
- * Class LdmListener _more_
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class LdmListener {
 
@@ -39,72 +31,47 @@ public class LdmListener {
     public static final TimeZone TIMEZONE_DEFAULT =
         TimeZone.getTimeZone("UTC");
 
-
-    /** _more_ */
     private boolean debug = false;
 
-    /** _more_ */
     private BufferedReader br;
 
-    /** _more_ */
     private SimpleDateFormat yearSdf;
 
-    /** _more_ */
     private SimpleDateFormat monthSdf;
 
-    /** _more_ */
     private List files = new ArrayList();
 
-    /** _more_ */
     private Pattern pattern;
 
-    /** _more_ */
     private String type = "any";
 
-    /** _more_ */
     private String bufferFile;
 
-    /** _more_ */
     private FileOutputStream bufferOS;
 
-    /** _more_ */
     int bufferCnt = 0;
 
-    /** _more_ */
     long startTime;
 
-    /** _more_ */
     int cnt = 0;
 
-    /** _more_ */
     private Object FILES_MUTEX = new Object();
 
-    /** _more_ */
     private Object PROCESS_MUTEX = new Object();
 
     // = "SDUS[2357]. .... ([0-3][0-9])([0-2][0-9])([0-6][0-9]).*/p(...)(...)";
 
-    /** _more_ */
     private String patternString;
     //"/data/ldm/gempak/nexrad/NIDS/\\5/\\4/\\4_(\\1:yyyy)(\\1:mm)\\1_\\2\\3";
 
-    /** _more_ */
     private String fileTemplate;
 
-
-    /** _more_ */
     private String getFileUrlTemplate =
         "http://localhost:8080/repository/harvester/processfile?file=${file}&type=${type}";
 
-    /** _more_ */
     private String bufferUrlTemplate =
         "http://localhost:8080/repository/harvester/processfile?tocfile=${file}";
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     private void usage(String msg) {
         System.err.println(msg);
         System.err.println(
@@ -112,13 +79,6 @@ public class LdmListener {
         Utils.exitTest(1);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public LdmListener(String[] args) throws Exception {
         processArgs(args);
         System.err.println("pattern:" + patternString);
@@ -141,13 +101,6 @@ public class LdmListener {
         processIncoming();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     private void processArgs(String[] args) {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-pattern")) {
@@ -184,11 +137,6 @@ public class LdmListener {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void processIncoming() throws Exception {
         while (true) {
             try {
@@ -204,12 +152,6 @@ public class LdmListener {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param line _more_
-     */
     private void processLine(String line) {
 
         Matcher matcher = pattern.matcher(line);
@@ -220,7 +162,6 @@ public class LdmListener {
 
             return;
         }
-
 
         if (debug) {
             if ((cnt++) % 50 == 0) {
@@ -255,10 +196,6 @@ public class LdmListener {
         addFile(f);
     }
 
-
-    /**
-     * _more_
-     */
     private void checkFiles() {
         while (true) {
             if (bufferCnt > 500) {}
@@ -281,25 +218,12 @@ public class LdmListener {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     private void addFile(File f) {
         synchronized (FILES_MUTEX) {
             files.add(f);
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeToBuffer(File f) throws Exception {
         if (bufferOS == null) {
             bufferOS = new FileOutputStream(bufferFile, true);
@@ -310,13 +234,6 @@ public class LdmListener {
         bufferCnt++;
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     private boolean processFile(File f) {
         synchronized (PROCESS_MUTEX) {
             if (bufferFile != null) {
@@ -359,19 +276,8 @@ public class LdmListener {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception{ 
         LdmListener listener = new LdmListener(args);
     }
-
 
 }

@@ -5,13 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-
-
 
 @SuppressWarnings("unchecked")
 public class GroupedBuffers implements Appendable {
@@ -20,7 +16,6 @@ public class GroupedBuffers implements Appendable {
     String currentGroup;
     List<Appendable> sbs = new ArrayList<Appendable>();
     List<String> groups = new ArrayList<String>();    
-
 
     public GroupedBuffers() {
 	this("");
@@ -45,7 +40,6 @@ public class GroupedBuffers implements Appendable {
 	return this;
     }    
 
-
     public void append(Object o) {
 	currentSB.append(o);
     }
@@ -62,6 +56,5 @@ public class GroupedBuffers implements Appendable {
     public List<String> getGroups() {
 	return groups;
     }
-    
 
 }

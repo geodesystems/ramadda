@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.Misc;
 
 import java.util.ArrayList;
@@ -13,17 +12,10 @@ import java.util.Date;
 import java.util.List;
 
 
-/**
- * Class description
- *
- *
- * @version        $version$, Sun, Aug 7, '22
- * @author         Enter your name here...    
- */
 @SuppressWarnings("unchecked")
 public abstract class FileWrapper {
 
-    /**  */
+    
     private     String path;
 
     /**  */
@@ -47,12 +39,12 @@ public abstract class FileWrapper {
     private FileWrapper[] files;
 
     /**
-     
+
      */
     public FileWrapper() {}
 
     /**
-     
+
      *
      * @param path _more_
      * @param name _more_
@@ -113,11 +105,9 @@ public abstract class FileWrapper {
         return path;
     }
 
-
     public String toStringVerbose() {
 	return (isDirectory()?"dir: ":"file: ") + this +" size:" + this.length() +" date:" + new Date(this.lastModified());
     }
-
 
     /**
       * @return _more_
@@ -186,14 +176,11 @@ public abstract class FileWrapper {
         return files;
     }
 
-
-
     public static boolean walkDirectory(java.io.File dir,
                                         FileViewer fileViewer)
             throws Exception {
 	return walkDirectory(new File(dir), fileViewer);
     }
-
 
     /**
      *
@@ -258,27 +245,10 @@ public abstract class FileWrapper {
         return true;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @return _more_
-     */
     public static FileWrapper[] sortFilesOnName(FileWrapper[] files) {
         return sortFilesOnName(files, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public static FileWrapper[] sortFilesOnName(FileWrapper[] files,
 						boolean descending) {
         List tuples = new ArrayList();
@@ -297,9 +267,6 @@ public abstract class FileWrapper {
         return files;
     }
 
-
-
-
     /**
      * Class description
      *
@@ -313,14 +280,13 @@ public abstract class FileWrapper {
         private java.io.File theFile;
 
         /**
-         
+
          *
          * @param file _more_
          */
         public File(String file) {
             this(new java.io.File(file));
         }
-
 
         /**
          *
@@ -370,7 +336,6 @@ public abstract class FileWrapper {
 	    return theFile.lastModified();
 	}
 
-
 	public long length() {
 	    return theFile.length();
 	}
@@ -404,7 +369,6 @@ public abstract class FileWrapper {
             return theFile.exists();
         }
     }
-
 
     /**
      * FileViewer  is used to walk dir trees
@@ -444,7 +408,5 @@ public abstract class FileWrapper {
 	    return null;
 	}	
     }
-    
-
 
 }

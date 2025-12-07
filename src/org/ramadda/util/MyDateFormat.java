@@ -14,7 +14,7 @@ public class MyDateFormat {
     String format;
     TimeZone timezone;
     SimpleDateFormat sdf;
-    
+
     public MyDateFormat(String format) {
 	this.format=format;
     }
@@ -27,7 +27,6 @@ public class MyDateFormat {
     public MyDateFormat(String format,String timezone) {
 	this(format,makeTimeZone(timezone));
     }
-
 
     @Override
     public String toString() {
@@ -57,7 +56,6 @@ public class MyDateFormat {
 	}
 	return sdf;
     }
-    
 
     public String getFormat() {
 	return format;

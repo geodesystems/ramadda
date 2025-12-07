@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.json.*;
 
 import org.w3c.dom.*;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
 
-
-
 /**
  * Class description
  * https://oembed.com
@@ -29,39 +26,17 @@ import java.util.regex.*;
  * @author         Enter your name here...
  */
 public class Oembed {
-
-    /**  */
+   
     private Response fixed;
-
-    /** _more_ */
     private static List<Oembed> oembeds;
-
-    /** _more_ */
     String name;
-
-    /** _more_ */
     List<String> schemes = new ArrayList<String>();
-
-    /** _more_ */
     String url;
 
-    /**
-     *
-     *
-     * @param fixed _more_
-     */
     public Oembed(Response fixed) {
         this.fixed = fixed;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     *
-     * @throws Exception _more_
-     */
     public Oembed(JSONObject obj) throws Exception {
         name = obj.getString("provider_name");
         JSONObject endPoint = obj.getJSONArray("endpoints").getJSONObject(0);
@@ -78,13 +53,6 @@ public class Oembed {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static List<Oembed> getOembeds() throws Exception {
         if (oembeds == null) {
             List<Oembed> tmp = new ArrayList<Oembed>();
@@ -102,23 +70,11 @@ public class Oembed {
         return oembeds;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return name + " " + url + " " + schemes;
     }
 
-    /**
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static String findHtml(String url) throws Exception {
         String id;
         id = StringUtil.findPattern(url,
@@ -152,16 +108,6 @@ public class Oembed {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Oembed find(String url) throws Exception {
         String fixed = findHtml(url);
         if (fixed != null) {
@@ -177,17 +123,6 @@ public class Oembed {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param width _more_
-     * @param height _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Response get(String url, String width, String height)
             throws Exception {
         Oembed oembed = find(url);
@@ -229,18 +164,6 @@ public class Oembed {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param xml _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Response getFromXml(String url, String xml) throws Exception {
         Element root = XmlUtil.getRoot(xml);
 
@@ -254,16 +177,6 @@ public class Oembed {
             XmlUtil.getGrandChildText(root, "html", null));
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param json _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Response getFromJson(String url, String json) throws Exception {
         JSONObject root = new JSONObject(json);
 
@@ -275,11 +188,6 @@ public class Oembed {
                             root.optString("html"));
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     */
     private void addScheme(String url) {
         url = url.replaceAll("\\.", "\\\\.");
         url = url.replaceAll("\\*", ".*");
@@ -288,13 +196,6 @@ public class Oembed {
         schemes.add(url);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     private boolean match(String url) {
         for (String s : schemes) {
             if (url.matches(s)) {
@@ -305,65 +206,33 @@ public class Oembed {
         return false;
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 26, '21
-     * @author         Enter your name here...
-     */
+    
     public static class Response {
 
-        /**  */
+        
         String fixedHtml;
 
-        /** _more_ */
         public String originalUrl;
 
-        /** _more_ */
         public String type;
 
-        /** _more_ */
         public String title;
 
-        /** _more_ */
         public String author;
 
-        /** _more_ */
         public String width;
 
-        /** _more_ */
         public String height;
 
-        /** _more_ */
         public String url;
 
-        /** _more_ */
         public String html;
 
-        /**
-         *
-         *
-         * @param fixedHtml _more_
-         */
+        
         public Response(String fixedHtml) {
             this.fixedHtml = fixedHtml;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param originalUrl _more_
-         * @param type _more_
-         * @param title _more_
-         * @param author _more_
-         * @param width _more_
-         * @param height _more_
-         * @param url _more_
-         * @param html _more_
-         */
         public Response(String originalUrl, String type, String title,
                         String author, String width, String height,
                         String url, String html) {
@@ -377,24 +246,13 @@ public class Oembed {
             this.html        = html;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String toString() {
             return type + " author:" + author + " title:" + title + " w:"
                    + width + " " + fixedHtml;
         }
 
-
         //<script src="https://gist.github.com/dustinmartin/364172.js"></script>
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getHtml() {
             if (fixedHtml != null) {
                 return fixedHtml;
@@ -418,13 +276,6 @@ public class Oembed {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         String[] urls = new String[] {
             "https://jsfiddle.net/macloo/bvwvd0ao/", null,
@@ -450,11 +301,6 @@ public class Oembed {
             }
         }
 
-
-
-
-
     }
-
 
 }

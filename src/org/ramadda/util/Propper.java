@@ -5,17 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
-
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  *  A wrapper around either a hashtable for direct look ups or a list of key,values for
@@ -23,52 +20,21 @@ import java.util.Properties;
  */
 @SuppressWarnings("unchecked")
 public class Propper {
-
-    /**  */
     public static boolean debug = false;
-
-    /**  */
     private boolean isProperties = false;
-
-    /**  */
     private boolean isText = false;
-
-    /**  */
     private boolean isCsv = false;
-
-    /**  */
     private boolean exact = true;
-
-    /**  */
     private Hashtable props;
-
-    /**  */
     private List<Value> values;
-
-    /**  */
     private List<String> header;
 
-    /**
-     *
-     */
     public Propper() {}
 
-    /**
-     *
-     *
-     * @param exact _more_
-     */
     public Propper(boolean exact) {
         this.exact = exact;
     }
 
-    /**
-     
-     *
-     * @param exact _more_
-     * @param pattern _more_
-     * @param contents _more_
-     */
     public Propper(boolean exact, String pattern, Object contents) {
         this(exact);
         if ( !exact) {
@@ -81,15 +47,7 @@ public class Propper {
 
     }
 
-    /**
-     *
-     * @param exact _more_
-     * @param filename _more_
-     * @param is _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static Propper create(boolean exact, String filename,
                                  InputStream is)
             throws Exception {
@@ -138,15 +96,7 @@ public class Propper {
         return propper;
     }
 
-
-
-
-    /**
-     *
-     *
-     * @param exact _more_
-     * @param props _more_
-     */
+    
     public Propper(boolean exact, Hashtable props) {
         this(exact);
         this.props = props;
@@ -159,20 +109,12 @@ public class Propper {
         }
     }
 
-    /**
-     *
-     * @param props _more_
-     */
+    
     public void set(Hashtable props) {
         this.props = props;
     }
 
-
-    /**
-     *
-     * @param key _more_
-     * @param value _more_
-     */
+    
     public void add(String key, Object value) {
         if (exact) {
             if (props == null) {
@@ -188,12 +130,7 @@ public class Propper {
 
     }
 
-    /**
-     *
-     * @param names _more_
-     * @param o _more_
-      * @return _more_
-     */
+    
     public String getValue(String[] names, Object o) {
         if (o instanceof String) {
             return (String) o;
@@ -212,12 +149,7 @@ public class Propper {
         return null;
     }
 
-    /**
-     *
-     * @param names _more_
-     * @param keys _more_
-      * @return _more_
-     */
+    
     public String getNamedValue(String[] names, String... keys) {
         Object o = get(keys);
         if (o == null) {
@@ -234,12 +166,7 @@ public class Propper {
         return getValue(names, l);
     }
 
-
-    /**
-     *
-     * @param keys _more_
-     * @return _more_
-     */
+    
     public Object get(String... keys) {
         if (props != null) {
             for (Object key : keys) {
@@ -277,38 +204,22 @@ public class Propper {
         return null;
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Aug 19, '22
-     * @author         Enter your name here...
-     */
+    
     private static class Value {
 
-        /**  */
+        
         String key;
 
-        /**  */
+        
         Object values;
 
-        /**
-         *
-         *
-         * @param key _more_
-         * @param values _more_
-         */
+        
         Value(String key, Object values) {
             this.key    = key;
             this.values = values;
         }
 
-        /**
-         *
-         * @param v _more_
-         *  @return _more_
-         */
+        
         boolean matches(String v) {
             if (v.matches(key)) {
                 if (debug) {
@@ -318,21 +229,14 @@ public class Propper {
                 return true;
             }
 
-
             return false;
         }
     }
 
-    /**
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         String v = "07";
         String p = "^\\d\\d$";
         System.err.println(v.matches(p));
     }
-
-
 
 }

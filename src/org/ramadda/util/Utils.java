@@ -84,7 +84,6 @@ public class Utils extends IO {
     public static final String TIME_UNIT_MONTH = "month";
     public static final String TIME_UNIT_YEAR = "year";
 
-    /** _more_ */
     public static final String[] LETTERS = {
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
         "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
@@ -111,7 +110,6 @@ public class Utils extends IO {
     public static final String ANSI_CYAN_BOLD = "\033[1;36m";   // CYAN
     public static final String ANSI_WHITE_BOLD = "\033[1;37m";  // WHITE
     public static final String ANSI_BLACK_BOLD = "\033[1;30m";
-    
 
     public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
@@ -123,7 +121,6 @@ public class Utils extends IO {
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
     //    public static final String ANSI_LIGHTGRAY_BACKGROUND = "\033[47m";
     public static final String ANSI_LIGHTGRAY_BACKGROUND = "\033[48;5;250m";        
-
 
     public static String[] ANSI_COLOR_ARRAY = {
 	Utils.ANSI_RED_BOLD,
@@ -141,14 +138,11 @@ public class Utils extends IO {
 	return ANSI_COLOR_ARRAY[index]; 
     }
 
-
     private static DecimalFormat[] FORMATS = {
         new DecimalFormat("#0"), new DecimalFormat("#0.0"),
         new DecimalFormat("#0.00"), new DecimalFormat("#0.000"),
         new DecimalFormat("#0.0000"), new DecimalFormat("#0.00000"),
     };
-
-
 
     //From https://stackoverflow.com/questions/4731055/whitespace-matching-regex-java
     public static final String WHITESPACE_CHARS = ""
@@ -217,7 +211,6 @@ public class Utils extends IO {
 	return ansi + text + ANSI_RESET;
     }
 
-
     public static String getMonthName(int month) {
 	if(month<0 || month>11) throw new IllegalArgumentException("Bad month:" + month);
 	return MONTHS_LONG[month];
@@ -249,7 +242,6 @@ public class Utils extends IO {
 	suffix=suffix.toLowerCase();
 	double mult=1;
 
-
 	if (suffix.equals("kb")) {
 	    mult=1_000.;
 	} else if (suffix.equals("mb")) {
@@ -266,7 +258,6 @@ public class Utils extends IO {
 	double value = Double.parseDouble(s);
 	return value*mult;
     }
-
 
     public static String format(Date date) {
 	//The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
@@ -1526,7 +1517,7 @@ public class Utils extends IO {
     public static boolean listEmpty(List list) {
 	return list==null || list.size()==0;
     }
-    
+
     public static boolean isCompressed(String filename) throws IOException {
         filename = filename.toLowerCase();
 
@@ -2295,7 +2286,6 @@ public class Utils extends IO {
             return obj == this;
         }
     }
-    
 
     public static class FloatTupleComparator implements Comparator {
 
@@ -4189,7 +4179,6 @@ public class Utils extends IO {
         }
 	return result;
     }
-    
 
     public static List<List> splitList(List list, int max, int... remainder) {
         List<List> lists = new ArrayList<List>();
@@ -4942,7 +4931,6 @@ public class Utils extends IO {
 	    tmp.put("day_of_week_in_month", Calendar.DAY_OF_WEEK_IN_MONTH);
 	    calendarFields = tmp;
 	}
-	
 
         // Lookup the corresponding Calendar field constant
         Integer fieldConstant = calendarFields.get(fieldName.toLowerCase());
@@ -4952,7 +4940,6 @@ public class Utils extends IO {
 	}
 	return fieldConstant;
     }
-
 
     /*
       if given string starts with regexp: then this does a regexp match.
@@ -4968,7 +4955,7 @@ public class Utils extends IO {
 		this.string = s;
 	    }
 	}
-	
+
 	public boolean matches(String text) {
 	    if(pattern!=null) {
 		Matcher m = pattern.matcher(text);
@@ -4978,6 +4965,5 @@ public class Utils extends IO {
 	}
 
     }
-
 
 }

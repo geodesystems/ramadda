@@ -5,46 +5,19 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.TwoFacedObject;
-
 import java.awt.Color;
-
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- *
- *
- * @author Jeff McWhirter
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class ColorTable {
-
-    /** _more_ */
     private static List<ColorTable> tables = new ArrayList<ColorTable>();
-
-    /** _more_ */
     private String id;
-
-    /** _more_ */
     private String name;
-
-    /** _more_ */
     private int[][] table;
-
-    /** _more_ */
     private List<Color> colors;
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param name _more_
-     * @param table _more_
-     */
     public ColorTable(String id, String name, int[][] table) {
         this.id    = id;
         this.name  = name;
@@ -52,13 +25,6 @@ public class ColorTable {
         tables.add(this);
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param name _more_
-     * @param s _more_
-     */
     public ColorTable(String id, String name, String[] s) {
         this.id    = id;
         this.name  = name;
@@ -74,11 +40,6 @@ public class ColorTable {
         tables.add(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Color> getColors() {
         if (colors == null) {
             colors = new ArrayList<Color>();
@@ -90,70 +51,30 @@ public class ColorTable {
         return colors;
     }
 
-    /**
-     * Set the Id property.
-     *
-     * @param value The new value for Id
-     */
     public void setId(String value) {
         id = value;
     }
 
-    /**
-     * Get the Id property.
-     *
-     * @return The Id
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Set the Name property.
-     *
-     * @param value The new value for Name
-     */
     public void setName(String value) {
         name = value;
     }
 
-    /**
-     * Get the Name property.
-     *
-     * @return The Name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Set the Table property.
-     *
-     * @param value The new value for Table
-     */
     public void setTable(int[][] value) {
         table = value;
     }
 
-    /**
-     * Get the Table property.
-     *
-     * @return The Table
-     */
     public int[][] getTable() {
         return table;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param min _more_
-     * @param max _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public Color getColor(double min, double max, double value) {
         double denom   = (max - min);
         double percent = ((denom == 0)
@@ -185,13 +106,6 @@ public class ColorTable {
         return colors.get(index);
     }
 
-
-    /**
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     */
     public Color getColorByIndex(int index) {
         colors = getColors();
         if (index >= colors.size()) {
@@ -215,9 +129,6 @@ public class ColorTable {
                 | c.getBlue());
     }
 
-    /**
-     * _more_
-     */
     public static void makeTables() {
 
         if (tables.size() > 0) {
@@ -974,7 +885,6 @@ public class ColorTable {
 
     }
 
-
     /**
      * get the fixed set of color table names"
      *
@@ -1008,15 +918,6 @@ public class ColorTable {
         return tables.get(0);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param min _more_
-     * @param max _more_
-     *
-     * @return _more_
-     */
     public static double[] getRange(String name, double min, double max) {
         if (name.equals("LASCLASSIFICATION")) {
             return new double[] { 0, 31 };
@@ -1024,9 +925,5 @@ public class ColorTable {
 
         return new double[] { min, max };
     }
-
-
-
-
 
 }

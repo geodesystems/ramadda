@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
@@ -32,29 +31,18 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
-/**
- * Class HtmlTemplate _more_
- *
- *
- */
 @SuppressWarnings("unchecked")
 public class HtmlTemplate {
 
-    /** _more_ */
     public static final String PROP_PROPERTIES =
         "ramadda.template.properties";
 
-
-    /** _more_ */
     private PropertyProvider propertyProvider;
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String id;
 
-    /** _more_ */
     private String template;
 
     /**  */
@@ -63,35 +51,19 @@ public class HtmlTemplate {
     /**  */
     private HtmlTemplate suffix;
 
-
-    /** _more_ */
     private String path;
 
     /**  */
     boolean wikify;
 
-    /** _more_ */
     private Hashtable properties = new Hashtable();
 
-
-    /** _more_ */
     private List<String> propertyIds = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> toks;
 
-    /** _more_ */
     private HashSet hasMacro = new HashSet();
 
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param propertyProvider _more_
-     * @param path _more_
-     * @param t _more_
-     */
     public HtmlTemplate(PropertyProvider propertyProvider, String path,
                         String t) {
         try {
@@ -151,23 +123,10 @@ public class HtmlTemplate {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getPropertyIds() {
         return propertyIds;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getTemplate() {
         return template;
     }
@@ -180,11 +139,6 @@ public class HtmlTemplate {
         template = t;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getToks() {
         if (toks == null) {
             toks = getToks(template);
@@ -210,28 +164,15 @@ public class HtmlTemplate {
         return toks;
     }
 
-    /**
-     * _more_
-     *
-     * @param m _more_
-     *
-     * @return _more_
-     */
     public boolean hasMacro(String m) {
         getToks();
 
         return hasMacro.contains(m);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getId() {
         return id;
     }
-
 
     /**
      *  Set the Wikify property.
@@ -251,34 +192,14 @@ public class HtmlTemplate {
         return wikify;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getName() {
         return name;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getTemplateProperty(String name, String dflt) {
         String value = (String) properties.get(name);
         if (value != null) {
@@ -288,14 +209,6 @@ public class HtmlTemplate {
         return propertyProvider.getProperty(name, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public boolean getTemplateProperty(String name, boolean dflt) {
         String v = getTemplateProperty(name, null);
         if (v == null) {
@@ -323,8 +236,6 @@ public class HtmlTemplate {
         return prefix;
     }
 
-
-
     /**
      * Set the Suffix property.
      *
@@ -342,7 +253,5 @@ public class HtmlTemplate {
     public HtmlTemplate getSuffix() {
         return suffix;
     }
-
-
 
 }

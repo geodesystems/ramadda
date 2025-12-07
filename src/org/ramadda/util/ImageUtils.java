@@ -5,14 +5,12 @@
 
 package org.ramadda.util;
 
-
 import com.drew.imaging.jpeg.*;
 import com.drew.lang.*;
 import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
 import com.drew.metadata.iptc.IptcDirectory;
 import com.drew.imaging.ImageMetadataReader;
-
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -26,26 +24,9 @@ import java.io.*;
 import javax.imageio.*;
 
 
-/**
- * A collection of utilities
- *
- * @author Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 
-
-    /**
-     * _more_
-     *
-     * @param image _more_
-     * @param top _more_
-     * @param bottom _more_
-     * @param left _more_
-     * @param right _more_
-     *
-     * @return _more_
-     */
     public static BufferedImage crop(BufferedImage image, int top, int left,
                                      int bottom, int right) {
         int imageWidth  = image.getWidth(null);
@@ -58,8 +39,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
         return image.getSubimage(left, top, w, h);
     }
 
-
-
     public static BufferedImage xresizeImage(File inputFile, int targetWidth, int targetHeight) throws IOException {
         BufferedImage originalImage = ImageIO.read(inputFile);
         Image resizedImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
@@ -67,7 +46,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
         bufferedResizedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
         return bufferedResizedImage;
     }
-
 
     public static BufferedImage resizeImage(File inputFile, int targetWidth,int targetHeight) throws IOException {
         BufferedImage originalImage = ImageIO.read(inputFile);
@@ -84,8 +62,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
         bufferedResizedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
         return bufferedResizedImage;
     }
-
-
 
     public static String stripImageMetadata(String file) throws Exception {
 	File imageFile = new File(file);
@@ -107,15 +83,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	return gimage;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public static Image readImage(String file) {
         if (file == null) {
             return null;
@@ -136,9 +103,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 
         return null;
     }
-
-
-
 
     public static boolean isJpeg(String path) {
         return path.toLowerCase().endsWith(".jpg")
@@ -181,7 +145,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	return image;
     }
 
-
     public static BufferedImage readBase64(String format, String base64Image) throws Exception {
 	byte[] imageBytes = Utils.decodeBase64(base64Image);
 	ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
@@ -189,7 +152,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	bis.close();
 	return image;
     }
-
 
     public static void main(String[]args) throws Exception {
 	BufferedImage   image = ImageIO.read(new File(args[0]));
@@ -214,15 +176,11 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	System.out.println("]},");
 	if(true) return;
 
-
-
-
 	for(String arg:args) {
 	    //	    Image image = orientImage(arg,readImage(arg),null);
 	    //            writeImageToFile(image,  new File("thumb_" + arg));
 	}
     }
-
 
     public static ImageInfo averageRGB(BufferedImage image) throws Exception {
 	// Get image dimensions
@@ -255,7 +213,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	return info;
     }
 
-
     public static class ImageInfo {
 	public int width;
 	public int height;
@@ -277,7 +234,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	    }
 	}
 
-
 	public ImageInfo(int width, int height, int avgRed,int avgGreen, int avgBlue){
 	    this();
 	    init(width,height,avgRed,avgGreen,avgBlue);
@@ -298,8 +254,5 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 
     }
 
-
 }
-
-
 

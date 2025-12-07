@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -18,38 +17,13 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-
-/**
- *
- *
- * @author Jeff McWhirter
- */
 public class MailUtil {
 
-    /**
-     * _more_
-     *
-     * @param content _more_
-     * @param desc _more_
-     *
-     * @throws Exception _more_
-     */
     public static void extractText(Object content, StringBuffer desc)
             throws Exception {
         extractText(content, desc, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param content _more_
-     * @param desc _more_
-     * @param tab _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static boolean extractText(Object content, StringBuffer desc,
                                       String tab)
             throws Exception {
@@ -120,7 +94,5 @@ public class MailUtil {
 
         return false;
     }
-
-
 
 }

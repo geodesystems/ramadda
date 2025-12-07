@@ -46,7 +46,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Class HttpFormEntry Represents a http form post input field.
  *
@@ -81,7 +80,6 @@ public class HttpFormEntry
      * Just a label in the gui
      */
     public static final int TYPE_FILE = 4;
-
 
     /**
      * The type of input field
@@ -145,12 +143,10 @@ public class HttpFormEntry
         this.value = fileName;
     }
 
-
     public HttpFormEntry(String name, String label, String value)
     {
         this(TYPE_INPUT, name, label, value);
     }
-
 
     public static HttpFormEntry hidden(String name, String value)
     {
@@ -262,7 +258,6 @@ public class HttpFormEntry
         this.required = required;
     }
 
-
     /**
      * Is this entry ok. That is, has their been input if it is required
      *
@@ -275,7 +270,6 @@ public class HttpFormEntry
         }
         return !required || (getValue().trim().length() > 0);
     }
-
 
     /**
      * Add the label/gui component into the list of components
@@ -582,7 +576,6 @@ public class HttpFormEntry
         }
         return true;
     }
-
 
     /**
      * Post the given entries tot he given url

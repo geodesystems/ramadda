@@ -1,16 +1,14 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
 
-
 import java.security.*;
 import java.security.cert.*;
 
 import javax.net.ssl.*;
-
 
 /**
  * Provides all secure socket factories, with a socket that ignores
@@ -81,23 +79,10 @@ public final class NaiveTrustProvider extends Provider {
      */
     public final static class NaiveTrustManagerFactory extends TrustManagerFactorySpi {
 
-        /**
-         * _more_
-         */
         public NaiveTrustManagerFactory() {}
 
-        /**
-         * _more_
-         *
-         * @param mgrparams _more_
-         */
         protected void engineInit(ManagerFactoryParameters mgrparams) {}
 
-        /**
-         * _more_
-         *
-         * @param keystore _more_
-         */
         protected void engineInit(KeyStore keystore) {}
 
         /**
@@ -120,7 +105,6 @@ public final class NaiveTrustProvider extends Provider {
             return TRUST_PROVIDER_ALG;
         }
     }
-
 
     /**
      * Class description
@@ -167,7 +151,5 @@ public final class NaiveTrustProvider extends Provider {
         }
 
     }
-
-
 
 }

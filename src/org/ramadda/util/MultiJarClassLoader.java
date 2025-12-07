@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -15,13 +14,9 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WrapperException;
 
 import java.io.*;
-
 import java.lang.reflect.*;
-
 import java.net.*;
-
 import java.security.*;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -31,12 +26,6 @@ import java.util.jar.*;
 import java.util.regex.*;
 
 
-
-/**
- * Class PluginClassLoader. Loads plugin classes
- *
- * @version $Revision: 1.54 $
- */
 @SuppressWarnings("unchecked")
 public class MultiJarClassLoader extends ClassLoader {
 
@@ -51,7 +40,6 @@ public class MultiJarClassLoader extends ClassLoader {
     /** The jar file we are loading from */
     private List<JarFile> jarFiles = new ArrayList<JarFile>();
 
-
     /** Mapping of resource name to jar entry */
     Hashtable<String, String> canonicalNames = new Hashtable<String,
                                                    String>();
@@ -62,17 +50,9 @@ public class MultiJarClassLoader extends ClassLoader {
     /** List of non class jar entry names */
     private List entryNames = new ArrayList();
 
-
     /** The parent class loader */
     private ClassLoader parent;
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     *
-     * @throws IOException _more_
-     */
     public MultiJarClassLoader(ClassLoader parent) throws IOException {
         super(parent);
         this.parent      = parent;
@@ -83,24 +63,11 @@ public class MultiJarClassLoader extends ClassLoader {
         };
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void shutdown() throws Exception {
         loadedClasses = null;
     }
 
-    /**
-     * ctor
-     *
-     *
-     * @param jarFilePath Where the jar file is
-     *
-     * @throws Exception _more_
-     */
+    
     public void addJar(String jarFilePath) throws Exception {
         JarFile jarFile = new JarFile(jarFilePath);
         //Check if we have already loaded this jar file
@@ -147,13 +114,6 @@ public class MultiJarClassLoader extends ClassLoader {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     * @param exc _more_
-     */
     protected void handleError(String msg, Throwable exc) {
         throw new WrapperException(msg, exc);
     }
@@ -169,7 +129,6 @@ public class MultiJarClassLoader extends ClassLoader {
             jarFiles = new ArrayList<JarFile>();
         } catch (IOException exc) {}
     }
-
 
     /**
      * Get the list of (String) names of the non-class files in the jar
@@ -199,41 +158,20 @@ public class MultiJarClassLoader extends ClassLoader {
         };
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Feb 12, '11
-     * @author         Enter your name here...
-     */
+    
     private static class MyJarEntry {
 
-        /** _more_ */
         JarFile jarFile;
 
-        /** _more_ */
         JarEntry jarEntry;
 
-        /**
-         * _more_
-         *
-         * @param jarFile _more_
-         * @param jarEntry _more_
-         */
         MyJarEntry(JarFile jarFile, JarEntry jarEntry) {
             this.jarFile  = jarFile;
             this.jarEntry = jarEntry;
         }
     }
 
-    /**
-     * Load in the class from the jar.
-     *
-     *
-     * @param entryName Name of entry
-     *
-     * @return The class.
-     */
+    
     private Class loadClassFromJar(String entryName) {
         MyJarEntry jarEntry = null;
         try {
@@ -264,23 +202,8 @@ public class MultiJarClassLoader extends ClassLoader {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @throws Exception _more_
-     */
     public void checkClass(Class c) throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     *
-     * @return _more_
-     */
     private MyJarEntry findJarEntry(String filename) {
         JarEntry jarEntry = null;
         for (JarFile jarFile : jarFiles) {
@@ -318,7 +241,6 @@ public class MultiJarClassLoader extends ClassLoader {
         }
     }
 
-
     /**
      * Check if this class is one we loaded from a plugin
      *
@@ -329,8 +251,6 @@ public class MultiJarClassLoader extends ClassLoader {
     public Class getClassFromPlugin(String name) {
         return (Class) loadedClasses.get(name);
     }
-
-
 
     /**
      * Associate the resource name with the jar entry
@@ -358,7 +278,6 @@ public class MultiJarClassLoader extends ClassLoader {
 
         return path;
     }
-
 
     /**
      * Get the actual name that is used in the jar file
@@ -392,7 +311,6 @@ public class MultiJarClassLoader extends ClassLoader {
         }
     }
 
-
     /**
      * Open the resource as a istream if we have it
      *
@@ -412,7 +330,6 @@ public class MultiJarClassLoader extends ClassLoader {
 
         return null;
     }
-
 
     /**
      * Load class bytes

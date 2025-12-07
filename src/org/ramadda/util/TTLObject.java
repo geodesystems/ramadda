@@ -5,12 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
-
 import java.util.Date;
 import java.util.Hashtable;
-
-
 
 /**
  * Keep the given object in memory for only a time threshold
@@ -24,16 +20,14 @@ public class TTLObject<VALUE> {
     /** holds the object */
     private TTLCache<String, VALUE> cache;
 
-
     /**
-     
+
      *
      * @param timeThresholdInMilliseconds _more_
      */
     public TTLObject(long timeThresholdInMilliseconds) {
         this(null, timeThresholdInMilliseconds, null);
     }
-
 
     /**
      * ctor
@@ -55,7 +49,7 @@ public class TTLObject<VALUE> {
     }
 
     /**
-     
+
      *
      * @param object _more_
      * @param name _more_
@@ -75,7 +69,7 @@ public class TTLObject<VALUE> {
     }
 
     /**
-     
+
      *
      * @param object _more_
      * @param timeThresholdInMilliseconds _more_
@@ -105,11 +99,6 @@ public class TTLObject<VALUE> {
         cache.put("", value);
     }
 
-    /**
-     * _more_
-     *
-     * @param t _more_
-     */
     public void setTimeThreshold(long t) {
         cache.setTimeThreshold(t);
     }

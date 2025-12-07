@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.seesv.Seesv;
 
 import com.monitorjbl.xlsx.StreamingReader;
@@ -38,9 +37,6 @@ import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.apache.poi.xslf.usermodel.XSLFShape;
 
-
-
-
 import org.apache.poi.xssf.streaming.*;
 
 import java.awt.Rectangle;
@@ -51,7 +47,6 @@ import javax.imageio.ImageIO;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
-
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -71,35 +66,13 @@ import java.util.HashSet;
 import java.util.List;
 
 
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...
- */
 public class XlsUtil {
-
     private static SimpleDateFormat sdf =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     *
-     * @return _more_
-     */
     public static InputStream xlsxToCsv(IO.Path path) {
         return xlsxToCsv(path, -1,-1);
     }
 
-
-    /**
-     *
-     * @param filename _more_
-     * @param maxRows _more_
-      * @return _more_
-     */
     public static InputStream xlsxToCsv(final IO.Path path, int maxRows,final int sheetNumber) {
         try {
             final PipedOutputStream    pos = new PipedOutputStream();
@@ -226,14 +199,6 @@ public class XlsUtil {
 	}
     }
 
-
-
-    /**
-     *
-     * @param filename _more_
-     * @param maxRows _more_
-      * @return _more_
-     */
     public static InputStream OLD_xlsxToCsv(final String filename,
                                             int maxRows) {
         try {
@@ -307,20 +272,10 @@ public class XlsUtil {
         }
     }
 
-    /**
-     *
-     * @param filename _more_
-     *  @return _more_
-     */
     public static InputStream xlsToCsv(IO.Path path) {
         return xlsToCsv(path, -1,0);
     }
 
-    /**
-     *
-     * @param maxRows _more_
-     * @return _more_
-     */
     public static InputStream xlsToCsv(final IO.Path path, final int maxRows,final int sheetNumber) {
         try {
             final PipedOutputStream pos = new PipedOutputStream();
@@ -349,7 +304,7 @@ public class XlsUtil {
                                 HSSFCell cell = row.getCell(col);
 				//Just keep adding values for null cells
                                 //if (cell == null) {break;}
-				
+
                                 String value = cell==null?"":cell.toString();
                                 if (col > firstCol) {
                                     pw.print(",");
@@ -374,15 +329,6 @@ public class XlsUtil {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static String clean(String s) {
         s = s.trim();
 	if(true) return Seesv.cleanColumnValue(s);
@@ -395,9 +341,6 @@ public class XlsUtil {
 
         return s;
     }
-
-    
-
 
     /**
        via gpt
@@ -428,15 +371,6 @@ public class XlsUtil {
         ppt.close();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
 	    explodeXls(new IO.Path(arg),new File("."));
@@ -458,7 +392,5 @@ public class XlsUtil {
 	    */
         }
     }
-
-
 
 }

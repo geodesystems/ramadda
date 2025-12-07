@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
-
 
 import org.apache.tika.sax.BodyContentHandler;
 
@@ -22,36 +20,23 @@ import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
 
-
 import java.util.List;
 import java.util.concurrent.*;
 
 
-/**
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class TikaUtil {
 
-    /**  */
+    
     public static final int LUCENE_MAX_LENGTH = 25000000;
 
     private static TikaConfig tikaConfig;
     private static TikaConfig tikaConfigNoImage;    
 
-
-    /**
-     *
-     * @param f _more_
-      * @return _more_
-     */
+    
     public static File getTextCorpusCacheFile(File f) {
         return new File(f.getParentFile(), "." + f.getName() + ".corpus.txt");
     }
-
-
 
     private  static File configFile;
 
@@ -82,13 +67,7 @@ public class TikaUtil {
 	return tikaConfig;
     }
 
-    /**
-     *
-     * @param f _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static String extractTextCorpus(File f) throws Exception {
         InputStream stream = new FileInputStream(f);
         org.apache.tika.metadata.Metadata metadata =
@@ -104,13 +83,7 @@ public class TikaUtil {
         return corpus;
     }
 
-    /**
-     *
-     * @param f _more_
-     * @param force _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void writeTextCorpus(File f, boolean force)
             throws Exception {
         File corpusFile = getTextCorpusCacheFile(f);
@@ -126,14 +99,6 @@ public class TikaUtil {
         IOUtil.writeFile(corpusFile, corpus);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         final boolean[] force   = { false };
         final String[]  pattern = { null };
@@ -181,6 +146,5 @@ public class TikaUtil {
         }
         Utils.exitTest(0);
     }
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import com.amazonaws.auth.*;
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
@@ -19,8 +18,6 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
 
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class S3File extends FileWrapper {
@@ -48,8 +45,6 @@ public class S3File extends FileWrapper {
 	this.endPointRegion = region;
     }
 
-
-
     public S3File(String bucket, boolean isDirectory) {
         setBucket(bucket);
         Date d = new Date();
@@ -57,12 +52,10 @@ public class S3File extends FileWrapper {
              d.getTime());
     }
 
-
     public S3File(String bucket, String name, long size, Date d) {
         this(bucket);
         init(bucket, name, false, size, d.getTime());
     }
-
 
     public void setKey(String key) {
 	if(!Utils.stringDefined(key)) return;
@@ -80,10 +73,7 @@ public class S3File extends FileWrapper {
 	setKey(toks.get(0),toks.get(1));	
     }
 
-
-    /**
-     *  @return _more_
-     */
+    
     private AmazonS3 getS3() {
         if (s3 == null) {
 	    AWSCredentials credentials=null;
@@ -105,35 +95,23 @@ public class S3File extends FileWrapper {
 		s3 = new AmazonS3Client(credentials);
 	    }
 
-
-
         }
 
         return s3;
     }
 
-    /**
-     * @return _more_
-     */
+    
     @Override
     public boolean isRemoteFile() {
         return true;
     }
 
-
-
-    /**
-     *
-     * @param bucket _more_
-     */
+    
     private void setBucket(String bucket) {
         this.bucket = normalizePath(bucket);
     }
 
-
-    /**
-     *  @return _more_
-     */
+    
     @Override
     public FileWrapper[] doListFiles() {
         try {
@@ -156,11 +134,7 @@ public class S3File extends FileWrapper {
         }
     }
 
-    /**
-     *
-     * @param path _more_
-     * @return _more_
-     */
+    
     public static String normalizePath(String path) {
         if (path == null) {
             return null;
@@ -185,13 +159,7 @@ public class S3File extends FileWrapper {
         return path;
     }
 
-    /**
-     *
-     * @param bucket _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static S3File createFile(String bucket) throws Exception {
 	return createFile(bucket, null,null,null);
     }
@@ -206,82 +174,38 @@ public class S3File extends FileWrapper {
         return null;
     }
 
-
-    /**
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doList() throws Exception {
         return doList(false, -1);
     }
 
-    /**
-     *
-     * @param self _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doList(boolean self) throws Exception {
         return doList(self, -1);
     }
 
-    /**
-     *
-     * @param max _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doList(int max) throws Exception {
         return doList(false, max);
     }
 
-    /**
-     *
-     * @param self _more_
-     * @param max _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doList(boolean self, int max) throws Exception {
         return doList(self, max, -1, -1, null);
     }
 
-    /**
-     *
-     * @param key _more_
-     *  @return _more_
-     */
+    
     private static String getObjectName(String key) {
         return new java.io.File(key).getName();
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Aug 16, '22
-     * @author         Enter your name here...
-     */
+    
     public static class S3Results {
-
-        /**  */
         String marker;
-
-        /**  */
         List<S3File> files;
-
 	String message;
 
-        /**
-         *
-         *
-         * @param marker _more_
-         * @param files _more_
-         */
+        
         public S3Results(String marker, List<S3File> files) {
             this.marker = marker;
             this.files  = files;
@@ -291,16 +215,12 @@ public class S3File extends FileWrapper {
 	    this.message= message;
         }
 
-        /**
-         *  @return _more_
-         */
+        
         public String getMarker() {
             return marker;
         }
 
-        /**
-         *  @return _more_
-         */
+        
         public List<S3File> getFiles() {
             return files;
         }
@@ -310,18 +230,7 @@ public class S3File extends FileWrapper {
 	}
     }
 
-
-    /**
-     *
-     * @param self _more_
-     * @param max _more_
-     * @param percent _more_
-     * @param maxSize _more_
-     * @param marker _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doList(boolean self, int max, double percent,
                                 long maxSize, String marker)
             throws Exception {
@@ -395,12 +304,7 @@ public class S3File extends FileWrapper {
         return new S3Results(token, files);
     }
 
-
-    /**
-     *
-     * @param objectSummary _more_
-      * @return _more_
-     */
+    
     public static S3File createS3File(S3ObjectSummary objectSummary) {
 	return createS3File(objectSummary,null, null);
     }
@@ -418,12 +322,7 @@ public class S3File extends FileWrapper {
         return file;
     }
 
-
-    /**
-     *
-     * @param o _more_
-     *  @return _more_
-     */
+    
     @Override
     public boolean equals(Object o) {
         if (o instanceof S3File) {
@@ -433,9 +332,7 @@ public class S3File extends FileWrapper {
         return false;
     }
 
-    /**
-     *  @return _more_
-     */
+    
     @Override
     public FileWrapper getParentFile() {
         String p = bucket.replaceAll("(.*)/[^/]+/?$", "$1/");
@@ -445,25 +342,18 @@ public class S3File extends FileWrapper {
         return new S3File(p,accessKey,secretKey,endPoint,endPointRegion);
     }
 
-
-    /**
-     *  @return _more_
-     */
+    
     public java.io.File getFile() {
         return null;
     }
 
-    /**
-     *  @return _more_
-     */
+    
     @Override
     public int hashCode() {
         return bucket.hashCode();
     }
 
-    /**
-     *  @return _more_
-     */
+    
     public boolean exists() {
         if ( !Utils.stringDefined(bucket) || bucket.equals("s3://")) {
             return false;
@@ -472,11 +362,7 @@ public class S3File extends FileWrapper {
         return true;
     }
 
-    /**
-     *
-     * @param path _more_
-     *  @return _more_
-     */
+    
     public static String[] getBucketAndPrefix(String path) {
         path = path.replace(S3PREFIX + "//", "");
         List<String> toks = Utils.splitUpTo(path, "/", 2);
@@ -486,14 +372,7 @@ public class S3File extends FileWrapper {
                                            : null };
     }
 
-
-    /**
-     *
-     * @param bucket _more_
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void copyFileTo(String bucket, java.io.File file)
             throws Exception {
         String[] pair = getBucketAndPrefix(bucket);
@@ -527,42 +406,18 @@ public class S3File extends FileWrapper {
                                         objectSummary.getKey()), file);
     }
 
-
-    /**
-     *
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void copyFileTo(java.io.File file) throws Exception {
         copyFileTo(bucket, file);
     }
 
-
-
-    /**
-     *
-     * @param search _more_
-     * @param searcher _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doSearch(String search, Searcher searcher, String marker)
             throws Exception {
         return doSearch(search, searcher, SEARCH_MAX_CALLS, false,marker);
     }
 
-    /**
-     *
-     * @param search _more_
-     * @param searcher _more_
-     * @param maxCalls _more_
-     * @param verbose _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public S3Results doSearch(String search, Searcher searcher,
 				  int maxCalls, boolean verbose,String marker)
             throws Exception {
@@ -616,67 +471,23 @@ public class S3File extends FileWrapper {
 	return new S3Results(marker, found,cnt>0?"Searched " + cnt +" objects":null);
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Aug 16, '22
-     * @author         Enter your name here...
-     */
+    
     public static class MyFileViewer extends FileWrapper.FileViewer {
-
-        /**  */
         boolean download = false;
-
-        /**  */
         boolean makeDirs = false;
-
-        /**  */
         boolean verbose = false;
-
-        /**  */
         boolean overWrite = false;
-
-        /**  */
         int sizeLimit = -1;
-
-        /**  */
         double percent = -1;
-
-        /**  */
         List<String> excludes;
-
-        /**  */
         Appendable buffer;
-
-        /**  */
         int maxLevel = -1;
 
-        /**
-         *
-         *
-         * @param buffer _more_
-         * @param maxLevel _more_
-         */
         public MyFileViewer(Appendable buffer, int maxLevel) {
             this.buffer   = buffer;
             this.maxLevel = maxLevel;
         }
 
-        /**
-         *
-         *
-         * @param download _more_
-         * @param makeDirs _more_
-         * @param overWrite _more_
-         * @param sizeLimit _more_
-         * @param percent _more_
-         * @param verbose _more_
-         * @param excludes _more_
-         */
         public MyFileViewer(boolean download, boolean makeDirs,
                             boolean overWrite, int sizeLimit, double percent,
                             boolean verbose, List<String> excludes) {
@@ -690,12 +501,6 @@ public class S3File extends FileWrapper {
             this.excludes = excludes;
         }
 
-        /**
-         *
-         * @param msg _more_
-         *
-         * @throws Exception _more_
-         */
         private void print(String msg) throws Exception {
             if (buffer != null) {
                 buffer.append(msg);
@@ -704,10 +509,6 @@ public class S3File extends FileWrapper {
             }
         }
 
-        /**
-         *
-         * @throws Exception _more_
-         */
         private void println() throws Exception {
             if (buffer != null) {
                 buffer.append("\n");
@@ -716,12 +517,6 @@ public class S3File extends FileWrapper {
             }
         }
 
-        /**
-         *
-         * @param f _more_
-         * @param children _more_
-         *  @return _more_
-         */
         private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
             //only check this when there are logs of siblings
             if ((percent > 0) && (children != null)
@@ -738,23 +533,12 @@ public class S3File extends FileWrapper {
             return f.length() < (sizeLimit * 1000000);
         }
 
-        /**
-         *
-         * @param level _more_
-         *
-         * @throws Exception _more_
-         */
         public void printPrefix(int level) throws Exception {
             for (int i = 0; i < level; i++) {
                 print("   ");
             }
         }
 
-        /**
-         *
-         * @param s _more_
-         *  @return _more_
-         */
         private String red(String s) {
             if (buffer != null) {
                 return "<span style='color:firebrick;'>" + s + "</span>";
@@ -763,11 +547,7 @@ public class S3File extends FileWrapper {
             return Utils.ANSI_RED + s + Utils.ANSI_RESET;
         }
 
-        /**
-         *
-         * @param s _more_
-         *  @return _more_
-         */
+
         private String green(String s) {
             if (buffer != null) {
                 return "<span style='color:green;'>" + s + "</span>";
@@ -776,15 +556,6 @@ public class S3File extends FileWrapper {
             return Utils.ANSI_GREEN + s + Utils.ANSI_RESET;
         }
 
-        /**
-         *
-         * @param level _more_
-         * @param file _more_
-         * @param children _more_
-         *  @return _more_
-         *
-         * @throws Exception _more_
-         */
         public int viewFile(int level, FileWrapper file,
                             FileWrapper[] children)
                 throws Exception {
@@ -844,12 +615,7 @@ public class S3File extends FileWrapper {
         }
     }
 
-
-
-    /**
-     *
-     * @param msg _more_
-     */
+    
     public static void usage(String msg) {
         if (msg != null) {
             System.err.println(msg);
@@ -859,15 +625,7 @@ public class S3File extends FileWrapper {
         Utils.exitTest(0);
     }
 
-
-
-
-    /**
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void main(String[] args) throws Exception {
 
         String dflt =
@@ -889,7 +647,7 @@ public class S3File extends FileWrapper {
 	String key = null;
 	String endpoint =null;
 	String region = null;
-	    
+
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             if (path.startsWith("--")) {
@@ -1053,20 +811,10 @@ public class S3File extends FileWrapper {
 
     }
 
-    /**
-     * Interface description
-     *
-     *
-     * @author         Enter your name here...    
-     */
+    
     public interface Searcher {
 
-        /**
-         *
-         * @param s _more_
-         * @param objectSummary _more_
-          * @return _more_
-         */
+        
         public boolean match(String s, S3ObjectSummary objectSummary);
     }
 
@@ -1075,38 +823,22 @@ public class S3File extends FileWrapper {
 	setSecretKey(secretKey);	
     }
 
-     /**
-       Set the AccessKey property.
-
-       @param value The new value for AccessKey
-    **/
+     
     public void setAccessKey (String value) {
 	accessKey = value;
     }
 
-    /**
-       Get the AccessKey property.
-
-       @return The AccessKey
-    **/
+    
     public String getAccessKey () {
 	return accessKey;
     }
 
-    /**
-       Set the SecretKey property.
-
-       @param value The new value for SecretKey
-    **/
+    
     public void setSecretKey (String value) {
 	secretKey = value;
     }
 
-    /**
-       Get the SecretKey property.
-
-       @return The SecretKey
-    **/
+    
     public String getSecretKey () {
 	return secretKey;
     }

@@ -1,12 +1,9 @@
 // Copyright (c) 2008-2025 Geode Systems LLC
 // SPDX-License-Identifier: Apache-2.0
 
-
 package org.ramadda.util;
 
-
 import org.json.*;
-
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
@@ -19,7 +16,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -31,16 +27,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.*;
 
-
-
 /**
  */
 @SuppressWarnings("unchecked")
 public class Github {
-
-
-
-    
 
     public static List<Item>  fetch(SystemContext handler, Hashtable props) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -73,13 +63,12 @@ public class Github {
 		} else {
 		    //		    System.err.println("got cache:" + json.substring(0,50));
 		}
-		
+
 		return  new JSONArray(json);
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
 	    }
 	};
-
 
 	List<Item> results = new ArrayList<Item>();
 
@@ -89,7 +78,7 @@ public class Github {
 	if(Utils.stringDefined(user)) {
 	    String apiUrl = HtmlUtils.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
             JSONArray a = getJson.apply(apiUrl);
-	    
+
 	    int cnt = 0;
             for (int itemIdx = 0; itemIdx < a.length(); itemIdx++) {
                 JSONObject item = a.getJSONObject(itemIdx);
@@ -148,17 +137,16 @@ public class Github {
 		results.add(new Item(new User(name,login, authorUrl, avatarUrl), date, message,url));
 	    }
 	}
-	
+
 	return results;
     }
-
 
     public static class User {
 	private String login;
 	private String name;
 	private String url;
 	private String avatarUrl;
-    
+
 	public User(String name, String login, String  url, String avatarUrl) {
 	    this.login = login;
 	    this.name = name;
@@ -167,20 +155,11 @@ public class Github {
 	}
 
 
-	/**
-	   Set the Login property.
-
-	   @param value The new value for Login
-	**/
 	public void setLogin (String value) {
 	    login = value;
 	}
 
-	/**
-	   Get the Login property.
-
-	   @return The Login
-	**/
+	
 	public String getLogin () {
 	    return login;
 	}
@@ -202,7 +181,6 @@ public class Github {
 	public String getName () {
 	    return name;
 	}
-
 
 	/**
 	   Get the AuthorUrl property.
@@ -232,7 +210,6 @@ public class Github {
 	}
 
     }
-
 
     public static class Item {
 	private User user;
@@ -264,7 +241,6 @@ public class Github {
 	public User getUser () {
 	    return user;
 	}
-
 
 	/**
 	   Set the Date property.

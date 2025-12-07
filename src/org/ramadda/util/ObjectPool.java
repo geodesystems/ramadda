@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 /**
  * Provides a pool of keyed objects and keeps the total size below a given limit.
@@ -29,7 +26,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ObjectPool<KeyType, ValueType> {
 
-    /** _more_ */
     private Object MUTEX = new Object();
 
     /** The cache */
@@ -38,7 +34,6 @@ public class ObjectPool<KeyType, ValueType> {
 
     /** Keep track of the keys */
     private List<KeyType> keys = new ArrayList<KeyType>();
-
 
     /** max cache size */
     private int maxSize = 100;
@@ -55,23 +50,10 @@ public class ObjectPool<KeyType, ValueType> {
         this.maxSize = size;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Object getMutex() {
         return MUTEX;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean contains(KeyType key) {
         if (key == null) {
             return false;
@@ -86,14 +68,6 @@ public class ObjectPool<KeyType, ValueType> {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public ValueType get(KeyType key) {
         if (key == null) {
             return null;
@@ -115,26 +89,10 @@ public class ObjectPool<KeyType, ValueType> {
         return createValue(key);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param list _more_
-     *
-     * @return _more_
-     */
     protected ValueType getFromPool(List<ValueType> list) {
         return list.remove(0);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean containsOrCreate(KeyType key) {
         if (key == null) {
             return false;
@@ -153,13 +111,6 @@ public class ObjectPool<KeyType, ValueType> {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void put(KeyType key, ValueType value) {
         if (key == null) {
             return;
@@ -194,7 +145,6 @@ public class ObjectPool<KeyType, ValueType> {
                 }
             }
 
-
             keys.remove(key);
             keys.add(key);
             List<ValueType> list = cache.get(key);
@@ -207,12 +157,6 @@ public class ObjectPool<KeyType, ValueType> {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     */
     public void getStats(StringBuffer sb) {
         synchronized (getMutex()) {
             sb.append("Cache size:" + cache.size());
@@ -225,7 +169,6 @@ public class ObjectPool<KeyType, ValueType> {
             }
         }
     }
-
 
     /**
      * Clear the cache
@@ -245,38 +188,14 @@ public class ObjectPool<KeyType, ValueType> {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getSize() {
         return size;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     protected ValueType createValue(KeyType key) {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param object _more_
-     */
     protected void removeValue(KeyType key, ValueType object) {}
-
-
-
 
 }

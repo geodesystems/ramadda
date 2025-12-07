@@ -27,7 +27,6 @@ import org.w3c.dom.*;
 
 import org.xml.sax.*;
 
-
 import ucar.unidata.util.GuiUtils;
 
 import ucar.unidata.util.IOUtil;
@@ -35,13 +34,9 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Trace;
 
-
 import java.awt.Color;
 
-
 import java.io.ByteArrayInputStream;
-
-
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,20 +44,17 @@ import java.io.InputStream;
 
 import java.security.SignatureException;
 
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-
 import javax.xml.parsers.*;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 
 /**
  * A collection of utilities for xml.
@@ -76,7 +68,6 @@ public abstract class MyXmlUtil {
     /** The header to use when writing out xml */
     public static final String XML_HEADER =
         "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
-
 
     /**
      *  used for matching any tag
@@ -125,9 +116,6 @@ public abstract class MyXmlUtil {
         return org.apache.xerces.impl.dv.util.Base64.decode(s);
     }
 
-
-
-
     /**
      *  Create and return an xml comment.
      *
@@ -171,13 +159,6 @@ public abstract class MyXmlUtil {
         return " " + name + "=" + quote(encodeString(value)) + " ";
     }
 
-    /**
-     * _more_
-     *
-     * @param attrs _more_
-     *
-     * @return _more_
-     */
     public static String attrs(String[] attrs) {
         StringBuffer a = new StringBuffer();
         for (int i = 0; i < attrs.length; i += 2) {
@@ -186,19 +167,9 @@ public abstract class MyXmlUtil {
         return a.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public static String attrs(String name, String value) {
         return " " + name + "=" + quote(encodeString(value)) + " ";
     }
-
 
     /**
      *  Return a String with n1=&quot;v1&quot n2=&quot;v2&quot.
@@ -231,7 +202,6 @@ public abstract class MyXmlUtil {
         return attrs(n1, v1, n2, v2) + attr(n3, v3);
     }
 
-
     /**
      *  Return a String with n1=&quot;v1&quot n2=&quot;v2&quot.  n3=&quot;v3&quot.  n4=&quot;v4&quot.
      *
@@ -250,7 +220,6 @@ public abstract class MyXmlUtil {
                                String n3, String v3, String n4, String v4) {
         return attrs(n1, v1, n2, v2, n3, v3) + attr(n4, v4);
     }
-
 
     /**
      *  Return a String of the form: &lt;name attrs &gt; contents &lt;/name&gt;
@@ -279,7 +248,6 @@ public abstract class MyXmlUtil {
                              ? " "
                              : "") + attrs + "/>";
     }
-
 
     /**
      *  Return a String of the form: &lt;name attrs /&gt;
@@ -316,7 +284,6 @@ public abstract class MyXmlUtil {
         return "</" + name + ">\n";
     }
 
-
     /**
      *  Get the given named attribute from the given element. If not found
      *  then recursively look in the parent of the given element.
@@ -329,7 +296,6 @@ public abstract class MyXmlUtil {
     public static String getAttributeFromTree(Node element, String name) {
         return getAttributeFromTree(element, name, null);
     }
-
 
     /**
      *  Get the given named attribute from the given element. If not found
@@ -359,10 +325,6 @@ public abstract class MyXmlUtil {
         return value;
     }
 
-
-
-
-
     /**
      *  Get the given named attribute from the given element. If not found
      *  then recursively look in the parent of the given element.
@@ -386,16 +348,6 @@ public abstract class MyXmlUtil {
         return Integer.parseInt(value);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static boolean getAttributeFromTree(Node element, String name,
             boolean dflt) {
         if (element == null) {
@@ -407,9 +359,6 @@ public abstract class MyXmlUtil {
         }
         return Boolean.parseBoolean(value);
     }
-
-
-
 
     /**
      *  Get a list of  attributes  of the given name from the given element
@@ -426,7 +375,6 @@ public abstract class MyXmlUtil {
                                              Hashtable tags) {
         return getAttributesFromTree(element, name, tags, null);
     }
-
 
     /**
      *  Get a list of  attributes  of the given name from the given element
@@ -464,9 +412,6 @@ public abstract class MyXmlUtil {
         return listOfValues;
     }
 
-
-
-
     /**
      * Does the given node have the attribute
      *
@@ -479,7 +424,6 @@ public abstract class MyXmlUtil {
         return getAttribute(element, attributeName, (String) null) != null;
     }
 
-
     /**
      *  Get the given name attribute from the given element.
      *  If the attribute is not found this will throw an IllegalArgumentException
@@ -491,7 +435,6 @@ public abstract class MyXmlUtil {
     public static String getAttribute(Node element, String name) {
         return getAttribute(element.getAttributes(), name);
     }
-
 
     /**
      *  Make sure that the given element contains the given attributes.
@@ -506,7 +449,6 @@ public abstract class MyXmlUtil {
             getAttribute(element, attrs[i]);
         }
     }
-
 
     /**
      *  Get the given name-d attribute from the given element. If not found
@@ -747,7 +689,6 @@ public abstract class MyXmlUtil {
         return GuiUtils.decodeColor(n.getNodeValue(), dflt);
     }
 
-
     /**
      * A utility  to set the attribute on the given node as the
      * String representation of the given color
@@ -761,8 +702,6 @@ public abstract class MyXmlUtil {
                           "" + value.getRed() + "," + value.getGreen() + ","
                           + value.getBlue());
     }
-
-
 
     /**
      *  Copy the attributes from n2 to n1.
@@ -814,7 +753,6 @@ public abstract class MyXmlUtil {
         return null;
     }
 
-
     /**
      *  Find all of the children elements of the given parent Node
      *  and all of its ancestors  whose tag name.equals the given tag.
@@ -831,8 +769,6 @@ public abstract class MyXmlUtil {
         }
         return results;
     }
-
-
 
     /**
      *  Find the first child element of the given parent Node
@@ -854,10 +790,6 @@ public abstract class MyXmlUtil {
         }
         return findChildRecurseUp(parent, tag);
     }
-
-
-
-
 
     /**
      *  Find all of the  children elements of the given parent Node
@@ -881,7 +813,6 @@ public abstract class MyXmlUtil {
         return found;
     }
 
-
     /**
      *  Append the given list of children Elements to the given Element.
      *
@@ -893,8 +824,6 @@ public abstract class MyXmlUtil {
             element.appendChild((Element) children.get(i));
         }
     }
-
-
 
     /**
      *  Find the first  descendant element of the given parent Node
@@ -912,8 +841,6 @@ public abstract class MyXmlUtil {
         }
         return (Element) found.get(0);
     }
-
-
 
     /**
      *  Find all of the  descendant elements of the given parent Node
@@ -968,8 +895,6 @@ public abstract class MyXmlUtil {
         return results;
     }
 
-
-
     /**
      *  UNTESTED!!!
      *
@@ -1002,8 +927,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-
-
     /**
      *  Find all of the  descendant elements of the given parent Node
      *  whose tag name equals the given tag.
@@ -1023,7 +946,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-
     /**
      *  Parse the given xml and return the root Element.
      *
@@ -1035,66 +957,20 @@ public abstract class MyXmlUtil {
         return getDocument(xml).getDocumentElement();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(String tag, Element parent)
             throws Exception {
         return create(parent.getOwnerDocument(), tag, parent);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param parent _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(String tag, Element parent, List attrs)
             throws Exception {
         return create(parent.getOwnerDocument(), tag, parent, attrs);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag) throws Exception {
         return create(doc, tag, (String[]) null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, Element parent)
             throws Exception {
         Element child = doc.createElement(tag);
@@ -1104,19 +980,6 @@ public abstract class MyXmlUtil {
         return child;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param parent _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, Element parent,
                                  List attrs)
             throws Exception {
@@ -1127,36 +990,11 @@ public abstract class MyXmlUtil {
         return child;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, String[] attrs)
             throws Exception {
         return create(doc, tag, (Element) null, attrs);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param parent _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, Element parent,
                                  String[] attrs)
             throws Exception {
@@ -1167,19 +1005,6 @@ public abstract class MyXmlUtil {
         return child;
     }
 
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param parent _more_
-     * @param text _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, Element parent,
                                  String text, String[] attrs)
             throws Exception {
@@ -1191,79 +1016,27 @@ public abstract class MyXmlUtil {
         return child;
     }
 
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param tag _more_
-     * @param parent _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(Document doc, String tag, Element parent,
                                  String text)
             throws Exception {
         return create(doc, tag, parent, text, null);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param parent _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(String tag, Element parent, String[] attrs)
             throws Exception {
         return create(parent.getOwnerDocument(), tag, parent, attrs);
     }
 
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param parent _more_
-     * @param text _more_
-     * @param attrs _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(String tag, Element parent, String text,
                                  String[] attrs)
             throws Exception {
         return create(parent.getOwnerDocument(), tag, parent, text, attrs);
     }
 
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param parent _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Element create(String tag, Element parent, String text)
             throws Exception {
         return create(parent.getOwnerDocument(), tag, parent, text);
     }
-
-
-
 
     /**
      *  Read in the xml contained in the given filename, parse it and return the
@@ -1295,8 +1068,6 @@ public abstract class MyXmlUtil {
     public static Element getRoot(InputStream stream) throws Exception {
         return getDocument(stream).getDocumentElement();
     }
-
-
 
     /**
      *  Read in the xml contained in the given filename, parse it and return the
@@ -1342,7 +1113,6 @@ public abstract class MyXmlUtil {
         return getDocument(xml);
     }
 
-
     /**
      *  Find the root element of the given node.
      *
@@ -1357,7 +1127,6 @@ public abstract class MyXmlUtil {
         }
         return child;
     }
-
 
     /**
      * Checks if the tag name of the given  node matches the given name.
@@ -1387,9 +1156,6 @@ public abstract class MyXmlUtil {
         return Misc.equals(nodeName, name);
     }
 
-
-
-
     /**
      * Get the non qualified tag name
      *
@@ -1410,14 +1176,6 @@ public abstract class MyXmlUtil {
         return name;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tagName _more_
-     *
-     * @return _more_
-     */
     public static boolean isFullyQualified(String tagName) {
         return tagName.indexOf(":") >= 0;
     }
@@ -1441,10 +1199,6 @@ public abstract class MyXmlUtil {
         }
         return name;
     }
-
-
-
-
 
     /**
      *  Find the ancestor of the given node with the given tagname
@@ -1472,7 +1226,6 @@ public abstract class MyXmlUtil {
         return null;
     }
 
-
     /**
      * A utility to make an empty document
      *
@@ -1496,44 +1249,20 @@ public abstract class MyXmlUtil {
      */
     private static class MyErrorHandler implements ErrorHandler {
 
-        /** _more_ */
         StringBuffer errors = new StringBuffer();
 
-        /**
-         * _more_
-         */
         public MyErrorHandler() {}
 
-        /**
-         * _more_
-         *
-         * @param exception _more_
-         */
         public void error(SAXParseException exception) {
             handleError(exception);
         }
 
-        /**
-         * _more_
-         *
-         * @param exception _more_
-         */
         public void fatalError(SAXParseException exception) {
             handleError(exception);
         }
 
-        /**
-         * _more_
-         *
-         * @param exception _more_
-         */
         public void warning(SAXParseException exception) {}
 
-        /**
-         * _more_
-         *
-         * @param e _more_
-         */
         private void handleError(SAXParseException e) {
             errors.append(e.getMessage() + " line:" + e.getLineNumber()
                           + ((e.getColumnNumber() >= 0)
@@ -1542,8 +1271,6 @@ public abstract class MyXmlUtil {
 
         }
     }
-
-
 
     /**
      *  Create a Document object with the given xml.
@@ -1577,8 +1304,6 @@ public abstract class MyXmlUtil {
         */
     }
 
-
-
     /**
      *  Create a Document object with the given xml.
      *
@@ -1601,11 +1326,6 @@ public abstract class MyXmlUtil {
         return  parser.getDocument();
         */
     }
-
-
-
-
-
 
     /**
      *  Get the first Element child of the given parent Element.
@@ -1632,9 +1352,6 @@ public abstract class MyXmlUtil {
         return getElements(parent, new XmlNodeList());
     }
 
-
-
-
     /**
      *  Get all children of the given parent Element who are instances of
      *  the Element class.
@@ -1654,7 +1371,6 @@ public abstract class MyXmlUtil {
         return nodeList;
     }
 
-
     /**
      *  Get all grand children of the given parent Element who are instances of
      *  the Element class.
@@ -1673,9 +1389,6 @@ public abstract class MyXmlUtil {
         }
         return nodeList;
     }
-
-
-
 
     /**
      * Finds the child node with the given tag name. Then gets the child text from that node if it is non-null.
@@ -1697,16 +1410,6 @@ public abstract class MyXmlUtil {
         return text;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param childTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static double getGrandChildValue(Node parent, String childTag,
                                             double dflt) {
         String text = getGrandChildText(parent, childTag);
@@ -1719,7 +1422,6 @@ public abstract class MyXmlUtil {
         }
         return Double.parseDouble(text);
     }
-
 
     /**
      * Finds the child node with the given tag name. Then gets the child text from that node if it is non-null.
@@ -1736,78 +1438,30 @@ public abstract class MyXmlUtil {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param bytes _more_
-     */
     public static void appendCdataBytes(StringBuffer sb, byte[] bytes) {
         sb.append("<![CDATA[");
         sb.append(encodeBase64(bytes));
         sb.append("]]>");
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param s _more_
-     */
     public static void appendCdata(StringBuffer sb, String s) {
         sb.append("<![CDATA[");
         sb.append(s);
         sb.append("]]>");
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static String getCdata(String s) {
         return "<![CDATA[" + s + "]]>";
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param text _more_
-     *
-     * @return _more_
-     */
     public static CDATASection makeCDataNode(Document doc, String text) {
         return makeCDataNode(doc, text, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param text _more_
-     */
     public static void createCDataNode(Element parent, String text) {
         parent.appendChild(makeCDataNode(parent.getOwnerDocument(), text));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param doc _more_
-     * @param text _more_
-     * @param andEncode _more_
-     *
-     * @return _more_
-     */
     public static CDATASection makeCDataNode(Document doc, String text,
                                              boolean andEncode) {
         if (andEncode) {
@@ -1817,7 +1471,6 @@ public abstract class MyXmlUtil {
             return doc.createCDATASection(text);
         }
     }
-
 
     /**
      *  Concatenates the node values (grom getNodeValue) of the  children of the given parent Node.
@@ -1840,8 +1493,6 @@ public abstract class MyXmlUtil {
         }
         return sb.toString();
     }
-
-
 
     /**
      *  Get all Element children of the given parent Element with the
@@ -1866,7 +1517,6 @@ public abstract class MyXmlUtil {
         return nodeList;
     }
 
-
     /**
      *  Get the first  Element children of the given parent Element with the  given tagName.
      *
@@ -1888,7 +1538,6 @@ public abstract class MyXmlUtil {
         return null;
     }
 
-
     /**
      *  Create and return a List of the Element children of the given parent node.
      *
@@ -1904,8 +1553,6 @@ public abstract class MyXmlUtil {
         return result;
     }
 
-
-
     /**
      *  Return the default xml header.
      *
@@ -1914,7 +1561,6 @@ public abstract class MyXmlUtil {
     public static String getHeader() {
         return XML_HEADER;
     }
-
 
     /**
      *  Convert the DOM rooted at the given Node to an xml String representation.
@@ -1926,7 +1572,6 @@ public abstract class MyXmlUtil {
         return toString(node, "  ", "\n");
     }
 
-
     /**
      *  Convert the DOM rooted at the given Node to an xml String representation.
      *
@@ -1936,8 +1581,6 @@ public abstract class MyXmlUtil {
     public static String toStringNoChildren(Node node) {
         return toString(node, "  ", "\n", false);
     }
-
-
 
     /**
      *  Convert the DOM rooted at the given Node to an xml String representation.
@@ -1949,7 +1592,6 @@ public abstract class MyXmlUtil {
     public static String toStringWithHeader(Node node) {
         return toStringWithHeader(node, "  ", "\n");
     }
-
 
     /**
      *  Convert the DOM rooted at the given Node to an xml String representation.
@@ -1966,7 +1608,6 @@ public abstract class MyXmlUtil {
         return toString(node, "", "");
     }
 
-
     /**
      *  Convert the DOM rooted at the given Node to an xml representation. Use the
      *  given tabSpacing to include spacing within the hierarchy.
@@ -1980,7 +1621,6 @@ public abstract class MyXmlUtil {
                                   String newLine) {
         return toString(node, tabSpacing, newLine, true);
     }
-
 
     /**
      *  Convert the DOM rooted at the given Node to an xml representation. Use the
@@ -2002,7 +1642,6 @@ public abstract class MyXmlUtil {
         //      return  result;
     }
 
-
     /**
      *  Convert the DOM rooted at the given Node to an xml representation. Use the
      *  given tabSpacing to include spacing within the hierarchy. Prepend the xml header
@@ -2018,16 +1657,9 @@ public abstract class MyXmlUtil {
         return toStringWithHeader(node, tabSpacing, newLine, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param appendable _more_
-     */
     public static void toString(Node node, Appendable appendable) {
         toString(appendable, node, "", "", "", false, true);
     }
-
 
     /**
      * Convert the xml to a string. Add the xml header
@@ -2046,7 +1678,6 @@ public abstract class MyXmlUtil {
         toString(xml, node, "", tabSpacing, newLine, prettifyAttrs, true);
         return xml.toString();
     }
-
 
     /**
      *  Convert the DOM rooted at the given Node to an xml representation.
@@ -2175,14 +1806,6 @@ public abstract class MyXmlUtil {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param html _more_
-     * @param node _more_
-     */
     public static void toHtml(StringBuffer html, Node node) {
         switch (node.getNodeType()) {
 
@@ -2254,8 +1877,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-
-
     /**
      *  Do a simple conversion  of special characters to their encoding.
      *
@@ -2267,7 +1888,6 @@ public abstract class MyXmlUtil {
 						       ">","\n" }, new String[] { "&amp;",
 					  "&quot;", "&lt;", "&gt;","&#10;" });
     }
-
 
     /**
      *  Find the first Element in the given NodeList of Elements
@@ -2295,8 +1915,6 @@ public abstract class MyXmlUtil {
         }
         return null;
     }
-
-
 
     /**
      *  Find the Element under (recursively) the given root  Element
@@ -2343,9 +1961,6 @@ public abstract class MyXmlUtil {
         return null;
     }
 
-
-
-
     /**
      *  Remove all children from the given parent Element.
      *
@@ -2357,7 +1972,6 @@ public abstract class MyXmlUtil {
             parent.removeChild(child);
         }
     }
-
 
     /**
      *  This method will return either the given node argument
@@ -2396,7 +2010,6 @@ public abstract class MyXmlUtil {
         return findUrlRefNode(node, "url");
     }
 
-
     /**
      * A main for tests
      *
@@ -2405,7 +2018,6 @@ public abstract class MyXmlUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-
 
         /*
         Trace.startTrace();
@@ -2447,7 +2059,6 @@ public abstract class MyXmlUtil {
                 continue;
             }
 
-
             if (args[i].equals("-generate")) {
                 generateCode = true;
                 continue;
@@ -2463,15 +2074,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param seen _more_
-     * @param tagBuff _more_
-     * @param attrBuff _more_
-     * @param topBuff _more_
-     */
     private static void printTags(Element node, HashSet<String> seen,
                                   StringBuffer tagBuff,
                                   StringBuffer attrBuff,
@@ -2516,13 +2118,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     * @param seen _more_
-     */
     private static void printTags(String f, HashSet<String> seen) {
         try {
             String       xml      = IOUtil.readContents(f, MyXmlUtil.class);
@@ -2540,14 +2135,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     * @param packageName _more_
-     *
-     * @throws Exception _more_
-     */
     private static void generateCode(String f, String packageName)
             throws Exception {
         HashSet<String> seen = new HashSet<String>();
@@ -2556,16 +2143,6 @@ public abstract class MyXmlUtil {
         generateCode(root, seen, packageName);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     * @param seen _more_
-     * @param packageName _more_
-     *
-     * @throws Exception _more_
-     */
     private static void generateCode(Element element, HashSet<String> seen,
                                      String packageName)
             throws Exception {
@@ -2573,14 +2150,6 @@ public abstract class MyXmlUtil {
         if ( !seen.contains(className)) {}
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     private static void format(String f) {
         try {
             String       xml     = IOUtil.readContents(f, MyXmlUtil.class);
@@ -2655,23 +2224,11 @@ public abstract class MyXmlUtil {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param xmlFile _more_
-     * @param xPath _more_
-     */
     public static ElementListIterator elements(final String xmlFile, final String xPath) {
 
         return new ElementListIterator(eval(xmlFile, xPath));
     }
 
-    /**
-     * _more_
-     *
-     * @param xmlFile _more_
-     * @param xPath _more_
-     */
     public static NodeList eval(final String xmlFile, final String xPath) {
         try {
             return (NodeList)expr(xPath).evaluate(loadXml(xmlFile), XPathConstants.NODESET);
@@ -2680,11 +2237,6 @@ public abstract class MyXmlUtil {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param xmlFile _more_
-     */
     public static Document loadXml(final String xmlFile) {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -2697,13 +2249,7 @@ public abstract class MyXmlUtil {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param xPath _more_
-     */
     public static XPathExpression expr(String xPath) {
-
 
         XPathExpression expr = pathMap.get(xPath);
         if (expr == null) {
@@ -2717,9 +2263,6 @@ public abstract class MyXmlUtil {
         return expr;
     }
 
-    /**
-     * _more_
-     */
     public static class ElementListIterator implements Iterable<Element>, Iterator<Element> {
         private final NodeList nodeList;
         private int index = 0;

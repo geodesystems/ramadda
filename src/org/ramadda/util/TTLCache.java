@@ -5,10 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.Misc;
-
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +13,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * Supports a cache that holds time limited entries (time to live)
@@ -29,19 +25,15 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class TTLCache<KEY, VALUE_TYPE> {
 
-    /** _more_ */
     private static Object MUTEX = new Object();
 
-    /** _more_ */
     private static List<TTLCache> caches = new ArrayList<TTLCache>();
 
-    /** _more_ */
     private static Runnable ttlRunnable;
 
     /** helper for ttl */
     public static long MS_IN_A_MINUTE = 1000 * 60;
 
-    /** _more_ */
     public static long MS_IN_AN_HOUR = 1000 * 60 * 60;
 
     /** helper for ttl */
@@ -60,12 +52,10 @@ public class TTLCache<KEY, VALUE_TYPE> {
     /** how big should the cache become until its cleared */
     private int sizeLimit = -1;
 
-    /** _more_ */
     public boolean debug = false;
 
     /**  */
     private String name;
-
 
     /**
      * default ctor. 1 hour in cache. No time reset. No size limit
@@ -85,7 +75,7 @@ public class TTLCache<KEY, VALUE_TYPE> {
     }
 
     /**
-     
+
      *
      * @param timeThresholdInMilliseconds _more_
      * @param name _more_
@@ -106,7 +96,7 @@ public class TTLCache<KEY, VALUE_TYPE> {
     }
 
     /**
-     
+
      *
      * @param timeThresholdInMilliseconds _more_
      * @param sizeLimit _more_
@@ -116,8 +106,6 @@ public class TTLCache<KEY, VALUE_TYPE> {
                     String name) {
         this(timeThresholdInMilliseconds, sizeLimit, false, name);
     }
-
-
 
     /**
      * ctor. No time reset.
@@ -134,7 +122,7 @@ public class TTLCache<KEY, VALUE_TYPE> {
     }
 
     /**
-     
+
      *
      * @param timeThresholdInMilliseconds _more_
      * @param sizeLimit _more_
@@ -171,7 +159,6 @@ public class TTLCache<KEY, VALUE_TYPE> {
         }
     }
 
-
     public String getName() {
 	return name;
     }
@@ -200,8 +187,6 @@ public class TTLCache<KEY, VALUE_TYPE> {
         }
     }
 
-
-
     /**
      *
      * @param cache _more_
@@ -224,30 +209,14 @@ public class TTLCache<KEY, VALUE_TYPE> {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int size() {
         return cache.size();
     }
 
-    /**
-     * _more_
-     *
-     * @param t _more_
-     */
     public void setTimeThreshold(long t) {
         this.timeThreshold = t;
     }
 
-
-
-    /**
-     * _more_
-     */
     public synchronized void clearCache() {
         List toRemove = new ArrayList();
         for (Enumeration keys = cache.keys(); keys.hasMoreElements(); ) {
@@ -259,16 +228,8 @@ public class TTLCache<KEY, VALUE_TYPE> {
         cache = new Hashtable<KEY, CacheEntry<VALUE_TYPE>>();
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void cacheRemove(VALUE_TYPE value) {}
 
-    /**
-     * _more_
-     */
     private synchronized void checkCache() {
         if (debug) {
             System.err.println("checkCache");
@@ -310,11 +271,6 @@ public class TTLCache<KEY, VALUE_TYPE> {
         cache.put(key, new CacheEntry<VALUE_TYPE>(value));
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
     public synchronized void remove(Object key) {
 	//	if(isDebug()) System.err.println("REMOVE:" + key);
         CacheEntry<VALUE_TYPE> entry = cache.get(key);
@@ -362,11 +318,9 @@ public class TTLCache<KEY, VALUE_TYPE> {
         return (VALUE_TYPE) cacheEntry.object;
     }
 
-
     public  boolean cacheValueOk(VALUE_TYPE v) {
 	return true;
     }
-
 
     /**
      * Class description
@@ -401,8 +355,6 @@ public class TTLCache<KEY, VALUE_TYPE> {
             this.time = new Date().getTime();
         }
 
-
     }
-
 
 }

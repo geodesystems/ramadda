@@ -6,10 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
-/**
- */
 public class GoogleChart {
-
 
     /**
      * Class description
@@ -20,22 +17,10 @@ public class GoogleChart {
      */
     public static class DataTable {
 
-        /**
-         * _more_
-         *
-         * @param sb _more_
-         */
         public static void init(StringBuffer sb) {
             sb.append("var data = new google.visualization.DataTable();\n");
         }
 
-        /**
-         * _more_
-         *
-         * @param sb _more_
-         * @param type _more_
-         * @param name _more_
-         */
         public static void addColumn(StringBuffer sb, String type,
                                      String name) {
             //data.addColumn('string', 'Name');
@@ -44,9 +29,6 @@ public class GoogleChart {
                                      HtmlUtils.squote(name)));
         }
 
-
     }
-
-
 
 }

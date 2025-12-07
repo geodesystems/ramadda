@@ -60,11 +60,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
-/**
- * A collection of utilities
- *
- * @author Jeff McWhirter
- */
+
 
 @SuppressWarnings("unchecked")
 public class WebHarvester {
@@ -98,7 +94,6 @@ public class WebHarvester {
     public WebHarvester(String url) throws Exception {
         this.url = new URL(url);
     }
-
 
     public void log(String msg) {
 	log.println(msg);
@@ -258,17 +253,11 @@ public class WebHarvester {
         page.hrefLabel = label;
         seen.put(url.toString(), page);
 
-
-
-
-
         if (parent != null) {
             parent.addChild(page);
         }
 
-	
 	body = Replace.replace(imageReplace,body);
-
 
         for (HtmlUtils.Link childLink :
                 HtmlUtils.extractLinks(url, body, ".*", true)) {
@@ -354,7 +343,6 @@ public class WebHarvester {
 
     }
 
-
     public void fetchImages() throws Exception {
         for (String path : images) {
             String replacePath = path;
@@ -381,7 +369,6 @@ public class WebHarvester {
 
         }
     }
-
 
     public Page getPage() {
         return page;
@@ -497,7 +484,6 @@ public class WebHarvester {
             return children;
         }
 
-
         public String toString() {
             return title + " " + url;
         }
@@ -519,8 +505,6 @@ public class WebHarvester {
 	    return s;
 	}
     }
-
-
 
     private void writeEntryXml(PrintWriter          writer,Page page, Page parent) throws Exception {
 
@@ -777,8 +761,6 @@ public class WebHarvester {
 	}
 
 	log.close();
-
-
 
     }
 }

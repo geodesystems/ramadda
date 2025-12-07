@@ -1,10 +1,9 @@
 /**
-   Copyright (c) 2008-2025 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
-
 
 import org.json.*;
 
@@ -33,17 +32,14 @@ import java.util.List;
 import java.util.Set;
 
 
-/**
- */
 @SuppressWarnings("unchecked")
 public class JsonUtil {
 
     /** JSON MIME type */
     public static final String MIMETYPE = "application/json";
 
-    /**  */
+    
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
-
 
     /**  */
     public static final String MAP_OPEN = "{";
@@ -57,51 +53,28 @@ public class JsonUtil {
     /**  */
     public static final String LIST_CLOSE = "]";
 
-
     /** the null string identifier */
     public static final String NULL = "null";
 
     /** default quote value */
     public static final boolean DFLT_QUOTE = false;
 
-    /** _more_ */
     public static final String FIELD_NAME = "name";
 
-    /** _more_ */
     public static final String FIELD_FIELDS = "fields";
 
-    /** _more_ */
     public static final String FIELD_DATA = "data";
 
-    /** _more_ */
     public static final String FIELD_VALUES = "values";
 
-    /** _more_ */
     public static final String FIELD_LATITUDE = "latitude";
 
-    /** _more_ */
     public static final String FIELD_LONGITUDE = "longitude";
 
-    /** _more_ */
     public static final String FIELD_ELEVATION = "elevation";
 
-    /** _more_ */
     public static final String FIELD_DATE = "date";
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param pw _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param elevation _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addGeolocation(Appendable pw, double lat, double lon,
                                       double elevation)
 	throws Exception {
@@ -112,8 +85,6 @@ public class JsonUtil {
         pw.append(",\n");
         pw.append(attr(FIELD_ELEVATION, elevation));
     }
-
-
 
     /*
       This method create a set of rows of date that are the result of joining the field values in a set of
@@ -216,7 +187,6 @@ public class JsonUtil {
 	return results;
     }
 
-
     /**
      *   This quotes every other list value for showing in a map
      *
@@ -245,7 +215,6 @@ public class JsonUtil {
         return quoted;
     }
 
-
     public static List quoteAll(List values) {
         List quoted = new ArrayList();
         for (int i = 0; i < values.size(); i ++) {
@@ -255,14 +224,6 @@ public class JsonUtil {
         return quoted;
     }    
 
-
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
     public static String mapAndQuote(List values) {
         return map(quoteList(values));
     }
@@ -285,15 +246,6 @@ public class JsonUtil {
 	return map(Utils.arrayToList(values));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param row _more_
-     * @param values _more_
-     *
-     * @return _more_
-     */
     public static Appendable map(Appendable row, List values) {
         try {
             if (row == null) {
@@ -348,33 +300,14 @@ public class JsonUtil {
         return row.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public static String mapKey(String key) {
         return "\"" + key + "\":";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String mapOpen() {
         return MAP_OPEN;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String mapClose() {
         return MAP_CLOSE;
     }
@@ -390,7 +323,6 @@ public class JsonUtil {
         return list(Misc.toList(values));
     }
 
-
     /**
      * Create a JSON list from the array of strings
      *
@@ -402,27 +334,13 @@ public class JsonUtil {
         return list(values, DFLT_QUOTE);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String listOpen() {
         return LIST_OPEN;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String listClose() {
         return LIST_CLOSE;
     }
-
-
 
     /**
      * Create a JSON list from the array of strings
@@ -453,16 +371,6 @@ public class JsonUtil {
         return result;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param row _more_
-     * @param values _more_
-     * @param quoteValue _more_
-     *
-     * @return _more_
-     */
     public static Appendable list(Appendable row, List values,
                                   boolean quoteValue) {
         try {
@@ -488,8 +396,6 @@ public class JsonUtil {
 
         return row;
     }
-
-
 
     /**
      * Create a list of JSON object from a list of TwoFacedObjects
@@ -549,32 +455,13 @@ public class JsonUtil {
         return s;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public static String attr(String name, double value) {
         return attr(name, formatNumber(value), false);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public static String attr(String name, long value) {
         return attr(name, "" + value, false);
     }
-
 
     /**
      *
@@ -605,7 +492,6 @@ public class JsonUtil {
         return attr(name, value, DFLT_QUOTE);
     }
 
-
     public static String quoteType(Object v) {
 	String s = v.toString().trim();
         if (s.equals("true") || s.equals("false")) {
@@ -627,7 +513,6 @@ public class JsonUtil {
     public static String attrGuessType(String name, String v) {
 	return attr(name,quoteType(v));
     }
-
 
     /**
      * Create a JSON object attribute
@@ -667,7 +552,6 @@ public class JsonUtil {
         items.add(getString(value, false));
     }
 
-
     /**
      *
      * @param d _more_
@@ -687,14 +571,6 @@ public class JsonUtil {
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public static String formatNumber(double d) {
         if (isNullNumber(d)) {
             return "null";
@@ -702,7 +578,6 @@ public class JsonUtil {
 
         return "" + d;
     }
-
 
     /**
      * Quote a string
@@ -720,12 +595,6 @@ public class JsonUtil {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param s _more_
-     */
     public static void quote(Appendable sb, Object o) {
         try {
             if (o == null) {
@@ -748,7 +617,6 @@ public class JsonUtil {
             throw new IllegalArgumentException("Could not quote string:" + o);
         }
     }
-
 
     /**
      * Clean a string of illegal JSON characters
@@ -802,17 +670,6 @@ public class JsonUtil {
         return s;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void convertCameras(String[] args) throws Exception {
         BufferedReader br =
             new BufferedReader(new InputStreamReader(System.in));
@@ -899,15 +756,6 @@ public class JsonUtil {
         System.out.println("</entries>");
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String xmlToJson(Element node) throws Exception {
         StringBuilder json = new StringBuilder();
         xmlToJson(node, json);
@@ -919,14 +767,6 @@ public class JsonUtil {
 
      */
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private static void xmlToJson(Element node, Appendable sb)
 	throws Exception {
         List<String> attrs = new ArrayList<String>();
@@ -950,8 +790,6 @@ public class JsonUtil {
         List<String> childJson = new ArrayList<String>();
         NodeList     children  = node.getChildNodes();
 
-
-
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ( !(child instanceof Element)) {
@@ -973,7 +811,6 @@ public class JsonUtil {
 
     }
 
-
     /*
       return the string denoted by path. Catch and ignore any errors
     */
@@ -985,15 +822,6 @@ public class JsonUtil {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     * @param path _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static String readValue(JSONObject obj, String path, String dflt) {
         List<String> toks = StringUtil.split(path, ".", true, true);
         while (toks.size() > 1) {
@@ -1025,15 +853,6 @@ public class JsonUtil {
         return s.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public static JSONObject readObject(JSONObject obj, String path) {
         List<String> toks = StringUtil.split(path, ".", true, true);
         while (toks.size() > 0) {
@@ -1073,7 +892,6 @@ public class JsonUtil {
 	return list;
     }
 
-
     public static JSONArray readArrayFromTok(JSONObject obj, String tok)  {
 	if(StringUtil.containsRegExp(tok)) {
 	    for(Iterator<String> keys=obj.keys();keys.hasNext();) {
@@ -1088,16 +906,6 @@ public class JsonUtil {
 	return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public static JSONArray readArray(JSONObject obj, String path) {
         List<String> toks    = StringUtil.split(path, ".", true, true);
         String       lastTok = toks.get(toks.size() - 1);
@@ -1123,15 +931,6 @@ public class JsonUtil {
         return readArrayFromTok(obj,lastTok);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static JSONObject readUrl(String url) throws Exception {
         String json = Utils.readUrl(url);
         if (json == null) {
@@ -1141,19 +940,6 @@ public class JsonUtil {
         return new JSONObject(new JSONTokener(json));
     }
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param json _more_
-     * @param forHtml _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String format(String json, boolean forHtml)
 	throws Exception {
 	String s;
@@ -1192,14 +978,6 @@ public class JsonUtil {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
 	JSONArray array  = new JSONArray(IO.readContents(args[0],JsonUtil.class));
 	System.out.println("beneficial use,parameter,name,value");
@@ -1235,7 +1013,6 @@ public class JsonUtil {
 	**/
     }
 
-
     /**
      *
      * @param obj _more_
@@ -1256,7 +1033,6 @@ public class JsonUtil {
 
         throw new IllegalArgumentException("Unknown object type");
     }
-
 
     /**
      *
@@ -1283,7 +1059,6 @@ public class JsonUtil {
 
         return hashtable;
     }
-
 
     /**
      *
@@ -1329,7 +1104,6 @@ public class JsonUtil {
 	return obj.optString(key,null);
     }
 
-
     public static List<String> getStrings(JSONArray array) {
 	List<String> s = new ArrayList<String>();
 	if(array!=null) {
@@ -1340,12 +1114,10 @@ public class JsonUtil {
 	return s;
     }
 
-
     public static String getString(JSONArray array,int idx) {
 	if(array==null) return null;
 	Object obj = array.get(idx);
 	return obj.toString();
     }
-
 
 }

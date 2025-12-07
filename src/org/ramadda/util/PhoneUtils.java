@@ -5,23 +5,16 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.json.*;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.net.*;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * A set of utility methods for dealing with phone things
@@ -30,29 +23,13 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class PhoneUtils {
-
-
-    /**  */
     private static String numverifyKey;
-
-    /**  */
     private static String numlookupapiKey;
-
-    /**  */
     private static String TWILIO_ACCOUNT_SID;
-
-    /**  */
     private static String TWILIO_AUTH_TOKEN;
-
-    /**  */
     private static String TWILIO_PHONE;
-
-
-    /**  */
     private static boolean haveInited = false;
-
-    /**
-     */
+   
     public static void initKeys() {
         if (haveInited) {
             return;
@@ -62,10 +39,7 @@ public class PhoneUtils {
         numlookupapiKey = System.getenv("NUMLOOKUPAPI_API_KEY");
     }
 
-
-    /**
-     *  @return _more_
-     */
+    
     public static boolean initTwilio() {
         if (TWILIO_ACCOUNT_SID == null) {
             TWILIO_ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
@@ -89,42 +63,31 @@ public class PhoneUtils {
         return true;
     }
 
-    /**  */
+    
     private static Hashtable<String, HashSet> campaigns =
         new Hashtable<String, HashSet>();
 
-    /**  */
+    
     public static final int SMS_CODE_SENT = 0;
 
-    /**  */
+    
     public static final int SMS_CODE_ALREADYSENT = 1;
 
-    /**  */
+    
     public static final int SMS_CODE_BADPHONE = 2;
 
-    /**  */
+    
     public static final int SMS_CODE_ERROR = 3;
 
-    /**  */
+    
     public static final int SMS_CODE_UNSUBSCRIBED = 4;
 
-    /**
-     *
-     * @param campaign _more_
-      * @return _more_
-     */
+    
     private static File getCampaignFile(String campaign) {
         return new File(campaign + ".sent.txt");
     }
 
-    /**
-     *
-     * @param campaign _more_
-     * @param phone _more_
-     * @param status _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private static void writeCampaignFile(String campaign, String phone,
                                           String status)
             throws Exception {
@@ -136,16 +99,7 @@ public class PhoneUtils {
         fw.close();
     }
 
-    /**
-     *
-     * @param phone _more_
-     * @param msg _more_
-     * @param ignoreInvalidNumbers _more_
-     * @param campaign _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static int sendSMS(String phone, String msg,
                               boolean ignoreInvalidNumbers, String campaign)
             throws Exception {
@@ -191,9 +145,7 @@ public class PhoneUtils {
             }
         }
 
-
         //      https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json
-
 
         String url = "https://api.twilio.com/2010-04-01/Accounts/"
                      + TWILIO_ACCOUNT_SID + "/Messages.json";
@@ -255,14 +207,7 @@ public class PhoneUtils {
 
     }
 
-    /**
-     *
-     * @param url _more_
-     * @param args _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private static String doPostTwilio(String url, String args)
             throws Exception {
         URL               myurl    = new URL(url);
@@ -294,19 +239,13 @@ public class PhoneUtils {
         }
     }
 
-    /**  */
+    
     private static Hashtable<String, Boolean> isMobile;
 
-    /**  */
+    
     private static List<String> numbers;
 
-    /**
-     *
-     * @param phone _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static boolean isPhoneMobile(String phone) throws Exception {
         File cacheFile = IO.getCacheFile("ismobile.txt");
         if (isMobile == null) {
@@ -342,11 +281,7 @@ public class PhoneUtils {
         return b.booleanValue();
     }
 
-    /**
-     *
-     * @param phone _more_
-     *  @return _more_
-     */
+    
     public static boolean isValidPhone(String phone) {
         phone = cleanPhone(phone);
         if (phone.length() != 12) {
@@ -359,12 +294,7 @@ public class PhoneUtils {
         return true;
     }
 
-
-    /**
-     *
-     * @param phone _more_
-     *  @return _more_
-     */
+    
     public static String cleanPhone(String phone) {
         phone = phone.replaceAll("[^0-9]+", "");
         //        phone = phone.replaceAll("-", "").replaceAll("-", "").replaceAll("\\s","").replaceAll("\\(","").replaceAll("\\)","").replaceAll("\\.","");
@@ -387,18 +317,9 @@ public class PhoneUtils {
         return phone;
     }
 
-
-
     private static boolean printedMessage = false;
 
-
-    /**
-     *
-     * @param phone _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static PhoneInfo getPhoneInfo(String phone) throws Exception {
         initKeys();
         if ((numverifyKey == null) && (numlookupapiKey == null)) {
@@ -477,34 +398,21 @@ public class PhoneUtils {
                              obj.getString("location"),
                              obj.getString("line_type"));
 
-
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Oct 12, '22
-     * @author         Enter your name here...    
-     */
+    
     private static class PhoneInfo {
 
-        /**  */
+        
         String countryCode;
 
-        /**  */
+        
         String location;
 
-        /**  */
+        
         String lineType;
 
-        /**
-         
-         *
-         * @param countryCode _more_
-         * @param location _more_
-         * @param lineType _more_
-         */
+        
         PhoneInfo(String countryCode, String location, String lineType) {
             this.countryCode = countryCode;
             this.location    = location;
@@ -512,11 +420,7 @@ public class PhoneUtils {
         }
     }
 
-
-    /**
-     *
-     * @param msg _more_
-     */
+    
     public static void usage(String msg) {
         if (msg != null) {
             System.err.println(msg);
@@ -526,13 +430,6 @@ public class PhoneUtils {
         Utils.exitTest(1);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < 10; i++) {
             System.err.println(isPhoneMobile("3038982413"));
@@ -541,7 +438,6 @@ public class PhoneUtils {
         if (true) {
             return;
         }
-
 
         String campaign = "testcampaign";
         String message  = null;
@@ -585,8 +481,5 @@ public class PhoneUtils {
         }
         Utils.exitTest(0);
     }
-
-
-
 
 }

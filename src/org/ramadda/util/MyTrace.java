@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.*;
 
 import java.awt.*;
@@ -16,11 +15,7 @@ import java.io.InputStream;
 
 import java.io.PrintStream;
 
-
-
-
 import java.lang.reflect.InvocationTargetException;
-
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -29,135 +24,55 @@ import java.util.Properties;
 
 import javax.swing.*;
 
-
 /**
- * Provides for applicatin level call tracing, timing and memory
+ * Provides for application level call tracing, timing and memory
  * tracing.
  *
  */
 @SuppressWarnings("unchecked")
 public class MyTrace {
-
-    /** _more_ */
     private static Hashtable counters = new Hashtable();
-
-    /** _more_ */
     private static List counterList = new ArrayList();
-
-    /** _more_ */
     private static final Object MUTEX = new Object();
-
-    /** _more_ */
     public static boolean displayMsg = false;
-
-    /** _more_ */
     public static boolean showThreadLabel = false;
-
-    /** _more_ */
     private static boolean showLineNumber = false;
-
-
-    /** _more_ */
     private static Hashtable accumTable = new Hashtable();
-
-    /** _more_ */
     private static Hashtable accumCntTable = new Hashtable();
-
-    /** _more_ */
     private static Hashtable accum1Table = new Hashtable();
-
-    /** _more_ */
     private static List accumList = new ArrayList();
-
-
-    /** _more_ */
     private static Hashtable ticks = new Hashtable();
-
-    /** _more_ */
     private static Hashtable mems = new Hashtable();
-
-    /** _more_ */
     private static Hashtable tabs = new Hashtable();
-
-    /** _more_ */
     private static Hashtable traceMsgs = new Hashtable();
-
-    /** _more_ */
     private static String lastThreadName = "";
-
-    /** _more_ */
     private static long initMemory = 0;
-
-    /** _more_ */
     public static long lastMemory = 0;
-
-    /** _more_ */
     public static long lastTime = 0;
-
-    /** _more_ */
     static StringBuffer ts = new StringBuffer();
-
-    /** _more_ */
     static StringBuffer ms = new StringBuffer();
-
-    /** _more_ */
     static StringBuffer tms = new StringBuffer();
-
-    /** _more_ */
     static StringBuffer prefix = new StringBuffer();
-
-    /** _more_ */
     public static StringBuffer buff = new StringBuffer();
-
-
-    /** _more_ */
     private static List notThese = new ArrayList();
-
-    /** _more_ */
     private static List onlyThese = new ArrayList();
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static List getNotThese() {
-        return notThese;
+	return notThese;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static List getOnlyThese() {
         return onlyThese;
     }
 
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     */
     public static void addNot(String pattern) {
         notThese.add(pattern);
     }
 
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     */
     public static void addOnly(String pattern) {
         onlyThese.add(pattern);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     */
     public static void removeOnly(String pattern) {
         onlyThese.remove(pattern);
     }
@@ -169,11 +84,6 @@ public class MyTrace {
         onlyThese = new ArrayList();
     }
 
-
-    /**
-     * _more_
-     * @return _more_
-     */
     static StringBuffer getBuffer() {
         Thread       t  = Thread.currentThread();
         StringBuffer sb = (StringBuffer) traceMsgs.get(t);
@@ -185,10 +95,6 @@ public class MyTrace {
         return sb;
     }
 
-    /**
-     * _more_
-     * @return _more_
-     */
     static Integer getTab() {
         Thread  t   = Thread.currentThread();
         Integer tab = (Integer) tabs.get(t);
@@ -200,56 +106,28 @@ public class MyTrace {
         return tab;
     }
 
-
-    /**
-     * _more_
-     * @return _more_
-     */
     static int getCurrentTab() {
         return getTab().intValue();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
     public static void setShowLineNumbers(boolean v) {
         showLineNumber = v;
     }
 
-
-    /**
-     * _more_
-     */
     public static void startTrace() {
         displayMsg = true;
         initMemory = (Runtime.getRuntime().totalMemory()
                       - Runtime.getRuntime().freeMemory());
     }
 
-    /**
-     * _more_
-     */
     public static void stopTrace() {
         displayMsg = false;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static boolean traceActive() {
         return displayMsg;
     }
 
-    /**
-     * _more_
-     *
-     * @param delta
-     */
     public static void deltaCurrentTab(int delta) {
         if ( !displayMsg) {
             return;
@@ -258,12 +136,6 @@ public class MyTrace {
         tabs.put(Thread.currentThread(),  Integer.valueOf(v + delta));
     }
 
-    /**
-     * _more_
-     *
-     * @param notTheseText _more_
-     * @param onlyTheseText _more_
-     */
     public static void setFilters(String notTheseText, String onlyTheseText) {
         if (notTheseText != null) {
             notThese = StringUtil.split(notTheseText, "\n", true, true);
@@ -273,13 +145,6 @@ public class MyTrace {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
     private static boolean ok(String msg) {
 
         if (notThese.size() > 0) {
@@ -297,43 +162,18 @@ public class MyTrace {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param m
-     */
     public static void call1(String m) {
         call1(m, "", true);
     }
 
-    /**
-     * _more_
-     *
-     * @param m
-     * @param print
-     */
     public static void call1(String m, boolean print) {
         call1(m, "", print);
     }
 
-    /**
-     * _more_
-     *
-     * @param m
-     * @param extra
-     */
     public static void call1(String m, String extra) {
         call1(m, extra, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param m
-     * @param extra
-     * @param print
-     */
     public static void call1(String m, String extra, boolean print) {
         if ( !displayMsg) {
             return;
@@ -353,22 +193,10 @@ public class MyTrace {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param m
-     */
     public static void call2(String m) {
         call2(m, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param m
-     * @param extra
-     */
     public static void call2(String m, String extra) {
         if ( !displayMsg) {
             return;
@@ -393,19 +221,11 @@ public class MyTrace {
         }
     }
 
-
-
-    /**
-     * _more_
-     */
     public static void clearMsgs() {
         tabs      = new Hashtable();
         traceMsgs = new Hashtable();
     }
 
-    /**
-     * _more_
-     */
     public static void printMsgs() {
         for (java.util.Enumeration keys = traceMsgs.keys();
                 keys.hasMoreElements(); ) {
@@ -416,12 +236,6 @@ public class MyTrace {
         clearMsgs();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param m
-     */
     public static void before(String m) {
         if ( !displayMsg) {
             return;
@@ -432,11 +246,6 @@ public class MyTrace {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param m
-     */
     public static void after(String m) {
         if ( !displayMsg) {
             return;
@@ -447,12 +256,6 @@ public class MyTrace {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param m
-     */
     public static void msg(String m) {
         if ( !displayMsg) {
             return;
@@ -465,11 +268,6 @@ public class MyTrace {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param msg
-     */
     private static void writeTrace(String msg) {
         String suff = "";
 
@@ -492,7 +290,6 @@ public class MyTrace {
             }
         }
 
-
         Thread t              = Thread.currentThread();
         String crntThreadName = t.getName();
         if ( !crntThreadName.equals(lastThreadName)) {
@@ -509,13 +306,6 @@ public class MyTrace {
         //      sb.append (msg+"\n");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param sb
-     */
     private static void printTabs(StringBuffer sb) {
         if ( !displayMsg) {
             return;
@@ -562,7 +352,6 @@ public class MyTrace {
             prefix.append(" ");
         }
 
-
         System.out.print(prefix.toString());
         if (sb != null) {
             sb.append(prefix.toString());
@@ -575,22 +364,11 @@ public class MyTrace {
             System.out.print("  ");
         }
 
-
         lastTime = currentTime;
         lastMemory = (Runtime.getRuntime().totalMemory()
                       - Runtime.getRuntime().freeMemory());
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     */
     public static void accum1(String name) {
         if ( !displayMsg) {
             return;
@@ -600,11 +378,6 @@ public class MyTrace {
         accum1Table.put(name, l);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     */
     public static void accum2(String name) {
         if ( !displayMsg) {
             return;
@@ -635,10 +408,6 @@ public class MyTrace {
         accumTable.put(name, total);
     }
 
-
-    /**
-     * _more_
-     */
     public static void printAccum() {
         for (int i = 0; i < accumList.size(); i++) {
             String  name  = (String) accumList.get(i);
@@ -653,12 +422,6 @@ public class MyTrace {
         accumTable    = new Hashtable();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param name
-     */
     public static void count(String name) {
         Integer i = (Integer) counters.get(name);
         if (i == null) {
@@ -670,10 +433,6 @@ public class MyTrace {
         counters.put(name, i);
     }
 
-
-    /**
-     * _more_
-     */
     public static void printAndClearCount() {
         for (int i = 0; i < counterList.size(); i++) {
             String  name     = (String) counterList.get(i);
@@ -683,7 +442,5 @@ public class MyTrace {
         counterList = new ArrayList();
         counters    = new Hashtable();
     }
-
-
 
 }

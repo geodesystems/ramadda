@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import java.io.*;
-
 
 /**
  * Class to eat a stream
@@ -23,9 +21,7 @@ public class StreamEater extends Thread {
     /** The type name (for debugging) */
     private String type;
 
-    /** _more_ */
     private boolean running = false;
-
 
     /**
      * A class for reading lines from an input stream in a thread
@@ -79,12 +75,6 @@ public class StreamEater extends Thread {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getRunning() {
         return running;
     }

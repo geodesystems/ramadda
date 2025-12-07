@@ -114,7 +114,7 @@ public class Test {
 	if(url.startsWith("stop")) {
 	    return false;
 	}
-	    
+
 	if(url.startsWith("sleep ")) {
 	    int s = Integer.parseInt(url.substring("sleep ".length()).trim());
 	    Misc.sleep(s);
@@ -133,8 +133,6 @@ public class Test {
 	    skip--;
 	    return true;
 	}
-
-
 
 	Date before = new Date();
 	IO.Result result = IO.doGetResult(new URL(url));
@@ -176,14 +174,6 @@ public class Test {
 	return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
 	startTime = new Date();
 	final List<String> urls=new ArrayList<String>();
@@ -197,7 +187,6 @@ public class Test {
 		timeThreshold= Integer.parseInt(args[++i]);
 		continue;
 	    }
-
 
 	    if(args[i].equals("-threads")) {
 		numThreads = Integer.parseInt(args[++i]);
@@ -257,7 +246,7 @@ public class Test {
 	    //Stagger the threads
 	    Misc.sleep(random.nextInt(50) + 1);
 	}
-	
+
 	while(true) {
 	    synchronized(MUTEX) {
 		if(numThreads<=0) break;
@@ -267,6 +256,5 @@ public class Test {
 	System.out.println("Finished");
 	Utils.exitTest(0);
     }
-
 
 }

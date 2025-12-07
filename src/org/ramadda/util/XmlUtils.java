@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.w3c.dom.*;
 
 import org.xml.sax.*;
@@ -31,7 +30,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import javax.xml.parsers.*;
 
-
 /**
  * A collection of utilities for xml.
  *
@@ -39,7 +37,6 @@ import javax.xml.parsers.*;
 
 @SuppressWarnings("unchecked")
 public abstract class XmlUtils {
-
 
     public static List findChildren(Node parent, String... tagList) {
 	ArrayList found    = new ArrayList();
@@ -60,16 +57,6 @@ public abstract class XmlUtils {
         return found;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param bytes _more_
-     *
-     * @throws Exception _more_
-     */
     public static void appendCdataBytes(Appendable sb, byte[] bytes)
             throws Exception {
         sb.append("<![CDATA[");
@@ -77,19 +64,10 @@ public abstract class XmlUtils {
         sb.append("]]>");
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param s _more_
-     *
-     * @throws Exception _more_
-     */
     public static void appendCdata(Appendable sb, String s) throws Exception {
         sb.append("<![CDATA[");
         sb.append(s);
         sb.append("]]>");
     }
-
 
 }
