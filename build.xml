@@ -232,6 +232,7 @@
         compress="true"
         jarfile="${plugin_destdir}/${plugin_jar}">
       <exclude name="${plugin_dir}/bin/**/*"/>
+      <exclude name="${plugin_dir}/docsrc/**/*"/>      
       <include name="${plugin_dir}/**/*.class"/>
       <include name="${plugin_dir}/**/*.json"/>	    
       <include name="${plugin_extra_class}"/>
