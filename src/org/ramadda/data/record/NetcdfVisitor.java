@@ -3,9 +3,7 @@ Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-
 package org.ramadda.data.record;
-
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
@@ -25,71 +23,46 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-/**
- */
-
 @SuppressWarnings("deprecation")
 public class NetcdfVisitor extends RecordVisitor {
 
     private static final boolean debug = false;
 
-    /** _more_ */
     public static final int MAX_STRING_LENGTH = 200;
 
-    /** _more_ */
     private int recordCnt = 0;
 
-    /** _more_ */
     private PointDataRecord cacheRecord;
 
-    /** _more_ */
     //    private List<VariableSimpleIF> dataVars;
     private List<ucar.nc2.dt.point.PointObVar> dataVars;
 
-
-    /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_ */
     private File tmpFile;
 
-    /** _more_ */
     private File outputNetcdfFile;
 
-    /** _more_ */
     private RecordIO tmpFileIO;
 
-    /** _more_ */
     //    private WriterCFPointCollection writer;
 
     private DataOutputStream dos;
 
-    /** _more_ */
     private double[] dvals;
 
-    /** _more_ */
     private String[] svals;
 
-    /** _more_ */
     private boolean hasTime = false;
 
-    /** _more_ */
     private Date now;
 
-    /**
-     * _more_
-     *
-     * @param tmpFile _more_
-     * @param outputNetcdfFile _more_
-     */
     public NetcdfVisitor(File tmpFile, File outputNetcdfFile,List<RecordField> subsetFields) {
         this.tmpFile          = tmpFile;
         this.outputNetcdfFile = outputNetcdfFile;
@@ -102,15 +75,6 @@ public class NetcdfVisitor extends RecordVisitor {
 	this.fields = subsetFields;
     }    
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param record _more_
-     *
-     * @throws Exception _more_
-     */
     private void init(RecordFile file, BaseRecord record) throws Exception {
         now     = new Date();
         hasTime = record.hasRecordTime();
@@ -192,19 +156,6 @@ public class NetcdfVisitor extends RecordVisitor {
 	*/
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         if (tmpFileIO == null) {
@@ -240,12 +191,6 @@ public class NetcdfVisitor extends RecordVisitor {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     */
     @Override
     public void close(VisitInfo visitInfo) {
         try {
@@ -289,7 +234,7 @@ public class NetcdfVisitor extends RecordVisitor {
 		dos.close();
 	    }
 	    tmpFile.delete();
-		
+
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

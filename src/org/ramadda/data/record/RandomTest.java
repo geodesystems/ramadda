@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.record;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
@@ -13,100 +12,47 @@ import java.util.Arrays;
 import java.util.List;
 
 
-/**
- * Class description
- *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
- */
 public class RandomTest extends BaseRecord {
-
-    /** _more_ */
     byte b = (byte) (Math.random() * 1000);
-
-    /** _more_ */
     short s = (short) (Math.random() * 1000);
-
-    /** _more_ */
     int i = (int) (Math.random() * 1000);
-
-    /** _more_ */
     long l = (long) (Math.random() * 1000);
-
-    /** _more_ */
     double d = (double) (Math.random() * 1000);
-
-    /** _more_ */
     float f = (float) (Math.random() * 1000);
-
-    /** _more_ */
     short u_b = (short) (Math.random() * 255);
-
-    /** _more_ */
     int u_s = (int) (Math.random() * 1000);
-
-    /** _more_ */
     long u_i = (long) (Math.random() * 1000);
-
-    /** _more_ */
     byte[] a_b = new byte[] { (byte) (Math.random() * 1000),
                               (byte) (Math.random() * 1000) };
 
-    /** _more_ */
     short[] a_s = new short[] { (short) (Math.random() * 1000),
                                 (short) (Math.random() * 1000) };
 
-    /** _more_ */
     int[] a_i = new int[] { (int) (Math.random() * 1000),
                             (int) (Math.random() * 1000) };
 
-    /** _more_ */
     float[] a_f = new float[] { (float) (Math.random() * 1000),
                                 (float) (Math.random() * 1000) };
 
-
-
-    /** _more_ */
     long[] a_l = new long[] { (long) (Math.random() * 1000),
                               (long) (Math.random() * 1000) };
 
-
-    /** _more_ */
     double[] a_d = new double[] { (double) (Math.random() * 1000),
                                   (double) (Math.random() * 1000) };
 
-    /** _more_ */
     short[] u_a_b = new short[] { (short) (Math.random() * 255),
                                   (short) (Math.random() * 255) };
 
-
-    /** _more_ */
     int[] u_a_s = new int[] { (int) (Math.random() * 1000),
                               (int) (Math.random() * 1000) };
 
-    /** _more_ */
     long[] u_a_i = new long[] { (long) (Math.random() * 1000),
                                 (long) (Math.random() * 1000) };
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param bigEndian _more_
-     */
     public RandomTest(boolean bigEndian) {
         super(null, bigEndian);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param that _more_
-     */
     public void check(RandomTest that) {
         /*
         if (this.b != that.b) {
@@ -177,18 +123,6 @@ public class RandomTest extends BaseRecord {
         */
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ReadStatus read(RecordIO recordIO) throws Exception {
         super.read(recordIO);
         this.b   = readByte(recordIO.getDataInputStream());
@@ -216,14 +150,6 @@ public class RandomTest extends BaseRecord {
         return ReadStatus.OK;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @throws IOException _more_
-     */
     public void write(RecordIO recordIO) throws IOException {
         super.write(recordIO);
 
@@ -237,7 +163,6 @@ public class RandomTest extends BaseRecord {
 
         writeUnsignedShort(recordIO.getDataOutputStream(), u_s);
 
-
         writeUnsignedInt(recordIO.getDataOutputStream(), u_i);
         write(recordIO.getDataOutputStream(), a_b);
         write(recordIO.getDataOutputStream(), a_s);
@@ -250,13 +175,6 @@ public class RandomTest extends BaseRecord {
         writeUnsignedInts(recordIO.getDataOutputStream(), u_a_i);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < 2; i++) {
             System.err.println("test " + i);
@@ -276,6 +194,5 @@ public class RandomTest extends BaseRecord {
         }
 
     }
-
 
 }

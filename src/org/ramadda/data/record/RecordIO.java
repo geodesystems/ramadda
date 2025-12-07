@@ -9,7 +9,6 @@ import org.ramadda.util.seesv.TextReader;
 
 import java.io.*;
 
-
 /**
  * This class  is  a holder for various IO capabilities. It needs a core InputStream or  OutputStream.
  * This holds wrappers around those streams - e.g., DataInputStream, DataOutputStream, PrintWriter, etc.
@@ -19,10 +18,8 @@ import java.io.*;
  */
 public class RecordIO {
 
-    /** _more_ */
     static int cnt = 0;
 
-    /** _more_ */
     public String myid = "RecordIO-" + (cnt++);
 
     /** the input stream */
@@ -43,10 +40,7 @@ public class RecordIO {
     /** print writer */
     private PrintWriter printWriter;
 
-    /** _more_ */
     private String putBackLine;
-
-
 
     /**
      * ctor
@@ -75,17 +69,9 @@ public class RecordIO {
         this.outputStream = outputStream;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isOk() {
         return (inputStream != null) || (bufferedReader != null);
     }
-
-
 
     /**
      * Copy ctor
@@ -118,7 +104,6 @@ public class RecordIO {
                 inputStream.close();
             }
         } catch (Exception ignore) {}
-
 
         try {
             if (printWriter != null) {
@@ -161,7 +146,6 @@ public class RecordIO {
         return outputStream;
     }
 
-
     /**
      * Create if needed and return the DataInputStream
      *
@@ -177,7 +161,6 @@ public class RecordIO {
         return dataInputStream;
     }
 
-
     /**
      * Create if needed and return the DataOutputStream
      *
@@ -192,8 +175,6 @@ public class RecordIO {
 
         return dataOutputStream;
     }
-
-
 
     /**
      * Create if needed and return the BufferedReader
@@ -236,21 +217,10 @@ public class RecordIO {
 	return getTextReader().readLine();
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     */
     public void putBackLine(String line) {
         putBackLine = line;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getAndClearPutback() {
         String s = putBackLine;
         putBackLine = null;
