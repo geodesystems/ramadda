@@ -1,8 +1,10 @@
 <html>
 <title>Documents and Media</title>
 <body>
-<div class="ramadda-section">
-<h2>PDF Image Thumbnails</h2>
++section title="Documents and Media"
+:navtop
+
+:heading PDF Image Thumbnails
 RAMADDA uses <a href="https://www.ghostscript.com/">Ghostscript</a>
 to generate thumbnail images of PDF files when they are uploaded.
 To configure your RAMADDA install Ghostscript and add the following
@@ -15,7 +17,7 @@ service.gs=/usr/local/bin/gs
 
 
 
-<h2>PDF Image Thumbnails</h2>
+:heading PDF Image Thumbnails
 RAMADDA uses <a href="https://www.libreoffice.org/">LibreOffice</a> to generate thumbnail images
 of PowerPoint files when they are uploaded.
 To configure your RAMADDA install LibreOffice (with soffice) and add the following
@@ -27,7 +29,7 @@ service.soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
 </pre>
 
 <a name=tesseract/>
-<h2>OCR for images</h2>
+:heading OCR for images
 RAMADDA can use the Tesseract OCR package to extract text from images to be added to the
 Lucene search index. Install <a href=https://github.com/tesseract-ocr/tesseract>Tesseract</a>
 on your server and set the following property in your repository.properties:
@@ -37,7 +39,7 @@ ramadda.tesseract=/path/to/tesseract
 
 
 <a name=zoomable/>
-<h2>Zoomable Images</h2>
+:heading Zoomable Images
 RAMADDA supports zoomable images using <a href="https://openseadragon.github.io/">OpenSeadragon</a>.
 RAMADDA will autotmatically create the set of image tiles. To enable this functionality you need to have the
 <a href="https://imagemagick.org/index.php">ImageMagick</a> package installed on your server. Then
@@ -56,7 +58,7 @@ The Zoomable Image entry also supports annotations.
 
 
 <a name=annotations/>
-<h2>Annotations</h2>
+:heading Annotations
 The Zoomable Image and the Annotated Image support drawing
 rectangle and polygon annotations.
 If you are logged in and can edit the 
