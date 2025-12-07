@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
-
 import com.monitorjbl.xlsx.StreamingReader;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,7 +35,6 @@ import org.ramadda.util.seesv.TextReader;
 
 import org.w3c.dom.*;
 
-
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -60,58 +58,22 @@ import java.util.List;
 
 import java.util.zip.*;
 
-
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class TabularOutputHandler extends OutputHandler {
-
-    /** _more_ */
     public static final int MAX_ROWS = 100;
-
-    /** _more_ */
     public static final int MAX_COLS = 100;
-
-    /** _more_ */
     public static final OutputType OUTPUT_XLS_HTML =
         new OutputType("Show Spreadsheet", "xls_html", OutputType.TYPE_VIEW,
                        "", "fa-file-excel");
 
-
-    /**
-     * _more_
-     */
     public TabularOutputHandler() {}
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public TabularOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_XLS_HTML);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         Entry entry = state.getEntry();
@@ -131,19 +93,6 @@ public class TabularOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param s _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
@@ -152,15 +101,6 @@ public class TabularOutputHandler extends OutputHandler {
         return new Result(s, "application/json");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param f _more_
-     *
-     * @throws Exception _more_
-     */
     private void addFileLink(Request request, StringBuffer sb, File f)
             throws Exception {
         String id = getEntryManager().getProcessFileTypeHandler().getSynthId(
@@ -173,24 +113,6 @@ public class TabularOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.href(url, f.getName(), "target=_output"));
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param harvester _more_
-     * @param args _more_
-     * @param buffer _more_
-     * @param files _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public boolean processCommandView(final org.ramadda.repository.harvester
             .CommandHarvester.CommandRequest request, final Entry entry,
                 final org.ramadda.repository.harvester
@@ -205,8 +127,6 @@ public class TabularOutputHandler extends OutputHandler {
             return false;
         }
 
-
-
         final boolean justHeader = args.contains("-header");
         final boolean doText     = args.contains("-text");
         final boolean doFile     = args.contains("-file");
@@ -217,7 +137,6 @@ public class TabularOutputHandler extends OutputHandler {
         final List<Integer> selectedColumns = (columnsArg.size() > 0)
                 ? new ArrayList<Integer>()
                 : null;
-
 
         //User indexes are 1 based
         if (columnsArg.size() > 0) {
@@ -238,7 +157,6 @@ public class TabularOutputHandler extends OutputHandler {
                 }
             }
         }
-
 
         final int startCol = Math.max(0, Utils.getArg("-startcol", args, 1)
                                       - 1);
@@ -326,8 +244,6 @@ public class TabularOutputHandler extends OutputHandler {
         }
         visit(request.getRequest(), entry, info, tabularVisitor);
 
-
-
         if (doImage) {
             File imageFile = getRepository().getStorageManager().getTmpFile(entry.getName() + "_table.png");
 
@@ -361,30 +277,10 @@ public class TabularOutputHandler extends OutputHandler {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private int getSkipRows(Request request, Entry entry) throws Exception {
         return (int) request.get("table.skiprows", 0);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getDelimiter(Entry entry) throws Exception {
         if (isTabular(entry)) {
             TabularTypeHandler tth =
@@ -396,17 +292,6 @@ public class TabularOutputHandler extends OutputHandler {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private int getRowCount(Request request, Entry entry, int dflt)
             throws Exception {
         int v = (int) request.get("table.rows", dflt);
@@ -414,16 +299,6 @@ public class TabularOutputHandler extends OutputHandler {
         return v;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param visitInfo _more_
-     * @param visitor _more_
-     *
-     * @throws Exception _more_
-     */
     public void visit(Request request, Entry entry, TextReader visitInfo,
                       TabularVisitor visitor)
             throws Exception {
@@ -458,7 +333,6 @@ public class TabularOutputHandler extends OutputHandler {
                     }
                 }
             }
-
 
             if (inputStream == null) {
                 inputStream = new BufferedInputStream(
@@ -495,19 +369,6 @@ public class TabularOutputHandler extends OutputHandler {
         IOUtil.close(inputStream);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param inputStream _more_
-     * @param textReader _more_
-     * @param visitor _more_
-     *
-     * @throws Exception _more_
-     */
     public void visitCsv(Request request, Entry entry,
                          InputStream inputStream,
                          final TextReader textReader, TabularVisitor visitor)
@@ -581,18 +442,6 @@ public class TabularOutputHandler extends OutputHandler {
         visitor.visit(textReader, entry.getName(), rows);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param suffix _more_
-     * @param inputStream _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Workbook makeWorkbook(String suffix,
                                          InputStream inputStream)
             throws Exception {
@@ -607,20 +456,6 @@ public class TabularOutputHandler extends OutputHandler {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param suffix _more_
-     * @param inputStream _more_
-     * @param visitInfo _more_
-     * @param visitor _more_
-     *
-     * @throws Exception _more_
-     */
     private void visitXls(Request request, Entry entry, String suffix,
                           InputStream inputStream, TextReader visitInfo,
                           TabularVisitor visitor)
@@ -698,15 +533,6 @@ public class TabularOutputHandler extends OutputHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static boolean isTabular(Entry entry) {
         if (entry == null) {
             return false;
@@ -715,18 +541,6 @@ public class TabularOutputHandler extends OutputHandler {
         return entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean csv(Request request, Service service, ServiceInput input,
                        List args)
             throws Exception {
@@ -762,7 +576,6 @@ public class TabularOutputHandler extends OutputHandler {
       final TextReader info =
       new TextReader(new BufferedInputStream(inputStream), new FileOutputStream(newFile));
 
-
       TabularVisitor visitor = new TabularVisitor() {
       public boolean visit(TabularVisitInfo info, String sheetName,
       List<List<Object>> rows) {
@@ -775,22 +588,13 @@ public class TabularOutputHandler extends OutputHandler {
       request, entry, getSkipRows(request, entry),
       getRowCount(request, entry, Integer.MAX_VALUE), sheetsToShow);
 
-
       visit(request, entry, visitInfo, visitor);
-
 
       return true;
 
       }
     */
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         Workbook wb = makeWorkbook(IOUtil.getFileExtension(args[0]),
                                    new FileInputStream(args[0]));
@@ -836,7 +640,5 @@ public class TabularOutputHandler extends OutputHandler {
             }
         }
     }
-
-
 
 }

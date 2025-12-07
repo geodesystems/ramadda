@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
-
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.services.PointTypeHandler;
 
@@ -27,43 +26,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-
-
-
-/**
- *
- *
- */
 public class ConvertibleTypeHandler extends PointTypeHandler {
-
     public static final String TYPE_CONVERTIBLE = "type_convertible";
-
-    /** _more_ */
     private static int IDX = 0;
-
     //Have these here so we can act like a point entry type
-
-    /** _more_ */
     public static final int IDX_NUMPOINTS = IDX++;
-
-    /** _more_ */
     public static final int IDX_PROPERTIES = IDX++;
-
-    /** _more_ */
     public static final int IDX_COMMANDS = IDX++;
-
-    /** _more_ */
     public static final int IDX_LAST = IDX_COMMANDS;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ConvertibleTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -110,20 +81,6 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 	return args;
     }	
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -136,17 +93,10 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
                 + " commands:" + Utils.join(args, " ", false));
         }
 
-
         IO.Path          path = getPathForRecordEntry(request,entry,requestProperties);
         ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
 
         return file;
     }
-
-
-
-
-
-
 
 }

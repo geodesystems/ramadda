@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
@@ -18,7 +17,6 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -33,38 +31,13 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
-/**
- *
- *
- */
 public class MsDocTypeHandler extends GenericTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public MsDocTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -73,15 +46,6 @@ public class MsDocTypeHandler extends GenericTypeHandler {
         initializeDocEntry(request, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void initializeDocEntry(Request request, Entry entry)
             throws Exception {
         File file = entry.getFile();
@@ -161,9 +125,5 @@ public class MsDocTypeHandler extends GenericTypeHandler {
 	return getEntryManager().addHeaderToAncillaryPage(request,
 							  new Result(BLANK, sb));
     }
-
-
-
-
 
 }

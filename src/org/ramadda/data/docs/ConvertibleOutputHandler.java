@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
@@ -37,38 +36,19 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class ConvertibleOutputHandler extends OutputHandler {
 
-
-    /** _more_ */
     public static final OutputType OUTPUT_CONVERT_FORM =
         new OutputType("Convert Data", "convert_form", OutputType.TYPE_FILE,
                        "", "fa-file-csv");
 
-    /** _more_ */
     public static final OutputType OUTPUT_CONVERT_PROCESS =
         new OutputType("Convert Data", "convert_process",
                        OutputType.TYPE_FILE, "", "fa-file-csv");
 
-
-    /**
-     * _more_
-     */
     public ConvertibleOutputHandler() {}
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public ConvertibleOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -76,19 +56,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         addType(OUTPUT_CONVERT_PROCESS);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         Entry entry = state.getEntry();
@@ -113,18 +80,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -139,18 +94,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         return new Result("", "Unknown request");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputConvertForm(Request request, Entry entry)
             throws Exception {
         StringBuilder sb = new StringBuilder();
@@ -161,19 +104,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
         return new Result(entry.getName() +" - Seesv Form" , sb);
     }
 
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeConvertForm(Request request, Entry entry,
                                 StringBuilder sb, Hashtable props)
             throws Exception {
-	
 
 	boolean canEdit = Utils.getProperty(props,"canEdit",
 					    getAccessManager().canDoEdit(request, entry));
@@ -194,16 +127,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 (String) entry.getValue(request,ConvertibleTypeHandler.IDX_COMMANDS);
 
 	}
-	/*
-	if (!Utils.stringDefined(lastInput)) {
-	    if (entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR)) {
-		lastInput = (String) entry.getValue(request,"TabularTypeHandler.IDX_CONVERT);
-	    }
-	    }*/
 	if (!Utils.stringDefined(lastInput)) {
 	    lastInput = (String) entry.getValue(request,"convert_commands");
 	}
-
 
         if (lastInput != null) {
             //A hack but escaping the escapes in java is a pain
@@ -227,7 +153,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	sb.append(getRepository().getMapManager().getHtmlImports(request));
         HtmlUtils.importJS(sb, getRepository().getHtdocsUrl("/seesv.js"));
 
-
 	if(canEdit) {
 	    props.put("canEdit","true");
 	} else {
@@ -240,19 +165,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		  "var convertParams = " + jsparams +";\n" +
                   "new SeesvForm(" + HU.comma(HU.squote(id),HU.squote(entry.getId()),"convertParams")+");");
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param s _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
@@ -261,15 +175,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         return new Result(s, "application/json");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param f _more_
-     *
-     * @throws Exception _more_
-     */
     private void addFileLink(Request request, StringBuffer sb, File f)
             throws Exception {
         String id = getEntryManager().getProcessFileTypeHandler().getSynthId(
@@ -282,28 +187,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.href(url, f.getName(), "target=_output"));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public PointTypeHandler getTypeHandler(Entry entry) {
         return (PointTypeHandler) entry.getTypeHandler();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputConvertProcess(Request request, Entry entry)
             throws Exception {
 
@@ -352,7 +239,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
             return makeHtmlResult(request, sb.toString());
         }
 
-
         if (request.get("stop", false)) {
             Seesv csvUtil =
                 (Seesv) getSessionManager().getSessionProperty(request,
@@ -377,7 +263,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 getEntryManager().updateEntry(request, entry);
             }
         }
-
 
         List    currentArgs = null;
         Seesv csvUtil     = null;
@@ -622,20 +507,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param process _more_
-     * @param entry _more_
-     * @param csvUtil _more_
-     * @param destDir _more_
-     * @param runDir _more_
-     * @param args _more_
-     * @param newFiles _more_
-     *
-     * @throws Exception _more_
-     */
     public void outputConvertProcessInner(Request request, boolean process,
                                           Entry entry, Seesv csvUtil,
                                           File destDir, File runDir,
@@ -656,7 +527,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	    }
 
 	    if(entry.getTypeHandler() instanceof RecordTypeHandler) {
-		
+
 		files.add(((RecordTypeHandler)entry.getTypeHandler()).getPathForRecordEntry(request, entry,  new Hashtable()));
 	    } else {
 		files.add(new IO.Path(path));
@@ -705,15 +576,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-
     public HashSet<Integer> getSheetsToShow(String s) {
         HashSet<Integer> sheetsToShow = null;
         if (Utils.stringDefined(s)) {
@@ -729,15 +591,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
         return sheetsToShow;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static boolean isConvertible(Entry entry) {
         if (entry == null) {
             return false;
@@ -746,7 +599,5 @@ public class ConvertibleOutputHandler extends OutputHandler {
         return entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE) ||
 	    entry.getTypeHandler().getTypeProperty("iscsvconvertible",false);
     }
-
-
 
 }

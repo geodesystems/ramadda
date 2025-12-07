@@ -5,20 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
-
 import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 
 import java.io.*;
 
@@ -27,40 +24,14 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- *
- */
 public class ConvertibleFile extends CsvFile {
-
-    /** _more_ */
     private Entry entry;
-
-    /** _more_ */
     private List<String> commands;
-
     private ConvertibleTypeHandler cth;
-
     private Request request;
 
-    /**
-     * ctor
-     */
     public ConvertibleFile() {}
 
-
-    /**
-     * ctor
-     *
-     *
-     *
-     *
-     * @param cth _more_
-     * @param entry _more_
-     * @param commands _more_
-     *
-     * @throws IOException on badness
-     */
     public ConvertibleFile(Request request,ConvertibleTypeHandler cth, Entry entry,
                            List<String> commands, IO.Path path)
             throws IOException {
@@ -71,13 +42,6 @@ public class ConvertibleFile extends CsvFile {
         this.commands = commands;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public List<String> getCsvCommands() throws Exception {
 	if(commands!=null && commands.size()>0) 
@@ -90,14 +54,6 @@ public class ConvertibleFile extends CsvFile {
 	return  cth.preprocessCsvCommands(request, commands);
     }
 
-    /**
-     * _more_
-     *
-     * @param csvUtil _more_
-     * @param buffered _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
@@ -109,8 +65,5 @@ public class ConvertibleFile extends CsvFile {
         }
         csvUtil.run(files);
     }
-
-
-
 
 }

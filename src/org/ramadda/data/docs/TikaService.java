@@ -31,8 +31,6 @@ import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.apache.poi.xslf.usermodel.XSLFShape;
 
-
-
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -57,9 +55,6 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.List;
 
-
-
-
 /**
  *
  * @author Jeff McWhirter/geodesystems.com
@@ -67,48 +62,16 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class TikaService extends Service {
 
-
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     * @throws Exception _more_
-     */
     public TikaService(Repository repository) throws Exception {
         super(repository, (Element) null);
     }
 
-
-
-    /**
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean extractMetadata(Request request, Service service,
                                    ServiceInput input, List args)
             throws Exception {
         return extractText(request, service, input, args, false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean extractText(Request request, Service service,
                                ServiceInput input, List args)
             throws Exception {
@@ -116,17 +79,6 @@ public class TikaService extends Service {
         return extractText(request, service, input, args, true);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     * @param doText _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean extractText(Request request, Service service,
                                ServiceInput input, List args, boolean doText)
             throws Exception {
@@ -231,7 +183,6 @@ public class TikaService extends Service {
 	}
 	name = IOUtil.stripExtension(name);
 
-
 	for(int i=slideStart;i<=slideEnd;i++) {
 	    File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
 						   name+"_"+i + ".png"));
@@ -239,7 +190,7 @@ public class TikaService extends Service {
 	}
 	return true;
     }
-    
+
     public static void  makePptScreenshot(XMLSlideShow ppt,
 					  List<XSLFSlide> slides,
 					  File output,int slideNumber) throws Exception {
@@ -271,8 +222,5 @@ public class TikaService extends Service {
 	XlsUtil.explodeXls(path, input.getProcessDir());
         return true;
     }
-
-
-
 
 }

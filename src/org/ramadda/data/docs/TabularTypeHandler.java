@@ -31,49 +31,17 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
-/**
- *
- *
- */
 public class TabularTypeHandler extends ConvertibleTypeHandler {
-
-
-    /** _more_ */
     public static final String TYPE_TABULAR = "type_document_tabular";
-
-
-    /** _more_ */
     private static int IDX = ConvertibleTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     public static final int IDX_LAST = IDX;
-
-
-
-    /** _more_ */
     private TabularOutputHandler tabularOutputHandler;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public TabularTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static boolean isTabular(Entry entry) {
         if (entry == null) {
             return false;
@@ -82,21 +50,6 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
         return entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param harvester _more_
-     * @param args _more_
-     * @param sb _more_
-     * @param files _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     @Override
     public boolean processCommandView(org.ramadda.repository.harvester
             .CommandHarvester.CommandRequest request, Entry entry,
@@ -107,11 +60,6 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
                 harvester, args, sb, files);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private TabularOutputHandler getTabularOutputHandler() {
         if (tabularOutputHandler == null) {
             tabularOutputHandler =
@@ -122,34 +70,10 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
         return tabularOutputHandler;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param myxls _more_
-     * @param visitInfo _more_
-     * @param visitor _more_
-     *
-     * @throws Exception _more_
-     */
     public void visit(Request request, Entry entry, InputStream myxls,
                       TextReader visitInfo, TabularVisitor visitor)
             throws Exception {}
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param requestProps _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getSimpleDisplay(Request request, Hashtable requestProps,
                                    Entry entry)
@@ -160,29 +84,10 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
 	return getWikiManager().wikifyEntry(request,entry,wiki);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean okToShowTable(Request request, Entry entry) {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
@@ -195,15 +100,6 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
         return new Result("", new StringBuilder(s));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getDelimiter(Entry entry) {
         return getTypeProperty("table.delimiter", (String) null);
     }
