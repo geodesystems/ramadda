@@ -5648,8 +5648,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 						      msg("No documentation available")));
         }
         CategoryBuffer cats = new CategoryBuffer();
-        for (String cat : new String[] { "Basics", "Integration",
-                                         "Other Documentation",
+        for (String cat : new String[] { "Basics",
+					 "Other Documentation",
+					 "Integration",
                                          "Advanced" }) {
             cats.get(cat);
         }
@@ -5657,8 +5658,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.append("<li>");
             String fullUrl = getUrlBase() + url[0];
-            tmpSB.append(HU.href(fullUrl, url[1]));
-            tmpSB.append("<br>&nbsp;");
+            tmpSB.append(HU.href(fullUrl, url[1],HU.attrs("class","search-component")));
+            tmpSB.append(HU.vspace("0.5em"));
             cats.get((url[2] == null)
                      ? "Other Documentation"
                      : url[2]).append(tmpSB.toString());
