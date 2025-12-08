@@ -24,13 +24,49 @@ public  class LinkedTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+	throws Exception {
+	super.initializeEntryFromForm(request, entry,
+				      parent,  newEntry);
+	Entry linkedEntry = getLinkedEntry(request, entry,false);
+	if(linkedEntry!=null) {
+	    long date;
+	    date = linkedEntry.getStartDate();
+	    if(!getDateHandler().isNullDate(date)) 
+		entry.setStartDate(date);
+	    date = linkedEntry.getEndDate();
+	    if(!getDateHandler().isNullDate(date)) 
+		entry.setEndDate(date);	    
+
+	    if(linkedEntry.isGeoreferenced(request))  {
+		entry.setNorth(linkedEntry.getNorth(request));
+		entry.setWest(linkedEntry.getWest(request));
+		entry.setSouth(linkedEntry.getSouth(request));	    	    
+		entry.setEast(linkedEntry.getEast(request));
+	    }
+	}
+    }
+
     @Override
     public Entry getLinkedEntry(Request request, Entry entry) {
+	return getLinkedEntry(request, entry,true);
+    }
+
+    private Entry getLinkedEntry(Request request, Entry entry,boolean passThis) {
 	try {
 	    String entryId = entry.getStringValue(request, "linked_entry",null);
-	    if(!stringDefined(entryId)) return entry;
+	    if(!stringDefined(entryId)) {
+		if(passThis) 
+		    return entry;
+		return null;
+	    }
 	    Entry linkedEntry =  getEntryManager().getEntry(request, entryId);
-	    if(linkedEntry==null) return entry;
+	    if(linkedEntry==null) {
+		if(passThis) 
+		    return entry;
+		return null;
+	    }
 	    return linkedEntry;
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
