@@ -13,6 +13,11 @@ into some types.xml file
 childtypes="type_image,wikipage,type_linked"
 edithelp="&lt;a target=_help href=_quote_{{root}}/archive/index.html#archive_exhibits_quote_&gt;Exhibit help&lt;/a&gt;"
 >
+
+<!-- Columns-->
+<column  name="show_gallery"  label="Show Gallery"  type="boolean"  default="true"  />
+<column  name="show_map"  label="Show Map"  type="boolean"  default="false" />
+<column  name="show_timeline"  label="Show Timeline"  type="boolean"  default="false" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/gallery.png" />
@@ -33,6 +38,7 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 +div class="ramadda-bordered" style="padding:10px;padding-top:0px;"
 :nonavheading {{name link=true }}
 +if haschildren=true  
++if show_gallery=true
 +row tight=true
 +col-6
 {{image  useThumbnail=true showCaption=true width="90%"   popup="true"  inDiv="true"    align="center" }}
@@ -41,13 +47,31 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 +col-6
 {{gallery  width="90%" columns="2"   popup="true"  useThumbnail="false" 
 orderby="entryorder_up,name_up"
-
-showNonImages=true
- decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
+showNonImages=true  decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
 -col
 -row
 -if
++if show_gallery=false
+${showmain}
+-if
++if show_map=true
+{{map hideIfNoLocations=true  wikiPrefix="----_nl_:heading Map" listEntries=true  listInMap=true }}
+-if
++if show_timeline=true
+:vspace 1em
+----
+:heading Timeline
+{{display_timeline doEntries=true imageField="image" titleField="name"  urlField=entry_url
+textTemplate="${description}" filterFields=name}}
+-if
+-if
 +if haschildren=false
+${showmain}
+-if
+-div
+-col
+-row
+<block var="showmain">
 +if hasthumbnail=true
 +row
 +col-3
@@ -61,10 +85,7 @@ showNonImages=true
 +if hasthumbnail=false
 {{description wikify=true}}
 -if
--if
--div
--col
--row
+</block>
 -section]]></wiki>
 </type>
 </types>
