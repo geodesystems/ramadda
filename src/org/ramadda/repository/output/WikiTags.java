@@ -177,7 +177,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#entriesListHeader","",
 					"#hideIfNoLocations","false",
 					"#showCircles","true",
-					"#mapProps","fillColor:red,strokeWidth:1,radius:6"), 
+					"#mapProps","fillColor:red,strokeWidth:1,radius:6",
+					
+					"#message","Message to show when no entries",
+					"#heading","Heading to show",
+					"#wikiPrefix","Wiki text to show"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%",
 					ATTR_HEIGHT,"800px","showIcon","true",
 					"#leftWidth","2",

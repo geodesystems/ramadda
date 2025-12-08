@@ -4392,7 +4392,7 @@ public class WikiManager extends RepositoryManager
                 }
             }
             if (children.size() > 0) {
-                checkHeading(request, wikiUtil, props, sb);
+                checkHeading(request, entry,wikiUtil, props, sb);
             }
 
 	    boolean  linkTop = getProperty(wikiUtil, props, "linkTop",false);
@@ -4922,7 +4922,7 @@ public class WikiManager extends RepositoryManager
                 }
             }
             if (children.size() > 0) {
-                checkHeading(request, wikiUtil, props, sb);
+                checkHeading(request, entry, wikiUtil, props, sb);
             }
             makeGallery(request, wikiUtil, children, props, sb);
 
@@ -6253,7 +6253,7 @@ public class WikiManager extends RepositoryManager
             }
         }
 
-        checkHeading(request, wikiUtil, props, sb);
+        checkHeading(request, entry, wikiUtil, props, sb);
         Request newRequest = makeRequest(request, props);
 	MapOutputHandler mapOutputHandler =
 	    (MapOutputHandler) getRepository().getOutputHandler(
@@ -6329,14 +6329,18 @@ public class WikiManager extends RepositoryManager
 	return map;
     }
 
-    public void checkHeading(Request request, WikiUtil wikiUtil,
+    public void checkHeading(Request request, Entry entry,WikiUtil wikiUtil,
                              Hashtable props, Appendable sb)
 	throws Exception {
+        String wikiPrefix = getProperty(wikiUtil, props, "wikiPrefix",
+                                     (String) null);
+        if (wikiPrefix != null) {
+	    sb.append(wikifyEntry(request, entry, convertText(wikiPrefix)));
+        }
         String heading = getProperty(wikiUtil, props, "heading",
                                      (String) null);
         if (heading != null) {
             sb.append(HU.div(heading, HU.cssClass("ramadda-page-heading")));
-
         }
     }
 
@@ -9007,6 +9011,21 @@ public class WikiManager extends RepositoryManager
 		    return entry.isFile();
 		} else {
 		    return !entry.isFile();
+		}
+	    }
+
+	    List<Column> columns = entry.getTypeHandler().getColumns();
+	    if(columns!=null) {
+		for(Column column: columns) {
+		    String property = (String) props.get(column.getName());
+		    if(property==null) continue;
+		    Object value = entry.getValue(request, column,null);
+		    if(value==null) {
+			if(!property.equals("null")) return false;
+		    }
+		    if(!property.equals(value.toString())) {
+			return false;
+		    }
 		}
 	    }
 
