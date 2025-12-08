@@ -43,11 +43,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- */
+
 @SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
@@ -90,12 +86,6 @@ public class Request implements Constants, Cloneable {
     private boolean cloned = false;
     private boolean embedded = false;
 
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     * @param user _more_
-     */
     public Request(Repository repository, User user) {
         this.repository = repository;
         this.user       = user;
@@ -103,13 +93,6 @@ public class Request implements Constants, Cloneable {
         this.parameters = new Hashtable();
     }
 
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     * @param user _more_
-     * @param path _more_
-     */
     public Request(Repository repository, User user, String path) {
         this.repository = repository;
         this.user       = user;
@@ -117,12 +100,6 @@ public class Request implements Constants, Cloneable {
         this.parameters = new Hashtable();
     }
 
-    /**
-     * ctor
-     *
-     * @param that _more_
-     * @param path _more_
-     */
     public Request(Request that, String path) {
         this.repository          = that.getRepository();
         this.user                = that.getUser();
@@ -139,13 +116,6 @@ public class Request implements Constants, Cloneable {
         this.httpHeaderArgs      = that.httpHeaderArgs;
     }
 
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     * @param urlPath _more_
-     * @param parameters _more_
-     */
     public Request(Repository repository, String urlPath,
                    Hashtable parameters) {
         this.repository         = repository;
@@ -240,20 +210,10 @@ public class Request implements Constants, Cloneable {
 							       value);
     }
 
-    /**
-       Set the IsEntryShow property.
-
-       @param value The new value for IsEntryShow
-    **/
     public void setIsEntryShow (boolean value) {
 	isEntryShow = value;
     }
 
-    /**
-       Get the IsEntryShow property.
-
-       @return The IsEntryShow
-    **/
     public boolean getIsEntryShow () {
 	return isEntryShow;
     }
@@ -325,19 +285,12 @@ public class Request implements Constants, Cloneable {
         setReturnFilename(filename, true);
     }
 
-    /**
-     *  @return _more_
-     */
     public boolean isNormalRequest() {
         return httpServletResponse != null;
     }
 
     boolean haveSetReturnFilename = false;
-    /**
-     *
-     * @param filename _more_
-     * @param inline _more_
-     */
+
     public void setReturnFilename(String filename, boolean inline) {
         if ( !isNormalRequest()) {
             return;
@@ -479,20 +432,12 @@ public class Request implements Constants, Cloneable {
         return HtmlUtils.uploadForm(makeUrl(theUrl), extra);
     }
 
-    /**
-     *  Set the OutputStream property.
-     *
-     *  @param value The new value for OutputStream
-     */
+
     public void setOutputStream(OutputStream value) {
         outputStream = value;
     }
 
-    /**
-     *  Get the OutputStream property.
-     *
-     *  @return The OutputStream
-     */
+
     public OutputStream getOutputStream() {
         return outputStream;
     }
@@ -581,7 +526,6 @@ public class Request implements Constants, Cloneable {
 	    port     = getExternalHttpPort();
 	else
             port     = getExternalHttpsPort();
-
 
         if (port == 80) {
             return protocol + "://" + getServerName();
@@ -696,13 +640,6 @@ public class Request implements Constants, Cloneable {
         return HtmlUtils.sanitizeString(s);
     }
 
-    /**
-     *
-     * @param sb _more_
-     * @param exceptArgs _more_
-     *
-     * @throws Exception _more_
-     */
     public void addFormHiddenArguments(Appendable sb,
                                        HashSet<String> exceptArgs)
 	throws Exception {
@@ -905,11 +842,6 @@ public class Request implements Constants, Cloneable {
         parameters.putAll(props);
     }
 
-    /**
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void putIfNull(Object key, Object value) {
         if (parameters.get(key) == null) {
             put(key, value);
@@ -1069,9 +1001,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     *  @return _more_
-     */
     public boolean getCloned() {
         return cloned;
     }
@@ -1080,11 +1009,6 @@ public class Request implements Constants, Cloneable {
 	this.cloned = c;
     }
 
-    /**
-     *  Set the Embedded property.
-     *
-     *  @param value The new value for Embedded
-     */
     public void setEmbedded(boolean value) {
         embedded = value;
     }
@@ -1093,20 +1017,10 @@ public class Request implements Constants, Cloneable {
         return embedded || get(ARG_EMBEDDED, false);
     }
 
-    /**
-     *  Set the CanStreamResult property.
-     *
-     *  @param value The new value for CanStreamResult
-     */
     public void setCanStreamResult(boolean value) {
         canStreamResult = value;
     }
 
-    /**
-     *  Get the CanStreamResult property.
-     *
-     *  @return The CanStreamResult
-     */
     public boolean getCanStreamResult() {
         return canStreamResult;
     }
@@ -1180,12 +1094,6 @@ public class Request implements Constants, Cloneable {
         return getCheckedString(key, dflt, checker);
     }
 
-    /**
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *  @return _more_
-     */
     public String getBase64String(String key, String dflt) {
         String raw = getUnsafeString(key, null);
         if (raw == null) {
@@ -1248,11 +1156,6 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-    /**
-     *
-     * @param s _more_
-     * @return _more_
-     */
     public static String cleanXSS(String s) {
 	if(s==null)
 	    return null;
@@ -1451,14 +1354,6 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_WHAT, dflt);
     }
 
-    /*
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
 
     public int get(Object key, int dflt) {
         String result = (String) getValue(key, (String) null);
@@ -1570,11 +1465,6 @@ public class Request implements Constants, Cloneable {
         return parameters.keys();
     }
 
-    /**
-     * Set the UrlPath property.
-     *
-     * @param value The new value for UrlPath
-     */
     public void setUrlPath(String value) {
         urlPath = value;
     }
@@ -1583,22 +1473,10 @@ public class Request implements Constants, Cloneable {
         urlPath = value;
     }
 
-    /**
-     * Get the UrlPath property.
-     *
-     * @return The UrlPath
-     */
     public String getRequestPath() {
         return urlPath;
     }
 
-    /**
-     * Class BadInputException On badness
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
     public static class BadInputException extends RuntimeException {
 
         public BadInputException(String msg) {
@@ -1606,11 +1484,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * Set the HttpHeaderArgs property.
-     *
-     * @param value The new value for HttpHeaderArgs
-     */
     public void setHttpHeaderArgs(Hashtable value) {
         httpHeaderArgs = value;
         //TODO: be smarter about this
@@ -1622,11 +1495,6 @@ public class Request implements Constants, Cloneable {
         isRobot = checkForRobot();
     }
 
-    /**
-     * Get the HttpHeaderArgs property.
-     *
-     * @return The HttpHeaderArgs
-     */
     public Hashtable getHttpHeaderArgs() {
         return httpHeaderArgs;
     }
@@ -1685,7 +1553,6 @@ public class Request implements Constants, Cloneable {
 	return sb.toString();
     }
 
-
     public String toString() {
         String args = getUrlArgs();
         if (args.trim().length() > 0) {
@@ -1718,11 +1585,6 @@ public class Request implements Constants, Cloneable {
         return sb.toString();
     }
 
-    /**
-     * Set the SessionId property.
-     *
-     * @param value The new value for SessionId
-     */
     public void setSessionId(String value) {
         sessionId = value;
         if (value != null) {
@@ -1736,18 +1598,10 @@ public class Request implements Constants, Cloneable {
         return sessionIdWasSet;
     }
 
-    /**
-     * Get the SessionId property.
-     *
-     * @return The SessionId
-     */
     public String getSessionId() {
         return sessionId;
     }
 
-    /**
-     *  @return _more_
-     */
     public String getAuthToken() {
         String sessionId = getSessionId();
         if (sessionId != null) {
@@ -1757,20 +1611,10 @@ public class Request implements Constants, Cloneable {
         return "";
     }
 
-    /**
-     * Set the User property.
-     *
-     * @param value The new value for User
-     */
     public void setUser(User value) {
         user = value;
     }
 
-    /**
-     * Get the User property.
-     *
-     * @return The User
-     */
     public User getUser() {
         return user;
     }
@@ -1788,20 +1632,10 @@ public class Request implements Constants, Cloneable {
 	return user.equals(entry.getUser());
     }
 
-    /**
-     * Set the Ip property.
-     *
-     * @param value The new value for Ip
-     */
     public void setIp(String value) {
         ip = value;
     }
 
-    /**
-     * Get the Ip property.
-     *
-     * @return The Ip
-     */
     public String getIp() {
         if ((ip == null) && (repository != null)) {
             return repository.getIpAddress();
@@ -1915,7 +1749,6 @@ public class Request implements Constants, Cloneable {
         return serverName;
     }
 
-
     public int getExternalHttpsPort() {
 	return getRepository().getExternalHttpsPort();
     }
@@ -1923,7 +1756,6 @@ public class Request implements Constants, Cloneable {
     public int getExternalHttpPort() {
 	return getRepository().getExternalHttpPort(getServerPort());
     }
-
 
     public int getServerPort() {
         if ( !repository.useFixedHostnameForAbsoluteUrls()) {
@@ -1937,11 +1769,6 @@ public class Request implements Constants, Cloneable {
         return repository.getPort();
     }
 
-    /**
-     *  Get the HttpServletRequest property.
-     *
-     *  @return The HttpServletRequest
-     */
     public HttpServletRequest getHttpServletRequest() {
         return httpServletRequest;
     }
@@ -1954,38 +1781,18 @@ public class Request implements Constants, Cloneable {
         return httpServlet;
     }
 
-    /**
-     * Set the PrefixHtml property.
-     *
-     * @param value The new value for PrefixHtml
-     */
     public void appendPrefixHtml(String value) {
         prefixHtml.append(value);
     }
 
-    /**
-     * Get the PrefixHtml property.
-     *
-     * @return The PrefixHtml
-     */
     public String getPrefixHtml() {
         return prefixHtml.toString();
     }
 
-    /**
-     * Set the SuffixHtml property.
-     *
-     * @param value The new value for SuffixHtml
-     */
     public void appendSuffixHtml(String value) {
         suffixHtml.append(value);
     }
 
-    /**
-     * Get the SuffixHtml property.
-     *
-     * @return The SuffixHtml
-     */
     public String getSuffixHtml() {
         return suffixHtml.toString();
     }
@@ -2031,25 +1838,16 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     */
     public void clearHead0() {
         removeExtraProperty("head0");
     }
 
-    /**
-     */
     public void clearHead() {
         removeExtraProperty("head");
     }
 
-    /**  */
     private PrintWriter printWriter;
 
-    /**
-     *
-     * @param pw _more_
-     */
     public void setPrintWriter(PrintWriter pw) {
         printWriter = pw;
     }
@@ -2090,11 +1888,6 @@ public class Request implements Constants, Cloneable {
         return extraProperties.get(key);
     }
 
-    /**
-     *
-     * @param key _more_
-     * @return _more_
-     */
     public String getPropertyOrArg(String key) {
         String s = (String) getExtraProperty(key);
         if (s == null) {
@@ -2104,56 +1897,26 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-    /**
-     * Get the Protocol property.
-     *
-     * @return The Protocol
-     */
     public String getProtocol() {
         return httpServletRequest.getProtocol();
     }
 
-    /**
-     * Get the Secure property.
-     *
-     * @return The Secure
-     */
     public boolean getSecure() {
         return httpServletRequest.isSecure();
     }
 
-    /**
-     * Set the CheckingAuthMethod property.
-     *
-     * @param value The new value for CheckingAuthMethod
-     */
     public void setCheckingAuthMethod(boolean value) {
         this.checkingAuthMethod = value;
     }
 
-    /**
-     * Get the CheckingAuthMethod property.
-     *
-     * @return The CheckingAuthMethod
-     */
     public boolean getCheckingAuthMethod() {
         return this.checkingAuthMethod;
     }
 
-    /**
-     * Set the ApiMethod property.
-     *
-     * @param value The new value for ApiMethod
-     */
     public void setApiMethod(ApiMethod value) {
         this.apiMethod = value;
     }
 
-    /**
-     * Get the ApiMethod property.
-     *
-     * @return The ApiMethod
-     */
     public ApiMethod getApiMethod() {
         return this.apiMethod;
     }
@@ -2179,20 +1942,10 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_TEXT);
     }
 
-    /**
-     *  Set the HtmlTemplateId property.
-     *
-     *  @param value The new value for HtmlTemplateId
-     */
     public void setHtmlTemplateId(String value) {
         htmlTemplateId = value;
     }
 
-    /**
-     *  Get the HtmlTemplateId property.
-     *
-     *  @return The HtmlTemplateId
-     */
     public String getHtmlTemplateId() {
         if (htmlTemplateId != null) {
             return htmlTemplateId;
@@ -2211,22 +1964,10 @@ public class Request implements Constants, Cloneable {
         return language;
     }
 
-    /**
-     * Set the PageStyle property.
-     *
-     * @param value The new value for PageStyle
-     */
     public void setPageStyle(PageStyle value) {
         pageStyle = value;
     }
 
-    /**
-     * Get the PageStyle property.
-     *
-     *
-     * @param entry _more_
-     * @return The PageStyle
-     */
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
             pageStyle = repository.getPageHandler().doMakePageStyle(this,
@@ -2251,15 +1992,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-    /**
-     *
-     * @param filename _more_
-     * @param mimeType _more_
-     * @param is _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result returnStream(String filename, String mimeType,
                                InputStream is)
 	throws Exception {
@@ -2310,62 +2042,31 @@ public class Request implements Constants, Cloneable {
         httpServletResponse.addHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
     }
 
-
     public Request setHeader(String name, String value) {
         httpServletResponse.setHeader(name, value);
 	return this;
     }
 
-    /**
-     * Set the MakeAbsoluteUrls property.
-     *
-     * @param value The new value for MakeAbsoluteUrls
-     */
     public void setMakeAbsoluteUrls(boolean value) {
         makeAbsoluteUrls = value;
     }
 
-    /**
-     * Get the MakeAbsoluteUrls property.
-     *
-     * @return The MakeAbsoluteUrls
-     */
     public boolean getMakeAbsoluteUrls() {
         return makeAbsoluteUrls;
     }
 
-    /**
-     *  Set the SessionHasBeenHandled property.
-     *
-     *  @param value The new value for SessionHasBeenHandled
-     */
     public void setSessionHasBeenHandled(boolean value) {
         sessionHasBeenHandled = value;
     }
 
-    /**
-     *  Getthe SessionHasBeenHandled property.
-     *
-     *  @return The SessionHasBeenHandled
-     */
     public boolean getSessionHasBeenHandled() {
         return sessionHasBeenHandled;
     }
 
-    /**
-     *  Set the RootEntry property.
-     *
-     *  @param value The new value for RootEntry
-     */
     public void setRootEntry(Entry value) {
         rootEntry = value;
     }
 
-    /**
-     *  Get the RootEntry property.
-     *
-     *  @return The RootEntry
-     */
     public Entry getRootEntry() {
         if (rootEntry == null) {
             rootEntry = repository.getEntryManager().getRootEntry(this);
@@ -2374,25 +2075,14 @@ public class Request implements Constants, Cloneable {
         return rootEntry;
     }
 
-    /**
-     *  Set the CurrentEntry property.
-     *
-     *  @param value The new value for CurrentEntry
-     */
     public void setCurrentEntry(Entry value) {
         currentEntry = value;
     }
 
-    /**
-     *  Get the CurrentEntry property.
-     *
-     *  @return The CurrentEntry
-     */
     public Entry getCurrentEntry() {
         return currentEntry;
     }
 
-    /**  */
     private static final String[] argPrefixes = { ARG_AREA, ARG_BBOX };
 
     public SelectionRectangle getSelectionBounds() {
