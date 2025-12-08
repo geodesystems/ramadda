@@ -1704,7 +1704,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             values[offset] =  Boolean.valueOf(value.equals("true")
 					      || value.equals("1"));
-	    System.err.println(this.getName() +" value:" +value +" boolean:" + values[offset]+" dflt:" + dflt);
+	    //	    System.err.println(this.getName() +" value:" +value +" boolean:" + values[offset]+" dflt:" + dflt);
             valueIdx++;
         } else if (isDate()) {
             values[offset] = getDatabaseManager().getTimestamp(results,  valueIdx,false);
