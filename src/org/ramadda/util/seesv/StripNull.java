@@ -1,17 +1,11 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 import java.io.*;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Tue, Sep 20, '16
- * @author         Enter your name here...
- */
+
 public class StripNull {
 
     public static void main(String[] args) throws Exception {

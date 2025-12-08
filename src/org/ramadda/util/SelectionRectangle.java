@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.*;
 
-
 public class SelectionRectangle {
 
     private double north = Double.NaN;
@@ -122,7 +121,6 @@ public class SelectionRectangle {
         throw new IllegalArgumentException("Bad index:" + idx);
     }
 
-    
     public void setNorth(double value) {
         north = value;
     }
@@ -167,37 +165,30 @@ public class SelectionRectangle {
                : dflt;
     }
 
-    
     public double getNorth() {
         return north;
     }
 
-    
     public void setWest(double value) {
         west = value;
     }
 
-    
     public double getWest() {
         return west;
     }
 
-    
     public void setSouth(double value) {
         south = value;
     }
 
-    
     public double getSouth() {
         return south;
     }
 
-    
     public void setEast(double value) {
         east = value;
     }
 
-    
     public double getEast() {
         return east;
     }

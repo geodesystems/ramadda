@@ -12,7 +12,6 @@ import ucar.unidata.xml.XmlUtil;
 import java.util.HashSet;
 import java.util.List;
 
-
 public class OpenSearchUtil {
 
     public static final String XMLNS = "http://a9.com/-/spec/opensearch/1.1/";

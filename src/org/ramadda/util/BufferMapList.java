@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
 public class BufferMapList<T> extends MapList<T, Appendable> {
 
     public Appendable get(T key) {

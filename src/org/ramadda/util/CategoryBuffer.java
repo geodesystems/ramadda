@@ -35,7 +35,6 @@ public class CategoryBuffer {
         return get(priority, category, false);
     }
 
-
     public StringBuilder get(int priority, String category,
                              boolean addToFront) {
         if (category == null) {

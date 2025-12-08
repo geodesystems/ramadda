@@ -19,8 +19,6 @@ import java.util.List;
 
 import java.util.regex.*;
 
-
-
 public class Oauth {
     public static final String CONTENT_TYPE =
         "application/x-www-form-urlencoded";

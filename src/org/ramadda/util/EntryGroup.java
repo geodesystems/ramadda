@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 @SuppressWarnings("unchecked")
 public class EntryGroup {
     private Object key;
@@ -66,7 +65,6 @@ public class EntryGroup {
     public String getName() {
         return name;
     }
-
 
     public void setChildren(List value) {
         children = value;

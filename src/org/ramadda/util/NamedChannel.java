@@ -10,7 +10,6 @@ import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
 
-
 public class NamedChannel {
     String name;
     ReadableByteChannel channel;

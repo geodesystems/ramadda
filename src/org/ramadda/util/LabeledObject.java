@@ -63,7 +63,6 @@ public class LabeledObject<ObjectType> implements Comparable<LabeledObject> {
         object = value;
     }
 
-
     public ObjectType getObject() {
         return object;
     }

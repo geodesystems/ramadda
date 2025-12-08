@@ -1,3 +1,8 @@
+/**
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
 package org.ramadda.util.geo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.cos.*;
@@ -23,7 +28,6 @@ public class ProcessPdf {
 	    return ""+cs.doubleValue();
 	}
 
-
 	if(obj instanceof COSName) {
 	    COSName cs = (COSName) obj;
 	    return cs.getName();
@@ -38,7 +42,6 @@ public class ProcessPdf {
 	    System.out.println(prefix+value);
 	    return;
 	}
-	
 
 	if(seen.contains(obj)) {
 	    System.out.println(prefix+"seen " + obj.getClass().getName());
@@ -55,7 +58,6 @@ public class ProcessPdf {
 	    return;
 	}		    
 
-
 	if(obj instanceof COSObject) {
 	    COSObject cs = (COSObject) obj;
 	    COSBase base = cs.getObject();
@@ -71,8 +73,6 @@ public class ProcessPdf {
 
 	System.out.println(prefix+"object:" + obj.getClass().getName() +" value:" + obj);
     }
-
-
 
     public static void processDict(COSDictionary dict, String prefix) throws Exception {
 	int cnt = 0;
@@ -98,8 +98,6 @@ public class ProcessPdf {
 	    process(element,prefix+"  ");
 	}
     }
-
-
 
     public static void main(String[] args) throws Exception {
         try (PDDocument doc = PDDocument.load(new File(args[0]))) {

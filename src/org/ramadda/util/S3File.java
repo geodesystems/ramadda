@@ -73,7 +73,6 @@ public class S3File extends FileWrapper {
 	setKey(toks.get(0),toks.get(1));	
     }
 
-    
     private AmazonS3 getS3() {
         if (s3 == null) {
 	    AWSCredentials credentials=null;
@@ -100,18 +99,15 @@ public class S3File extends FileWrapper {
         return s3;
     }
 
-    
     @Override
     public boolean isRemoteFile() {
         return true;
     }
 
-    
     private void setBucket(String bucket) {
         this.bucket = normalizePath(bucket);
     }
 
-    
     @Override
     public FileWrapper[] doListFiles() {
         try {
@@ -134,7 +130,6 @@ public class S3File extends FileWrapper {
         }
     }
 
-    
     public static String normalizePath(String path) {
         if (path == null) {
             return null;
@@ -159,7 +154,6 @@ public class S3File extends FileWrapper {
         return path;
     }
 
-    
     public static S3File createFile(String bucket) throws Exception {
 	return createFile(bucket, null,null,null);
     }
@@ -174,38 +168,31 @@ public class S3File extends FileWrapper {
         return null;
     }
 
-    
     public S3Results doList() throws Exception {
         return doList(false, -1);
     }
 
-    
     public S3Results doList(boolean self) throws Exception {
         return doList(self, -1);
     }
 
-    
     public S3Results doList(int max) throws Exception {
         return doList(false, max);
     }
 
-    
     public S3Results doList(boolean self, int max) throws Exception {
         return doList(self, max, -1, -1, null);
     }
 
-    
     private static String getObjectName(String key) {
         return new java.io.File(key).getName();
     }
 
-    
     public static class S3Results {
         String marker;
         List<S3File> files;
 	String message;
 
-        
         public S3Results(String marker, List<S3File> files) {
             this.marker = marker;
             this.files  = files;
@@ -215,12 +202,10 @@ public class S3File extends FileWrapper {
 	    this.message= message;
         }
 
-        
         public String getMarker() {
             return marker;
         }
 
-        
         public List<S3File> getFiles() {
             return files;
         }
@@ -230,7 +215,6 @@ public class S3File extends FileWrapper {
 	}
     }
 
-    
     public S3Results doList(boolean self, int max, double percent,
                                 long maxSize, String marker)
             throws Exception {
@@ -304,7 +288,6 @@ public class S3File extends FileWrapper {
         return new S3Results(token, files);
     }
 
-    
     public static S3File createS3File(S3ObjectSummary objectSummary) {
 	return createS3File(objectSummary,null, null);
     }
@@ -322,7 +305,6 @@ public class S3File extends FileWrapper {
         return file;
     }
 
-    
     @Override
     public boolean equals(Object o) {
         if (o instanceof S3File) {
@@ -332,7 +314,6 @@ public class S3File extends FileWrapper {
         return false;
     }
 
-    
     @Override
     public FileWrapper getParentFile() {
         String p = bucket.replaceAll("(.*)/[^/]+/?$", "$1/");
@@ -342,18 +323,15 @@ public class S3File extends FileWrapper {
         return new S3File(p,accessKey,secretKey,endPoint,endPointRegion);
     }
 
-    
     public java.io.File getFile() {
         return null;
     }
 
-    
     @Override
     public int hashCode() {
         return bucket.hashCode();
     }
 
-    
     public boolean exists() {
         if ( !Utils.stringDefined(bucket) || bucket.equals("s3://")) {
             return false;
@@ -362,7 +340,6 @@ public class S3File extends FileWrapper {
         return true;
     }
 
-    
     public static String[] getBucketAndPrefix(String path) {
         path = path.replace(S3PREFIX + "//", "");
         List<String> toks = Utils.splitUpTo(path, "/", 2);
@@ -372,7 +349,6 @@ public class S3File extends FileWrapper {
                                            : null };
     }
 
-    
     public void copyFileTo(String bucket, java.io.File file)
             throws Exception {
         String[] pair = getBucketAndPrefix(bucket);
@@ -406,18 +382,15 @@ public class S3File extends FileWrapper {
                                         objectSummary.getKey()), file);
     }
 
-    
     public void copyFileTo(java.io.File file) throws Exception {
         copyFileTo(bucket, file);
     }
 
-    
     public S3Results doSearch(String search, Searcher searcher, String marker)
             throws Exception {
         return doSearch(search, searcher, SEARCH_MAX_CALLS, false,marker);
     }
 
-    
     public S3Results doSearch(String search, Searcher searcher,
 				  int maxCalls, boolean verbose,String marker)
             throws Exception {
@@ -471,7 +444,6 @@ public class S3File extends FileWrapper {
 	return new S3Results(marker, found,cnt>0?"Searched " + cnt +" objects":null);
     }
 
-    
     public static class MyFileViewer extends FileWrapper.FileViewer {
         boolean download = false;
         boolean makeDirs = false;
@@ -547,7 +519,6 @@ public class S3File extends FileWrapper {
             return Utils.ANSI_RED + s + Utils.ANSI_RESET;
         }
 
-
         private String green(String s) {
             if (buffer != null) {
                 return "<span style='color:green;'>" + s + "</span>";
@@ -615,7 +586,6 @@ public class S3File extends FileWrapper {
         }
     }
 
-    
     public static void usage(String msg) {
         if (msg != null) {
             System.err.println(msg);
@@ -625,7 +595,6 @@ public class S3File extends FileWrapper {
         Utils.exitTest(0);
     }
 
-    
     public static void main(String[] args) throws Exception {
 
         String dflt =
@@ -811,10 +780,8 @@ public class S3File extends FileWrapper {
 
     }
 
-    
     public interface Searcher {
 
-        
         public boolean match(String s, S3ObjectSummary objectSummary);
     }
 
@@ -823,22 +790,18 @@ public class S3File extends FileWrapper {
 	setSecretKey(secretKey);	
     }
 
-     
     public void setAccessKey (String value) {
 	accessKey = value;
     }
 
-    
     public String getAccessKey () {
 	return accessKey;
     }
 
-    
     public void setSecretKey (String value) {
 	secretKey = value;
     }
 
-    
     public String getSecretKey () {
 	return secretKey;
     }

@@ -29,12 +29,10 @@ public class SortableObject<VALUE> implements Comparable {
         this.value    = value;
     }
 
-    
     public SortableObject(VALUE value) {
         this(MAX_PRIORITY, value);
     }
 
-    
     @Override
     public int compareTo(Object o) {
         SortableObject<VALUE> po = (SortableObject<VALUE>) o;
@@ -42,7 +40,6 @@ public class SortableObject<VALUE> implements Comparable {
         return this.priority - po.priority;
     }
 
-    
     @Override
     public boolean equals(Object o) {
         if ( !(o instanceof SortableObject<?>)) {
@@ -57,12 +54,10 @@ public class SortableObject<VALUE> implements Comparable {
 	return priority;
     }
 
-    
     public VALUE getValue() {
         return value;
     }
 
-    
     public String toString() {
         return value.toString() + " " + priority;
     }

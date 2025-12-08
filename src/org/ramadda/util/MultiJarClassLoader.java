@@ -25,7 +25,6 @@ import java.util.Properties;
 import java.util.jar.*;
 import java.util.regex.*;
 
-
 @SuppressWarnings("unchecked")
 public class MultiJarClassLoader extends ClassLoader {
 
@@ -67,7 +66,6 @@ public class MultiJarClassLoader extends ClassLoader {
         loadedClasses = null;
     }
 
-    
     public void addJar(String jarFilePath) throws Exception {
         JarFile jarFile = new JarFile(jarFilePath);
         //Check if we have already loaded this jar file
@@ -158,7 +156,6 @@ public class MultiJarClassLoader extends ClassLoader {
         };
     }
 
-    
     private static class MyJarEntry {
 
         JarFile jarFile;
@@ -171,7 +168,6 @@ public class MultiJarClassLoader extends ClassLoader {
         }
     }
 
-    
     private Class loadClassFromJar(String entryName) {
         MyJarEntry jarEntry = null;
         try {

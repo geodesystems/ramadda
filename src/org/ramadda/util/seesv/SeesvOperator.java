@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2025 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -7,25 +7,16 @@ package org.ramadda.util.seesv;
 
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.FuzzyScore;
-
 import org.apache.commons.text.similarity.JaroWinklerDistance;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.geo.GeoUtils;
-
 import ucar.unidata.util.LogUtil;
-
 import ucar.unidata.util.StringUtil;
-
 import java.io.*;
-
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -38,69 +29,38 @@ import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
 public class SeesvOperator {
-
     public static final DecimalFormat decimalFormat = new DecimalFormat("0.################");
-
     public static final HtmlUtils HU = null;
-
     public static int OP_LT = 0;
-
     public static int OP_LE = 1;
-
     public static int OP_GT = 2;
-
     public static int OP_GE = 3;
-
     public static int OP_EQUALS = 4;
-
     public static int OP_NOTEQUALS = 5;
-
     public static int OP_DEFINED = 6;
-
     public static int OP_MATCH = 7;
-
     public static final String OPERAND_PERCENT = "percent";
-
     public static final String OPERAND_COUNT = "count";
-
     public static final String OPERAND_SUM = "sum";
-
     public static final String OPERAND_MIN = "min";
-
     public static final String OPERAND_MAX = "max";
-
     public static final String OPERAND_AVERAGE = "average";
-
     public static final String OPERAND_AVG = "avg";    
-
     protected int rowCnt = 0;
-
     public static final int UNDEFINED_INDEX = -1;
-
     public static final int INDEX_ALL = -9999;
-
     private int index = UNDEFINED_INDEX;
-
     protected List<String> sindices;
-
     List<Integer> indices;
-
     HashSet<Integer> indexMap;
-
     HashSet<Integer> colsSeen = new HashSet<Integer>();
-
     private List header;
-
     private LinkedHashMap<String, Integer> columnMap;
-
     private List<String> columnNames;
-
     private String scol;
-
     Seesv seesv;
 
     public SeesvOperator() {}
-
     public SeesvOperator(Seesv seesv) {
         this.seesv = seesv;
     }
@@ -151,9 +111,7 @@ public class SeesvOperator {
 	}
 	return sb.toString();
 
-	
     }
-
 
     public String getProperty(String name) {
         if (seesv != null) {

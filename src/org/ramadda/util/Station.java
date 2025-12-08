@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 public class Station {
 
     private String id;
@@ -27,52 +26,42 @@ public class Station {
         this.elevation = elevation;
     }
 
-    
     public void setId(String value) {
         id = value;
     }
 
-    
     public String getId() {
         return id;
     }
 
-    
     public void setName(String value) {
         name = value;
     }
 
-    
     public String getName() {
         return name;
     }
 
-    
     public void setLatitude(double value) {
         latitude = value;
     }
 
-    
     public double getLatitude() {
         return latitude;
     }
 
-    
     public void setLongitude(double value) {
         longitude = value;
     }
 
-    
     public double getLongitude() {
         return longitude;
     }
 
-    
     public void setElevation(double value) {
         elevation = value;
     }
 
-    
     public double getElevation() {
         return elevation;
     }

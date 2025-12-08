@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 public class WfsUtil {
     public static final String HEADER_ARGS = "";
     public static final String ARG_SERVICE = "service";
@@ -16,7 +15,7 @@ public class WfsUtil {
     public static final String REQUEST_GETCAPABILITIES = "GetCapabilities";
     public static final String REQUEST_DESCRIBEFEATURETYPE =
         "DescribeFeatureType";
-    
+
     public static class Cap {
 
         public static final String XMLNS_XMLNS_GML =

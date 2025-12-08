@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -25,7 +25,6 @@ import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.util.CellRangeAddress;
-
 
 /**
  *
@@ -93,7 +92,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
-
 
     public static class Write extends Processor {
         private Row headerRow;
@@ -514,13 +512,13 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    CellStyle titleStyle = workbook.createCellStyle();
 	    titleStyle.setAlignment(HorizontalAlignment.CENTER);
 	    titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-	    
+
 	    // Fill background
 	    XSSFColor lightGray = new XSSFColor(new Color(0xEE, 0xEE, 0xEE), null);
 	    //        titleStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
 	    ((XSSFCellStyle) titleStyle).setFillForegroundColor(lightGray);
 	    titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	    
+
 	    // Optionally add a border
 	    titleStyle.setBorderTop(BorderStyle.THIN);
 	    titleStyle.setBorderBottom(BorderStyle.THIN);
@@ -563,8 +561,5 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
-    
-
-
 
 }

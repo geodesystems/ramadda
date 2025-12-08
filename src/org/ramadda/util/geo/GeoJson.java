@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -14,12 +14,10 @@ import org.ramadda.util.geo.Bounds;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
-
 import org.w3c.dom.*;
 
 import java.awt.geom.*;
 import java.io.*;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,22 +26,17 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-
 /**
  * JSON Utility class
  */
 @SuppressWarnings("unchecked")
 public class GeoJson extends JsonUtil {
-
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
-
     public static final String DOWNLOAD_MIMETYPE = "application/forcedownload";
-
 
     public static JSONObject read(String f) throws Exception {
         return  new JSONObject(new JSONTokener(new FileInputStream(f)));
     }
-
 
     public static void reduce(String file) throws Exception {
         String contents = IOUtil.readContents(file, JsonUtil.class);
@@ -59,7 +52,6 @@ public class GeoJson extends JsonUtil {
 	return new JSONObject(contents);
     }    
 
-
     public static void merge(List<String> files) throws Exception {
 	JSONObject j1 =  read(files.get(0));
 	JSONArray f1=j1.getJSONArray("features");
@@ -73,7 +65,6 @@ public class GeoJson extends JsonUtil {
 	}
 	System.out.println(j1);
     }
-
 
     public static void join(String file1, String file2,String field1,String field2) throws Exception {
 	JSONObject j1 =  read(file1);
@@ -106,7 +97,7 @@ public class GeoJson extends JsonUtil {
 	System.out.println(j1);
 
     }
-    
+
     public static List<String> getProperties(String file) throws Exception {
 	List<String> names = new ArrayList<String>();
 	JSONObject obj  =read(file);
@@ -115,7 +106,7 @@ public class GeoJson extends JsonUtil {
 	getProperties(features.getJSONObject(0), names);
 	return names;
     }
-    
+
     private  static void getProperties(JSONObject feature, List<String> names) throws Exception {	
 	JSONObject props   = feature.getJSONObject("properties");
 	String[] nameList = JSONObject.getNames(props);
@@ -150,16 +141,6 @@ public class GeoJson extends JsonUtil {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param pw _more_
-     * @param colString _more_
-     *
-     * @throws Exception _more_
-     */
     public static void geojsonFileToCsv(String file, PrintStream pw, String colString)
 	throws Exception {
         String contents = IOUtil.readContents(file, JsonUtil.class);
@@ -167,8 +148,6 @@ public class GeoJson extends JsonUtil {
         InputStream is = new ByteArrayInputStream(contents.getBytes());
         toCsv(is, pw, colString, false);
     }
-
-
 
     /**
      *
@@ -224,11 +203,6 @@ public class GeoJson extends JsonUtil {
 
     }
 
-
-
-
-
-
     /**
      * @param file _more_
      *
@@ -283,9 +257,6 @@ public class GeoJson extends JsonUtil {
 
     }
 
-
-
-
     /**
      *
      * @param file _more_
@@ -329,18 +300,6 @@ public class GeoJson extends JsonUtil {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param pw _more_
-     * @param prop _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
     public static void geojsonSubsetByProperty(String file, PrintStream pw, boolean matchAll,
 					       List<String>props) throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
@@ -426,27 +385,17 @@ public class GeoJson extends JsonUtil {
         pw.println("]}");
     }
 
-
     private static double dec(double d) {
 	return Utils.decimals(d,6);
     }
 
-    /**
-     * _more_
-     *
-     * @param points _more_
-     * @param bounds _more_
-     * @param pts _more_
-     *
-     * @return _more_
-     */
     private static Bounds getBounds(JSONArray points, Bounds bounds,
                                     List<Point> pts) {
         for (int j = 0; j < points.length(); j++) {
             JSONArray tuple = points.getJSONArray(j);
             double    lon   = tuple.getDouble(0);
             double    lat   = tuple.getDouble(1);
-	    
+
 	    if(!GeoUtils.latLonOk(lat,lon)) {
 		continue;
 	    }
@@ -489,16 +438,6 @@ public class GeoJson extends JsonUtil {
         return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Bounds getBounds(String file) throws Exception {
 	return getBounds(file,null);
     }
@@ -512,7 +451,7 @@ public class GeoJson extends JsonUtil {
         Bounds bounds = null;
         JSONArray    features = readArray(obj, "features");
 	if(features==null) return bounds;
-	
+
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
             bounds = getFeatureBounds(feature, bounds, null);
@@ -524,17 +463,6 @@ public class GeoJson extends JsonUtil {
         return bounds;
     }
 
-    /**
-     * _more_
-     *
-     * @param feature _more_
-     * @param bounds _more_
-     * @param pts _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds,
                                           List<List<Point>> pts)
 	throws Exception {
@@ -661,8 +589,6 @@ public class GeoJson extends JsonUtil {
         return sb.toString();
     }
 
-
-
     public static void split(String f, String prop) throws Exception {
 	split(read(f),prop);
     }
@@ -696,8 +622,6 @@ public class GeoJson extends JsonUtil {
 	features.putAll(objects);
 	return obj;
     }
-
-
 
     public static JSONObject stride(JSONObject obj,double step) throws Exception {
         JSONArray             features = readArray(obj, "features");
@@ -739,7 +663,6 @@ public class GeoJson extends JsonUtil {
 		    System.err.println("props:" + properties);
 		}
 		}*/
-
 
             Bounds b = getFeatureBounds(o, null, null);
 	    if(debug) System.err.println("bounds:\n\t" + b+"\n\t" + bounds);
@@ -875,8 +798,6 @@ public class GeoJson extends JsonUtil {
 	features.putAll(objects);
 	return obj;
     }
-    
-
 
     public static JSONObject keep(JSONObject obj,List<String> keepers) throws Exception {
         JSONArray             features = readArray(obj, "features");
@@ -894,8 +815,6 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
-
-
     public static JSONObject first(JSONObject obj,int n) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
@@ -907,21 +826,12 @@ public class GeoJson extends JsonUtil {
 	features.putAll(objects);
 	return obj;
     }
-    
 
     public static double parse(String s) {
 	if(s==null || s.trim().length()==0) return Double.NaN;
 	return Double.parseDouble(s);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
 	List<Command> commands = new ArrayList<Command>();
 	for(int i=0;i<args.length;i++) {
@@ -972,14 +882,12 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }	    
 
-
-
 	    if(arg.equals("-contained")) {
 		final Bounds b = new Bounds(parse(args[++i]),
 					    parse(args[++i]),
 					    parse(args[++i]),
 					    parse(args[++i]));
-				    
+
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,false);}});
 		continue;
 	    }
@@ -988,7 +896,7 @@ public class GeoJson extends JsonUtil {
 					    parse(args[++i]),
 					    parse(args[++i]),
 					    parse(args[++i]));
-				    
+
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,true);}});
 		continue;
 	    }	    	    
@@ -1024,7 +932,6 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }
 
-
 	    JSONObject            obj      = read(arg);
 	    for(Command command: commands) {
 		obj = command.apply(obj);
@@ -1032,7 +939,6 @@ public class GeoJson extends JsonUtil {
 	}
 	Utils.exitTest(0);
     }
-
 
     public interface Command {
 	public JSONObject apply(JSONObject obj) throws Exception;
@@ -1054,7 +960,6 @@ public class GeoJson extends JsonUtil {
 
         /**  */
         boolean addPolygon;
-
 
         /**
          *
@@ -1125,7 +1030,7 @@ public class GeoJson extends JsonUtil {
 	    } else {
 		Utils.add(values,"NaN","NaN");
 	    }
-	    
+
             if (addPolygon) {
                 StringBuilder poly = new StringBuilder();
                 for (List<Point> p2 : pts) {
@@ -1141,10 +1046,6 @@ public class GeoJson extends JsonUtil {
             return values;
         }
 
-
     }
-
-
-
 
 }

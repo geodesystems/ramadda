@@ -26,7 +26,7 @@ import java.util.regex.*;
  * @author         Enter your name here...
  */
 public class Oembed {
-   
+
     private Response fixed;
     private static List<Oembed> oembeds;
     String name;
@@ -74,7 +74,6 @@ public class Oembed {
         return name + " " + url + " " + schemes;
     }
 
-    
     public static String findHtml(String url) throws Exception {
         String id;
         id = StringUtil.findPattern(url,
@@ -206,10 +205,8 @@ public class Oembed {
         return false;
     }
 
-    
     public static class Response {
 
-        
         String fixedHtml;
 
         public String originalUrl;
@@ -228,7 +225,6 @@ public class Oembed {
 
         public String html;
 
-        
         public Response(String fixedHtml) {
             this.fixedHtml = fixedHtml;
         }

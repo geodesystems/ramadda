@@ -130,7 +130,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public static final String ARG_PROVIDER = "provider";
     public static final String ARG_SEARCH_SUBSET = "search.subset";
     public static final String ARG_SEARCH_SERVERS = "search.servers";
-    
+
     public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
 							      "/search/do", "Search");
 
@@ -471,7 +471,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	} finally {
 	    if(actionId!=null)
 		getActionManager().removeAction(actionId);		    
-		   
+
 	    if(message[0]!=null) {
 		getSessionManager().clearSessionMessage(request,message[0]);
 	    }
@@ -491,7 +491,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
     private void indexEntryInner(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
-	
+
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
@@ -876,7 +876,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return getCorpusFile(request, entry,  entry.getResource().getPath());
     }
 
-
     public File getCorpusFile(Request request,Entry entry,String path) {
 	File f = new File(path);
 	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
@@ -891,7 +890,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public boolean corpusExists(Request request, Entry entry) {
 	return getCorpusFile(request,entry).exists();
     }	
-
 
     public String extractCorpus(Request request, Entry entry,
 				String path,
@@ -1052,7 +1050,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sessionMessage = getSessionManager().addStickySessionMessage(request,entry.getId(),
 									 HU.href(cancelUrl,"Cancel text extraction"));
 	}
-	
+
 	action.setFuture(future);
 	try {
 	    String contents =  future.get();
@@ -1066,7 +1064,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(actionId!=null) {
 		getActionManager().removeAction(actionId);
 	    }
-		
+
 	}
 
     }
@@ -1176,9 +1174,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return builder.build();
     }        
 
-
-
-    
     public List<EntryUtil.EntryCount> getEntryCounts(Request request) throws Exception {
 	long t1 = System.currentTimeMillis();
 	try {
@@ -1195,7 +1190,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
     private List<EntryUtil.EntryCount> getEntryCountsInner(Request request) throws Exception {
-	
+
 	IndexSearcher searcher = getLuceneSearcher();
 	IndexReader reader = searcher.getIndexReader();
 	FacetsConfig config = new FacetsConfig();
@@ -1387,8 +1382,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}	
 	long dateMin = Long.MIN_VALUE;
 	long dateMax = Long.MAX_VALUE;
-
-
 
 	for (DateArgument arg : DateArgument.SEARCH_ARGS) {
             Date[] dateRange = request.getDateRange(arg.getFrom(),
@@ -1728,8 +1721,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	return query;
     }
-
-
 
     int scnt=0;
     public void processLuceneSearch(Request request, List<Entry> entries)
@@ -2853,7 +2844,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-
         if (request.get(ARG_WAIT, false)) {
             return getRepository().getMonitorManager().processEntryListen(
 									  request);
@@ -2916,7 +2906,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	//	System.err.println("dosearch:" + children.size());
-
 
 	if(request.get("docount",false)) {
 	    return new Result("count:" + children.size(), MIME_TEXT);

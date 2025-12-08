@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -21,7 +21,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.awt.Color;
 
 import java.io.*;
@@ -34,12 +33,6 @@ import java.util.List;
 
 import java.util.zip.*;
 
-
-/**
- * DataSource for Web Map Servers
- *
- * @version $Revision: 1.38 $ $Date: 2007/04/16 20:34:52 $
- */
 @SuppressWarnings("unchecked")
 public class KmlUtil {
 
@@ -121,8 +114,6 @@ public class KmlUtil {
     public static final String TAG_WHEN = "when";
     public static final String TAG_WIDTH = "width";
     //J+
-
-
 
     /** the Tour tag */
     public static final String TAG_TOUR = "gx:Tour";
@@ -226,8 +217,6 @@ public class KmlUtil {
         return kmlRoot;
     }
 
-
-
     /**
      * Make a Kml element
      *
@@ -258,7 +247,6 @@ public class KmlUtil {
         return child;
     }
 
-
     /**
      * Make a KML Document
      *
@@ -288,7 +276,6 @@ public class KmlUtil {
 
         return node;
     }
-
 
     /**
      * Make a NetworkLink element
@@ -351,8 +338,6 @@ public class KmlUtil {
                 : "0"));
     }
 
-
-
     /**
      * Make a snippet Element
      *
@@ -364,7 +349,6 @@ public class KmlUtil {
     public static Element snippet(Element parent, String snippet) {
         return makeText(parent, TAG_SNIPPET, snippet);
     }
-
 
     /**
      * Set the open flag on an elemenet
@@ -380,8 +364,6 @@ public class KmlUtil {
                                            : "0"));
     }
 
-
-
     /*    public static Element timestamp(Element parent, DateTime dttm) {
         String when = dttm.formattedString("yyyy-MM-dd", DateUtil.TIMEZONE_GMT)
             + "T"
@@ -391,7 +373,6 @@ public class KmlUtil {
         makeText(timestamp,TAG_WHEN, when);
         return timestamp;
         }*/
-
 
     /** simple date format  for yyyy-MM-dd */
     private static SimpleDateFormat sdf1;
@@ -497,7 +478,6 @@ public class KmlUtil {
         return style;
     }
 
-
     /*
         <Style id="globeIcon">
       <IconStyle>
@@ -553,7 +533,6 @@ public class KmlUtil {
 
         return iconstyle;
     }
-
 
     /**
      * Create an IconStyle element
@@ -670,7 +649,6 @@ public class KmlUtil {
     <!-- specific to LabelStyle -->
     <scale>1</scale>                   <!-- float -->
   </LabelStyle>*/
-
 
     /**
      * Create a LineStyle element
@@ -793,7 +771,6 @@ public class KmlUtil {
                                : -1);
     }
 
-
     /**
      * Create a LineString element
      *
@@ -841,7 +818,6 @@ public class KmlUtil {
      */
     public static String coordsString(float[][] coords, boolean isXY,
                                       int... extra) {
-
 
         int          skip      = (extra.length > 0)
                                  ? extra[0]
@@ -920,7 +896,6 @@ public class KmlUtil {
         return node;
     }
 
-
     /**
      * Create a Folder element
      *
@@ -951,7 +926,6 @@ public class KmlUtil {
         return node;
     }
 
-
     /**
      * Create a Placemark
      *
@@ -974,7 +948,6 @@ public class KmlUtil {
         return node;
     }
 
-
     /*
     public static Element placemark(Element parent, String name, String description, visad.georef.EarthLocation el, String style) throws Exception {
         return placemark(parent, name, description,
@@ -982,7 +955,6 @@ public class KmlUtil {
                          el.getLongitude().getValue(visad.CommonUnit.degree),
                          (el.getAltitude()!=null?el.getAltitude().getValue():0), style);
                          }*/
-
 
     /**
      * Make a point Element string
@@ -1020,7 +992,6 @@ public class KmlUtil {
                          new String[] { styleUrl }, true);
     }
 
-
     /**
      * Make a Placemark element
      *
@@ -1052,7 +1023,6 @@ public class KmlUtil {
         return placemark;
     }
 
-
     /**
      * Create a GroundOverlay element
      *
@@ -1075,7 +1045,6 @@ public class KmlUtil {
         return groundOverlay(parent, name, description, url, north, south,
                              east, west, false);
     }
-
 
     /**
      * Create a GroundOverlay element
@@ -1136,7 +1105,6 @@ public class KmlUtil {
         return placemark;
     }
 
-
     /*
       <Placemark>
         <name>Floating placemark</name>
@@ -1156,7 +1124,6 @@ public class KmlUtil {
           <coordinates>-122.084075,37.4220033612141,50</coordinates>
         </Point>
         </Placemark>*/
-
 
     /**
      * Parse coordinates
@@ -1247,7 +1214,6 @@ public class KmlUtil {
                            Integer.toHexString(c.getRed()), 2, "0");
     }
 
-
     /**
      *
      * @param c _more_
@@ -1264,7 +1230,6 @@ public class KmlUtil {
 
         return toBGRHexString(color);
     }
-
 
     /**
      * Create a ScreenOverlay Element
@@ -1382,8 +1347,6 @@ public class KmlUtil {
 
     }
 
-
-
     /**
      *
      * @param root _more_
@@ -1396,7 +1359,6 @@ public class KmlUtil {
             throws Exception {
         return (List<Element>) XmlUtil.findDescendants(root, TAG_PLACEMARK);
     }
-
 
     /**
      *
@@ -1428,13 +1390,6 @@ public class KmlUtil {
         return d;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         Element root = XmlUtil.getRoot(IOUtil.readContents(args[0],
                            KmlUtil.class));
@@ -1443,7 +1398,6 @@ public class KmlUtil {
 	StringBuilder sb = new StringBuilder();
 	sb.append("{\"type\": \"FeatureCollection\",\n\"features\": [\n");
         for (Element placemark : (List<Element>) placemarks) {
-
 
             String        name = XmlUtil.getGrandChildText(placemark, "name");
             String desc = XmlUtil.getGrandChildText(placemark, "description",
@@ -1507,6 +1461,5 @@ public class KmlUtil {
 	//        System.out.println("Util::placemarkEnd");
 	Utils.exitTest(0);
     }
-
 
 }

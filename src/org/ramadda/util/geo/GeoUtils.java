@@ -1,10 +1,9 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
-
 
 import org.json.*;
 
@@ -12,7 +11,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
 
 import org.ramadda.util.geo.Bounds;
 
@@ -88,66 +86,33 @@ public class GeoUtils {
      */
     public static final double WGS84_B_2 = WGS84_B * WGS84_B;
 
-    /** _more_ */
     public static final double WGS84_E_2 = (WGS84_A_2 - WGS84_B_2)
 	/ WGS84_A_2;
 
-    /** _more_ */
     public static final double DEG2RAD = Math.PI / 180.0;
-
-
-    /** _more_ */
     private static long GPS_TIME_OFFSET = 0;
-
-    /** _more_ */
     public static final Calendar GPS_DATE = new GregorianCalendar(1980, 0, 6);
-
-    /** _more_ */
     public static final int MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-    /** _more_ */
     private static String googleKey;
-
-    /** _more_ */
     private static String geocodeioKey;
-
-    /** _more_ */
     private static String hereKey;
-
-
-    /** _more_ */
     private static PrintWriter cacheWriter;
-
-    /** _more_ */
     private static String cacheDelimiter = "_delim_";
-
-    /**  */
     private static boolean haveInitedKeys = false;
-
-    /** _more_ */
     private static Hashtable<String,String> statesMap;
 
-    /** _more_ */
     private static Hashtable<String, Place> citiesMap;
 
-    /** _more_ */
     private static final String[] citySuffixes = new String[] { "city",
 								"town", "cdp", "village" };
 
-    /** _more_ */
     private static final String[] countySuffixes = new String[] {
         "county", "city", "borough", "municipality", "parish", "census area",
         "city and borough"
     };
 
-
-    /** _more_ */
     private static HashSet noPlaceSet = new HashSet();
 
-
-
-    /**
-     */
     private static void initKeys() {
         if (haveInitedKeys) {
             return;
@@ -164,27 +129,14 @@ public class GeoUtils {
         haveInitedKeys = true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
     public static void setGoogleKey(String key) {
         googleKey = key;
     }
 
-    /**
-     *
-     * @param key _more_
-     */
     public static void setHereKey(String key) {
         hereKey = key;
     }
 
-    /**
-     * @return _more_
-     */
     public static String getHereKey() {
         return hereKey;
     }
@@ -193,15 +145,9 @@ public class GeoUtils {
         return googleKey;
     }    
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
     public static void setGeocodeioKey(String key) {
         geocodeioKey = key;
     }
-
 
     public static double calculateBearing(double lat1, double lon1, double lat2, double lon2) {
         double lat1Rad = Math.toRadians(lat1);
@@ -240,7 +186,6 @@ public class GeoUtils {
 	return new double[]{xr + cx, yr + cy};
     }
 
-
     public static double[] rotateLatLon(double lat, double lon,
                                         double latCenter, double lonCenter,
                                         double angleRad) {
@@ -277,15 +222,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
     return new double[]{latRot, lonRot};
 }
 
-
-
-    /**
-     * _more_
-     *
-     * @param date _more_
-     *
-     * @return _more_
-     */
     public static String date2GPS(Calendar date) {
         long elapsedTime = date.getTimeInMillis()
 	    - GPS_DATE.getTimeInMillis();
@@ -299,13 +235,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return Double.toString(fullDays);
     }
 
-    /**
-     * _more_
-     *
-     * @param gpsDays _more_
-     *
-     * @return _more_
-     */
     public static Calendar gps2Date(int gpsDays) {
         Calendar returnDate = (Calendar) GPS_DATE.clone();
         returnDate.add(Calendar.DATE, gpsDays);
@@ -313,12 +242,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return returnDate;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static long getGpsTimeOffset() {
         if (GPS_TIME_OFFSET == 0) {
             GregorianCalendar cal =
@@ -330,13 +253,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return GPS_TIME_OFFSET;
     }
 
-    /**
-     * _more_
-     *
-     * @param gpsTime _more_
-     *
-     * @return _more_
-     */
     public static long convertGpsTime(long gpsTime) {
         return getGpsTimeOffset() + gpsTime;
     }
@@ -353,7 +269,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
     public static double[] wgs84XYZToLatLonAlt(double x, double y, double z) {
         return wgs84XYZToLatLonAlt(x, y, z, null);
     }
-
 
     public static double metersToFeet(double meters) {
 	return meters*3.28084;
@@ -373,7 +288,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
     public static double mmToMeters(double mm) {
 	return mm/1000;
     }    
-    
 
     public static int estimateWindowSize(double avgPointSpacingMeters, double smoothDistanceMeters) {
 	int size = (int)Math.round(smoothDistanceMeters / avgPointSpacingMeters);
@@ -382,7 +296,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	if (size % 2 == 0) size += 1;
 	return size;
     }
-
 
     /**
      * Taken from the C WGS84_xyz_to_geo  in postion.c
@@ -436,7 +349,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             }
         } while ((last_lat - lat) != 0 && (loop++ < 10));
 
-
         if (result == null) {
             result = new double[3];
         }
@@ -473,27 +385,10 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return lon;
     }
 
-
-
-
-
-
     public static boolean reverseGeocodeEnabled() {
         return  (googleKey != null || hereKey != null || geocodeioKey != null);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Address getAddress(double lat, double lon)
 	throws Exception {
         String                    key   = lat + "_" + lon;
@@ -514,16 +409,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return address;
     }
 
-
-
-    /**
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Address getAddressInner(double lat, double lon)
 	throws Exception {
         initKeys();
@@ -542,15 +427,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return address;
     }
 
-
-    /**
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Address getAddressFromLatLonGeocodeio(double lat,
 							 double lon)
 	throws Exception {
@@ -604,14 +480,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 
     }
 
-    /**
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Address getAddressFromLatLonHere(double lat, double lon)
 	throws Exception {
         /*
@@ -678,26 +546,17 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 
     }
 
-
-
-
     private static Object ADDRESS_MUTEX = new Object();
 
-    /** _more_ */
     private static Hashtable<String, Place> addressToLocation = null;
 
-    /** _more_ */
     private static Hashtable<String, String> hoods = null;
 
-    /** _more_ */
     private static PrintWriter hoodsWriter;
-
 
     private static Hashtable<String, Address> addresses = null;    
 
-    /** _more_ */
     private static PrintWriter addressesWriter;
-
 
     private static Hashtable<String, Place> getGeocodeCache() throws Exception {
         if (addressToLocation == null) {
@@ -737,14 +596,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	return addressToLocation;
     }
 
-    /**
-     * _more_
-     *
-     * @param address _more_
-     * @param bounds _more_
-     *
-     * @return _more_
-     */
     public static Place getLocationFromAddress(String address,
 					       Bounds bounds) {
         try {
@@ -767,20 +618,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Feature findFeature(String path, double lat, double lon)
 	throws Exception {
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
@@ -808,19 +645,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return fc.find((float) lat, (float) lon);
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param field _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Object findFeatureField(String path, String field,
                                           double lat, double lon, Object dflt)
 	throws Exception {
@@ -835,16 +659,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return dflt;
     }
 
-    /**
-     *
-     * @param path _more_
-     * @param fields _more_
-     * @param lat _more_
-     * @param lon _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Object> findFeatureFields(String path,
 						 List<String> fields, double lat, double lon)
 	throws Exception {
@@ -876,22 +690,9 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return null;
     }
 
-    /** _more_ */
     private static final String[] NAME_FIELDS = new String[] { "name",
 							       "state_name", "cntry_name", "tzid" };
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String findFeatureName(String path, double lat, double lon,
                                          String dflt)
 	throws Exception {
@@ -912,14 +713,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return dflt;
     }
 
-
-
-    /**
-     * _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Hashtable<String,String> getStatesMap() throws Exception {
         if (statesMap == null) {
             InputStream inputStream =
@@ -955,7 +748,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return R * c;
     }
 
-
     public static class TiledObject {
 	public double latitude;
 	public double longitude;
@@ -969,9 +761,7 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	    return object;
 	}
 
-
     }
-
 
     public static class Tile {
 	private List<TiledObject> objects = new ArrayList<TiledObject>();
@@ -1105,8 +895,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 		return place;
 	    }
 
-
-
 	    if(resource!=null)
 		place=match(resource);
 	    if(place==null && resource2!=null)
@@ -1130,15 +918,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	}
     }
 
-    /**
-     *
-     * @param address _more_
-     * @param bounds _more_
-     * @param debug _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Place getLocationFromAddressInner(String address,
 						     Bounds bounds, boolean debug)
 	throws Exception {
@@ -1238,7 +1017,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             locale.doCounty = true;
         }
 
-
 	if (locale.doCounty) {
             resource = GeoResource.RESOURCE_COUNTIES;
             int index = locale.cleanAddress.indexOf(",");
@@ -1285,7 +1063,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             locale.doState = true;
         }
 
-
         if (locale.doState) {
 	    resource = GeoResource.RESOURCE_STATES;
             place    = locale.match(resource);
@@ -1294,7 +1071,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             }
             locale.doCountry = true;
         }
-
 
         if (locale.doCountry) {
             resource = GeoResource.RESOURCE_COUNTRIES;
@@ -1324,7 +1100,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
                 return place;
             }
         }
-
 
         if (place != null) {
             return place;
@@ -1429,7 +1204,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             }
         }
 
-
         if ((place != null) && !place.within(bounds)) {
             place = null;
         }
@@ -1474,19 +1248,8 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return null;
     }
 
-
-    /** _more_ */
     private static String preciselyToken;
 
-    /**
-     * _more_
-     *
-     * @param force _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getPreciselyToken(boolean force) throws Exception {
         if (force) {
             preciselyToken = null;
@@ -1514,14 +1277,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return preciselyToken;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Hashtable<String, String> getHoods() throws Exception {
 	File cacheDir =  IO.getCacheDir();
         if ((hoods == null) && (cacheDir != null)) {
@@ -1573,18 +1328,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return addresses;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getNeighborhood(double lat, double lon)
 	throws Exception {
         String                    key   = lat + "_" + lon;
@@ -1640,14 +1383,11 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 		if(!JsonUtil.getList(types).contains("neighborhood")) continue;
 		return obj.getString("long_name");
 	    }
-	    
+
 	}
 	//	System.err.println(json);
 	return null;
     }
-
-
-
 
     private static String getNeighborhoodInner(double lat, double lon)
 	throws Exception {
@@ -1698,11 +1438,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         JSONObject nameObject = nameArray.getJSONObject(0);
         return  nameObject.getString("value");
     }
-    
-
-
-
-
 
     private static boolean checkGoogleComponent(JSONObject obj, String type) {
 	JSONArray types = obj.optJSONArray("types");
@@ -1767,16 +1502,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	return null;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param pts _more_
-     *
-     * @return _more_
-     */
     public static double[] getBounds(double[] pts) {
         double north = Double.NaN,
 	    south = Double.NaN,
@@ -1812,27 +1537,16 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return latLonOk(d.doubleValue());
     }
 
-    
-
     //Hackish as  this is really checking for a -9999 sortof null value
     public static boolean latLonOk(double v) {
         return ((v == v) && (v>=-180 && v<=360));
     }
-
 
     public static boolean latLonOk(double lat, double lon) {
 	return lat>=-90 && lat<=90 &&
 	    lon>=-180 && lon<=360;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     *
-     * @return _more_
-     */
     public static Bounds parseGdalInfo(String results) {
         /*
           Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
@@ -1900,13 +1614,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return bounds;
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     *
-     * @return _more_
-     */
     private static double[] getGdalLatLon(String line) {
         line = line.trim();
         line = StringUtil.findPattern(line, ".*\\(([^\\)]+)\\.*");
@@ -1924,13 +1631,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
                               decodeGdalLatLon(toks.get(1)) };
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private static double decodeGdalLatLon(String s) {
         s = s.replace("d", ":");
         s = s.replace("'", ":");
@@ -2032,15 +1732,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return value * southOrWest;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param points _more_
-     *
-     * @return _more_
-     */
     public static List<double[]> parsePointString(String s,
 						  List<double[]> points) {
         if (s == null) {
@@ -2059,9 +1750,8 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         return points;
     }
 
-
     private static int POLYGON_SCALE = 1000;
-    
+
     /*
       Array of <latitude,longitude,latitude,longitude>
       this applies the POLYGON_SCALE value to scale the points up to integer
@@ -2090,14 +1780,11 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	}
 	return new Polygon(x,y,x.length);
     }
-    
+
     public static boolean polygonContains(Polygon polygon, double lat,double lon) {
 	return polygon.contains(POLYGON_SCALE*lon,POLYGON_SCALE*lat);
 
     }
-	
-
-
 
     public static class UTMInfo {
 	String zone;
@@ -2153,7 +1840,6 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 			   utmCode,dstCoord.x,dstCoord.y);
     }
 
-
     public static String getEPSGFromUTMZone(String utmZone) {
         if (utmZone == null || utmZone.length() < 2) {
 	    return null;
@@ -2169,10 +1855,9 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 
 	String z = ""+zoneNumber;
 	if(z.length()<2) z = "0" + z;
-			     
+
         return (hemisphere == 'N') ? "326" +  z : "327"+ z;
     }
-
 
     public static double[]  UTMToLatLon(String zone, double easting, double northing) {
 	if(!Utils.stringDefined(zone)) return null;
@@ -2200,20 +1885,16 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 
     }
 
-
-
-
-
     public static void main(String[] args) throws Exception {
 	System.err.println("lat:" + 40 +" lon:" + -107 +" " +LatLonToUTM(40,-107));
 	System.err.println("lat:" + -40 +" lon:" + -107 +" " +LatLonToUTM(-40,-107));	
 	if(true) return;
 	int scale = 1000;
 	List<Double> d = Utils.getDoubles("44.992342,-110.65619,44.430205,-88.507752,32.875383,-87.980408,29.874414,-98.351502,33.537222,-110.65619,43.989213,-112.06244");
-	
+
 	Polygon poly = makePolygon(d);
 	System.err.println(polygonContains(poly,40,-104));
-	
+
 	if(true) return;
 	for(String s: args) {
 	    System.err.println(decodeLatLon(s));
@@ -2221,13 +1902,9 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 
 	if(true) return;
 
-
-
 	initKeys();
 	System.err.println(getAddress(39.9905392833907,-105.22957815436592));
 	//	System.err.println(getNeighborhood(39.9905392833907,-105.22957815436592));
-
-
 
         /*
 
@@ -2283,8 +1960,5 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
         }
 
     }
-
-
-
 
 }

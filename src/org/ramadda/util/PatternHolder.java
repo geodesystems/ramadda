@@ -10,7 +10,6 @@ import java.util.regex.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class PatternHolder {
     private String spattern;
     private Pattern pattern;
@@ -19,7 +18,6 @@ public class PatternHolder {
     public PatternHolder(String spattern) {
         this(spattern, false);
     }
-
 
     public PatternHolder(String spattern, boolean checkStringIndex) {
         this.checkStringIndex = checkStringIndex;
@@ -48,13 +46,11 @@ public class PatternHolder {
 	return false;
     }
 
-    
     @Override
     public String toString() {
         return "Pattern:" + spattern;
     }
 
-    
     public boolean matches(String s) {
         if (s == null) {
             return false;

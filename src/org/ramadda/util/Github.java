@@ -154,12 +154,10 @@ public class Github {
 	    this.avatarUrl = avatarUrl;
 	}
 
-
 	public void setLogin (String value) {
 	    login = value;
 	}
 
-	
 	public String getLogin () {
 	    return login;
 	}

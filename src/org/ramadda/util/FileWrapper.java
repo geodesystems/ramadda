@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 @SuppressWarnings("unchecked")
 public abstract class FileWrapper {
 
-    
     private     String path;
 
     /**  */

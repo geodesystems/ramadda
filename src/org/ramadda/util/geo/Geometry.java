@@ -1,14 +1,12 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
 
-
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
 
 import org.ramadda.util.geo.GeoUtils;
 
@@ -16,7 +14,6 @@ import java.awt.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Class to hold a Geometry which has a type and a list of coordinates.  If the
@@ -56,12 +53,10 @@ public class Geometry {
     /** the coordinates (x,y(,z) order) */
     private List<float[][]> coords;
 
-    /** _more_ */
     private List<Path2D.Double> paths;
 
     /**  */
     private Bounds bounds;
-
 
     /**
      * Create a Geometry
@@ -73,14 +68,6 @@ public class Geometry {
         this.coords       = coords;
     }
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     */
     public boolean contains(float lat, float lon) {
         if ( !getBounds().contains(lat, lon)) {
             return false;
@@ -93,7 +80,6 @@ public class Geometry {
 
         return false;
     }
-
 
     /**
       * @return _more_
@@ -117,11 +103,6 @@ public class Geometry {
         return bounds;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Path2D.Double> getPaths() {
         if (paths == null) {
             List<Path2D.Double> tmp = new ArrayList<Path2D.Double>();
@@ -147,7 +128,6 @@ public class Geometry {
 
         return paths;
     }
-
 
     /**
      * Set the type of this Geometry
@@ -181,15 +161,6 @@ public class Geometry {
         return coords;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void toGeoJson(Appendable sb) throws Exception {
         sb.append(JsonUtil.mapOpen());
         JsonUtil.attr(sb, "type", JsonUtil.quote(geometryType));
@@ -199,24 +170,11 @@ public class Geometry {
         sb.append(JsonUtil.mapClose());
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public float[] getCenter() {
         return getCenter(false);
     }
 
-    /**
-     * _more_
-     *
-     * @param debug _more_
-     *
-     * @return _more_
-     */
     public float[] getCenter(boolean debug) {
-
 
         float minLat = Float.NaN;
         float minLon = Float.NaN;
@@ -243,11 +201,6 @@ public class Geometry {
         return new float[] { cLat, cLon };
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getCoordsString() {
         List<String> allCoords = new ArrayList<String>();
         for (float[][] coord : coords) {
@@ -314,11 +267,6 @@ public class Geometry {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         try {
             StringBuilder sb = new StringBuilder();
@@ -330,11 +278,6 @@ public class Geometry {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         int numcoords = (args.length == 0)
                         ? 2

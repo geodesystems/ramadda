@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 public class GmlUtil {
     public static final String XMLNS_XMLNS_GML = "http://www.opengis.net/gml";
     public static final String XMLNS_XMLNS_MS =    "http://mapserver.gis.umn.edu/mapserver";

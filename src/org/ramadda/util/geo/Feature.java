@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
-
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
@@ -23,25 +22,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * A holder for Feature information
  */
 @SuppressWarnings("unchecked")
 public class Feature {
 
-    /** _more_ */
     public static final DecimalFormat decimalFormat =
         new DecimalFormat("#,##0.#");
 
-    /** _more_ */
     public static final DecimalFormat intFormat = new DecimalFormat("####");
 
-    /** _more_ */
     public static final DecimalFormat plainFormat =
         new DecimalFormat("####.#");
-
-
 
     /** the feature id */
     private String id;
@@ -49,28 +42,21 @@ public class Feature {
     /** the geometry for this feature */
     private Geometry geometry;
 
-    /** _more_ */
     private List<float[][]> origCoords;
 
     /** the list of properties */
 
     private Hashtable<String, Object> featureProperties;
 
-    /** _more_ */
     private Hashtable data;
 
-    /** _more_ */
     private Hashtable allProperties;
 
-    /** _more_ */
     private int numPoints = -1;
 
-    /** _more_ */
     private int maxPoints = -1;
 
-    /** _more_ */
     private int stride = 0;
-
 
     /**
      * Create a Feature
@@ -80,7 +66,6 @@ public class Feature {
     public Feature(String id, Geometry geometry) {
         this(id, geometry, new Hashtable<String, Object>(), new Hashtable());
     }
-
 
     /**
      * Create a Feature
@@ -97,8 +82,6 @@ public class Feature {
         this.featureProperties = featureProperties;
         this.allProperties     = allProperties;
     }
-
-
 
     /**
      *  Set the Data property.
@@ -118,35 +101,14 @@ public class Feature {
         return data;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return "feature:" + featureProperties;
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String format(int v) {
         return intFormat.format(v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public static String format(double v) {
         if (v == (int) v) {
             return intFormat.format(v);
@@ -155,22 +117,10 @@ public class Feature {
         return decimalFormat.format(v);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param stride _more_
-     */
     public void setStride(int stride) {
         this.stride = stride;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getNumPoints() {
         if (numPoints < 0) {
             numPoints = 0;
@@ -185,11 +135,6 @@ public class Feature {
         return numPoints;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getMaxPoints() {
         if (maxPoints < 0) {
             getNumPoints();
@@ -230,24 +175,10 @@ public class Feature {
         return geometry;
     }
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     */
     public boolean contains(float lat, float lon) {
         return geometry.contains(lat, lon);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public float getMaxDistance() {
         float dmax = -1;
         if (origCoords == null) {
@@ -267,13 +198,6 @@ public class Feature {
         return dmax;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param epsilon _more_
-     */
     public void applyEpsilon(float epsilon) {
         numPoints = -1;
         if (origCoords == null) {
@@ -401,16 +325,7 @@ public class Feature {
 
         return placemark;
 
-
     }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
 
     public void toGeoJson(Appendable sb) throws Exception {
         sb.append(JsonUtil.mapOpen());

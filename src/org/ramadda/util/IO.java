@@ -97,7 +97,6 @@ public class IO {
         return cacheDir;
     }
 
-    
     public static File getCacheFile(String filename) {
         if (cacheDir == null) {
             throw new IllegalStateException("No Utils.cacheDir defined");

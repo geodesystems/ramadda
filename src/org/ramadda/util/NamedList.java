@@ -8,7 +8,6 @@ package org.ramadda.util;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class NamedList<T> {
     private String name;
     List<T> list = new ArrayList<T>();

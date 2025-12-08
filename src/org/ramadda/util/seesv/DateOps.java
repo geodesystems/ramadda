@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -22,13 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Jan 9, '15
- * @author         Jeff McWhirter
- */
+
 @SuppressWarnings("unchecked")
 public abstract class DateOps extends Processor {
 
@@ -49,47 +43,21 @@ public abstract class DateOps extends Processor {
     private static final int OFFSET_SECONDS_IN_YEAR = OFFSET_IDX--;
     private static final int DECADE= OFFSET_IDX--;        
 
-    /**
-     *
-     */
     public DateOps() {}
 
-    /**
-     * @param col _more_
-     */
     public DateOps(String col) {
         super(col);
     }
 
-    /**
-     *
-     * @param cols _more_
-     */
     public DateOps(List<String> cols) {
         super(cols);
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class DateConverter extends Converter {
-
-        /**
-         * @param col _more_
-         */
         public DateConverter(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -109,33 +77,12 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class DateAdder extends Converter {
-
-        /**  */
         private int type;
-
-        /**  */
         private String valueCol;
-
-        /**  */
         private int valueIndex = -1;
-
-        /**  */
         private GregorianCalendar cal;
 
-        /**
-         * @param ctx _more_
-         * @param dateCol _more_
-         * @param valueCol _more_
-         * @param what _more_
-         */
         public DateAdder(TextReader ctx, String dateCol, String valueCol,
                          String what) {
             super(dateCol);
@@ -143,11 +90,6 @@ public abstract class DateOps extends Processor {
             type          = getDatePart(what);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -172,38 +114,15 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class DateClear extends Converter {
-
-        /**  */
         private int type;
-
-        /**  */
         private GregorianCalendar cal;
-
-        /**
-         * @param ctx _more_
-         * @param dateCol _more_
-         * @param valueCol _more_
-         * @param what _more_
-         */
         public DateClear(TextReader ctx, String dateCol, 
                          String what) {
             super(dateCol);
             type          = getDatePart(what);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -235,26 +154,11 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class DateExtracter extends Converter {
-
         private String whatLabel = "Hour";
-
         private int what = GregorianCalendar.HOUR_OF_DAY;
-
-        /**  */
         private GregorianCalendar cal;
 
-        /**
-         * @param col _more_
-         * @param what _more_
-         */
         public DateExtracter(String col, String what) {
             super(col);
             whatLabel = StringUtil.camelCase(what);
@@ -271,11 +175,6 @@ public abstract class DateOps extends Processor {
 		whatLabel="Seconds in year";	    	    
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
@@ -331,17 +230,11 @@ public abstract class DateOps extends Processor {
     }
 
     public static class FormatDateOffset extends Converter {
-
         private int what = GregorianCalendar.HOUR_OF_DAY;
 	private String name;
-
 	private SimpleDateFormat sdf;
 	private Date start;
 
-        /**
-         * @param col _more_
-         * @param what _more_
-         */
         public FormatDateOffset(String col, String what) {
             super(col);
 	    start = Utils.getStartOfYear(new Date());
@@ -364,11 +257,6 @@ public abstract class DateOps extends Processor {
 	    }		
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
@@ -399,38 +287,15 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class DateBefore extends Converter {
-
         private int col;
-
-        /* */
-
         private Date date;
 
-        /* */
-
-        /**
-         * @param col _more_
-         * @param sdf1 _more_
-         * @param date _more_
-         */
         public DateBefore(String col,  Date date) {
 	    super(col);
             this.date = date;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -458,19 +323,8 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class DateAfter extends Converter {
-
         private int col=-1;
-
-        /* */
-
         private Date date;
 
         public DateAfter(String col,  Date date) {
@@ -478,11 +332,6 @@ public abstract class DateOps extends Processor {
             this.date = date;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -510,27 +359,11 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Jan 26, '19
-     * @author         Enter your name here...
-     */
     public static class DateFormatter extends Converter {
-
-        /**
-         * @param cols _more_
-         */
         public DateFormatter(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -555,33 +388,13 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Elapsed extends Converter {
-
-        /**  */
         private Date lastDate;
-
-        /**  */
-        private int index;
-
-        /**
-         * @param col _more_
-         */
+	private int index;
         public Elapsed(String col) {
             super(col);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -637,16 +450,7 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Diff extends Converter {
-
-        /**  */
         private int index1;
         private int index2;	
 	private String col1;
@@ -654,9 +458,6 @@ public abstract class DateOps extends Processor {
 	private String unit;
 	private double divisor;
 
-        /**
-         * @param col _more_
-         */
         public Diff(String col1,String col2, String unit) {
             super();
 	    this.col1= col1;
@@ -678,11 +479,6 @@ public abstract class DateOps extends Processor {
 	    System.err.println(divisor);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -729,38 +525,20 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
+
     public static class CompareDate extends Converter {
-
         private String op;
-
 	private String scol1;
 	private String scol2;
 	private int col1;
 	private int col2;	
 
-        /**
-         * @param indices _more_
-         * @param name _more_
-         * @param op _more_
-         */
         public CompareDate(String col1, String col2, String op) {
 	    this.scol1=  col1;
 	    this.scol2=  col2;	    
             this.op   = op;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -793,11 +571,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-    /**
-     *
-     * @param what _more_
-      * @return _more_
-     */
     public static int getDatePart(String what) {
         what = what.toUpperCase().trim();
         if (what.equals("ERA")) {

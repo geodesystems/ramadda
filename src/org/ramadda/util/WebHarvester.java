@@ -60,8 +60,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
-
-
 @SuppressWarnings("unchecked")
 public class WebHarvester {
     private URL url;

@@ -23,17 +23,14 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.*;
 
-
 @SuppressWarnings("unchecked")
 public class TikaUtil {
 
-    
     public static final int LUCENE_MAX_LENGTH = 25000000;
 
     private static TikaConfig tikaConfig;
     private static TikaConfig tikaConfigNoImage;    
 
-    
     public static File getTextCorpusCacheFile(File f) {
         return new File(f.getParentFile(), "." + f.getName() + ".corpus.txt");
     }
@@ -67,7 +64,6 @@ public class TikaUtil {
 	return tikaConfig;
     }
 
-    
     public static String extractTextCorpus(File f) throws Exception {
         InputStream stream = new FileInputStream(f);
         org.apache.tika.metadata.Metadata metadata =
@@ -83,7 +79,6 @@ public class TikaUtil {
         return corpus;
     }
 
-    
     public static void writeTextCorpus(File f, boolean force)
             throws Exception {
         File corpusFile = getTextCorpusCacheFile(f);

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -14,11 +14,6 @@ import java.io.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-
-/**
- *
- * @author Jeff McWhirter
- */
 
 public class ShapefileProvider extends DataProvider.BulkDataProvider {
 

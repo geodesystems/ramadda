@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2022 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -1741,7 +1741,6 @@ public class Seesv implements SeesvCommands {
                 "Pass through rows that have repeated words",
 		ARG_LABEL,"Check repeating words",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-
 
         new Cmd(CMD_RAWLINES, "",
 		ARG_LABEL,"Print raw lines",

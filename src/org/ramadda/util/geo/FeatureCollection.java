@@ -1,30 +1,22 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
 
-
-
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.IO;
-
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
-
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
-
 import ucar.unidata.gis.GisPart;
 import ucar.unidata.gis.shapefile.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-
 import java.text.DecimalFormat;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -32,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 
 /**
  * Class to hold a Collection of Features.  Modeled off the GEOJson spec.
@@ -70,33 +61,25 @@ public class FeatureCollection {
     /** Schema Id property */
     public static final String PROP_SCHEMAID = "SchemaId";
 
-    /** _more_ */
     public static final String PROP_STYLEID = "StyleId";
 
-    /** _more_ */
     public static final String PROP_BALLOON_TEMPLATE = "BalloonTemplate";
 
-    /** _more_ */
     private Properties fieldProperties;
 
-    /** _more_ */
     private List<DbaseDataWrapper> fieldDatum;
 
-
-    /** _more_ */
     private static TTLCache<String, FeatureCollection> cache =
         new TTLCache<String, FeatureCollection>(60 * 1000 * 5);
 
-
     /**
-     
+
      *
      * @param features _more_
      */
     public FeatureCollection(List<Feature> features) {
         this.features = features;
     }
-
 
     /**
      * Create a FeatureCollection
@@ -134,17 +117,6 @@ public class FeatureCollection {
         this.fieldDatum  = fieldDatum;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param fieldDatum _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static DbaseDataWrapper getNameField(
             List<DbaseDataWrapper> fieldDatum)
             throws Exception {
@@ -172,16 +144,6 @@ public class FeatureCollection {
         return nameField;
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param is _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static FeatureCollection getFeatureCollection(String path,
             InputStream is)
             throws Exception {
@@ -198,33 +160,11 @@ public class FeatureCollection {
         return fc;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static FeatureCollection makeFeatureCollection(File file)
             throws Exception {
         return makeFeatureCollection(new FileInputStream(file));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static FeatureCollection makeFeatureCollection(InputStream file)
             throws Exception {
         Hashtable extraProps = new Hashtable();
@@ -236,20 +176,6 @@ public class FeatureCollection {
                                      collectionProps);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param fcname _more_
-     * @param desc _more_
-     * @param shapefile _more_
-     * @param extraProps _more_
-     * @param collectionProps _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static FeatureCollection makeFeatureCollection(String fcname,
             String desc, EsriShapefile shapefile, Hashtable extraProps,
             Hashtable<String, Object> collectionProps)
@@ -352,18 +278,6 @@ public class FeatureCollection {
         return fc;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dbfile _more_
-     * @param properties _more_
-     * @param pluginProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<DbaseDataWrapper> getDatum(DbaseFile dbfile,
             Hashtable properties, Hashtable pluginProperties)
             throws Exception {
@@ -431,8 +345,6 @@ public class FeatureCollection {
         return fieldDatum;
     }
 
-
-
     /**
      * Get the Geometry type corresponding the the EsriFeature
      * @param feature the feature
@@ -471,7 +383,6 @@ public class FeatureCollection {
         return tag;
     }
 
-
     /**
      * Get the Geometry type corresponding the the EsriShapefileFeature
      *
@@ -509,17 +420,6 @@ public class FeatureCollection {
         return tag;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     */
     public Feature find(float lat, float lon) {
         for (Feature feature : features) {
             if (feature.contains(lat, lon)) {
@@ -602,41 +502,18 @@ public class FeatureCollection {
         return properties;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<DbaseDataWrapper> getDatum() {
         return fieldDatum;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public EsriShapefile getShapefile() {
         return (EsriShapefile) properties.get("shapefile");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public DbaseFile getDbFile() {
         return (DbaseFile) properties.get("dbfile");
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void toGeoJson(Appendable sb) throws Exception {
         List<String> map = new ArrayList<String>();
         sb.append(JsonUtil.mapOpen());

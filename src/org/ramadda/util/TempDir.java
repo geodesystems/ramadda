@@ -21,7 +21,6 @@ import java.util.Map;
 
 import java.util.zip.*;
 
-
 public class TempDir {
     private File dir;
     boolean recurse = true;
@@ -173,22 +172,18 @@ public class TempDir {
         return dir;
     }
 
-    
     public void setMaxFiles(int value) {
         this.maxFiles = value;
     }
 
-    
     public int getMaxFiles() {
         return this.maxFiles;
     }
 
-    
     public void setMaxSize(long value) {
         this.maxSize = value;
     }
 
-    
     public long getMaxSize() {
         return this.maxSize;
     }
@@ -197,42 +192,34 @@ public class TempDir {
         setMaxAge(1000 * 60 * value);
     }
 
-    
     public void setMaxAge(long value) {
         this.maxAge = value;
     }
 
-    
     public long getMaxAge() {
         return this.maxAge;
     }
 
-    
     public void setTouched(boolean value) {
         touched = value;
     }
 
-    
     public boolean getTouched() {
         return touched;
     }
 
-    
     public void setFilesOk(boolean value) {
         filesOk = value;
     }
 
-    
     public boolean getFilesOk() {
         return filesOk;
     }
 
-    
     public void setDirsOk(boolean value) {
         dirsOk = value;
     }
 
-    
     public boolean getDirsOk() {
         return dirsOk;
     }

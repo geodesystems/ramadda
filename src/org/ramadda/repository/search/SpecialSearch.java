@@ -451,7 +451,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		}
 	    }
 
-
 	    addAttr(sb,"entryTypes",typeHandler.getType());
 	    addAttr(sb, "showAncestor",  Utils.getProperty(props,"showAncestor",
 							   typeHandler.getTypeProperty("search.ancestor.show",""+showAncestor)));

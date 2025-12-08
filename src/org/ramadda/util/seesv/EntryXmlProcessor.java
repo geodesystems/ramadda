@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -20,19 +20,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Wed, Jul 8, '15
- * @author         Enter your name here...
- */
+
 public class EntryXmlProcessor extends RowCollector {
-
     SimpleDateFormat fsdf = new SimpleDateFormat("yyyy-MM-dd");
-
     SimpleDateFormat sdf1 = new SimpleDateFormat("MM/yyyy");
-
     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy");
 
     public EntryXmlProcessor() {}

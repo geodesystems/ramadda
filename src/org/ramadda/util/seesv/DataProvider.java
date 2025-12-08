@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -47,25 +47,15 @@ import java.util.List;
 
 import java.util.regex.*;
 
-/**
- *
- * @author Jeff McWhirter
- */
-
 @SuppressWarnings("unchecked")
 public abstract class DataProvider extends SeesvOperator {
-
     public static final JsonUtil JU = null;
     boolean debugInput = false;
-
     TextReader ctx;
-
     private Seesv seesv;
 
     public DataProvider() {}
-
     public DataProvider(TextReader ctx) {this.ctx=ctx;}    
-
     public void initialize(Seesv seesv, TextReader ctx) throws Exception {
 	this.ctx = ctx;
 	if (ctx != null) {
@@ -755,7 +745,6 @@ public abstract class DataProvider extends SeesvOperator {
                                             addPolygon);
         }
 
-
         public Row readRow() throws Exception {
             List<String> values = iterator.next();
             if (values == null) {
@@ -780,7 +769,7 @@ public abstract class DataProvider extends SeesvOperator {
         private Row headerRow;
         private int rowCnt = 0;
 	private int maxRows;
-	
+
         public SqlDataProvider(String db, String table, String columns,
                                String where,
                                Dictionary<String, String> props) {
@@ -1321,7 +1310,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
 
     }
-
 
     public static class TextDataProvider extends BulkDataProvider {
         String header;

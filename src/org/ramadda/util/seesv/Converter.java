@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2025 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -59,7 +59,7 @@ import javax.script.*;
 public abstract class Converter extends Processor {
 
     public List<Utils.Macro> macros;
-    
+
     public Converter() {}
 
     public Converter(String col) {

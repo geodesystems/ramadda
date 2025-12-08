@@ -64,8 +64,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_UNIQUE = "unique";        
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 30 * 1000;
 
-
-
     private String dateFormat = "yyyyMMdd_HHmm";
     private List<SimpleDateFormat> sdf;
     private List<String> patternNames = new ArrayList<String>();
@@ -320,7 +318,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   ATTR_ROOTDIR, inputText.toString(), 5, 60,
 					   fileFieldExtra.toString()) + extraLabel));
 
-
 	formHelp(sb,"Only harvest the top-level files that match this pattern.","#heading-top_directory_pattern");
         sb.append(HU.formEntry(msgLabel("Top directory pattern"),
 			       HU.input(ATTR_TOPPATTERN,
@@ -387,8 +384,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
 							      false, null,true)));
 
-
-
         sb.append(
 		  HU.formEntry(
 			       "",
@@ -407,8 +402,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(HU.formEntry(msgLabel("Default Entry type"),
 			       makeEntryTypeSelector(request,
 						     getTypeHandler())));
-
-
 
 	formHelp(sb,"Patterns to match on files to define entry type.","#heading-type_patterns");
 	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
@@ -464,7 +457,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private void formHelp(StringBuffer sb,String label, String link) {
 	sb.append(HU.formEntry("",HU.formHelp(label+   makeHarvesterHelp(link))));
     }
-	
 
     private String makeHarvesterHelp(String tag) {
 	if(tag==null) return "";
@@ -472,8 +464,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html" + tag),
 						   msg("Help"), " target=_HELP");
     }
-
-
 
     private List<SimpleDateFormat> getSDF() {
         if (sdf == null) {
@@ -913,7 +903,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    System.err.println("not unique: " + entry);
 		*/
 
-
 		nonUniqueCnt+= nonUnique.size();
                 for (Entry found : nonUnique) {
                     String existingId = (String) found.getTransientProperty(
@@ -1340,7 +1329,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if (templateEntry != null) {
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
-
 
         if (typeHandlerToUse == null) {
 	    typeHandlerToUse = getEntryManager().findTypeFromPatterns(typePatterns, filePath);

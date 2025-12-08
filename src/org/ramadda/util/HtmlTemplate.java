@@ -30,7 +30,6 @@ import java.util.jar.*;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
 @SuppressWarnings("unchecked")
 public class HtmlTemplate {
 

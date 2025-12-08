@@ -23,7 +23,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import javax.imageio.*;
 
-
 @SuppressWarnings("unchecked")
 public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 

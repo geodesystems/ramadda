@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 public class WadlUtil {
     public static final String XMLNS = "http://wadl.dev.java.net/2009/02";
     public static final String XMLNS_TNS = "urn:yahoo:yn";

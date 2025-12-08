@@ -39,12 +39,10 @@ public class FormInfo {
         return formId;
     }
 
-
     public void setHistory (Object value) {
 	history = value;
     }
 
-    
     public Object getHistory () {
 	return history;
     }

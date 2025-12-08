@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -23,11 +23,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import java.util.regex.*;
-
-/**
- *
- * @author Jeff McWhirter
- */
 
 @SuppressWarnings("unchecked")
 public class Filter extends Processor {
@@ -289,8 +284,6 @@ public class Filter extends Processor {
         }
 
     }
-
-
 
     public static class IsNumber extends Filter {
 

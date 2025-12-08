@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
+Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -33,18 +33,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
 
-/**
- *
- * @author Jeff McWhirter
- */
-
 @SuppressWarnings("unchecked")
 public class TextReader implements Cloneable {
     private static char NEWLINE = '\n';
     private static char CARRIAGE_RETURN = '\r';
     private static int UNDEF = -1;
     private static final char QUOTE_DOUBLE = '"';
-
     private List<String> files = new ArrayList<String>();
     private Hashtable<String, String> fieldAliases = new Hashtable<String,
                                                          String>();

@@ -11,7 +11,6 @@ import java.util.HashSet;
 
 import java.util.Hashtable;
 
-
 public interface WikiPageHandler extends SystemContext {
 
     public String getHtdocsUrl(String path);
@@ -25,7 +24,6 @@ public interface WikiPageHandler extends SystemContext {
                                        String tag, String remainder,
                                        HashSet notTags);
 
-    
     public boolean titleOk(WikiUtil wikiUtil);
 
     public boolean ifBlockOk(WikiUtil wikiUtil, String attrs);

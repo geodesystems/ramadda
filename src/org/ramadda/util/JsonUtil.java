@@ -31,14 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
 @SuppressWarnings("unchecked")
 public class JsonUtil {
 
     /** JSON MIME type */
     public static final String MIMETYPE = "application/json";
 
-    
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
 
     /**  */

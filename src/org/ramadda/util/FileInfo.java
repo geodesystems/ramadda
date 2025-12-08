@@ -119,7 +119,6 @@ public class FileInfo {
         return file.exists();
     }
 
-
     public void setDescription(String value) {
         description = value;
     }
@@ -132,7 +131,6 @@ public class FileInfo {
         title = value;
     }
 
-    
     public String getTitle() {
         return title;
     }

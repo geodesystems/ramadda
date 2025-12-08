@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 public class CategoryList<T> {
     List<String> categories = new ArrayList<String>();
     Hashtable<String, List<T>> map = new Hashtable<String, List<T>>();

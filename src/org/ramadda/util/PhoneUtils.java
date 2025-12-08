@@ -29,7 +29,7 @@ public class PhoneUtils {
     private static String TWILIO_AUTH_TOKEN;
     private static String TWILIO_PHONE;
     private static boolean haveInited = false;
-   
+
     public static void initKeys() {
         if (haveInited) {
             return;
@@ -39,7 +39,6 @@ public class PhoneUtils {
         numlookupapiKey = System.getenv("NUMLOOKUPAPI_API_KEY");
     }
 
-    
     public static boolean initTwilio() {
         if (TWILIO_ACCOUNT_SID == null) {
             TWILIO_ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
@@ -63,31 +62,23 @@ public class PhoneUtils {
         return true;
     }
 
-    
     private static Hashtable<String, HashSet> campaigns =
         new Hashtable<String, HashSet>();
 
-    
     public static final int SMS_CODE_SENT = 0;
 
-    
     public static final int SMS_CODE_ALREADYSENT = 1;
 
-    
     public static final int SMS_CODE_BADPHONE = 2;
 
-    
     public static final int SMS_CODE_ERROR = 3;
 
-    
     public static final int SMS_CODE_UNSUBSCRIBED = 4;
 
-    
     private static File getCampaignFile(String campaign) {
         return new File(campaign + ".sent.txt");
     }
 
-    
     private static void writeCampaignFile(String campaign, String phone,
                                           String status)
             throws Exception {
@@ -99,7 +90,6 @@ public class PhoneUtils {
         fw.close();
     }
 
-    
     public static int sendSMS(String phone, String msg,
                               boolean ignoreInvalidNumbers, String campaign)
             throws Exception {
@@ -207,7 +197,6 @@ public class PhoneUtils {
 
     }
 
-    
     private static String doPostTwilio(String url, String args)
             throws Exception {
         URL               myurl    = new URL(url);
@@ -239,13 +228,10 @@ public class PhoneUtils {
         }
     }
 
-    
     private static Hashtable<String, Boolean> isMobile;
 
-    
     private static List<String> numbers;
 
-    
     public static boolean isPhoneMobile(String phone) throws Exception {
         File cacheFile = IO.getCacheFile("ismobile.txt");
         if (isMobile == null) {
@@ -281,7 +267,6 @@ public class PhoneUtils {
         return b.booleanValue();
     }
 
-    
     public static boolean isValidPhone(String phone) {
         phone = cleanPhone(phone);
         if (phone.length() != 12) {
@@ -294,7 +279,6 @@ public class PhoneUtils {
         return true;
     }
 
-    
     public static String cleanPhone(String phone) {
         phone = phone.replaceAll("[^0-9]+", "");
         //        phone = phone.replaceAll("-", "").replaceAll("-", "").replaceAll("\\s","").replaceAll("\\(","").replaceAll("\\)","").replaceAll("\\.","");
@@ -319,7 +303,6 @@ public class PhoneUtils {
 
     private static boolean printedMessage = false;
 
-    
     public static PhoneInfo getPhoneInfo(String phone) throws Exception {
         initKeys();
         if ((numverifyKey == null) && (numlookupapiKey == null)) {
@@ -400,19 +383,14 @@ public class PhoneUtils {
 
     }
 
-    
     private static class PhoneInfo {
 
-        
         String countryCode;
 
-        
         String location;
 
-        
         String lineType;
 
-        
         PhoneInfo(String countryCode, String location, String lineType) {
             this.countryCode = countryCode;
             this.location    = location;
@@ -420,7 +398,6 @@ public class PhoneUtils {
         }
     }
 
-    
     public static void usage(String msg) {
         if (msg != null) {
             System.err.println(msg);

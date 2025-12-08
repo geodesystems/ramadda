@@ -7,8 +7,6 @@ package org.ramadda.util;
 
 import java.io.*;
 
-
-
 public class NamedInputStream {
 
     String name;

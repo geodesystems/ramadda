@@ -41,57 +41,46 @@ public class MapRegion {
         north = value;
     }
 
-    
     public double getNorth() {
         return north;
     }
 
-    
     public void setWest(double value) {
         west = value;
     }
 
-    
     public double getWest() {
         return west;
     }
 
-    
     public void setSouth(double value) {
         south = value;
     }
 
-    
     public double getSouth() {
         return south;
     }
 
-    
     public void setEast(double value) {
         east = value;
     }
 
-    
     public double getEast() {
         return east;
     }
 
-    
     public void setName(String value) {
         name = value;
     }
 
-    
     public String getName() {
         return name;
     }
 
-    
     public void setGroup(String value) {
         group = value;
     }
 
-    
     public String getGroup() {
         return group;
     }
@@ -104,12 +93,10 @@ public class MapRegion {
         return this.group.equals(group);
     }
 
-    
     public void setId(String value) {
         id = value;
     }
 
-    
     public String getId() {
         return id;
     }

@@ -44,7 +44,6 @@ public class PatternProps {
 	}
     }
 
-    
     public String get(String key) {
         for (int i = 0; i < patterns.size(); i++) {
             Matcher matcher = patterns.get(i).matcher(key);

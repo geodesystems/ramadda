@@ -47,7 +47,6 @@ public class Propper {
 
     }
 
-    
     public static Propper create(boolean exact, String filename,
                                  InputStream is)
             throws Exception {
@@ -96,7 +95,6 @@ public class Propper {
         return propper;
     }
 
-    
     public Propper(boolean exact, Hashtable props) {
         this(exact);
         this.props = props;
@@ -109,12 +107,10 @@ public class Propper {
         }
     }
 
-    
     public void set(Hashtable props) {
         this.props = props;
     }
 
-    
     public void add(String key, Object value) {
         if (exact) {
             if (props == null) {
@@ -130,7 +126,6 @@ public class Propper {
 
     }
 
-    
     public String getValue(String[] names, Object o) {
         if (o instanceof String) {
             return (String) o;
@@ -149,7 +144,6 @@ public class Propper {
         return null;
     }
 
-    
     public String getNamedValue(String[] names, String... keys) {
         Object o = get(keys);
         if (o == null) {
@@ -166,7 +160,6 @@ public class Propper {
         return getValue(names, l);
     }
 
-    
     public Object get(String... keys) {
         if (props != null) {
             for (Object key : keys) {
@@ -204,22 +197,17 @@ public class Propper {
         return null;
     }
 
-    
     private static class Value {
 
-        
         String key;
 
-        
         Object values;
 
-        
         Value(String key, Object values) {
             this.key    = key;
             this.values = values;
         }
 
-        
         boolean matches(String v) {
             if (v.matches(key)) {
                 if (debug) {
