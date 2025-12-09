@@ -1189,18 +1189,36 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		tocStyle+=HU.css("width",HU.makeDim(w, "px"),
 				 "max-width",HU.makeDim(w, "px"));				 
 	    }
+	    if((w=Utils.getProperty(props,"listHeight",null))!=null) {
+		tocStyle+=HU.css("max-height",HU.makeDim(w, "px"),
+				 "overflow-y","auto");
+	    }
 	    StringBuilder tocOuter = new StringBuilder();
 	    String uid =HU.getUniqueId("toc_");
+	    String searchId =HU.getUniqueId("toc_search");
+	    String innerId =HU.getUniqueId("toc_inner");
 	    StringBuilder contents = new StringBuilder();
 	    String listHeader = Utils.getProperty(props, "listHeader","Entries");
 	    String link = HU.makeShowHideBlock(contents,listHeader,toc.toString(), true,"","",null,null);
-	    HU.open(tocOuter,"div",HU.attrs("class", "ramadda-earth-nav ramadda-map-toc-outer","id",uid, "style",HU.css("max-height",height)));
+	    HU.open(tocOuter,"div",
+		    HU.attrs("class", "ramadda-earth-nav ramadda-map-toc-outer",
+			     "id",uid,
+			     "style",HU.css("max-height",height)));
 	    HU.div(tocOuter,link,HU.clazz("ramadda-clickable ramadda-map-toc-header"));
-	    HU.open(tocOuter,"div",HU.attrs("class","ramadda-map-toc-inner","style",tocStyle));
+	    HU.tag(tocOuter,"div",HU.attrs("id",searchId,"style","margin:5px;text-align:center;"),"");
+	    HU.open(tocOuter,"div",HU.attrs("id",innerId,"class","ramadda-map-toc-inner","style",tocStyle));
 	    tocOuter.append(contents);
 	    HU.close(tocOuter,HU.TAG_DIV,HU.TAG_DIV);
 	    sb.append(tocOuter);
 	    HU.script(sb,"$(\"#" + uid+"\").draggable();");
+	    String args = JU.map("target",JU.quote("#"+searchId));
+	    HU.script(sb,HU.call("HtmlUtils.initPageSearch",
+				 HU.squote("#" + innerId+" .ramadda-earth-nav"),
+				 HU.squote("#" + uid),
+				 HU.squote("Search"),
+				 "false",args));
+
+
 	}
 	HU.close(sb,HU.TAG_DIV);
         if (weight != 12) {
