@@ -45,6 +45,9 @@ public  class LinkedTypeHandler extends ExtensibleGroupTypeHandler {
 		entry.setSouth(linkedEntry.getSouth(request));	    	    
 		entry.setEast(linkedEntry.getEast(request));
 	    }
+	    if(!stringDefined(entry.getName())) {
+		entry.setName(linkedEntry.getName());
+	    }
 	}
     }
 
