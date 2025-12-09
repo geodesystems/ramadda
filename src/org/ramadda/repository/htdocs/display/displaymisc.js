@@ -766,7 +766,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		} else {
 		    event.start_date  = startDate;
 		    if(endDateField) {
-			event.end_date = tuple[endDateField.getIndex()];
+			let endDate = tuple[endDateField.getIndex()];
+			if(endDate) {
+			    event.end_date =this.getDate(endDate);
+			}
 		    }
 		}
 		events.push(event);
