@@ -679,7 +679,15 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    });
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
-	    let imageField = this.getFieldById(null,this.getPropertyImageField());
+	    let imageFields=[];
+	    
+	    Utils.split(this.getPropertyImageField(''),',',true,true).forEach(f=>{
+		let imageField = this.getFieldById(null,f);
+		if(imageField) {
+		    imageFields.push(imageField);
+		}
+	    });
+
 	    let thumbnailField = this.getFieldById(null,this.getPropertyThumbnailField());	    
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
@@ -745,14 +753,29 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 			event.media.thumbnail =url;
 		    }
 		}
-		if(imageField) {
+		if(imageFields.length) {
 		    if(!event.media.thumbnail && this.getProperty('thumbnailOk',true)) {
+			imageFields.every(imageField=>{
+			    let url = record.getValue(imageField.getIndex());
+			    if(Utils.stringDefined(url)) {
+				event.media.thumbnail =url;
+				return false;
+			    }
+			    return true;
+			});
+		    }
+		    event.media.url = '';
+		    imageFields.every(imageField=>{
 			let url = record.getValue(imageField.getIndex());
 			if(Utils.stringDefined(url)) {
-			    event.media.thumbnail =url;
+//			    console.log(record.data);
+//			    console.log(imageField.getId(),imageField.getIndex(),'url:'+url);
+			    event.media.url = url;
+			    return false;
 			}
-		    }
-		    event.media.url = record.getValue(imageField.getIndex());
+			return true;
+		    });
+//		    event.media.url = record.getValue(imageFields[0].getIndex());
 		    if(urlField) {
 			event.media.link = record.getValue(urlField.getIndex());
 			event.media.link_target = "_timelinemedia";
