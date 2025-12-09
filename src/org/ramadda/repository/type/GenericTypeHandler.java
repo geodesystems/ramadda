@@ -615,15 +615,14 @@ public class GenericTypeHandler extends TypeHandler {
         if ( !haveDatabaseTable()) {
             return;
         }
-        readValuesFromDatabase(entry, values);
+        readValuesFromDatabase(entry, values,true);
     }
 
-    private Object[] readValuesFromDatabase(Entry entry, Object[] values)
-            throws Exception {
+    private Object[] readValuesFromDatabase(Entry entry, Object[] values,boolean firstCall)
+	throws Exception {
         Clause clause = Clause.eq(COL_ID, entry.getId());
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
 						     getTableName(), clause);
-
         try {
             ResultSet results2 = stmt.getResultSet();
             if (results2.next()) {
@@ -643,12 +642,16 @@ public class GenericTypeHandler extends TypeHandler {
                 //using an old types.xml that did not have any columns defined. 
                 if (haveDatabaseTable()) {
                     String sql = SqlUtil.makeInsert(getTableName(), COL_ID,
-                                     SqlUtil.getQuestionMarks(1));
+						    SqlUtil.getQuestionMarks(1));
                     getLogManager().logInfo(
-                        "GenericTypeHandler: inserting id into database:"
-                        + getTableName());
+					    "GenericTypeHandler: inserting id into database:"
+					    + getTableName());
                     getDatabaseManager().executeInsert(sql,
-                            new Object[] { entry.getId() });
+						       new Object[] { entry.getId() });
+		    if(firstCall) {
+			//this initializes the entry
+			readValuesFromDatabase(entry, values,false);
+		    }
                 }
             }
         } finally {
