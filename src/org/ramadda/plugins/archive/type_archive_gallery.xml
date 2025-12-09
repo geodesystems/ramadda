@@ -38,7 +38,8 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 +div class="ramadda-bordered" style="padding:10px;padding-top:0px;"
 :nonavheading {{name link=true }}
 +if haschildren=true  
-+if show_gallery=true
++if show_gallery=true 
++if hasdescription=true hasthumbnail=true orlogic=true
 +row tight=true
 +col-6
 {{image  useThumbnail=true showCaption=true width="90%"   popup="true"  inDiv="true"    align="center" }}
@@ -50,6 +51,12 @@ orderby="entryorder_up,name_up"
 showNonImages=true  decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
 -col
 -row
+-if
++if hasdescription=false hasthumbnail=false
+{{gallery  width="90%" columns="4"   popup="true"  useThumbnail="false" 
+orderby="entryorder_up,name_up"
+showNonImages=true  decorate="false"  imageStyle=""  padding="10px"  style="padding-top:0px;" caption="${name}" }} 
+-if
 -if
 +if show_gallery=false
 ${showmain}
