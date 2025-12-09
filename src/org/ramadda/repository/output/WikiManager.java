@@ -8456,7 +8456,7 @@ public class WikiManager extends RepositoryManager
 
         Utils.appendAll(tags4,
 			hdr.call("Miscellany:"),
-			l.call("If block", "\\n+if #isgeoreferenced=true #haschildren=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"),
+			l.call("If block", "\\n+if #entry=entry_id #isgeoreferenced=true #hasdescription=true #haschildren=true #hasthumbnail=true #size=\"<10MB\" #isfile=true #candoedit=true #candonew=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2 #column=value #hasChildrenOfType=some_type #orlogic=true\\n","-if"),
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
 			l.call("Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    
@@ -8912,105 +8912,143 @@ public class WikiManager extends RepositoryManager
         }
     }
 
+    private boolean processIfResults(Request request,Hashtable props,List<Boolean>results) {
+	if(results.size()==0) {
+	    return true;
+	}
+	boolean orLogic  = Utils.getProperty(props,"orlogic",false);
+	for(boolean b: results) {
+	    if(orLogic) {
+		if(b) return true;
+	    } else {
+		if(!b) return false;
+	    }
+	}
+	if(orLogic) {
+	    return false;
+	}
+	return true;
+    }
+
     /**
        Implements from WikiPageHandler interface
        Checks for hasChildrenOfType=<some entry type>
     */
     public boolean ifBlockOk(WikiUtil wikiUtil, String attrs)  {
 	try {
+	    
 	    Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 	    Hashtable props = HU.parseHtmlProperties(attrs);
 	    User user = request.getUser();
 	    if(user==null) user = getUserManager().getAnonymousUser();
+	    List<Boolean> results = new ArrayList<Boolean>();
+
 	    if(props.get("anonymous")!=null) {
 		boolean value = Utils.getProperty(props,"anonymous",true);
 		props.remove("anonymous");
 		if(request.isAnonymous() !=value) {
-		    return false;
+		    results.add(false);
+		    //		    return false;
 		}
 	    }
 
 	    if(props.get("admin")!=null) {
 		boolean value = Utils.getProperty(props,"admin",true);
 		props.remove("admin");
-		if(request.isAdmin() !=value) {
-		    return false;
-		}
+		results.add(request.isAdmin() ==value);
 	    }	    
 
 	    if(props.get("users")!=null) {
 		String users = Utils.getProperty(props,"users","");
 		props.remove("users");
-		if(!Utils.split(users,",",true,true).contains(user.getId()))
-		    return false;
+		results.add(Utils.split(users,",",true,true).contains(user.getId()));
 	    }
 
 	    if(props.get("notusers")!=null) {
 		String users = Utils.getProperty(props,"notusers","");
 		props.remove("notusers");
-		if(Utils.split(users,",",true,true).contains(user.getId()))
-		    return false;
+		results.add(!Utils.split(users,",",true,true).contains(user.getId()));
 	    }
 
-	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    Entry   entry=null;
+	    String entryId = Utils.getProperty(props,"entry",null);
+	    if(entryId!=null) {
+		entry = 
+		    (Entry) getEntryManager().getEntry(request,entryId);
+		if(entry==null) {
+		    return false;
+		}
+	    }
+	    if(entry==null) {
+		entry = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    }
 	    String canDoEdit = Utils.getProperty(props,"canedit",
 						 Utils.getProperty(props,"candoedit",null));
 	    if(canDoEdit !=null) {
 		props.remove("canedit");
 		props.remove("candoedit");		
-		if(entry==null) return false;
-		boolean doEdit = getAccessManager().canDoEdit(request, entry);
-		if(doEdit)
-		    return canDoEdit.equals("true");
-		else
-		    return canDoEdit.equals("false");
+		if(entry==null) {
+		    results.add(false);
+		} else {
+		    boolean doEdit = getAccessManager().canDoEdit(request, entry);
+		    if(doEdit)
+			results.add(canDoEdit.equals("true"));
+		    else
+			results.add(canDoEdit.equals("false"));
+		}
 	    }
 
 	    String canDoNew =  Utils.getProperty(props,"candonew",null);
 	    if(canDoNew!=null) {
 		props.remove("candonew");		
-		if(entry==null) return false;
-		boolean doNew = getAccessManager().canDoNew(request, entry);
-		if(doNew)
-		    return canDoNew.equals("true");
-		else
-		    return canDoNew.equals("false");
+		if(entry==null) {
+		    results.add(false);
+		} else {
+		    boolean doNew = getAccessManager().canDoNew(request, entry);
+		    if(doNew)
+			results.add(canDoNew.equals("true"));
+		    else
+			results.add(canDoNew.equals("false"));
+		}
 	    }
 
-	    if(entry==null) return true;
-
+	    if(entry==null) processIfResults(request,props,results);
 	    String hasLocation = Utils.getProperty(props,"isgeoreferenced",null);
 	    if(hasLocation !=null) {
 		boolean isGeo = entry.isGeoreferenced(request);
-		if(hasLocation.equals("true") && !isGeo) return false;
-		if(hasLocation.equals("false") && isGeo) return false;
+		if(hasLocation.equals("true")) {
+		    results.add(isGeo);
+		} else {
+		    results.add(!isGeo);
+		}
 	    }
 
 	    String size = (String) props.get("size");
 	    if(stringDefined(size)) {
+		size = size.trim();
 		boolean lessThan = true;
 		if(size.startsWith("<")) {
 		    lessThan  = true;
-		    size = size.substring(1);
+		    size = size.substring(1).trim();
 		} else if(size.startsWith(">")) {
 		    lessThan  = false;
-		    size = size.substring(1);
+		    size = size.substring(1).trim();
 		}
 		double s = Utils.parseSize(size);
 		long fileSize = entry.getResource().getFileSize();
 		if(lessThan) {
-		    if(fileSize>s) return false;
+		    results.add(fileSize<s);
 		} else {
-		    if(fileSize<s) return false;
+		    results.add(fileSize>s);
 		}
 	    }
 
 	    String isFile = (String) props.get("isfile");
 	    if(stringDefined(isFile)) {
 		if(isFile.equals("true")) {
-		    return entry.isFile();
+		    results.add(entry.isFile());
 		} else {
-		    return !entry.isFile();
+		    results.add(!entry.isFile());
 		}
 	    }
 
@@ -9021,11 +9059,10 @@ public class WikiManager extends RepositoryManager
 		    if(property==null) continue;
 		    Object value = entry.getValue(request, column,null);
 		    if(value==null) {
-			if(!property.equals("null")) return false;
+			if(!property.equals("null")) results.add(false);
+			continue;
 		    }
-		    if(!property.equals(value.toString())) {
-			return false;
-		    }
+		    results.add(property.equals(value.toString()));
 		}
 	    }
 
@@ -9037,64 +9074,76 @@ public class WikiManager extends RepositoryManager
 		}
 		Object value = entry.getValue(request, property);
 		if(value==null) {
-		    if(not) return true;
-		    return false;
+		    if(not) results.add(true);
+		    return results.add(false);
+		} else {
+		    String match = (String) props.get("match");
+		    props.remove("property");
+		    boolean ok = true;
+		    if(match!=null) 
+			ok= value.toString().equals(match);
+		    else 
+			ok= value.toString().equals("true");
+		    if(not) results.add(!ok);
+		    else results.add(ok);
 		}
-		String match = (String) props.get("match");
-		props.remove("property");
-		boolean ok = true;
-		if(match!=null) 
-		    ok= value.toString().equals(match);
-		else 
-		    ok= value.toString().equals("true");
-		if(not) return !ok;
-		return ok;
 	    }
 
-	    boolean ok = true;
+
 	    for (Object key : props.keySet()) {
 		String skey = key.toString();
+		if(skey.startsWith("#")) continue;
 		Column column = entry.getColumn(skey);
 		if(column!=null) {
 		    Object value = props.get(key);
 		    Object entryValue = entry.getValue(request,column);
 		    if(entryValue==null) {
-			ok = false;
-			break;
+			results.add(false);
+			continue;
 		    }
-		    if(!Misc.equals(value,entryValue.toString())) ok = false;
+		    results.add(Misc.equals(value,entryValue.toString()));
 		}
 	    }
-	    if(!ok) return false;
-
+	    
 	    String hasChildren = (String) props.get("haschildren");
 	    if(hasChildren!=null) {
 		List<Entry>children= getEntryManager().getChildren(request, entry);
-		if(hasChildren.equals("true")) return children.size()>0;
-		else return children.size()==0;
+		if(hasChildren.equals("true")) results.add(children.size()>0);
+		else results.add(children.size()==0);
 	    }
+
+	    String hasDescription = (String) props.get("hasdescription");
+	    if(hasDescription!=null) {
+		if(hasDescription.equals("true")) results.add(stringDefined(entry.getDescription()));
+		else results.add(!stringDefined(entry.getDescription()));
+	    }	    
 
 	    String hasThumbnail = (String) props.get("hasthumbnail");
 	    if(hasThumbnail!=null) {
 		List<String> urls = new ArrayList<String>();
 		getMetadataManager().getThumbnailUrls(request, entry, urls);
-		if(hasThumbnail.equals("true")) return urls.size()>0;
-		else return urls.size()==0;
+		if(hasThumbnail.equals("true")) results.add(urls.size()>0);
+		else results.add(urls.size()==0);
 	    }	    
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
+		boolean didOne = false;
 		List<String> types = Utils.split(ofType,",",true,true);
 		for(Entry child: getEntryManager().getChildren(request, entry)) {
+		    if(didOne) break;
 		    for(String t: types) {
 			if(child.getTypeHandler().isType(t)) {
-			    return true;
+			    didOne=true;
+			    break;
 			}
 		    }
 		}
-		return false;
+		results.add(didOne);
 	    }
-	    return true;
+
+	    //	    System.err.println("\tResults:" + processIfResults(request,props,results) +" list:" +results);
+	    return  processIfResults(request,props,results);
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
