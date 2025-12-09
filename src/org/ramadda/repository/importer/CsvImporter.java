@@ -139,9 +139,9 @@ public class CsvImporter extends ImportHandler {
 				    typeIdx=i;
 				} else if(_field.equals("date")) {
 				    dateIdx = i;
-				} else if(_field.equals("fromdate")) {
+				} else if(_field.matches("^(from_?date|start_?date)$")) {
 				    dateIdxFrom = i;
-				} else if(_field.equals("fromto")) {
+				} else if(_field.matches("^(to_?date|end_?date)$")) {
 				    dateIdxTo = i;
 				} else if(_field.equals("latitude")) {
 				    latitudeIdx = i;
