@@ -1257,9 +1257,12 @@ function makePointData(json, derived, source,url,callback) {
 	    let value = values[index];
 	    values[index] = Utils.parseDate(value);
         }
+	//convert null to NaN for numeric fields
         for (let col = 0; col < values.length; col++) {
             if(values[col]==null) {
-                values[col] = NaN;
+		if(fields[col] && fields[col].isNumeric()) {
+                    values[col] = NaN;
+		}
             } 
         }
 
