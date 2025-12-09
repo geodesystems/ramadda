@@ -62,7 +62,10 @@ showNonImages=true  decorate="false"  imageStyle=""  padding="10px"  style="padd
 ${showmain}
 -if
 +if show_map=true
-{{map hideIfNoLocations=true  wikiPrefix="----_nl_:heading Map" listEntries=true  listInMap=true }}
+{{map hideIfNoLocations=true  
+wikiPrefix="----_nl_:heading Map" listEntries=true  listInMap=true 
+listHeight="400px" listWidth="300px"
+height=500px}}
 -if
 +if show_timeline=true
 :vspace 1em
