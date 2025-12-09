@@ -25,6 +25,9 @@ public class GroupedBuffers implements Appendable {
 	setGroup(group);
     }
 
+    public StringBuilder getCurrentBuffer() {
+	return currentSB;
+    }
     public Appendable 	append(char c) {
 	currentSB.append(c);
 	return this;
