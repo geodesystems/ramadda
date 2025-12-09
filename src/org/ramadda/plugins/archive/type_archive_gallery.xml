@@ -71,7 +71,7 @@ height=500px}}
 :vspace 1em
 ----
 :heading Timeline
-{{display_timeline doEntries=true imageField="image"  
+{{display_timeline doEntries=true imageField="image,thumbnail"  
 startDateField="start_date"  endDateField="end_date"
 titleField="name"  urlField=entry_url
 textTemplate="${description}" filterFields=name}}
