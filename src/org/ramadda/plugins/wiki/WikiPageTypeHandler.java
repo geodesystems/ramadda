@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.GroupedBuffers;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
@@ -42,10 +43,6 @@ import java.util.List;
 import java.util.Properties;
 
 
-/**
- *
- *
- */
 @SuppressWarnings("unchecked")
 public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
@@ -475,7 +472,9 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 	String edit = HU.b("Wiki Text:") + "<br>"+tmpSB.toString();
 	
 	sb.append(HU.row(HU.td(edit,"colspan=2")));
-	//TODO:        addDateToEntryForm(request, sb, parentEntry,entry);
+	GroupedBuffers tmp = new GroupedBuffers("tmp");
+	addDateToEntryForm(request, tmp, parentEntry,entry);
+	sb.append(tmp.getCurrentBuffer());
         addAreaWidget(request, parentEntry,entry, sb, formInfo);
         sb.append(formEntry(request, msgLabel("Order"),
                             HU.input(ARG_ENTRYORDER, ((entry != null)
