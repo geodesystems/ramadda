@@ -1942,6 +1942,11 @@ public class TypeHandler extends RepositoryManager {
 	return isType(that.getType());
     }
 
+    public boolean isTypeExact(String type) {
+        return this.type.equals(type);
+    }
+
+
     public boolean isType(String type) {
         if (this.type.equals(type)) {
             return true;

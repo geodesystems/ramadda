@@ -2000,6 +2000,7 @@ public class PageHandler extends RepositoryManager {
 
                     break;
                 }
+		System.err.println("PAGE STYLE:");
                 for (String type : Utils.split(types, ",", true, true)) {
                     if ((type.equals("file") || type.equals("anyfile")) && !entry.isGroup()) {
                         theMetadata = metadata;
@@ -2009,9 +2010,15 @@ public class PageHandler extends RepositoryManager {
                         theMetadata = metadata;
                         break;
                     }
-                    if (entry.getTypeHandler().isType(type)) {
-                        theMetadata = metadata;
+		    if(type.startsWith("exact:")) {
+			if (entry.getTypeHandler().isTypeExact(type.substring("exact:".length()))) {
+			    theMetadata = metadata;
+			    break;
+			}
+		    }
 
+		    if (entry.getTypeHandler().isType(type)) {
+                        theMetadata = metadata;
                         break;
                     }
                 }
