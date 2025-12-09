@@ -68,7 +68,9 @@ ${showmain}
 :vspace 1em
 ----
 :heading Timeline
-{{display_timeline doEntries=true imageField="image" titleField="name"  urlField=entry_url
+{{display_timeline doEntries=true imageField="image"  
+startDateField="start_date"  endDateField="end_date"
+titleField="name"  urlField=entry_url
 textTemplate="${description}" filterFields=name}}
 -if
 -if
