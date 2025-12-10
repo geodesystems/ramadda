@@ -12,19 +12,13 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
-import org.ramadda.util.JsonUtil;
 import ucar.unidata.util.StringUtil;
-
-
 import org.w3c.dom.*;
 import org.json.*;
-
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.HashSet;
 import java.util.List;
-
 
 public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandler {
     private TTLCache<String,String> seenId= new TTLCache<String,String>(Utils.minutesToMillis(2));
@@ -69,7 +63,6 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 			      "style","margin:5px;padding:5px;text-align:left;width:100%;max-height:200px;overflow-y:auto;"));
 
 	HU.importJS(sb,getRepository().getHtdocsUrl("/lib/zxing/zxing.min.js"));
-	//	sb.append("<script src='https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'></script>\n");
 	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
 	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
     }
@@ -124,6 +117,4 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	HU.script(sb,js.toString());
 	formBuffer.append(sb.toString());
     }
-
-
 }

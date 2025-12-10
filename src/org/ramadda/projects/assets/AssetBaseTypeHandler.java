@@ -6,7 +6,6 @@
 package org.ramadda.projects.assets;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -14,19 +13,14 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.Utils;
-import org.ramadda.util.JsonUtil;
-import org.ramadda.util.seesv.Seesv;
-
 import org.w3c.dom.*;
 import org.json.*;
-
 import java.util.LinkedHashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 @SuppressWarnings("unchecked")
 public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
@@ -38,16 +32,13 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TYPE_IT = "type_assets_it";        
     public static final String TYPE_FIXTURE = "type_assets_fixture";
     public static final String TYPE_INTANGIBLE = "type_assets_intangible";
-
     public static final String TYPE_LICENSE = "type_assets_license";
     public static final String TYPE_DEPARTMENT = "type_assets_department";
     public static final String TYPE_VENDOR = "type_assets_vendor";
     public static final String TYPE_PERSONNEL = "type_assets_personnnel";        
     public static final String TYPE_LOCATION = "type_assets_location";
-
     public static final String ARG_REPORT="report";
     public static final String ARG_ALLCOLUMNS = "allcolumns";
-    
     public static final String ARG_MIN_COST="mincost";
     public static final String ARG_MAX_COST="maxcost";    
     public static final String ARG_DOWNLOAD = "download";
@@ -65,6 +56,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TAG_HEADER= "assets_header";
     public static final String TAG_SUMMARY= "assets_summary";    
 
+    private String assetHeaderWiki;
+    private String assetSummaryWiki;    
 
     public AssetBaseTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -83,9 +76,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
         tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" showWarranties=true showLicenses=true showDetails=true "});
         tags.add(new String[]{"Assets Report Costs",REPORT_COSTS+" #types=\"type_assets_it,type_assets_equipment,...\" #showSummary=false #showTable=false #summaryTitle=\"\"  #tableTitle=\"\" "});				
         tags.add(new String[]{"Assets Costs URL","raw:dataUrl=\"" + getRepository().getUrlPath("/entry/action?action=assets_data_costs&entryid=${entryid}&output=\"")});
-
     }
-
 
     private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
 	if(entry.isType(TYPE_DEPARTMENT)) {
@@ -129,8 +120,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
 	getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
 	return entries;
-
-	//	return  getEntryManager().getChildren(request, entry);
     }
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
@@ -160,10 +149,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    }
 	    sb.append("</center>");
 	}
-
     }
-
-
 
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
@@ -186,23 +172,15 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	return super.processEntryAction(request,entry);
     }
 
-
-
-
-
     public Result handleActionSearch(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb, "Asset Search");
 	String wiki = "{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n";
-
 	wikify(request, entry,sb,wiki);
 	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result = new Result("Asset Search - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
-
-
-
 
     public Result handleActionNew(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -224,7 +202,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	Result result = new Result("Scan Asset - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
-
 
     public Result handleActionReport(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -271,12 +248,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result = new Result("Assets Report - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
-
     }
-
-
-    private String assetHeaderWiki;
-    private String assetSummaryWiki;    
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -327,14 +299,10 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    makeReportMaintenance(request, entry,sb,props);
 	    return sb.toString();
 	}	
-
-
 	return super.getWikiInclude(wikiUtil, request, originalEntry,
 				    entry, tag, props);
 
     }
-
-
 
     private Result makeReportDownload(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
 	if(request.defined(ARG_DOWNLOAD)) {
@@ -447,8 +415,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	sb.append("\n");
     }
 
-
-
     private String cleanColumnValue(String v) {
 	if(v==null) return v;
 	v = v.replace("\"","_qt_");
@@ -456,7 +422,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	v = v.replace(",","_comma_");
 	return v;
     }
-
 
     private String inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map,String wiki) {
 	String guid = HU.getUniqueId(id);
@@ -486,8 +451,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	return wiki;
     }
 
-
-
     private String inlineData(StringBuilder buff,String id,String csv,String wiki) {
 	String guid = HU.getUniqueId(id);
 	buff.append(HU.comment("inline data for "+ id));
@@ -498,7 +461,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	wiki=wiki.replace("${" + id+"}",guid);
 	return wiki;
     }
-    
 
     private void addCount(LinkedHashMap<String,Integer> map,String label) {
 	if(!stringDefined(label)) label="NA";
@@ -561,8 +523,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	boolean showLicenses = Utils.getProperty(props,"showLicenses",true);
 	boolean showWarranties = Utils.getProperty(props,"showWarranties",true);
 	boolean showDetails = Utils.getProperty(props,"showDetails",true);		
-
-
 	boolean didOne = false;
 	Date now = new Date();
 	Date near = new Date(now.getTime()+Utils.daysToMillis(30));
@@ -704,10 +664,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    buff.append(getPageHandler().showDialogNote("No assets or licenses have a warranty expiration date"));
 	    return;
 	}
-
     }    
-
-
 
     private void makeReportCounts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	List<Entry> entries = getEntries(request, entry,props);
@@ -754,10 +711,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	wiki = 	inlineData(buff,"statusdata","status,count",status,wiki);
 	wiki = 	inlineData(buff,"conditiondata","condition,count",condition,wiki);	 	 	 	 	 
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
-
     }
-
-
 
     private Entry getVendor(Request request, Entry entry) throws Exception {
 	String id = entry.getStringValue(request, "vendor",null);
@@ -777,7 +731,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	return getEntryManager().getEntry(request, id,true);
     }    
 
-
     private void makeReportCosts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	StringBuilder csv = new StringBuilder();
 
@@ -795,7 +748,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
     }
     
-
     private boolean makeCsvCosts(Request request, Entry entry, StringBuilder csv,Hashtable props ) throws Exception {
 	csv.append("Name[type=string],Cost[type=double],Asset Type[type=enumeration],Department[type=enumeration],Vendor[type=enumeration],Url,Icon\n");
 	List<Entry> entries = getEntries(request, entry,props);
@@ -831,13 +783,9 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    csv.append("\n");
 	    cnt++;
 	}
-
-	//	System.out.println(csv);
 	if(cnt==0) {
 	    return false;
 	}
-
 	return true;
     }
-
 }
