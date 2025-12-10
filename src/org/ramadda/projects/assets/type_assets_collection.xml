@@ -13,7 +13,7 @@ childtypes="type_assets_collection,super:type_assets_base,type_assets_license,su
 >
 
 <!-- Columns-->
-<column  name="asset_type"  label="Asset Type"  type="enumeration"  values=":Select,type_assets_building:Building,type_assets_vehicle:Vehicle" />
+<column  name="asset_type"  label="Asset Type"  type="enumerationplus"  values=":Select,type_assets_building:Building,type_assets_vehicle:Vehicle" />
 <column  name="organization"  label="Organization Name"  type="enumerationplus" />
 <column  name="department_entry"  label="Department"  type="entry"  entrytype="type_assets_department"  cansearch="true" />
 <column  name="contact_person"  label="Contact"  type="entry"  entrytype="type_assets_personnel" cansearch="true" />

@@ -1,5 +1,5 @@
 #collection
-asset_type,Asset Type,enumeration,\
+asset_type,Asset Type,enumerationplus,\
 values=":Select\,type_assets_building:Building\,type_assets_vehicle:Vehicle"
 organization,Organization Name,enumerationplus,
 department_entry,Department,entry, entrytype="type_assets_department"  cansearch="true"
