@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2025 Geode Systems LLC
+   Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -37,6 +37,7 @@ var ATTR_METADATA_INDEX='metadata-index';
 var ATTR_RECORD_INDEX = "recordindex";
 var ATTR_RECORD_ID = "recordid";
 
+var VALUE_BLANK='--blank--';
 
 var ramaddaDoingWiki = 0;
 

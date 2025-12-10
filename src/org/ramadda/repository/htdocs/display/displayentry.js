@@ -1,5 +1,5 @@
 /**
-   Copyright 2008-2025 Geode Systems LLC
+   Copyright 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -64,6 +64,8 @@ var CLASS_SIMPLESEARCH_INPUT='display-simplesearch-input';
 var CLASS_SEARCH_TEXTINPUT = 'display-search-textinput';
 var CLASS_SEARCH_HEADER_ENABLED='display-search-header-enabled';
 var CLASS_SEARCH_HEADER_DISABLED='display-search-header-disabled';
+var CLASS_METADATA_LIST='display-metadatalist';
+var CLASS_METADATA_LIST_ITEM='display-metadatalist-item';
 
 addGlobalDisplayType({
     type: DISPLAY_SIMPLESEARCH,
@@ -1375,6 +1377,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(!Array.isArray(value)) {
 			value = [value];
 		    }
+		    //check for the blank special value
+		    value = value.map(v=>{
+			if(v==VALUE_BLANK) return '';
+			return v;
+		    });
 		    if(value.length==0) {
 			tag.remove();
 			continue;
@@ -1786,14 +1793,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 						      areaWidget.getHtml()),
 					{toggleClose:this.getProperty('areaToggleClose',true)});
             }
-            extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
+            extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], '');
             if (Utils.stringDefined(this.getMetadataTypes())) {
-		let metadataBlock = "";
+		let metadataBlock = '';
                 for (let i = 0; i < this.metadataTypeList.length; i++) {
                     let type = this.metadataTypeList[i];
                     let value = type.getValue();
-		    let block = HU.div([ATTR_CLASS,"display-search-metadata-block"],
-				       HU.div([ATTR_CLASS,"display-search-metadata-block-inner",
+		    let block = HU.div([ATTR_CLASS,'display-search-metadata-block'],
+				       HU.div([ATTR_CLASS,'display-search-metadata-block-inner',
 					       ATTR_ID,this.getMetadataFieldId(type)]));
 		    metadataBlock += this.addWidget(type.getLabel(), block,{toggleClose:toggleClose});
                 }
@@ -1805,17 +1812,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             extra +=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.em(1),CSS_BORDER_TOP,CSS_BASIC_BORDER),
 			    ATTR_CLASS,'display-search-widget'],
 			   HU.b(recordsLabel) +' '+
-			   HU.input("",  DEFAULT_MAX, [ATTR_CLASS,CLASS_SIMPLESEARCH_INPUT,
+			   HU.input('',  DEFAULT_MAX, [ATTR_CLASS,CLASS_SIMPLESEARCH_INPUT,
 						       ATTR_ID,this.domId(ID_SEARCH_MAX),
 						       ATTR_SIZE,5]));
 
 	    contents +=topContents;
 	    topContents='';
-            contents += HU.div([ATTR_CLASS, "display-search-extra",
+            contents += HU.div([ATTR_CLASS, 'display-search-extra',
 				ATTR_ID, this.getDomId(ID_SEARCH_SETTINGS)],
-			       HU.div([ATTR_CLASS, "display-search-extra-inner"], extra));
+			       HU.div([ATTR_CLASS, 'display-search-extra-inner'], extra));
             //Hide the real submit button
-            contents += HU.open(TAG_INPUT,[ATTR_TYPE,"submit",
+            contents += HU.open(TAG_INPUT,[ATTR_TYPE,'submit',
 					   ATTR_STYLE,
 					   HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_LEFT,HU.px(-9999),
 						  CSS_WIDTH,HU.px(1),CSS_HEIGHT,HU.px(1))]);
@@ -1826,7 +1833,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(Utils.stringDefined(topContents)) {
-		form+=HU.div([ATTR_CLASS,"display-search-extra"],topContents);
+		form+=HU.div([ATTR_CLASS,'display-search-extra'],topContents);
 	    }
 	    form+=contents;
             form += HU.closeTag(TAG_FORM);
@@ -1836,7 +1843,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	getEgText:function(eg) {
             eg = this.getProperty(ATTR_PLACEHOLDER,eg||LABEL_SEARCH);
             if (this.eg) {
-                eg = " " + this.eg;
+                eg = ' ' + this.eg;
             }
 	    return eg;
 	},
@@ -1919,7 +1926,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    dest.html('');
 	    this.idToElement = {};
 	    let cbxChange = function(){
-		let not  = $(this).attr("metadata-not");
+		let not  = $(this).attr('metadata-not');
 		let value  = $(this).attr(ATTR_METADATA_VALUE);
 		let type  = $(this).attr(ATTR_METADATA_TYPE);
 		let index  = $(this).attr(ATTR_METADATA_INDEX);				
@@ -1932,7 +1939,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    _this.addMetadataTag(metadataType.getType(), label,value, cbx,not);
 		} else {
 		    if(element) element.setCbxOff((not?'!':'')+value);
-		    let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +"_" + metadataType.getType() +"_" + value);
+		    let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +'_' + metadataType.getType() +'_' + value);
 		    jqid(tagId).remove();
 		}		
 		_this.submitSearchForm();
@@ -1978,15 +1985,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    });
 			}
 		    } else {
-			dest.append(Utils.wrap(cbxs,"",HU.br()));
+			dest.append(Utils.wrap(cbxs,'',HU.br()));
 		    }
 		}});
-	    dest.find(":checkbox").change(cbxChange);
+	    dest.find(':checkbox').change(cbxChange);
 	    HU.handleNewContent(dest);
         },
 
 	metadataTagSelected:function(type, value) {
-	    let tagGroupId = ID_SEARCH_TAG_GROUP+"_"+type;
+	    let tagGroupId = ID_SEARCH_TAG_GROUP+'_'+type;
 	    let tagGroup = this.jq(tagGroupId);
 	    let existing = tagGroup.find(HU.attrSelect(ATTR_METADATA_TYPE,type)+
 					 HU.attrSelect(ATTR_METADATA_VALUE,value));
@@ -2148,8 +2155,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let icon = type.getIcon();
                 let optionAttrs = [ATTR_TITLE, type.getLabel(),
 				   ATTR_VALUE, type.getId(),
-				   ATTR_CLASS, "display-typelist-type",
-				   "data-iconurl", icon
+				   ATTR_CLASS, 'display-typelist-type',
+				   'data-iconurl', icon
 				  ];
                 let selected = this.getSearchSettings().hasType(type.getId());
 		if(!selected) {
@@ -2159,12 +2166,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(!selected && !anySelected && i==0 && !startWithAny)  selected=true;
                 if (selected) {
 		    hadSelected = true;
-                    optionAttrs.push("selected");
+                    optionAttrs.push('selected');
                     optionAttrs.push(null);
                 }
 		let label = type.getLabel();
 		if(type.getEntryCount()>0) 
-		    label += " (" + type.getEntryCount() + ")"
+		    label += ' (' + type.getEntryCount() + ')'
 
                 let option = HU.tag(TAG_OPTION, optionAttrs, label);
                 let map = catMap[type.getCategory()];
@@ -2172,9 +2179,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(addTypeCategory)  {
 			catMap[type.getCategory()] =
 			    HU.tag(TAG_OPTION, [ATTR_CATEGORY,'true',
-						ATTR_CLASS, "display-typelist-category",
-						ATTR_TITLE, "",
-						ATTR_VALUE, ""], type.getCategory());
+						ATTR_CLASS, 'display-typelist-category',
+						ATTR_TITLE, '',
+						ATTR_VALUE, ''], type.getCategory());
 		    }
                     cats.push(type.getCategory());
                 }
@@ -2284,13 +2291,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let popupLimit = this.getTagPopupLimit();
 	    let toggleClose = this.getColumnsToggleClose(this.getToggleClose(!this.getProperty('searchOpen',true)));
             if (this.savedValues == null) this.savedValues = {};
-            let extra = "";
+            let extra = '';
             let cols = this.getSearchableColumns();
 	    let lastGroup = null;
 	    let inGroup=false;
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
-                if (this.getProperty("fields") != null && this.getProperty("fields").indexOf(col.getName()) < 0) {
+                if (this.getProperty('fields') != null && this.getProperty('fields').indexOf(col.getName()) < 0) {
                     continue;
                 }
 
@@ -2308,16 +2315,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					    ATTR_ID,widgetId,
 					    ATTR_STYLE,HU.css(CSS_DISPLAY,toggleClose?DISPLAY_NONE:DISPLAY_BLOCK)]);
 		}
-                let field = "";
+                let field = '';
                 let id = this.getDomId(ID_COLUMN + col.getName());
                 let savedValue = this.savedValues[id];
                 if (savedValue == null) {
                     savedValue = this.jq(ID_COLUMN + col.getName()).val();
                 }
-		//                if (savedValue == null) savedValue = "";
-		let widget = "";
-		let label="";
-		let help = "";
+		//                if (savedValue == null) savedValue = '';
+		let widget = '';
+		let label='';
+		let help = '';
 		/** don't do this since the suffix can be used for editing help, etc
 		    if(Utils.stringDefined(col.getSuffix())) {
 		    help = HU.span([ATTR_STYLE,HU.css(CSS_CURSOR,'help',
@@ -2335,14 +2342,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let searchValue = this.getSearchValue(col.getName());
 		    if(showCheckboxes) {
 			for (let vidx in values) {
-                            let value = values[vidx].value||"";
-			    if(value=="") {
-				value = "--blank--";
+                            let value = values[vidx].value||'';
+			    if(value=='') {
+				value = VALUE_BLANK;
 			    }
                             let label = values[vidx].label.trim();
-			    if(label=="&lt;blank&gt;") label="--blank--";
-			    if(label=="")
-				label= "--blank--"; 
+			    if(label=='&lt;blank&gt;') label=VALUE_BLANK;
+			    if(label=='')
+				label= VALUE_BLANK; 
 			    let boxId = id+'_'+vidx;
                             field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',
 								  ATTR_ID,boxId,'checkbox-id',id,
@@ -2350,10 +2357,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 							   value==searchValue, label));
 			}
 		    } else {
-			let clazz = 'display-metadatalist';
+			let clazz = CLASS_METADATA_LIST;
 			let attrs = [ATTR_ID, id];
-			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item",
-					   ATTR_TITLE, "",
+			let optionAttrs = [ATTR_CLASS,CLASS_METADATA_LIST_ITEM,
+					   ATTR_TITLE, '',
 					   ATTR_VALUE, VALUE_NONE];
 			if(values.length>=popupLimit || col.getSearchMultiples()) {
 			    attrs.push(ATTR_MULTIPLE,'true');
@@ -2364,31 +2371,31 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			attrs.push(ATTR_CLASS,clazz);
 			attrs.push('data-label',col.getLabel());
 			field = HU.openTag(TAG_SELECT, attrs);
-			field+="\n";
+			field+='\n';
 			if(!col.getSearchMultiples()) {
 			    field += HU.tag(TAG_OPTION, optionAttrs,
-					    showLabels?"-- Select --":col.getSearchLabel());
+					    showLabels?'-- Select --':col.getSearchLabel());
 			}
-			field+="\n";
+			field+='\n';
 			for (let vidx in values) {
-                            let value = values[vidx].value||"";
-                            let extraAttr = "";
+                            let value = values[vidx].value||'';
+                            let extraAttr = '';
                             if (value === savedValue || value===searchValue) {
-				extraAttr = " selected ";
+				extraAttr = ' selected ';
                             }
 
-			    if(value=="") {
-				value = "--blank--";
+			    if(value=='') {
+				value = VALUE_BLANK;
 			    }
                             let label = values[vidx].label.trim();
-			    if(label=="&lt;blank&gt;") label="--blank--";
-			    if(label=="")
-				label= "--blank--"; 
-                            field += HU.tag(TAG_OPTION, [ATTR_CLASS,"display-metadatalist-item",
+			    if(label=='&lt;blank&gt;') label=VALUE_BLANK;
+			    if(label=='')
+				label= VALUE_BLANK; 
+                            field += HU.tag(TAG_OPTION, [ATTR_CLASS,CLASS_METADATA_LIST_ITEM,
 							 ATTR_TITLE, label,
 							 ATTR_VALUE, value, extraAttr, null],
 					    label);
-			    field+="\n";
+			    field+='\n';
 			}
 			field += HU.closeTag(TAG_SELECT);
 		    }
@@ -2398,32 +2405,32 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			label =  this.getLabel(col);
 			widget = field+help;
 		    } else {
-			widget= HU.div([ATTR_CLASS,"display-search-block"], field+help);
+			widget= HU.div([ATTR_CLASS,'display-search-block'], field+help);
 		    }
 		} else if (col.isNumeric()) {
-		    let from = HU.input("", "", [ATTR_TITLE,"greater than",
+		    let from = HU.input('', '', [ATTR_TITLE,'greater than',
 						 ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 						 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
-						 ATTR_ID, id+"_from"]);
-		    let to = HU.input("", "", [ATTR_TITLE,"less than",
+						 ATTR_ID, id+'_from']);
+		    let to = HU.input('', '', [ATTR_TITLE,'less than',
 					       ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
-					       ATTR_ID, id+"_to"]);		    
+					       ATTR_ID, id+'_to']);		    
 		    label = col.getSearchLabel();
-                    widget = from +" - " + to +help;
+                    widget = from +' - ' + to +help;
                 } else if(col.isLatLon()) {
 		    let areaWidget= col.areaWidget = new AreaWidget(this,col.getName());
 		    label = this.makeLabel(col.getSearchLabel());
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()==COLUMN_TYPE_STRING ||
 			  col.getType()==COLUMN_TYPE_LIST) {
-                    field = HU.input("", savedValue??this.getSearchValue(col.getName()),
+                    field = HU.input('', savedValue??this.getSearchValue(col.getName()),
 				     [ATTR_PLACEHOLDER,col.getSearchLabel(),
 				      ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 				      ATTR_SIZE, this.getTextInputSize(),
 				      ATTR_ID, id]);
 		    label = col.getSearchLabel();
-                    widget =  field + " " + help;
+                    widget =  field + ' ' + help;
 		} else if(col.isDate()) {
 		    label = col.getSearchLabel();
                     let dateWidget =  new DateRangeWidget(this,col.getName(),label+' start',
@@ -2432,17 +2439,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    widget=dateWidget.getHtml();
 		} else if(col.isEntry()) {
 		    let name = col.getName();
-		    let clear = HU.href("javascript:void(0);",HU.getIconImage(ICON_ERASER),
-					[ATTR_ONCLICK,"RamaddaUtils.clearSelect(" + HU.squote(id) +");",
-					 ATTR_TITLE,"Clear selection"]);
-		    let input = HU.input("","",[ATTR_READONLY,null,
+		    let clear = HU.href('javascript:void(0);',HU.getIconImage(ICON_ERASER),
+					[ATTR_ONCLICK,'RamaddaUtils.clearSelect(' + HU.squote(id) +');',
+					 ATTR_TITLE,'Clear selection']);
+		    let input = HU.input('','',[ATTR_READONLY,null,
 						ATTR_PLACEHOLDER,'Select',
 						ATTR_STYLE,HU.css(CSS_CURSOR,CURSOR_POINTER,CSS_WIDTH,HU.perc(100)),
 						ATTR_ID,id,
-						ATTR_CLASS,"ramadda-entry-popup-select  disabledinput"]);
+						ATTR_CLASS,'ramadda-entry-popup-select  disabledinput']);
 
 		    label = col.getSearchLabel();
-		    widget = HU.hidden("","",[ATTR_ID,id+"_hidden"]);
+		    widget = HU.hidden('','',[ATTR_ID,id+'_hidden']);
 		    widget+= HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)],
 				    HU.leftRightTable(clear,input,HU.perc(10), HU.perc(90)));
 		} else {
@@ -2482,7 +2489,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 
 
-	    this.jq(ID_TYPEFIELDS).find('.display-metadatalist').each(function() {
+	    this.jq(ID_TYPEFIELDS).find(HU.dotClass(CLASS_METADATA_LIST)).each(function() {
 		let opts = $(this).find(TAG_OPTION);
 		if(opts.length<popupLimit) return;
 		HU.makeSelectTagPopup($(this),{
@@ -2491,23 +2498,23 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 
 	    let _this = this;
-	    this.jq(ID_TYPEFIELDS).find(".ramadda-expr").change(function() {
+	    this.jq(ID_TYPEFIELDS).find('.ramadda-expr').change(function() {
 		let id = $(this).attr(ATTR_ID);
 		let val = $(this).val();
-		id  = id.replace("_expr","_to");
-		if(val=="between")
+		id  = id.replace('_expr','_to');
+		if(val=='between')
 		    jqid(id).show();
 		else
 		    jqid(id).hide();
 	    });
-	    let cbxs = this.jq(ID_TYPEFIELDS).find(".display-entrylist-enum-checkbox");
+	    let cbxs = this.jq(ID_TYPEFIELDS).find('.display-entrylist-enum-checkbox');
 	    cbxs.change(()=>{
 		this.submitSearchForm();
 	    });
 
-	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
+	    let menus = this.jq(ID_TYPEFIELDS).find('.display-searchmenu');
 	    HU.initSelect(menus);
-	    let allMenus = this.jq(ID_TYPEFIELDS).find(".display-metadatalist");
+	    let allMenus = this.jq(ID_TYPEFIELDS).find(HU.dotClass(CLASS_METADATA_LIST));
 	    allMenus.change(()=>{
 		this.submitSearchForm();
 	    });
@@ -2603,8 +2610,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
         providerChanged: function(initialCall) {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
 	    if(!initialCall && this.jq(ID_ANCESTOR).val) {
-		this.jq(ID_ANCESTOR).val("");
-		this.jq(ID_ANCESTOR+"_hidden").val("");		
+		this.jq(ID_ANCESTOR).val('');
+		this.jq(ID_ANCESTOR+'_hidden').val('');		
 	    }
 	    this.getSearchSettings().skip=0;
             let id = this.jq(ID_PROVIDERS).val();
@@ -2612,13 +2619,13 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    if(Utils.stringDefined(id) && id!='this') {
 		this.addToDocumentUrl(ID_PROVIDERS,id);
 	    }
-	    this.jq(ID_SEARCH_BAR).html("");
+	    this.jq(ID_SEARCH_BAR).html('');
 	    let blocks = [ID_SEARCH_AREA, ID_SEARCH_TAGS,ID_SEARCH_ANCESTOR,ID_SEARCH_DATE_CREATE,ID_SEARCH_DATE_RANGE];
-            if (this.provider && this.provider.type!="ramadda") {
+            if (this.provider && this.provider.type!='ramadda') {
 		this.setRamadda(this.originalRamadda);
-		let caps = (this.provider.capabilities||"").split(",");
+		let caps = (this.provider.capabilities||'').split(',');
 		caps.forEach(cap=>{
-		    let index = blocks.indexOf("search_" + cap);
+		    let index = blocks.indexOf('search_' + cap);
 		    if(index>=0) {
 			blocks.splice(index,1);
 		    }
@@ -2635,7 +2642,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		this.jq(ID_TYPE_DIV).show();
 		if(this.getSearchDirect()) {
 		    if(this.provider)
-			this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
+			this.setRamadda(getRamadda(this.provider.id+';'+ this.provider.name));
 		    this.addTypes();
 		    this.initMetadata();
 		}
@@ -2645,8 +2652,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
             SUPER.getMenuItems.apply(this, menuItems);
             if (this.getSelectedEntriesFromTree().length > 0) {
                 let get = this.getGet();
-                menuItems.push(HU.onClick(get + ".makeDisplayList();", "Make List"));
-                menuItems.push(HU.onClick(get + ".makeDisplayGallery();", "Make Gallery"));
+                menuItems.push(HU.onClick(get + '.makeDisplayList();', 'Make List'));
+                menuItems.push(HU.onClick(get + '.makeDisplayGallery();', 'Make Gallery'));
             }
         },
         makeDisplayList: function() {
@@ -2660,7 +2667,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                 showMenu: true,
                 fixedEntries: true
             };
-            props.entryList = new EntryList(this.getRamadda(), "", this, false);
+            props.entryList = new EntryList(this.getRamadda(), '', this, false);
             props.entryList.setEntries(entries);
             this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
         },
@@ -5241,7 +5248,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
                 let label = v.label;
 		let type =this.metadata.getType();
                 let optionAttrs = [ATTR_VALUE, value,
-				   ATTR_CLASS, "display-metadatalist-item"];
+				   ATTR_CLASS, CLASS_METADATA_LIST_ITEM];
                 let selected = this.cbxState[value];
                 if (selected) {
 		    optionAttrs.push("selected");
