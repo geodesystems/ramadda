@@ -270,11 +270,11 @@ public class CsvImporter extends ImportHandler {
 			    if(prop.indexOf(":")>0) {
 				List<String>propToks = Utils.splitUpTo(prop,":",2);
 				if(propToks.size()>1) {
-				    String modifier = propToks.get(1);
+				    String modifier = propToks.get(0);
 				    if(modifier.equals("name")) {
 					lookupName  = true;
 				    }
-				    prop = propToks.get(0);
+				    prop = propToks.get(1);
 				}
 			    }
 
