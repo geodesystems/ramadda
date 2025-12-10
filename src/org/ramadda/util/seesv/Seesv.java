@@ -2525,7 +2525,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("min","",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("max","",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_RAND, "make random value",
-		new Arg("column name"),
+		new Arg("column name","start with int: for integer"),
 		new Arg("minrange","Minimum range (e.g. 0)",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("maxrange","Maximum range (e.g. 1)",ATTR_TYPE,TYPE_NUMBER)),		
         new Cmd(CMD_EVEN, "Add true if the column starts with an even number",

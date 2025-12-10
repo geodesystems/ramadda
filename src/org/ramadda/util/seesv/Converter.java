@@ -4533,14 +4533,16 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnRand extends Converter {
-
         String name;
-
         double min;
-
         double max;
+	boolean doInt = false;
 
         public ColumnRand(String name, double min, double max) {
+	    if(name.startsWith("int:")) {
+		doInt = true;
+		name = name.substring("int:".length());
+	    }
             this.name = name;
             this.min  = min;
             this.max  = max;
@@ -4550,13 +4552,15 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 row.add(name);
-
                 return row;
             }
             double r = Math.random();
             r = r * (max - min) + min;
-            row.add("" + r);
-
+	    if(doInt) {
+		row.add("" + ((int)r));
+	    } else {
+		row.add("" + r);
+	    }
             return row;
         }
 
