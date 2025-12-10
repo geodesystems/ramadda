@@ -3,6 +3,7 @@ Since this is for import add a:
 <import resource="type_assets_department.xml"/>
 into some types.xml file
 -->
+<types>
 <type  name="type_assets_department" 
  description="Department" 
  handler="org.ramadda.projects.assets.AssetBaseTypeHandler" 
@@ -39,8 +40,10 @@ into some types.xml file
 {{information   showDetails=false}}
 -col
 -row
-
-{{tabletree message="" contentsHeading=":vspace 1em\n----\n:heading Assets" entries="entrylink:type_assets_base;department"}}
+{{tabletree    entries="entrylink:type_assets_base;department"
+typeWidth=300px orderby="entryorder_up,name_up"
+contentsHeading=":vspace 1em\n----\n:heading Assets" 
+message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
 
 {{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
 showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
@@ -48,3 +51,4 @@ showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="fa
  showPlaceholderImage=true}} 
 -section]]></wiki>
 </type>
+</types>

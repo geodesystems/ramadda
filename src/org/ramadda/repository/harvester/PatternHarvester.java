@@ -978,7 +978,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (newEntry == null) {
                 continue;
             }
-            if (newEntry.getTypeHandler().convertIdsFromImport(newEntry,
+            if (newEntry.getTypeHandler().convertIdsFromImport(request,
+							       newEntry,
 							       idList)) {
                 getEntryManager().updateEntry(getRequest(), newEntry);
             }

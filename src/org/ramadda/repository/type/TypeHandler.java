@@ -1796,20 +1796,32 @@ public class TypeHandler extends RepositoryManager {
         return s;
     }
 
-    public boolean convertIdsFromImport(Entry newEntry,
-                                        List<String[]> idList) {
+    public boolean convertIdsFromImport(Request request,
+					Entry newEntry,
+                                        List<String[]> idList) throws Exception {
         boolean changed = false;
 
+	List<Column> columns = getColumns();
+	if(columns!=null) {
+	    Object[] values = newEntry.getValues();
+	    for(Column column: columns) {
+		if(column.isEntryType() || (column.isString() && column.isWiki())) {
+		    String value= (String) column.getValue(request, newEntry);
+		    if(value!=null) value = convertIdsFromImport(value, idList);
+		    column.setValue(newEntry, values, value);
+		}
+	    }
+	}
         if (getTypeProperty("convertidsinfile", false)) {
             changed = convertIdsFromImportInFile(newEntry, idList);
         }
+
 
         String desc = newEntry.getDescription();
         if ((desc != null) && (desc.length() > 0)) {
             String converted = convertIdsFromImport(desc, idList);
             if ( !converted.equals(desc)) {
                 newEntry.setDescription(converted);
-
                 changed = true;
             }
         }

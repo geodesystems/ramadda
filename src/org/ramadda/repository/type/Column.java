@@ -813,6 +813,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
+    public boolean isWiki() {
+	return isWiki;
+    }
     public boolean isNumeric() {
         return isInteger() || isDouble();
     }

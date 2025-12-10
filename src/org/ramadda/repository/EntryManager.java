@@ -5942,7 +5942,7 @@ public class EntryManager extends RepositoryManager {
 	}
         //Replace any references to old entries
         for (Entry newEntry : newEntries) {
-            newEntry.getTypeHandler().convertIdsFromImport(newEntry, idList);
+            newEntry.getTypeHandler().convertIdsFromImport(request, newEntry, idList);
         }
 
         addNewEntries(request, newEntries, TypeHandler.NewType.IMPORT);

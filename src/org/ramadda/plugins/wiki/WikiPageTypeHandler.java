@@ -222,10 +222,10 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      * @return _more_
      */
     @Override
-    public boolean convertIdsFromImport(Entry newEntry,
-                                        List<String[]> idList) {
+    public boolean convertIdsFromImport(Request request,Entry newEntry,
+                                        List<String[]> idList) throws Exception {
 
-        boolean  changed = super.convertIdsFromImport(newEntry, idList);
+        boolean  changed = super.convertIdsFromImport(request,newEntry, idList);
         Object[] values  = newEntry.getValues();
         if (values != null) {
             String wikiText = (String) values[0];
