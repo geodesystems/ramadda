@@ -2861,7 +2861,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String sel1 = Utils.getProperty(props,"selector",".search-component,.entry-list-row-data");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
-		    for(String prop:new String[]{"linkSelector","focus","hideAll"}) {
+		    for(String prop:new String[]{"linkSelector","focus","hideAll","width"}) {
 			String v = Utils.getProperty(props,prop,null);
 			if(v!=null) 
 			    Utils.add(opts,prop,JU.quoteType(v));
