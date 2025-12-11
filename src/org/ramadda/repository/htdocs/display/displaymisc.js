@@ -1442,7 +1442,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			}
 			return;
 		    }
-		    html+=HU.th([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(0,transparent),
+		    html+=HU.th([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(0,COLOR_TRANSPARENT),
 						   CSS_BACKGROUND,COLOR_TRANSPARENT)],HU.div(attrs,SPACE))+"\n";
 		});
 		html+=HU.close(TAG_TR);
