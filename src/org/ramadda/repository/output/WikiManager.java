@@ -8372,15 +8372,17 @@ public class WikiManager extends RepositoryManager
         StringBuilder tags3 = new StringBuilder();
         StringBuilder tags4 = new StringBuilder();	
 
+	final String[]currentHeader = new String[]{""};
 	Utils.UniFunction<String,String> hdr = (title)->{
+	    currentHeader[0] = title;
 	    return HU.div(HU.b(title),HU.attrs("class","wiki-editor-popup-link"));
 	};
 	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
-	    return getWikiEditLink(textAreaId,title,pre,post,"");
+	    return getWikiEditLink(textAreaId,title,pre,post,"",currentHeader[0]);
 	};
 
 	Utils.QuadFunction<String,String,String,String,String> l2 = (title,tt,pre,post)->{
-	    return getWikiEditLink(textAreaId,title,pre,post,tt);
+	    return getWikiEditLink(textAreaId,title,pre,post,tt,currentHeader[0]);
 	};
 
 	BiFunction<String,String,String> makeButton = (title,contents)->{
@@ -8533,7 +8535,8 @@ public class WikiManager extends RepositoryManager
 
         wikiMenuTagsButton = makeMenuButton("Tags",
 					    HU.span(HU.hbox(misc1, misc2,misc3),
-						    HU.attrs("data-title","Tags","class","wiki-menubar-tags")),
+						    HU.attrs("data-title","Tags",
+							     "class","wiki-menubar-tags")),
 					    true);
 
         String previewButton =
@@ -8603,7 +8606,10 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept(help2,"/userguide/wiki/wikientries.html",
                         "Specifying the entry");
         makeHelp.accept(help2,"/userguide/wiki/wikientries.html#entries",
-                        "Specifying multiple entries");
+                        "Multiple entries");
+        makeHelp.accept(help2,"/userguide/wiki/sortorder.html",
+                        "Sort order");	
+
         makeHelp.accept(help2,"/userguide/wiki/wikidisplay.html", "Displays and Charts");
 	help3.append(HU.div(HU.b("Listings")));
         makeHelp.accept(help3,"/entry/types.html", "Entry Types");
@@ -8617,7 +8623,8 @@ public class WikiManager extends RepositoryManager
         wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,false,true);
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
-							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")),true,true);
+							  HU.attrs("data-title","Formatting",
+								   "class","wiki-menubar-tags")),true,true);
 
     }
 
@@ -8691,7 +8698,8 @@ public class WikiManager extends RepositoryManager
 
         String entriesButton = makeMenuButton("Entry",
 					      HU.span(makeTagsMenu(entry,textAreaId),
-						      HU.attrs("data-title","Entries","class","wiki-menubar-tags")),true);
+						      HU.attrs("data-title","Entries",
+							       "class","wiki-menubar-tags")),true);
 
         String displaysButton = HU.href("javascript:noop()", "Displays",
 					HU.attrs("id", "displays_button" + textAreaId,
@@ -8833,7 +8841,7 @@ public class WikiManager extends RepositoryManager
      */
     private String getWikiEditLink(String textAreaId, String label,
                                    String prefix, String suffix,
-                                   String tt) {
+                                   String tt,String corpus) {
         String js;
 	String linkAttrs = "";
 	if(stringDefined(tt)) {
@@ -8851,6 +8859,7 @@ public class WikiManager extends RepositoryManager
 		+ HU.squote("") + ");";
         }
 	String attrs=  HU.attrs("class","wiki-editor-popup-link");
+	if(corpus!=null) attrs+=HU.attrs("data-corpus",corpus);
         return HU.div(HU.href(js, label,linkAttrs),attrs);
     }
 
