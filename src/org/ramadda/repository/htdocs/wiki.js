@@ -19,6 +19,7 @@ var ID_TRANSCRIBE_DELETE='transcribe_delete';
 var ID_TRANSCRIBE_TEXT='transcribe_text';
 var ID_TRANSCRIBE_LOADING='transcribe_loading';
 
+var CLASS_WIKI_POPUP_MENU_ITEM='wiki-popup-menu-item';
 
 var wikiPopup = null;
 if(!window.WikiUtil) {
@@ -461,35 +462,23 @@ WikiEditor.prototype = {
 	    html +=HU.br('What do you want to insert into the document?');
 	}
 	let what = [];
-	const what_id = "ID";
-	const what_commaid = ",ID";	
-	const what_import = "Import";	
-	const what_entry_id = "entry=ID" ;	    
-	const what_link = "Link";
-	const what_wiki_text = "Wiki Text";	    
-	const what_description = "Description";
-	const what_image = "Image";
-    	const what_map = "Map";
-	const what_editable_map = "Editable map";
-	const what_tree = "Tree";
-	const what_grid = "Grid";
-	const what_gallery = "Gallery";	    
-	const what_children_ids = "Children IDS";
-	const what_children_links = "Children Links";
-	const what_nothing="nothing";
-	const what_thumbnail = "Thumbnail";
-
-
-	if(extra) {
-	    extra.forEach(e=>{
-		if(e.label) {
-		    what.push({label:e.label,
-			       value:'base64:'+window.btoa(e.value)});
-		} else {
-		    what.push(e);
-		}
-	    });
-	}
+	const what_id = 'ID';
+	const what_commaid = ',ID';	
+	const what_import = 'Import';	
+	const what_entry_id = 'entry=ID' ;	    
+	const what_link = 'Link';
+	const what_wiki_text = 'Wiki Text';	    
+	const what_description = 'Description';
+	const what_image = 'Image';
+    	const what_map = 'Map';
+	const what_editable_map = 'Editable map';
+	const what_tree = 'Tree';
+	const what_grid = 'Grid';
+	const what_gallery = 'Gallery';	    
+	const what_children_ids = 'Children IDS';
+	const what_children_links = 'Children Links';
+	const what_nothing='nothing';
+	const what_thumbnail = 'Thumbnail';
 
 	if(isNew) {
 	    if(opts.isImage) what.push(what_image);
@@ -511,7 +500,7 @@ WikiEditor.prototype = {
 	    what.push(what_thumbnail);
 	    if(opts.isGeo) 
 		what.push(what_map);
-	    if(opts.entryType=="geo_editable_json") 
+	    if(opts.entryType=='geo_editable_json') 
 		what.push(what_editable_map);
 
 	    if(opts.isGroup) {
@@ -525,37 +514,47 @@ WikiEditor.prototype = {
 	    what.push(what_children_links);
 	}
 
+	if(extra) {
+	    extra.forEach(e=>{
+		if(e.label) {
+		    what.push({label:e.label,
+			       value:'base64:'+window.btoa(e.value)});
+		} else {
+		    what.push(e);
+		}
+	    });
+	}
 
-	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
+	html += HU.select('',[ATTR_ID, this.domId('addtype')],what,this.lastWhat);
 	html += HU.p();
 	html += HU.buttons([
 	    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 		    ATTR_CLASS,CLASS_BUTTON,
-		    ATTR_ID,this.domId("addok")],LABEL_OK),
+		    ATTR_ID,this.domId('addok')],LABEL_OK),
 	    HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 		    ATTR_CLASS,CLASS_BUTTON,
-		    ATTR_ID,this.domId("addcancel")],LABEL_CANCEL)]);
+		    ATTR_ID,this.domId('addcancel')],LABEL_CANCEL)]);
 	html = HU.div([ATTR_STYLE,
 		       HU.css(CSS_PADDING,HU.px(10),CSS_WIDTH,HU.px(400))],html);
 	let dialog = this.addDialog = HU.makeDialog({
 	    content:html,
 	    anchor:this.getScroller(),
-	    title:"Select Entry",
+	    title:'Select Entry',
 	    header:true,
 	    sticky:true,
 	    draggable:true,
 	    modal:true});
-	let menu = jqid(this.domId("addtype"));	
-	HU.initSelect(menu);
-	jqid(this.domId("addcancel")).button().click(()=>{
+	let menu = jqid(this.domId('addtype'));	
+
+	jqid(this.domId('addcancel')).button().click(()=>{
 	    this.addDialog.remove();
 	});
 
-	jqid(this.domId("addok")).button().click(()=>{
+	jqid(this.domId('addok')).button().click(()=>{
 	    this.addDialog.remove();
 	    let what=this.lastWhat=menu.val();
 	    what = Utils.convertText(what);
-	    let text="";
+	    let text='';
 	    let insert = text=>{
 		if(pos) {
 		    this.getEditor().session.insert(pos,text);
@@ -682,7 +681,8 @@ WikiEditor.prototype = {
     },
 
     clearDragAndDrop:function() {
-	if(this.dragMarker)    this.getEditor().session.removeMarker(this.dragMarker);
+	if(this.dragMarker)
+	    this.getEditor().session.removeMarker(this.dragMarker);
     },
 
     getDiv:function() {
@@ -736,9 +736,9 @@ WikiEditor.prototype = {
 		popup.focus();
 		//We do this because the  SF menu stays popped up after clicking so we hide it
 		//then after a second we remove the style so subsequent menu clicks will work
-		this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass('wiki-popup-menu-item')).css(CSS_DISPLAY,DISPLAY_NONE);
+		this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass(CLASS_WIKI_POPUP_MENU_ITEM)).css(CSS_DISPLAY,DISPLAY_NONE);
 		setTimeout(()=> {
-		    this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass('wiki-popup-menu-item')).removeAttr(ATTR_STYLE);
+		    this.jq(this.ID_WIKI_MENUBAR).find(HU.dotClass(CLASS_WIKI_POPUP_MENU_ITEM)).removeAttr(ATTR_STYLE);
 		},1000);
 		return;
 	    }
@@ -2845,7 +2845,7 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 		       HU.div([ATTR_CLASS,
 			       'wiki-popup-menu-header wiki-popup-menu-link '],title) +
 		       HU.tag(TAG_UL,
-			      [ATTR_CLASS,'wiki-popup-menu-item'], sub));
+			      [ATTR_CLASS,CLASS_WIKI_POPUP_MENU_ITEM], sub));
     });
     let menubar = HU.div([ATTR_CLASS,'wiki-popup-menubar',
 			  ATTR_ID, id],
