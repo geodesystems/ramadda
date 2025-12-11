@@ -5567,7 +5567,8 @@ snippet-hide {
 }
 
 .ramadda-pagesearch-input {
-    border-radius
+    border-radius: var(--default-radius);
+    width:180px;
 }
 
 .pagesubtitle {

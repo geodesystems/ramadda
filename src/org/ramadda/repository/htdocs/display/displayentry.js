@@ -3396,7 +3396,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 
 	    let size = HU.getDimension(this.getPropertyInputSize());
-            let textField = HU.input("", text, [ATTR_STYLE, HU.css(CSS_WIDTH, size),
+	    let style = size?HU.css(CSS_WIDTH, size):'';
+	    let textField = HU.input("", text, [ATTR_STYLE, style,
 						ATTR_PLACEHOLDER, eg,
 						ATTR_CLASS, "display-search-input",
 						ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);

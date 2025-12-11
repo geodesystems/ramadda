@@ -3993,7 +3993,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    target:null,
 	    hideAll:hideAll,
 	    linkSelector:null,
-	    widgets:[]
+	    widgets:[],
+	    style:''
 	};
 	if(args) {
 	    $.extend(opts,args);
@@ -4003,7 +4004,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let id = HU.getUniqueId('search_');
 	let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
+	if(opts.width) opts.style+=HU.css(CSS_WIDTH,opts.width);
 	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
+					   ATTR_STYLE,opts.style,
 					   ATTR_ID,id,
 					   ATTR_PLACEHOLDER,label??'Search',
 					   ATTR_SIZE,opts.inputSize]);
