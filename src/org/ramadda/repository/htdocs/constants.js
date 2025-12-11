@@ -261,6 +261,7 @@ var ATTR_CURSOR='cursor';
 var ATTR_DATA_ACTION='data-action';
 var ATTR_DATA_CAPTION = 'data-caption';
 var ATTR_DATA_CORPUS='data-corpus';
+var ATTR_DATA_CORPUS2='data-corpus2';
 var ATTR_DATA_FANCYBOX = 'data-fancybox';
 var ATTR_DATA_FIELD = 'data-field';
 var ATTR_DATA_FIELDID = 'data-fieldid';

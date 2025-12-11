@@ -4175,7 +4175,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let category = element.attr('data-category');
 	    if(category) html+=' ' +category;
 	    let corpus = element.attr(ATTR_DATA_CORPUS);
-	    if(corpus) html+=' ' +corpus;		
+	    if(corpus) html+=' ' +corpus;
+	    corpus = element.attr(ATTR_DATA_CORPUS2);
+	    if(corpus) html+=' ' +corpus;			    
 	    //check for title
 	    let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
 	    if(match) {

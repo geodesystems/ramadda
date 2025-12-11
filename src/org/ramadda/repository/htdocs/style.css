@@ -6979,7 +6979,9 @@ a.wiki-link-noexist {
 
 .wiki-editor-popup-header {
     display:inline-block;
+    xdisplay:block;
     width:190px;
+    padding:4px;
 }
 
 .wiki-editor-popup-section {
