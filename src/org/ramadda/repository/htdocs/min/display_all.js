@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 11 05:11:42 MST 2025";
+var build_date="RAMADDA build date: Thu Dec 11 05:26:23 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -38248,7 +38248,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 
 	    let size = HU.getDimension(this.getPropertyInputSize());
-            let textField = HU.input("", text, [ATTR_STYLE, HU.css(CSS_WIDTH, size),
+	    let style = size?HU.css(CSS_WIDTH, size):'';
+	    let textField = HU.input("", text, [ATTR_STYLE, style,
 						ATTR_PLACEHOLDER, eg,
 						ATTR_CLASS, "display-search-input",
 						ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
