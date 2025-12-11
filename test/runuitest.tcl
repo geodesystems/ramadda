@@ -127,6 +127,7 @@ if {$groupID!=""} {
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
     runGroup "Archive" archive_test
+    runGroup "BOCO Elections" boco_election_displays
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "SeeSV" a424786b-ebf2-43c3-add7-21c3bb2f526f
