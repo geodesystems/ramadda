@@ -117,6 +117,8 @@ public interface Constants {
 
     public static final String ARG_ICON = "ramadda.icon";
     public static final String ARG_AGREE = "agree";
+    public static final String ARG_DOALIAS = "doalias";
+    public static final String ARG_ALIAS = "alias";    
     public static final String ARG_SERVICEID = "serviceid";
     public static final String ARG_EXPORT_SHALLOW = "exportshallow";
     public static final String ARG_EXPORT_CHILDREN = "exportchildren";    

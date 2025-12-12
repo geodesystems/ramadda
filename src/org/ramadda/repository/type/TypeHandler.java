@@ -4429,7 +4429,18 @@ public class TypeHandler extends RepositoryManager {
 				 + HU.attr("autofocus","true")
 				 + HU.attr("placeholder", showLabel?"":label)
 				 + HU.id(domId));
-
+		    String alias = getMetadataManager().getMetadataAlias(request, entry);
+		    if(alias==null) {
+			String aliasId = HU.getUniqueId("");
+			String aliasInput =
+			    HU.labeledCheckbox(ARG_DOALIAS,
+					       "true", false,HU.id(aliasId), "Make alias:")+
+			    HU.SPACE+
+			    HU.input(ARG_ALIAS,"",20,HU.attr("id",aliasId+"_input"));
+			input = input +HU.SPACE+HU.makeToggleInline("",aliasInput,false);
+			input +=HU.importJS(getPageHandler().getCdnPath("/makealias.js"));
+			input +=HU.script(HU.call("RamaddaMakeAlias",HU.quote(domId),HU.quote(aliasId)));
+		    }
 		    if(showLabel) {
 			HU.formEntry(sb,  label+":",input);
 		    } else {

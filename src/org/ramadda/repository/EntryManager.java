@@ -2906,8 +2906,7 @@ public class EntryManager extends RepositoryManager {
 			  DateHandler.getTime(theDateRange[1]), null);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
-                }
-
+                } 
 
                 setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
@@ -3628,6 +3627,12 @@ public class EntryManager extends RepositoryManager {
     private void setEntryState(Request request, Entry entry, Entry parent,
                                boolean newEntry)
 	throws Exception {
+	//Check for alias
+	if(request.get(ARG_DOALIAS,false) && request.defined(ARG_ALIAS)) {
+	    getMetadataManager().addMetadataAlias(request, entry, request.getString(ARG_ALIAS,""));
+	}
+
+
         if (request.exists(ARG_LOCATION_LATITUDE)
 	    && request.exists(ARG_LOCATION_LONGITUDE)) {
 	    if (request.defined(ARG_LOCATION_LATITUDE)
