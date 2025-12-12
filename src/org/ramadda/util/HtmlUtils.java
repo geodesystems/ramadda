@@ -2902,7 +2902,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                       id, "img','", hideImg, "','", showImg,
                                       "')")), img + label,
                                           HtmlUtils.cssClass(
-                                              "toggleblocklabellink"));
+                                              "ramadda-toggle-link toggleblocklabellink"));
 
             //        sb.append(RepositoryManager.tableSubHeader(link));
 	    if(extraAttrs.length>0) {
