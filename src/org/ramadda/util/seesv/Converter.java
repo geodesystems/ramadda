@@ -70,6 +70,13 @@ public abstract class Converter extends Processor {
         super(cols);
     }
 
+    public void checkMacros(String value) {
+	if(value!=null && value.indexOf("${")>=0) {
+	    macros = Utils.splitMacros(value);
+	}
+    } 
+
+
     private static String getLabel(int n) {
 	int d = (int) (n / 25.0);
 	int r = n % 25;
@@ -4963,17 +4970,38 @@ public abstract class Converter extends Processor {
 
     }
 
-    public static class ColumnInserter extends Converter {
-        private String name;
-        private List<String> values;
-	private String value;
+    public static class ValueInserter extends Converter {
+        public List<String> values;
+        public List<String> names;
+	public List<List<Utils.Macro>> macroList;
 
+	public ValueInserter(String col,String names,String values) {
+	    super(col);
+            this.names  = Utils.split(names, ",", false, false);
+            this.values = Utils.split(values, ",", false, false);
+            while (this.values.size() < this.names.size()) {
+                this.values.add("");
+            }
+	    initMacros(this.values);
+	}
+
+	public void initMacros(List<String>values) {
+	    for(String value: values) {
+		if(value.indexOf("${")>=0) {
+		    macroList=new ArrayList<List<Utils.Macro>>();
+		    for(String listValue: this.values) {
+			macroList.add(Utils.splitMacros(listValue));
+		    }
+		    break;
+		}
+	    }	
+	}
+    }
+
+
+    public static class ColumnInserter extends ValueInserter {
         public ColumnInserter(String col, String name, String value) {
-            super(col);
-	    this.value = value;
-            this.name   = name;
-	    //	    macros = Utils.splitMacros(value);
-            this.values = Utils.split(value, ",", false, false);
+            super(col,name,value);
         }
 
         @Override
@@ -4981,39 +5009,43 @@ public abstract class Converter extends Processor {
             int    col = hasColumns()
 		? getIndex(ctx)
 		: -1;
-            String v   = "";
             if (rowCnt == 0) {
-		value = ctx.applyMacros(value);
-                v = name;
-            } else if (rowCnt < values.size()) {
-                //v = values.get(rowCnt);
-		v = this.value;
-            } else {
-		//                v = values.get(values.size() - 1);
-		v = this.value;
+		for(String name: names) {
+		    row.add(name);
+		}
+		rowCnt++;
+		return row;
             }
-	    v =v.replace("${row}",rowCnt+"");
+	    if(macroList!=null) {
+		for(List<Utils.Macro> macros: macroList) {
+		    String v = getColumnValue(ctx,row,"",macros);
+		    v =v.replace("${row}",rowCnt+"");
+		    if ((col < 0) || (col > row.getValues().size())) {
+			row.getValues().add(v);
+		    } else {
+			row.getValues().add(col, v);
+			col++;
+		    }
+		}
+	    } else {
+		for(String v: values) {
+		    v =v.replace("${row}",rowCnt+"");
+		    if ((col < 0) || (col > row.getValues().size())) {
+			row.getValues().add(v);
+		    } else {
+			row.getValues().add(col, v);
+			col++;
+		    }
+		}
+	    }
             rowCnt++;
-            if ((col < 0) || (col > row.getValues().size())) {
-                row.getValues().add(v);
-            } else {
-                row.getValues().add(col, v);
-            }
-
             return row;
         }
     }
 
-    public static class ColumnAdder extends Converter {
-        private List<String> names;
-        private List<String> values;
-
+    public static class ColumnAdder extends ValueInserter {
         public ColumnAdder(String names, String values) {
-            this.names  = Utils.split(names, ",", false, false);
-            this.values = Utils.split(values, ",", false, false);
-            while (this.values.size() < this.names.size()) {
-                this.values.add("");
-            }
+	    super("",names,values);
         }
 
         @Override
@@ -5021,7 +5053,13 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 row.addAll(names);
             } else {
-                row.addAll(values);
+		if(macroList!=null) {
+		    for(List<Utils.Macro> macros: macroList) {
+			row.add(getColumnValue(ctx,row,"",macros));
+		    }
+		} else {
+		    row.addAll(values);
+		}
             }
 
             return row;
@@ -5261,9 +5299,7 @@ public abstract class Converter extends Processor {
         public ColumnSetter(List<String> cols,  String value) {
             super(cols);
             this.value = value;
-	    if(value.indexOf("${")>=0) {
-		macros = Utils.splitMacros(value);
-	    } 
+	    checkMacros(value);
         }
 
         public ColumnSetter(List<String> cols, List<String> rows,

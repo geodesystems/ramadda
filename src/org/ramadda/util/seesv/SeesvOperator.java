@@ -95,7 +95,7 @@ public class SeesvOperator {
     }
 
     public String getColumnValue(TextReader ctx, Row row, String value,
-			   List<Utils.Macro> macros) {
+				 List<Utils.Macro> macros) {
 	if(macros==null || macros.size()==0)  return value;
 	StringBuilder sb = new StringBuilder();
 	for(Utils.Macro macro: macros) {
@@ -104,7 +104,12 @@ public class SeesvOperator {
 	    } else {
 		int index = getIndex(ctx,macro.getId());
 		if(row.indexOk(index)) {
-		    sb.append(row.get(index));
+		    String rowValue = row.getString(index);
+		    String caseType = macro.getProperty("case",null);
+		    if(caseType!=null) {
+			rowValue=Utils.applyCase(caseType,rowValue);
+		    }
+		    sb.append(rowValue);
 		} else {
 		}
 	    }
