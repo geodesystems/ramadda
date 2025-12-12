@@ -3852,6 +3852,12 @@ public class Utils extends IO {
         return StringUtil.split(s.toString(), delim, cnt);
     }
 
+
+    public static List<String> splitSpacesUpTo(Object o, int cnt) {
+	return splitUpTo(o,"\\s+",cnt);
+    }
+
+
     /**
        Copied from ucar.unidata.util.StringUtil
        don't trim the results
@@ -3860,6 +3866,11 @@ public class Utils extends IO {
 					 int cnt) {
 	String s = o.toString();
 	List<String> toks = new ArrayList<String>();
+	for(String tok:s.split(delimiter, cnt)) {
+	    toks.add(tok);
+	}
+	return toks;
+	/*
 	int delimLength = delimiter.length();
 	for (int i = 0; i < cnt - 1; i++) {
 	    int idx = s.indexOf(delimiter);
@@ -3873,6 +3884,7 @@ public class Utils extends IO {
 	    toks.add(s);
 	}
 	return toks;
+	*/
     }
 
     public static List<String> split(Object s, String delim) {
