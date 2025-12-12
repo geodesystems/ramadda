@@ -1108,6 +1108,16 @@ public class MetadataManager extends RepositoryManager {
         return changed;
     }
 
+    public String getMetadataAlias(Request request,Entry entry) throws Exception {
+	if(entry==null) return null;
+	List<Metadata> metadataList =  findMetadata(request, entry,
+						    new String[]{ContentMetadataHandler.TYPE_ALIAS}, false);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    return  metadataList.get(0).getAttr1();
+	}
+	return null;
+    }
+
     public void addMetadataAlias(Request request,Entry entry, String value) throws Exception {
         addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS,CHECK_UNIQUE_FALSE, value);
     }
