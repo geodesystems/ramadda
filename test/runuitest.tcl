@@ -126,7 +126,10 @@ if {$groupID!=""} {
     runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
-    runGroup "Archive" archive_test
+    runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
+    runGroup "Asset Reports" 56ff445d-58c5-4f6a-a634-768217490b38
+    runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
+    runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "BOCO Elections" boco_election_displays
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
@@ -140,11 +143,10 @@ if {$groupID!=""} {
     runGroup "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
     runGroup "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
     runGroup "Dashboards" eb4102f8-720f-4ef3-9211-0ce5940da04d
-    runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
     runGroup "Cards" e4b6667d-d640-4048-a756-b06e4c352a62 3
     #runGroup Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
-    runGroup "Misc" a7fe0b5c-5c1b-4005-afce-e92b082fa335
+    runGroup "Miscellany" a7fe0b5c-5c1b-4005-afce-e92b082fa335
     runGroup "Notebooks" 38bb6bb4-3f51-4625-9acd-c79c4f445c78
 }
 finish
