@@ -6747,9 +6747,34 @@ a.wiki-link-noexist {
     width:200px;
 }
 
+.ramadda-menutree .ui-menu-item {
+}
+
+.ramadda-menutree .ui-menu-item-wrapper {
+}
+
+.ramadda-menutree .ui-menu-item {
+    border: 1px solid transparent;
+}
+.ramadda-menutree .ui-menu-item:hover {
+}
+
+.ramadda-menutree .ui-menu-item-wrapper:hover {
+    border: 1px solid #aaa;
+}
+
+
+/**override for the header*/
+.ramadda-menutree .ui-widget-header .ui-state-active {
+    border:1px solid transparent;
+    cursor:default;
+    font-weight: bold;
+}
+
 .ramadda-menutree .ui-menu-item-wrapper:not([aria-haspopup="true"]) {
     padding-left:6px;
 }
+
 
 
 .ramadda-dashboard {

@@ -500,7 +500,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
 	int                  olCnt           = 0;
-        StringBuffer         buff            = new StringBuffer();
+	StringBuffer         buff            = new StringBuffer();
         StringBuilder        js              = new StringBuilder("\n");
 
         String           currentVar        = null;
@@ -895,6 +895,86 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
+                int starCnt = 0;
+                while (tline.startsWith("*")) {
+                    tline = tline.substring(1);
+                    starCnt++;
+                }
+                if (starCnt > 0) {
+		    boolean doCheckbox =  tline.startsWith("+") || tline.startsWith("-");
+		    boolean checkboxOn = tline.startsWith("+");
+		    if(doCheckbox) tline = tline.substring(1);
+                    if (starCnt > ulCnt) {
+                        while (starCnt > ulCnt) {
+			    if(ulCnt==0)
+				buff.append("<ul class=ramadda-ul>\n");				
+			    else
+				buff.append("<ul>\n");
+                            ulCnt++;
+                        }
+                    } else {
+                        while ((starCnt < ulCnt) && (ulCnt > 0)) {
+			    HU.close(buff,"ul");
+                            ulCnt--;
+                        }
+                    }
+		    if(doCheckbox) {
+			String id = "";
+			String attrs = HU.attrs("class","ramadda-checklist");
+			if(Misc.equals(getWikiProperty("checklistActive"),"true")) {
+			    id  ="checklist_" + Utils.makeID(tline);
+			    attrs+=HU.attrs("id",id);
+			}
+			//			buff.append("<li class='ramadda-bullet'> ");
+			buff.append(HU.div(HU.labeledCheckbox("", "true", checkboxOn,
+							      attrs,
+							      tline)));
+		    } else {
+			buff.append("<li class='ramadda-bullet'> ");
+			buff.append(tline);
+			buff.append("</li> ");
+		    }
+                    buff.append("\n");
+                    continue;
+		}
+                while (ulCnt > 0) {
+		    HU.close(buff,"ul");
+                    ulCnt--;
+                }
+
+                int hashCnt = 0;
+                //Check if this is a commented attribute inside a tag
+                while (tline.startsWith("#") && (tline.indexOf("=") < 0)) {
+                    tline = tline.substring(1);
+                    hashCnt++;
+                }
+                if (hashCnt > 0) {
+                    if (hashCnt > olCnt) {
+                        while (hashCnt > olCnt) {
+                            buff.append("<ol>\n");
+                            olCnt++;
+                        }
+                    } else {
+                        while ((hashCnt < olCnt) && (olCnt > 0)) {
+                            buff.append("</ol>\n");
+                            olCnt--;
+                        }
+                    }
+                    buff.append("<li> ");
+                    buff.append(tline);
+                    buff.append("\n");
+
+                    continue;
+                }
+
+                while (olCnt > 0) {
+                    buff.append("</ol>\n");
+                    olCnt--;
+                }
+
+
+
+
 		if(tline.startsWith("+mermaid")) {
 		    inMermaid=true;
 		    if(!seen.contains("addedmermaid")) {
@@ -1029,29 +1109,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
-		if (tline.startsWith(":menuitem")) {
-                    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
-		    HU.open(buff, "li");
-		    HU.open(buff,TAG_DIV);
-		    buff.append(toks.size()>1?toks.get(1):"No Label");
-		    HU.close(buff,TAG_DIV,"li","\n");
-		    continue;
-		}
-
-		if (tline.startsWith(":menuheader")) {
-		    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
-		    HU.open(buff, "li",HU.attrs(ATTR_CLASS,"ui-widget-header"));
-		    HU.open(buff,TAG_DIV);
-		    buff.append(toks.size()>1?toks.get(1):"No Label");
-		    HU.close(buff,TAG_DIV,"li","\n");
-		    continue;
-		}
-
 		if (tline.startsWith("+popup")) {
 		    Hashtable props = getProps.apply(tline);
 		    String icon = (String) props.get("icon");
 		    String link =  Utils.getProperty(props,"link","");
-		    String style =  Utils.getProperty(props,ATTR_STYLE,"");
+		    String style =  HU.css("padding","10px","max-width","500px")+Utils.getProperty(props,ATTR_STYLE,"");
 		    String linkStyle =  Utils.getProperty(props,"linkStyle","");
 		    String linkTitle =  Utils.getProperty(props,"linkTitle","");		    		    		    
 		    if(icon!=null) link = HU.image(handler.getWikiImageUrl(this, icon, props))+HU.SPACE + link;
@@ -1067,7 +1129,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 			arg("sticky",Utils.getProperty(props,"sticky","false")),
 			arg("slideLeft",Utils.getProperty(props,"slideLeft","false")),
 			arg("animateSpeed",Utils.getProperty(props,"animateSpeed","300")),
-
 			arg("toggleid",HU.getUniqueId("popup"))
 		    };
 
@@ -1088,24 +1149,43 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}		
 
+		if (tline.startsWith(":menuheader")) {
+		    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
+		    HU.open(buff, "li",HU.attrs(ATTR_CLASS,"ui-widget-header"));
+		    buff.append(HU.div(toks.size()>1?toks.get(1):"No Label"));
+		    HU.close(buff,"li","\n");
+		    continue;
+		}
+
+		if (tline.startsWith(":menuitem")) {
+                    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
+		    HU.open(buff, "li");
+		    buff.append(HU.div(toks.size()>1?toks.get(1):"No Label"));
+		    HU.close(buff,"li","\n");
+		    continue;
+		}
 		if (tline.startsWith("+menuitem")) {
 		    Hashtable props = getProps.apply(tline);
 		    String attrs = HU.attrs(ATTR_STYLE,Utils.getProperty(props,ATTR_STYLE,""));
+		    buff.append("\n");
 		    HU.open(buff, "li",attrs);
-		    HU.open(buff,TAG_DIV);
+		    HU.open(buff,"div");
 		    continue;
 		}
+
 		if (tline.startsWith("-menuitem")) {
-		    HU.close(buff,TAG_DIV,"li","\n");
+		    HU.close(buff,"div","li","\n");
 		    continue;
 		}
+
                 if (tline.startsWith("+menu")) {
 		    buff.append("\n");
-		    HU.open(buff,TAG_DIV,ATTR_CLASS,"ramadda-menutree");
                     List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
 		    String attrs = "";
 		    menuCnt++;
 		    if(menuCnt==1) {
+			HU.open(buff,TAG_DIV,ATTR_CLASS,"ramadda-menutree");
+			buff.append("\n");
 			String menuId = HU.getUniqueId("menu_");
 			attrs += HU.attrs("id",menuId);
 			menuIds.add(menuId);
@@ -1115,6 +1195,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 			    buff.append(HU.div(toks.get(1)));
 			}
 		    }
+		    buff.append("\n");
 		    HU.open(buff,"ul",attrs);
 		    buff.append("\n");
 		    continue;
@@ -1125,8 +1206,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    HU.close(buff,"ul","\n");
 		    if(menuCnt>0) {
 			HU.close(buff,"li","\n");
+		    } else {
+			HU.close(buff,TAG_DIV);
 		    }
-		    HU.close(buff,TAG_DIV);
 		    continue;
 
 		}
@@ -3232,82 +3314,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append("<hr class=\"ramadda-hr\">\n");
 
                     continue;
-                }
+		}
 
-                int starCnt = 0;
-                while (tline.startsWith("*")) {
-                    tline = tline.substring(1);
-                    starCnt++;
-                }
-                if (starCnt > 0) {
-		    boolean doCheckbox =  tline.startsWith("+") || tline.startsWith("-");
-		    boolean checkboxOn = tline.startsWith("+");
-		    if(doCheckbox) tline = tline.substring(1);
-                    if (starCnt > ulCnt) {
-                        while (starCnt > ulCnt) {
-			    if(ulCnt==0)
-				buff.append("<ul class=ramadda-ul>\n");				
-			    else
-				buff.append("<ul>\n");
-                            ulCnt++;
-                        }
-                    } else {
-                        while ((starCnt < ulCnt) && (ulCnt > 0)) {
-                            buff.append("</ul>\n");
-                            ulCnt--;
-                        }
-                    }
-		    if(doCheckbox) {
-			String id = "";
-			if(Misc.equals(getWikiProperty("checklistActive"),"true")) {
-			    id  ="checklist_" + Utils.makeID(tline);
-			}
-			//			buff.append("<li class='ramadda-bullet'> ");
-			buff.append(HU.div(HU.labeledCheckbox("", "true", checkboxOn,
-							      HU.attrs("id",id,"class","ramadda-checklist"),
-							      tline)));
-		    } else {
-			buff.append("<li class='ramadda-bullet'> ");
-			buff.append(tline);
-			buff.append("</li> ");
-		    }
-                    buff.append("\n");
-                    continue;
-                }
-                while (ulCnt > 0) {
-                    buff.append("</ul>\n");
-                    ulCnt--;
-                }
 
-                int hashCnt = 0;
-                //Check if this is a commented attribute inside a tag
-                while (tline.startsWith("#") && (tline.indexOf("=") < 0)) {
-                    tline = tline.substring(1);
-                    hashCnt++;
-                }
-                if (hashCnt > 0) {
-                    if (hashCnt > olCnt) {
-                        while (hashCnt > olCnt) {
-                            buff.append("<ol>\n");
-                            olCnt++;
-                        }
-                    } else {
-                        while ((hashCnt < olCnt) && (olCnt > 0)) {
-                            buff.append("</ol>\n");
-                            olCnt--;
-                        }
-                    }
-                    buff.append("<li> ");
-                    buff.append(tline);
-                    buff.append("\n");
 
-                    continue;
-                }
-
-                while (olCnt > 0) {
-                    buff.append("</ol>\n");
-                    olCnt--;
-                }
 
                 buff.append(line);
                 buff.append("\n");
@@ -3332,7 +3342,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         //end of processing
         while (ulCnt > 0) {
-            buff.append("</ul>\n");
+	    HU.close(buff,"ul");
             ulCnt--;
         }
         while (olCnt > 0) {
