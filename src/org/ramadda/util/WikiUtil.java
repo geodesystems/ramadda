@@ -70,6 +70,7 @@ public class WikiUtil implements HtmlUtilsConstants {
     private List<TabState>       tabStates       = new ArrayList<TabState>();
     private List<RowState>       rowStates       = new ArrayList<RowState>();
     private List<AccordionState> accordionStates = new ArrayList<AccordionState>();
+    private List<AccordionState> accordionStatesToInit = new ArrayList<AccordionState>();    
     private List<TableState> tableStates       = new ArrayList<TableState>();
 
     public WikiUtil() {}
@@ -1764,19 +1765,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     AccordionState accordionState =
                         accordionStates.get(accordionStates.size() - 1);
                     accordionStates.remove(accordionStates.size() - 1);
-                    String args = "{heightStyle: \""
-			+ accordionState.heightStyle + "\""
-			+ ", collapsible: "
-			+ accordionState.collapsible + ", active: "
-			+ accordionState.activeSegment
-			+ ", decorate: " + accordionState.decorate
-			+ ", animate:" + accordionState.animate
-			+ "}";
-                    js.append("HtmlUtil.makeAccordion(\"#"
-                              + accordionState.id + "\" " + "," + args
-                              + ");\n");
-                    buff.append("\n");
-
+		    accordionStatesToInit.add(0,accordionState);
                     continue;
                 }
 
@@ -3316,13 +3305,27 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
 		}
 
-
-
-
                 buff.append(line);
                 buff.append("\n");
 	    }
 	}
+
+	for(AccordionState accordionState:accordionStatesToInit) {
+	    String args = "{heightStyle: \""
+		+ accordionState.heightStyle + "\""
+		+ ", collapsible: "
+		+ accordionState.collapsible + ", active: "
+		+ accordionState.activeSegment
+		+ ", decorate: " + accordionState.decorate
+		+ ", animate:" + accordionState.animate
+		+ "}";
+	    js.append("HtmlUtil.makeAccordion(\"#"
+		      + accordionState.id + "\" " + "," + args
+		      + ");\n");
+	}
+
+
+
 
 	if(Misc.equals(getWikiProperty("checklistActive"),"true") ||
 	   userInputCnt>0) {
@@ -3404,6 +3407,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                 sb.append(value);
             }
         }
+
+
+
+
+
 
 	if(navId!=null) {
 	    sb.append(HU.close(TAG_DIV));
@@ -3530,6 +3538,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
+    
         /*
           <block title="foo">xxxxx</block>
         */
@@ -3603,7 +3612,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
             }
 
-            if (props.get(ATTR_VAR) != null) {
+	    if (props.get(ATTR_VAR) != null) {
 		myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
             } else {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
