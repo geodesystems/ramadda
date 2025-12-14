@@ -10,7 +10,9 @@ import org.json.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.xml.XmlUtil;
 
+import org.w3c.dom.Element;
 import java.io.IOException;
 
 import java.net.URL;
@@ -660,6 +662,17 @@ public class WikiUtil implements HtmlUtilsConstants {
                 String s = chunk.buff.toString().replaceAll("\\{\\{",
 							    "{<noop>{");
 		if(chunk.type==chunk.TYPE_XML) {
+		    if(Utils.getProperty(props,"format",false)) {
+			try {
+			    Element root = XmlUtil.getRoot(s);
+			    s = XmlUtils.elementToString(root);
+			} catch(Exception exc) {
+			    System.err.println("WikiUtil.xml error:" + exc);
+			}
+		    }
+
+
+
 		    s=s.replace("<","&lt;").replace(">","&gt;");
 		}
                 buff.append(s);
