@@ -4941,16 +4941,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		heightStyle: "content", collapsible: true, active: 0,
 		decorate: false, animate:200};
 	}
-	var icons = {
+	let icons = {
             header: "iconClosed",    // custom icon class
             activeHeader: "iconOpen" // custom icon class
 	};
         $(function() {
             //We initially hide the accordion contents
             //Show all contents
-            var contents = $(id +" .ramadda-accordion-contents");
+            let contents = $(id +" .ramadda-accordion-contents");
             contents.css(CSS_DISPLAY, DISPLAY_BLOCK);
-            var ctorArgs = {
+            let ctorArgs = {
                 animate:200,
 		icons:icons,
                 collapsible: true,
@@ -4966,7 +4966,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $.extend(ctorArgs, args);
 
             if(!ctorArgs.decorate) {
-                var header = $(id +" .ui-accordion-header");
+                let header = $(id +" .ui-accordion-header");
                 header.css(CSS_PADDING,"0em 0em 0em 0em");
             }
             if(ctorArgs.active<0) ctorArgs.active='none';
