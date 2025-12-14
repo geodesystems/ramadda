@@ -8485,7 +8485,7 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Javascript", "Include Javascript","+js_newline_", "-js"),
 			l.call( "CSS", "+css_newline_", "-css"),
 			l.call( "PRE", "+pre addCopy=false addDownload=false_newline_", "-pre"),
-                        l2.call( "Xml", "Include XML","+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
+                        l2.call( "Xml", "Include XML","+xml format=false addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Code", "```_newline__newline_", "```"),
 			l.call( "Markdown", "``` markdown_newline__newline_", "```"),
 			l.call( "Javascript", "``` javascript_newline__newline_", "```"),
