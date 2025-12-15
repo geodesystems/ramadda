@@ -3629,7 +3629,9 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
 	//Check for alias
 	if(request.get(ARG_DOALIAS,false) && request.defined(ARG_ALIAS)) {
-	    getMetadataManager().addMetadataAlias(request, entry, request.getString(ARG_ALIAS,""));
+	    String alias = request.getString(ARG_ALIAS,"");
+	    alias = Utils.makeID(alias);
+	    getMetadataManager().addMetadataAlias(request, entry, alias);
 	}
 
 
