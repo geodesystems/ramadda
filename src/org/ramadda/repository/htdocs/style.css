@@ -1550,13 +1550,20 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-header-floating {
-    font-size:75%;
+    font-size:9pt;
     display:inline-block;
     z-index:1000;
     position:absolute;
     top:5px;
     right:8px;
 }
+
+.ramadda-header-floating .ui-widget {
+    font-family: inherit;
+    font-size: 9pt !important;
+}
+
+
 
 .ramadda-header-small {
     text-align:center;
@@ -2805,6 +2812,7 @@ thin_hr,.ramadda-thin-hr {
     font-family: inherit;
     font-size: var(--font-size) !important;
 }
+
 
 
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
@@ -6742,15 +6750,33 @@ a.wiki-link-noexist {
 }
 
 
+.ramadda-menutree {
+    display:inline-block;
+}
+
+
 .ramadda-menutree .ui-menu {
     border  :var(--basic-border);
-    width:200px;
+    /*width:200px;*/
 }
+
+.ramadda-menutree-noborder .ui-menu {
+//    border:0px;
+    /*width:200px;*/
+}
+
+
 
 .ramadda-menutree .ui-menu-item {
 }
 
 .ramadda-menutree .ui-menu-item-wrapper {
+}
+
+.ramadda-menutree .ui-menu-item-wrapper a {
+    display:block;
+    width:100%;
+    text-decoration:none;
 }
 
 .ramadda-menutree .ui-menu-item {

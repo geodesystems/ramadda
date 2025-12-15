@@ -4794,6 +4794,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getErrorDialog: function(msg) {
         return "<div class=\"ramadda-message\"><table><tr valign=top><td><div class=\"ramadda-message-link\"><img border=\"0\"  src=\"/repository/icons/error.png\"  /></div></td><td><div class=\"ramadda-message-inner\">" + msg + "</div></td></tr></table></div>";
     },
+    initMenu: function(id) {
+	let menu = jqid(id);
+	let args = {
+	}
+	if(menu.attr('menu-down')) {
+	    args.position= { my: "left top", at: "left bottom" };
+	    args.icons= { submenu: 'ui-icon-arrow-1-s'};
+	}
+	if(menu.attr('menu-noicon')) {
+	    args.icons= { submenu: 'ui-icon-blank'};
+	}
+
+	menu.menu(args);
+    },
     makeBreadcrumbsInit: function(id) {
         //If page isn't loaded then register a callback
         if(!Utils.getPageLoaded()) {
@@ -6138,7 +6152,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     $(this).attr("oleft",o.left);
                     $(this).attr("otop",o.top);             
                     $(this).css(CSS_POSITION,POSITION_ABSOLUTE).css(CSS_LEFT,HU.px(o.left)).css(CSS_TOP,HU.px(o.top));
-                    console.log("start:" + o.left + " " + o.top);
                 }
             },
         });

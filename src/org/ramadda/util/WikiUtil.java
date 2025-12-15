@@ -1194,19 +1194,40 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith("+menu")) {
 		    buff.append("\n");
-                    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
 		    String attrs = "";
 		    menuCnt++;
 		    if(menuCnt==1) {
-			HU.open(buff,TAG_DIV,ATTR_CLASS,"ramadda-menutree");
+			Hashtable props = getProps.apply(tline);
+			String classes = "ramadda-menutree";
+			String style = "";
+			if(Utils.getProperty(props,"noBorder",false)) {
+			    style+=HU.css("border","0px");
+			}
+			style+=Utils.getProperty(props,"style","");
+			HU.open(buff,TAG_DIV,ATTR_CLASS,classes);
 			buff.append("\n");
 			String menuId = HU.getUniqueId("menu_");
 			attrs += HU.attrs("id",menuId);
+			if(Utils.getProperty(props,"menuDown",false)) {
+			    attrs+=HU.attrs("menu-down","true");
+			}
+			if(Utils.getProperty(props,"noIcon",false)) {
+			    attrs+=HU.attrs("menu-noicon","true");
+			}
+			if(Utils.getProperty(props,"width",null) !=null) {
+			    style+=HU.css("width",Utils.getProperty(props,"width",null));
+			}
+
+			attrs+=HU.attrs("style",style);
 			menuIds.add(menuId);
 		    } else {
+			List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
 			HU.open(buff,"li");
 			if(toks.size()>1) {
-			    buff.append(HU.div(toks.get(1)));
+			    String label = toks.get(1);
+			    label = label.replace("<bars>","<i class='fas fa-bars'></i>");
+			    label = label.replace("<cog>","<i class='fas fa-cog'></i>");			    
+			    buff.append(HU.div(label));
 			}
 		    }
 		    buff.append("\n");
@@ -1224,7 +1245,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 			HU.close(buff,TAG_DIV);
 		    }
 		    continue;
-
 		}
 
                 if (tline.startsWith(":macro")) {
@@ -3353,7 +3373,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 	//Add the menus init calls
 	for(String menuId:menuIds) {
-	    HU.script(buff, "$('#" +menuId+"').menu();\n");
+	    HU.script(buff, HU.call("HtmlUtils.initMenu",HU.quote(menuId)));
 	}
 
         //end of processing
