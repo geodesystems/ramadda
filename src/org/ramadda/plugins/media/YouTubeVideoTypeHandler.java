@@ -33,12 +33,11 @@ import java.util.List;
 
 public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     private static final String ACTION_EXTRACT_ANNOTATIONS="extractannotations";
-    private static int IDX = MediaTypeHandler.IDX_LAST+1;
-    public static final int IDX_ID = IDX++;
-    public static final int IDX_START = IDX++;
-    public static final int IDX_END = IDX++;
-    public static final int IDX_DISPLAY = IDX++;
-    public static final int IDX_AUTOPLAY = IDX++;
+    public static final String COL_ID = "video_id";
+    public static final String COL_START = "video_start";
+    public static final String COL_END = "video_end";
+    public static final String COL_DISPLAY = "display";
+    public static final String COL_AUTOPLAY = "autoplay";
     private static int idCnt = 0;
 
     public YouTubeVideoTypeHandler(Repository repository, Element entryNode)
@@ -132,9 +131,9 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     @Override
     public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
                                String mediaUrl) {
-        boolean autoPlay = entry.getBooleanValue(request,IDX_AUTOPLAY, false);
-        double start  = entry.getDoubleValue(request,IDX_START, 0.0);
-        double end    = entry.getDoubleValue(request,IDX_END, -1);
+        boolean autoPlay = entry.getBooleanValue(request,COL_AUTOPLAY, false);
+        double start  = entry.getDoubleValue(request,COL_START, 0.0);
+        double end    = entry.getDoubleValue(request,COL_END, -1);
 	Utils.add(attrs,"autoplay",autoPlay?"1":"0");
 	if(start>0)
 	    Utils.add(attrs,"start",""+(int) start);
@@ -195,6 +194,9 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
+	if(!isNew(newType)) {
+	    return;
+	}
         String url = entry.getResource().getPath();
         String id  = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
@@ -204,7 +206,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
             id = StringUtil.findPattern(url, "youtu.be/([^&]+)");
         }
         if (id != null) {
-            entry.setValue(IDX_ID, id);
+            entry.setValue(COL_ID, id);
         }
 
         String html  = IOUtil.readContents(url, "");
