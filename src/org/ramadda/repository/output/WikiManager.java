@@ -710,7 +710,8 @@ public class WikiManager extends RepositoryManager
 
 	List<String> toks = Utils.split(string,";",true,true);
 	if(debugSelect) System.err.println("getSelectFromString: string:" + string+" toks:" +toks);
-	String orderBy = getProperty(wikiUtil,props,ARG_ORDERBY,null);
+	String orderBy = getProperty(wikiUtil,props,ARG_ORDERBY,
+				     getProperty(wikiUtil,props,"sortby",null));
 	Boolean ascending = null;
 	String name=null;
         String filter = getProperty(wikiUtil, props,
@@ -5191,7 +5192,8 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"showToggleAll",true)) {
 		wiki += "{{toggle_all}}\n";
 	    }
-	    String orderBy = getProperty(wikiUtil, props,"orderby","entryorder,name");
+	    String orderBy = getProperty(wikiUtil, props,ATTR_ORDERBY,
+					 getProperty(wikiUtil,props,"sortby","entryorder,name"));
 	    wiki+="{{entries_template  orderby=" + orderBy+"  ascending=true template=\"<div class='search-component ramadda-namelist-entry' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
 	    String html =  wikifyEntry(request,entry,wiki);
 	    return html;
@@ -5743,7 +5745,8 @@ public class WikiManager extends RepositoryManager
 	String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR, null);
 	if (doEntries || doEntry) {
 	    String extra ="";
-	    String orderBy = getProperty(wikiUtil, props,"orderby",getProperty(wikiUtil, props,"sortby",null));
+	    String orderBy = getProperty(wikiUtil, props,ATTR_ORDERBY,
+					 getProperty(wikiUtil, props,"sortby",null));
 	    if(orderBy!=null)
 		extra+="&orderby=" + orderBy;
 	    String ascending = getProperty(wikiUtil, props,"ascending",null);
@@ -7288,7 +7291,8 @@ public class WikiManager extends RepositoryManager
 	    orderBy = getProperty(wikiUtil, props, "sortby");
 	}
 	if (orderBy == null) {
-	    orderBy = getProperty(wikiUtil, props, "orderby");
+	    orderBy = getProperty(wikiUtil, props, ATTR_ORDERBY,
+				  getProperty(wikiUtil,props,"sortby",null));
 	}	    
 
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
