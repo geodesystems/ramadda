@@ -222,16 +222,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
 	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
-        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
-						 (String) null);
-
-        priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,
-						priority);
-
+        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,(String) null);
+        priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,priority);
 	textLengthLimit= XmlUtil.getAttributeFromTree(node, "textLengthLimit",textLengthLimit);
-        setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
-						  false));
-
+        setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,  false));
         setDisplayCategory(XmlUtil.getAttributeFromTree(node,
 							ATTR_DISPLAYCATEGORY, "Properties"));
 
@@ -767,9 +761,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	if(isPrivate(request, entry,metadata)) {
 	    return null;
 	}
-	Hashtable props =
-	    (Hashtable) request.getExtraProperty("wiki.props");
-
+	Hashtable props =   (Hashtable) request.getExtraProperty("wiki.props");
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
 						 "").equals(DISPLAY_SMALL);
@@ -779,8 +771,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	    smallDisplay
 	    ? msg(nameString)
 	    : msgLabel(nameString);
-	boolean showLabel = Utils.getProperty(props,"showLabel",true);
-
+	boolean localShowLabel = Utils.getProperty(props,"showLabel",showLabel);
 	List<MetadataElement> children = getChildren();
 	boolean makeSearchLink =  !smallDisplay && (this.makeSearchLink ||getSearchable()) && children.size()>=1;
 	if(makeSearchLink) {
@@ -831,7 +822,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 			    metadataHtml = HU.div(metadataHtml,HU.cssClass("ramadda-bigtext"));
 			}
 		    }
-                    if (!showLabel || (!element.isGroup() && (children.size() == 1))) {
+                    if (!localShowLabel || (!element.isGroup() && (children.size() == 1))) {
                         content.append(HU.row(HU.colspan(metadataHtml, 2)));
                     } else {
                         content.append(HU.formEntry(formInfo.label,  metadataHtml));
@@ -967,6 +958,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             sb.append(HU.formEntry("",buttons));
         }
 
+
         //Only show the value if its simple text
 	if(showLabel) {
 	    if(titles.size()>0) {
@@ -977,7 +969,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		}
 	    }
 	}
-
         return new String[] { lbl, sb.toString() };
     }
 
