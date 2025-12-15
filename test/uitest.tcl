@@ -29,66 +29,13 @@ proc finish {} {
 }
 
 proc getTop { {title {Test Results}} {inError 0}} {
-    set top  "<html><title>$title</title><head>\n<script  type='text/JavaScript'>\n"
-    append top {
-	var errorCnt = 0;
-	function doError(name,prefix) {
-	    name = "<a href='#" + name+"'>" + name +"</a>";
-	    var ele = document.getElementById('header');
-	    if (errorCnt>0) 
-	    ele.innerHTML=ele.innerHTML+"&nbsp;|&nbsp;";
-	    else
-	    ele.innerHTML="Had console output: "; 
-	    errorCnt++;
-	    ele.innerHTML=ele.innerHTML+name +"&nbsp;";
-	}
-    } 
-    append top "</script>\n";
-    append top {
-	<style type='text/css'>
-	:root {
-	    --font-size:12pt;
-	    --font-family:  'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
-	}
-	body {
-	    font-family: var(--font-family);
-	    font-size: var(--font-size) !important;
-	    margin: 0px;
-	    margin-left:10px;
-	    padding: 0px;
-	}
-
-	html, body {
-	    height: 100%;
-	}
-
-	img {
-	    border:1px solid #000;
-	}
-	.test-grid {
-	    vertical-align:top;
-	    display:flex;
-	    flex-wrap: wrap;
-	}
-	.test-gridbox {
-	    display:inline-block;
-	    flex-grow:1;
-	    vertical-align:top;
-	    margin:5px;
-	    padding:10px;
-	    padding-bottom:6px;
-	    padding-top:6px;
-	    text-align:left;
-	}
-
-	</style>
-    }
-
+    set top  "<html><title>$title</title><head>\n"
+    append top [read [open "$::mydir/prefix.html" r]]
     append top "\n</head><body>";
     if {$inError} {
 	append top "<h2>Errors</h2>"
     }
-    append top "<center><div id=header></div></center>\n<div xclass=test-grid>\n"
+    append top "<center><div id=header></div></center>\n<div id=header2></div><div xclass=test-grid>\n"
     set top
 }
 
@@ -296,7 +243,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    set extraError "<pre style='font-size:10pt;padding:4px;margin:10px;margin-top:2px;margin-bottom:10px;max-height:200px;overflow-y:auto;border:1px solid #ccc;'>$lines</pre>"
 	}
     }
-    set line  "<a name='$name'></a><div xxxclass='test-gridbox ' style='width:400px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
+    set line  "<a name='$name'></a><div class='test-gridbox ' style='width:400px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
     write $line
     if {$inError} {
 	set line  "<a href=\"$url\">#$::pageCnt $name </a>$extraError";

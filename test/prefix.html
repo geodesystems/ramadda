@@ -1,0 +1,115 @@
+
+<script  type="text/JavaScript"  >var ramaddaBaseUrl = "/repository";
+var ramaddaBaseEntry = "2e485e95-eb29-44fc-8987-76e6ac74365a";
+var ramaddaCurrentEntry = "8f40d1f4-cf7e-4e23-af7e-e07a860bce33";
+var ramaddaBaseHtdocs = "/repository/htdocs_v24_57_0";
+var ramaddaIsMobile=false;
+var ramaddaCdn = "/repository/htdocs_v24_57_0";
+var ramaddaUser = "jeffmc";
+var ramaddaTreeSearchEnabled = true;
+var ramaddaState={};
+var ramaddaThisEntry = null;
+var ramaddaThisEntryName = null;
+	var ramaddaLanguage = "en";
+	var ramaddaLanguages = [];
+var ramaddaLanguagesEnabled = true;</script>
+
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/jquery/js/jquery-3.6.1.min.js"
+	type="text/JavaScript"></script>
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/jquery/jquery-ui-1.13.2/jquery-ui.min.js"
+	type="text/JavaScript"></script>
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/constants.js"
+	type="text/JavaScript"></script>
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/utils.js"
+	type="text/JavaScript"></script>
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/ramadda.js"
+	type="text/JavaScript"></script>
+<link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/style.css"
+      rel="stylesheet"  type="text/css" />
+<link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/jquery/jquery-ui-1.13.2/jquery-ui.min.css"
+      rel="stylesheet"  type="text/css" />
+<link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/fancybox-3/jquery.fancybox.min.css"
+      rel="stylesheet"  type="text/css" />
+<script src="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/fancybox-3/jquery.fancybox.min.js"
+	type="text/JavaScript"></script>    
+
+<script  type='text/JavaScript'>
+  var errorCnt = 0;
+  function doError(name,prefix) {
+      name = "<a href='#" + name+"'>" + name +"</a>";
+      var ele = document.getElementById('header');
+      if (errorCnt>0) 
+	  ele.innerHTML=ele.innerHTML+"&nbsp;|&nbsp;";
+      else
+	  ele.innerHTML="Had console output: "; 
+      errorCnt++;
+      ele.innerHTML=ele.innerHTML+name +"&nbsp;";
+  }
+  </script>
+
+
+<style type='text/css'>
+  :root {
+      --font-size:12pt;
+      --font-family:  'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
+  }
+  body {
+      font-family: var(--font-family);
+      font-size: var(--font-size) !important;
+      margin: 0px;
+      margin-left:10px;
+      padding: 0px;
+  }
+  html, body {
+      height: 100%;
+  }
+  img {
+      border:1px solid #000;
+  }
+  .test-grid {
+      vertical-align:top;
+      display:flex;
+      flex-wrap: wrap;
+  }
+  .test-gridbox {
+      display:inline-block;
+      flex-grow:1;
+      vertical-align:top;
+      max-width:400px;
+      margin:5px;
+      padding:10px;
+      padding-bottom:6px;
+      padding-top:6px;
+      text-align:left;
+  }
+  .test-bigger, .test-smaller {
+      font-size:10pt;
+      font-weight:400;
+  }
+
+</style>
+
+
+<script  type="text/JavaScript"  >
+  $(document).ready(function() {
+      let html = SPACE;
+      let w = 400;
+      html+=HU.span([ATTR_CLASS,HU.classes('test-smaller',CLASS_CLICKABLE)],'Smaller');
+      html+=SPACE1;
+      html+=HU.span([ATTR_CLASS,HU.classes('test-bigger',CLASS_CLICKABLE)],'Bigger');
+      $('h2').append(html);
+      let apply = () =>{
+	  $('.test-gridbox').css('width',HU.px(w));
+	  $('.test-gridbox').css('max-width',HU.px(w));	  
+      }
+      $('.test-bigger').click(()=>{
+	  w+=100;
+	  apply();
+      });
+      $('.test-smaller').click(()=>{
+	  w-=100;
+	  if(w<100) w=100;
+	  apply();
+      });      
+  });
+</script>

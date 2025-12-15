@@ -2,6 +2,12 @@
 
 set ::mydir [file dirname [file normalize [info script]]]
 set ::root https://ramadda.org/repository
+set ::maxCount 10000
+set ::total 0
+set groupID ""
+set urls [list]
+set ::sleep 5
+
 source $::mydir/uitest.tcl
 
 set ::urlsfp [open testurls.txt w]
@@ -15,6 +21,10 @@ proc writeUrl {url {desc ""}} {
 }
 
 proc runGroup {group id {groupLimit 10000}} {
+    if {$::total>=$::maxCount} {
+	return;
+    }
+
     write "</div>\n"
     write "<h2>$group</h2><div class=ramadda-grid>"
     if {[regexp http $group]} {
@@ -33,6 +43,10 @@ proc runGroup {group id {groupLimit 10000}} {
 	set url "$::root/entry/show?entryid=$id#fortest"
 	writeUrl $url $name
 	capture $_group $name $url 0 $::sleep
+	incr ::total 1
+	if {$::total>=$::maxCount} {
+	    break;
+	}
     }
 }
 
@@ -41,9 +55,8 @@ proc usage {} {
     puts stderr "usage tclsh runuitest.tcl <-clean (remove and thumb_ and console_ files> <-o output.html> <-sleep sleep_seconds> <-urls file (file contains urls to test_> <url>"
 }
 
-set groupID ""
-set urls [list]
-set ::sleep 5
+
+
 for {set i 0} {$i <[llength $argv]} {incr i} {
     set  arg [lindex $argv $i]
     if {$arg == "-help"} {
@@ -66,6 +79,11 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 	continue;
     }
     
+    if {$arg == "-max"} {
+	incr i
+	set ::maxCount  [lindex $argv $i]
+	continue;
+    }
 
     if {$arg == "-sleep"} {
 	incr i
@@ -117,6 +135,10 @@ if {$groupID!=""} {
 	    continue
 	}
 	capture ""  "Page $cnt" $url 0 $::sleep
+	incr ::total 1
+	if {$::total>=$::maxCount} {
+	    break;
+	}
     }
 } else {
 #Run with the default ramadda.org entries
