@@ -493,16 +493,19 @@ RamaddaMediaTranscript.prototype = {
 	if(this.attrs.start)  playerVars.start = this.attrs.start;
 	if(this.attrs.end)  playerVars.end = this.attrs.end;
 	if(Utils.isDefined(this.attrs.autoplay))  playerVars.autoplay = this.attrs.autoplay;
-	let player = new YT.Player(this.id, {
+	let args = {
             height: Utils.isDefined(this.attrs.height)?this.attrs.height:'390',
 	    width: Utils.isDefined(this.attrs.width)?this.attrs.width:'100%',
 //            width: Utils.isDefined(this.attrs.width)?this.attrs.width:'640',	    
             videoId: this.attrs.videoId,
             playerVars: playerVars,
             events: {
-            }
-	});
-
+		onError: error=>{
+		    console.dir('Error loading youtube video',error)
+		}
+	    }
+	};
+	let player = new YT.Player(this.id, args);
 	return {
 	    pause:()=>{
 		player.pauseVideo();
