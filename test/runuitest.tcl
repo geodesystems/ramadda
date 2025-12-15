@@ -143,22 +143,22 @@ if {$groupID!=""} {
 } else {
 #Run with the default ramadda.org entries
     runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
+    runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
+    runGroup "Asset Reports" 78ac9b04-b151-49d1-b682-e99d155ef70a
+    runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
+    runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
     runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
     runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
-    runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
-    runGroup "Asset Reports" 56ff445d-58c5-4f6a-a634-768217490b38
-    runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
-    runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "BOCO Elections" boco_election_displays
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "SeeSV" a424786b-ebf2-43c3-add7-21c3bb2f526f
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
-    runGroup "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
+    runGroup "Other Data" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
     runGroup "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
     runGroup "Soundings" 53f411f7-9390-4afc-9cb9-e7313030498b
     #runGroup Covid 52644ac1-f6d6-45ea-88af-b5d2ec75742e
