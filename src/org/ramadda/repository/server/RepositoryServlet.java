@@ -232,7 +232,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
                 //Some headers to tighten up security
-                response.setHeader("Referrer-Policy", "no-referrer");
+    //                response.setHeader("Referrer-Policy", "no-referrer");
+		//Use this since the youtube embed on safari needs it
+                response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
                 //don't do this as it blocks some valid embeds
                 //response.setHeader("X-Frame-Options", "SAMEORIGIN");
                 //
