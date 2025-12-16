@@ -2849,7 +2849,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         exteditHandler.addType(OUTPUT_EXTEDIT);
         addOutputHandler(exteditHandler);
 
-        OutputHandler snapshotHandler = new OutputHandler(getRepository(), "Entry Snapshotter") {
+	OutputHandler snapshotHandler = new OutputHandler(getRepository(), "Entry Snapshotter",
+							  OUTPUT_MAKESNAPSHOT) {
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_MAKESNAPSHOT);
 		}
@@ -2887,11 +2888,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		}
 
 	    };
-        snapshotHandler.addType(OUTPUT_MAKESNAPSHOT);
-        addOutputHandler(snapshotHandler);
 
-        OutputHandler typeChangeHandler = new OutputHandler(getRepository(),
-							    "Entry Type Changer") {
+
+
+	OutputHandler typeChangeHandler = new OutputHandler(getRepository(),
+							    "Entry Type Changer",
+							    OUTPUT_TYPECHANGE) {
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_TYPECHANGE);
 		}
@@ -2946,21 +2948,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    //                        idBuffer.toString()));
 		}
 	    };
-        typeChangeHandler.addType(OUTPUT_TYPECHANGE);
-        addOutputHandler(typeChangeHandler);
 
-        OutputHandler entryListingHandler = new OutputHandler(getRepository(), "Entry Listing") {
+
+	OutputHandler entryListingHandler = new OutputHandler(getRepository(), "Entry Listing",OUTPUT_ENTRYLISTING) {
+		@Override
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_ENTRYLISTING);
 		}
+		@Override
 		public void getEntryLinks(Request request, State state,
 					  List<Link> links)
                     throws Exception {
 		    if (entryListingOK(request)) {
-			links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYLISTING));
+			Link link = makeLink(request, state.getEntry(), OUTPUT_ENTRYLISTING);
+			links.add(new Link(true,OutputType.TYPE_OTHER));
+			links.add(link);
 		    }
 		}
 
+		@Override
 		public Result outputEntry(Request request, OutputType outputType,
 					  Entry entry)
                     throws Exception {
@@ -2981,23 +2987,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		}
 
 	    };
-        entryListingHandler.addType(OUTPUT_ENTRYLISTING);
-        addOutputHandler(entryListingHandler,true);
 
-        OutputHandler createTypeHandler = new OutputHandler(getRepository(),
-							     "Create Entry Type") {
+	OutputHandler createTypeHandler = new OutputHandler(getRepository(),
+							    "Create Entry Type",
+							    OUTPUT_CREATETYPE) {
+		@Override
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_CREATETYPE);
 		}
+		@Override
 		public void getEntryLinks(Request request, State state,
 					  List<Link> links)
                     throws Exception {
 		    if (getExtEditor().createTypeOK(request)) {
 			links.add(makeLink(request, state.getEntry(),
 					   OUTPUT_CREATETYPE));
+			links.add(new Link(true,OutputType.TYPE_OTHER));
 		    }
 		}
 
+		@Override
 		public Result outputEntry(Request request, OutputType outputType,
 					  Entry entry)
                     throws Exception {
@@ -3008,15 +3017,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		public Result outputGroup(Request request, OutputType outputType,
 					  Entry group, List<Entry> children)
                     throws Exception {
-		    return getExtEditor().outputCreateType(request, group);
+		    return outputEntry(request,outputType,group);
 		}
-		public String toString() {
-		    return "Entry listing handler";
-		}
-
 	    };
-        createTypeHandler.addType(OUTPUT_CREATETYPE);
-        addOutputHandler(createTypeHandler);
+
+        addOutputHandler(createTypeHandler,true);
+        addOutputHandler(snapshotHandler,true);
+        addOutputHandler(entryListingHandler,true);
+        addOutputHandler(typeChangeHandler);
 
         getUserManager().initOutputHandlers();
 

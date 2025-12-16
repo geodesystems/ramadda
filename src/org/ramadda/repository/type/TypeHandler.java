@@ -2765,9 +2765,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     private Link makeHRLink(int mask) {
-        Link hr = new Link(true);
-        hr.setLinkType(mask);
-
+        Link hr = new Link(true,mask);
         return hr;
     }
 

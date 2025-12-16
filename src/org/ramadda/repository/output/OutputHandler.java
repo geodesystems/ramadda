@@ -55,24 +55,13 @@ import java.util.function.Function;
 import java.util.regex.*;
 import java.util.zip.*;
 
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class OutputHandler extends RepositoryManager implements OutputConstants {
-
     public static final String PROP_PROCESSDIR = "processdir";
-
     public static final String WIDTH_DATE = "120";
-
     public static final String WIDTH_SIZE = "100";
-
     public static final String WIDTH_KIND = "120";
-
     public static final JQuery JQ = null;
 
     /** max connections attribute */
@@ -110,14 +99,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         super(null);
     }
 
-    /**
-     * Construct an OutputHandler
-     *
-     * @param repository  the repository
-     * @param name        the OutputHandler name
-     *
-     * @throws Exception  problem with repository
-     */
+    public OutputHandler(Repository repository, String name,OutputType type)
+            throws Exception {
+	this(repository,name);
+	addType(type);
+    }
+
     public OutputHandler(Repository repository, String name)
             throws Exception {
         super(repository);

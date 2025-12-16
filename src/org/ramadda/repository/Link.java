@@ -25,10 +25,11 @@ public class Link implements Constants {
     String category;
     String tooltip;
 
-    public Link(boolean hr) {
-        this.hr = hr;
+    public Link(boolean hr,int type) {
+	this.hr=hr;
+	this.type = type;
     }
-
+    
     public Link(String url, String icon, String label, int type) {
         this(url, icon, label, null, type);
     }
@@ -84,12 +85,14 @@ public class Link implements Constants {
         return hr;
     }
 
+    @Override
     public String toString() {
-        if (true) {
-            return url + " " + label;
-        }
         if (hr) {
             return "<hr>";
+        }
+
+        if (true) {
+	    return url + " " + label;
         }
         if (icon == null) {
             return HtmlUtils.href(url, label);

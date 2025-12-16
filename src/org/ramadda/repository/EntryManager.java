@@ -6783,9 +6783,9 @@ public class EntryManager extends RepositoryManager {
             otherSB      = null,
             fileSB          = null;
         int     cnt         = 0;
-        boolean needToAddHr = false;
+	boolean lastHr = false;
         for (Link link : links) {
-            if ( !link.isType(typeMask) && !link.getHr()) {
+            if ( !link.isType(typeMask)) {
                 continue;
             }
             StringBuilder sb;
@@ -6821,19 +6821,20 @@ public class EntryManager extends RepositoryManager {
                 sb = actionSB;
             }
             //Only add the hr if we have more things in the list
-            if (needToAddHr && (sb.length() > 0)) {
-                sb.append("</div>");
+            if (!lastHr && link.getHr() && (sb.length() > 0)) {
+		sb.append("</div>");
 		HU.div(sb,
 		       "",
 		       HU.cssClass(CSS_CLASS_MENUITEM_SEPARATOR));
 		HU.open(sb,
 			HU.TAG_DIV,
 			HU.cssClass(CSS_CLASS_MENU_GROUP));
+		lastHr=true;
+		continue;
+
             }
-            needToAddHr = link.getHr();
-            if (needToAddHr) {
-                continue;
-            }
+	    lastHr=false;
+	    if(link.getHr()) continue;
 	    Integer c = count.get(sb);
 	    if(c == null) c = Integer.valueOf(0);
 	    c  = Integer.valueOf(c.intValue()+1);
