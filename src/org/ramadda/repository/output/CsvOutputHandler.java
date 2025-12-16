@@ -91,14 +91,15 @@ public class CsvOutputHandler extends OutputHandler {
 
     public static final OutputType OUTPUT_XLSX = new OutputType("XLSX Export",
                                                     "xlsx",
-                                                    OutputType.TYPE_OTHER|    OutputType.TYPE_FORSEARCH,
+								OutputType.TYPE_OTHER|    OutputType.TYPE_FORSEARCH,
                                                     "", ICON_CSV);
 
 
 
 
     public static final OutputType OUTPUT_ENTRYCSV =
-        new OutputType("Entry CSV", "entry.csv", OutputType.TYPE_FEEDS, "",
+        new OutputType("Entry CSV", "entry.csv",
+		       OutputType.TYPE_FEEDS, "",
                        ICON_CSV);
 
     public static final OutputType OUTPUT_WRAPPER_MATLAB = new OutputType("Matlab Wrapper",
@@ -131,13 +132,15 @@ public class CsvOutputHandler extends OutputHandler {
             throws Exception {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_XLSX));	    
+            links.add(makeLink(request, state.getEntry(), OUTPUT_XLSX));
+            links.add(new Link(true,OutputType.TYPE_OTHER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYCSV));
 	    if(state.getEntry().getTypeHandler().isType("type_point")||
 	       state.getEntry().getTypeHandler() instanceof PointTypeHandler) {
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_MATLAB));
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_R));
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_PYTHON));
+		links.add(new Link(true,OutputType.TYPE_OTHER));
 	    }
 	}
     }
