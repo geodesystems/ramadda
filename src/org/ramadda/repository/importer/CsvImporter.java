@@ -217,8 +217,10 @@ public class CsvImporter extends ImportHandler {
 
 			if(dateIdx>=0) {
 			    String v = row.getString(dateIdx,"");
-			    attrs+=XU.attrs("fromdate",v);
-			    attrs+=XU.attrs("todate",v);			    
+			    if(stringDefined(v)) {
+				attrs+=XU.attrs("fromdate",v);
+				attrs+=XU.attrs("todate",v);
+			    }
 			}
 			if(dateIdxFrom>=0) {
 			    String v = row.getString(dateIdxFrom,"");
