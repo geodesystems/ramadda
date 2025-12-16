@@ -58,6 +58,17 @@ public class TextOutputHandler extends OutputHandler {
         addType(OUTPUT_WORDCLOUD);
         addType(OUTPUT_PRETTY);
     }
+    private static String[] suffixes = new String[] {
+            ".csv", ".txt", ".java", ".c", ".h", ".cc", ".f90", ".cpp", ".hh",
+            ".cdl", ".sh", "m4"
+        };
+    private static         String[] codesuffixes = new String[] {
+            ".bsh", ".c", ".cc", ".cpp", ".cs", ".csh", ".cyc", ".cv", ".htm",
+            ".html", ".java", ".js", ".m", ".mxml", ".perl", ".pl", ".pm",
+            ".py", ".rb", ".sh", ".xhtml", ".xml", ".xsl"
+        };
+
+
 
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -74,28 +85,21 @@ public class TextOutputHandler extends OutputHandler {
             return;
         }
 
-        String   path     = state.entry.getResource().getPath();
-        String[] suffixes = new String[] {
-            ".csv", ".txt", ".java", ".c", ".h", ".cc", ".f90", ".cpp", ".hh",
-            ".cdl", ".sh", "m4"
-        };
+	String   path     = state.entry.getResource().getPath();
 
-        String[] codesuffixes = new String[] {
-            ".bsh", ".c", ".cc", ".cpp", ".cs", ".csh", ".cyc", ".cv", ".htm",
-            ".html", ".java", ".js", ".m", ".mxml", ".perl", ".pl", ".pm",
-            ".py", ".rb", ".sh", ".xhtml", ".xml", ".xsl"
-        };
+
 
         for (int i = 0; i < codesuffixes.length; i++) {
             if (path.endsWith(codesuffixes[i])) {
+		links.add(new Link(true,OutputType.TYPE_VIEW));
                 links.add(makeLink(request, state.entry, OUTPUT_PRETTY));
-
                 return;
             }
         }
 
         for (int i = 0; i < suffixes.length; i++) {
             if (path.endsWith(suffixes[i])) {
+		links.add(new Link(true,OutputType.TYPE_VIEW));
                 links.add(makeLink(request, state.entry, OUTPUT_TEXT));
 
                 //                links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
@@ -107,6 +111,7 @@ public class TextOutputHandler extends OutputHandler {
         String type   = getRepository().getMimeTypeFromSuffix(suffix);
         if ((type != null) && type.startsWith("text/")) {
 
+	    links.add(new Link(true,OutputType.TYPE_VIEW));
             links.add(makeLink(request, state.entry, OUTPUT_TEXT));
             links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
         }
