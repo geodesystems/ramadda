@@ -400,7 +400,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	//	String searchUrl =  HU.urlEncode(getSearchUrl(request,entry,null));
 	String searchUrl =  getSearchUrl(request,entry,null);	
 	//	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
-	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:" +
+	String contentsWiki = "{{table 	dateLabel=\"Purchase Date\" showHeader=" + showHeader+" entries=\"searchurl:" +
 	    searchUrl+"\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
 
 
