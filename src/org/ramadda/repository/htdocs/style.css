@@ -5442,6 +5442,7 @@ snippet-hide {
     padding-bottom: 2px;
     padding-left:0.25em;
     padding-right:0.25em;
+
     /*font-weight:450;*/
 }
 
@@ -5466,6 +5467,7 @@ snippet-hide {
 }
 
 .ramadda-linksheader-on, .ramadda-linksheader-off  {
+    line-height:1.4em;
     padding: 0px;
     padding-left: 8px;
     padding-right: 8px;
