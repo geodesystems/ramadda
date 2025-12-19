@@ -57,6 +57,10 @@ public class Link implements Constants {
         this.type       = linkType;
     }
 
+    public boolean isActive() {
+	return url!=null;
+    }
+
     public boolean isType(int typeMask) {
         return (getType() & typeMask) != 0;
     }
