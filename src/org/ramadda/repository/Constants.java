@@ -78,8 +78,8 @@ public interface Constants {
     public static final String ICON_MAP = "fas fa-map";
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
     public static final String ICON_METADATA = "fas fa-info";
-    public static final String ICON_METADATA_ADD = "fas fa-database";
-    public static final String ICON_METADATA_EDIT = "fas fa-database";
+    public static final String ICON_METADATA_ADD = "fas fa-plus";
+    public static final String ICON_METADATA_EDIT = "fas fa-pen";
     public static final String ICON_MOVE = "fas fa-copy";
     public static final String ICON_NEW = "fas fa-plus";
     public static final String ICON_PLUS = "fa-regular fa-square-plus" ;    
@@ -777,7 +777,6 @@ public interface Constants {
     public static final String BREADCRUMB_SEPARATOR_PAD =
         "&nbsp;&raquo;&nbsp;";
     public static final String CSS_CLASS_ENTRY_TREE_ROW = "entry-tree-row";
-    public static final String CSS_CLASS_ENTRY_LIST_ROW = "entry-list-row";
     public static final String CSS_CLASS_ENTRY_ROW_LABEL = "entry-row-label";
     public static final String CSS_CLASS_FOLDER_BLOCK =
         "ramadda-folder-block";
