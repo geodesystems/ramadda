@@ -4173,18 +4173,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(!Utils.stringDefined(value)) return true;
 	    let textOk = false;
 	    let html = element.html();
+	    let extra='';
 	    let category = element.attr('data-category');
-	    if(category) html+=' ' +category;
-	    let corpus = element.attr(ATTR_DATA_CORPUS);
-	    if(corpus) html+=' ' +corpus;
-	    corpus = element.attr(ATTR_DATA_CORPUS2);
-	    if(corpus) html+=' ' +corpus;			    
-	    //check for title
-	    let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
-	    if(match) {
-		html = html+' ' + match[2];
-	    } 
+	    if(category) extra=' ' +category;
+	    [ATTR_VALUE,ATTR_TITLE,ATTR_DATA_CORPUS,ATTR_DATA_CORPUS2].forEach(attr=>{
+		extra+=Utils.join(element.find('['+attr+']').map(function () {
+		    return $(this).attr(attr);
+		}).get(),' ');
+	    });
 	    html = Utils.stripTags(html);
+	    html+=' ' + extra;
 	    html = html.toLowerCase();
 	    if(v.pre && v.post) {
 		let i1 = html.indexOf(v.pre);
