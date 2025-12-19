@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec 15 16:19:15 MST 2025";
+var build_date="RAMADDA build date: Fri Dec 19 08:41:31 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -30539,20 +30539,19 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 
-//Note: define meaningful things as variables not as string literals
-const FIELD_TIME = "time";
-const FIELD_DEPTH = "depth";
-const FIELD_VALUE = "value";
-const FIELD_SELECTEDFIELD = "selectedfield";
+var FIELD_TIME = "time";
+var FIELD_DEPTH = "depth";
+var FIELD_VALUE = "value";
+var FIELD_SELECTEDFIELD = "selectedfield";
 
-const TYPE_LATITUDE = "latitude";
-const TYPE_LONGITUDE = "longitude";
-const TYPE_TIME = "time";
-const TYPE_VALUE = "value";
-const TYPE_ELEVATION = "elevation";
+var TYPE_LATITUDE = "latitude";
+var TYPE_LONGITUDE = "longitude";
+var TYPE_TIME = "time";
+var TYPE_VALUE = "value";
+var TYPE_ELEVATION = "elevation";
 
 
-const FUNC_MOVINGAVERAGE = "movingAverage";
+var FUNC_MOVINGAVERAGE = "movingAverage";
 
 const D3Util = {
     initPlot:function(display,opts) {
@@ -38016,7 +38015,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'doTagSearch',ex:'true'},
 	{p:'tagShowGroup',d:true},
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
-	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
+	{p:'pageSearchSelector',d:'.search-component,.entry-table-row-data'},
 	{p:'applyToEntries',ex:true,tt:'When doing the entry search use the IDs to hide/show components'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},		
