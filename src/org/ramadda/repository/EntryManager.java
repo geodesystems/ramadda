@@ -6830,11 +6830,14 @@ public class EntryManager extends RepositoryManager {
 			HU.TAG_DIV,
 			HU.cssClass(CSS_CLASS_MENU_GROUP));
 		lastHr=true;
-		continue;
+            } else {
+		lastHr=false;
+	    }
 
-            }
-	    lastHr=false;
-	    if(link.getHr()) continue;
+	    if(!link.isActive()) {
+		continue;
+	    }
+
 	    Integer c = count.get(sb);
 	    if(c == null) c = Integer.valueOf(0);
 	    c  = Integer.valueOf(c.intValue()+1);
