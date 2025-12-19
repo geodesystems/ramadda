@@ -6072,7 +6072,7 @@ public class WikiManager extends RepositoryManager
 	String divId  = HU.getUniqueId("div_");
 	HU.open(sb,"div",HU.id(divId));
 	if(getProperty(wikiUtil, props, "addPageSearch",false)) {
-	    HU.addPageSearch(sb,"#" + divId +" .entry-list-row-data",null,"Find");
+	    HU.addPageSearch(sb,"#" + divId +" .entry-table-row-data",null,"Find");
 	}
 
 	//	List<LabeledObject<StringBuilder>> objects = new ArrayList<LabeledObject<StringBuilder>>();
@@ -7010,13 +7010,9 @@ public class WikiManager extends RepositoryManager
 						    getEntryManager().getImageEntries(request, entries,
 										      useAttachment), filter);
         }
-
-
-
         String excludeEntries = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_EXCLUDE,
                                             (String) null);
-
 
 
         if (excludeEntries != null) {
@@ -7067,6 +7063,7 @@ public class WikiManager extends RepositoryManager
             }
             boolean descending = dir.equals("down");
             entries = getEntryUtil().sortEntries(entries, sort, descending);
+
         }
 
         String firstEntries = getProperty(wikiUtil, props,
