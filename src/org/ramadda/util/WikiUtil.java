@@ -2961,7 +2961,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 							     ? toks.get(1)
 							     : "");
 		    List<String> opts = new ArrayList<String>();
-		    String sel1 = Utils.getProperty(props,"selector",".search-component,.entry-list-row-data");
+		    String sel1 = Utils.getProperty(props,"selector",".search-component,.entry-table-row-data");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
 		    for(String prop:new String[]{"linkSelector","focus","hideAll","width"}) {
@@ -3333,7 +3333,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
                 if (tline.equals("----")) {
-                    buff.append("<hr class=\"ramadda-hr\">\n");
+                    buff.append("<div class=\"ramadda-hr\"></div>\n");
 
                     continue;
 		}
