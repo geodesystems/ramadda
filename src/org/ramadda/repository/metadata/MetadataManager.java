@@ -1972,7 +1972,8 @@ public class MetadataManager extends RepositoryManager {
 	getEntryManager().addEntryEditHeader(request, entry,sb, URL_METADATA_FORM);
         List<Metadata> metadataList = getMetadata(request,entry);
         if (metadataList.size() != 0) {
-	    sb.append(getWikiManager().getNewPropertyLinks(request,  entry,Utils.makeMap("fromEntry","true","showToggle","true","class","ramadda-button-small")));
+	    sb.append(getWikiManager().getNewPropertyLinks(request,  entry,
+							   Utils.makeMap("fromEntry","true","showToggle","true","class","ramadda-button-small")));
 	}
 
         if (metadataList.size() == 0) {
@@ -2044,8 +2045,8 @@ public class MetadataManager extends RepositoryManager {
                 metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
                 HU.formTableClose(metadataEntry);
-                HU.comment(metadataEntry, "Metadata part end");
-                titles.add(html[0] + HU.span(cbx.toString(),HU.cssClass("accordion-toolbar") +HU.style("float:right;")));
+                HU.comment(metadataEntry, "Metadata part end"); 
+		titles.add(html[0] + HU.span(cbx.toString(),HU.cssClass("accordion-toolbar") +HU.style("float:right;")));
                 String content = HU.div(
                                      metadataEntry.toString(),
                                      HU.cssClass(
@@ -2065,7 +2066,45 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HU.formClose());
             sb.append("\n");
 
-        }
+	}
+	List<Metadata> inherited= getInheritedMetadata(request, entry);
+	if(inherited.size()>0) {
+            FormInfo formInfo = new FormInfo("");
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    boolean didOne = false;
+	    for(Metadata metadata:  inherited) {
+                MetadataHandler metadataHandler =
+                    findMetadataHandler(metadata);
+                if (metadataHandler == null) {
+                    continue;
+                }
+
+		Entry mtdEntry = getEntryManager().getEntry(request, metadata.getEntryId());
+		MetadataType  type =metadata.getMetadataType(); 
+                String[] html = metadataHandler.getForm(request, formInfo,
+							mtdEntry, metadata, true);
+		if(html==null) {
+		    System.err.println(metadata);
+		    continue;
+		}
+		if(!didOne) {
+		    getPageHandler().sectionOpen(request, sb,"Inherited Metadata",false);
+		    sb.append("<table width=100%><tr><td width=200 class=ramadda-table-heading-space>Entry</td><td class=ramadda-table-heading-space>Metadata</td></tr>");
+		    didOne = true;
+		}
+		sb.append("<tr valign=top>");
+		sb.append("<td>");
+		sb.append(getEntryManager().getEntryLink(request, mtdEntry,true,""));
+		sb.append("</td><td>");
+		sb.append(html[0]);		
+		sb.append("</td><tr>");		
+	    }
+	    if(didOne) {
+		sb.append("</table>");
+	    }
+	    
+	}
+
 
         getPageHandler().entrySectionClose(request, entry, sb);
 

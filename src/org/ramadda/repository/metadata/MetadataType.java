@@ -753,10 +753,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	return false;
     }
 
-    public String[] getHtml(Request request, Entry entry, Metadata metadata)
+    public String[] getHtml(Request request, Entry entry, Metadata metadata,boolean...force)
 	throws Exception {
         if ( !getShowInHtml()) {
-            return null;
+	    if(force.length==0 || !force[0]) {
+		return null;
+	    }
         }
 	if(isPrivate(request, entry,metadata)) {
 	    return null;
