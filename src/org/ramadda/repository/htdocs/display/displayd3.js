@@ -95,20 +95,19 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 
-//Note: define meaningful things as variables not as string literals
-const FIELD_TIME = "time";
-const FIELD_DEPTH = "depth";
-const FIELD_VALUE = "value";
-const FIELD_SELECTEDFIELD = "selectedfield";
+var FIELD_TIME = "time";
+var FIELD_DEPTH = "depth";
+var FIELD_VALUE = "value";
+var FIELD_SELECTEDFIELD = "selectedfield";
 
-const TYPE_LATITUDE = "latitude";
-const TYPE_LONGITUDE = "longitude";
-const TYPE_TIME = "time";
-const TYPE_VALUE = "value";
-const TYPE_ELEVATION = "elevation";
+var TYPE_LATITUDE = "latitude";
+var TYPE_LONGITUDE = "longitude";
+var TYPE_TIME = "time";
+var TYPE_VALUE = "value";
+var TYPE_ELEVATION = "elevation";
 
 
-const FUNC_MOVINGAVERAGE = "movingAverage";
+var FUNC_MOVINGAVERAGE = "movingAverage";
 
 const D3Util = {
     initPlot:function(display,opts) {

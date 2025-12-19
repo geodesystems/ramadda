@@ -97,6 +97,11 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_ENTRY_TABLE_ROW='entry-table-row';
+var CLASS_ENTRY_TABLE_HEADER='entry-table-header';
+var CLASS_ENTRY_TABLE_CELL='entry-table-cell';
+var CLASS_ENTRY_TABLE_ROW_TOGGLE='entry-table-row-toggle';
+
 var CLASS_BUTTON = 'ramadda-button';
 var CLASS_BUTTON_SMALL = 'ramadda-button-small';
 var CLASS_BUTTONS = 'ramadda-buttons';
@@ -407,6 +412,7 @@ var CSS_CURSOR = 'cursor';
 var CSS_DISPLAY='display';
 var CSS_FILL='fill';
 var CSS_FILL_OPACITY='fill-opacity';
+var CSS_FLEX='flex';
 var CSS_FONT_SIZE='font-size';
 var CSS_FONT_STYLE='font-style';
 var CSS_FONT_WEIGHT='font-weight';

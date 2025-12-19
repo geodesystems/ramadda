@@ -89,7 +89,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     initToggleTable:function(container) {
-	$(container).find(HU.dotClass('entry-arrow')).click(function() {
+	$(container).find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE)).click(function() {
 	    let url = $(this).attr('data-url');
 	    if(!url) return;
 	    let title = $(this).attr('data-title')??'';
@@ -487,7 +487,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
 
+
     initEntryTable:function(id,opts,json) {
+	let main = jqid(id);
+	let gridTemplate=null;
 	let _this=this;
 	opts = opts||{};
 	let entryMap = {};
@@ -532,10 +535,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let cols = [];
 	let colString = props.columns;
 	if(!colString) {
-	    colString ='name,entryorder,creator,date,time,createdate,download,size,type,attachments';
+	    colString =Utils.join([FIELD_NAME,FIELD_ENTRYORDER,FIELD_CREATOR,FIELD_DATE,FIELD_TIME,
+				    FIELD_CREATEDATE,FIELD_DOWNLOAD,FIELD_SIZE,FIELD_TYPE,FIELD_ATTACHMENTS],
+				   ',');;
 	    if(props.inlineEdit) {
-		colString+=',editcolumns';
-		props.nameWidth=400;
+		colString+=',' + FIELD_EDITCOLUMNS;
 	    }
 	}
 	let colList = Utils.split(colString,',',true,true);
@@ -543,85 +547,107 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let typeWidth = 100;	
 	let sizeWidth  =80;
 	colList.forEach(c=>{
-	    if(c=='name' && props.showName)
-		cols.push({id:"name",label:"Name",width:props.nameWidth});
-	    else if(c=='date' && props.showDate)
-		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
-	    else if(c=='editcolumns') {
+	    if(c==FIELD_NAME && props.showName)
+		cols.push({id:'name',label:'Name',width:props.nameWidth});
+	    else if(c==FIELD_DATE && props.showDate)
+		cols.push({id:FIELD_FROMDATE,label:'Date',width:props.fromDateWidth??props.dateWidth??dateWidth});
+	    else if(c==FIELD_EDITCOLUMNS) {
 		cols.push({align:ALIGN_LEFT,overflowX:OVERFLOW_AUTO,
-			   cansort:false,id:"editcolumns",label:"Edit Columns",width:300});
+			   cansort:false,
+			   id:FIELD_EDITCOLUMNS,
+			   label:'Edit Columns'});
 	    }   else if(c=='geo') {
-		cols.push({id:"latitude",label:"Latitude",width:100});
-		cols.push({id:"longitude",label:"Longitude",width:100});
-		cols.push({id:"altitude",label:"Altitude",width:100});
-	    } else if(c=='altitude') {
-		cols.push({id:"altitude",label:"Altitude",width:100});		
+		cols.push({id:FIELD_LATITUDE,label:'Latitude',width:100});
+		cols.push({id:FIELD_LONGITUDE,label:'Longitude',width:100});
+		cols.push({id:FIELD_ALTITUDE,label:'Altitude',width:100});
+	    } else if(c==FIELD_ALTITUDE) {
+		cols.push({id:FIELD_ALTITUDE,label:'Altitude',width:100});		
 	    }	else if(c=='latlon') {
-		cols.push({id:"latitude",label:"Latitude",width:100});
-		cols.push({id:"longitude",label:"Longitude",width:100});
-	    }  else if(c=='createdate' && props.showCreateDate)
-		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
-	    else if(c=='download' && props.showDownload)
-		cols.push({id:c,label:"&nbsp;Download&nbsp;",width:100,align:ALIGN_LEFT});
-	    else if(c=='time' && props.showTime)
-		cols.push({id:c,label:"&nbsp;Time&nbsp;",width:100,align:ALIGN_RIGHT});	    	    
-	    else if(c=='creator' && props.showCreator)
-		cols.push({id:c,label:"Creator",width:props.creatorWidth??200});	    
-	    else if(c=='entryorder' && props.showEntryOrder)
-		cols.push({id:c,label:"Order",width:75});
-
-	    else if(c=='changedate' && props.showChangeDate)
-		cols.push({id:c,label:"Change Date",width:props.changeDateWidth??props.dateWidth??dateWidth});	    
-	    else if(c=='size' && props.showSize)
-		cols.push({id:c,label:"Size",width:props.sizeWidth??sizeWidth});
-	    else if(c=='type' && props.showType)
+		cols.push({id:FIELD_LATITUDE,label:'Latitude',width:100});
+		cols.push({id:FIELD_LONGITUDE,label:'Longitude',width:100});
+	    }  else if(c==FIELD_CREATEDATE && props.showCreateDate) {
+		cols.push({id:c,align:ALIGN_RIGHT,label:'Create Date',width:props.createDateWidth??props.dateWidth??dateWidth});
+	    }  else if(c==FIELD_DOWNLOAD && props.showDownload) {
+	    	cols.push({id:c,label:'&nbsp;Download&nbsp;',width:100,align:ALIGN_LEFT});
+	    }  else if(c==FIELD_TIME && props.showTime) {
+		cols.push({id:c,label:'&nbsp;Time&nbsp;',width:100,align:ALIGN_RIGHT});	    	    
+	    } else if(c==FIELD_CREATOR && props.showCreator) {
+		cols.push({id:c,label:'Creator',width:props.creatorWidth??150});
+	    }  else if(c==FIELD_ENTRYORDER && props.showEntryOrder) {
+		cols.push({id:c,align:ALIGN_RIGHT,label:'Order',width:75});
+	    }  else if(c==FIELD_CHANGEDATE && props.showChangeDate) {
+		cols.push({id:c,align:ALIGN_RIGHT,label:'Change Date',width:props.changeDateWidth??props.dateWidth??dateWidth});
+	    }   else if(c==FIELD_SIZE && props.showSize) {
+		cols.push({align:ALIGN_RIGHT,
+			   id:c,label:'Size',width:props.sizeWidth??sizeWidth});
+	    }   else if(c==FIELD_TYPE && props.showType) {
 		cols.push({id:c,
-			   label:"Type",
+			   label:'Type',
 			   align:ALIGN_LEFT,
-			   paddingLeft:HU.px(10),
 			   width:props.typeWidth??typeWidth});
-	    else if(c=='attachments' && props.showAttachments)
-		cols.push({id:c,label:"Attachments",
+	    }   else if(c==FIELD_ATTACHMENTS && props.showAttachments) {
+		cols.push({id:c,label:'Attachments',
 			   align:ALIGN_LEFT,
-			   paddingLeft:HU.px(10),width:props.attachmentsWidth??240});
+			   width:props.attachmentsWidth??240});
+	    } else {
+//		console.log('Unknown table field:' + c);
+	    }
+
 	});
+
+	let gridTemplateList=[];
+	cols.forEach((col,idx)=> {
+	    if(Utils.isDefined(col.width)) {
+		gridTemplateList.push(HU.px(col.width));
+	    } else {
+		gridTemplateList.push('minmax(200px, 1fr)');
+	    }
+	});
+	gridTemplate = Utils.join(gridTemplateList,' ');
+
 
 	let tableWidth=props.tableWidth??'100%';
 	if(props.showHeader) {
-	    html+=HU.open(TAG_TABLE,[ATTR_CELLSPACING,0,
-				     ATTR_CELLPADDING,0,
-				     ATTR_CLASS,'entry-list-header',
-				     ATTR_WIDTH,tableWidth]);
-	    let hdrAttrs = [ATTR_CLASS,HU.classes('entry-list-header-column','entry-list-header-column-sortable',CLASS_CLICKABLE)];
-	    let noSortHdrAttrs = [ATTR_CLASS,HU.classes('entry-list-header-column')];
+	    html+=HU.open(TAG_DIV,
+			  [ATTR_CLASS,HU.classes(CLASS_ENTRY_TABLE_ROW,CLASS_ENTRY_TABLE_HEADER),
+			   ATTR_STYLE,HU.css('grid-template-columns',gridTemplate)
+			  ]);
+	    let hdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,  'entry-table-header-column');
+	    let noSortHdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,'entry-table-header-column');
 	    cols.forEach((col,idx)=> {
-		let attrs = noSortHdrAttrs;
-		if(!Utils.isDefined(col.cansort) || col.cansort) {
-		    attrs = hdrAttrs;
-		}
-		let width = col.width;
+		let prefix='';
 		if(idx==0 && props.showForm) {
-		    html+=HU.td([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,HU.px(3),CSS_WIDTH,HU.px(10))],
-				HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(15)),
-					ATTR_ID,id+'_formarrow',
-					ATTR_TITLE,'Click to show entry form',
-					ATTR_CLASS,CLASS_CLICKABLE],
-				       HU.getIconImage("fas fa-caret-right")));
-		    width-=10;
+		    prefix =
+			HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'entry-table-row-toggle'),
+				  ATTR_STYLE,
+				  HU.css(CSS_PADDING_LEFT,HU.px(0),CSS_WIDTH,HU.px(10)),
+				  ATTR_ID,id+'_formarrow',
+				  ATTR_TITLE,'Click to show entry form'],
+				 HU.getIconImage('fas fa-caret-right'));
 		}
-		if(Utils.isDefined(col.width)) {
-		    attrs = Utils.mergeLists(attrs,[ATTR_WIDTH,col.width]);
-		}
-		attrs.push(ATTR_STYLE,HU.css(CSS_PADDING_LEFT,col.paddingLeft??HU.px(0)))
-		if(!Utils.isDefined(col.cansort) || col.cansort) {
-		    attrs = Utils.mergeLists(attrs,
-					     [ARG_ORDERBY,col.id=='download'?'size':col.id,
-					      ATTR_TITLE,'Sort by '+ (col.id=='download'?'Size':col.label)]);
 
+		let canSort  = !Utils.isDefined(col.cansort) || col.cansort;
+		let cellClass=canSort?hdrClass:noSortHdrClass;
+		let cellStyle='';
+		let cellAttrs=[ATTR_STYLE,cellStyle,ATTR_CLASS,cellClass];
+		let labelAttrs =[];
+		if(canSort) {
+		    labelAttrs = Utils.mergeLists(labelAttrs,
+					     [ARG_ORDERBY,col.id==FIELD_DOWNLOAD?'size':col.id,
+					      ATTR_TITLE,'Sort by '+ (col.id==FIELD_DOWNLOAD?'Size':col.label)]);
+		    cellAttrs = Utils.mergeLists(cellAttrs,
+						 [ARG_ORDERBY,col.id==FIELD_DOWNLOAD?'size':col.id,
+						  ATTR_TITLE,'Sort by '+ (col.id==FIELD_DOWNLOAD?'Size':col.label)]);
 		}
 		let v = col.label;
-		v=HU.span([ATTR_STYLE,this.props.headerStyle??''], v);
-		if(col.id==props.orderby || (props.orderby=='size' && col.id=='download')) {
+		labelAttrs= Utils.mergeLists(labelAttrs,
+					     [ATTR_CLASS,
+					      HU.classes(CLASS_CLICKABLE,
+							  (canSort?'entry-table-header-column-sortable':'')),
+					      ATTR_STYLE,this.props.headerStyle??'']);
+		v=HU.span(labelAttrs, v);
+
+		if(col.id==props.orderby || (props.orderby=='size' && col.id==FIELD_DOWNLOAD)) {
 		    if(Utils.isDefined(props.ascending)) {
 			if(props.ascending)
 			    v = HU.getIconImage('fas fa-arrow-up') + SPACE+HU.span([],v);
@@ -629,15 +655,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    v = HU.getIconImage('fas fa-arrow-down') +SPACE+HU.span([],v);
 		    }
 		}
-		html+=HU.td(attrs,v);
+		html+=HU.div(cellAttrs,prefix+v);
 	    });
-	    html+=HU.close(TAG_TABLE);
+	    html+=HU.close(TAG_DIV);	    
 	} else if(!simple) {
-	    html+=HU.div([ATTR_CLASS,'entry-list-noheader']);
+	    html+=HU.div([ATTR_CLASS,'entry-table-noheader']);
 	}
 	let innerId = Utils.getUniqueId();
 	let tableId = Utils.getUniqueId();	
-	let classPrefix  = simple?'entry-list-simple':'entry-list';
+	let classPrefix  = simple?'entry-table-simple':'entry-table';
 
 	let attrs = [ATTR_ID,innerId,ATTR_CLASS,classPrefix];
 	if(props.showHeader && props.tableWidth) {
@@ -658,7 +684,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		actions.push([action.id,action.label]);
 	    });
 	    form+=SPACE1;
-	    form+= HU.select("",[ATTR_NAME,'output',
+	    form+= HU.select('',[ATTR_NAME,'output',
 				 ATTR_ID,id+'_form_action'],actions);
 	    form+=SPACE1;
 	    form+=HU.open(TAG_INPUT,[ATTR_NAME,'getselected',
@@ -674,7 +700,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_ID,'getall1337','role','button']);
 	    searchId = HU.getUniqueId('find');	
 	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20)), ATTR_ID,searchId]);
-	    html+=HU.div([ATTR_CLASS,HU.classes(classPrefix +'-row','entry-list-form-header'),
+	    html+=HU.div([ATTR_CLASS,HU.classes(/*classPrefix +'-row',*/'entry-table-form-header'),
 			  ATTR_ID,id+'_form',
 			  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
 					    CSS_WIDTH,HU.perc(100))],form);
@@ -684,10 +710,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.maxHeight) tableAttrs.push(ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,props.maxHeight,CSS_OVERFLOW_Y,OVERFLOW_AUTO));
 	html+=HU.open(TAG_DIV,tableAttrs);
 	html+=HU.close(TAG_DIV,TAG_TABLE,TAG_DIV);
-	let main = jqid(id);
 	main.html(html);
 	if(searchId) {
-	    HU.initPageSearch('.search-component,.entry-list-row-data',
+	    HU.initPageSearch('.search-component,.entry-table-row-data',
 			      null,
 			      'Search table',false,{target:jqid(searchId)});
 	}
@@ -700,8 +725,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	}
 
-	main.find(HU.dotClass('entry-list-header-column-sortable')).click(function() {
-
+	main.find(HU.dotClass('entry-table-header-column-sortable')).click(function() {
 	    let orderby = $(this).attr(ARG_ORDERBY);
 	    let url;
 	    if(props.orderby == orderby) {
@@ -765,10 +789,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.formOpen) {
 	    checkForm();
 	}
-	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries);	
-
-
-
+	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries,gridTemplate);	
     },
 
     formatMetadata:function(entry,metadataDisplay,args) {
@@ -994,11 +1015,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     },
 
-    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
+    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,gridTemplate,secondTime) {
 	let main = jqid(mainId);
 	let html = '';
 	let space = '';
-	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
+	let rowClass  = props.simple?'entry-table-simple-row':'entry-table-row-data';
+	rowClass=HU.classes(rowClass,CLASS_ENTRY_TABLE_ROW);
 	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.props.metadataDisplay);
 	let hasMetadata=false;
 	entries.forEach((entry,entryIdx)=>{
@@ -1007,45 +1029,52 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let innerId = Utils.getUniqueId();
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
-		let attrs = [ATTR_CLASS,'entry-row'];
-		let v = entry.getProperty(col.id,{},props.inlineEdit)??'';
-		if(typeof v=='number' && isNaN(v))
-		    v ='NA'
-		let _v = v;
+		let cellClass=CLASS_ENTRY_TABLE_CELL;		
+		let cellStyle='';
+		let cellValue = entry.getProperty(col.id,{},props.inlineEdit)??'';
+		if(typeof cellValue=='number' && isNaN(cellValue))
+		    cellValue ='NA'
+		let _v = cellValue;
 		let title = null;
 		let classes = this.props.textClass??'';
-		if(col.id=='name') {
+		if(col.id==FIELD_NAME && props.inlineEdit) {
+		    cellValue  = HU.span([ATTR_CLASS,classes,
+				  ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))],cellValue);
+
+		} else {
 		    classes=HU.classes('ramadda-text',classes);
+		    cellValue  = HU.span([ATTR_CLASS,classes,
+				  ATTR_STYLE,this.props.textStyle??''],cellValue);
 		}
-		v  = HU.span([ATTR_CLASS,classes,
-			      ATTR_STYLE,this.props.textStyle??''],v);
-		if(col.id=='name') {
+
+		if(col.id==FIELD_NAME) {
 		    let icon = '';
 		    if(props.showIcon) {
 			icon = entry.getLink(entry.getIconImage([ATTR_WIDTH,this.props.iconWidth??ramaddaGlobals.iconWidth]));
 		    }
 		    if(!props.inlineEdit) {
-			v = entry.getLink(v);
+			cellValue = entry.getLink(cellValue);
 		    }
 		    
-		    if(props.showIcon)
-			v =  icon + SPACE +v;
+		    if(props.showIcon) {
+			cellValue =  icon + SPACE +cellValue;
+		    }
 		    
+		    let rowExtra ='';
+
 		    if(metadataDisplay && metadataDisplay.length) {
 			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
 			if(Utils.stringDefined(mtd)) {
-			    v +=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.perc(100),
+			    rowExtra +=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.perc(100),
 							  CSS_OVERFLOW_WRAP,'break-word')],mtd);
 			    hasMetadata=true;
 			}
 		    }
 
-
-
 		    let tds = [];
-		    //[cbx,space,arrow,icon,thumbnail,v]
+		    //[cbx,space,arrow,icon,thumbnail,cellValue]
 		    let cbxId = Utils.getUniqueId('entry_');
-		    if(props.showForm)
+		    if(props.showForm) {
 			tds.push(HU.hidden('allentry',entry.getId()) +
 				 HU.checkbox(cbxId,['rowid',rowId,
 						    ATTR_NAME,'selentry',
@@ -1053,121 +1082,109 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 						    ATTR_CLASS,'entry-form-select',
 						    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(2),
 								      CSS_DISPLAY,DISPLAY_NONE)],false));
+		    }
 
-		    tds.push(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(2),
-						       CSS_MIN_WIDTH,HU.px(10)),
-				     'innerid',innerId,
-				     ATTR_ENTRYID,entry.getId(),
-				     ATTR_TITLE,'Click to show contents',
-				     ATTR_CLASS,HU.classes('entry-arrow',CLASS_CLICKABLE)], this.getToggleIcon(false)));
-
+		    tds.push(HU.span(['innerid',innerId,
+				      ATTR_ENTRYID,entry.getId(),
+				      ATTR_TITLE,'Click to show contents',
+				      ATTR_CLASS,
+				      HU.classes(CLASS_ENTRY_TABLE_ROW_TOGGLE,CLASS_CLICKABLE)],
+				     this.getToggleIcon(false)));
+		    
 
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
-			v = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId,
+			cellValue = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId,
 				     'breadcrumbid',crumbId,
 				     ATTR_TITLE,'Show breadcrumbs',
 				     ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-breadcrumb-toggle') ],
 				    HU.getIconImage(ICON_TOGGLE_CLOSED)) +SPACE2
 			    + HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
-				       ATTR_ID,crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;') +v;
+				       ATTR_ID,crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;') +cellValue;
 		    }
-
 		    if(props.showThumbnails && entry.getThumbnail()) {
-			v+= HU.br()+HU.div([ATTR_CLASS,'ramadda-thumbnail',
-					   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
-					  HU.image(entry.getThumbnail(),[ATTR_LOADING,LOADING_LAZY,
-									 ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-thumbnail-image'),
-									 ATTR_TITLE,'Click to enlarge',
-									 ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100)),
-									 'entry-url',entry.getEntryUrl()
-									]));
+			rowExtra+=
+			    HU.div([ATTR_CLASS,'ramadda-thumbnail',
+				    ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				   HU.image(entry.getThumbnail(),[ATTR_LOADING,LOADING_LAZY,
+								  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-thumbnail-image'),
+								  ATTR_TITLE,'Click to enlarge',
+								  ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100)),
+								  'entry-url',entry.getEntryUrl()
+								 ]));
 		    }
-
-
-		    tds.push(v);
-		    v =  HU.table([],HU.tr([ATTR_VALIGN,ALIGN_TOP],HU.tds([],tds)));
-		} else {
-		    if(col.id=='attachments') {
-			v='';
-			entry.getMetadata().forEach(m=>{
-			    if(m.type=='content.thumbnail' || m.type=='content.attachment') {
-				let imgUrl;
-				let f = m.value.attr1;
-				let name = f.replace(/.*_file_/,'');
-				let mUrl = HU.url(RamaddaUtil.getBaseUrl()+'/metadata/view/' + f,
-						  ['element','1',ATTR_ENTRYID,entry.getId(),'metadata_id', m.id]);
-				
-				if(m.type=='content.thumbnail' || Utils.isImage(f)) {
-				    imgUrl = mUrl;
-				    name+=HU.br()+HU.image(imgUrl,[ATTR_WIDTH,HU.px(290)]).replace(/"/g,"'");
-				} else {
-				    f = f.toLowerCase();
-				    let icon  = null;
-				    if(f.endsWith('pdf')) icon='/icons/pdf.png';
-				    else if(f.endsWith('txt')) icon='/icons/txt.png';
-				    else  icon='/icons/file.png';				    				    
-				    if(icon)
-					imgUrl = RamaddaUtil.getBaseUrl()+icon;
-				}
-				if(imgUrl) {
-				    v+=HU.href(mUrl,HU.image(imgUrl,[ATTR_CLASS,HU.classes('ramadda-attachment',CLASS_CLICKABLE),
-								     ATTR_TITLE,name,
-								     ATTR_WIDTH,HU.px(75),
-								     ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(2))]));
-				}
+		    tds.push(cellValue);
+		    cellValue = HU.div([ATTR_CLASS,'ramadda-single-line',
+				ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))],
+			       Utils.wrap(tds,'',''));
+		    if(Utils.stringDefined(rowExtra)) {
+			cellValue+=rowExtra;
+		    }
+		} else  if(col.id==FIELD_TYPE) {
+		    cellValue = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),cellValue,
+					[ATTR_DATA_CORPUS,'type:'+ entry.getType() + ' ' + _v,
+					 ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + _v]);
+		} else  if(col.id==FIELD_ATTACHMENTS) {
+		    cellValue='';
+		    let items = [];
+		    entry.getMetadata().forEach(m=>{
+			if(!(m.type=='content.thumbnail' || m.type=='content.attachment')) return;
+			let imgUrl;
+			let f = m.value.attr1;
+			let name = f.replace(/.*_file_/,'');
+			let mUrl = HU.url(RamaddaUtil.getBaseUrl()+'/metadata/view/' + f,
+					  ['element','1',ATTR_ENTRYID,entry.getId(),'metadata_id', m.id]);
+			
+			if(m.type=='content.thumbnail' || Utils.isImage(f)) {
+			    imgUrl = mUrl;
+			} else {
+			    f = f.toLowerCase();
+			    let icon  = null;
+			    if(f.endsWith('pdf')) icon='/icons/pdf.png';
+			    else if(f.endsWith('txt')) icon='/icons/txt.png';
+			    else  icon='/icons/file.png';				    				    
+			    if(icon)
+				imgUrl = RamaddaUtil.getBaseUrl()+icon;
+			}
+			if(imgUrl) {	
+		    let caption = m.value.attr2;
+			    if(!Utils.stringDefined(caption)) {
+				caption =name;
 			    }
-			});
-			if(v!='') v  =HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.getDimension(col.width),
-								CSS_OVERFLOW_X,OVERFLOW_AUTO)], v);
+			    if(Utils.stringDefined(caption)) {
+				caption = HU.div([ATTR_CLASS,'image-caption',
+						  ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(80),
+								    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
+								    CSS_FONT_SIZE,HU.pt(9))],caption);
+			    }
 
-		    } else  if(col.id=='type') {
-			v = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),v,
-				    [ATTR_DATA_CORPUS,'type:'+ entry.getType() + ' ' + _v,
-				     ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + _v]);
+			    items.push(HU.href(mUrl,HU.image(imgUrl,
+							     [ATTR_CLASS,HU.classes('ramadda-attachment',CLASS_CLICKABLE),
+							      ATTR_DATA_CORPUS,name,
+							      ATTR_WIDTH,HU.px(75),
+							      ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(2))])+(caption??'')));
+			}
+		    });
+		    if(items.length>0) {
+			cellValue=HU.hbox(items);
+			cellValue  =
+			    HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.getDimension(col.width), CSS_OVERFLOW_X,OVERFLOW_AUTO)], cellValue);
 		    }
-		    let maxWidth = col.width-20;
-		    maxWidth = col.width;		    
-		    v = HU.div([ATTR_STYLE,HU.css(CSS_PADDING_LEFT,col.paddingLeft??HU.px(5),
-						  CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
-						  CSS_WIDTH,HU.getDimension(col.width),
-						  CSS_TEXT_ALIGN,col.align??ALIGN_RIGHT,
-						  CSS_MAX_WIDTH,HU.getDimension(maxWidth),
-						  CSS_OVERFLOW_X,col.overflowX??OVERFLOW_HIDDEN)+(last?HU.css(CSS_PADDING_LEFT,HU.px(4)):'')],v);
-		    attrs.push(ATTR_ALIGN,col.align??ALIGN_RIGHT);
 		}
-		if(Utils.isDefined(col.width)) {
-		    attrs.push(ATTR_WIDTH,HU.getDimension(col.width));
-		}
-		if(title) {
-		    //		    attrs.push(ATTR_TITLE,title);
-		}
-		//		v = HU.div([ATTR_CLASS,'entry-row-label'], v);
-		line+=HU.td(attrs,v);
+		let maxWidth =  col.width;		    
+		let wrapStyle = '';
+		if(col.align) wrapStyle=HU.css(CSS_TEXT_ALIGN,col.align);
+		if(last) wrapStyle+=HU.css(CSS_PADDING_LEFT,HU.px(4));
+		cellValue = HU.div([ATTR_STYLE,wrapStyle],cellValue);
+		line+=HU.div([ATTR_CLASS,cellClass,ATTR_STYLE,cellStyle],cellValue);
 	    });		
 
-
-
-	    let row =  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),
-					ATTR_ID,rowId]);
-	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId(),
-				     ATTR_ID,rowId,
-				     ATTR_CLASS,rowClass]);
-	    row+= HU.open(TAG_TABLE,[ATTR_CELLSPACING,0,
-				     ATTR_CELLPADDING,'border',
-				     ATTR_WIDTH,'100%',
-				     ATTR_CLASS,  'entry-row-table',
-				     ATTR_ENTRYID,entry.getId()]);
 	    let title='';
-	    let rowAttrs = [ATTR_CLASS,'entry-row',
-			    ATTR_VALIGN,ALIGN_TOP];
+	    let rowAttrs = [];
 	    if(!props.simple) {
 		let img = entry.getIconImage([ATTR_WIDTH,HU.px(32)]).replace(/"/g,"'");
-		//			attrs.push('data-icon',entry.getIconUrl());
 		title = Utils.noMsg(entry.getName());
-		
 		if(entry.remoteRepository) rowAttrs.push('remote-repository', entry.remoteRepository.name);
-
 		let type = entry.getType();
 		if(type) rowAttrs.push(ATTR_DATA_TYPE, type.name);
 		let thumb =entry.getThumbnail()
@@ -1177,13 +1194,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let file =entry.getFilename()
 		if(file)
 		    rowAttrs.push('data-filename', file);
-		
-
 		rowAttrs.push(ATTR_TITLE,title,'data-icon',entry.getIconUrl());
 	    }
-	    row+=HU.open(TAG_TR,rowAttrs);
+	    let row = '';
+	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId()]);
+	    rowAttrs= Utils.mergeLists(rowAttrs,[ATTR_ID,rowId,
+						 ATTR_STYLE,HU.css('grid-template-columns',gridTemplate),
+						 ATTR_CLASS,rowClass,
+						 ATTR_ENTRYID,entry.getId()]);
+	    row+=HU.open(TAG_DIV,rowAttrs);
 	    row+=line;
-	    row+=HU.close(TAG_TR,TAG_TABLE,TAG_DIV);
+	    row+=HU.close(TAG_DIV);
 	    row+=HU.div([ATTR_ID,innerId,ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20))]);
 	    row+=HU.close(TAG_DIV);
 	    html+=row;
@@ -1205,12 +1226,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 	let inlineEdit =        main.find(HU.dotClass('ramadda-entry-inlineedit'));
-
 	let entryOrder =        main.find(HU.dotClass('ramadda-entry-inlineedit-entryorder'));
 	this.applyInlineEdit(inlineEdit,entryOrder)
 
 	if(true ||!props.inlineEdit) {
-	    html.find(HU.dotClass('entry-row')).tooltip({
+	    html.find(HU.dotClass('entry-table-row-data')).tooltip({
 		show: { effect: 'slideDown', delay: 1500, duration: 300 },
 		position: { my: POS_RIGHT_TOP, at: POS_RIGHT_BOTTOM },
 		content: function () {
@@ -1219,7 +1239,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    let icon = $(this).attr('data-icon');		
 		    let thumb = $(this).attr('data-thumbnail');		
 		    if(icon) {
-			icon = HU.image(icon,[ATTR_WIDTH,HU.px(32)]);
+			icon = HU.image(icon,[ATTR_WIDTH,HU.px(24)]);
 			title = icon+HU.space(1) +title;
 		    }
 		    title = HU.div([],HU.b(title));
@@ -1259,7 +1279,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	let _this=this;
-	container.find(HU.dotClass('entry-arrow')).click(function() {
+	container.find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE)).click(function() {
 	    let entryId = $(this).attr(ATTR_ENTRYID);
 	    let innerId = $(this).attr('innerid');	    
 	    let inner = jqid(innerId);
@@ -1301,7 +1321,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    return entry;
 		});
 		if(entries.length>0) {
-		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,true);	
+		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,gridTemplate,true);	
 		} else {
 		    let table = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']);
 		    if(entry.getIsUrl()) {
@@ -1345,8 +1365,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    main.find(HU.dotClass('entry-form-select')).each(function() {
 		let on  = HU.isChecked($(this));
 		let row = jqid($(this).attr('rowid'));
-		if(on) row.addClass('entry-list-row-selected');
-		else row.removeClass('entry-list-row-selected');	    
+		if(on) row.addClass('entry-table-row-selected');
+		else row.removeClass('entry-table-row-selected');	    
 	    });
 	});
 
@@ -1366,7 +1386,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    show: { effect: 'slideDown', delay: 500, duration: 1000 },
 	    content: function () {return $(this).prop(ATTR_TITLE);}});
 
-	let rows = container.find(HU.dotClass('entry-list-row'));
+	let rows = container.find(HU.dotClass('entry-table-row'));
 	rows.bind ('contextmenu', function(event) {
 	    let entryRow = $(this);
 	    let entry = entryMap[$(this).attr(ATTR_ENTRYID)];
@@ -1382,6 +1402,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			       my:POS_LEFT_TOP,
 			       at:POS_LEFT_BOTTOM,
 			       title:entry.getIconImage()+" "+entry.getName(),
+			       draggable:true,
 			       anchor:entryRow,
 			       header:true});
 	    }
@@ -1427,7 +1448,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!entry) return;
 	    let source = $(this);
 	    let entries = [entry];
-	    jqid(mainId).find('.entry-list-row-selected').each(function() {
+	    jqid(mainId).find('.entry-table-row-selected').each(function() {
 		let selectedEntry = entryMap[$(this).attr(ATTR_ENTRYID)];
 		if(!selectedEntry) return;
 		if(selectedEntry.getId()!=entry.getId()) {
@@ -2120,9 +2141,9 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     this.setRowColor = function() {
         this.getRow().removeClass("entry-row-hover");	    
         if (this.isSelected()) {
-            this.getRow().addClass("entry-list-row-selected");
+            this.getRow().addClass("entry-table-row-selected");
         } else {
-            this.getRow().removeClass("entry-list-row-selected");	    
+            this.getRow().removeClass("entry-table-row-selected");	    
         }
     }
 

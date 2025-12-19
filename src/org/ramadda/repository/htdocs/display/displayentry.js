@@ -3164,7 +3164,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'doTagSearch',ex:'true'},
 	{p:'tagShowGroup',d:true},
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
-	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
+	{p:'pageSearchSelector',d:'.search-component,.entry-table-row-data'},
 	{p:'applyToEntries',ex:true,tt:'When doing the entry search use the IDs to hide/show components'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},		
