@@ -278,7 +278,7 @@ Control how entries are displayed.
     <type
        name="Page Template"
        tag="internal"
-       showlabel="false"
+       showlabel="true"
        showinhtml="false"
        id="content.pagetemplate">
       <help>
