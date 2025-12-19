@@ -13,6 +13,25 @@ var VALUE_ANY_TYPE="_any_";
 var DEFAULT_MAX = 100;
 var ENTRY_NONGEO = -9999;
 
+var FIELD_ATTACHMENTS='attachments';
+var FIELD_ENTRYORDER='entryorder';
+var FIELD_CREATOR='creator'
+var FIELD_ALTITUDE='altitude';
+var FIELD_DOWNLOAD = 'download'
+var FIELD_EDITCOLUMNS = 'editcolumns';
+var FIELD_LATITUDE = 'latitude';
+var FIELD_LONGITUDE = 'longitude';
+
+var FIELD_NAME='name';
+var FIELD_TYPE='type';
+var FIELD_SIZE='size';
+var FIELD_DATE='date';
+var FIELD_CREATEDATE='createdate';
+var FIELD_CHANGEDATE='changedate';
+var FIELD_FROMDATE='fromdate';
+var FIELD_TODATE='todate';
+var FIELD_TIME='time';
+
 var OUTPUTS = [
     {id: OUTPUT_CHOOSE,name: "Select Output"},
     //These are handled by the choose
@@ -626,6 +645,10 @@ function MetadataType(type, label, value) {
 }
 
 
+
+
+
+
 var COLUMN_TYPE_STRING='string';
 var COLUMN_TYPE_LIST='list';
 
@@ -836,34 +859,35 @@ function Entry(props) {
         },
         getProperty: function(what,props,inlineEdit) {
 	    props = props??{};
-	    if(what=="name") {
+	    if(what==FIELD_NAME) {
 		if(this.canEdit() && inlineEdit) {
-		    return HU.input(null,this.getName(),[ATTR_SIZE,30,
-							 ATTR_ENTRYID,this.getId(),
-							 ATTR_TITLE,'Edit name',
-							 ATTR_CLASS,'ramadda-entry-inlineedit',
-							 ATTR_DATA_FIELD,'name']);
+		    return HU.input(null,this.getName(),
+				    [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(95)),
+				     ATTR_ENTRYID,this.getId(),
+				     ATTR_TITLE,'Edit name',
+				     ATTR_CLASS,'ramadda-entry-inlineedit',
+				     ATTR_DATA_FIELD,FIELD_NAME]);
 		}
 		return this.getName();
 	    }
-	    if(what=="fromdate") {
+	    if(what==FIELD_FROMDATE) {
 		return HU.span([ATTR_CLASS,CLASS_DATETIME,
 				ATTR_TITLE,this.startDate],this.startDateFormat);
 	    }
 	    
-	    if(what=="time") {
+	    if(what==FIELD_TIME) {
 		return HU.span([ATTR_CLASS,CLASS_DATETIME,
 				ATTR_TITLE,this.startDate],this.hhmm);
 	    }
 
-	    if(what=="download") {
+	    if(what==FIELD_DOWNLOAD) {
 		if(!this.getIsFile()) return  "";
 		let url = this.getResourceUrl();
 		let label = HU.getIconImage('fas fa-download');
 		if(this.getFilesize()) label+=" " + this.getFormattedFilesize();
 		return   HU.href(url,label);
 	    }
-	    if(what=="entryorder") {
+	    if(what==FIELD_ENTRYORDER) {
 		if(!this.canEdit() || !inlineEdit) {
 		    return this.order;
 		}
@@ -873,7 +897,7 @@ function Entry(props) {
 						 ATTR_CLASS,'ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder',
 						 ATTR_DATA_FIELD,'entryorder']);
 	    }
-	    if(what=="creator") {
+	    if(what==FIELD_CREATOR) {
 		let searchUrl = HU.url(RamaddaUtil.getUrl('/search/do'),'user_id',this.creator,'search.submit','true');
 		let created = HU.href(searchUrl,
 				      Utils.stringDefined(this.creatorName)?this.creatorName:this.creator,
@@ -881,26 +905,28 @@ function Entry(props) {
 		return created;
 	    }
 	    
-	    if(what=="latitude") {
+	    if(what==FIELD_LATITUDE) {
 		return this.getLatitude();
 	    }		
-	    if(what=="longitude") {
+	    if(what==FIELD_LONGITUDE) {
 		return this.getLongitude();
 	    }
 
-	    if(what=="altitude") {
+	    if(what==FIELD_ALTITUDE) {
 		return this.getAltitude();
 	    }	    
-	    if(what=="createdate") return HU.span([ATTR_CLASS,CLASS_DATETIME,
+	    if(what==FIELD_CREATEDATE) return HU.span([ATTR_CLASS,CLASS_DATETIME,
 						   ATTR_TITLE,this.createDate],this.createDateFormat);
-	    if(what=="changedate") return HU.span([ATTR_CLASS,CLASS_DATETIME,
+	    if(what==FIELD_CHANGEDATE) return HU.span([ATTR_CLASS,CLASS_DATETIME,
 						   ATTR_TITLE,this.changeDate],this.changeDateFormat);
-	    if(what=="size") {
+	    if(what==FIELD_SIZE) {
 		return this.getFilesize()?this.getFormattedFilesize():"---";
 	    }
-	    if(what=="type") return this.typeName;
+	    if(what==FIELD_TYPE) {
+		return this.typeName;
+	    }
 
-	    if(what=='editcolumns') {
+	    if(what==FIELD_EDITCOLUMNS) {
 		if(!this.attributes) return '';
 		let inputs = '';
 		this.attributes.forEach(attr=>{
