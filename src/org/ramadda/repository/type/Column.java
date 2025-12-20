@@ -1225,6 +1225,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 			HU.span(result,   HU.span(getRepository().getIconImage("fas fa-circle-info"),
 						  HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
 							   "title","Click to view contents",
+							   "data-entryid",theEntry.getId(),
 							   "data-title",theEntry.getName(),
 							   "data-url",entryLink.getFolderClickUrl())),
 				HU.attrs("id",clickId));
