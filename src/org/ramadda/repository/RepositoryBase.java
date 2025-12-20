@@ -384,8 +384,15 @@ public class RepositoryBase implements Constants, RepositorySource {
     }
 
     public String getHtdocsUrl(String f) {
-        return getFileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
+	return getHtdocsUrl(f,false);
     }
+
+    public String getHtdocsUrl(String f,boolean addTimestamp) {
+	String url = getFileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
+	if(addTimestamp) url = HU.url(url,"timestamp",""+(new Date().getTime()));
+	return url;
+    }
+
 
     public String getIconUrl(String f) {
         if (f == null) {
