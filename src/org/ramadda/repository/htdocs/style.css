@@ -2192,54 +2192,37 @@ mapheader {
     background-color: #cdc6a5;
 }
 
-
-
 .ramadda-background-almond , .ramadda-block-almond , .ramadda-heading-almond , .ramadda-box-almond , .ramadda-note-almond , .ramadda-blurb-almond ,  .ramadda-section-almond  {
     background-color: #f0dcca;
 }
-
-
 
 .ramadda-background-tumbleweed , .ramadda-block-tumbleweed , .ramadda-heading-tumbleweed , .ramadda-box-tumbleweed , .ramadda-note-tumbleweed , .ramadda-blurb-tumbleweed ,  .ramadda-section-tumbleweed  {
     background-color: #e1b07e;
 }
 
-
-
 .ramadda-background-palegold , .ramadda-block-palegold , .ramadda-heading-palegold , .ramadda-box-palegold , .ramadda-note-palegold , .ramadda-blurb-palegold ,  .ramadda-section-palegold  {
     background-color: #e5be9e;
 }
-
-
 
 .ramadda-background-turquoise , .ramadda-block-turquoise , .ramadda-heading-turquoise , .ramadda-box-turquoise , .ramadda-note-turquoise , .ramadda-blurb-turquoise ,  .ramadda-section-turquoise  {
     background-color: #a7cdbd;
 }
 
-
-
 .ramadda-background-vermillion , .ramadda-block-vermillion , .ramadda-heading-vermillion , .ramadda-box-vermillion , .ramadda-note-vermillion , .ramadda-blurb-vermillion , .ramadda-section-vermillion  {
     background-color: #d56f3e;
 }
-
-
 
 .ramadda-background-bone , .ramadda-block-bone , .ramadda-heading-bone , .ramadda-box-bone , .ramadda-note-bone , .ramadda-blurb-bone , .ramadda-section-bone  {
     background-color: #e2dbbe;
 }
 
-
-
 .ramadda-background-platinum , .ramadda-block-platinum , .ramadda-heading-platinum , .ramadda-box-platinum , .ramadda-note-platinum , .ramadda-blurb-platinum ,  .ramadda-section-platinum  {
     background-color: #dfe0e2;
 }
 
-
-
 .ramadda-background-olivine , .ramadda-block-olivine , .ramadda-heading-olivine , .ramadda-box-olivine , .ramadda-note-olivine , .ramadda-blurb-olivine ,  .ramadda-section-olivine  {
     background-color: #9cb380;
 }
-
 
 .ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow ,  .ramadda-section-yellow  {
     background-color: var(--color-mellow-yellow);
@@ -2547,8 +2530,6 @@ div:hover::-webkit-scrollbar-thumb {
     color: #000;
 }
 
-
-
 .ramadda-section-full  {
     padding:0px;
 }
@@ -2558,16 +2539,34 @@ div:hover::-webkit-scrollbar-thumb {
     padding-right:20px;
 }
 
-
 .ramadda-section-map {
     background: URL(images/background.png);
 }
+
 .ramadda-section-coast {
     background: URL(images/coast.png);
 }
 
 .ramadda-section-globe {
     background: URL(images/globe.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}
+
+.ramadda-section-globe2 {
+    background: URL(images/globe2.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}
+
+.ramadda-section-analytics {
+    background: URL(images/analytics.svg);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}
+
+.ramadda-section-bookshelf {
+    background: URL(images/bookshelf.svg);
     background-size: 100% auto;
     background-repeat: no-repeat;
 }
@@ -3057,6 +3056,7 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 .entry-table  {
     border: var(--basic-border);
     border-top:0px transparent solid;
+    background:#fff;
 }
 
 .entry-table-form-header  {
@@ -5552,12 +5552,20 @@ snippet-hide {
 }
 
 .ramadda-header-link-2 {
+    margin-top:0.25em;
     display:inline-block;
     font-size:110% !important;
     padding-bottom: 2px;
     padding-left:0.25em;
     padding-right:0.25em;
     font-weight:400;
+}
+
+
+.ramadda-header-link-2 a {
+    padding:0.2em;
+    padding-left:0.4em;
+    padding-right:0.4em;
 }
 
 

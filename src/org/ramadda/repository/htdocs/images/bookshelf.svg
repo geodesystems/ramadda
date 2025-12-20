@@ -1,0 +1,70 @@
+<!-- Repeatable "Library / Bookshelf" SVG background (inline attributes; white-safe) -->
+<!-- Save as: library-bookshelf-pattern.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" role="img" aria-label="Subtle bookshelf pattern">
+  <defs>
+    <pattern id="bookshelfTile" patternUnits="userSpaceOnUse" width="320" height="240">
+      <!-- Shelf boards -->
+      <rect x="0" y="76" width="320" height="10" rx="0" fill="#000" fill-opacity="0.02"></rect>
+      <rect x="0" y="186" width="320" height="10" rx="0" fill="#000" fill-opacity="0.02"></rect>
+
+      <path d="M0 76H320" stroke="#000" stroke-opacity="0.035" stroke-width="2" fill="none" stroke-linecap="round"></path>
+      <path d="M0 186H320" stroke="#000" stroke-opacity="0.035" stroke-width="2" fill="none" stroke-linecap="round"></path>
+
+      <!-- TOP SHELF books -->
+      <rect x="18" y="22" width="14" height="54" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="34" y="18" width="18" height="58" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="54" y="26" width="12" height="50" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="68" y="20" width="20" height="56" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="90" y="24" width="14" height="52" rx="2" fill="#000" fill-opacity="0.03"></rect>
+
+      <!-- a couple spine labels -->
+      <rect x="38" y="30" width="10" height="6" rx="2" fill="#000" fill-opacity="0.028"></rect>
+      <rect x="72" y="44" width="14" height="6" rx="2" fill="#000" fill-opacity="0.028"></rect>
+
+      <!-- mid cluster -->
+      <rect x="132" y="20" width="16" height="56" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="150" y="26" width="12" height="50" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="164" y="16" width="18" height="60" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="184" y="24" width="14" height="52" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="200" y="22" width="20" height="54" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="167" y="34" width="12" height="6" rx="2" fill="#000" fill-opacity="0.028"></rect>
+
+      <!-- right cluster + gentle leaning book (simple matrix avoids rotate() parsing issues) -->
+      <rect x="244" y="24" width="14" height="52" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="260" y="18" width="18" height="58" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <!-- Leaning book: slightly rotated around its top-left corner -->
+      <g transform="matrix(0.9945,-0.1045,0.1045,0.9945,286,24)">
+        <rect x="0" y="0" width="14" height="52" rx="2" fill="#000" fill-opacity="0.03"></rect>
+        <rect x="2" y="18" width="10" height="6" rx="2" fill="#000" fill-opacity="0.028"></rect>
+      </g>
+
+      <!-- Subtle spine edges (few only) -->
+      <path d="M34 18V76 M68 20V76 M90 24V76 M148 16V76" stroke="#000" stroke-opacity="0.03" stroke-width="1" fill="none"></path>
+
+      <!-- BOTTOM SHELF books -->
+      <rect x="22" y="96" width="18" height="90" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="42" y="104" width="14" height="82" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="58" y="98" width="22" height="88" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="82" y="110" width="12" height="76" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="96" y="100" width="18" height="86" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="62" y="130" width="14" height="7" rx="2" fill="#000" fill-opacity="0.028"></rect>
+
+      <rect x="132" y="106" width="14" height="80" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="148" y="96" width="20" height="90" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="170" y="112" width="12" height="74" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      <rect x="184" y="100" width="18" height="86" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <rect x="204" y="108" width="14" height="78" rx="2" fill="#000" fill-opacity="0.03"></rect>
+
+      <rect x="244" y="98" width="20" height="88" rx="2" fill="#000" fill-opacity="0.022"></rect>
+      <g transform="matrix(0.9962,0.0872,-0.0872,0.9962,270,102)">
+        <rect x="0" y="0" width="14" height="84" rx="2" fill="#000" fill-opacity="0.03"></rect>
+      </g>
+      <rect x="290" y="110" width="12" height="76" rx="2" fill="#000" fill-opacity="0.03"></rect>
+
+      <!-- a few bottom spine edges -->
+      <path d="M58 98V186 M148 96V186 M244 98V186" stroke="#000" stroke-opacity="0.03" stroke-width="1" fill="none"></path>
+    </pattern>
+  </defs>
+
+  <rect width="320" height="240" fill="url(#bookshelfTile)"></rect>
+</svg>

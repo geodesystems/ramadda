@@ -1,0 +1,62 @@
+<!-- Abstract, repeatable "data & analytics" SVG background tile (no boxes, no axes) -->
+<!-- Save as: analytics-abstract-pattern.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <defs>
+    <style>
+      /* Tweak these if you want it lighter/darker */
+      .grid { stroke:#000; stroke-opacity:0.035; stroke-width:1; fill:none; }
+      .line { stroke:#000; stroke-opacity:0.075; stroke-width:1.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+      .dash { stroke:#000; stroke-opacity:0.05;  stroke-width:1; fill:none; stroke-dasharray:3 5; }
+      .dot  { fill:#000; fill-opacity:0.08; }
+      .ring { stroke:#000; stroke-opacity:0.05;  stroke-width:1.25; fill:none; }
+      .bar  { fill:#000; fill-opacity:0.045; }
+    </style>
+
+    <pattern id="p" patternUnits="userSpaceOnUse" width="240" height="240">
+      <!-- Soft orthogonal grid -->
+      <path class="grid" d="M0 60H240 M0 120H240 M0 180H240 M60 0V240 M120 0V240 M180 0V240"/>
+
+      <!-- Faint circular "analysis rings" -->
+      <circle class="ring" cx="50" cy="52" r="18"/>
+      <circle class="ring" cx="50" cy="52" r="30"/>
+      <circle class="ring" cx="188" cy="158" r="22"/>
+      <circle class="ring" cx="188" cy="158" r="36"/>
+
+      <!-- Abstract bars cluster -->
+      <rect class="bar" x="150" y="34" width="10" height="26" rx="2"/>
+      <rect class="bar" x="166" y="24" width="10" height="36" rx="2"/>
+      <rect class="bar" x="182" y="40" width="10" height="20" rx="2"/>
+      <rect class="bar" x="198" y="18" width="10" height="42" rx="2"/>
+
+      <!-- Abstract line/trend strokes (no axes) -->
+      <path class="line" d="M22 152 L48 138 L70 146 L94 126 L120 134 L144 110 L168 116 L196 92 L222 104"/>
+      <path class="dash" d="M18 170 Q70 118 128 140 T230 96"/>
+
+      <!-- Scatter dots -->
+      <circle class="dot" cx="34" cy="92"  r="2.2"/>
+      <circle class="dot" cx="56" cy="104" r="2.2"/>
+      <circle class="dot" cx="76" cy="88"  r="2.2"/>
+      <circle class="dot" cx="98" cy="100" r="2.2"/>
+      <circle class="dot" cx="126" cy="86" r="2.2"/>
+      <circle class="dot" cx="148" cy="96" r="2.2"/>
+      <circle class="dot" cx="170" cy="82" r="2.2"/>
+      <circle class="dot" cx="206" cy="88" r="2.2"/>
+
+      <!-- Mini donut arc (abstract "metric share") -->
+      <path class="line" stroke-opacity="0.06"
+            d="M70 208
+               m -18 0
+               a 18 18 0 1 0 36 0
+               a 18 18 0 1 0 -36 0"/>
+      <circle cx="70" cy="208" r="9" fill="#fff" fill-opacity="0.7"/>
+
+      <!-- Tiny sparklines for texture -->
+      <path class="line" stroke-opacity="0.05"
+            d="M120 208 L132 202 L144 206 L156 196 L168 200 L180 192 L192 196 L204 188"/>
+      <path class="line" stroke-opacity="0.045"
+            d="M24 24 L38 30 L52 26 L66 34 L80 28 L94 38"/>
+    </pattern>
+  </defs>
+
+  <rect width="240" height="240" fill="url(#p)"/>
+</svg>
