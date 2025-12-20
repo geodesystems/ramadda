@@ -2000,7 +2000,6 @@ public class PageHandler extends RepositoryManager {
 
                     break;
                 }
-		System.err.println("PAGE STYLE:");
                 for (String type : Utils.split(types, ",", true, true)) {
                     if ((type.equals("file") || type.equals("anyfile")) && !entry.isGroup()) {
                         theMetadata = metadata;

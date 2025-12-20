@@ -15,6 +15,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.output.WikiMacro;
+import org.ramadda.repository.output.WikiTag;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
@@ -653,7 +654,7 @@ public class TypeHandler extends RepositoryManager {
 	return  entry.getValue(request,id,true);
     }
 
-    public void getWikiTags(List<String[]> tags, Entry entry) {
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
         if(this.parent!=null) {
 	    this.parent.getWikiTags(tags, entry);
 	}

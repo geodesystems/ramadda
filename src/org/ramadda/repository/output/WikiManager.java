@@ -656,18 +656,18 @@ public class WikiManager extends RepositoryManager
 				    "macro",JU.quote(macro.getWikiText())));
 		}
 	    }
-	    List<String[]> fromType = new ArrayList<String[]>();
+	    List<WikiTag> fromType = new ArrayList<WikiTag>();
 	    entry.getTypeHandler().getWikiTags(fromType,entry);
-	    for(String[]tuple:fromType) {
-		String tag = tuple[1];
+	    for(WikiTag wikiTag:fromType) {
+		String tag = wikiTag.tag;
 		if(tag.startsWith("raw:")) {
 		    tag = tag.substring("raw:".length());
 		}  else {
-		    tag = "{{"+tuple[1] +" entry=" + entry.getId()+ " }}";
+		    tag = "{{"+wikiTag.tag +" entry=" + entry.getId()+ " }}";
 		}
 		tag = tag.replace("${entryid}",entry.getId());
 		json.add(JU.map("label",
-				JU.quote(tuple[0]),
+				JU.quote(wikiTag.label),
 				"tag",JU.quote(tag)));
 					 
 	    }
@@ -1613,7 +1613,7 @@ public class WikiManager extends RepositoryManager
         return result;
     }
 
-    public void addWikiTagDefinition(List<String> tags, WikiTags.WikiTag tag) {
+    public void addWikiTagDefinition(List<String> tags, WikiTag tag) {
 	List<String> tmp = new ArrayList<String>();
 	String label = Utils.makeLabel(tag.label) + " properties";
 	tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
@@ -1647,7 +1647,7 @@ public class WikiManager extends RepositoryManager
         for (int i = 0; i < WikiTags.WIKITAGS.length; i++) {
             WikiTags.WikiTagCategory cat = WikiTags.WIKITAGS[i];
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
-                WikiTags.WikiTag      tag = cat.tags[tagIdx];
+                WikiTag      tag = cat.tags[tagIdx];
 		addWikiTagDefinition(tags,tag);
             }
         }
@@ -8752,7 +8752,7 @@ public class WikiManager extends RepositoryManager
         StringBuilder sb     = new StringBuilder();
         String        inset  = "&nbsp;&nbsp;";
         int           rowCnt = 0;
-	List<String[]> fromType = new ArrayList<String[]>();
+	List<WikiTag> fromType = new ArrayList<WikiTag>();
 	if(entry!=null) {
 	    entry.getTypeHandler().getWikiTags(fromType,entry);
 	}
@@ -8761,13 +8761,13 @@ public class WikiManager extends RepositoryManager
             sb.append("<td valign=top>");
             sb.append(HU.b(entry.getTypeHandler().getLabel()));
             sb.append(HU.br());
-	    for(String[]tuple: fromType) {
-                String  textToInsert = tuple[1].replace("\n","\\n");
+	    for(WikiTag wikiTag: fromType) {
+                String  textToInsert = wikiTag.tag.replace("\n","\\n");
                 String js2 = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
-                sb.append(HU.div(HU.href(js2, tuple[0]),
+                sb.append(HU.div(HU.href(js2, wikiTag.label),
 				 HU.attrs("class","wiki-editor-popup-link",
 					  "style","margin-left:8px;")));
 	    }
@@ -8786,7 +8786,7 @@ public class WikiManager extends RepositoryManager
             sb.append(HU.div(cat.category,HU.attrs("class","wiki-editor-popup-category")));
             rowCnt += cat.tags.length;
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
-                WikiTags.WikiTag tag          = cat.tags[tagIdx];
+                WikiTag tag          = cat.tags[tagIdx];
                 String  textToInsert = tag.tag;
                 if (tag.attrs.length() > 0) {
 		    String text = tag.attrs;
