@@ -2654,10 +2654,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
         Utils.concatBuff(sb, function, "(", args, ");\n");
     }
 
-    public static String importJS(String jsUrl) {
+    public static String importJS(String ...urls) {
         StringBuilder sb = new StringBuilder("\n");
-        importJS(sb, jsUrl);
-
+        importJS(sb, urls);
         return sb.toString();
     }
 
@@ -2668,11 +2667,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	}
     }
 
-    public static void importJS(Appendable sb, String jsUrl,
-                                String integrity) {
+
+    public static void importJSWithIntegrity(Appendable sb, String jsUrl,
+					     String integrity) {
         if (integrity == null) {
             importJS(sb, jsUrl);
-
             return;
         }
         tag(sb, TAG_SCRIPT,
