@@ -8,6 +8,7 @@ package org.ramadda.plugins.feed;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
@@ -72,9 +73,9 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
 
     @Override
-    public void getWikiTags(List<String[]> tags, Entry entry) {
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
-        tags.add(new String[]{"Feed Label","zoomify_collection"});
+        tags.add(new WikiTag("zoomify_collection","Feed Label"));
     }
 
 

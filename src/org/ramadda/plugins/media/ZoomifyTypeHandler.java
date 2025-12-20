@@ -6,6 +6,7 @@
 package org.ramadda.plugins.media;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -90,8 +91,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     }
 
     @Override
-    public void getWikiTags(List<String[]> tags, Entry entry) {
-	tags.add(new String[]{"zoomify_collection","zoomify_collection"});
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
+	tags.add(new WikiTag("zoomify_collection","Zoomify collection"));
     }
 
     @Override

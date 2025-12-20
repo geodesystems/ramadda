@@ -64,6 +64,7 @@ fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double lab
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>     
+     <property name="form.description.iswiki" value="true"/>
      <wikimacro name="nws_alerts" label="NWS Alerts"><![CDATA[{{nws_alerts #noAlertsMessage=""}}]]></wikimacro>
      <column name="areas" type="string" label="Areas" size="1000" rows="5" columns="60"
 	     help="See &lt;a target=_help href='${root}/feed/alerts.html#areas'&gt;alerts.html&lt;/a&gt; for help"

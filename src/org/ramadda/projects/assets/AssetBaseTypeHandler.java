@@ -4,7 +4,6 @@
 */
 
 package org.ramadda.projects.assets;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.metadata.*;
@@ -56,99 +55,65 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TAG_HEADER= "assets_header";
     public static final String TAG_SUMMARY= "assets_summary";    
 
+    public static final String COL_LOCATION_ENTRY="location_entry";
+    public static final String COL_VENDOR="vendor";
+    public static final String COL_DEPARTMENT="department";
+    public static final String COL_ASSIGNED_TO="assigned_to";
+
     private String assetHeaderWiki;
     private String assetSummaryWiki;    
+    private String summaryReportWiki;
 
     public AssetBaseTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
+	assetHeaderWiki =  getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetheader.txt");
+	assetSummaryWiki = getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetsummary.txt");
+	summaryReportWiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
     }
 
     @Override
-    public void getWikiTags(List<String[]> tags, Entry entry) {
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
-	tags.add(new String[]{"Asset Group Header",TAG_HEADER});
-	tags.add(new String[]{"Asset Summary",TAG_SUMMARY});	
-
-        tags.add(new String[]{"Assets Report Table",REPORT_TABLE+" #types=\"type_assets_it,type_assets_equipment,...\" showHeader=true"});
-        tags.add(new String[]{"Assets Report Counts",REPORT_COUNTS +" "});
-        tags.add(new String[]{"Assets Report Maintenance",REPORT_MAINTENANCE+" "});
-        tags.add(new String[]{"Assets Report Warranty",REPORT_WARRANTY+" showWarranties=true showLicenses=true showDetails=true "});
-        tags.add(new String[]{"Assets Report Costs",REPORT_COSTS+" #types=\"type_assets_it,type_assets_equipment,...\" #showSummary=false #showTable=false #summaryTitle=\"\"  #tableTitle=\"\" "});				
-        tags.add(new String[]{"Assets Costs URL","raw:dataUrl=\"" + getRepository().getUrlPath("/entry/action?action=assets_data_costs&entryid=${entryid}&output=\"")});
+	tags.add(new WikiTag(TAG_HEADER,"Asset Group Header"));
+	tags.add(new WikiTag(TAG_SUMMARY,"Asset Summary"));	
+	tags.add(new WikiTag(REPORT_TABLE+" #types=\"type_assets_it,type_assets_equipment,...\" showHeader=true","Assets Report Table"));
+	tags.add(new WikiTag(REPORT_COUNTS,"Assets Report Counts"));
+        tags.add(new WikiTag(REPORT_MAINTENANCE,"Assets Report Maintenance"));
+        tags.add(new WikiTag(REPORT_WARRANTY+" showWarranties=true showLicenses=true showDetails=true ","Assets Report Warranty"));
+        tags.add(new WikiTag(REPORT_COSTS+" #types=\"type_assets_it,type_assets_equipment,...\" #showSummary=false #showTable=false #summaryTitle=\"\"  #tableTitle=\"\" ","Assets Report Costs"));				
+        tags.add(new WikiTag("raw:dataUrl=\"" + getRepository().getUrlPath("/entry/action?action=assets_data_costs&entryid=${entryid}&output=\""),
+			     "Assets Costs URL"));
     }
 
     private String getSearchUrl(Request request, Entry entry, Hashtable props) throws Exception {
-	if(entry.isType(TYPE_DEPARTMENT)) {
-	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
-	}
-	if(entry.isType(TYPE_PERSONNEL)) {
-	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"assigned_to");
-	}	
-	if(entry.isType(TYPE_VENDOR)) {
-	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
-	}
-	if(entry.isType(TYPE_LOCATION)) {
-	    return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"location_entry");
-	}		
-
+	if(entry.isType(TYPE_DEPARTMENT)) return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_DEPARTMENT);
+	if(entry.isType(TYPE_PERSONNEL)) return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_ASSIGNED_TO);
+	if(entry.isType(TYPE_VENDOR))  return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_VENDOR);
+	if(entry.isType(TYPE_LOCATION))  return  getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_LOCATION_ENTRY);
 	String types = Utils.getProperty(props,"types","super:" + TYPE_BASE+"%2C"+ TYPE_LICENSE);
-	String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
-	return searchUrl;
+	return  "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=10000";
     }
-
 
     private List<Entry> getEntries(Request request, Entry entry, Hashtable props) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	if(entry.isType(TYPE_DEPARTMENT)) {
-	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"department");
-	    getSearchManager().processSearchUrl(request, entries,searchUrl);
-	    return entries;
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_DEPARTMENT);
+	    return getSearchManager().processSearchUrl(request, entries,searchUrl);
 	}
-
 	if(entry.isType(TYPE_VENDOR)) {
-	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"vendor");
-	    getSearchManager().processSearchUrl(request, entries,searchUrl);
-	    return entries;
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_VENDOR);
+	    return getSearchManager().processSearchUrl(request, entries,searchUrl);
 	}
 	if(entry.isType(TYPE_LOCATION)) {
-	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,"location_entry");
-	    getSearchManager().processSearchUrl(request, entries,searchUrl);
-	    return entries;
+	    String searchUrl = getWikiManager().makeEntryLinkSearchUrl(request, entry,TYPE_BASE,COL_LOCATION_ENTRY);
+	    return getSearchManager().processSearchUrl(request, entries,searchUrl);
 	}		
-
-	String types = Utils.getProperty(props,"types","super:type_assets_base%2Ctype_assets_license");
-	getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
-	return entries;
+	return getSearchManager().processSearchUrl(request, entries,getSearchUrl(request, entry,props));
     }
 
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
 	sb.append(getWikiManager().wikifyEntry(request, entry,wiki));
-    }
-
-    private String getInfo(Request request, Entry entry) {
-	return "asset:" + entry;
-    }
-
-    private String getTypeName(Request request,Entry entry) {
-	return entry.getTypeHandler().getLabel();
-    }
-
-    private void addThumbnails(Request request, StringBuilder sb,Entry entry) throws Exception {
-	List<String[]> thumbs = new ArrayList<String[]>();
-        getMetadataManager().getFullThumbnailUrls(request, entry, thumbs,false);
-	if(thumbs.size()>0) {
-	    sb.append("<center>");
-	    for(String[] tuple: thumbs) {
-		String image=HU.img(tuple[0],"",
-				    HU.attrs("width","150px"));
-		if(stringDefined(tuple[1])) {
-		    image =HU.span(HU.div(image,"")+HU.div(tuple[1],HU.attrs("class","caption")),"");
-		}
-		sb.append(HU.div(image,HU.style("padding-right:20px;display:table-cell;")));
-	    }
-	    sb.append("</center>");
-	}
     }
 
     public Result processEntryAction(Request request, Entry entry)
@@ -157,145 +122,92 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	if(action.equals(ACTION_DATA_COSTS)) {
 	    StringBuilder csv = new StringBuilder();
 	    makeCsvCosts(request,  entry,  csv,new Hashtable());
-	    String mime = "text/csv";
 	    request.setReturnFilename(Utils.makeID(entry.getName())+"_costs.csv",false);
-	    return new Result("", csv, mime);
+	    return new Result("", csv, MIME_CSV);
 	}
-	if(action.equals(ACTION_SEARCH)) 
-	    return handleActionSearch(request, entry);
-	if(action.equals(ACTION_REPORT)) 
-	    return handleActionReport(request, entry);
-	if(action.equals(ACTION_NEW))
-	    return handleActionNew(request, entry);
-	if(action.equals(ACTION_SCAN))
-	    return handleActionScan(request, entry);	
+	if(action.equals(ACTION_SEARCH)) return handleActionSearch(request, entry);
+	if(action.equals(ACTION_REPORT)) return handleActionReport(request, entry);
+	if(action.equals(ACTION_NEW)) return handleActionNew(request, entry);
+	if(action.equals(ACTION_SCAN)) return handleActionScan(request, entry);	
 	return super.processEntryAction(request,entry);
     }
 
     public Result handleActionSearch(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "Asset Search");
-	String wiki = "{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n";
+	String wiki = "+section title={{name}}\n:heading Asset Search\n{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
 	wikify(request, entry,sb,wiki);
-	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result = new Result("Asset Search - " + entry.getName(),sb);
-        return getEntryManager().addEntryHeader(request, entry, result);
+        return getEntryManager().addEntryHeader(request, entry, new Result("Asset Search - " + entry.getName(),sb));
     }
 
     public Result handleActionNew(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "Create New Asset");
-	String wiki = "+center\n{{new_entry   fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n";
-
+	String wiki = "+section title={{name}}\n:heading Create New Asset\n+center\n{{new_entry   fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
 	wikify(request, entry,sb,wiki);
-	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result = new Result("New Assets - " + entry.getName(),sb);
-        return getEntryManager().addEntryHeader(request, entry, result);
+	return getEntryManager().addEntryHeader(request, entry, new Result("New Assets - " + entry.getName(),sb));
     }
 
     public Result handleActionScan(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "Scan for Asset");
-	String wiki = "+center\n{{assets_barcode doScan=true}}\n";
+	String wiki = "+section title={{name}}\n:heading Scan for Asset\n+center\n{{assets_barcode doScan=true}}\n-center\n-section\n";
 	wikify(request, entry,sb,wiki);
-	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result = new Result("Scan Asset - " + entry.getName(),sb);
-        return getEntryManager().addEntryHeader(request, entry, result);
+	return getEntryManager().addEntryHeader(request, entry, new Result("Scan Asset - " + entry.getName(),sb));
     }
 
     public Result handleActionReport(Request request, Entry entry) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	String report = request.getString("report",REPORT_TABLE);
 	getPageHandler().entrySectionOpen(request, entry, sb, "");
-
-
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
-	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},
-					 {REPORT_COUNTS,"Counts"},
-					 {REPORT_COSTS,"Costs"},
-					 {REPORT_WARRANTY,"Warranty"},
-					 {REPORT_MAINTENANCE,"Maintenance"},
-					 {REPORT_DOWNLOAD,"Download Data"}
-	    }) {
-	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT),
-						      ARG_REPORT,tuple[0]),
+	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},{REPORT_COUNTS,"Counts"},
+					 {REPORT_COSTS,"Costs"}, {REPORT_WARRANTY,"Warranty"},
+					 {REPORT_MAINTENANCE,"Maintenance"},{REPORT_DOWNLOAD,"Download Data"}}) {
+	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT), ARG_REPORT,tuple[0]),
 					       tuple[1],
-					       report.equals(tuple[0])?
-					       "ramadda-linksheader-on":
-					       "ramadda-linksheader-off"));
+					       report.equals(tuple[0])? "ramadda-linksheader-on": "ramadda-linksheader-off"));
 	}
-
-	//	headerItems.add(new HtmlUtils.Href(xlsUrl,"Download Data"));
-
 	sb.append(HU.center(HU.makeHeader1(headerItems)));
-
-	if(report.equals(REPORT_TABLE))
-	    makeReportTable(request, entry,sb, new Hashtable());
-	else if(report.equals(REPORT_MAINTENANCE))
-	    makeReportMaintenance(request, entry,sb, new Hashtable());
-	else if(report.equals(REPORT_WARRANTY))
-	    makeReportWarranty(request, entry,sb, new Hashtable());		
-	else if(report.equals(REPORT_COUNTS))
-	    makeReportCounts(request, entry,sb,new Hashtable());
-	else if(report.equals(REPORT_COSTS))
-	    makeReportCosts(request, entry,sb,new Hashtable());		
+	if(report.equals(REPORT_TABLE))    makeReportTable(request, entry,sb, new Hashtable());
+	else if(report.equals(REPORT_MAINTENANCE))   makeReportMaintenance(request, entry,sb, new Hashtable());
+	else if(report.equals(REPORT_WARRANTY))   makeReportWarranty(request, entry,sb, new Hashtable());		
+	else if(report.equals(REPORT_COUNTS))   makeReportCounts(request, entry,sb,new Hashtable());
+	else if(report.equals(REPORT_COSTS))    makeReportCosts(request, entry,sb,new Hashtable());		
 	else if(report.equals(REPORT_DOWNLOAD)) {
 	    Result result  =   makeReportDownload(request, entry,sb, new Hashtable());
 	    if(result!=null) return result;
-	}
-	else
+	} else {
 	    sb.append("Unknown report:" + report);
+	}
 	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result = new Result("Assets Report - " + entry.getName(),sb);
-        return getEntryManager().addEntryHeader(request, entry, result);
+        return getEntryManager().addEntryHeader(request, entry, new Result("Assets Report - " + entry.getName(),sb));
     }
 
     @Override
-    public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,  Entry originalEntry,
+				 Entry entry,  String tag, Hashtable props)
 	throws Exception {
-	if(tag.equals(TAG_HEADER)) {
-	    if(assetHeaderWiki==null) {
-		assetHeaderWiki =
-		    getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetheader.txt");
-	    }
-	    return getWikiManager().wikifyEntry(request, entry,assetHeaderWiki);
-	}
-	if(tag.equals(TAG_SUMMARY)) {
-	    if(assetSummaryWiki==null) {
-		assetSummaryWiki =
-		    getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetsummary.txt");
-	    }
-	    return getWikiManager().wikifyEntry(request, entry,assetSummaryWiki);
-	}	
-        if (tag.equals("assets_report_link")) {
-	    String url =getEntryActionUrl(request,  entry,ACTION_REPORT);
-	    return HU.div(HU.href(url,"Reports"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
-	}
+	if(tag.equals(TAG_HEADER)) return getWikiManager().wikifyEntry(request, entry,assetHeaderWiki);
+	if(tag.equals(TAG_SUMMARY)) return getWikiManager().wikifyEntry(request, entry,assetSummaryWiki);
+        if (tag.equals("assets_report_link")) 
+	    return HU.div(HU.href(getEntryActionUrl(request,  entry,ACTION_REPORT),"Reports"),
+			  HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
+	StringBuilder sb = new StringBuilder();
         if (tag.equals(REPORT_TABLE)) {
-	    StringBuilder sb = new StringBuilder();
 	    makeReportTable(request, entry,sb,props);
 	    return sb.toString();
 	}
         if (tag.equals(REPORT_COUNTS)) {
-	    StringBuilder sb = new StringBuilder();
 	    makeReportCounts(request, entry,sb,props);
 	    return sb.toString();
 	}
         if (tag.equals(REPORT_COSTS)) {
-	    StringBuilder sb = new StringBuilder();
 	    makeReportCosts(request, entry,sb,props);
 	    return sb.toString();
 	}	
         if (tag.equals(REPORT_WARRANTY)) {
-	    StringBuilder sb = new StringBuilder();
 	    makeReportWarranty(request, entry,sb,props);
 	    return sb.toString();
 	}		
-
         if (tag.equals(REPORT_MAINTENANCE)) {
-	    StringBuilder sb = new StringBuilder();
 	    makeReportMaintenance(request, entry,sb,props);
 	    return sb.toString();
 	}	
@@ -320,23 +232,16 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		    xlsUrl = HU.url(xlsUrl,ARG_TYPES,typeSelect);
 		}
 	    }
-
+	    
 	    if(!request.get(ARG_SEPARATETYPES,false)) {
-		xlsUrl = HU.url(xlsUrl,ARG_SEPARATETYPES,"false");
-		xlsUrl = HU.url(xlsUrl,ARG_TAGS,"_none_");
-		xlsUrl = HU.url(xlsUrl,ARG_SHOWTYPE,"true");
-		if(stringDefined(title)) {
-		    xlsUrl = HU.url(xlsUrl,	ARG_TITLE,title.replace("${sheet}","all assets"));
-		}
+		xlsUrl = HU.url(xlsUrl,ARG_SEPARATETYPES,"false",ARG_TAGS,"_none_",ARG_SHOWTYPE,"true");
+		if(stringDefined(title)) title = title.replace("${sheet}","all assets");
 	    } else {
-		if(stringDefined(title)) {
-		    xlsUrl = HU.url(xlsUrl,	ARG_TITLE,title);
-		}
 		if(!request.get(ARG_ALLCOLUMNS,false)) {
 		    xlsUrl = HU.url(xlsUrl,ARG_TAGS,"reportable");
 		}	    
 	    }
-
+	    if(stringDefined(title)) xlsUrl = HU.url(xlsUrl, ARG_TITLE,title);
 	    int op = 0;
 	    String minCost = request.getString(ARG_MIN_COST,"");
 	    if(stringDefined(minCost)) {
@@ -354,8 +259,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 			       ARG_OPERATOR_COLUMN+op,"acquisition_cost",
 			       ARG_OPERATOR_VALUE+op,maxCost);
 	    }
-
-
 	    return new Result(xlsUrl);
 	}
 	String url =  request.makeUrl(getRepository().URL_ENTRY_ACTION);
@@ -364,8 +267,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
 	sb.append(HU.hidden(ARG_REPORT,REPORT_DOWNLOAD));
 	sb.append(HU.formTable());
-	HU.formEntry(sb,msgLabel("Title"),HU.input(ARG_TITLE,request.getString(ARG_TITLE,"Asset report for ${sheet}"),
-						   HU.SIZE_60));
+	HU.formEntry(sb,msgLabel("Title"),
+		     HU.input(ARG_TITLE,request.getString(ARG_TITLE,"Asset report for ${sheet}"),HU.SIZE_60));
 	
 	List options = new ArrayList();
 	options.add(new HtmlUtils.Selector("All Asset Types",""));
@@ -382,8 +285,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		     HU.input(ARG_MAX_COST,"",HU.attrs("size","10","placeholder","Max value")));
 	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_ALLCOLUMNS,"true",true,"All Fields"));
 	HU.formEntry(sb,"",HU.labeledCheckbox(ARG_SEPARATETYPES,"true",true,"Separate asset types"));	
-
-
 	HU.formEntry(sb,"",HU.submit("Download",ARG_DOWNLOAD));
 	sb.append(HU.formTableClose());	
 	sb.append(HU.formClose());
@@ -391,55 +292,31 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     }
 
     private void makeReportTable(Request request, Entry entry, StringBuilder sb,Hashtable props) throws Exception {
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	Date now = new Date();
-	String types = Utils.getProperty(props,"types","super:type_assets_base,type_assets_license");
-	types = HU.urlEncode(types);
 	boolean showHeader   = Utils.getProperty(props,"showHeader",true);
 	String guid = HU.getUniqueId("assets");
-	//	String searchUrl =  HU.urlEncode(getSearchUrl(request,entry,null));
 	String searchUrl =  getSearchUrl(request,entry,null);	
-	//	String contentsWiki = "{{table 	showHeader=" + showHeader+" entries=\"searchurl:/repository/search/do?forsearch=true&type=" + types+"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=5000&skip=0\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
 	String contentsWiki = "{{table 	dateLabel=\"Purchase Date\" showHeader=" + showHeader+" entries=\"searchurl:" +
 	    searchUrl+"\" display=list showBreadcrumbs=false entryRowClass=\"" + guid+"\"}}";
-
-
-	sb.append("<center>");
+	sb.append("<center>\n");
 	HU.script(sb,"HtmlUtils.initPageSearch('." + guid+"','.ramadda-entry-table','Search in page')");
-	sb.append("</center>");
-	sb.append("\n");
-	//	HU.open(sb,"div",HU.attrs("id",guid,"class","assets-block"));
-	sb.append("\n");
+	sb.append("</center>\n");
 	wikify(request, entry,sb,contentsWiki);
-	//	HU.close(sb,"div");
-	sb.append("\n");
     }
 
     private String cleanColumnValue(String v) {
 	if(v==null) return v;
-	v = v.replace("\"","_qt_");
-	v = v.replace("\n","_nl_");
-	v = v.replace(",","_comma_");
-	return v;
+	return  v.replace("\"","_qt_").replace("\n","_nl_").replace(",","_comma_");
     }
 
     private String inlineData(StringBuilder buff,String id,String header,LinkedHashMap<String,Integer> map,String wiki) {
 	String guid = HU.getUniqueId(id);
-	buff.append(HU.comment("inline data for " + id));
 	buff.append(HU.open("div",HU.attrs("style","display:none","id",guid)));
-	buff.append(header);
-	buff.append("\n");
+	Utils.append(buff,header,"\n");
 	for (String key : map.keySet()) {
-	    Integer value = map.get(key);
-	    buff.append(cleanColumnValue(key));
-	    buff.append(",");
-	    buff.append(value);
-	    buff.append("\n");
+	    Utils.append(buff,cleanColumnValue(key),",",map.get(key),"\n");
 	}
-	HU.close(buff,"div");
-	buff.append("\n");
-	wiki=wiki.replace("${" + id+"}",guid);
-	return wiki;
+	buff.append("</div>\n");
+	return wiki.replace("${" + id+"}",guid);
     }
 
     private String strip(Hashtable props,String wiki, String... keys) {
@@ -453,21 +330,16 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 
     private String inlineData(StringBuilder buff,String id,String csv,String wiki) {
 	String guid = HU.getUniqueId(id);
-	buff.append(HU.comment("inline data for "+ id));
 	buff.append(HU.open("div",HU.attrs("style","display:none","id",guid)));
 	buff.append(csv);
-	HU.close(buff,"div");
-	buff.append("\n");
-	wiki=wiki.replace("${" + id+"}",guid);
-	return wiki;
+	buff.append("</div>\n");
+	return wiki.replace("${" + id+"}",guid);
     }
 
     private void addCount(LinkedHashMap<String,Integer> map,String label) {
 	if(!stringDefined(label)) label="NA";
 	Integer typeCnt = map.get(label);
-	if(typeCnt==null) {
-	    map.put(label,typeCnt=new Integer(0));
-	}		 
+	if(typeCnt==null)  map.put(label,typeCnt=new Integer(0));
 	map.put(label,new Integer(typeCnt+1));
     }
 
@@ -493,8 +365,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		buff.append("</center>");
 	    }
 	    buff.append("<div class=ramadda-entry>");
-	    if(didOne)
-		buff.append("<div class=ramadda-hr></div>\n");
+	    if(didOne) buff.append("<div class=ramadda-hr></div>\n");
 	    didOne=true;
 	    buff.append(getEntryManager().getEntryLink(request,child,true,""));
 	    buff.append("<div style='margin-left:20px;'>");
@@ -570,7 +441,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		else if(close) list = warrantyClose;		
 		else list = warrantyOk;
 	    }
-
 	    list.add(HU.row(HU.td(link)+  HU.td(date==null?"NA":sdf.format(date),"align=right")+HU.td(expired?"Yes":(close?"1 month":(none?"NA":"No"))),
 			    HU.attrs("class",expired?"assets-expired":(close?"assets-close":(none?"assets-none":"assets-ok")))));
 	}
@@ -690,7 +560,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    addCount(department,departmentEntry==null?"NA":departmentEntry.getName());
 	    Entry locationEntry = getLocation(request,child);
 	    addCount(location,locationEntry==null?"NA":locationEntry.getName());
-	    String assignedTo = child.getEnumValue(request,"assigned_to","");
+	    String assignedTo = child.getEnumValue(request,COL_ASSIGNED_TO,"");
 	    Entry personnel = getEntryManager().getEntry(request, assignedTo,true);
 	    addCount(assignedto,personnel!=null?personnel.getName():"NA");
 	    if(child.getTypeHandler().isType("type_assets_physical")) {
@@ -699,41 +569,38 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		addCount(condition,child.getEnumValue(request,"condition",""));
 	    }
 	}
-
-	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
+	String wiki =	summaryReportWiki;
 	if(statusCnt==0) {
 	    wiki = wiki.replaceAll("(?s)<status>.*</status>","");
 	}
 	wiki = inlineData(buff,"typesdata","type,count",types,wiki);
-	wiki = 	inlineData(buff,"departmentdata","department,count",department,wiki);
-	wiki = 	inlineData(buff,"locationdata","location,count",location,wiki);
-	wiki = 	inlineData(buff,"assignedtodata","assigned to,count",assignedto,wiki);
-	wiki = 	inlineData(buff,"statusdata","status,count",status,wiki);
-	wiki = 	inlineData(buff,"conditiondata","condition,count",condition,wiki);	 	 	 	 	 
+	wiki = inlineData(buff,"departmentdata","department,count",department,wiki);
+	wiki = inlineData(buff,"locationdata","location,count",location,wiki);
+	wiki = inlineData(buff,"assignedtodata","assigned to,count",assignedto,wiki);
+	wiki = inlineData(buff,"statusdata","status,count",status,wiki);
+	wiki = inlineData(buff,"conditiondata","condition,count",condition,wiki);	 	 	 	 	 
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
     }
 
-    private Entry getVendor(Request request, Entry entry) throws Exception {
-	String id = entry.getStringValue(request, "vendor",null);
+    private Entry getEntry(Request request, String id) throws Exception {
 	if(!stringDefined(id)) return null;
 	return getEntryManager().getEntry(request, id,true);
     }
 
+    private Entry getVendor(Request request, Entry entry) throws Exception {
+	return getEntry(request,entry.getStringValue(request, COL_VENDOR,null));
+    }
+
     private Entry getLocation(Request request, Entry entry) throws Exception {
-	String id = entry.getStringValue(request, "location_entry",null);
-	if(!stringDefined(id)) return null;
-	return getEntryManager().getEntry(request, id,true);
+	return getEntry(request,entry.getStringValue(request, COL_LOCATION_ENTRY,null));
     }
     
     private Entry getDepartment(Request request, Entry entry) throws Exception {
-	String id = entry.getStringValue(request, "department",null);
-	if(!stringDefined(id)) return null;
-	return getEntryManager().getEntry(request, id,true);
+	return getEntry(request,entry.getStringValue(request, COL_DEPARTMENT,null));
     }    
 
     private void makeReportCosts(Request request, Entry entry, StringBuilder buff,Hashtable props ) throws Exception {
 	StringBuilder csv = new StringBuilder();
-
 	if(!makeCsvCosts(request,  entry,  csv,props )) {
 	    buff.append(getPageHandler().showDialogNote("No assets available"));
 	    return;
@@ -741,8 +608,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	String wiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/costreport.txt");
 	String title = Utils.getProperty(props,"summaryTitle","Summary");
 	if(stringDefined(title)) title = ":heading " + title;
-	wiki = wiki.replace("${summary_title}",title);
-	wiki = wiki.replace("${table_title}",Utils.getProperty(props,"tableTitle","Table"));	
+	wiki = wiki.replace("${summary_title}",title).replace("${table_title}",Utils.getProperty(props,"tableTitle","Table"));	
 	wiki = strip(props,wiki,"showSummary","costs_summary","showTable","costs_table");
 	wiki = inlineData(buff,"costdata",csv.toString(),wiki);
 	buff.append(getWikiManager().wikifyEntry(request, entry, wiki));
@@ -751,10 +617,6 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     private boolean makeCsvCosts(Request request, Entry entry, StringBuilder csv,Hashtable props ) throws Exception {
 	csv.append("Name[type=string],Cost[type=double],Asset Type[type=enumeration],Department[type=enumeration],Vendor[type=enumeration],Url,Icon\n");
 	List<Entry> entries = getEntries(request, entry,props);
-	if(entries.size()==0) {
-	    return false;
-	}
-
 	int cnt =0;
 	for(Entry child: entries) {
 	    if(!child.getTypeHandler().isType("type_assets_base")) {
@@ -762,30 +624,23 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	    }
 	    Double cost=(Double) child.getValue(request,"acquisition_cost");
 	    if(cost==null || Double.isNaN(cost)) continue;
-
-	    String url = getEntryManager().getEntryURL(request,child);
 	    String        entryIcon = getPageHandler().getIconUrl(request, child);
-	    Entry vendor = getVendor(request, child);
+	    Entry vendorEntry = getVendor(request, child);
+	    Entry departmentEntry = getDepartment(request,child);
 	    csv.append(cleanColumnValue(child.getName()));
-	    csv.append(",");	    
-	    csv.append(cost);
-	    csv.append(",");
+	    csv.append(","); csv.append(cost);  csv.append(",");
 	    csv.append(cleanColumnValue(child.getTypeHandler().getLabel()));
 	    csv.append(",");
-	    Entry departmentEntry = getDepartment(request,child);
 	    csv.append(cleanColumnValue(departmentEntry==null?"NA":departmentEntry.getName()));
 	    csv.append(",");	    
-	    csv.append(cleanColumnValue(vendor==null?"NA":vendor.getName()));
+	    csv.append(cleanColumnValue(vendorEntry==null?"NA":vendorEntry.getName()));
 	    csv.append(",");	    
-	    csv.append(cleanColumnValue(url));
+	    csv.append(cleanColumnValue(getEntryManager().getEntryURL(request,child)));
 	    csv.append(",");
 	    csv.append(cleanColumnValue(entryIcon));
 	    csv.append("\n");
 	    cnt++;
 	}
-	if(cnt==0) {
-	    return false;
-	}
-	return true;
+	return cnt!=0;
     }
 }

@@ -13,16 +13,13 @@ import org.ramadda.util.WikiUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
-import org.w3c.dom.*;
-import org.json.*;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandler {
     private TTLCache<String,String> seenId= new TTLCache<String,String>(Utils.minutesToMillis(2));
-    public AssetTypeHandler(Repository repository, Element node)
+    public AssetTypeHandler(Repository repository, org.w3c.dom.Element node)
 	throws Exception {
         super(repository, node);
     }
@@ -30,17 +27,13 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
     @Override
     public synchronized void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-	String id = entry.getStringValue(request,"asset_id",null);
-	if(stringDefined(id)) return;
+	if(stringDefined(entry.getStringValue(request,"asset_id",null))) return;
 	String type = entry.getTypeHandler().getTypeProperty("asset.type",null);
 	if(type==null) {
-	    type = entry.getTypeHandler().getType();
-	    type = type.replace("type_assets_","");
-	    type = type.toUpperCase();
+	    type = entry.getTypeHandler().getType().replace("type_assets_","").toUpperCase();
 	}
-
 	int cnt=0;
-	id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
+	String id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	while(seenId.get(id)!=null || getDatabaseManager().tableContains("TYPE_ASSETS_BASE", "ASSET_ID",id)) {
 	    cnt++;
 	    id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
@@ -55,16 +48,13 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
     }
 
     @Override
-    public void addTagDefinition(List<String>  tags) {
-    }
+    public void addTagDefinition(List<String>  tags) {}
 
     private void initJS(Request request, StringBuilder sb) throws Exception {
-	HU.div(sb,"",HU.attrs("id","barcodedebug",
-			      "style","margin:5px;padding:5px;text-align:left;width:100%;max-height:200px;overflow-y:auto;"));
-
-	HU.importJS(sb,getRepository().getHtdocsUrl("/lib/zxing/zxing.min.js"));
-	HU.importJS(sb,getRepository().getHtdocsUrl("/assets/barcode.js?time=" + (new Date().getTime())));
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css?time=" + (new Date().getTime()))));
+	HU.div(sb,"",HU.attrs("id","barcodedebug", "style","margin:5px;padding:5px;text-align:left;width:100%;max-height:200px;overflow-y:auto;"));
+	HU.importJS(sb,getRepository().getHtdocsUrl("/lib/zxing/zxing.min.js"),
+		    getRepository().getHtdocsUrl("/assets/barcode.js",true));
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css",true)));
     }
 
     @Override
@@ -83,38 +73,27 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 		Utils.add(args,"defaultType",JU.quote(type),"defaultTypeLabel",JU.quote(assetType.getLabel()));
 	    }
 	}
-	if(Utils.getProperty(props,"doScan",false)) {
-	    Utils.add(args,"scanMode","true");
-	}
-
+	if(Utils.getProperty(props,"doScan",false))  Utils.add(args,"scanMode","true");
 	String entryId = Utils.getProperty(props,"parent",entry.getId());
 	Utils.add(args,"entryid",JU.quote(entryId));
-	StringBuilder js = new StringBuilder();
-	js.append(HU.call("new AssetHandler",HU.squote(uid),JU.map(args)));
-	HU.script(sb,js.toString());
+	HU.script(sb,HU.call("new AssetHandler",HU.squote(uid),JU.map(args)));
 	return sb.toString();
-
     }
 
     @Override
     public void addColumnToEntryForm(Request request, Entry parentEntry, Entry entry,
                                      Column column, Appendable formBuffer,
                                      Object[] values, Hashtable state,
-                                     FormInfo formInfo,
-                                     TypeHandler sourceTypeHandler)
+                                     FormInfo formInfo, TypeHandler sourceTypeHandler)
 	throws Exception {
-	super.addColumnToEntryForm(request, parentEntry, entry,
-				   column,formBuffer,
-				   values, state, formInfo,
-				   sourceTypeHandler);
+	super.addColumnToEntryForm(request, parentEntry, entry, column,
+				   formBuffer, values, state, formInfo, sourceTypeHandler);
 	if(!column.getName().equals("asset_id")) return;
 	StringBuilder sb = new StringBuilder();
 	initJS(request, sb);
 	List<String> args = new ArrayList<String>();
 	Utils.add(args,"editMode","true");
-	StringBuilder js = new StringBuilder();
-	js.append(HU.call("new AssetHandler","null",JU.map(args)));
-	HU.script(sb,js.toString());
+	HU.script(sb,HU.call("new AssetHandler","null",JU.map(args)));
 	formBuffer.append(sb.toString());
     }
 }

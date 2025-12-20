@@ -7,6 +7,7 @@ package org.ramadda.geodata.geo;
 
 import org.ramadda.repository.output.WikiTagHandler;
 import org.ramadda.repository.output.WikiTags;
+import org.ramadda.repository.output.WikiTag;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -262,22 +263,22 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 
     }
     
-    private static final  WikiTags.WikiTag wikiTag = new WikiTags.WikiTag("core_visualizer",null,
-									  "tt","Core Visualizer",
-									  "otherEntries","comma separated list of other image collections",
-									  "displayEntries","comma separated list of data entries",
-									  "canvasHeight","400",
-									  "top","0",
-									  "showLegend","true",
-									  "showAnnotations","true",
-									  "imageWidthScale","1",
-									  "maxColumnWidth","200",
-									  "doRotation","true",
-									  "scaleY","1",
-									  "showLabels","true",
-									  "showHighlight","true",
-									  "showMenuBar","true",
-									  "initScale","1.0");
+    private static final  WikiTag wikiTag = new WikiTag("core_visualizer",null,
+							"tt","Core Visualizer",
+							"otherEntries","comma separated list of other image collections",
+							"displayEntries","comma separated list of data entries",
+							"canvasHeight","400",
+							"top","0",
+							"showLegend","true",
+							"showAnnotations","true",
+							"imageWidthScale","1",
+							"maxColumnWidth","200",
+							"doRotation","true",
+							"scaleY","1",
+							"showLabels","true",
+							"showHighlight","true",
+							"showMenuBar","true",
+							"initScale","1.0");
 
     @Override
     public void addTagDefinition(List<String>  tags) {

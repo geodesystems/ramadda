@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.media;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -410,13 +411,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         return sb.toString();
     }
 
-    public void getWikiTags(List<String[]> tags, Entry entry) {
-	tags.add(new String[]{"3dmodel","3dmodel \n#width=600 #height=400 #background=f4f4f4 \n" +
-			      "#showAxes=true #axesColor=red \n" +
-			      "#showBox=true #bboxColor=#ff0000 \n" +
-			      "#cameraPosition=\"posx,posy,posz;rotx;roty;rotz\" \n" +
-			      "#ambientLight=\"#404040,30\" #lights=\"#ff0000,x,y,z,intensity;...\" \n"
-	    });
+    @Override
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
+	tags.add(new WikiTag("3dmodel \n#width=600 #height=400 #background=f4f4f4 \n" +
+			     "#showAxes=true #axesColor=red \n" +
+			     "#showBox=true #bboxColor=#ff0000 \n" +
+			     "#cameraPosition=\"posx,posy,posz;rotx;roty;rotz\" \n" +
+			     "#ambientLight=\"#404040,30\" #lights=\"#ff0000,x,y,z,intensity;...\" \n",
+			     "3dmodel"));
     }
 
     @Override

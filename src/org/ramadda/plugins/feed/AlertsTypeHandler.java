@@ -8,6 +8,7 @@ package org.ramadda.plugins.feed;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
@@ -54,9 +55,9 @@ public class AlertsTypeHandler extends GenericTypeHandler {
     }
 
     @Override
-    public void getWikiTags(List<String[]> tags, Entry entry) {
+    public void getWikiTags(List<WikiTag> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
-        tags.add(new String[]{"NWS Alerts","nws_alerts"});
+        tags.add(new WikiTag("nws_alerts","NWS Alerts"));
     }
 
 
