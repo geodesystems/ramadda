@@ -1,6 +1,4 @@
-:p
-----
-:p
+:vspace 1em
 +row
 +col-2
 :b Asset Type
