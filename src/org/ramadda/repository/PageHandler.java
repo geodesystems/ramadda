@@ -375,7 +375,7 @@ public class PageHandler extends RepositoryManager {
     public void addJSImports(Appendable sb, String resourcePath)
             throws Exception {
         for (String[] file : readWebResources(resourcePath)) {
-            HU.importJS(sb, file[0], (file.length > 1)
+            HU.importJSWithIntegrity(sb, file[0], (file.length > 1)
                                      ? file[1]
                                      : null);
             sb.append("\n");
