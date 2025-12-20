@@ -89,10 +89,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     initToggleTable:function(container) {
-	$(container).find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE)).click(function() {
+	let elements = $(container).find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE));
+	if(elements.length==0) {
+	    elements= $(container).find('[data-url]');
+	}
+	elements.click(function() {
 	    let url = $(this).attr('data-url');
 	    if(!url) return;
 	    let title = $(this).attr('data-title')??'';
+	    let entryId = $(this).attr('data-entryid');
 	    let handler = request => {
 		if (request.responseXML == null) return;
 		let xmlDoc = request.responseXML.documentElement;
@@ -113,6 +118,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5),
 						     CSS_MAX_HEIGHT,HU.px(300),
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)], html);
+		    if(entryId) {
+			title  = HU.href(RamaddaUtils.getEntryUrl(entryId),title);
+		    }
 		    let dialog =  HU.makeDialog({content:html,
 						 my:POS_LEFT_TOP,
 						 at:POS_LEFT_BOTTOM,
