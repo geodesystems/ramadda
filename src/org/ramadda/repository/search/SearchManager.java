@@ -1271,7 +1271,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return makeAnd(ands);
     }
 
-    public void processSearchUrl(Request request, List<Entry> entries, String url) throws Exception {
+    public List<Entry> processSearchUrl(Request request, List<Entry> entries, String url) throws Exception {
 	Request searchRequest = new Request(getRepository(),request.getUser());
 	List<String> args = IO.parseArgs(url);
 	for(int i=0;i<args.size();i+=2) {
@@ -1280,6 +1280,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    searchRequest.put(key,value,false);
 	}
 	processLuceneSearch(searchRequest,entries);
+	return entries;
     }
 
     public Query makeQuery(Request request,boolean[]hasArea)
