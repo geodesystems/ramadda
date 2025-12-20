@@ -4149,12 +4149,13 @@ img.metadata-tag-selected {
     max-width: 100%;
 }
 
+
 .ramadda-system-message {
     z-index:var(--ui-dialog-z-index);
+    border-radius: var(--default-radius);
     margin:4px;
     padding:4px;
-    border: 1px #aaa solid;
-    font-weight: bold; 
+    border: var(--basic-border);
     background:var(--color-mellow-yellow);
 }
 
