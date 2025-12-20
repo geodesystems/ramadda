@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project basedir="../../../../" default="plugins" name="Project Plugins">
-
     <target name="init">
        <tstamp>
          <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
@@ -9,24 +8,12 @@
         <property file="${basedir}/build.properties"/>
     </target>
 
-
-
     <target name="plugins" depends="init">
-<!--
-      <ant antfile="${src_dir}/org/ramadda/projects/aap/build.xml" inheritAll="false"/>
--->
-
       <ant antfile="${src_dir}/org/ramadda/projects/asdi/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/fec/build.xml" inheritAll="false"/>
-<!--
-      <ant antfile="${src_dir}/org/ramadda/projects/kbocc/build.xml" inheritAll="false"/>
--->
-<!--
-    <ant antfile="${src_dir}/org/ramadda/projects/sdb/build.xml" inheritAll="false"/>
-    -->
-<!--
-      <ant antfile="${src_dir}/org/ramadda/projects/usna/build.xml" inheritAll="false"/>
--->
+      <ant antfile="${src_dir}/org/ramadda/projects/assets/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/missing/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/kbocc/build.xml" inheritAll="false"/>      
     </target>
     
 </project>
