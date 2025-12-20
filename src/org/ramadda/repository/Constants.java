@@ -751,6 +751,7 @@ public interface Constants {
     public static final String HR = "<hr>";
     public static final String BLANK = "";
     public static final String MIME_XML = "text/xml";
+    public static final String MIME_CSV = "text/csv";
     public static final String MIME_TEXT = "text/plain";
     public static final boolean DFLT_INHERITED = false;
     public static final String DEFAULT_SEARCH_SIZE = "100";
