@@ -1861,6 +1861,10 @@ public class WikiUtil implements HtmlUtilsConstants {
 					  + ";");
                         }
 		    }
+		    if (styles.length() == 0 && toks.size()==2 && toks.get(1).matches("^\\d+$")) {
+			styles.append("margin:" + HU.makeDim(toks.get(1))+";");
+		    }
+
 		    if (styles.length() > 0) {
 			extra.append(HU.style(styles.toString()));
                     }
