@@ -620,7 +620,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		gridTemplateList.push(HU.px(col.width));
 	    } else {
 		col.fixed=false;
-		gridTemplateList.push('minmax(200px, 1fr)');
+		if(col.id==FIELD_NAME) {
+		    gridTemplateList.push('minmax(200px, 2fr)');
+		} else {
+		    gridTemplateList.push('minmax(100px, 1fr)');
+		}
 	    }
 	});
 	let rowStyle = '';
