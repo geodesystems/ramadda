@@ -550,16 +550,21 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		colString+=',' + FIELD_EDITCOLUMNS;
 	    }
 	}
-	let colList = Utils.split(colString,',',true,true);
-	let dateWidth = 140;
-	let typeWidth = 140;	
+	let dateWidth = 150;
+	let typeWidth = props.typeWidth??150;	
 	let sizeWidth  =80;
+	let colList = Utils.split(colString,',',true,true);
 	colList.forEach(c=>{
-	    if(c==FIELD_NAME && props.showName)
+	    if(c==FIELD_NAME && props.showName) {
 		cols.push({id:'name',label:'Name',width:props.nameWidth});
-	    else if(c==FIELD_DATE && props.showDate)
-		cols.push({id:FIELD_FROMDATE,label:'Date',width:props.fromDateWidth??props.dateWidth??dateWidth});
-	    else if(c==FIELD_EDITCOLUMNS) {
+	    } else if(c==FIELD_DATE && props.showDate) {
+		cols.push({id:FIELD_FROMDATE,label:'Date',
+			   width:props.fromDateWidth??props.dateWidth??dateWidth});
+	    }  else if(c==FIELD_CREATEDATE && props.showCreateDate) {
+		cols.push({id:c,align:ALIGN_RIGHT,label:'Create Date',
+			   width:props.createDateWidth??props.dateWidth??dateWidth});
+
+	    }   else if(c==FIELD_EDITCOLUMNS) {
 		cols.push({align:ALIGN_LEFT,overflowX:OVERFLOW_AUTO,
 			   cansort:false,
 			   id:FIELD_EDITCOLUMNS,
@@ -573,8 +578,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }	else if(c=='latlon') {
 		cols.push({id:FIELD_LATITUDE,label:'Latitude',width:100});
 		cols.push({id:FIELD_LONGITUDE,label:'Longitude',width:100});
-	    }  else if(c==FIELD_CREATEDATE && props.showCreateDate) {
-		cols.push({id:c,align:ALIGN_RIGHT,label:'Create Date',width:props.createDateWidth??props.dateWidth??dateWidth});
 	    }  else if(c==FIELD_DOWNLOAD && props.showDownload) {
 	    	cols.push({id:c,label:'&nbsp;Download&nbsp;',width:100,align:ALIGN_LEFT});
 	    }  else if(c==FIELD_TIME && props.showTime) {
@@ -584,7 +587,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }  else if(c==FIELD_ENTRYORDER && props.showEntryOrder) {
 		cols.push({id:c,align:ALIGN_RIGHT,label:'Order',width:75});
 	    }  else if(c==FIELD_CHANGEDATE && props.showChangeDate) {
-		cols.push({id:c,align:ALIGN_RIGHT,label:'Change Date',width:props.changeDateWidth??props.dateWidth??dateWidth});
+		cols.push({id:c,align:ALIGN_RIGHT,label:'Change Date',
+			   width:props.changeDateWidth??props.dateWidth??dateWidth});
 	    }   else if(c==FIELD_SIZE && props.showSize) {
 		cols.push({align:ALIGN_RIGHT,
 			   id:c,label:'Size',width:props.sizeWidth??sizeWidth});
@@ -592,7 +596,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:c,
 			   label:'Type',
 			   align:ALIGN_LEFT,
-			   width:props.typeWidth??typeWidth});
+			   width:typeWidth});
 	    }   else if(c==FIELD_ATTACHMENTS && props.showAttachments) {
 		cols.push({id:c,label:'Attachments',
 			   align:ALIGN_LEFT,
@@ -605,6 +609,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	let gridTemplateList=[];
 	cols.forEach((col,idx)=> {
+	    col.last = idx==cols.length-1;
+	    let colStyle='';
+	    if(col.align) colStyle=HU.css(CSS_TEXT_ALIGN,col.align);
+	    if(col.last) colStyle=HU.css(CSS_PADDING_LEFT,HU.px(4));
+	    col.style=colStyle;
 	    if(Utils.isDefined(col.width)) {
 		col.fixed=true;
 		gridTemplateList.push(HU.px(col.width));
@@ -1038,14 +1047,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let rowId = Utils.getUniqueId('row_');
 	    let innerId = Utils.getUniqueId();
 	    cols.forEach((col,idx)=> {
-		let last = idx==cols.length-1;
 		let cellClass=CLASS_ENTRY_TABLE_CELL;		
 		if(col.fixed) {
 		    cellClass+=HU.classes(CLASS_ENTRY_TABLE_CELL_FIXED);		
 		} else {
 		    cellClass+=HU.classes(CLASS_ENTRY_TABLE_CELL_FLEX);		
 		}
-		let cellStyle='';
 		let cellValue = entry.getProperty(col.id,{},props.inlineEdit)??'';
 		if(typeof cellValue=='number' && isNaN(cellValue))
 		    cellValue ='NA'
@@ -1136,8 +1143,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			cellValue+=rowExtra;
 		    }
 		} else  if(col.id==FIELD_TYPE) {
-		    cellValue = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),cellValue,
-					[ATTR_DATA_CORPUS,'type:'+ entry.getType() + ' ' + _v,
+		    cellValue = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),
+					cellValue,
+					[ATTR_DATA_CORPUS,'type:'+ entry.getType().getLabel() + ' ' + _v,
 					 ATTR_TITLE,Utils.delimMsg('Search for entries of type') +' ' + _v]);
 		} else  if(col.id==FIELD_ATTACHMENTS) {
 		    cellValue='';
@@ -1183,15 +1191,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(items.length>0) {
 			cellValue=HU.hbox(items);
 			cellValue  =
-			    HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.getDimension(col.width), CSS_OVERFLOW_X,OVERFLOW_AUTO)], cellValue);
+			    HU.div([ATTR_STYLE,
+				    HU.css(CSS_MAX_WIDTH,HU.getDimension(col.width),
+					   CSS_OVERFLOW_X,OVERFLOW_AUTO)], cellValue);
 		    }
 		}
-		let maxWidth =  col.width;		    
-		let wrapStyle = '';
-		if(col.align) wrapStyle=HU.css(CSS_TEXT_ALIGN,col.align);
-		if(last) wrapStyle+=HU.css(CSS_PADDING_LEFT,HU.px(4));
-		cellValue = HU.div([ATTR_STYLE,wrapStyle],cellValue);
-		line+=HU.div([ATTR_CLASS,cellClass,ATTR_STYLE,cellStyle],cellValue);
+		line+=HU.div([ATTR_CLASS,cellClass,ATTR_STYLE,col.style],cellValue);
 	    });		
 
 	    let title='';
