@@ -579,7 +579,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:FIELD_LATITUDE,label:'Latitude',width:100});
 		cols.push({id:FIELD_LONGITUDE,label:'Longitude',width:100});
 	    }  else if(c==FIELD_DOWNLOAD && props.showDownload) {
-	    	cols.push({id:c,label:'&nbsp;Download&nbsp;',width:100,align:ALIGN_LEFT});
+	    	cols.push({id:c,label:'Download',width:100,align:ALIGN_LEFT});
 	    }  else if(c==FIELD_TIME && props.showTime) {
 		cols.push({id:c,label:'&nbsp;Time&nbsp;',width:100,align:ALIGN_RIGHT});	    	    
 	    } else if(c==FIELD_CREATOR && props.showCreator) {

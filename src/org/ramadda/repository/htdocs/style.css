@@ -3141,6 +3141,7 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 .entry-table-header .entry-table-cell {
     padding-top:4px;
     padding-bottom:4px;    
+    white-space:nowrap;
 }
 
 .ramadda-single-line {

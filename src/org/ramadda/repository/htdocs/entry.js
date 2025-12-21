@@ -898,7 +898,8 @@ function Entry(props) {
 						 ATTR_DATA_FIELD,'entryorder']);
 	    }
 	    if(what==FIELD_CREATOR) {
-		let searchUrl = HU.url(RamaddaUtil.getUrl('/search/do'),'user_id',this.creator,'search.submit','true');
+		let searchUrl = HU.url(RamaddaUtil.getUrl('/search/do'),
+				       'user_id',this.creator,'search.submit','true');
 		let created = HU.href(searchUrl,
 				      Utils.stringDefined(this.creatorName)?this.creatorName:this.creator,
 				      [ATTR_TITLE,'Search for entries of this type created by this user']);
@@ -915,12 +916,18 @@ function Entry(props) {
 	    if(what==FIELD_ALTITUDE) {
 		return this.getAltitude();
 	    }	    
-	    if(what==FIELD_CREATEDATE) return HU.span([ATTR_CLASS,CLASS_DATETIME,
-						   ATTR_TITLE,this.createDate],this.createDateFormat);
-	    if(what==FIELD_CHANGEDATE) return HU.span([ATTR_CLASS,CLASS_DATETIME,
-						   ATTR_TITLE,this.changeDate],this.changeDateFormat);
+	    if(what==FIELD_CREATEDATE) {
+		return HU.span([ATTR_CLASS,CLASS_DATETIME,
+				ATTR_TITLE,this.createDate],this.createDateFormat);
+	    }
+	    if(what==FIELD_CHANGEDATE) {
+		return HU.span([ATTR_CLASS,CLASS_DATETIME,
+				ATTR_TITLE,this.changeDate],this.changeDateFormat);
+	    }
 	    if(what==FIELD_SIZE) {
-		return this.getFilesize()?this.getFormattedFilesize():"---";
+		if(!this.getIsFile()) return  "----";
+		let url = this.getResourceUrl();
+		return HU.href(url,this.getFilesize()?this.getFormattedFilesize():"---");
 	    }
 	    if(what==FIELD_TYPE) {
 		return this.typeName;
