@@ -124,8 +124,10 @@
     <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
     <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
     <ant antfile="${src_dir}/org/ramadda/bio/build.xml" inheritAll="false"/>
+<!--
     <echo message="Building project plugins"/>
     <ant antfile="${src_dir}/org/ramadda/projects/build.xml" inheritAll="false"/>
+    -->
     <ant antfile="${src_dir}/gov/noaa/esrl/psd/repository/build.xml" inheritAll="false"/>
 
     <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
