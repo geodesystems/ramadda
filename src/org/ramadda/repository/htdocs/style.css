@@ -3073,6 +3073,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     background:var(--color-mellow-yellow);
 }
 
+.entry-table-widget {
+    margin-right:6px !important;
+}
+
 .entry-table-noheader {
     border-bottom : 1px #d8d8d8 solid;
 }
@@ -3154,7 +3158,6 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-table-row-toggle {
-    margin-right:4px;
 }
 
 .entry-table-row-toggle i {
