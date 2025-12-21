@@ -519,7 +519,7 @@ WikiEditor.prototype = {
 	    extra.forEach(e=>{
 		if(e.label) {
 		    let  value = e.value;
-		    if(entryId) {
+		    if(entryId && value) {
 			value = value.replace(/\${entryid\}/g,entryId);
 			value = value.replace(/#entry=/g,'entry=');
 		    }
