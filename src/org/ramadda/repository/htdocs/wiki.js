@@ -518,8 +518,13 @@ WikiEditor.prototype = {
 	if(extra) {
 	    extra.forEach(e=>{
 		if(e.label) {
+		    let  value = e.value;
+		    if(entryId) {
+			value = value.replace(/\${entryid\}/g,entryId);
+			value = value.replace(/#entry=/g,'entry=');
+		    }
 		    what.push({label:e.label,
-			       value:'base64:'+window.btoa(e.value)});
+			       value:'base64:'+window.btoa(value)});
 		} else {
 		    what.push(e);
 		}
