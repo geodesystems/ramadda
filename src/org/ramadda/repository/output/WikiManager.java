@@ -5983,6 +5983,7 @@ public class WikiManager extends RepositoryManager
 
 	for(String prop: new String[]{"maxHeight","details","simple","showHeader",
 				      "sortby","sortdir","ascending","orderby",
+				      "width",
 				      "inlineEdit",
 				      "showEntryOrder",
 				      "tableWidth",

@@ -498,7 +498,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     initEntryTable:function(id,opts,json) {
 	let main = jqid(id);
-	let gridTemplate=null;
 	let _this=this;
 	opts = opts||{};
 	let entryMap = {};
@@ -508,7 +507,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let simple =opts.simple;
 	let dflt = !simple;
 	let dfltShow = opts.columns!=null;
-
 	let props =  {
 	    actions:[],
 	    showName:true,
@@ -534,12 +532,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	$.extend(props,opts);
 	this.props=props;
+	let tableWidth=props.tableWidth??props.width??'100%';
 	let entries = json.map((j,idx)=>{
 	    let entry =  new Entry(j);
 	    entryMap[entry.getId()]= entry;
 	    return entry;
 	});
 	let html = "";
+//xxxx	html+=
 	let cols = [];
 	let colString = props.columns;
 	if(!colString) {
@@ -623,15 +623,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		gridTemplateList.push('minmax(200px, 1fr)');
 	    }
 	});
-	gridTemplate = Utils.join(gridTemplateList,' ');
-
-
-	let tableWidth=props.tableWidth??'100%';
+	let rowStyle = '';
+	let gridTemplate = Utils.join(gridTemplateList,' ');
+	rowStyle+=HU.css('grid-template-columns',gridTemplate)
 	if(props.showHeader) {
 	    html+=HU.open(TAG_DIV,
 			  [ATTR_CLASS,HU.classes(CLASS_ENTRY_TABLE_ROW,CLASS_ENTRY_TABLE_HEADER),
-			   ATTR_STYLE,HU.css('grid-template-columns',gridTemplate)
-			  ]);
+			   ATTR_STYLE,HU.css(CSS_WIDTH,tableWidth)+rowStyle]);
 	    let hdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,  'entry-table-header-column');
 	    let noSortHdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,'entry-table-header-column');
 	    cols.forEach((col,idx)=> {
@@ -810,7 +808,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.formOpen) {
 	    checkForm();
 	}
-	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries,gridTemplate);	
+	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries,rowStyle);	
     },
 
     formatMetadata:function(entry,metadataDisplay,args) {
@@ -1045,7 +1043,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else row.removeClass('entry-table-row-selected');	    
 	});
     },
-    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,gridTemplate,secondTime) {
+    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,rowStyle,secondTime) {
 	let main = jqid(mainId);
 	let _this = this;
 	let html = '';
@@ -1239,7 +1237,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let row = '';
 	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId()]);
 	    rowAttrs= Utils.mergeLists(rowAttrs,[ATTR_ID,rowId,
-						 ATTR_STYLE,HU.css('grid-template-columns',gridTemplate),
+						 ATTR_STYLE,rowStyle,
 						 ATTR_CLASS,rowClass,
 						 ATTR_ENTRYID,entry.getId()]);
 	    row+=HU.open(TAG_DIV,rowAttrs);
@@ -1362,7 +1360,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    return entry;
 		});
 		if(entries.length>0) {
-		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,gridTemplate,true);	
+		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,rowStyle,true);	
 		} else {
 		    let table = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']);
 		    if(entry.getIsUrl()) {
