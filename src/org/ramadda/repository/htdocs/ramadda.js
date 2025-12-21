@@ -551,8 +551,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	}
 	let colList = Utils.split(colString,',',true,true);
-	let dateWidth = 130;
-	let typeWidth = 100;	
+	let dateWidth = 140;
+	let typeWidth = 140;	
 	let sizeWidth  =80;
 	colList.forEach(c=>{
 	    if(c==FIELD_NAME && props.showName)
@@ -606,8 +606,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let gridTemplateList=[];
 	cols.forEach((col,idx)=> {
 	    if(Utils.isDefined(col.width)) {
+		col.fixed=true;
 		gridTemplateList.push(HU.px(col.width));
 	    } else {
+		col.fixed=false;
 		gridTemplateList.push('minmax(200px, 1fr)');
 	    }
 	});
@@ -1038,6 +1040,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
 		let cellClass=CLASS_ENTRY_TABLE_CELL;		
+		if(col.fixed) {
+		    cellClass+=HU.classes(CLASS_ENTRY_TABLE_CELL_FIXED);		
+		} else {
+		    cellClass+=HU.classes(CLASS_ENTRY_TABLE_CELL_FLEX);		
+		}
 		let cellStyle='';
 		let cellValue = entry.getProperty(col.id,{},props.inlineEdit)??'';
 		if(typeof cellValue=='number' && isNaN(cellValue))

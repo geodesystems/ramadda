@@ -100,6 +100,8 @@ var UNIT_NM='nm';
 var CLASS_ENTRY_TABLE_ROW='entry-table-row';
 var CLASS_ENTRY_TABLE_HEADER='entry-table-header';
 var CLASS_ENTRY_TABLE_CELL='entry-table-cell';
+var CLASS_ENTRY_TABLE_CELL_FLEX='entry-table-cell-flex';
+var CLASS_ENTRY_TABLE_CELL_FIXED='entry-table-cell-fixed';
 var CLASS_ENTRY_TABLE_ROW_TOGGLE='entry-table-row-toggle';
 
 var CLASS_BUTTON = 'ramadda-button';
