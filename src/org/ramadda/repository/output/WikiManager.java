@@ -3035,7 +3035,7 @@ public class WikiManager extends RepositoryManager
 	    String url = entry.getTypeHandler().getEntryIconUrl(request,  entry);
 	    return HU.img(url, "", HU.attr("width", width));
         } else if (theTag.equals(WIKI_TAG_MACRO)) {
-	    if(entry==null) return "NULL ENTRY";
+	    if(entry==null) return "Null entry for macro";
 	    String name = getProperty(wikiUtil,props,"name",getProperty(wikiUtil,props,"id",""));
 	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
 	    if(macro==null) return "Could not find macro:" + name;
