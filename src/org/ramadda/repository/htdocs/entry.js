@@ -862,7 +862,7 @@ function Entry(props) {
 	    if(what==FIELD_NAME) {
 		if(this.canEdit() && inlineEdit) {
 		    return HU.input(null,this.getName(),
-				    [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(95)),
+				    [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(80)),
 				     ATTR_ENTRYID,this.getId(),
 				     ATTR_TITLE,'Edit name',
 				     ATTR_CLASS,'ramadda-entry-inlineedit',
