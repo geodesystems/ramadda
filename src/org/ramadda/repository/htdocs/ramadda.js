@@ -539,13 +539,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    return entry;
 	});
 	let html = "";
-//xxxx	html+=
+	//xxxx	html+=
 	let cols = [];
 	let colString = props.columns;
 	if(!colString) {
 	    colString =Utils.join([FIELD_NAME,FIELD_ENTRYORDER,FIELD_CREATOR,FIELD_DATE,FIELD_TIME,
-				    FIELD_CREATEDATE,FIELD_DOWNLOAD,FIELD_SIZE,FIELD_TYPE,FIELD_ATTACHMENTS],
-				   ',');;
+				   FIELD_CREATEDATE,FIELD_DOWNLOAD,FIELD_SIZE,FIELD_TYPE,FIELD_ATTACHMENTS],
+				  ',');;
 	    if(props.inlineEdit) {
 		colString+=',' + FIELD_EDITCOLUMNS;
 	    }
@@ -602,7 +602,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			   align:ALIGN_LEFT,
 			   width:props.attachmentsWidth??240});
 	    } else {
-//		console.log('Unknown table field:' + c);
+		//		console.log('Unknown table field:' + c);
 	    }
 
 	});
@@ -641,11 +641,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(idx==0 && props.showForm) {
 		    prefix =
 			HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'entry-table-row-toggle'),
-				  ATTR_STYLE,
-				  HU.css(CSS_PADDING_LEFT,HU.px(0),CSS_WIDTH,HU.px(10)),
-				  ATTR_ID,id+'_formarrow',
-				  ATTR_TITLE,'Click to show entry form'],
-				 HU.getIconImage('fas fa-caret-right'));
+				ATTR_STYLE,
+				HU.css(CSS_PADDING_LEFT,HU.px(0),CSS_WIDTH,HU.px(10)),
+				ATTR_ID,id+'_formarrow',
+				ATTR_TITLE,'Click to show entry form'],
+			       HU.getIconImage('fas fa-caret-right'));
 		}
 
 		let canSort  = !Utils.isDefined(col.cansort) || col.cansort;
@@ -655,8 +655,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let labelAttrs =[];
 		if(canSort) {
 		    labelAttrs = Utils.mergeLists(labelAttrs,
-					     [ARG_ORDERBY,col.id==FIELD_DOWNLOAD?'size':col.id,
-					      ATTR_TITLE,'Sort by '+ (col.id==FIELD_DOWNLOAD?'Size':col.label)]);
+						  [ARG_ORDERBY,col.id==FIELD_DOWNLOAD?'size':col.id,
+						   ATTR_TITLE,'Sort by '+ (col.id==FIELD_DOWNLOAD?'Size':col.label)]);
 		    cellAttrs = Utils.mergeLists(cellAttrs,
 						 [ARG_ORDERBY,col.id==FIELD_DOWNLOAD?'size':col.id,
 						  ATTR_TITLE,'Sort by '+ (col.id==FIELD_DOWNLOAD?'Size':col.label)]);
@@ -665,7 +665,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		labelAttrs= Utils.mergeLists(labelAttrs,
 					     [ATTR_CLASS,
 					      HU.classes(CLASS_CLICKABLE,
-							  (canSort?'entry-table-header-column-sortable':'')),
+							 (canSort?'entry-table-header-column-sortable':'')),
 					      ATTR_STYLE,this.props.headerStyle??'']);
 		v=HU.span(labelAttrs, v);
 
@@ -885,7 +885,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     makeMetadataDisplay:function(props) {
 	if(!props) return null;
 	let mtd=[];
+	props = props.replace(/\\,/g,'_comma_');
 	Utils.split(props,",",true,true).forEach(prop=>{
+	    prop = prop.replace(/_comma_/g,',');
+	    prop = prop.replace(/\\:/g,'_colon_');
+	    prop = prop.replace(/\\,/g,'_comma_');	    
 	    let toks = prop.split(":");
 	    if(toks.length==0) return
 	    let header;
@@ -894,6 +898,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let type;
 	    let template='{attr1} {attr2}';
 	    toks.forEach((tok,idx)=>{
+		tok = tok.replace(/_colon_/g,':');
+		tok = tok.replace(/_comma_/g,',');		
 		if(idx==0) {
 		    type=tok;
 		    return
@@ -910,16 +916,19 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    template=value;
 		} else if(key=='delimiter') {
 		    delimiter=value;
+		} else if(key=='separator') {
+		    delimiter=value;		    
 		} else if(key=='header') {
 		    header=value;		    
 		}		    
 	    });
+
 	    let m ={
 		prop:prop,
 		type:type,
 		delimiter:delimiter,
 		header:header,
-		template:template.replace('_colon_',':','_comma_',','),
+		template:template,
 		check:check,
 		ok:function(metadata) {
 		    if(metadata.type!=this.type) return false;
@@ -1054,7 +1063,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let space = '';
 	let rowClass  = props.simple?'entry-table-simple-row':'entry-table-row-data';
 	rowClass=HU.classes(rowClass,CLASS_ENTRY_TABLE_ROW);
-	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.props.metadataDisplay);
+	let metadataProps=[];
+	if(Utils.stringDefined(this.props.metadataDisplay)) metadataProps.push(this.props.metadataDisplay);
+	for(let i=1;i<=10;i++) {
+	    let value = this.props['metadataDisplay'+i];
+	    if(!Utils.stringDefined(value)) continue;
+	    metadataProps.push(value);
+	}
+	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(Utils.join(metadataProps,','));
 	let hasMetadata=false;
 	entries.forEach((entry,entryIdx)=>{
 	    let line = '';
@@ -1075,12 +1091,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let classes = this.props.textClass??'';
 		if(col.id==FIELD_NAME && props.inlineEdit) {
 		    cellValue  = HU.span([ATTR_CLASS,classes,
-				  ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))],cellValue);
+					  ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))],cellValue);
 
 		} else {
 		    classes=HU.classes('ramadda-text',classes);
 		    cellValue  = HU.span([ATTR_CLASS,classes,
-				  ATTR_STYLE,this.props.textStyle??''],cellValue);
+					  ATTR_STYLE,this.props.textStyle??''],cellValue);
 		}
 
 		if(col.id==FIELD_NAME) {
@@ -1101,7 +1117,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
 			if(Utils.stringDefined(mtd)) {
 			    rowExtra +=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.perc(100),
-							  CSS_OVERFLOW_WRAP,'break-word')],mtd);
+								 CSS_OVERFLOW_WRAP,'break-word')],mtd);
 			    hasMetadata=true;
 			}
 		    }
@@ -1148,7 +1164,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				imgUrl = RamaddaUtil.getBaseUrl()+icon;
 			}
 			if(imgUrl) {	
-		    let caption = m.value.attr2;
+			    let caption = m.value.attr2;
 			    if(!Utils.stringDefined(caption)) {
 				caption =name;
 			    }
@@ -1206,18 +1222,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				 + HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
 					    ATTR_ID,crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;'));
 		    }
-
-
 		    tds.push(cellValue);
 		    cellValue = Utils.wrap(tds,'','');
-		    /*
-		    cellValue = HU.div([//ATTR_CLASS,HU.classes('ramadda-single-line'),
-					ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))],
-					Utils.wrap(tds,'',''));
-					*/
 		}
-
-
 		line+=HU.div([ATTR_CLASS,cellClass,ATTR_STYLE,col.style],cellValue);
 	    });		
 
