@@ -3056,9 +3056,17 @@ public class WikiManager extends RepositoryManager
 		text = text.replaceAll("\\$\\{entryid\\}",entry.getId());
 		text = text.replaceAll("#entry\\s*=","entry=");
 	    }
+	    WikiUtil newWikiUtil  = new WikiUtil(wikiUtil);
+	    newWikiUtil.putWikiProperties(wikiUtil.getWikiProperties());
+	    for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+		String key   = (String) keys.nextElement();
+		String value =  (String)props.get(key);
+		if(!(key.equals("name") || key.equals("entry"))) {
+		    newWikiUtil.putWikiProperty(key,value);
+		}
+	    }
 	    //Wikify using the wikiUtil so we get the context, e.g. the properties
-	    return  wikifyEntry(request, entry, wikiUtil, text, false,null,true);
-	    //	    return wikifyEntry(request, entry,text);
+	    return  wikifyEntry(request, entry, newWikiUtil, text, false,null,true);
         } else if (theTag.equals(WIKI_TAG_ARK)) {
 	    String ark = getPageHandler().getArk(request, entry,getProperty(wikiUtil,props,"short",false));
 	    if(ark==null) return getProperty(wikiUtil, props, ATTR_MESSAGE, "No ARK service available");
@@ -6002,6 +6010,10 @@ public class WikiManager extends RepositoryManager
 				      "metadataDisplay8",
 				      "metadataDisplay9",
 				      "metadataDisplay10",
+				      "bigTextLength",
+				      "bigTextHeight",
+				      "bigTextLabelMore",
+				      "bigTextLabelLess",				      				      				      
 				      "showTime",
 				      "showDownload",
 				      "showCreator",
