@@ -467,7 +467,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 :vspace 1em
 +tabs cullEmpty=true
 +tab Information
-{{information  showDetails="true"  showTitle="false"   }} 
+{{information  showDetails="true"  showTitle="false"   showMetadata=false }} 
 {{properties  message=""
 metadata.types="!tag:archiveinternal,!tag:archivecultural,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
