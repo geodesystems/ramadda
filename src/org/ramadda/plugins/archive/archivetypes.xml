@@ -12,7 +12,9 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"
 toggleStyle="font-size:22px;"
 columns=name,date,attachments  showAttachments=true
 showThumbnails=false
-metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:header=Subjects:delimiter=;,archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
+metadataDisplay1="archive_keyword:header=Keywords:separator=;"
+metadataDisplay2="archive_subject:header=Subjects:separator=;"
+metadataDisplay3="archive_note:template=<b>{attr1}\:</b> {attr2}"
 }}
 ]]></wikimacro>
 
@@ -100,7 +102,9 @@ inherited="false"  }}
 {{tabletree  message="" showSize="false" showCreateDate="false" showDate="false"
 headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
 columns=name,date,attachments  showAttachments=true  showThumbnails=false
-metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:header=Subjects:delimiter=;,archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
+metadataDisplay1="archive_keyword:header=Keywords:separator=;"
+metadataDisplay2="archive_subject:header=Subjects:separator=;"
+metadataDisplay3="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
 }} 
 -skip
 -col
