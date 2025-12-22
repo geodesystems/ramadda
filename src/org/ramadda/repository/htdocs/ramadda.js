@@ -528,7 +528,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showForm:dflt,
 	    formOpen:false,
 	    inlineEdit:false,
-	    metadataDisplay:null
+	    metadataDisplay:null,
+	    bigTextLength:100
 	}
 	$.extend(props,opts);
 	this.props=props;
@@ -818,7 +819,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     formatMetadata:function(entry,metadataDisplay,args) {
 	let opts = {
 	    doBigText:true,
-	    wrapInDiv:true
+	    wrapInDiv:true,
+	    bigTextLength:100,
 	}
 	if(args) opts = $.extend(opts, args);
 	let types = {};
@@ -878,7 +880,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
 	if(Utils.stringDefined(mtd) && opts.doBigText) {
-	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length',100], mtd);
+	    let attrs = [ATTR_CLASS,'ramadda-metadata-bigtext',
+			 'bigtext-length',opts.bigTextLength];
+	    if(Utils.isDefined(opts.bigTextHeight))
+		attrs.push('bigtext-height',opts.bigTextHeight);
+	    if(Utils.isDefined(opts.bigTextLabelMore))
+		attrs.push('bigtext-label-more',opts.bigTextLabelMore);
+	    if(Utils.isDefined(opts.bigTextLabelLess))
+		attrs.push('bigtext-label-less',opts.bigTextLabelLess);	    
+	    mtd = HU.div(attrs, mtd);
 	}
 	return mtd;
     },
@@ -1114,7 +1124,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    
 		    let rowExtra ='';
 		    if(metadataDisplay && metadataDisplay.length) {
-			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
+			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay,
+							     {bigTextLength:props.bigTextLength,
+							      bigTextHeight:props.bigTextHeight,
+							      bigTextLabelMore:props.bigTextLabelMore,
+							      bigTextLabelLess:props.bigTextLabelLess});
 			if(Utils.stringDefined(mtd)) {
 			    rowExtra +=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.perc(100),
 								 CSS_OVERFLOW_WRAP,'break-word')],mtd);

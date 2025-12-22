@@ -2894,10 +2894,13 @@ var Utils =  {
     initBigText:function(bigText) {
 	let text= bigText.html();
 	let limit = bigText.attr('bigtext-length')??400;
-	if(text.length<limit) return;
+	if(text.length<limit) {
+	    return;
+	}
 	let moreLabel = bigText.attr('bigtext-label-more')??'More...';
 	let lessLabel = bigText.attr('bigtext-label-less')??'Less...';		
-	let height = bigText.attr('bigtext-height')??HU.px(100);
+	let height = bigText.attr('bigtext-height')??100;
+	height=HU.px(height);
 	let fadeId = HU.getUniqueId('fade_');
 	bigText.css(CSS_PADDING_BOTTOM,HU.px(25)).css(CSS_MAX_HEIGHT,height).css(CSS_OVERFLOW_Y,OVERFLOW_HIDDEN).css(CSS_POSITION,POSITION_RELATIVE);
 	let fade = $(HU.div([ATTR_STYLE,HU.css(CSS_HEIGHT,bigText.attr('bigtext-fade-height')??HU.px(50)),
