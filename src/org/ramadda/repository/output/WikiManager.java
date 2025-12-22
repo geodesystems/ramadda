@@ -6002,6 +6002,13 @@ public class WikiManager extends RepositoryManager
 				      "showChangeDate",
 				      "columns",
 				      "showAttachments",
+				      "attachmentsLabel",
+				      "nameLabel",
+				      "sizeLabel",				      
+				      "typeLabel",
+				      "dateLabel",
+				      "createDateLabel",
+				      "changeDateLabel",				      
 				      "showType",
 				      "showIcon",
 				      "showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth","changeDateWidth"}) {

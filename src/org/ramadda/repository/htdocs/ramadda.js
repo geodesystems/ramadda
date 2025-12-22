@@ -556,12 +556,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let colList = Utils.split(colString,',',true,true);
 	colList.forEach(c=>{
 	    if(c==FIELD_NAME && props.showName) {
-		cols.push({id:'name',label:'Name',width:props.nameWidth});
+		cols.push({id:'name',label:props.nameLabel??'Name',width:props.nameWidth});
 	    } else if(c==FIELD_DATE && props.showDate) {
-		cols.push({id:FIELD_FROMDATE,label:'Date',
+		cols.push({id:FIELD_FROMDATE,label:props.dateLabel??'Date',
 			   width:props.fromDateWidth??props.dateWidth??dateWidth});
 	    }  else if(c==FIELD_CREATEDATE && props.showCreateDate) {
-		cols.push({id:c,align:ALIGN_RIGHT,label:'Create Date',
+		cols.push({id:c,align:ALIGN_RIGHT,label:props.createDateLabel??'Create Date',
 			   width:props.createDateWidth??props.dateWidth??dateWidth});
 
 	    }   else if(c==FIELD_EDITCOLUMNS) {
@@ -581,24 +581,24 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }  else if(c==FIELD_DOWNLOAD && props.showDownload) {
 	    	cols.push({id:c,label:'Download',width:100,align:ALIGN_LEFT});
 	    }  else if(c==FIELD_TIME && props.showTime) {
-		cols.push({id:c,label:'&nbsp;Time&nbsp;',width:100,align:ALIGN_RIGHT});	    	    
+		cols.push({id:c,label:'Time',width:100,align:ALIGN_RIGHT});	    	    
 	    } else if(c==FIELD_CREATOR && props.showCreator) {
 		cols.push({id:c,label:'Creator',width:props.creatorWidth??150});
 	    }  else if(c==FIELD_ENTRYORDER && props.showEntryOrder) {
 		cols.push({id:c,align:ALIGN_RIGHT,label:'Order',width:75});
 	    }  else if(c==FIELD_CHANGEDATE && props.showChangeDate) {
-		cols.push({id:c,align:ALIGN_RIGHT,label:'Change Date',
+		cols.push({id:c,align:ALIGN_RIGHT,label:props.changeDateLabel??'Change Date',
 			   width:props.changeDateWidth??props.dateWidth??dateWidth});
 	    }   else if(c==FIELD_SIZE && props.showSize) {
 		cols.push({align:ALIGN_RIGHT,
-			   id:c,label:'Size',width:props.sizeWidth??sizeWidth});
+			   id:c,label:props.sizeLabel??'Size',width:props.sizeWidth??sizeWidth});
 	    }   else if(c==FIELD_TYPE && props.showType) {
 		cols.push({id:c,
-			   label:'Type',
+			   label:props.typeLabel??'Type',
 			   align:ALIGN_LEFT,
 			   width:typeWidth});
 	    }   else if(c==FIELD_ATTACHMENTS && props.showAttachments) {
-		cols.push({id:c,label:'Attachments',
+		cols.push({id:c,label:props.attachmentsLabel??'Attachments',
 			   align:ALIGN_LEFT,
 			   width:props.attachmentsWidth??240});
 	    } else {
