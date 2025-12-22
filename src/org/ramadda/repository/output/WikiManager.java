@@ -3052,9 +3052,13 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 	    if(entry!=null) {
-		text = text.replace("#entry=\"${entry}\"","entry="+entry.getId());
+		//sub in the entry
+		text = text.replaceAll("\\$\\{entryid\\}",entry.getId());
+		text = text.replaceAll("#entry\\s*=","entry=");
 	    }
-	    return wikifyEntry(request, entry,text);
+	    //Wikify using the wikiUtil so we get the context, e.g. the properties
+	    return  wikifyEntry(request, entry, wikiUtil, text, false,null,true);
+	    //	    return wikifyEntry(request, entry,text);
         } else if (theTag.equals(WIKI_TAG_ARK)) {
 	    String ark = getPageHandler().getArk(request, entry,getProperty(wikiUtil,props,"short",false));
 	    if(ark==null) return getProperty(wikiUtil, props, ATTR_MESSAGE, "No ARK service available");
@@ -5988,6 +5992,16 @@ public class WikiManager extends RepositoryManager
 				      "showEntryOrder",
 				      "tableWidth",
 				      "metadataDisplay",
+				      "metadataDisplay1",
+				      "metadataDisplay2",				      				      
+				      "metadataDisplay3",
+				      "metadataDisplay4",
+				      "metadataDisplay5",
+				      "metadataDisplay6",
+				      "metadataDisplay7",
+				      "metadataDisplay8",
+				      "metadataDisplay9",
+				      "metadataDisplay10",
 				      "showTime",
 				      "showDownload",
 				      "showCreator",
