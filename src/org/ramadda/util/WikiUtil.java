@@ -128,6 +128,12 @@ public class WikiUtil implements HtmlUtilsConstants {
         properties.put(key, value);
     }
 
+    public void putWikiProperties(Hashtable props) {
+	if(props==null) return;
+	wikiProperties.putAll(props);
+    }
+
+
     public void putWikiProperty(Object key, Object value) {
         if (value == null) {
             wikiProperties.remove(key);
@@ -138,7 +144,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 
     public Hashtable getWikiProperties() {
 	return wikiProperties;
-
     }
 
     public Object getWikiProperty(Object key) {
