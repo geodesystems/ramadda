@@ -3131,10 +3131,12 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-table-cell {
-    padding-top:4px;
-    padding-bottom:4px;    
-    padding-left:4px;
-    padding-right:4px;    
+    padding:4px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position:relative;
+}
 }
 
 .entry-table-cell-flex {
@@ -3174,13 +3176,6 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 
 
 
-
-
-.entry-table-cell  {
-    position:relative;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 
 

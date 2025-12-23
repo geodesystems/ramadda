@@ -1,3 +1,4 @@
+
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
@@ -618,7 +619,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    col.style=colStyle;
 	    if(Utils.isDefined(col.width)) {
 		col.fixed=true;
-		gridTemplateList.push(HU.px(col.width));
+		let width = 'minmax(0,' +HU.px(col.width)+')';
+		gridTemplateList.push(width);
 	    } else {
 		col.fixed=false;
 		if(col.id==FIELD_NAME) {
