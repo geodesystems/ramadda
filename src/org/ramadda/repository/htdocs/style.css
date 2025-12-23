@@ -3067,6 +3067,8 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 
 .entry-table-row  {
     display:grid;
+    grid-auto-flow: column;
+    overflow: hidden;     
 }
 
 .entry-table-row-selected {
