@@ -2343,6 +2343,14 @@ public class WikiUtil implements HtmlUtilsConstants {
 					      ? toks2.get(1)
 					      : "");
 
+                    if (remainder.length() == 0) {
+			String  background    = (String) props.get("background");
+			if(background!=null) {
+			    remainder=background;
+			}
+			
+		    }
+
                     String       baseClass = "ramadda-section";
                     if (remainder.length() > 0) {
                         baseClass = baseClass+" " + baseClass + "-" + remainder;

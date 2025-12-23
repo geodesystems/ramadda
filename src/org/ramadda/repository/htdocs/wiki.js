@@ -940,21 +940,23 @@ WikiEditor.prototype = {
 	if(prevIndex>=0) {
 	    let substring = text.substring(prevIndex).trim();
 	    //Check for the +<tag> 
-	    if(substring.startsWith('+')) {
+	    if(substring.startsWith('+') || substring.startsWith(':')) {
 		let nlIndex = substring.indexOf('\n');
 		if(nlIndex>=0)  substring = substring.substring(0,nlIndex);
 		let length = substring.length;
 		let attrs = substring.match('[^ ]+([^\n]*)$');
 		if(attrs) attrs=attrs[1].trim();
-		if(!substring) return null;
-		let match = substring.match('\\+([^ \n]+)[ \n]');
-		if(!match) return;
-		substring = match[1]
+		let match = substring.match('(:|\\+)([^ \n]+)[ \n]');
+		if(match) {
+		    substring = match[2]
+		} 
+
+		if(substring) substring=substring.trim();
 		let Range = ace.require('ace/range').Range;
 		return {
 		    range:new Range(cursor.row, 0,cursor.row,length),
 		    tag:substring,
-		    type: 'plus',
+		    type: substring.startsWith(':')?'colon':'plus',
 		    attrs:attrs||'',
 		};
 	    }
@@ -1441,8 +1443,7 @@ WikiEditor.prototype = {
 	}
 	if(!attrs) return null;
 	let blocks  = getWikiEditorMenuBlocks(attrs,forPopup,this.getId());
-	//	if(display) {
-	let ctItems =  Utils.getColorTablePopup({xxxwikiEditor:this, itemize:false,showToggle:false,clazz:''});
+	let ctItems =  Utils.getColorTablePopup({itemize:false,showToggle:false,clazz:''});
 	let popupColorTable=(dialog,source,block)=>{
 	    let contents = block.items;
 	    contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items wiki-editor-popup-colortable'],contents);
@@ -1514,13 +1515,62 @@ WikiEditor.prototype = {
     },
 
 
+    handlePopupOn:function(event, tagInfo,plus) {
+	let _this= this;
+	let tag = tagInfo.tag;
+	let props = 	this.oneLiners[tag];
+	if(!props) {
+	    tag = tag.replace(/-.*/,'');
+	    props = this.oneLiners[tag];
+	}
+	if(!props) return;
+	if(!props.attributes) return;
+	if(this.tagDialog) {
+	    this.tagDialog.remove();
+	}
+	let title = props.title??tagInfo.tag+' Properties';
+	let menu = '';
+	props.attributes.forEach((attr,idx)=>{
+	    menu+=HU.div([ATTR_INDEX,idx,
+			  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_MENU_ITEM)],attr.title??attr.p);
+	});
+	let dialog = this.tagDialog =
+	    HU.makeDialog({content:menu,
+			   anchor:$(window),
+			   my: POS_LEFT_TOP,
+			   at: 'left+' +event.x +' top+' + (event.y),
+			   title:title,
+			   header:true,
+			   sticky:true,
+			   draggable:true,
+			   modal:false});	
+
+	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+	    let attr=	props.attributes[+$(this).attr(ATTR_INDEX)];
+	    if(!attr) return;
+	    WikiUtil.insertText(_this.id,' '+attr.p+' ');
+	    dialog.remove();
+	    _this.tagDialog =null;
+	    
+	});
+    },
+
     handlePopupMenu:function(event, result) {
 	let tagInfo = this.getTagInfo();
 	if(!tagInfo) {
 	    return;
 	}
 
-	if(!tagInfo.chunk) return
+
+	if(tagInfo.type=='plus'|| tagInfo.type=='colon') {
+	    this.handlePopupOn(event,tagInfo,tagInfo.type=='plus');
+	    return;
+	}
+
+	if(!tagInfo.chunk) {
+	    return
+	}
+
 
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,true, (r)=>{
@@ -2516,6 +2566,90 @@ WikiEditor.prototype = {
 	    {p:'layer',ex:'osm|esri.topo|google.roads|google.hybrid|esri.street|opentopo|usfs|caltopo.mapbuilder|usgs.topo|google.terrain|google.satellite|naip||naip.esri|naip.caltopo|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|publiclands|historic|esri.aeronautical|osm.toner|osm.toner.lite|cartolight|watercolor|lightblue|blue|white|black|gray'},
 	    {p:'iconsonly',ex:'false'}];
 
+
+	this.oneLiners = {
+	    section: {
+		title:'Section',
+		attributes:[
+		    {p:'title="{{name}}"',title:'Title'},
+		    {p:'subTitle="{{name}}"',title:'Sub-title'},		    
+		    {p:'titleStyle=""',title:'Title Style'},
+		    {p:'style=""',title:'Section Style'},
+		    {p:'label="{{name}}"',title:'Label'},
+		    {p:'heading="{{name}}"',title:'Heading'},		    		    
+		    {p:'----',title:'Section line'},
+		    {p:'#',title:'Even/Odd'},
+		    {p:'background=grid',title:'Grid Background'},
+		    {p:'background=map',title:'Map Background'},
+		    {p:'background=globe',title:'Globe Background'}		    		    ,
+		]
+	    },
+	    tabs: {
+		title:'Tabs',
+		attributes:[
+		    {p:'center=true',title:'Center Tabs'},
+		    {p:'min=true',title:'Minimal Tabs'},
+		    {p:'minArrow=true',title:'Minimal with Arrow'},
+		    {p:'transparent=true',title:'Transparent'},		    		    
+		    {p:'tight=true',title:'Tight'},
+		    {p:'minHeight="200px"',title:'Min Height'},		    
+		    {p:'noBorder=true',title:'No Border'},		    
+		    {p:'cullEmpty=true',title:'Cull Empty'},
+		    ]
+	    },
+	    accordion:{
+		attributes:[
+		    {p:'decorate=false'},
+		    {p:'collapsible=true'},
+		    {p:'activeSegment=0'}
+		]
+	    },
+	    table: {
+		attributes:[
+		    {p:'height=400'},
+		    {p:'hover=true'},
+		    {p:'cellborder=true'},
+		    {p:'rowborder=true'},
+		    {p:'stripe=true'},
+		    {p:'ordering=true'},
+		    {p:'paging=true'},
+		    {p:'searching=true'}
+		]
+
+	    },
+	    inset:{
+		attributes:[
+		    {p:'space=10px'},
+		    {p:'top=10px'},
+		    {p:'bottom=10px'},
+		    {p:'left=10px'},
+		    {p:'right=10px'}
+		    ]
+	    }
+	    pre:{
+		attributes:[
+		    {p:'addCopy=true'},
+		    {p:'addDownload=true'}
+		    ]
+	    },
+	    row: {
+		title:'Row',
+		attributes:[{p:'tight=true'},
+			    ]
+	    },
+	    col:{
+		title:'Column',
+		attributes:[
+		    {p:'style=""'}
+		    ]
+	    },
+	    pagesearch: {
+		title:'Page Search',
+		attributes:[{p:'focus=true'},
+			    {p:'selector=""'},
+			    {p:'hideAll=true'}]
+	    }
+	}
 
 	this.wikiAttributes = {
 	    tree: treeAttrs,	
