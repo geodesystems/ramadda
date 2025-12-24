@@ -158,6 +158,7 @@ if {$groupID!=""} {
     runGroup "SeeSV" a424786b-ebf2-43c3-add7-21c3bb2f526f
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
+    runGroup "Misc Displays" 3270b9eb-b63b-4b41-8cd8-5a5e09ea0dae
     runGroup "Other Data" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
     runGroup "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
     runGroup "Soundings" 53f411f7-9390-4afc-9cb9-e7313030498b
