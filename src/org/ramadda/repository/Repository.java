@@ -5161,6 +5161,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public Result processClearState(Request request) throws Exception {
         StringBuilder sb         = new StringBuilder("");
+        getPageHandler().sectionOpen(request, sb,"Clear State",false);
         String        passPhrase = getProperty(PROP_PASSPHRASE, "").trim();
         if ((passPhrase.length() > 0) && request.defined(PROP_PASSPHRASE)) {
             if (request.getString(PROP_PASSPHRASE,
@@ -5175,24 +5176,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                 }
                 sb.append("OK, state is cleared");
-
+		getPageHandler().sectionClose(request, sb);
                 return new Result("", sb);
             }
             sb.append("Bad pass phrase");
             sb.append(HU.p());
         }
-        sb.append(HU.p());
-        sb.append(
+	StringBuilder msg = new StringBuilder();
+        msg.append(
 		  "This form allows you to clear any caches and have RAMADDA reload properties");
-        sb.append(HU.br());
+        msg.append(HU.br());
         if (passPhrase.length() == 0) {
-            sb.append(
-		      "The pass phrase needs to be set as a property on your server - <i>ramadda.passphrase</i>");
-            sb.append(HU.br());
+            msg.append(
+		      "The pass phrase needs to be set as a property on your server - <span style='font-style:italic;'>ramadda.passphrase</span>");
+            msg.append(HU.br());
         }
-        sb.append(
+        msg.append(
 		  "Note: The pass phrase is not meant to be secure, it is just used so anonymous users can't be clearing your repository state");
-        sb.append(HU.hr());
+	sb.append(getPageHandler().showDialogNote(msg.toString()));
         sb.append(HU.formTable());
         sb.append(request.formPost(URL_CLEARSTATE));
         sb.append(HU.formEntry(msgLabel("Pass Phrase"),
@@ -5202,7 +5203,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			       "", HU.submit("Clear Repository State")));
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
-
+        getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
