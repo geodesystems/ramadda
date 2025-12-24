@@ -2481,6 +2481,13 @@ div:hover::-webkit-scrollbar-thumb {
     padding-bottom:4px;
 }
 
+.ramadda-section-tight {
+    padding-left:0px;
+    padding-right:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
 .ramadda-bar-outer {
     display: block;
     position: relative;

@@ -1524,31 +1524,52 @@ WikiEditor.prototype = {
 	    props = this.oneLiners[tag];
 	}
 	if(!props) return;
-	if(!props.attributes) return;
+	let attributes;
+	let title;
+	if(Array.isArray(props)) {
+	    attributes=props;
+	}  else {
+	    attributes = props.attributes;
+	    title = props.title;
+	}
+	if(!attributes) return;
+	if(!title)
+	    title = Utils.makeLabel(tagInfo.tag);
 	if(this.tagDialog) {
 	    this.tagDialog.remove();
 	}
-	let title = props.title??tagInfo.tag+' Properties';
 	let menu = '';
-	props.attributes.forEach((attr,idx)=>{
+	attributes.forEach((attr,idx)=>{
+	    let label;
+	    if((typeof attr)=='string') {
+		label = attr;
+	    } else {
+		label = attr.label??attr.p;
+	    }
 	    menu+=HU.div([ATTR_INDEX,idx,
-			  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_MENU_ITEM)],attr.title??attr.p);
+			  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_HOVERABLE,CLASS_MENU_ITEM)],label);
 	});
 	let dialog = this.tagDialog =
 	    HU.makeDialog({content:menu,
 			   anchor:$(window),
 			   my: POS_LEFT_TOP,
 			   at: 'left+' +event.x +' top+' + (event.y),
-			   title:title,
+			   title:title+' Properties',
 			   header:true,
 			   sticky:true,
 			   draggable:true,
 			   modal:false});	
 
 	dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
-	    let attr=	props.attributes[+$(this).attr(ATTR_INDEX)];
+	    let attr=	attributes[+$(this).attr(ATTR_INDEX)];
 	    if(!attr) return;
-	    WikiUtil.insertText(_this.id,' '+attr.p+' ');
+	    let value;
+	    if((typeof attr)=='string') {
+		value=attr;
+	    } else {
+		value=attr.p;
+	    }
+	    WikiUtil.insertText(_this.id,' '+value+' ');
 	    dialog.remove();
 	    _this.tagDialog =null;
 	    
@@ -2568,33 +2589,66 @@ WikiEditor.prototype = {
 
 
 	this.oneLiners = {
+	    iframe:{
+		title:'Iframe',
+		attributes:[
+		    'URL',
+		    'height="600px"',
+		    'class="ramadda-iframe-progress"',
+		    'style=""'  
+		]
+	    },
 	    section: {
 		title:'Section',
 		attributes:[
-		    {p:'title="{{name}}"',title:'Title'},
-		    {p:'subTitle="{{name}}"',title:'Sub-title'},		    
-		    {p:'titleStyle=""',title:'Title Style'},
-		    {p:'style=""',title:'Section Style'},
-		    {p:'label="{{name}}"',title:'Label'},
-		    {p:'heading="{{name}}"',title:'Heading'},		    		    
-		    {p:'----',title:'Section line'},
-		    {p:'#',title:'Even/Odd'},
-		    {p:'background=grid',title:'Grid Background'},
-		    {p:'background=map',title:'Map Background'},
-		    {p:'background=globe',title:'Globe Background'}		    		    ,
+		    {p:'title="{{name}}"',label:'Title'},
+		    {p:'subTitle="{{name}}"',label:'Sub-title'},		    
+		    {p:'titleStyle=""',label:'Title Style'},
+		    {p:'style=""',label:'Section Style'},
+		    {p:'tight=true',label:'Tight Section'},		    
+		    {p:'label="{{name}}"',label:'Label'},
+		    {p:'heading="{{name}}"',label:'Heading'},		    		    
+		    {p:'----',label:'Section line'},
+		    {p:'#',label:'Even/Odd'},
+		    {p:'background=grid',label:'Grid Background'},
+		    {p:'background=map',label:'Map Background'},
+		    {p:'background=globe',label:'Globe Background'}		    		    ,
 		]
+	    },
+	    hbox:[
+		'space=10','style=""'
+	    ],
+	    menu:[
+		'width=30px',
+		'menuDown=true',
+		'noBorder=true',
+		'noIcon=true'
+	    ],
+	    popup: {
+		attributes:[
+		    'link="Link"',
+		    'icon="fa-solid fa-arrow-right-from-bracket"',
+		    'title="Title"',
+		    'header=true',
+		    'draggable=true',
+		    'decorate=true',
+		    'sticky=true',
+		    'my=""',
+		    'at=""',
+		    'animate=false'
+		    ]
 	    },
 	    tabs: {
 		title:'Tabs',
 		attributes:[
-		    {p:'center=true',title:'Center Tabs'},
-		    {p:'min=true',title:'Minimal Tabs'},
-		    {p:'minArrow=true',title:'Minimal with Arrow'},
-		    {p:'transparent=true',title:'Transparent'},		    		    
-		    {p:'tight=true',title:'Tight'},
-		    {p:'minHeight="200px"',title:'Min Height'},		    
-		    {p:'noBorder=true',title:'No Border'},		    
-		    {p:'cullEmpty=true',title:'Cull Empty'},
+		    {p:'center=true',label:'Center Tabs'},
+		    {p:'min=true',label:'Minimal Tabs'},
+		    {p:'minArrow=true',label:'Minimal with Arrow'},
+		    {p:'transparent=true',label:'Transparent'},		    		    
+		    {p:'tight=true',label:'Tight'},
+		    {p:'minHeight="200px"',label:'Min Height'},		    
+		    {p:'noBorder=true',label:'No Border'},		    
+		    {p:'cullEmpty=true',label:'Cull Empty'},
 		    ]
 	    },
 	    accordion:{
@@ -2624,27 +2678,47 @@ WikiEditor.prototype = {
 		    {p:'bottom=10px'},
 		    {p:'left=10px'},
 		    {p:'right=10px'}
-		    ]
-	    }
-	    pre:{
+		]
+	    },
+	    "if":{
+		title:'If Block',
 		attributes:[
-		    {p:'addCopy=true'},
-		    {p:'addDownload=true'}
-		    ]
+		    {p:'entry=entry_id',label:'Is entry'},
+		    {p:'isgeoreferenced=true',label:'Is georeferenced'},
+		    {p:'hasdescription=true',label:'Has description'},
+		    {p:'haschildren=true',label:'Has children'},
+		    {p:'hasthumbnail=true',label:'Has thumbnail image'},
+		    {p:'size="<10MB"',label:'File size'},
+		    {p:'isfile=true',label:'Is a file'},
+		    {p:'candoedit=true',label:'User can edit'},
+		    {p:'candonew=true',label:'User can create new entry'},
+		    {p:'admin=true',label:'User is Admin'},
+		    {p:'anonymous=true',label:'User is Anonymous'},
+		    {p:'users=id1,id2',label:'Is certain user'},
+		    {p:'notusers=id1,id2',label:'Is not certain user'},
+		    {p:'column=value',label:'Entry has column value'},
+		    {p:'hasChildrenOfType=some_type',label:'Has children of type'},
+		    {p:'orlogic=true',label:'Use or logic'},
+		]
 	    },
-	    row: {
-		title:'Row',
-		attributes:[{p:'tight=true'},
-			    ]
+	    enlarge:[
+		'height="200"',
+		'enlargeLabel="Show more"',
+		'shrinkLabel="Show less"'
+	    ],
+	    balloon:[
+		'avatar=true',
+		'width=400px',
+		'style="background:#fffeec;"'
+	    ],
+	    draft:['height="600px"'],
+	    splash:['style=""'],	    
+	    pre:['addCopy=true','addDownload=true'],
+	    row: ['tight=true'],
+	    col:{title:'Column',
+		attributes:['style=""']
 	    },
-	    col:{
-		title:'Column',
-		attributes:[
-		    {p:'style=""'}
-		    ]
-	    },
-	    pagesearch: {
-		title:'Page Search',
+	    pagesearch: {title:'Page Search',
 		attributes:[{p:'focus=true'},
 			    {p:'selector=""'},
 			    {p:'hideAll=true'}]
