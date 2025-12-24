@@ -79,6 +79,11 @@ import org.w3c.dom.Element;
 
 import org.w3c.dom.NodeList;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+
+
 import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
@@ -184,6 +189,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final String PROP_ISHUMAN_MESSAGE = "ramadda.ishuman.message";
     public static final String ATTR_ISHUMAN = "ishuman";
     public static final String COOKIE_ISHUMAN= "ramadda_ishuman";
+
+    private static final String[] GOOGLE_DOMAINS = {
+        ".googlebot.com",
+        ".google.com"
+    };
+
 
     /** Entry edit URLs */
     protected List<RequestUrl> entryEditUrls;
@@ -1454,6 +1465,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    //	    System.err.println("cookies:" + cookies);
 	    if(cookies.contains(getIsHumanCookieValue()))  return null;
 	}
+
+	//Special exception for google bot
+	if(acceptGoogleBot() && isGoogleBot(request)) {
+	    return null;
+	}
+
+
+
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
 	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp());
@@ -3206,6 +3225,77 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return  acceptGoogleBot;
     }
 
+    private boolean isGoogleBot(Request request) {
+	if(request.getIsGoogleBot()) {
+	    return isVerifiedGoogleBot(request);
+	}
+	return false;
+    }
+
+
+    private Hashtable<String,Boolean> googleBotIps = new Hashtable<String,Boolean>();
+
+    private   boolean isVerifiedGoogleBot(Request request) {
+	String ipAddress=request.getIpRaw();
+	if(ipAddress==null) {
+	    return false;
+	}
+	Boolean ok =googleBotIps.get(ipAddress);
+	if(ok!=null) return ok;
+	ok = isVerifiedGoogleBotInner(ipAddress);
+	System.err.println("is googlebot:" + ok + " IP:" + ipAddress +" user agent:" + request.getUserAgent());
+	googleBotIps.put(ipAddress,ok);
+	return ok;
+    }
+
+    /**
+     * Verifies whether an IP address belongs to a legitimate Googlebot.
+     *
+     * @param ipAddress IPv4 or IPv6 address as string
+     * @return true if verified Googlebot, false otherwise
+     */
+    private   boolean isVerifiedGoogleBotInner(String ipAddress) {
+	if(ipAddress==null) return false;
+        try {
+            InetAddress addr = InetAddress.getByName(ipAddress);
+
+            // 1. Reverse DNS lookup
+            String hostName = addr.getCanonicalHostName();
+
+            // If reverse lookup fails, Java often returns the IP itself
+            if (hostName.equals(ipAddress)) {
+                return false;
+            }
+
+            // Check allowed Google domains
+            if (!endsWithGoogleDomain(hostName)) {
+                return false;
+            }
+
+            // 2. Forward DNS lookup
+            InetAddress[] forwardAddrs = InetAddress.getAllByName(hostName);
+
+            for (InetAddress forward : forwardAddrs) {
+                if (forward.equals(addr)) {
+                    return true; // Verified
+                }
+            }
+            return false;
+        } catch (UnknownHostException e) {
+            return false;
+        }
+    }
+
+    private boolean endsWithGoogleDomain(String hostName) {
+        String lower = hostName.toLowerCase();
+        return Arrays.stream(GOOGLE_DOMAINS)
+                     .anyMatch(lower::endsWith);
+    }
+
+
+
+
+
     public boolean getCommentsEnabled() {
 	return commentsEnabled;
     }
@@ -3254,7 +3344,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    }
 	    //	    System.err.println("robot ok:" + request.getUserAgent());
 	}
-	if(request.getIsGoogleBot()) {
+	if(isGoogleBot(request)) {
 	    if(!acceptGoogleBot()) {
 		//		System.err.println("googlebot not ok:" + request.getUserAgent());
 		return getNoRobotsResult(request);
