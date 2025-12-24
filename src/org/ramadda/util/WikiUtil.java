@@ -523,6 +523,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 	List<NamedList<String>> repeatList = null;
         StringBuilder    repeatBuffer = null;
         StringBuilder    splashBuffer = null;
+	String splashLine="";
         boolean          inScroll          = false;
         String           slidesId           = null;
         Hashtable        slidesProps       = null;
@@ -1046,15 +1047,19 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith("+splash")) {
 		    splashBuffer = new StringBuilder();
+		    splashLine=tline;
 		    continue;
 		}
 
                 if (tline.startsWith("-splash")) {
 		    if(splashBuffer==null) continue;
+		    Hashtable props = getProps.apply(splashLine);
+		    splashLine="";
+		    String style = Utils.getProperty(props,"style","");
 		    String s = wikify(splashBuffer.toString(), handler);
 		    String id = HU.getUniqueId("splash_");
 		    buff.append("\n");
-		    HU.div(buff, s,HU.attrs("id", id, ATTR_STYLE,"display:none;"));
+		    HU.div(buff, s,HU.attrs("id", id, ATTR_STYLE,"display:none;"+style));
 		    buff.append("\n");
                     HU.script(buff,
                               "HtmlUtils.makeSplash('',{src:'" + id +"'})");
@@ -2343,6 +2348,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 					      ? toks2.get(1)
 					      : "");
 
+
+
                     if (remainder.length() == 0) {
 			String  background    = (String) props.get("background");
 			if(background!=null) {
@@ -2355,6 +2362,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (remainder.length() > 0) {
                         baseClass = baseClass+" " + baseClass + "-" + remainder;
                     }
+
+		    if(Utils.getProperty(props,"tight",false)) {
+			baseClass += " ramadda-section-tight ";
+		    }
 
                     String  label       = (String) props.get("label");
                     String  heading     = (String) props.get("heading");
@@ -2954,7 +2965,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
                 if (tline.startsWith("+draft")) {
-                    buff.append("<div class=ramadda-draft>");
+		    Hashtable props = getProps.apply(tline);
+		    String height = Utils.getProperty(props,ATTR_HEIGHT,null);
+		    String style ="";
+		    if(height!=null) style=HU.css("height",HU.makeDim(height));
+                    HU.open(buff,"div",HU.attrs("class","ramadda-draft","style",style));
                     continue;
                 }
 
