@@ -8653,6 +8653,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept(help3,"/metadata/types.html", "Metadata Types");
         makeHelp.accept(help3,"/colortables", "Color Tables");
         makeHelp.accept(help3,"/icons.html", "Icons");	
+        makeHelp.accept(help3,"/usagedescriptors", "Usage Descriptors");
         makeHelp.accept(help3,"/search/providers", "Search Providers");
 
         wikiMenuEtcButton = makeMenuButton("Misc", etc.toString(),false);
