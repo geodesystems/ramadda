@@ -3224,7 +3224,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     private boolean isGoogleBot(Request request) {
-	if(true || request.getIsGoogleBot()) {
+	if(request.getIsGoogleBot()) {
 	    return isVerifiedGoogleBot(request);
 	}
 	return false;
@@ -3236,12 +3236,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private   boolean isVerifiedGoogleBot(Request request) {
 	String ipAddress=request.getIpRaw();
 	if(ipAddress==null) {
+	    getLogManager().logSpecial("is googlebot: no ipAddress user agent:" + request.getUserAgent());
 	    return false;
 	}
 	Boolean ok =googleBotIps.get(ipAddress);
 	if(ok!=null) return ok;
 	ok = isVerifiedGoogleBotInner(ipAddress);
-	getLogManager().logSpecial("is googlebot:" + ok + " IP:" + ipAddress +" user agent:" + request.getUserAgent());
+	getLogManager().logSpecial("*** is googlebot:" + ok + " IP:" + ipAddress +" user agent:" + request.getUserAgent());
 	googleBotIps.put(ipAddress,ok);
 	return ok;
     }
