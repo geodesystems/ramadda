@@ -1471,8 +1471,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return null;
 	}
 
-
-
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
 	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp());
@@ -3226,7 +3224,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     private boolean isGoogleBot(Request request) {
-	if(request.getIsGoogleBot()) {
+	if(true || request.getIsGoogleBot()) {
 	    return isVerifiedGoogleBot(request);
 	}
 	return false;
@@ -3243,7 +3241,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	Boolean ok =googleBotIps.get(ipAddress);
 	if(ok!=null) return ok;
 	ok = isVerifiedGoogleBotInner(ipAddress);
-	System.err.println("is googlebot:" + ok + " IP:" + ipAddress +" user agent:" + request.getUserAgent());
+	getLogManager().logSpecial("is googlebot:" + ok + " IP:" + ipAddress +" user agent:" + request.getUserAgent());
 	googleBotIps.put(ipAddress,ok);
 	return ok;
     }
@@ -3262,13 +3260,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             // 1. Reverse DNS lookup
             String hostName = addr.getCanonicalHostName();
 
+	    /*
             // If reverse lookup fails, Java often returns the IP itself
             if (hostName.equals(ipAddress)) {
+		System.err.println("googlebot: hostname is ipAddress:" + hostName);
                 return false;
             }
+	    */
 
             // Check allowed Google domains
             if (!endsWithGoogleDomain(hostName)) {
+		getLogManager().logSpecial("googlebot: does not end with google domain:" + hostName);
                 return false;
             }
 
@@ -3277,19 +3279,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             for (InetAddress forward : forwardAddrs) {
                 if (forward.equals(addr)) {
+		    getLogManager().logSpecial("googlebot: verified:" + addr);
                     return true; // Verified
                 }
             }
+	    getLogManager().logSpecial("googlebot: no match with forward addresses: "+ addr);
+            for (InetAddress forward : forwardAddrs) {
+		getLogManager().logSpecial("\tgooglebot: address:" +forward);
+	    }
+
             return false;
         } catch (UnknownHostException e) {
+	    getLogManager().logSpecial("googlebot: unknown host exception:" + ipAddress);
             return false;
         }
     }
 
     private boolean endsWithGoogleDomain(String hostName) {
         String lower = hostName.toLowerCase();
-        return Arrays.stream(GOOGLE_DOMAINS)
-                     .anyMatch(lower::endsWith);
+	for(String domain: GOOGLE_DOMAINS) {
+	    if(lower.endsWith(domain)) return true;
+	}
+	return false;
     }
 
 
