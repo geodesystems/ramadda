@@ -6,35 +6,23 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.archive;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.database.DatabaseManager;
-import org.ramadda.repository.database.Tables;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
-import org.ramadda.util.IO;
 
 import org.ramadda.util.WikiUtil;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.IOUtil;
-import org.ramadda.util.sql.Clause;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
 
-import java.io.*;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -111,67 +99,8 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HU.formClose());
 
 	if(request.exists("check")) {
-	    boolean download = request.get("download",false);
-	    List<Entry> entries = getEntryManager().getEntriesWithType(request, "type_archive_book");
-	    HashSet seen = Utils.makeHashSet(barcodeList);
-	    List<String> hit = new ArrayList<String>();
-	    List<String> miss = new ArrayList<String>();	    
-	    StringBuilder nomatch = new StringBuilder();
-	    List<String> matched = new ArrayList<String>();
-	    StringBuilder csv = new StringBuilder();
-	    csv.append("status,barcode,entry,url\n");
-	    for(Entry book: entries) {
-		String barcode = book.getStringValue(request, "barcode","");
-		String link = getEntryManager().getEntryLink(request, book,barcode +" -- " + book.getName(),true,"");
-		String status="found";
-		if(seen.contains(barcode)) {
-		    matched.add(barcode);
-		    hit.add(HU.div(link));
-		} else {
-		    miss.add(HU.div(link));
-		    status="missing";
-		}
-		if(download) {
-		    csv.append(status);
-		    csv.append(",");
-		    csv.append(barcode);
-		    csv.append(",");
-		    csv.append(Seesv.cleanColumnValue(book.getName()));
-		    csv.append(",");
-		    csv.append(request.getAbsoluteUrl(getEntryManager().getEntryURL(request, book)));
-		    csv.append("\n");
-		}
-
-	    }
-	    if(download) {
-		request.setReturnFilename(Utils.makeID(entry.getName())+".csv",false);
-		return new Result("",csv,"text/csv");
-	    }
-	    seen = Utils.makeHashSet(matched);
-	    for(String barcode: barcodeList) {
-		if(seen.contains(barcode)) continue;
-		nomatch.append(HU.div(barcode));
-	    }
-
-	    sb.append("<hr>");
-	    sb.append("# Missing Books: "+ miss.size() +HU.space(2) +
-		      "# Found Books: "+ hit.size());
-	    List<String>titles = new ArrayList<String>();
-	    List<String>contents = new ArrayList<String>();	    
-
-	    if(miss.size()>0) {
-		titles.add("Missing Books");
-		contents.add(Utils.join(miss,""));
-	    }
-	    if(hit.size()>0) {
-		titles.add("Found Books");
-		contents.add(Utils.join(hit,""));
-	    }
-	    if(nomatch.length()>0) {
-		titles.add("Missing Barcodes");
-		contents.add(nomatch.toString());
-	    }
-	    HU.makeTabs(sb, titles, contents);
+	    Result result = runInventory(request, entry, barcodeList,sb);
+	    if(result!=null) return result;
 	} else {
 	    if(barcodeList.size()==0) {
 		sb.append("No bar codes");
@@ -184,8 +113,89 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	    }
 	}
 
+
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return new Result(entry.getName() +" - Inventory",sb);
     }
+
+    private Result runInventory(Request request, Entry entry,List<String> barcodeList,
+				StringBuilder sb)  throws Exception {
+	boolean download = request.get("download",false);
+	List<Entry> entries = getEntryManager().getEntriesWithType(request, "type_archive_book");
+	HashSet seen = Utils.makeHashSet(barcodeList);
+	List<String> hit = new ArrayList<String>();
+	List<String> miss = new ArrayList<String>();	    
+	StringBuilder nomatch = new StringBuilder();
+	List<String> matched = new ArrayList<String>();
+	StringBuilder csv = new StringBuilder();
+	csv.append("status,barcode,entry,url\n");
+	for(Entry book: entries) {
+	    String barcode = book.getStringValue(request, "barcode","");
+	    String link = getEntryManager().getEntryLink(request, book,barcode +" -- " + book.getName(),true,"");
+	    String status="found";
+	    if(seen.contains(barcode)) {
+		matched.add(barcode);
+		hit.add(HU.div(link));
+	    } else {
+		miss.add(HU.div(link));
+		status="missing";
+	    }
+	    if(download) {
+		csv.append(status);
+		csv.append(",");
+		csv.append(barcode);
+		csv.append(",");
+		csv.append(Seesv.cleanColumnValue(book.getName()));
+		csv.append(",");
+		csv.append(request.getAbsoluteUrl(getEntryManager().getEntryURL(request, book)));
+		csv.append("\n");
+	    }
+	}
+	if(download) {
+	    request.setReturnFilename(Utils.makeID(entry.getName())+".csv",false);
+	    return new Result("",csv,"text/csv");
+	}
+	seen = Utils.makeHashSet(matched);
+	for(String barcode: barcodeList) {
+	    if(seen.contains(barcode)) continue;
+	    nomatch.append(HU.div(barcode));
+	}
+
+	sb.append("<hr>");
+	sb.append("# Missing Books: "+ miss.size() +HU.space(2) +
+		  "# Found Books: "+ hit.size());
+	List<String>titles = new ArrayList<String>();
+	List<String>contents = new ArrayList<String>();	    
+
+	if(miss.size()>0) {
+	    titles.add("Missing Books");
+	    contents.add(Utils.join(miss,""));
+	}
+	if(hit.size()>0) {
+	    titles.add("Found Books");
+	    contents.add(Utils.join(hit,""));
+	}
+	if(nomatch.length()>0) {
+	    titles.add("Missing Barcodes");
+	    contents.add(nomatch.toString());
+	}
+	HU.makeTabs(sb, titles, contents);
+	return null;
+    }
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if (tag.equals("archive_inventory_run")) {
+	    StringBuilder sb = new StringBuilder();
+	    List<String> barcodeList = getBarcodes(request,entry);
+	    Result result = runInventory(request, entry, barcodeList,sb);
+	    return sb.toString();
+	}
+	return super.getWikiInclude(wikiUtil,request,originalEntry,entry,tag,props);
+    }
+
 
 }
