@@ -1449,25 +1449,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	new TTLCache<String,Integer>(Utils.minutesToMillis(30));
 
 
+    public void logSpecial(String msg) {
+	getLogManager().logSpecial(msg);
+    }
+
     public Result checkForHuman(Request request) throws Exception  {
 	if(!checkHuman) {
-	    //	    System.err.println("human: not enabled");
+	    //	    logSpecial("human: not enabled");
 	    return null;
 
 	}
 	if(!request.isAnonymous()) {
-	    //	    System.err.println("human: not anon");
+	    //	    logSpecial("human: not anon");
 	    return null;
 	}
 	    
 	List<String> cookies = getSessionManager().getCookies(request,COOKIE_ISHUMAN);
 	if(cookies.size()!=0) {
-	    //	    System.err.println("cookies:" + cookies);
-	    if(cookies.contains(getIsHumanCookieValue()))  return null;
+	    if(cookies.contains(getIsHumanCookieValue()))  {
+		//		logSpecial("human: has cookie");
+		return null;
+	    }
 	}
 
 	//Special exception for google bot
 	if(acceptGoogleBot() && isGoogleBot(request)) {
+	    //	    logSpecial("human: is google bot");
 	    return null;
 	}
 
