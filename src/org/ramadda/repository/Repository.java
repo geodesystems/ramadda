@@ -1480,7 +1480,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp());
+	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp() +" user:" + request.getUserAgent());
 	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false));
 	    return null;
 	}
