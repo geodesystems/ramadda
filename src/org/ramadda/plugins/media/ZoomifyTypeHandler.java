@@ -28,13 +28,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHandler {
-    private static int IDX = 0;
-    private static final int IDX_IMAGE_WIDTH = IDX++;
-    private static final int IDX_IMAGE_HEIGHT = IDX++;
-    private static final int IDX_TILES_URL = IDX++;
-    private static final int IDX_STYLE = IDX++;
-    private static final int IDX_ANNOTATIONS = IDX++;    
-
     public ZoomifyTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
         super(repository, entryNode);
@@ -77,7 +70,6 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
 	throws Exception {
-
         if ( !tag.equals("zoomify") && !tag.equals("zoomable")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -108,9 +100,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
-	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
-											   originalEntry, entry, props),
-							       getType());
+	List<Entry> children =
+	    getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
+									originalEntry, entry, props),
+					    getType());
 
 	if(children.size()==0) {
 	    return "No zoomable images";
