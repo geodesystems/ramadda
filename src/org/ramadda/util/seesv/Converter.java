@@ -5011,7 +5011,12 @@ public abstract class Converter extends Processor {
 		: -1;
             if (rowCnt == 0) {
 		for(String name: names) {
-		    row.add(name);
+		    if ((col < 0) || (col > row.getValues().size())) {
+			row.add(name);
+		    } else {
+			row.insert(col, name);
+			col++;
+		    }
 		}
 		rowCnt++;
 		return row;
@@ -5021,9 +5026,9 @@ public abstract class Converter extends Processor {
 		    String v = getColumnValue(ctx,row,"",macros);
 		    v =v.replace("${row}",rowCnt+"");
 		    if ((col < 0) || (col > row.getValues().size())) {
-			row.getValues().add(v);
+			row.add(v);
 		    } else {
-			row.getValues().add(col, v);
+			row.insert(col, v);
 			col++;
 		    }
 		}
@@ -5031,9 +5036,9 @@ public abstract class Converter extends Processor {
 		for(String v: values) {
 		    v =v.replace("${row}",rowCnt+"");
 		    if ((col < 0) || (col > row.getValues().size())) {
-			row.getValues().add(v);
+			row.add(v);
 		    } else {
-			row.getValues().add(col, v);
+			row.insert(col, v);
 			col++;
 		    }
 		}
