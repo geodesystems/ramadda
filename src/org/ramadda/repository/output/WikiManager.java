@@ -10447,15 +10447,18 @@ public class WikiManager extends RepositoryManager
 				   + "/images.dzi"));
 	    }
 
-        } else if (Utils.stringDefined(entry.getStringValue(request,"tiles_url",null))) {
-	    String        width  = Utils.getProperty(props, "imageWidth",
-						     (String)entry.getStringValue(request,"image_width",null));
+        } else if (stringDefined(entry.getStringValue(request,"tiles_url",null))) {
+	    String width  =
+		Utils.getProperty(props, "imageWidth",
+				  (String)entry.getStringValue(request,"image_width",null));
 	    if(!stringDefined(width)) width="2000";
-	    String        height  = Utils.getProperty(props, "imageHeight",
-						      (String)entry.getStringValue(request,"image_height",null));
+	    String height  =
+		Utils.getProperty(props, "imageHeight",
+				  (String)entry.getStringValue(request,"image_height",null));
 	    if(!stringDefined(height)) height="2000";	    
-            Utils.add(tiles, "type", JU.quote("zoomifytileservice"),
-                      "tilesUrl", JU.quote(entry.getValue(request,2)));
+            Utils.add(tiles,
+		      "type", JU.quote("zoomifytileservice"),
+                      "tilesUrl",   JU.quote(entry.getStringValue(request,"tiles_url",null)));
 	    Utils.add(tiles, "width", width, "height", height);
             Utils.add(jsonProps, "tileSources", JU.map(tiles));
         } else {
