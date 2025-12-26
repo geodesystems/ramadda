@@ -683,11 +683,24 @@ public class EntryUtil extends RepositoryManager {
             return  e1.getTypeHandler().getLabel().compareToIgnoreCase(
 								       e2.getTypeHandler().getLabel());
         } else if (on.is(ORDERBY_FOLDER)) {
-	    boolean g1 = e1.getTypeHandler().isGroup();
-	    boolean g2 = e2.getTypeHandler().isGroup();	    
-	    if(g1==g2) return  0;
-	    else if(g1) return 1;
-	    else return  -1;
+	    TypeHandler t1= e1.getTypeHandler();
+	    TypeHandler t2= e2.getTypeHandler();	    
+	    boolean g1 = t1.isGroup();
+	    boolean g2 = t2.isGroup();	    
+	    if(g1 && g2) {
+		if(t1.equals(t2)) {
+		    return 0;
+		} 
+		if(t1.getType().equals(TYPE_GROUP)) return 1;
+		if(t2.getType().equals(TYPE_GROUP)) return -1;		
+		return 0;
+	    } else  if(g1==g2) {
+		return  0;
+	    }  else if(g1) {
+		return 1;
+	    }  else {
+		return  -1;
+	    }
         } else if (on.is(ORDERBY_SIZE)) {
             return  compare(e1.getResource().getFileSize(),
 			    e2.getResource().getFileSize());
