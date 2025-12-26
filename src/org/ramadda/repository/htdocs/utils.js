@@ -6988,7 +6988,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
 	if(opts.separate)
-	    return {header:header,body:body,id:id};
+	    return {header:header,body:body,id:id,imgid:imgid,imgopen:img1,imgclose:img2};
 	if(horizontal)
 	    return HU.hbox([header,body]);
         return header + body;
