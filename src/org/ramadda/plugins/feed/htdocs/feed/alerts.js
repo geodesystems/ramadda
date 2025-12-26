@@ -157,7 +157,7 @@ NwsAlerts.prototype = {
 	    let innerContents = '';
 	    if(data.features.length==0) {
 		this.finish();
-		console.log('no events for:',type,value,url)
+//		console.log('no events for:',type,value,url)
 		return;
 		//		innerContents+=this.noAlertsMessage;
 	    }
@@ -192,7 +192,8 @@ NwsAlerts.prototype = {
 		    pre+='\n\n' + fmt('Area');
 		    pre+=props.areaDesc;
 		}		
-		let title = props.headline;
+		let title = props.headline??'';
+		if(props.areaDesc) title+=SPACE + '-' + SPACE+props.areaDesc;
 		let significance='';
 		let phenon='';
 		let code='';
@@ -230,7 +231,7 @@ NwsAlerts.prototype = {
 		    //		    console.log(Utils.formatDate(sent) +" " + sent);
 		}
 		pre = pre.trim();
-		pre = pre.replace(/\n\n/g,'<p>');
+		pre = pre.replace(/\n\n/g,'<div style="margin-top:0.25em"></div>');
 		let contents = '';
 		if(props?.geocode?.UGC) {
 		    let zone = props.geocode.UGC['0'];
@@ -240,6 +241,7 @@ NwsAlerts.prototype = {
 			contents += HU.center(link);
 		    }
 		}
+
 
 		contents += pre;
 		contents+=HU.div([ATTR_STYLE,HU.css(CSS_FONT_SIZE,HU.perc(80),
