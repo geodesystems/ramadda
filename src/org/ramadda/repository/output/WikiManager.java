@@ -3054,6 +3054,7 @@ public class WikiManager extends RepositoryManager
 	    if(entry!=null) {
 		//sub in the entry
 		text = text.replaceAll("\\$\\{entryid\\}",entry.getId());
+		text = text.replaceAll("\\$\\{entry\\}",entry.getId());		
 		text = text.replaceAll("#entry\\s*=","entry=");
 	    }
 	    WikiUtil newWikiUtil  = new WikiUtil(wikiUtil);
