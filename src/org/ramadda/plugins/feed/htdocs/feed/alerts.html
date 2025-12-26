@@ -101,6 +101,15 @@ The areas or zones can be overwritten with:
 {<foo>{nws_alerts areas="CO,SD" zones="KSZ081,SDZ049"}}
 </pre>
 
+:heading2 Specifying geo location
+Specify one or more lat/lon locations.
+<pre>
+{<foo>{nws_alerts points="lat1\,lon1,lat2\,lon2" }} 
+e.g:
+{<foo>{nws_alerts points="40\,-107,30\,-110" }} 
+</pre>
+
+
 :heading2 Unique alerts
 There can be multiple zones/areas producing mulitple alerts. Some of the alerts
 coming from different zones/areas can be the same alert. To only show unique alerts do:

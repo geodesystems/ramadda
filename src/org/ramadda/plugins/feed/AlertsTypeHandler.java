@@ -5,45 +5,16 @@
 
 package org.ramadda.plugins.feed;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.AtomUtil;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.IO;
-import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
-import org.ramadda.data.point.text.*;
-import org.ramadda.data.record.*;
-
-import org.ramadda.data.services.PointTypeHandler;
-import org.ramadda.data.services.RecordTypeHandler;
-
-import ucar.unidata.xml.XmlUtil;
-
-
 import org.w3c.dom.*;
-
-
-import java.net.URL;
 import java.io.*;
-import java.text.SimpleDateFormat;
-
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-import java.util.TimeZone;
-
 
 
 @SuppressWarnings("unchecked")
@@ -97,7 +68,8 @@ public class AlertsTypeHandler extends GenericTypeHandler {
 	    Object v = props.get(key);
 	    if(key.equals("urls") || key.equals("points") ||
 	       key.equals("zones") || key.equals("areas")) {
-		v = JU.list(Utils.split(v.toString(),",",true,true),true);
+		
+		v = JU.list(Utils.split(v.toString(),",",true,true,true),true);
 	    } else {
 		v = JU.quote(v.toString());
 	    }
