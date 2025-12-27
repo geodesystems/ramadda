@@ -8746,11 +8746,19 @@ public class WikiManager extends RepositoryManager
 						 "ramadda-menubar-button"));
 
 
+	/*getSelect(Request request, String elementId,
+	  String label, boolean allEntries,
+	  String type, Entry entry,
+	  boolean addView, boolean addClear, boolean addField,String linkExtra,String...entryType)*/
         OutputHandler.EntrySelect importEntry = OutputHandler.getSelect(request, textAreaId,
-									"Embed Entry", true, "wikilink", entry, false, false,false,BUTTONCLASS);
+									"Embed Entry", true,
+									"wikilink", entry,
+									false, false,false,BUTTONCLASS);
 
         OutputHandler.EntrySelect fieldLink = OutputHandler.getSelect(request, textAreaId,
-								      "Field ID", true, "fieldname", entry, false, false,false,BUTTONCLASS);
+								      "Field ID", true,
+								      "fieldname", entry,
+								      false, false,false,BUTTONCLASS);
 
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")

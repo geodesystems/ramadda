@@ -367,7 +367,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    ),
 
 				new WikiTag(WIKI_TAG_DATAPOLICIES, null, "message","","inherited","true","includePermissions","false"),
-				new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false")),
+				new WikiTag(WIKI_TAG_WIKITEXT,null,"#showToolbar","false","#height","200px")),
 	    new WikiTagCategory("Misc 2",
 				new WikiTag(WIKI_TAG_BREADCRUMBS,"Breadcrumbs",
 					    "#count","5",
