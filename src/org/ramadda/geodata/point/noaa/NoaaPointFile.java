@@ -59,7 +59,7 @@ public class NoaaPointFile extends CsvFile {
      * @return _more_
      */
     public String getStationsPath() {
-        return "/org/ramadda/data/point/noaa/stations.txt";
+        return "/org/ramadda/geodata/point/noaa/stations.txt";
     }
 
 
