@@ -462,8 +462,18 @@ public class TypeHandler extends RepositoryManager {
             defaultChildTypes = Utils.getAttributeOrTag(node, ATTR_CHILDTYPES, "");
 
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
-            wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true));
+
+	    String overrideWiki=getRepository().getProperty("ramadda.wikitemplate.default." +getType(),
+							    getRepository().getProperty("ramadda.wikitemplate." +getType(),null));
+	    if(overrideWiki!=null) {
+		wikiTemplate =  getRepository().getResource(overrideWiki);
+	    } 
+
+	    if(wikiTemplate==null) {
+		wikiTemplate = Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true);
+	    }
 	    if(wikiTemplate!=null) {
+		wikiTemplate = Utils.trimLinesLeft(wikiTemplate);
 		String p = StringUtil.findPattern(wikiTemplate,"\\{\\{description(.*?)\\}\\}");
 		if(p!=null) {
 		    defaultIsWiki = p.indexOf("wikify")>=0;
@@ -5028,6 +5038,9 @@ public class TypeHandler extends RepositoryManager {
 	    if(cnt<20)
 		height=(cnt+3)+"em";
 	}
+
+
+
 	for(int i=0;i<args.length;i+=2) {
 	    String key = args[i];
 	    String value = args[i+1];
@@ -5060,6 +5073,8 @@ public class TypeHandler extends RepositoryManager {
 
 	String authToken = request.getAuthToken();
 
+	List props = Utils.arrayToList(args);
+	Utils.add(props,"authToken",authToken);
         sb.append(HU.script(HU.call("new WikiEditor",
 				    HU.squote((entry == null)
 					      ? ""
@@ -5069,7 +5084,7 @@ public class TypeHandler extends RepositoryManager {
 				     : HU.squote(formInfo.getId())),
 				    HU.squote(editorId),
 				    HU.squote(hiddenId),
-				    JsonUtil.map("authToken",HU.squote(authToken)))));
+				    JU.mapAndQuote(props))));
 
         if ( !readOnly) {
             HU.close(sb, "div");
