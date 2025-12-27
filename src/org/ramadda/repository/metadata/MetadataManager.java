@@ -569,10 +569,15 @@ public class MetadataManager extends RepositoryManager {
             top.add(JU.list(keywords, true));
         }
 	if(!addedLicense) {
-	    Utils.add(top,"license","no license specified");
+	    Utils.add(top,"license",JU.quote("no license specified"));
 	}
 	if(!addedCreator) {
-	    Utils.add(top,"creator",getRepository().getRepositoryName());
+	    List<String> ctor = new ArrayList<String>();
+	    ctor.add("@type");
+	    ctor.add(JU.quote("Organization"));
+	    ctor.add("name");
+	    ctor.add(JU.quote(getRepository().getRepositoryName()));
+	    Utils.add(top,"creator",JU.map(ctor));
 	}	
         JU.map(sb, top);
         sb.append("\n</script>\n");
