@@ -4953,8 +4953,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeAccordion: function(id, args) {
         if(args == null) {
 	    args = {
-		heightStyle: "content", collapsible: true, active: 0,
-		decorate: false, animate:200};
+		heightStyle: "content",
+		collapsible: true,
+		active: 0,
+		decorate: false,
+		animate:200};
 	}
 	let icons = {
             header: "iconClosed",    // custom icon class
@@ -4963,8 +4966,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         $(function() {
             //We initially hide the accordion contents
             //Show all contents
-            let contents = $(id +" .ramadda-accordion-contents");
-            contents.css(CSS_DISPLAY, DISPLAY_BLOCK);
             let ctorArgs = {
                 animate:200,
 		icons:icons,
@@ -4979,12 +4980,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             }
             $.extend(ctorArgs, args);
+            let contents = $(id +" .ramadda-accordion-contents");
+	    if(ctorArgs.active>=0) {
+		contents.css(CSS_DISPLAY, DISPLAY_BLOCK);
+	    }
 
             if(!ctorArgs.decorate) {
                 let header = $(id +" .ui-accordion-header");
                 header.css(CSS_PADDING,"0em 0em 0em 0em");
             }
             if(ctorArgs.active<0) ctorArgs.active='none';
+
             let accordion = $(id).accordion(ctorArgs);
 	    //Handle any checkboxes in the header
 	    let f = function(ele,event) {
