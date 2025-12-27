@@ -4980,6 +4980,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             }
             $.extend(ctorArgs, args);
+	    ctorArgs.active = +ctorArgs.active;
             let contents = $(id +" .ramadda-accordion-contents");
 	    if(ctorArgs.active>=0) {
 		contents.css(CSS_DISPLAY, DISPLAY_BLOCK);

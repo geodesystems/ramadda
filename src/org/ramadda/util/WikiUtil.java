@@ -1767,7 +1767,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    if(isToggle) Utils.put(props,"activeSegment",tline.startsWith("+toggleopen")?
 					   "0":"-1","decorate","false");
 		    accordionState.activeSegment =
-			Misc.getProperty(props, "activeSegment", 0);
+			Misc.getProperty(props, "activeSegment", "0");
 		    accordionState.animate = Misc.getProperty(props,
 							      "animate", accordionState.animate);
 		    accordionState.heightStyle = Misc.getProperty(props,
@@ -3380,7 +3380,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		+ accordionState.heightStyle + "\""
 		+ ", collapsible: "
 		+ accordionState.collapsible + ", active: "
-		+ accordionState.activeSegment
+		+ JU.quote(accordionState.activeSegment)
 		+ ", decorate: " + accordionState.decorate
 		+ ", animate:" + accordionState.animate
 		+ "}";
@@ -4292,19 +4292,12 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
     public static class AccordionState extends ContentState {
-
         int segmentId = 0;
-
-        int activeSegment = 0;
-
+        String activeSegment = "0";
         String heightStyle = "content";
-
         boolean collapsible = true;
-
         int animate = 200;
-
         boolean decorate = true;
-
         public AccordionState() {}
     }
 
