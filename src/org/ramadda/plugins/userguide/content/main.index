@@ -49,9 +49,9 @@ index.html
 >>loginsecurity.html
 >>configuration.html
 >>pageconfig.html
->>thumbnails.html
->>arkids.html
 >>templates.html
+>>entrydisplay.html
+>>thumbnails.html
 >>build.html
 >>database.html
 >>llm.html
@@ -70,6 +70,7 @@ index.html
 >>subrepositories.html
 >>monitors.html
 >>datamonitor.html
+>>arkids.html
 
 ##>>repositoryscript.html
 

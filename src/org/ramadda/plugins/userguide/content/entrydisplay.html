@@ -1,0 +1,67 @@
+[ht::head {Entry Displays}]
+:navtop
+
+
+:heading Default Folder and File Display
+The default display for folders and files are defined by two wiki text templates, the outer template and the contents template
+For example for folders the outer template is defined by the
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/repository/resources/templates/folder.default.txt>
+  folder.default.txt</a> template. The outer template defines the overall layout of the page, e.g. inner contents in the main part
+of the page and properties, maps, etc, on the right hand side of the page.
+The inner contents is defined by the 
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/repository/resources/templates/folder.content.txt>
+  folder.content.txt</template>. The default inner contents is the wiki text:
++pre
+{<noop>{description suffix="<p>"}}
+{<noop>{tabletree message="" orderby="entryorder_up,name_up" maxHeight=80vh}}
+-pre
+
+For generic file entries the display is defined with the templates - 
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/repository/resources/templates/file.default.txt>
+  file.default.txt</a> and
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/repository/resources/templates/file.content.txt>
+file.content.txt</template>. 
+
+
+You can overwrite these templates with the following properties. The %repositorydir% is your RAMADDA home directory.
++pre addCopy=true
+ramadda.wikitemplate.default.folder=%repositorydir%/folder.default.txt
+ramadda.wikitemplate.content.folder=%repositorydir%/folder.content.txt
+
+ramadda.wikitemplate.content.file=%repositorydir%/file.content.txt
+ramadda.wikitemplate.default.file=%repositorydir%/file.default.txt
+-pre
+
+For example, if you wanted a different sort order for all Folder entries you could create a file
+myfolder.txt with
++pre
+{<noop>{description}}
+{<noop>{tabletree message="" orderby="folder_up,entryorder_up,name_up" maxHeight=80vh}}
+-pre
+
+And then set the property:
++pre addCopy=true
+ramadda.wikitemplate.content.folder=%repositorydir%/myfolder.txt
+-pre
+
+Note: for the case of specifying a default sort order for the entire repository
+see the documentation on   <a href=wiki/sortorder.html#sort_order_property>sort order</a>.
+
+:heading Overriding displays
+You can also override the default display of any entry type with the following property:
++pre addCopy=true
+ramadda.wikitemplate.default.&lt;type&gt;=/path/to/wiki/template    
+-pre
+
+For example, if you wanted change how PDF file entries are displayed you could specify the property:
++pre addCopy=true
+ramadda.wikitemplate.default.type_document_pdf=%repositorydir%/mypdf.html
+-pre
+
+And then create the mypdf.html file in your RAMADDA home directory. The file
+is just the wiki text that displays the PDF. For example, you can view the default wiki text
+in the 
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/plugins/media/types.xml>types.xml</a>
+plugin file on Github. Look for the &lt;wiki&gt; tag definition for the PDF entry type.
+
+[ht::foot]
