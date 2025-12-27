@@ -35,7 +35,8 @@ The default message shown can be set with the property:
 ramadda.ishuman.message=Due to the proliferation of AI crawlers we need to check if you are a real person
 -pre
 
-
+Note: If you have enabled the GoogleBot to scan your site then RAMADDA does a special check to see if
+the request is from the GoogleBot. If it is then the Human check is not applied.
 
 :heading Google Recaptcha
 Google Recaptcha can be used for verifying non-bot access to some services (below).
