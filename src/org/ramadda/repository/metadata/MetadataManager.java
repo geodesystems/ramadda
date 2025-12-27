@@ -457,31 +457,34 @@ public class MetadataManager extends RepositoryManager {
         sb.append("\n<script type=\"application/ld+json\">\n");
         List<String>   top          = new ArrayList<String>();
         top.add("@context");
-        top.add(JsonUtil.quote("https://schema.org/"));
+        top.add(JU.quote("https://schema.org/"));
         top.add("@type");
-        top.add(JsonUtil.quote("Dataset"));
+        top.add(JU.quote("Dataset"));
         top.add("name");
-        top.add(JsonUtil.quote(JsonUtil.cleanString(entry.getName())));
+        top.add(JU.quote(JU.cleanString(entry.getName())));
         top.add("url");
         top.add(
-            JsonUtil.quote(
+            JU.quote(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
 
 	//50-5000
 	if(stringDefined(snippet)&& snippet.length()>50) {
 	    top.add("description");
-	    top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
+	    top.add(JU.quote(JU.cleanString(snippet)));
+	} else {
+	    top.add("description");
+	    top.add(JU.quote(JU.cleanString(entry.getTypeHandler().getLabel())));
 	}
         if (entry.hasDate()) {
             top.add("temporalCoverage");
 	    synchronized(jsonLdSdf) {
 		if (entry.getStartDate() == entry.getEndDate()) {
 		    top.add(
-			    JsonUtil.quote(
+			    JU.quote(
 					   jsonLdSdf.format(new Date(entry.getStartDate()))));
 		} else {
 		    top.add(
-			    JsonUtil.quote(
+			    JU.quote(
 					   jsonLdSdf.format(new Date(entry.getStartDate())) + "/"
 					   + jsonLdSdf.format(new Date(entry.getEndDate()))));
 		}
@@ -491,30 +494,30 @@ public class MetadataManager extends RepositoryManager {
         if (entry.isGeoreferenced(request)) {
             List<String> geo = new ArrayList<String>();
             geo.add("@type");
-            geo.add(JsonUtil.quote("Place"));
+            geo.add(JU.quote("Place"));
             geo.add("geo");
             if (entry.hasAreaDefined(request)) {
                 String box = entry.getSouth(request) + " " + entry.getWest(request) + " "
                              + entry.getNorth(request) + " " + entry.getEast(request);
-                geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
-                        JsonUtil.quote("GeoShape"), "box",
-                        JsonUtil.quote(box))));
+                geo.add(JU.map(Utils.makeListFromValues("@type",
+                        JU.quote("GeoShape"), "box",
+                        JU.quote(box))));
             } else {
-                geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
-                        JsonUtil.quote("GeoCoordinates"), "latitude",
-                        JsonUtil.quote("" + entry.getLatitude(request)),
+                geo.add(JU.map(Utils.makeListFromValues("@type",
+                        JU.quote("GeoCoordinates"), "latitude",
+                        JU.quote("" + entry.getLatitude(request)),
                         "longitude",
-                        JsonUtil.quote("" + entry.getLongitude(request)))));
+                        JU.quote("" + entry.getLongitude(request)))));
             }
             top.add("spatialCoverage");
-            top.add(JsonUtil.map(geo));
+            top.add(JU.map(geo));
         }
 
         if (entry.isFile()) {
             top.add("distribution");
 	    String mimeType = getRepository().getMimeTypeFromSuffix(
 								    IO.getFileExtension(entry.getResource().getPath()));
-            top.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("@type","DataDownload",
+            top.add(JU.mapAndQuote(Utils.makeListFromValues("@type","DataDownload",
 							"encodingFormat",mimeType,
 							"contentUrl",
                     getEntryManager().getEntryResourceUrl(request, entry,
@@ -522,11 +525,14 @@ public class MetadataManager extends RepositoryManager {
         }
 
         List<String> ids      = null;
+	boolean addedLicense=false;
+	boolean addedCreator=false;	
         for (Metadata md : metadataList) {
             String type = md.getType();
             if (type.equals("content.license")) {
                 top.add("license");
-                top.add(JsonUtil.quote(md.getAttr1()));
+                top.add(JU.quote(md.getAttr1()));
+		addedLicense=true;
             } else if (type.equals("doi_identifier")) {
                 if (ids == null) {
                     ids = new ArrayList<String>();
@@ -534,34 +540,41 @@ public class MetadataManager extends RepositoryManager {
                 ids.add(md.getAttr2());
             } else if (type.equals("metadata_author")) {
                 List<String> ctor = new ArrayList<String>();
-		ctor.add(JsonUtil.quote("@type"));
-		ctor.add(JsonUtil.quote(md.getAttr1()));
+		ctor.add(JU.quote("@type"));
+		ctor.add(JU.quote(md.getAttr1()));
                 top.add("author");
-                top.add(JsonUtil.map(ctor));
+                top.add(JU.map(ctor));
             } else if (type.equals("thredds.creator")) {
                 List<String> ctor = new ArrayList<String>();
                 ctor.add("@type");
-                ctor.add(JsonUtil.quote("Organization"));
+                ctor.add(JU.quote("Organization"));
                 ctor.add("name");
-                ctor.add(JsonUtil.quote(md.getAttr1()));
+                ctor.add(JU.quote(md.getAttr1()));
                 ctor.add("url");
-                ctor.add(JsonUtil.quote(md.getAttr4()));
+                ctor.add(JU.quote(md.getAttr4()));
                 ctor.add("contactPoint");
-                ctor.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("@type",
+                ctor.add(JU.mapAndQuote(Utils.makeListFromValues("@type",
                         "ContactPoint", "email", md.getAttr3())));
                 top.add("creator");
-                top.add(JsonUtil.map(ctor));
+                top.add(JU.map(ctor));
+		addedCreator=true;
             }
 	}
         if (ids != null) {
             top.add("identifier");
-            top.add(JsonUtil.list(ids, true));
+            top.add(JU.list(ids, true));
         }
         if (keywords != null) {
             top.add("keywords");
-            top.add(JsonUtil.list(keywords, true));
+            top.add(JU.list(keywords, true));
         }
-        JsonUtil.map(sb, top);
+	if(!addedLicense) {
+	    Utils.add(top,"license","no license specified");
+	}
+	if(!addedCreator) {
+	    Utils.add(top,"creator",getRepository().getRepositoryName());
+	}	
+        JU.map(sb, top);
         sb.append("\n</script>\n");
     }
 
@@ -1630,9 +1643,9 @@ public class MetadataManager extends RepositoryManager {
             }
             values = tmp;
         }
-        sb.append(JsonUtil.list(values, true));
+        sb.append(JU.list(values, true));
 
-        return new Result("", sb, JsonUtil.MIMETYPE);
+        return new Result("", sb, JU.MIMETYPE);
     }
 
     public Result processMetadataList(Request request) throws Exception {
@@ -1674,7 +1687,7 @@ public class MetadataManager extends RepositoryManager {
 	}
         if (request.responseAsJson()) {
             request.setCORSHeaderOnResponse();
-            return new Result("", sb, JsonUtil.MIMETYPE);
+            return new Result("", sb, JU.MIMETYPE);
         }
 
         sb.append(HU.sectionClose());
@@ -1686,12 +1699,12 @@ public class MetadataManager extends RepositoryManager {
 
     private String makeElementJson(MetadataElement element,List<String>maps) {
 	List<String>attrs = new ArrayList<String>();
-	Utils.add(attrs,"id",JsonUtil.quote(element.getId()),"name",JsonUtil.quote(element.getLabel()),
+	Utils.add(attrs,"id",JU.quote(element.getId()),"name",JU.quote(element.getLabel()),
 		  "index",""+element.getIndex());
 
-	Utils.add(attrs,"type",JsonUtil.quote(element.isEnumeration()?"enumeration":"string"));
-	if(maps!=null) Utils.add(attrs,"values",JsonUtil.list(maps));
-	return JsonUtil.map(attrs);
+	Utils.add(attrs,"type",JU.quote(element.isEnumeration()?"enumeration":"string"));
+	if(maps!=null) Utils.add(attrs,"values",JU.list(maps));
+	return JU.map(attrs);
     }
 
     public List<MetadataElement> getSearchableElements(MetadataType type) {
@@ -1766,7 +1779,7 @@ public class MetadataManager extends RepositoryManager {
         MetadataType    type    = handler.findType(metadataType);
         if ((type == null) || (type.getChildren() == null)) {
             if (doJson) {
-                sb.append(JsonUtil.list(new ArrayList<String>()));
+                sb.append(JU.list(new ArrayList<String>()));
             }
 	    sb.append(getPageHandler().showDialogError("Could not find metadata type:" +type));
             return;
@@ -1836,10 +1849,10 @@ public class MetadataManager extends RepositoryManager {
 			if (label == null) {
 			    label = value;
 			}
-			maps.add(JsonUtil.map(Utils.makeListFromValues("count",
+			maps.add(JU.map(Utils.makeListFromValues("count",
 								       tuple[0].toString(), "value",
-								       JsonUtil.quote(value), "label",
-								       JsonUtil.quote(label))));
+								       JU.quote(value), "label",
+								       JU.quote(label))));
 		    }
 		    jsonItems.add(makeElementJson(element,maps));
 
@@ -1895,10 +1908,10 @@ public class MetadataManager extends RepositoryManager {
 	}
 	if(doJson) {
 	    List<String> obj = new ArrayList<String>();
-	    Utils.add(obj,"metadataType",JsonUtil.quote(type.getId()),"metadataLabel",JsonUtil.quote(type.getLabel()));
+	    Utils.add(obj,"metadataType",JU.quote(type.getId()),"metadataLabel",JU.quote(type.getLabel()));
 	    Utils.add(obj,"addNot",""+type.getAddNot());
-	    Utils.add(obj,"elements",JsonUtil.list(jsonItems));
-	    sb.append(JsonUtil.map(obj));
+	    Utils.add(obj,"elements",JU.list(jsonItems));
+	    sb.append(JU.map(obj));
 	}
 
     }
