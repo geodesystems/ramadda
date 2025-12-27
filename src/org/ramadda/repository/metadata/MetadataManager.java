@@ -473,7 +473,7 @@ public class MetadataManager extends RepositoryManager {
 	    top.add(JU.quote(JU.cleanString(snippet)));
 	} else {
 	    top.add("description");
-	    top.add(JU.quote(JU.cleanString(entry.getName())));
+	    top.add(JU.quote(JU.cleanString(entry.getTypeHandler().getLabel())));
 	}
         if (entry.hasDate()) {
             top.add("temporalCoverage");
