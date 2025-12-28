@@ -459,7 +459,7 @@ public class MetadataManager extends RepositoryManager {
         top.add("@context");
         top.add(JU.quote("https://schema.org/"));
         top.add("@type");
-        top.add(JU.quote("Dataset"));
+        top.add(JU.quote(entry.getTypeHandler().getTypeProperty("jsonld.type","WebPage")));
         top.add("name");
         top.add(JU.quote(JU.cleanString(entry.getName())));
         top.add("url");
@@ -468,13 +468,16 @@ public class MetadataManager extends RepositoryManager {
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
 
 	//50-5000
+	String description=null;
 	if(stringDefined(snippet)&& snippet.length()>50) {
-	    top.add("description");
-	    top.add(JU.quote(JU.cleanString(snippet)));
-	} else {
-	    top.add("description");
-	    top.add(JU.quote(JU.cleanString(entry.getTypeHandler().getLabel())));
+	    description=snippet;	    
 	}
+	if(description==null) {
+	    description = "A repository entry of type " + entry.getTypeHandler().getLabel();
+	}
+	top.add("description");
+	top.add(JU.quote(JU.cleanString(description)));
+
         if (entry.hasDate()) {
             top.add("temporalCoverage");
 	    synchronized(jsonLdSdf) {
@@ -569,7 +572,7 @@ public class MetadataManager extends RepositoryManager {
             top.add(JU.list(keywords, true));
         }
 	if(!addedLicense) {
-	    Utils.add(top,"license",JU.quote("no license specified"));
+	    //	    Utils.add(top,"license",JU.quote("no license specified"));
 	}
 	if(!addedCreator) {
 	    List<String> ctor = new ArrayList<String>();

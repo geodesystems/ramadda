@@ -23,6 +23,7 @@ metadataDisplay3="archive_note:template=<b>{attr1}\:</b> {attr2}"
     <type name="type_archive_base"  foruser="false" description="Base Archive Type">
       <property name="icon" value="/archive/collection.png"/>
       <property name="form.description.iswiki" value="true"/>
+      <property name="jsonld.type" value="Collection"/>
     </type>
 	  
 
