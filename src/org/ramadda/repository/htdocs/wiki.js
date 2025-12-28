@@ -2656,7 +2656,8 @@ WikiEditor.prototype = {
 		attributes:[
 		    {p:'decorate=false'},
 		    {p:'collapsible=true'},
-		    {p:'activeSegment=0'}
+		    {p:'activeSegment=0'},
+		    'animate=2000'
 		]
 	    },
 	    table: {
