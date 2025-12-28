@@ -8396,6 +8396,13 @@ public class WikiManager extends RepositoryManager
                 : null);
     }
 
+    private String  plus  (String s) {
+	return "+"+s+"\\n";
+    }
+    private String minus(String s){
+	return "\\n-"+s;
+    }
+    
     private synchronized void initWikiMenuButtons() throws Exception {
 	if(wikiMenuEtcButton!=null) return;
 	String textAreaId = "${textareaid}";
@@ -8413,6 +8420,12 @@ public class WikiManager extends RepositoryManager
 	    currentHeader[0] = title;
 	    return HU.div(HU.b(title),HU.attrs("class","wiki-editor-popup-link"));
 	};
+	Utils.UniFunction<String,String> plus = (s)->{
+	    return "+"+s+"\\n";
+	};
+	Utils.UniFunction<String,String> minus = (s)->{
+	    return "\\n-"+s;
+	};		
 	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,"",currentHeader[0]);
 	};
@@ -8429,63 +8442,93 @@ public class WikiManager extends RepositoryManager
 
         Utils.appendAll(tags1,
 			hdr.call("Layout:"),
-			l2.call("Section", "Section wrapper. use +section-map for a map bg\nimg:section.png","+section title={{name}}_newline__newline_", "-section"),
-			l2.call( "Frame", "Full page framed section","+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
-			l2.call( "Table", "HTML table","+table #height=400 #hover=true #cellborder=false #rowborder=false #stripe=false #ordering=false #paging=false #searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
-			l2.call( "Row/Column", "Create a 12 unit wide bootstrap row\nimg:row.png", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
-			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
-			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
-			l2.call( "Tabs", "Make tabs\nimg:tabs.png","+tabs center=false minarrow=false tight=false noBorder=false #minheight=\"\" _newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
-			l2.call( "Accordion", "Accordion layout\nimg:accordion.png","+accordion #decorate=false #collapsible=true #activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
-			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
-			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
-			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") ,
+			l2.call("Section", "Section wrapper. use +section-map for a map bg\nimg:section.png",
+				plus("section title={{name}}"),
+				minus("section")),
+			l2.call( "Frame", "Full page framed section",
+				 plus("frame background=#fff frameSize=0 shadow title=\"\""),
+				 minus("frame")),
+			l2.call( "Table", "HTML table",
+				 "+table\\n:tr &quot;heading 1&quot; &quot;heading 2&quot;\\n+tr\\n:td column 1\\n+td\\ncolumn 2\\n-td\\n-tr\\n-table",""),
+			l2.call( "Row/Column", "Create a 12 unit wide bootstrap row\nimg:row.png",
+				 "+row\\n+col-6\\n", "-col\\n+col-6\\n-col\\n-row"),
+			l2.call( "Left-right", "2 column table aligned left and right",
+				 "+leftright\\n+left\\n-left\\n+right\\n-right\\n", "-leftright"),
+			l2.call( "Left-middle-right", "3 column table aligned left,center and right",
+				 "+leftmiddleright\\n+left\\n-left\\n+middle\\n-middle\\n+right\\n-right\\n", "-leftmiddleright"),
+			l2.call( "Tabs", "Make tabs\nimg:tabs.png",
+				 "+tabs \\n+tab tab title\\n", "-tab\\n-tabs\\n"),
+			l2.call( "Accordion", "Accordion layout\nimg:accordion.png",
+				 "+accordion  \\n+segment segment  title\\n", "-segment\\n-accordion\\n"),
+			l2.call("Close Toggle","Show a closed toggle box",
+				"+toggle Toggle Label\\n","-toggle"),
+			l2.call("Open Toggle","Show a open toggle box",
+				"+toggleopen Toggle Label\\n","-toggleopen"),			
+			l2.call("Side Toggle","Side Toggle",
+				"+sidetoggle label=\"Click me\" boxBackground=\"#fff\" boxWidth=\"200px\" fontSize=16px buttonWidth=\"24px\" buttonBackground=\"#fff\" buttonColor=\"#000\" boxTop=\"100px\" buttonTop=\"100px\"\\n",
+				"-sidetoggle"),
+
+			l2.call( "Slides", "Slides layout\nimg:slides.png",
+				 "+slides slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt_\\n+slide Title\\n", "-slide\\n-slides\\n"),
+			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ \\n:filler\\n+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt_\\n-gridbox\\n+gridbox #title=_qt_Title 2_qt_\\n-gridbox\\n:filler\\n", "-grid"),
+			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png",
+				plus("scroll\\n+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ \\n+center\\n<div class=scroll-indicator>Scroll Down</div>\\n-center\\n-panel\\n+panel color=gradient2 name=panel1\\n\\n-panel\\n+panel color=blue name=panel2\\n\\n-panel"), minus("scroll")) ,
 			l2.call( "IFrame", "Iframe",":iframe URL  height=\"600px\" class=\"ramadda-iframe-progress\" #style=\"\" ", "")
 			); 
 
         Utils.appendAll(tags2,
 			hdr.call("Format:"),
-			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1_nl_* bullet 2_nl_** 2 level_nl_", ""),
-			l2.call( "Checkbox list", "Checkbox list. One per line","*+ on bullet 1_nl_*- off bullet 2_nl_**- 2 level_nl_", ""),
-			l2.call("Active checklist","Make the checklist active",":property checklistActive true_nl_",""),
+			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1\\n* bullet 2\\n** 2 level\\n", ""),
+			l2.call( "Checkbox list", "Checkbox list. One per line","*+ on bullet 1\\n*- off bullet 2\\n**- 2 level\\n", ""),
+			l2.call("Active checklist","Make the checklist active",":property checklistActive true\\n",""),
 
-			l2.call("Center", "Center text","\\n+center\\n","-center"),
-			l2.call("Center div", "Center the block, not the text","\\n+centerdiv\\n","-centerdiv"),			
-			l2.call("Horizontal layout", "","+hbox \\n", "-hbox"),
-			l2.call("Inset", "top/left/bottom/right spacing","+inset _newline_", "-inset"),
-			l2.call("Popup", "Popup link\nimg:popup.png","+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
-			l.call("Menu", "+menu _nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu <cog> Menu 1_nl_        :menuitem Item 2_nl_        +menuitem _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu <bars> Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
+			l2.call("Center", "Center text",
+				plus("center"),minus("center")),
+			l2.call("Center div", "Center the block, not the text",
+				plus("centerdiv"),minus("centerdiv")),
+			l2.call("Horizontal layout", "",
+				plus("hbox"), minus("hbox")),
+			l2.call("Inset", "top/left/bottom/right spacing",
+				plus("inset space=10px"), minus("inset")),
+			l2.call("Popup", "Popup link\nimg:popup.png",
+				"+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true animate=false\\n\\n", "-popup"),
+			l.call("Menu",
+			       "+menu \\n    :menuheader Header\\n    :menuitem Item 1\\n    +menu <cog> Menu 1\\n        :menuitem Item 2\\n        +menuitem _qt_ \\n        Menu contents\\n        -menuitem\\n    -menu\\n    +menu <bars> Menu 2\\n        :menuitem Item 3\\n    -menu\\n-menu\\n", ""),
 
-			l2.call("Toggle","Show a closed toggle box","+toggle Toggle Label\\n","-toggle"),
-			l2.call("Open Toggle","Show a open toggle box","+toggleopen Toggle Label\\n","-toggleopen"),			
-			l2.call("Side Toggle",
-				"Side Toggle","+sidetoggle label=\"Click me\" boxBackground=\"#fff\" boxWidth=\"200px\" fontSize=16px buttonWidth=\"24px\" buttonBackground=\"#fff\" buttonColor=\"#000\" boxTop=\"100px\" buttonTop=\"100px\"\\n",
-				"-sidetoggle"),
-			l.call("Splash", "+splash_nl_", "-splash_nl_"),
+			l.call("Splash",
+			       plus("splash"), minus("splash")),
 			l2.call("Enlarge/Shrink",
 				"Enlarge/Shrink Toggle\nimg:enlarge.png\nShow content in an expandable block",
-				"+enlarge \\n",
-				"-enlarge"),
+				plus("enlarge"),minus("-enlarge")),
 			l2.call("Expandable", "Allow a section to expand to the full browser window",
-				"+expandable header=_quote__quote_ expand=false_newline_", "-expandable"),
-			l2.call("Full screen", "Allow a section to be expanded to full screen",  "+fullscreen_newline_", "-fullscreen"),
-			l2.call("Draggable", "A draggable section\nimg:draggable.png","+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
-				"-draggable"));
+				plus("expandable header=_quote__quote_ expand=false"), minus("expandable")),
+			l2.call("Full screen", "Allow a section to be expanded to full screen",
+				plus("fullscreen"), minus("fullscreen")),
+			l2.call("Draggable", "A draggable section\nimg:draggable.png",
+				plus("draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote_"),
+				minus("draggable")));
 
 
         Utils.appendAll(tags3,
 			hdr.call("Callouts:"),			
-			l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"),
-			l.call( "Box", "+box_nl__nl_", "-box"),
-                        l2.call( "Callout", "Callout box\nimg:callout.png", "+callout_nl__nl_", "-callout"),
-                        l2.call( "Callout info", "Callout box\nimg:calloutinfo.png","+callout-info_nl__nl_", "-callout"),
-                        l2.call( "Callout tip", "Callout box\nimg:callouttip.png","+callout-tip_nl__nl_", "-callout"),
-                        l2.call( "Callout question", "Callout box\nimg:calloutquestion.png","+callout-question_nl__nl_", "-callout"),
-                        l2.call( "Callout warning", "Callout box\nimg:calloutwarning.png","+callout-warning_nl__nl_", "-callout"),
-                        l2.call( "Text Balloon", "Text balloon with avatar\nimg:balloon.png","+balloon-left_nl__nl_", "-balloon"),
+			l2.call( "Note", "A centered text note\nimg:note.png",
+				 plus("note"), minus("note")),
+			l.call( "Box", plus("box"), minus("box")),
+                        l2.call( "Callout", "Callout box\nimg:callout.png",
+				 plus("callout"), minus("callout")),
+                        l2.call( "Callout info", "Callout box\nimg:calloutinfo.png",
+				 plus("callout-info"), minus("callout-info")),
+                        l2.call( "Callout tip", "Callout box\nimg:callouttip.png",
+				 plus("callout-tip"), minus("callout-tip")),
+                        l2.call( "Callout question", "Callout box\nimg:calloutquestion.png",
+				 plus("callout-question"), minus("callout-question")),
+                        l2.call( "Callout warning", "Callout box\nimg:calloutwarning.png",
+				 plus("callout-warning"), minus("callout-warning")),
+                        l2.call( "Text Balloon", "Text balloon with avatar\nimg:balloon.png",
+				 plus("balloon-left"), minus("balloon-left")),
 			hdr.call("Translation:"),
 			l2.call( "Language block","Language block",
-				 "+lang en|es|fr_nl__nl_", "-lang"),
+				 plus("lang en|es|fr"), minus("lang")),
 			l2.call( "Set the language","Set the language for a page",
 				 ":setlang en|es|fr", ""),
 			l2.call( "Language switcher","Add language switching widget",
@@ -8496,17 +8539,23 @@ public class WikiManager extends RepositoryManager
 
         Utils.appendAll(tags4,
 			hdr.call("Miscellany:"),
-			l.call("If block", "+if\\n","-if"),
-			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
-			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
+			l.call("If block", 
+			       plus("if"),minus("if")),
+			l.call("Navigation left",
+			       ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
+			l.call("Navigation top",
+			       ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
 			l.call("Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    
 			l.call("Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", ""),
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
-			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
-			l.call("Relative", "\\n+relative\\n","-relative"),
-			l2.call("User note field","Make a user input field",":user-note rows=1 size=60 #id=\"some id\" #placeholder=\"some label\" #buttons=true_nl_",""),			
-			l2.call( "Comment section","Commented out section",
-				 "+skip_nl__nl_", "-skip"),
+			l.call("Absolute", 
+			       plus("absolute top= bottom= left= right="),minus("absolute")),
+			l.call("Relative", 
+			       plus("relative"),minus("relative")),
+			l2.call("User note field","Make a user input field",
+				":user-note rows=1 size=60 #id=\"some id\" #placeholder=\"some label\" #buttons=true\\n",""),
+			l2.call( "Skip", "Skip a section of wiki text",
+				 plus("skip"), minus("skip")),
 			l2.call( "Inline comment","Inline commented",
 				 ":rem comment", "")						
 			);			
@@ -8516,18 +8565,25 @@ public class WikiManager extends RepositoryManager
         StringBuilder misc2 = new StringBuilder();
         StringBuilder misc3 = new StringBuilder();
 	Utils.appendAll(misc3,
-			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),
-			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
-			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
+			l.call( "Macro", ":macro name value\\n${name}\\n", ""),
+			l.call( "Template",
+				plus("template template_name\\n... ${var1} ... ${var2}"), minus("template")),
+			l.call( "Apply template",
+				plus("apply template_name\\n:var var1 Some value\\n+var var2\\nSome other value\\n...\\n-var"),
+				minus("apply")),
 			l.call( "Template inline", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
-			l2.call( "Javascript", "Include Javascript","+javascript_newline_", "-javascript"),
-			l.call( "CSS", "+css_newline_", "-css"),
-			l.call( "PRE", "+pre addCopy=false addDownload=false_newline_", "-pre"),
-                        l2.call( "Xml", "Include XML","+xml format=false addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
-			l.call( "Code", "```_newline__newline_", "```"),
-			l.call( "Markdown", "``` markdown_newline__newline_", "```"),
-			l.call( "Format Javascript", "``` javascript_newline__newline_", "```"),
-			l.call( "LaTeX", "``` latex_newline__newline_", "```"),						
+			l2.call( "Javascript", "Include Javascript",
+				 plus("javascript"), minus("javascript")),
+			l.call( "CSS",
+				plus("css"), minus("css")),
+			l.call( "PRE",
+				plus("pre addCopy=false addDownload=false"), minus("pre")),
+                        l2.call( "Xml", "Include XML",
+				 plus("xml format=false addCopy=true addDownload=true downloadFile=download.xml"), minus("xml")),
+			l.call( "Code", "```\\n\\n", "```"),
+			l.call( "Markdown", "``` markdown\\n\\n", "```"),
+			l.call( "Format Javascript", "``` javascript\\n\\n", "```"),
+			l.call( "LaTeX", "``` latex\\n\\n", "```"),						
 			l2.call( "Property", "Name value properties",
 				 "{{property name=value", "}}"),
 			l.call( "Page search", ":pagesearch ", "")
@@ -8546,8 +8602,8 @@ public class WikiManager extends RepositoryManager
 			l.call( "Heading-1", ":h1 your heading", ""),
 			l.call( "Heading-2", ":h2 your heading", ""),
 			l.call( "Heading-3", ":h3 your heading", ""),	    
-			l.call("Break", "\\n:br", ""),
-			l.call("Paragraph", "\\n:p", ""),
+			l.call("Break", ":br", ""),
+			l.call("Paragraph", ":p", ""),
 			l2.call("Vertical space", "Add vertical space","\\n:vspace 1em", ""),
 			l.call("Bold text", "_squote__squote__squote_", "_squote__squote__squote_"),
 			l.call("Italic text", "_squote__squote_", "_squote__squote_"),
@@ -8559,17 +8615,19 @@ public class WikiManager extends RepositoryManager
 				"@(youtube URL, wikipedia, etc, URL #width=600 #height=800)",""),
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l2.call("Button", "Add a button with a URL",":button url label", ""),
-			l2.call("Language Block", "Show/hide block based on user's language preference","+lang one of es en fr etc.\\n", "-lang"),
+			l2.call("Language Block", "Show/hide block based on user's language preference",
+				plus("lang one of es en fr etc."), minus("lang")),
 			l2.call("Language Switcher", "Add a widget to switch languages",":langswitcher en,es,fr, etc.\\n", ""),
 			l2.call("Set Language", "Set the language of the page",":setlanguage es\\n", ""),
-			l2.call("Draft", "Show a 'Draft' background","+draft\\n", "-draft"),
+			l2.call("Draft", "Show a 'Draft' background",
+				plus("draft"), minus("draft")),
 			l2.call("Remark", "One line comment","\\n:rem ", ""),
-			l2.call( "Skip", "Skip a section of wiki text",
-				 "+skip_nl__nl_", "-skip"),
 			l2.call("Reload", "Reload the page after some time",
 				"\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
-			l2.call("After", "Fade in a block of content after some time","+after pause=0 afterFade=5000_newline__newline_", "-after"),
-			l2.call("Odometer", "Show a spinning counter","{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
+			l2.call("After", "Fade in a block of content after some time",
+				plus("after pause=0 afterFade=5000"), minus("after")),
+			l2.call("Odometer", "Show a spinning counter",
+				"{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
 
         wikiMenuTagsButton = makeMenuButton("Tags",
 					    HU.span(HU.hbox(misc1, misc2,misc3),
@@ -8680,7 +8738,9 @@ public class WikiManager extends RepositoryManager
 			    new NamedValue("inPlace",""+(!showSearch)),
 			    new NamedValue("searchSelector",showSearch?".wiki-editor-popup-link":null),
 			    new NamedValue("closeOnClick","true"),			    
-			    new NamedValue("header",showSearch+""),			    
+			    new NamedValue("header",showSearch+""),
+			    new NamedValue("sticky","true"),
+			    //			    new NamedValue("closeOnClick","false"),
 			    new NamedValue("draggable",showSearch+""),
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }

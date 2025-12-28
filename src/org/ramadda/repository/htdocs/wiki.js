@@ -756,11 +756,12 @@ WikiEditor.prototype = {
 
     insertTags:function(tagOpen, tagClose, sampleText) {
 	let selText, isSample = false;
+	tagOpen = tagOpen??'';
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);
 	sampleText = Utils.decodeText(sampleText);    	
 	let sel = this.getEditor().getSelectedText();
-        let text = (tagOpen??'') + (sel?sel+'\n':'') + (tagClose??'') + ' ';
+        let text = tagOpen + (sel?sel+'\n':'') + (tagClose??'') + ' ';
         let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(text);
         if (tagOpen.endsWith('\n')) {
