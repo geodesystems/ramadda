@@ -8739,8 +8739,6 @@ public class WikiManager extends RepositoryManager
 			    new NamedValue("searchSelector",showSearch?".wiki-editor-popup-link":null),
 			    new NamedValue("closeOnClick","true"),			    
 			    new NamedValue("header",showSearch+""),
-			    new NamedValue("sticky","true"),
-			    //			    new NamedValue("closeOnClick","false"),
 			    new NamedValue("draggable",showSearch+""),
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }
