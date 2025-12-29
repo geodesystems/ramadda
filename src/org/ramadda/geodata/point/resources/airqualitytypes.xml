@@ -44,7 +44,7 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.
 <![CDATA[
 +section  title="OpenAQ Air Quality: {{name}}"
 {{group showMenu="true" }}
-{{display_linechart fields="#1" vAxisMinValue="0"
+{{display_linechart fields="#1,unhealthy,hazardous" vAxisMinValue="0"
 }}
 ]]></property>
 
@@ -56,7 +56,16 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.
 +row
 +col-md-9
 {{group showMenu="true"}}
-{{display_linechart fields="#1" vAxisMinValue="0"
+{{display_linechart 
+height="350px"  vAxisSharedRange=true 
+fields="#1,unhealthy,very_unhealthy,hazardous" 
+moderate.color="#FFFF00"
+unhealthy_sensitive.color="#FF7E00"
+unhealthy.color="#FF0000"
+very_unhealthy.color="#013E8F"
+hazardous.color="#7E0023"
+hazardous.lineWidth="2"
+vAxisMinValue="0"
 requestFieldsShow=true
 requestFields="instrument"
 request.instrument.includeNone=false
@@ -65,8 +74,8 @@ request.instrument.label="Instrument"
 request.instrument.type=enumeration
 request.instrument.values="property:openaq.instruments"
 }}
-{{display_download showMenu="false"}}
-{{display_table showMenu="false"}}
+{{display_download showMenu="false" fields="#2,#1"}}
+{{display_table showMenu="false" fields="#2,#1"}}
 -col
 +col-md-3
 This data is provided by <a href="https://openaq.org/">OpenAQ</a><br>

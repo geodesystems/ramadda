@@ -45,6 +45,10 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     private static int IDX_SENSOR_INDEX = IDX++;        
     private static int IDX_STATIONARY = IDX++;    
     private static int IDX_HOURS_OFFSET = IDX++;
+
+    private static final String MEASURE_PM25 = "pm25";
+
+
     private SimpleDateFormat dateSDF;
 
     private static final String[]
@@ -52,6 +56,19 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	"-json", "results", "value,period.datetimeFrom.utc",
 	"-set","value", "0","${name}",
 	"-set","period_datetimefrom_utc", "0","date",
+	//normalize the params
+	"-sortby","date","up","date",
+	"-addheader","${name}.label {${displayname}} ${name}.unit {${unit}} ${name}.type double date.format yyyy-MM-dd'T'HH:mm:ss",
+	"-print"
+    };
+
+    private static final String[]
+	PM25_SEESV_ARGS = new String[] {
+	"-json", "results", "value,period.datetimeFrom.utc",
+	"-set","value", "0","${name}",
+	"-set","period_datetimefrom_utc", "0","date",
+	"-add", "moderate,unhealthy_sensitive,unhealthy,very_unhealthy,hazardous",
+	"51,101,151,201,301",
 	//normalize the params
 	"-sortby","date","up","date",
 	"-addheader","${name}.label {${displayname}} ${name}.unit {${unit}} ${name}.type double date.format yyyy-MM-dd'T'HH:mm:ss",
@@ -120,7 +137,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	    JSONObject sensor = sensors.getJSONObject(i);
 	    JSONObject parameter = sensor.getJSONObject("parameter");
 	    String name = parameter.getString("name");
-	    if(name.equals("pm25")) index = i;
+	    if(name.equals(MEASURE_PM25)) index = i;
 	    ss.add(sensor.getInt("id")+
 		   ";"+name+
 		   ";"+parameter.getString("units")+
@@ -251,10 +268,14 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {
-	    String[]args = new String[SEESV_ARGS.length];
-	    for(int i=0;i<args.length;i++) {
-		args[i]=SEESV_ARGS[i].replace("${name}",sensor.name).replace("${unit}",sensor.unit).replace("${displayname}",sensor.displayName);
-		
+	    boolean isPM25= sensor.name.equals(MEASURE_PM25);
+	    String [] baseArgs = isPM25?PM25_SEESV_ARGS:SEESV_ARGS;
+	    String[]args = new String[baseArgs.length];
+	    int i=0;
+	    for(String command:baseArgs) {
+		args[i]=baseArgs[i].replace("${name}",sensor.name).replace("${unit}",sensor.unit).replace("${displayname}",
+													  sensor.displayName);
+		i++;
 	    }
 	    return applySeesv(entry,args);
 	}
