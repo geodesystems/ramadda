@@ -2435,7 +2435,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 				    HU.open(
 					    HU.TAG_DIV,
 					    HU.cssClass("ramadda-heading-outer")));
-                        buff.append(HU.div(label,
+                        buff.append(HU.div(getTitle(label, titleStyle!=null?titleStyle:""),
                                            HU.cssClass("ramadda-theme-heading ramadda-heading")));
                         buff.append(HU.close(HU.TAG_DIV));
                     }
