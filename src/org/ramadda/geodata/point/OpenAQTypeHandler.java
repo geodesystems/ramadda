@@ -67,8 +67,8 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	"-json", "results", "value,period.datetimeFrom.utc",
 	"-set","value", "0","${name}",
 	"-set","period_datetimefrom_utc", "0","date",
-	"-add", "moderate,unhealthy_sensitive,unhealthy,very_unhealthy,hazardous",
-	"51,101,151,201,301",
+	"-add", "hazardous,very_unhealthy,unhealthy,unhealthy_sensitive,moderate",
+	"301,201,151,101,51",
 	//normalize the params
 	"-sortby","date","up","date",
 	"-addheader","${name}.label {${displayname}} ${name}.unit {${unit}} ${name}.type double date.format yyyy-MM-dd'T'HH:mm:ss",

@@ -46,14 +46,30 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.
 {{group}}
 {{display_linechart vAxisSharedRange=true  showMenu=true
 height=200px
-fields="#1,unhealthy,very_unhealthy,hazardous" 
+fields="#1,hazardous,very_unhealthy,unhealthy,unhealthy_sensitive"
 vAxisMinValue="0"
+
 moderate.color="#FFFF00"
 unhealthy_sensitive.color="#FF7E00"
 unhealthy.color="#FF0000"
 very_unhealthy.color="#013E8F"
 hazardous.color="#7E0023"
+
+moderate.lineWidth="2"
+unhealthy_sensitive.lineWidth="2"
+unhealthy.lineWidth="2"
+very_unhealthy.lineWidth="2"
 hazardous.lineWidth="2"
+
+
+moderate.lineDashStyle="4,4"
+unhealthy_sensitive.lineDashStyle="4,4"
+unhealthy.lineDashStyle="4,4"
+very_unhealthy.lineDashStyle="4,4"
+hazardous.lineDashStyle="4,4"
+
+
+
 }}
 ]]></property>
 
@@ -67,13 +83,26 @@ hazardous.lineWidth="2"
 {{group showMenu="true"}}
 {{display_linechart 
 height="350px"  vAxisSharedRange=true 
-fields="#1,unhealthy,very_unhealthy,hazardous" 
+fields="#1,hazardous,very_unhealthy,unhealthy,unhealthy_sensitive"
 moderate.color="#FFFF00"
 unhealthy_sensitive.color="#FF7E00"
 unhealthy.color="#FF0000"
 very_unhealthy.color="#013E8F"
 hazardous.color="#7E0023"
+
+moderate.lineWidth="2"
+unhealthy_sensitive.lineWidth="2"
+unhealthy.lineWidth="2"
+very_unhealthy.lineWidth="2"
 hazardous.lineWidth="2"
+
+
+moderate.lineDashStyle="4,4"
+unhealthy_sensitive.lineDashStyle="4,4"
+unhealthy.lineDashStyle="4,4"
+very_unhealthy.lineDashStyle="4,4"
+hazardous.lineDashStyle="4,4"
+
 vAxisMinValue="0"
 requestFieldsShow=true
 requestFields="instrument"
