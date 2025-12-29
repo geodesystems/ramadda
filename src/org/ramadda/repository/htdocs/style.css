@@ -5835,8 +5835,7 @@ wiki {
 }
 
 .ramadda-selectdiv {
-    width:90vw;
-    max-width: 90vw;
+    display:none;
 }
 .ramadda-select-search {
     margin-top:8px;
