@@ -2986,6 +2986,7 @@ MapGlyph.prototype = {
 	if(this.getUseEntryLabel())
 	    this.style.label= entry.getName();
 	if(this.getUseEntryLocation() && entry.hasLocation()) {
+	    this.style.labelSelect=true;
 	    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
 						   [entry.getLatitude(), entry.getLongitude()]);
 	    MapUtils.setFeatureStyle(feature, this.style);

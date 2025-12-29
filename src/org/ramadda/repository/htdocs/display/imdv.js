@@ -2332,6 +2332,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	},
 	createMapMarker:function(glyphType, glyphAttrs,style,points,andAdd) {
+	    if(style) style.labelSelect=true;
 	    let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Point', style, points);
 	    feature.style = style;
 	    this.addFeatures([feature]);
@@ -5937,7 +5938,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },500);
 
 	    this.getMap().featureClickHandler = e=>{
-
 		let debug = false;
 		let feature = e.feature;
 		if(debug)
