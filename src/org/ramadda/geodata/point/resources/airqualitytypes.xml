@@ -42,9 +42,18 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.
 
 <property name="bubble">
 <![CDATA[
-+section  title="OpenAQ Air Quality: {{name}}"
-{{group showMenu="true" }}
-{{display_linechart fields="#1,unhealthy,hazardous" vAxisMinValue="0"
++section  heading="OpenAQ Air Quality: {{name}}"
+{{group}}
+{{display_linechart vAxisSharedRange=true  showMenu=true
+height=200px
+fields="#1,unhealthy,very_unhealthy,hazardous" 
+vAxisMinValue="0"
+moderate.color="#FFFF00"
+unhealthy_sensitive.color="#FF7E00"
+unhealthy.color="#FF0000"
+very_unhealthy.color="#013E8F"
+hazardous.color="#7E0023"
+hazardous.lineWidth="2"
 }}
 ]]></property>
 
