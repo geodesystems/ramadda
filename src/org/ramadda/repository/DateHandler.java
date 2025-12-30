@@ -328,6 +328,7 @@ public class DateHandler extends RepositoryManager {
         return jsBuf.toString() + "\n"
                + HU.input(name, dateString,
                           HU.attr("placeholder", "yyyy-MM-dd") + HU.SIZE_10
+			  + HU.attr("autocomplete","off")
                           + HU.id(inputId) + HU.title(dateHelp)) + extra;
     }
 
