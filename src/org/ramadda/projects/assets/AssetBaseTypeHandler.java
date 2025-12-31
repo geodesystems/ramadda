@@ -505,6 +505,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	if(licenseTotal>0) {
 	    buff.append("<div  class='col-md-" + cw+" ramadda-col wiki-col'>");
 	    buff.append("<h3>Licenses</h3>");
+	    HU.open(buff,"div",HU.clazz("ramadda-dashboard-component"));
 	    HU.div(buff,bullet+ (licenseTotal) +" " + Utils.plural(licenseTotal,"license"),"");
 	    if(licenseExpired.size()>0)
 		HU.div(buff,bullet+ licenseExpired.size() +" " + Utils.plural(licenseExpired.size(),"license")+" expired",HU.attrs("class","assets-expired"));
@@ -518,6 +519,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 		HU.div(buff, bullet+ licenseNone.size() +" " +Utils.plural(licenseNone.size(),"license")+" with no expiration date",
 		       HU.attrs("class","assets-none"));
 
+	    HU.close(buff,"div");
 	    if(showDetails) {	    
 		buff.append("<br>");
 		HU.open(buff,"table",

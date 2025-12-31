@@ -43,7 +43,12 @@ into some types.xml file
 {{tabletree    entries="entrylink:type_assets_base;department"
 typeWidth=300px orderby="entryorder_up,name_up"
 contentsHeading=":vspace 1em\n----\n:heading Assets" 
-message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
+message=""  simple="false"   showDate=false showCreateDate=false showSize=false }} 
+
+{{tabletree    entries="entrylink:type_assets_personnel;department"
+typeWidth=300px orderby="entryorder_up,name_up"
+contentsHeading=":vspace 1em\n----\n:heading Personnel" 
+message=""  simple="false"   showDate=false showCreateDate=false showSize=false }} 
 
 {{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
 showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
