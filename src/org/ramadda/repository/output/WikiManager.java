@@ -4810,6 +4810,22 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_TABLE)) {
             List<Entry> entries = getEntries(request, wikiUtil,
                                              originalEntry, entry, props);
+	    if(entries.size()==0) {
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE, (String) null);
+                if (message != null) {
+		    message = Utils.convertPattern(message).replace("\\n","\n");
+                    return wikifyEntry(request, entry, message);
+                }
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
+	    }
+	    String heading = getProperty(wikiUtil,props,"contentsHeading",null);
+	    if (heading != null) {
+		//Convert ant _nl_, _qt_, etc
+		heading = Utils.convertPattern(heading).replace("\\n","\n");
+		heading = wikifyEntry(request, entry, wikiUtil, heading, false,
+				      wikiUtil.getNotTags(), true);
+		sb.append(heading);
+	    }
             getHtmlOutputHandler().makeTable(request, entries, sb, props);
 
             return sb.toString();
