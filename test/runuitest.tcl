@@ -148,22 +148,23 @@ if {$groupID!=""} {
     runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
     runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
-    runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
-    runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
-    runGroup "BOCO Elections" boco_election_displays
+    runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
+    runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "SeeSV" a424786b-ebf2-43c3-add7-21c3bb2f526f
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
-    runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
+    runGroup "Map Examples" geospatial_data
+    runGroup "All Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
     runGroup "Misc Displays" 3270b9eb-b63b-4b41-8cd8-5a5e09ea0dae
     runGroup "Other Data" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
     runGroup "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
     runGroup "Soundings" 53f411f7-9390-4afc-9cb9-e7313030498b
     #runGroup Covid 52644ac1-f6d6-45ea-88af-b5d2ec75742e
     runGroup "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
+    runGroup "BOCO Elections" boco_election_displays
     runGroup "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
     runGroup "Dashboards" eb4102f8-720f-4ef3-9211-0ce5940da04d
     runGroup "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
