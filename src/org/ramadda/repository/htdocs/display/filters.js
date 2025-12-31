@@ -258,11 +258,17 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else  if(this.isFieldNumeric()) {
 		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
 		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
-		if(!minField.val() || !maxField.val()) return;
+		if(minField.val()===null || !maxField.val()===null) {
+		    return;
+		}
 		let minValue = parseFloat(minField.val().trim());
 		let maxValue = parseFloat(maxField.val().trim());
 		let dfltMinValue = parseFloat(minField.attr(ATTR_DATA_MIN));
 		let dfltMaxValue = parseFloat(maxField.attr(ATTR_DATA_MAX));
+		if(isNaN(minValue) && isNaN(maxValue)) {
+		    return
+
+		}
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
@@ -303,7 +309,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!anyValues && values) {
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
-	    //console.log("\t",this+" any values:" + anyValues);
+//	    console.log("\t",this+" any values:" + anyValues +'value:',value,'values',values);
 	    if(anyValues) {
 		this.mySearch =  {
 		    value:value,
@@ -1150,7 +1156,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    else widgetLabel = widgetLabel+": ";
 		}
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
-		if(labelVertical) widgetLabel = widgetLabel+HU.br();
+//		if(labelVertical) widgetLabel = widgetLabel+HU.br();
 		if(vertical) {
 		    widget = HU.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
