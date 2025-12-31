@@ -1779,6 +1779,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showMenu',ex:true},	      
 	{p:'showMenuRight',ex:true},	      
 	{p:'showTitle',ex:true},
+	{p:'doDashboard',tt:'Wrap the contents',ex:true},
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
@@ -2756,10 +2757,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         setContents: function(contents,dontWrap) {
             this.clearDisplayMessage();
-            if(!dontWrap)
+            if(!dontWrap) {
+		let classes = HU.classes('display-contents-inner',
+					 'display-' + this.getType() + '-inner');
+	    
+		if(this.getDoDashboard()) {
+		    classes=HU.classes(classes,'ramadda-dashboard-component');
+		}
 		contents = HU.div([ATTR_STYLE,this.getProperty("displayInnerStyle",""),
-				   ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"],
-				  contents);
+				   ATTR_CLASS, classes],	  contents);
+	    }
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -6990,7 +6997,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return HU.div([ATTR_CLASS,"display-filter-widget"],widget);
 	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
 	    if(this.getFilterLabelVertical(this.getProperty(name+'.filterLabelVertical')))
-		label = label+HU.br()+widget;							       
+		label = HU.div([],label)+widget;							       
 	    else
 		label = label+widget;
 	    return HU.div([ATTR_CLASS,"display-filter-widget"],label);
@@ -7444,11 +7451,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(filter=>{
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
-		    if(!vertical)
+		    if(!vertical) {
 			widget = HU.span([ATTR_CLASS,
 					  HU.classes('display-filter-container','display-filter-'+ filter.displayType),
 					  ATTR_ID,this.domId("filtercontainer_" + filter.id)],
 					 widget);
+		    }
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -7508,7 +7516,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.createRequestProperties();
  	    let inputFunc = (input, input2, value) =>{
 		let debug = false;
-		debug=true;
+//		debug=true;
 
 		if(this.ignoreFilterChange) return;
 		if(input.attr('ignore')) return;
