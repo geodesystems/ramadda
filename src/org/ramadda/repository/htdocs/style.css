@@ -449,6 +449,17 @@ ramadda-heading, .ramadda-page-heading {
     border:1px solid rgb(211, 220, 228); 
 }
 
+.ramadda-dashboard-component {
+    background-color : #FFF; 
+    padding:5px;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    border-radius:var(--default-radius);
+    border:1px solid rgb(211, 220, 228); 
+}
+
+
+
 p {margin-top:1em;}
 
 a {
