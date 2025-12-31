@@ -2933,7 +2933,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	{p:'groupBy',ex:''},
 	{p:'groupByCount',ex:'true'},
 	{p:'groupByCountLabel',ex:''},
-	{p:'showTopLegend'},
+	{p:'showTopLegend',ex:true},
 	{p:'binCount',ex:'true'},
 	{p:'pieHole',ex:'0.5'},
 	{p:'is3D',ex:'true'},
