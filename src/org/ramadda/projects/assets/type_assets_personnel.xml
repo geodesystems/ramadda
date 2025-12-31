@@ -32,7 +32,7 @@ into some types.xml file
 <property  name="date.nullok"  value="true" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.resource.show"  value="false" />
-<property  name="html.entrylinklabel"  value="{{name}} -" />
+<property  name="html.entrylinklabel"  value="{{name}}" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
@@ -47,16 +47,15 @@ into some types.xml file
 {{information  showBase=false}}
 -col
 +col-4
+{{image message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true"}}
 {{information   showDetails=false}}
 -col
 -row
 -toggle
 {{tabletree    entries="entrylink:type_assets_base;assigned_to"
 typeWidth=300px orderby="entryorder_up,name_up"
-contentsHeading=":vspace 1em\n----\n:heading Assets" 
+contentsHeading=":vspace 1em\n----\n:heading Assets\n:pagesearch" 
 message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
-
-
 {{grid  contentsHeading="----\n:heading Documents" tag="card"   width="350px"  
 showIcon="true"  includeChildren="false"  addTags="false"  showDisplayHeader="false" 
  captionPrefix=""  captionSuffix=""  showSnippet="false"  showSnippetHover="true"  showLink="false"  showHeading="true" 

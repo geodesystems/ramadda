@@ -1,82 +1,101 @@
 :vspace 1em
 +row
-+col-2
++col-6   
 :b Asset Type
 {{group inlineDataSrc="${typesdata}" loadingMessage="" sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px }} 
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;" }}
 -col
-+col-2
+-row
+-col
++col-6
 :b Department
 {{group inlineDataSrc="${departmentdata}" loadingMessage=""  sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px}}
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
 -row
-
+-col
+-row
 <status>
 :p
-----
-:p
 +row
-+col-2
++col-6
 :b Status
 {{group inlineDataSrc="${statusdata}" loadingMessage=""  sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px}} 
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
-+col-2
+-row
+-col
++col-6
 :b Condition
 {{group inlineDataSrc="${conditiondata}" loadingMessage=""  sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px}}
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
+-col
+-row
 -col
 -row
 </status>
 :p
-----
-:p
 +row
-+col-2
++col-6
 :b Location
 {{group inlineDataSrc="${locationdata}" loadingMessage=""  sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px}} 
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
 -col
-+col-2
+-row
+-col
++col-6
 :b Assigned to
 {{group inlineDataSrc="${assignedtodata}" loadingMessage=""  sortFields="count" sortAscending="false"}}
++row tight=true class="ramadda-dashboard-component"
++col-6
 +center
 {{display_piechart width=200px}}
 -center
 -col
-+col-4
++col-6
 {{display_download}}
 {{display_htmltable height=200px displayStyle="font-size:10pt;background:#fff;"}}
+-col
+-row
 -col
 -row

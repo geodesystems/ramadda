@@ -1,25 +1,27 @@
-{{group inlineDataSrc="${costdata}" filterFields="name,department,vendor,asset_type,cost"
+{{group inlineDataSrc="${costdata}"
+filterFields="department,vendor,asset_type,cost"
+filterLabelVertical=true
 filterMultiple=true
 name.filterLive=true  hideFilterWidget=true
 xdepartment.type=enumeration xasset_type.type=enumeration xvendor.type=enumeration}}
-{{display_filter inlineDataSrc="${costdata}" }}
+{{display_filter }}
 <costs_summary>
 :vspace 1em
 ${summary_title}
 +row
 +col-4
 +center
-{{display_piechart  title="By Department" showTitle=true displayStyle="display:inline-block;" chartWidth="250"   groupBy="department" }} 
+{{display_piechart  doDashboard=true title="By Department" showTitle=true displayStyle="display:inline-block;" chartWidth="250"   groupBy="department" }}
 -center
 -col
 +col-4
 +center
-{{display_piechart  title="By Asset Type" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="asset_type" }} 
+{{display_piechart  doDashboard=true title="By Asset Type" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="asset_type" }} 
 -center
 -col
 +col-4
 +center
-{{display_piechart  title="By Vendor" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="vendor" }} 
+{{display_piechart  doDashboard=true title="By Vendor" showTitle=true displayStyle="display:inline-block;" chartWidth="250" groupBy="vendor" }} 
 -center
 -col
 -row
@@ -29,8 +31,8 @@ ${summary_title}
 <costs_table>
 :vspace 1em
 :heading ${table_title}
-{{display_download fields=name,department,vendor,asset_type,cost}}
-{{display_htmltable showSummaryTotal=true  showSummaryAverage=true
+{{display_download showRecordCount=true fields="name,department,vendor,asset_type,cost" }}
+{{display_htmltable showSummaryCount=true showSummaryTotal=true  showSummaryAverage=true
 sortAscending="false" sortFields=cost  fields=name,department,vendor,asset_type,cost 
 name.template="<a href=${url}><img src='${icon}' width=18px> ${value}</a>"
 cost.template="$${value}"

@@ -35,6 +35,7 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 	int cnt=0;
 	String id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	while(seenId.get(id)!=null || getDatabaseManager().tableContains("TYPE_ASSETS_BASE", "ASSET_ID",id)) {
+	    seenId.put(id,"");
 	    cnt++;
 	    id = type+"-"+StringUtil.padLeft(""+cnt,5,"0");
 	}
