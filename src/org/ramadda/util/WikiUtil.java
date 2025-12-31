@@ -4302,11 +4302,8 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
     public static class RowState {
-
         int colCnt = 0;
-
         Hashtable props;
-
         public RowState(Appendable buff, Hashtable props) {
             try {
                 String clazz = "row wiki-row";
@@ -4315,6 +4312,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (c != null) {
                         clazz += " row-tight ";
                     }
+		    c = (String) props.get("class");
+                    if (c != null) {
+                        clazz += " " + c +" ";
+                    }		    
+
                 }
                 HU.open(buff, TAG_DIV, HU.clazz(clazz));
             } catch (Exception exc) {
