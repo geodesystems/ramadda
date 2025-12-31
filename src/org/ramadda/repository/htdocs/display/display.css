@@ -287,7 +287,8 @@ table.dataTable {
 
 
 .display-filter-label-vertical {
-    text-align:left;
+    text-align:left !important;
+    display:block;
 }
 
 .display-changeentries-button {
