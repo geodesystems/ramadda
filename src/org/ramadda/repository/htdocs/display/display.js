@@ -4446,6 +4446,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
+//		debug=true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -7032,7 +7033,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	initializeRangeSlider:function(jq, inputFunc, immediate) {
 	    let _this = this;
 	    jq.mousedown(function(){
-		let id = $(this).attr(ID);
+		let id = $(this).attr(ATTR_ID);
 		//Do these like this in case we have a field that ends with _max
 		let type = $(this).attr(ATTR_DATA_TYPE);
 		if(id.endsWith("_min")) {
@@ -7507,15 +7508,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.createRequestProperties();
  	    let inputFunc = (input, input2, value) =>{
 		let debug = false;
+		debug=true;
+
 		if(this.ignoreFilterChange) return;
 		if(input.attr('ignore')) return;
-                let id = input.attr(ID);
+                let id = input.attr(ATTR_ID);
 		if(!id) {
 		    console.log("No ID attribute for filter");
 		    return;
 		}
 		if(debug)
-		    console.log(this.type+" filter change");
+		    console.log(this.type+" filter change",'filter:',id);
 
 		let changedFilter;
 		let changedFilterId;
@@ -7573,8 +7576,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		
 		if(value==null) {
-		    if(debug)
-			console.log("no value:" + value);
+		    if(debug)console.log("no value:" + value);
 		    return;
 		}
 		if(!Array.isArray(value) && input.attr("isButton")) {
@@ -7590,6 +7592,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.checkFilterField(input);
 		_this.haveCalledUpdateUI = false;
 		if(_this.settingFilterValue) {
+		    if(debug) console.log("currently settging filter value");
 		    return;
 		}
 		_this.settingFilterValue = true;
@@ -7597,7 +7600,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug)
 		    console.log("calling dataFilterChanged");
 		_this.dataFilterChanged();
-
 
 		let records =[];
 		let predecessorChanged = false;
@@ -7699,7 +7701,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    let value =  Utils.join(values,",");
 		    parent.attr(ATTR_DATA_VALUE, value);
-		    jqid(parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
+		    jqid(parent.attr(ATTR_ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
 		    inputFunc(parent,null, values);
 		});
 
@@ -7767,7 +7769,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 	    });
-
 
 
 	    this.initializeRangeSlider(this.jq(ID_FILTERBAR).find(".display-filter-range"), inputFunc, this.getProperty("filterSliderImmediate"));
