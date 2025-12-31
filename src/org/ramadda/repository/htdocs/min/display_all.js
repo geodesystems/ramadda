@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec 29 05:41:05 MST 2025";
+var build_date="RAMADDA build date: Wed Dec 31 04:26:54 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6078,6 +6078,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showMenu',ex:true},	      
 	{p:'showMenuRight',ex:true},	      
 	{p:'showTitle',ex:true},
+	{p:'doDashboard',tt:'Wrap the contents',ex:true},
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
@@ -7055,10 +7056,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         setContents: function(contents,dontWrap) {
             this.clearDisplayMessage();
-            if(!dontWrap)
+            if(!dontWrap) {
+		let classes = HU.classes('display-contents-inner',
+					 'display-' + this.getType() + '-inner');
+	    
+		if(this.getDoDashboard()) {
+		    classes=HU.classes(classes,'ramadda-dashboard-component');
+		}
 		contents = HU.div([ATTR_STYLE,this.getProperty("displayInnerStyle",""),
-				   ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"],
-				  contents);
+				   ATTR_CLASS, classes],	  contents);
+	    }
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -8745,6 +8752,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
+//		debug=true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -11288,7 +11296,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return HU.div([ATTR_CLASS,"display-filter-widget"],widget);
 	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
 	    if(this.getFilterLabelVertical(this.getProperty(name+'.filterLabelVertical')))
-		label = label+HU.br()+widget;							       
+		label = HU.div([],label)+widget;							       
 	    else
 		label = label+widget;
 	    return HU.div([ATTR_CLASS,"display-filter-widget"],label);
@@ -11331,7 +11339,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	initializeRangeSlider:function(jq, inputFunc, immediate) {
 	    let _this = this;
 	    jq.mousedown(function(){
-		let id = $(this).attr(ID);
+		let id = $(this).attr(ATTR_ID);
 		//Do these like this in case we have a field that ends with _max
 		let type = $(this).attr(ATTR_DATA_TYPE);
 		if(id.endsWith("_min")) {
@@ -11742,11 +11750,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(filter=>{
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
-		    if(!vertical)
+		    if(!vertical) {
 			widget = HU.span([ATTR_CLASS,
 					  HU.classes('display-filter-container','display-filter-'+ filter.displayType),
 					  ATTR_ID,this.domId("filtercontainer_" + filter.id)],
 					 widget);
+		    }
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -11806,15 +11815,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.createRequestProperties();
  	    let inputFunc = (input, input2, value) =>{
 		let debug = false;
+//		debug=true;
+
 		if(this.ignoreFilterChange) return;
 		if(input.attr('ignore')) return;
-                let id = input.attr(ID);
+                let id = input.attr(ATTR_ID);
 		if(!id) {
 		    console.log("No ID attribute for filter");
 		    return;
 		}
 		if(debug)
-		    console.log(this.type+" filter change");
+		    console.log(this.type+" filter change",'filter:',id);
 
 		let changedFilter;
 		let changedFilterId;
@@ -11872,8 +11883,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		
 		if(value==null) {
-		    if(debug)
-			console.log("no value:" + value);
+		    if(debug)console.log("no value:" + value);
 		    return;
 		}
 		if(!Array.isArray(value) && input.attr("isButton")) {
@@ -11889,6 +11899,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.checkFilterField(input);
 		_this.haveCalledUpdateUI = false;
 		if(_this.settingFilterValue) {
+		    if(debug) console.log("currently settging filter value");
 		    return;
 		}
 		_this.settingFilterValue = true;
@@ -11896,7 +11907,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug)
 		    console.log("calling dataFilterChanged");
 		_this.dataFilterChanged();
-
 
 		let records =[];
 		let predecessorChanged = false;
@@ -11998,7 +12008,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    let value =  Utils.join(values,",");
 		    parent.attr(ATTR_DATA_VALUE, value);
-		    jqid(parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
+		    jqid(parent.attr(ATTR_ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
 		    inputFunc(parent,null, values);
 		});
 
@@ -12066,7 +12076,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 	    });
-
 
 
 	    this.initializeRangeSlider(this.jq(ID_FILTERBAR).find(".display-filter-range"), inputFunc, this.getProperty("filterSliderImmediate"));
@@ -19144,11 +19153,17 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else  if(this.isFieldNumeric()) {
 		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
 		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
-		if(!minField.val() || !maxField.val()) return;
+		if(minField.val()===null || !maxField.val()===null) {
+		    return;
+		}
 		let minValue = parseFloat(minField.val().trim());
 		let maxValue = parseFloat(maxField.val().trim());
 		let dfltMinValue = parseFloat(minField.attr(ATTR_DATA_MIN));
 		let dfltMaxValue = parseFloat(maxField.attr(ATTR_DATA_MAX));
+		if(isNaN(minValue) && isNaN(maxValue)) {
+		    return
+
+		}
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
@@ -19189,7 +19204,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!anyValues && values) {
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
-	    //console.log("\t",this+" any values:" + anyValues);
+//	    console.log("\t",this+" any values:" + anyValues +'value:',value,'values',values);
 	    if(anyValues) {
 		this.mySearch =  {
 		    value:value,
@@ -20036,7 +20051,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    else widgetLabel = widgetLabel+": ";
 		}
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
-		if(labelVertical) widgetLabel = widgetLabel+HU.br();
+//		if(labelVertical) widgetLabel = widgetLabel+HU.br();
 		if(vertical) {
 		    widget = HU.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
@@ -23218,7 +23233,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	{p:'groupBy',ex:''},
 	{p:'groupByCount',ex:'true'},
 	{p:'groupByCountLabel',ex:''},
-	{p:'showTopLegend'},
+	{p:'showTopLegend',ex:true},
 	{p:'binCount',ex:'true'},
 	{p:'pieHole',ex:'0.5'},
 	{p:'is3D',ex:'true'},
@@ -49577,6 +49592,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	},
 	createMapMarker:function(glyphType, glyphAttrs,style,points,andAdd) {
+	    if(style) style.labelSelect=true;
 	    let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Point', style, points);
 	    feature.style = style;
 	    this.addFeatures([feature]);
@@ -53182,7 +53198,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },500);
 
 	    this.getMap().featureClickHandler = e=>{
-
 		let debug = false;
 		let feature = e.feature;
 		if(debug)
@@ -57243,6 +57258,7 @@ MapGlyph.prototype = {
 	if(this.getUseEntryLabel())
 	    this.style.label= entry.getName();
 	if(this.getUseEntryLocation() && entry.hasLocation()) {
+	    this.style.labelSelect=true;
 	    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
 						   [entry.getLatitude(), entry.getLongitude()]);
 	    MapUtils.setFeatureStyle(feature, this.style);
@@ -62340,6 +62356,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	
 
 	{p:'showSummary',ex:'true'},
+	{p:'showSummaryCount',ex:'true'},
 	{p:'showSummaryTotal',ex:'true'},
 	{p:'showSummaryAverage',ex:'true'},
 	{p:'showSummaryMinMax',ex:'true'},
@@ -62886,12 +62903,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    html+=HU.open(TAG_TFOOT);
 	    html+=HU.open(TAG_TR);
 	    let total = NaN;
-	    if(summary && (this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
+	    if(summary && (this.getShowSummaryCount() ||
+			   this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
 			   this.getShowSummaryMinMax())) {
 		total=0;
 		summary.forEach(s=>{
 		    html+=HU.open(TAG_TD,[ATTR_ALIGN,ALIGN_RIGHT,
-					  ATTR_STYLE,HU.css(CSS_PADDING,HU.px(0),CSS_PADDING_RIGHT,HU.px(10))]);
+					  ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_PADDING,HU.px(0),CSS_PADDING_RIGHT,HU.px(10))]);
 		    let ok  = (main,what)=>{
 			if(s.field) {
 			    if(s.field.isFieldString()) return false;
@@ -62902,20 +62920,33 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 		    if(s.cnt) {
 			let v = [];
+			let row = (label,value) =>{
+			    v.push(HU.tr(HU.td([ATTR_STYLE,HU.css(CSS_BORDER,'0px')],label) + 
+					 HU.td([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.important(HU.px(0)),
+								  CSS_TEXT_ALIGN,ALIGN_RIGHT,
+								  CSS_BORDER,'0px'),ATTR_ALIGN,ALIGN_RIGHT],value)));
+			};
+			if(ok(this.getShowSummaryCount(),'showSummaryCount')) {
+			    let total =  Utils.formatNumberComma(s.cnt,0);
+			    row('Count: ',total);
+			}
 			if(ok(this.getShowSummaryTotal(),'showSummaryTotal')) {
 			    let total =  Utils.formatNumberComma(s.total,2);
-			    v.push('Total: '+total);
+			    row('Total: ',total);
 			}
 			if(ok(this.getShowSummaryAverage(),'showSummaryAverage')) {
 			    let avg = s.total/s.cnt;
 			    avg = Utils.formatNumberComma(avg,2);
-			    v.push('Avg: '+ avg);
+			    row('Avg: ',avg);
 			}
 			if(ok(this.getShowSummaryMinMax(),'showSummaryMinMax')) {
-			    v.push('Min: '+s.min);
-			    v.push('Max: '+s.max);
+			    row('Min: ',s.min);
+			    row('Max: ',s.max);
 			}
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],Utils.join(v,HU.br()));
+			    
+			let table='<table style="margin-left:auto;">' + HU.join(v,'') +'</table>';
+			html+=table;
+//			html+=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_TEXT_ALIGN,ALIGN_RIGHT)],table);
 			total+=s.total;
 		    }
 		    html+=HU.close(TAG_TD);
