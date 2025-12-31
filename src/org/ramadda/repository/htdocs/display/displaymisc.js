@@ -1234,6 +1234,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	
 
 	{p:'showSummary',ex:'true'},
+	{p:'showSummaryCount',ex:'true'},
 	{p:'showSummaryTotal',ex:'true'},
 	{p:'showSummaryAverage',ex:'true'},
 	{p:'showSummaryMinMax',ex:'true'},
@@ -1780,12 +1781,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    html+=HU.open(TAG_TFOOT);
 	    html+=HU.open(TAG_TR);
 	    let total = NaN;
-	    if(summary && (this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
+	    if(summary && (this.getShowSummaryCount() ||
+			   this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
 			   this.getShowSummaryMinMax())) {
 		total=0;
 		summary.forEach(s=>{
 		    html+=HU.open(TAG_TD,[ATTR_ALIGN,ALIGN_RIGHT,
-					  ATTR_STYLE,HU.css(CSS_PADDING,HU.px(0),CSS_PADDING_RIGHT,HU.px(10))]);
+					  ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_PADDING,HU.px(0),CSS_PADDING_RIGHT,HU.px(10))]);
 		    let ok  = (main,what)=>{
 			if(s.field) {
 			    if(s.field.isFieldString()) return false;
@@ -1796,20 +1798,33 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 		    if(s.cnt) {
 			let v = [];
+			let row = (label,value) =>{
+			    v.push(HU.tr(HU.td([ATTR_STYLE,HU.css(CSS_BORDER,'0px')],label) + 
+					 HU.td([ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.important(HU.px(0)),
+								  CSS_TEXT_ALIGN,ALIGN_RIGHT,
+								  CSS_BORDER,'0px'),ATTR_ALIGN,ALIGN_RIGHT],value)));
+			};
+			if(ok(this.getShowSummaryCount(),'showSummaryCount')) {
+			    let total =  Utils.formatNumberComma(s.cnt,0);
+			    row('Count: ',total);
+			}
 			if(ok(this.getShowSummaryTotal(),'showSummaryTotal')) {
 			    let total =  Utils.formatNumberComma(s.total,2);
-			    v.push('Total: '+total);
+			    row('Total: ',total);
 			}
 			if(ok(this.getShowSummaryAverage(),'showSummaryAverage')) {
 			    let avg = s.total/s.cnt;
 			    avg = Utils.formatNumberComma(avg,2);
-			    v.push('Avg: '+ avg);
+			    row('Avg: ',avg);
 			}
 			if(ok(this.getShowSummaryMinMax(),'showSummaryMinMax')) {
-			    v.push('Min: '+s.min);
-			    v.push('Max: '+s.max);
+			    row('Min: ',s.min);
+			    row('Max: ',s.max);
 			}
-			html+=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT)],Utils.join(v,HU.br()));
+			    
+			let table='<table style="margin-left:auto;">' + HU.join(v,'') +'</table>';
+			html+=table;
+//			html+=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_TEXT_ALIGN,ALIGN_RIGHT)],table);
 			total+=s.total;
 		    }
 		    html+=HU.close(TAG_TD);
