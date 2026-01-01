@@ -69,7 +69,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	"+section title={{name}}\n:heading Scan for Asset\n+center\n{{assets_barcode doScan=true}}\n-center\n-section\n";
 
     public static final String  WIKI_NEW=
-	"+section title={{name}}\n:heading Create New Asset\n+center\n{{new_entry   fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
+	"+section title={{name}}\n:heading Create New Asset\n+center\n{{new_entry   template=\"${type}\" fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
 
     public static final String WIKI_SEARCH =
 	"+section title={{name}}\n:heading Asset Search\n{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
