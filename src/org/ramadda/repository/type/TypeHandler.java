@@ -3892,7 +3892,9 @@ public class TypeHandler extends RepositoryManager {
     public void addNewEntryPageHeader(Request request, Entry group,Appendable sb) throws Exception {
 
 	String msg = "+callout-info\n";
-	msg+="You are adding a new " + getDescription() + " to the entry: " + HU.italics(group.getName());
+	msg+="You are adding a new " + getDescription() + " to the " +
+	    group.getTypeHandler().getDescription() + " " +
+	    HU.span(group.getName(),HU.clazz("ramadda-italic"));
 
 	if (Utils.equals(getType(),TYPE_FILE)) {
 	    msg+="<br>RAMADDA will try to guess at the new entry type based on the file name";

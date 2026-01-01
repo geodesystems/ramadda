@@ -2031,10 +2031,11 @@ public class EntryManager extends RepositoryManager {
 
 	    String defaultGroup = request.getString("defaultgroup",null);
 	    if((group==null && entry==null) || stringDefined(defaultGroup)) {
-		HU.row(sb,HU.colspan(HU.b("Select a parent entry:"),2));
+		//		HU.row(sb,HU.colspan(HU.b("Select a parent entry:"),2));
 		Entry defaultEntry=null;
 		if(stringDefined(defaultGroup)) defaultEntry=getEntry(request, defaultGroup);
-		HU.row(sb,HU.colspan(OutputHandler.makeEntrySelect(request, ARG_GROUP, true,"",defaultEntry),2));
+		HU.row(sb,HU.colspan(HU.b("Select a parent entry: ")+
+				     OutputHandler.makeEntrySelect(request, ARG_GROUP, true,"",defaultEntry),2));
 	    }
 	    
 	    String targetEntry = request.getString(ARG_TARGET_ENTRY,null);
