@@ -28,6 +28,7 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.GroupedBuffers;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -5149,7 +5150,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                            ? VIEW_NEW
                                            : ""), null);
 
-        StringBuilder formBuffer = new StringBuilder();
+        //StringBuilder formBuffer = new StringBuilder();
+	GroupedBuffers  formBuffer= new GroupedBuffers ();
 
         String        formId     = makeForm(request, entry, formBuffer);
         Object[]      values     = null;

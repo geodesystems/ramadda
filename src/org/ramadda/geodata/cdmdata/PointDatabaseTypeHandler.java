@@ -16,6 +16,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.GroupedBuffers;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.geo.KmlUtil;
@@ -2881,7 +2882,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
+    public void addColumnsToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler sourceTypeHandler, HashSet seen)
             throws Exception {

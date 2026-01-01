@@ -13,6 +13,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.GroupedBuffers;
 
 import org.ramadda.util.HtmlUtils;
 
@@ -115,7 +116,7 @@ public class PollTypeHandler extends BlobTypeHandler {
      * @param baseTypeHandler _more_
      */
     @Override
-    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
+    public void addColumnsToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler baseTypeHandler, HashSet seen) {
         try {
