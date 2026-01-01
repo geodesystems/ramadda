@@ -651,7 +651,7 @@ public class PageHandler extends RepositoryManager {
 	    StringBuilder recentContents = new StringBuilder();
 	    for(Entry entry: recent) {
 		HU.div(recentContents,getEntryManager().getEntryLink(request, entry,true,""),
-		       HU.attrs("style","padding:4px;","class","ramadda-clickable ramadda-hoverable"));
+		       HU.attrs("style","padding:4px;","class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
 	    }
 
 	    String link  = HU.span(HU.faIcon("fa fa-clock-rotate-left"),HU.attrs("title","Recent History"));

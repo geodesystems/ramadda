@@ -3195,9 +3195,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     top:5px;
 }
 
-
-
-
+.ramadda-fulllink a {
+    width:100%;
+    display:block;
+}
 
 
 .entry-row-table  {
@@ -5065,7 +5066,7 @@ img.ramadda-user-menu-image:hover {
 
 
 
-.ramadda-user-link {
+.ramadda-recent-link, .ramadda-user-link {
     display:block;
     max-width:250px;
     white-space:nowrap;    
