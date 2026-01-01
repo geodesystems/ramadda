@@ -487,6 +487,7 @@ public class PageHandler extends RepositoryManager {
         String entryBreadcrumbs =
             (String) result.getProperty(PROP_ENTRY_BREADCRUMBS,
                                         (String) null);
+
         String entryPopup =
             (String) result.getProperty(PROP_ENTRY_POPUP,
                                         (String) null);	
@@ -645,6 +646,23 @@ public class PageHandler extends RepositoryManager {
 
 	List<String> pageLinks = new ArrayList<String>();
 
+	List<Entry> recent = getEntryManager().getSessionEntries(request);
+	if(Utils.listNotEmpty(recent)) {
+	    StringBuilder recentContents = new StringBuilder();
+	    for(Entry entry: recent) {
+		HU.div(recentContents,getEntryManager().getEntryLink(request, entry,true,""),
+		       HU.attrs("style","padding:4px;","class","ramadda-clickable ramadda-hoverable"));
+	    }
+
+	    String link  = HU.span(HU.faIcon("fa fa-clock-rotate-left"),HU.attrs("title","Recent History"));
+	    String popup = HU.makePopup(null, link,recentContents.toString(),
+					arg("my", "right top"),
+					arg("at", "right bottom"),
+					arg("animate", true));
+	    pageLinks.add(wrapPageLink(popup));
+	}
+
+
         if (showSearch) {
 	    pageLinks.add(wrapPageLink(
 				       HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');", searchImg, "")+
@@ -724,9 +742,9 @@ public class PageHandler extends RepositoryManager {
 	}
 
 	pageLinks.add(wrapPageLink(HU.makePopup(null, popupImage, menuHtml,
-				   arg("my", "right top"),
-				   arg("at", "left bottom"),
-						arg("animate", false))));
+						arg("my", "right top"),
+						arg("at", "left bottom"),
+						arg("animate", true))));
 	if(extra.length()>0)
 	    pageLinks.add(wrapPageLink(extra.toString()));
 	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
