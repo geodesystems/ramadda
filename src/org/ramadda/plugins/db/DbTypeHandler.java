@@ -5201,12 +5201,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         formBuffer.append(HU.script(script));
 
         if (doAnonForm) {
-            sb.append(entry.getDescription() + HU.p() + formBuffer);
+            sb.append(entry.getDescription() + HU.p() + formBuffer.getCurrentBuffer());
         } else {
             if (forEdit && (dbid == null)) {
-                createBulkForm(request, entry, sb, formBuffer);
+                createBulkForm(request, entry, sb, formBuffer.getCurrentBuffer());
             } else {
-                sb.append(formBuffer);
+                sb.append(formBuffer.getCurrentBuffer());
             }
         }
 
