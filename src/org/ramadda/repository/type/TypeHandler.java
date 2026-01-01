@@ -191,6 +191,14 @@ public class TypeHandler extends RepositoryManager {
 
     public static final String PROP_FIELD_FILE_PATTERN = "field_file_pattern";
     public static final String PROP_INGEST_LINKS = "ingestLinks";
+
+    public static final String PROP_DATE_BEFORE = "form.date.before";
+    public static final String PROP_DATE_AFTER = "form.date.after";
+    public static final String PROP_AREA_BEFORE = "form.area.before";
+    public static final String PROP_AREA_AFTER = "form.area.after";        
+
+
+
     public static final String ALL = "-all-";
     public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject(ALL,
 								       ALL);
@@ -225,6 +233,8 @@ public class TypeHandler extends RepositoryManager {
     private String superCategory = "";
     private Hashtable properties = new Hashtable();
     private SpecialSearch specialSearch;
+
+
 
     /**
      *   the pattern= attribute in types.xml. Used when trying to figure out what entry type
@@ -380,6 +390,7 @@ public class TypeHandler extends RepositoryManager {
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+
 
 	    List nodes = XmlUtil.findChildren(node, "filename_metadata");
 	    for (int i = 0; i < nodes.size(); i++) {
@@ -2325,8 +2336,8 @@ public class TypeHandler extends RepositoryManager {
 		    addDescriptionToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("createdate"))
 		    addCreateDateToHtml(request,typeHandler,entry,sb);
-		else if(field.equals("date"))
-		    addDateToHtml(request,typeHandler,entry,sb);		
+		else if(field.equals(FIELD_DATE))
+		    addDateToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("owner"))
 		    addOwnerToHtml(request,typeHandler,entry,sb);								
 		//		else if(field.equals("altitude"))
@@ -3033,7 +3044,7 @@ public class TypeHandler extends RepositoryManager {
 	if(justBasic) return;
 
 	if (forOutput||showDate) {
-	    if(!seen.contains("date"))
+	    if(!seen.contains(FIELD_DATE))
 		addDateToHtml(request,typeHandler,entry,sb);
 	}
 
@@ -3194,8 +3205,19 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-    public void addDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+    public void addDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb,boolean...force) throws Exception {
 	boolean hasDataDate = false;
+	if(getTypeProperty(PROP_DATE_BEFORE,null)!=null ||
+	   getTypeProperty(PROP_DATE_AFTER,null)!=null) {
+	    if(force.length>0) {
+		if(!force[0]) return;
+	    } else {
+		return;
+	    }
+	}
+
+
+
 	if (Math.abs(entry.getCreateDate() - entry.getStartDate())   > 60000) {
 	    hasDataDate = true;
 	} else if (Math.abs(entry.getCreateDate() - entry.getEndDate())
@@ -3203,6 +3225,13 @@ public class TypeHandler extends RepositoryManager {
 	    hasDataDate = true;
 	}
 	if(!hasDataDate) return;
+
+	String subGroup = getTypeProperty("form.date.subgroup",null);
+	if(subGroup!=null) {
+	    HU.formEntry(sb,HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	}
+
+
 
 	if (entry.getEndDate() != entry.getStartDate()) {
 	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
@@ -4123,8 +4152,18 @@ public class TypeHandler extends RepositoryManager {
 
     public void addSpatialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
-                                      FormInfo formInfo)
+                                      FormInfo formInfo,boolean...force)
 	throws Exception {
+
+	if(getTypeProperty(PROP_AREA_BEFORE,null)!=null ||
+	   getTypeProperty(PROP_AREA_AFTER,null)!=null) {
+	    if(force.length>0) {
+		if(!force[0]) return;
+	    } else {
+		return;
+	    }
+	}
+
 
         MapOutputHandler mapOutputHandler =
             (MapOutputHandler) getRepository().getOutputHandler(
@@ -4163,11 +4202,11 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
 	    }
 
-            sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
+            sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Geo Location")), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
-            addAreaWidget(request, parentEntry, entry, sb, formInfo);
-        }
+	    addAreaWidget(request, parentEntry, entry, sb, formInfo);
+	}
 
         if (okToShowInForm(entry, ARG_ALTITUDE, false)) {
             String altitude = "";
@@ -4239,8 +4278,23 @@ public class TypeHandler extends RepositoryManager {
                                    Entry parentEntry,Entry entry)
 	throws Exception {
 	String group = getTypeProperty("form.date.group",null);
-	if(group!=null)
+	if(group!=null) {
 	    sb.setGroup(group);
+	}
+	String subGroup = getTypeProperty("form.date.subgroup",null);
+	if(subGroup!=null) {
+	    HU.formEntry(sb,HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	}
+
+
+	addDateToEntryForm(request,sb.getCurrentBuffer(), parentEntry, entry);
+
+    }
+
+    public void addDateToEntryForm(Request request, Appendable sb,
+                                   Entry parentEntry,Entry entry)
+	throws Exception {
+
 
         String dateHelp = " (e.g., 2007-12-11 00:00:00)";
         /*        String fromDate = ((entry != null)
@@ -4779,7 +4833,10 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if (what.equals(ARG_DATE)) {
-                addDateToEntryForm(request, sb, parentEntry,entry);
+		if(getTypeProperty(PROP_DATE_BEFORE,null)==null &&
+		   getTypeProperty(PROP_DATE_AFTER,null)==null) {
+		    addDateToEntryForm(request, sb, parentEntry,entry);
+		}
                 continue;
             }
             if (what.equals(ARG_LOCATION)) {

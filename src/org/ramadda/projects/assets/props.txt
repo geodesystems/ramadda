@@ -9,7 +9,7 @@ show_summary,,boolean, showinhtml="false" default="true"
 show_map,,boolean, showinhtml="false" default="false"
 
 #base asset class
-asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false"
+asset_id,Asset ID,string,  size="400"  cansearch="true"  tokenizesearch="false" subgroup="Basic Asset Information"
 department,Department,entry, entrytype="type_assets_department"  cansearch="true" tags="reportable" \
 searchgroup="Organization"
 assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
@@ -18,7 +18,7 @@ site,Site,enumerationplus, cansearch="true"  enumerationspecifictotype="false"
 program,Program,enumerationplus, cansearch="true"  enumerationspecifictotype="false"
 category,Category,enumerationplus, cansearch="true"  enumerationspecifictotype="true"
 acquisition_method,Acquisition Method,enumerationplus, cansearch="true" searchgroup="Purchase" \
-values="Purchased\,Transferred\,Donated\,Other" subgroup="Acquisiton"
+values="Purchased\,Transferred\,Donated\,Other" 
 vendor,Vendor,entry, entrytype="type_assets_vendor"  cansearch="true"
 purchase_order,,string
 account_number,,string

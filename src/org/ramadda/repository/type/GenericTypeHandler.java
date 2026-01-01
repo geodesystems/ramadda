@@ -785,6 +785,9 @@ public class GenericTypeHandler extends TypeHandler {
     public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry,
 				 List<NamedBuffer> contents,
 				 HashSet<String> seen) throws Exception {
+	String dateBeforeColumn = getTypeProperty(PROP_DATE_BEFORE,null);
+	String dateAfterColumn = getTypeProperty(PROP_DATE_AFTER,null);
+
 	Object[]      values = getEntryValues(entry);
 	if (values != null) {
 	    for (Column column : getMyColumns()) {
@@ -810,7 +813,14 @@ public class GenericTypeHandler extends TypeHandler {
 		}
 		*/
 		NamedBuffer buff= NamedBuffer.append(contents,column.getDisplayGroup(),null);
+		if(dateBeforeColumn!=null && column.getName().equals(dateBeforeColumn)) {
+		    addDateToHtml(request,typeHandler,entry,buff,true);
+		}
+
 		addColumnToTable(request, entry,column,buff);
+		if(dateAfterColumn!=null && column.getName().equals(dateAfterColumn)) {
+		    addDateToHtml(request,typeHandler,entry,buff,true);
+		}
 	    }
 
 	}
@@ -837,6 +847,8 @@ public class GenericTypeHandler extends TypeHandler {
 
     public void addColumnToTable(Request request, Entry entry,Column column,Appendable sb,String...searchArgs) throws Exception {
 	if(column==null) return;
+
+
 	StringBuilder tmpSb = new StringBuilder();
 	Object[]      values = getEntryValues(entry);
 	if(column.getAdminOnly()) {
@@ -959,7 +971,7 @@ public class GenericTypeHandler extends TypeHandler {
                               sourceTypeHandler, seen);
     }
 
-    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
+    public void addColumnsToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler sourceTypeHandler, HashSet seen)
             throws Exception {
@@ -968,18 +980,39 @@ public class GenericTypeHandler extends TypeHandler {
 							   : getEntryValues(entry)), formInfo, sourceTypeHandler,seen);
     }
 
-    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
+    public void addColumnsToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry, Entry entry, Object[] values,
                                       FormInfo formInfo,
                                       TypeHandler sourceTypeHandler, HashSet seen)
             throws Exception {
         Hashtable state = new Hashtable();
+	String dateBeforeColumn = getTypeProperty(PROP_DATE_BEFORE,null);
+	String dateAfterColumn = getTypeProperty(PROP_DATE_AFTER,null);
+	String areaBeforeColumn = getTypeProperty(PROP_AREA_BEFORE,null);
+	String areaAfterColumn = getTypeProperty(PROP_AREA_AFTER,null);		
         for (Column column : getMyColumns()) {
 	    String key = "column_"+column.getName();
 	    if(seen.contains(key)) continue;
 	    seen.add(key);
+	    if(dateBeforeColumn!=null && column.getName().equals(dateBeforeColumn)) {
+		addDateToEntryForm(request, formBuffer, parentEntry,entry);
+		seen.add(FIELD_DATE);
+	    }
+	    if(areaBeforeColumn!=null && column.getName().equals(areaBeforeColumn)) {
+		addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo,true);
+		//		seen.add(FIELD_AREA);
+	    }	    
             addColumnToEntryForm(request, column, formBuffer, parentEntry, entry, values,
                                  state, formInfo, sourceTypeHandler);
+
+	    if(dateAfterColumn!=null && column.getName().equals(dateAfterColumn)) {
+		addDateToEntryForm(request, formBuffer, parentEntry,entry);
+		seen.add(FIELD_DATE);
+	    }
+	    if(areaAfterColumn!=null && column.getName().equals(areaAfterColumn)) {
+		addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo,true);
+		//		seen.add(FIELD_AREA);
+	    }	    
 
         }
     }

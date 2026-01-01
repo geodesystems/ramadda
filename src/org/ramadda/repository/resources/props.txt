@@ -42,6 +42,8 @@ form.createdate.label=
 form.enddate.label=
 form.fromdate.label=
 form.fromdate.show=false
+form.date.before=column to show date before
+form.date.after=column to show date after
 
 form.startdate.label=
 form.settimerange.show=false
@@ -166,6 +168,9 @@ search.metadatatypes=archive_subject,archive_keyword,archive_note
 #what to show
 search.form.area.show=false
 search.form.area.label=Last known location
+form.area.before=column to show area before
+form.area.after=column to show date after
+
 search.form.description.show=true
 search.form.name.show=true
 search.form.createdate.show=false
