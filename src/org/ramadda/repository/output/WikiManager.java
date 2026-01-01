@@ -2003,6 +2003,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    String clazz = getProperty(wikiUtil,props,"class","");
 	    String _type = getProperty(wikiUtil,props,"type",null);
+	    String template = getProperty(wikiUtil,props,"template","New ${type}");
 	    boolean showToggle = getProperty(wikiUtil,props,"showToggle",false);
 	    if(_type!=null) {
 		types.add(_type);
@@ -2021,7 +2022,8 @@ public class WikiManager extends RepositoryManager
 					     ARG_GROUP, entry.getId(),
 					     ARG_TYPE, type,
 					     "defaultgroup",entry.getId());
-		String label = getProperty(wikiUtil,props,"label","New " + typeHandler.getLabel());
+		String label = template.replace("${type}",typeHandler.getLabel());
+		label = getProperty(wikiUtil,props,"label",label);
 		if(getProperty(wikiUtil,props,"addIcon",true)) {
 		    String icon = HU.img(typeHandler.getIconUrl(typeHandler.getIconProperty(ICON_BLANK)),"",
 					 HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
