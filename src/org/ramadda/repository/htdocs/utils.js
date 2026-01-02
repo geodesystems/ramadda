@@ -2543,9 +2543,9 @@ var Utils =  {
 
     toggleShowMore: function(id) {
         let toggle = jqid( id);
-        let open = toggle.attr('open');
+        let open = toggle.attr(ATTR_OPEN);
         open = !open;
-        toggle.attr('open',open);
+        toggle.attr(ATTR_OPEN,open);
         if(open) {
             jqid(id+'_ellipsis').hide();
             jqid(id+'_post').show();       
@@ -2674,6 +2674,7 @@ var Utils =  {
         id = id.replace(/[^a-zA-Z0-9_]/g,"_");
         return id;
     },
+
     isMobile: function() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
@@ -5783,14 +5784,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let right = $('.ramadda-nav-right');    
         
         if(opts.showToggle) {
-            let menu = HU.div(['toggle-state',opts.leftOpen?'open':'closed',
+            let menu = HU.div([ATTR_TOGGLESTATE,opts.leftOpen?'open':'closed',
 			       ATTR_TITLE,'Toggle left',
 			       ATTR_ID,'ramadda-nav-left-toggle',
 			       ATTR_CLASS,'ramadda-nav-left-toggle'],
 			      HU.getIconImage('fa-bars'));
             $(menu).appendTo(right);
             jqid('ramadda-nav-left-toggle').click(function() {
-                let closed = $(this).attr('toggle-state')==='closed';
+                let closed = $(this).attr(ATTR_TOGGLESTATE)==='closed';
                 if(closed) {
                     left.show();
                     right.animate({'margin-left':opts.leftWidth});
@@ -5798,7 +5799,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     left.hide();
                     right.animate({'margin-left':HU.px(0)});
                 }
-                $(this).attr('toggle-state',closed?'open':'closed');
+                $(this).attr(ATTR_TOGGLESTATE,closed?'open':'closed');
             });
         }
 
