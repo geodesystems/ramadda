@@ -652,8 +652,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 
 .ramadda-button-active {
-    background:#aaa !important;
+    background:rgba(0, 102, 204, 0.1) !important;
+    border:1px solid #000;
 }
+
 
 
 .ramadda-button:hover {

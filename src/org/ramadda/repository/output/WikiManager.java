@@ -2760,6 +2760,10 @@ public class WikiManager extends RepositoryManager
 
 	    if(icon!=null) label = getIconImage(icon) +"&nbsp;" + label;
 	    String action = getProperty(wikiUtil,props,"action",null);
+	    boolean active=false;
+	    if(action!=null && Misc.equals(action,request.getString(ARG_ACTION,null))) {
+		active=true;
+	    }
             String url =  HU.url(getRepository().getUrlBase() +(action==null?"/entry/show":"/entry/action?action=" + action),
 				 ARG_ENTRYID, entry.getId(),
 				 ARG_OUTPUT,link);
@@ -2771,9 +2775,13 @@ public class WikiManager extends RepositoryManager
 		    + HU.space(2) + label;
             }
 
+	    String  clazz="ramadda-button";
+	    if(active) {
+		clazz  = "ramadda-button ramadda-button-active";
+	    }
             if (makeButton) {
                 return HU.href(url, label,
-			       HU.cssClass("ramadda-button")
+			       HU.cssClass(clazz)
 			       + HU.attr("role", "button"));
             }
             String extra = "";
