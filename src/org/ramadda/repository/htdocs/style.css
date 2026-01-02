@@ -5006,7 +5006,6 @@ td .ramadda-role {
 
 .ramadda-page-link {
     transition: transform .3s ease-in-out;
-    padding-right:5px;
     display: table-cell;
     vertical-align: middle;
     padding-right:4px;
