@@ -42,7 +42,6 @@ canedit="true" icon="fas fa-plus" foruser="true" category="file"/>
 +if property=show_summary
 {{assets_summary}}
 -if
-:heading List
 +center
 {{display_simplesearch width=310px                                                                            
 ancestor=this                                                                                                
@@ -53,6 +52,7 @@ orderBy=name
 #pageSearchParent=.ramadda-grid-container                                                                     
 }} 
 -center
+----
 {{tabletree    typeWidth=300px orderby="entryorder_up,name_up"
 message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
 +skip
