@@ -1,0 +1,15 @@
++if property=show_links
+{{assets_header}}
+-if
++if property=show_summary
+{{assets_summary}}
+-if
++center
+{{display_simplesearch width=310px
+ancestor=this
+toggle=true
+inputSize=300 doPageSearch=false 
+placeholder="Search Assets"
+orderBy=name                                                                                 
+}} 
+-center

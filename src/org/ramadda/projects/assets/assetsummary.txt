@@ -1,6 +1,7 @@
 +center
 {{typecount  typecountPrefix=":heading Summary" 
-typecountSuffix="" types="super:type_assets_base,super:type_assets_thing"  iconWidth=24px
+typecountSuffix="" types="super:type_assets_base,super:type_assets_thing"  iconWidth=14px
+style="font-size:10pt;min-width:unset;"
 doColor=true ancestor="${this}" addAncestor=true
 addSearchLink=true  topCount=100
 hero="false"  template="${icon} ${label}<br>${count}"  

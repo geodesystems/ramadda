@@ -59,6 +59,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String TAG_HEADER= "assets_header";
     public static final String TAG_SUMMARY= "assets_summary";
     public static final String TAG_REPORT_LINK= "assets_report_link";
+    public static final String TAG_FULLHEADER= "assets_fullheader";
 
     public static final String COL_LOCATION_ENTRY="location_entry";
     public static final String COL_VENDOR="vendor";
@@ -66,15 +67,16 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     public static final String COL_ASSIGNED_TO="assigned_to";
 
     public static final String WIKI_SCAN=
-	"+section title={{name}}\n:heading Scan for Asset\n+center\n{{assets_barcode doScan=true}}\n-center\n-section\n";
+	"+section title={{name}}\n{{assets_fullheader}}\n:heading Scan for Asset\n+center\n{{assets_barcode doScan=true}}\n-center\n-section\n";
 
     public static final String  WIKI_NEW=
-	"+section title={{name}}\n:heading Create New Asset\n+center\n{{new_entry   template=\"${type}\" fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
+	"+section title={{name}}\n{{assets_fullheader}}\n:heading Create New Asset\n+center\n{{new_entry   template=\"${type}\" fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
 
     public static final String WIKI_SEARCH =
-	"+section title={{name}}\n:heading Asset Search\n{{display_entrylist     showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
+	"+section title={{name}}\n{{assets_fullheader}}\n:heading Asset Search\n{{display_entrylist showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
 
 
+    private String fullHeaderWiki;
     private String assetHeaderWiki;
     private String assetSummaryWiki;    
     private String summaryReportWiki;
@@ -83,6 +85,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	throws Exception {
         super(repository, node);
 	assetHeaderWiki =  getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetheader.txt");
+	fullHeaderWiki =  getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/fullheader.txt");
 	assetSummaryWiki = getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/assetsummary.txt");
 	summaryReportWiki =getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/assets/summaryreport.txt");
     }
@@ -90,7 +93,9 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
     @Override
     public void getWikiTags(List<WikiTag> tags, Entry entry) {
 	super.getWikiTags(tags, entry);
+
 	tags.add(new WikiTag(TAG_HEADER,"Asset Group Header"));
+	tags.add(new WikiTag(TAG_FULLHEADER,"Asset Full Header"));
 	tags.add(new WikiTag(TAG_SUMMARY,"Asset Summary"));	
 	tags.add(new WikiTag(REPORT_TABLE+" #types=\"type_assets_it,type_assets_equipment,...\" showHeader=true","Assets Report Table"));
 	tags.add(new WikiTag(REPORT_COUNTS,"Assets Report Counts"));
@@ -177,6 +182,8 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	StringBuilder sb = new StringBuilder();
 	String report = request.getString("report",REPORT_TABLE);
 	getPageHandler().entrySectionOpen(request, entry, sb, "");
+	wikify(request, entry,sb,fullHeaderWiki);
+
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
 	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},{REPORT_COUNTS,"Counts"},
 					 {REPORT_COSTS,"Costs"}, {REPORT_WARRANTY,"Warranty"},
@@ -206,6 +213,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 				 Entry entry,  String tag, Hashtable props)
 	throws Exception {
 	if(tag.equals(TAG_HEADER)) return getWikiManager().wikifyEntry(request, entry,assetHeaderWiki);
+	if(tag.equals(TAG_FULLHEADER)) return getWikiManager().wikifyEntry(request, entry,fullHeaderWiki);	
 	if(tag.equals(TAG_SUMMARY)) return getWikiManager().wikifyEntry(request, entry,assetSummaryWiki);
         if (tag.equals(TAG_REPORT_LINK)) 
 	    return HU.div(HU.href(getEntryActionUrl(request,  entry,ACTION_REPORT),"Reports"),
