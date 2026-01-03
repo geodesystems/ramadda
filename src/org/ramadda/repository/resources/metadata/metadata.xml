@@ -227,6 +227,7 @@
     <type
        name="Thumbnail Image"
        tag="internal"
+       candisplay="false"
        id="content.thumbnail">
       <element name="Thumbnail File" datatype="file" thumbnail="true" istitle="true"/>
       <element name="Caption" datatype="string" />
