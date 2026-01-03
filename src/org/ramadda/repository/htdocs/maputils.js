@@ -365,7 +365,7 @@ var MapUtils =  {
 	if(!feature.style) return true;
 	return feature.style.display!=DISPLAY_NONE;
     },
-    setFeatureVisible:function(feature, vis) {
+    setFeatureVisible:function(feature, vis,redraw) {
 	if(!feature.style) {
 	    //No need to add a style if it is visible
 	    if(vis) return;
@@ -377,6 +377,11 @@ var MapUtils =  {
 	    feature.style.display = DISPLAY_NONE;
 	}
 	if(feature.originalStyle) feature.originalStyle.display = feature.style.display;
+	if(redraw) {
+	    if(feature.layer) {
+		feature.layer.redraw(feature);
+	    }
+	}
 //	$.extend(feature.style,{display:feature.style.display});
     },
 
@@ -473,8 +478,14 @@ var MapUtils =  {
 	let goodFeatures=[];
 	features.forEach((feature,idx)=>{
 	    feature.gridSpacingInfo=null;
-	    if(!feature.geometry) return;
-	    if(!feature.style) return;
+	    if(!feature.geometry) {
+//		console.log('no geometry');
+		return;
+	    }
+	    if(!feature.style) {
+//		console.log('no style');
+		return;
+	    }
 	    let bounds = feature.geometry.getBounds();
 	    if(!mapBounds.contains(bounds) && !mapBounds.intersectsBounds(bounds))  {
 //		console.log('not in bounds',bounds);
@@ -547,6 +558,7 @@ var MapUtils =  {
 		bottom:Math.ceil(bottom)
 	    }
 	});
+
 	if(!dim) return;
 	dim= {
 	    minx:Math.floor(dim.minx),
@@ -563,8 +575,9 @@ var MapUtils =  {
 	let hideCnt =0, showCnt=0;
 	features.forEach((feature,idx)=>{
 	    let debug = false;
+	    debug=true;
 	    if(!this.isFeatureVisible(feature)) {
-		console.log('not viz');
+		console.log('not visible');
 		return
 	    }
 	    let info = feature.gridSpacingInfo;

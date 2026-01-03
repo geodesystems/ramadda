@@ -1294,14 +1294,25 @@ public class MapInfo {
         String info = repository.getMapManager().makeInfoBubble(request,
 								entry, this,true);
 
-
-        String props = "null";
-
-        String fillColor = entry.getTypeHandler().getDisplayAttribute(request,entry,    "mapFillColor");
+	List<String>props = new ArrayList<String>();
+        String fillColor = entry.getTypeHandler().getDisplayAttribute(request,entry, "mapFillColor");
         if (fillColor != null) {
-            props = "{fillColor:'" + fillColor + "'";
-            props += "}";
+	    Utils.add(props,"fillColor",JU.quote(fillColor));
         }
+	boolean addLabel = Utils.getProperty(this.tagProps,"addLabel",false);
+	if(addLabel) {
+	    Utils.add(props,"label",JU.quote(entry.getName()));
+	    boolean declutter = Utils.getProperty(this.tagProps,"declutter",false);
+	    if(declutter) Utils.add(props,"declutter","true");
+	    String fontSize = Utils.getProperty(this.tagProps,"fontSize",null);
+	    if(fontSize!=null) Utils.add(props,"fontSize",JU.quote(fontSize));
+	    String textBackground = Utils.getProperty(this.tagProps,"textBackground",null);
+	    if(textBackground!=null) Utils.add(props,"textBackground",JU.quote(textBackground));
+	    String textPadding = Utils.getProperty(this.tagProps,"textPadding",null);
+	    if(textPadding!=null) Utils.add(props,"textPadding",JU.quote(textPadding));
+	    String labelMaxLength = Utils.getProperty(this.tagProps,"labelMaxLength",null);
+	    if(labelMaxLength!=null) Utils.add(props,"labelMaxLength",JU.quote(labelMaxLength));	    	    	    
+	}
 
 	if(addImageLayer) {
 	    String args = JsonUtil.map(Utils.makeListFromValues("popupText",
@@ -1324,7 +1335,7 @@ public class MapInfo {
 			   + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
 			   + "," + HU.squote(info) + ","
 			   + HU.squote(entry.getTypeHandler().getType()) + ","
-			   + props + ");\n");
+			   + JU.map(props) + ");\n");
 	}
     }
 

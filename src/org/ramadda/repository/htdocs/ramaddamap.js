@@ -19,6 +19,7 @@ function RepositoryMap(mapId, params) {
     this.params = params;
     this.mapId = mapId || "map";
 
+    this.declutterFeatures =[];
     ramaddaMapAdd(this);
 
     [ARG_MAPCENTER,ARG_ZOOMLEVEL].forEach(prop=>{
@@ -967,6 +968,7 @@ RepositoryMap.prototype = {
 	return  this.transformProjBounds(this.getMap().getExtent());
     },
     zoomChanged: function() {
+	this.checkDeclutter();
     },
     receiveShareState:function(source, state) {
 	if(state.center) {
@@ -3304,9 +3306,15 @@ RepositoryMap.prototype = {
     },
 
     finishInit:function() {
+	this.checkDeclutter();
     },
-
-
+    checkDeclutter: function() {
+	if(this.declutterFeatures.length==0) return;
+	MapUtils.declutter(this, this.declutterFeatures,{});
+	if(this.markers) {
+            this.markers.redraw();
+	}
+    },
     destroyMousePositionReadout:function() {
 	if(this.mousePositionReadout) {
 	    this.mousePositionReadout.destroy();
@@ -4417,6 +4425,7 @@ RepositoryMap.prototype = {
 	    console.log('cannot find marker with id:' +id);
             return;
         }
+	MapUtils.setFeatureVisible(mymarker,true);		    
         let latLonBounds = mymarker.latLonBounds;
         if (latLonBounds) {
             let projBounds = this.transformLLBounds(latLonBounds);
@@ -4574,10 +4583,16 @@ RepositoryMap.prototype = {
     },
 
     addEntryMarker:  function(id, location, iconUrl, markerName, text, type, props) {
-        marker = this.addMarker(id, location, iconUrl, markerName, text);
+	props = props??{};
+//    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
+        marker = this.addMarker(id, location, iconUrl, markerName, text,null,null,null,null,props);
+	if(props.declutter) {
+	    this.declutterFeatures.push(marker);
+	}
+
         marker.entryType = type;
         marker.entryId = id;
-	if(props && props.fillColor) {
+	if(props.fillColor) {
 	    let pointStyle = {
 		pointRadius:props.radius||12,
 		fillColor:props.fillColor,
@@ -4627,13 +4642,24 @@ RepositoryMap.prototype = {
         let projPoint = this.transformLLPoint(location);
         let marker = MapUtils.createMarker(projPoint, icon);
 	let pt = MapUtils.createPoint(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
+	let label = attrs.label;
+	if(label) {
+	    if(attrs.labelMaxLength>0 && label.length>attrs.labelMaxLength) {
+		label=label.substring(0,attrs.labelMaxLength)+'...';
+	    }
+//	    label=label.replace(/ /g,'\n');
+	}
 	let style = {
+	    showLabels:true,
             externalGraphic: iconUrl,
             graphicWidth: size,
             graphicXOffset: xoffset + (-size / 2),
             graphicYOffset: -size / 2,
-	    labelYOffset:attrs.labelYOffset??-size,
-	    label:attrs.label
+	    labelYOffset:attrs.labelYOffset??size,
+	    label:label,
+	    fontSize:attrs.fontSize??'8pt',
+	    textBackgroundFillColor:attrs.textBackground,
+	    textBackgroundPadding:attrs.textPadding??2
         };
 	if(attrs.fontSize) style.fontSize = attrs.fontSize;
 	if(Utils.isDefined(attrs.rotation)) {
@@ -4917,6 +4943,7 @@ RepositoryMap.prototype = {
         if (!marker) {
             return null;
         }
+	MapUtils.setFeatureVisible(marker,true,true);		    
 	let   myattrs = {
             pointRadius: 16,
             stroke: true,
