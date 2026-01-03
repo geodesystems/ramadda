@@ -3061,10 +3061,10 @@ function PiechartDisplay(displayManager, id, properties) {
                 chartOptions.is3D = true;
             }
             if (this.getPieHole()) {
-                chartOptions.pieHole = this.pieHole;
+                chartOptions.pieHole = this.getPieHole();
             }
             if (this.getSliceVisibilityThreshold()) {
-                chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
+                chartOptions.sliceVisibilityThreshold = this.getSliceVisibilityThreshold();
             }
 
 	    chartOptions.pieSliceBorderColor = this.getPieSliceBorderColor();
