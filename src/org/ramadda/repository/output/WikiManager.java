@@ -5573,7 +5573,7 @@ public class WikiManager extends RepositoryManager
 		    if(Double.isNaN(number)) {
 			v = "NA";
 		    } else  {
-			v=""+number;
+			v=Utils.format(number);
 		    }
 		} else if(macro.getId().equals("size")) {
 		    if(!child.isFile()) {
