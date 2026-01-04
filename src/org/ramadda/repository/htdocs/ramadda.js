@@ -1143,10 +1143,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 		    if(props.showThumbnails && entry.getThumbnail()) {
 			rowExtra+=HU.br()+
-			    HU.div([ATTR_CLASS,'ramadda-thumbnail',
+			    HU.div([ATTR_CLASS,HU.classes('ramadda-thumbnail',CLASS_CLICKABLE),
 				    ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(100),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
 				   HU.image(entry.getThumbnail(),[ATTR_LOADING,LOADING_LAZY,
-								  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-thumbnail-image'),
+								  ATTR_CLASS,HU.classes('ramadda-thumbnail-image'),
 								  ATTR_TITLE,'Click to enlarge',
 								  ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(100)),
 								  'entry-url',entry.getEntryUrl()

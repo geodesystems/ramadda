@@ -2385,23 +2385,9 @@ mapheader {
     scrollbar-width: none;  
 }
 
-/*
-::-webkit-scrollbar {
-    width: 12px;
-    background: transparent;
+.ramadda-thumbnail:hover {
+    border:1px solid var(--highlight-color);
 }
-
-div:hover::-webkit-scrollbar {
-    width: 12px;
-    background: transparent;
-}
-
-
-div:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.4);
-}
-*/
-
 
 .ramadda-breadcrumbs-list::-webkit-scrollbar,
 .ramadda-menubar::-webkit-scrollbar {
