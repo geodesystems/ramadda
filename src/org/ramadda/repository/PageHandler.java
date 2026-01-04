@@ -1808,6 +1808,11 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    public String showDialogProgress(String h, String... extra) {
+        return getDialog(h, extra, ICON_DIALOG_PROGRESS, false);
+    }
+
+
     public String showDialogNote(String h, String... extra) {
         return getDialog(h, extra, ICON_DIALOG_INFO, false);
     }
@@ -1927,7 +1932,11 @@ public class PageHandler extends RepositoryManager {
         sb.append("<table width=100%><tr valign=top>");
         if (icon != null) {
             sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
-            sb.append(getIconImage(icon + " " + faClazz, "style", (style==null?"":style)));
+	    if(icon.startsWith("fa")) {
+		sb.append(getIconImage(icon + " " + faClazz, "style", (style==null?"":style)));
+	    } else {
+		sb.append(getIconImage(icon, "style", (style==null?"width:30px;":style)));
+	    }
             sb.append("</div></td>");
         }
         sb.append("<td><div class=\"ramadda-message-inner\">");

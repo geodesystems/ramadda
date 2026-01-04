@@ -106,6 +106,7 @@ public interface Constants {
     public static final String ICON_DIALOG_INFO = "fas fa-info-circle";
     public static final String ICON_DIALOG_ERROR = "fas fa-exclamation-triangle";
     public static final String ICON_DIALOG_WARNING = "fas fa-triangle-exclamation";
+    public static final String ICON_DIALOG_PROGRESS="fa-solid fa-spinner fa-spin";
     public static final String ICON_WIDTH = "18px";
     public static final String ICON_WIKI = "/icons/wiki.png";
     public static final String ICON_XML = "/icons/xml.png";

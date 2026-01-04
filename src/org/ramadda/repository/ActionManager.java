@@ -91,7 +91,11 @@ public class ActionManager extends RepositoryManager {
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
             actions.remove(id);
-            sb.append("Action cancelled");
+	    if(!json) {
+		sb.append(getPageHandler().showDialogNote("Action cancelled"));
+	    } else {
+		sb.append("Action cancelled");
+	    }
             status = "canceled";
             JobManager.getManager().stopLoad(id);
 	    String url = action.getRedirectUrl();
@@ -119,33 +123,34 @@ public class ActionManager extends RepositoryManager {
                 }
                 actions.remove(id);
             } else {
+		StringBuilder messageSB = new StringBuilder();
+		StringBuilder buttonsSB = new StringBuilder();		
                 status = "running";
                 String msg = JobManager.getManager().getDialogLabel2(id);
                 if ( !json) {
-                    sb.append("<meta http-equiv=\"refresh\" content=\"2\">");
-                    sb.append(getRepository().progress("In progress"));
-                    sb.append(HtmlUtils.href(request.makeUrl(URL_STATUS,
-                            ARG_ACTION_ID, id), "Reload"));
-                    sb.append("<p>");
+		    sb.append("<meta http-equiv=\"refresh\" content=\"1\">");
+		    HU.div(messageSB, "In progess");
+                    buttonsSB.append(HU.button(HU.href(request.makeUrl(URL_STATUS,
+								       ARG_ACTION_ID, id), "Reload")));
                 }
                 if (action.getExtraHtml() != null) {
-                    sb.append(action.getExtraHtml());
-                }
-                if (action.getExtraHtml() != null) {
-                    sb.append(action.getExtraHtml());
+                    messageSB.append(action.getExtraHtml());
                 }
                 if (msg != null) {
-                    sb.append(msg);
+                    messageSB.append(msg);
                 } else {
-                    sb.append(action.getMessage());
+                    messageSB.append(action.getMessage());
                 }
                 if ( !json) {
-                    sb.append("<p>");
-                    sb.append(request.form(URL_STATUS));
-                    sb.append(HtmlUtils.submit("Cancel Action", ARG_CANCEL));
-                    sb.append(HtmlUtils.hidden(ARG_ACTION_ID, id));
-                    sb.append(HtmlUtils.formClose());
-                }
+		    String cancelUrl = request.makeUrl(URL_STATUS,
+						       ARG_CANCEL,"true",
+						       ARG_ACTION_ID, id);
+                    buttonsSB.append(HU.button(HU.href(cancelUrl, "Cancel Action")));
+		    sb.append(getPageHandler().showDialogProgress(messageSB.toString(),
+								  buttonsSB.toString()));
+                } else {
+		    sb.append(messageSB);
+		}
             }
         }
         if ( !json) {
