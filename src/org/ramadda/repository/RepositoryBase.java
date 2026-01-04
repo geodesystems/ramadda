@@ -354,10 +354,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return httpPort;
     }
 
-    public String progress(String h) {
-        return getMessage(h, Constants.ICON_PROGRESS, false);
-    }
-
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),

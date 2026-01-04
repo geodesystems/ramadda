@@ -481,7 +481,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     "An error occurred while processing the request:<br>"
                     + jobInfo.getError()));
         } else if (stillRunning) {
-            sb.append(getRepository().progress("Job is running"));
+            sb.append(getPageHandler().showDialogProgress("Job is running"));
         } else {
             sb.append(
                 getPageHandler().showDialogNote("Processing is complete"));

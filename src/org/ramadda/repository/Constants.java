@@ -84,7 +84,6 @@ public interface Constants {
     public static final String ICON_NEW = "fas fa-plus";
     public static final String ICON_PLUS = "fa-regular fa-square-plus" ;    
     public static final String ICON_MINUS = "fa-regular fa-square-minus";
-    public static final String ICON_PROGRESS = "/icons/progress.gif";
     public static final String ICON_QUESTION = "/icons/question.png";
     public static final String ICON_RANGE = "fas fa-arrow-right";
     public static final String ICON_RCURVE = "/icons/brc.gif";

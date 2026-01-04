@@ -478,8 +478,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onsubmit=\"return Utils.submitEntryForm('#" + id
                           + "');\" ";
-        String loadingImage =
-            HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));
+	String 	loadingImage = getIconImage(ICON_DIALOG_PROGRESS,HU.style("font-size:18pt;"));
         Utils.append(sb,
                      "<div style=\"display:none;\" id=\"" + id + "\">"
                      + loadingImage + " " + message + "</div>");
@@ -492,8 +491,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         String id = HtmlUtils.getUniqueId("dialog-message");
         String onSubmit = " onclick=\"return Utils.submitEntryForm('#" + id
                           + "');\" ";
-        String loadingImage =
-            HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));
+	String 	loadingImage = getIconImage(ICON_DIALOG_PROGRESS,HU.style("font-size:18pt;"));
         Utils.append(sb,
                      "<div style=\"display:none;\" id=\"" + id + "\">"
                      + loadingImage + " " + message + "</div>");

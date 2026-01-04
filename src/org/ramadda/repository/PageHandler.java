@@ -1826,10 +1826,6 @@ public class PageHandler extends RepositoryManager {
                                  + " is restricted");
     }
 
-    public String progress(String h) {
-        return getMessage(h, Constants.ICON_PROGRESS, false);
-    }
-
     public String showDialogWarning(String h, String... extra) {
         return getDialog(h, extra, Constants.ICON_DIALOG_WARNING, false);
     }
