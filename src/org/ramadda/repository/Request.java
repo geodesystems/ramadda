@@ -46,6 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
+    public static final HtmlUtils HU = null;
+
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
 							REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
@@ -355,9 +357,9 @@ public class Request implements Constants, Cloneable {
                 return entry.getRemoteServer().getUrl() + theUrl.getPath();
             }
 
-            String url = HtmlUtils.url(entry.getRemoteServer().getUrl()
+            String url = HU.url(entry.getRemoteServer().getUrl()
                                        + theUrl.getPath(), arg, id);
-            url = HtmlUtils.url(url, args);
+            url = HU.url(url, args);
 
             return url;
         }
@@ -365,14 +367,14 @@ public class Request implements Constants, Cloneable {
         String path = fullPath
 	    ? getEntryUrlPath(theUrl.toString(), entry)
 	    : makeUrlPath(theUrl);
-        String url  = HtmlUtils.url(path, arg, entry.getId());
-        url = HtmlUtils.url(url, args);
+        String url  = HU.url(path, arg, entry.getId());
+        url = HU.url(url, args);
 
         return url;
     }
 
     public String makeUrl(RequestUrl theUrl, String... args) {
-        return HtmlUtils.url(makeUrlPath(theUrl), args);
+        return HU.url(makeUrlPath(theUrl), args);
     }
 
     public String makeUrlPath(RequestUrl theUrl) {
@@ -384,15 +386,15 @@ public class Request implements Constants, Cloneable {
     }
 
     public String form(RequestUrl theUrl) {
-        return HtmlUtils.form(makeUrl(theUrl));
+        return HU.form(makeUrl(theUrl));
     }
 
     public String formPost(RequestUrl theUrl) {
-        return HtmlUtils.formPost(makeUrl(theUrl));
+        return HU.formPost(makeUrl(theUrl));
     }
 
     public String formPost(RequestUrl theUrl, String extra) {
-        return HtmlUtils.formPost(makeUrl(theUrl), extra);
+        return HU.formPost(makeUrl(theUrl), extra);
     }
 
     public void formPostWithAuthToken(Appendable sb, RequestUrl theUrl) {
@@ -411,7 +413,7 @@ public class Request implements Constants, Cloneable {
 
     public void uploadFormWithAuthToken(Appendable sb, RequestUrl theUrl,
                                         String extra) {
-        Utils.append(sb, HtmlUtils.uploadForm(makeUrl(theUrl), extra));
+        Utils.append(sb, HU.uploadForm(makeUrl(theUrl), extra));
         try {
             sb.append("\n");
         } catch (Exception exc) {
@@ -421,7 +423,7 @@ public class Request implements Constants, Cloneable {
     }
 
     public String form(RequestUrl theUrl, String extra) {
-        return HtmlUtils.form(makeUrl(theUrl), extra);
+        return HU.form(makeUrl(theUrl), extra);
     }
 
     public String uploadForm(RequestUrl theUrl) {
@@ -429,7 +431,7 @@ public class Request implements Constants, Cloneable {
     }
 
     public String uploadForm(RequestUrl theUrl, String extra) {
-        return HtmlUtils.uploadForm(makeUrl(theUrl), extra);
+        return HU.uploadForm(makeUrl(theUrl), extra);
     }
 
 
@@ -613,7 +615,7 @@ public class Request implements Constants, Cloneable {
                     if (cnt++ > 0) {
                         sb.append("&");
                     }
-                    HtmlUtils.arg(sb, arg, svalue, true);
+                    HU.arg(sb, arg, svalue, true);
                 }
 
                 continue;
@@ -630,14 +632,14 @@ public class Request implements Constants, Cloneable {
                 sb.append("&");
             }
             try {
-                HtmlUtils.arg(sb, arg, svalue, true);
+                HU.arg(sb, arg, svalue, true);
             } catch (Exception exc) {  /*noop*/
             }
         }
 
         String s = sb.toString();
 
-        return HtmlUtils.sanitizeString(s);
+        return HU.sanitizeString(s);
     }
 
     public void addFormHiddenArguments(Appendable sb,
@@ -671,7 +673,7 @@ public class Request implements Constants, Cloneable {
 			|| svalue.equals(TypeHandler.ALL)) {
                         continue;
                     }
-                    sb.append(HtmlUtils.hidden(arg, svalue));
+                    sb.append(HU.hidden(arg, svalue));
                     sb.append("\n");
                 }
                 continue;
@@ -680,7 +682,7 @@ public class Request implements Constants, Cloneable {
             if ((svalue.length() == 0) || svalue.equals(TypeHandler.ALL)) {
                 continue;
             }
-            sb.append(HtmlUtils.hidden(arg, svalue));
+            sb.append(HU.hidden(arg, svalue));
             sb.append("\n");
         }
     }
@@ -971,7 +973,7 @@ public class Request implements Constants, Cloneable {
         String s = getString(key, dflt);
         if (s != null) {
             s = Utils.encodeUntrustedText(s);
-            //            s = HtmlUtils.entityEncode(s);
+            //            s = HU.entityEncode(s);
         }
 
         return s;
@@ -989,11 +991,12 @@ public class Request implements Constants, Cloneable {
         try {
             if (hasMessage()) {
                 String message = getMessage();
-                //            message = HtmlUtils.entityEncode(getUnsafeString(ARG_MESSAGE, "");
+                //            message = HU.entityEncode(getUnsafeString(ARG_MESSAGE, "");
                 message = PageHandler.getDialogString(message);
                 //Encode this to keep from a spoof attack
-                message = HtmlUtils.entityEncode(message);
-                sb.append(repository.getPageHandler().showDialogNote(message));
+                message = HU.entityEncode(message);
+		sb.append(HU.center(repository.getPageHandler().showDialogNote(message)));
+		//                sb.append(repository.getPageHandler().showDialogNote(message));
                 remove(ARG_MESSAGE);
             }
         } catch (java.io.IOException ioe) {
@@ -1109,7 +1112,7 @@ public class Request implements Constants, Cloneable {
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
         String s = getCheckedString(key, dflt, checker);
-        s = HtmlUtils.sanitizeString(s);
+        s = HU.sanitizeString(s);
         return s;
     }
 
@@ -1119,7 +1122,7 @@ public class Request implements Constants, Cloneable {
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
         String s = getCheckedString(key, dflt, checker);
-        s = HtmlUtils.strictSanitizeString(s);
+        s = HU.strictSanitizeString(s);
 
         return s;
     }
@@ -1133,7 +1136,7 @@ public class Request implements Constants, Cloneable {
 	    s = s.replace("<","").replace(">","");
 	}
 
-        s = HtmlUtils.strictSanitizeString(s);
+        s = HU.strictSanitizeString(s);
 	//	System.err.println(key+"=" + s);
 	return s;
     }
@@ -2039,7 +2042,7 @@ public class Request implements Constants, Cloneable {
 
     public void addCookie(String name, String value) {
         cookieWasAdded = true;
-        httpServletResponse.addHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
+        httpServletResponse.addHeader(HU.HTTP_SET_COOKIE, name + "=" + value);
     }
 
     public Request setHeader(String name, String value) {
@@ -2136,8 +2139,8 @@ public class Request implements Constants, Cloneable {
      */
     public String addCheckbox(Appendable sb, String arg,  String label,boolean dflt) throws Exception {
 	boolean v = getCheckboxValue(arg,dflt);
-	sb.append(HtmlUtils.hidden(arg+"_hidden","false"));
-	return HtmlUtils.labeledCheckbox(arg, "true", v,label);
+	sb.append(HU.hidden(arg+"_hidden","false"));
+	return HU.labeledCheckbox(arg, "true", v,label);
     }
 
     public static void main(String[] args) throws Exception {
