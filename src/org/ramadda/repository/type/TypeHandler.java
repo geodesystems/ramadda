@@ -3140,20 +3140,17 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void addImageToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
-	String width = "600";
-	if (request.isMobile()) {
-	    width = "250";
-	}
+	//	String width = "600";	if (request.isMobile()) {	    width = "250";	}
 	String img    = null;
 	String imgUrl = null;
 	if (entry.getResource().isFile()
 	    && getAccessManager().canDownload(request, entry)) {
 	    imgUrl = getEntryResourceUrl(request, entry,false,true);
-	    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+	    img    = HU.img(imgUrl, "", HU.attrs("style","max-width:100%;","align","center"));
 	} else if (entry.getResource().isUrl()) {
 	    try {
 		imgUrl = typeHandler.getPathForEntry(request, entry,false);
-		img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+		img    = HU.img(imgUrl, "", HU.attrs("style","max-width:100%;","align","center"));
 	    } catch (Exception exc) {
 		sb.append("Error getting path:" + entry.getResource()
 			  + " " + exc);
