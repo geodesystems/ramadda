@@ -714,9 +714,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    });
 
 
+	    //Get the media object as needed and init an empty url
 	    let getMedia=event=>{
 		if(!event.media) {
-		    event.media  ={};
+		    event.media  ={url:''};
 		}
 		return event.media;
 	    }
@@ -801,6 +802,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    }
 		}
 		events.push(event);
+//		console.dir(event);
 	    }
 	    if(jqid(timelineId).length==0) {
 		return;
