@@ -2109,6 +2109,8 @@ public class MetadataManager extends RepositoryManager {
 		    continue;
 		}
 		if(!didOne) {
+		    sb.append(HU.p());
+		    sb.append(HU.hr());
 		    getPageHandler().sectionOpen(request, sb,"Inherited Metadata",false);
 		    sb.append("<table width=100%><tr><td width=200 class=ramadda-table-heading-space>Entry</td><td class=ramadda-table-heading-space>Metadata</td></tr>");
 		    didOne = true;
