@@ -27,6 +27,7 @@
     <property name="icon" value="/files/java.png"/>
 </type>
 
+
 <type name="type_file_r"   super="type_file_code"
       description="R File" pattern=".*\.r" >
     <property name="icon" value="/files/r.png"/>
@@ -117,7 +118,10 @@
 </type>
 
 
-
+<type name="type_file_javaclass"   
+      description="Java Class File" pattern=".*\.class" >
+    <property name="icon" value="/files/java.png"/>
+</type>
 
 
 </types>
