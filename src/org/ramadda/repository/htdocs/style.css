@@ -2134,8 +2134,10 @@ mapheader {
 }
 
 .ramadda-message {
-/*    background-color : var(--color-mellow-yellow);*/
     background-color : #f9f9f9;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+
 }
 
 .ramadda-message-plain {
@@ -2147,8 +2149,7 @@ mapheader {
 }
 
 .ramadda-message-importantquestion {
-    border:2px solid #dc3545;
-
+    border:1px solid #dc3545;
 }
 
 
@@ -3063,10 +3064,11 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 
 .entry-confirm-header {
     font-weight: bold;
-    margin-bottom: 0.5em;
+    margin-bottom:0.5em;
 }
 
 .entry-confirm-list {
+    margin-left:1em;
     max-height: 250px; 
     overflow-y: auto;
     margin-bottom: 1em;

@@ -1891,7 +1891,6 @@ public class PageHandler extends RepositoryManager {
 			    String style,
 			    Boolean  pairedIcons) {
         msg = msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
-
         if ((extra != null) && (extra.length > 0)) {
             String tmp = "";
             for (String e : extra) {

@@ -4101,7 +4101,7 @@ public class EntryManager extends RepositoryManager {
                     return;
                 }
                 getActionManager().setActionMessage(actionId,
-						    "Deleted:" + totalDeleteCnt + "/" + found.size()
+						    "Deleted: " + totalDeleteCnt + "/" + found.size()
 						    + " entries");
 
                 resourcesToDelete.add(new Resource(new File(descendent.path), descendent.resourceType));
@@ -4874,7 +4874,7 @@ public class EntryManager extends RepositoryManager {
 	    } else {
 		getPageHandler().sectionOpen(request, sb,msg(label),false);
 	    }
-	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
+	    HU.div(sb, msg("Entries"), HU.cssClass("entry-confirm-header"));
             sb.append(fromDiv);
 
 	    StringBuilder left  = new StringBuilder();
@@ -4897,9 +4897,11 @@ public class EntryManager extends RepositoryManager {
                 left.append("&nbsp;&nbsp;");
                 left.append(HU.labeledRadio(ARG_ACTION, "copy", isCopy,
 					    msg("Copy")));
-                left.append("&nbsp;&nbsp;");
-                left.append(HU.labeledRadio(ARG_ACTION, "link", isLink,
-					    msg("Link")));
+		if (entries.size() == 1) {
+		    left.append("&nbsp;&nbsp;");
+		    left.append(HU.labeledRadio(ARG_ACTION, "link", isLink,
+						msg("Link")));
+		}
                 left.append(HU.close(HU.TAG_DIV));
 		bottom.append("<div style='margin-left:20px;margin-bottom:20px;display:" + (isCopy?"block":"none")+";' id='" + extraId+"'>");
 		bottom.append(HU.formTable());
@@ -4922,7 +4924,10 @@ public class EntryManager extends RepositoryManager {
 		bottom.append(HU.script("HtmlUtils.initRadioToggle(" +HU.comma(HU.squote("#"+radiosId),"{'copy':" +HU.squote("#"+extraId))+"});\n"));
             }
 
-	    HU.div(middle, HU.div("To",HU.cssClass("entry-confirm-header")) +HU.faIcon(ICON_RIGHTARROW, HU.style("font-size:24pt;")),HU.style("margin-left:32px;margin-right:32px;text-align:center;"));
+	    HU.div(middle, HU.div("&nbsp;",HU.cssClass("entry-confirm-header")) +
+		   HU.span("To","") +HU.space(1) +
+		   HU.faIcon(ICON_RIGHTARROW, HU.style("color:#000;")),
+		   HU.style("margin-left:24px;margin-right:24px;text-align:center;"));
 
 	    HU.div(right,
 		   toEntry==null?"Select a destination":"Target entry:",
@@ -4930,7 +4935,7 @@ public class EntryManager extends RepositoryManager {
             right.append(
 			 HU.open(
 				 HU.TAG_DIV,
-				 HU.cssClass("entry-confirm-list")));
+				 HU.cssClass("xentry-confirm-list")));
             right.append(HU.hidden(ARG_FROM, fromIds));
 
             if (toEntry != null) {
