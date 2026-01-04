@@ -44,26 +44,10 @@ public class JpegMetadataHandler extends MetadataHandler {
     /** Camera Direction type */
     public static final String TYPE_CAMERA_DIRECTION = "camera.direction";
 
-    /**
-     * Construct a new instance for the repository
-     *
-     * @param repository  the repository
-     *
-     * @throws Exception  problems
-     */
     public JpegMetadataHandler(Repository repository) throws Exception {
         super(repository);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Metadata getThumbnail(Request request, Entry entry,com.drew.metadata.Metadata[]mtd,int width)
             throws Exception {
 
@@ -85,26 +69,46 @@ public class JpegMetadataHandler extends MetadataHandler {
 	image = ImageUtils.orientImage(path,  image,mtd);
 
 	long t3= System.currentTimeMillis();
+	int oldWidth = image.getWidth(null);
 	int newWidth = width>0?width:getDefaultThumbnailWidth();
-        Image scaledImage = image.getScaledInstance(newWidth, -1, Image.SCALE_FAST);
+        Image scaledImage;
+	if(oldWidth>0 && oldWidth<=newWidth) {
+	    scaledImage = image;
+	} else {
+	    scaledImage = image.getScaledInstance(newWidth, -1, Image.SCALE_FAST);
+	    ImageUtils.waitOnImage(scaledImage);
+	}
  	long t4= System.currentTimeMillis();
-        ImageUtils.waitOnImage(scaledImage);
+	/*
+BufferedImage argb = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+Graphics2D g = argb.createGraphics();
+g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+g.drawImage(scaledImage, 0, 0, w, h, null);
+g.dispose();
+	*/
+
+
+
+
         RenderedImage finalImage = ImageUtils.toBufferedImage(scaledImage,
-							      BufferedImage.TYPE_INT_RGB);
+							      BufferedImage.TYPE_INT_ARGB);
 
 	long t5= System.currentTimeMillis();
         String thumbFile = IO.stripExtension(entry.getName()) + "_thumb.";
 	String format;
-        if (path.toLowerCase().endsWith("gif")) {
+	String _path = path.toLowerCase();
+        if (_path.endsWith("gif")) {
 	    format = "gif";
+	} else if (true || _path.endsWith("png")) {
+	    //for now always do png
+	    format = "png";
         } else {
 	    format =  "jpg";
         }
 	thumbFile += format;
         File f = getStorageManager().getTmpFile(thumbFile);
         ImageIO.write(finalImage,format, f);
-        String fileName = getStorageManager().moveToEntryDir(entry,
-                              f).getName();
+        String fileName = getStorageManager().moveToEntryDir(entry,   f).getName();
 
 	long t6= System.currentTimeMillis();
 	//	Utils.printTimes("thumb",t1,t2,t3,t4,t5,t6);
@@ -116,12 +120,6 @@ public class JpegMetadataHandler extends MetadataHandler {
 
     /**
      * Get the initial metadata
-     *
-     * @param request  the request
-     * @param entry  the entry
-     * @param metadataList the metadata list
-     * @param extra  extra stuff
-     * @param shortForm  true for shortform
      */
     public void getInitialMetadata(Request request, Entry entry,
                                    List<Metadata> metadataList,
@@ -310,23 +308,5 @@ public class JpegMetadataHandler extends MetadataHandler {
         return dir.getDouble(tag);
     }
 
-    public static void main(String[] args) throws Exception {
-        //        String str = "40:00:40.200000000004366";
-
-        int cnt = 0;
-        for (String path : args) {
-            Image image = ImageUtils.readImage(path);
-            System.err.println("before:" + image.getWidth(null) + " "
-                               + image.getHeight(null));
-            Image newImage = ImageUtils.resize(image, 100, -1);
-            //The waitOnImage was blocking so just check the width and sleep for a few milliseconds
-            ImageUtils.waitOnImage(newImage);
-            System.err.println("width:" + newImage.getWidth(null));
-            ImageUtils.writeImageToFile(newImage,
-                                        new File("thumb_" + cnt + ".jpg"));
-            cnt++;
-        }
-
-    }
 
 }
