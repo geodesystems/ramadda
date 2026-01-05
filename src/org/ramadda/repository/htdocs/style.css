@@ -4263,6 +4263,16 @@ img.metadata-tag-selected {
 
 
 
+.ramadda-select2-icon {
+    width:18px;
+    margin-right:4px;
+}
+
+.select2-selection__choice {
+    width:95%;
+}
+
+
 .selectboxit-text {
     float: none !important;
     text-align:left !important;
