@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan  4 09:34:53 MST 2026";
+var build_date="RAMADDA build date: Mon Jan  5 06:55:06 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34891,6 +34891,7 @@ var ID_SEARCH_BAR = "searchbar";
 var ID_SEARCH_TAG = "searchtag";
 var ID_SEARCH_TAG_GROUP = "searchtaggroup";
 var ID_SEARCH_FOOTER = ID_FOOTER;
+var ID_DOWNLOAD_XLSX='downloadxlsx';
 var ID_ENTRIES = "entries";
 var ID_DETAILS_INNER = "detailsinner";
 var ID_DETAILS_ANCESTORS = "detailsancestors";
@@ -35734,11 +35735,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             return html;
         },
         initDisplay: function() {
+	    let _this=this;
             let theDisplay = this;
             this.jq(ID_SEARCH).button().click(function(event) {
 		theDisplay.submitSearchForm();
                 event.preventDefault();
             });
+	    this.jq(ID_DOWNLOAD_XLSX).button().click(()=>{
+		let settings = this.getSearchSettings();
+		let url= this.getRamadda().getSearchUrl(settings);
+		let what = 'xlsx';
+		let size=1000;
+		this.doDownload(url,'&what='+ what,size);
+	    });
+
 
             this.jq(ID_TEXT_FIELD).autocomplete({
                 source: function(request, callback) {
@@ -36047,14 +36057,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(tuple.length<2)return;
 		let id = tuple[0];
 		let label = tuple[1];
+		let searchUrl = this.getRamadda().getSearchUrl(settings,id);
                 outputs.push(HU.span([ATTR_CLASS,HU.classes('ramadda-search-link',CLASS_CLICKABLE),
 				      ATTR_TITLE,Utils.delimMsg('Click to download') +
 				      '; '+Utils.delimMsg('Shift-click to copy URL'),
 				      'custom-output','true',
 				      ATTR_DATA_NAME,label,
 				      'data-format',id,
-				      ATTR_DATA_URL,
-				      this.getRamadda().getSearchUrl(settings,id)],
+				      ATTR_DATA_URL,  searchUrl],
 				     label));
 	    });
 
@@ -36397,14 +36407,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, LABEL_SEARCH]);
             let topItems = [];
 	    buttonLabel = LABEL_SEARCH;
-            let searchButton = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
-							 CSS_MAX_WIDTH,HU.perc(80)),
-				       ATTR_ID, this.getDomId(ID_SEARCH),
-				       ATTR_CLASS,
-				       HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], buttonLabel);
+	    let buttons = [];
+	    buttons.push(HU.span([ATTR_ID, this.getDomId(ID_SEARCH),
+				  ATTR_CLASS,
+				  HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], buttonLabel));
+	    if(this.getProperty('addDownloadXls',true)) {
+		buttons.push(HU.span([ATTR_ID, this.getDomId(ID_DOWNLOAD_XLSX),
+				      ATTR_CLASS,
+				      HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], 'Download'));
+	    }
             let extra = "";
             let settings = this.getSearchSettings();
-
             let horizontal = this.isLayoutHorizontal();
 
             if (this.ramaddas.length > 0) {
@@ -36546,7 +36559,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    let contents = "";
 	    let topContents = "";	    
-	    form+=HU.center(searchButton);
+	    form+=HU.center(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4))],
+				   Utils.join(buttons,SPACE)));
 	    if(topItems.length>0) {
 		if (horizontal) {
 		    form += topItems[0];
@@ -37349,7 +37363,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			RamaddaUtils.selectInitialClick(event,id,id,true,null,null,
 							col.entrytype,
 							root,
-							{title:'Select ' + col.getLabel()});
+							{doSearch:true,
+							 searchFirst:true,title:'Select ' + col.getLabel()});
 		    });
 		}
 	    });
@@ -37693,24 +37708,11 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    let url = button.attr(ATTR_DATA_URL);
 	    let format = button.attr('data-format')
 	    let formatName = button.attr(ATTR_DATA_NAME)	    
-	    let size = "100";
-	    let doit = (extra) =>{
-		url = url.replace(/max=\d+/,'max='+size);
-		if(extra) url+=extra;
-		if(event.shiftKey) {
-		    let protocol = window.location.protocol;
-		    let hostname = window.location.hostname;
-		    let port = window.location.port;
-		    let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
-		    url = prefix+url;
-		    Utils.copyToClipboard(url);
-		    alert('The URL has been copied to the clipboard');
-		} else {
-		    Utils.triggerDownload(url);
-		}
-	    };
+	    let size = "1000";
 
-	    size= this.jq(ID_SEARCH_MAX).val();
+	    if(this.jq(ID_SEARCH_MAX).val()>size) {
+		size= this.jq(ID_SEARCH_MAX).val();
+	    }
 	    if(!dontAsk) {
 		if(format==OUTPUT_CHOOSE) {
 		    let html = HU.formTable();
@@ -37738,10 +37740,11 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 						title:'Download options',
 						anchor:button,
 						draggable:true,header:true});
+
 		    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
 			size = this.jq('downloadrecords').val();
 			what = this.jq('downloadwhat').val();
-			doit('&what='+ what);
+			this.doDownload(url,'&what='+ what,size);
 			dialog.remove();
 		    });
 		    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
@@ -37750,13 +37753,31 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		} else {
 		    size = prompt('How many records do you want in the ' + formatName +' download?',size);
 		    if(!size) return;
-		    
-		    doit();
+		    this.doDownload(url,null,size);
 		}
 	    } else {
-		doit();
+		this.doDownload(url,null,size);
 	    }
 	},
+	doDownload:function(url,extra,size) {
+	    console.log(url);
+	    url = url.replace(/max=\d+/,'max='+size);
+	    //dummy event for now
+	    let event = {};
+	    if(extra) url+=extra;
+	    if(event.shiftKey) {
+		let protocol = window.location.protocol;
+		let hostname = window.location.hostname;
+		let port = window.location.port;
+		let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+		url = prefix+url;
+		Utils.copyToClipboard(url);
+		alert('The URL has been copied to the clipboard');
+	    } else {
+		Utils.triggerDownload(url);
+	    }
+	},
+
         entryListChanged: function(entryList) {
             if (this.multiSearch) {
                 this.multiSearch.count--;
@@ -38208,6 +38229,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		});
 	    }
 
+
+
             this.jq(ID_SEARCH).button().click(function(event) {
 		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
@@ -38216,6 +38239,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
             });
+
+
+
+
+
+					  
+
 
 
             this.jq(ID_TEXT_FIELD).autocomplete({
