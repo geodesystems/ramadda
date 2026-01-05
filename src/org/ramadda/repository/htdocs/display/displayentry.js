@@ -2125,10 +2125,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let addTypeCategory=this.getProperty('addTypeCategory',true) && this.entryTypes.length>1;
             let cats = [];
             let catMap = {};
-            let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_TYPE_FIELD),
-						 ATTR_CLASS, 'display-typelist',
-						 ATTR_ONCHANGE, this.getGet() + '.typeChanged();'
-						]);
+	    let typeSelectAttributes = [ATTR_ID, this.getDomId(ID_TYPE_FIELD),
+					ATTR_CLASS, 'display-typelist',
+					ATTR_ONCHANGE, this.getGet() + '.typeChanged();'
+				       ]
+	    if(this.getProperty('typeSelectMultiple',true)) {
+		typeSelectAttributes.push(ATTR_MULTIPLE,null,
+					  ATTR_SIZE,4);
+	    }
+	    let select = HU.openTag(TAG_SELECT, typeSelectAttributes);
 	    if(this.getAddAllTypes()) {
 		select += HU.tag(TAG_OPTION, [ATTR_TITLE, '',
 					      ATTR_VALUE, VALUE_ANY_TYPE],'Any type');
@@ -2170,7 +2175,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let optionAttrs = [ATTR_TITLE, type.getLabel(),
 				   ATTR_VALUE, type.getId(),
 				   ATTR_CLASS, 'display-typelist-type',
-				   'data-iconurl', icon
+				   'data-icon', icon
 				  ];
                 let selected = this.getSearchSettings().hasType(type.getId());
 		if(!selected) {
@@ -2191,11 +2196,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let map = catMap[type.getCategory()];
                 if (map == null) {
 		    if(addTypeCategory)  {
-			catMap[type.getCategory()] =
-			    HU.tag(TAG_OPTION, [ATTR_CATEGORY,'true',
-						ATTR_CLASS, 'display-typelist-category',
-						ATTR_TITLE, '',
-						ATTR_VALUE, ''], type.getCategory());
+			catMap[type.getCategory()] ='';
 		    }
                     cats.push(type.getCategory());
                 }
@@ -2203,7 +2204,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 catMap[type.getCategory()] += option;
             }
             for (let i in cats) {
+		select+=HU.open(TAG_OPTGROUP,[ATTR_LABEL,cats[i]]);
                 select += catMap[cats[i]];
+		select += HU.close(TAG_OPTGROUP);
+/*
+			    HU.tag(TAG_OPTION, [ATTR_CATEGORY,'true',
+						ATTR_DISABLED,null,
+						ATTR_CLASS, 'display-typelist-category',
+						ATTR_TITLE, '',
+						ATTR_VALUE, ''], type.getCategory());
+*/		
+		    
             }
 
             select += HU.closeTag(TAG_SELECT);
@@ -2217,15 +2228,18 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			       this.addWidget(this.getProperty('typesLabel','Types'),select,{toggleClose:toggleClose}));
 	    }
 	    
-            HU.initSelect(this.jq(ID_TYPE_FIELD),  { autoWidth: false,  'max-height':HU.px(100)});
+            HU.initSelect2(this.jq(ID_TYPE_FIELD),  
+			   {placeholder:'Select Entry Type'});
 
+/*
 	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
 		showCategories:true,
 		icon:true,
 		after:true,
 		single:true,
 		hide:false,
-		label:$(this).attr('data-label')});	    
+		label:$(this).attr('data-label')});
+		*/
 
             this.addExtraForm();
 	    this.typesPending=false;
