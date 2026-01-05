@@ -979,17 +979,27 @@ public class HtmlOutputHandler extends OutputHandler {
 	    HU.close(childrenSB, "div");
 	}
 
+
 	if(firstCall && !isFieldName) {
 	    NamedBuffer searchSB         = new NamedBuffer("Search");
-	    buffers.add(searchSB);
+	    if(request.get(ARG_SEARCHFIRST,false)) {
+		buffers.add(0,searchSB);
+	    } else {
+		buffers.add(searchSB);
+	    }
 	    HU.open(searchSB, "div", HU.cssClass("ramadda-select-search"));
 	    String searchId = HU.getUniqueId("search");
 	    HU.div(searchSB, "", HU.attrs("id", searchId));
+	    List<String> props = new ArrayList<String>();
+	    if(request.get("dosearch",false)) {
+		Utils.add(props,"doSearch","true");
+	    }
 	    searchSB.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
 					       HU.squote(searchId),
 					       HU.squote(target),
 					       HU.squote(request.getString("entrytype","")),
-					       request.get("showtypeselector",false))));
+					       request.get("showtypeselector",false),
+					       JU.map(props))));
 	    HU.close(searchSB, "div");
 	}
 

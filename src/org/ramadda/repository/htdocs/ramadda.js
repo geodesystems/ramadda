@@ -217,7 +217,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     selectorRamaddas:{},
     searchState:{},
-    initEntryPopup:function(id,target,entryType,showTypeSelector) {
+    initEntryPopup:function(id,target,entryType,showTypeSelector,props) {
+	let opts = props??{};
 	let getId=(suffix) =>{
 	    return id+suffix;
 	}
@@ -353,6 +354,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             entryList.doSearch();
 	}
 
+
 	jqid(getId('button')).click(doSearch);
         let results =jqid(id +'_results');
         inputWidget.keyup(function(event){
@@ -367,6 +369,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		doSearch();
             }
         });
+
+	if(opts.doSearch) {
+	    doSearch();
+	}
+
     },
 
 
@@ -2366,7 +2373,15 @@ function Selector(event, selectorId, elementId, allEntries,
 	};
 
 
+
         let url =  HU.url(URL_ENTRY_SHOW,ARG_OUTPUT,'selectxml','noredirect','true','firstclick',true);
+	if(props.searchFirst) {
+	    url = HU.url(url,'searchfirst',true);
+	}
+	if(props.doSearch) {
+	    url = HU.url(url,'dosearch',true);
+	}	
+
 	if(this.selecttype) 
 	    url = HU.url(url,['selecttype',this.selecttype]);
 	url= HU.url(url,'allentries', this.allEntries,'target', this.id);

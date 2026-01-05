@@ -381,6 +381,7 @@ public interface Constants {
     public static final String SEARCH_TYPE_TEXT = "search.type.text";
     public static final String SEARCH_TYPE_ADVANCED = "search.type.advanced";
     public static final String ARG_SELECTTYPE = "selecttype";
+    public static final String ARG_SEARCHFIRST = "searchfirst";    
     public static final String ARG_SESSIONID = "sessionid";
     public static final String ARG_ANONYMOUS = "anonymous";
     public static final String ARG_AUTHTOKEN = "authtoken";
