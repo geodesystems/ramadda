@@ -6812,6 +6812,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     textarea: function(name, value, attrs) {
         return "<textarea " + HU.attrs(attrs) + HU.attrs([ATTR_NAME, name]) + ">" + value + "</textarea>";
     },
+    initSelect2: function(selector, args) {
+        if(selector.length==0) return;
+	let  formatOption= (option) =>{
+	    if (!option.id) return option.text;
+	    const icon = $(option.element).data('icon');
+	    if (!icon) return option.text;
+	    return $(`<span class="opt"><img src="${icon}" class="ramadda-select2-icon">${option.text}</span>`);
+	    //return $(`<span><i class="fa ${icon}" style="margin-right:6px"></i>${option.text}</span>);`
+	}				 
+
+        let opts = {
+//	    allowClear:true,
+	    width:'100%',
+	    templateResult: formatOption,
+	    templateSelection: formatOption
+        };
+        if(args) $.extend(opts,args);
+	$(document).ready(function() {
+            HU.loadJqueryLib('select2',
+			     [//'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+				 RamaddaUtil.getCdnUrl('/lib/select2/select2.min.css')],
+                             [//'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+				 RamaddaUtil.getCdnUrl('/lib/select2/select2.min.js')],
+                             selector, ()=>{$(selector).select2(opts); });
+	});
+    },
+
+
+
+
     initSelect: function(selector, args) {
         if(selector.length==0) return;
         let opts = {
