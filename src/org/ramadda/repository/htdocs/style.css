@@ -3154,6 +3154,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     position:relative;
 }
 
+.entry-table-simple-row .entry-table-cell {
+    padding-top:0px;
+    padding-bottom:2px;
+}
 .entry-table-cell-flex {
 }
 

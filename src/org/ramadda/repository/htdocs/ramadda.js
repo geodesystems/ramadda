@@ -509,7 +509,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     initEntryTable:function(id,opts,json) {
 	let main = jqid(id);
 	let _this=this;
-	opts = opts||{};
+	opts = opts??{};
 	let entryMap = {};
 	if(Utils.isDefined(opts.details) && opts.details==false) {
 	    opts.simple = true;
@@ -534,13 +534,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showAttachments:false,
 	    showIcon:dflt,
 	    showThumbnails:dflt,
-	    showArrow:dflt,	    
+	    showArrow:Utils.isDefined(opts.showArrow)?opts.showArrow:true,	    
 	    showForm:dflt,
 	    formOpen:false,
 	    inlineEdit:false,
 	    metadataDisplay:null,
 	    bigTextLength:100
 	}
+
 	$.extend(props,opts);
 	this.props=props;
 	let tableWidth=props.tableWidth??props.width??'100%';
