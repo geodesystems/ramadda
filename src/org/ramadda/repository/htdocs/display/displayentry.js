@@ -2229,7 +2229,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    
             HU.initSelect2(this.jq(ID_TYPE_FIELD),  
-			   {placeholder:'Select Entry Type'});
+			   {allowClear:true,
+			    placeholder:'Select Entry Type'});
 
 /*
 	    HU.makeSelectTagPopup(this.jq(ID_TYPE_FIELD),{
