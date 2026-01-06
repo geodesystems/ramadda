@@ -2834,14 +2834,16 @@ public class TypeHandler extends RepositoryManager {
 	    }
             String      icon        = typeHandler.getIconProperty(null);
             if (icon == null) {
-                icon = ICON_ENTRY_ADD;
-            }
+                icon = getIconImage(ICON_ENTRY_ADD);
+            } else {
+		icon= HU.img(icon,"",HU.attr("width",ICON_WIDTH));
+	    }
             links.add(
 		      new Link(
 			       request.makeUrl(
 					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
-					       entry.getId(), ARG_TYPE, type), icon,
-			       getIconImage("fas fa-plus") +HU.SPACE +
+					       entry.getId(), ARG_TYPE, type), 
+			       ICON_NEW,icon +HU.SPACE +
 			       msg(typeHandler.getDescription()),
 			       OutputType.TYPE_FILE));
         }
