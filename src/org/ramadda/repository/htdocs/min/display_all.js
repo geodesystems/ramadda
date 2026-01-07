@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan  7 04:52:34 MST 2026";
+var build_date="RAMADDA build date: Wed Jan  7 05:12:51 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -25545,6 +25545,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
+	    if(!Utils.isDefined(this.hideNoImages)) {
+		this.hideNoImages = true;
+	    }
+
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
 	    let imageField = null;
 	    let showBottomLabel = this.getProperty("showBottomLabel",true);
@@ -25761,7 +25765,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		contents = HU.div([ATTR_STYLE,
 				   HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(0))],
 				  HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
-					      this.hideNoImages,'Show entries with images')) +
+					      this.hideNoImages,'Only show entries with images')) +
 		    contents;
 	    }
 
@@ -38010,7 +38014,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 tooltipClick:tooltip,
 				 myTextGetter:myTextGetter,
 				 descriptionField:"description",
-				 imageWidth:HU.px(140),
+				 imageWidth:HU.perc(95),
 				 blockWidth:HU.px(150),
 				 numberOfImages:500,
 				 includeNonImages:this.getProperty('includeNonImages',true),
