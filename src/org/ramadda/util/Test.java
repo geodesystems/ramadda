@@ -82,6 +82,7 @@ public class Test {
     public boolean call(String url) throws Exception {
 	url = url.trim();
 	if(url.startsWith("#")) return true;
+	if(url.equals("quit")) return false;
 	boolean print = false;
 	if(url.startsWith("print:")) {
 	    print=true;
@@ -117,7 +118,7 @@ public class Test {
 
 	if(url.startsWith("sleep ")) {
 	    int s = Integer.parseInt(url.substring("sleep ".length()).trim());
-	    Misc.sleep(s);
+	    Misc.sleepSeconds(s);
 	    return true;
 	}
 	long expectedSize = -1;
@@ -136,6 +137,12 @@ public class Test {
 
 	Date before = new Date();
 	String _url = HtmlUtils.url(url,"overidehuman","true");
+	String base64 = StringUtil.findPattern(_url,"<base64>(.*)</base64>");
+	if(base64!=null) {
+	    _url = _url.replaceAll("<base64>(.*)</base64>",Utils.encodeBase64(base64));
+	    //	    System.err.println("B64:" + _url);
+	}
+
 	IO.Result result = IO.doGetResult(new URL(_url));
 	if(result.getError()) {
 	    String err= result.getResult();
