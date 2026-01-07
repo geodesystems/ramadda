@@ -696,7 +696,7 @@ public class CsvOutputHandler extends OutputHandler {
         boolean showResource = request.get(ARG_SHOWRESOURCE,true);
         boolean showDate = request.get(ARG_SHOWDATE, true);
         boolean showCreateDate = request.get(ARG_SHOWCREATEDATE, false);
-        boolean showChangeDate = request.get(ARG_SHOWCREATEDATE, false);
+        boolean showChangeDate = request.get(ARG_SHOWCHANGEDATE, false);
         boolean showFromDate = request.get(ARG_SHOWFROMDATE, false);
         boolean showToDate = request.get(ARG_SHOWTODATE, false);
         boolean showType = request.get(ARG_SHOWTYPE, false);		
@@ -886,10 +886,13 @@ public class CsvOutputHandler extends OutputHandler {
 		}
 	    }
 
+	    
 	    if(stringDefined(title)) {
 		row[0] = sheet.createRow(rowCnt++);
+		String date = getDateHandler().formatYYYYMMDD(new Date());
 		Cell titleCell = row[0].createCell(0);
-		titleCell.setCellValue(title.replace("${sheet}",sheetTitle));
+		String theTitle  =  title.replace("${sheet}",sheetTitle).replace("${type}",sheetTitle).replace("${date}",date);
+		titleCell.setCellValue(theTitle);
 		titleCell.setCellStyle(titleStyle);
 		CellRangeAddress region = new CellRangeAddress(0, // first row (0-based)
 							       0, // last row  (0-based)
@@ -989,7 +992,7 @@ public class CsvOutputHandler extends OutputHandler {
 		    if(showLink) 
 			addLink.accept(url,"Repository link");
 		    if(showId) 
-			addLink.accept(entry.getId(),"ID");
+			add.accept(entry.getId());
 		    if(showType) 
 			add.accept(entry.getTypeHandler().getLabel());
 		    if (showDate) {

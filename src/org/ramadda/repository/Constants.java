@@ -124,8 +124,8 @@ public interface Constants {
     public static final String ARG_EXPORT_CHILDREN = "exportchildren";    
     public static final String ARG_EXPORT_DEEP = "exportdeep";    
     public static final String ARG_TARGET_ENTRY = "targetentry";
-    public static final String ARG_SHOWCATEGORIES = "showCategories";
-    public static final String ARG_SEPARATETYPES = "separateTypes";
+    public static final String ARG_SHOWCATEGORIES = "showcategories";
+    public static final String ARG_SEPARATETYPES = "separatetypes";
     public static final String ARG_PAGINATE = "paginate";
     public static final String ARG_SHOWRESOURCE  = "showResource";
     public static final String ARG_SHOWTYPE="showType";

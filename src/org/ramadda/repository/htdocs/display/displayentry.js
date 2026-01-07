@@ -569,7 +569,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'showEntryType',ex:'true',tt:'Show entry type in list'},
 	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
         {p:'showDetailsForGroup',d: false},	
-
+	{p:'addDownloadXls',ex:true,tt:'Add the download xls button'},
+	{p:'downloadXlsTitle',ex:'Download data for ${type} ${date}'}
 	/*
           {p:'orientation',ex:'horizontal|vertical',d:'horizontal'},
 	*/
@@ -875,12 +876,54 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		theDisplay.submitSearchForm();
                 event.preventDefault();
             });
-	    this.jq(ID_DOWNLOAD_XLSX).button().click(()=>{
-		let settings = this.getSearchSettings();
-		let url= this.getRamadda().getSearchUrl(settings);
-		let what = 'xlsx';
-		let size=1000;
-		this.doDownload(url,'&what='+ what,size);
+	    this.jq(ID_DOWNLOAD_XLSX).button().click(function(){
+		//Assume 10000 is good enough
+		let size = 1000;
+		if(_this.jq(ID_SEARCH_MAX).val()>size) {
+		    size= _this.jq(ID_SEARCH_MAX).val();
+		}
+		let html = HU.formTable();
+		html += HU.formEntryLabel('Number of Records',
+					  HU.input('',size,[ATTR_ID,_this.domId('downloadrecords'),
+							    ATTR_SIZE,5]));
+		let title = _this.getProperty('downloadXlsTitle','${type} Entries - ${date}');
+		html+=HU.formEntryLabel('Header Template',HU.input('',title,
+								   [ATTR_ID,_this.domId('download_title'),
+								    ATTR_SIZE,30]));
+								   
+
+		html+=HU.formEntry('',HU.checkbox('',
+						  [ATTR_ID,_this.domId('allcolumns')],
+						  true,'Include all fields'));
+		html+=HU.formEntry('',HU.checkbox('',
+						  [ATTR_ID,_this.domId('separatetypes')],
+						   true,'Separate Types'));		
+		html+=HU.formTableClose();
+		html+=HU.makeOkCancelButtons();
+		let dialog = HU.makeDialog({content:html,
+					    decorate:true,
+					    title:'Download options',
+					    anchor:$(this),
+					    draggable:true,
+					    header:true});
+
+		HU.initOkCancelButtons(dialog, ()=>{
+		    let size =  _this.jq('downloadrecords').val();
+		    let settings = _this.getSearchSettings();
+		    let url= _this.getRamadda().getSearchUrl(settings);
+		    let title = _this.jq('download_title').val();
+		    url=HU.url(url, ARG_OUTPUT,'default.ids','what','xlsx');
+		    if(!HU.isChecked(_this.jq('allcolumns'))) {
+			url = HU.url(url,'tags','reportable');
+		    }
+		    if(!HU.isChecked(_this.jq('separatetypes'))) {
+			url = HU.url(url,'separatetypes','false','tags','_none_','showtype','true');
+//			title='Entries';
+		    }	    		    
+		    url = HU.url(url,ARG_TITLE,title);
+		    _this.doDownload(url,null,size);
+		});
+
 	    });
 
 
@@ -1545,8 +1588,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    buttons.push(HU.span([ATTR_ID, this.getDomId(ID_SEARCH),
 				  ATTR_CLASS,
 				  HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], buttonLabel));
-	    if(this.getProperty('addDownloadXls',true)) {
+	    if(this.getProperty('addDownloadXls',false)) {
 		buttons.push(HU.span([ATTR_ID, this.getDomId(ID_DOWNLOAD_XLSX),
+				      ATTR_TITLE,'Download data as XLSX',
 				      ATTR_CLASS,
 				      HU.classes(CLASS_BUTTON,'display-search-button',CLASS_CLICKABLE)], 'Download'));
 	    }
@@ -2439,11 +2483,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		} else if (col.isNumeric()) {
 		    let from = HU.input('', '', [ATTR_TITLE,'greater than',
 						 ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
-						 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
+						 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(4)),
 						 ATTR_ID, id+'_from']);
 		    let to = HU.input('', '', [ATTR_TITLE,'less than',
 					       ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
-					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(2.5)),
+					       ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(4)),
 					       ATTR_ID, id+'_to']);		    
 		    label = col.getSearchLabel();
                     widget = from +' - ' + to +help;
@@ -2858,7 +2902,6 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    let format = button.attr('data-format')
 	    let formatName = button.attr(ATTR_DATA_NAME)	    
 	    let size = "1000";
-
 	    if(this.jq(ID_SEARCH_MAX).val()>size) {
 		size= this.jq(ID_SEARCH_MAX).val();
 	    }
@@ -2879,25 +2922,20 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 ['wrapper_matlab','Matlab Wrapper']];
 		    html+= HU.formEntryLabel('What to download',
 					     HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
-		    let buttons = HU.buttons([
-			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
-			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 		    html+=HU.formTableClose();
-		    html+=buttons;
-		    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], html);
+		    html+=HU.makeOkCancelButtons();
 		    let dialog = HU.makeDialog({content:html,
+						decorate:true,
 						title:'Download options',
 						anchor:button,
-						draggable:true,header:true});
+						draggable:true,
+						header:true});
 
-		    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
+		    HU.initOkCancelButtons(dialog, ()=>{
 			size = this.jq('downloadrecords').val();
 			what = this.jq('downloadwhat').val();
 			this.doDownload(url,'&what='+ what,size);
 			dialog.remove();
-		    });
-		    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
-			dialog.remove();			
 		    });
 		} else {
 		    size = prompt('How many records do you want in the ' + formatName +' download?',size);
@@ -2909,8 +2947,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }
 	},
 	doDownload:function(url,extra,size) {
-	    console.log(url);
 	    url = url.replace(/max=\d+/,'max='+size);
+	    console.log('download:',url);
 	    //dummy event for now
 	    let event = {};
 	    if(extra) url+=extra;
