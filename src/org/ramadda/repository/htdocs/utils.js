@@ -5011,6 +5011,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
         });
     },
+    makeOkCancelButtons:function() {
+	let buttons = HU.buttons([
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], LABEL_OK),
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], LABEL_CANCEL)]);
+	return buttons;
+    },
+    initOkCancelButtons(dialog,ok,cancel) {
+	dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+	dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
+	    if(cancel) cancel();
+	    dialog.remove();			
+	});
+    },
     buttons:function(args,clazz,style) {
 	let buttons = Utils.wrap(args,
 				 HU.open(TAG_DIV,
@@ -5277,6 +5290,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } 
 	    
         }
+	if(opts.decorate) {
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
+	}
 	let searchDivId;
 	if(opts.searchSelector) {
 	    searchDivId=HU.getUniqueId('');
@@ -5307,6 +5323,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 				 ATTR_CLASS,'ramadda-popup-header'],hdr);
             html = header + html;
         }
+
 
         if(opts.decorate || opts.header) {
             html = HU.div([ATTR_CLASS,CLASS_POPUP], html);
