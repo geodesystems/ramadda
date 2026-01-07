@@ -235,8 +235,6 @@ https://ramadda.org:443/repository/entry/show?entryid=c207b6d8-dfd6-4816-afc7-a9
 https://ramadda.org:443/repository/entry/show?entryid=c207b6d8-dfd6-4816-afc7-a900553cd108&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=e937b930-c689-480a-a2ae-b704d5982af2&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=39082dfb-e885-4b34-a0ed-4d774d3f4cb0&max=5000&output=points.product&product=points.json
-https://ramadda.org:443/repository/entry/show?entryid=bc4526fa-e0a4-4d96-8aa9-7af7c9ba8c0f
-https://ramadda.org:443/repository/entry/show?entryid=bc4526fa-e0a4-4d96-8aa9-7af7c9ba8c0f&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=3a05f16a-5fc0-49f3-8bb5-8ad860bd7c3f
 https://ramadda.org:443/repository/entry/show?entryid=3a05f16a-5fc0-49f3-8bb5-8ad860bd7c3f&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=e4b6667d-d640-4048-a756-b06e4c352a62
@@ -268,9 +266,6 @@ https://ramadda.org:443/repository/entry/show?entryid=39b7e1db-b812-4fb8-8d16-3a
 https://ramadda.org:443/repository/entry/show?entryid=39b7e1db-b812-4fb8-8d16-3a2e27c42562&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=123f21c7-97df-4db5-9037-b27cb6f93996&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=7bd05bbd-e311-4350-b7a8-9c8c0c14a744&max=5000&output=points.product&product=points.json
-https://ramadda.org:443/repository/entry/show?entryid=7c9582a5-5371-43c7-ba79-1a89927c2601
-https://ramadda.org:443/repository/entry/show?entryid=7c9582a5-5371-43c7-ba79-1a89927c2601&max=5000&output=points.product&product=points.json&request.query=Trump
-https://ramadda.org:443/repository/entry/show?entryid=7c9582a5-5371-43c7-ba79-1a89927c2601&max=5000&output=points.product&product=points.json&request.query=Biden
 https://ramadda.org:443/repository/entry/show?entryid=df54964f-7836-44ef-829b-e39b0e29fd33
 https://ramadda.org:443/repository/entry/show?entryid=df54964f-7836-44ef-829b-e39b0e29fd33&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=d72c3542-e446-4b37-b2e5-6a7c0bfa2a24

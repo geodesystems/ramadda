@@ -5,7 +5,6 @@ fail:https://ramadda.org/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8
 fail:https://ramadda.org/admin
 fail:https://ramadda.org/repository/admin/settings
 https://ramadda.org/repository/user/home
-https://ramadda.org/repository/user/form
 fail:https://ramadda.org/repository/user/monitors
 fail:https://ramadda.org/repository/user/list
 fail:https://ramadda.org/repository/admin/stats
