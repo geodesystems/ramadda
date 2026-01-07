@@ -50,6 +50,7 @@ var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';
 var ARG_ELEMENT='element';
 var ARG_RESPONSE='response';
+var ARG_TITLE='title';
 var ARG_TYPE='type';
 var ARG_URL='url';
 var ARG_TEXT='text';
