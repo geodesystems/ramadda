@@ -29,6 +29,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.util.function.Function;
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
 
@@ -746,6 +747,9 @@ public class CsvOutputHandler extends OutputHandler {
 	CellStyle dateStyle = workbook.createCellStyle();
 	dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
 
+	CellStyle numberStyle = workbook.createCellStyle();
+	numberStyle.setAlignment(HorizontalAlignment.RIGHT);
+
 	CreationHelper createHelper = workbook.getCreationHelper();
 	CellStyle titleStyle = workbook.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -776,6 +780,8 @@ public class CsvOutputHandler extends OutputHandler {
 	    String sheetTitle = typeHandler.getLabel();
 	    if(!separateTypes) sheetTitle="Entries";
 	    Sheet sheet = workbook.createSheet(sheetTitle);
+	    //	    sheet.setDefaultColumnWidth(20);
+	    //	    sheet.setColumnWidth(0, 40 * 256);
 
 
 	    int rowCnt=0;
@@ -783,9 +789,10 @@ public class CsvOutputHandler extends OutputHandler {
 	    final int[] colCnt={0};
 
     
-	    Consumer<String> add = (value)->{
+	    Function<String, Cell> add = (value)->{
 		Cell cell = row[0].createCell(colCnt[0]++);
 		cell.setCellValue(value);
+		return cell;
 	    };
 
 
@@ -886,6 +893,8 @@ public class CsvOutputHandler extends OutputHandler {
 		}
 	    }
 
+
+
 	    
 	    if(stringDefined(title)) {
 		row[0] = sheet.createRow(rowCnt++);
@@ -940,9 +949,9 @@ public class CsvOutputHandler extends OutputHandler {
 				String downloadLink =
 				    HU.href(entry.getTypeHandler().getEntryResourceUrl(request, entry),
 					    HU.img(getIconUrl(ICON_DOWNLOAD), msg("Download"),""));
-				add.accept(entry.getResource().getFileSize()+"");
+				add.apply(entry.getResource().getFileSize()+"");
 			    } else {
-				add.accept(NA);
+				add.apply(NA);
 			    }
 			    continue;
 			} else if(col.equals(TypeHandler.FIELD_CREATEDATE)) {
@@ -960,14 +969,14 @@ public class CsvOutputHandler extends OutputHandler {
 			} else {
 			    Column column = typeHandler.getColumn(col);
 			    if(column==null) {
-				add.accept(NA);
+				add.apply(NA);
 				continue;
 			    }
 
 			    if(column.isDate()) {
 				Object o = entry.getValue(request, column);
 				if(o==null) {
-				    add.accept(NA);
+				    add.apply(NA);
 				} else {
 				    Date date = (Date)o;
 				    fmt.accept(entry,date.getTime());
@@ -978,9 +987,10 @@ public class CsvOutputHandler extends OutputHandler {
 
 			    String s = entry.getTypeHandler().decorateValue(request, entry, column, v);
 			    if (column.isNumeric()) {
-				add.accept(v);
+				Cell cell =add.apply(v);
+				cell.setCellStyle(numberStyle);
 			    } else {
-				add.accept(v);
+				add.apply(v);
 			    }
 			}
 		    }
@@ -988,13 +998,13 @@ public class CsvOutputHandler extends OutputHandler {
 		    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
 		    String url = getEntryManager().getEntryUrl(request, entry);
 		    url = request.getAbsoluteUrl(url);
-		    add.accept(name);
+		    add.apply(name);
 		    if(showLink) 
 			addLink.accept(url,"Repository link");
 		    if(showId) 
-			add.accept(entry.getId());
+			add.apply(entry.getId());
 		    if(showType) 
-			add.accept(entry.getTypeHandler().getLabel());
+			add.apply(entry.getTypeHandler().getLabel());
 		    if (showDate) {
 			fmt.accept(entry,entry.getStartDate());
 		    }
@@ -1016,11 +1026,11 @@ public class CsvOutputHandler extends OutputHandler {
 			String downloadUrl=request.getAbsoluteUrl(entry.getTypeHandler().getEntryResourceUrl(request, entry));
 
 			if (entry.isFile()) {
-			    add.accept(""+entry.getResource().getFileSize());
-			    add.accept(downloadUrl);
+			    add.apply(""+entry.getResource().getFileSize());
+			    add.apply(downloadUrl);
 			} else {
-			    add.accept(NA);
-			    add.accept(NA);
+			    add.apply(NA);
+			    add.apply(NA);
 			}
 		    }
 
@@ -1032,21 +1042,22 @@ public class CsvOutputHandler extends OutputHandler {
 							 "show" + column.getName(), showColumns)) {
 				    String s = entry.getStringValue(request, column,"");
 				    if (column.isNumeric()) {
-					add.accept(s);
+					Cell cell =add.apply(s);
+					cell.setCellStyle(numberStyle);
 				    } else if (column.isEntryType()) {
 					Entry columnEntry = null;
 					if(stringDefined(s)) {
 					    columnEntry = getRepository().getEntryManager().getEntry(request, s);
 					}
 					if(columnEntry==null) {
-					    add.accept("");
+					    add.apply("");
 					} else {
 					    String entryUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW,  ARG_ENTRYID, columnEntry.getId());
 					    entryUrl = request.getAbsoluteUrl(entryUrl);
 					    addLink.accept(entryUrl,columnEntry.getName());
 					}
 				    } else {
-					add.accept(s);
+					add.apply(s);
 				    }
 				}
 			    }
@@ -1059,13 +1070,19 @@ public class CsvOutputHandler extends OutputHandler {
 		    for(MetadataType mtd: showMetadata) {
 			List<Metadata> byType = getMetadataManager().getMetadata(request,entry,metadataList, mtd.getId());
 			if(byType!=null && byType.size()>0) {
-			    add.accept(byType.get(0).getAttr1());
+			    add.apply(byType.get(0).getAttr1());
 			} else {
-			    add.accept(NA);
+			    add.apply(NA);
 			}
 		    }
 		}
             }
+	    for(int i=0;i<headers.size();i++) {
+		sheet.autoSizeColumn(i);
+		int currentWidth = sheet.getColumnWidth(i);
+		//		sheet.setColumnWidth(i, currentWidth + 256);
+	    }
+
 	}
 
 	workbook.write(outputStream);
