@@ -3144,7 +3144,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 tooltipClick:tooltip,
 				 myTextGetter:myTextGetter,
 				 descriptionField:"description",
-				 imageWidth:HU.px(140),
+				 imageWidth:HU.perc(95),
 				 blockWidth:HU.px(150),
 				 numberOfImages:500,
 				 includeNonImages:this.getProperty('includeNonImages',true),

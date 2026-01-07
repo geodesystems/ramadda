@@ -2536,10 +2536,10 @@ font-weight:bold;
 .display-images-image-outer {
     flex-grow:1;
     border:var(--basic-border);
-    padding:10px;
+/*    padding:10px;*/
     padding-bottom:10px;
-    margin:10px;
-    margin-bottom:10px;
+    margin:8px;
+    margin-bottom:8px;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
 }
 

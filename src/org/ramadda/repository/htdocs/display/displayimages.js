@@ -477,6 +477,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
+	    if(!Utils.isDefined(this.hideNoImages)) {
+		this.hideNoImages = true;
+	    }
+
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
 	    let imageField = null;
 	    let showBottomLabel = this.getProperty("showBottomLabel",true);
@@ -693,7 +697,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		contents = HU.div([ATTR_STYLE,
 				   HU.css(CSS_MARGIN_LEFT,HU.px(8),CSS_MARGIN_TOP,HU.px(0))],
 				  HU.checkbox('',[ATTR_ID,this.domId('onlyimages')],
-					      this.hideNoImages,'Show entries with images')) +
+					      this.hideNoImages,'Only show entries with images')) +
 		    contents;
 	    }
 
