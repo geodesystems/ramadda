@@ -146,8 +146,8 @@ public class Test {
 		err  = inner;
 	    }
 	    System.out.println("read error:" + err);
+	    System.out.println("url:" + _url);
 	    if(suddenDeath) Utils.exitTest(1);
-
 	    return true;
 	} else if(print) {
 	    System.out.println(result.getResult().trim());
