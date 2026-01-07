@@ -549,11 +549,16 @@ public class UserManager extends RepositoryManager {
 							 getRepositoryBase().URL_USER_LOGIN)));
 
         if (request.defined(ARG_REDIRECT)) {
-            String redirect = request.getBase64String(ARG_REDIRECT, "");
-            //Um, a bit of a hack
-            if (redirect.indexOf("logout") < 0) {
-                sb.append(HU.hidden(ARG_REDIRECT, Utils.encodeBase64(redirect)));
-            }
+	    try {
+		String redirect = request.getBase64String(ARG_REDIRECT, "");
+		//Um, a bit of a hack
+		if (redirect.indexOf("logout") < 0) {
+		    sb.append(HU.hidden(ARG_REDIRECT, Utils.encodeBase64(redirect)));
+		}
+	    } catch(Exception exc) {
+		getLogManager().logError("Error decoding base64 redirect:" +request.getString(ARG_REDIRECT,""));
+		throw exc;
+	    }
         }
 
         if (stringDefined(userPreface)) {
