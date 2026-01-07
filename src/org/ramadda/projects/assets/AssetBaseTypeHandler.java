@@ -73,7 +73,7 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	"+section title={{name}}\n{{assets_fullheader}}\n:heading Create New Asset\n+center\n{{new_entry   template=\"${type}\" fromEntry=true    message=\"\"  }}\n:vspace 1em\n{{assets_barcode #type=type_assets_vehicle}}\n-section\n";
 
     public static final String WIKI_SEARCH =
-	"+section title={{name}}\n{{assets_fullheader}}\n:heading Asset Search\n{{display_entrylist showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
+	"+section title={{name}}\n{{assets_fullheader}}\n:heading Asset Search\n{{display_entrylist addDownloadXls=true downloadXlsTitle=\"Asset report for ${type} - ${date}\" showEntryType=true orderByTypes=\"name,acquisition_cost,relevant,date,createdate,changedate\"  \nshowAncestor=false ancestor=this  typesLabel=\"Asset Type\"  typesToggleClose=false displayTypes=\"list,images,map,display\" showName=true  \ntoggleClose=true  \nentryTypes=\"super:type_assets_base,super:type_assets_thing\" \nexcludeTypes=\"type_assets_thing,type_assets_physical\"\n}} \n-section";
 
 
     private String fullHeaderWiki;
@@ -187,7 +187,9 @@ public class AssetBaseTypeHandler extends ExtensibleGroupTypeHandler   {
 	List<HtmlUtils.Href> headerItems = new ArrayList<HtmlUtils.Href>();
 	for(String[]tuple:new String[][]{{REPORT_TABLE,"Table"},{REPORT_COUNTS,"Counts"},
 					 {REPORT_COSTS,"Costs"}, {REPORT_WARRANTY,"Warranty"},
-					 {REPORT_MAINTENANCE,"Maintenance"},{REPORT_DOWNLOAD,"Download Data"}}) {
+					 {REPORT_MAINTENANCE,"Maintenance"}
+					 //Don't include the download ,{REPORT_DOWNLOAD,"Download Data"}
+	    }) {
 	    headerItems.add(new HtmlUtils.Href(HU.url(getEntryActionUrl(request,  entry,ACTION_REPORT), ARG_REPORT,tuple[0]),
 					       tuple[1],
 					       report.equals(tuple[0])? "ramadda-linksheader-on": "ramadda-linksheader-off"));
