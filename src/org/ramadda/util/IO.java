@@ -407,7 +407,6 @@ public class IO {
                 if (handlingRedirect) {
                     throw exc;
                 }
-                System.err.println("Error URL: " + path.path);
                 String msg = "An error has occurred";
                 if ((connection != null)
 		    && (connection instanceof HttpURLConnection)) {
@@ -842,10 +841,8 @@ public class IO {
             return new Result(connection[0],sb.toString());
         } catch (Throwable exc) {
 	    //xxx
-	    exc.printStackTrace();
-	    System.err.println("reading error");
+	    //	    exc.printStackTrace();
             String error = readError(connection[0]);
-	    System.err.println("error:" +error);
             return new Result(connection[0],error, connection[0].getResponseCode(), true, exc);
         }
     }

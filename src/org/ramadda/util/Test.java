@@ -44,7 +44,6 @@ public class Test {
 		    synchronized(MUTEX) {
 			numThreads--;
 			activeThreads--;
-			System.out.println("DONE:" + numThreads);
 		    }
 		}
 	    });
@@ -121,6 +120,13 @@ public class Test {
 	    Misc.sleepSeconds(s);
 	    return true;
 	}
+	boolean expectFailure = false;
+	if(url.startsWith("fail:")) {
+	    expectFailure = true;
+	    url = url.substring("fail:".length());
+	}
+	
+
 	long expectedSize = -1;
 	if(url.startsWith("size:")) {
 	    url  =url.substring("size:".length()).trim();
@@ -145,19 +151,27 @@ public class Test {
 
 	IO.Result result = IO.doGetResult(new URL(_url));
 	if(result.getError()) {
-	    String err= result.getResult();
-	    String inner = StringUtil.findPattern(err.replace("\n"," "),"<!-- content begin-->(.*)<!-- content end-->");
+	    if(!expectFailure) {
+		String err= result.getResult();
+		String inner = StringUtil.findPattern(err.replace("\n"," "),"<!-- content begin-->(.*)<!-- content end-->");
 
-	    if(inner!=null) {
-		inner = Utils.stripTags(inner);
-		err  = inner;
+		if(inner!=null) {
+		    inner = Utils.stripTags(inner);
+		    err  = inner;
+		}
+		System.out.println("read error:" + err);
+		System.out.println("url:" + _url);
+		if(suddenDeath) Utils.exitTest(1);
+		return true;
 	    }
-	    System.out.println("read error:" + err);
-	    System.out.println("url:" + _url);
-	    if(suddenDeath) Utils.exitTest(1);
-	    return true;
-	} else if(print) {
-	    System.out.println(result.getResult().trim());
+	} else {
+	    if(print) {
+		System.out.println(result.getResult().trim());
+	    }
+	    if(expectFailure) {
+		System.out.println("Expected error:" + _url);
+		if(suddenDeath) Utils.exitTest(1);
+	    }
 	}
 	if(expectedSize>=0 && result.getResult().length() != expectedSize) {
 	    throw new IllegalStateException("Incorrect size for URL:" + url +" expected size:" + expectedSize +" actual size:" + result.getResult().length());
