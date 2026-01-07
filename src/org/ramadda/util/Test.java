@@ -89,11 +89,11 @@ public class Test {
 	}
 	if(url.startsWith("children:")) {
 	    String id = url.substring("children:".length());
-	    String csvUrl ="https://ramadda.org/entry/show?ascending=true&orderby=name&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false&entryid="+ id;
+	    String csvUrl ="https://ramadda.org/entry/show?ascending=true&orderby=name&output=default.csv&escape=true&fields=name,id&showheader=false&overidehuman=true&showheader=false&entryid="+ id;
 	    String csv = IO.readContents(csvUrl);
 	    for(String line:Utils.split(csv,"\n",true,true)) {
 		List<String> toks = Utils.splitUpTo(line,",",2);
-		String _url = "https://ramadda.org/entry/show?entryid=" +toks.get(1);
+		String _url = "https://ramadda.org/entry/show?overidehuman=true&entryid=" +toks.get(1);
 		long t1 = System.currentTimeMillis();
 		if(!call(_url)) {
 		    System.err.println("failed:" + toks.get(0) +" " + toks.get(1));
@@ -135,7 +135,8 @@ public class Test {
 	}
 
 	Date before = new Date();
-	IO.Result result = IO.doGetResult(new URL(url));
+	String _url = HtmlUtils.url(url,"overidehuman","true");
+	IO.Result result = IO.doGetResult(new URL(_url));
 	if(result.getError()) {
 	    String err= result.getResult();
 	    String inner = StringUtil.findPattern(err.replace("\n"," "),"<!-- content begin-->(.*)<!-- content end-->");

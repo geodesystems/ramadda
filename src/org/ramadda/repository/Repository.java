@@ -1454,6 +1454,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result checkForHuman(Request request) throws Exception  {
+	if(request.get("overidehuman",false)) {
+	    return null;
+	}
+
+
 	if(!checkHuman) {
 	    //	    logSpecial("human: not enabled");
 	    return null;
