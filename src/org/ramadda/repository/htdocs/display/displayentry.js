@@ -2305,11 +2305,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             let selectedType =  this.getFieldValue(this.getDomId(ID_TYPE_FIELD), null);
 	    if(selectedType) {
+		if(!Array.isArray(selectedType)) {
+		    selectedType = [selectedType];
+		}
 		for (let i = 0; i < this.entryTypes.length; i++) {
                     let type = this.entryTypes[i];
                     if (type.getId) {
-			if(selectedType == type.getId())
+			if(selectedType.includes(type.getId())) {
                             return type;
+			}
                     }
                 }
             }
@@ -2365,6 +2369,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let toggleClose = this.getColumnsToggleClose(this.getToggleClose(!this.getProperty('searchOpen',true)));
             if (this.savedValues == null) this.savedValues = {};
             let extra = '';
+	    
             let cols = this.getSearchableColumns();
 	    let lastGroup = null;
 	    let inGroup=false;
