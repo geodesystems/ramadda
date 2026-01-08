@@ -5290,9 +5290,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } 
 	    
         }
-	if(opts.decorate) {
-	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
-	}
 	let searchDivId;
 	if(opts.searchSelector) {
 	    searchDivId=HU.getUniqueId('');
