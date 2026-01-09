@@ -41,7 +41,8 @@ childtypes="type_assets_license"
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
 <property  name="form.area.after"  value="location_entry" />
-<property  name="form.resource.show"  value="false" />
+<property  name="form.url.show"  value="false" />
+<property  name="form.serverfile.show"  value="false" />
 <property  name="form.todate.show"  value="false" />
 <property  name="form.date.label"  value="Acquisition Date" />
 <property  name="form.date.before"  value="acquisition_method" />

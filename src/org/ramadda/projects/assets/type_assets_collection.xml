@@ -54,7 +54,7 @@ orderBy=name
 -center
 ----
 {{tabletree    typeWidth=300px orderby="entryorder_up,name_up"
-message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=false showSize=false }} 
+message=""  simple="false"  #maxHeight="500px" showDate=false showCreateDate=true showSize=false }} 
 +skip
 {{assets_report_table}}
 -skip
