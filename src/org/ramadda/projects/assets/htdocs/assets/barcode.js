@@ -468,7 +468,8 @@ AssetHandler.prototype = {
     },
 
     createEntry:function() {
-	let args =['defaultgroup',this.opts.entryid,
+	let args =[ARG_GROUP,this.opts.entryid,
+		   'defaultgroup',this.opts.entryid,
 		   ARG_TYPE,this.opts.type??this.opts.defaultType,
 		   'asset_id',this.opts.code];
 	if(Utils.stringDefined(this.opts.name)) {
