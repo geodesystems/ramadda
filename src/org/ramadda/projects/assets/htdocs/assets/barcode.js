@@ -1,8 +1,8 @@
 
 function barcodeDebug() {
-    //    let s = Utils.join(arguments,' ');
+    let s = Utils.join(arguments,' ');
     //    jqid('barcodedebug').append(HU.div([],s));
-    //    console.log(s);
+//    console.log(s);
 }
 function barcodeInfo() {
     let s = Utils.join(arguments,' ');
@@ -30,17 +30,15 @@ var ID_ASSETS_NAME = 'name';
 var ID_ASSETS_CODE = 'barcode';
 var ID_ASSETS_ADDGEOLOCATION = 'addgeolocation';
 var ID_ASSETS_TYPE='assettype';
-var ASSET_TYPES=[['type_assets_building','Building'],
-		 ['type_assets_vehicle','Vehicle'],
+var ASSET_TYPES=[['type_assets_vehicle','Vehicle'],
 		 ['type_assets_equipment','Equipment'],
-		 ['type_assets_it','IT Asset']];
-
-
-
+		 ['type_assets_equipment_construction','Construction Equipment'],
+		 ['type_assets_fixture','Furniture/Fixture'],
+		 ['type_assets_it','IT Asset'],
+		 ['type_assets_building','Building'],
+		];
 
 function BarcodeReader (videoId,callback,args) {
-    let opts = {
-    }
     let videoElement = this.videoElement = document.getElementById(videoId);
     // Force attributes for iOS Safari
     videoElement.autoplay = true;
@@ -52,7 +50,7 @@ function BarcodeReader (videoId,callback,args) {
     //    videoElement.setAttribute('autoplay', '');    videoElement.setAttribute('muted', '');    videoElement.setAttribute('playsinline', '');
 
     barcodeDebug('making ZXing reader');
-    this.startScanner(callback,videoElement);
+    this.startScanner(callback,videoElement,args);
     barcodeDebug('after making ZXing reader');
 
     this.cancel = ()=>{
@@ -62,7 +60,10 @@ function BarcodeReader (videoId,callback,args) {
 
 
 BarcodeReader.prototype = {
-    startScanner:async function(callback,videoElement) {
+    startScanner:async function(callback,videoElement,args) {
+	let opts = {};
+	if(args) opts = $.extend(opts,args);
+
 	try {
 	    barcodeDebug('startScanner');
 	    const devices = await navigator.mediaDevices.enumerateDevices();
@@ -79,7 +80,6 @@ BarcodeReader.prototype = {
 
 
 	    //	    Object.keys(ZXing.BarcodeFormat).forEach(key=>{onsole.log(key);});
-
 
 	    const hints = new Map();
 	    //	    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13]);
@@ -101,6 +101,8 @@ BarcodeReader.prototype = {
 	    let cnt = 0;
 	    let seen = {};
 	    //	    this.codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, error, controls) => {
+	    this.firstAttempt = performance.now();
+	    this.lastAttempt = performance.now();	    
 	    let handleResponse = (result, error, controls) => {
 		if (result) {
 		    //		    barcodeInfo('result',result);
@@ -108,11 +110,23 @@ BarcodeReader.prototype = {
 			//		controls.stop();
 		    }
 		} else if(error) {
+		    if (error instanceof ZXing.NotFoundException) {
+			const now = performance.now();
+			const diff= now - this.lastAttempt;
+			if (diff > 500) {
+			    if(opts.statusCallback) {
+				opts.statusCallback('Still scanning...',now-this.firstAttempt);
+			    }
+			    this.lastAttempt = now;
+			}
+		    }
 		    let s = error+'';
 		    if(!seen[s]) {
 			//			barcodeInfo('barcode: ', error);
 			seen[s] = true;
 		    }
+		} else {
+		    
 		}
 	    };
 	    try {
@@ -183,6 +197,14 @@ function AssetHandler (id,args) {
 }
 
 AssetHandler.prototype = {
+    showStatus:function(message,ms) {
+	console.log(message);
+	if(this.statusId) {
+	    let seconds = parseInt(ms/1000);
+	    message = HU.getIconImage('fa-solid fa-spinner fa-spin') + SPACE +' scanning';
+	    jqid(this.statusId).html(message);
+	}
+    },
     initEditMode: function() {
 	let name = 'edit_type_assets_base_asset_id';
         this.assetIdInput= HU.jqname(name);
@@ -197,11 +219,14 @@ AssetHandler.prototype = {
 						     CSS_MARGIN,HU.px(5)),
 				   ATTR_ID,this.id+'_cancel'],LABEL_CANCEL));
 	    html+=HU.center(HU.tag(TAG_VIDEO,
-				   [ATTR_CLASS,'assets_editmode_barcode_video',
+				   [ATTR_CLASS,'ramadda-barcode-video-editmode',
 				    ATTR_ID,this.videoId,
 				    'autoplay',null,
 				    'muted',null,
 				    'playsinline']));
+	    html+=HU.div([ATTR_CLASS,'ramadda-barcode-status',
+			  ATTR_STYLE,HU.css(CSS_PADDING,HU.px(10)),
+			  ATTR_ID,this.statusId=this.id+'_status'],'&nbsp;');
 	    let dialog = this.dialog = HU.makeDialog({content:html,
 						      anchor:jqid(buttonId),
 						      at:POS_LEFT_TOP,
@@ -232,13 +257,18 @@ AssetHandler.prototype = {
 		},3000);
 		
 	    };
-	    this.barcodeReader = new BarcodeReader(this.videoId,callback);
+	    this.barcodeReader = new BarcodeReader(this.videoId,callback,
+						   {statusCallback:(message,ms)=>this.showStatus(message,ms)}
+);
 	});
     },
     initScanMode:function() {
 	let header =  'Scan a bar code to search for asset or ' +
 	    HU.span([ATTR_ID,'searchasset',
 		     ATTR_CLASS,'assets-create-link'],'search');
+	let status = HU.span([ATTR_CLASS,'ramadda-barcode-status',
+			     ATTR_ID,this.statusId=this.id+'_status'],'&nbsp;');
+	header= header  + HU.space(4)+status;
 	this.makeVideo({header:header});
 	jqid('searchasset').click(()=>{
 	    return this.handleBarcode('');
@@ -346,7 +376,7 @@ AssetHandler.prototype = {
     makeVideo:function(args) {
 	let html = HU.center(HU.div([ATTR_ID,this.headerId]));
 	this.videoId= this.id+'_video';
-	html+=HU.center("<video class=assets_barcode_video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
+	html+=HU.center("<video class=ramadda-barcode-video id='" + this.videoId+ "'  autoplay muted playsinline></video>\n");
 	jqid(this.id).append(HU.div([ATTR_ID,this.contentsId],html));
 	try {
 	    this.initVideo(args);
@@ -360,8 +390,16 @@ AssetHandler.prototype = {
 	let title = 'create an asset';
 	if(this.opts.defaultTypeLabel)
 	    title = 'create a ' + this.opts.defaultTypeLabel;
-	let header = args.header ?? 'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
-									      ATTR_CLASS,'assets-create-link'],title);
+	let header = args.header;
+	if(!header) {
+	    let status = HU.span([ATTR_CLASS,'ramadda-barcode-status',
+				  ATTR_ID,this.statusId=this.id+'_status'],'&nbsp;');
+	    header =
+		'Scan a bar code or directly ' + HU.span([ATTR_ID,'create',
+							  ATTR_CLASS,'assets-create-link'],title);
+	    header= header  + HU.space(4)+status;
+	}
+	
 	jqid(this.headerId).html(header);
 	jqid('create').click(()=>{
 	    return this.handleBarcode('');
@@ -371,7 +409,9 @@ AssetHandler.prototype = {
 	    if(!jqid(this.videoId).is(':visible')) return;
 	    return this.handleBarcode(result.getText(),controls);
 	}
-	this.barcodeReader = new BarcodeReader(this.videoId,callback);
+	this.barcodeReader = new BarcodeReader(this.videoId,callback,
+					       {statusCallback:(message,ms)=>this.showStatus(message,ms)}
+					      );
 	if(this.opts.debug) {
 	    setTimeout(()=>{this.handleBarcode('example-bar-code');},3000);
 	}

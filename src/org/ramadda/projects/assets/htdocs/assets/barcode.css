@@ -1,0 +1,20 @@
+
+
+.ramadda-barcode-video {
+  width: 90vw;    
+  height: auto;     
+  display: block;  
+  object-fit: contain; 
+  margin-bottom:0px;
+}
+
+.ramadda-barcode-video-editmode {
+  width: 400px;    
+  height: auto;     
+  display: block;  
+  object-fit: contain; 
+  margin-bottom:0px;
+}
+
+.ramadda-barcode-status {
+}    

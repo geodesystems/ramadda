@@ -53,9 +53,10 @@ public class AssetTypeHandler extends GenericTypeHandler implements WikiTagHandl
 
     private void initJS(Request request, StringBuilder sb) throws Exception {
 	HU.div(sb,"",HU.attrs("id","barcodedebug", "style","text-align:left;width:100%;max-height:200px;overflow-y:auto;"));
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css",true)));
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/barcode.css",true)));
 	HU.importJS(sb,getRepository().getHtdocsUrl("/lib/zxing/zxing.min.js"),
 		    getRepository().getHtdocsUrl("/assets/barcode.js",true));
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/assets/assets.css",true)));
     }
 
     @Override
