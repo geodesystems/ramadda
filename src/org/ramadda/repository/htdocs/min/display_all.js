@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan 11 11:02:36 MST 2026";
+var build_date="RAMADDA build date: Sun Jan 11 11:19:07 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6571,7 +6571,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.tagDialogs[type] = dialog;
 	    dialog.find(":checkbox").change(cbxChange);
 	    let tags = dialog.find(".display-search-tag");
-	    jqid("#"+inputId).keyup(function(event) {
+	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() {
 		    if(text=="")
