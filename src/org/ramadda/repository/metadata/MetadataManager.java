@@ -1701,7 +1701,7 @@ public class MetadataManager extends RepositoryManager {
         sb.append(HU.sectionClose());
 
         return getSearchManager().makeResult(request,
-                                             msg(type.getLabel() + " Cloud"),
+					     (type==null?"NULL": (msg(type.getLabel() + " Cloud"))),
                                              sb);
     }
 
