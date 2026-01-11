@@ -1724,6 +1724,10 @@ a.ramadda-menubar-button:hover {
     background:#fff;
 }
 
+.ramadda-gridbox .ramadda-subheading  a {
+    font-weight:450;
+}
+
 .ramadda-gridbox-flex {
     flex-grow:1;
 }
