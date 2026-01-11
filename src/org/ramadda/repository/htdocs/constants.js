@@ -105,7 +105,9 @@ var CLASS_ENTRY_TABLE_CELL='entry-table-cell';
 var CLASS_ENTRY_TABLE_CELL_FLEX='entry-table-cell-flex';
 var CLASS_ENTRY_TABLE_CELL_FIXED='entry-table-cell-fixed';
 var CLASS_ENTRY_TABLE_ROW_TOGGLE='entry-table-row-toggle';
+var CLASS_ENTRY_TABLE_HEADER_COLUMN = 'entry-table-header-column';
 
+var CLASS_THEME_DARK ='ramadda-theme-dark';
 var CLASS_BUTTON = 'ramadda-button';
 var CLASS_BUTTON_SMALL = 'ramadda-button-small';
 var CLASS_BUTTONS = 'ramadda-buttons';
