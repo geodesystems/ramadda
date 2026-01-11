@@ -6,37 +6,20 @@
 package org.ramadda.plugins.archive;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.database.DatabaseManager;
-import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.JsonUtil;
 import org.json.*;
 
 import java.util.Iterator;
 import java.net.URL;
-import org.ramadda.util.WikiUtil;
-import ucar.unidata.util.StringUtil;
-import org.ramadda.util.sql.Clause;
 import org.w3c.dom.*;
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.HashSet;
 import java.util.List;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
 
 @SuppressWarnings("unchecked")
 public class BookTypeHandler extends GenericTypeHandler  {
@@ -60,12 +43,12 @@ public class BookTypeHandler extends GenericTypeHandler  {
 	    try {
 		processISBNOpenlibrary(request, entry,state,isbn);
 	    } catch(Exception exc) {
-		getSessionManager().addSessionMessage(request, "Error reading openlibrary:" + exc);
+		getSessionManager().addSessionMessage(request, "Error reading openlibrary:" + exc.getMessage());
 	    }
 	    try {
 		processISBNGoogle(request, entry,state,isbn);
 	    } catch(Exception exc) {
-		getSessionManager().addSessionMessage(request, "Error reading google books:" + exc);
+		getSessionManager().addSessionMessage(request, "Error reading google books:" + exc.getMessage());
 	    }
 	    if(stringDefined(state.name)&& !stringDefined(entry.getName())) entry.setName(state.name);
 	    if(state.date!=null) {
@@ -110,134 +93,137 @@ public class BookTypeHandler extends GenericTypeHandler  {
 	String places = null;
     }
 
-    private void processISBNOpenlibrary(Request request, Entry entry, State state,String isbn) throws Exception {
-	for(String _isbn: Utils.split(isbn,"\n",true,true)) {
-	    String url = "https://openlibrary.org/api/books?bibkeys=ISBN:" + _isbn+"&format=json&jscmd=data";
-	    IO.Result result = IO.doGetResult(new URL(url));
-	    if(result.getError()) {
-		getLogManager().logInfo("BookTypeHandler: error reading:"+ url);
-		continue;
-	    }
-            JSONObject  obj   = new JSONObject(result.getResult());
-	    Iterator<String> keys = obj.keys();
-	    while (keys.hasNext()) {
-		String key= keys.next();
-		JSONObject o = obj.getJSONObject(key);
-		state.name = o.optString("title",null);
-		if(state.name==null) continue;
-		state.cnt++;
-		state.description.append(o.optString("notes",""));		
-		String bookUrl = o.optString("url",null);
-		if(stringDefined(bookUrl)) {
-		    getMetadataManager().addMetadata(request, entry, "content.url",false,
-						     bookUrl,
-						     "openlibrary.org link");
+    private void processISBNOpenlibrary(Request request, Entry entry, State state,String isbnList) throws Exception {
+	for(String isbn1: Utils.split(isbnList,",",true,true)) {
+	    for(String isbn: Utils.split(isbn1,"\n",true,true)) {
+		String url = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn+"&format=json&jscmd=data";
+		IO.Result result = IO.doGetResult(new URL(url));
+		if(result.getError()) {
+		    getLogManager().logInfo("BookTypeHandler: error reading:"+ url);
+		    continue;
 		}
+		JSONObject  obj   = new JSONObject(result.getResult());
+		Iterator<String> keys = obj.keys();
+		while (keys.hasNext()) {
+		    String key= keys.next();
+		    JSONObject o = obj.getJSONObject(key);
+		    state.name = o.optString("title",null);
+		    if(state.name==null) continue;
+		    state.cnt++;
+		    state.description.append(o.optString("notes",""));		
+		    String bookUrl = o.optString("url",null);
+		    if(stringDefined(bookUrl)) {
+			getMetadataManager().addMetadata(request, entry, "content.url",false,
+							 bookUrl,
+							 "openlibrary.org link");
+		    }
 
-		JSONArray ebooks = o.optJSONArray("ebooks");
-		if(ebooks!=null) {
-		    for (int i = 0; i < ebooks.length(); i++) {
-			JSONObject ebook = ebooks.getJSONObject(i);
-			String purl = ebook.optString("preview_url",null);
-			if(purl!=null) {
-			    URL _url = new URL(purl);
-			    getMetadataManager().addMetadata(request, entry, "content.url",false,
-							     purl,
-							     "Preview @ " + _url.getHost());
+		    JSONArray ebooks = o.optJSONArray("ebooks");
+		    if(ebooks!=null) {
+			for (int i = 0; i < ebooks.length(); i++) {
+			    JSONObject ebook = ebooks.getJSONObject(i);
+			    String purl = ebook.optString("preview_url",null);
+			    if(purl!=null) {
+				URL _url = new URL(purl);
+				getMetadataManager().addMetadata(request, entry, "content.url",false,
+								 purl,
+								 "Preview @ " + _url.getHost());
+			    }
 			}
 		    }
-		}
 
-		state.date = o.optString("publish_date",null);
-		JSONArray subjects = o.optJSONArray("subjects");
-		if(subjects!=null) {
-		    for (int i = 0; i < subjects.length(); i++) {
-			String subject = subjects.getJSONObject(i).optString("name",null);
-			if(stringDefined(subject)) 
-			    getMetadataManager().addMetadata(request, entry, "archive_subject",false,subject);
-		    }
-
-		}
-
-		JSONObject ids= o.optJSONObject("identifiers");
-		if(ids!=null) {
-		    JSONArray lccn = ids.optJSONArray("lccn");
-		    if(lccn!=null) {
-			List<String> a = new ArrayList<String>();
-			for (int i = 0; i < lccn.length(); i++) {
-			    a.add(lccn.getString(i));
+		    state.date = o.optString("publish_date",null);
+		    JSONArray subjects = o.optJSONArray("subjects");
+		    if(subjects!=null) {
+			for (int i = 0; i < subjects.length(); i++) {
+			    String subject = subjects.getJSONObject(i).optString("name",null);
+			    if(stringDefined(subject)) 
+				getMetadataManager().addMetadata(request, entry, "archive_subject",false,subject);
 			}
-			entry.setValue("lccn",Utils.join(a,"\n"));
+
 		    }
-		}
 
-		if(state.authors==null)
-		    state.authors = getNames(o,"authors");
-		if(state.publishers==null)
-		    state.publishers  =getNames(o,"publishers");
-		if(state.places==null)
-		    state.places = getNames(o,"publish_places");
+		    JSONObject ids= o.optJSONObject("identifiers");
+		    if(ids!=null) {
+			JSONArray lccn = ids.optJSONArray("lccn");
+			if(lccn!=null) {
+			    List<String> a = new ArrayList<String>();
+			    for (int i = 0; i < lccn.length(); i++) {
+				a.add(lccn.getString(i));
+			    }
+			    entry.setValue("lccn",Utils.join(a,"\n"));
+			}
+		    }
 
-		JSONObject cover= o.optJSONObject("cover");
-		if(state.thumb!=null && cover!=null) {
-		    state.thumb = cover.optString("large",null);
-		    if(state.thumb==null)
-			state.thumb = cover.optString("medium",null);
-		    if(state.thumb==null)
-			state.thumb = cover.optString("small",null);					    
-		    if(state.thumb!=null)
-			state.thumbCredit = "Credit: openlibrary.org";
+		    if(state.authors==null)
+			state.authors = getNames(o,"authors");
+		    if(state.publishers==null)
+			state.publishers  =getNames(o,"publishers");
+		    if(state.places==null)
+			state.places = getNames(o,"publish_places");
+
+		    JSONObject cover= o.optJSONObject("cover");
+		    if(state.thumb!=null && cover!=null) {
+			state.thumb = cover.optString("large",null);
+			if(state.thumb==null)
+			    state.thumb = cover.optString("medium",null);
+			if(state.thumb==null)
+			    state.thumb = cover.optString("small",null);					    
+			if(state.thumb!=null)
+			    state.thumbCredit = "Credit: openlibrary.org";
+		    }
+
 		}
 
 	    }
-
 	}
     }
 
-    private void processISBNGoogle(Request request, Entry entry, State state,String isbn) throws Exception {
-	for(String _isbn: Utils.split(isbn,"\n",true,true)) {
-	    String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
-	    IO.Result result = IO.doGetResult(new URL(url));
-	    if(result.getError()) {
-		getLogManager().logInfo("BookTypeHandler: error reading:"+ url);
-		continue;
-	    }
-            JSONObject  obj   = new JSONObject(result.getResult());
-	    JSONArray items = obj.optJSONArray("items");
-	    if(items==null) return;
-	    for (int i = 0; i < items.length(); i++) {
-		JSONObject item = items.getJSONObject(i);
-		JSONObject volume = item.getJSONObject("volumeInfo");
-		if(state.name==null)
-		    state.name  = volume.optString("title",null);
-		state.cnt++;
-		if(state.description.length()>0) state.description.append("\n:p\n");
-		state.description.append(volume.optString("description",""));
-		if(state.date==null) 
-		    state.date = volume.optString("publishedDate",null);
-		if(state.authors==null)  {
-		    List<String> a = JU.getStrings(volume.optJSONArray("authors"));
-		    state.authors = Utils.join(a,"\n");
+    private void processISBNGoogle(Request request, Entry entry, State state,String isbnList) throws Exception {
+	for(String isbn1: Utils.split(isbnList,",",true,true)) {
+	    for(String isbn: Utils.split(isbn1,"\n",true,true)) {
+		String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+		IO.Result result = IO.doGetResult(new URL(url));
+		if(result.getError()) {
+		    getLogManager().logInfo("BookTypeHandler: error reading:"+ url);
+		    continue;
 		}
-		if(state.publishers==null)
-		    state.publishers  =volume.optString("publisher",null);
+		JSONObject  obj   = new JSONObject(result.getResult());
+		JSONArray items = obj.optJSONArray("items");
+		if(items==null) return;
+		for (int i = 0; i < items.length(); i++) {
+		    JSONObject item = items.getJSONObject(i);
+		    JSONObject volume = item.getJSONObject("volumeInfo");
+		    if(state.name==null)
+			state.name  = volume.optString("title",null);
+		    state.cnt++;
+		    if(state.description.length()>0) state.description.append("\n:p\n");
+		    state.description.append(volume.optString("description",""));
+		    if(state.date==null) 
+			state.date = volume.optString("publishedDate",null);
+		    if(state.authors==null)  {
+			List<String> a = JU.getStrings(volume.optJSONArray("authors"));
+			state.authors = Utils.join(a,"\n");
+		    }
+		    if(state.publishers==null)
+			state.publishers  =volume.optString("publisher",null);
 
-		JSONObject cover= volume.optJSONObject("imageLinks");
-		if(state.thumb==null && cover!=null) {
-		    for(String k:new String[]{"thumbnail","medium","large","smallThumbnail"}) {
-			if(state.thumb==null) {
-			    state.thumb = cover.optString(k,null);
+		    JSONObject cover= volume.optJSONObject("imageLinks");
+		    if(state.thumb==null && cover!=null) {
+			for(String k:new String[]{"thumbnail","medium","large","smallThumbnail"}) {
+			    if(state.thumb==null) {
+				state.thumb = cover.optString(k,null);
+			    }
+			}
+			if(state.thumb!=null) {
+			    state.thumbCredit = "Credit: Google Books";
+			    state.thumbName = "thumbnail.jpg";
 			}
 		    }
-		    if(state.thumb!=null) {
-			state.thumbCredit = "Credit: Google Books";
-			state.thumbName = "thumbnail.jpg";
-		    }
 		}
+
 	    }
-
 	}
-
     }
 
     private String getNames(JSONObject o,String key) {
