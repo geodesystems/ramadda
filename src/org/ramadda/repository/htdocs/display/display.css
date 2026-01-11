@@ -1285,7 +1285,9 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-tag {
   display: inline-block;
-  padding: 0.1em 0.6em;
+  padding: 0.75em;
+  padding-top:0.4em;
+  padding-bottom:0.2em;  
   margin: 0.2em;
   background-color:#e8f9e9;
   color: #333; /* readable text */

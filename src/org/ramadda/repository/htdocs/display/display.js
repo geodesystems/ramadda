@@ -2272,7 +2272,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.tagDialogs[type] = dialog;
 	    dialog.find(":checkbox").change(cbxChange);
 	    let tags = dialog.find(".display-search-tag");
-	    jqid("#"+inputId).keyup(function(event) {
+	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() {
 		    if(text=="")
