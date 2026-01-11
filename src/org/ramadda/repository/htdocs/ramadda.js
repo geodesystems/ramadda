@@ -650,8 +650,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    html+=HU.open(TAG_DIV,
 			  [ATTR_CLASS,HU.classes(CLASS_ENTRY_TABLE_ROW,CLASS_ENTRY_TABLE_HEADER),
 			   ATTR_STYLE,HU.css(CSS_WIDTH,tableWidth)+rowStyle]);
-	    let hdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,  'entry-table-header-column');
-	    let noSortHdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,'entry-table-header-column');
+
+	    let hdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,  CLASS_ENTRY_TABLE_HEADER_COLUMN);
+	    let noSortHdrClass=HU.classes(CLASS_ENTRY_TABLE_CELL,CLASS_ENTRY_TABLE_HEADER_COLUMN);
 	    cols.forEach((col,idx)=> {
 		let prefix='';
 		if(idx==0 && props.showForm) {
@@ -680,7 +681,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let v = col.label;
 		labelAttrs= Utils.mergeLists(labelAttrs,
 					     [ATTR_CLASS,
-					      HU.classes(CLASS_CLICKABLE,
+					      HU.classes(CLASS_CLICKABLE,CLASS_ENTRY_TABLE_HEADER_COLUMN,
 							 (canSort?'entry-table-header-column-sortable':'')),
 					      ATTR_STYLE,this.props.headerStyle??'']);
 		v=HU.span(labelAttrs, v);
