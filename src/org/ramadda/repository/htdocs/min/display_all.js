@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan  7 05:12:51 MST 2026";
+var build_date="RAMADDA build date: Sun Jan 11 07:08:45 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -57720,7 +57720,6 @@ MapGlyph.prototype = {
         return  HU.div(attrs,display);
     },
     initColorTables: function(currentColorbar) {
-//	if(!currentColorbar)	    this.currentColorbar=this.getDatacubeVariable()?.colorBarName;
 	let items = [];
 	let image;
 	let html = '';
@@ -59081,9 +59080,10 @@ MapGlyph.prototype = {
 		_this.setZoomOnChange(HU.isChecked($(this)));
 	    });
 
-	    this.findFilter('.imdv-legend-clearall').click(()=>{
+	    this.findFilter(HU.dotClass('imdv-legend-clearall')).click(()=>{
 		this.display.featureChanged();
 		this.attrs.featureFilters = {};
+
 		this.applyMapStyle();
 		this.updateFeaturesTable();
 		if(HU.isChecked(jqid(this.zoomonchangeid))) {
@@ -59371,7 +59371,7 @@ MapGlyph.prototype = {
 
     initColorTableDots:function(obj, dialog) {
 	let _this  = this;
-	let dots = dialog.find('.display-colortable-dot-item');
+	let dots = dialog.find(HU.dotClass('display-colortable-dot-item'));
 	dots.css({cursor:CURSOR_POINTER,title:'Click to show legend'});
 	dots.addClass(CLASS_CLICKABLE);
 	let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
@@ -59384,6 +59384,7 @@ MapGlyph.prototype = {
 	});
 
 	dots.click(function(event) {
+	    let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
 	    let meta = event.metaKey || event.ctrlKey;
 	    let label = $(this).attr('label');
 	    let selected = $(this).hasClass('display-colortable-dot-item-selected');
@@ -60956,13 +60957,18 @@ MapGlyph.prototype = {
 	    let style={
 		strokeColor:COLOR_BLACK,
 		strokeWidth:2,
-		fillColor:COLOR_TRANSPARENT,
+//		fillColor:COLOR_TRANSPARENT,
+		fillOpacity:0.5,
 		pointRadius:5
 	    };
 
 	    mapLayer.features.forEach(f=>{
+		let featureStyle = f.originalStyle??f.style??{};
 		f.originalStyle = f.style;
-		f.style = style;
+		let newStyle = $.extend({},style);
+		newStyle.fillColor   = featureStyle.fillColor;
+		f.style = newStyle;
+		
 	    });
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}	    
