@@ -22,17 +22,7 @@ import org.ramadda.util.seesv.Processor;
 import org.ramadda.util.seesv.Row;
 import org.ramadda.util.seesv.TextReader;
 
-import ucar.unidata.xml.XmlUtil;
-
-
 import org.w3c.dom.*;
-
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.TwoFacedObject;
@@ -44,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
-
 import java.util.List;
 
 
@@ -68,24 +57,27 @@ public class CsvImporter extends ImportHandler {
     }
 
 
+    public static boolean isMine(Request request) throws Exception {
+	boolean isMine  = request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV);
+	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
+	    String fileName = request.getString(ARG_FILE,"");
+	    isMine = fileName.toLowerCase().endsWith(".csv") ||
+		fileName.toLowerCase().endsWith(".xlsx");
+	    
+	}
+	return isMine;
+    }
+
     @Override
     public InputStream getStream(Request request, Entry parent,
                                  String fileName, InputStream stream,
 				 StringBuilder message)
 	throws Exception {
-	Request lookupRequest = new Request(getRepository(),request.getUser());
-
-	boolean isMine  = request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV);
-	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
-	    isMine = fileName.toLowerCase().endsWith(".csv") ||
-		fileName.toLowerCase().endsWith(".xlsx");
-	    
-	}
-
-        if (!isMine){
+        if (!isMine(request)) {
             return null;
         }
 
+	Request lookupRequest = new Request(getRepository(),request.getUser());
 	HashSet seenMessage=new HashSet();
 	StringBuilder myMessage =new StringBuilder();
 	StringBuilder myMessage2 =new StringBuilder();	
