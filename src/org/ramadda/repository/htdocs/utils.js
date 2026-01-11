@@ -1874,6 +1874,7 @@ var Utils =  {
         s = s.replace(/[\s,&\.\(\)]+/g,"_");
         s = s.replace(/[:\//]+/g, "_");
         s = s.replace(/_+$/,'');
+        s = s.replace(/'/,'');	
         s = s.replace(/^_+/,'');	
 //        s = s.trim().replace(/ /g,"_");
         return s;
