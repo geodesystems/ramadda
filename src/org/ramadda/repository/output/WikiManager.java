@@ -4480,6 +4480,7 @@ public class WikiManager extends RepositoryManager
 		    else
 			content.append(HU.center(href));
                 }
+
 		String theContent;
 		if(flipCards) {
 		    String url = getEntryManager().getEntryUrl(request, child);
@@ -6610,6 +6611,8 @@ public class WikiManager extends RepositoryManager
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
         boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", true);
 	boolean showDescription = getProperty(wikiUtil, props,"showDescription", false)	;
+	boolean showTextTop = getProperty(wikiUtil, props,   "showTextTop", true);
+	String suffix=null;
         if (showSnippet || showSnippetHover || showDescription) {
             String snippet = showDescription? entry.getDescription():getSnippet(request, entry, false,null);
             if (Utils.stringDefined(snippet)) {
@@ -6617,7 +6620,11 @@ public class WikiManager extends RepositoryManager
                                       wikiUtil.getNotTags());
 
                 if (showSnippet) {
-                    HU.div(card, snippet,"");
+		    if(showTextTop) {
+			HU.div(card, snippet,"");
+		    } else {
+			suffix = HU.div(snippet,"");
+		    }
                 } else if (showSnippetHover) {
                     HU.div(card, snippet, HU.cssClass("ramadda-snippet-hover")+HU.attr("hover-target",cardId));
                 }
@@ -6713,6 +6720,10 @@ public class WikiManager extends RepositoryManager
                 addImagePopupJS(request, wikiUtil, card, props);
             }
         }
+
+	if(suffix!=null) {
+	    card.append(suffix);
+	}
 
         HU.close(card, HU.TAG_DIV,HU.TAG_DIV);
         return card.toString();
