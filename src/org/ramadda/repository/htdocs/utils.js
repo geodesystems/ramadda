@@ -5050,6 +5050,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],col);
     },    
 
+    toggleDarkMode:function() {
+	let body = $('body');
+	if(body.hasClass(CLASS_THEME_DARK)) {
+	    jqid('darkmodetoggle').html(HU.getIconImage('fa-regular fa-moon'));
+	    body.removeClass(CLASS_THEME_DARK);
+	} else {
+	    jqid('darkmodetoggle').html(HU.getIconImage('fa-solid fa-moon'));
+	    body.addClass(CLASS_THEME_DARK);
+	}
+    },
+
 
     leftRight: function(left, right, leftWeight, rightWeight) {
         if (leftWeight == null) leftWeight = "6";
@@ -7455,8 +7466,4 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
-
-
-
-
 

@@ -3422,7 +3422,7 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-body {
-    background:#fff;
+    background:var(--theme-background-color);
     font-size:80%;
 }
 

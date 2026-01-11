@@ -18,7 +18,7 @@
 
 .ramadda-header-floating .ramadda-navbar, .ramadda-header .ramadda-navbar,
 .ramadda-header-floating .ramadda-link-bar, .ramadda-header .ramadda-link-bar {
-    background:#fff;
+    background:var(--theme-background-color);
     border-radius:var(--default-radius);
     border:var(--basic-border);
     margin:4px;

@@ -66,13 +66,37 @@
 }
 
 
+/*  dark mode  */
+.ramadda-theme-dark  {
+    --theme-background-color: #121212;
+    --theme-color:#fff;
+    --theme-text-color:#fff;
+    --theme-href-color:#fff;
+    --theme-border:1px #ddd solid;
+    --basic-border:var(--theme-border);
+    .ramadda-clickable {
+	color:var(--theme-color);
+    }
+    .entry-table-header-column {
+	color:#000;
+    }
+    img {
+	background:#fff;
+    }
+}
+
+
+
+
+
+
 @view-transition {
     navigation: auto;
 }
 
 body {
     background:var(--theme-background-color);
-    color:var(--theme-text-color);
+    color:var(--theme-text-color) !important;
     position:relative;
     font-family: var(--font-family);
     font-size: var(--font-size) !important;
@@ -94,7 +118,9 @@ textarea, input {
 }
 
 select, input, password, .fileinput, textarea {
-    border  :var(--basic-border);
+    border:1px #ccc solid;
+    /*border:var(--basic-border);*/
+/*    background:var(--theme-input-background);*/
 }
 
 
@@ -183,7 +209,6 @@ input:focus, textarea:focus, .ramadda-search-input:focus {
 }
 
 select {
-    background:#fff;
     padding:3px;
     width:auto;
 }
@@ -859,7 +884,7 @@ i.fa, i.fas,i.fab {
     color:#aaa;
     font-size:var(--font-size);
 }
-
+
 .ramadda-nav-horizontal .ramadda-links a {
     display:inline-block;
     width:100%;
@@ -3070,10 +3095,17 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-table  {
-    border: var(--basic-border);
+    border:var(--theme-border);
     border-top:0px transparent solid;
-    background:#fff;
+    background:var(--theme-background-color);
 }
+
+.entry-table-noheader {
+    border-bottom : 1px #d8d8d8 solid;
+    border-bottom:var(--theme-border);
+}
+
+
 
 .entry-table-form-header  {
     padding:6px;
@@ -3095,9 +3127,6 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     margin-right:6px !important;
 }
 
-.entry-table-noheader {
-    border-bottom : 1px #d8d8d8 solid;
-}
 
 .entry-table-row  a {
     text-decoration:none;
@@ -3110,7 +3139,7 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 
 .entry-table-row-data {
     margin-top:0px;
-    border-bottom:1px #f0f0f0 solid;
+    border-bottom:var(--theme-border);
     border-top:1px transparent solid;    
 }
 
@@ -4322,7 +4351,7 @@ a.btn-primary:link, a.btn-primary  {
     border-radius: 4px;
     z-index:1000;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-    background-color : #FFF;
+    background-color:var(--theme-background-color);
 }
 
 .ramadda-popup-dialog {
@@ -6339,7 +6368,7 @@ a.toggleblocklabellink:visited {
     font-weight: bold;
     text-align:right;
     vertical-align: top;
-    color: #000;
+    color:var(--theme-text-color);
 }
 
 .formtable-fullwidth .formlabel, .formtable-fullwidth .formlabeltop {
