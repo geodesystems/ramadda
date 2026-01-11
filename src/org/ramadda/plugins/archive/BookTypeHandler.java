@@ -6,6 +6,7 @@
 package org.ramadda.plugins.archive;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.importer.CsvImporter;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
@@ -33,9 +34,13 @@ public class BookTypeHandler extends GenericTypeHandler  {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
 	super.initializeNewEntry(request, entry, newType);
-	if(!isNew(newType)) return;
-	if(!request.get("initisbn",false)) return;
+	if(!CsvImporter.isMine(request)) {
+	    if(!isNew(newType)) return;
+	    if(!request.get("initisbn",false)) return;
+	}
+			   
 	String isbn = entry.getStringValue(request,"isbn",null);
+	System.err.println(isbn);
 	if(!stringDefined(isbn)) return;
 
 	try {
@@ -71,7 +76,7 @@ public class BookTypeHandler extends GenericTypeHandler  {
 		getMetadataManager().addThumbnailUrl(request, entry,state.thumb,state.thumbName,state.thumbCredit);
 	    }
 	    if(state.cnt==0) {
-		getSessionManager().addSessionMessage(request, "No ISBN information found");
+		getSessionManager().addSessionMessage(request, "No ISBN information found for book:" + entry.getName());
 	    }
 
 	} catch(Exception exc) {
