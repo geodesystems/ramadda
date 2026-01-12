@@ -622,7 +622,7 @@ public class PageHandler extends RepositoryManager {
         }
 
         StringBuilder extra = new StringBuilder();
-	String userLinkTemplate =HU.href("${url}","${label}",HU.attrs("class","ramadda-user-link"));
+	String userLinkTemplate =HU.href("${url}","${label}",HU.attrs("class","ramadda-clickable ramadda-user-link"));
 	//	String userLinkTemplate =HU.div("${label}",HU.onMouseClick("${url}") +HU.attrs("class","ramadda-user-link"));	
 	List<String> allLinks = new ArrayList<String>();
         List<String> navLinks = null;

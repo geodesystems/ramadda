@@ -295,6 +295,7 @@ var Utils =  {
         Utils.loadFunctions.forEach(f=>{
             f();
         });
+//	HU.toggleDarkMode();
     },
 
     addLoadFunction: function(f) {

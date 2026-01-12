@@ -7,20 +7,15 @@
     --theme-page-title-color:var(--theme-color);
     --theme-heading-color:var(--theme-color);
     --theme-heading-weight:400;
-
     --theme-border:1px #ddd solid;
-    --basic-border:1px #ddd solid;
 
+    --basic-border:1px #ddd solid;
     --font-size:12pt;
     --font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-
-
-
     --default-radius:6px;
     --line-border:1px #eee solid;
     --light-border:1px rgb(239, 243, 244) solid;    
     --highlight-border:1px #aaa solid;
-
     --nav-color:#000;
     --nav-link-color:#000;
     --highlight-color:#0074D9;
@@ -28,7 +23,6 @@
     --highlight-background: #f4f4f4;
     --header-background:  #eaeaea;
     --href-decoration:underline;
-    --href-color: var(--theme-href-color);
     --color-mellow-yellow:#fffeec;
     --nav-hover-color:var(--highlight-color);
 
@@ -66,24 +60,6 @@
 }
 
 
-/*  dark mode  */
-.ramadda-theme-dark  {
-    --theme-background-color: #121212;
-    --theme-color:#fff;
-    --theme-text-color:#fff;
-    --theme-href-color:#fff;
-    --theme-border:1px #ddd solid;
-    --basic-border:var(--theme-border);
-    .ramadda-clickable {
-	color:var(--theme-color);
-    }
-    .entry-table-header-column {
-	color:#000;
-    }
-    img {
-	background:#fff;
-    }
-}
 
 
 
@@ -119,8 +95,6 @@ textarea, input {
 
 select, input, password, .fileinput, textarea {
     border:1px #ccc solid;
-    /*border:var(--basic-border);*/
-/*    background:var(--theme-input-background);*/
 }
 
 
@@ -129,7 +103,7 @@ select, input, password, .fileinput, textarea {
     background:var(--color-mellow-yellow);
     padding:10px;
     border-radius:var(--default-radius);
-    border  :var(--basic-border);
+    border:var(--basic-border);
     margin-top:1em;
     margin-bottom:1em;
 }
@@ -488,7 +462,7 @@ ramadda-heading, .ramadda-page-heading {
 p {margin-top:1em;}
 
 a {
-    color: var(--href-color);
+    color: var(--theme-href-color);
     text-decoration: var(--href-decoration);
 }
 
@@ -567,7 +541,6 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
     padding:4px;
     border:var(--basic-border);
-    
     border-radius:var(--default-radius);
 }
 
@@ -4463,11 +4436,11 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup, .ramadda-popup a:visited, .ramadda-popup a {
-    color:black;
+    color:var(--theme-href-color);
 }
 
 .ramadda-popup-link {
-    color:black;
+    color:var(--theme-href-color);
 }
 
 .ramadda-popup-close {
@@ -7605,3 +7578,22 @@ h3 a:visited {
     }
 }
 
+
+/*  dark mode  */
+.ramadda-theme-dark  {
+    --theme-background-color: #121212;
+    --theme-color:#fff;
+    --theme-text-color:#fff;
+    --theme-href-color:#fff;
+    --theme-border:1px #ddd solid;
+    --basic-border:var(--theme-border);
+    .ramadda-clickable {
+	color:var(--theme-color);
+    }
+    .entry-table-header-column {
+	color:#000;
+    }
+    img {
+	background:#fff;
+    }
+}
