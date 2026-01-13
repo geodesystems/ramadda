@@ -4863,6 +4863,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    features.forEach(feature=>{
 		if(!feature.geometry) return;
 		let geom  = feature.geometry.getVertices();
+		if(!geom) return;
 		vertices.push(...geom);
 	    });
 	    let step = 0;
@@ -4878,7 +4879,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		//Make a copy since this if there is a shared point it screws up the redraw of the original feature
                 pt = MapUtils.createPoint(pt.x,pt.y);
-		let dot = MapUtils.createVector(pt,null,this.DOT_STYLE);
+		let style = this.DOT_STYLE;
+		if(vertices.length==1) {
+		    style = $.extend({},style);
+		    style.pointRadius=12;
+		    style.fillColor='rgba(0,0,0,0.5)';
+		}
+		let dot = MapUtils.createVector(pt,null,style);
 		mapGlyph.selectDots.push(dot);
 		pointCount++;
 	    });
