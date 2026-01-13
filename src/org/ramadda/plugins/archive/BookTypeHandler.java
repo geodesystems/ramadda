@@ -40,9 +40,7 @@ public class BookTypeHandler extends GenericTypeHandler  {
 	}
 			   
 	String isbn = entry.getStringValue(request,"isbn",null);
-	System.err.println(isbn);
 	if(!stringDefined(isbn)) return;
-
 	try {
 	    State state = new State();
 	    try {
