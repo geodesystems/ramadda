@@ -1,4 +1,4 @@
-<types supercategory="Geoscience" category="Borehole Data">
+<types supercategory="Geoscience" category="Core Data">
 
 <!-- project and site -->
 <import resource="type_borehole_project.xml"/>

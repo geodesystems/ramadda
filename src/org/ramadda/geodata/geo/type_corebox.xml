@@ -2,7 +2,7 @@
   <type  name="type_geo_corebox_csv"  description="Geo Corebox CSV"
 	 handler="org.ramadda.data.services.PointTypeHandler"
 	 pattern=".*corebox.cblog"
-	 super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
+	 super="type_point"  supercategory="Geoscience"  category="Core Data" >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />
@@ -36,7 +36,7 @@ csvcommands1=-tab,-skiplines,1
        handler="org.ramadda.repository.type.TypeHandler"
        priority="50"
        pattern=".*corebox.json"
-       supercategory="Geoscience"  category="Borehole Data" >
+       supercategory="Geoscience"  category="Core Data" >
 
 <!-- Properties-->
 <property  name="icon"  value="/geo/drilling-rig.png" />

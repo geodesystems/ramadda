@@ -4,7 +4,7 @@
       description="Borehole Log File"
       foruser="false"
       supercategory="Geoscience" 
-      category="Borehole Data" 
+      category="Core Data" 
       handler="org.ramadda.geodata.geo.BoreholeTypeHandler"
       metadata="geo_stratigraphy,geo_measurement"
       >      
@@ -17,7 +17,7 @@
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
   <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true"
-	  group="Borehole Metadata"	  
+	  group="Core Metadata"	  
 	  suffix="meters" default="NaN"
 	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"/>
   <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true"

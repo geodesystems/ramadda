@@ -1,4 +1,5 @@
 <type name="type_borehole_wellcad"
+      supercategory="Geoscience"  category="Core Data"
       super="type_borehole_base"
       description="WellCAD Log File"
       pattern=".*\.wcl">

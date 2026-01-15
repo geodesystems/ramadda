@@ -1,6 +1,7 @@
 <type name="type_borehole_dlis"
       super="type_borehole_base"
       description="Digital Log Interchange Standard"
+      supercategory="Geoscience"  category="Core Data"
       pattern=".*\.dlis">            
   <property name="icon" value="/geo/dlis.png"/>
 </type>

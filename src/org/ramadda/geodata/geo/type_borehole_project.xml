@@ -1,4 +1,4 @@
-<types supercategory="Geoscience" category="Borehole Data">
+<types supercategory="Geoscience" category="Core Data">
   <type name="type_geo_project"
 	description="Geo Project" 
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  

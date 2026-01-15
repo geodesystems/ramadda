@@ -8,7 +8,7 @@ into some types.xml file
  description="Multi-Sensor Core Logging" 
  super="type_borehole_point" 
  supercategory="Geoscience" 
- category="Borehole Data" 
+ category="Core Data" 
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
