@@ -1223,6 +1223,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showArrow) {
 			tds.push(HU.span(['innerid',innerId,
 					  ATTR_ENTRYID,entry.getId(),
+					  'parentid',id,
 					  ATTR_TITLE,'Click to show contents',
 					  ATTR_CLASS,
 					  HU.classes(CLASS_ENTRY_TABLE_ROW_TOGGLE,'entry-table-widget',CLASS_CLICKABLE)],
@@ -1357,26 +1358,26 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
 
-	container.find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE)).click(function() {
-	    let entryId = $(this).attr(ATTR_ENTRYID);
-	    let innerId = $(this).attr('innerid');	    
+	let toggle = (selector) =>{
+	    let entryId = selector.attr(ATTR_ENTRYID);
+	    let innerId = selector.attr('innerid');	    
 	    let inner = jqid(innerId);
-	    let filled = $(this).attr('filled');
-	    let open = $(this).attr(ATTR_OPEN);
-	    $(this).html(_this.getToggleIcon(!open));
+	    let filled = selector.attr('filled');
+	    let open = selector.attr(ATTR_OPEN);
+	    selector.html(_this.getToggleIcon(!open));
 	    if(filled) {
 		if(open) {
 		    inner.hide();
-		    $(this).attr(ATTR_OPEN,false);	    
+		    selector.attr(ATTR_OPEN,false);	    
 		} else {
 		    inner.show();
-		    $(this).attr(ATTR_OPEN,true);	    
+		    selector.attr(ATTR_OPEN,true);	    
 		}
 		return;
 	    }
 	    let entry = entryMap[entryId];
-	    $(this).attr('filled',true);
-	    $(this).attr(ATTR_OPEN,true);	    
+	    selector.attr('filled',true);
+	    selector.attr(ATTR_OPEN,true);	    
 	    let url = HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
 			     ARG_OUTPUT,'json',
 			     'includeproperties','false',
@@ -1433,6 +1434,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 		HU.handleNewContent(jqid(innerId));
 	    });
+
+	}
+
+	container.find(HU.dotClass(CLASS_ENTRY_TABLE_ROW_TOGGLE)).click(function(event) {
+	    toggle($(this));
 	});
 
 

@@ -1140,7 +1140,11 @@ public class EntryManager extends RepositoryManager {
 
 
 		icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
-		HU.formEntry(sb,"Type ID:", icon+HU.space(1)+typeHandler.getType());
+		String searchLink = HU.href(getSearchManager().getTypeSearchUrl(typeHandler),
+					    HU.getIconImage(ICON_SEARCH));
+
+		HU.formEntry(sb,"Type ID:", searchLink+HU.space(1) +
+			     icon+HU.space(1)+typeHandler.getType());
 
 		String pattern = typeHandler.getFilePattern();
 		if(stringDefined(pattern)) 
@@ -1224,7 +1228,11 @@ public class EntryManager extends RepositoryManager {
 					     parentIcon+HU.space(1) +
 					     parent.getDescription(),HU.attrs("title",parent.getType()));
 		    }
-		    sb.append(HU.tr(HU.td(HU.href(url,icon+" "+  typeHandler.getDescription()))+
+		    String searchLink = HU.href(getSearchManager().getTypeSearchUrl(typeHandler),
+					  HU.getIconImage(ICON_SEARCH));
+		    sb.append(HU.tr(HU.td(searchLink +HU.space(1) +
+					  HU.href(url,icon+" "+  typeHandler.getDescription(),
+						  HU.attrs("title","Details"))) +
 				    HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
 				    HU.td(parentHtml) +
 				    HU.td(category),

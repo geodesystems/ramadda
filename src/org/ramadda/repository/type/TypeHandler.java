@@ -6817,7 +6817,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String getCategory() {
-        if (Misc.equals(this.category, CATEGORY_DEFAULT)
+        if (
+	    (Misc.equals(this.category, CATEGORY_DEFAULT) ||
+	     !stringDefined(this.category))
 	    && (parent != null)) {
             return parent.getCategory();
         }
@@ -6826,7 +6828,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String getSuperCategory() {
-        if ((this.superCategory.length() == 0) && (parent != null)) {
+        if (!stringDefined(superCategory) && parent != null) {
             return parent.getSuperCategory();
         }
 
