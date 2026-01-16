@@ -4847,6 +4847,9 @@ public class WikiManager extends RepositoryManager
 
             String text = entry.getTypeHandler().getTextForWiki(request,
 								entry, props);
+	    if(!stringDefined(text)) {
+		text = entry.getTypeHandler().getWikiTemplate(request, entry);
+	    }
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
 						 null, HU.getUniqueId(""), text, null, !showToolbar,
 						 0,true,
