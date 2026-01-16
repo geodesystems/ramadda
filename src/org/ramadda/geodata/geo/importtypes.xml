@@ -25,7 +25,7 @@
 
 <import resource="type_core_cml.xml"/>
 <import resource="type_core_car.xml"/>
-<import resource="type_core_psicat.xml"/>
+<import resource="type_core_psicat_scheme.xml"/>
 
 
 

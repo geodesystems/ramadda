@@ -1,0 +1,28 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_psicat_scheme.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_psicat_scheme" 
+ description="PSICAT Scheme" 
+ super="type_borehole_base" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+pattern=".*\.car"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}                                                                             
+{{description wikify="true"}}                                                                       
+{{information}}                                                                                     
+:heading Contents                                                                                   
+{{zipfile}}                                                                                         
+-section]]></wiki>
+</type>
+</types>
