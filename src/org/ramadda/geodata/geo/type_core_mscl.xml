@@ -1,10 +1,9 @@
 <!-- 
 Since this is for import add a:
-<import resource="type_borehole_mscl.xml"/>
+<import resource="type_core_mscl.xml"/>
 into some types.xml file
 -->
-<types>
-<type  name="type_borehole_mscl" 
+<type  name="type_core_mscl" 
  description="Multi-Sensor Core Logging" 
  super="type_borehole_point" 
  supercategory="Geoscience" 
@@ -102,6 +101,4 @@ The group tag keeps the scatter plots separate from the above filters
 {{seesv}}
 -section]]></wiki>
 </type>
-<type  name="type_geo_mscl" description="Old MSCL Type" foruser="false" super="type_borehole_mscl"/>
 
-</types>

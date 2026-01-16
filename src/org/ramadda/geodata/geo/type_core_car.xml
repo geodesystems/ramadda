@@ -1,0 +1,19 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_car.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_car" 
+ description="Corelyzer Archive" 
+ super="type_borehole_base" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+pattern=".*\.car"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+</type>
+</types>

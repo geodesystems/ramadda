@@ -8,7 +8,7 @@
 
 <!-- Point types -->
 <import resource="type_borehole_point.xml"/>
-<import resource="type_borehole_mscl.xml"/>
+<import resource="type_core_mscl.xml"/>
 <import resource="type_borehole_log.xml"/>
 <import resource="type_borehole_las.xml"/>
 <import resource="type_borehole_xrf.xml"/>
@@ -22,6 +22,12 @@
 <import resource="type_borehole_dlis.xml"/>
 <import resource="type_borehole_wellcad.xml"/>
 <import resource="type_borehole_fieldplot.xml"/>
+
+<import resource="type_core_cml.xml"/>
+<import resource="type_core_car.xml"/>
+<import resource="type_core_psicat.xml"/>
+
+
 
 <!-- Prediktera Breeze metadata -->
 <import resource="type_breeze.xml"/>

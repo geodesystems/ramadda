@@ -1,7 +1,7 @@
 
 <type name="type_borehole_point"
       super="type_point"
-      description="Borehole Log File"
+      description="Core Data File"
       foruser="false"
       supercategory="Geoscience" 
       category="Core Data" 
