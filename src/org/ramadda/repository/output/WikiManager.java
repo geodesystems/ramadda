@@ -4999,7 +4999,9 @@ public class WikiManager extends RepositoryManager
             boolean showRoot = getProperty(wikiUtil, props, "showroot",
                                            false);
             boolean showSize = getProperty(wikiUtil, props, "showSize",
-                                           false);	    
+                                           false);
+            boolean showType = getProperty(wikiUtil, props, "showType",
+                                           false);	    	    
             boolean showIcon = getShowIcon(wikiUtil, props, false);
             List<String> types = Utils.split(getProperty(wikiUtil,
 							 props, "types", ""), ",", true, true);
@@ -5013,7 +5015,7 @@ public class WikiManager extends RepositoryManager
 	    long[]size={0};
 	    int count =
 		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
-			   style, labelWidth, addPrefix, "", showRoot, showIcon, showSize,size,depth, types, sb,0);
+			   style, labelWidth, addPrefix, "", showRoot, showIcon, showType, showSize,size,depth, types, sb,0);
 	    sb.append(HU.close("span"));
 	    if(doMenu) {
 		HU.script(sb, "$('#" +menuId+"').menu();\n");
@@ -6479,7 +6481,8 @@ public class WikiManager extends RepositoryManager
 			   int labelWidth,
 			   boolean addPrefix,
 			   String prefix, boolean showRoot,
-			   boolean showIcon, boolean showSize,
+			   boolean showIcon, boolean showType,
+			   boolean showSize,
 			   long[]size,
 			   int depth, List<String> types,
 			   Appendable sb,int count)
@@ -6494,11 +6497,16 @@ public class WikiManager extends RepositoryManager
 	    String corpus = entry.getTypeHandler().getType();
 	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
-	    if(showIcon)
-		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE + label;
+	    if(showIcon) {
+		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE +
+		    (showType?"("+entry.getTypeHandler().getDescription()+")" +HU.SPACE:"") +
+		    label;
+	    }
             String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label, HU.attrs("class","ramadda-tree-link"));
 	    if(addPrefix) link = prefix +" " + link;
 	    if(asMenu) link = HU.div(link);
+
+
 	    long fileSize = entry.getResource().getFileSize();
 	    size[0]+=fileSize;
 	    if(showSize) {
@@ -6553,7 +6561,7 @@ public class WikiManager extends RepositoryManager
                             : "") + (cnt++);
                 count = doFullTree(request,  wikiUtil, originalEntry, child, props,
 				   false, asMenu, null,			   
-				   style, labelWidth, addPrefix, p, showRoot, showIcon, showSize, size,depth, types,
+				   style, labelWidth, addPrefix, p, showRoot, showIcon, showType,showSize, size,depth, types,
 				   sb,count);
 	    }
 	    if(addedUl) {

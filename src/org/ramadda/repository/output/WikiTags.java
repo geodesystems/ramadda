@@ -117,6 +117,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "addprefix","false",
 					    "showroot","true",
 					    "#showSize","true",
+					    "#showTrue","true",					    
 					    "#labelWidth","40",
 					    ATTR_SHOWICON,"true",
 					    "#types","group,file,...."),
