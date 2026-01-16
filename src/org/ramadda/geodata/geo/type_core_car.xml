@@ -13,6 +13,7 @@ pattern=".*\.car"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/drilling-rig.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
 </type>
