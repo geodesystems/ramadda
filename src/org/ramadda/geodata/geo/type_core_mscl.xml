@@ -3,6 +3,7 @@ Since this is for import add a:
 <import resource="type_core_mscl.xml"/>
 into some types.xml file
 -->
+<types>
 <type  name="type_core_mscl" 
  description="Multi-Sensor Core Logging" 
  super="type_borehole_point" 
@@ -11,7 +12,6 @@ into some types.xml file
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="icon"  value="/geo/drilling-rig.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="false" />
 <property  name="form.properties.show"  value="false" />
@@ -35,7 +35,7 @@ csvcommands7=^$,NaN,-addheader,section.type enumeration  surface_depth.unit M
 :rem The navtop stands for navigation top - this shows the link to the Information section below
 :navtop
 :rem Only show at most 10000 records
-{{property max=20000}}
+{{property max=10000}}
 
 :rem The group tag groups the display tag. We can have properties in the group that get in inherited by all of the displays
 {{group 
@@ -101,4 +101,4 @@ The group tag keeps the scatter plots separate from the above filters
 {{seesv}}
 -section]]></wiki>
 </type>
-
+</types>
