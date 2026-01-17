@@ -6,8 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.docs;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.*;
 import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
+import org.ramadda.data.point.text.CsvFile;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.data.services.PointTypeHandler;
 
@@ -98,13 +100,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-        makeConvertForm(request, entry, sb, new Hashtable());
+        makeSeesvForm(request, entry, sb, new Hashtable());
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result(entry.getName() +" - Seesv Form" , sb);
     }
 
-    public void makeConvertForm(Request request, Entry entry,
+    public void makeSeesvForm(Request request, Entry entry,
                                 StringBuilder sb, Hashtable props)
             throws Exception {
 
@@ -130,6 +132,21 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	if (!Utils.stringDefined(lastInput)) {
 	    lastInput = (String) entry.getValue(request,"convert_commands");
 	}
+
+	TypeHandler typeHandler = entry.getTypeHandler();
+	if(!Utils.stringDefined(lastInput)) {
+	    Hashtable properties =((PointTypeHandler)typeHandler).getRecordProperties(entry); 
+	    if(properties!=null) {
+		properties.put("entry",entry);
+		CsvFile csvFile = new CsvFile(properties);
+		lastInput =  csvFile.getCsvCommandsText();
+	    }
+
+	    //	} catch(Exception ignore) {
+	    //	}
+
+	}
+
 
         if (lastInput != null) {
             //A hack but escaping the escapes in java is a pain

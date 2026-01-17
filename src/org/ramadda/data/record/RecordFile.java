@@ -100,7 +100,6 @@ public abstract class RecordFile {
 
     public RecordFile(Hashtable properties) {
         this.properties = properties;
-
     }
 
     public RecordFile(IO.Path path, Hashtable properties) {

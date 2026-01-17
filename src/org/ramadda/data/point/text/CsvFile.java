@@ -67,6 +67,10 @@ public class CsvFile extends TextFile {
         super(path, properties);
     }
 
+    public CsvFile(Hashtable properties) throws IOException {
+        super(properties);
+    }    
+
     public CsvFile(IO.Path path, RecordFileContext context,
                    Hashtable properties) {
         super(path, context, properties);
@@ -132,13 +136,55 @@ public class CsvFile extends TextFile {
         if (appendCnt == 0) {
             return args;
         }
-        csvCommands = commands.toString().trim().replaceAll("\\\\,",
-                "_comma_");
+        csvCommands = commands.toString().trim().replaceAll("\\\\,","_comma_");
         for (String arg : Utils.split(csvCommands, ",")) {
             args.add(arg.replaceAll("_comma_", ",").replaceAll("_csvcommandspace_"," "));
         }
         return args;
     }
+
+    public String getCsvCommandsText() throws Exception {
+        StringBuilder commands  = new StringBuilder();
+        String c = getProperty("csvcommands",
+                                         getProperty("point.csvcommands",
+                                             (String) null));
+	c = convertCsvCommands(c);
+        if (Utils.stringDefined(c)) {
+	    c = c.replaceAll("\\\\,","_comma_");
+	    for (String arg : Utils.split(c, ",")) {
+		arg = arg.replace("_comma_",",").trim();
+		if(arg.startsWith("$") || arg.length()==0  || arg.indexOf(" ")>=0) arg = "\"" + arg +"\"";
+		if(arg.startsWith("-")) {
+		    commands.append("\n");
+		}
+		commands.append(arg);
+		commands.append(" ");
+	    }
+        }
+        int commandCnt = 1;
+        while (true) {
+            c = getProperty("csvcommands" + (commandCnt++),
+			    (String) null);
+            if ( !Utils.stringDefined(c)) {
+                break;
+            }
+	    c = convertCsvCommands(c);
+	    c = c.replaceAll("\\\\,","_comma_");
+	    for (String arg : Utils.split(c, ",")) {
+		arg = arg.replace("_comma_",",");
+		if(arg.startsWith("$") || arg.length()==0  || arg.indexOf(" ")>=0) arg = "\"" + arg +"\"";
+		if(arg.startsWith("-")) {
+		    commands.append("\n");
+		}
+		    
+		commands.append(arg);
+		commands.append(" ");
+	    }
+        }
+	return commands.toString();
+    }
+
+
 
     public boolean shouldCreateCsvFile() {
         return false;

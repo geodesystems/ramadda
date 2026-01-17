@@ -947,11 +947,12 @@ public class PointTypeHandler extends RecordTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
+
         ConvertibleOutputHandler coh =
             (ConvertibleOutputHandler) (ConvertibleOutputHandler) getRepository()
                 .getOutputHandler(ConvertibleOutputHandler.class);
         StringBuilder sb = new StringBuilder();
-        coh.makeConvertForm(request, entry, sb,props);
+        coh.makeSeesvForm(request, entry, sb,props);
 
         return sb.toString();
     }

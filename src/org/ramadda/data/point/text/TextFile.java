@@ -45,6 +45,10 @@ public abstract class TextFile extends PointFile {
 
     public TextFile() {}
 
+    public TextFile(Hashtable properties) throws IOException {
+        super(properties);
+    }    
+
     public TextFile(IO.Path path) throws IOException {
         super(path);
     }

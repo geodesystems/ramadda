@@ -78,6 +78,14 @@ public abstract class PointFile extends RecordFile
 
     public PointFile() {}
 
+
+    public PointFile(Hashtable properties)
+            throws IOException {
+        super(properties);
+    }
+
+
+
     public PointFile(IO.Path path) throws IOException {
         super(path);
     }
