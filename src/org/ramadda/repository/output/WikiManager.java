@@ -3212,6 +3212,7 @@ public class WikiManager extends RepositoryManager
 		    formatted= XU.toString(root);
 		    formatted = formatted.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		    formatted = formatted.replaceAll("\n\n+","\n");
+		    formatted = formatted.replaceAll("  "," ");
 		} catch(Exception exc) {
 		    System.err.println("Error processing xml for entry:" + entry +" error: " + exc);
 		    System.err.println("xml:" + txt.substring(0,100));
