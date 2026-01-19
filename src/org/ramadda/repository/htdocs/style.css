@@ -546,6 +546,23 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 
 
+.ramadda-map-layer-item {
+    white-space:nowrap;
+}
+
+.ramadda-map-layer-item .labelSpan {
+    display:inline-block;
+    width:90%;
+    font-size:8pt;
+    padding-left:1.75em;
+
+}
+
+.ramadda-map-layer-item .labelSpan:hover {
+    background:var(--highlight-background);
+}
+
+
 .ramadda-map-bubble a {
     text-decoration: underline !important;
 }
