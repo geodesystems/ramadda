@@ -77499,9 +77499,14 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 
                 var groupDiv = (baseLayer) ? this.baseLayersDiv
                                            : this.dataLayersDiv;
-                groupDiv.appendChild(inputElem);
-                groupDiv.appendChild(labelSpan);
-                groupDiv.appendChild(br);
+		//jeffmc: wrap this in a div
+		var itemDiv = document.createElement('div');
+                OpenLayers.Element.addClass(itemDiv, "ramadda-map-layer-item");
+                groupDiv.appendChild(itemDiv);
+
+                itemDiv.appendChild(inputElem);
+                itemDiv.appendChild(labelSpan);
+//                groupDiv.appendChild(br);
             }
         }
 
