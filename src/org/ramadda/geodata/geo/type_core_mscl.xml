@@ -40,7 +40,7 @@ csvcommands7=^$,NaN,-addheader,section.type enumeration  surface_depth.unit M
 :rem The group tag groups the display tag. We can have properties in the group that get in inherited by all of the displays
 {{group 
 filterFields="section" section.filterIncludeAll=false hideFilterWidget=true 
-indexField=depth  marginTop=10   marginRight=10 yAxisReverse=true showLegend=false showMenu=true}}
+indexField=section_depth  marginTop=10   marginRight=10 yAxisReverse=true showLegend=false showMenu=true}}
 +skip
 Any display can show filters and the filter values are shared with the other displays in the group
 We use the display_filter here so there is one set of widgets shown to the user
