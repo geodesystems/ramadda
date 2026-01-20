@@ -3,6 +3,10 @@ var ID_CT_BULKTEXT='bulktext';
 var ID_CT_TYPEID ='typeid';
 var ID_CT_SUPER ='supertype';
 var ID_CT_TYPENAME ='typename';
+var ID_CT_CATEGORY ='category';
+var ID_CT_SUPERCATEGORY ='supercategory';
+var ID_CT_ICON='icon';
+var ID_CT_HANDLER_EXTRA='handler_extra';
 
 
 
@@ -20,9 +24,10 @@ var CreateType  = {
 //	let formData = json ?? Utils.getLocalStorage(storageKey,true);
 	let formData = json ?? null;
 	let form = jqid(formId);
+	jqid('headerbuttons').append(HU.span([ATTR_CLASS,'ct_bulkupload'],'Bulk Upload'));
 	jqid('colbuttons').append(HU.buttons([
 	    HU.span([ATTR_ID,'clearcols'],'Clear'),
-	    HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'),
+	    HU.span([ATTR_CLASS,'ct_bulkupload'],'Bulk Upload'),
 	    HU.span([ATTR_ID,'textdownload'],'Download Text')]));
 	_this.currentColumn = null;
 	this.columns = [];
@@ -99,9 +104,8 @@ var CreateType  = {
 	    }
 	    Utils.makeDownloadFile('columns.txt',text);
 	});
-	jqid("bulkupload").button().click(function(){
+	$('.ct_bulkupload').button().click(function(){
 	    let html = 'Enter columns, one per line. "name,label,type,extra"';
-	    html+=SPACE2+HU.checkbox('clearrows',[ATTR_ID,'clearrows'],true,'Clear all rows');
 	    if(_this.currentColumn) {
 		html+=HU.br()+HU.checkbox('insertabove',[ATTR_ID,'insertabove'],
 					  false,'Insert above selected row' +' ' + _this.currentColumn.name.val());
@@ -115,6 +119,11 @@ var CreateType  = {
 
 	    let buttons = HU.buttons(buttonList);
 	    html+=HU.textarea(ID_CT_BULKTEXT,'',[ATTR_ID,ID_CT_BULKTEXT,'rows',10,'cols',60]);
+	    html+=HU.div([],
+			 HU.checkbox('bulk_force',[ATTR_TITLE,'Override any values',ATTR_ID,'bulk_force'],
+				     false,'Force Override') +SPACE2 +			 
+			 HU.checkbox('clearrows',[ATTR_ID,'clearrows'],true,'Clear all rows') +SPACE);
+
 	    html+=buttons;
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600)),
 			   ATTR_CLASS,'ramadda-license-dialog'], html);
@@ -310,20 +319,73 @@ var CreateType  = {
 	    }
 	}
 	v =v.replace(/\\\n/, " ");
+	let fields  =
+	    [ID_CT_CATEGORY,
+	     ID_CT_SUPERCATEGORY,		  
+	     ID_CT_ICON,
+	     ['handler',ID_CT_HANDLER_EXTRA],		  
+	     ['type',ID_CT_TYPEID],
+	     ['super',ID_CT_SUPER],
+	     ['name',ID_CT_TYPENAME]];
+	
+
+	let force = HU.isChecked(jqid('bulk_force'));
+	let props = [[],[]];
+	let propIdx =-1;
+
 	let lines = Utils.split(v,'\n',true,true).filter(line=>{
-	    line = line.trim();
 	    let ok = true;
-	    [['type',ID_CT_TYPEID],['super',ID_CT_SUPER],['name',ID_CT_TYPENAME]].forEach(tuple=>{
-		if(line.startsWith(tuple[0]+':')) {
-		    if(!Utils.stringDefined(jqname(tuple[1]).val())) {
-			jqname(tuple[1]).val(line.substring((tuple[0]+':').length).trim());
+	    if(line=='<attributes>') {
+		propIdx=0;
+		return;
+	    } else if(line=='</attributes>') {
+		propIdx=-1;
+		return;
+	    } else   if(line=='<properties>') {
+		propIdx=1;
+		return;
+	    } else if(line=='</properties>') {
+		propIdx=-1;
+		return;
+	    }	    
+	    if(propIdx>=0) {
+		props[propIdx].push(line);
+		return;
+	    }
+	    
+	    fields.forEach(tuple=>{
+		let prefix =(Array.isArray(tuple)?tuple[0]:tuple).trim();
+		if(line.startsWith(prefix+':')) {
+		    let name =(Array.isArray(tuple)?(tuple.length==1?tuple[0]:tuple[1]):tuple).trim();		
+		    let nameField  = jqname(name);
+//		    console.log('line:'+ line +' field name:' + name +' ' + nameField.length);
+		    if(nameField.length==0) {
+			alert('field not found:' + name);
+			return false;
 		    }
 		    ok= false;
+		    if(force || !Utils.stringDefined(nameField.val())) {
+			nameField.val(line.substring((prefix+':').length).trim());
+		    }
 		}
 	    });
 	    if(!ok) return false;
+	    console.log('line:'+ line);
 	    return !line.startsWith('#') && line.length>0;
 	});
+	if(props[0].length) {
+	    let textArea =    jqname('extraattributes');
+	    if(force || !Utils.stringDefined(textArea.val())) {
+		textArea.val(Utils.join(props[0],'\n'));
+	    }
+	}
+	if(props[1].length) {
+	    let textArea =    jqname('properties');
+	    if(force || !Utils.stringDefined(textArea.val())) {
+		textArea.val(Utils.join(props[1],'\n'));
+	    }
+	}	    
+
 	if(above) {
 	    this.insertRows(this.currentColumn,lines.length);
 	    theIdx = this.currentColumn.index;
