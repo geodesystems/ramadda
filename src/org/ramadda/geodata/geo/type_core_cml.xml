@@ -6,15 +6,28 @@ into some types.xml file
 <types>
 <type  name="type_core_cml" 
  description="Corelyzer Session" 
- super="type_borehole_base" 
+ super="type_core_base" 
  supercategory="Geoscience" 
  category="Core Data" 
 pattern=".*\.cml"
 >
+
+<!-- Columns-->
+<column  name="showxml"  label="Show XML"  type="boolean"  default="true" showinhtml="false" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="icon"  value="/geo/corelyzer_icon.jpg" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section # title="{{name}}"                                                                                                
+{{description wikify="true"}}                                                                                              
+{{information showTitle="false" details="true"}}                                                                           
++if property=showxml                                                                                                       
+{{embed  as="xml" maxheight="600" maxSize="10000" force="true"}}                                                           
+-if                                                                                                                        
+-section]]></wiki>
 </type>
 </types>

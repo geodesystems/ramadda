@@ -14,15 +14,11 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.*;
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
 public class LasTypeHandler extends BoreholeTypeHandler {

@@ -3,7 +3,7 @@
       description="Borehole Field Plot"
       icon="/icons/pdf.png" 
       supercategory="Geoscience"  category="Core Data"
-      super="type_borehole_base">            
+      super="type_core_base">            
   <action name="applyllm" label="Apply LLM" canedit="true"
           icon="fas fa-font" foruser="true" category="edit"/>
 <wiki>

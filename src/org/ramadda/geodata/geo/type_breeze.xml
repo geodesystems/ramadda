@@ -7,7 +7,7 @@
 	 supercategory="Geoscience"  category="Core Data" >
 
 <!-- Properties-->
-<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="icon"  value="/geo/prediktera.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
 <wiki><![CDATA[

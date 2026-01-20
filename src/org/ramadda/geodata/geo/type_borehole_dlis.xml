@@ -1,5 +1,5 @@
 <type name="type_borehole_dlis"
-      super="type_borehole_base"
+      super="type_core_base"
       description="Digital Log Interchange Standard"
       supercategory="Geoscience"  category="Core Data"
       pattern=".*\.dlis">            

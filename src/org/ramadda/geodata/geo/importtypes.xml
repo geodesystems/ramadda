@@ -18,7 +18,7 @@
 
 
 <!-- Base type for non point data -->
-<import resource="type_borehole_base.xml"/>
+<import resource="type_core_base.xml"/>
 <import resource="type_borehole_dlis.xml"/>
 <import resource="type_borehole_wellcad.xml"/>
 <import resource="type_borehole_fieldplot.xml"/>

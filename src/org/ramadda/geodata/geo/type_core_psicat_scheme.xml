@@ -6,21 +6,21 @@ into some types.xml file
 <types>
 <type  name="type_core_psicat_scheme" 
  description="PSICAT Scheme" 
- super="type_borehole_base" 
+ super="type_core_base" 
  supercategory="Geoscience" 
  category="Core Data" 
 pattern=".*\.car"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="icon"  value="/geo/psicat.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}                                                                             
-{{description wikify="true"}}                                                                       
+{{description wikify="true"}}     
 {{information}}                                                                                     
 :heading Contents                                                                                   
 {{zipfile}}                                                                                         
