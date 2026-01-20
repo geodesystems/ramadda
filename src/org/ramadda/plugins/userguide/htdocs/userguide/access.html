@@ -59,7 +59,7 @@ The form is composed of this list of actions and, for each action,
 there is a field where you can enter any number of user roles (one per line).
 
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/access.png?version=11"><img  src="images/access.png?version=11"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Permissions" ></a><br><span class="caption">Image 1: Entry Permissions</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/access.png?version=407"><img  src="images/access.png?version=407"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Permissions" ></a><br><span class="caption">Image 1: Entry Permissions</span></div></div>
 
 +callout-info
 Note: Permissions settings have no effect on RAMADDA site administrators. They can do anything.
@@ -323,16 +323,27 @@ that contains the other recipient's email.
 
 RAMADDA has support for a data policy mechanism that allows for
 the specification of a data license and access settings in a centralized
-location. This allows for the use of a single data policy across multiple
+location.
+This allows for the use of a single data policy across multiple
 entries within a single RAMADDA repository as well as sharing data policies
 across a group of confederated RAMADDA repositories.
-See the documentation at <a href=https://ramadda.org/repository/a/datapolicy>
+:p
+The specification of a Data Policy is done using a special purpose Data Policy
+entry. Here is an <a href=https://ramadda.org/repository/a/example_data_policy_1>example</a>
+of such a
+Data Policy entry. Only site administrators can create a Data Policy entry. When defining
+permissions the set of Data Policy entries will be displayed and can be selected. This
+essentially uses the permissions defined by these Data Policies. This can enable
+one to, for example, define some permissions for a project (e.g.  a date embargo) in on place
+then use those permissions across mulitple entries.
+
+:p
+For information on using Data Policies across multiple RAMADDA's 
+see the documentation at <a href=https://ramadda.org/repository/a/datapolicy>
 https://ramadda.org/repository/a/datapolicy
 </a>
 for more details.
-
-
-
+:p
 A RAMADDA repository is configured to read in data policies
 from a set of URLs specified in a repository.properties file
 in your local RAMADDA home directory.
@@ -357,7 +368,7 @@ A data policy consists of name, ID, data license and a number of permissions.
 You can embed the access status for an entry directly in the wiki page for the entry with the access_status tag.
 This is only shown for logged in users and gives you the opportunity to see what access anonymous users have.
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/accessstatus.png?version=11"><img  src="images/accessstatus.png?version=11"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Status" ></a><br><span class="caption">Image 2: Entry Status</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/accessstatus.png?version=407"><img  src="images/accessstatus.png?version=407"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Status" ></a><br><span class="caption">Image 2: Entry Status</span></div></div>
 
 <pre>
 {<noop>{access_status  fullAccess="false"  }}
