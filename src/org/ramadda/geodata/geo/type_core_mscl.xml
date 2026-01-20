@@ -21,7 +21,7 @@ into some types.xml file
 <property  name="record.properties" ><![CDATA[
 csvcommands1=-encoding,ISO-8859-1,-unitrow,-set,0
 csvcommands2=0,Section,-insert,,top_depth
-csvcommands3=${column:top_depth},-copy,section_depth,scaled_section_depth,-scale
+csvcommands3=${entry.column:top_depth},-copy,section_depth,scaled_section_depth,-scale
 csvcommands4=scaled_section_depth,0,0.01,0,-operator
 csvcommands5=top_depth\,scaled_section_depth,depth,+,-notcolumns,scaled_section_depth
 csvcommands6=-columnsafter,section,depth,-change,1-50
