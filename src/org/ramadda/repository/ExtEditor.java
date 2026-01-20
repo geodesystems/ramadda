@@ -2055,6 +2055,7 @@ public class ExtEditor extends RepositoryManager {
 	if(msg!=null) sb.append(msg);
 
 	String formId = HU.getUniqueId("form_");
+	FormInfo formInfo  = new FormInfo(formId);
 	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, getRepository().OUTPUT_CREATETYPE));
@@ -2063,7 +2064,8 @@ public class ExtEditor extends RepositoryManager {
 			     HU.submit("Download Type",ARG_CREATE,HU.title("Create and download the entry type plugin file")),
 			     request.isAdmin()?
 			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and temporarily install the type")):null,
-			     HU.submit("Save",ARG_SAVE)));
+			     HU.submit("Save",ARG_SAVE),
+			     HU.span("",HU.attrs("id","headerbuttons"))));
 	sb.append(HU.vspace());
 	StringBuilder main = new StringBuilder();
         main.append(HU.formTable());
@@ -2160,6 +2162,13 @@ public class ExtEditor extends RepositoryManager {
 
 	StringBuilder props = processTypeProps(request,
 					       "/org/ramadda/repository/resources/colattrs.txt","colattributes",10);
+	StringBuilder wiki = new StringBuilder();
+	entry.getTypeHandler().addWikiEditor(request, entry, wiki, formInfo,
+					     ARG_DESCRIPTION, entry.getDescription(), "",
+					     false, Entry.MAX_DESCRIPTION_LENGTH,
+					     true,"height","500px");
+
+
 	StringBuilder cols = new StringBuilder();
 	cols.append(HU.span("",HU.attrs("id","colbuttons")));
 	cols.append(HU.space(1));
@@ -2224,8 +2233,9 @@ public class ExtEditor extends RepositoryManager {
 				      "Properties",
 				      "Advanced Configuration",
 				      "Columns",
+				      "Wiki Text",
 				      "Admin"},
-			 new Object[]{main,properties,extra,cols,admin});
+			 new Object[]{main,properties,extra,cols,wiki,admin});
 	sb.append(HtmlUtils.formClose());
 
 	List<Metadata> metadataList =
@@ -2246,6 +2256,9 @@ public class ExtEditor extends RepositoryManager {
 	} 
 
 	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()),"entryTypeCreateJson")));
+
+	formInfo.addToForm(sb);
+
 
 	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result =  new Result("Create Type - " + entry.getName(),sb);
@@ -2524,15 +2537,19 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-	String desc = entry.getDescription();
-	if (Utils.stringDefined(desc) && entry.getTypeHandler().isWikiText(desc)) {
-	    desc = desc.replace("{skip{","{{");
+	String oldDescription = entry.getDescription();
+	String newDescription = request.getString(ARG_DESCRIPTION, null);
+	if(stringDefined(newDescription) && !Misc.equals(oldDescription,newDescription)) {
+	    entry.setDescription(newDescription);
+	    getEntryManager().updateEntry(request, entry);
+	}
+	if (Utils.stringDefined(newDescription) && entry.getTypeHandler().isWikiText(newDescription)) {
+	    newDescription = newDescription.replace("{skip{","{{");
 	    sb.append("\n");
 	    sb.append(XU.comment("Wiki text"));
-	    desc=desc.replaceAll("^<wiki>","");
-	    desc = desc.replace("\r\n","\n");	    
-	    sb.append(XU.tag("wiki","",XU.getCdata(desc)));
-
+	    newDescription=newDescription.replaceAll("^<wiki>","");
+	    newDescription = newDescription.replace("\r\n","\n");	    
+	    sb.append(XU.tag("wiki","",XU.getCdata(newDescription)));
 	}
 
 	sb.append("</type>\n");
