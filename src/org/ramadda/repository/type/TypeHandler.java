@@ -357,6 +357,72 @@ public class TypeHandler extends RepositoryManager {
 	initTypeHandler(typeNode);
     }
 
+    private void printProps(Element node) {
+	System.out.println("#####");
+	System.out.println("name:" + getDescription());
+	System.out.println("type:" + getType());
+	if(parent!=null)
+	    System.out.println("super:" + parent.getType());
+	if(stringDefined(iconPath)) 
+	    System.out.println("icon:" + iconPath);
+
+	NamedNodeMap nnm = node.getAttributes();
+        if (nnm != null) {
+	    int cnt = 0;
+	    for (int i = 0; i < nnm.getLength(); i++) {
+		if(cnt++==0) System.out.println("<attributes>");
+		Attr attr = (Attr) nnm.item(i);
+		String name = attr.getNodeName();
+		if(!(name.matches("^(name|category|supercategory|description|super)$"))) {
+		    System.out.println(name+"=\""+ attr.getNodeValue()+"\"");
+		}
+	    }
+	    if(cnt>0) System.out.println("</attributes>");
+	}
+
+
+
+        List propertyNodes = XmlUtil.findChildren(node, TAG_PROPERTY);
+	int cnt = 0;
+        for (int propIdx = 0; propIdx < propertyNodes.size(); propIdx++) {
+	    cnt++;
+	    if(propIdx==0) {
+		System.out.println("<properties>");
+	    }
+            Element propertyNode = (Element) propertyNodes.get(propIdx);
+            if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
+		String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
+		System.out.println(name+"="+ XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
+	    } else {
+		//		String value = XmlUtil.getChildText(propertyNode);
+	    }
+	}
+	if(cnt>0)
+	    System.out.println("</properties>");
+        List columnNodes = XmlUtil.findChildren(node, TAG_COLUMN);
+        for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
+            Element cn = (Element) columnNodes.get(colIdx);
+	    String cname=XU.getAttribute(cn,"name","");
+	    String clabel=XU.getAttribute(cn,"label","");
+	    String ctype=XU.getAttribute(cn,"type","");	    	    
+	    String extra="";
+	    NamedNodeMap cnnm = cn.getAttributes();
+	    if (cnnm != null) {
+		for (int i = 0; i < cnnm.getLength(); i++) {
+		    Attr attr = (Attr) cnnm.item(i);
+		    String name = attr.getNodeName();
+		    if(!(name.matches("^(name|label|type)$"))) {
+			extra+=" " + name+"=\""+ attr.getNodeValue()+"\"";
+		    }
+		}
+	    }
+	    System.out.println(cname+","+clabel+","+ctype+","+extra);
+	}
+	//assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
+
+	System.out.println("");
+    }
+
     public void initTypeHandler(Element node) {
         try {
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
@@ -620,6 +686,11 @@ public class TypeHandler extends RepositoryManager {
                 parent.checkAncestorTypes(getType());
                 parent.addChildTypeHandler(this);
 	    }
+
+	    /*	    if(isType("type_core_cml")) {
+		printProps(node);
+		}*/
+
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);
