@@ -81,13 +81,13 @@ public class CsvFile extends TextFile {
 	Entry entry = (Entry) getProperty("entry");
 	if(entry!=null) {
 	    if(cmd.indexOf("${entry.name}")>=0) {
-		cmd = cmd.replace("{entry.name}",entry.getName());
+		cmd = cmd.replace("${entry.name}",entry.getName());
 	    }
 	    List<Column> columns = entry.getTypeHandler().getColumns();
 	    if(columns!=null) {
 		Request request = (Request) getProperty("request");
 		for(Column column: columns) {
-		    String key = "${column:" + column.getName()+"}";
+		    String key = "${entry.column:" + column.getName()+"}";
 		    if(cmd.indexOf(key)>=0) {
 			Object value = entry.getValue(request,column);
 			if(value==null) value="";
@@ -100,6 +100,10 @@ public class CsvFile extends TextFile {
 	    cmd = cmd.replace("${latitude}",(String)getProperty("latitude","NaN"));
 	    cmd = cmd.replace("${longitude}",(String)getProperty("longitude","NaN"));		
 	}
+	if(cmd.indexOf("${entry.latitude}")>=0) {
+	    cmd = cmd.replace("${entry.latitude}",(String)getProperty("latitude","NaN"));
+	    cmd = cmd.replace("${entry.longitude}",(String)getProperty("longitude","NaN"));		
+	}	
 	return cmd;
 
     }
