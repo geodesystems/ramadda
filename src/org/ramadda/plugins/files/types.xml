@@ -93,7 +93,7 @@ picky=false
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
 +if property=showxml
-{{embed  as="xml" maxheight="600" maxSize="10000" }}
+{{embed  as="xml" maxheight="600" maxSize="10000" force=true}}
 -if
 -section
 ]]>
