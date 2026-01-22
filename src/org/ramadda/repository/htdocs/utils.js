@@ -3266,7 +3266,15 @@ var Utils =  {
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
         let icon = jqid(id);
-        let dialog = this.dialog = HU.makeDialog({content:html,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM,title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
+        let dialog = this.dialog =
+	    HU.makeDialog({content:html,
+			   my:POS_RIGHT_TOP,
+			   at:POS_RIGHT_BOTTOM,
+			   title:links,
+			   anchor:anchor,
+			   draggable:true,
+			   header:true,
+			   inPlace:false});
 	this.dialog.find(HU.dotClass(CLASS_BUTTON_SMALL)).button();
         let input =jqid('popup_search_input');
         input.mousedown(function(evt) {
@@ -6517,6 +6525,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
     },
     makeSelectTagPopup:function(select,args) {
+	if(typeof select =='string') select=$(select);
+	select.each(function() {
+	    HU.makeSelectTagPopupInner($(this),args);
+	});
+    },
+    makeSelectTagPopupInner:function(select,args) {	
 	args = args??{};
 	let opts ={
 	    label:'Select',
@@ -6531,7 +6545,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    makeButton:true,
 	    makeButtons:true
 	}
-	if(typeof select =='string') select=$(select);
 	if(args.icon && !args.buttonLabel)
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
 	$.extend(opts,args);
@@ -6548,10 +6561,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
 			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
 	btn = opts.wrap.replace('${widget}',btn);
-	if(opts.after)
-	    select.after(' ' +btn);
-	else
-	    select.before(btn+SPACE);
+	let selectContainer = select.attr('select-container');
+	if(selectContainer) {
+	    jqid(selectContainer).after(btn);
+	} else {
+	    if(opts.after)
+		select.after(' ' +btn);
+	    else
+		select.before(btn+SPACE);
+	}
 	let optionMap = {};
 	let dialog;
 	let handleChange = function(cbx,trigger) {
