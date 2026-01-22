@@ -119,6 +119,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	this.addFeature(feature);
 	if(this.attrs.labelTemplate) {
 	    style.label = this.attrs.labelTemplate.replace('${name}',this.getName());
+	    style.labelSelect= true;
 	}
 	MapUtils.setFeatureStyle(feature, style);
 	this.display.addFeatures([feature]);
@@ -201,6 +202,49 @@ MapGlyph.prototype = {
 	});
     },
 
+    handleEventRecordSelection: function(record) {
+	if(!this.isMap())  return;
+	let idField;
+	let matchField='objectid';
+	let _matchField = matchField.toUpperCase();
+	record.getFields().every(f=>{
+	    if(f.getId()==matchField) {
+		idField=f;
+		return false;
+	    }
+	    return true;
+	});
+	if(!idField) return;
+	let features= this.getMapFeatures();
+	if(!features) return;
+	let matchValue =idField.getValue(record);
+	let theFeature;
+	features.every(feature=>{
+	    if(!feature.data) return true;
+	    let value;
+	    if(Utils.isDefined(feature.data[matchField])) {
+		value = feature.data[matchField];
+	    } else    if(Utils.isDefined(feature.data[_matchField])) {
+		value = feature.data[_matchField];
+	    } else {
+		return true;
+	    }
+	    if(matchValue==value) {
+		theFeature=feature;
+		return false;
+	    }
+	    return true;
+	});
+	if(!theFeature) {
+	    return;
+	}
+	this.getMap().centerOnFeatures([theFeature],true);
+	let zoom = this.getProperty('record.select.zoomlevel');
+	if(Utils.isDefined(zoom)) {
+	    this.getMap().setZoom(+zoom);
+	}
+	   
+    },
     getElevations:async function(points,callback,update) {
 	let elevations = points.map(()=>{return 0;});
 	let ok = true;
@@ -864,6 +908,7 @@ MapGlyph.prototype = {
 
 	if(style.label && this.attrs.labelTemplate) {
 	    this.attrs.labelTemplate= style.label;
+	    console.log('label2');
 	}
 
 	this.applyStyle(style);
@@ -4582,9 +4627,11 @@ MapGlyph.prototype = {
 		    });
 
 		    let size = info.filterSize();
-		    let line=label+":" + HU.br() +
+		    let selectId = HU.getUniqueId('select');
+		    let line=HU.div([],label+": " +SPACE+HU.span([ATTR_ID,selectId])) +
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
+				      'select-container',selectId,
 				      ATTR_CLASS,'imdv-filter-enum',
 				      ATTR_ID,this.domId('enum_'+ id),
 				      ATTR_MULTIPLE,null,
@@ -4749,7 +4796,9 @@ MapGlyph.prototype = {
 		    update();
 		}
 	    });
-	    this.findFilter('.imdv-filter-enum').change(function(event) {
+	    let enums = this.findFilter('.imdv-filter-enum');
+	    HU.makeSelectTagPopup(enums,{icon:true,single:false});
+	    enums.change(function(event) {
 		let key = $(this).attr('filter-property');
 		let filter = filters[key]??{};
 		filter.property = key;
@@ -5150,6 +5199,7 @@ MapGlyph.prototype = {
 	}
 	let style = this.style;
 	
+
 	if(Utils.isDefined(style.externalGraphic_cleared)) {
 	    if(Utils.isTrue(style.externalGraphic_cleared)) {
 		features.forEach(f=>{
@@ -5189,6 +5239,8 @@ MapGlyph.prototype = {
 	let labelProperty = this.getProperty('map.property.label');	
 
 
+
+
 	//	if(debug)   console.dir(style);
 	if(this.mapLayer)
 	    this.mapLayer.style = style;
@@ -5221,12 +5273,13 @@ MapGlyph.prototype = {
 				labelYOffset:-8,
 				labelAlign:'lt',
 				fontSize:'6pt',
+				labelSelect:true,
 				label:label});
 			    //			    featureStyle.fillColor = COLOR_TRANSPARENT
 			}
 		    }
 		}
-		if(debug && idx<3)   console.dir("\tfeature style:",featureStyle.fillColor);
+		if(debug )   console.dir("\tfeature style:",featureStyle.labelSelect,featureStyle.label);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 	    });
@@ -5416,6 +5469,9 @@ MapGlyph.prototype = {
 		let pt = feature.geometry.getCentroid(true); 
 		let labelStyle = $.extend({},markerStyle);
 		let label = this.applyMacros(template, feature.attributes,macros);
+		labelStyle.labelSelect=true;
+		labelStyle.sourceFeature = feature;
+		labelStyle.sourceGlyph= this;
 		if(label.length>maxLength) {
 		    label = label.substring(0,maxLength)+'...';
 		}
@@ -5684,7 +5740,6 @@ MapGlyph.prototype = {
 	}  else {
 	    this.attrs.labelTemplate = null;
 	}
-
 	if(style) {
 	    this.style = style;
 	}
