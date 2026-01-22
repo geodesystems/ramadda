@@ -1060,8 +1060,7 @@ RepositoryMap.prototype = {
 	}
     },
     makePopup: function(projPoint, text, props) {
-	if(debugPopup)
-	    console.log("makePopup:" + text);
+	if(debugPopup)  console.log("makePopup:" + (text?text.substring(0,100):null));
 	props = props||{};
 	let size  =  MapUtils.createSize(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
@@ -1348,7 +1347,6 @@ RepositoryMap.prototype = {
         }
     },
     handleFeatureclick: function(layer, feature, center,event,extraStyle) {
-
         if (!layer)
             layer = feature.layer;
 
@@ -1388,6 +1386,19 @@ RepositoryMap.prototype = {
 	    pointRadius: fstyle.highlightPointRadius??this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
+
+	if(fstyle.label) {
+	    ['label','labelAlign','labelOutlineColor','labelOutlineWidth',
+	     'labelSelect','labelXOffset','labelYOffset',
+	     'textBackgroundFillColor','textBackgroundFillOpacity',
+	     'textBackgroundPadding','textBackgroundRadius',
+	     'textBackgroundShape','textBackgroundStrokeColor',
+	     'textBackgroundStrokeWidth'].forEach(attr=>{
+		 if(Utils.isDefined(fstyle[attr])) style[attr] = fstyle[attr];
+	     });
+	    style.textBackgroundStrokeColor = 'red';
+	    style.textBackgroundStrokeWidth=2;
+	}
 
 	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
@@ -2250,7 +2261,6 @@ RepositoryMap.prototype = {
 	if(layer.textGetter) {
 	    let text= layer.textGetter(feature);
 	    if(text) {
-
 		if(debugPopup) console.log("getFeatureText-layer has textGetter");
 		return text;
 	    }
@@ -5255,9 +5265,9 @@ RepositoryMap.prototype = {
 	}
 	return bounds;
     },
-    centerOnFeatures: function(features) {
+    centerOnFeatures: function(features,center) {
 	let bounds = this.getFeaturesBounds(features);
-	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
+	if(center || bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
 	    let center = bounds.getCenterLonLat();
 	    this.setCenter(center);
@@ -5406,6 +5416,14 @@ RepositoryMap.prototype = {
 		inputProps = $.extend(inputProps,{init:markerText.init});
 		markerText=  markerText.contents;
 	    }
+	}
+
+
+	if(marker.layer && marker.layer.textGetter) {
+	    markerText = marker.layer.textGetter(marker);
+	}
+	if(!markerText && marker.style) {
+	    markerText = marker.style.popupText;
 	}
 
 	if(!markerText) {
