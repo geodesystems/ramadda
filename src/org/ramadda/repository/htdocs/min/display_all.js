@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 20 05:10:13 EST 2026";
+var build_date="RAMADDA build date: Thu Jan 22 08:04:07 EST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47431,6 +47431,8 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.toggle.show=false',
 			  'filter.sortOnCount=true',
 			  'filter.showRawValues=true',
+			  'filters.height=400px',
+			  'filter.toggle.show=false',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
 			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
@@ -47824,7 +47826,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         myLayer: [],
 	glyphs:[],
 	markers:{},
-	minLevel:2,maxLevel:20,
+	minLevel:2,
+	maxLevel:20,
 	levels: [['','None'],[2,'2 - Most zoomed out'],3,4,5,6,7,8,
 		 9,10,11,12,13,14,15,16,17,18,19,[20,'20 - Most zoomed in']],
 	DOT_STYLE:{
@@ -48247,6 +48250,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},	    
 
 
+        handleEventFilterChanged: function(source, prop) {
+	    SUPER.handleEventFilterChanged.call(this,source,prop);
+	},
+        handleEventRecordSelection: function(source, args) {
+            this.glyphs.forEach((mapGlyph,idx)=>{
+		mapGlyph.handleEventRecordSelection(args.record);
+	    });
+
+	},
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
@@ -50574,7 +50586,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let current = this.getCurrentLevel();
 	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
 	    this.jq('level_range_tick').css(CSS_LEFT,HU.perc(perc));
-	    this.jq('level_range_tick').attr(ATTR_TITLE,'Current level:' + current);
+	    this.jq('level_range_tick').attr(ATTR_TITLE,'Current level: ' + current);
 	},
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
@@ -50592,36 +50604,43 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			      [ATTR_ID,this.domId(ID_LEVEL_RANGE_MIN)]) +
 		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
 	    widget+=HU.hidden('','',[ATTR_ID,this.domId(ID_LEVEL_RANGE_CHANGED)]);
-	    let slider =
-		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),
-			ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(110),
-					  CSS_MARGIN_TOP,HU.px(10),
-					  CSS_POSITION,POSITION_RELATIVE,
-					  CSS_WIDTH,width)]);
-
-	    let clear = HU.span([ATTR_TITLE,'Clear range values',
-				 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10)),
-				 ATTR_CLASS,CLASS_CLICKABLE,
-				 ATTR_ID,this.domId(ID_LEVEL_RANGE_CLEAR)],
-				HU.getIconImage('fas fa-delete-left'));
-	    slider= HU.hbox([slider,clear]);
-
 	    let tick = HU.image(icon_downdart,
 				[ATTR_ID,this.domId('level_range_tick'),
 				 ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_TOP,HU.px(0))]);
-	    let sample1 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'),
-				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
-				    ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_LEFT,HU.px(0),
-						      CSS_BOTTOM,HU.px(0)),
-				    ATTR_WIDTH,HU.px(120)]);
-	    let sample2 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'),
-				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
-				    ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
-						      CSS_BOTTOM,HU.px(0)),
-				    ATTR_WIDTH,HU.px(120)]);	    
-	    let container = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-						      CSS_POSITION,POSITION_RELATIVE)],
-				   slider +tick+sample1+sample2);
+	    let slider =
+		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),
+			ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(130),
+					  CSS_MARGIN_TOP,HU.px(15),
+					  CSS_WIDTH,width)]);
+	    //If I don't have the border the tick does not show - go figure?
+	    slider = HU.div([ATTR_STYLE,
+			     HU.css(CSS_HEIGHT,HU.px(160),'border','1px solid transparent',
+				    CSS_POSITION,POSITION_RELATIVE)],
+			    tick+slider);
+
+	    let clear = HU.div([ATTR_TITLE,'Clear range values',
+				 ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10), CSS_MARGIN_TOP,HU.px(15)),
+				 ATTR_CLASS,CLASS_CLICKABLE,
+				 ATTR_ID,this.domId(ID_LEVEL_RANGE_CLEAR)],
+				HU.getIconImage('fas fa-delete-left'));
+
+	    let sample1 = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_LEFT,HU.px(0),
+						    CSS_BOTTOM,HU.px(0))],
+				 HU.image(this.getZoomImage(min),
+					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
+					   ATTR_WIDTH,HU.px(120)])+HU.br()+
+				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN+'_label')],min)));
+	    let sample2 = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
+						    CSS_BOTTOM,HU.px(0))],
+				 HU.image(this.getZoomImage(max),
+					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
+					   ATTR_WIDTH,HU.px(120)])+HU.br()+
+				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX+'_label')],max)));
+	    let container = HU.div([ATTR_STYLE,
+				    HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+					   CSS_POSITION,POSITION_RELATIVE)],
+				   slider+sample1+sample2);
+	    container =  HU.hbox([container,clear]);
 
 
 	    return widget+container;
@@ -51052,9 +51071,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
 		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr(ATTR_SRC,
 							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
-		
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN+'_label').html(min);
 		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr(ATTR_SRC,
 							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX+'_label').html(max);
 	    }
 	    
 
@@ -53269,6 +53289,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    SUPER.initDisplay.call(this)
 	    this.myLayer = this.map.createFeatureLayer('IMDV Features',true,null,{rendererOptions: {zIndexing: true}});
 
+	    this.myLayer.textGetter = t=>{
+		if(t.style && t.style.popupText) {
+		    if(t.style.sourceFeature && t.style.sourceGlyph) {
+			return t.style.sourceGlyph.applyMacros(t.style.popupText, t.style.sourceFeature.attributes);
+		    }
+		    return t.style.popupText;
+		}
+		return null;
+	    }
 	    this.selectionLayer = this.map.createFeatureLayer('Selection',false,null,{rendererOptions: {zIndexing: true}});	    
 	    //	    this.selectionLayer = this.myLayer;
 	    this.selectionLayer.canSelect=false;
@@ -54490,6 +54519,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	this.addFeature(feature);
 	if(this.attrs.labelTemplate) {
 	    style.label = this.attrs.labelTemplate.replace('${name}',this.getName());
+	    style.labelSelect= true;
 	}
 	MapUtils.setFeatureStyle(feature, style);
 	this.display.addFeatures([feature]);
@@ -54572,6 +54602,49 @@ MapGlyph.prototype = {
 	});
     },
 
+    handleEventRecordSelection: function(record) {
+	if(!this.isMap())  return;
+	let idField;
+	let matchField='objectid';
+	let _matchField = matchField.toUpperCase();
+	record.getFields().every(f=>{
+	    if(f.getId()==matchField) {
+		idField=f;
+		return false;
+	    }
+	    return true;
+	});
+	if(!idField) return;
+	let features= this.getMapFeatures();
+	if(!features) return;
+	let matchValue =idField.getValue(record);
+	let theFeature;
+	features.every(feature=>{
+	    if(!feature.data) return true;
+	    let value;
+	    if(Utils.isDefined(feature.data[matchField])) {
+		value = feature.data[matchField];
+	    } else    if(Utils.isDefined(feature.data[_matchField])) {
+		value = feature.data[_matchField];
+	    } else {
+		return true;
+	    }
+	    if(matchValue==value) {
+		theFeature=feature;
+		return false;
+	    }
+	    return true;
+	});
+	if(!theFeature) {
+	    return;
+	}
+	this.getMap().centerOnFeatures([theFeature],true);
+	let zoom = this.getProperty('record.select.zoomlevel');
+	if(Utils.isDefined(zoom)) {
+	    this.getMap().setZoom(+zoom);
+	}
+	   
+    },
     getElevations:async function(points,callback,update) {
 	let elevations = points.map(()=>{return 0;});
 	let ok = true;
@@ -55235,6 +55308,7 @@ MapGlyph.prototype = {
 
 	if(style.label && this.attrs.labelTemplate) {
 	    this.attrs.labelTemplate= style.label;
+	    console.log('label2');
 	}
 
 	this.applyStyle(style);
@@ -58953,9 +59027,11 @@ MapGlyph.prototype = {
 		    });
 
 		    let size = info.filterSize();
-		    let line=label+":" + HU.br() +
+		    let selectId = HU.getUniqueId('select');
+		    let line=HU.div([],label+": " +SPACE+HU.span([ATTR_ID,selectId])) +
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
+				      'select-container',selectId,
 				      ATTR_CLASS,'imdv-filter-enum',
 				      ATTR_ID,this.domId('enum_'+ id),
 				      ATTR_MULTIPLE,null,
@@ -59120,7 +59196,9 @@ MapGlyph.prototype = {
 		    update();
 		}
 	    });
-	    this.findFilter('.imdv-filter-enum').change(function(event) {
+	    let enums = this.findFilter('.imdv-filter-enum');
+	    HU.makeSelectTagPopup(enums,{icon:true,single:false});
+	    enums.change(function(event) {
 		let key = $(this).attr('filter-property');
 		let filter = filters[key]??{};
 		filter.property = key;
@@ -59521,6 +59599,7 @@ MapGlyph.prototype = {
 	}
 	let style = this.style;
 	
+
 	if(Utils.isDefined(style.externalGraphic_cleared)) {
 	    if(Utils.isTrue(style.externalGraphic_cleared)) {
 		features.forEach(f=>{
@@ -59560,6 +59639,8 @@ MapGlyph.prototype = {
 	let labelProperty = this.getProperty('map.property.label');	
 
 
+
+
 	//	if(debug)   console.dir(style);
 	if(this.mapLayer)
 	    this.mapLayer.style = style;
@@ -59592,12 +59673,13 @@ MapGlyph.prototype = {
 				labelYOffset:-8,
 				labelAlign:'lt',
 				fontSize:'6pt',
+				labelSelect:true,
 				label:label});
 			    //			    featureStyle.fillColor = COLOR_TRANSPARENT
 			}
 		    }
 		}
-		if(debug && idx<3)   console.dir("\tfeature style:",featureStyle.fillColor);
+		if(debug )   console.dir("\tfeature style:",featureStyle.labelSelect,featureStyle.label);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 	    });
@@ -59787,6 +59869,9 @@ MapGlyph.prototype = {
 		let pt = feature.geometry.getCentroid(true); 
 		let labelStyle = $.extend({},markerStyle);
 		let label = this.applyMacros(template, feature.attributes,macros);
+		labelStyle.labelSelect=true;
+		labelStyle.sourceFeature = feature;
+		labelStyle.sourceGlyph= this;
 		if(label.length>maxLength) {
 		    label = label.substring(0,maxLength)+'...';
 		}
@@ -60055,7 +60140,6 @@ MapGlyph.prototype = {
 	}  else {
 	    this.attrs.labelTemplate = null;
 	}
-
 	if(style) {
 	    this.style = style;
 	}
