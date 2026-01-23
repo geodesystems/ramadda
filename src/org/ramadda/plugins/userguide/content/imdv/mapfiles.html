@@ -127,7 +127,13 @@ enables the user to select individual features in the map to apply the style to.
 
 :heading Labels
 The <b>Labels</b> section allows you to specify a template (similar to the popup text) for a label
-for each polygon. 
+for each polygon. You can specify:
+* Visibility limit - Don't show the labels when zoomed out past this limit
+* Template - Text to use including macros from the feature attributes
+* Max Length: Total number of characters to display
+* Max Line Length: Split the text into multiple lines
+* Declutter Labels: Apply a declutter filter to show less details
+* Padding, Pixels/Line, Pixels/Character: Declutter parameters. It is best to play around with these settings
 
 :heading Other Configuration
 The top-level properties for the IMDV entry are available through the File-&gt;Properties menu item.
