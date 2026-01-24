@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jan 22 08:04:07 EST 2026";
+var build_date="RAMADDA build date: Sat Jan 24 11:48:28 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -118,8 +118,11 @@ $.extend(Utils,{
 	dialog.find(HU.dotClass(CLASS_COLORTABLE_SEARCH)).each(function() {
 	    let id = $(this).attr(ATTR_ID);
 	    let listId = $(this).attr('listid');	    
+	    //Pass in the array to hide the other categories on the search
 	    HU.initPageSearch('#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_SELECT),
-			      null,null,true,
+			      ['#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_CATEGORY),
+			       HU.dotClass(CLASS_COLORTABLE_SELECT)],
+			      null,true,
 			      {	    addToUrl:false,target:'#'+id});
 	});
     },
@@ -190,8 +193,9 @@ $.extend(Utils,{
 		HU.vspace(HU.em(0.25))+
 		popup;
 	}	    
-	if(showToggle)
+	if(showToggle) {
             popup = HU.toggleBlock(HU.div([ATTR_CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+	}
         if(opts.itemize) return items;
         return popup;
     },
@@ -48853,7 +48857,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			style.strokeColor=COLOR_LIGHT_GRAY;
+			style.strokeColor='#000';
 			style.fillColor = COLOR_TRANSPARENT;
 		    } else {
 			$.extend(mapOptions,attrs);
@@ -50628,12 +50632,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						    CSS_BOTTOM,HU.px(0))],
 				 HU.image(this.getZoomImage(min),
 					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
+					   ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#aaa')),
 					   ATTR_WIDTH,HU.px(120)])+HU.br()+
 				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN+'_label')],min)));
 	    let sample2 = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
 						    CSS_BOTTOM,HU.px(0))],
 				 HU.image(this.getZoomImage(max),
 					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
+					   ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#aaa')),
 					   ATTR_WIDTH,HU.px(120)])+HU.br()+
 				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX+'_label')],max)));
 	    let container = HU.div([ATTR_STYLE,
@@ -52816,12 +52822,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
 			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
 
+	    let imageStyle =  Utils.clone({},
+					  {imageOpacity:this.getImageOpacity(1)},
+					  lineStyle,
+					  {strokeWidth:0.25,
+					   strokeColor:'#000',
+					   rotation:0,
+					   transform:'', clippath:'', imagefilter:'',imagecss:''});
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
-			  Utils.clone({},
-				      {imageOpacity:this.getImageOpacity(1)},
-				      lineStyle,
-				      {rotation:0,
-				       transform:'', clippath:'', imagefilter:'',imagecss:''}),
+			  imageStyle,
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,
@@ -54457,10 +54466,6 @@ var ID_MAPLEGEND = 'maplegend';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
-
-
-
-
     if(!type) {
 	console.log("no type given for MapGlyph");
 	console.trace();
@@ -56950,6 +56955,7 @@ MapGlyph.prototype = {
 		if(showAnimation)
 		    body+='Opacity:';
 		body += 
+		    HU.boldLabel('Opacity') +
 		    HU.center(
 			HU.div([ATTR_TITLE,'Set image opacity',
 				ATTR_SLIDER_MIN,0,
@@ -56963,12 +56969,15 @@ MapGlyph.prototype = {
 
 	if(this.display.canEdit() && this.getProperty('showRotationSlider',false) && 
 	   (this.image || Utils.stringDefined(this.style.imageUrl))) {
-	    body+='Rotation:';
+	    let rotation = this.style.rotation??0;
+	    body+=HU.boldLabel('Rotation');
+	    body+=SPACE+HU.input('',rotation,[ATTR_SIZE,3,
+					      ATTR_ID,this.domId('image_rotation_value')]);
 	    body += HU.center(
 		HU.div([ATTR_TITLE,'Set image rotation',
 			ATTR_SLIDER_MIN,-360,
 			ATTR_SLIDER_MAX,360,
-			ATTR_SLIDER_VALUE,this.style.rotation??0,
+			ATTR_SLIDER_VALUE,rotation,
 			ATTR_ID,this.domId('image_rotation_slider'),
 			ATTR_CLASS,CLASS_SLIDER,
 			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -57221,7 +57230,9 @@ MapGlyph.prototype = {
 	}
 
 	let setRotation = (event,ui) =>{
-	    this.setRotation(ui.value);
+	    let rotation = ui.value;
+	    this.jq('image_rotation_value').val(rotation);
+	    this.setRotation(rotation);
 	}
 	let setOpacity = (event,ui) =>{
 	    if(this.isMapServer())
@@ -57264,6 +57275,13 @@ MapGlyph.prototype = {
 
 
 
+	this.jq('image_rotation_value').keypress(function(event) {
+	    if(Utils.isReturnKey(event)) {
+		let rotation = $(this).val();
+		_this.setRotation(rotation);
+		_this.jq('image_rotation_slider').slider('value',rotation);
+	    }
+	});
 	this.jq('image_rotation_slider').slider({
 	    min: -360,
 	    max: 360,
@@ -57708,7 +57726,8 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
 	    this.attrs.declutter_labels=HU.isChecked(this.jq('declutter_labels'));
-	    ['labels_maxlength','labels_maxlinelength',
+	    ['labels_position',
+	     'labels_maxlength','labels_maxlinelength',
 	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
 		 let v=this.jq(id).val();
 		 if(v) v=v.trim();
@@ -58461,7 +58480,7 @@ MapGlyph.prototype = {
 	let colorBy = '';
 	let colorCbxs = HU.checkbox(this.domId(ID_FILLCOLORS),
 				    [ATTR_ID,this.domId(ID_FILLCOLORS)],
-				    this.attrs.fillColors,'Fill Colors') + SPACE+
+				    this.attrs.fillColors,'Fill Colors') + SPACE2+
 	    HU.checkbox(this.domId(ID_STROKECOLORS),
 			[ATTR_ID,this.domId(ID_STROKECOLORS)],
 			this.attrs.strokeColors,'Stroke Colors')
@@ -58571,9 +58590,10 @@ MapGlyph.prototype = {
 	content.push({header:'Style Rules', contents:colorBy+table});
 
 
-	let mapPointsRange = HU.leftRightTable(HU.boldLabel('Visiblity limit') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	let mapPointsRange =
+	    HU.leftRightTable(HU.boldLabel('Visiblity limit') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
-					       this.getHelp('mapfiles.html#map_labels'));
+					       this.getHelp('mapfiles.html#labels'));
 
 	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',[ATTR_ID,'mappoints_template',ATTR_ROWS,'6',ATTR_COLS,'40',ATTR_TITLE,'Map points template, e.g., ${code}']);
 
@@ -58617,23 +58637,38 @@ MapGlyph.prototype = {
 
 
 	let input = (id,label,dflt) =>{
-	    return SPACE2 + HU.boldLabel(label)+
+	    return (label?(SPACE2 + HU.boldLabel(label)):'')+
 		HU.input('', this.attrs[id]??'', [ATTR_PLACEHOLDER,dflt,
 						  ATTR_ID,this.domId(id),
 						  ATTR_SIZE,5]);
 	}
 	let space =  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(5))]);
-	let extra = '';
-	extra+=input('labels_maxlength','Max Length','100');
-	extra+=input('labels_maxlinelength','Max Line Length',15);
-	extra+=space;
-	extra+= HU.checkbox(this.domId('declutter_labels'),
-			    [ATTR_ID,this.domId('declutter_labels')],
-			    this.getDeclutterLabels(),'Declutter Labels');
-	extra+=space;
-	extra+=input('declutter_padding','Padding',2);				
-	extra+=input('declutter_pixelsperline','Pixels/Line',10);
-	extra+=input('declutter_pixelspercharacter','Pixels/Character',4);
+	let extra = HU.formTable();
+	extra += HU.formEntryLabel('Position',
+				   HU.select("",[ATTR_ID,this.domId('labels_position')],
+					     [['center','Center'],
+					      ['n','North'],
+					      ['nw','Northwest'],
+					      ['w','West'],
+					      ['sw','Southwest'],
+					      ['s','South'],
+					      ['se','Southeast'],
+					      ['e','East'],
+					      ['ne','Northeast']],
+					     this.getAttribute('labels_position')));
+
+	extra+=HU.formEntryLabel('Max Length',
+				 input('labels_maxlength',null,'100')+
+				 input('labels_maxlinelength','Max Line Length',15));
+	extra+= HU.formEntry('', HU.checkbox(this.domId('declutter_labels'),
+					     [ATTR_ID,this.domId('declutter_labels')],
+					     this.getDeclutterLabels(),'Declutter Labels'));
+	extra+=HU.formEntryLabel('Padding',input('declutter_padding',null,2));
+	extra+=HU.formEntryLabel('Pixels/Line',
+				 input('declutter_pixelsperline',null,10));
+	extra+=HU.formEntryLabel('Pixels/Character',
+				 input('declutter_pixelspercharacter',null,4));	
+	extra+=HU.formTableClose();
 	let labelsHtml =mapPointsRange+ 
 	    HU.boldLabel('Label Template')+ HU.br() +    
 	    mapPoints +
@@ -59858,6 +59893,7 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
 	    let maxLength = parseInt(this.attrs.labels_maxlength??1000);
 	    let maxLineLength = parseInt(this.attrs.labels_maxlinelength??1000);
+	    let pos = this.attrs.labels_position??'center';
 	    needToAddMapLabels = true;
 	    this.mapLabels = [];
 	    let markerStyle = 	$.extend({},this.style);
@@ -59866,7 +59902,30 @@ MapGlyph.prototype = {
 	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
 	    let macros = Utils.tokenizeMacros(template);
 	    features.forEach((feature,idx)=>{
-		let pt = feature.geometry.getCentroid(true); 
+		let pt;
+		let bounds = feature.geometry.getBounds();
+		let cx = bounds.left+(bounds.right-bounds.left)/2;
+		let cy = bounds.bottom+(bounds.top-bounds.bottom)/2;		
+		if(pos=='n') {
+		    pt = MapUtils.createPoint(cx,bounds.top);
+		} else if(pos=='nw') {
+		    pt = MapUtils.createPoint(bounds.left,bounds.top);
+		} else if(pos=='w') {
+		    pt = MapUtils.createPoint(bounds.left,cy);
+		} else if(pos=='sw') {
+		    pt = MapUtils.createPoint(bounds.left,bounds.bottom);
+		} else if(pos=='s') {
+		    pt = MapUtils.createPoint(cx,bounds.bottom);
+		} else if(pos=='se') {
+		    pt = MapUtils.createPoint(bounds.right,bounds.bottom);
+		} else if(pos=='e') {
+		    pt = MapUtils.createPoint(bounds.right,cy);
+		} else if(pos=='ne') {
+		    pt = MapUtils.createPoint(bounds.right,bounds.top);
+		}
+		if(!pt) {
+		    pt = feature.geometry.getCentroid(true); 
+		}
 		let labelStyle = $.extend({},markerStyle);
 		let label = this.applyMacros(template, feature.attributes,macros);
 		labelStyle.labelSelect=true;
