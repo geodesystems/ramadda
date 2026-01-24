@@ -4191,10 +4191,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let category = element.attr('data-category');
 	    if(category) extra=' ' +category;
 	    [ATTR_VALUE,ATTR_TITLE,ATTR_DATA_CORPUS,ATTR_DATA_CORPUS2].forEach(attr=>{
+		let v = element.attr(attr);
+		if(Utils.isDefined(v)) {
+		    extra+=v +' ';
+		}
 		extra+=Utils.join(element.find('['+attr+']').map(function () {
 		    return $(this).attr(attr);
 		}).get(),' ');
 	    });
+
+
 	    html = Utils.stripTags(html);
 	    html+=' ' + extra;
 	    html = html.toLowerCase();
@@ -4220,7 +4226,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	s.each(function() {
 	    totalCount++;
 	    let textOk = true;
-	    values.every(v=>{
+	    values.every((v,idx)=>{
 		let ok = search(v,$(this));
 		if(!ok) {
 		    textOk = false;
@@ -4248,9 +4254,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	});
 	if(parentSelect) {
-	    $(parentSelect).each(function() {
+	    let subSelect = select;
+	    let parentSelector = parentSelect;
+	    if(Array.isArray(parentSelect)) {
+		parentSelector		 = parentSelector[0];
+		subSelect = parentSelect[1];
+	    }
+	    $(parentSelector).each(function() {
 		let anyVisible = false;
-		$(this).find(select).each(function() {
+		$(this).find(subSelect).each(function() {
 		    if($(this).attr('isvisible')==='true') {
 			anyVisible=true;
 		    }
