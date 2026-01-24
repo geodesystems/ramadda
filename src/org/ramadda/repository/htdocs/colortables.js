@@ -116,8 +116,11 @@ $.extend(Utils,{
 	dialog.find(HU.dotClass(CLASS_COLORTABLE_SEARCH)).each(function() {
 	    let id = $(this).attr(ATTR_ID);
 	    let listId = $(this).attr('listid');	    
+	    //Pass in the array to hide the other categories on the search
 	    HU.initPageSearch('#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_SELECT),
-			      null,null,true,
+			      ['#'+ listId +' ' + HU.dotClass(CLASS_COLORTABLE_CATEGORY),
+			       HU.dotClass(CLASS_COLORTABLE_SELECT)],
+			      null,true,
 			      {	    addToUrl:false,target:'#'+id});
 	});
     },
@@ -188,8 +191,9 @@ $.extend(Utils,{
 		HU.vspace(HU.em(0.25))+
 		popup;
 	}	    
-	if(showToggle)
+	if(showToggle) {
             popup = HU.toggleBlock(HU.div([ATTR_CLASS,"wiki-editor-popup-header"], opts.label??"Color Table"),popup);
+	}
         if(opts.itemize) return items;
         return popup;
     },
