@@ -2563,12 +2563,15 @@ MapGlyph.prototype = {
 
 	if(this.display.canEdit() && this.getProperty('showRotationSlider',false) && 
 	   (this.image || Utils.stringDefined(this.style.imageUrl))) {
-	    body+='Rotation:';
+	    let rotation = this.style.rotation??0;
+	    body+=HU.boldLabel('Rotation');
+	    body+=SPACE+HU.input('',rotation,[ATTR_SIZE,3,
+					      ATTR_ID,this.domId('image_rotation_value')]);
 	    body += HU.center(
 		HU.div([ATTR_TITLE,'Set image rotation',
 			ATTR_SLIDER_MIN,-360,
 			ATTR_SLIDER_MAX,360,
-			ATTR_SLIDER_VALUE,this.style.rotation??0,
+			ATTR_SLIDER_VALUE,rotation,
 			ATTR_ID,this.domId('image_rotation_slider'),
 			ATTR_CLASS,CLASS_SLIDER,
 			ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -2821,7 +2824,9 @@ MapGlyph.prototype = {
 	}
 
 	let setRotation = (event,ui) =>{
-	    this.setRotation(ui.value);
+	    let rotation = ui.value;
+	    this.jq('image_rotation_value').val(rotation);
+	    this.setRotation(rotation);
 	}
 	let setOpacity = (event,ui) =>{
 	    if(this.isMapServer())
@@ -2864,6 +2869,13 @@ MapGlyph.prototype = {
 
 
 
+	this.jq('image_rotation_value').keypress(function(event) {
+	    if(Utils.isReturnKey(event)) {
+		let rotation = $(this).val();
+		_this.setRotation(rotation);
+		_this.jq('image_rotation_slider').slider('value',rotation);
+	    }
+	});
 	this.jq('image_rotation_slider').slider({
 	    min: -360,
 	    max: 360,
@@ -3308,7 +3320,8 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
 	    this.attrs.declutter_labels=HU.isChecked(this.jq('declutter_labels'));
-	    ['labels_maxlength','labels_maxlinelength',
+	    ['labels_position',
+	     'labels_maxlength','labels_maxlinelength',
 	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
 		 let v=this.jq(id).val();
 		 if(v) v=v.trim();
@@ -4061,7 +4074,7 @@ MapGlyph.prototype = {
 	let colorBy = '';
 	let colorCbxs = HU.checkbox(this.domId(ID_FILLCOLORS),
 				    [ATTR_ID,this.domId(ID_FILLCOLORS)],
-				    this.attrs.fillColors,'Fill Colors') + SPACE+
+				    this.attrs.fillColors,'Fill Colors') + SPACE2+
 	    HU.checkbox(this.domId(ID_STROKECOLORS),
 			[ATTR_ID,this.domId(ID_STROKECOLORS)],
 			this.attrs.strokeColors,'Stroke Colors')
@@ -4171,9 +4184,10 @@ MapGlyph.prototype = {
 	content.push({header:'Style Rules', contents:colorBy+table});
 
 
-	let mapPointsRange = HU.leftRightTable(HU.boldLabel('Visiblity limit') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	let mapPointsRange =
+	    HU.leftRightTable(HU.boldLabel('Visiblity limit') + HU.select('',[ATTR_ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
-					       this.getHelp('mapfiles.html#map_labels'));
+					       this.getHelp('mapfiles.html#labels'));
 
 	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',[ATTR_ID,'mappoints_template',ATTR_ROWS,'6',ATTR_COLS,'40',ATTR_TITLE,'Map points template, e.g., ${code}']);
 
@@ -4217,23 +4231,38 @@ MapGlyph.prototype = {
 
 
 	let input = (id,label,dflt) =>{
-	    return SPACE2 + HU.boldLabel(label)+
+	    return (label?(SPACE2 + HU.boldLabel(label)):'')+
 		HU.input('', this.attrs[id]??'', [ATTR_PLACEHOLDER,dflt,
 						  ATTR_ID,this.domId(id),
 						  ATTR_SIZE,5]);
 	}
 	let space =  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(5))]);
-	let extra = '';
-	extra+=input('labels_maxlength','Max Length','100');
-	extra+=input('labels_maxlinelength','Max Line Length',15);
-	extra+=space;
-	extra+= HU.checkbox(this.domId('declutter_labels'),
-			    [ATTR_ID,this.domId('declutter_labels')],
-			    this.getDeclutterLabels(),'Declutter Labels');
-	extra+=space;
-	extra+=input('declutter_padding','Padding',2);				
-	extra+=input('declutter_pixelsperline','Pixels/Line',10);
-	extra+=input('declutter_pixelspercharacter','Pixels/Character',4);
+	let extra = HU.formTable();
+	extra += HU.formEntryLabel('Position',
+				   HU.select("",[ATTR_ID,this.domId('labels_position')],
+					     [['center','Center'],
+					      ['n','North'],
+					      ['nw','Northwest'],
+					      ['w','West'],
+					      ['sw','Southwest'],
+					      ['s','South'],
+					      ['se','Southeast'],
+					      ['e','East'],
+					      ['ne','Northeast']],
+					     this.getAttribute('labels_position')));
+
+	extra+=HU.formEntryLabel('Max Length',
+				 input('labels_maxlength',null,'100')+
+				 input('labels_maxlinelength','Max Line Length',15));
+	extra+= HU.formEntry('', HU.checkbox(this.domId('declutter_labels'),
+					     [ATTR_ID,this.domId('declutter_labels')],
+					     this.getDeclutterLabels(),'Declutter Labels'));
+	extra+=HU.formEntryLabel('Padding',input('declutter_padding',null,2));
+	extra+=HU.formEntryLabel('Pixels/Line',
+				 input('declutter_pixelsperline',null,10));
+	extra+=HU.formEntryLabel('Pixels/Character',
+				 input('declutter_pixelspercharacter',null,4));	
+	extra+=HU.formTableClose();
 	let labelsHtml =mapPointsRange+ 
 	    HU.boldLabel('Label Template')+ HU.br() +    
 	    mapPoints +
@@ -5458,6 +5487,7 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
 	    let maxLength = parseInt(this.attrs.labels_maxlength??1000);
 	    let maxLineLength = parseInt(this.attrs.labels_maxlinelength??1000);
+	    let pos = this.attrs.labels_position??'center';
 	    needToAddMapLabels = true;
 	    this.mapLabels = [];
 	    let markerStyle = 	$.extend({},this.style);
@@ -5466,7 +5496,30 @@ MapGlyph.prototype = {
 	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
 	    let macros = Utils.tokenizeMacros(template);
 	    features.forEach((feature,idx)=>{
-		let pt = feature.geometry.getCentroid(true); 
+		let pt;
+		let bounds = feature.geometry.getBounds();
+		let cx = bounds.left+(bounds.right-bounds.left)/2;
+		let cy = bounds.bottom+(bounds.top-bounds.bottom)/2;		
+		if(pos=='n') {
+		    pt = MapUtils.createPoint(cx,bounds.top);
+		} else if(pos=='nw') {
+		    pt = MapUtils.createPoint(bounds.left,bounds.top);
+		} else if(pos=='w') {
+		    pt = MapUtils.createPoint(bounds.left,cy);
+		} else if(pos=='sw') {
+		    pt = MapUtils.createPoint(bounds.left,bounds.bottom);
+		} else if(pos=='s') {
+		    pt = MapUtils.createPoint(cx,bounds.bottom);
+		} else if(pos=='se') {
+		    pt = MapUtils.createPoint(bounds.right,bounds.bottom);
+		} else if(pos=='e') {
+		    pt = MapUtils.createPoint(bounds.right,cy);
+		} else if(pos=='ne') {
+		    pt = MapUtils.createPoint(bounds.right,bounds.top);
+		}
+		if(!pt) {
+		    pt = feature.geometry.getCentroid(true); 
+		}
 		let labelStyle = $.extend({},markerStyle);
 		let label = this.applyMacros(template, feature.attributes,macros);
 		labelStyle.labelSelect=true;
