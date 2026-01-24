@@ -3276,12 +3276,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						    CSS_BOTTOM,HU.px(0))],
 				 HU.image(this.getZoomImage(min),
 					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
+					   ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#aaa')),
 					   ATTR_WIDTH,HU.px(120)])+HU.br()+
 				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN+'_label')],min)));
 	    let sample2 = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(0),
 						    CSS_BOTTOM,HU.px(0))],
 				 HU.image(this.getZoomImage(max),
 					  [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
+					   ATTR_STYLE,HU.css(CSS_BORDER,HU.border(1,'#aaa')),
 					   ATTR_WIDTH,HU.px(120)])+HU.br()+
 				 HU.center(HU.span([ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX+'_label')],max)));
 	    let container = HU.div([ATTR_STYLE,
