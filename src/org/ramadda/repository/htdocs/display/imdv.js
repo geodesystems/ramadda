@@ -1501,7 +1501,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			style.strokeColor=COLOR_LIGHT_GRAY;
+			style.strokeColor='#000';
 			style.fillColor = COLOR_TRANSPARENT;
 		    } else {
 			$.extend(mapOptions,attrs);
@@ -5466,12 +5466,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
 			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
 
+	    let imageStyle =  Utils.clone({},
+					  {imageOpacity:this.getImageOpacity(1)},
+					  lineStyle,
+					  {strokeWidth:0.25,
+					   strokeColor:'#000',
+					   rotation:0,
+					   transform:'', clippath:'', imagefilter:'',imagecss:''});
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
-			  Utils.clone({},
-				      {imageOpacity:this.getImageOpacity(1)},
-				      lineStyle,
-				      {rotation:0,
-				       transform:'', clippath:'', imagefilter:'',imagecss:''}),
+			  imageStyle,
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,

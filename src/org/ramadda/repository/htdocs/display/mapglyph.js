@@ -57,10 +57,6 @@ var ID_MAPLEGEND = 'maplegend';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
-
-
-
-
     if(!type) {
 	console.log("no type given for MapGlyph");
 	console.trace();
@@ -2550,6 +2546,7 @@ MapGlyph.prototype = {
 		if(showAnimation)
 		    body+='Opacity:';
 		body += 
+		    HU.boldLabel('Opacity') +
 		    HU.center(
 			HU.div([ATTR_TITLE,'Set image opacity',
 				ATTR_SLIDER_MIN,0,
