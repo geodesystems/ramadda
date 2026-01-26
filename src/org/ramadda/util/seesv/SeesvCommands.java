@@ -83,6 +83,7 @@ public interface SeesvCommands {
     public static final String CMD_SKIPLINES="-skiplines";
     public static final String CMD_IF="-if";
     public static final String CMD_START="-start";
+    public static final String CMD_STARTAFTER="-startafter";    
     public static final String CMD_STOP="-stop";
     public static final String CMD_RAWLINES="-rawlines";
     public static final String CMD_INPUTNOTCONTAINS="-inputnotcontains";

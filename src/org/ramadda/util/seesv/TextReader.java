@@ -71,6 +71,8 @@ public class TextReader implements Cloneable {
     private String outputPrefix;
     private String outputDelimiter = ",";
     private List<Utils.StringPattern> lineFilters;
+    private boolean startAfter = false;
+    private boolean seenStartAfter = false;    
     private String _startPattern;
     private Pattern startPattern;
     private boolean seenStartPattern  =false;
@@ -163,6 +165,7 @@ public class TextReader implements Cloneable {
 
     public void resetProcessors(boolean force) {
 	seenStartPattern = false;
+	seenStartAfter = false;
         if (firstProcessor != null) {
             firstProcessor.reset(force);
         }
@@ -490,6 +493,11 @@ public class TextReader implements Cloneable {
     }
 
     public void setStartPattern(String start) {
+	setStartPattern(start,false);
+    }
+
+    public void setStartPattern(String start,boolean after) {	
+	startAfter = after;
 	start=start.replace("\\t","\t").replace("_tab_","\t");
 	if(StringUtil.containsRegExp(start)) {
 	    startPattern = Pattern.compile(start);
@@ -498,6 +506,7 @@ public class TextReader implements Cloneable {
 	}
     }
 
+    int xcnt=0;
     public boolean lineOk(String line) {
         if ((inputComment != null) && inputComment.length()>0 && line.startsWith(inputComment)) {
             return false;
@@ -514,6 +523,15 @@ public class TextReader implements Cloneable {
 	    }	    
 	    seenStartPattern = true;
 	}
+	if(startAfter && !seenStartAfter) {
+	    seenStartAfter = true;
+	    return false;
+	}
+	/*
+	  if(xcnt++<2) {
+	  System.err.println("LINE OK:" + line);
+	  }*/
+
 
         if (lineFilters != null) {
             for (Utils.StringPattern f : lineFilters) {

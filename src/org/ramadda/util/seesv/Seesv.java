@@ -1565,6 +1565,8 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_START, "Start at pattern in source file",
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
+        new Cmd(CMD_STARTAFTER, "Start after pattern in source file",
+                new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),	
         new Cmd(CMD_STOP, "End at pattern in source file",
                 new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_TRIMLINE, "Trim the input line"),
@@ -3457,6 +3459,11 @@ public class Seesv implements SeesvCommands {
 		//		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_STARTAFTER,1,(ctx,args,i) -> {
+		ctx.setStartPattern(args.get(++i),true);
+		//		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction(CMD_UNIQUE_HEADER,0, (ctx,args,i) -> {
 		ctx.addProcessor(new Filter.UniqueHeader(ctx));
