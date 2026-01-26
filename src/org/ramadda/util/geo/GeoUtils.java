@@ -281,9 +281,13 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	return m*0.000621371;
     }    
 
+    public static double feetToMeters(double feet) {
+	return feet*0.3048;
+    }
+
     public static double kilometersToMeters(double km) {
 	return km*1000;
-    }
+    }    
 
     public static double mmToMeters(double mm) {
 	return mm/1000;
