@@ -2307,10 +2307,11 @@ var selectors = new Array();
 function Selector(event, selectorId, elementId, allEntries,
 		  selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
+    props = props??{};
+    this.props = props;
     this.id = selectorId;
     this.elementId = elementId;
     this.domId = HU.getUniqueId('selector_');
-    this.props = props||{};
     this.localeId = localeId;
     this.entryType = entryType;
     this.allEntries = allEntries;
@@ -2383,10 +2384,10 @@ function Selector(event, selectorId, elementId, allEntries,
 
 
         let url =  HU.url(URL_ENTRY_SHOW,ARG_OUTPUT,'selectxml','noredirect','true','firstclick',true);
-	if(props.searchFirst) {
+	if(this.props.searchFirst) {
 	    url = HU.url(url,'searchfirst',true);
 	}
-	if(props.doSearch) {
+	if(this.props.doSearch) {
 	    url = HU.url(url,'dosearch',true);
 	}	
 
