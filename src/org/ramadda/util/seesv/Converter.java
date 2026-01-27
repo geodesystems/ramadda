@@ -1280,11 +1280,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (int i : indices) {
 		if(!row.indexOk(i)) continue;
@@ -1305,11 +1301,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (int i : indices) {
 		if(!row.indexOk(i)) continue;
@@ -2446,12 +2438,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -2475,12 +2462,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -2507,12 +2489,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -2566,12 +2543,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 if ((idx >= 0) && (idx < row.size())) {
@@ -2600,12 +2572,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -3097,11 +3064,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            if ( !rows.contains(rowCnt++)) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (int index : indices) {
 		if(!row.indexOk(index)) continue;
@@ -3224,12 +3187,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -4419,11 +4377,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
+	    if(isHeaderRow(ctx,row)) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();

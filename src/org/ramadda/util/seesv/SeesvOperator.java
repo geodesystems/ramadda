@@ -76,6 +76,15 @@ public class SeesvOperator {
         this.sindices = cols;
     }
 
+    public boolean isHeaderRow(TextReader ctx,Row row) {
+	if (rowCnt++ == 0) {
+	    if ( !ctx.getAllData()) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
     public String format(double d) {
 	synchronized(decimalFormat) {
 	    return decimalFormat.format(d);
