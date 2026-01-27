@@ -17,7 +17,11 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
+
 import ucar.unidata.util.StringUtil;
+
+
 
 import org.w3c.dom.*;
 import org.json.*;
@@ -53,10 +57,11 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	int depthIndex=-1;
 	int index=0;
 	//	System.err.println("harvest metadata");
+	RecordField depthField=null;
 	for(RecordField field: metadata.getFields()) {
 	    String id = field.getName().toLowerCase();
-	    System.err.println("\tid:" + id);
 	    if(id.equals("depth")) {
+		depthField = field;
 		depthIndex=index;
 		break;
 	    }
@@ -66,9 +71,25 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	if(depthIndex>=0) {
 	    double[]range =metadata.getRange(depthIndex);
 	    if(range!=null) {
-		//		System.err.println("range:" + range[0] +" " + range[1]);
-		entry.setValue("top_depth",range[0]);
-		entry.setValue("bottom_depth",range[1]);		
+		double top  =range[0];
+		double bottom  =range[1];		
+		String unit = depthField.getUnit();
+		System.err.println("init:" + top +" " + bottom);
+
+		if(unit!=null) {
+		    unit  = unit.toLowerCase();
+		    if(unit.equals("f") || unit.equals("feet") ||
+		       unit.equals("ft")) {
+			top = GeoUtils.feetToMeters(top);
+			bottom = GeoUtils.feetToMeters(bottom);
+		    } else if(unit.equals("mm") || unit.equals("millimeters")) {
+			top = GeoUtils.mmToMeters(top);
+			bottom = GeoUtils.mmToMeters(bottom);
+		    }
+		}
+		System.err.println("range:" + depthField.getUnit()+" " +range[0] +" " + range[1]);
+		entry.setValue("top_depth",top);
+		entry.setValue("bottom_depth",bottom);
 	    }
 	}
     }
