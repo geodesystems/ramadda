@@ -13,7 +13,7 @@ Provides support for the
 
 <property name="record.properties">
 picky=false
-csvcommands1=-startafter,~A,-delimiter,spaces,-change,0-10,-999.*,NaN
+csvcommands1=-alldata,-startafter,~A,-delimiter,spaces,-change,0-10,-999.*,NaN
 </property>
 <property name="bubble">
 <![CDATA[
