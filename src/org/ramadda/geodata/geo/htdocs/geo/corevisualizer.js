@@ -1143,13 +1143,13 @@ RamaddaCoreDisplay.prototype = {
 	collection.annotationObjects=[];
 	
 
-	Utils.split(collection.annotations,",",true,true).forEach(a=>{
+
+	collection.annotations.forEach(annotation=>{
 	    let layer = this.legendLayer;
-	    let tuple = a.split(';');
-	    let depth = tuple[0];
-	    let label = tuple[1]??'';
-	    let style = Utils.convertText(tuple[2]??'');
-	    let desc = Utils.convertText(tuple[3]);
+	    let depth = +annotation.depth;
+	    let label = annotation.label??'';
+	    let style = annotation.style??'';
+	    let desc = annotation.description??'';
 	    let x= this.opts.axisWidth-75;
 	    let y = this.worldToCanvas(+depth);
 	    let styleObj = {doOffsetWidth:true};
@@ -1173,10 +1173,9 @@ RamaddaCoreDisplay.prototype = {
 	    let l = this.makeText(layer,label,x+pad,y-5, styleObj);
 	    if(l && Utils.stringDefined(desc)) {
 		this.addClickHandler(l,(e,obj)=>{
-		    let y = l.getAbsolutePosition().y;
-		    let world = this.canvasToWorld(y);
 		    desc  =desc.replace(/\n/g,'<br>');
-		    this.showPopup(label,desc,l,true);
+		    this.showPopup(label,desc,l,true,dialog=>{
+		    });
 		});
 	    }
 	    let tick = new Konva.Line({
@@ -1201,7 +1200,11 @@ RamaddaCoreDisplay.prototype = {
 	    if(!collection.visible) {
 		this.toggleAll([l,tick],false);
 	    }
+
 	});
+
+
+
     },
 
     showGallery: function(anchor) {
@@ -1698,7 +1701,7 @@ RamaddaCoreDisplay.prototype = {
 	    }		
 	});
     },
-    showPopup:function(label,text,obj,left) {
+    showPopup:function(label,text,obj,left,callback) {
 	let _this = this;
 	if(!text) return;
 	if(obj &&  obj.dialog) obj.dialog.remove();
@@ -1715,6 +1718,9 @@ RamaddaCoreDisplay.prototype = {
 				     draggable:this.canEdit()});
 
 	
+	if(callback) {
+	    callback(dialog);
+	}
 	dialog.find('.wiki-image img').css(CSS_CURSOR,CURSOR_POINTER);
 	dialog.find('.wiki-image img').click(function() {
 	    let url  =$(this).attr(ATTR_SRC);
