@@ -74,7 +74,7 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 		double top  =range[0];
 		double bottom  =range[1];		
 		String unit = depthField.getUnit();
-		System.err.println("init:" + top +" " + bottom);
+		//		System.err.println("init:" + top +" " + bottom);
 
 		if(unit!=null) {
 		    unit  = unit.toLowerCase();
@@ -87,7 +87,7 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 			bottom = GeoUtils.mmToMeters(bottom);
 		    }
 		}
-		System.err.println("range:" + depthField.getUnit()+" " +range[0] +" " + range[1]);
+		//		System.err.println("range:" + depthField.getUnit()+" " +range[0] +" " + range[1]);
 		entry.setValue("top_depth",top);
 		entry.setValue("bottom_depth",bottom);
 	    }
