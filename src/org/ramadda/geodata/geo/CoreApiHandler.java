@@ -96,12 +96,17 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    String style = mtd.getAttr3();	    
 	    String desc =  mtd.getAttr4();	    
 	    if(Utils.stringDefined(depth)) {
-		annotations.add(depth+";"+ label+";"+Utils.encodeBase64(style,true)+";"+Utils.encodeBase64(desc,true));
+		List<String> annotation = new ArrayList<String>();
+		Utils.add(annotation,"depth",JU.quote(depth),
+			  "label",JU.quote(label),
+			  "style",JU.quote(style),
+			  "description",JU.quote(desc));
+		annotations.add(JU.map(annotation));
 	    }
 	}
 
 	if(annotations.size()>0) {
-	    Utils.add(collection,"annotations",JU.quote(Utils.join(annotations,",")));
+	    Utils.add(collection,"annotations",JU.list(annotations));
 	}
 
 	List<String> entries = new ArrayList<String>();
