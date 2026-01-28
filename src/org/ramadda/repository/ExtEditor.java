@@ -1588,6 +1588,12 @@ public class ExtEditor extends RepositoryManager {
 	public String getType() {
 	    return entry.getTypeHandler().getType();
 	}
+	public String getTypeLabel() {
+	    return entry.getTypeHandler().getDescription();
+	}
+	public TypeHandler getTypeHandler() {
+	    return entry.getTypeHandler();
+	}		
 
 	public void reindex() {
 	    List<Entry> entries = new ArrayList<Entry>();
