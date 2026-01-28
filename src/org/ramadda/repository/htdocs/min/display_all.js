@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan 28 07:58:17 MST 2026";
+var build_date="RAMADDA build date: Wed Jan 28 08:31:03 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -27689,6 +27689,8 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		this.recordToIdx[record.getId()] = idx;
 	    });
 
+
+
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
 	    if(this.getShowArrows(false)) {
 		let noun = this.getProperty("noun", "Data");
@@ -27706,6 +27708,16 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let label = this.getMenuLabel();
 	    if(label) menu = label+SPACE + menu;
 	    this.setContents(menu);
+
+	    HU.makeSelectTagPopup(this.jq(ID_MENU),{
+		sticky:true,
+		after:true,
+		icon:true,
+		single:true,
+		hide:false,
+		label:'Select'});	    
+
+
 	    if(this.getShowArrows(false)) {
 		this.jq(ID_PREV).click(e=>{
 		    let index = +this.jq(ID_MENU).val()-1;
