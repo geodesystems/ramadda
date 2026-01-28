@@ -443,6 +443,25 @@ showHeading=true
   <property name="form.datatype.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.altitude.show" value="false"/>
+  <wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{group}}
++center
+{{display_menu shareSelectedEntry=true  doEntries=true showArrows=true  }} 
+{{display_entrytitle entry="child:"   acceptShareSelectedEntry=true  }}
+-center
+{{display_entrywiki  acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}}
+
+----
+
+:heading The Entries
+{{tabletree}}
+
+-section
+]]>
+</wiki>
+
 
 </type>
 
