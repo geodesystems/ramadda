@@ -15,6 +15,9 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import org.w3c.dom.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -25,6 +28,32 @@ public class LasTypeHandler extends BoreholeTypeHandler {
     public LasTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
+    }
+
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
+            throws Exception {
+	super.initializeNewEntry(request, entry,newType);
+	if(!isNew(newType)) return;
+	InputStream input = new FileInputStream(entry.getFile());
+	BufferedReader br   = new BufferedReader(new InputStreamReader(input));
+	String line;
+	//COMP  .          LAMONT-DOHERTY                   :COMPANY
+	Pattern p = Pattern.compile("^([^\\s]+)\\s+\\.(.*):(.*)$");
+	while((line= br.readLine())!=null) {
+	    if(line.startsWith("~A")) {
+		break;
+	    }
+	    Matcher m = p.matcher(line);
+	    if (m.find()) {
+		String id = m.group(1).trim();
+		String value = m.group(2).trim();		
+		String longId = m.group(3).trim();
+		if(!stringDefined(value)) continue;
+		System.err.println("id:" + id +" v:" + value +" long:" + longId);
+	    }
+	    
+	}
     }
 
     @Override
