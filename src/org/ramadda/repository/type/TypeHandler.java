@@ -1194,7 +1194,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
-	if(isSynthType()) {
+	if(isSynthType() && !this.equals(entry.getTypeHandler())) {
 	    if(entry.getTypeHandler().isSynthType()) {
 		if(entry.isGroup()) {
 		    return getRepository().getGroupTypeHandler();
