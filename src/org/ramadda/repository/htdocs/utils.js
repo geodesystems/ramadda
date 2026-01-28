@@ -6555,7 +6555,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    after:false,
 	    wrap:'${widget}',
 	    makeButton:true,
-	    makeButtons:true
+	    makeButtons:true,
+	    sticky:false
 	}
 	if(args.icon && !args.buttonLabel)
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
@@ -6595,7 +6596,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    select.iconselectmenu('refresh');
 		}
 	    }
-	    if(opts.single) {
+	    if(opts.single && !opts.single) {
 		dialog.remove();
 	    }
 
