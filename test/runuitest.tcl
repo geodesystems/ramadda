@@ -148,6 +148,7 @@ if {$groupID!=""} {
     runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
     runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
+    runGroup "Core Data" example_core_data_types
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
     runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
