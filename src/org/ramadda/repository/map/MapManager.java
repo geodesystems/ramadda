@@ -270,8 +270,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
             if (userLoc != null) {
                 List<String> toks = Utils.split(userLoc, ";");
-                props.put(PROP_INITIAL_BOUNDS, JsonUtil.list(toks));
-                didLoc = true;
+		if(toks.size()>4 && Utils.allStringDefined(toks)) {
+		    props.put(PROP_INITIAL_BOUNDS, JsonUtil.list(toks));
+		    didLoc = true;
+		}
             }
         }
 
@@ -1618,7 +1620,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (request.defined("map_bounds")) {
 	    List<String> toks = Utils.split(request.getString("map_bounds",
 							      ""), ",", true, true);
-            if (toks.size() == 4) {
+            if (toks.size() == 4 &&  Utils.allStringDefined(toks)) {
 		haveLocation = true;
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
                                 JsonUtil.list(toks.get(0), toks.get(1),

@@ -628,6 +628,7 @@ public class MapInfo {
      * @param value  the value
      */
     public void addProperty(String name, Object value) {
+	//	if(name.equals(MapManager.PROP_INITIAL_BOUNDS)) System.err.println(value +" " + Utils.getStack(10));
         getMapProps().put(name, value);
     }
 
