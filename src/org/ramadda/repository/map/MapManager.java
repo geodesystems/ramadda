@@ -127,15 +127,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         extraJS.append("\n");
     }
 
-
-    /**
-     *
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     * @param pts _more_
-     * @param props _more_
-     */
     public void makeMap(StringBuilder sb, String width, String height,
                         List<double[]> pts, Hashtable<String, String> props) {
         try {
@@ -245,17 +236,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Hashtable<String, String> getMapProps(Request request,
 						 Entry entry, Hashtable<String, String> props)
 	throws Exception {
@@ -377,27 +357,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         return mapLayers;
     }
 
-    /**
-     * Create a map
-     *
-     * @param request      the Request
-     * @param entry _more_
-     * @param width        map width
-     * @param height       map height
-     * @param forSelection true if map used for selection
-     * @param props _more_
-     *
-     * @return a map information holder
-     *
-     * @throws Exception _more_
-     */
-    public MapInfo createMap(Request request, Entry entry, String width,
-                             String height, boolean forSelection,
-                             Hashtable<String, String> props)
-	throws Exception {
-        return createMap(request, entry, width, height, forSelection, false,
-                         props);
-    }
 
     /**
      *
@@ -781,28 +740,18 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	}
 
 	return new Result("{error:'No routing service available'}", Result.TYPE_JSON);
-
-
     }
-    
 
 
+    public MapInfo createMap(Request request, Entry entry, String width,
+                             String height, boolean forSelection,
+                             Hashtable<String, String> props)
+	throws Exception {
+        return createMap(request, entry, width, height, forSelection, false,
+                         props);
+    }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param width _more_
-     * @param height _more_
-     * @param forSelection _more_
-     * @param hidden _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public MapInfo createMap(Request request, Entry entry, String width,
                              String height, boolean forSelection,
                              boolean hidden, Hashtable<String, String> props)
@@ -816,6 +765,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         MapInfo mapInfo = new MapInfo(request, getRepository(), props, width,
                                       height, forSelection);
 
+
+
 	addGeoJson(request, mapInfo, entry,true);
 
 
@@ -823,7 +774,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             mapInfo.setStyle(style);
         }
         mapInfo.setMapHidden(hidden);
-
 
         String imageOpacity = (String) props.get("imageOpacity");
         if (imageOpacity != null) {
