@@ -109,7 +109,7 @@ function RepositoryMap(mapId, params) {
     };
 
 
-    if(!Utils.isDefined(params.initialZoom)) {
+    if(!Utils.isDefined(params.initialZoom) && params.initialZoom>0) {
 	this.hadInitialZoom = Utils.isDefined(params[ARG_ZOOMLEVEL]);
 	params.initialZoom= Utils.isDefined(params[ARG_ZOOMLEVEL])?params[ARG_ZOOMLEVEL]:MapUtils.defaults.defaultZoomLevel;
 	if(debugBounds) console.log("setting initial zoom:",params.initialZoom);
@@ -201,17 +201,23 @@ function RepositoryMap(mapId, params) {
 	} else {
             this.defaultLocation = MapUtils.createLonLat(params.initialLocation[1], params.initialLocation[0]);
 	}
+	if(!Utils.isDefined(this.params.initialZoom)) {
+	    this.params.initialZoom=6;
+	}
 	
 	if(debugBounds)
-	    console.log("setting default location:" + this.defaultLocation);
+	    console.log("setting default location:",this.defaultLocation);
     } else if (Utils.isDefined(params.initialBounds)) {
         if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
         }
-        this.defaultBounds = MapUtils.createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
+        this.defaultBounds = MapUtils.createBounds(params.initialBounds[1],
+						   params.initialBounds[2],
+						   params.initialBounds[3],
+						   params.initialBounds[0]);
 	this.defaultLocation = null;
 	if(debugBounds)
-	    console.log("setting default bounds-1:" + this.defaultBounds);
+	    console.log("setting default bounds-1:",this.defaultBounds);
     }
     
 
@@ -308,7 +314,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             'click': this.handleMapClick
         }, this.handlerOptions);
     },
-    setLatLonZoomFld: function(lonFld, latFld, zoomFld, listener,onAlt) {
+    setLatLonZoomFld: function(latFld, lonFld, zoomFld, listener,onAlt) {
         this.lonFldId = lonFld;
         this.latFldId = latFld;
         this.zoomFldId = zoomFld;
@@ -353,12 +359,17 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 	}
 	
 
+
+
 	let lonFld = GuiUtils.getDomObject(this.lonFldId);
         let latFld = GuiUtils.getDomObject(this.latFldId);
         let zoomFld = GuiUtils.getDomObject(this.zoomFldId);
+
         if (latFld && lonFld) {
-            latFld.obj.value = MapUtils.formatLocationValue(lonlat.lat);
-            lonFld.obj.value = MapUtils.formatLocationValue(lonlat.lon);
+	    let formatLat = MapUtils.formatLocationValue(lonlat.lat);
+	    let formatLon = MapUtils.formatLocationValue(lonlat.lon);	    
+            latFld.obj.value = formatLat;
+            lonFld.obj.value = formatLon;
         }
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
@@ -373,8 +384,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 	if(Utils.isDefined(this.clickListener)) {
             this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
         }
-
-
     }
 
 });
@@ -997,7 +1006,16 @@ RepositoryMap.prototype = {
 	    this.locationChangedInner();
 	    this.pendingResizeTimeout = null;
 	},500);
-	
+	/*
+	Utils.bufferedCall('mapmove',()=>{
+	    let center =   this.transformProjPoint(this.getMap().getCenter())
+	    Utils.setLocalStorage('ramaddamaplocation', 
+				  {zoomlevel:this.getMap().getZoom(),
+				   latitude:center.lat,longitude:center.lon},
+				  true);
+				  },500);
+				  */
+
     },
     locationChangedInner: function(toConsole) {
 	let latlon = this.getBounds();
@@ -1028,6 +1046,9 @@ RepositoryMap.prototype = {
         baseLayer = baseLayer.ramaddaId;
 	HU.addToDocumentUrl("defaultMapLayer",baseLayer);
 	ramaddaMapShareState(this,"baseLayer");
+    },
+    getJq: function(suffix) {
+	return jqid(this.mapDivId+suffix);
     },
     appendToolbar: function(html) {
 	jqid(this.mapDivId+"_toolbar").append(html);
@@ -3712,6 +3733,8 @@ RepositoryMap.prototype = {
             return;
 	}
 
+
+	if(!lonfld && !latfld && !zoomfld && !object) return;
         this.clickHandler = new OpenLayers.Control.Click();
         this.clickHandler.setLatLonZoomFld(latfld, lonfld, zoomfld, object,onAlt);
         this.clickHandler.setTheMap(this);
@@ -3729,8 +3752,9 @@ RepositoryMap.prototype = {
         if (!GuiUtils) {
             return;
         }
+
 	let getField=suffix=>{
-            return  GuiUtils.getDomObject(this.argBase + '_'+suffix) ??
+            return   GuiUtils.getDomObject(this.argBase + '_'+suffix) ??
 		GuiUtils.getDomObject(this.argBase + '.' + suffix) ??
 		GuiUtils.getDomObject(this.argBase + suffix) ??
 		GuiUtils.getDomObject(this.mapId + '_' + suffix);
@@ -3741,10 +3765,12 @@ RepositoryMap.prototype = {
         this.fldWest = getField('west');
         this.fldLat = getField('latitude');
         this.fldLon = getField('longitude');
+
         if (this.fldLon || this.params.addMarkerOnClick) {
-            this.addClickHandler(this?.fldLat?.id, this?.fldLon?.id);
-	    if(this.fldLon)
+            this.addClickHandler(this?.fldLon?.id, this?.fldLat?.id);
+	    if(this.fldLon) {
 		this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
+	    }
         } else if(this.fldWest && this.fldNorth) {
             this.addClickHandler(this?.fldNorth?.id, this?.fldWest?.id,null,null,true);
 	}
@@ -3867,11 +3893,14 @@ RepositoryMap.prototype = {
     },
 
     setSelectionMarker:  function(lon, lat, andCenter, zoom) {
-        if (!lon || !lat || lon == "" || lat == "")
+        if (!lon || !lat || lon == "" || lat == "") {
             return;
+	}
         if (this.lonFldId != null) {
-            jqid(this.lonFldId).val(MapUtils.formatLocationValue(lon));
-            jqid(this.latFldId).val(MapUtils.formatLocationValue(lat));
+	    let formatLat = MapUtils.formatLocationValue(lat);
+	    let formatLon = MapUtils.formatLocationValue(lon);	    
+            jqid(this.lonFldId).val(formatLon);
+            jqid(this.latFldId).val(formatLat);
         }
 
 
