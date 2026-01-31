@@ -3991,9 +3991,13 @@ public class TypeHandler extends RepositoryManager {
     public void addNewEntryPageHeader(Request request, Entry group,Appendable sb) throws Exception {
 
 	String msg = "+callout-info\n";
-	msg+="You are adding a new " + getDescription() + " to the " +
-	    group.getTypeHandler().getDescription() + " " +
-	    HU.span(group.getName(),HU.clazz("ramadda-italic"));
+	String actualMsg = getTypeProperty("form.new.header",null);
+	if(actualMsg==null) {
+	    actualMsg="You are adding a new " + getDescription() + " to the " +
+		group.getTypeHandler().getDescription() + " " +
+		HU.span(group.getName(),HU.clazz("ramadda-italic"));
+	}
+	msg+=actualMsg;
 
 	if (Utils.equals(getType(),TYPE_FILE)) {
 	    msg+="<br>RAMADDA will try to guess at the new entry type based on the file name";
@@ -4036,18 +4040,25 @@ public class TypeHandler extends RepositoryManager {
 		addSpecialToEntryForm(request, buffers, parentEntry, entry, formInfo,this, seen);
 	    }
 
-	    //	    if(okToShowInForm(entry, FIELD_ORDER)) {
-	    buffers.setGroup("Admin");
-	    buffers.append(formEntry(request, msgLabel("Order"),
-				HU.input(ARG_ENTRYORDER,
-					 ((entry != null)
-					  ? entry.getEntryOrder()
-					  : 999), HU.SIZE_5) + " 1-N"));
+	    boolean addedAdminGroup =false;
+	    if(okToShowInForm(entry, FIELD_ORDER,true)) {
+		addedAdminGroup =true;
+		buffers.setGroup("Admin");
+		buffers.append(formEntry(request, msgLabel("Order"),
+					 HU.input(ARG_ENTRYORDER,
+						  ((entry != null)
+						   ? entry.getEntryOrder()
+						   : 999), HU.SIZE_5) + " 1-N"));
+	    }
 		//	    }
 
 
             if ((entry != null) && request.getUser().getAdmin()
 		&& okToShowInForm(entry, "owner", true)) {
+		if(!addedAdminGroup) {
+		    addedAdminGroup =true;
+		    buffers.setGroup("Admin");
+		}
                 String ownerInputId = Utils.getGuid();
 		buffers.append(formEntry(request, msgLabel("Owner"),
 					 HU.input(ARG_USER_ID,
@@ -4260,9 +4271,10 @@ public class TypeHandler extends RepositoryManager {
 
             String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
-            MapInfo map = getMapManager().createMap(request, entry, true,
-						    getMapManager().getMapProps(request, entry,
-										null));
+	    Entry mapEntry = entry!=null?entry:parentEntry;
+	    Hashtable<String, String> mapProps = getMapManager().getMapProps(request, mapEntry,null);
+	    MapInfo map = getMapManager().createMap(request, mapEntry, true,null);
+	    map.addProperties(mapProps);
 	    getMapManager().initMapSelector(request, this,parentEntry, entry, map);
 
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
@@ -4565,7 +4577,7 @@ public class TypeHandler extends RepositoryManager {
 				 + HU.attr("placeholder", showLabel?"":label)
 				 + HU.id(domId));
 		    String alias = getMetadataManager().getMetadataAlias(request, entry);
-		    if(alias==null) {
+		    if(getTypeProperty("form.alias.show", true) && alias==null) {
 			String aliasId = HU.getUniqueId("");
 			String aliasInput =
 			    HU.labeledCheckbox(ARG_DOALIAS,
@@ -4694,8 +4706,7 @@ public class TypeHandler extends RepositoryManager {
 
                         String label =
                             getTypeProperty("form.description.label", "");
-                        String edit = prefix + HU.b(label) + "<br>"
-			    + tmpSB.toString();
+                        String edit = prefix + HU.div(HU.b(label),"") +   tmpSB.toString();
                         sb.append(HU.row(HU.td(edit, "colspan=2")));
                     }
                 }
