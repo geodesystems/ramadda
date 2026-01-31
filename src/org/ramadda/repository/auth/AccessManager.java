@@ -53,12 +53,6 @@ import java.util.TimeZone;
 import java.util.regex.*;
 import java.util.zip.*;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class AccessManager extends RepositoryManager {
 
@@ -69,72 +63,48 @@ public class AccessManager extends RepositoryManager {
     public static final String ATTR_ROLE = "role";
     public static final String ATTR_DATAPOLICY = "datapolicy";    
 
-    /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
 						       "/access/form", "Edit Permissions");
 
-    /** _more_ */
     public RequestUrl URL_ACCESS_CHANGE = new RequestUrl(getRepository(),
 							 "/access/change");
 
-    /** _more_ */
     private Object MUTEX_PERMISSIONS = new Object();
 
-    /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
         new TTLCache<String, Object[]>(5 * 60 * 1000,
 				       "Access Manager Permissions");
 
-    /** _more_ */
     public static final String PROP_STOPATFIRSTROLE =
         "ramadda.auth.stopatfirstrole";
 
-    /**  */
     public static final String DATAPOLICY_PREFIX = "datapolicy:";
 
-    /**  */
     public static final String PROP_DATAPOLICY_URLS =
         "ramadda.datapolicy.urls";
 
-    /**  */
     public static final String PROP_DATAPOLICY_DEBUG =
         "ramadda.datapolicy.debug";
 
-    /**  */
     public static final String PROP_DATAPOLICY_SLEEP =
         "ramadda.datapolicy.sleepminutes";
 
-    /**  */
     public static final String ARG_DATAPOLICY = "datapolicy";
 
-    /**  */
     private boolean haveDoneDataPolicyFetch = false;
 
-    /**  */
     private boolean stopAtFirstRole = true;
 
-    /**  */
     private List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
 
-    /**  */
     private Hashtable<String, DataPolicy> dataPoliciesMap =
         new Hashtable<String, DataPolicy>();
 
-    /**  */
     private boolean debugDataPolicy = false;
-
-    /** _more_ */
     public static boolean debug = false;
     public static boolean debugAction = false;
-
     public static boolean debugAll = false;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     */
     public AccessManager(Repository repository) {
         super(repository);
         Misc.run(new Runnable() {
@@ -150,8 +120,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     */
     public void updateLocalDataPolicies() {
         Misc.runInABit(5000, new Runnable() {
 		public void run() {
@@ -165,10 +133,6 @@ public class AccessManager extends RepositoryManager {
 	    });
     }
 
-    /**
-     *
-     * @throws Exception _more_
-     */
     private void runDataPolicyFetch() throws Exception {
         //Pause for a a bit before we get started
         //        Misc.sleepSeconds(10);
@@ -189,11 +153,7 @@ public class AccessManager extends RepositoryManager {
         }
     }
 
-    /**
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     private synchronized boolean doDataPolicyFetch() throws Exception {
         boolean debug = debugDataPolicy;
         List<String> urls = new ArrayList<String>();
@@ -270,11 +230,7 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     *
-     * @param a _more_
-     * @param licenses _more_
-     */
+
     private void loadLocalContextsLabels(JSONArray a,
                                          List<License> licenses) {
         for (int i = 0; i < a.length(); i++) {
@@ -292,14 +248,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     *
-     * @param obj _more_
-     * @param fromUrl _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<DataPolicy> loadLocalContexts(JSONObject obj, String fromUrl)
 	throws Exception {
         List<DataPolicy> dps      = new ArrayList<DataPolicy>();
@@ -387,9 +335,6 @@ public class AccessManager extends RepositoryManager {
 	}
     }
 
-    /**
-     * _more_
-     */
     public synchronized void clearCache() {
         recentPermissions.clearCache();
         //Since clearCache gets called at startup  we only want to
@@ -401,8 +346,7 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     */
+
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -410,13 +354,6 @@ public class AccessManager extends RepositoryManager {
         debugAction = getRepository().getProperty("ramadda.debugaction",   false);
     }
 
-    /**
-     * _more_
-     *
-     * @param mainEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initTopEntry(Entry mainEntry) throws Exception {
         List<Permission> permissions = new ArrayList<Permission>();
         Utils.add(
@@ -434,16 +371,6 @@ public class AccessManager extends RepositoryManager {
         insertPermissions(null, mainEntry, permissions);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param action _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoAction(Request request, String action)
 	throws Exception {
         boolean debug =false;
@@ -532,17 +459,6 @@ public class AccessManager extends RepositoryManager {
         //        return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param action _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoAction(Request request, Entry entry, String action)
 	throws Exception {
         return canDoAction(request, entry, action, false);
@@ -696,14 +612,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean canSetAccess(Request request, Entry entry) {
         User user = request.getUser();
         if (user.getAdmin()
@@ -716,20 +624,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param log _more_
-     * @param entry _more_
-     * @param action _more_
-     * @param user _more_
-     * @param requestIp _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean canDoActionInner(Request request, String requestIp,
                                      User user, boolean log, Entry entry,
                                      String action)
@@ -836,16 +730,6 @@ public class AccessManager extends RepositoryManager {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param action _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Role> getRoles(Entry entry, String action) throws Exception {
         //Make sure we call getPermissions first which forces the instantation of the roles
         getPermissions(entry);
@@ -863,16 +747,6 @@ public class AccessManager extends RepositoryManager {
         return roles;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canAccessFile(Request request, Entry entry)
 	throws Exception {
         //Check if its a crawler
@@ -906,16 +780,6 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_VIEW, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDownload(Request request, Entry entry)
 	throws Exception {
 	return canDownload(request, entry, false);
@@ -951,27 +815,12 @@ public class AccessManager extends RepositoryManager {
 	return can;
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void debug(String msg) {
         if (debug) {
             logInfo(msg);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry filterEntry(Request request, Entry entry) throws Exception {
 	//	debug = true;
 	if(debug) System.err.println("filterEntry:" + entry);
@@ -1020,16 +869,6 @@ public class AccessManager extends RepositoryManager {
         return entry;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> filterEntries(Request request, List entries)
 	throws Exception {
         List<Entry> filtered = new ArrayList();
@@ -1044,20 +883,20 @@ public class AccessManager extends RepositoryManager {
         return filtered;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoEdit(Request request, Entry entry) throws Exception {
+	if(entry==null) return false;
         //        if(entry.getIsLocalFile()) return false;
-	if(entry!=null && getEntryManager().isSynthEntry(entry.getId())) return false;
-        return canDoAction(request, entry, Permission.ACTION_EDIT);
+	if(getEntryManager().isSynthEntry(entry.getId())) return false;
+        boolean ok= canDoAction(request, entry, Permission.ACTION_EDIT);
+	if(!ok) return false;
+
+        User user = request.getUser();
+	if(user!=null && user.getIsGuest() &&	
+	   Misc.equals(user, entry.getUser())) {
+	    //
+	    //	    return false;
+	}
+	return true;
     }
 
     public boolean canDoGeo(Request request, Entry entry)  {
@@ -1069,174 +908,65 @@ public class AccessManager extends RepositoryManager {
 	}
     }    
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public boolean canDoFile(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_FILE);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public boolean canDoType1(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoType2(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoExport(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_EXPORT);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoComment(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_COMMENT);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoView(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_VIEW);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoNew(Request request, Entry entry) throws Exception {
 	if(entry!=null && getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_NEW);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoUpload(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_UPLOAD);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoDelete(Request request, Entry entry)
 	throws Exception {
 	if(entry!=null && getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_DELETE);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoViewChildren(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_VIEWCHILDREN);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoType1Action(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoType2Action(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void listAccess(Request request, Entry entry, StringBuilder sb,boolean even)
 	throws Exception {
         if (entry == null) {
@@ -1302,15 +1032,6 @@ public class AccessManager extends RepositoryManager {
 					      entry.getParentEntryId()), sb,!even);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param permissions _more_
-     *
-     * @throws Exception _more_
-     */
     private void insertPermissions(Request request, Entry entry,
                                    List<Permission> permissions)
 	throws Exception {
@@ -1334,16 +1055,6 @@ public class AccessManager extends RepositoryManager {
         entry.setPermissions(permissions);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param permission _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean hasPermissionSet(Entry entry, String permission)
 	throws Exception {
         for (Permission p : getPermissions(entry)) {
@@ -1355,14 +1066,6 @@ public class AccessManager extends RepositoryManager {
         return false;
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param inherited _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<DataPolicy> getDataPolicies(Entry entry, boolean inherited)
 	throws Exception {
         List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
@@ -1395,15 +1098,6 @@ public class AccessManager extends RepositoryManager {
         return dataPolicies;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Permission> getPermissions(Entry entry) throws Exception {
         if (entry.isGroup() && entry.isDummy()) {
             return new ArrayList<Permission>();
@@ -1451,12 +1145,6 @@ public class AccessManager extends RepositoryManager {
         return getUpdatedPermissions(entry, permissions);
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param permissions _more_
-     *  @return _more_
-     */
     private List<Permission> getUpdatedPermissions(Entry entry,
 						   List<Permission> permissions) {
         boolean hasDataPolicy = false;
@@ -1514,11 +1202,6 @@ public class AccessManager extends RepositoryManager {
         return result;
     }
 
-    /**
-     *
-     * @param permission _more_
-     *  @return _more_
-     */
     private DataPolicy getDataPolicy(Permission permission) {
 	return getDataPolicy(permission.getDataPolicyId());
     }
@@ -1530,13 +1213,6 @@ public class AccessManager extends RepositoryManager {
         return dataPoliciesMap.get(id);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processDataPolicyInfo(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Data Policies", false);
@@ -1552,16 +1228,6 @@ public class AccessManager extends RepositoryManager {
         return new Result("Data Policies", sb);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param dataPolicies _more_
-     * @param includeCollection _more_
-     * @param includePermissions _more_
-     *
-     * @throws Exception _more_
-     */
     public void formatDataPolicies(Request request, Appendable sb,
                                    List<DataPolicy> dataPolicies,
                                    boolean includeCollection,
@@ -1683,15 +1349,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processAccessForm(Request request) throws Exception {
 
         boolean debug =debugAll;
@@ -1705,8 +1362,6 @@ public class AccessManager extends RepositoryManager {
 	//        getPageHandler().entrySectionOpen(request, entry, sb, "Edit Permissions");
 	getEntryManager().addEntryEditHeader(request, entry,sb, URL_ACCESS_FORM);
         request.appendMessage(sb);
-
-
 
         StringBuilder currentAccess = new StringBuilder();
 	getCurrentAccess(request, entry,currentAccess);
@@ -1786,9 +1441,6 @@ public class AccessManager extends RepositoryManager {
 					   "target", "_datapolicies"));
 	    HU.span(sb,HU.b("Data Policy") + " " + help +"<br>" + select,"");
         }
-
-	
-
 
         sb.append("<table id='accessform' style=''><tr valign=top>");
         sb.append("<td>");
@@ -1872,15 +1524,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processAccessChange(Request request) throws Exception {
         getAuthManager().ensureAuthToken(request);
         Entry entry = getEntryManager().getEntry(request);
@@ -1918,72 +1561,27 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /** _more_ */
     private TwoFactorAuthenticator twoFactorAuthenticator;
 
-    /**
-     * _more_
-     *
-     * @param tfa _more_
-     */
     public void setTwoFactorAuthenticator(TwoFactorAuthenticator tfa) {
         twoFactorAuthenticator = tfa;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public TwoFactorAuthenticator getTwoFactorAuthenticator() {
         return twoFactorAuthenticator;
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Dec 6, '18
-     * @author         Enter your name here...
-     */
     public static class TwoFactorAuthenticator {
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param user _more_
-         * @param sb _more_
-         *
-         * @throws Exception _more_
-         */
         public void addAuthForm(Request request, User user, Appendable sb)
 	    throws Exception {}
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param user _more_
-         * @param sb _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public boolean userHasBeenAuthenticated(Request request, User user,
 						Appendable sb)
 	    throws Exception {
             return true;
         }
 
-        /**
-         * _more_
-         *
-         * @param user _more_
-         *
-         * @return _more_
-         */
         public boolean userCanBeAuthenticated(User user) {
             return false;
         }
