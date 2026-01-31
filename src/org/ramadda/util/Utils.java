@@ -704,6 +704,14 @@ public class Utils extends IO {
         return true;
     }
 
+    public static boolean allStringDefined(List list) {
+	for(Object o:list) {
+	    if(!stringDefined(o)) return false;
+	}
+	return true;
+    }
+
+
     public static String getDefined(String dflt, String... args) {
         for (String s : args) {
             if (Utils.stringDefined(s)) {
