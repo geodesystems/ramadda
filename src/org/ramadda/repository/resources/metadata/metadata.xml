@@ -450,6 +450,23 @@ If inherited=true then the children entries cannot be deleted
 
     <type
 	tag="internal" 	     showinhtml="false"
+       searchable="false" browsable="false"
+       name="Restricted Entry Types"
+       id="restrictedentrytypes"
+       >
+      <help>
+<![CDATA[
+Limit new entry types
+<a target=_types href=/repository/entry/types.html>View entry types</a>
+]]>
+</help>
+<element name="Types" datatype="string" rows="5" suffix="One type ID per row"/>
+    </type>
+
+
+
+    <type
+	tag="internal" 	     showinhtml="false"
        searchable="true" browsable="true"
        name="Is In Site Map"
        id="isinsitemap"

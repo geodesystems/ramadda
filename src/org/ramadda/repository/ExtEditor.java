@@ -341,8 +341,12 @@ public class ExtEditor extends RepositoryManager {
 									request.getString(
 											  ARG_EXTEDIT_NEWTYPE, ""));
 
-            entry = changeType(request, entry, newTypeHandler);
-            prefix.append(getPageHandler().showDialogNote(msg("Entry type has been changed")));
+	    try {
+		entry = changeType(request, entry, newTypeHandler);
+		prefix.append(getPageHandler().showDialogNote(msg("Entry type has been changed")));
+	    } catch(Exception exc) {
+		prefix.append(getPageHandler().showDialogError(exc.getMessage()));
+	    }
         } else  if (request.exists(ARG_EXTEDIT_ADDALIAS) || request.exists(ARG_EXTEDIT_ADDALIAS_CONFIRM)) {
 	    what = new String[]{ARG_EXTEDIT_ADDALIAS};
 	    boolean firstTime = !request.exists(ARG_EXTEDIT_ADDALIAS_NOTFIRST);
@@ -1229,7 +1233,7 @@ public class ExtEditor extends RepositoryManager {
             for (Entry entry : entries) {
                 if ( !getAccessManager().canDoEdit(request, entry)) {
                     throw new IllegalArgumentException(
-						       "Whoa dude, you can't edit this entry:"
+						       "You can't edit this entry:"
 						       + entry.getName());
                 }
                 entry = changeType(request, entry, newTypeHandler);
@@ -1299,6 +1303,12 @@ public class ExtEditor extends RepositoryManager {
             throw new AccessException("Cannot edit:" + entry.getLabel(),
                                       request);
         }
+	if(!getEntryManager().isTypeHandlerOk(request,entry,newTypeHandler)) {
+            throw new IllegalArgumentException("Cannot change entry type of: " + entry.getLabel()+" to: " + newTypeHandler.getDescription());
+
+	}
+	
+
         getEntryManager().addSessionType(request, newTypeHandler.getType());
 
 	String extraDesc =   entry.getTypeHandler().getExtraText(entry);

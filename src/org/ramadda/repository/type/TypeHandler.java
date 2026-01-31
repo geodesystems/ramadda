@@ -2627,14 +2627,17 @@ public class TypeHandler extends RepositoryManager {
 	    && getAccessManager().canDoNew(request, entry);
 
         if (canDoNew) {
-            links.add(
-		      new Link(
-			       request.makeUrl(
-					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
-					       entry.getId(), ARG_TYPE,
-					       TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
-			       OutputType.TYPE_FILE));
-            links.add(
+	    List<TypeHandler> okList = getEntryManager().getTypeOkList(request, entry);
+	    if(Utils.listEmpty(okList)) {
+		links.add(
+			  new Link(
+				   request.makeUrl(
+						   getRepository().URL_ENTRY_FORM, ARG_GROUP,
+						   entry.getId(), ARG_TYPE,
+						   TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
+				   OutputType.TYPE_FILE));
+	    }
+	    links.add(
 		      new Link(
 			       request.makeUrl(
 					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
@@ -4284,7 +4287,15 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
 	    }
 
-            sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Geo Location")), mapSelector));
+	    if(getTypeProperty("form.location.label.newline",false)) {
+		HU.formEntry(sb,
+			     HU.span(msgLabel(getFormLabel(parentEntry,entry,"location","Geo Location")),
+				     HU.attrs("class","formlabel")));
+		HU.formEntry(sb,mapSelector);
+	    } else {
+		sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Geo Location")),
+				    mapSelector));
+	    }
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
 	    addAreaWidget(request, parentEntry, entry, sb, formInfo);
@@ -4353,7 +4364,7 @@ public class TypeHandler extends RepositoryManager {
 	    sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
 	}
 
-        sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
+	sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
     }
 
     public void addDateToEntryForm(Request request, GroupedBuffers sb,
@@ -4706,7 +4717,7 @@ public class TypeHandler extends RepositoryManager {
 
                         String label =
                             getTypeProperty("form.description.label", "");
-                        String edit = prefix + HU.div(HU.b(label),"") +   tmpSB.toString();
+                        String edit = prefix + HU.div(HU.b(msgLabel(label)),"") +   tmpSB.toString();
                         sb.append(HU.row(HU.td(edit, "colspan=2")));
                     }
                 }

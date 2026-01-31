@@ -1896,6 +1896,45 @@ public class EntryManager extends RepositoryManager {
         return makeEntryEditResult(request, entry, "Edit Entry", sb);
     }
 
+    public List<TypeHandler> getTypeOkList(Request request, Entry entry) throws Exception {
+	if(entry==null) return null;
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+					      new String[]{"restrictedentrytypes"}, true);
+
+        if (Utils.listNotEmpty(metadataList)) {
+	    List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
+	    for(Metadata mtd: metadataList) {
+		for(String type:Utils.split(mtd.getAttr1(),"\n",true,true)) {
+		    if(type.startsWith("#")) continue;
+		    TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		    if(typeHandler!=null) typeHandlers.add(typeHandler);
+		}
+	    }
+	    return typeHandlers;
+	}
+	return null;
+	    
+    }
+
+    /**
+       Is this entry type ok to add
+    */
+    public boolean isTypeHandlerOk(Request request, Entry entry,TypeHandler typeHandler) throws Exception {
+	List<TypeHandler> okList = getTypeOkList(request, entry);
+	if(Utils.listEmpty(okList))  return true;
+	return okList.contains(typeHandler);
+    }	
+
+
+    public boolean isTypeHandlerOk(TypeHandler typeHandler,List<TypeHandler> okList) {
+	if(Utils.listNotEmpty(okList)) {
+	    return okList.contains(typeHandler);
+	}
+	return true;
+    }
+
+
     public Entry addEntryForm(Request request, Entry entry, Appendable sb)
 	throws Exception {
 
@@ -1981,6 +2020,15 @@ public class EntryManager extends RepositoryManager {
         sb.append(HU.formTable("ramadda-entry-edit",true));
         String title = BLANK;
 
+	if(entry==null) {
+	    if(typeHandler !=null && !typeHandler.isType(TypeHandler.TYPE_FILE)) {
+		List<TypeHandler> okList = getTypeOkList(request, group);
+
+		if(!isTypeHandlerOk(typeHandler,okList)) {
+		    throw new IllegalArgumentException("Cannot add entry of type: " + typeHandler.getDescription());
+		}
+	    }
+	}
         if (type == null) {
 	    HU.formEntry(sb,
 			 msgLabel("Type"),
@@ -2078,10 +2126,9 @@ public class EntryManager extends RepositoryManager {
 			    + email + " <b>IP:</b> "
 			    + metadata.getAttr2();
                     }
-                    String msg = HU.space(2) + msg("Make public?")
-			+ extra;
+                    String msg = HU.space(2) +  extra;
                     sb.append(HU.formEntry(msgLabel("Publish"),
-					   HU.checkbox(ARG_PUBLISH, "true", false)
+					   HU.labeledCheckbox(ARG_PUBLISH, "true", false,"Make public?")
 					   + msg));
                 }
             } else {
@@ -2779,6 +2826,8 @@ public class EntryManager extends RepositoryManager {
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, createDate);
 	    //	    System.err.println("from:" + dateRange[0] +" to:" + dateRange[1]);
             File originalFile = null;
+	    List<TypeHandler> okList = getTypeOkList(request, parentEntry);
+
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
 		if(stripExif && Utils.isImage(theResource) && new File(theResource).exists()) {
@@ -2833,12 +2882,14 @@ public class EntryManager extends RepositoryManager {
                     }
                 }
 
-                if ( !canBeCreatedBy(request, typeHandlerToUse)) {
+                if ( !canBeCreatedBy(request, typeHandlerToUse) ||
+		     !isTypeHandlerOk(typeHandlerToUse, okList)) {
                     fatalError(request,
                                "Cannot create an entry of type "
                                + typeHandlerToUse.getDescription());
                 }
 
+		
                 //If its an anon upload  or we're unzipping an archive then don't set the name
                 String name = ((forUpload || hasZip)
                                ? ""
@@ -4396,13 +4447,19 @@ public class EntryManager extends RepositoryManager {
 	sb.append("<center>");
 	HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type',null,{focus:true})");
 	sb.append("</center>");
+	List<TypeHandler> okList = getTypeOkList(request, group);
 	for(EntryManager.SuperType superType:getEntryManager().getCats()) {
 	    boolean didSuper = false;
 	    for(EntryManager.Types types: superType.getList()) {
 		boolean didSub = false;
 		for(TypeHandler typeHandler: types.getList()) {
-		    if(!typeHandler.canCreate(request))
+		    if(!typeHandler.canCreate(request)) {
 			continue;
+		    }
+		    
+		    if(Utils.listNotEmpty(okList)) {
+			if(!okList.contains(typeHandler)) continue;
+		    }
 		    if(!didSuper) {
 			didSuper = true;
 			sb.append("<div class=type-group-container><div class='type-group-header'>" + superType.getName()+"</div><div class=type-group>");
