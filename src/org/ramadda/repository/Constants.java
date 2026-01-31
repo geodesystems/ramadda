@@ -164,8 +164,8 @@ public interface Constants {
     public static final String ARG_APPLET = "applet";
     public static final String ARG_AREA = "area";
     public static final String ARG_LOCATION = "location";
-    public static final String ARG_LOCATION_LATITUDE = "location.latitude";
-    public static final String ARG_LOCATION_LONGITUDE = "location.longitude";
+    public static final String ARG_LOCATION_LATITUDE = "location_latitude";
+    public static final String ARG_LOCATION_LONGITUDE = "location_longitude";
     public static final String ARG_LATITUDE = "latitude";
     public static final String ARG_LONGITUDE = "longitude";
     public static final String ARG_BBOX = "bbox";
