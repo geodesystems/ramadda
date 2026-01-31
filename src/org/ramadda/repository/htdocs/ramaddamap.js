@@ -759,6 +759,7 @@ RepositoryMap.prototype = {
 	let ok = num=>{
 	    return !isNaN(num) && Utils.isDefined(num);
 	}
+
 	if(!ok(bounds.left) ||
 	   !ok(bounds.right) ||
 	   !ok(bounds.top) ||
@@ -769,7 +770,7 @@ RepositoryMap.prototype = {
 	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
-	    var center = bounds.getCenterLonLat();
+	    let center = bounds.getCenterLonLat();
 	    this.setCenter(center);
 	    return true;
 	}
@@ -3443,9 +3444,9 @@ RepositoryMap.prototype = {
             let projPoint = this.transformLLPoint(llPoint);
 	    if(debugBounds)
 		console.log("applying default bounds: center:" +  llPoint +" b:" + this.defaultBounds +" zoom:" + this.params.initialZoom);
-            this.getMap().setCenter(projPoint);
 	    let extent = this.transformLLBounds(this.defaultBounds);
             this.zoomToExtent(extent);
+            this.getMap().setCenter(projPoint);
 	    if(this.params.initialZoom<0) {
 		let width = this.defaultBounds.right-this.defaultBounds.left;
 		let zoom = -1;
