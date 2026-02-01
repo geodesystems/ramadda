@@ -1006,7 +1006,6 @@ public class UserManager extends RepositoryManager {
 
 	String size = HU.SIZE_40;
         sb.append(HU.formTable());
-	//	HU.formEntry(sb,"",getAuthManager().getVerification(request));
 	sb.append(formEntry(request, msgLabel("ID"), user.getId()));
         if (isAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),

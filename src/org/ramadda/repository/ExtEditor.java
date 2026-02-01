@@ -2239,8 +2239,8 @@ public class ExtEditor extends RepositoryManager {
 	    HU.div(admin,"<b>Be careful!</b>. If this entry has database columns and you have changed the types, etc., you may need to drop the database table when installing a new version of this entry type. If you do this then any entries you have created of this type will be removed..",HU.clazz("ramadda-form-help"));
 	    admin.append(HU.insetDiv(
 				     HU.labeledCheckbox(ARG_DROPTABLE,"true",false,"Yes, drop the database table")+
-				     HU.div(getAuthManager().getVerification(request,
-									     "To ensure the drop table is OK please enter your password",true,false)),0,30,0,0));
+				     HU.div(getAuthManager().getVerificationWithPassword(request,
+									     "To ensure the drop table is OK please enter your password")),0,30,0,0));
 	}
 
 	String basicLabel = "Basic Configuration";

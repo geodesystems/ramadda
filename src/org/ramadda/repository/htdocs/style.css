@@ -2118,14 +2118,21 @@ mapheader {
 .ramadda-recaptcha {
 }
 
+
 .ramadda-verification {
     display:inline-block;
-    margin:8px;
+    margin-left:8px;
+    margin-bottom:8px;
+    vertical-align:top;
+}
+
+.ramadda-verification-password {
+    display:inline-block;
     padding:8px;
     border:var(--basic-border);
     background-color : var(--color-mellow-yellow);
     border-radius:var(--default-radius);
-    max-width:500px;
+    max-width:700px;
 }
 
 .ramadda-message .ramadda-verification {

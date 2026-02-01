@@ -48,7 +48,7 @@ public class AuthManager extends RepositoryManager {
     public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
     public static final String TOKEN_NO_SESSION = "nosession";
     private static final String ARG_EXTRA_PASSWORD = "extrapassword";
-    private static final String DEFAULT_MESSAGE = "For verification please enter your current password";
+    private static final String DEFAULT_MESSAGE = "For verification please enter your password";
 
     private boolean doCaptcha;
     private boolean doPassword;
@@ -178,18 +178,23 @@ public class AuthManager extends RepositoryManager {
 	return getVerification(request, null, false);
     }
 
-    public String getVerification(Request request, String msg, boolean forcePassword,boolean...addRecaptcha) {
-	StringBuilder  sb = new StringBuilder();
+    public String getVerificationWithPassword(Request request, String msg) {
+	return getVerification(request,msg,true);
+    }
+
+    private String getVerification(Request request, String msg, boolean forcePassword) {
+	StringBuilder  sb = new StringBuilder("<div class=ramadda-verification>");
 	if(msg==null) msg = DEFAULT_MESSAGE;
 	msg = msg(msg);
 	if(doPassword||forcePassword) {
-	    String div =    HU.div(msg+ "<br>" +
-		   HU.password(ARG_EXTRA_PASSWORD),
-		   HU.clazz("ramadda-verification"));
-	    Utils.append(sb,div);
-	}
-	if(!forcePassword && doCaptcha && Utils.isTrue(addRecaptcha,true))
+	    String passwordInput =
+		HU.password(ARG_EXTRA_PASSWORD,"",HU.attrs("placeholder","Your password"));
+	    HU.div(sb,msg+ "<br>" +  passwordInput,
+		   HU.clazz("ramadda-verification-password"));
+	} else 	if(doCaptcha) {
 	    sb.append(getRecaptcha(request));
+	}
+	sb.append("</div>");
 	addAuthToken(request, sb);
 	return sb.toString();
     }
