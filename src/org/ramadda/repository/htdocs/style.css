@@ -7282,26 +7282,19 @@ a.wiki-link-noexist {
 .ramadda-file-dnd-target {
     min-width:400px;
     display:inline-block;
-    border: 2px dashed #ccc;    
+    border: 1px dashed #ccc;    
     cursor:pointer;
-    /*padding:2px;
-    margin-top:2px;
-*/
-
-
 }
 
 .ramadda-file-dnd-target:hover {
     background:var(--highlight-background);
-    border: 2px dashed #aaa;    
+    border: 1px dashed #000;    
 }
 
-.ramadda-drop-active {
-    border:1px solid #666;
-}
 
 
 .ramadda-file-dnd-label {
+    vertical-align:top;
     display: inline-block;
     padding:5px;
     margin-bottom:25px;
@@ -7317,11 +7310,18 @@ a.wiki-link-noexist {
 
 
 
+.ramadda-drop-active {
+    border:1px solid #000;
+}
+
+
 .ramadda-file-dnd-target.ramadda-drop-active {
-    border: 2px solid #aaa !important;        
+    border: 1px solid #000 !important;        
 }
 
 .ramadda-dnd-target-files {
+    margin-right:8px;
+    margin-left:8px;
     margin-top:4px;
     margin-bottom:4px;    
     display:inline-block;

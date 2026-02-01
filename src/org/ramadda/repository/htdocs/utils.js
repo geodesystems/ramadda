@@ -349,17 +349,18 @@ var Utils =  {
         target.on('dragover', (event) => {
             event.stopPropagation();
             event.preventDefault();
-            target.addClass("ramadda-drop-active");
+            target.addClass('ramadda-drop-active');
             if(dragOver) dragOver(event);
         });
 
         target.on('dragleave', (event) => {
             if(dragLeave) dragLeave(event);
+            target.removeClass('ramadda-drop-active');
         });
 
 
         target.on('drop', (event) => {
-            target.removeClass("ramadda-drop-active");
+            target.removeClass('ramadda-drop-active');
             event.stopPropagation();
             event.preventDefault();
             let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files

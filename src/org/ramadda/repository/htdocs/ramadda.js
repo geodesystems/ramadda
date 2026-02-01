@@ -1679,7 +1679,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let form = input.closest('form');
 	let custom = HU.div([ATTR_TITLE,'Click to select a file',
 			     ATTR_ID,fileInputId+'_filewrapper',
-			     ATTR_CLASS, 'fileinput_wrapper'],HU.getIconImage('fas fa-upload') +
+			     ATTR_CLASS, 'fileinput_wrapper'],
+			    HU.getIconImage('fas fa-file-arrow-up') +
 			    SPACE +HU.div([ATTR_ID,fileInputId+'_filename',
 					   ATTR_CLASS,'fileinput_label']));
 	input.after(custom);
@@ -1725,54 +1726,55 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    target.append(HU.div([ATTR_CLASS,'ramadda-dnd-target-files',
 				  ATTR_ID,fileInputId+'_dnd_files']));
 	    let files=jqid(fileInputId+'_dnd_files');
+	    let dropFunction = (event,item,result,wasDrop) =>{
+		fileDrop.cnt++;
+		let name = item.name;
+		if(!name && item.getAsFile) {
+		    name = item.getAsFile().name;
+		}
+
+		if(!name) {
+		    let isImage = item.type && item.type.match('image/.*');
+		    name = prompt('Entry file name:',isImage?'image':'file');
+		    if(!name) return;
+		    if(item.type) {
+			if(item.type=='text/plain') {
+			    if(!name.endsWith('.txt')) {
+				name = name+'.txt';
+			    }
+			} else {
+			    let type  = item.type.replace(/.*\//,'');
+			    name = name+'.'+type;
+			}
+		    }
+		}
+		let listId = fileInputId +'_list' + fileDrop.cnt;
+		let inputId = fileInputId +'_file' + fileDrop.cnt;
+		let nameInputId = fileInputId +'_file_name' + fileDrop.cnt;
+		let fileName = argPrefix+'_file_' + fileDrop.cnt;
+		let nameName = argPrefix+'_name_' + fileDrop.cnt;				  				  
+		fileDrop.files[inputId] = result;
+		let del =HU.span([ATTR_CLASS,CLASS_CLICKABLE,ID,listId+'_trash'],HU.getIconImage(icon_trash));
+		let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):'';
+		files.append(HU.div([ATTR_ID,listId],del +' ' +name+' '+size));
+		form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
+					      ATTR_NAME,fileName,
+					      ATTR_ID,inputId]));
+		form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
+					      ATTR_NAME,nameName,
+					      ATTR_ID,nameInputId]));				  
+		jqid(inputId).val(result);
+		jqid(nameInputId).val(name);				  
+		jqid(listId+'_trash').click(function(){
+		    jqid(listId).remove();
+		    jqid(inputId).remove();
+		    jqid(nameInputId).remove();				      
+		});
+	    };
 	    Utils.initDragAndDrop(target,
 				  event=>{},
 				  event=>{},
-				  (event,item,result,wasDrop) =>{
-				      fileDrop.cnt++;
-				      let name = item.name;
-				      if(!name && item.getAsFile) {
-					  name = item.getAsFile().name;
-				      }
-
-				      if(!name) {
-					  let isImage = item.type && item.type.match('image/.*');
-					  name = prompt('Entry file name:',isImage?'image':'file');
-					  if(!name) return;
-					  if(item.type) {
-					      if(item.type=='text/plain') {
-						  if(!name.endsWith('.txt')) {
-						      name = name+'.txt';
-						  }
-					      } else {
-						  let type  = item.type.replace(/.*\//,'');
-						  name = name+'.'+type;
-					      }
-					  }
-				      }
-				      let listId = fileInputId +'_list' + fileDrop.cnt;
-				      let inputId = fileInputId +'_file' + fileDrop.cnt;
-				      let nameInputId = fileInputId +'_file_name' + fileDrop.cnt;
-				      let fileName = argPrefix+'_file_' + fileDrop.cnt;
-				      let nameName = argPrefix+'_name_' + fileDrop.cnt;				  				  
-				      fileDrop.files[inputId] = result;
-				      let del =HU.span([ATTR_CLASS,CLASS_CLICKABLE,ID,listId+'_trash'],HU.getIconImage(icon_trash));
-				      let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):'';
-				      files.append(HU.div([ATTR_ID,listId],del +' ' +name+' '+size));
-				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
-								    ATTR_NAME,fileName,
-								    ATTR_ID,inputId]));
-				      form.append(HU.tag(TAG_INPUT,[ATTR_TYPE,'hidden',
-								    ATTR_NAME,nameName,
-								    ATTR_ID,nameInputId]));				  
-				      jqid(inputId).val(result);
-				      jqid(nameInputId).val(name);				  
-				      jqid(listId+'_trash').click(function(){
-					  jqid(listId).remove();
-					  jqid(inputId).remove();
-					  jqid(nameInputId).remove();				      
-				      });
-				  },null, true);
+				  dropFunction,null, true,true);
 	}			      
     },
 
