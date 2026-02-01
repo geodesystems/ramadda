@@ -978,7 +978,7 @@ public class UserManager extends RepositoryManager {
                 + HU.space(2)
                 + HU.submit(LABEL_CANCEL, ARG_CANCEL);
             sb.append(buttons);
-	    sb.append(getAuthManager().getVerification(request));
+	    HU.span(sb,getAuthManager().getVerification(request),"");
 	    NamedBuffer infoSB = new NamedBuffer("User Information");
 	    NamedBuffer passwordSB = new NamedBuffer("Password");	    
             makeUserForm(request, user, infoSB, true);
@@ -1418,7 +1418,7 @@ public class UserManager extends RepositoryManager {
 				ARG_USER_DELETE_CONFIRM));
 	    sb.append(HU.space(2));
 	    sb.append(HU.submit(LABEL_CANCEL, ARG_USER_CANCEL));
-	    sb.append(getAuthManager().getVerification(request));
+	    HU.span(sb,getAuthManager().getVerification(request),"");
 	    sb.append(HU.vspace());
 	    for (User user : users) {
 		String userCbx = HU.checkbox("user_" + user.getId(),
