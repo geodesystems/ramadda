@@ -34,7 +34,7 @@
 {{description wikify="true"}}
 </div>
 <table class="formtable">
-{{resource row.label="URL:"  message=""}}
+{{resource row.label="URL:"  message="" simple="true"}}
 {{field name="project_type" row.label="Type:"}}
 {{field name="status" row.label="Status:"}}
 {{field name="country" row.label="Country:"}}
@@ -356,7 +356,7 @@ zoomLevel=default width="300" message=""}}
 +row
 +col-md-8
 <table class="formtable">
-{{resource prefix="URL:"  message="" row.label="Web:"}}
+{{resource prefix="URL:"  message="" row.label="Web:" simple="true"}}
 <tr><td class="formlabel">Address:</td><td> {{field name="address"}} {{field name="city"}} {{field name="state"}} {{field name="zipcode"}}</td></tr>
 {{field name="phone" row.label="Phone:"}}
 </table>
@@ -404,7 +404,7 @@ zoomLevel=default width="300" message=""}}
 +col-md-8
 :title {{field name="organization_type"}}: {{name}}</div>
 <table class="formtable">
-{{resource prefix="URL:"  message="" row.label="Web:"}}
+{{resource prefix="URL:"  message="" row.label="Web:" simple="true"}}
 <tr><td class="formlabel">Address:</td><td> {{field name="address"}} {{field name="city"}} {{field name="state"}} {{field name="zipcode"}}</td></tr>
 {{field name="phone" row.label="Phone:"}}
 </table>
