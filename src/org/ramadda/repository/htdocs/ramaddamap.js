@@ -754,7 +754,7 @@ RepositoryMap.prototype = {
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
-	    console.log("zoomToExtent:", bounds);
+	    console.log("zoomToExtent:", this.transformProjBounds(bounds));
 	}
 	let ok = num=>{
 	    return !isNaN(num) && Utils.isDefined(num);
@@ -774,7 +774,12 @@ RepositoryMap.prototype = {
 	    this.setCenter(center);
 	    return true;
 	}
-	this.getMap().zoomToExtent(bounds,flag);
+	//Do this a bit later since the updateSize call messes with the desired zoom level
+	setTimeout(()=>{
+	    let desiredZoom = this.getMap().getZoomForExtent(bounds, flag);
+	    let center = bounds.getCenterLonLat();	
+            this.getMap().setCenter(center,desiredZoom);
+	},1);
 	return true;
     },
     centerToMarkers: function() {
@@ -867,7 +872,9 @@ RepositoryMap.prototype = {
 		_this.zoomChanged();
                 _this.locationChanged();
 		_this.setNoPointerEvents();
-		if(debugBounds)  console.log("zoomend",_this.getMap().getZoom());
+		if(debugBounds)  {
+		    console.log("zoomend",_this.getMap().getZoom());
+		}
             });
             _this.getMap().events.register("moveend", "ramaddamap", function() {
                 _this.locationChanged();
@@ -3798,10 +3805,9 @@ RepositoryMap.prototype = {
         }
 	//The updateSize messes with map position
 	let center = this.map.getCenter();
-	//	let zoom =  this.map.getZoom();
+	let zoom =  this.map.getZoom();
 	this.getMap().updateSize();
         this.getMap().setCenter(center);
-	//	this.setZoom(zoom);
     },
 
     setSelectionBoxFromFields:  function(zoom) {
