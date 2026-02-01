@@ -4765,8 +4765,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let highlightGetter = f=>{
 		if(f.record) {
                     return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
-                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE)],
-				    this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
+//                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE)],
+//				    this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
 	    };	    
