@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb  1 06:01:52 MST 2026";
+var build_date="RAMADDA build date: Sun Feb  1 11:05:12 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -45018,8 +45018,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
 		    let attrs =[];
-                    if (colorBy.field.getId() == field.getId())
-			attrs.push(ATTR_EXTRA,true);
+                    if (colorBy.field.getId() == field.getId()) {
+			attrs.push('extra',true);
+		    }
 		    attrs.push(ATTR_VALUE,field.getId());
                     menu += HU.tag(TAG_OPTION,attrs,field.getLabel());
                 }
@@ -45111,8 +45112,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let highlightGetter = f=>{
 		if(f.record) {
                     return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
-                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE)],
-				    this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
+//                    return   HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_WHITE)],
+//				    this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
 	    };	    
