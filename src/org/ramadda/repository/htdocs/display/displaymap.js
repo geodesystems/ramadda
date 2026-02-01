@@ -4672,8 +4672,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
 		    let attrs =[];
-                    if (colorBy.field.getId() == field.getId())
-			attrs.push(ATTR_EXTRA,true);
+                    if (colorBy.field.getId() == field.getId()) {
+			attrs.push('extra',true);
+		    }
 		    attrs.push(ATTR_VALUE,field.getId());
                     menu += HU.tag(TAG_OPTION,attrs,field.getLabel());
                 }
