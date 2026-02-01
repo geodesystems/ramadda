@@ -15,9 +15,11 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -976,11 +978,15 @@ public class UserManager extends RepositoryManager {
                 + HU.space(2)
                 + HU.submit(LABEL_CANCEL, ARG_CANCEL);
             sb.append(buttons);
-            makeUserForm(request, user, sb, true);
+	    sb.append(getAuthManager().getVerification(request));
+	    NamedBuffer infoSB = new NamedBuffer("User Information");
+	    NamedBuffer passwordSB = new NamedBuffer("Password");	    
+            makeUserForm(request, user, infoSB, true);
 	    //            if (user.canChangePassword()) {
-	    sb.append(HU.vspace());
+	    //	    sb.append(HU.vspace());
 	    //	    sb.append(RepositoryUtil.header(msgLabel("Password")));
-	    makePasswordForm(request, user, sb,"Password");
+	    makePasswordForm(request, user, passwordSB);
+	    HU.makeTabs(sb,infoSB,passwordSB);
 	    //            }
             sb.append(HU.vspace());
             //            sb.append(buttons);
@@ -1000,7 +1006,7 @@ public class UserManager extends RepositoryManager {
 
 	String size = HU.SIZE_40;
         sb.append(HU.formTable());
-	HU.formEntry(sb,"",getAuthManager().getVerification(request));
+	//	HU.formEntry(sb,"",getAuthManager().getVerification(request));
 	sb.append(formEntry(request, msgLabel("ID"), user.getId()));
         if (isAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),
@@ -3369,6 +3375,7 @@ public class UserManager extends RepositoryManager {
         sb.append(request.uploadForm(getRepositoryBase().URL_USER_CHANGE_SETTINGS));
 	String buttons = HU.submit("Change Settings", ARG_USER_CHANGE);
         sb.append(buttons);
+	sb.append(getAuthManager().getVerification(request));
         makeUserForm(request, user, sb, false);
         sb.append(HU.formClose());
         sb.append(HU.vspace());
