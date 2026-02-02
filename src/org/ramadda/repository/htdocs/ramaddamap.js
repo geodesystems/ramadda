@@ -28,9 +28,15 @@ function RepositoryMap(mapId, params) {
 	    if(debugBounds)console.log("url arg:"+ prop+"=" + params[prop]);
 	}
     });
-    if(params.mapCenter) {
-	[lat,lon] =  	params.mapCenter.replace("%2C",",").split(",")
+    if(params[ARG_ZOOMLEVEL]) {
+	params.initialZoom = params[ARG_ZOOMLEVEL];
+	if(debugBounds)console.log('initial zoom',params.initialZoom);
+    }
+
+    if(params[ARG_MAPCENTER]) {
+	[lat,lon] =  	params[ARG_MAPCENTER].replace("%2C",",").split(",")
 	params.initialLocation = {lon:lon,lat:lat};
+	if(debugBounds)console.log('initial map center',params.initialLocation);
     }
 
     let showDflt = true;
@@ -134,7 +140,6 @@ function RepositoryMap(mapId, params) {
         displayProjection: MapUtils.defaults.displayProjection,
         projectionUnits: MapUtils.defaults.units,
         mapDivId: this.mapId,
-	//        defaultLocation: MapUtils.defaults.location,
         defaultLocation: null,
         latlonReadout: null,
 
@@ -197,9 +202,11 @@ function RepositoryMap(mapId, params) {
 
     if (params.initialLocation) {
 	if(!Array.isArray(params.initialLocation)) {
-            this.defaultLocation = MapUtils.createLonLat(params.initialLocation.lon, params.initialLocation.lat);
+            this.defaultLocation =
+		MapUtils.createLonLat(params.initialLocation.lon, params.initialLocation.lat);
 	} else {
-            this.defaultLocation = MapUtils.createLonLat(params.initialLocation[1], params.initialLocation[0]);
+            this.defaultLocation =
+		MapUtils.createLonLat(params.initialLocation[1], params.initialLocation[0]);
 	}
 	if(!Utils.isDefined(this.params.initialZoom)) {
 	    this.params.initialZoom=6;
@@ -459,9 +466,18 @@ RepositoryMap.prototype = {
 	return !isNaN(b.bottom) && !isNaN(b.left) && !isNaN(b.right) && !isNaN(b.top);
     },
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
+	if(this.hadDefaultPosition) {
+	    this.hadDefaultPosition = false;
+	    if(debugBounds) {
+		console.log('centerOnMarkers: ignoring because we had default bounds set');
+	    }
+	    return;
+	}
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
 	}
+
+
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
         let now = Date.now();
@@ -700,10 +716,6 @@ RepositoryMap.prototype = {
 	    if(debugBounds)  console.log("setViewToBounds- setting to max zoom",this.params.maxZoom);
             this.zoomTo(this.params.maxZoom);
 	}
-	//xxxxx
-	//	this.defaultBounds=null;
-	//	this.defaultLocation=null;
-
     },
     setCenter:function(to) {
 	if(debugBounds)
@@ -959,6 +971,7 @@ RepositoryMap.prototype = {
 	    if(!mapDiv) return;
 	    let observer = new ResizeObserver(Utils.throttle(()=>{
 		if(this.getMap()) {
+		    this.logInternalChange();
 		    this.getMap().updateSize();
 		    let baseLayers = this.getMap().layers.filter(layer=>{
 			return layer.isBaseLayer;
@@ -1025,6 +1038,9 @@ RepositoryMap.prototype = {
 				  */
 
     },
+    logInternalChange:function() {
+	this.lastInternalChange = new Date();
+    },
     locationChangedInner: function(toConsole) {
 	let latlon = this.getBounds();
 	let bits = 100000;
@@ -1044,6 +1060,14 @@ RepositoryMap.prototype = {
 	    return
 	} 
 	if(this.params.addToUrl) {
+	    //If there was some recent internal change (e.g, size update) then don't add url args
+	    if(this.lastInternalChange) {
+		let now = new Date();
+		let diff = now.getTime()-this.lastInternalChange.getTime();
+		if(diff<2000) {
+		    return;
+		}
+	    }
 	    HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
             HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
 	}
@@ -3294,8 +3318,8 @@ RepositoryMap.prototype = {
             this.initLocationSearch();
         }
 
-        if (this.defaultBounds) {
-            this.hadDefaultBounds = true;
+        if (this.defaultBounds || this.defaultLocation) {
+            this.hadDefaultPosition = true;
 	}
 
         if (false && this.defaultLocation && !this.defaultBounds) {
@@ -4549,7 +4573,7 @@ RepositoryMap.prototype = {
     },
 
     centerOnMarkersInit:  function() {
-	if(!this.hadDefaultBounds) {
+	if(!this.hadDefaultPosition) {
             this.centerOnMarkers(null);
 	}
     },
