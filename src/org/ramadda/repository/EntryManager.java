@@ -1966,6 +1966,16 @@ public class EntryManager extends RepositoryManager {
                                       : getRepository().getTypeHandler(type))
                                    : entry.getTypeHandler());
 
+	if (typeHandler==null) {
+            getPageHandler().makeEntrySection(request, pageEntry, sb,
+					      "New Entry Error",
+					      getPageHandler().showDialogError(
+									       "Unknown entry type: " + type));
+	    return group;
+	}
+
+
+
 	if ( !canBeCreatedBy(request, typeHandler)) {
             getPageHandler().makeEntrySection(request, pageEntry, sb,
 					      "New Entry Error",
