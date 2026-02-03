@@ -4506,6 +4506,10 @@ public class TypeHandler extends RepositoryManager {
 	    if(seen.contains(what)) continue;
 	    seen.add(what);
 	    size = getProperty(entry, "form." + what+".size",theSize);
+	    //check for the size=...
+	    if(size!=null && size.indexOf("=")<0) {
+		size = "size=\"" + size+"\"";
+	    }
             if (what.equals(FIELD_COLUMNS)) {
 		addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo, this,seen);
 		continue;
@@ -4622,6 +4626,10 @@ public class TypeHandler extends RepositoryManager {
 					   entry, "form.description.rows",
 					   getRepository().getProperty(
 								       "ramadda.edit.rows", 8));
+                    int columns = getProperty(
+					   entry, "form.description.columns",
+					   getRepository().getProperty(
+								       "ramadda.edit.columns", 40));		    
                     boolean isWiki = isDescriptionWiki(entry);
                     if (entry != null) {
                         desc = entry.getDescription();
@@ -4712,13 +4720,18 @@ public class TypeHandler extends RepositoryManager {
                             prefix = cbx + HU.space(2);
                         } else {
                             tmpSB.append(HU.textArea(ARG_DESCRIPTION,
-						     desc, rows, HU.id(textId)));
+						     desc, rows, columns,
+						     HU.id(textId)));
                         }
 
                         String label =
                             getTypeProperty("form.description.label", "");
-                        String edit = prefix + HU.div(HU.b(msgLabel(label)),"") +   tmpSB.toString();
-                        sb.append(HU.row(HU.td(edit, "colspan=2")));
+			if(getTypeProperty("form.description.showintable",false)) {
+			    HU.formEntry(sb,msgLabel(label),prefix+tmpSB);
+			} else  {
+			    String edit = prefix + HU.div(HU.b(msgLabel(label)),"") +   tmpSB.toString();
+			    sb.append(HU.row(HU.td(edit, "colspan=2")));
+			}
                     }
                 }
 
