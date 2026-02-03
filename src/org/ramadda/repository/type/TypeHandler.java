@@ -2384,6 +2384,7 @@ public class TypeHandler extends RepositoryManager {
         }
 	HashSet<String> seen = new HashSet<String>();
 
+	boolean showLocation  =Utils.getProperty(props,"showLocation",true);
 	List<String> fields = displayFields;
 	String propFields = Utils.getProperty(props,"displayFields",null);
 	if(propFields!=null) fields=Utils.split(propFields,",",true,true);
@@ -2409,6 +2410,11 @@ public class TypeHandler extends RepositoryManager {
 		    addCreateDateToHtml(request,typeHandler,entry,sb);
 		else if(field.equals(FIELD_DATE))
 		    addDateToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("location")) {
+		    if(showLocation) {
+			addLocationToHtml(request,typeHandler,entry,sb,seen);
+		    }
+		}
 		else if(field.equals("owner"))
 		    addOwnerToHtml(request,typeHandler,entry,sb);								
 		//		else if(field.equals("altitude"))
@@ -3129,8 +3135,10 @@ public class TypeHandler extends RepositoryManager {
 		addCreateDateToHtml(request,typeHandler,entry,sb);
 	}
 
-	//	if(!seen.contains("altitude"))
-	//	    addAltitudeToHtml(request,typeHandler,entry,sb);
+	boolean showLocation  =Utils.getProperty(props,"showLocation",true);
+	if(showLocation && !seen.contains("location")) {
+	    addLocationToHtml(request,typeHandler,entry,sb,seen);								
+	}
     }
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
@@ -3268,6 +3276,21 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
+    public void addLocationToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb,
+				  HashSet<String> seen) throws Exception {
+	if(seen.contains("location")) return;
+	seen.add("location");
+	if(entry.hasAreaDefined(request)) {
+	    addEntryProperty(request, sb,"Bounds",entry.getBoundsString(request,true));
+	} else 	if(entry.hasLocationDefined(request)) {
+	    addEntryProperty(request, sb,"Location",
+			     "Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request));
+	}
+	seen.add("altitude");
+	addAltitudeToHtml(request,this,entry,sb);
+    }
+
+
     public void addOwnerToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	typeHandler.addUserSearchLink(request, entry, sb);
     }
@@ -3368,15 +3391,6 @@ public class TypeHandler extends RepositoryManager {
 
 	}
 	addEntryProperty(request, sb,"Created by", userSearchLink);
-
-	if(entry.hasAreaDefined(request)) {
-	    addEntryProperty(request, sb,"Bounds",entry.getBoundsString(request,true));
-	} else 	if(entry.hasLocationDefined(request)) {
-	    addEntryProperty(request, sb,"Location",
-			     "Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request));
-	}
-	//	seen.add("altitude");
-	addAltitudeToHtml(request,this,entry,sb);
     }
 
     public String formatLocation(double lat, double lon) {
