@@ -3,14 +3,18 @@ cat:Properties
 
 #entry name
 form.name.columns=80
+form.name.size=60
 form.name.label=Title
 form.name.show=true
 form.name.showlabel=true
+form.alias.show=false
 
 #entry description
 form.description.columns=80
 form.description.group=Description
 form.description.iswiki=true
+form.description.showwiki=false
+form.description.showintable=true
 form.description.label=
 form.description.rows=5
 form.description.show=false
