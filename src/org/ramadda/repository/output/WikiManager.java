@@ -9812,9 +9812,10 @@ public class WikiManager extends RepositoryManager
 
         boolean isNotebook =   displayType.equals("notebook");	
 
-        boolean isMap = displayType.equals("map") ||
-	    displayType.equals("editablemap") ||
-	    displayType.equals("imdv") ||
+        boolean isImdv =   displayType.equals("editablemap") ||   displayType.equals("imdv");
+
+
+        boolean isMap = isImdv || displayType.equals("map") ||
 	    displayType.equals("entrylist") || isNotebook;
 	//	System.err.println("type:" + displayType +" map:" + isMap);
 	if(displayType.equals("editablemap")||displayType.equals("imdv")) {
@@ -10351,7 +10352,8 @@ public class WikiManager extends RepositoryManager
                                          ")"));
         }
 
-        if (isMap) {
+	//Don't do this if its an IMDV map
+        if (isMap && !isImdv) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
 						  new String[]{"map_displaymap"}, true);
@@ -10360,7 +10362,6 @@ public class WikiManager extends RepositoryManager
                 List<String> kmlNames     = new ArrayList<String>();
                 List<String> geojsonIds   = new ArrayList<String>();
                 List<String> geojsonNames = new ArrayList<String>();
-
 		List<String>mapLayers= new ArrayList<String>();
 
                 String annotatedIds     = null;		
