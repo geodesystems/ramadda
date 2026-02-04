@@ -31,7 +31,8 @@ showToggle=true toggleOpen=false toggleLabel="Exhibit Information"}}
 +row
 +col-3
 +div class="ramadda-bordered" style="padding:10px;padding-left:0px;min-height:80vh;"
-{{links  #target="link target" entry="parent" orderby="entryorder_up,name_up" innerClass="ramadda-links-inner-simple"}} 
+{{links   entry="parent" orderby="entryorder_up,name_up" innerClass="ramadda-links-inner-simple"
+entries.filter="type:type_archive_gallery" }} 
 -div
 -col
 +col-9
