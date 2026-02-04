@@ -4083,8 +4083,9 @@ public class EntryManager extends RepositoryManager {
         entries = okEntries;
 	parentageChanged(entries,false);
 
+	HashSet<String> seen  = new HashSet<String>();
         List<Descendent> found = getDescendents(request, entries, connection,
-						null, true, true, actionId);
+						null, true, true, actionId,seen);
 
 	boolean anyCantBeDeleted = false;
 	StringBuilder errMsg = new StringBuilder();
@@ -5146,6 +5147,7 @@ public class EntryManager extends RepositoryManager {
 					      final List<Entry> entries, Object actionId,
 					      String link)
 	throws Exception {
+	HashSet<String> seen = new HashSet<String>();
 	Date now = new Date();
 	boolean deepCopy  = request.get(ARG_COPY_DEEP,false);
 	boolean doMetadata= request.get(ARG_COPY_DO_METADATA,false);
@@ -5158,7 +5160,7 @@ public class EntryManager extends RepositoryManager {
             connection.setAutoCommit(false);
             List<Descendent> ids = getDescendents(request, entries, connection,
 						  excluder,
-						  true, !deepCopy, actionId);
+						  true, !deepCopy, actionId,seen);
             getDatabaseManager().closeConnection(connection);
             Hashtable<String, Entry> oldIdToNewEntry = new Hashtable<String,
 		Entry>();
@@ -9601,7 +9603,7 @@ public class EntryManager extends RepositoryManager {
 					      EntryUtil.Excluder excluder,
 					      boolean firstCall,
 					      boolean ignoreSynth,
-					      Object actionId)
+					      Object actionId,HashSet<String> seen)
 	throws Exception {
 
         boolean        ok       = true;
@@ -9617,66 +9619,18 @@ public class EntryManager extends RepositoryManager {
 
             if (firstCall) {
                 children.add(new Descendent(entry));
-		/*
-		  children.add(new Object[] {
-		  entry.getId(), entry.getTypeHandler().getType(),
-		  entry.getResource().getPath(),
-		  entry.getResource().getType(),
-		  entry.getTypeHandler().getEntryValues(entry),
-		  entry.getParentEntry()
-		  });
-		*/
             }
             if ( !entry.isGroup()) {
                 continue;
             }
 
-            if (entry.getMasterTypeHandler().isSynthType()
-		|| isSynthEntry(entry.getId())) {
-                if (ignoreSynth) {
-                    continue;
-                }
-                for (String childId :
-			 getChildIds(request, (Entry) entry, null)) {
-                    if ((actionId != null)
-			&& !getActionManager().getActionOk(actionId)) {
-                        ok = false;
-
-                        break;
-                    }
-                    Entry childEntry = getEntry(request, childId);
-                    if (childEntry == null) {
-                        continue;
-                    }
-		    if(excluder!=null && !excluder.isEntryOk(childEntry))
-			continue;
-                    children.add(new Descendent(childEntry));
-		    /*
-		      children.add(new Object[] {
-		      childId, childEntry.getType(),
-		      childEntry.getResource().getPath(),
-		      childEntry.getResource().getType(),
-		      entry.getTypeHandler().getEntryValues(entry),
-		      entry.getParentEntry()
-		      });
-		    */
-                    if (childEntry.isGroup()) {
-                        children.addAll(getDescendents(request,
-						       (List<Entry>) Misc.newList(childEntry),
-						       connection,excluder, false, ignoreSynth, actionId));
-                    }
-                }
-
-                return children;
-	    }
-
             Statement stmt = SqlUtil.select(connection,
                                             SqlUtil.comma(new String[] {
 						    Tables.ENTRIES.COL_ID,
 						    Tables.ENTRIES.COL_TYPE, Tables.ENTRIES.COL_RESOURCE,
-						    Tables.ENTRIES.COL_RESOURCE_TYPE }), Misc.newList(
-												      Tables.ENTRIES.NAME), Clause.eq(
-																      Tables.ENTRIES.COL_PARENT_GROUP_ID, entry.getId()));
+						    Tables.ENTRIES.COL_RESOURCE_TYPE }),
+					    Misc.newList(Tables.ENTRIES.NAME),
+					    Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entry.getId()));
 
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             //Don't close the statement because that ends up closing the connection
@@ -9706,20 +9660,45 @@ public class EntryManager extends RepositoryManager {
 		    continue;
 		}
 
+		if(seen.contains(childId)) continue;
+		seen.add(childId);
                 children.add(new Descendent(childEntry));
-		/*
-
-		  children.add(new Object[] {
-		  childId, childType, resource, resourceType,
-		  childEntry.getTypeHandler().getEntryValues(childEntry),
-		  childEntry.getParentEntry()
-		  });
-		*/
                 children.addAll(getDescendents(request,
 					       (List<Entry>) Misc.newList(childEntry), connection,
-					       excluder, false, ignoreSynth, actionId));
+					       excluder, false, ignoreSynth, actionId,seen));
             }
             getDatabaseManager().closeStatement(stmt);
+
+
+            if (!ignoreSynth && (entry.getMasterTypeHandler().isSynthType()
+				 || isSynthEntry(entry.getId()))) {
+                for (String childId : getChildIds(request, (Entry) entry, null)) {
+                    if ((actionId != null)
+			&& !getActionManager().getActionOk(actionId)) {
+                        ok = false;
+                        break;
+                    }
+                    Entry childEntry = getEntry(request, childId);
+                    if (childEntry == null) {
+                        continue;
+                    }
+		    if(excluder!=null && !excluder.isEntryOk(childEntry))
+			continue;
+		    if(seen.contains(childId)) continue;
+		    seen.add(childId);
+
+
+                    children.add(new Descendent(childEntry));
+                    if (childEntry.isGroup()) {
+                        children.addAll(getDescendents(request,
+						       (List<Entry>) Misc.newList(childEntry),
+						       connection,excluder, false, ignoreSynth, actionId,seen));
+                    }
+                }
+	    }
+	    
+
+
         }
 
         return children;
