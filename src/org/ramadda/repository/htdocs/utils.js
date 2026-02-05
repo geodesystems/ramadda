@@ -5265,7 +5265,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             title:"",
 	    rightSideTitle:"",
             inPlace:true,
-            fit:true
+            fit:true,
+	    doTooltip:true
         };
 
         if(args) {
@@ -5368,8 +5369,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         let popup=   $(html).appendTo(TAG_BODY);
-
-	if(true || opts.tooltip) {
+	if(opts.doTooltip) {
 	    popup.find('a,div').tooltip({
 		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
 		content: function () {
