@@ -77467,6 +77467,10 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                     inputElem.disabled = true;
                 }
 
+		//jeffmc: wrap this in a div
+		var itemDiv = document.createElement('div');
+
+
                 // create span
                 var labelSpan = document.createElement("label");
                 // this isn't the DOM attribute 'for', but an arbitrary name we
@@ -77478,7 +77482,14 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                 if (!baseLayer && !layer.inRange) {
                     labelSpan.style.color = "gray";
                 }
-                labelSpan.innerHTML = layer.name;
+		let label = layer.name;
+		if(!baseLayer && layer?.baseStyle?.externalGraphic) {
+		    label  = '<img width=16 src=' +layer?.baseStyle?.externalGraphic+'>' +' ' + label
+		}
+
+
+
+                labelSpan.innerHTML = label;
                 labelSpan.style.verticalAlign = (baseLayer) ? "bottom"
                                                             : "baseline";
 		//jeffmc:
@@ -77490,6 +77501,9 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 
                 var groupArray = (baseLayer) ? this.baseLayers
                                              : this.dataLayers;
+
+
+
                 groupArray.push({
                     'layer': layer,
                     'inputElem': inputElem,
@@ -77499,16 +77513,25 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 
                 var groupDiv = (baseLayer) ? this.baseLayersDiv
                                            : this.dataLayersDiv;
+
 		//jeffmc: wrap this in a div
-		var itemDiv = document.createElement('div');
                 OpenLayers.Element.addClass(itemDiv, "ramadda-map-layer-item");
 
 		//jeffmc: 2026-02 - added styling to the layer selector
 		if(!baseLayer && layer.baseStyle) {
-		    if(layer.baseStyle.strokeColor) {
-			itemDiv.style.color=layer.baseStyle.strokeColor;
-		    } else  if(layer.baseStyle.fillColor) {
-			itemDiv.style.color=layer.baseStyle.fillColor;
+		    if(layer.baseStyle.externalGraphic &&
+		       layer.baseStyle.externalGraphic!='') {
+			console.dir(layer.name,layer.baseStyle.externalGraphic);
+		    } else {
+			let color;
+			if(layer.baseStyle.strokeColor) {
+			    color=layer.baseStyle.strokeColor;
+			} else  if(layer.baseStyle.fillColor) {
+			    color=layer.baseStyle.fillColor;
+			}
+			if(color) {
+			    itemDiv.style.color=color;
+			}
 		    }
 		}
 
