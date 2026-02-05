@@ -2826,6 +2826,7 @@ RepositoryMap.prototype = {
 	$.extend(opts, args);
 
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
+	layer.baseStyle= opts;
 	this.checkLayerToggle(name,layer,idx,opts);
         this.initMapVectorLayer(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback);
         return layer;
