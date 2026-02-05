@@ -1980,21 +1980,25 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
 		if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
 		if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
-		String strokeStyle = metadata.getAttr(7);    		    
+		String strokeStyle = metadata.getAttr(idx++);    		    
 		if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
+		String pointRadius = metadata.getAttr(idx++);    		    
+		if(stringDefined(pointRadius)) Utils.add(styles,"pointRadius",JU.quote(pointRadius));		    
+		boolean canSelect = Misc.equals(metadata.getAttr(idx++),"true");
 		String mapStyle = JU.map(styles);
+
 		if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
 		    String url =
 			request.entryUrl(getRepository()
 					 .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
 					 ShapefileOutputHandler.OUTPUT_GEOJSON
 					 .toString(), "formap", "true");
-		    map.addGeoJsonUrl(mapEntry.getName(), url, true,mapStyle,false);
+		    map.addGeoJsonUrl(mapEntry.getName(), url, canSelect,mapStyle,false);
 		} else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
 		    String url =
 			request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
 		    map.addGeoJsonUrl(
-				      mapEntry.getName(), url, true,mapStyle,false);
+				      mapEntry.getName(), url, canSelect,mapStyle,false);
 		    
 		}
 	    }

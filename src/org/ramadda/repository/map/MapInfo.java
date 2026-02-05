@@ -835,6 +835,7 @@ public class MapInfo {
 						  ph.arg("header", true),
 						  ph.arg("draggable", true),
 						  ph.arg("sticky", true),
+						  ph.arg("doTooltip", false),						  
 						  ph.arg("initCall", initCall));
 
             rightSide =  mapPopup + HU.SPACE + extraTop;
