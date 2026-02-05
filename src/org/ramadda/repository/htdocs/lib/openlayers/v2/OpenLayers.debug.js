@@ -77502,6 +77502,16 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 		//jeffmc: wrap this in a div
 		var itemDiv = document.createElement('div');
                 OpenLayers.Element.addClass(itemDiv, "ramadda-map-layer-item");
+
+		//jeffmc: 2026-02 - added styling to the layer selector
+		if(!baseLayer && layer.baseStyle) {
+		    if(layer.baseStyle.strokeColor) {
+			itemDiv.style.color=layer.baseStyle.strokeColor;
+		    } else  if(layer.baseStyle.fillColor) {
+			itemDiv.style.color=layer.baseStyle.fillColor;
+		    }
+		}
+
                 groupDiv.appendChild(itemDiv);
 
                 itemDiv.appendChild(inputElem);
