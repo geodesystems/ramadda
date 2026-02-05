@@ -65,6 +65,7 @@ function RepositoryMap(mapId, params) {
 	selectFillColor:null,
 	selectStrokeWidth:null,
 	selectFillOpacity:0.4,	
+	selectPointRadius:6,
 
 	maxZoom:18,
 	singlePointZoom:7,
@@ -260,6 +261,7 @@ function RepositoryMap(mapId, params) {
             },
 	    
             featureclick: function(e) {
+		_this.featureClickTime = new Date();
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
 		    if(debugSelect)    console.log('featureclick-1');
 		    return;
@@ -334,6 +336,15 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     handleMapClick: function(e) {
+	let now = new Date();
+	this.lastClick=now;
+	if(!e.metaKey && !e.ctrlKey) {
+	    if(this.theMap.featureClickTime) {
+		if((now.getTime()-this.theMap.featureClickTime.getTime())<1000)  {
+		    return;
+		}
+	    }
+	}
 	if(this.onAlt) {
 	    if(!e.altKey) return;
 	    let map = this.theMap;
@@ -1314,13 +1325,23 @@ RepositoryMap.prototype = {
 	}
 
 
-	if(fs.pointRadius && !highlight.pointRadius) {
-	    highlight.pointRadius = fs.pointRadius*1.2;
-	}
+
 	if(fs.externalGraphic && !highlight.externalGraphic) {
 	    highlight.externalGraphic = fs.externalGraphic;
 	    highlight.fillOpacity=1;
 	}	    
+
+	if(!highlight.pointRadius) {
+	    let pointRadius = 6;
+	    let scale=1.4;
+	    if(Utils.isDefined(fs.pointRadius)) {
+		pointRadius = feature.originalStyle.pointRadius*scale;
+	    } else 	if(Utils.isDefined(feature?.layer?.styleMap?.styles?.default?.defaultStyle?.pointRadius)) {
+		pointRadius = feature.layer.styleMap.styles.default.defaultStyle.pointRadius*scale;
+	    }
+	    highlight.pointRadius=pointRadius;
+	}
+
 	this.drawFeature(feature.layer,feature, highlight);
     },
 
@@ -1439,7 +1460,6 @@ RepositoryMap.prototype = {
 	    pointRadius: fstyle.highlightPointRadius??this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
-
 	if(fstyle.label) {
 	    ['label','labelAlign','labelOutlineColor','labelOutlineWidth',
 	     'labelSelect','labelXOffset','labelYOffset',
@@ -2250,22 +2270,6 @@ RepositoryMap.prototype = {
                 let id = this.mapDivId + "_features";
                 this.showText(HU.div([ATTR_ID, id,
 				      ATTR_CLASS, "ramadda-map-features"], html),true);
-		/****
-                     jqid(id + " .ramadda-map-feature").tooltip({
-		     content: function() {
-		     let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
-		     feature =  layer.features[index];
-		     if(feature) {
-		     let p = feature.attributes;
-		     if(p) {
-		     return MapUtils.makeDefaultFeatureText(p);
-		     }				
-		     }
-		     return null;
-		     }
-		     });
-		**/
-
                 jqid(id + " .ramadda-map-feature").click(function(e) {
                     let index = parseInt($(this).attr(ATTR_FEATURE_INDEX));
 		    _this.dontShowText = true;
@@ -2842,7 +2846,8 @@ RepositoryMap.prototype = {
 	});
     },
 
-    addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
+    addGeoJsonLayer:  function(name, url,
+			       canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 	if(this.hadInitialZoom) zoomToExtent=false;
 	let layer = MapUtils.createLayerGeoJson(this,name,url);
 	if(args) {
