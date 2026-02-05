@@ -1939,12 +1939,12 @@ div.olControlZoom {
 }
 
 .dataLayersDiv, .baseLayersDiv {
-    max-height:100px !important;
+    max-height:150px !important;
 }
 
 .dataLayersDiv {
-    max-height:200px !important;
-    height:200px !important;    
+    max-height:150px !important;
+    height:150px !important;    
 }
 
 .olPopupContent {
