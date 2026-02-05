@@ -835,16 +835,18 @@ new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x
 
 new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}'],
 	     {legend:RamaddaUtil.getUrl('/images/federallands.png'),
+	      isOverlay:true,
 	      attribution:'Map courtesy of BLM'});
 
 new MapLayer('seafloor','Seafloor',['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}']);
 
 new MapLayer('esri.oceanbasemap','ESRI Ocean Basemap','https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Sources: GEBCO, NOAA, CHS, OSU,'});
 
+new MapLayer('historic','Caltopo Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',
+	     {isForMap:false,attribution:'Map courtesy of Caltopo',isOverlay:true});
 
-new MapLayer('historic','Caltopo Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo',isOverlay:true});
-
-new MapLayer('strava.all','Strava - All','https://heatmap-external-a.strava.com/tiles/all/hot/{z}/{x}/{y}.png',{attribution:'Map tiles by <a href="https://labs.strava.com/heat'});
+new MapLayer('strava.all','Strava - All','https://heatmap-external-a.strava.com/tiles/all/hot/{z}/{x}/{y}.png',
+	     {isForMap:false,isOverlay:true,attribution:'Map tiles by <a href="https://labs.strava.com/heat'});
 
 
 new MapLayer('nasa.earthatnight','Earth at Night','https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default//GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',{attribution:'Imagery provided by services from the Global Image'});
