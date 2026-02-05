@@ -67,7 +67,8 @@ function makeWxLayers() {
 
     wlayers.forEach(l=>{
 	new MapLayer(l.id,l.name,'',
-		     {isOverlay:true,
+		     {isForMap:false,
+		      isOverlay:false,
 		      refresh:300,
 		      minZoom:l.minZoom,
 		      maxZoom:l.maxZoom,
