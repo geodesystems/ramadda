@@ -261,14 +261,16 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-    private Result addHeader(Request request, Appendable sb, String title)
+    private Result addHeader(Request request, Appendable sb, String title,int...code)
 	throws Exception {
         Appendable html = new StringBuilder();
         HU.titleSectionOpen(html, title);
         html.append(sb.toString());
         html.append(HU.sectionClose());
         Result result = new Result(title, html);
-
+	if(code.length>0) {
+	    result.setResponseCode(code[0]);
+	}
         return addHeader(request, result);
     }
 
@@ -2118,7 +2120,8 @@ public class UserManager extends RepositoryManager {
         if ( !request.getUser().canEditFavorites()) {
             return addHeader(
 			     request,
-			     new StringBuffer(messageError("Favorites not allowed")), "Favorites");
+			     new StringBuffer(messageError("Favorites not allowed")), "Favorites",
+			     Result.RESPONSE_UNAUTHORIZED);
         }
         String entryId = request.getString(ARG_ENTRYID, BLANK);
 
@@ -2126,7 +2129,8 @@ public class UserManager extends RepositoryManager {
             Entry entry = getEntryManager().getEntry(request, entryId);
             if (entry == null) {
                 return addHeader(
-				 request, new StringBuffer(messageError("Cannot find or access entry")), 																		 "Favorites");
+				 request, new StringBuffer(messageError("Cannot find or access entry")),
+				 "Favorites",Result.RESPONSE_UNAUTHORIZED);
             }
 
             addFavorites(request, user, (List<Entry>) Misc.newList(entry));
@@ -2200,8 +2204,7 @@ public class UserManager extends RepositoryManager {
             sb.append(HU.center(messageWarning(msg)));
             sb.append(makeLoginForm(request));
             sb.append(HU.sectionClose());
-
-            return addHeader(request, sb, "User Home");
+            return addHeader(request, sb, "User Home",Result.RESPONSE_UNAUTHORIZED);
         } else {
             request.appendMessage(sb);
         }
@@ -3426,13 +3429,13 @@ public class UserManager extends RepositoryManager {
             sb.append(HU.center(messageWarning(msg("You need to be signed in to change user settings"))));
             sb.append(makeLoginForm(request));
 
-            return addHeader(request, sb, "User Settings");
+            return addHeader(request, sb, "User Settings",Result.RESPONSE_UNAUTHORIZED);
         }
 
         if ( !user.canEditSettings()) {
             StringBuffer sb = new StringBuffer();
             sb.append(messageWarning(msg("You cannot edit your settings")));
-            return addHeader(request, sb,"User Settings");
+            return addHeader(request, sb,"User Settings",Result.RESPONSE_UNAUTHORIZED);
         }
 
         return null;
