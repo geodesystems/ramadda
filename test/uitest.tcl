@@ -7,9 +7,18 @@ set ::output ""
 set ::consoleCnt 0
 
 proc getUrl {url} {
-    catch {exec rm tmp.csv}
-    catch {exec curl -k $url > tmp.csv} err
-    set fp [open tmp.csv]
+    catch {exec rm tmp.txt}
+    set rc [catch {
+	exec curl -k -s -o tmp.txt -w "%{http_code}" $url
+    } code]
+
+    if {$code!=200} {
+	error "Error: url received code $code: $url"
+    }
+
+#    catch {exec curl -k $url > tmp.txt} err
+#    puts $err
+    set fp [open tmp.txt]
     set c [read $fp]
     close $fp
     set c
@@ -63,15 +72,30 @@ proc writeError {html} {
 
 
 
+proc convertUrl {url} {
+    if {[info exists ::env(RAMADDA_USER)]} {
+	regsub -all "{ARG_USER}" $url  $::env(RAMADDA_USER) url
+    }
+    if {[info exists ::env(RAMADDA_PASSWORD)]} {
+	regsub -all "{ARG_PASSWORD}" $url  $::env(RAMADDA_PASSWORD) url
+    }
+    set url
+}
 
-proc capture {_group name url {doDisplays 1} {sleep 3}} {
+
+proc logout {} {
+    capture "" "" https://ramadda.org/repository/user/logout 0 0 1
+}
+
+proc capture {_group name url {doDisplays 1} {sleep 3} {justCall 0} } {
+    set url [convertUrl $url]
     initTest
     regsub -all {[/ .'\",]+} $name _ clean
     regsub -all {\?} $clean _ clean    
     set image image_${clean}.png
     set thumb thumb_${_group}_${clean}.png
     set consoleFile console_${_group}_${clean}.txt
-    if {![file exists $thumb]} {
+    if {$justCall || ![file exists $thumb]} {
 	puts stderr "\t$name url:$url"
 	#Bring Firefox to the front and tell it to load the page
 	if {[regexp ramadda.org $url]} {
@@ -83,6 +107,10 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	if {[catch {
 	    exec osascript -e {activate application "Safari"}
 	    exec osascript -e $cmd
+	    if {$justCall} {
+		return "OK";
+	    }
+
 	    if {[catch {
 		if {$sleep>0} {
 		    exec sleep $sleep
@@ -94,7 +122,6 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		}
 	    } err]} {
 		##Do this since any call to log in the above script triggers an error
-		puts stderr "$err"
 		if {[regexp variable $err]} {
 		    exit
 		}
@@ -117,11 +144,16 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		file delete $console
 	    } 
 	} err]} {
-	    puts stderr "Error running script: $err"
-	    write "Error: $err<hr>"
-	    write "</div>"
-	    exit
+	    if {$err!="OK"} {
+		puts stderr "Error running script: $err"
+		write "Error: $err<hr>"
+		write "</div>"
+		exit
+	    }
 	}
+    }
+    if {$justCall} {
+	return
     }
     incr ::pageCnt
     set extra ""

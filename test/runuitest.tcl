@@ -20,27 +20,40 @@ proc writeUrl {url {desc ""}} {
     flush $::urlsfp
 }
 
+
+
 proc runGroup {group id {groupLimit 10000}} {
     if {$::total>=$::maxCount} {
 	return;
     }
-
+    set suffix ""
     write "</div>\n"
     write "<h2>$group</h2><div class=ramadda-grid>"
     if {[regexp http $group]} {
 	set url $group
     } else {
-	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false"
+	if {[regexp auth: $id]} {
+	    regsub -all auth: $id {} id
+	    set suffix "&auth.user={ARG_USER}&auth.password={ARG_PASSWORD}"
+	} 
+	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false$suffix"
     }
+    set url [convertUrl $url]
     puts stderr "group: $group $url"
     writeUrl $url CSV
-    set csv [getUrl $url]
+    set rc [catch {
+	set csv [getUrl $url]
+    } err opts]
+    if {$rc} {
+	puts $err
+	exit
+    }
     regsub -all { } $group _ _group
     foreach line2 [split $csv "\n"] {
 	set line2 [string trim $line2]
 	if {$line2==""} continue;
 	foreach     {name id} [split $line2 ,] break
-	set url "$::root/entry/show?entryid=$id#fortest"
+	set url "$::root/entry/show?entryid=$id$suffix#fortest"
 	writeUrl $url $name
 	capture $_group $name $url 0 $::sleep
 	incr ::total 1
@@ -52,7 +65,7 @@ proc runGroup {group id {groupLimit 10000}} {
 
 
 proc usage {} {
-    puts stderr "usage tclsh runuitest.tcl <-clean (remove and thumb_ and console_ files> <-o output.html> <-sleep sleep_seconds> <-urls file (file contains urls to test_> <url>"
+    puts stderr "usage tclsh runuitest.tcl <-clean (remove and thumb_ and console_ files> <-o output.html> <-sleep sleep_seconds> <-urls file (file contains urls to test_> <-max 10> <url>"
 }
 
 
@@ -142,6 +155,8 @@ if {$groupID!=""} {
     }
 } else {
 #Run with the default ramadda.org entries
+    runGroup "Private" auth:f66f4537-bae3-4b7a-82cd-4b8a033d29bc
+    logout
     runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
     runGroup "Asset Reports" 78ac9b04-b151-49d1-b682-e99d155ef70a
