@@ -1,13 +1,13 @@
 #This is a list of URLS that should all fail
-fail:https://ramadda.org/repository/entry/show?entryid=f66f4537-bae3-4b7a-82cd-4b8a033d29bc
-fail:https://ramadda.org/repository/entry/show?entryid=70ea76a9-b2f7-493e-85d5-a3e815d7ef9d
-quit
-fail:https://ramadda.org/repository/entry/show?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
-fail:https://ramadda.org/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
-fail:https://ramadda.org/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
-fail:https://ramadda.org/admin
-fail:https://ramadda.org/repository/admin/settings
-https://ramadda.org/repository/user/home
+echo:**** Test private entries
+fail:code:401:https://ramadda.org/repository/entry/show?entryid=f66f4537-bae3-4b7a-82cd-4b8a033d29bc
+fail:code:401:https://ramadda.org/repository/entry/show?entryid=8d21da12-cc2d-48db-88c7-740473b16603
+
+fail:code:404:https://ramadda.org/repository/entry/show?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
+fail:code:404:https://ramadda.org/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
+fail:code:404:https://ramadda.org/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
+fail:code:401:https://ramadda.org/repository/admin/settings
+fail:code:401:https://ramadda.org/repository/user/home
 fail:https://ramadda.org/repository/user/monitors
 fail:https://ramadda.org/repository/user/list
 fail:https://ramadda.org/repository/admin/stats
