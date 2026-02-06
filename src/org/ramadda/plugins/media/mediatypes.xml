@@ -49,7 +49,9 @@
 	  -->
   <property name="icon" value="/media/youtube-new.png"/>
   <property name="form.area.show" value="false"/>
-  <property name="form.date.show" value="false"/>
+  <property name="form.date.show" value="true"/>
+  <property name="form.todate.show" value="false"/>
+  <property name="form.time.show" value="false"/>
   <property name="form.datatype.show" value="false"/>
   <property name="form.file.show" value="false"/>
   <property name="form.url.label" value="YouTube Video URL"/>
