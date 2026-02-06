@@ -125,6 +125,11 @@ public class Test {
 	    expectFailure = true;
 	    url = url.substring("fail:".length());
 	}
+	int code = -1;
+	if(url.startsWith("code:")) {
+	    code = Integer.parseInt(StringUtil.findPattern(url,"code:([^:]+):"));
+	    url = url.replaceAll("code:([^:]+):","");
+	}
 	
 
 	long expectedSize = -1;
@@ -150,6 +155,11 @@ public class Test {
 	}
 
 	IO.Result result = IO.doGetResult(new URL(_url));
+	if(code>0 && code!=result.getCode()) {
+	    System.out.println("**** bad code:" + result.getCode() +" != "+ code +" " +url);
+	    if(suddenDeath) Utils.exitTest(1);
+	}
+
 	if(result.getError()) {
 	    if(!expectFailure) {
 		String err= result.getResult();
@@ -159,8 +169,8 @@ public class Test {
 		    inner = Utils.stripTags(inner);
 		    err  = inner;
 		}
-		System.out.println("read error:" + err);
-		System.out.println("url:" + _url);
+		System.out.println("**** read error:" + err);
+		System.out.println("**** url:" + _url);
 		if(suddenDeath) Utils.exitTest(1);
 		return true;
 	    }
@@ -169,7 +179,7 @@ public class Test {
 		System.out.println(result.getResult().trim());
 	    }
 	    if(expectFailure) {
-		System.out.println("Expected error:" + _url);
+		System.out.println("**** expected error:" + _url);
 		if(suddenDeath) Utils.exitTest(1);
 	    }
 	}
@@ -201,7 +211,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -suddendeath -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -die -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
 		Utils.exitTest(0);
 	    }
 
@@ -235,7 +245,7 @@ public class Test {
 		noecho = true;
 		continue;
 	    }
-	    if(args[i].equals("-suddendeath")) {
+	    if(args[i].equals("-die")) {
 		suddenDeath = true;
 		continue;
 	    }	    	    
