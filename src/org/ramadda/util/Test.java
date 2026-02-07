@@ -20,9 +20,9 @@ public class Test {
     private static Date startTime;
     private static Object MUTEX=new Object();
     private static int activeThreads = 0;
-    private static int numThreads = 50;
+    private static int numThreads = 1;
     private static int totalRead =0;
-    private static int loops = 1000;
+    private static int loops = 1;
     private static int sleep=0;
     private static int timeThreshold = 3000;
     private static boolean showSize = true;
