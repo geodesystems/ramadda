@@ -78,11 +78,14 @@ RamaddaCanvas.prototype = {
 					  [1,2,3,4,5,6,7,8,9,10,15,20]));
 	header.push(HU.checkbox(getId('_arrow'),[ATTR_TITLE,'Arrow endpoint',
 						 ATTR_ID,getId('_arrow')],false,'Arrow'));
-	let left = Utils.wrap(header,HU.open(TAG_SPAN,[ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8)]),HU.close(TAG_SPANE));
-			      let right = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
-								    CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
-								    CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP),
-						  ATTR_ID,getId('_message')]);
+	let left = Utils.wrap(header,
+			      HU.open(TAG_SPAN,
+				      [ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8))]),
+			      HU.close(TAG_SPAN));
+	let right = HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(200),
+					      CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
+					      CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP),
+			    ATTR_ID,getId('_message')]);
 	jqid(this.divId+"_header").html(HU.leftRightTable(left,right));
 	jqid(getId('_toggle')).change(function() {
 	    _this.toggleVisibility(HU.isChecked($(this)));
