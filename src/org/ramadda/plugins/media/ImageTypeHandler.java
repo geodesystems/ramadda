@@ -118,7 +118,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
             sb.append("\n+skip\n");
 	    if(request.getExtraProperty("aframejs")==null) {
 		request.putExtraProperty("aframejs", "true");
-		sb.append(HU.importJS(getHtdocsUrl("/lib/aframe/aframe-master.js")));
+		sb.append(HU.importJS(getHtdocsUrl("/lib/aframe/aframe.min.js")));
 		sb.append(HU.importJS(getHtdocsUrl("/media/ramadda_aframe.js")));
 	    }
             String imgUrl =
