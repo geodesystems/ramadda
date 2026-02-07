@@ -1,3 +1,5 @@
+echo:**** File:failure.txt
+
 #This is a list of URLS that should all fail
 echo:**** Test private entries
 fail:code:401:https://ramadda.org/repository/entry/show?entryid=f66f4537-bae3-4b7a-82cd-4b8a033d29bc

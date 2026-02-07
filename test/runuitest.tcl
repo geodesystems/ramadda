@@ -83,6 +83,9 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
     }
 
     if {$arg == "-clean"} {
+	if {[file exists error.html]} {
+	    file delete -force error.html
+	}
 	foreach file [glob -nocomplain thumb_*.png] {
 	    file delete -force $file
 	}

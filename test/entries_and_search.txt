@@ -1,3 +1,4 @@
+echo:**** File:entries_and_search.txt
 https://ramadda.org/repository/entry/links?entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Home/Explore/Miscellany/Integrating+External+Data/FTP+Servers/NGDC+FTP+Site?entryid=df7336d1-7ace-4cb0-b4ba-8b2de67fba97
 https://ramadda.org/repository/entry/show/Home/Explore/Miscellany/Integrating+External+Data/FTP+Servers?entryid=228d04a8-c746-4163-8ba0-1021f943c6ea

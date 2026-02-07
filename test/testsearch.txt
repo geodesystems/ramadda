@@ -1,3 +1,4 @@
+echo:**** File:testsearch.txt
 print:https://ramadda.org/repository/search/do?text=preble&docount=true
 print:https://ramadda.org/repository/search/do?text=data&docount=true
 print:https://ramadda.org/repository/search/do?text=rmnp&docount=true

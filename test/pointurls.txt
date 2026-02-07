@@ -1,3 +1,4 @@
+echo:**** File:pointurls.txt
 https://ramadda.org/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=default.html&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
 https://ramadda.org/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=html.table&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
 https://ramadda.org/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=calendar.calendar&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44

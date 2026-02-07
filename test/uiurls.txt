@@ -1,3 +1,4 @@
+echo:**** File:uiurls.txt
 https://ramadda.org:443/repository/entry/show?entryid=1cdae7f3-4469-4085-bb57-4bab71533c49
 https://ramadda.org:443/repository/entry/show?entryid=892170dc-e19f-4c74-817a-1f9b6fadb248
 https://ramadda.org:443/repository/entry/show?entryid=892170dc-e19f-4c74-817a-1f9b6fadb248&max=5000&output=points.product&product=points.json
