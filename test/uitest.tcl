@@ -103,7 +103,16 @@ proc capture {_group name url {doDisplays 1} {sleep 3} {justCall 0} } {
 		set url "$url#fortest"
 	    }
 	}
-	set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
+	if {0} {
+	    close front document
+	    delay 0.2
+	    make new document with properties {URL:theURL}
+	}
+
+
+	set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""
+##set the url to about:blank to clear the console
+	set cmd "tell application \"Safari\"\n    tell front document\n        set its URL to \"about:blank\"\n        delay 0.2\n        set its URL to \"$url\"\n    end tell\nend tell\n"
 	if {[catch {
 	    exec osascript -e {activate application "Safari"}
 	    exec osascript -e $cmd

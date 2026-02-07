@@ -155,8 +155,8 @@ if {$groupID!=""} {
     }
 } else {
 #Run with the default ramadda.org entries
-    runGroup "Private" auth:f66f4537-bae3-4b7a-82cd-4b8a033d29bc
-    logout
+#    runGroup "Private" auth:f66f4537-bae3-4b7a-82cd-4b8a033d29bc
+#    logout
     runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
     runGroup "Asset Reports" 78ac9b04-b151-49d1-b682-e99d155ef70a
