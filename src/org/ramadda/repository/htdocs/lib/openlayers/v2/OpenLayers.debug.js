@@ -77521,7 +77521,6 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 		if(!baseLayer && layer.baseStyle) {
 		    if(layer.baseStyle.externalGraphic &&
 		       layer.baseStyle.externalGraphic!='') {
-			console.dir(layer.name,layer.baseStyle.externalGraphic);
 		    } else {
 			let color;
 			if(layer.baseStyle.strokeColor) {
