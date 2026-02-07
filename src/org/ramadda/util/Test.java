@@ -23,6 +23,7 @@ public class Test {
     private static int activeThreads = 0;
     private static int numThreads = 1;
     private static int totalRead =0;
+    private static int totalCalls=0;
     private static int loops = 1;
     private static int sleep=0;
     private static int timeThreshold = 3000;
@@ -206,8 +207,14 @@ public class Test {
 	    }
 	    long diff = (after.getTime()-startTime.getTime())/1000;
 	    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-	    if(!quiet)
-		System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads+(!showSize?"":" size:"+result.getResult().length()));
+	    if(!quiet) {
+		System.out.println("#" + (urlCnt++) +
+				   " read:" + totalRead +
+				   " (" + totalCalls+")" +
+				   " " + callsPer +"/s" +
+				   " time:" + time +
+				   " #threads:"+ activeThreads+(!showSize?"":" size:"+result.getResult().length()));
+	    }
 
 	}
 	if(sleep>0) Misc.sleep(sleep);
@@ -285,6 +292,8 @@ public class Test {
 	Random random = new Random();
 	System.out.println("num threads:" + numThreads);
 	int threads = numThreads;
+	totalCalls = threads*urls.size();
+
 	for(int i=0;i<threads;i++) {
 	    new Test(urls);
 	    //Stagger the threads
