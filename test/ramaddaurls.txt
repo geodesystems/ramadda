@@ -151,8 +151,6 @@ echo:Map Files
 https://ramadda.org/repository/entry/show?entryid=335ac406-f1a0-44a0-b36d-cb1e7304cee9
 echo:CSV
 https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d&output=default.csv&fields=name,id&showheader=false&showheader=false
-echo:Top 100 women on the web
-https://ramadda.org/repository/entry/show?entryid=e2417456-024c-402f-ab54-0e9f5d0b6fc8
 echo:Gender in Music Festivals
 https://ramadda.org/repository/entry/show?entryid=f268f91d-d849-44e4-8d8b-4d6b3b474b1e
 echo:Texas Death Row Inmates
@@ -985,6 +983,9 @@ https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/sc
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/textures/pasted__pasted__lambert2_baseColor.png
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/textures/pasted__pasted__lambert2_metallicRoughness.png
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/textures/pasted__pasted__lambert2_normal.png
+
+echo: **** HTTP Resources
+
 https://ramadda.org/repository/colortables.js
 https://ramadda.org/repository/display/animation.js
 https://ramadda.org/repository/display/colorby.js
@@ -1084,6 +1085,8 @@ https://ramadda.org/repository/metadata/list?metadata_type=enum_gcmdkeyword
 https://ramadda.org/repository/metadata/list?metadata_type=enum_tag
 https://ramadda.org/repository/metadata/list?metadata_type=thredds.contributor
 https://ramadda.org/repository/metadata/list?metadata_type=thredds.creator
+
+echo: **** Metadata View
 https://ramadda.org/repository/metadata/view/366f918b-d78d-4262-855d-f5a9d56df075_file_Screen%20Shot%202022-06-02%20at%203.56.49%20PM.png?element=1&entryid=2b78b286-bd3e-4f4d-a9b6-b79edd0b9217&metadata_id=ad26f969-db8d-432b-9685-f2fbe62cc2cb
 https://ramadda.org/repository/metadata/view/38aae6ef-f6ce-49fc-b6ca-a6424d660cc4_file_Screen%20Shot%202022-05-31%20at%2010.34.53%20AM.png?element=1&entryid=4dbb46ca-5d0c-49a0-a65f-515708cb261e&metadata_id=e8153edd-d2e1-4b5a-a8a4-7c3cf1c3edba
 https://ramadda.org/repository/metadata/view/4021718c-39c7-4ca7-8cee-7c6f51ad7709_file_Screen%20Shot%202022-06-01%20at%2010.37.53%20AM.png?element=1&entryid=5fb5e8e1-15e8-4011-9132-a7e4bd12cfbd&metadata_id=93e3478d-e892-44bc-acaf-4de491e7bf7a
@@ -1133,7 +1136,6 @@ https://ramadda.org/repository/metadata/view/Screenshot_2023-07-11_at_14-53-36_P
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-15_at_15-31-18_IIIF_Collection.png?element=1&entryid=1fd6270b-7792-4bd6-a2ea-58a625515cbd&metadata_id=c0a41366-bf71-4d73-90ec-b6ffb998abcb
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-16_at_05-30-40_Global_Temperature_Anomalies.png?element=1&entryid=00a5cd2e-7c4e-4836-b40f-6d83850f46ff&metadata_id=d7420425-16d7-4ab3-afb1-b515f274bb04
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-19_at_10-35-56_John_Snow's_Cholera_Map.png?element=1&entryid=2ffa7bf3-15c6-4aea-ae3f-ebd9dd7478fc&metadata_id=bd1913e7-7730-4d3b-8449-4672bb046d59
-https://ramadda.org/repository/metadata/view/Screenshot_2023-07-21_at_14-20-57_Top_100_women_on_the_web.png?element=1&entryid=e2417456-024c-402f-ab54-0e9f5d0b6fc8&metadata_id=8bf803c9-91f2-4330-9245-122d656d0fb9
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-22_at_13-09-28_Fallout_Map.png?element=1&entryid=23b1c592-b4a1-4a31-9d91-bb84bf7c7a90&metadata_id=c8b92eb4-8d73-44b1-9ff1-9af6b672b488
 https://ramadda.org/repository/metadata/view/Screenshot_2023-08-02_at_07-38-15_National_Parks_and_Forests.png?element=1&entryid=c2331d6e-0bef-4f0c-99ac-a6780d46eaf6&metadata_id=9798b87f-1037-4279-b1df-ff683b5402fa
 https://ramadda.org/repository/metadata/view/Screenshot_2023-08-14_at_14-18-41_Roman_Sites.png?element=1&entryid=a283f010-7119-44f2-b438-ecff5526c579&metadata_id=b7fdf941-84e9-42aa-9c5a-79a04068a9cb
