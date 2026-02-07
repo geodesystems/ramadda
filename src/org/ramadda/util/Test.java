@@ -7,6 +7,7 @@ package org.ramadda.util;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Date;
 import java.util.regex.*;
@@ -31,6 +32,7 @@ public class Test {
     private static boolean noecho = false;
     private static boolean suddenDeath = false;        
     private static int skip=0;
+    private static boolean randomize=false;
     private static List<String> randos = new ArrayList<String>();
     int urlCnt=0;
 
@@ -56,7 +58,13 @@ public class Test {
 	    while(cnt++<loops && ok) {
 		//		System.err.println("cnt:" + cnt);
 		boolean didRando = false;
-		for(String url:urls) {
+		List<String> urlsToUse = urls;
+		if(randomize) {
+		    List<String> randomized = new ArrayList<>(urls);
+		    Collections.shuffle(randomized);
+		    urlsToUse = randomized;
+		}
+		for(String url:urlsToUse) {
 		    if(verbose)
 			System.out.println("call:" + url);
 		    ok=call(url);
@@ -108,7 +116,7 @@ public class Test {
 	}	    
 
 	if(url.startsWith("echo:")) {
-	    if(!noecho)	    System.out.println(url.substring("echo:".length()));
+	    if(!randomize && !noecho)	    System.out.println(url.substring("echo:".length()));
 	    return true;
 	}
 	if(url.startsWith("stop")) {
@@ -211,7 +219,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -die -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -die -randomize -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
 		Utils.exitTest(0);
 	    }
 
@@ -226,6 +234,10 @@ public class Test {
 	    }
 	    if(args[i].equals("-loops")) {
 		loops = Integer.parseInt(args[++i]);
+		continue;
+	    }
+	    if(args[i].equals("-randomize")) {
+		randomize=true;
 		continue;
 	    }
 	    if(args[i].equals("-rando")) {
