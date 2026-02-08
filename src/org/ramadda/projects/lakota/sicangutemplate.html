@@ -9,10 +9,12 @@ id=sicangudata
 </properties>
 ${imports}
 <style type="text/css">
-  :root {
-      --sicangu-logo-width:90px;
-      --header-height:80px;
- }
+:root {
+    --sicangu-logo-width:90px;
+    --sicangu-logo-height:50px;    
+    --header-height:90px;
+    --header-gap:12px;
+  }
 
 .treatymap {
     background:url(${root}/ocetisakowin/treatybg.png?version=3);
@@ -39,12 +41,23 @@ ${imports}
 .sicangu-title a {
     color:#fff;
 }
+.sicangu-header-images {
+    position:absolute;
+    top:var(--header-gap);
+    left:var(--header-gap);
+}
+
 .ramadda-user-menu i {
     color:#fff;
 }
 
+.ramadda-header-floating {
+    top:var(--header-gap);
+    right:var(--header-gap);
+}
+
 .ramadda-header-floating .ramadda-navbar, .sicangu-pageheader .ramadda-navbar {
-    padding:3px;
+    padding:2px;
     padding-left:6px;    
     padding-right:6px;
     border-radius:var(--default-radius);
@@ -56,9 +69,9 @@ ${imports}
 }
 
 
-
 .ramadda-logo-image {
-    width:var(--sicangu-logo-width);
+    xwidth:var(--sicangu-logo-width);
+    height:var(--sicangu-logo-height);
 }
 .ramadda-header {
     height:var(--header-height);
@@ -90,15 +103,17 @@ ${headfinal}
 </head>
 <body>
 <div class="ramadda-header">
-<div style="position:absolute;left:10px;top:20px;top:50%;    transform: translateY(-50%);">
+<div class="sicangu-header-images">
+<span>
 <a href="https://www.rosebudsiouxtribe-nsn.gov/" title="Rosebud Sioux Tribe">
-<img class="ramadda-logo-image"  src="${root}/ocetisakowin/rosebudflag.png" style="width:var(--sicangu-logo-width);">
+<img class="ramadda-logo-image"  src="${root}/ocetisakowin/rosebudflag.png">
 </a>
-</div>
-<div style="position:absolute;left:110px;top:20px;top:50%;    transform: translateY(-50%);">
+</span>
+<span style="margin-left:6px;">
 <a href="${root}" title="Sicangu Climate Data Hub">
-<img class="ramadda-logo-image"  src="${root}/scc/scclogo.png" style="width:var(--sicangu-logo-width);">
+<img class="ramadda-logo-image"  src="${root}/scc/scclogo.png">
 </a>
+</span>
 </div>
 ${pageheader}
 <div class="sicangu-title"
@@ -107,7 +122,7 @@ ${pageheader}
 Sicangu Climate Data Repository
 </a>
 </div>
-<div style="position:absolute;right:10px;bottom:0px;">${links}</div>
+<div style="position:absolute;right:8px;bottom:0px;">${links}</div>
 </div>
 <div style="border-bottom:1px solid #ccc;">${entry.header}</div>
 <div class="ramadda-outercontents">
