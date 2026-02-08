@@ -745,9 +745,10 @@ public class PageHandler extends RepositoryManager {
 						arg("my", "right top"),
 						arg("at", "left bottom"),
 						arg("animate", true))));
-	if(extra.length()>0)
+	if(extra.length()>0) {
 	    pageLinks.add(wrapPageLink(extra.toString()));
-	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
+	}
+	pageLinks.add(HU.span("",HU.id("ramadda_links_suffix")));
 	//        menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
 	menuHtml = HU.div(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
 	//        menuHtml = HU.table(HU.row(HU.tds(pageLinks,HU.cssClass(""))),HU.clazz("ramadda-user-menu"));
