@@ -618,7 +618,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 		    } else {
 			String s = v.toString();
-			if(column.getTokenizeSearch()) {
+			if(column.getTokenizeSearch() && !column.isClob()) {
 			    doc.add(new TextField(field+SUFFIX_EXACT, s,Field.Store.NO));
 			}			    
 

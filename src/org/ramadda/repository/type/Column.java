@@ -878,9 +878,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST);
     }
 
+    public boolean isClob() {
+	return isType(DATATYPE_CLOB);
+    }
+
+
     public boolean isString() {
         return isType(DATATYPE_STRING) || isEnumeration()
-	    || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
+	    || isClob() || isType(DATATYPE_JSONLIST)
 	    || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST) || isType(DATATYPE_EMAIL)
 	    || isType(DATATYPE_WIKI) || isType(DATATYPE_URL)
 	    || isType(DATATYPE_LIST);
