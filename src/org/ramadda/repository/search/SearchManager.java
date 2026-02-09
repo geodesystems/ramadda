@@ -409,14 +409,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return FIELD_METADATA+"_"+ type;
     }
 
-    public String getPropertyField(TypeHandler  handler,Column column) {
+    private String getPropertyField(TypeHandler  handler,Column column) {
 	//We used to use the main type handler to get the field name
 	//return   = getPropertyField(handler,column.getName());
 	//but now we use the type handler of the column
-	return  getPropertyField(column.getTypeHandler(),column.getName());		    
+	return  getPropertyField(column.getTypeHandler(),column.getLuceneFieldName());		    
     }
 
-    public String getPropertyField(TypeHandler  handler,String  type) {
+    private String getPropertyField(TypeHandler  handler,String  type) {
 	return FIELD_PROPERTY+"_"+ handler.getType()+"_"+type;
     }    
 
@@ -577,7 +577,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Object[] values = entry.getTypeHandler().getEntryValues(entry);
 	    if(values!=null) {
 		for (Column column : columns) {
-		    if (!column.getCanSearch() && !column.isEntryType()) continue;
+		    if (!column.getCanSearch() &&
+			!column.getIncludeInSearchIndex() &&
+			!column.isEntryType()) continue;
 		    String field  = getPropertyField(entry.getTypeHandler(),column);
 		    Object v= entry.getValue(request,column);
 		    if(v==null) continue;
@@ -618,9 +620,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 		    } else {
 			String s = v.toString();
-			if(column.getTokenizeSearch() && !column.isClob()) {
-			    doc.add(new TextField(field+SUFFIX_EXACT, s,Field.Store.NO));
-			}			    
+			//Columns can be cansearch=false && getIncludeInSearchIndex=true
+			//e.g. wiki text
+			if(column.getCanSearch()) {
+			    if(column.getTokenizeSearch() && !column.isClob()) {
+				doc.add(new TextField(field+SUFFIX_EXACT, s,Field.Store.NO));
+			    }
+			}
 
 			s = s.toLowerCase();
 			corpus.append(s);
@@ -629,7 +635,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(s.length()>FIELD_MAX_LENGTH) {
 			    s = s.substring(0,FIELD_MAX_LENGTH-1);
 			}
-			doc.add(new StringField(field, s,Field.Store.NO));
+			//			System.err.println("index:" + column.getName() +" " +  column.getUnstructured());
+			if(column.getCanSearch()) {
+			    if(column.getUnstructured()) {
+				doc.add(new TextField(field, s,Field.Store.NO));
+			    } else {
+				doc.add(new StringField(field, s,Field.Store.NO));
+			    }
+			}
 
 			if(column.getCanSort()) {
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
