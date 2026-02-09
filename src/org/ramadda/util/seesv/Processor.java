@@ -2066,6 +2066,11 @@ public abstract class Processor extends SeesvOperator {
 			    "cansearch", "" + canSearch,
 			    "canlist", "" + canList
 			}));
+		if(getDbProp(colId, "includeinsearchindex",false)) {
+		    attrs.append(XmlUtil.attrs(new String[] {
+				"includeinsearchindex","true"}));
+		}
+
 		if(addRawInput) {
 		    attrs.append(XmlUtil.attrs(new String[] {
 				"addrawinput", "" + addRawInput
