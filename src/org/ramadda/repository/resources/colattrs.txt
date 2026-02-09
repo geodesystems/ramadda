@@ -59,7 +59,9 @@ candisplay="false"
 #can search
 cansearch="true"
 searchgroup="Misc."
-
+lucenefieldname="override the default lucene field name"
+unstructured="true - index this field as unstructured text, e.g. for clobs and big strings"
+includeinsearchindex="true - include the text in the search index"
 
 displaylabel=
 htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"
