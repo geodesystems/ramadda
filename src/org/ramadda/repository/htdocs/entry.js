@@ -651,6 +651,7 @@ function MetadataType(type, label, value) {
 
 var COLUMN_TYPE_STRING='string';
 var COLUMN_TYPE_LIST='list';
+var COLUMN_TYPE_CLOB='clob';
 
 function EntryTypeColumn(props) {
     $.extend(this, props);
