@@ -157,6 +157,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Element xmlElement;
     private String name;
     private String fullName;
+    private String luceneFieldName;
     private String displayGroup;
     private String subGroup;    
     private String editGroup;    
@@ -203,6 +204,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean isWiki;
     private boolean isCategory;
     private boolean canSearch;
+    private boolean includeInSearchIndex= false;
+    private boolean unstructured = false;
     private boolean canSort;
     private boolean showEnumerationMenu = true;
     private boolean showEnumerationPopup = false;
@@ -263,6 +266,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.typeHandler = typeHandler;
         this.offset      = offset;
         name             = XU.getAttribute(element, ATTR_NAME);
+	luceneFieldName  =XU.getAttribute(element,"lucenefieldname",(String)null);
 	delimiter= XU.getAttribute(element, "delimiter",",");
 	addRawInput= XU.getAttribute(element, "addrawinput",false);
 	initPattern = Utils.compilePattern(XU.getAttribute(element, "initpattern",(String)null));
@@ -390,6 +394,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        includeInSearchIndex  = getAttributeOrTag(element, "includeinsearchindex", false);	
+
+
+        unstructured  = getAttributeOrTag(element, "unstructured", false);
         canSort    = getAttributeOrTag(element, ATTR_CANSORT, false);
 
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
@@ -465,6 +473,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    showInForm= false;
 	}
         dateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
+
+	/*
+	if(getCanSearch() && !getIncludeInSearchIndex()) {
+	    if(isClob()) 
+		System.out.println("clob:" +getTypeHandler().getType() +" column:"  +this.getName());
+	    if(getUnstructured()) 
+		System.out.println("unstructured:" +getTypeHandler().getType() +" column:"  +this.getName());
+	}
+	*/
     }
 
     public void debug(Object o) {
@@ -883,12 +900,21 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public boolean getUnstructured() {
+        return unstructured;
+    }
+
     public boolean isString() {
-        return isType(DATATYPE_STRING) || isEnumeration()
-	    || isClob() || isType(DATATYPE_JSONLIST)
-	    || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST) || isType(DATATYPE_EMAIL)
-	    || isType(DATATYPE_WIKI) || isType(DATATYPE_URL)
-	    || isType(DATATYPE_LIST);
+        return isType(DATATYPE_STRING) ||
+	    isEnumeration() ||
+	    isClob() ||
+	    isType(DATATYPE_JSONLIST)   ||
+	    isType(DATATYPE_ENTRY) ||
+	    isType(DATATYPE_ENTRY_LIST) ||
+	    isType(DATATYPE_EMAIL)   ||
+	    isType(DATATYPE_WIKI) ||
+	    isType(DATATYPE_URL)  ||
+	    isType(DATATYPE_LIST);
     }
 
     public boolean isMediaUrl() {
@@ -3535,6 +3561,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         return name;
     }
 
+    public String getLuceneFieldName() {
+	if(luceneFieldName!=null)return luceneFieldName;
+	return name;
+    }
+
     public void setGroup(String group) {
 	displayGroup = group;
 	editGroup = group;
@@ -3800,6 +3831,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean getCanSearch() {
         return canSearch;
     }
+
+    public boolean getIncludeInSearchIndex() {
+        return includeInSearchIndex;
+    }
+
+
 
     public boolean getCanSort() {
         return canSort;
