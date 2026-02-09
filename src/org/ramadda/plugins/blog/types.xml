@@ -26,7 +26,10 @@
      <property name="form.todate.show" value="false"/>
      <property name="form.resource.show" value="false"/>
 
-     <column name="blogtext" type="clob" size="256000" label="Extra Text" cansearch="true" showinhtml="false" rows="20" columns="80" iswiki="true"/>
+     <column name="blogtext" type="clob"
+	     size="256000" label="Extra Text"
+	     includeinsearchindex="true"
+	     showinhtml="false" rows="20" columns="80" iswiki="true"/>
 </type>
 
 
