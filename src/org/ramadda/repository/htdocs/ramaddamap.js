@@ -3949,7 +3949,7 @@ RepositoryMap.prototype = {
 
         let lonlat = MapUtils.createLonLat(lon, lat);
         if (this.selectorMarker == null) {
-            this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
+            this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 20);
         } else {
             this.selectorMarker.lonlat = this.transformLLPoint(lonlat);
         }
