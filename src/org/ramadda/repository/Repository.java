@@ -3467,8 +3467,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 //              System.err.println ("auth:" + authMethod);
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
-                    sb.append(
-			      getPageHandler().showDialogError(inner.getMessage()));
+                    sb.append(HU.center(getPageHandler().showDialogError(inner.getMessage())));
+		    sb.append(HU.center(getPageHandler().showDialogNote("Please login")));
                     sb.append(getUserManager().makeLoginForm(request,
 							     HU.hiddenBase64(ARG_REDIRECT, request.getUrl())));
 
