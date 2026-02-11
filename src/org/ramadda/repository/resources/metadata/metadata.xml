@@ -262,7 +262,8 @@
 Control how entries are displayed. 
 ]]>
 </help>
-      <element name="menus" label="Menus to show" datatype="string" suffix=" Comma separated list: &quot;file,edit,feeds,view,other&quot; or &quot;none&quot;"/>
+<element name="menus" label="Menus to show" datatype="string"
+	 help=" Comma separated list: &quot;file,edit,feeds,view,other&quot; or &quot;none&quot;"/>
       <element id="showbreadcrumbs" name="Show Breadcrumbs" datatype="boolean" default="true"/>
       <element id="showtoolbar" name="Show Toolbar" datatype="boolean" default="true"/>
       <element id="showentryheader" name="Show Entry Header" datatype="boolean" default="true"/>
