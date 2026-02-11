@@ -1,0 +1,108 @@
+#####
+name:Core Data File
+type:type_borehole_point
+super:type_point
+<attributes>
+foruser="false"
+handler="org.ramadda.geodata.geo.BoreholeTypeHandler"
+metadata="geo_stratigraphy,geo_measurement"
+</attributes>
+<properties>
+inheritlocationfromtype=type_geo_site
+icon=/geo/drilling-rig.png
+date.nullok=true
+record.file.class=org.ramadda.data.point.text.CsvFile
+form.properties.show=false
+form.area.show=false
+form.location.show=true
+</properties>
+top_depth,Top Depth,double, default="NaN" doinlineedit="true" group="Core Metadata" htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix="(" suffix=" feet) " scale=3.28084}" showinhtml="true" suffix="meters"
+bottom_depth,Bottom Depth,double, default="NaN" doinlineedit="true" htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix="(" suffix=" feet) " scale=3.28084}" showinhtml="true" suffix="meters"
+hole,Hole,enumerationplus, cansearch="true" showempty="false"
+tool,Tool,enumerationplus, cansearch="true" showempty="false" values="file:/org/ramadda/geodata/geo/resources/tools.txt"
+fields_to_show,Fields to show,string, candisplay="false" canlist="false" cansearch="false" group="Display" showinhtml="false" suffix="Comma separated list of fields, e.g., #2,#3"
+
+#####
+name:Multi-Sensor Core Logging
+type:type_core_mscl
+super:type_borehole_point
+<attributes>
+</attributes>
+<properties>
+record.file.class=org.ramadda.data.point.text.CsvFile
+form.area.show=false
+form.location.show=false
+form.properties.show=false
+record.file.class=org.ramadda.data.point.text.CsvFile
+</properties>
+
+#####
+name:Borehole Log File
+type:type_borehole_log
+super:type_borehole_point
+<attributes>
+metadata="geo_stratigraphy,geo_measurement"
+</attributes>
+<properties>
+record.patterns=hole:HOLE:\s*([^\s]+),top_depth:TOP:\s*([\d.]+),bottom_depth:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)
+</properties>
+
+#####
+name:Log ASCII Standard
+type:type_borehole_las
+super:type_borehole_point
+<attributes>
+handler="org.ramadda.geodata.geo.LasTypeHandler"
+pattern=".*\.las"
+</attributes>
+<properties>
+record.pattern.date.format=MM/dd/yy
+record.patterns=field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)
+</properties>
+state,State,enumerationplus, cansearch="true" showempty="false"
+field,Field,enumerationplus, cansearch="true" showempty="false"
+
+#####
+name:Core XRF File
+type:type_borehole_xrf
+super:type_borehole_point
+<attributes>
+editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
+newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
+pattern="(?i).*core(_|-)xrf.*\.csv"
+</attributes>
+<properties>
+icon=/geo/xray.png
+form.date.label=Scan Date
+form.todate.show=false
+form.url.show=false
+form.resource.extra.show=false
+form.time.show=false
+form.tags.show=false
+addinitialmetadata=false
+profile.fields=k_wt|h_pct,fe_wt|c_pct,ca_wt|o_pct,si_wt|na_pct
+</properties>
+hole,Hole,enumerationplus, cansearch="true" group="XRF Metadata" initpattern="hole_?([^_]+)_"
+depth_level,Depth Level,enumerationplus, default="NA" initpattern="depth_?([^_\.]+)(_|\.)" values="NA,1 ft,10 cm, 1m"
+xrf_current,Current,double, default="" initpattern="current_?(\d+\.?\d*)" suffix="mA" unit="mA"
+xrf_voltage,Voltage,double, default="" initpattern="(?i)(\d+)kV" suffix="kV" unit="kV"
+scan_rate,Scan Rate,double, default="" initpattern="scan_?(\d+)" suffix="cm/s"
+
+#####
+name:Core Lithology
+type:type_borehole_lithology
+super:type_borehole_point
+<attributes>
+pattern=".*lith.csv"
+</attributes>
+<properties>
+</properties>
+
+#####
+name:type_geo_lithology
+type:type_geo_lithology
+super:type_borehole_lithology
+<attributes>
+foruser="false"
+</attributes>
+
