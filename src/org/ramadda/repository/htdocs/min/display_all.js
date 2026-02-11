@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 11 05:17:30 MST 2026";
+var build_date="RAMADDA build date: Wed Feb 11 05:32:23 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -56491,8 +56491,11 @@ MapGlyph.prototype = {
 			if(icon) {
 			    if(this.style.fillColor && this.style.fillColor!='transparent')
 				iconStyle+=HU.css(CSS_COLOR,this.style.fillColor);
-			    else if(this.style.strokeColor) iconStyle+=HU.css(CSS_COLOR,this.style.strokeColor);
-			    boxLabel=HU.getIconImage(icon,[ATTR_STYLE,iconStyle]);
+			    else if(this.style.strokeColor)
+				iconStyle+=HU.css(CSS_COLOR,this.style.strokeColor);
+			    iconStyle+=HU.css('-webkit-text-stroke','0.5px #000');
+			    console.log(iconStyle);
+			    boxLabel=HU.getIconImage(icon,null,[ATTR_STYLE,iconStyle]);
 			    boxStyle='';
 
 			}
