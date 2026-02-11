@@ -1907,6 +1907,7 @@ RepositoryMap.prototype = {
             fillColor: props.fillColor,
 	    fillPattern: props.fillPattern,
             fill: props.fill,
+	    graphicName:props.graphicName,
             strokeColor: props.strokeColor,
             strokeWidth: props.strokeWidth,
 	    strokeDashstyle:props.strokeStyle??'solid',
@@ -2798,7 +2799,9 @@ RepositoryMap.prototype = {
 	let v = this.getProperty(prop  +"_"+id, this.getProperty(prop+idx,this.getProperty(prop, dflt)));
 	return v;
     },
-    addMapFileLayer:  function(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
+    addMapFileLayer:  function(layer, url, name,
+			       canSelect, selectCallback, unselectCallback,
+			       args, loadCallback, zoomToExtent,errorCallback) {
 
 
 	let idx  = this.loadedLayers.length+1;
@@ -2824,7 +2827,6 @@ RepositoryMap.prototype = {
 
 	args = args||{};
 	$.extend(opts, args);
-
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
 	layer.baseStyle= opts;
 	this.checkLayerToggle(name,layer,idx,opts);
@@ -2855,7 +2857,9 @@ RepositoryMap.prototype = {
 	    if(Utils.isDefined(args.zoomToExtent))
 		zoomToExtent=args.zoomToExtent;
 	}
-	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
+	this.addMapFileLayer(layer, url, name,
+			     canSelect, selectCallback, unselectCallback,
+			     args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
 
@@ -2868,7 +2872,9 @@ RepositoryMap.prototype = {
 	}
 
         let layer = MapUtils.createLayerKML(this,name, url);
-	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
+	this.addMapFileLayer(layer, url, name,
+			     canSelect, selectCallback, unselectCallback,
+			     args, loadCallback, zoomToExtent,errorCallback);
         return layer;
     },
 
