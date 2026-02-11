@@ -33,12 +33,17 @@
           datatype="boolean"
           default="true"
           name="Display data in map"
-          suffix="Should the map color by settings be displayed in the map polygons"/>
-      <element name="Fill Color" />
-      <element name="Fill Opacity" />      
-      <element name="Stroke Color" />
-      <element name="Stroke Width" />
-      <element name="Stroke Style" datatype="enumeration" values="solid,dot,dash,dashdot,longdash,longdashdot"/>                <element name="Point Radius" />
+          help="Should the map color by settings be displayed in the map polygons"/>
+      <element name="Fill Color" columns="10"/>
+      <element name="Fill Opacity" columns="10" suffix="0 - 1"/>      
+      <element name="Stroke Color" columns="10"/>
+      <element name="Stroke Width" columns="10"/>
+      <element name="Stroke Style" datatype="enumeration"
+	       values="solid,dot,dash,dashdot,longdash,longdashdot"/>
+      <element name="Point Radius" columns="10"/>
+      <element name="Extra Attributes"
+	       datatype="string" rows="5" columns="30"
+               suffix="&lt;pre&gt;one per line: e.g.\nexternalGraphic=/repository/...\ngraphicName=circle|square|star|cross|triangle&lt;/pre&gt;"/>
       <element name="Can Select" datatype="boolean" default="false"/>
     </type>
 
