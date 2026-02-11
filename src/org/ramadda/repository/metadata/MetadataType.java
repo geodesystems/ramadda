@@ -915,20 +915,27 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 sb.append(HU.row(HU.colspan(header(lastGroup),
 					    2)));
             }
-            String elementLbl = msgLabel(element.getLabel());
             String widget =
                 element.getForm(request, entry, formInfo, metadata, suffix,
                                 metadata.getAttr(element.getIndex()),
                                 forEdit);
             if ((widget == null) || (widget.length() == 0)) {}
             else {
-                String suffixLabel = element.getSuffixLabel();
-                if (suffixLabel == null) {
-                    suffixLabel = "";
-                }
-		suffixLabel = HU.span(suffixLabel,HU.attrs("class","ramadda-metadata-widget-suffix"));
-                sb.append(HU.formEntryTop(elementLbl, HU.span(widget+ suffixLabel,HU.cssClass(clazz))
-					  ));
+                String help = element.getHelp();
+		if(stringDefined(help)) {
+		    String _help = HU.div(help,HU.clazz("ramadda-form-help"));
+		    sb.append(HU.formEntryTop("",_help));
+		}
+
+		String suffixLabel = element.getSuffixLabel();
+		if(suffixLabel==null) suffixLabel = "";
+		if(element.isBoolean()) {
+		    sb.append(HU.formEntry("", HU.hbox(widget,suffixLabel)));
+		} else {
+		    String elementLbl = msgLabel(element.getLabel());
+		    suffixLabel = HU.div(suffixLabel.replace("\\n","\n"),HU.attrs("class","ramadda-metadata-widget-suffix"));
+		    sb.append(HU.formEntryTop(elementLbl, HU.hbox(widget,suffixLabel)));
+		}
             }
         }
 

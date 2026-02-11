@@ -18,94 +18,50 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.awt.Image;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
-
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class MetadataTypeBase extends RepositoryManager {
-
     private SimpleDateFormat sdf;
-
     public static final String TAG_TYPE = "type";
-
     public static final String TAG_ELEMENT = "element";
-
     public static final String TAG_TEMPLATE = "template";
-
     public static String ATTR_HELP = "help";
-
     public static final String ATTR_FILE = "file";
-
     public static final String ATTR_TAG = "tag";
-
     public static final String ATTR_TYPE = "type";
-
     public static final String ATTR_NAME = "name";
-
     public static final String ATTR_LABEL = "label";
-
     public static final String ATTR_SUFFIX = "suffix";
-
     public static final String ATTR_ENTRYTYPE = "entrytype";    
-
     public static final String ATTR_SEARCHABLE = "searchable";
-
     public static final String ATTR_SHOWINHTML = "showinhtml";
-
     public static final String TEMPLATETYPE_THREDDS = "thredds";
-
     public static final String TEMPLATETYPE_DIF = "dif";
-
     public static final String TEMPLATETYPE_ISO = "iso";
-
     public static final String TEMPLATETYPE_OAIDC = "oai_dc";
-
     public static final String TEMPLATETYPE_HTML = "html";
 
     private String name;
-
     private String label;
-
     private String suffixLabel;
-
+    private String help;
     protected String entryType;
-
     private boolean showInHtml = true;
-
     private boolean isTitle = false;
-
     protected boolean hasFile = false;
-
-    private Hashtable<String, String> templates = new Hashtable<String,
-                                                      String>();
-
+    private Hashtable<String, String> templates = new Hashtable<String,String>();
     List<MetadataElement> children = new ArrayList<MetadataElement>();
-
     private Hashtable<String,MetadataElement> map;
-
     MetadataHandler handler;
-
     private boolean searchable = false;
-
     private Hashtable<String, String> tags = new Hashtable<String, String>();
 
     public MetadataTypeBase(MetadataHandler handler) {
@@ -117,24 +73,15 @@ public class MetadataTypeBase extends RepositoryManager {
         return name;
     }
 
-    /**
-     *  Set the Handler property.
-     *
-     *  @param value The new value for Handler
-     */
     public void setHandler(MetadataHandler value) {
         this.handler = value;
     }
 
-    /**
-     *  Get the Handler property.
-     *
-     *  @return The Handler
-     */
     public MetadataHandler getHandler() {
         return this.handler;
     }
 
+    @Override
     public String toString() {
         return name;
     }
@@ -303,6 +250,7 @@ public class MetadataTypeBase extends RepositoryManager {
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
         setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
+	help  = Utils.getAttributeOrTag(node, "help",   (String) null);
         setSuffixLabel(Utils.getAttributeOrTag(node, ATTR_SUFFIX,
                 (String) null));
 
@@ -638,6 +586,10 @@ public class MetadataTypeBase extends RepositoryManager {
 
     public void setLabel(String value) {
         label = value;
+    }
+
+    public String getHelp() {
+	return help;
     }
 
     public String getSuffixLabel() {

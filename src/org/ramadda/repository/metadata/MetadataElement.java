@@ -30,10 +30,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.net.URL;
-import java.net.URLConnection;
-
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,89 +37,46 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- *
- * @author Jeff McWhirter
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
-
-
-    public static final String ARG_THUMBNAIL_SCALEDOWN =
-        "metadata_thumbnail_scaledown";
-
-    public static final String ARG_THUMBNAIL_WIDTH =
-        "metadata_thumbnail_width";
-
-    public static final String ARG_THUMBNAIL_DELETE =
-        "metadata_thumbnail_delete";    
-
+    public static final String ARG_THUMBNAIL_SCALEDOWN =    "metadata_thumbnail_scaledown";
+    public static final String ARG_THUMBNAIL_WIDTH =    "metadata_thumbnail_width";
+    public static final String ARG_THUMBNAIL_DELETE =        "metadata_thumbnail_delete";    
     public static final String ATTR_REQUIRED = "required";
-
     public static final String ATTR_MAX = "max";
-
     public static final String ATTR_ID = "id";
-
     public static final String ATTR_ROWS = "rows";
-
     public static final String ATTR_COLUMNS = "columns";
-
     public static final String ATTR_DEPENDS = "depends";
-
     public static final String ATTR_DATATYPE = "datatype";
-
     public static final String ATTR_GROUP = "group";
-
     public static final String ATTR_SUBNAME = "subname";
-
     public static final String ATTR_DEFAULT = "default";
-
     public static final String ATTR_VALUES = "values";
-
     public static final String ATTR_SEARCHABLE = "searchable";
-
     public static final String ATTR_THUMBNAIL = "thumbnail";
-
     public static final String ATTR_INDEX = "index";
-
     public static final String ATTR_ATTACHMENT = "attachment";
 
     private String dataType = DATATYPE_STRING;
-
     private boolean attachment = true;
-
     private String id = null;
-
     private String subName = "";
-
     private int max = -1;
-
     private int rows = 1;
-
     private int columns = 60;
-
     private List<HtmlUtils.Selector> values;    
-
     private Hashtable<String, String> valueMap = new Hashtable<String,
                                                      String>();
 
     private String dflt = "";
-
     private boolean thumbnail = false;
-
     private boolean embed=false;
-
     private boolean required = false;
-
     private boolean searchable = false;
-
     private int index;
-
     private MetadataTypeBase parent;
-
     private String group;
-
     private Element xmlNode;
 
     public MetadataElement(MetadataHandler handler, MetadataTypeBase parent,
@@ -616,7 +569,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                    + request.getString(arg + ".longitude", "");
         }
 
-        if (getDataType().equals(DATATYPE_BOOLEAN)) {
+        if (isBoolean()) {
             boolean value = request.get(arg, false);
 
             return "" + value;
@@ -823,9 +776,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                    + HU.href(getRepository().getUrlBase()
                                     + "/colortables", "View",
                                         "target=_colortables");
-        } else if (dataType.equals(DATATYPE_BOOLEAN)) {
-            return HU.checkbox(arg, "true",
-                                      Misc.equals(value, "true"));
+        } else if (isBoolean()) {
+            return HU.labeledCheckbox(arg, "true",
+                                      Misc.equals(value, "true"),getLabel());
         } else if (dataType.equals(DATATYPE_ENTRY)) {
             return getRepository().getEntryManager().getEntryFormSelect(request, entry, arg, value,entryType,"Entry for " + this.getLabel());
         } else if (dataType.equals(DATATYPE_API_KEY)) {
@@ -920,7 +873,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    if(Utils.stringDefined(image)) sb.append(space);
 	    String fileInput =HU.makeDndFileInput(arg,false);
 	    //HU.fileInput(arg, HU.SIZE_70 + HU.id(inputId))
-
 
 	    sb.append(fileInput      +space +
 		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
