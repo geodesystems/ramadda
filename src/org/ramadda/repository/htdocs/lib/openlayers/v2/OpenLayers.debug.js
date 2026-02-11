@@ -77483,10 +77483,27 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                     labelSpan.style.color = "gray";
                 }
 		let label = layer.name;
-		if(!baseLayer && layer?.baseStyle?.externalGraphic) {
-		    label  = '<img width=16 src=' +layer?.baseStyle?.externalGraphic+'>' +' ' + label
+		//jeffmc: 2026-02 - added styling to the layer selector
+		let style={};
+		if(!baseLayer && layer?.baseStyle) {
+		    style = layer.baseStyle;
 		}
 
+		if(style.externalGraphic && style.externalGraphic!='') {
+		    label  = '<img width=16 src=' +style.externalGraphic+'>' +' ' + label
+		} else {
+		    let divStyle='';
+		    if(style.fillColor) {	
+			divStyle+='background:' + style.fillColor+';';
+		    } 
+		    if(style.strokeColor) {
+			divStyle+='border:2px solid ' + style.strokeColor+';';
+		    }
+		    if(divStyle!='') {
+			divStyle+='display:inline-block;height:14px;width:14px;';
+			label = '<div style="' + divStyle+'"></div> ' + label;
+		    }
+		}
 
 
                 labelSpan.innerHTML = label;
@@ -77494,15 +77511,8 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                                                             : "baseline";
 		//jeffmc:
 		labelSpan.title = inputElem.title=layer.ramaddaId??layer.name;
-
-                // create line break
-               var br = document.createElement("br");
-
-
                 var groupArray = (baseLayer) ? this.baseLayers
                                              : this.dataLayers;
-
-
 
                 groupArray.push({
                     'layer': layer,
@@ -77517,28 +77527,13 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 		//jeffmc: wrap this in a div
                 OpenLayers.Element.addClass(itemDiv, "ramadda-map-layer-item");
 
-		//jeffmc: 2026-02 - added styling to the layer selector
-		if(!baseLayer && layer.baseStyle) {
-		    if(layer.baseStyle.externalGraphic &&
-		       layer.baseStyle.externalGraphic!='') {
-		    } else {
-			let color;
-			if(layer.baseStyle.strokeColor) {
-			    color=layer.baseStyle.strokeColor;
-			} else  if(layer.baseStyle.fillColor) {
-			    color=layer.baseStyle.fillColor;
-			}
-			if(color) {
-			    itemDiv.style.color=color;
-			}
-		    }
-		}
+
+
 
                 groupDiv.appendChild(itemDiv);
 
                 itemDiv.appendChild(inputElem);
                 itemDiv.appendChild(labelSpan);
-//                groupDiv.appendChild(br);
             }
         }
 
