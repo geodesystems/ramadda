@@ -5494,7 +5494,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  Utils.clone(	
 			      {externalGraphic: externalGraphic},
 			      {childIcon:''},
+			      {graphicName:''},
+			      boxStyle,
 			      {showLabels:true, pointRadius:12},
+
 			      textStyle,textBackgroundStyle),
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",

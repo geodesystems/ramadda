@@ -2037,7 +2037,12 @@ MapGlyph.prototype = {
 			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    if(args.addIcon) {
-		if(args.forLegend && this.getProperty('showLegendBox')) {
+		let showLegendBox=this.getProperty('showLegendBox');
+		if(!Utils.isDefined(showLegendBox) && this.getParentGlyph()) {
+		    showLegendBox = this.getParentGlyph().getProperty('showLegendBox');
+		}
+		
+		if(args.forLegend && showLegendBox) {
 		    let boxStyle = this.getLegendStyle(this.style);
 		    let boxLabel = '';
 		    if(Utils.stringDefined(this.style.graphicName) && this.style.graphicName!='circle') {
@@ -3336,11 +3341,19 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry()) {
 	    let childIcon = this.style.childIcon;
 	    if(Utils.stringDefined(childIcon)) {
-		this.applyChildren(child=>{
+		this.applyChildren((child,idx)=>{
 		    child.style.externalGraphic = childIcon;
 		    child.attrs.icon = childIcon;		    
 		});
+	    } else if(this.style.childIcon_cleared) {
+		this.applyChildren((child,idx)=>{
+		    child.style.externalGraphic = '';
+		    child.attrs.icon ='';
+		});
 	    }
+
+
+
 	}
 
 
@@ -6657,14 +6670,20 @@ MapGlyph.prototype = {
 		}
 		let pt = MapUtils.createPoint(latLon.longitude,latLon.latitude);
 		pt = this.display.getMap().transformLLPoint(pt);
-		let style = Utils.clone({},this.style);
-		style.externalGraphic = e.getIconUrl();
-		if(Utils.stringDefined(this.style.childIcon)) {
-		    style.externalGraphic = this.style.childIcon;
+		let style = {
 		}
 		style.strokeWidth=1;
 		style.strokeColor=COLOR_TRANSPARENT;
 		style.fontSize=HU.px(12);
+		style = Utils.clone({},style,this.style);
+		if(Utils.stringDefined(this.style.graphicName)) {
+		    style.externalGraphic='';
+		} else {
+		    style.externalGraphic = e.getIconUrl();
+		    if(Utils.stringDefined(this.style.childIcon)) {
+			style.externalGraphic = this.style.childIcon;
+		    }
+		} 
 		if(style.showLabels) {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
