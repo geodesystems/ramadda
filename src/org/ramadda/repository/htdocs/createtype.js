@@ -330,10 +330,10 @@ var CreateType  = {
 	
 
 	let force = HU.isChecked(jqid('bulk_force'));
-	let props = [[],[]];
+	let props = [[],[],[]];
 	let propIdx =-1;
 
-	let lines = Utils.split(v,'\n',true,true).filter(line=>{
+	let lines = Utils.split(v,'\n').filter(line=>{
 	    let ok = true;
 	    if(line=='<attributes>') {
 		propIdx=0;
@@ -347,6 +347,12 @@ var CreateType  = {
 	    } else if(line=='</properties>') {
 		propIdx=-1;
 		return;
+	    } else   if(line=='<wiki>') {
+		propIdx=2;
+		return;
+	    } else if(line=='</wiki>') {
+		propIdx=-1;
+		return;		
 	    }	    
 	    if(propIdx>=0) {
 		props[propIdx].push(line);
@@ -370,7 +376,6 @@ var CreateType  = {
 		}
 	    });
 	    if(!ok) return false;
-	    console.log('line:'+ line);
 	    return !line.startsWith('#') && line.length>0;
 	});
 	if(props[0].length) {
@@ -385,6 +390,18 @@ var CreateType  = {
 		textArea.val(Utils.join(props[1],'\n'));
 	    }
 	}	    
+
+	if(props[2].length) {
+	    let wiki = Utils.join(props[2],'\n');
+	    let editor =  WikiUtil.getWikiEditor('description_editor');
+	    if(editor) {
+		editor=editor.getEditor();
+		editor.setValue(wiki,-1);
+	    } else {
+		console.log('Could not find wiki editor');
+	    }
+
+	}
 
 	if(above) {
 	    this.insertRows(this.currentColumn,lines.length);
