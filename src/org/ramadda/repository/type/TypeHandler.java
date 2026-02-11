@@ -358,7 +358,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
     private void printProps(Element node) {
-	System.out.println("#####");
+	String separator = "#########";
+	System.out.println(separator);
 	System.out.println("name:" + getDescription());
 	System.out.println("type:" + getType());
 	if(parent!=null)
@@ -370,10 +371,10 @@ public class TypeHandler extends RepositoryManager {
         if (nnm != null) {
 	    int cnt = 0;
 	    for (int i = 0; i < nnm.getLength(); i++) {
-		if(cnt++==0) System.out.println("<attributes>");
 		Attr attr = (Attr) nnm.item(i);
 		String name = attr.getNodeName();
 		if(!(name.matches("^(name|category|supercategory|description|super)$"))) {
+		    if(cnt++==0) System.out.println("<attributes>");
 		    System.out.println(name+"=\""+ attr.getNodeValue()+"\"");
 		}
 	    }
@@ -385,12 +386,11 @@ public class TypeHandler extends RepositoryManager {
         List propertyNodes = XmlUtil.findChildren(node, TAG_PROPERTY);
 	int cnt = 0;
         for (int propIdx = 0; propIdx < propertyNodes.size(); propIdx++) {
-	    cnt++;
-	    if(propIdx==0) {
-		System.out.println("<properties>");
-	    }
             Element propertyNode = (Element) propertyNodes.get(propIdx);
             if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
+		if(cnt++==0) {
+		    System.out.println("<properties>");
+		}
 		String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
 		System.out.println(name+"="+ XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
 	    } else {
@@ -399,8 +399,10 @@ public class TypeHandler extends RepositoryManager {
 	}
 	if(cnt>0)
 	    System.out.println("</properties>");
+
         List columnNodes = XmlUtil.findChildren(node, TAG_COLUMN);
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
+	    if(colIdx==0) System.out.println("\n# columns");
             Element cn = (Element) columnNodes.get(colIdx);
 	    String cname=XU.getAttribute(cn,"name","");
 	    String clabel=XU.getAttribute(cn,"label","");
@@ -418,9 +420,18 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	    System.out.println(cname+","+clabel+","+ctype+","+extra);
 	}
-	//assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
 
-	System.out.println("");
+	if(stringDefined(wikiTemplate)) {
+	    System.out.println("\n<wiki>");
+	    System.out.println(wikiTemplate.trim());
+	    System.out.println("</wiki>");	    
+	}
+
+
+
+	//assigned_to,Assigned To,entry, entrytype="type_assets_personnel" cansearch="true" 
+	System.out.println("\n\n");
+
     }
 
     public void initTypeHandler(Element node) {
@@ -687,9 +698,12 @@ public class TypeHandler extends RepositoryManager {
                 parent.addChildTypeHandler(this);
 	    }
 
-	    /*	    if(isType("type_core_cml")) {
+	    //	    if(isType("type_borehole_point") || isType("type_core_base")) {
+	    /**
+	    if(isType("type_borehole_point")) {
 		printProps(node);
-		}*/
+	    }
+	    */
 
 
         } catch (Exception exc) {
