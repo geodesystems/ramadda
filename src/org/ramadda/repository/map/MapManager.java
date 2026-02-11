@@ -1984,6 +1984,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
 		String pointRadius = metadata.getAttr(idx++);    		    
 		if(stringDefined(pointRadius)) Utils.add(styles,"pointRadius",JU.quote(pointRadius));		    
+		String extra = metadata.getAttr(idx++);    		    
+		if(stringDefined(extra)) {
+		    for(String line: Utils.split(extra,"\n",true,true)) {
+			if(line.startsWith("#")) continue;
+			List<String> toks = Utils.splitUpTo(line,"=",2);
+			if(toks.size()!=2) continue;
+			Utils.add(styles,toks.get(0),JU.quote(toks.get(1)));
+		    }
+		}		    
 		boolean canSelect = Misc.equals(metadata.getAttr(idx++),"true");
 		String mapStyle = JU.map(styles);
 
