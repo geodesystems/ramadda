@@ -2039,8 +2039,35 @@ MapGlyph.prototype = {
 	    if(args.addIcon) {
 		if(args.forLegend && this.getProperty('showLegendBox')) {
 		    let boxStyle = this.getLegendStyle(this.style);
-		    label = HU.div([ATTR_CLASS,'imdv-legend-box',
-				    ATTR_STYLE,boxStyle], '')  + label;
+		    let boxLabel = '';
+		    if(Utils.stringDefined(this.style.graphicName) && this.style.graphicName!='circle') {
+			let g = this.style.graphicName;
+			let iconStyle ='';
+			let map = {
+			    star:'fa-solid fa-star',
+			    triangle:'fa-solid fa-caret-up',
+			    cross:'fa-solid fa-cross',
+			    arrow:'fa-solid fa-location-arrow',
+			    x:'fa-solid fa-x',
+			    plane:'fa-solid fa-plane',			    			    			    
+			}
+			
+			let icon = map[this.style.graphicName];
+			if(this.style.graphicName=='triangle') {
+			    iconStyle+=HU.css(CSS_FONT_SIZE,'16pt');
+			}
+
+			if(icon) {
+			    if(this.style.fillColor && this.style.fillColor!='transparent')
+				iconStyle+=HU.css(CSS_COLOR,this.style.fillColor);
+			    else if(this.style.strokeColor) iconStyle+=HU.css(CSS_COLOR,this.style.strokeColor);
+			    boxLabel=HU.getIconImage(icon,[ATTR_STYLE,iconStyle]);
+			    boxStyle='';
+
+			}
+		    }
+		    label = HU.span([ATTR_CLASS,'imdv-legend-box',
+				    ATTR_STYLE,boxStyle], boxLabel)  + label;
 		} else {
 		    label = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))], icon)  + label;
 		}
@@ -2328,6 +2355,13 @@ MapGlyph.prototype = {
 	}  else if(style.fillColor) {
 	    s+=HU.css(CSS_BACKGROUND,style.fillColor);
 	} 
+	if(Utils.stringDefined(style.graphicName)) {
+	    if(style.graphicName=='circle') {
+		s +=HU.css('border-radius','10px');
+	    } else {
+	    }
+	}
+
 	if(Utils.stringDefined(style.strokeColor)) 
 	    lineColor = style.strokeColor;
 	if(Utils.stringDefined(style.strokeWidth)) 
