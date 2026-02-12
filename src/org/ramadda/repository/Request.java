@@ -2078,8 +2078,13 @@ public class Request implements Constants, Cloneable {
         return rootEntry;
     }
 
-    public void setCurrentEntry(Entry value) {
-        currentEntry = value;
+    public void setCurrentEntry(Entry...entries) {
+	for(Entry entry: entries) {
+	    if(entry!=null) {
+		currentEntry = entry;
+		break;
+	    }
+	}	    
     }
 
     public Entry getCurrentEntry() {
