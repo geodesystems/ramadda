@@ -4704,7 +4704,8 @@ MapGlyph.prototype = {
 
 		    let size = info.filterSize();
 		    let selectId = HU.getUniqueId('select');
-		    let line=HU.div([],label+": " +SPACE+HU.span([ATTR_ID,selectId])) +
+		    let line=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				    HU.leftRightTable(label+": " +SPACE,HU.span([ATTR_ID,selectId]))) +
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      'select-container',selectId,
@@ -4820,7 +4821,8 @@ MapGlyph.prototype = {
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
-	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
+	    filtersHeader = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				   HU.leftRightTable(filtersHeader, clearAll));
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
