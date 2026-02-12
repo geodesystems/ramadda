@@ -113,37 +113,40 @@ NwsAlerts.prototype = {
 	this.seen={};
 	this.pending = 0;
 	this.tbdUrls = [];
+	this.numberOfUrlsToLoad=this.allUrls.length;
 
 	//	setTimeout(()=>{
 	this.allUrls.forEach(item=>{
-	    if(Utils.stringDefined(item.url)) {
-		let loadFirst = Utils.getProperty(this.getFullProperty('loadFirst',item.type,item.value,true));
-		if(!loadFirst) {
-		    this.tbdUrls.push(item);
-		    return;
-		}
-		this.pending++;
-		this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
+	    if(!Utils.stringDefined(item.url)) return;
+	    let loadFirst = Utils.getProperty(this.getFullProperty('loadFirst',item.type,item.value,true));
+	    if(!loadFirst) {
+		this.tbdUrls.push(item);
+		return;
 	    }
+	    this.pending++;
+	    this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
 	});
+
 	//now check if there are any second phase urls to load
 	if(this.tbdUrls.length) {
 	    let check = ()=>{
 		if(this.pending>0) {
-		    setTimeout(check,50);
+		    setTimeout(check,10);
 		    return;
 		}
 		this.tbdUrls.forEach(item=>{
 		    this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
 		});
 	    }
-	    setTimeout(check,50);
+	    check();
 	}
-	//	},2000);
-
     },
     loadAlert:function(url,type,value,multiples) {    
-	if(!Utils.stringDefined(url)) return;
+	this.numberOfUrlsToLoad--;
+	if(!Utils.stringDefined(url)) {
+	    this.pending--;
+	    return;
+	}
 	let  collapseShortLines= function(input, maxLength = 100) {
 	    return input;
 	    return input.replace(/\n(?=([^\n]{1,100})(\n|$))/g, (_, match) => {
@@ -157,9 +160,7 @@ NwsAlerts.prototype = {
 	    let innerContents = '';
 	    if(data.features.length==0) {
 		this.finish();
-//		console.log('no events for:',type,value,url)
 		return;
-		//		innerContents+=this.noAlertsMessage;
 	    }
 	    
 	    this.hasAlertsCount++;
@@ -310,6 +311,9 @@ NwsAlerts.prototype = {
 	});
     },
     finish:function() {
+	if(this.numberOfUrlsToLoad>0) {
+	    return;
+	}
 	this.jq('progress').hide();
 	if(this.allUrls.length!=this.loadedCount) return;
 	if(this.alertCount==0) {
