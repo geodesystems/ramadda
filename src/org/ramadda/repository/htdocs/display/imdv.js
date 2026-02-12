@@ -2436,6 +2436,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
 	    let showPopup =(mapGlyph.isEntry() ||  Utils.stringDefined(mapGlyph.getPopupText()));
+	    if(mapGlyph.isMap()) showPopup=false;
 	    if(showPopup) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				      ATTR_TITLE,'Map Popup',
