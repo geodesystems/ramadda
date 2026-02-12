@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 11 10:20:05 MST 2026";
+var build_date="RAMADDA build date: Thu Feb 12 09:25:15 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -49806,6 +49806,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
 	    let showPopup =(mapGlyph.isEntry() ||  Utils.stringDefined(mapGlyph.getPopupText()));
+	    if(mapGlyph.isMap()) showPopup=false;
 	    if(showPopup) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				      ATTR_TITLE,'Map Popup',
@@ -59130,7 +59131,8 @@ MapGlyph.prototype = {
 
 		    let size = info.filterSize();
 		    let selectId = HU.getUniqueId('select');
-		    let line=HU.div([],label+": " +SPACE+HU.span([ATTR_ID,selectId])) +
+		    let line=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				    HU.leftRightTable(label+": " +SPACE,HU.span([ATTR_ID,selectId]))) +
 			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      'select-container',selectId,
@@ -59246,7 +59248,8 @@ MapGlyph.prototype = {
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
-	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
+	    filtersHeader = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				   HU.leftRightTable(filtersHeader, clearAll));
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
