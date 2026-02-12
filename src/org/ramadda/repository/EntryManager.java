@@ -1874,6 +1874,7 @@ public class EntryManager extends RepositoryManager {
         }
         StringBuilder sb    = new StringBuilder();
         Entry         group = addEntryForm(request, entry, sb);
+	request.setCurrentEntry(entry,group);
         getPageHandler().entrySectionClose(request, entry, sb);
         if (entry == null) {
 	    if(group!=null && !canAddTo(request, group)) {
@@ -4854,6 +4855,7 @@ public class EntryManager extends RepositoryManager {
 
         Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
 					   getRepository().URL_ENTRY_GET,true);
+
 
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();

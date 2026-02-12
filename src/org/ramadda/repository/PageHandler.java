@@ -684,6 +684,7 @@ public class PageHandler extends RepositoryManager {
             theFooter.append(HU.script(footerScript));
 	}
 
+
 	List<Metadata> headerMtd = 
 	    getMetadataManager().findMetadata(request, sourceEntry,
 					      "content.header",true);
@@ -2901,6 +2902,8 @@ public class PageHandler extends RepositoryManager {
         }
         sb.append(HU.sectionOpen(null, false));
         if (entry != null) {
+	    request.setCurrentEntry(entry);
+	    
             String label = Utils.stringDefined(entryLabel)
                            ? entryLabel
 		: getEntryDisplayName(entry);
