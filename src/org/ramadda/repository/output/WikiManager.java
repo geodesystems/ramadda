@@ -5160,13 +5160,19 @@ public class WikiManager extends RepositoryManager
 
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_NAVBAR)) {
-	    boolean popup = getProperty(wikiUtil,props,ATTR_POPUP,false);	    
+	    boolean popup = getProperty(wikiUtil,props,ATTR_POPUP,false);
+	    boolean makeButtons = getProperty(wikiUtil,props,"makeButton",false);	    	    
 	    String style =getProperty(wikiUtil,props,"style","");
 	    String linkStyle =getProperty(wikiUtil,props,"linkStyle","");
 	    String separator =getProperty(wikiUtil,props,"separator",popup?"<br>":null);
 	    String contents =getProperty(wikiUtil,props,"contents",null);
 	    String header =getProperty(wikiUtil,props,"header",null);
 	    String footer =getProperty(wikiUtil,props,"footer","");	    	    
+	    String clazz="ramadda-clickable ramadda-navbar-link";
+	    if(makeButtons) {
+		clazz+=" ramadda-button";
+	    }
+
 	    if(separator==null)
 		separator = HU.div("&#9679;",HU.clazz("ramadda-navbar-separator"));
 	    String image =getProperty(wikiUtil,props,"image","");	    
@@ -5178,7 +5184,13 @@ public class WikiManager extends RepositoryManager
 		else
 		    sb.append(header);		
 	    }
-	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {
+	    List<String> links = Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true);
+	    if(links.size()==0) {
+		List<Entry> entries = getEntries(request, wikiUtil,
+						 originalEntry, entry, props);
+		for(Entry e: entries) links.add(e.getId());
+	    }
+	    for(String link:links) {
 		String url;
 		String label;
 		if(link.indexOf(";")>=0) {
@@ -5208,7 +5220,7 @@ public class WikiManager extends RepositoryManager
 		if(stringDefined(image2)) {
 		    label = HU.div(image2,"")+label;
 		}
-		label = HU.div(label,HU.attrs("style",linkStyle,"class","ramadda-clickable ramadda-navbar-link"));
+		label = HU.div(label,HU.attrs("style",linkStyle,"class",clazz));
 		if(cnt++>0) sb.append(separator);
 		sb.append(HU.href(url,label));
 	    }
