@@ -74,10 +74,14 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     this.transientProperties = {};
 
     let glyphType = this.getGlyphType();
-    if(attrs.routeProvider)
+    if(attrs.routeProvider) {
 	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
-    else 
-	this.name = attrs.name || glyphType.getName() || type;
+    } else {
+	this.name = Utils.getStringDefined(attrs.name,style?.label,glyphType.getName(),  type);
+    }
+
+
+
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
     if(mapGlyphs) {
@@ -1911,9 +1915,6 @@ MapGlyph.prototype = {
     getGeometry: function() {
 	if(this.features.length>0) return this.features[0].geometry;
 	else return null;
-    },
-    setName: function(name) {
-	this.attrs.name = name;
     },
     getName: function() {
 	return this.attrs.name||this.name;
