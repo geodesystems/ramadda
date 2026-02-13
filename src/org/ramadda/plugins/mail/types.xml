@@ -5,7 +5,7 @@
         handler="org.ramadda.plugins.mail.MailTypeHandler" 
         foruser="true"
         category="Information" 
-        pattern=".*\.eml$">
+        pattern="(?i).*\.eml$">
      <property name="icon" value="/mail/email.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

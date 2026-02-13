@@ -18,18 +18,18 @@
 
 
 <type name="type_file_javascript"  super="type_file_code"
-      description="Javascript File" pattern=".*\.js">
+      description="Javascript File" pattern="(?i).*\.js">
     <property name="icon" value="/icons/js.png"/>
 </type>
 
 <type name="type_file_java"   super="type_file_code"
-      description="Java File" pattern=".*\.java" >
+      description="Java File" pattern="(?i).*\.java" >
     <property name="icon" value="/files/java.png"/>
 </type>
 
 
 <type name="type_file_r"   super="type_file_code"
-      description="R File" pattern=".*\.r" >
+      description="R File" pattern="(?i).*\.r" >
     <property name="icon" value="/files/r.png"/>
 </type>
 
@@ -65,7 +65,7 @@
 </type>
 
 <type name="type_file_matlab_code" super="type_file_matlab"
-      description="Matlab Code File" pattern=".*\.m" >
+      description="Matlab Code File" pattern="(?i).*\.m" >
   <property name="canbeindexed" value="true"/>
   <action name="documentchat" label="LLM with code"
 	  icon="fas fa-comments" foruser="true" category="view"/>
@@ -84,7 +84,7 @@
 </type>
 
 <type name="type_file_matlab_data" super="type_file_matlab"
-      description="Matlab Data File" pattern=".*\.mat" >
+      description="Matlab Data File" pattern="(?i).*\.mat" >
 </type>
 
 <type name="type_json"  super="type_convertible" description="JSON File as CSV"
@@ -108,7 +108,7 @@
 </type>
   
 <type name="type_file_shell" super="type_file_code"
-      description="Shell Script" pattern=".*\.sh" >
+      description="Shell Script" pattern="(?i).*\.sh" >
   <property name="canbeindexed" value="true"/>
   <property name="icon" value="/files/sh.png"/>
   <property name="llm.prompt.extra" value="The text below is shell script."/>
@@ -119,7 +119,7 @@
 
 
 <type name="type_file_javaclass"   
-      description="Java Class File" pattern=".*\.class" >
+      description="Java Class File" pattern="(?i).*\.class" >
     <property name="icon" value="/files/java.png"/>
 </type>
 

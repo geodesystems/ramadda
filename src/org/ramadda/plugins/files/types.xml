@@ -1,6 +1,6 @@
 <types>
 
-  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"
+  <type name="type_document_xls"  description="Excel File" pattern="(?i)(.*\.xls|.*\.xlsx)"  super="type_document_tabular"
 	handler="org.ramadda.plugins.files.XlsTypeHandler" priority="10" >
   <column name="display_inline" type="boolean" default="false" label="Display Inline"
 	  showinhtml="false"
@@ -47,7 +47,7 @@ picky=false
 
 </type>
 
-<type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"
+<type name="type_document_csv"  description="CSV File" pattern="(?i)(.*\.csv)"
       super="type_document_tabular"
       handler="org.ramadda.data.docs.TabularTypeHandler"
       category="Data" >
@@ -84,7 +84,7 @@ picky=false
 </wiki>
   </type>
 
-  <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular"  category="Data">
+  <type name="type_document_xml"  description="XML File" pattern="(?i)(.*\.xml)"  super="type_document_tabular"  category="Data">
      <property name="icon" value="/icons/xml.png"/>
      <column name="showxml" label="Show XML"
 	    type="boolean" showinhtml="false" default="false"/>	     
@@ -102,7 +102,7 @@ picky=false
   </type>
 
 
-<type name="type_file_text"  description="Text File" pattern="(.*\.txt)"  category="Documents">
+<type name="type_file_text"  description="Text File" pattern="(?i)(.*\.txt)"  category="Documents">
 <property name="icon" value="/icons/text.png"/>
 <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
 
@@ -121,14 +121,14 @@ picky=false
 </type>
   
 <!--
-<type name="type_file"  description="Text File" pattern="(.*\.txt)"  category="Documents">
+<type name="type_file"  description="Text File" pattern="(?i)(.*\.txt)"  category="Documents">
 -->
 
-<type name="type_file_readme"  super="type_file_text" description="README" pattern=".*(readme|README)(.txt)?"  category="Documents">
+<type name="type_file_readme"  super="type_file_text" description="README" pattern="(?i).*(readme|README)(.txt)?"  category="Documents">
     <property name="icon" value="/icons/book-open.png"/>
 </type>
 
-<type name="type_file_markdown"  super="type_file_text" description="Markdown File" pattern=".*\.md"  category="Documents">
+<type name="type_file_markdown"  super="type_file_text" description="Markdown File" pattern="(?i).*\.md"  category="Documents">
     <property name="icon" value="/files/markdown.png"/>
 <wiki><![CDATA[
 +section title={{name}}

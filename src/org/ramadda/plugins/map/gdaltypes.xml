@@ -12,7 +12,7 @@
      <service link="gdal_info"/>
   </type>
 
-  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(.*\.tif|.*\.tiff)"
+  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(?i)(.*\.tif|.*\.tiff)"
 	handler="org.ramadda.plugins.map.LatLonImageTypeHandler"
 	>
      <property name="icon" value="/icons/image.gif"/>
@@ -37,7 +37,7 @@
 </wiki_inner>
   </type>
 
- <type name="type_nitf"  description="NITF File"   pattern="(.*\.ntf|.*\.NTF)" super="geo_gdal_raster">
+ <type name="type_nitf"  description="NITF File"   pattern="(?i)(.*\.ntf|.*\.NTF)" super="geo_gdal_raster">
      <property name="icon" value="/icons/image.gif"/>
      <property name="form.area.show" value="true"/>
      <service link="gdal_info" id="gdal_info" target="description"  namePattern="(?s).*NITF_FTITLE=(.*?)[\n\r]"  descriptionPattern="(?s).*NITF_ITITLE=(.*?)[\n\r]"/>

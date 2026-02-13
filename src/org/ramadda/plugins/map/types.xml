@@ -1,6 +1,5 @@
 <types supercategory="Geoscience" category="GIS Data">
 
-
   <type name="type_map"  foruser="false"/>
 
   <type name="type_map_folder"  super="type_map"
@@ -49,7 +48,7 @@ entriesListHeader=""  }}
 
   <type name="geo_kml"  super="type_map"
 	mimetype="application/vnd.google-earth.kml+xml"
-	description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
+	description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(?i)(.*\.kml$|.*\.kmz$)">
     <property name="search.tabs" value="list,map"/>
     <property name="icon" value="/icons/kml.png"/>
      <column name="showmap" label="Show Map" type="boolean" showinhtml="false" default="true"/>
@@ -138,7 +137,7 @@ popupSliderRight=true
 
   <type name="geo_gpx"  mimetype="application/json" super="type_point"
 	priority="12"
-	description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+	description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern="(?i).*\.gpx$">
     <property name="icon" value="/map/gpx.png"/>
      <xproperty name="point.initialize" value="false"/>
      <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
@@ -254,7 +253,7 @@ Hint: To use conversion services name your file .shz or .shp.zip
    </type>
 
 
-  <type name="geo_dbase"  description="DBase File"   super="type_point" handler="org.ramadda.plugins.map.DbaseTypeHandler" pattern="(.*\.dbf$)" >
+  <type name="geo_dbase"  description="DBase File"   super="type_point" handler="org.ramadda.plugins.map.DbaseTypeHandler" pattern="(?i)(.*\.dbf$)" >
      <property name="icon" value="/icons/database.png"/>
 <xwiki>
 <![CDATA[
@@ -324,7 +323,7 @@ Hint: To use conversion services name your file .shz or .shp.zip
 	priority="12"      
 	mimetype="application/json" description="GeoJson Map"
       handler="org.ramadda.plugins.map.GeoJsonTypeHandler"
-      pattern="(.*\.geojson$)" metadata="map_style">
+      pattern="(?i)(.*\.geojson$)" metadata="map_style">
   <property name="form.properties.show" value="false"/>
     <property name="icon" value="/icons/mapfile.png"/>
     <property name="mimetype" value="application/geo+json"/>    

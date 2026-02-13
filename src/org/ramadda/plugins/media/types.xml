@@ -17,7 +17,8 @@
 </type>
 
 
-<type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true"
+
+<type name="type_document_pdf"  description="PDF File" pattern="(?i).*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true"
       handler="org.ramadda.repository.type.PdfTypeHandler"      
       >
      <service link="media_gs_thumbnail" target="attachment"/>
@@ -89,13 +90,13 @@
 
 
 
-<type name="type_document_doc"  super="type_document_msfile" description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true"
+<type name="type_document_doc"  super="type_document_msfile" description="Word File" pattern="(?i)(.*\.doc|.*\.docx)"   includeInSearch="true"
       priority="10" >
      <property name="icon" value="/icons/doc.png"/>
      <property name="file.accept" value=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
 </type>
 
-<type name="type_document_ppt"    super="type_document_msfile" description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"
+<type name="type_document_ppt"    super="type_document_msfile" description="Powerpoint File" pattern="(?i)(.*\.ppt|.*\.pptx)"
       includeInSearch="true"   priority="10" >
 <!--
     <service link="media_soffice_thumbnail" target="attachment"/>
@@ -105,7 +106,7 @@
 </type>
 
 
-<type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)"
+<type name="type_document_html"  description="HTML File" pattern="(?i)(.*\.html|.*\.htm)"
       priority="1"
       super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
      <property name="icon" value="/icons/html.png"/>

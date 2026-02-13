@@ -97,7 +97,7 @@
         description="Audio File" 
         handler="org.ramadda.plugins.media.AudioTypeHandler" 
 	super="type_media"
-        pattern=".*(\.wav|\.m4a|\.webm)">
+        pattern="(?i).*(\.wav|\.m4a|\.webm)">
      <property name="icon" value="/media/audio-new.png"/>
      <property name="media.height" value="40"/>
      <wikimacro name="embed_audio" label="Embed Audio">
@@ -116,7 +116,7 @@
         super="type_video"
         description="Quicktime Video" 
         handler="org.ramadda.plugins.media.QuicktimeTypeHandler" 
-        pattern="(.*\.mov|.*\.mp4)">
+        pattern="(?i)(.*\.mov|.*\.mp4)">
      <property name="icon" value="/icons/mov.png"/>
      <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
      <service link="media.qttools.thumbnail" id="initmov"  target="attachment"/>
@@ -223,7 +223,7 @@
 </type>
 
 
-  <type name="type_image"  description="Image"  includeInSearch="true" foruser="true"  pattern="(.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
+  <type name="type_image"  description="Image"  includeInSearch="true" foruser="true"  pattern="(?i)(.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
     <property name="icon" value="/icons/image.png"/>
     <property name="file.accept" value="image/*"/>
     <property name="search.tabs" value="images,list"/>
@@ -596,7 +596,7 @@ xxx
 </type>
 
 <type name="type_iiif_document"        super="type_media" supercategory="" description="IIIF Document"
-      pattern=".iiif.*"
+      pattern="(?i).iiif.*"
       handler="org.ramadda.plugins.media.IIIFDocumentTypeHandler" foruser="true" >  
   <property name="form.description.iswiki" value="true"/>
   <property name="form.file.show" value="false"/>
