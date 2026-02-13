@@ -487,7 +487,6 @@ public class TypeHandler extends RepositoryManager {
 	    for(String prop: propsToCheck) {
 		String v= Utils.getAttributeOrTag(node, prop,null);
 		if(v!=null) {
-		    System.err.println(type+" " +prop+"=" +v);
 		    putProperty(prop,v);
 		}
 
@@ -4759,10 +4758,20 @@ public class TypeHandler extends RepositoryManager {
 			StringBuilder editorSB = new StringBuilder();
 			editorSB.append(cbx);
 			String extra  =msg("Description");
+			String height;
+			if(isTextWiki) {
+			    height= "50em";
+			} else {
+			    int lines =Utils.split(desc!=null?desc:"","\n").size();
+			    lines = (int)(lines*1.5);
+			    lines = Math.max(lines,14);
+			    lines = Math.min(lines,40);				
+			    height=lines+"em";
+			}
                         addWikiEditor(request, entry, editorSB, formInfo,
                                       ARG_DESCRIPTION, desc, "",
                                       false, Entry.MAX_DESCRIPTION_LENGTH,
-                                      true,"height",isTextWiki?"500px":"150px");
+                                      true,"height",height);
                         sb.append(HU.makeShowHideBlock(extra,
 						       editorSB.toString(),
 						       true));
@@ -5302,7 +5311,9 @@ public class TypeHandler extends RepositoryManager {
 	for(int i=0;i<args.length;i+=2) {
 	    String key = args[i];
 	    String value = args[i+1];
-	    if(key.equals("height")) height=value;
+	    if(key.equals("height")) {
+		height=value;
+	    }
 	}
         String textWidget = HU.div(text,
 				   HU.id(editorId)
