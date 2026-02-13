@@ -1,7 +1,7 @@
 <types supercategory="Bioinformatics">
 
 
-  <type name="bio_dicom"  description="DICOM File"  category="Bio" pattern=".*\.dcm" handler="org.ramadda.bio.image.DicomTypeHandler">
+  <type name="bio_dicom"  description="DICOM File"  category="Bio" pattern="(?i).*\.dcm" handler="org.ramadda.bio.image.DicomTypeHandler">
      <property name="icon" value="/dicom/film.png"/>
      <property name="form.area.show" value="false"/>
      <property name="search.area.show" value="false"/>
@@ -34,7 +34,7 @@ StationName
   </type>
 
 
-  <type name="bio_ome_tiff"  description="OME TIFF File"  category="Bio" pattern=".*\.ome\.tif+" handler="org.ramadda.bio.image.OmeTiffTypeHandler">
+  <type name="bio_ome_tiff"  description="OME TIFF File"  category="Bio" pattern="(?i).*\.ome\.tif+" handler="org.ramadda.bio.image.OmeTiffTypeHandler">
      <property name="icon" value="/bioimage/ome.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.todate.show" value="false"/>
