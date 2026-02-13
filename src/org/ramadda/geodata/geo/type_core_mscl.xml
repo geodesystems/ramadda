@@ -9,6 +9,8 @@ into some types.xml file
  super="type_borehole_point" 
  supercategory="Geoscience" 
  category="Core Data" 
+pattern="(?i).*MSCL-XYZ.xls"
+priority="1"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -16,6 +18,7 @@ into some types.xml file
 <property  name="form.location.show"  value="false" />
 <property  name="form.properties.show"  value="false" />
 <property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+<property  name="canbeindexed"  value="false" />
 
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
