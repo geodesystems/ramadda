@@ -35,13 +35,20 @@ includeInSearch="false"
 
 
 #regexp pattern for matching on files
-pattern=".*data.csv"
+pattern="(?i).*data.csv"
 
 #regexp pattern for (not) matching on file names
-notpattern="(?i).*imdvmap\.json$"
+notpattern="(?i).*data.csv"
+
 
 #How to pull out field values from the file name
 field_file_pattern=".*(frequency_type:inst|tavg|const)(frequency:1|3|6|M|U|0)_(dimensions:2d|3d)_(data_group:...)"
+
+
+#for checking the bytes in the file
+bytesfilepattern="(?i).*\.txt"
+bytescount="100"
+bytespattern="(?m)(?i)^TOP:.*"
 
 
 nametemplate="${first_name} ${middle_name} ${last_name}"

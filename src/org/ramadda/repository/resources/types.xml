@@ -249,7 +249,7 @@ priority="2"       >
 </type>
 
 
-  <type name="type_zipfile"  description="ZIP File" pattern="(.*\.zip|.*\.jar)" >
+  <type name="type_zipfile"  description="ZIP File" pattern="(?i)(.*\.zip|.*\.jar)" >
      <property name="icon" value="/icons/zip.png"/>
      <property name="upload.zip" value="true"/>
      <wiki><![CDATA[
