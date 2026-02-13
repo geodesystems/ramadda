@@ -385,9 +385,9 @@ public class PointTypeHandler extends RecordTypeHandler {
     }
 
     @Override
-    public boolean canHandleResource(String path, String filename) {
+    public boolean canHandleResource(String path, File file, String filename) {
         try {
-            boolean canParent = super.canHandleResource(path, filename);
+            boolean canParent = super.canHandleResource(path, file,filename);
             if (canParent) {
                 return true;
             }

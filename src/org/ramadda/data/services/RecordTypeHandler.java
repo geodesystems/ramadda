@@ -538,7 +538,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                            List<RecordFilter> filters) {}
 
     @Override
-    public boolean canHandleResource(String path, String filename) {
+    public boolean canHandleResource(String path, File file, String filename) {
         try {
             boolean ok = getRecordFileFactory().canLoad(path);
             if (ok) {
@@ -548,7 +548,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             //            return false;
         }
 
-        return super.canHandleResource(path, filename);
+        return super.canHandleResource(path, file, filename);
     }
 
     public RecordFileFactory getRecordFileFactory() {
