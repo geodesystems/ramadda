@@ -110,7 +110,7 @@ These don't define the fields or their order. They just define the default attri
   </type>
 
   <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"
-	handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
+	handler="org.ramadda.data.services.PointTypeHandler" pattern="(?i).*\.cnv">
      <property name="icon" value="/point/sbe.png"/>
      <property name="isTrajectory" value="true"/>
      <property name="form.area.show" value="false"/>
@@ -731,7 +731,7 @@ indexField="depth" fields="temperature"
 </type>
 
 <type name="type_point_islr" description="Interagency Sea Level Rise (ISLR)" super="type_point_ocean"  foruser="true"
-      pattern=".*sl_taskforce_scenarios.*xlsx"
+      pattern="(?i).*sl_taskforce_scenarios.*xlsx"
       handler="org.ramadda.geodata.point.ISLRTypeHandler">
   <property name="icon" value="/point/nasa.png"/>
   <property name="search.tabs" value="list,display,map"/>

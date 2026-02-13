@@ -28,7 +28,7 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 </type>
 
 <type name="type_point_3dtrack_csv"  description="3D Track CSV Data"  super="type_point"
-      pattern=".*flight_history\.csv"
+      pattern="(?i).*flight_history\.csv"
       supercategory="Geoscience" category="Point Data">
      <property name="record.properties">
        record.type.utc_time=string
@@ -79,7 +79,7 @@ height=400px isPath=true pathWidth=8 radius=6 strokeWidth=0 colorBy=# colorByFie
 
 
 <type name="type_sounding_text"  description="Text Sounding" super="type_sounding" category="Point Data"
-      pattern=".*\.sounding\.csv"
+      pattern="(?i).*\.sounding\.csv"
       handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.patterns" value="latitude:lat=(.*?)_comma_,longitude:lon=(.*?)_comma_,date:utc_time=(\d\d\d\d-\d\d-\d\d \d\d:\d\d)"/>
      <property name="icon" value="/point/balloon.png"/>
@@ -226,7 +226,7 @@ Data courtesy of
 </type>
 
 
-  <type name="type_sounding_frd"  description="FRD Sounding" super="type_sounding"  foruser="true"  pattern=".*\.frd">
+  <type name="type_sounding_frd"  description="FRD Sounding" super="type_sounding"  foruser="true"  pattern="(?i).*\.frd">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.patterns" value="latitude:Lat: *(-?[\d\.]+ (N|S)),longitude:Lon: *(-?[\d\.]+ (E|W)),time:Time: *([^ ]+),date:Date: *([^ ]+) ,sonde:Sonde: *([0-9]+),aircraft:Aircraft: *(.*?)Date:,bias_corrections: Bias corrections: *(.*),filters:Filters.*?:(.*),comment:COMMENT:(.*)"/>
@@ -327,7 +327,7 @@ Data courtesy of
 
 
 
-  <type name="type_sounding_atomic"  description="NOAA Atomic Sounding" super="type_sounding"  foruser="true"  pattern=".*atomic.*\.txt">
+  <type name="type_sounding_atomic"  description="NOAA Atomic Sounding" super="type_sounding"  foruser="true"  pattern="(?i).*atomic.*\.txt">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.patterns" value="latitude:Release point latitude *([^ ].*),longitude:Release point longitude *([^ ].*),date:Balloon release date and time\s*([^\s].*),sonde_type:Sonde type *([^ ].*),sonde_serial:Sonde serial number *([^ ].*),station:Station name *([^ ].*)"/>
@@ -368,7 +368,7 @@ skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=fal
 </type>
 
 
-<type name="type_nasaames"  description="NASA AMES File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.NasaAmesTypeHandler" pattern=".*\.na" icon="/point/nasa.png">
+<type name="type_nasaames"  description="NASA AMES File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.NasaAmesTypeHandler" pattern="(?i).*\.na" icon="/point/nasa.png">
   <column  name="dimensions"  label="Dimensions" type="int"  />
   <column  name="originator_name"  label="Originator Name" type="string"  />
   <column  name="affiliation"  label="Affiliation" type="enumerationplus"  />

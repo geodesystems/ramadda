@@ -30,7 +30,7 @@
 
   <type name="cdm_grid"  description="Gridded Data File" foruser="true" category="Geoscience Data" 
         handler="org.ramadda.geodata.cdmdata.GridTypeHandler"
-        pattern=".*\.(grb|grib|grib2|grb2|grb\.gz|grib\.gz|grb2\.gz|grib2\.gz)$">
+        pattern="(?i).*\.(grb|grib|grib2|grb2|grb\.gz|grib\.gz|grb2\.gz|grib2\.gz)$">
      <property name="icon" value="/cdmdata/grid.png"/>
    <embedwiki><![CDATA[
    {{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}}
@@ -106,7 +106,7 @@ doAnimation=true animationLoop=true animationMode=frame animationSliderStyle="wi
 
 
 
-  <type name="geo_hdf5"  description="HDF5 File" handler="org.ramadda.repository.type.GenericTypeHandler" category="Geoscience Data" pattern=".*\.h5">
+  <type name="geo_hdf5"  description="HDF5 File" handler="org.ramadda.repository.type.GenericTypeHandler" category="Geoscience Data" pattern="(?i).*\.h5">
      <property name="icon" value="/cdmdata/hdf.png"/>
    </type>
 
