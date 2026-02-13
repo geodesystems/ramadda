@@ -540,8 +540,13 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     private HashSet<String> textSuffixes;
 
     public boolean isTextFile(Entry entry, String file) {
+	String canBeIndexed =   entry.getTypeHandler().getTypeProperty("canbeindexed",null);
+	if(canBeIndexed!=null) {
+	    return canBeIndexed.equals("true");
+	}
 	if(entry.getTypeHandler().isType("type_file_text")) return true;
 	if(entry.getTypeHandler().getTypeProperty("istextfile",false)) return true;	
+
 	return isTextFile(file);
     }
 
