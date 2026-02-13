@@ -283,6 +283,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
+	if(help!=null) {
+	    help = help.replace("\\n","<br>");
+	}
+	if(searchHelp!=null) {
+	    searchHelp = help.replace("\\n","<br>");
+	}
 
 	//	if(Utils.stringDefined(suffix))
 	//	    System.err.println(typeHandler +" " +name + " suffix:" + Utils.clip(suffix,20,"...").replaceAll("\n"," "));	

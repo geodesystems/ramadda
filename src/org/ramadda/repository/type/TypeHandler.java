@@ -527,8 +527,14 @@ public class TypeHandler extends RepositoryManager {
 		editHelp = editHelp.replace("\\n","\n").replace("_quote_","\"");
 	    }
             newHelp = Utils.getAttributeOrTag(node, "newhelp", editHelp);	    
-	    if(newHelp!=null)
+	    if(help!=null) {
+		help = help.replace("\\n","<br>");
+	    }
+
+
+	    if(newHelp!=null) {
 		newHelp = newHelp.replace("\\n","\n");
+	    }
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
 	    superCategory = XmlUtil.getAttributeFromTree(node,
