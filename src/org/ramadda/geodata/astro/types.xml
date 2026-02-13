@@ -11,7 +11,7 @@
   </type>
 
 
-  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.astro.FitsTypeHandler" category="Astronomy" pattern=".*\.fits$">
+  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.astro.FitsTypeHandler" category="Astronomy" pattern="(?i).*\.fits$">
      <property name="icon" value="/astro/fits.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

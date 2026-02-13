@@ -3,7 +3,7 @@
   <type name="type_idv_bundle"  
         description="IDV Bundle" 
         category="Geoscience Data" 
-        pattern="(.*\.zidv|.*\.xidv)">
+        pattern="(?i)(.*\.zidv|.*\.xidv)">
      <property name="icon" value="/idv/idv.gif"/>
 <wiki>
 <![CDATA[

@@ -1,5 +1,5 @@
 <type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" 
-      pattern=".*\.las"
+      pattern="(?i).*\.las"
       handler="org.ramadda.geodata.geo.LasTypeHandler">      
   <help><![CDATA[
 Provides support for the 

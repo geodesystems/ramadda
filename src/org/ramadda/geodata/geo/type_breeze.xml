@@ -3,7 +3,7 @@
 	 description="Geo Breeze XML"
 	 handler="org.ramadda.repository.type.TypeHandler"
 	 priority="50"
-	 pattern=".*measurement.xml"
+	 pattern="(?i).*measurement.xml"
 	 supercategory="Geoscience"  category="Core Data" >
 
 <!-- Properties-->

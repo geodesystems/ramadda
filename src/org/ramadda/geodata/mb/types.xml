@@ -35,7 +35,7 @@
 
 
 
-  <type name="type_mb"  description="MB Bathymetry" handler="org.ramadda.geodata.mb.MbTypeHandler" pattern=".*\.mb[0-9]+">
+  <type name="type_mb"  description="MB Bathymetry" handler="org.ramadda.geodata.mb.MbTypeHandler" pattern="(?i).*\.mb[0-9]+">
      <property name="form.altitude.show" value="true"/>
      <column name="format" label="Format"  type="enumerationplus"   values="file:/org/ramadda/geodata/mb/mbtypes.txt"/>
      <column name="number_of_records" label="Number of records"  type="int"/>

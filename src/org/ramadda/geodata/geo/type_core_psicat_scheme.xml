@@ -9,7 +9,7 @@ into some types.xml file
  super="type_core_base" 
  supercategory="Geoscience" 
  category="Core Data" 
-pattern=".*\.car"
+pattern="(?i).*\.car"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>

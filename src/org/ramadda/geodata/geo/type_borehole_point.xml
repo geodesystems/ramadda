@@ -4,6 +4,7 @@
       description="Core Data File"
       foruser="false"
       supercategory="Geoscience" 
+      canbeindexed="false"
       category="Core Data" 
       handler="org.ramadda.geodata.geo.BoreholeTypeHandler"
       metadata="geo_stratigraphy,geo_measurement"

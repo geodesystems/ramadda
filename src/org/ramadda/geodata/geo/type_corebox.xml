@@ -1,7 +1,7 @@
 <types>
   <type  name="type_geo_corebox_csv"  description="Geo Corebox CSV"
 	 handler="org.ramadda.data.services.PointTypeHandler"
-	 pattern=".*corebox.cblog"
+	 pattern="(?i).*corebox.cblog"
 	 super="type_point"  supercategory="Geoscience"  category="Core Data" >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -35,7 +35,7 @@ csvcommands1=-tab,-skiplines,1
 <type  name="type_geo_corebox_json"  description="Geo Corebox JSON"
        handler="org.ramadda.repository.type.TypeHandler"
        priority="50"
-       pattern=".*corebox.json"
+       pattern="(?i).*corebox.json"
        supercategory="Geoscience"  category="Core Data" >
 
 <!-- Properties-->

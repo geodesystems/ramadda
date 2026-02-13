@@ -2,7 +2,7 @@
 <type  name="type_borehole_lithology"
        super="type_borehole_point"
        description="Core Lithology"
-       pattern=".*lith.csv">
+       pattern="(?i).*lith.csv">
 <!-- Properties-->
 <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
 <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  

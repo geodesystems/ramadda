@@ -2,6 +2,6 @@
       super="type_core_base"
       description="Digital Log Interchange Standard"
       supercategory="Geoscience"  category="Core Data"
-      pattern=".*\.dlis">            
+      pattern="(?i).*\.dlis">            
   <property name="icon" value="/geo/dlis.png"/>
 </type>

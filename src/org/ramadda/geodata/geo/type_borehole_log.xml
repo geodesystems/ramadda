@@ -1,5 +1,8 @@
 <types>
 <type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
+      bytesfilepattern="(?i).*\.txt"
+      bytescount="100"
+      bytespattern="(?m)(?i)^TOP:.*"
       metadata="geo_stratigraphy,geo_measurement">      
 <!-- These match up with the file header -->
   <property name="record.patterns"

@@ -3,6 +3,7 @@
       supercategory="Geoscience"  category="Core Data"
       handler="org.ramadda.repository.type.GenericTypeHandler"
       icon="/geo/drilling-rig.png"
+      canbeindexed="false"
       foruser="false">
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="date.nullok" value="true"/>
