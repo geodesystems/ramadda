@@ -776,7 +776,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /**
        is the file a pdf, doc, ppt, etc
     */
-    public boolean isDocument(Entry entry, String path) {
+    private boolean isDocument(Entry entry, String path) {
+	if(entry!=null) {
+	    String canBeIndexed =   entry.getTypeHandler().getTypeProperty("canbeindexed",null);
+	    if(canBeIndexed!=null) {
+		return canBeIndexed.equals("true");
+	    }
+	}
 	path = path.toLowerCase();	
 	//Only do documents
 	if(!(path.endsWith("pdf") ||
@@ -1675,7 +1681,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			Date date1 = dateRange[0];
 			Date date2 = dateRange[1];
 			if(date1!=null || date2!=null) {
-			    System.err.println("date:" + date1 +" d2:" + date2);
 			    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():dateMin,
 										      date2!=null?date2.getTime():dateMax));
 			}
