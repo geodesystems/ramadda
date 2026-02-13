@@ -3468,8 +3468,14 @@ public class EntryManager extends RepositoryManager {
 			    return t1.getPriority()-t2.getPriority();
 			}
 
-			String p1 = t1.getFilePattern();
-			String p2 = t2.getFilePattern();			
+			String p1 = t1.getBytesFilePattern();
+			String p2 = t2.getBytesFilePattern();			
+			if(p1==null) p1="";
+			if(p2==null) p2="";
+			int result = p2.length()-p1.length();
+			if(result!=0) return result;
+			p1 = t1.getFilePattern();
+			p2 = t2.getFilePattern();			
 			if(p1==null) p1="";
 			if(p2==null) p2="";
 			return p2.length()-p1.length();
@@ -3520,18 +3526,10 @@ public class EntryManager extends RepositoryManager {
 
 	}
 
-        //Handle case sensitive first
-        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
-            if (otherTypeHandler.canHandleResource(theResource, shortName)) {
-		return otherTypeHandler;
-            }
-        }
 
-        //now try any case
         for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
-            if (otherTypeHandler.canHandleResource(_theResource,
-						   shortName.toLowerCase())) {
-                return otherTypeHandler;
+            if (otherTypeHandler.canHandleResource(theResource, newFile,shortName)) {
+		return otherTypeHandler;
             }
         }
 

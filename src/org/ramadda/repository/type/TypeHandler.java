@@ -65,6 +65,10 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.util.function.Supplier;
+import java.nio.file.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -245,6 +249,12 @@ public class TypeHandler extends RepositoryManager {
     private String geoPosition;
     private List<MetadataPattern> metadataPatterns;
 
+    private String  bytesFilePatternString;
+    private Pattern bytesFilePattern;
+    private Pattern bytesPattern;    
+    private int bytesCount=100;
+    
+
     /**
      *   the field_file_pattern attribute in types.xml. Used when trying to figure out what entry type
      *   to use for a file and to set the entry values from
@@ -269,6 +279,8 @@ public class TypeHandler extends RepositoryManager {
     private boolean isSynthType = false;    
     private boolean adminOnly = false;
     private boolean isGroup = false;
+
+    private String[] propsToCheck = {"canbeindexed"};
 
     /** can be set for abstract types */
     private boolean includeInSearch = false;
@@ -467,6 +479,30 @@ public class TypeHandler extends RepositoryManager {
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+	    /*
+	    if(filePattern!=null && !filePattern.startsWith("(?i)") && filePattern.indexOf("http")<0) {
+		System.err.println(type +" " + filePattern);
+		}*/
+
+	    for(String prop: propsToCheck) {
+		String v= Utils.getAttributeOrTag(node, prop,null);
+		if(v!=null) {
+		    System.err.println(type+" " +prop+"=" +v);
+		    putProperty(prop,v);
+		}
+
+	    }
+
+
+	    bytesFilePatternString =  Utils.getAttributeOrTag(node, "bytesfilepattern",null);
+	    String tmp2 =  Utils.getAttributeOrTag(node, "bytespattern",null);
+	    if(bytesFilePatternString!=null && tmp2!=null) {
+		bytesFilePattern = Pattern.compile(bytesFilePatternString);
+		bytesPattern = Pattern.compile(tmp2);
+		bytesCount=Utils.getAttributeOrTag(node, "bytescount",bytesCount);
+	    }
+
+
 
 
 	    List nodes = XmlUtil.findChildren(node, "filename_metadata");
@@ -2202,11 +2238,33 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
+
     public String getFilePattern() {
         return filePattern;
     }
 
-    public boolean canHandleResource(String fullPath, String name) {
+    public String getBytesFilePattern() {
+	return bytesFilePatternString;
+    }
+
+    public boolean canHandleResource(String fullPath, File file, String name) {
+	if(bytesFilePattern!=null && file.exists()) {
+	    //	    System.err.println("bytes check:"+ name);
+	    Matcher matcher = bytesFilePattern.matcher(name);
+	    if(matcher.find()) {
+		String first = IO.readFirstBytes(file,bytesCount);
+		if(first!=null) {
+		    //		    System.err.println("\tfirst bytes:"+ first.);
+		    matcher=bytesPattern.matcher(first);
+		    if(matcher.find()) {
+			//			System.err.println("\tis mine");
+			return true;
+		    }
+		}
+	    }
+	}
+
+
         if (filePattern == null) {
             return false;
         }
@@ -2237,6 +2295,8 @@ public class TypeHandler extends RepositoryManager {
                 //                System.err.println ("no match");
             }
         }
+
+
 
         return false;
     }
