@@ -1879,4 +1879,22 @@ public class IO {
 
     }
 
+    public static String readFirstBytes(File file, int n) {
+	if(!file.exists()) return null;
+	try {
+	    byte[] buffer = new byte[n];
+	    try (FileInputStream fis = new FileInputStream(file)) {
+		int bytesRead = fis.read(buffer);
+		if (bytesRead > 0) {
+		    String result = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+		    return result;
+		}
+	    }
+	} catch(Exception ignore) {
+
+	}
+	return null;
+    }
+
+
 }
