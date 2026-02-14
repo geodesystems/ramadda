@@ -1262,7 +1262,6 @@ public class ExtEditor extends RepositoryManager {
 
         StringBuffer inner = new StringBuffer();
         inner.append(msg("Are you sure you want to change the entry types?"));
-        inner.append(HU.p());
         inner.append(HU.formTable());
         inner.append(
 		     HU.formEntry(
@@ -1275,16 +1274,15 @@ public class ExtEditor extends RepositoryManager {
 		  getPageHandler().showDialogQuestion(
 						      inner.toString(),
 						      HU.buttons(
-								 HU.submit(
-									   msg("Yes, change the entry types"),
-									   ARG_CONFIRM), HU.submit(
-												   msg(LABEL_CANCEL), ARG_CANCEL))));
+								 HU.submit("Yes, change the entry types",
+									   ARG_CONFIRM),
+								 HU.submit(LABEL_CANCEL, ARG_CANCEL))));
         sb.append(HU.formClose());
         sb.append("<table>");
         sb.append("<tr><td><b>Entry</b></td><td><b>Type</b></td></tr>");
         for (Entry entry : entries) {
             sb.append("<tr><td>");
-            sb.append(HU.img(entry.getTypeHandler().getTypeIconUrl()));
+	    sb.append(getPageHandler().getEntryIconImage(request,entry));
             sb.append(" ");
             sb.append(entry.getName());
             sb.append("</td><td>");
