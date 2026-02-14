@@ -6767,6 +6767,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 value  = item[0];
             } else if(Utils.isDefined(item.category)) {
 		label = item.category;
+		attrs.push('disabled',null);
 		attrs.push('isheader',true);
 		attrs.push(ATTR_CLASS,'ramadda-select-header');
 		attrs.push(ATTR_CATEGORY,item.category);
