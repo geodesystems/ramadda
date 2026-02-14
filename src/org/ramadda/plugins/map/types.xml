@@ -388,25 +388,26 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
    <property name="defaultFilename" value="imdvmap.json"/>
    <property name="convertidsinfile" value="true"/>
    <property name="icon" value="/icons/imdv.png"/>
-    <column name="show_information" label="Show Information"
-	    type="boolean" showinhtml="false" default="true"/>
+   <column name="show_information" label="Show Information"
+	   type="boolean" showinhtml="false" default="true"/>
+   <column name="suffix_text" label="Suffux Text"
+	   type="clob" size="10000" iswiki="true" showinhtml="false" />
 
 <wiki>
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
 +fullscreen
-{{display_imdv height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false  
-}}
+{{display_imdv height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false}}
 -fullscreen
--section
-]]>
+{{field  name="suffix_text"  wikify="true" fieldPrefix=""  fieldSuffix=""  }}
 +if property=show_information
 :vspace 1em
 ----
 {{information details=true}}
 -if
-</wiki>
+-section
+]]></wiki>
 </type>
 
 <type name="geo_editable_json" super="geo_imdv"  description="Editable Map File"  isgroup="true" foruser="false">
