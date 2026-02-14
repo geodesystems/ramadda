@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb 13 05:45:20 MST 2026";
+var build_date="RAMADDA build date: Sat Feb 14 04:21:50 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47469,7 +47469,18 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showRotationSlider=true',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
-			  'showTextSearch=true'];
+			  'showTextSearch=true',
+			  'linelabels.show=true',
+			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
+			  'linelabels.location=first|last|middle|center',
+			  'linelabels.fontcolor=white',
+			  'linelabels.fontsize=8pt',
+			  'linelabels.strokecolor=#888',
+			  'linelabels.strokewidth=1',
+			  'linelabels.fillcolor=#ffd700',
+			  'linelabels.opacity=0.75',
+			  'linelabels.padding=4',
+			 ];
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
@@ -48599,15 +48610,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(asObject) {
-		return {
-		    feet:feet,
-		    sqfeet:area,
-		    sqmiles:area/MapUtils.squareFeetInASquareMile,
-		    acres:acres
-
-		}
-	    }
 	    if(!justDistance&&area>0) {
 		unit=UNIT_FT;
 		if(area>MapUtils.squareFeetInASquareMile) {
@@ -48621,6 +48623,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else {
 		    msg+=   HU.br() +
 			'Area: ' + Utils.formatNumber(acres) +' acres';
+		}
+	    }
+
+
+	    if(asObject) {
+		return {
+		    label:msg,
+		    feet:feet,
+		    miles:feet/5280,
+		    sqfeet:area,
+		    sqmiles:area/MapUtils.squareFeetInASquareMile,
+		    acres:acres
+
 		}
 	    }
 
@@ -51643,7 +51658,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
 		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
-	    accords.push({header:'Other Properties',
+	    accords.push({header:'Flags',
 			  contents:
 			  HU.hbox([
 			      HU.textarea('',props,[ATTR_ID,this.domId('otherproperties_input'),
@@ -53352,6 +53367,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		},true);
 	    },500);
 
+	    
 	    this.getMap().featureClickHandler = e=>{
 		let debug = false;
 		let feature = e.feature;
@@ -53934,20 +53950,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
 		    this.theDisplay.featureChanged();	    
 		    this.theDisplay.clearMessage2(1000);
+		    this.updateGlyphPosition();
 		},
 		isShiftKey:function() {
 		    let event = this?.handlers?.drag?.evt;
 		    if(!event) return false;
 		    return event.shiftKey || event.metaKey;
 		},
+		getMapGlyph:function() {
+		    return  this.feature?.mapGlyph;
+		},
+		updateGlyphPosition:function() {
+		    let mapGlyph = this.getMapGlyph();
+		    mapGlyph.updateLineLabels(mapGlyph.getDistances());
+		},
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    let mapGlyph = this.feature.mapGlyph;
 		    if(!mapGlyph) return;
-
-		    if(mapGlyph) {
-			if(!mapGlyph.isSelected()) mapGlyph.select();
-		    }
+		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image &&
 		       mapGlyph.getType()!=GLYPH_BOX &&
@@ -53955,6 +53976,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		       !mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
 			mapGlyph.vertexDragged(this.feature,vertex,pixel);
+			this.updateGlyphPosition();
 			return;
 		    }
 		    let vertices  = this.feature.geometry.getVertices();
@@ -54018,24 +54040,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 		    } 
 		    imageChecker(this.feature);
+		    this.updateGlyphPosition();
 		}
 	    });
 
 	    let resizer = new MyMover(this.myLayer,{
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    imageChecker(feature);},
+		    imageChecker(feature);
+		},
 		mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
 
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
-		onDrag: function(feature, pixel) {
-		    imageChecker(feature);
-		},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
+		onDrag: function(feature, pixel) {
+		    this.updateGlyphPosition();
+		},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
 
@@ -57090,10 +57114,17 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
+
+	let distances;
 	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
-	    let distances = this.display.getDistances(this.getGeometry(),this.getType());
-	    item(distances,true,true);
+	    //getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
+	    distances = this.getDistances();
+	    item(distances?.label,true,true);
 	}
+	this.updateLineLabels(distances);
+
+
+
 	if(this.isMultiEntry()) {
 	    //	    item(HU.div([ATTR_ID,this.domId('multientry')]));
 	}
@@ -57147,8 +57178,6 @@ MapGlyph.prototype = {
 	
 
 
-
-
 	this.jq('maplegend').remove();
 	if(inMapLegend!='') {
 	    inMapLegend=
@@ -57168,6 +57197,99 @@ MapGlyph.prototype = {
 
 
 	return body;
+    },
+    getDistances: function() {
+	return  this.display.getDistances(this.getGeometry(),this.getType(),
+					  false,false,true);
+    },
+    updateLineLabels:function(distance) {
+	if(!distance) return;
+	if(!distance.feet) return;
+	this.removeLineLabels();
+	if(!this.isLineLike()) {
+//	    return;
+	}
+
+	if(!this.getProperty('linelabels.show',false)) {
+	    return;
+	}
+
+	let points = this.getPoints({});
+	if(points==null || points.length<2) return;
+
+	let template = this.getProperty('linelabels.template','${distance}');
+	template = template.replace(/\\n/g,'\n');
+	let latitude  = points[0];
+	let longitude  = points[1];	
+	let labelLocation = this.getProperty('linelabels.location','last');
+	if(labelLocation=='last') {
+	    latitude  = points[points.length-2];
+	    longitude  = points[points.length-1];	    
+	} else 	if(labelLocation=='middle') {
+	    if(points.length==4) {
+		let latitude2  = points[points.length-2];
+		let longitude2  = points[points.length-1];	    
+		latitude=latitude+(latitude2-latitude)/2;
+		longitude=longitude+(longitude2-longitude)/2;		
+	    }  else {
+		let index = parseInt(points.length/2);
+		if (index % 2 !== 0) {
+		    index--;
+		}
+		if(index<0) index=0;
+		latitude  = points[index];
+		longitude  = points[index+1];
+	    }
+	} else if(labelLocation=='center') {
+	    let centroid = this.getGeometry()?.getCentroid(true);
+	    let lonlat = this.getMap().transformProjPoint(centroid)
+	    latitude=lonlat.y;
+	    longitude=lonlat.x;
+	}
+	template = template.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
+	template = template.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
+
+	template = template.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
+	template = template.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+	template = template.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
+	template = template.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+	template = template.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
+
+	if(distance) {
+	    let value = distance.feet;
+	    template = template.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
+	    template = template.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+	    template = template.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
+	    template = template.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
+	    let unit = UNIT_FT;
+	    if(value) {
+		unit = UNIT_MILES;
+		value = value/5280;
+	    }
+	    value =  Utils.formatNumberComma(value,1) + ' ' + unit;
+	    template = template.replace('${distance}',value);
+	}
+	let pt = MapUtils.createPoint(longitude,latitude);
+	pt = this.display.getMap().transformLLPoint(pt);
+	let style = {
+	    label:template,
+	    labelSelect:true,
+	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
+	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
+	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
+	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
+	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
+	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
+	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
+	    textBackgroundShape:'rectangle',
+	    textBackgroundRadius:4
+	};
+	let dot = MapUtils.createVector(pt,null,style);
+	dot.mapGlyph=this;
+	this.lineLabels=[dot];
+	setTimeout(()=>{
+	    this.display.addFeatures(this.lineLabels);
+	},1);
     },
     canDrop: function() {
 	if(this.getParentGlyph()) {
@@ -57523,6 +57645,11 @@ MapGlyph.prototype = {
 	this.display.makeLegend();
 	//And call getBounds so the bounds object gets cached for later use on reload
 	this.getBounds();
+    },
+    isLineLike:function() {
+	return this.isPolygon()  ||
+	    this.type==GLYPH_LINE ||
+	    this.type==GLYPH_BOX;
     },
     isPolygon:function() {
 	return this.type==GLYPH_POLYLINE ||
@@ -60351,6 +60478,7 @@ MapGlyph.prototype = {
 	}
 
 	this.display.checkSelected(this);
+	this.updateLineLabels(this.getDistances());
     },
     removeImage:function() {
 	if(this.image) {
@@ -60549,6 +60677,9 @@ MapGlyph.prototype = {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
 
+	Utils.forEach(this.lineLabels,f=>{
+	    MapUtils.setFeatureVisible(f,visible);
+	});
 	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(this.canHaveChildren()) {
@@ -60556,11 +60687,9 @@ MapGlyph.prototype = {
 	    this.checkLayersAnimationButton();
 	}
 
-
 	if(callCheck) {
 	    this.checkVisible();
 	}
-
 
 	this.checkMapLayer();
 
@@ -61213,6 +61342,7 @@ MapGlyph.prototype = {
 		    let r = Utils.rotate(c.x, c.y, x, y, this.style.rotation,true);
 		    x = r.x; y=r.y;
 		}
+
                 let pt = MapUtils.createPoint(x,y);
 		let dot = MapUtils.createVector(pt,null,this.display.DOT_STYLE);	
 		this.selectDots.push(dot);
@@ -61220,6 +61350,9 @@ MapGlyph.prototype = {
 	} else {
 	    pointCount+=this.display.selectFeatures(this,this.getFeatures(),maxPoints);
 	}
+
+
+
 	this.display.selectionLayer.addFeatures(this.selectDots,{silent:true});
 	this.applyChildren(child=>{pointCount+=child.select(maxPoints, dontRedraw);});
 	return pointCount;
@@ -61242,7 +61375,14 @@ MapGlyph.prototype = {
 
     },
     
+    removeLineLabels:function() {
+	if(this.lineLabels) {
+	    this.display.removeFeatures(this.lineLabels);
+	    this.lineLabels=null;
+	}
+    },
     doRemove:function() {
+	this.removeLineLabels();
 	if(this.dataIconContainer) {
 	    jqid(this.dataIconContainer).remove();
 	    this.dataIconContainer=null;
