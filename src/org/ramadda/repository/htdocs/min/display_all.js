@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb 14 04:21:50 MST 2026";
+var build_date="RAMADDA build date: Sat Feb 14 04:36:00 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47474,12 +47474,16 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
 			  'linelabels.location=first|last|middle|center',
 			  'linelabels.fontcolor=white',
+			  'linelabels.fontweight=bold',
+			  'linelabels.fontstyle=italic',
+			  'linelabels.fontfamily','Helvetica',
 			  'linelabels.fontsize=8pt',
 			  'linelabels.strokecolor=#888',
 			  'linelabels.strokewidth=1',
 			  'linelabels.fillcolor=#ffd700',
 			  'linelabels.opacity=0.75',
-			  'linelabels.padding=4',
+			  'linelabels.radius=4',
+			  'linelabels.padding=4',			  
 			 ];
 
 
@@ -57275,14 +57279,19 @@ MapGlyph.prototype = {
 	    label:template,
 	    labelSelect:true,
 	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
+
+	    fontWeight: this.getProperty('linelabels.fontweight',null),
+	    fontStyle: this.getProperty('linelabels.fontstyle',null),	    	    
 	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
+	    fontFamily:this.getProperty('linelabels.fontfamily',null),
 	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
 	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
 	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
 	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
 	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
+	    textBackgroundRadius:this.getProperty('linelabels.radius',4),
 	    textBackgroundShape:'rectangle',
-	    textBackgroundRadius:4
+
 	};
 	let dot = MapUtils.createVector(pt,null,style);
 	dot.mapGlyph=this;
