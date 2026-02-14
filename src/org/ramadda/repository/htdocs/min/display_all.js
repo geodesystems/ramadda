@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb 14 04:36:00 MST 2026";
+var build_date="RAMADDA build date: Sat Feb 14 04:53:12 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -40361,6 +40361,7 @@ let displayMapMarkerIcons = {};
 var ID_REGION_SELECTOR = "regionselector";
 var ID_LEGENDID="legendid";
 var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
+var ID_BASELAYERS='baselayers';
 
 var debugit = false;
 var debugMapTime = false;
@@ -40720,13 +40721,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		return  HU.span([ATTR_TITLE,"Choose base layer",
 				 ATTR_CLASS,"display-filter"],
 				(prefix??'') +
-				HU.select("",[ATTR_ID,this.domId("baselayers")],items,on));
+				HU.select("",[ATTR_ID,this.domId(ID_BASELAYERS)],items,on));
 	    }
 	    return '';
 	},
 	initBaseLayersSelect:function() {
 	    let _this = this;
-	    this.jq("baselayers").change(function() {
+	    this.jq(ID_BASELAYERS).change(function() {
 		let on = $(this).val();
 		for(let id in _this.map.baseLayers) {
 		    if(id==on) {
@@ -53122,9 +53123,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
 	    let html = '';
+	    let baseMapPlaceID;
 	    if(this.getMapProperty('showBaseMapSelect')) {
+		baseMapPlaceID=HU.getUniqueId('');
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4)),
-			      ATTR_CLASS,CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
+			      ATTR_CLASS,CLASS_LEGEND_OFFSET], 
+			     HU.b('Base Map: ') +
+			     SPACE + HU.span([ATTR_ID,baseMapPlaceID])+this.getBaseLayersSelect());
 	    }
 
 	    if(this.getMapProperty('showAddress',false)) {
@@ -53227,6 +53232,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    this.initViewMenu('_legend');
+	    if(baseMapPlaceID) {
+		HU.makeSelectTagPopup('#'+this.domId(ID_BASELAYERS),
+				      {location:baseMapPlaceID,icon:true,single:true});
+	    }
+
+
 
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
