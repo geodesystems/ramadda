@@ -99,7 +99,18 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showRotationSlider=true',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
-			  'showTextSearch=true'];
+			  'showTextSearch=true',
+			  'linelabels.show=true',
+			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
+			  'linelabels.location=first|last|middle|center',
+			  'linelabels.fontcolor=white',
+			  'linelabels.fontsize=8pt',
+			  'linelabels.strokecolor=#888',
+			  'linelabels.strokewidth=1',
+			  'linelabels.fillcolor=#ffd700',
+			  'linelabels.opacity=0.75',
+			  'linelabels.padding=4',
+			 ];
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
@@ -1229,15 +1240,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(asObject) {
-		return {
-		    feet:feet,
-		    sqfeet:area,
-		    sqmiles:area/MapUtils.squareFeetInASquareMile,
-		    acres:acres
-
-		}
-	    }
 	    if(!justDistance&&area>0) {
 		unit=UNIT_FT;
 		if(area>MapUtils.squareFeetInASquareMile) {
@@ -1251,6 +1253,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else {
 		    msg+=   HU.br() +
 			'Area: ' + Utils.formatNumber(acres) +' acres';
+		}
+	    }
+
+
+	    if(asObject) {
+		return {
+		    label:msg,
+		    feet:feet,
+		    miles:feet/5280,
+		    sqfeet:area,
+		    sqmiles:area/MapUtils.squareFeetInASquareMile,
+		    acres:acres
+
 		}
 	    }
 
@@ -4273,7 +4288,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
 		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
-	    accords.push({header:'Other Properties',
+	    accords.push({header:'Flags',
 			  contents:
 			  HU.hbox([
 			      HU.textarea('',props,[ATTR_ID,this.domId('otherproperties_input'),
@@ -5982,6 +5997,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		},true);
 	    },500);
 
+	    
 	    this.getMap().featureClickHandler = e=>{
 		let debug = false;
 		let feature = e.feature;
@@ -6564,20 +6580,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
 		    this.theDisplay.featureChanged();	    
 		    this.theDisplay.clearMessage2(1000);
+		    this.updateGlyphPosition();
 		},
 		isShiftKey:function() {
 		    let event = this?.handlers?.drag?.evt;
 		    if(!event) return false;
 		    return event.shiftKey || event.metaKey;
 		},
+		getMapGlyph:function() {
+		    return  this.feature?.mapGlyph;
+		},
+		updateGlyphPosition:function() {
+		    let mapGlyph = this.getMapGlyph();
+		    mapGlyph.updateLineLabels(mapGlyph.getDistances());
+		},
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    let mapGlyph = this.feature.mapGlyph;
 		    if(!mapGlyph) return;
-
-		    if(mapGlyph) {
-			if(!mapGlyph.isSelected()) mapGlyph.select();
-		    }
+		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image &&
 		       mapGlyph.getType()!=GLYPH_BOX &&
@@ -6585,6 +6606,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		       !mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
 			mapGlyph.vertexDragged(this.feature,vertex,pixel);
+			this.updateGlyphPosition();
 			return;
 		    }
 		    let vertices  = this.feature.geometry.getVertices();
@@ -6648,24 +6670,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 		    } 
 		    imageChecker(this.feature);
+		    this.updateGlyphPosition();
 		}
 	    });
 
 	    let resizer = new MyMover(this.myLayer,{
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    imageChecker(feature);},
+		    imageChecker(feature);
+		},
 		mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
 
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
-		onDrag: function(feature, pixel) {
-		    imageChecker(feature);
-		},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
+		onDrag: function(feature, pixel) {
+		    this.updateGlyphPosition();
+		},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
 

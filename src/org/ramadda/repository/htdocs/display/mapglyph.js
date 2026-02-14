@@ -2663,10 +2663,17 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
+
+	let distances;
 	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
-	    let distances = this.display.getDistances(this.getGeometry(),this.getType());
-	    item(distances,true,true);
+	    //getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
+	    distances = this.getDistances();
+	    item(distances?.label,true,true);
 	}
+	this.updateLineLabels(distances);
+
+
+
 	if(this.isMultiEntry()) {
 	    //	    item(HU.div([ATTR_ID,this.domId('multientry')]));
 	}
@@ -2720,8 +2727,6 @@ MapGlyph.prototype = {
 	
 
 
-
-
 	this.jq('maplegend').remove();
 	if(inMapLegend!='') {
 	    inMapLegend=
@@ -2741,6 +2746,99 @@ MapGlyph.prototype = {
 
 
 	return body;
+    },
+    getDistances: function() {
+	return  this.display.getDistances(this.getGeometry(),this.getType(),
+					  false,false,true);
+    },
+    updateLineLabels:function(distance) {
+	if(!distance) return;
+	if(!distance.feet) return;
+	this.removeLineLabels();
+	if(!this.isLineLike()) {
+//	    return;
+	}
+
+	if(!this.getProperty('linelabels.show',false)) {
+	    return;
+	}
+
+	let points = this.getPoints({});
+	if(points==null || points.length<2) return;
+
+	let template = this.getProperty('linelabels.template','${distance}');
+	template = template.replace(/\\n/g,'\n');
+	let latitude  = points[0];
+	let longitude  = points[1];	
+	let labelLocation = this.getProperty('linelabels.location','last');
+	if(labelLocation=='last') {
+	    latitude  = points[points.length-2];
+	    longitude  = points[points.length-1];	    
+	} else 	if(labelLocation=='middle') {
+	    if(points.length==4) {
+		let latitude2  = points[points.length-2];
+		let longitude2  = points[points.length-1];	    
+		latitude=latitude+(latitude2-latitude)/2;
+		longitude=longitude+(longitude2-longitude)/2;		
+	    }  else {
+		let index = parseInt(points.length/2);
+		if (index % 2 !== 0) {
+		    index--;
+		}
+		if(index<0) index=0;
+		latitude  = points[index];
+		longitude  = points[index+1];
+	    }
+	} else if(labelLocation=='center') {
+	    let centroid = this.getGeometry()?.getCentroid(true);
+	    let lonlat = this.getMap().transformProjPoint(centroid)
+	    latitude=lonlat.y;
+	    longitude=lonlat.x;
+	}
+	template = template.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
+	template = template.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
+
+	template = template.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
+	template = template.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+	template = template.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
+	template = template.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+	template = template.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
+
+	if(distance) {
+	    let value = distance.feet;
+	    template = template.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
+	    template = template.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+	    template = template.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
+	    template = template.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
+	    let unit = UNIT_FT;
+	    if(value) {
+		unit = UNIT_MILES;
+		value = value/5280;
+	    }
+	    value =  Utils.formatNumberComma(value,1) + ' ' + unit;
+	    template = template.replace('${distance}',value);
+	}
+	let pt = MapUtils.createPoint(longitude,latitude);
+	pt = this.display.getMap().transformLLPoint(pt);
+	let style = {
+	    label:template,
+	    labelSelect:true,
+	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
+	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
+	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
+	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
+	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
+	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
+	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
+	    textBackgroundShape:'rectangle',
+	    textBackgroundRadius:4
+	};
+	let dot = MapUtils.createVector(pt,null,style);
+	dot.mapGlyph=this;
+	this.lineLabels=[dot];
+	setTimeout(()=>{
+	    this.display.addFeatures(this.lineLabels);
+	},1);
     },
     canDrop: function() {
 	if(this.getParentGlyph()) {
@@ -3096,6 +3194,11 @@ MapGlyph.prototype = {
 	this.display.makeLegend();
 	//And call getBounds so the bounds object gets cached for later use on reload
 	this.getBounds();
+    },
+    isLineLike:function() {
+	return this.isPolygon()  ||
+	    this.type==GLYPH_LINE ||
+	    this.type==GLYPH_BOX;
     },
     isPolygon:function() {
 	return this.type==GLYPH_POLYLINE ||
@@ -5924,6 +6027,7 @@ MapGlyph.prototype = {
 	}
 
 	this.display.checkSelected(this);
+	this.updateLineLabels(this.getDistances());
     },
     removeImage:function() {
 	if(this.image) {
@@ -6122,6 +6226,9 @@ MapGlyph.prototype = {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
 
+	Utils.forEach(this.lineLabels,f=>{
+	    MapUtils.setFeatureVisible(f,visible);
+	});
 	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(this.canHaveChildren()) {
@@ -6129,11 +6236,9 @@ MapGlyph.prototype = {
 	    this.checkLayersAnimationButton();
 	}
 
-
 	if(callCheck) {
 	    this.checkVisible();
 	}
-
 
 	this.checkMapLayer();
 
@@ -6786,6 +6891,7 @@ MapGlyph.prototype = {
 		    let r = Utils.rotate(c.x, c.y, x, y, this.style.rotation,true);
 		    x = r.x; y=r.y;
 		}
+
                 let pt = MapUtils.createPoint(x,y);
 		let dot = MapUtils.createVector(pt,null,this.display.DOT_STYLE);	
 		this.selectDots.push(dot);
@@ -6793,6 +6899,9 @@ MapGlyph.prototype = {
 	} else {
 	    pointCount+=this.display.selectFeatures(this,this.getFeatures(),maxPoints);
 	}
+
+
+
 	this.display.selectionLayer.addFeatures(this.selectDots,{silent:true});
 	this.applyChildren(child=>{pointCount+=child.select(maxPoints, dontRedraw);});
 	return pointCount;
@@ -6815,7 +6924,14 @@ MapGlyph.prototype = {
 
     },
     
+    removeLineLabels:function() {
+	if(this.lineLabels) {
+	    this.display.removeFeatures(this.lineLabels);
+	    this.lineLabels=null;
+	}
+    },
     doRemove:function() {
+	this.removeLineLabels();
 	if(this.dataIconContainer) {
 	    jqid(this.dataIconContainer).remove();
 	    this.dataIconContainer=null;
