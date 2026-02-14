@@ -3287,6 +3287,7 @@ public class WikiManager extends RepositoryManager
                 String fieldValue =
                     entry.getTypeHandler().getFieldHtml(request, entry, props, name,raw);
                 if (fieldValue != null) {
+		    if(wikify) fieldValue = wikifyEntry(request, entry, fieldValue);
 		    if(decimalFormat!=null) {
 			try {
 			    DecimalFormat fmt     = new DecimalFormat(decimalFormat);

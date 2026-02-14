@@ -52,7 +52,9 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_TT,"Import display of another entry",
 					ATTR_ENTRY,"","showTitle","false"),
-                            new WikiTag(WIKI_TAG_FIELD, null, "name", "",
+                            new WikiTag(WIKI_TAG_FIELD, null,
+					"name", "",
+					"#wikify","true",
 					"fieldPrefix","","fieldSuffix",""),
                             new WikiTag(WIKI_TAG_ASSOCIATIONS,null,ATTR_TT,"Show connections")			    
 			    ),
