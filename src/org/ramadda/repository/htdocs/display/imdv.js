@@ -5861,6 +5861,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    this.initViewMenu('_legend');
+	    HU.initSelect2(this.jq(ID_BASELAYERS));
 	    if(baseMapPlaceID) {
 		HU.makeSelectTagPopup('#'+this.domId(ID_BASELAYERS),
 				      {location:baseMapPlaceID,icon:true,single:true});
