@@ -363,10 +363,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.map.baseLayers) {
 		let items = [];
 		let on = false;
+		let category =null;
 		for(a in this.map.baseLayers) {
 		    let layer = this.map.baseLayers[a];
 		    if(!layer.isBaseLayer) continue;
 		    if(layer.getVisibility()) on = a;
+		    let ramaddaMapLayer = layer.ramaddaMapLayer;
+		    if(ramaddaMapLayer && ramaddaMapLayer.getCategory() && category != ramaddaMapLayer.getCategory()) {
+			category = ramaddaMapLayer.getCategory();
+			items.push({category:category});
+		    }
 		    items.push([a,layer.name]);
 		}
 		let prefix = this.getBaseLayerSelectLabel();
