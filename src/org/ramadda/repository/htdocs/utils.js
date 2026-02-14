@@ -6554,6 +6554,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    hide: false,
 	    addBreak:false,
 	    after:false,
+	    location:null,
 	    wrap:'${widget}',
 	    makeButton:true,
 	    makeButtons:true,
@@ -6578,6 +6579,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let selectContainer = select.attr('select-container');
 	if(selectContainer) {
 	    jqid(selectContainer).after(btn);
+	} else if(opts.location) {
+	    jqid(opts.location).after(btn);
 	} else {
 	    if(opts.after)
 		select.after(' ' +btn);
