@@ -2824,14 +2824,19 @@ MapGlyph.prototype = {
 	    label:template,
 	    labelSelect:true,
 	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
+
+	    fontWeight: this.getProperty('linelabels.fontweight',null),
+	    fontStyle: this.getProperty('linelabels.fontstyle',null),	    	    
 	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
+	    fontFamily:this.getProperty('linelabels.fontfamily',null),
 	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
 	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
 	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
 	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
 	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
+	    textBackgroundRadius:this.getProperty('linelabels.radius',4),
 	    textBackgroundShape:'rectangle',
-	    textBackgroundRadius:4
+
 	};
 	let dot = MapUtils.createVector(pt,null,style);
 	dot.mapGlyph=this;

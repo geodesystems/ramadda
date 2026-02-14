@@ -104,12 +104,16 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
 			  'linelabels.location=first|last|middle|center',
 			  'linelabels.fontcolor=white',
+			  'linelabels.fontweight=bold',
+			  'linelabels.fontstyle=italic',
+			  'linelabels.fontfamily','Helvetica',
 			  'linelabels.fontsize=8pt',
 			  'linelabels.strokecolor=#888',
 			  'linelabels.strokewidth=1',
 			  'linelabels.fillcolor=#ffd700',
 			  'linelabels.opacity=0.75',
-			  'linelabels.padding=4',
+			  'linelabels.radius=4',
+			  'linelabels.padding=4',			  
 			 ];
 
 
