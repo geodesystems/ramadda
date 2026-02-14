@@ -5752,9 +5752,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
 	    let html = '';
+	    let baseMapPlaceID;
 	    if(this.getMapProperty('showBaseMapSelect')) {
+		baseMapPlaceID=HU.getUniqueId('');
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4)),
-			      ATTR_CLASS,CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
+			      ATTR_CLASS,CLASS_LEGEND_OFFSET], 
+			     HU.b('Base Map: ') +
+			     SPACE + HU.span([ATTR_ID,baseMapPlaceID])+this.getBaseLayersSelect());
 	    }
 
 	    if(this.getMapProperty('showAddress',false)) {
@@ -5857,6 +5861,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    this.initViewMenu('_legend');
+	    if(baseMapPlaceID) {
+		HU.makeSelectTagPopup('#'+this.domId(ID_BASELAYERS),
+				      {location:baseMapPlaceID,icon:true,single:true});
+	    }
+
+
 
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);

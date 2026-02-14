@@ -14,6 +14,7 @@ let displayMapMarkerIcons = {};
 var ID_REGION_SELECTOR = "regionselector";
 var ID_LEGENDID="legendid";
 var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
+var ID_BASELAYERS='baselayers';
 
 var debugit = false;
 var debugMapTime = false;
@@ -373,13 +374,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		return  HU.span([ATTR_TITLE,"Choose base layer",
 				 ATTR_CLASS,"display-filter"],
 				(prefix??'') +
-				HU.select("",[ATTR_ID,this.domId("baselayers")],items,on));
+				HU.select("",[ATTR_ID,this.domId(ID_BASELAYERS)],items,on));
 	    }
 	    return '';
 	},
 	initBaseLayersSelect:function() {
 	    let _this = this;
-	    this.jq("baselayers").change(function() {
+	    this.jq(ID_BASELAYERS).change(function() {
 		let on = $(this).val();
 		for(let id in _this.map.baseLayers) {
 		    if(id==on) {
