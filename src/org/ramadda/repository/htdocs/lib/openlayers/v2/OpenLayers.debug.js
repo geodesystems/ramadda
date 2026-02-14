@@ -77427,6 +77427,8 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 
         var layers = this.map.layers.slice();
         if (!this.ascending) { layers.reverse(); }
+	//jeffmc: add layer category
+	let layerCategory;
         for(var i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
             var baseLayer = layer.isBaseLayer;
@@ -77529,7 +77531,20 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
 
 
 
-
+		//jeffmc: add layer category
+		if(layer.layerCategory && layer.layerCategory !=layerCategory) {
+		    let catDiv= document.createElement("div");
+		    catDiv.className = 'ramadda-layer-category';
+		    catDiv.style.padding='2px';
+		    catDiv.style.paddingLeft='4px';
+		    catDiv.style.paddingRight='4px';		    		    
+		    catDiv.style.marginBottom='2px';
+		    catDiv.style.marginTop='4px';		    
+		    catDiv.textContent =  layer.layerCategory;
+                    groupDiv.appendChild(catDiv);
+		    layerCategory = layer.layerCategory;
+		}
+		
                 groupDiv.appendChild(itemDiv);
 
                 itemDiv.appendChild(inputElem);
