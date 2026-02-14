@@ -546,21 +546,6 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 
 
-.ramadda-map-layer-item {
-    white-space:nowrap;
-}
-
-.ramadda-map-layer-item .labelSpan {
-    display:inline-block;
-    width:90%;
-    font-size:8pt;
-    padding-left:1.75em;
-
-}
-
-.ramadda-map-layer-item .labelSpan:hover {
-    background:var(--highlight-background);
-}
 
 
 .ramadda-map-bubble a {
@@ -1891,10 +1876,6 @@ a.ramadda-menubar-button:hover {
 
 
 
-.baseLayersDiv, .dataLayersDiv {
-    max-height:150px;
-    overflow-y: auto;
-}
 
 .ramadda-div-link {
     cursor:pointer;
@@ -4088,6 +4069,20 @@ img.metadata-tag-selected {
 
 .select2-selection__choice {
     width:95%;
+}
+
+.ramadda-layer-category, .select2-results__option--disabled {
+    background:#C5E5F5;
+    color:#000;
+}
+
+.select2-results__option {
+    font-size:9pt;
+}
+
+.select2-container--default .select2-results__option--disabled {
+    color:#000 !important;
+    font-weight:bold;
 }
 
 

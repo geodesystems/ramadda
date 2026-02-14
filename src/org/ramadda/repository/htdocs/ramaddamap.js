@@ -2958,6 +2958,7 @@ RepositoryMap.prototype = {
             let mapLayer = this.mapLayers[i];
 	    if(!mapLayer.isForMap()) continue;
             let newLayer = this.makeMapLayer(mapLayer);
+	    newLayer.ramaddaMapLayer = mapLayer;
             if (this.firstLayer == null) {
                 this.firstLayer = newLayer;
             }
@@ -3010,6 +3011,8 @@ RepositoryMap.prototype = {
 	    layer = mapLayer;
 	if(layer) {
 	    let l= layer.createMapLayer(this);
+	    l.layerCategory=layer.getCategory();
+	    
 
 	    if(layer.opts.alias) {
 		this.baseLayers[layer.opts.alias] = l;

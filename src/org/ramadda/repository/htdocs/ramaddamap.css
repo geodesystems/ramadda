@@ -103,6 +103,7 @@
 
 .baseLayersDiv {
     border-bottom:1px solid #000;
+    padding-left:0px !important;
 }
 
 
@@ -319,4 +320,30 @@ mapheader {
 
 .ramadda-popup .baseLayersDiv {
     max-height: 100px !important;
+}
+
+.ramadda-map-layer-item {
+    white-space:nowrap;
+    margin-left:10px;
+}
+
+.ramadda-map-layer-item .labelSpan {
+    display:inline-block;
+    width:90%;
+    font-size:8pt;
+    padding-left:1.75em;
+
+}
+
+.ramadda-map-layer-item .labelSpan:hover {
+    background:var(--highlight-background);
+}
+
+.baseLayersDiv, .dataLayersDiv {
+    max-height:150px;
+    overflow-y: auto;
+}
+
+.olControlLayerSwitcher .layersDiv .baseLayersDiv, .olControlLayerSwitcher .layersDiv .dataLayersDiv {
+  padding-left: 0px !important;
 }
