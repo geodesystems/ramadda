@@ -258,7 +258,7 @@ public class WebHarvester {
 	body = Replace.replace(imageReplace,body);
 
         for (HtmlUtils.Link childLink :
-                HtmlUtils.extractLinks(url, body, ".*", true)) {
+		 HtmlUtils.extractLinks(url, body, true,".*" )) {
             String l = childLink.getLink().replace("\\", "\\\\");
 	    //	    System.out.println("IMG:" + l);
             String fullPath    = childLink.getUrl().toString();

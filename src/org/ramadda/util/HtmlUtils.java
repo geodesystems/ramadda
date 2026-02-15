@@ -3237,28 +3237,24 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-    public static List<Link> extractLinks(URL url, String linkPattern)
+    public static List<Link> extractLinks(URL url, String ...patterns)
             throws Exception {
-        if ( !Utils.stringDefined(linkPattern)) {
-            linkPattern = null;
-        }
         if (url.getProtocol().equals("ftp")) {
-            return extractLinksFtp(url, linkPattern);
+            return extractLinksFtp(url, patterns);
         }
         String html = Utils.readUrl(url.toString());
-
-        return extractLinks(url, html, linkPattern);
+        return extractLinks(url, html, false, patterns);
     }
 
-    public static List<Link> extractLinks(URL url, String html,
-                                          String linkPattern)
-            throws Exception {
-        return extractLinks(url, html, linkPattern, false);
+    /*
+    public static List<Link> extractLinks(URL url, String html,   String ...patterns)
+	throws Exception {
+        return extractLinks(url, html, false, patterns);
     }
+    */
 
-    public static List<Link> extractLinks(URL url, String html,
-                                          String linkPattern, boolean images)
-            throws Exception {
+    public static List<Link> extractLinks(URL url, String html,boolean images, String ...patterns)
+	throws Exception {
         HashSet    seen    = new HashSet();
         List<Link> links   = new ArrayList<Link>();
         String     pattern = images
@@ -3268,7 +3264,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
         Matcher matcher = Pattern.compile(pattern).matcher(html);
-        //      System.err.println("pattern:" + linkPattern);
         while (matcher.find()) {
             String href = matcher.group(2);
 	    if(href.startsWith("#")) continue;
@@ -3291,9 +3286,20 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
                 label = label.replaceAll("\\s+", " ");
                 Link link = new Link(href, newUrl, label);
-                if ( !link.matches(linkPattern)) {
-                    //                  System.err.println("\tHREF:" + newUrl +" " + label +" not match");
-                    continue;
+		if(patterns.length>0) {
+		    boolean ok = false;
+		    int checked=0;
+		    for(String linkPattern: patterns) {
+			if(!Utils.stringDefined(linkPattern)) continue;
+			checked++;
+			if (link.matches(linkPattern)) {
+			    ok=true;
+			    link.setPattern(linkPattern);
+			    break;
+			}
+		    }
+		    if(checked==0) ok = true;
+		    if(!ok)  continue;
                 }
                 if (href.toLowerCase().startsWith("javascript:")) {
                     continue;
@@ -3308,7 +3314,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return links;
     }
 
-    public static List<Link> extractLinksFtp(URL url, String linkPattern)
+    public static List<Link> extractLinksFtp(URL url, String...patterns)
             throws Exception {
         FTPClient ftpClient = null;
         try {
@@ -3324,12 +3330,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 }
                 String href  = files[i].getName();
                 String label = href;
-                if (linkPattern != null) {
-                    if ( !(href.matches(linkPattern)
-                            || label.matches(linkPattern))) {
-                        continue;
-                    }
-                }
+		if(patterns.length>0) {
+		    boolean ok = false;
+		    for(String linkPattern: patterns) {
+			if (href.matches(linkPattern)|| label.matches(linkPattern)) {
+			    ok=true;
+			    break;
+			}
+		    }
+		    if(!ok) continue;
+		}
                 URL newUrl = new URL(url, href);
                 links.add(new Link(href, newUrl, label, files[i].getSize()));
             }
@@ -3345,17 +3355,39 @@ public class HtmlUtils implements HtmlUtilsConstants {
         private URL url;
         private String label;
         private long size = -1;
+	private List<Link> children;
+	private String pattern;
 
         public Link(String link, URL url, String label, long size) {
             this(link, url, label);
             this.size = size;
         }
 
+        public Link(URL url, String label) {
+	    this(url.toString(),url,label);
+	}
+
+
         public Link(String link, URL url, String label) {
             this.link  = link;
             this.url   = url;
             this.label = label;
         }
+
+	public void setPattern (String value) {
+	    pattern = value;
+	}
+
+	public String getPattern () {
+	    return pattern;
+	}
+
+	public  void setChildren(List<Link> children) {
+	    this.children = children;
+	}
+	public  List<Link> getChildren() {
+	    return this.children;
+	}	
 
         public boolean matches(String pattern) {
             if ( !Utils.stringDefined(pattern)) {
