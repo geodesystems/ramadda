@@ -1001,7 +1001,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.addLLMMetadata('metadata_type'  , 'prompt' , true )</span>\n" +
 		    "//e.g.: entry.addLLMMetadata('tribe_name','Extract the tribe name from the document');\n" +
 		    "\n//extract lat/lon\n"+
-		    "<span>entry.addLLMGeo('optional prompt')</span>\n" +		    		    
+		    "<span>entry.addLLMGeo('optional prompt',true=>use entry name)</span>\n" +		    		    
 		    "</div>\n";
 
 		String control =   divOpen +
@@ -1714,19 +1714,32 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-	public void addLLMGeo(String prompt)  throws Exception {
+	public void addLLMGeo(String prompt1,boolean...justName)  throws Throwable {
 	    if(entry.isGeoreferenced(request)) {
 		ctx.print("Already has location:" + entry.getName());
 		return;
 	    }
-	    if(!Utils.stringDefined(prompt)) {
-		prompt="Give the latitude and longitude of the area that this document describes. Just give the 2 numbers, nothing else. Give it in the form <latitude>,<longitude></longitude></latitude>";
-	    }
+
+	    String prompt="Give the latitude and longitude of the area that this document describes. Just give the 2 numbers, nothing else. Give it in the form <latitude>,<longitude></longitude></latitude>";
+
+
 	    try {
-		String r = repository.getLLMManager().applyPromptToDocument(request,
-									    entry,
-									    true,
-									    prompt,null);
+		String r;
+		if(justName.length>0 && justName[0]) {
+
+		    r = repository.getLLMManager().callLLM(request, prompt,prompt1,entry.getName(),1000,true, null);
+		} else {
+		    if(Utils.stringDefined(prompt1)) {
+			prompt+=" " +prompt1;
+		    }
+
+		    r = repository.getLLMManager().applyPromptToDocument(request,
+									 entry,
+									 true,
+									 prompt,null);
+		}
+
+
 		if(!Utils.stringDefined(r)) {
 		    ctx.warning("No results for entry:" + entry.getName());
 		    return;

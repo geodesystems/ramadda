@@ -393,7 +393,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    } else {
 		StringBuilder sb = new StringBuilder();
-
 		sb.append("The below text is JSON describing a " + entry.getTypeHandler().getDescription()+"\n");
 		String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 		if(typePrompt!=null) {
@@ -521,7 +520,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	return result;
     }
 
-    private String callLLM(Request request,
+    public String callLLM(Request request,
 			   String prompt1,
 			   String prompt2,
 			   String text,
@@ -530,6 +529,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			   PromptInfo info,
 			   String...extraArgs)
 	throws Throwable {
+	if(info==null) info=new PromptInfo();
 
 	Model model = getModel(request.getString(ARG_MODEL,modelList.get(0).getId()));
 	if(model==null) {
