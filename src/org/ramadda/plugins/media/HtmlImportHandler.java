@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.media;
@@ -29,20 +29,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.List;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
 public class HtmlImportHandler extends ImportHandler {
+    public static boolean debug = true;
+    public static final String ARG_IMPORT_USEURL  = "useurl";
+    public static final String ARG_IMPORT_NAMETEMPLATE  = "nametemplate";    
     public static final String ARG_IMPORT_PATTERN = "import.pattern";
+    public static final String ARG_IMPORT_NOTPATTERN = "import.notpattern";    
     public static final String ARG_IMPORT_RECURSE = "import.recurse";
-    public static final String ARG_IMPORT_RECURSE_PATTERN =
-        "import.recurse.pattern";
-
-    public static final String ARG_IMPORT_RECURSE_DEPTH =
-        "import.recurse.depth";
-
-    public static final String ARG_IMPORT_DOIT = "import.doit";
+    public static final String ARG_IMPORT_RECURSE_PATTERN =     "import.recurse.pattern";
+    public static final String ARG_IMPORT_RECURSE_DEPTH =   "import.recurse.depth";
+    public static final String ARG_IMPORT_ADDINTERMEDIATE="addintermediate";
+    public static final String ARG_IMPORT_TEST_PARTIAL = "import.testpartial";
+    public static final String ARG_IMPORT_TEST_FULL = "import.testfull";    
+    public static final String ARG_IMPORT_CREATEENTRIES = "import.createentries";
     public static final String ARG_IMPORT_PROVENANCE = "import.addprovenance";
     public static final String ARG_IMPORT_UNCOMPRESS = "import.uncompress";
     public static final String ARG_IMPORT_HANDLE = "import.handle";
@@ -64,306 +68,333 @@ public class HtmlImportHandler extends ImportHandler {
                                            TYPE_HTML));
     }
 
-    private boolean importHtmlInner(Request request, Object actionId,
-				    int[]cnt,
-                                    int depth, StringBuilder sb, URL url,
-				    List<String> okLinks,
-                                    Entry parentEntry, String recursePattern,
-                                    String pattern)
-            throws Exception {
 
-        if (depth <= 0) {
-            return true;
-        }
-        List<String> errors = new ArrayList<String>();
-        boolean addFile = request.getString(ARG_IMPORT_HANDLE,
-                                            "").equals("file");
-        boolean uncompress    = request.get(ARG_IMPORT_UNCOMPRESS, false);
-        boolean addProvenance = request.get(ARG_IMPORT_PROVENANCE, false);
+
+    private boolean importHtmlInner(Request request,
+				    Object actionId,
+				    HashSet seen,
+				    List<Entry> entries,
+				    int[]cnt,
+                                    StringBuilder sb,
+				    HtmlUtils.Link link,
+                                    Entry parentEntry)   throws Exception {
         if ( !getActionManager().getActionOk(actionId)) {
             return false;
         }
 
-        String html = Utils.readUrl(url.toString());
-        final List<HtmlUtils.Link> links = HU.extractLinks(url, html,
-                                               pattern);
+        List<String> errors = new ArrayList<String>();
+        boolean addFile = request.getString(ARG_IMPORT_HANDLE,  "").equals("file");
+        boolean uncompress    = request.get(ARG_IMPORT_UNCOMPRESS, false);
+        boolean addProvenance = request.get(ARG_IMPORT_PROVENANCE, false);
+	boolean addIntermediate = request.get(ARG_IMPORT_ADDINTERMEDIATE,false);
+	String  recursePattern = request.getString(ARG_IMPORT_RECURSE_PATTERN, "");
+	String  notPattern = request.getString(ARG_IMPORT_NOTPATTERN, "");	
         List<HtmlUtils.Link> pageLinks = null;
-        if (recursePattern != null) {
-            pageLinks = HU.extractLinks(url, html, recursePattern);
-            for (HtmlUtils.Link link : pageLinks) {
-                if (links.contains(link)) {
-                    continue;
+	for (HtmlUtils.Link childLink : link.getChildren()) {
+	    if (seen.contains(childLink)) {
+		continue;
+	    }
+	    seen.add(childLink);
+	    if ( !getActionManager().getActionOk(actionId)) {
+		return false;
+	    }
+	    boolean isIntermediate = Utils.equals(childLink.getPattern(), recursePattern);
 
-                }
-                if ( !getActionManager().getActionOk(actionId)) {
-                    return false;
-                }
-                String name = link.getLabel().trim();
-                name = name.replaceAll("/$", "").replaceAll("^/", "");
-                Entry child = getEntryManager().findEntryWithName(request,
-                                  parentEntry, name);
-                if (child == null) {
-                    child = getEntryManager().makeEntry(
-                        request, new Resource(), parentEntry, name, "",
-                        request.getUser(),
-                        getRepository().getTypeHandler(
-                            TypeHandler.TYPE_GROUP), null);
-                    getEntryManager().addNewEntry(request, child);
-                }
-                sb.append("<li>");
-                sb.append(
-                    HU.href(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW,
-                            child), child.getName()));
-                sb.append("<ul>");
-                boolean ok = importHtmlInner(request, actionId, cnt,depth - 1,
-                                             sb, link.getUrl(),
-					     okLinks,child,
-                                             recursePattern, pattern);
-                sb.append("</ul>");
-                getActionManager().setActionMessage(actionId,
-                        "<h2>Imported entries</h2>" + sb.toString());
-                if ( !ok) {
-                    return false;
-                }
-            }
-        }
+	    if(isIntermediate) {
+		Entry newParent;
+		String name = childLink.getLabel().trim();
+		name = name.replaceAll("/$", "").replaceAll("^/", "");
+		if(!addIntermediate) {
+		    newParent = parentEntry;
+		} else {
+		    newParent = getEntryManager().findEntryWithName(request,  parentEntry, name);
+		    if (newParent == null) {
+			newParent = getEntryManager().makeEntry(
+								request, new Resource(), parentEntry, name, "",
+								request.getUser(),
+								getRepository().getTypeHandler(
+											       TypeHandler.TYPE_GROUP), null);
+			entries.add(newParent);
+			getEntryManager().addNewEntry(request, newParent);
+		    }
+		}
+		boolean ok = importHtmlInner(request, actionId, seen,entries,cnt,sb, childLink, newParent);
+		if(!ok) return false;
+		continue;
+	    }
 
-        for (HtmlUtils.Link link : links) {
-	    if(okLinks.size()>0) {
-		if(!okLinks.contains(link.getUrl().toString())) {
+	    if(stringDefined(notPattern)) {
+		if(childLink.matches(notPattern)) {
 		    continue;
 		}
 	    }
 
-            if ((pageLinks != null) && pageLinks.contains(link)) {
-                continue;
-            }
-            Resource    resource    = null;
-            TypeHandler typeHandler = getRepository().getTypeHandler(request);
-            String      name        = link.getLabel();
-            if (request.get("useurl", false) || (name.length() < 4)) {
-                name = IOUtil.stripExtension(
-                    IOUtil.getFileTail(link.getUrl().toString()));
-                name = Utils.makeLabel(name);
-                name = name.replaceAll("^[0-9]+", "").trim();
-            }
 
-            //TODO: check if we have a entry already
-            Entry existing = getEntryManager().findEntryWithName(request,
-                                 parentEntry, name);
-            if (existing == null) {
-                String tmp = IOUtil.stripExtension(name);
-                existing = getEntryManager().findEntryWithName(request,
-                        parentEntry, tmp);
-            }
-            if (existing != null) {
-                sb.append("<li> ");
-                sb.append(msgLabel("Entry already exists"));
-                sb.append(" ");
-                sb.append(link.getUrl());
-                sb.append("\n");
-                continue;
-            }
+	    Resource    resource    = null;
+	    TypeHandler typeHandler = getRepository().getTypeHandler(request);
+	    String      name        = childLink.getLabel();
+	    String template   = request.getString(ARG_IMPORT_NAMETEMPLATE,"");
+	    if (request.get(ARG_IMPORT_USEURL, false) || (name.length() < 4)) {
+		name = IOUtil.stripExtension(
+					     IOUtil.getFileTail(childLink.getUrl().toString()));
+		name = Utils.makeLabel(name);
+		name = name.replaceAll("^[0-9]+", "").trim();
+	    }
 
-            try {
-                if (addFile) {
-                    File tmpFile =
-                        getStorageManager().getTmpFile(request,
-                            IOUtil.getFileTail(link.getUrl().toString()));
-                    FileOutputStream fos = new FileOutputStream(tmpFile);
-                    if (IOUtil.writeTo(
-                            IO.getInputStream(link.getUrl().toString()),
-                            fos) == 0) {
-                        errors.add("Failed to read url:" + link.getUrl());
-                        IOUtil.close(fos);
+	    if(stringDefined(template)) {
+		String filename = IOUtil.stripExtension(IOUtil.getFileTail(childLink.getUrl().toString()));
+		name = template.replace("${parent}",parentEntry.getName()).replace("${filename}",filename).replace("${filename_label}",
+														   Utils.makeLabel(filename));
+										   
+	    }
 
-                        continue;
-                    }
-                    IOUtil.close(fos);
 
-                    if (request.get(ARG_IMPORT_UNCOMPRESS, false)) {
-                        tmpFile =
-                            getStorageManager().uncompressIfNeeded(request,
-                                tmpFile);
-                        if (tmpFile == null) {
-                            errors.add("Failed to uncompress file:"
-                                       + tmpFile);
+	    //TODO: check if we have a entry already
+	    Entry existing = getEntryManager().findEntryWithName(request, parentEntry, name);
+	    if (existing == null) {
+		String tmp = IOUtil.stripExtension(name);
+		existing = getEntryManager().findEntryWithName(request, parentEntry, tmp);
+	    }
+	    if (existing != null) {
+		sb.append("<li> ");
+		sb.append(msgLabel("Entry already exists"));
+		sb.append(" ");
+		sb.append(childLink.getUrl());
+		continue;
+	    }
 
-                            continue;
-                        }
-                        name = RepositoryUtil.getFileTail(tmpFile.getName());
-                        //                                System.err.println("NAME:" + name);
-                    }
-                    tmpFile = getStorageManager().moveToStorage(request,
-                            tmpFile);
-                    if ((typeHandler == null)
-                            || typeHandler.getType().equals(
-                                TypeHandler.TYPE_FINDMATCH)) {
-                        typeHandler =
-                            getEntryManager().findDefaultTypeHandler(request,
-                                tmpFile.toString());
-                    }
-                    resource = new Resource(tmpFile,
-                                            Resource.TYPE_STOREDFILE);
-                } else {
-                    resource = new Resource(link.getUrl().toString(),
-                                            Resource.TYPE_URL);
-                    if ((typeHandler == null)
-                            || typeHandler.getType().equals(
-                                TypeHandler.TYPE_FINDMATCH)) {
-                        typeHandler =
-                            getEntryManager().findDefaultTypeHandler(request,
-                                link.getUrl().toString());
-                    }
-                }
+	    try {
+		if (addFile) {
+		    File tmpFile =
+			getStorageManager().getTmpFile(request,
+						       IOUtil.getFileTail(childLink.getUrl().toString()));
+		    FileOutputStream fos = new FileOutputStream(tmpFile);
+		    if (IOUtil.writeTo(
+				       IO.getInputStream(childLink.getUrl().toString()),
+				       fos) == 0) {
+			errors.add("Failed to read url:" + childLink.getUrl());
+			IOUtil.close(fos);
+
+			continue;
+		    }
+		    IOUtil.close(fos);
+
+		    if (request.get(ARG_IMPORT_UNCOMPRESS, false)) {
+			tmpFile =  getStorageManager().uncompressIfNeeded(request, tmpFile);
+			if (tmpFile == null) {
+			    errors.add("Failed to uncompress file:" + tmpFile);
+			    continue;
+			}
+			name = RepositoryUtil.getFileTail(tmpFile.getName());
+		    }
+		    tmpFile = getStorageManager().moveToStorage(request, tmpFile);
+		    if ((typeHandler == null)
+			|| typeHandler.getType().equals(
+							TypeHandler.TYPE_FINDMATCH)) {
+			typeHandler =
+			    getEntryManager().findDefaultTypeHandler(request, tmpFile.toString());
+		    }
+		    resource = new Resource(tmpFile, Resource.TYPE_STOREDFILE);
+		} else {
+		    resource = new Resource(childLink.getUrl().toString(),Resource.TYPE_URL);
+		    if ((typeHandler == null)
+			|| typeHandler.getType().equals(
+							TypeHandler.TYPE_FINDMATCH)) {
+			typeHandler =
+			    getEntryManager().findDefaultTypeHandler(request,
+								     childLink.getUrl().toString());
+		    }
+		}
 
 		cnt[0]++;
-                Entry entry = getEntryManager().makeEntry(request, resource,
-                                  parentEntry, name, "", request.getUser(),
-                                  typeHandler, null);
+		Entry entry = getEntryManager().makeEntry(request, resource,
+							  parentEntry, name, "", request.getUser(),
+							  typeHandler, null);
 
 		entry.setEntryOrder(cnt[0]*5);
-                if (addProvenance) {
-                    getMetadataManager().addMetadata(request,entry,
-                            new Metadata(getRepository().getGUID(),
-                                         entry.getId(), getMetadataManager().findType("metadata_source"),
-                                         false, link.getUrl().toString(),
-                                         "RAMADDA entry import", null, null,
-                                         null));
-                }
+		if (addProvenance) {
+		    getMetadataManager().addMetadata(request,entry,
+						     new Metadata(getRepository().getGUID(),
+								  entry.getId(), getMetadataManager().findType("metadata_source"),
+								  false, childLink.getUrl().toString(),
+								  childLink.getUrl().toString(),
+								  null, null,
+								  null));
+		}
 
-                entry.getTypeHandler().initializeEntryFromHarvester(request,
-                        entry, true);
-                getEntryManager().addNewEntry(request, entry);
-
-                sb.append("<li> ");
-                sb.append(
-                    HU.href(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW,
-                            entry), entry.getName()));
-                sb.append(HU.br());
-
-            } catch (Exception exc) {
-                sb.append("<li> ");
-                sb.append(msgLabel("Error fetching URL"));
-                sb.append(" ");
-                sb.append(link.getUrl());
-                sb.append("\n");
-                sb.append("" + exc);
-            }
-	    String message =   "Processed: " + cnt[0]+"/" + links.size() +" links<br>";
+		entry.getTypeHandler().initializeEntryFromHarvester(request, entry, true);
+		entries.add(entry);
+		getEntryManager().addNewEntry(request, entry);
+	    } catch (Exception exc) {
+		sb.append("<li> ");
+		sb.append(msgLabel("Error fetching URL"));
+		sb.append(" ");
+		sb.append(childLink.getUrl());
+		sb.append("\n");
+		sb.append("" + exc);
+	    }
+	    String message =   "Created " + entries.size() +" entries<br>";
 	    message+=sb;
-            getActionManager().setActionMessage(actionId,
-						message);
+	    getActionManager().setActionMessage(actionId,message);
 	}
-        if (errors.size() > 0) {
-            sb.append(
-                getPageHandler().showDialogError(
-                    StringUtil.join("<br>", errors)));
-
-            return false;
-        }
-
-        return true;
-
+	if (errors.size() > 0) {
+	    sb.append(getPageHandler().showDialogError(StringUtil.join("<br>", errors)));
+	    return false;
+	}
+	return true;
     }
 
     private Result importHtml(final Request request,
-                              final Repository repository, URL url,
-			      final List<String> okLinks,
-                              final Entry parentEntry,
-                              final String recursePattern,
-                              final String pattern)
-            throws Exception {
-        //IMPORTANT!
-        getAuthManager().ensureAuthToken(request);
-        ActionManager.Action action = new ActionManager.Action() {
-            public void run(Object actionId) throws Exception {
-		int []cnt={0};
-                StringBuilder sb    = new StringBuilder("");
-                int           depth = request.get(ARG_IMPORT_RECURSE_DEPTH,
-                                          1);
-                sb.append("<ul>");
-                importHtmlInner(request, actionId, cnt,depth, sb, url,okLinks,
-                                parentEntry, recursePattern, pattern);
-                sb.append("</ul>");
-                getActionManager().setActionMessage(actionId, sb.toString());
-                getActionManager().setContinueHtml(actionId, sb.toString());
-            }
-        };
+			      final Repository repository,
+			      final HtmlUtils.Link topLink,
+			      final Entry parentEntry,
+			      final boolean createEntries,
+			      final String recursePattern,
+			      final String pattern)
+	throws Exception {
+	//IMPORTANT!
+	getAuthManager().ensureAuthToken(request);
+	ActionManager.Action action = new ActionManager.Action() {
+		StringBuilder resultsSB    = new StringBuilder("");
+		List<Entry> entries = new ArrayList<Entry>();
+		public void run(Object actionId) throws Exception {
+		    HashSet seen = new HashSet();
+		    int []cnt={0};
+		    int           depth = request.get(ARG_IMPORT_RECURSE_DEPTH, 1);
+		    boolean recurse = request.get(ARG_IMPORT_RECURSE, false);
+		    boolean testFull    = request.exists(ARG_IMPORT_TEST_FULL);	
+		    int[]pageCnt={0};
+		    int[]linkCnt={0};
+		    extractLinks(request, topLink, recurse, recursePattern, pattern, depth,createEntries?true:testFull,actionId,pageCnt,linkCnt);
+		    if(!createEntries) {
+			resultsSB.append(msgHeader("Scanned links"));
+			displayLinks(request,resultsSB,topLink.getChildren());
+			resultsSB.append("<p>");
+		    } else {
+			resultsSB.append("<div  style='max-height:400px;overflow-y:auto;margin-bottom:1em;'>");
+			resultsSB.append("<ul>");
+			importHtmlInner(request, actionId, seen, entries,cnt,resultsSB, topLink, parentEntry);
+			resultsSB.append("</ul>");
+			resultsSB.append("</div>");
 
-        return getActionManager().doAction(request, action, "Importing HTML",
-                                           "", parentEntry);
+		    }
+		}
+		@Override
+		public Result finishAction(ActionManager.ActionInfo info, StringBuffer messages) throws Exception {
+		    StringBuilder sb = new StringBuilder();
+		    getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
+		    if(info.getError()!=null) {
+			sb.append(getPageHandler().showDialogError("An error has occurred"
+								   + "<p>" + info.getError()));
+		    } else if(info.getCancelled()) {
+			sb.append(getPageHandler().showDialogNote("Processing has been cancelled"));
+			if(!createEntries) {
+			    resultsSB.append(msgHeader("Scanned links"));
+			    displayLinks(request,resultsSB,topLink.getChildren());
+			}
+
+		    } else if(!info.getRunning()) {
+			sb.append(getPageHandler().showDialogNote("Processing complete"));
+		    }
+		    sb.append(resultsSB);
+		    if(entries.size()>0) {
+			if(entries.size()==1) {
+			    sb.append(msgHeader("1 entry has been created"));
+			} else {
+			    sb.append(msgHeader(entries.size() +" entries have been created"));
+			}
+			sb.append("<ul style='max-height:400px;overflow-y:auto;margin-bottom:1em;'>");
+			for(Entry entry: entries) {
+			    sb.append("<li>");
+			    sb.append(HU.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,entry), entry.getName()));
+			}
+			sb.append("</ul><p>");
+		    }
+		    makeForm(request, parentEntry, topLink.getUrl().toString(), sb);
+		    getPageHandler().entrySectionClose(request, parentEntry, sb);
+		    return getEntryManager().makeEntryEditResult(request, parentEntry, "", sb);
+		}
+	    };
+	return getActionManager().doAction(request, action, "Importing HTML",
+					   "", parentEntry);
     }
 
     public Result handleUrlRequest(Request request, Repository repository,
-                                   String url, Entry parentEntry)
-            throws Exception {
+				   String url, Entry parentEntry)
+	throws Exception {
 
-        if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_HTML)) {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-	List  <String> okLinks = (List<String>) request.get("linkok",new ArrayList<String>());
-	boolean anySelected = okLinks.size()>0;
+	if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_HTML)) {
+	    return null;
+	}
+	boolean recurse = request.get(ARG_IMPORT_RECURSE, false);
+	String  pattern = request.getString(ARG_IMPORT_PATTERN, "");
+	String  recursePattern = request.getString(ARG_IMPORT_RECURSE_PATTERN, "");
 
-        getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
+	boolean testPartial    = request.exists(ARG_IMPORT_TEST_PARTIAL);
+	boolean testFull    = request.exists(ARG_IMPORT_TEST_FULL);	
+	boolean createEntries    = request.exists(ARG_IMPORT_CREATEENTRIES);
+	URL                  rootUrl   = new URL(url);
+	HtmlUtils.Link topLink = new HtmlUtils.Link(rootUrl,"Main page");
+	if(!testPartial && !testFull && !createEntries) {
+	    StringBuilder sb = new StringBuilder();
+	    getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
+	    makeForm(request, parentEntry, topLink.getUrl().toString(), sb);
+	    getPageHandler().entrySectionClose(request, parentEntry, sb);
+	    return getEntryManager().makeEntryEditResult(request, parentEntry, "", sb);
+	}
 
-        String  pattern = request.getString(ARG_IMPORT_PATTERN, "");
 
-        boolean doit    = request.exists(ARG_IMPORT_DOIT);
-        String recursePattern = request.getString(ARG_IMPORT_RECURSE_PATTERN,
-                                    "");
-        boolean              recurse = request.get(ARG_IMPORT_RECURSE, false);
-        List<HtmlUtils.Link> pageLinks = null;
-        List<HtmlUtils.Link> links     = null;
-        URL                  rootUrl   = new URL(url);
-        if (doit) {
-            return importHtml(request, repository, rootUrl, okLinks,
-			      parentEntry,
-                              recurse
-                              ? recursePattern
-                              : null, pattern);
-        }
-        if (recurse) {
-            pageLinks = HU.extractLinks(rootUrl, recursePattern);
-            if ((pageLinks.size() > 0) && !doit) {
-                links = HU.extractLinks(pageLinks.get(0).getUrl(),
-                        pattern);
-            }
-        } else {
-            links = HU.extractLinks(rootUrl, pattern);
-        }
+	return importHtml(request, repository, topLink, 
+			  parentEntry,
+			  createEntries,
+			  recurse
+			  ? recursePattern
+			  : null, pattern);
 
-        TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE,TypeHandler.TYPE_FINDMATCH),false);
+	/*
+	if (Utils.listEmpty(topLink.getChildren())) {
+	    sb.append(getPageHandler().showDialogNote(
+						      "No pages found. Maybe add \".*\" before and after pattern"));
+	} else {
+	    sb.append(msgHeader(testPartial?"Partial Imports":"Full Imports"));
+	    displayLinks(request,sb,topLink.getChildren());
+	    }*/	    
+	
 
-        String buttons =
-            HU.buttons(HU.submit("Test it out"),
-                              HU.submit("Create entries",
-                                  ARG_IMPORT_DOIT));
-        sb.append(msgHeader("HTML Import"));
-        request.uploadFormWithAuthToken(sb,
-                                        getRepository().URL_ENTRY_XMLCREATE,
-                                        makeFormSubmitDialog(sb,
-                                            msg("Importing HTML")));
-        sb.append(HU.hidden(ARG_GROUP, parentEntry.getId()));
-        sb.append(HU.hidden(ARG_IMPORT_TYPE, TYPE_HTML));
-        sb.append(HU.formTable());
-        sb.append(HU.formEntry(msgLabel("URL"),
-                                      HU.input(ARG_URL, url,
-                                          HU.SIZE_70)));
+    }
 
-        HU.formEntry(sb, "",
-		     HU.labeledCheckbox(ARG_IMPORT_RECURSE,
-					"true", recurse,"Recurse"));
+
+
+    private void makeForm(Request request, Entry parentEntry, String url,
+			  StringBuilder sb) throws Exception {
+	boolean recurse = request.get(ARG_IMPORT_RECURSE, false);
+	String  recursePattern = request.getString(ARG_IMPORT_RECURSE_PATTERN, "");
+	String  pattern = request.getString(ARG_IMPORT_PATTERN, "");
+
+	TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE,TypeHandler.TYPE_FINDMATCH),false);
+	String buttons =
+	    HU.buttons(HU.submit("Partial Test",ARG_IMPORT_TEST_PARTIAL),
+		       HU.submit("Full Test",ARG_IMPORT_TEST_FULL),		       
+		       HU.submit("Create entries", ARG_IMPORT_CREATEENTRIES));
+	sb.append(msgHeader("HTML Import"));
+	request.uploadFormWithAuthToken(sb,
+					getRepository().URL_ENTRY_XMLCREATE,
+					makeFormSubmitDialog(sb,
+							     msg("Importing HTML")));
+	sb.append(HU.hidden(ARG_GROUP, parentEntry.getId()));
+	sb.append(HU.hidden(ARG_IMPORT_TYPE, TYPE_HTML));
+	sb.append(HU.formTable());
+	sb.append(HU.formEntry(msgLabel("URL"),
+			       HU.input(ARG_URL, url,
+					HU.SIZE_70)));
+
+	HU.formEntry(sb, "",   HU.labeledCheckbox(ARG_IMPORT_RECURSE,
+						  "true", recurse,"Recurse"));
 
 	HU.formEntry(sb, "",HU.div("Regular expression pattern to match on links to other pages",
 				   HU.cssClass("ramadda-form-help")));
 
-        HU.formEntry(sb,msgLabel("Recurse Pattern"),
+	HU.formEntry(sb,msgLabel("Recurse Pattern"),
 		     HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
 			      HU.SIZE_50));
 
@@ -372,13 +403,24 @@ public class HtmlImportHandler extends ImportHandler {
 			      request.getString(ARG_IMPORT_RECURSE_DEPTH, "1"),
 			      HU.SIZE_5));
 
+	HU.formEntry(sb,"",
+		     HU.labeledCheckbox(ARG_IMPORT_ADDINTERMEDIATE, "true",
+					request.get(ARG_IMPORT_ADDINTERMEDIATE, false),
+					msg("Add intermediate folders")));
+
+
+
 	HU.formEntry(sb, "",HU.div("Link regular expression - e.g. \".*\\.pdf\"",HU.cssClass("ramadda-form-help")));
 
 	HU.formEntry(sb, msgLabel("Entry Pattern"),
 		     HU.input(ARG_IMPORT_PATTERN, pattern, HU.attrs("size","50","placeholder","e.g. .*\\.pdf")));
 
-        boolean addFile = request.getString(ARG_IMPORT_HANDLE,
-                                            "file").equals("file");
+	HU.formEntry(sb, msgLabel("Not Pattern"),
+		     HU.input(ARG_IMPORT_NOTPATTERN, request.getString(ARG_IMPORT_NOTPATTERN,""),
+			      HU.attrs("size","50")));	
+
+	boolean addFile = request.getString(ARG_IMPORT_HANDLE,
+					    "file").equals("file");
 	HU.formEntry(sb,
 		     msgLabel("What to do"),
 		     HU.labeledRadio(ARG_IMPORT_HANDLE, "file", addFile,
@@ -387,21 +429,27 @@ public class HtmlImportHandler extends ImportHandler {
 		     + HU.labeledRadio(ARG_IMPORT_HANDLE, "url", !addFile,
 				       msg("Add the link")));
 
-	HU.formEntry(sb,"",
-                HU.labeledCheckbox(ARG_IMPORT_UNCOMPRESS, "true",
-				   request.get(ARG_IMPORT_UNCOMPRESS, false),
-				   msg("Uncompress file")));
+	HU.formEntry(sb, msgLabel("Name template"),
+		     HU.input(ARG_IMPORT_NAMETEMPLATE, request.getString(ARG_IMPORT_NAMETEMPLATE,""),
+			      HU.attrs("size","50")) +" " +
+		     "${parent}, ${filename}, ${filename_label}");
 
-        HU.formEntry(sb,"",
-		     HU.labeledCheckbox("useurl", "true",
-					request.get("useurl",false),
+
+	HU.formEntry(sb,"",
+		     HU.labeledCheckbox(ARG_IMPORT_UNCOMPRESS, "true",
+					request.get(ARG_IMPORT_UNCOMPRESS, false),
+					msg("Uncompress file")));
+
+	HU.formEntry(sb,"",
+		     HU.labeledCheckbox(ARG_IMPORT_USEURL, "true",
+					request.get(ARG_IMPORT_USEURL,false),
 					"Use URL for name"));
 
 	HU.formEntry(sb, "",HU.div("What type of entry to create",HU.cssClass("ramadda-form-help")));
 	HU.formEntry(sb, msgLabel("Entry type"),
 		     getPageHandler().makeFileTypeSelector(request, typeHandler, false));
 
-        sb.append(HU.formTableClose());
+	sb.append(HU.formTableClose());
 	StringBuilder mtdSb = new StringBuilder();
 	mtdSb.append(HU.labeledCheckbox(ARG_IMPORT_PROVENANCE, "true",
 					request.get(ARG_IMPORT_PROVENANCE, false),
@@ -423,108 +471,97 @@ public class HtmlImportHandler extends ImportHandler {
 	    sb.append(mtdSb);
 	}
 	sb.append("<br>");
-
 	sb.append(buttons);
-	//        HU.formEntry(sb,"", buttons);
-
-        sb.append(HU.p());
-
-        if (pageLinks != null) {
-            if (pageLinks.size() > 0) {
-                sb.append(msgHeader("Page Imports"));
-                sb.append("<ul>");
-                for (HtmlUtils.Link link : pageLinks) {
-                    sb.append("<li> ");
-                    sb.append(link.getHref(true));
-                    if (link.getSize() > 0) {
-                        sb.append("  --  ");
-                        sb.append(
-                            " "
-                            + RepositoryManager.formatFileLength(
-                                link.getSize()));
-                    }
-                    sb.append("  --  ");
-                    sb.append(link.getUrl());
-                    sb.append(HU.br());
-                }
-                sb.append("</ul>");
-            } else {
-                sb.append(
-                    getPageHandler().showDialogNote(
-                        "No recursed pages found. Maybe add \".*\" before and after pattern"));
-            }
-
-        }
-
-        if (links != null) {
-            if (links.size() > 0) {
-                if ((pageLinks != null) && (pageLinks.size() > 0)) {
-                    sb.append(
-                        msgHeader(
-                            "Example links import for recursed page: "
-                            + pageLinks.get(0).getHref(true)));
-                } else {
-                    sb.append(msgHeader("Links Import"));
-                }
-                sb.append("<ul>");
-                for (HtmlUtils.Link link : links) {
-                    sb.append("<li> ");
-
-		    String lurl = link.getUrl().toString();
-
-		    String cbxId = HU.getUniqueId("cbx");
-		    String cbxCall =
-			HU.attr(HU.ATTR_ONCLICK,
-				HU.call("HU.checkboxClicked",
-					HU.comma("event",
-						 HU.squote("linkok"),
-						 HU.squote(cbxId))));
-
-		    sb.append(HU.labeledCheckbox("linkok",lurl,
-						 anySelected?okLinks.contains(lurl):true,
-						 cbxCall + HU.id(cbxId),
-						 link.getLabel()));
-		    sb.append(HU.space(1));
-                    if (link.getSize() > 0) {
-                        sb.append("  --  ");
-                        sb.append(
-                            " "
-                            + RepositoryManager.formatFileLength(
-                                link.getSize()));
-                    }
-                    sb.append("  --  ");
-                    sb.append(HU.href(link.getUrl().toString(),link.getUrl().toString(),HU.attrs("target","link")));
-                    sb.append(HU.br());
-                }
-                sb.append("</ul>");
-
-            } else {
-                sb.append(
-                    getPageHandler().showDialogNote(
-                        "No links found. Maybe add \".*\" before and after pattern"));
-            }
-        }
-        sb.append(HU.formClose());
-
-        getPageHandler().entrySectionClose(request, parentEntry, sb);
-
-        return getEntryManager().makeEntryEditResult(request, parentEntry,
-                "", sb);
-        //        return getEntryManager().addEntryHeader(request, parentEntry, new Result("",sb));
+	sb.append(HU.formClose());
     }
 
-    public static void test(String file) throws Exception {
-        String html = IOUtil.readContents(file, HtmlUtils.class);
-        //        String pattern = "(?i)<\\s*a href\\s*=\\s*\"?([^\">]+)\"?>(.+?)</a>";
+    private void extractLinks(Request request, HtmlUtils.Link topLink,
+			      boolean recurse, String recursePattern,
+			      String pattern, int depth,
+			      boolean full,Object actionId,int[]pageCnt,int[]linkCnt) throws Exception {
+	topLink.setChildren(HU.extractLinks(topLink.getUrl(), recursePattern,pattern));
+	pageCnt[0]++;
+	linkCnt[0]+=topLink.getChildren().size();
 
-        String pattern =
-            "(?i)<\\s*a href\\s*=\\s*(\"|')?([^\"'>]+)(\"|')?[^>]*>(.+)</a>";
-        Matcher matcher = Pattern.compile(pattern).matcher(html);
-        while (matcher.find()) {
-            String href = matcher.group(1);
-            //            String label = matcher.group(2);
-            System.err.println(href);
-        }
+	if(actionId!=null) {
+	    if(!getActionManager().getActionOk(actionId)) {
+		return;
+	    }
+	    getActionManager().setActionMessage(actionId,"Processing: " + topLink.getLabel() +" Total pages: " + pageCnt[0] +" Total links: " + linkCnt[0]);
+	}
+
+	if (recurse && depth>0) {
+	    for(HtmlUtils.Link pageLink: topLink.getChildren()) {
+		extractLinks(request, pageLink,recurse,recursePattern, pattern, depth-1,full,actionId,pageCnt,linkCnt);
+		if(!getActionManager().getActionOk(actionId)) {
+		    return;
+		}
+		pageLink.setChildren(HU.extractLinks(pageLink.getUrl(), recursePattern,pattern));
+		if(!full) {
+		    break;
+		}
+	    }
+	}
     }
+
+    private void displayLinks(Request request,StringBuilder sb,List<HtmlUtils.Link>pageLinks) {
+	if (Utils.listEmpty(pageLinks))  return;
+	sb.append("<div  style='max-height:400px;overflow-y:auto;'>");
+	sb.append("<ul>");
+	for (HtmlUtils.Link link : pageLinks) {
+	    sb.append("<li> ");
+	    sb.append(link.getHref(true));
+	    if (link.getSize() > 0) {
+		sb.append("  --  ");
+		sb.append(
+			  " "
+			  + RepositoryManager.formatFileLength(
+							       link.getSize()));
+	    }
+	    sb.append("  --  ");
+	    sb.append(link.getUrl());
+	    displayLinks(request, sb, link.getChildren());
+	}
+	sb.append("</ul>");
+	sb.append("</div>");	
+
+	/*
+	  for (HtmlUtils.Link link : links) {
+	  sb.append("<li> ");
+	  String lurl = link.getUrl().toString();
+	  String cbxId = HU.getUniqueId("cbx");
+	  String cbxCall =
+	  HU.attr(HU.ATTR_ONCLICK,
+	  HU.call("HU.checkboxClicked",
+	  HU.comma("event",
+	  HU.squote("linkok"),
+	  HU.squote(cbxId))));
+	  sb.append(HU.labeledCheckbox("linkok",lurl,
+	  anySelected?okLinks.contains(lurl):true,
+	  cbxCall + HU.id(cbxId),
+	  link.getLabel()));
+	  sb.append(HU.space(1));
+	  if (link.getSize() > 0) {
+	  sb.append("  --  ");
+	  sb.append(
+	  " "
+	  + RepositoryManager.formatFileLength(
+	  link.getSize()));
+	  }
+	  sb.append("  --  ");
+	  sb.append(HU.href(link.getUrl().toString(),link.getUrl().toString(),HU.attrs("target","link")));
+	  sb.append(HU.br());
+	  }
+	  sb.append("</ul>");
+	  } else {
+	  sb.append(
+	  getPageHandler().showDialogNote(
+	  "No links found. Maybe add \".*\" before and after pattern"));
+	  }
+
+	*/
+    }
+
+
 
 }
