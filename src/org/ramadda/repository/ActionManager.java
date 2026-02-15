@@ -90,6 +90,10 @@ public class ActionManager extends RepositoryManager {
 
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
+	    action.setCancelled(true);
+	    Result result = action.finishAction(sb);
+	    if(result!=null) return result;
+	    
             actions.remove(id);
 	    if(!json) {
 		sb.append(getPageHandler().showDialogNote("Action cancelled"));
@@ -98,11 +102,15 @@ public class ActionManager extends RepositoryManager {
 	    }
             status = "canceled";
             JobManager.getManager().stopLoad(id);
+	    Result actionResult = action.finishAction(sb);
+	    if(actionResult!=null) return actionResult;
 	    String url = action.getRedirectUrl();
 	    if(url!=null) return new Result(url);
         } else {
             if (action.getError() != null) {
                 if ( !json) {
+		    Result actionResult = action.finishAction(sb);
+		    if(actionResult!=null) return actionResult;
                     sb.append(getPageHandler().showDialogError("Error"
                             + "<p>" + action.getError()));
                 } else {
@@ -111,17 +119,19 @@ public class ActionManager extends RepositoryManager {
                 }
                 actions.remove(id);
             } else if ( !action.getRunning()) {
-                StringBuilder message = new StringBuilder();
                 status = "complete";
+                actions.remove(id);
                 if (json) {
                     sb.append(action.getContinueHtml());
                 } else {
-                    message.append("Completed");
-                    sb.append(
-                        getPageHandler().showDialogNote(
-                            message.toString(), action.getContinueHtml()));
+		    Result actionResult = action.finishAction(sb);
+		    if(actionResult!=null) return actionResult;
+		    StringBuilder message = new StringBuilder();
+		    message.append("Completed");
+		    sb.append(
+			      getPageHandler().showDialogNote(
+							      message.toString(), action.getContinueHtml()));
                 }
-                actions.remove(id);
             } else {
 		StringBuilder messageSB = new StringBuilder();
 		StringBuilder buttonsSB = new StringBuilder();		
@@ -151,7 +161,7 @@ public class ActionManager extends RepositoryManager {
                 } else {
 		    sb.append(messageSB);
 		}
-            }
+	    }
         }
         if ( !json) {
             if (action.getEntry() != null) {
@@ -317,26 +327,23 @@ public class ActionManager extends RepositoryManager {
 	public String getRedirectUrl() {
 	    return null;
 	}
+
+	public Result finishAction(ActionInfo info,StringBuffer sb) throws Exception  {
+	    return null;
+	}
+
     }
 
     public class ActionInfo {
-
 	private Action action;
-
         private String id;
-
         private String name;
-
         private boolean running = true;
-
+        private boolean cancelled=false;
         private String message = "";
-
         private String continueHtml;
-
         private String error = null;
-
         private String extraHtml;
-
         private Entry entry;
 
         public ActionInfo(String name, String continueHtml, Entry entry,Action action) {
@@ -349,6 +356,11 @@ public class ActionManager extends RepositoryManager {
 
         public ActionInfo(String name, String continueHtml, Entry entry) {
 	    this(name, continueHtml, entry,null);
+	}
+
+	public Result finishAction(StringBuffer sb) throws Exception  {
+	    if(action!=null) return action.finishAction(this,sb);
+	    return null;
 	}
 
         public void setId(String value) {
@@ -371,6 +383,15 @@ public class ActionManager extends RepositoryManager {
 	    if(action!=null) return action.getRedirectUrl();
 	    return null;
 	}
+
+	public void setCancelled (boolean value) {
+	    cancelled = value;
+	}
+
+	public boolean getCancelled () {
+	    return cancelled;
+	}
+
 
         public void setRunning(boolean value) {
             running = value;
