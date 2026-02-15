@@ -141,12 +141,14 @@ public class HtmlImportHandler extends ImportHandler {
 		name = name.replaceAll("^[0-9]+", "").trim();
 	    }
 
+
 	    if(stringDefined(template)) {
 		String filename = IOUtil.stripExtension(IOUtil.getFileTail(childLink.getUrl().toString()));
 		name = template.replace("${parent}",parentEntry.getName()).replace("${filename}",filename).replace("${filename_label}",
 														   Utils.makeLabel(filename));
 										   
 	    }
+	    name = name.replace("%20"," ").replaceAll("  +"," ");
 
 
 	    //TODO: check if we have a entry already
