@@ -267,9 +267,14 @@ public class HtmlImportHandler extends ImportHandler {
 		    int[]linkCnt={0};
 		    extractLinks(request, topLink, recurse, recursePattern, pattern, depth,createEntries?true:testFull,actionId,pageCnt,linkCnt);
 		    if(!createEntries) {
-			resultsSB.append(msgHeader("Scanned links"));
-			displayLinks(request,resultsSB,topLink.getChildren());
-			resultsSB.append("<p>");
+			if (Utils.listEmpty(topLink.getChildren())) {
+			    resultsSB.append(getPageHandler().showDialogNote(
+									     "No pages found. Maybe add \".*\" before and after pattern"));
+			} else {
+			    resultsSB.append(msgHeader("Scanned links"));
+			    displayLinks(request,resultsSB,topLink.getChildren());
+			    resultsSB.append("<p>");
+			}
 		    } else {
 			resultsSB.append("<div  style='max-height:400px;overflow-y:auto;margin-bottom:1em;'>");
 			resultsSB.append("<ul>");
