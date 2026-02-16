@@ -6093,6 +6093,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	handleMapGlyphClick:function(mapGlyph,xy,event) {	
 	    if(mapGlyph==null) return false;
 	    let debug = false;
+	    mapGlyph.handleClick(xy,event);
+
+
 	    if(mapGlyph.isMap()) {
 		if(event && event.event && event.feature && event.event.altKey) {
 		    //		    return false;

@@ -1936,6 +1936,13 @@ MapGlyph.prototype = {
 	return this.style.wikiText || this.getPopupText();
     },
 
+    handleClick:function(xy,event) {
+	let bg = this.getLegendDiv().css('background');
+	this.getLegendDiv().css('background','yellow');
+	this.getLegendDiv().animate({
+	    backgroundColor: bg,
+	}, 2000);
+    },
     getPopupContents: function() {
 	let contents = this.getPopupText()??'';
 	if(this.isImage() && Utils.stringDefined(this.style.imageUrl)) {
