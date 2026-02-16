@@ -431,10 +431,11 @@ public class MetadataTypeBase extends RepositoryManager {
                 .URL_METADATA_VIEW.toString(), "/", tail);
 
         if (Utils.isImage(f.toString())) {
+	    long modified = f.lastModified();
             String img = HU.img(HU.url(path, ARG_ELEMENT,
                              element.getIndex() + "", ARG_ENTRYID,
                              metadata.getEntryId(), ARG_METADATA_ID,
-                             metadata.getId()), (forLink
+				       metadata.getId(),ARG_TIMESTAMP,""+modified), (forLink
                     ? msg("Click to enlarge")
                     : ""), extra);
 
