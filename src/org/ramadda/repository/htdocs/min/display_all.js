@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 16 05:41:29 MST 2026";
+var build_date="RAMADDA build date: Mon Feb 16 05:59:46 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47538,6 +47538,7 @@ var ROUTE_PEDESTRIAN ='pedestrian';
 
 
 var ID_GLYPH_LEGEND = 'glyphlegend';
+var ID_IMDV_LEGEND = 'imdvlegend';
 
 var ID_MAPRESOURCE = 'mapresource';
 
@@ -53187,6 +53188,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(height && !inMap && !legendDiv) css+=HU.css(CSS_HEIGHT,legendHeight);
 		if(!legendDiv) {
 		    let attrs = [ATTR_CLASS,'imdv-legend',
+				 ATTR_ID,this.domId(ID_IMDV_LEGEND),
 				 ATTR_STYLE,css]
 		    html  = HU.div(attrs,html);
 		}
@@ -53608,6 +53610,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
 	    doPopup(text);
 	    return false;
+	},
+	getLegendDiv:function () {
+	    return this.jq(ID_IMDV_LEGEND);
 	},
 	getLabels:function() {
 	    return this.jq(ID_GLYPH_LABELS);
@@ -56414,6 +56419,7 @@ MapGlyph.prototype = {
 
     handleClick:function(xy,event) {
 	let bg = this.getLegendDiv().css('background');
+        HU.scrollVisible(this.display.getLegendDiv(), this.getLegendDiv(),100);
 	this.getLegendDiv().css('background','yellow');
 	this.getLegendDiv().animate({
 	    backgroundColor: bg,
