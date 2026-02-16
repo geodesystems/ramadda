@@ -144,6 +144,14 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	return image;
     }
 
+    public static BufferedImage rotate90(File inputFile, boolean left) throws Exception {
+        BufferedImage originalImage = ImageIO.read(inputFile);
+	return rotate90(originalImage,left);
+    }
+
+
+
+
     public static BufferedImage readBase64(String format, String base64Image) throws Exception {
 	byte[] imageBytes = Utils.decodeBase64(base64Image);
 	ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
