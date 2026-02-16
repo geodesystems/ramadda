@@ -15,6 +15,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ImageUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import java.awt.image.BufferedImage;
 
 import org.w3c.dom.*;
 
@@ -41,7 +42,9 @@ import java.util.List;
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public static final String ARG_THUMBNAIL_SCALEDOWN =    "metadata_thumbnail_scaledown";
     public static final String ARG_THUMBNAIL_WIDTH =    "metadata_thumbnail_width";
-    public static final String ARG_THUMBNAIL_DELETE =        "metadata_thumbnail_delete";    
+    public static final String ARG_THUMBNAIL_DELETE =        "metadata_thumbnail_delete";
+    public static final String ARG_THUMBNAIL_ROTATE_LEFT=        "metadata_thumbnail_rotate_left";
+    public static final String ARG_THUMBNAIL_ROTATE_RIGHT=        "metadata_thumbnail_rotate_right";            
     public static final String ATTR_REQUIRED = "required";
     public static final String ATTR_MAX = "max";
     public static final String ATTR_ID = "id";
@@ -638,6 +641,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                            ? ""
                            : oldMetadata.getAttr(getIndex()));
 
+	if(request.get(ARG_THUMBNAIL_ROTATE_LEFT,false) ||
+	   request.get(ARG_THUMBNAIL_ROTATE_RIGHT,false)) {
+	    File f = getFile(entry,oldMetadata,oldValue);
+		
+	    if(f!=null && f.exists()) {
+		BufferedImage image = ImageUtils.rotate90(f,
+							  request.get(ARG_THUMBNAIL_ROTATE_LEFT,false));
+
+		ImageUtils.writeImageToFile(image,f);
+	    }
+	}
+
+
 	if(request.get(ARG_THUMBNAIL_DELETE,false)) {
 	    File f = getFile(entry,oldMetadata,oldValue);
 	    if(f!=null && f.exists()) {
@@ -869,6 +885,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             StringBuilder sb      = new StringBuilder();
             String        inputId = formInfo.getId() + "_" + arg;
             sb.append(image);
+	    sb.append(HU.br());
+	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_LEFT, "true",false,"Rotate left"));
+	    sb.append(HU.SPACE2);
+	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_RIGHT, "true",false,"Rotate right"));
+
 	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
 	    if(Utils.stringDefined(image)) sb.append(space);
 	    String fileInput =HU.makeDndFileInput(arg,false);
@@ -878,6 +899,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
 	    sb.append(HU.br());
 	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_DELETE, "true",false,"Delete file"));
+	    sb.append(HU.br());
+
+	    
 	    //            HU.script(sb,    "Ramadda.initFormUpload("
 	    //		      + HU.comma(HU.squote(inputId)) + ");");
 
