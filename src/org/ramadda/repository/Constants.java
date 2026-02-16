@@ -233,6 +233,7 @@ public interface Constants {
     public static final String ARG_ENTRYID = "entryid";
     public static final String ARG_SELENTRY = "selentry";
     public static final String ARG_ALLENTRY = "allentry";
+    public static final String ARG_TIMESTAMP = "timestamp";
     public static final String ARG_ENTRY_TIMESTAMP = "entry.timestamp";
     public static final String ARG_LOCALEID = "localeid";
     public static final String ARG_ENTRYIDS = "entryids";
