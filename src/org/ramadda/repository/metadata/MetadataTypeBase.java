@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.metadata;
@@ -89,7 +89,7 @@ public class MetadataTypeBase extends RepositoryManager {
     protected void checkFileXml(Request request, String templateType,
                                 Entry entry, Metadata metadata,
                                 Element parent)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
@@ -101,18 +101,19 @@ public class MetadataTypeBase extends RepositoryManager {
             String tail = getStorageManager().getFileTail(f.toString());
             String path =
                 request.getAbsoluteUrl(handler.getRepository()
-                    .getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
+				       .getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
 
             String url = HU.url(path, ARG_ELEMENT,
-                                       element.getIndex() + "", ARG_ENTRYID,
-                                       metadata.getEntryId(),
-                                       ARG_METADATA_ID, metadata.getId());
+				element.getIndex() + "", ARG_ENTRYID,
+				metadata.getEntryId(),
+				ARG_METADATA_ID, metadata.getId(),
+				ARG_TIMESTAMP,""+f.lastModified());
             //TODO:
             if (templateType.equals(TEMPLATETYPE_THREDDS)) {
                 XmlUtil.create(parent.getOwnerDocument(), "property", parent,
                                new String[] { "name", (element.getThumbnail()
-                        ? "thumbnail"
-                        : "attachment"), "value", url });
+						       ? "thumbnail"
+						       : "attachment"), "value", url });
             }
 
         }
@@ -121,7 +122,7 @@ public class MetadataTypeBase extends RepositoryManager {
     public String applyTemplate(Request request, String templateType,
                                 Entry entry, Metadata metadata,
                                 Element parent)
-            throws Exception {
+	throws Exception {
         checkFileXml(request, templateType, entry, metadata, parent);
         String template = getTemplate(templateType);
         if ((template == null) || (template.length() == 0)) {
@@ -189,9 +190,9 @@ public class MetadataTypeBase extends RepositoryManager {
         //        value = XmlUtil.encodeString(value);
         value = getRepository().getPageHandler().applyBaseMacros(value);
         value = value.replaceAll("[\\r\\n]+", " ").replaceAll("&",
-                                 "&amp;").replaceAll("<",
-                                     "&lt;").replaceAll(">",
-                                         "&gt;").replaceAll("\"", "&quot;");
+							      "&amp;").replaceAll("<",
+										  "&lt;").replaceAll(">",
+												     "&gt;").replaceAll("\"", "&quot;");
 
         //TODO: make faster
 
@@ -252,7 +253,7 @@ public class MetadataTypeBase extends RepositoryManager {
         setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
 	help  = Utils.getAttributeOrTag(node, "help",   (String) null);
         setSuffixLabel(Utils.getAttributeOrTag(node, ATTR_SUFFIX,
-                (String) null));
+					       (String) null));
 
 	entryType = XmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
@@ -298,7 +299,7 @@ public class MetadataTypeBase extends RepositoryManager {
             }
             lastIndex = index;
             MetadataElement element = new MetadataElement(getHandler(), this,
-                                          lastIndex, elementNode);
+							  lastIndex, elementNode);
             addElement(element);
         }
 
@@ -358,13 +359,13 @@ public class MetadataTypeBase extends RepositoryManager {
     }
     public String getFileUrl(Request request, Entry entry,
 			     Metadata metadata, boolean checkImage,String matchFile)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
             }
             String url = getFileUrl(request, entry, metadata, element, checkImage,
-                                     matchFile);
+				    matchFile);
             if (url != null) {
                 return url;
             }
@@ -377,7 +378,7 @@ public class MetadataTypeBase extends RepositoryManager {
 			     Metadata metadata, MetadataElement element,
 			     boolean checkImage,
 			     String matchFile)
-            throws Exception {
+	throws Exception {
 
         File f = getFile(entry, metadata, element);
         if (f == null) {
@@ -409,7 +410,8 @@ public class MetadataTypeBase extends RepositoryManager {
 	    .URL_METADATA_VIEW + "/" + tail;
 	return HU.url(path, ARG_ELEMENT, element.getIndex() + "",
 		      ARG_ENTRYID, metadata.getEntryId(),
-		      ARG_METADATA_ID, metadata.getId());
+		      ARG_METADATA_ID, metadata.getId(),
+		      ARG_TIMESTAMP,""+f.lastModified());
     }
 
     public String getFileHtml(Request request, Entry entry,
@@ -422,38 +424,40 @@ public class MetadataTypeBase extends RepositoryManager {
 
         String extra = (forLink
                         ? HU.cssClass(
-                            "ramadda-thumbnail-image img-thumbnail")
+				      "ramadda-thumbnail-image img-thumbnail")
                         : "");
         extra += HU.attrs("style", "max-width:100%;","loading","lazy");
         String tail = getStorageManager().getFileTail(f.toString());
         String path =
             Utils.concatString(handler.getRepository().getMetadataManager()
-                .URL_METADATA_VIEW.toString(), "/", tail);
+			       .URL_METADATA_VIEW.toString(), "/", tail);
 
         if (Utils.isImage(f.toString())) {
 	    long modified = f.lastModified();
             String img = HU.img(HU.url(path, ARG_ELEMENT,
-                             element.getIndex() + "", ARG_ENTRYID,
-                             metadata.getEntryId(), ARG_METADATA_ID,
-				       metadata.getId(),ARG_TIMESTAMP,""+modified), (forLink
-                    ? msg("Click to enlarge")
-                    : ""), extra);
+				       element.getIndex() + "", ARG_ENTRYID,
+				       metadata.getEntryId(), ARG_METADATA_ID,
+				       metadata.getId(),
+				       ARG_TIMESTAMP,""+modified), (forLink
+								    ? msg("Click to enlarge")
+								    : ""), extra);
 
             if (forLink) {
                 String bigimg = HU.img(HU.url(path,
-                                    ARG_ELEMENT, element.getIndex() + "",
-                                    ARG_ENTRYID, metadata.getEntryId(),
-                                    ARG_METADATA_ID,
-                                    metadata.getId()), "thumbnail", "");
+					      ARG_ELEMENT, element.getIndex() + "",
+					      ARG_ENTRYID, metadata.getEntryId(),
+					      ARG_TIMESTAMP,""+f.lastModified(),
+					      ARG_METADATA_ID,
+					      metadata.getId()), "thumbnail", "");
                 StringBuilder tmp = new StringBuilder();
                 img = HU.div(img,
-                                    HU.cssClass("ramadda-thumbnail"));
+			     HU.cssClass("ramadda-thumbnail"));
                 img = HU.makePopup(tmp, img, bigimg,
-                                          new NamedValue("at", "right top"),
-                                          new NamedValue("header", true));
+				   new NamedValue("at", "right top"),
+				   new NamedValue("header", true));
                 img = HU.div(
-                    img, HU.cssClass("ramadda-thumbnail")) + "\n"
-                        + tmp;
+			     img, HU.cssClass("ramadda-thumbnail")) + "\n"
+		    + tmp;
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }
@@ -463,9 +467,10 @@ public class MetadataTypeBase extends RepositoryManager {
             String name = getStorageManager().getFileTail(f.getName());
 
             return HU.href(HU.url(path, ARG_ELEMENT,
-                    element.getIndex() + "", ARG_ENTRYID,
-                    metadata.getEntryId(), ARG_METADATA_ID,
-                    metadata.getId()), name);
+				  element.getIndex() + "", ARG_ENTRYID,
+				  metadata.getEntryId(),
+				  ARG_TIMESTAMP,""+f.lastModified(),
+				  ARG_METADATA_ID, metadata.getId()), name);
         }
 
         return "";
@@ -473,7 +478,7 @@ public class MetadataTypeBase extends RepositoryManager {
 
     public String[] getFileUrl(Request request, Entry entry,
                                Metadata metadata)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
@@ -489,14 +494,14 @@ public class MetadataTypeBase extends RepositoryManager {
 
     public String[] getFileUrl(Request request, Entry entry,
                                Metadata metadata, MetadataElement element)
-            throws Exception {
+	throws Exception {
 
         File f = getFile(entry, metadata, element);
         if (f == null) {
             /*            String value = metadata.getAttr(element.getIndex());
-            if ((value != null) && value.startsWith("http")) {
-                return value;
-            }
+			  if ((value != null) && value.startsWith("http")) {
+			  return value;
+			  }
             */
 
             return null;
@@ -509,9 +514,10 @@ public class MetadataTypeBase extends RepositoryManager {
             handler.getRepository().getMetadataManager().URL_METADATA_VIEW
             + "/" + tail;
         String url = HU.url(path, ARG_ELEMENT,
-                                   element.getIndex() + "", ARG_ENTRYID,
-                                   metadata.getEntryId(), ARG_METADATA_ID,
-                                   metadata.getId());
+			    element.getIndex() + "", ARG_ENTRYID,
+			    metadata.getEntryId(), ARG_METADATA_ID,
+			    metadata.getId(),
+			    ARG_TIMESTAMP,""+f.lastModified());
 
         //Get the full file name
         return new String[] { IO.getFileTail(f.toString()), url,f.getName()};
@@ -537,9 +543,9 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         File f= new File(
-            IOUtil.joinDir(
-                getStorageManager().getEntryDir(
-                    metadata.getEntryId(), false), filename));
+			 IOUtil.joinDir(
+					getStorageManager().getEntryDir(
+									metadata.getEntryId(), false), filename));
 	return f;
     }
 
@@ -559,20 +565,10 @@ public class MetadataTypeBase extends RepositoryManager {
         return f;
     }
 
-    /**
-     * Set the Name property.
-     *
-     * @param value The new value for Name
-     */
     public void setName(String value) {
         name = value;
     }
 
-    /**
-     * Get the Name property.
-     *
-     * @return The Name
-     */
     public String getName() {
         return name;
     }
@@ -601,67 +597,31 @@ public class MetadataTypeBase extends RepositoryManager {
         suffixLabel = value;
     }
 
-    /**
-     *  Set the ShowInHtml property.
-     *
-     *  @param value The new value for ShowInHtml
-     */
     public void setShowInHtml(boolean value) {
         this.showInHtml = value;
     }
 
-    /**
-     *  Get the ShowInHtml property.
-     *
-     *  @return The ShowInHtml
-     */
     public boolean getShowInHtml() {
         return this.showInHtml;
     }
 
-    /**
-     * Get the Template property.
-     *
-     *
-     * @param type _more_
-     * @return The Template
-     */
+
     public String getTemplate(String type) {
         return templates.get(type);
     }
 
-    /**
-     * Set the Searchable property.
-     *
-     * @param value The new value for Searchable
-     */
     public void setSearchable(boolean value) {
         this.searchable = value;
     }
 
-    /**
-     * Get the Searchable property.
-     *
-     * @return The Searchable
-     */
     public boolean getSearchable() {
         return this.searchable;
     }
 
-    /**
-       Set the IsTitle property.
-
-       @param value The new value for IsTitle
-    **/
     public void setIsTitle (boolean value) {
 	isTitle = value;
     }
 
-    /**
-       Get the IsTitle property.
-
-       @return The IsTitle
-    **/
     public boolean getIsTitle () {
 	return isTitle;
     }
