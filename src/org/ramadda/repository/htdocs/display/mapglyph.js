@@ -1938,6 +1938,7 @@ MapGlyph.prototype = {
 
     handleClick:function(xy,event) {
 	let bg = this.getLegendDiv().css('background');
+        HU.scrollVisible(this.display.getLegendDiv(), this.getLegendDiv(),100);
 	this.getLegendDiv().css('background','yellow');
 	this.getLegendDiv().animate({
 	    backgroundColor: bg,
