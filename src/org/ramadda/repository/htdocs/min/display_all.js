@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb 14 06:14:17 MST 2026";
+var build_date="RAMADDA build date: Mon Feb 16 05:41:29 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -53470,6 +53470,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	handleMapGlyphClick:function(mapGlyph,xy,event) {	
 	    if(mapGlyph==null) return false;
 	    let debug = false;
+	    mapGlyph.handleClick(xy,event);
+
+
 	    if(mapGlyph.isMap()) {
 		if(event && event.event && event.feature && event.event.altKey) {
 		    //		    return false;
@@ -56409,6 +56412,13 @@ MapGlyph.prototype = {
 	return this.style.wikiText || this.getPopupText();
     },
 
+    handleClick:function(xy,event) {
+	let bg = this.getLegendDiv().css('background');
+	this.getLegendDiv().css('background','yellow');
+	this.getLegendDiv().animate({
+	    backgroundColor: bg,
+	}, 2000);
+    },
     getPopupContents: function() {
 	let contents = this.getPopupText()??'';
 	if(this.isImage() && Utils.stringDefined(this.style.imageUrl)) {
