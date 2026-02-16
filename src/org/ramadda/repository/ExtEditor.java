@@ -1543,8 +1543,7 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-	public void makeThumbnail(boolean deleteExisting,int...widthArray) throws Exception {
-	    int width = widthArray.length>0?widthArray[0]:-1;
+	public void makeThumbnail(boolean deleteExisting,int width) throws Exception {
 	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting,width)) {
 		changed=true;
 		ctx.print("Thumbnail added:" + entry.getName());
