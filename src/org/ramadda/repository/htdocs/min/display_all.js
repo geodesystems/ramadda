@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 17 07:15:05 MST 2026";
+var build_date="RAMADDA build date: Tue Feb 17 08:34:10 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -53354,7 +53354,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
 	    this.myLayer = this.map.createFeatureLayer('IMDV Features',true,null,{rendererOptions: {zIndexing: true}});
-
+	    this.myLayer.handleFeatureOver = true;
 	    this.myLayer.textGetter = t=>{
 		if(t.style && t.style.popupText) {
 		    if(t.style.sourceFeature && t.style.sourceGlyph) {
