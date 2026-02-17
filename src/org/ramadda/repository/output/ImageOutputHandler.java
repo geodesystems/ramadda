@@ -557,7 +557,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-
         int versions = 0;
         String extension =
             IO.getFileExtension(entry.getResource().getPath());
@@ -572,7 +571,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
         if (getAccessManager().canDoEdit(request, entry)) {
             String save =
-                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditorSave();'>Save Image</div>"
+                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorSave();'>Save Image</div>"
                 + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>";
             String undo = HtmlUtils.span(((versions > 0)
                                           ? (versions + " version"
@@ -580,42 +579,48 @@ public class ImageOutputHandler extends OutputHandler {
                     ? "s "
                     : " "))
                                           : ""), HtmlUtils.id(
-                                              "imageversions")) + " <div style='display:inline-block;' class='ramadda-button' onclick='imageEditorUndo();'>Undo</div>";
+                                              "imageversions")) + " <div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorUndo();'>Undo</div>";
 
             sb.append(HtmlUtils.leftRight(save, undo));
         }
 
-        String url = getImageUrl(request, entry, true);
-        sb.append(
-            HtmlUtils.formPost(
-                getRepository().getUrlBase() + "/lib/tui/tui",
-                HtmlUtils.id("imageeditform")));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        //        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
-        //        sb.append(HtmlUtils.hidden("imagecontents", "", HtmlUtils.id("imagecontents")));
+	sb.append(HtmlUtils.formPost(
+				     getRepository().getUrlBase() + "/lib/tui/tui",
+				     HtmlUtils.id("imageeditform")));
+	sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
-        String template =
-            repository.getResource(
-                "/org/ramadda/repository/resources/web/imageeditor.html");
-
-        /*
-        template = IOUtil.readContents(
-            "/org/ramadda/repository/resources/web/imageeditor.html",
-            getClass());
-        */
-        template =
-            template.replace("${imageurl}", url).replace("${imagename}",
-                             entry.getName()).replace("${versions}",
-                                 "" + versions);
-        template = getPageHandler().applyBaseMacros(template);
-        sb.append(template);
-        sb.append(HtmlUtils.formClose());
-
+	loadEditor(request, entry,versions,sb);
+	sb.append(HtmlUtils.formClose());
         getPageHandler().entrySectionClose(request, entry, sb);
+
         Result result = new Result("", sb);
         getEntryManager().addEntryHeader(request, entry, result);
 
         return result;
+
+    }
+
+    public void loadEditor(Request request, Entry entry,int versions,StringBuilder sb) throws Exception  {
+	String url = "null";
+	String name = "null";
+	if(entry!=null) {
+	    url = HU.quote(getImageUrl(request, entry, true));
+	    name = HU.quote(entry.getName());
+	}
+        String template =
+            repository.getResource(
+                "/org/ramadda/repository/resources/web/imageeditor.html");
+
+        template =
+            template.replace("${root}", getRepository().getUrlBase());
+        template = getPageHandler().applyBaseMacros(template);
+        sb.append(template);
+	sb.append(HU.script("let imageEditor = " +HU.call("new RamaddaImageEditor",
+							  url,name,
+							  ""+versions)));
+
+
+
 
     }
 

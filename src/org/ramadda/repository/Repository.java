@@ -5750,6 +5750,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result("", sb);
     }
 
+    public Result processImageEditor(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder("");
+        getPageHandler().sectionOpen(request, sb,"Image Editor",false);	
+        ImageOutputHandler imageOutputHandler =
+            (ImageOutputHandler) getOutputHandler(
+						  ImageOutputHandler.OUTPUT_PLAYER);
+
+	imageOutputHandler.loadEditor(request, null,-1,sb);
+        getPageHandler().sectionClose(request, sb);
+        return new Result("Image Editor", sb);
+    }
+
+
+
     public Result processColorTables(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb,"Color Tables",false);	

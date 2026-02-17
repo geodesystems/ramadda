@@ -16,7 +16,10 @@
     <api request="/favicon.ico"      method="processFavIcon"/>
     <api request="/base.js"          method="processBaseJs"/>
     <api request="/base.js"          method="processBaseJs"/>
-    <api request="/testaction"       method="processTestAction"/>
+    <api request="/imageeditor"       method="processImageEditor"/>
+    <api request="/testaction"       method="processTestAction"/>    
+
+    
   </group>
 
 
