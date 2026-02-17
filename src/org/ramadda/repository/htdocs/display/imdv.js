@@ -5977,7 +5977,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
 	    this.myLayer = this.map.createFeatureLayer('IMDV Features',true,null,{rendererOptions: {zIndexing: true}});
-
+	    this.myLayer.handleFeatureOver = true;
 	    this.myLayer.textGetter = t=>{
 		if(t.style && t.style.popupText) {
 		    if(t.style.sourceFeature && t.style.sourceGlyph) {

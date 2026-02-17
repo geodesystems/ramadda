@@ -1229,61 +1229,6 @@ RepositoryMap.prototype = {
 	    }
 	});
     },
-    handleFeatureover: function(feature, skipText,extraStyle) {
-        if (this.selectedFeature)  return;
-	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
-	    let location = feature.location;
-	    if (location) {
-		if(this.highlightFeature != feature) {
-		    this.closeHighlightPopup();
-		    let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
-		    if (!Utils.stringDefined(text))  {text = feature.text;}
-		    if (Utils.stringDefined(text)) {
-			let projPoint = this.transformLLPoint(location);
-			this.highlightPopup = new OpenLayers.Popup("popup",
-								   projPoint,
-								   feature.highlightSize,
-								   text,
-								   false);
-			this.highlightPopup.backgroundColor=feature.highlightBackgroundColor??this.highlightBackgroundColor??"#fffeec";
-			this.highlightPopup.autoSize=(feature.highlightSize==null);
-			this.highlightPopup.keepInMap=true;
-			this.highlightPopup.padding=0;
-			this.addPopup(this.highlightPopup);
-		    }
-		}
-	    }
-	}
-
-        let layer = feature.layer;
-        if (!(layer.isMapLayer === true)) {
-            if (!skipText && feature.text) {
-                this.showFeatureText(feature);
-            }
-            return;
-        }
-	if (layer.canSelect === false || layer.noHighlight) return;
-	if(feature.style==null) feature.hadNullStyle=true;
-        if (!feature.isSelected) {
-	    this.highlightFeature(feature,extraStyle);
-            if (this.params.displayDiv) {
-                this.displayedFeature = feature;
-                if (!skipText) {
-		    if(this.pendingDisplayTextTimeout) {
-			clearTimeout(this.pendingDisplayTextTimeout);
-		    }
-                    let callback = () =>{
-			if (this.displayedFeature == feature) {
-			    let text = this.getFeatureText(layer, feature);
-                            this.showText(text);
-                            this.dateFeatureOver(feature);
-			}
-                    }
-                    this.pendingDisplayTextTimeout = setTimeout(callback, 500);
-                }
-            }
-        }
-    },
 
 
     unhighlightFeature:function(feature) {
@@ -1355,6 +1300,62 @@ RepositoryMap.prototype = {
 	    this.highlightFeature = null;
 	}
     },
+    
+    handleFeatureover: function(feature, skipText,extraStyle) {
+        if (this.selectedFeature)  return;
+	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
+	    let location = feature.location;
+	    if (location) {
+		if(this.highlightFeature != feature) {
+		    this.closeHighlightPopup();
+		    let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
+		    if (!Utils.stringDefined(text))  {text = feature.text;}
+		    if (Utils.stringDefined(text)) {
+			let projPoint = this.transformLLPoint(location);
+			this.highlightPopup = new OpenLayers.Popup("popup",
+								   projPoint,
+								   feature.highlightSize,
+								   text,
+								   false);
+			this.highlightPopup.backgroundColor=feature.highlightBackgroundColor??this.highlightBackgroundColor??"#fffeec";
+			this.highlightPopup.autoSize=(feature.highlightSize==null);
+			this.highlightPopup.keepInMap=true;
+			this.highlightPopup.padding=0;
+			this.addPopup(this.highlightPopup);
+		    }
+		}
+	    }
+	}
+        let layer = feature.layer;
+        if (layer && !(layer.isMapLayer === true) && !(layer.handleFeatureOver === true)) {
+            if (!skipText && feature.text) {
+                this.showFeatureText(feature);
+            }
+            return;
+        }
+	if (layer.canSelect === false || layer.noHighlight) return;
+	if(feature.style==null) feature.hadNullStyle=true;
+        if (!feature.isSelected) {
+	    this.highlightFeature(feature,extraStyle);
+            if (this.params.displayDiv) {
+                this.displayedFeature = feature;
+                if (!skipText) {
+		    if(this.pendingDisplayTextTimeout) {
+			clearTimeout(this.pendingDisplayTextTimeout);
+		    }
+                    let callback = () =>{
+			if (this.displayedFeature == feature) {
+			    let text = this.getFeatureText(layer, feature);
+                            this.showText(text);
+                            this.dateFeatureOver(feature);
+			}
+                    }
+                    this.pendingDisplayTextTimeout = setTimeout(callback, 500);
+                }
+            }
+        }
+    },
+
     handleFeatureout: function(feature, skipText) {
         if(this.displayedFeature==feature) {
 	    this.displayedFeature=null;
@@ -1365,7 +1366,7 @@ RepositoryMap.prototype = {
 
 	this.closeHighlightPopup();
         let layer = feature.layer;
-        if (layer && !(layer.isMapLayer === true)) {
+        if (layer && !(layer.isMapLayer === true) && !(layer.handleFeatureOver === true)) {
             if (!skipText) {
                 if (feature.text && !this.fixedText) {
                     this.hideFeatureText(feature);
