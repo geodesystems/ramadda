@@ -600,13 +600,21 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
+    public void loadEditor(Request request, String url,StringBuilder sb) throws Exception  {
+	loadEditor(request,url,"Image",-1,sb);
+    }
+
+
     public void loadEditor(Request request, Entry entry,int versions,StringBuilder sb) throws Exception  {
-	String url = "null";
-	String name = "null";
-	if(entry!=null) {
-	    url = HU.quote(getImageUrl(request, entry, true));
-	    name = HU.quote(entry.getName());
-	}
+	loadEditor(request,getImageUrl(request, entry, true),
+		   entry.getName(),versions, sb);
+    }
+
+    public void loadEditor(Request request, String url, String name,int versions,StringBuilder sb) throws Exception  {
+	if(stringDefined(url)) url = HU.quote(url);
+	else url = "null";
+	if(stringDefined(name)) name = HU.quote(name);
+	else url = "null";
         String template =
             repository.getResource(
                 "/org/ramadda/repository/resources/web/imageeditor.html");

@@ -5757,7 +5757,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             (ImageOutputHandler) getOutputHandler(
 						  ImageOutputHandler.OUTPUT_PLAYER);
 
-	imageOutputHandler.loadEditor(request, null,-1,sb);
+	imageOutputHandler.loadEditor(request, request.getString(ARG_URL,null),sb);
         getPageHandler().sectionClose(request, sb);
         return new Result("Image Editor", sb);
     }

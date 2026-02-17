@@ -15,7 +15,7 @@ function RamaddaImageEditor(imageUrl, imageName, numberOfVersions) {
     if(imageUrl) {
         args.includeUI.loadImage =  {
             path: this.imageUrl,
-            name: this.imageName,
+            name: this.imageName??'Image',
         };
     }
 
