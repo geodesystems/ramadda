@@ -69,6 +69,30 @@ go.
 
 
 
+<faqitem cat="Administration" id="debugdb" q="How do I debug the database connections" >
+If you are having problems with database connections you can turn on a debug connections
+property in your repository.properties file:
+<p>
+<pre>
+ramadda.database.debugconnections=true
+</pre>
+This will cause RAMADDA to track information about where database connections are being
+opened from.
+When this is enabled the connection information and
+the Java stack trace can be accessed through the URL:
+<br>
+/repository/debugconnections
+<p>
+Note: Once your issue is resolved you should turn off this flag as it does cause some performance
+overhead.
+<p>
+Also note: No admin access control is applied to this URL end point so anyone can access this
+information. No private information is shown other than the internal connection information and the
+Java stack trace.
+</faqitem>
+
+
+
 <faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >
 For security reasons you can configure what IP addresses users are allowed to login from.
 In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
