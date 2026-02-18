@@ -6225,7 +6225,7 @@ MapGlyph.prototype = {
 	return this.attrs.visibleLevelRange;
     },
 
-    setVisible:function(visible,callCheck,highlighted,skipChildren) {
+    setVisible:function(visible,callCheck,highlighted,skipChildren,skipParent) {
 	if(this.isZoom()) {
 	    this.panMapTo(true);
 	    return;
@@ -6278,6 +6278,18 @@ MapGlyph.prototype = {
 	    }
 	}
 	this.checkDataIconMenu();	
+
+
+	let parent = this.getParentGlyph();
+	if(!skipParent && parent && parent.getProperty(PROP_LAYERS_ONE_VISIBLE,false)) {
+	    parent.getChildren().forEach(child=>{
+		if(child==this) return;
+		child.setVisible(false,callCheck,highlighted,skipChildren,true);
+	    });
+	}
+					 
+
+
     },
     getGlyphProperty:function(prop,dflt) {
 	let key = this.getId()+'.' +prop;
