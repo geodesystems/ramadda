@@ -9,7 +9,6 @@ index.html
 >>extendededit.html
 >>extendededitjs.html
 >>access.html
->>importer.html
 #>>entrydocs.html
 >faq.html
 
@@ -25,6 +24,9 @@ index.html
 >>dataingest.html
 >>entryxml.html
 >>harvesters.html
+>>import.html
+>>htmlimporter.html
+>>csvimporter.html
 >>localfileview.html
 >>virtualgroup.html
 >>s3.html
