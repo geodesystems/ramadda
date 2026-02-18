@@ -55,7 +55,7 @@ function RepositoryMap(mapId, params) {
 	layerFillColor:"#ccc",
 	layerFillOpacity:0.3,	
 
-	highlightStrokeColor:"blue",
+	highlightStrokeColor:"red",
 	highlightFillColor:"match",	
 	highlightStrokeWidth:2,
 	highlightFillOpacity:0.5,
@@ -1239,16 +1239,35 @@ RepositoryMap.prototype = {
 	}
     },
     highlightFeature:function(feature,highlightStyle) {
-	if(feature.style && feature.style.display==DISPLAY_NONE) return;
 	let fs = feature.style;
-	if(!feature.originalStyle && feature.style) {
-            feature.originalStyle = $.extend({},feature.style);
+	if(fs && fs.display==DISPLAY_NONE) return;
+	if(!feature.originalStyle && fs) {
+            feature.originalStyle = $.extend({},fs);
 	}
-	MapUtils.setFeatureStyle(feature,null);
+//	MapUtils.setFeatureStyle(feature,null);
 	let layer = feature.layer;
 	let hadStrokeWidth = highlightStyle&&Utils.isDefined(highlightStyle.strokeWidth);
 	let hadFillColor = highlightStyle&&Utils.isDefined(highlightStyle.fillColor);	
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
+	if(!fs) {
+	    console.dir(feature);
+	}
+
+	if(fs && fs.label) {
+	    ['label',
+	     'fontColor','fontSize','fontFamily',
+	     'fontWeight',
+	     'fontStyle',
+	     'labelAlign',
+	     'labelXOffset',
+	     'labelYOffset',
+	     'labelOutlineColor',
+	     'labelOutlineWidth'].forEach(a=>{
+		 if(fs[a]) highlight[a] = fs[a];
+	     });
+	    highlight.fontWeight='bold';
+	}
+
 
 	if(!hadFillColor && highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
 	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4)??highlight.fillColor;
@@ -1276,6 +1295,7 @@ RepositoryMap.prototype = {
 	    highlight.fillOpacity=1;
 	}	    
 
+
 	if(!highlight.pointRadius) {
 	    let pointRadius = 6;
 	    let scale=1.4;
@@ -1286,6 +1306,10 @@ RepositoryMap.prototype = {
 	    }
 	    highlight.pointRadius=pointRadius;
 	}
+	if(highlight.externalGraphic) {
+	    highlight.fillOpacity=1
+	}
+
 
 	this.drawFeature(feature.layer,feature, highlight);
     },
@@ -1302,6 +1326,16 @@ RepositoryMap.prototype = {
     },
     
     handleFeatureover: function(feature, skipText,extraStyle) {
+/*
+	let now  = new Date();
+	if(feature.featureOverTime && (now.getTime() - feature.featureOverTime)<1000) {
+//	    console.log('feature over skip',feature.id,(now.getTime() - feature.featureOverTime));
+//	    return;
+	}
+	feature.featureOverTime = now.getTime();
+	let featureOverTime = feature.feature
+	*/
+
         if (this.selectedFeature)  return;
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    let location = feature.location;
@@ -1461,6 +1495,7 @@ RepositoryMap.prototype = {
 	    pointRadius: fstyle.highlightPointRadius??this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
+
 	if(fstyle.label) {
 	    ['label','labelAlign','labelOutlineColor','labelOutlineWidth',
 	     'labelSelect','labelXOffset','labelYOffset',
