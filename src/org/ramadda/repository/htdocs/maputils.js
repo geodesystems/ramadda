@@ -758,28 +758,46 @@ var map_default_layer = 'osm';
 new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'],
-	     {
-		 category:'Streets',
-		 attribution:'<a target=_help href=https://www.openstreetmap.org/copyright>© OpenStreetMap</a>'
+	     {category:'Streets',
+	      attribution:'<a target=_help href=https://www.openstreetmap.org/copyright>© OpenStreetMap</a>'
 	     });
 
 
+new MapLayer('google.roads','Google Maps - Roads',
+	     'https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}',
+	     {attribution:'Map courtesy of Google'});
 
-new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}',{attribution:'Map courtesy of Google'});
-new MapLayer('esri.street','ESRI Streets','https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}',
+new MapLayer('esri.street','ESRI Streets',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}',
 	     {attribution:'Map courtesy of ESRI'});
 
 
 
-
-new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',
+new MapLayer('esri.topo','ESRI Topo',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',
 	     {isForMap:true,attribution:'Map courtesy of ESRI',
 	      category:'Topos'});
 
-new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png',
+new MapLayer('opentopo','OpenTopo',
+	     '//a.tile.opentopomap.org/${z}/${x}/${y}.png',
 	    {attribution:'Map courtesy of OpenTopo'});
 
-new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+
+new MapLayer('usgs.topo','USGS Topo',
+	     'https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'USGS - The National Map'});
+
+new MapLayer('esri.worldtopomap','ESRI World Topo',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ, TomTom, I'});
+
+new MapLayer('usfs','Forest Service',
+	     'https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of Caltopo'});
+
+new MapLayer('caltopo.mb_topo','MapBuilder Topo',
+	     'https://caltopo.com/tile/mb_topo/${z}/${x}/${y}@2x.png',
+	     {attribution:'Map courtesy of Caltopo'});
 
 new MapLayer('caltopo.scannedusgs','Scanned USGS',
 	     'https://caltopo.com/tile/t/${z}/${x}/${y}@2x.png?ctdarkmode=false',
@@ -787,98 +805,137 @@ new MapLayer('caltopo.scannedusgs','Scanned USGS',
 
 
 
-
-//new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
-
-new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
-
-new MapLayer('esri.worldtopomap','ESRI World Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ, TomTom, I'});
-
-
-
 new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}',
 	     {category:'Imagery',
 	      attribution:'Map courtesy of Google'});
-new MapLayer('google.satellite','Google Maps - Satellite','https://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}',{attribution:'Map courtesy of Google'});
+
+new MapLayer('google.satellite','Google Maps - Satellite',
+	     'https://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}',
+	     {attribution:'Map courtesy of Google'});
 
 new MapLayer('naip','NAIP - USDA',
-	     'https://gis.apfo.usda.gov/arcgis/rest/services/NAIP/USDA_CONUS_PRIME/ImageServer/tile/${z}/${y}/${x}?blankTile=false',{attribution:'Map courtesy of USDA'});
+	     'https://gis.apfo.usda.gov/arcgis/rest/services/NAIP/USDA_CONUS_PRIME/ImageServer/tile/${z}/${y}/${x}?blankTile=false',
+	     {attribution:'Map courtesy of USDA'});
 
 new MapLayer('naip.esri','NAIP - ESRI',
-	     'https://naip.maptiles.arcgis.com/arcgis/rest/services/NAIP/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
+	     'https://naip.maptiles.arcgis.com/arcgis/rest/services/NAIP/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'Map courtesy of ESRI'});
 
 new MapLayer('naip.caltopo','NAIP - CalTopo',
-	     'https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+	     'https://caltopo.com/tile/n/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of Caltopo'});
 
-new MapLayer('esri.worldimagery','ESRI World Imagery','https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Source: Esri, i-cubed, USDA, USG'});
+new MapLayer('esri.worldimagery','ESRI World Imagery',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- Source: Esri, i-cubed, USDA, USG'});
 
-new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+new MapLayer('usgs.imagery','USGS Imagery',
+	     'https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'USGS - The National Map'});
 
 new MapLayer('usgs.imagery.topo','USGS Imagery-Topo',
-	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'USGS - The National Map'});
 
 
 new MapLayer('usgs.hydro','USGS Hydro',
-	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'USGS - The National Map'});
 
 
-
-new MapLayer('google.terrain','Google Maps - Terrain','https://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}',
+new MapLayer('google.terrain','Google Maps - Terrain',
+	     'https://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}',
 	     {category:'Terrain',
-attribution:'Map courtesy of Google'});
-new MapLayer('esri.terrain','ESRI Terrain','https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
-new MapLayer('esri.worldphysical','ESRI World Physical','https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Source: US National Park Service'});
+	      attribution:'Map courtesy of Google'});
 
-new MapLayer('esri.natgeoworldmap','ESRI NatGeo World Map','https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- National Geographic, Esri, DeLor'});
-
-
-new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}',
+new MapLayer('esri.terrain','ESRI Terrain',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}',
 	     {attribution:'Map courtesy of ESRI'});
-new MapLayer('shadedrelief','Shaded Relief','https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
-new MapLayer('world.hillshade','World Hillshade','https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+new MapLayer('esri.worldphysical','ESRI World Physical',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- Source: US National Park Service'});
 
-new MapLayer('esri.lightgray','ESRI Light Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
-new MapLayer('esri.darkgray','ESRI Dark Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
+new MapLayer('esri.natgeoworldmap','ESRI NatGeo World Map',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- National Geographic, Esri, DeLorme'});
 
+new MapLayer('esri.shaded','ESRI Shaded Relief',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'Map courtesy of ESRI'});
 
-new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
-new MapLayer('esri.worldgraycanvas','ESRI World Gray','https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ'});
-new MapLayer('cartodb.positron','CartoDB Positron','https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
-attribution:'(C) OpenStreetMap contributors (C) CARTO'});
+new MapLayer('shadedrelief','Shaded Relief',
+	     'https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of Caltopo'});
 
-new MapLayer('cartodb.voyager','CartoDB Voyager','https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',{attribution:'(C) OpenStreetMap contributors (C) CARTO'});
+new MapLayer('world.hillshade','World Hillshade',
+	     'https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'USGS - The National Map'});
 
+new MapLayer('esri.lightgray','ESRI Light Gray',
+	     'https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'Map courtesy of ESRI'});
 
+new MapLayer('esri.darkgray','ESRI Dark Gray',
+	     'https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}',
+	     {attribution:'Map courtesy of ESRI'});
 
+new MapLayer('cartolight','Carto-Light',
+	     'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of fastly.net'});
+
+new MapLayer('esri.worldgraycanvas','ESRI World Gray',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ'});
+
+new MapLayer('cartodb.positron','CartoDB Positron',
+	     'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+	     {attribution:'(C) OpenStreetMap contributors (C) CARTO'});
+
+new MapLayer('cartodb.voyager','CartoDB Voyager',
+	     'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+	     {attribution:'(C) OpenStreetMap contributors (C) CARTO'});
 
 new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',
 	     {attribution:'Map courtesy of Caltopo',
 	      isOverlay:true,
 	      legend:RamaddaUtil.getUrl('/images/publiclands.png')});
 
-new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}'],
+new MapLayer('federallands','Federal Lands',
+	     'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}',
 	     {legend:RamaddaUtil.getUrl('/images/federallands.png'),
 	      isOverlay:true,
 	      attribution:'Map courtesy of BLM'});
 
 new MapLayer('seafloor','Seafloor',
-	     ['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}'],
+	     'https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}',
 	     {category:'Earth and Space'});
 
-new MapLayer('esri.oceanbasemap','ESRI Ocean Basemap','https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles (C) Esri -- Sources: GEBCO, NOAA, CHS, OSU,'});
+new MapLayer('esri.oceanbasemap','ESRI Ocean Basemap',
+	     'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
+	     {attribution:'Tiles (C) Esri -- Sources: GEBCO, NOAA, CHS, OSU,'});
 
 new MapLayer('historic','Caltopo Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',
-	     {isForMap:false,attribution:'Map courtesy of Caltopo',isOverlay:true});
+	     {isForMap:false,
+	      isOverlay:true,
+	      attribution:'Map courtesy of Caltopo'});
 
 new MapLayer('strava.all','Strava - All','https://heatmap-external-a.strava.com/tiles/all/hot/{z}/{x}/{y}.png',
-	     {isForMap:false,isOverlay:true,attribution:'Map tiles by <a href="https://labs.strava.com/heat'});
+	     {isForMap:false,
+	      isOverlay:true,
+	      attribution:'Map tiles by <a href="https://labs.strava.com/heat>Strava</a>'});
 
+new MapLayer('nasa.earthatnight','Earth at Night',
+	     'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default//GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',
+	     {attribution:'Imagery provided by services from the NASA Global Image'});
 
-new MapLayer('nasa.earthatnight','Earth at Night','https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default//GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',{attribution:'Imagery provided by services from the Global Image'});
+new MapLayer('moon','Moon',
+	     'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of fastly.net'});
 
-new MapLayer('moon','Moon','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/${z}/${x}/${y}.png');
-new MapLayer('mars','Mars','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/all/${z}/${x}/${y}.png');
+new MapLayer('mars','Mars',
+	     'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/all/${z}/${x}/${y}.png',
+	     {attribution:'Map courtesy of fastly.net'});
 
 new MapLayer('lightblue','','',{category:'Color Backgrounds',type:'simple'});
 new MapLayer('blue','','',{type:'simple'});
