@@ -867,11 +867,13 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             StringBuilder sb      = new StringBuilder();
             String        inputId = formInfo.getId() + "_" + arg;
-            sb.append(image);
-	    sb.append(HU.br());
-	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_LEFT, "true",false,"Rotate left"));
-	    sb.append(HU.SPACE2);
-	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_RIGHT, "true",false,"Rotate right"));
+	    if(Utils.stringDefined(image)) {
+		sb.append(image);
+		sb.append(HU.br());
+		sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_LEFT, "true",false,"Rotate left"));
+		sb.append(HU.SPACE2);
+		sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_RIGHT, "true",false,"Rotate right"));
+	    }
 
 	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
 	    if(Utils.stringDefined(image)) sb.append(space);
