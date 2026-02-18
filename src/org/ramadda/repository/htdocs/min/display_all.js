@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 17 08:34:10 MST 2026";
+var build_date="RAMADDA build date: Tue Feb 17 20:16:27 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -48767,8 +48767,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
 		let predefined =  HU.select('',
 					    [ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
+
 		let html = 'Pre-defined layer: ' + predefined;
 		html+=wmtHtml;
+		setTimeout(()=>{
+		    HU.makeSelectTagPopup('#'+this.domId('predefined'),{after:true,icon:true,single:true});
+		},1);
 
 
 		let buttons = HU.buttons([
@@ -50561,6 +50565,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.select("",[ATTR_ID,domId],opts,v);			
 			} else if(prop=='fillPattern') {
 			    widget = this.getFillPatternSelect(domId,v);
+			    setTimeout(()=>{
+				HU.makeSelectTagPopup('#'+domId,{after:true,icon:true,single:true});
+			    },1);
 			} else if(prop.indexOf('Radius')>=0 ||
 				  prop.indexOf("Width")>=0 ||
 				  prop.indexOf("Padding")>=0 ||
@@ -53561,8 +53568,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    let text=HU.div([ATTR_CLASS,'imdv-popup-header'],
 			    mapGlyph.getLabel({})??'');
+	    let buttons = this.makeGlyphButtons(mapGlyph,true);
 	    let entryLink = mapGlyph.getEntryLink('View entry');
-	    if(entryLink) text=HU.leftRightTable(text,entryLink);
+//	    if(entryLink) text=HU.leftRightTable(text,buttons+entryLink);
+	    text=HU.leftRightTable(text,buttons+(entryLink??''));	    
 	    //text+=HU.div([],entryLink);
 	    text+= HU.div([],mapGlyph.getPopupContents()??'');
 	    let bg =  mapGlyph.getLegendDiv().css(CSS_BACKGROUND);
@@ -53607,7 +53616,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
  		if(debug)console.log('\tno text')
 		return false;
 	    }
-	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
+//	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
 	    doPopup(text);
 	    return false;
 	},
