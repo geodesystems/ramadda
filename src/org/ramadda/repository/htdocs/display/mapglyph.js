@@ -2869,6 +2869,14 @@ MapGlyph.prototype = {
 	return true;
     },
     
+    initGlyphButtons: function() {
+	let _this = this;
+	if(this.showFeatureTableId) {
+	    jqid(this.showFeatureTableId).click(function() {
+		_this.showFeaturesTable($(this));
+	    });
+	}
+    },
     initLegend:function() {
 	let _this = this;
 	if(this.canHaveChildren()) {
@@ -2968,12 +2976,8 @@ MapGlyph.prototype = {
 
 	}
 
-	if(this.showFeatureTableId) {
-	    jqid(this.showFeatureTableId).click(function() {
-		_this.showFeaturesTable($(this));
-	    });
-	}
 
+	this.initGlyphButtons();
 	let setRotation = (event,ui) =>{
 	    let rotation = ui.value;
 	    this.jq('image_rotation_value').val(rotation);

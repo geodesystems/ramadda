@@ -6102,15 +6102,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph==null) return false;
 	    let debug = false;
 	    mapGlyph.handleClick(xy,event);
-
-
-	    if(mapGlyph.isMap()) {
-		if(event && event.event && event.feature && event.event.altKey) {
-		    //		    return false;
-		}
- 		if(debug)console.log('\tis map');
-		return true;
-	    }
 	    if(this.command==ID_EDIT) {
  		if(debug)console.log('\tdoing edit');
 		this.doEdit(mapGlyph);
@@ -6121,6 +6112,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
  		if(debug)console.log('\tdoing command:' + this.command);
 		return false;
 	    }
+	    if(mapGlyph.isMap()) {
+ 		if(debug)console.log('\tis map');
+//		return true;
+	    }
+
+
 	    let showPopup = (html,props)=>{
 		this.getMap().lastClickTime  = new Date().getTime();
 		let popupContentsId = HU.getUniqueId(TAG_DIV);
@@ -6140,6 +6137,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.getMap().getMap().addPopup(popup);
 		jqid(popupContentsId).html(html);
 		this.initGlyphButtons(jqid(popupContentsId));
+		mapGlyph.initGlyphButtons();
+
 		//For some reason the links don't work in the popup
 		//so we do this and handle the clicks here
 		jqid(popupContentsId).find('a').each(function() {
@@ -6195,6 +6194,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    heading=HU.div([ATTR_CLASS,'imdv-popup-heading'],
 			   HU.leftRightTable(heading,buttons,null,null,{valign:ALIGN_BOTTOM}));
 	    let text= mapGlyph.getPopupContents()??'';
+
+
 	    if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith('<wiki>')) {
  		if(debug)console.log('\twikifying')
 		let wiki;
@@ -6236,6 +6237,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
+
+	    if(mapGlyph.isMap() && event.feature) {
+		let layer = event.feature.layer;
+		text = this.getMap().getFeatureText(layer, event.feature);
+	    }
+	    
+
+
 	    text= HU.div([],text);
 	    doPopup(heading+text);
 	    return false;
