@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.database;
 
-
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.ramadda.repository.*;
@@ -17,7 +16,6 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.DbObject;
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Counter;
@@ -26,7 +24,6 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlEncoder;
@@ -46,7 +43,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -56,97 +52,46 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class DatabaseManager extends RepositoryManager implements SqlUtil
 								  .ConnectionManager {
 
     public static final int NOMAX= -1;
 
-
-
     //Try for something that won't ever be in a string
 
-    /** _more_ */
     public static final String COMPRESS_PREFIX = "___gzip:";
-
-    /** _more_ */
     public static final String PROP_DB_DRIVER = "ramadda.db.${db}.driver";
-
-    /** _more_ */
     public static final String PROP_DB_PASSWORD = "ramadda.db.${db}.password";
-
-    /** _more_ */
     public static final String PROP_DB_SCRIPT = "ramadda.db.script";
-
-    /** _more_ */
     public static final String PROP_DB_URL = "ramadda.db.${db}.url";
-
-    /** _more_ */
     public static final String PROP_DB_USER = "ramadda.db.${db}.user";
-
-
-    /** _more_ */
     public static int openCnt = 0;
-
     public static int getConnectCnt=0;
-
     public static boolean debugConnections=false;
     public static boolean debug = false;
-
-
-    /** _more_ */
     private static final DbObject dummyToCompile = null;
 
-    /** _more_ */
     //NOTE: When we had a non-zero timeout we got a memory leak
     private static final int TIMEOUT = 0;
 
-    /** _more_ */
     private static final int DUMPTAG_TABLE = 1;
-
-    /** _more_ */
     private static final int DUMPTAG_ROW = 2;
-
-    /** _more_ */
     private static final int DUMPTAG_END = 3;
-
-
-    /** _more_ */
     private String db;
-
-    /** _more_ */
     private String connectionURL;
-
-    /** _more_ */
     private BasicDataSource dataSource;
 
-    /** _more_ */
     private Hashtable<String, BasicDataSource> externalDataSources =
         new Hashtable<String, BasicDataSource>();
 
-
     private final Object CONNECTION_MUTEX = new Object();
 
-    /** _more_ */
     private List<ConnectionInfo> connectionInfos =
         new ArrayList<ConnectionInfo>();
 
-    /** _more_ */
     private boolean haveInitialized = false;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public DatabaseManager(Repository repository) {
         super(repository);
         db = (String) getRepository().getProperty(PROP_DB);
@@ -157,11 +102,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         db = db.trim();
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void init() throws Exception {
         if (haveInitialized) {
             return;
@@ -185,7 +125,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    closeAndReleaseConnection(statement);
         }
 
-
         try {
             //To generate the Tables.java uncomment this and
             //run RAMADDA with a new install (e.g. with -Dramadda_home=tmp
@@ -197,12 +136,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+	debugConnections = getRepository().getProperty("ramadda.database.debugconnections", false);
+    }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+
+
     public void reInitialize() throws Exception {
         if (dataSource != null) {
             BasicDataSource bds = (BasicDataSource) dataSource;
@@ -214,8 +155,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             dataSource = doMakeDataSource();
         }
     }
-
-
 
     public void applyUpdates() {
 	if(true) return;
@@ -260,12 +199,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void initComplete() throws Exception {
         //If nothing  in dummy table then add an entry
         BasicDataSource bds   = (BasicDataSource) dataSource;
@@ -283,16 +216,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         */
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private BasicDataSource doMakeDataSource() throws Exception {
         try {
             String userName = (String) getRepository().getProperty(
@@ -300,11 +223,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             String password = (String) getRepository().getProperty(
 								   PROP_DB_PASSWORD.replace("${db}", db));
 
-
             connectionURL = getStorageManager().localizePath(
 							     (String) getRepository().getProperty(
 												  PROP_DB_URL.replace("${db}", db)));
-
 
             //ramadda.db.derby.url=jdbc:derby:${storagedir}/derby/${db.name};create=true;
             connectionURL = connectionURL.replace("%repositorydir%",
@@ -328,16 +249,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param connectionUrl _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String loadDriver(String connectionUrl) throws Exception {
         String dbType = SqlUtil.getDbType(connectionUrl);
 
@@ -350,24 +261,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return driverClassName;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param connectionUrl _more_
-     * @param userName _more_
-     * @param password _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public BasicDataSource makeDataSource(String connectionUrl,
                                           String userName, String password)
 	throws Exception {
         String          driverClassName = loadDriver(connectionUrl);
         BasicDataSource ds              = new BasicDataSource();
-
 
 	//ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 100));
         //ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE,100));
@@ -388,20 +286,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return ds;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param prefix _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Connection getExternalConnection(String prefix, String id)
 	throws Exception {
         String full = prefix + "." + id;
@@ -420,7 +304,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             return null;
         }
 
-
         //Load the jdbc driver class
         String     driverClassName = loadDriver(connectionUrl);
 
@@ -431,7 +314,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (password != null) {
             connectionProps.put("password", password);
         }
-
 
         Connection conn = DriverManager.getConnection(connectionUrl,
 						      connectionProps);
@@ -455,15 +337,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return ds.getConnection();
     }
 
-    /**
-     * _more_
-     *
-     * @param dbId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public BasicDataSource getExternalDataSource(String dbId)
 	throws Exception {
 
@@ -489,24 +362,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return ds;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private List<ConnectionInfo> getConnectionInfos() {
         synchronized (connectionInfos) {
             return new ArrayList<ConnectionInfo>(connectionInfos);
         }
     }
-
-
-
-
-
 
     public String getStatusMessage() {
 	BasicDataSource bds    = (BasicDataSource) dataSource;
@@ -517,14 +377,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param dbSB _more_
-     *
-     * @throws Exception _more_
-     */
     public void addStatistics(Request request, StringBuffer dbSB,boolean decorated)
 	throws Exception {
 	if(dataSource==null) {
@@ -570,36 +422,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param query _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public PreparedStatement getPreparedStatement(String query)
 	throws Exception {
         return getConnection().prepareStatement(query);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param colId _more_
-     * @param id _more_
-     * @param names _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     public void update(String table, String colId, Object id, String[] names,
                        Object[] values)
 	throws Exception {
@@ -625,18 +452,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         closeAndReleaseConnection(statement);
     }
 
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param clause _more_
-     * @param names _more_
-     * @param values _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public int update(String table, Clause clause, String[] names,
                       Object[] values)
 	throws Exception {
@@ -648,29 +463,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement createStatement() throws Exception {
         return getConnection().createStatement();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param clause _more_
-     *
-     * @throws Exception _more_
-     */
     public void delete(String table, Clause clause) throws Exception {
         Connection connection = getConnection();
         try {
@@ -683,7 +479,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void delete(Connection connection, String table, Clause clause) throws Exception {
 	SqlUtil.delete(connection, table, clause);
     }
-
 
     @Override
     public void shutdown() throws Exception {
@@ -701,13 +496,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         super.shutdown();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean hasConnection() throws Exception {
         Connection connection = getConnection();
         boolean    connected  = connection != null;
@@ -716,18 +504,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return connected;
     }
 
-
     boolean havePrinted = false;
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Connection getConnection() throws Exception {
         try {
 	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true).replace("\n"," "));
@@ -741,14 +519,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    try {
 		connection = tmpDataSource.getConnection();
 		if(debugConnections) {
+
+		    System.err.println("getConnection");
 		    synchronized(connectionInfos) {connectionInfos.add(new ConnectionInfo(connection,""));}
 		}
 		synchronized(CONNECTION_MUTEX) {
 		    getConnectCnt++;
 		    openCnt++;
 		    if(debugConnections) {
-			System.err.print("\r                                            ");
-			System.err.print("\rget connection:" + getConnectCnt +"  #open:" + openCnt);
+			//			System.err.print("\r                                            ");
+			//			System.err.print("\rget connection:" + getConnectCnt +"  #open:" + openCnt);
 		    }
 		}
 
@@ -767,26 +547,45 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-    /**
-     * _more_
-     */
-    public void printIt() {
-        System.err.println("active:" + dataSource.getNumActive());
-        System.err.println("idle:" + dataSource.getNumIdle());
-        System.err.println("connections:" + getConnectionInfos().size());
-        for (ConnectionInfo info : getConnectionInfos()) {
-	    //	    if(info.where.indexOf("reateEntryFromDatabase")>=0) continue;
-            System.out.println("*******************");
-            System.out.println(info);
-        }
+    public Result processDebugConnections(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder("");
+	if(debugConnections) {
+	    printIt(sb);
+	    //	    System.err.println(sb);
+	}
+        Result result = new Result("", sb,MIME_TEXT);
+        result.setShouldDecorate(false);
+        return result;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     */
+
+    private void printIt() {
+	StringBuilder sb = new StringBuilder();
+	printIt(sb);
+        System.err.println(sb);
+    }
+
+
+    private void printIt(StringBuilder sb) {
+	sb.append("Database:\n");
+        sb.append("active:" + dataSource.getNumActive()+"\n");
+        sb.append("idle:" + dataSource.getNumIdle()+"\n");
+        sb.append("connections:" + getConnectionInfos().size());
+        for (ConnectionInfo info : getConnectionInfos()) {
+	    //	    if(info.where.indexOf("reateEntryFromDatabase")>=0) continue;
+            sb.append("*******************"+"\n");
+            sb.append(info+"\n");
+        }
+	sb.append("\n\nStack\n");
+	sb.append(LogUtil.getStackDump(false));
+
+
+
+    }
+
+
+
     public void closeConnection(Connection connection) {
         try {
 	    synchronized(CONNECTION_MUTEX) {
@@ -812,19 +611,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param stmt _more_
-     */
     public void initSelectStatement(Statement stmt) {}
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     */
     public void closeStatement(Statement statement) {
         if (statement == null) {
             return;
@@ -834,28 +622,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         } catch (Exception ignore) {}
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     *
-     * @throws SQLException _more_
-     */
     public void closeAndReleaseConnection(Statement statement)
 	throws SQLException {
         closeAndReleaseConnection(statement, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param debug _more_
-     *
-     * @throws SQLException _more_
-     */
     public void closeAndReleaseConnection(Statement statement, boolean debug)
 	throws SQLException {
         if (statement == null) {
@@ -890,17 +661,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public int getCount(String table, Clause clause) throws Exception {
         Statement statement = select("count(*)", table, clause);
         ResultSet results   = statement.getResultSet();
@@ -915,29 +675,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return result;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     */
     public void addInfo(StringBuffer sb) {
         sb.append(HU.formEntry("Database:", db));
         sb.append(HU.formEntry("JDBC URL:", connectionURL));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param os _more_
-     * @param all _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeDatabaseCopyxxx(OutputStream os, boolean all)
 	throws Exception {
 
@@ -963,7 +705,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     continue;
                 }
 
-
                 String tn = tableName.toLowerCase();
                 if ( !all) {
                     if (tn.equals(Tables.GLOBALS.NAME)
@@ -974,7 +715,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                         continue;
                     }
                 }
-
 
                 ResultSet cols = dbmd.getColumns(null, null, tableName, null);
 
@@ -1074,19 +814,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             closeConnection(connection);
         }
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dos _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String readString(DataInputStream dos) throws Exception {
         int length = dos.readInt();
         if (length < 0) {
@@ -1098,15 +827,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return new String(bytes);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dos _more_
-     * @param i _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeInteger(DataOutputStream dos, Integer i)
 	throws Exception {
         if (i == null) {
@@ -1117,26 +837,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param dos _more_
-     * @param i _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeLong(DataOutputStream dos, long i) throws Exception {
         dos.writeLong(i);
     }
 
-    /**
-     * _more_
-     *
-     * @param dos _more_
-     * @param i _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeDouble(DataOutputStream dos, Double i)
 	throws Exception {
         if (i == null) {
@@ -1146,14 +850,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param dos _more_
-     * @param s _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeString(DataOutputStream dos, String s)
 	throws Exception {
         if (s == null) {
@@ -1164,15 +860,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param doDrop _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadRdbFile(String file, boolean doDrop) throws Exception {
 
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
@@ -1275,8 +962,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     System.err.println("rows:" + rows);
                 }
 
-
-
                 Object[] values = new Object[tableInfo.getColumns().size()];
                 int      colCnt = 0;
                 for (ColumnInfo columnInfo : tableInfo.getColumns()) {
@@ -1342,32 +1027,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         System.err.println("imported " + rows + " rows");
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void finishRdbLoad() throws Exception {
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             typeHandler.initAfterDatabaseImport();
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     * @param all _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<TableInfo> getTableInfos(Connection connection, boolean all)
 	throws Exception {
 
@@ -1375,15 +1042,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         ResultSet tables = dbmd.getTables(null, null, null,
                                           new String[] { "TABLE" });
 
-
         ResultSetMetaData rsmd = tables.getMetaData();
         for (int col = 1; col <= rsmd.getColumnCount(); col++) {
             //                System.err.println (rsmd.getColumnName(col));
         }
         List<TableInfo> tableInfos = new ArrayList<TableInfo>();
         HashSet<String> seen       = new HashSet<String>();
-
-
 
         while (tables.next()) {
             String tableName = tables.getString("TABLE_NAME");
@@ -1394,7 +1058,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 continue;
             }
 
-
             //Just in case
             if (seen.contains(tn)) {
                 System.err.println("Warning: duplicate table:" + tableName);
@@ -1402,7 +1065,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 continue;
             }
             seen.add(tn);
-
 
             boolean ok = true;
             for (TypeHandler typeHandler :
@@ -1434,8 +1096,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 					    indices.getString("COLUMN_NAME")));
 
             }
-
-
 
             ResultSet cols = dbmd.getColumns(null, null, tableName, null);
             rsmd = cols.getMetaData();
@@ -1480,17 +1140,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param os _more_
-     * @param all _more_
-     * @param actionId _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeDatabaseCopy(OutputStream os, boolean all,
                                  Object actionId)
 	throws Exception {
@@ -1505,7 +1154,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             List<TableInfo> tableInfos = getTableInfos(connection, false);
             String          xml        = encoder.toXml(tableInfos, false);
             writeString(dos, xml);
-
 
             int rowCnt = 0;
             System.err.println("Exporting database");
@@ -1591,46 +1239,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     *
-     * @return _more_
-     */
     public SqlUtil.Iterator getIterator(Statement statement) {
         return new Iterator(this, statement);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param sql _more_
-     *
-     * @throws Exception _more_
-     */
     public void executeAndClose(String sql) throws Exception {
         executeAndClose(sql, 10000000, 0);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param sql _more_
-     * @param max _more_
-     * @param timeout _more_
-     *
-     * @throws Exception _more_
-     */
     public void executeAndClose(String sql, int max, int timeout)
 	throws Exception {
         Connection connection = getConnection();
@@ -1642,36 +1258,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param sql _more_
-     * @param max _more_
-     * @param timeout _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement execute(String sql, int max, int timeout)
 	throws Exception {
         return execute(getConnection(), sql, max, timeout);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     * @param sql _more_
-     * @param max _more_
-     * @param timeout _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement execute(Connection connection, String sql, int max,
                              int timeout)
 	throws Exception {
@@ -1702,19 +1293,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return statement;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param oldTable _more_
-     * @param newTable _more_
-     * @param connection _more_
-     *
-     * @throws Exception _more_
-     */
     public void copyTable(String oldTable, String newTable,
                           Connection connection)
 	throws Exception {
@@ -1723,18 +1301,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         execute(connection, copySql, -1, -1);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param col _more_
-     * @param date _more_
-     *
-     * @throws Exception _more_
-     */
     public void setTimestamp(PreparedStatement statement, int col, Date date)
 	throws Exception {
 	date = DateHandler.checkDate(date);
@@ -1750,33 +1316,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getTimestamp(ResultSet results, int col) throws Exception {
         return getTimestamp(results, col, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param makeDflt If true then return a new Date if there are no results found
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getTimestamp(ResultSet results, int col, boolean makeDflt)
 	throws Exception {
 	synchronized(Repository.calendar) {
@@ -1794,18 +1337,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param makeDflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getTimestamp(ResultSet results, String col, boolean makeDflt)
 	throws Exception {
 	synchronized(Repository.calendar) {
@@ -1823,31 +1354,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param col _more_
-     * @param time _more_
-     *
-     * @throws Exception _more_
-     */
     public void setDate(PreparedStatement statement, int col, long time)
 	throws Exception {
         setDate(statement, col, DateHandler.checkDate(new Date(time)));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param col _more_
-     * @param date _more_
-     *
-     * @throws Exception _more_
-     */
     public void setDate(PreparedStatement statement, int col, Date date)
 	throws Exception {
         //        if (!db.equals(SqlUtil.DB_MYSQL)) {
@@ -1865,18 +1376,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, int col, Date dflt)
 	throws Exception {
         Date date = getDate(results, col, false);
@@ -1887,17 +1386,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return date;
     }
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, String col, Date dflt)
 	throws Exception {
         Date date = getDate(results, col, false);
@@ -1908,47 +1396,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return date;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, int col) throws Exception {
         return getDate(results, col, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, String col) throws Exception {
         return getDate(results, col, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param makeDflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, int col, boolean makeDflt)
 	throws Exception {
         //        if (!db.equals(SqlUtil.DB_MYSQL)) {
@@ -1968,18 +1423,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     * @param makeDflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Date getDate(ResultSet results, String col, boolean makeDflt)
 	throws Exception {
         //        if (!db.equals(SqlUtil.DB_MYSQL)) {
@@ -1999,30 +1442,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     public void setValues(PreparedStatement statement, Object[] values)
 	throws Exception {
         setValues(statement, values, 1);
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param values _more_
-     * @param startIdx _more_
-     *
-     * @throws Exception _more_
-     */
     public void setValues(PreparedStatement statement, Object[] values,
                           int startIdx)
 	throws Exception {
@@ -2063,15 +1487,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param insert _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     public void executeInsert(String insert, Object[] values)
 	throws Exception {
         List<Object[]> valueList = new ArrayList<Object[]>();
@@ -2079,15 +1494,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         executeInsert(insert, valueList);
     }
 
-
-
-    /**
-     *
-     * @param stmt _more_
-     * @param idx _more_
-     *
-     * @throws Exception _more_
-     */
     public void setNaN(PreparedStatement stmt, int idx) throws Exception {
         if (isDatabaseDerby()) {
             stmt.setNull(idx, Types.DOUBLE);
@@ -2096,14 +1502,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param insert _more_
-     * @param valueList _more_
-     *
-     * @throws Exception _more_
-     */
     public void executeInsert(String insert, List<Object[]> valueList)
 	throws Exception {
         PreparedStatement pstatement = getPreparedStatement(insert);
@@ -2118,24 +1516,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         closeAndReleaseConnection(pstatement);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean supportsRegexp() {
         return db.equals(SqlUtil.DB_MYSQL) || db.equals(SqlUtil.DB_POSTGRES);
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param pattern _more_
-     * @param doNot _more_
-     *
-     * @return _more_
-     */
     public Clause makeRegexpClause(String column, String pattern,
                                    final boolean doNot) {
         if (isDatabaseMysql()) {
@@ -2171,51 +1555,22 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDatabaseDerby() {
         return (db.equals(SqlUtil.DB_DERBY));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDatabaseMysql() {
         return (db.equals(SqlUtil.DB_MYSQL));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDatabaseH2() {
         return (db.equals(SqlUtil.DB_H2));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDatabasePostgres() {
         return (db.equals(SqlUtil.DB_POSTGRES));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param sql _more_
-     *
-     * @return _more_
-     */
     public String convertSql(String sql) {
         if (db.equals(SqlUtil.DB_MYSQL)) {
             sql = sql.replace("ramadda.double", "double");
@@ -2259,14 +1614,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return sql;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param col _more_
-     *
-     * @return _more_
-     */
     public String getExtractYear(String col) {
         if (db.equals(SqlUtil.DB_POSTGRES)) {
             return " extract (year from " + col + ") ";
@@ -2275,17 +1622,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param sql _more_
-     * @param ignoreErrors _more_
-     * @param printStatus _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadSql(String sql, boolean ignoreErrors, boolean printStatus)
 	throws Exception {
         Connection connection = getConnection();
@@ -2299,13 +1635,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private HashSet getFlags() {
         HashSet flags = new HashSet();
         flags.add(db);
@@ -2313,16 +1642,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return flags;
     }
 
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     * @param sql _more_
-     * @param ignoreErrors _more_
-     * @param printStatus _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadSql(Connection connection, String sql,
                         boolean ignoreErrors, boolean printStatus)
 	throws Exception {
@@ -2356,14 +1675,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public String escapeString(String value) {
         if (db.equals(SqlUtil.DB_MYSQL)) {
             value = value.replace("'", "\\'");
@@ -2374,26 +1685,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return value;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public String convertType(String type) {
         return convertType(type, -1);
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param size _more_
-     *
-     * @return _more_
-     */
     public String convertType(String type, int size) {
         if (type.equals("clob")) {
             if (db.equals(SqlUtil.DB_DERBY)) {
@@ -2420,15 +1715,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return type;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param skip _more_
-     * @param max _more_
-     *
-     * @return _more_
-     */
     public String getLimitString(int skip, int max) {
         if (skip < 0) {
             skip = 0;
@@ -2449,29 +1735,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean canDoSelectOffset() {
 	//All dbs can do skip now
 	return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param table _more_
-     * @param clause _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(String what, String table, Clause clause,
                             String extra)
 	throws Exception {
@@ -2479,42 +1747,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-
-    /**
-     * Class DbQueryInfo _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     */
     private static class DbQueryInfo {
-
-        /** _more_ */
         long time;
-
-        /** _more_ */
         String what;
-
-        /** _more_ */
         List tables;
-
-        /** _more_ */
         Clause clause;
-
-        /** _more_ */
         String extra;
-
-        /** _more_ */
         int max;
 
-        /**
-         * _more_
-         *
-         * @param what _more_
-         * @param tables _more_
-         * @param clause _more_
-         * @param extra _more_
-         * @param max _more_
-         */
         public DbQueryInfo(String what, List tables, Clause clause,
 			   String extra, int max) {
             time        = System.currentTimeMillis();
@@ -2527,21 +1767,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param tables _more_
-     * @param clause _more_
-     * @param extra _more_
-     * @param max _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(final String what, final List tables,
                             final Clause clause, String extra, final int max)
 	throws Exception {
@@ -2568,18 +1793,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         } 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param table _more_
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(String what, String table, Clause clause)
 	throws Exception {
         return select(what, Misc.newList(table), ((clause == null)
@@ -2587,87 +1800,26 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 						  : new Clause[] { clause }));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param table _more_
-     * @param clauses _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(String what, String table, Clause[] clauses)
 	throws Exception {
         return select(what, Misc.newList(table), clauses);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param table _more_
-     * @param clauses _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(String what, String table, List<Clause> clauses)
 	throws Exception {
         return select(what, Misc.newList(table), Clause.toArray(clauses));
     }
 
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param tables _more_
-     * @param clauses _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Statement select(String what, List tables, Clause[] clauses)
 	throws Exception {
         return select(what, tables, Clause.and(clauses), null, -1);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param tableName _more_
-     * @param column _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean tableContains(String tableName, String column,String id)
 	throws Exception {
         return tableContains(tableName, column,Clause.eq(column, id));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param clause _more_
-     * @param tableName _more_
-     * @param column _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean tableContains(String tableName,String column,Clause clause)
 	throws Exception {
         Statement statement = select(column, tableName, clause);
@@ -2678,27 +1830,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return result;
     }
 
-
-    /**
-     * Class Iterator _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     */
     public static class Iterator extends SqlUtil.Iterator {
-
-        /** _more_ */
         Statement statement;
-
-        /** _more_ */
         DatabaseManager databaseManager;
 
-        /**
-         * _more_
-         *
-         * @param databaseManager _more_
-         * @param statement _more_
-         */
         public Iterator(DatabaseManager databaseManager,
                         Statement statement) {
             super(statement);
@@ -2706,13 +1841,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             this.databaseManager = databaseManager;
         }
 
-        /**
-         * _more_
-         *
-         * @param statement _more_
-         *
-         * @throws SQLException _more_
-         */
         @Override
         protected void close(Statement statement) throws SQLException {
             databaseManager.closeAndReleaseConnection(statement);
@@ -2720,16 +1848,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param stmt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String makeTable(Statement stmt) throws Exception {
         StringBuilder     sb   = new StringBuilder();
         ResultSetMetaData rsmd = null;
@@ -2765,18 +1883,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param connection _more_
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String showTable(String table, Connection connection,
                             Clause clause)
 	throws Exception {
@@ -2789,17 +1895,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return sb.toString();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public StringBuffer getDbMetaData() throws Exception {
         Connection connection = getDatabaseManager().getConnection();
         try {
@@ -2809,15 +1904,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public StringBuffer getDbMetaData(Connection connection)
 	throws Exception {
         StringBuffer     sb       = new StringBuffer();
@@ -2835,7 +1921,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 continue;
             }
 
-
             String tableType = tables.getString("TABLE_TYPE");
             //            System.err.println("table type" + tableType);
             if (Misc.equals(tableType, "INDEX")) {
@@ -2848,9 +1933,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             if ((tableType != null) && tableType.startsWith("SYSTEM")) {
                 continue;
             }
-
-
-
 
             ResultSet columns = dbmd.getColumns(null, null, tableName, null);
             String encoded = new String(Utils.encodeBase64(("text:?"
@@ -2902,7 +1984,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 //                                  + typeString + " " + pages + "<br>");
                 sb.append("Index:" + indexName + "<br>");
 
-
             }
 
             sb.append("</ul>");
@@ -2910,11 +1991,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         return sb;
     }
-
-
-
-
-
 
     /**
      * This writes out the full database table definition to a file called Tables.java
@@ -2929,15 +2005,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         writeTables(packageName, match, new String[] { "TABLE", "VIEW" });
     }
 
-    /**
-     * _more_
-     *
-     * @param packageName _more_
-     * @param match _more_
-     * @param what _more_
-     *
-     * @throws Exception On badness
-     */
     public void writeTables(String packageName, String match, String[] what)
 	throws Exception {
         FileOutputStream fos = new FileOutputStream("Tables.java");
@@ -2977,7 +2044,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         ResultSet        catalogs   = dbmd.getCatalogs();
         ResultSet        tables     = dbmd.getTables(null, null, null, what);
 
-
         HashSet          seenTables = new HashSet();
         while (tables.next()) {
             String tableName = tables.getString("TABLE_NAME");
@@ -3007,7 +2073,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             }
 
             ResultSet columns  = dbmd.getColumns(null, null, tableName, null);
-
 
             List      colNames = new ArrayList();
             pw.append("\n\n");
@@ -3070,21 +2135,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         }
 
-
         pw.append("\n\n}\n");
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param packageName _more_
-     * @param aliases _more_
-     * @param match _more_
-     *
-     * @throws Exception _more_
-     */
     public void generateBeans(String packageName, Hashtable aliases,
                               String match)
 	throws Exception {
@@ -3240,16 +2294,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param value _more_
-     * @param not _more_
-     *
-     * @return _more_
-     */
     public Clause makeLikeTextClause(String column, String value,
                                      boolean not) {
         Clause clause = Clause.like(column, value.toUpperCase(), not);
@@ -3259,18 +2303,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return clause;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tableName _more_
-     * @param column _more_
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<String> selectDistinct(String tableName, String column,
                                        Clause clause)
 	throws Exception {
@@ -3280,7 +2312,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         return (List<String>) Misc.toList(values);
     }
-
 
     public static List<Clause> addTypeClause(Repository repository,
 					     Request request, List<String> typeList,List<Clause>clauses) throws Exception {
@@ -3314,17 +2345,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	return clauses;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param value _more_
-     * @param clauses _more_
-     *
-     * @return _more_
-     */
     public static boolean addOrClause(String column, String value,
 				      List<Clause> clauses) {
         if ((value != null) && (value.trim().length() > 0)
@@ -3337,17 +2357,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return false;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param table _more_
-     * @param column _more_
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public String getAlterTableSql(String table, String column, String type) {
         String sql;
         if (isDatabaseDerby()) {
@@ -3371,23 +2380,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return sql;
     }
 
-
     public String getAddColumnSql(String table, String column, String type) {
         return  "alter table " + table + " add column " + column + " " + type;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param col _more_
-     * @param value _more_
-     * @param missing _more_
-     *
-     * @throws Exception _more_
-     */
     public void setDouble(PreparedStatement statement, int col, double value,
                           double missing)
 	throws Exception {
@@ -3398,16 +2394,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         statement.setDouble(col, value);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param stmt _more_
-     * @param handler _more_
-     *
-     * @throws Exception _more_
-     */
     public void iterate(Statement stmt, SqlUtil.ResultsHandler handler)
 	throws Exception {
         SqlUtil.Iterator iter = getIterator(stmt);
@@ -3421,42 +2407,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
     public String makeOrderBy(String column) {
         return makeOrderBy(column, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param ascending _more_
-     *
-     * @return _more_
-     */
     public String makeOrderBy(String column, boolean ascending) {
         return " order by " + column + (ascending
                                         ? " asc "
                                         : " desc ");
     }
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param col _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getString(ResultSet results, int col) throws Exception {
         String s = results.getString(col);
         if ((s != null) && s.startsWith(COMPRESS_PREFIX)) {
@@ -3466,17 +2426,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param idx _more_
-     * @param name _more_
-     * @param value _more_
-     * @param maxSize _more_
-     *
-     * @throws Exception _more_
-     */
     public void setString(PreparedStatement statement, int idx, String name,
                           String value, int... maxSize)
 	throws Exception {
@@ -3494,18 +2443,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 					     : 0));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     * @param maxSize _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String checkString(String name, String value, int maxSize)
 	throws Exception {
         if ((value != null) && (maxSize > 0) && (value.length() > maxSize)) {
@@ -3520,43 +2457,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return value;
     }
 
-
-
-    /**
-     * Class ConnectionWrapper _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
     private static class ConnectionInfo {
-
-        /** _more_ */
         static int cnt = 0;
-
-        /** _more_ */
         int myCnt = cnt++;
-
-
-        /** _more_ */
         Connection connection;
-
-        /** _more_ */
         long time;
-
-        /** _more_ */
         String where;
-
-        /** _more_ */
         String msg;
 
-        /**
-         * _more_
-         *
-         * @param connection _more_
-         *
-         * @param msg _more_
-         */
         ConnectionInfo(Connection connection, String msg) {
             this.connection = connection;
             this.time       = System.currentTimeMillis();
@@ -3564,17 +2472,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             where           = Utils.getStack(10,null,true);
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String toString() {
             //            return "info:" + connection + " ";
             //            return "info:" + msg +"\n" + where + " ";
             return where;
         }
-
 
     }
 

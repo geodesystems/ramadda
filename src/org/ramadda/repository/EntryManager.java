@@ -179,6 +179,9 @@ public class EntryManager extends RepositoryManager {
 	httpCacheFile = getRepository().getProperty("ramadda.http.cachefile", true);
     }
 
+
+
+
     public void debug(String msg) {
         if (debug) {
             logInfo(msg);
@@ -1007,6 +1010,15 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Result processEntryShow(Request request) throws Exception {
+	/*
+	System.err.println("show");
+        Connection connection1 = getDatabaseManager().getConnection();
+        Connection connection2 = getDatabaseManager().getConnection();	
+        Connection connection3 = getDatabaseManager().getConnection();
+	Misc.sleepSeconds(10000);
+	*/
+
+
 	if(getRepository().getCheckIfHuman()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
 	    OutputType outputType = request.getOutput();
@@ -4051,6 +4063,11 @@ public class EntryManager extends RepositoryManager {
         }
         delCnt = 0;
         Connection connection = getDatabaseManager().getConnection();
+
+
+
+
+
         try {
             deleteEntriesInner(request, entries, connection, asynchId);
         } finally {

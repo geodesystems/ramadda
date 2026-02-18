@@ -16,11 +16,13 @@
     <api request="/favicon.ico"      method="processFavIcon"/>
     <api request="/base.js"          method="processBaseJs"/>
     <api request="/imageeditor"       method="processImageEditor"/>
-    <api request="/testaction"       method="processTestAction"/>    
-
-    
+    <api request="/testaction"       method="processTestAction"/>
+   
   </group>
 
+  <group handler="databasemanager">  
+    <api request="/debugconnections"    method="processDebugConnections"/>        
+  </group>
 
   <group handler="datehandler">
     <api request="/datetest" method="processDateTest"  />

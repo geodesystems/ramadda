@@ -3409,6 +3409,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return makeBlockedResult(request,true);
         }
 
+	//skip the session handling for this debug call
+	if(requestPath.endsWith("debugconnections")) {
+	    return getDatabaseManager().processDebugConnections(request);
+
+	}
+
         boolean debugMemory = false;
         double mem1=0;
         if (debugMemory) {
@@ -5258,6 +5264,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return typeHandler;
     }
 
+
+
+
     public Result processPing(Request request) throws Exception {
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
             Document resultDoc = XU.makeDocument();
@@ -5611,7 +5620,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(true) return new Result("",new StringBuilder("not implemented"));
 	if(request.defined("debug"))
 	    DatabaseManager.debugConnections = request.get("debug",true);
-	getDatabaseManager().printIt();
+	//	getDatabaseManager().printIt();
 	return new Result("",new StringBuilder());
     }
 
