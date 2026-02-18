@@ -3321,13 +3321,17 @@ table.dataTable tfoot td {
     border:1px solid #000;
 }
     
-.imdv-popup-header {
-    font-size:140%;
-    font-weight:bold
+.imdv-popup-heading {
+    font-size:120%;
+    font-weight:bold;
+    border-bottom:var(--basic-border);
+    padding-bottom:4px;
+    margin-bottom:4px;    
+    vertical-align:bottom;
 }
 
-.imdv-popup-header img {
-    width:32px;
+.imdv-popup-heading img {
+    width:24px;
 }
 .imdv-style-suffix {
     margin-left:4px;

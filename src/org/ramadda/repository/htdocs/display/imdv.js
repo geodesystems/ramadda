@@ -2512,7 +2512,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
 	    title+=HU.div([], visible +	mapGlyph.makeLegendButtons());
-	    //		this.makeGlyphButtons(mapGlyph,true);
  	    line += HU.td([ATTR_NOWRAP,'',
 			   ATTR_STYLE,HU.css(CSS_PADDING,HU.px(5))], title);
 	    let col = mapGlyph.getDecoration();
@@ -6124,8 +6123,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let showPopup = (html,props)=>{
 		this.getMap().lastClickTime  = new Date().getTime();
-		let id = HU.getUniqueId(TAG_DIV);
-		let div = HU.div([ATTR_ID,id]);
+		let popupContentsId = HU.getUniqueId(TAG_DIV);
+		let div = HU.div([ATTR_ID,popupContentsId]);
 		//		let location = e.feature.geometry.getBounds().getCenterLonLat();
 		let location = mapGlyph.getCentroid();
 		if(this.getMap().currentPopup) {
@@ -6139,16 +6138,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let popup =this.getMap().makePopup(location,div,props);
 		this.getMap().currentPopup = popup;
 		this.getMap().getMap().addPopup(popup);
-		if(this.isIsolineEnabled()) {
-		    let latlon =   this.getMap().transformProjPoint(location);
-		    html+=HU.p()+
-			HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineAt('+ latlon.lat+',' + latlon.lon+')',
-				   HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
-		}
-		jqid(id).html(html);
+		jqid(popupContentsId).html(html);
+		this.initGlyphButtons(jqid(popupContentsId));
 		//For some reason the links don't work in the popup
 		//so we do this and handle the clicks here
-		jqid(id).find('a').each(function() {
+		jqid(popupContentsId).find('a').each(function() {
 		    $(this).click(function(){
 			let url = $(this).attr(ATTR_HREF);
 			if(url) {
@@ -6189,24 +6183,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		};
 		cb();
 	    };
-	    let text=HU.div([ATTR_CLASS,'imdv-popup-header'],
-			    mapGlyph.getLabel({})??'');
-	    let buttons = this.makeGlyphButtons(mapGlyph,true);
-	    let entryLink = mapGlyph.getEntryLink('View entry');
-//	    if(entryLink) text=HU.leftRightTable(text,buttons+entryLink);
-	    text=HU.leftRightTable(text,buttons+(entryLink??''));	    
-	    //text+=HU.div([],entryLink);
-	    text+= HU.div([],mapGlyph.getPopupContents()??'');
+
 	    let bg =  mapGlyph.getLegendDiv().css(CSS_BACKGROUND);
 	    mapGlyph.getLegendDiv().css(CSS_BACKGROUND,'yellow');
 	    if(bg!='yellow') {
-		setTimeout(()=>{
-		    mapGlyph.getLegendDiv().css(CSS_BACKGROUND,COLOR_WHITE);
-		},2000);
+		setTimeout(()=>{mapGlyph.getLegendDiv().css(CSS_BACKGROUND,COLOR_WHITE);},2000);
 	    }
+
+	    let heading=  mapGlyph.getLabel({})??'';
+	    let buttons = mapGlyph.makeLegendButtons();
+	    heading=HU.div([ATTR_CLASS,'imdv-popup-heading'],
+			   HU.leftRightTable(heading,buttons,null,null,{valign:ALIGN_BOTTOM}));
+	    let text= mapGlyph.getPopupContents()??'';
 	    if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith('<wiki>')) {
  		if(debug)console.log('\twikifying')
-		let wiki = (text.startsWith('<wiki>')?text:mapGlyph.getWikiText())??'';
+		let wiki;
+		if(text.startsWith('<wiki>')) {
+		    text = text.replace('<wiki>','');
+		    wiki = text;
+		} else {
+		    wiki= mapGlyph.getWikiText()??'';
+		}
+
 		let width = '400';
 		let height='300';
 		let widthRegexp = /popupWidth *= *(\d+)/;
@@ -6228,19 +6226,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html = mapGlyph.convertPopupText(html);
 		    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],html);
+		    html = heading+html;
 		    doPopup(html,{width:this.getProperty('popupWidth',width),
 				  height:this.getProperty('popupHeight',height)});
 		};
+
 		this.wikify(wiki, mapGlyph.getEntryId(),wikiCallback);
 		return false;
 	    }
 
-	    if(!Utils.stringDefined(text)) {
- 		if(debug)console.log('\tno text')
-		return false;
-	    }
-//	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
-	    doPopup(text);
+	    text = mapGlyph.convertPopupText(text).replace(/\n/g,HU.br());
+	    text= HU.div([],text);
+	    doPopup(heading+text);
 	    return false;
 	},
 	getLegendDiv:function () {
