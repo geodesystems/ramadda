@@ -519,8 +519,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    try {
 		connection = tmpDataSource.getConnection();
 		if(debugConnections) {
-
-		    System.err.println("getConnection");
 		    synchronized(connectionInfos) {connectionInfos.add(new ConnectionInfo(connection,""));}
 		}
 		synchronized(CONNECTION_MUTEX) {
@@ -552,6 +550,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	if(debugConnections) {
 	    printIt(sb);
 	    //	    System.err.println(sb);
+	} else {
+	    sb.append("debug connections is not enabled\nyou need to set the property\nramadda.database.debugconnections=true");
 	}
         Result result = new Result("", sb,MIME_TEXT);
         result.setShouldDecorate(false);
