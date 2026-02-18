@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 18 09:52:44 MST 2026";
+var build_date="RAMADDA build date: Wed Feb 18 11:41:25 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47434,6 +47434,7 @@ var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+var PROP_LAYERS_ONE_VISIBLE= "onlyOneLayerVisible";
 
 var PROP_LEVELRANGE_SHOWMARKER = 'showMarkerWhenNotVisible';
 var PROP_LEVELRANGE_RANGE = 'visibleLevelRange';
@@ -47494,11 +47495,13 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			 ];
 
 
-var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
-				PROP_LAYERS_SHOW_SEQUENCE+'=true',
-				PROP_LAYERS_ANIMATION_SHOW+'=true',
-				PROP_LAYERS_ANIMATION_DELAY+'=1000',
-				PROP_LAYERS_ANIMATION_PLAY+'=true'];				
+var IMDV_GROUP_PROPERTY_HINTS= [
+    PROP_LAYERS_ONE_VISIBLE+'=true',
+    PROP_LAYERS_STEP_SHOW+'=true',
+    PROP_LAYERS_SHOW_SEQUENCE+'=true',
+    PROP_LAYERS_ANIMATION_SHOW+'=true',
+    PROP_LAYERS_ANIMATION_DELAY+'=1000',
+    PROP_LAYERS_ANIMATION_PLAY+'=true'];				
 
 
 
@@ -60721,7 +60724,7 @@ MapGlyph.prototype = {
 	return this.attrs.visibleLevelRange;
     },
 
-    setVisible:function(visible,callCheck,highlighted,skipChildren) {
+    setVisible:function(visible,callCheck,highlighted,skipChildren,skipParent) {
 	if(this.isZoom()) {
 	    this.panMapTo(true);
 	    return;
@@ -60774,6 +60777,18 @@ MapGlyph.prototype = {
 	    }
 	}
 	this.checkDataIconMenu();	
+
+
+	let parent = this.getParentGlyph();
+	if(!skipParent && parent && parent.getProperty(PROP_LAYERS_ONE_VISIBLE,false)) {
+	    parent.getChildren().forEach(child=>{
+		if(child==this) return;
+		child.setVisible(false,callCheck,highlighted,skipChildren,true);
+	    });
+	}
+					 
+
+
     },
     getGlyphProperty:function(prop,dflt) {
 	let key = this.getId()+'.' +prop;
