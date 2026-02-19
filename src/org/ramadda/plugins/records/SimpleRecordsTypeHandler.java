@@ -32,16 +32,14 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 
 
 @SuppressWarnings("unchecked")
 public class SimpleRecordsTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_FIELDS = IDX++;
-    private static int IDX_DATA = IDX++;
+    private static String COL_FIELDS = "fields";
+    private static String COL_DATA = "records_data";
 
 
     public SimpleRecordsTypeHandler(Repository repository, Element node)
@@ -130,9 +128,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 line.append(value);
                 cnt++;
             }
-            String data = entry.getStringValue(request,IDX_DATA, "").trim();
+            String data = entry.getStringValue(request,COL_DATA, "").trim();
             data = data + "\n" + line;
-            entry.setValue(IDX_DATA, data);
+            entry.setValue(COL_DATA, data);
             getEntryManager().updateEntry(request, entry);
         } else if (action.equals("newform")) {
             StringBuilder sb = new StringBuilder();
@@ -308,7 +306,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 csv.append("\n");
                 cnt++;
             }
-            entry.setValue(IDX_DATA, csv.toString());
+            entry.setValue(COL_DATA, csv.toString());
             getEntryManager().updateEntry(request, entry);
 
             return new Result(getRepository().getUrlBase()
@@ -355,7 +353,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
 	Request request = getRepository().getAdminRequest();
         List<List<String>> rows = new ArrayList<List<String>>();
         for (String line :
-                StringUtil.split(entry.getStringValue(request,IDX_DATA, ""), "\n", true,
+                StringUtil.split(entry.getStringValue(request,COL_DATA, ""), "\n", true,
                                  true)) {
             List<String>              toks = StringUtil.split(line, ",");
             Hashtable<String, String> map  = new Hashtable<String, String>();
@@ -426,7 +424,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             recordFields = new ArrayList<RecordField>();
             int cnt = 1;
             for (String line :
-                    StringUtil.split(entry.getStringValue(request,IDX_FIELDS, ""), "\n",
+                    StringUtil.split(entry.getStringValue(request,COL_FIELDS, ""), "\n",
                                      true, true)) {
                 if (line.startsWith("#")) {
                     continue;
