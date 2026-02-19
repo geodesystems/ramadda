@@ -49,10 +49,9 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class DwmlFeedTypeHandler extends PointTypeHandler {
 
-    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
-    private static int IDX_HAZARD_TEXT = IDX++;
-    private static int IDX_NOHAZARD_TEXT = IDX++;    
-    private static int IDX_TIMEZONE = IDX++;
+    private static String COL_HAZARD_TEXT = "hazard_text";
+    private static String COL_NOHAZARD_TEXT = "nohazard_text";    
+    private static String COL_TIMEZONE = "timezone";
 
     private TTLCache<String, Weather> forecastCache = new TTLCache<String,
 	Weather>(Utils.minutesToMillis(5));
@@ -310,7 +309,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	String text = HU.div(Utils.getProperty(props,"text",""));
         if (forecast.hazards == null || forecast.hazards.length()==0) {
 	    String noHazardText = Utils.getProperty(props,"noHazardText",
-						    entry.getStringValue(request,IDX_NOHAZARD_TEXT, ""));
+						    entry.getStringValue(request,COL_NOHAZARD_TEXT, ""));
 	    if(stringDefined(noHazardText)) sb.append(HU.div(noHazardText));
 	    sb.append(text);
             return;
@@ -329,7 +328,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	sb.append(link);
         sb.append("</ul>");
 	String hazardText = Utils.getProperty(props,"hazardText",
-						entry.getStringValue(request,IDX_HAZARD_TEXT, ""));
+						entry.getStringValue(request,COL_HAZARD_TEXT, ""));
 	if(stringDefined(hazardText)) sb.append(HU.div(hazardText));
 	sb.append(text);
 
@@ -352,7 +351,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             return;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat();
-        String           timezone   = entry.getStringValue(request,IDX_TIMEZONE, "");
+        String           timezone   = entry.getStringValue(request,COL_TIMEZONE, "");
         if ( !Utils.stringDefined(timezone)) {
             timezone = getEntryUtil().getTimezone(request,entry);
         }
