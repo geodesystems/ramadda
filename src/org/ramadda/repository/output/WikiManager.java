@@ -417,6 +417,7 @@ public class WikiManager extends RepositoryManager
 
             String include = handleWikiImport(wikiUtil, request, entry,
 					      theEntry, tag, props,remainder);
+
 	    if(tmpAddedGroup!=null) {
 		request.putExtraProperty(PROP_GROUP_VAR,tmpAddedGroup);
 	    }
@@ -1454,6 +1455,9 @@ public class WikiManager extends RepositoryManager
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
                                             entry, tag, props,remainder);
 
+
+
+
         if (result == null) {
 	    System.err.println("WikiManager:error processing tag:" + tag +" entry:" + entry);
 	    System.err.println("WIKI ERROR:" + Utils.getStack(20));
@@ -1869,8 +1873,7 @@ public class WikiManager extends RepositoryManager
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
-        //      System.err.println("tag:"+ theTag);
-        if (criteria != null) {}
+
 
         StringBuilder sb = new StringBuilder();
 	if(theTag.equals("testcheckboxes")) {
@@ -3286,8 +3289,10 @@ public class WikiManager extends RepositoryManager
 		boolean upperCase = getProperty(wikiUtil, props, "upperCase",false);
                 String fieldValue =
                     entry.getTypeHandler().getFieldHtml(request, entry, props, name,raw);
+
+
                 if (fieldValue != null) {
-		    if(wikify) fieldValue = wikifyEntry(request, entry, fieldValue);
+		    if(wikify) fieldValue = wikifyEntry(request, entry, fieldValue,false);
 		    if(decimalFormat!=null) {
 			try {
 			    DecimalFormat fmt     = new DecimalFormat(decimalFormat);
@@ -3298,11 +3303,18 @@ public class WikiManager extends RepositoryManager
 		    }
 		    if(lowerCase) fieldValue = fieldValue.toLowerCase();
 		    if(upperCase) fieldValue = fieldValue.toUpperCase();		    
+
+
+
 		    String fieldPrefix=getProperty(wikiUtil,props,"fieldPrefix","");
 		    String fieldSuffix=getProperty(wikiUtil,props,"fieldSuffix","");		    
 		    if(stringDefined(fieldValue)) {
 			fieldValue = fieldPrefix+fieldValue+fieldSuffix;
 		    }
+
+
+
+
                     return fieldValue;
 		}
 		return getProperty(wikiUtil,props,"message",
