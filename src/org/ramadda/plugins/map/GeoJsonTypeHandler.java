@@ -37,15 +37,11 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- */
 public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     implements WikiConstants {
     private static final GeoJson GJ = null;
 
-    private static int IDX = IDX_LAST+1;
-
-    public static final int IDX_COLUMNS = IDX++;
+    public static final String COL_NAMES = "names";
 
     public GeoJsonTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -65,7 +61,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         if (bounds != null) {
             entry.setBounds(bounds);
         }
-	entry.setValue(IDX_COLUMNS,Utils.join(names,", "));
+	entry.setValue(COL_NAMES,Utils.join(names,", "));
     }
 
     @Override
@@ -167,19 +163,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
             this.entry      = entry;
         }
 
-	/*
-	@Override
-	public List<RecordField> doMakeFields(boolean failureOk) {
-	    String names = (String) entry.getValue(request,GeoJsonTypeHandler.IDX_COLUMNS);
-	    if(!stringDefined(names)) return super.doMakeFields(failureOk);
-	    StringBuilder fields = new StringBuilder();
-	    for(String field:Utils.split(names,",",true,true)) {
-		if(fields.length()>0) fields.append(",");
-
-	    }
-	    return super.doMakeFields(failureOk);
-	}
-	*/
 
         @Override
 	public List<String> getCsvCommands() throws Exception {

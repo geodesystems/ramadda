@@ -50,13 +50,12 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class GpxTypeHandler extends PointTypeHandler {
-    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
-    private static int IDX_DISTANCE = IDX++;
-    private static int IDX_TOTAL_TIME = IDX++;
-    private static int IDX_MOVING_TIME = IDX++;
-    private static int IDX_SPEED = IDX++;
-    private static int IDX_GAIN = IDX++;
-    private static int IDX_LOSS = IDX++;
+    private static String COL_DISTANCE = "distance";
+    private static String COL_TOTAL_TIME = "total_time";
+    private static String COL_MOVING_TIME = "moving_time";
+    private static String COL_SPEED = "speed";
+    private static String COL_GAIN = "elevation_gain";
+    private static String COL_LOSS = "elevation_loss";
 
     private static TTLCache<String, List<String>> extraTagsCache =
         new TTLCache<String, List<String>>(60 * 60 * 1000, "Gpx extra tags");
@@ -106,28 +105,28 @@ public class GpxTypeHandler extends PointTypeHandler {
 	throws Exception {
 
         if (tag.equals("gpx.stats")) {
-            double distance = (Double) entry.getDoubleValue(request,IDX_DISTANCE,
+            double distance = (Double) entry.getDoubleValue(request,COL_DISTANCE,
 							    Double.valueOf(0));
-            double totalTime = (Double) entry.getDoubleValue(request,IDX_TOTAL_TIME,
+            double totalTime = (Double) entry.getDoubleValue(request,COL_TOTAL_TIME,
 							     Double.valueOf(0));
-            double movingTime = (Double) entry.getDoubleValue(request,IDX_MOVING_TIME,
+            double movingTime = (Double) entry.getDoubleValue(request,COL_MOVING_TIME,
 							      Double.valueOf(0));
-            double speed = (Double) entry.getDoubleValue(request,IDX_SPEED, Double.valueOf(0));
-            double gain  = (Double) entry.getDoubleValue(request,IDX_GAIN, Double.valueOf(0));
-            double loss  = (Double) entry.getDoubleValue(request,IDX_LOSS, Double.valueOf(0));
+            double speed = (Double) entry.getDoubleValue(request,COL_SPEED, Double.valueOf(0));
+            double gain  = (Double) entry.getDoubleValue(request,COL_GAIN, Double.valueOf(0));
+            double loss  = (Double) entry.getDoubleValue(request,COL_LOSS, Double.valueOf(0));
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
 		|| (totalTime == -1)) {
                 initializeNewEntry(request, entry, NewType.NEW);
-                distance = (Double) entry.getDoubleValue(request,IDX_DISTANCE,
+                distance = (Double) entry.getDoubleValue(request,COL_DISTANCE,
 							 Double.valueOf(0));
-                totalTime = (Double) entry.getDoubleValue(request,IDX_TOTAL_TIME,
+                totalTime = (Double) entry.getDoubleValue(request,COL_TOTAL_TIME,
 							  Double.valueOf(0));
-                movingTime = (Double) entry.getDoubleValue(request,IDX_MOVING_TIME,
+                movingTime = (Double) entry.getDoubleValue(request,COL_MOVING_TIME,
 							   Double.valueOf(0));
-                speed = (Double) entry.getDoubleValue(request,IDX_SPEED, Double.valueOf(0));
-                gain  = (Double) entry.getDoubleValue(request,IDX_GAIN, Double.valueOf(0));
-                loss  = (Double) entry.getDoubleValue(request,IDX_LOSS, Double.valueOf(0));
+                speed = (Double) entry.getDoubleValue(request,COL_SPEED, Double.valueOf(0));
+                gain  = (Double) entry.getDoubleValue(request,COL_GAIN, Double.valueOf(0));
+                loss  = (Double) entry.getDoubleValue(request,COL_LOSS, Double.valueOf(0));
                 if (distance != -1) {
                     try {
                         getEntryManager().updateEntry(request, entry);
@@ -481,15 +480,15 @@ public class GpxTypeHandler extends PointTypeHandler {
             averageSpeed = totalDistance / movingTime;
         }
 
-        entry.setValue(IDX_DISTANCE,
+        entry.setValue(COL_DISTANCE,
                        Double.valueOf(Math.round(100.0 * totalDistance) / 100.0));
-        entry.setValue(IDX_TOTAL_TIME,
+        entry.setValue(COL_TOTAL_TIME,
                        Double.valueOf((maxTime - minTime) / 1000.0 / 60 / 60));
-        entry.setValue(IDX_MOVING_TIME, Double.valueOf(movingTime));
-        entry.setValue(IDX_SPEED,
+        entry.setValue(COL_MOVING_TIME, Double.valueOf(movingTime));
+        entry.setValue(COL_SPEED,
                        Double.valueOf(Math.round(100 * averageSpeed) / 100.0));
-        entry.setValue(IDX_GAIN, Double.valueOf((int) (3.28084 * elevationGain)));
-        entry.setValue(IDX_LOSS, Double.valueOf((int) (3.28084 * elevationLoss)));
+        entry.setValue(COL_GAIN, Double.valueOf((int) (3.28084 * elevationGain)));
+        entry.setValue(COL_LOSS, Double.valueOf((int) (3.28084 * elevationLoss)));
 
     }
 

@@ -48,34 +48,22 @@ public class GeoJsonOutputHandler extends OutputHandler {
         new OutputType("GeoJson to CSV", "geojsoncsv", OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "",
                        ICON_CSV);
 
-    /**  */
     public static final OutputType OUTPUT_GEOJSON_REDUCE =
         new OutputType("Reduce GeoJson", "geojsonreduce",
                        OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);
 
-    /**  */
     public static final OutputType OUTPUT_GEOJSON_SUBSET =
         new OutputType("Subset GeoJson", "geojsonsubset",
                        OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);    
 
-    /**  */
     public static final OutputType OUTPUT_GEOJSON_FILTER =
         new OutputType("Filter GeoJson", "geojsonfilter",
                        OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);
 
-    /**  */
     public static final OutputType OUTPUT_EDITABLE_TOKML =
         new OutputType("Convert to KML", "editable.kml",
                        OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_KML);
 
-    /**
-     * Create a MapOutputHandler
-     *
-     *
-     * @param repository  the repository
-     * @param element     the Element
-     * @throws Exception  problem generating handler
-     */
     public GeoJsonOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -87,15 +75,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
         addType(OUTPUT_EDITABLE_TOKML);
     }
 
-    /**
-     * Get the entry links
-     *
-     * @param request  the Request
-     * @param state    the repository State
-     * @param links    the links
-     *
-     * @throws Exception  problem creating links
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
@@ -121,16 +100,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -148,17 +117,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 				    GJ.DOWNLOAD_MIMETYPE,is);	    
     }
 
-    /**
-     * Output the entry
-     *
-     * @param request      the Request
-     * @param outputType   the type of output
-     * @param entry        the Entry to output
-     *
-     * @return  the Result
-     *
-     * @throws Exception  problem outputting entry
-     */
+
     @Override
     public Result outputEntry(final Request request,
 			      OutputType outputType,
@@ -175,7 +134,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
                 sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GEOJSON_FILTER.toString()));
                 sb.append(HU.formTable());
-		String names = (String) entry.getValue(request,GeoJsonTypeHandler.IDX_COLUMNS);
+		String names = (String) entry.getValue(request,GeoJsonTypeHandler.COL_NAMES);
 		List<String> properties = null;
 		if(stringDefined(names)) properties = Utils.split(names,",",true,true);
 		if(properties==null) {
@@ -328,14 +287,6 @@ public class GeoJsonOutputHandler extends OutputHandler {
         return new Result("", sb);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputEditableToKml(Request request, Entry entry)
             throws Exception {
 
