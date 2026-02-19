@@ -258,13 +258,13 @@ public class SocrataTypeHandler extends ExtensibleGroupTypeHandler {
             (SocrataSeriesTypeHandler) getRepository().getTypeHandler(
                 SocrataSeriesTypeHandler.TYPE_SERIES);
         entry = new Entry(id, seriesTypeHandler);
-        Object[] values = seriesTypeHandler.makeEntryValues(null);
-        values[SocrataSeriesTypeHandler.IDX_SERIES_ID] = seriesId;
+	entry.setValue(SocrataSeriesTypeHandler.COL_SERIES_ID, seriesId);
+
 
         entry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                         new Resource(), "", Entry.DEFAULT_ORDER,
                         dttm.getTime(), dttm.getTime(), dttm.getTime(),
-                        dttm.getTime(), values);
+                        dttm.getTime(), entry.getValues());
         getEntryManager().cacheSynthEntry(entry);
 
         return entry;

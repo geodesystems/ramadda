@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.socrata;
 
-
 import org.json.*;
 
 import org.ramadda.data.point.text.CsvFile;
@@ -15,7 +14,6 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
 
 import org.ramadda.data.services.RecordTypeHandler;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -48,74 +46,37 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class SocrataSeriesTypeHandler extends PointTypeHandler {
 
-
-    /** _more_ */
     public static final String URL_METADATA =
         "https://${hostname}/api/views/${series_id}.json";
 
-
-    /** _more_ */
     public static final String URL_CSV =
     //        "https://${hostname}/resource/${series_id}.csv?$limit=${limit}&$offset=${offset}";
     "https://${hostname}/api/views/${series_id}/rows.csv?accessType=DOWNLOAD&limit=${limit}&offset=${offset}";
 
-
-
-    /** _more_ */
     public static final String URL_TEMPLATE =
         "https://${hostname}/api/views/${series_id}/rows.json?accessType=DOWNLOAD";
 
-    /** _more_ */
     public static final String TYPE_SERIES = "type_socrata_series";
 
-    /** _more_ */
-    public static final int IDX_FIRST = RecordTypeHandler.IDX_LAST + 1;
 
-    /** _more_ */
-    public static final int IDX_REPOSITORY = IDX_FIRST;
+    public static final String COL_REPOSITORY = "repository";
+    public static final String COL_SERIES_ID = "series_id";
 
-    /** _more_ */
-    public static final int IDX_SERIES_ID = IDX_FIRST + 1;
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public SocrataSeriesTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
 
-        String repository = entry.getStringValue(request,IDX_REPOSITORY, (String) null);
-        String seriesId   = entry.getStringValue(request,IDX_SERIES_ID, (String) null);
+        String repository = entry.getStringValue(request,COL_REPOSITORY, (String) null);
+        String seriesId   = entry.getStringValue(request,COL_SERIES_ID, (String) null);
         if ( !Utils.stringDefined(seriesId)
                 || !Utils.stringDefined(repository)) {
             return null;
@@ -163,7 +124,6 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
             }
             //RecordField []fieldArray = new RecordField[fieldCnt];
 
-
             /*
             int idx = 0;
             idx = 0;
@@ -188,7 +148,6 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                 String name = col.get("name").toString().trim();
                 name = name.replaceAll(",", " ");
                 name = name.replaceAll("\"", "'");
-
 
                 String type = col.get("dataTypeName").toString();
                 if (type.equals("meta_data")) {
@@ -253,9 +212,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
 
         return file;
 
-
     }
-
 
     /**
      * Class description
@@ -266,7 +223,6 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
      */
     private static class SimpleSocrataFile extends CsvFile {
 
-        /** _more_ */
         int locationIndex = -1;
 
         /**
@@ -280,15 +236,6 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
             super(path);
         }
 
-        /**
-         * _more_
-         *
-         * @param record _more_
-         * @param toks _more_
-         * @param header _more_
-         *
-         * @return _more_
-         */
         @Override
         public List<String> processTokens(TextRecord record,
                                           List<String> toks, boolean header) {

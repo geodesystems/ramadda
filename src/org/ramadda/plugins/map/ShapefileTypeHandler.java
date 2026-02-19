@@ -95,7 +95,8 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                     new IO.Path(entry.getResourcePath(request)), shapefile);
         String props = recordFile.getEntryFieldsProperties();
 
-        getEntryValues(entry)[IDX_PROPERTIES] = props;
+	entry.setValue(COL_PROPERTIES,props);
+	//        getEntryValues(entry)[IDX_PROPERTIES] = props;
 
         Rectangle2D bounds   = shapefile.getBoundingBox();
         double[][]  lonlat   = new double[][] {

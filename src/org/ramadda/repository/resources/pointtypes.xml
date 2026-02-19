@@ -172,27 +172,6 @@ addTooltip=false useMultipleAxes=true
 
   
 
-  <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.data.services.FetchPointTypeHandler"
-	priority="4"	
-	help="Downloads the given URL every once in a while"
-	>
-    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-    <column  name="source_url"  label="Source URL" type="url" />
-    <column  name="enabled"  label="Enabled" type="boolean" default="true"/>
-    <column  name="every_hours"  label="Every" type="double" default="24" suffix="hours"/>
-    <column  name="last_update_time"  label="Last Update" type="datetime" />
-    <column  name="add_date"  label="Add Date" type="boolean" default="true"/>
-    <wiki>
-      <![CDATA[
-	       +section  title="{{name}}"
-	       {{description}}
-	       ----
-	       {{display_table}}
-      ]]>
-
-    </wiki>
-  </type>
-
 
   <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.data.services.types.InlinePointTypeHandler"
 	priority="3"

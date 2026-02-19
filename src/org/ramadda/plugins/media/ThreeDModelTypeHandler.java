@@ -31,24 +31,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
 
-/**
- *
- *
- */
 public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiTagHandler {
-
-    /**  */
     private static int IDX = 0;
-
-    /**  */
     private static final int IDX_MODEL_FILE = IDX++;
-
-    /**  */
     private static final int IDX_CAMERA_POSITION = IDX++;
-
-    /**  */
     private static final int IDX_AMBIENT_LIGHT = IDX++;
-
     private static final int IDX_LIGHTS = IDX++;
     private static final int IDX_PROPERTIES = IDX++;        
     private static final int IDX_ANNOTATIONS = IDX++;        
@@ -58,14 +45,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         super(repository, entryNode);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -96,16 +75,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         entry.setValue(IDX_MODEL_FILE, modelFile);
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param entryDir _more_
-     * @param prefix _more_
-     * @param files _more_
-     * @param fis _more_
-     *
-     * @throws Exception _more_
-     */
     private void unzip(Entry entry, File entryDir, String prefix,
                        List<String> files, InputStream fis)
             throws Exception {
@@ -429,17 +398,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     @Override
     public void addTagDefinition(List<String>  tags) {
     }
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param theTag _more_
-     * @param props _more_
-     * @param remainder _more_
-      * @return _more_
-     */
+
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {

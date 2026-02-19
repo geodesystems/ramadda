@@ -46,9 +46,16 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 									   RecordFileContext {
     public static boolean debug = false;
     private static int IDX = 0;
+    public static final String COL_NUMBEROFPOINTS="numberofpoints";
+
+
     public static final int IDX_RECORD_COUNT = IDX++;
     public static final int IDX_PROPERTIES = IDX++;
     public static final int IDX_LAST = IDX_PROPERTIES;
+
+    public static final String COL_PROPERTIES = "properties";
+
+
     private RecordFileFactory recordFileFactory;
     private RecordOutputHandler recordOutputHandler;
 
@@ -218,8 +225,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	if(values.length==0) return null;
         String    propertiesString = entry.getStringValue(getRepository().getAdminRequest(),
 							  "properties","");
-	//(values[IDX_PROPERTIES] != null)                                     ? values[IDX_PROPERTIES].toString()                                     : "";
-
         String    typeProperties   = getRecordPropertiesFromType(null,entry);
 
         Hashtable p                = null;

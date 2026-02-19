@@ -199,10 +199,9 @@ public class SocrataSearchProvider extends SearchProvider {
                                        + TypeHandler.ID_DELIMITER
                                        + id, typeHandler);
             Object[] values = typeHandler.makeEntryValues(null);
-            System.err.println("view type:" + viewType);
-            values[SocrataSeriesTypeHandler.IDX_REPOSITORY] = server;
+	    newEntry.setValue(SocrataSeriesTypeHandler.COL_REPOSITORY, server);
             if (viewType.equals("tabular")) {
-                values[SocrataSeriesTypeHandler.IDX_SERIES_ID] = id;
+                newEntry.setValue(SocrataSeriesTypeHandler.COL_SERIES_ID,id);
             } else if (viewType.equals("blobby")) {
                 String mimeType = StringUtil.splitUpTo(JsonUtil.readValue(item,
                                       "blobMimeType", ";"), ";",
@@ -221,7 +220,7 @@ public class SocrataSearchProvider extends SearchProvider {
                                parent, getUserManager().getLocalFileUser(),
                                resource, "", Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
-                               fromDate.getTime(), toDate.getTime(), values);
+                               fromDate.getTime(), toDate.getTime(), newEntry.getValues());
             getEntryManager().cacheSynthEntry(newEntry);
         }
 
@@ -370,11 +369,10 @@ public class SocrataSearchProvider extends SearchProvider {
                                    + TypeHandler.ID_DELIMITER + type
                                    + TypeHandler.ID_DELIMITER
                                    + id, typeHandler);
-        Object[] values = typeHandler.makeEntryValues(null);
-
         if (type.equals(SOCRATA_TYPE_DATASET)) {
-            values[SocrataSeriesTypeHandler.IDX_REPOSITORY] = domain;
-            values[SocrataSeriesTypeHandler.IDX_SERIES_ID]  = id;
+	    newEntry.setValue(SocrataSeriesTypeHandler.COL_REPOSITORY, domain);
+	    newEntry.setValue(SocrataSeriesTypeHandler.COL_SERIES_ID,id);
+
         } else if (true || type.equals("blobby")) {
             //            System.err.println("Socrata - new Type:" + type);
             /*
@@ -396,7 +394,7 @@ public class SocrataSearchProvider extends SearchProvider {
                            getUserManager().getLocalFileUser(), resource, "",
                            Entry.DEFAULT_ORDER, dttm.getTime(),
                            dttm.getTime(), fromDate.getTime(),
-                           toDate.getTime(), values);
+                           toDate.getTime(), newEntry.getValues());
         getEntryManager().cacheSynthEntry(newEntry);
 
         return newEntry;

@@ -28,12 +28,13 @@ import java.util.List;
 
 public class ConvertibleTypeHandler extends PointTypeHandler {
     public static final String TYPE_CONVERTIBLE = "type_convertible";
-    private static int IDX = 0;
-    //Have these here so we can act like a point entry type
-    public static final int IDX_NUMPOINTS = IDX++;
-    public static final int IDX_PROPERTIES = IDX++;
-    public static final int IDX_COMMANDS = IDX++;
-    public static final int IDX_LAST = IDX_COMMANDS;
+    /*
+    //public static final int IDX_NUMPOINTS = IDX++;
+    //public static final int IDX_PROPERTIES = IDX++;
+    //public static final int IDX_COMMANDS = IDX++;
+    */
+    public static final String IDX_COMMANDS = "convert_commands";
+
 
     public ConvertibleTypeHandler(Repository repository, Element entryNode)
             throws Exception {
