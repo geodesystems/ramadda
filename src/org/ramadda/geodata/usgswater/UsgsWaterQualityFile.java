@@ -9,6 +9,7 @@ package org.ramadda.geodata.usgswater;
 
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -33,10 +34,10 @@ public class UsgsWaterQualityFile extends CsvFile {
 
 
     /** _more_ */
-    private SimpleDateFormat sdfShort = makeDateFormat("yyyyMMdd");
+    private MyDateFormat sdfShort = makeDateFormat("yyyyMMdd");
 
     /** _more_ */
-    private SimpleDateFormat sdfLong = makeDateFormat("yyyyMMdd HHmmss S");
+    private MyDateFormat sdfLong = makeDateFormat("yyyyMMdd HHmmss S");
 
     /** _more_ */
     public static final String FIELD_SURVEY_ID = "SURVEY_ID";
@@ -255,7 +256,7 @@ public class UsgsWaterQualityFile extends CsvFile {
         }
         StringBuffer dttm = new StringBuffer();
         dttm.append((int) value);
-        SimpleDateFormat sdf = sdfShort;
+        MyDateFormat sdf = sdfShort;
         if (timeIdx >= 0) {
             value = textRecord.getValue(timeIdx);
             if ( !Double.isNaN(value)) {
