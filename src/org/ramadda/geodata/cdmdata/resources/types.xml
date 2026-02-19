@@ -96,7 +96,8 @@ doAnimation=true animationLoop=true animationMode=frame animationSliderStyle="wi
       </type>
     -->
 
-  <type name="pointdatabase"  description="Point Database" handler="org.ramadda.geodata.cdmdata.PointDatabaseTypeHandler" category="Geoscience Data">
+    <type name="pointdatabase"  description="Point Database"
+	  handler="org.ramadda.geodata.cdmdata.PointDatabaseTypeHandler" category="Geoscience Data">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.date.show" value="false"/>
 <!--     <property name="form.area.show" value="false"/> -->

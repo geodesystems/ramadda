@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.poll;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -19,10 +18,8 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.Clause;
 
-
 import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
@@ -40,7 +37,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -49,78 +45,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-
-/**
- *
- *
- */
 @SuppressWarnings("unchecked")
 public class PollTypeHandler extends BlobTypeHandler {
-
-    /** _more_ */
     public static final String ATTR_CHOICES = "choices";
-
-    /** _more_ */
     public static final String ATTR_RESPONSETYPES = "responsetypes";
-
-    /** _more_ */
     public static final String ATTR_SECRET = "secret";
-
-    /** _more_ */
     public static final String ARG_COMMENT = "comment";
-
-    /** _more_ */
     public static final String ATTR_RESPONSES = "responses";
-
-    /** _more_ */
     public static final String ACTION_ADDRESPONSE = "addresponse";
-
-    /** _more_ */
     public static final String ACTION_DELETERESPONSE = "deleteresponse";
-
-    /** _more_ */
     public static final String ARG_RESPONSE = "response";
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public PollTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean returnToEditForm() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param baseTypeHandler _more_
-     */
+    @Override
+    public String getValuesColumn() {
+        return "properties";
+    }
+
+
+
     @Override
     public void addColumnsToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler baseTypeHandler, HashSet seen) {
         try {
-            Hashtable    props   = getProperties(entry);
+            Hashtable    props   = getProperties(request, entry);
             List<String> choices = (List<String>) props.get(ATTR_CHOICES);
             if (choices == null) {
                 choices = new ArrayList<String>();
@@ -149,13 +106,6 @@ public class PollTypeHandler extends BlobTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param type _more_
-     * @return _more_
-     */
     @Override
     public String getTypePermissionName(String type) {
         if (type.equals(Permission.ACTION_TYPE1)) {
@@ -169,19 +119,6 @@ public class PollTypeHandler extends BlobTypeHandler {
         return super.getTypePermissionName(type);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -193,7 +130,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         String       typesString = request.getString(ATTR_RESPONSETYPES, "");
         List<String> types = StringUtil.split(typesString, "\n", true, true);
 
-        Hashtable    props       = getProperties(entry);
+        Hashtable    props       = getProperties(request,entry);
         String       secret      = (String) props.get(ATTR_SECRET);
         if (secret == null) {
             secret = getRepository().getGUID() + "_" + Math.random();
@@ -204,23 +141,11 @@ public class PollTypeHandler extends BlobTypeHandler {
         setProperties(entry, props);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
 
-        Hashtable props  = getProperties(entry);
+        Hashtable props  = getProperties(request,entry);
         String    secret = (String) props.get(ATTR_SECRET);
         if (secret == null) {
             //Shoudln't happen
@@ -238,7 +163,6 @@ public class PollTypeHandler extends BlobTypeHandler {
 
         boolean canView = getAccessManager().canDoType2(request, entry);
 
-
         List<String> choices = (List<String>) props.get(ATTR_CHOICES);
         if (choices == null) {
             choices = new ArrayList<String>();
@@ -248,8 +172,6 @@ public class PollTypeHandler extends BlobTypeHandler {
         if (types == null) {
             types = new ArrayList<String>();
         }
-
-
 
         List<PollResponse> responses =
             (List<PollResponse>) props.get(ATTR_RESPONSES);
@@ -438,7 +360,6 @@ public class PollTypeHandler extends BlobTypeHandler {
             //            sb.append(headerRow);
         }
 
-
         sb.append("</table>");
 
         if (canAdd) {
@@ -447,12 +368,9 @@ public class PollTypeHandler extends BlobTypeHandler {
             sb.append("</form>");
         }
 
-
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result(entry.getName(), sb);
     }
-
-
 
 }

@@ -14,7 +14,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.util.Hashtable;
 
 @SuppressWarnings("unchecked")
-public class BlobTypeHandler extends GenericTypeHandler {
+public abstract class BlobTypeHandler extends GenericTypeHandler {
 
     public BlobTypeHandler(Repository repository, Element entryNode)
             throws Exception {
@@ -26,42 +26,39 @@ public class BlobTypeHandler extends GenericTypeHandler {
         super(repository, type, description);
     }
 
-    public void putEntryProperty(Entry entry, String key, Object value)
+    public  String getValuesColumn() {
+	return "undefined";
+    }
+
+    public void putEntryProperty(Request request, Entry entry, String key, Object value)
             throws Exception {
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
         props.put(key, value);
         setProperties(entry, props);
     }
 
-    public Hashtable getProperties(Entry entry) throws Exception {
+    public Hashtable getProperties(Request request, Entry entry) throws Exception {
         if (entry == null) {
             return new Hashtable();
         }
         Hashtable properties = null;
-        if (properties == null) {
-            Object[] values = getEntryValues(entry);
-            int      index  = getValuesIndex();
-            if ((values != null) && (index >= 0) && (index < values.length)
-                    && (values[index] != null)) {
-                properties = (Hashtable) Repository.decodeObject(
-                    (String) values[index]);
-            }
-            if (properties == null) {
-                properties = new Hashtable();
-            }
+	String value = entry.getStringValue(request, getValuesColumn(),null);
+	if (stringDefined(value)) {
+	    properties = (Hashtable) Repository.decodeObject(value);
+	}
+	if (properties == null) {
+	    properties = new Hashtable();
         }
 
         return properties;
     }
 
-    public int getValuesIndex() {
-        return 0;
-    }
+
 
     protected void setProperties(Entry entry, Hashtable properties)
             throws Exception {
-        Object[] values = getEntryValues(entry);
-        values[getValuesIndex()] = Repository.encodeObject(properties);
+	String  encoded = Repository.encodeObject(properties);
+	entry.setValue(getValuesColumn(), encoded);
     }
 
 }

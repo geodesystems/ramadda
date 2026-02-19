@@ -228,7 +228,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         boolean        didone     = false;
 
-        Hashtable      properties = getProperties(entry);
+        Hashtable      properties = getProperties(request,entry);
         int            baseId     = Misc.getProperty(properties, PROP_ID, 0);
         int            totalCnt   = Misc.getProperty(properties, PROP_CNT, 0);
         long           t1         = System.currentTimeMillis();

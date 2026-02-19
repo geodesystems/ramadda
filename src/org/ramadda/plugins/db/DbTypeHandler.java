@@ -361,8 +361,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
     @Override
-    public int getValuesIndex() {
-        return RecordTypeHandler.IDX_PROPERTIES;
+    public String getValuesColumn() {
+        return RecordTypeHandler.COL_PROPERTIES;
     }
 
     /*
@@ -617,7 +617,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
 	}
 
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
         if (doAnonForm && !getAccessManager().canDoEdit(request, entry)) {
@@ -757,7 +757,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return;
         }
 
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
         if (doAnonForm) {
@@ -1404,7 +1404,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         super.addToEntryForm(request, formBuffer, parentEntry, entry,
                              formInfo);
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
 
         if (entry != null) {
             addToEditForm(request, entry, formBuffer);
@@ -1416,7 +1416,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public void addToEditForm(Request request, Entry entry,
                               Appendable formBuffer)
             throws Exception {
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
 
         formBuffer.append(
             HU.formEntry(
@@ -1440,7 +1440,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (getDbInfo().getEnumColumns().size() == 0) {
             return;
         }
-        Hashtable props  = getProperties(entry);
+        Hashtable props  = getProperties(request,entry);
 
         String[]  colors = {
             "#fff", "#000", "#444", "#888", "#eee", "red", "orange", "yellow",
@@ -1579,7 +1579,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         Entry parent, boolean newEntry)
             throws Exception {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
-        Hashtable props = getProperties(entry);
+        Hashtable props = getProperties(request,entry);
 
         props.put(PROP_ANONFORM_ENABLED,
                   request.get(PROP_ANONFORM_ENABLED, false) + "");
@@ -2730,7 +2730,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         doStore(entry, values, dbid == null);
 
         if (fromAnonForm) {
-            Hashtable props = getProperties(entry);
+            Hashtable props = getProperties(request,entry);
             String message = Misc.getProperty(props, PROP_ANONFORM_MESSAGE,
                                  "");
             if ( !Utils.stringDefined(message)) {
@@ -2994,7 +2994,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         SimpleDateFormat sdf          = getDateFormat(request, entry);
         SimpleDateFormat dateTimeSdf  = getDateTimeFormat(request, entry);
-        Hashtable        entryProps   = getProperties(entry);
+        Hashtable        entryProps   = getProperties(request,entry);
         StringBuilder    hb           = new StringBuilder();
         if (doForm) {
             String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
@@ -3839,7 +3839,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	final boolean simpleMap = request.get(ARG_DB_SIMPLEMAP, false);
         boolean       doTile = request.get(ARG_TILE_ENTRIES,false);
         DbInfo        dbInfo     = getDbInfo();
-        Hashtable     entryProps = getProperties(entry);
+        Hashtable     entryProps = getProperties(request,entry);
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         final StringBuilder sb         = new StringBuilder();
         sb.append(

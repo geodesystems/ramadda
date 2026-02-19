@@ -47,12 +47,9 @@ import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
 public class ExternalDbTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    public static final int IDX_DBID = IDX++;
-    public static final int IDX_TABLE = IDX++;
-    public static final int IDX_TABLE2 = IDX++;
-    public static final int IDX_JOIN1 = IDX++;
-    public static final int IDX_JOIN2 = IDX++;
+    public static final String COL_DBID = "db_id";
+    public static final String COL_TABLE = "table_name";
+
     private Hashtable<String, List<TableInfo>> dbToTables =
         new Hashtable<String, List<TableInfo>>();
 
@@ -67,7 +64,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 (List<String>) entry.getTransientProperty("db.enums." + name);
             if (enums == null) {
                 try (Connection connection = getConnection(request,entry)) {
-                    String table = entry.getStringValue(request,IDX_TABLE, (String) null);
+                    String table = entry.getStringValue(request,COL_TABLE, (String) null);
                     Statement stmt = SqlUtil.select(connection,
                                          SqlUtil.distinct(name),
                                          Utils.makeListFromValues(table), null, null,
@@ -102,7 +99,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
     private Connection getConnection(Request request,Entry entry) throws Exception {
-        return getConnection(entry.getStringValue(request,IDX_DBID, (String) null));
+        return getConnection(entry.getStringValue(request,COL_DBID, (String) null));
     }
 
     private void closeConnection(Connection connection) throws Exception {
@@ -120,8 +117,8 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
     @Override
-    public int getValuesIndex() {
-        return PointTypeHandler.IDX_LAST + 1;
+    public String getValuesColumn() {
+        return RecordTypeHandler.COL_PROPERTIES;
     }
 
     @Override
@@ -137,7 +134,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
             String all = null;
             Hashtable recordProps =
-                Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES,
+                Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES,
                     (String) ""));
             recordProps.putAll(Utils.makeHashtable(displayProps));
             boolean displayAll =
@@ -192,13 +189,13 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
     private String getWhat(Request request,Entry entry) {
         Hashtable recordProps =
-            Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES, (String) ""));
+            Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES, (String) ""));
 
         return Utils.getProperty(recordProps, "what", "*");
     }
 
     private List getTableList(Request request,Entry entry) {
-        String table = entry.getStringValue(request,IDX_TABLE, (String) null);
+        String table = entry.getStringValue(request,COL_TABLE, (String) null);
         if ( !Utils.stringDefined(table)) {
             System.err.println("DbTableTypeHadler.visit: no table defined");
 
@@ -206,7 +203,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         }
         List tableList = Utils.makeListFromValues(table);
         Hashtable recordProps =
-            Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES, (String) ""));
+            Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES, (String) ""));
         String join = Utils.getProperty(recordProps, "jointables",
                                         (String) null);
         if (join != null) {
@@ -220,7 +217,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         List<Clause> andClauses = new ArrayList<Clause>();
 
         Hashtable recordProps =
-            Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES, (String) ""));
+            Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES, (String) ""));
         String joinFields = Utils.getProperty(recordProps, "joinfields",
                                 (String) null);
         //"salaries.emp_no","employees.emp_no";
@@ -346,7 +343,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             }
 
             Hashtable recordProps =
-                Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES,
+                Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES,
                     (String) ""));
 
             List tableList = getTableList(request,entry);
@@ -496,7 +493,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
             private void makeFields() throws Exception {
                 Hashtable recordProps =
-                    Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES,
+                    Utils.getProperties(entry.getStringValue(request,COL_PROPERTIES,
                         (String) ""));
                 List<RecordField> fields = recordFile.fields =
                                                new ArrayList<RecordField>();
@@ -618,7 +615,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             if (dbs.size() > 0) {
                 String dbid = ((entry == null)
                                ? null
-                               : entry.getStringValue(request,IDX_DBID, (String) null));
+                               : entry.getStringValue(request,COL_DBID, (String) null));
                 formBuffer.append(
                     formEntry(
                         request, column.getLabel() + ":",
@@ -634,7 +631,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 tables.add(0, "");
                 String name = (entry == null)
                               ? null
-                              : entry.getStringValue(request,IDX_TABLE, (String) null);
+                              : entry.getStringValue(request,COL_TABLE, (String) null);
                 formBuffer.append(
                     formEntry(
                         request, column.getLabel() + ":",
@@ -664,7 +661,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         if (tableInfos == null) {
             return null;
         }
-        String table = entry.getStringValue(request,IDX_TABLE, (String) null);
+        String table = entry.getStringValue(request,COL_TABLE, (String) null);
 
         if ( !Utils.stringDefined(table)) {
             return null;
@@ -680,7 +677,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
     private List<TableInfo> getTableInfos(Request request,Entry entry) throws Exception {
-        String dbid = entry.getStringValue(request,IDX_DBID, (String) null);
+        String dbid = entry.getStringValue(request,COL_DBID, (String) null);
         if ( !Utils.stringDefined(dbid)) {
             return null;
         }

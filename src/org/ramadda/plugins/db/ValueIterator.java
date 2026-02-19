@@ -533,7 +533,7 @@ public abstract class ValueIterator implements DbConstants {
                              boolean fromSearch)
                 throws Exception {
             super(request, db, entry,fromSearch);
-            entryProps      = db.getProperties(entry);
+            entryProps      = db.getProperties(request,entry);
             editImg = HU.img(
                 getRepository().getUrlBase() + "/db/database_edit.png",
                 "View entry");
