@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.census;
 
-
 import org.json.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -41,83 +39,28 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- */
 public class AcsTypeHandler extends PointTypeHandler {
 
-    /** _more_ */
     public static final String URL =
         "https://api.census.gov/data/{year}/acs/acs5";
 
+    public static final String COL_FIELDS = "fields";
+    public static final String COL_HEADER = "header";
+    public static final String COL_PATTERN = "filter_pattern";
+    public static final String COL_FOR_TYPE = "for_type";
+    public static final String COL_FOR_VALUE = "for_value";
+    public static final String COL_IN_TYPE1 = "in_type1";
+    public static final String COL_IN_VALUE1 = "in_value1";
+    public static final String COL_IN_TYPE2 = "in_type2";
+    public static final String COL_IN_VALUE2 = "in_value2";
+    public static final String COL_SOURCE_URL = "source_url";
+    public static final String COL_INCLUDE_LOCALES = "include_locales";
 
-    /** _more_ */
-    private static int IDX =
-        org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
-
-
-    /** _more_ */
-    public static final int IDX_FIELDS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_HEADER = IDX++;
-
-    /**  */
-    public static final int IDX_PATTERN = IDX++;
-
-    /** _more_ */
-    public static final int IDX_FOR_TYPE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_FOR_VALUE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_IN_TYPE1 = IDX++;
-
-    /** _more_ */
-    public static final int IDX_IN_VALUE1 = IDX++;
-
-    /** _more_ */
-    public static final int IDX_IN_TYPE2 = IDX++;
-
-    /** _more_ */
-    public static final int IDX_IN_VALUE2 = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SOURCE_URL = IDX++;
-
-    /** _more_ */
-    public static final int IDX_INCLUDE_LOCALES = IDX++;
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public AcsTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param tmpSb _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, Appendable tmpSb,
                                       Object[] values)
@@ -128,7 +71,6 @@ public class AcsTypeHandler extends PointTypeHandler {
 
             return;
         }
-
 
         tmpSb.append(HtmlUtils.formTable());
         for (CensusVariable variable : getVariables(request,entry)) {
@@ -144,20 +86,6 @@ public class AcsTypeHandler extends PointTypeHandler {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param widget _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
@@ -197,28 +125,15 @@ public class AcsTypeHandler extends PointTypeHandler {
         return HtmlUtils.hbox(widget, sb.toString());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        String               header  = entry.getStringValue(request,IDX_HEADER, "");
-        boolean includeSpecial = entry.getBooleanValue(request,IDX_INCLUDE_LOCALES, false);
+        String               header  = entry.getStringValue(request,COL_HEADER, "");
+        boolean includeSpecial = entry.getBooleanValue(request,COL_INCLUDE_LOCALES, false);
         List<CensusVariable> vars    = getVariables(request,entry);
-        String               pattern = (String) entry.getValue(request,IDX_PATTERN);
+        String               pattern = (String) entry.getValue(request,COL_PATTERN);
         if ((pattern == null) || (pattern.trim().length() == 0)) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
@@ -237,15 +152,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         return file;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<String> getIndicatorIds(Request request,Entry entry) throws Exception {
         List<String> ids = new ArrayList<String>();
         for (CensusVariable variable : getVariables(request,entry)) {
@@ -256,15 +162,6 @@ public class AcsTypeHandler extends PointTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<CensusVariable> getVariables(Request request,Entry entry) throws Exception {
         List<CensusVariable> vars = new ArrayList<CensusVariable>();
         if (entry == null) {
@@ -318,20 +215,11 @@ public class AcsTypeHandler extends PointTypeHandler {
         return vars;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<String> getFieldLines(Request request,Entry entry) throws Exception {
         if (entry == null) {
             return new ArrayList<String>();
         }
-        String       s      = entry.getStringValue(request,IDX_FIELDS, "").trim();
+        String       s      = entry.getStringValue(request,COL_FIELDS, "").trim();
         List<String> fields = new ArrayList<String>();
         for (String line : StringUtil.split(s, "\n", true, true)) {
             if (line.startsWith("#")) {
@@ -343,15 +231,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         return fields;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
         /*
         if (entry != null) {
@@ -367,17 +246,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         return super.okToShowInForm(entry, arg, dflt);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -386,16 +254,16 @@ public class AcsTypeHandler extends PointTypeHandler {
         }
         String getArgValue = StringUtil.join(",", getIndicatorIds(request,entry));
 
-        String forType     = entry.getStringValue(request,IDX_FOR_TYPE, "us");
-        String forValue    = entry.getStringValue(request,IDX_FOR_VALUE, "");
+        String forType     = entry.getStringValue(request,COL_FOR_TYPE, "us");
+        String forValue    = entry.getStringValue(request,COL_FOR_VALUE, "");
         String forArgValue = forType + ":" + (Utils.stringDefined(forValue)
                 ? forValue
                 : "*");
 
-        String inType1     = entry.getStringValue(request,IDX_IN_TYPE1, "");
-        String inValue1    = entry.getStringValue(request,IDX_IN_VALUE1, "");
-        String inType2     = entry.getStringValue(request,IDX_IN_TYPE2, "");
-        String inValue2    = entry.getStringValue(request,IDX_IN_VALUE2, "");
+        String inType1     = entry.getStringValue(request,COL_IN_TYPE1, "");
+        String inValue1    = entry.getStringValue(request,COL_IN_VALUE1, "");
+        String inType2     = entry.getStringValue(request,COL_IN_TYPE2, "");
+        String inValue2    = entry.getStringValue(request,COL_IN_VALUE2, "");
         String key = getRepository().getProperty("census.api.key",
                          (String) null);
         //        "http://api.census.gov/data/2013/acs5?get=NAME,B01001_001E&for=county+subdivision:*&in=state:04";
@@ -428,16 +296,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         return url;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -445,17 +303,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         setAcsEntryName(request, entry, false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
@@ -463,28 +310,16 @@ public class AcsTypeHandler extends PointTypeHandler {
         setAcsEntryName(request, entry, true);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param force _more_
-     *
-     * @throws Exception _more_
-     */
     private void setAcsEntryName(Request request, Entry entry, boolean force)
             throws Exception {
         if ( !entry.isFile()) {
-            entry.setValue(IDX_SOURCE_URL, getPathForEntry(request, entry,false));
+            entry.setValue(COL_SOURCE_URL, getPathForEntry(request, entry,false));
         }
 
-
-        String inValue  = entry.getStringValue(request,IDX_IN_VALUE1, "");
-        String inType   = entry.getStringValue(request,IDX_IN_TYPE1, "");
-        String forValue = entry.getStringValue(request,IDX_FOR_VALUE, "");
-        String forType  = entry.getStringValue(request,IDX_FOR_TYPE, "");
+        String inValue  = entry.getStringValue(request,COL_IN_VALUE1, "");
+        String inType   = entry.getStringValue(request,COL_IN_TYPE1, "");
+        String forValue = entry.getStringValue(request,COL_FOR_VALUE, "");
+        String forType  = entry.getStringValue(request,COL_FOR_TYPE, "");
 
         if (Utils.stringDefined(inValue)) {
             Place place = Place.getPlace(inValue);
@@ -500,6 +335,5 @@ public class AcsTypeHandler extends PointTypeHandler {
             }
         }
     }
-
 
 }
