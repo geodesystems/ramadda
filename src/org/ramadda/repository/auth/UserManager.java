@@ -2311,6 +2311,7 @@ public class UserManager extends RepositoryManager {
 
     public Result processFindUserId(Request request) throws Exception {
         StringBuffer sb    = new StringBuffer();
+	sb.append("<center>");
         String       title = "Find User ID";
 
         if ( !getMailManager().isEmailEnabled()) {
@@ -2348,8 +2349,7 @@ public class UserManager extends RepositoryManager {
             sb.append(messageError("No user is registered with the given email address"));
         }
 
-        sb.append(messageNote(
-			      "Please enter your registered email address"));
+        sb.append(messageNote("Please enter your registered email address"));
         sb.append(HU.vspace());
         sb.append(request.form(getRepositoryBase().URL_USER_FINDUSERID));
         sb.append(HU.formTable());
@@ -2361,6 +2361,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.formEntry("", HU.submit("Submit")));
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
+	sb.append("</center>");
 
         return addHeader(request, sb, title);
     }
@@ -2436,7 +2437,9 @@ public class UserManager extends RepositoryManager {
         }
         if (user == null) {
             if (request.exists(ARG_USER_NAME)) {
+		sb.append("<center>");
                 sb.append(messageError("Not a registered user"));
+		sb.append("</center>");
                 sb.append(HU.vspace());
             }
             addPasswordResetForm(request, sb,
@@ -2485,6 +2488,7 @@ public class UserManager extends RepositoryManager {
 
     private void addPasswordResetForm(Request request, StringBuilder sb,
                                       String name) {
+	sb.append("<center>");
         sb.append(messageNote("Please enter your user ID"));
         request.formPostWithAuthToken(
 				      sb, getRepositoryBase().URL_USER_RESETPASSWORD);
@@ -2501,6 +2505,7 @@ public class UserManager extends RepositoryManager {
 		  HU.formEntry("", HU.submit("Reset your password")));
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
+	sb.append("</center>");
     }
 
     public boolean isPasswordValid(User user, String rawPassword)
@@ -3092,7 +3097,6 @@ public class UserManager extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
         sb.append(HU.center(messageNote(msg("You are signed out"))));
         sb.append(makeLoginForm(request));
-
         return addHeader(request, sb, "Sign out");
     }
 

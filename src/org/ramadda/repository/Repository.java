@@ -4119,7 +4119,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (entry == null) {
                         if ( !tryingOnePathAsAlias) {
 
-			    StringBuilder sb =new StringBuilder(HU.center(getPageHandler().showDialogError("Could not find aliased entry:"+ HU.sanitizeString(alias))));
+			    StringBuilder sb =new StringBuilder(HU.center(getPageHandler().showDialogError("Could not find entry: "+ HU.sanitizeString(alias))));
 
 			    if(request.isAnonymous()) {
 				String redirectUrl =   Utils.encodeBase64(request.getUrl());
