@@ -126,7 +126,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
         if ((lastInput == null)
                 && entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE)) {
             lastInput =
-                (String) entry.getValue(request,ConvertibleTypeHandler.IDX_COMMANDS);
+                (String) entry.getValue(request,ConvertibleTypeHandler.COL_COMMANDS);
 
 	}
 	if (!Utils.stringDefined(lastInput)) {

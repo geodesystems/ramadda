@@ -28,12 +28,7 @@ import java.util.List;
 
 public class ConvertibleTypeHandler extends PointTypeHandler {
     public static final String TYPE_CONVERTIBLE = "type_convertible";
-    /*
-    //public static final int IDX_NUMPOINTS = IDX++;
-    //public static final int IDX_PROPERTIES = IDX++;
-    //public static final int IDX_COMMANDS = IDX++;
-    */
-    public static final String IDX_COMMANDS = "convert_commands";
+    public static final String COL_COMMANDS = "convert_commands";
 
 
     public ConvertibleTypeHandler(Repository repository, Element entryNode)
@@ -43,7 +38,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 
     public List<String> getCsvCommands(Request request, Entry entry) throws Exception {
         String commands =
-            (String) entry.getValue(request,ConvertibleTypeHandler.IDX_COMMANDS);
+            (String) entry.getValue(request,ConvertibleTypeHandler.COL_COMMANDS);
         if ( !Utils.stringDefined(commands)) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,

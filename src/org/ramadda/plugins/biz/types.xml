@@ -230,7 +230,6 @@ Data courtesy of  <a href="https://beta.bls.gov/dataViewer/view/timeseries/{{fie
 
 
 
-
   <type name="type_biz_stockseries"  super="type_point" description="Stock Ticker Data"  handler="org.ramadda.plugins.biz.StockSeriesTypeHandler" mefirst="true">
      <property name="icon" value="/biz/chart-up.png"/>
      <property name="point.initialize" value="false"/>
@@ -328,17 +327,6 @@ Data courtesy of  <a href="{{resource  url=true}}">Quandl</a>.
 
 
 
-  <type name="type_enigma_table"  super="type_point"  description="Enigma Table"  handler="org.ramadda.plugins.biz.EnigmaTableTypeHandler"  mefirst="true">
-     <property name="record.file.class" value="org.ramadda.plugins.biz.EnigmaTable"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.properties.show" value="false"/>
-     <property name="point.initialize" value="false"/>
-     <property name="chart.type" value="table"/>
-     <property name="icon" value="/biz/enigma.png"/>
-     <column   name="table_id" type="string"  columns="60" label="Enigma Table ID"  >
-<suffix><![CDATA[From <a href="https://app.enigma.io/search">Enigma</a>]]></suffix>
-</column>
-</type>
 
 
 </types>

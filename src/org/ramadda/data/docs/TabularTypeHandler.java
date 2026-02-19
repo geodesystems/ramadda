@@ -33,8 +33,6 @@ import java.util.zip.ZipInputStream;
 
 public class TabularTypeHandler extends ConvertibleTypeHandler {
     public static final String TYPE_TABULAR = "type_document_tabular";
-    private static int IDX = ConvertibleTypeHandler.IDX_LAST + 1;
-    public static final int IDX_LAST = IDX;
     private TabularOutputHandler tabularOutputHandler;
 
     public TabularTypeHandler(Repository repository, Element entryNode)

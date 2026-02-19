@@ -96,7 +96,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         String props = recordFile.getEntryFieldsProperties();
 
 	entry.setValue(COL_PROPERTIES,props);
-	//        getEntryValues(entry)[IDX_PROPERTIES] = props;
 
         Rectangle2D bounds   = shapefile.getBoundingBox();
         double[][]  lonlat   = new double[][] {
@@ -165,7 +164,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         if ( !entry.isFile()) {
 	    //            return true;
         }
-        int numPoints = entry.getIntValue(request,IDX_RECORD_COUNT, -1);
+        int numPoints = entry.getIntValue(request, COL_NUMBEROFPOINTS, -1);
 
         if (numPoints < 0) {
             long t1 = System.currentTimeMillis();
@@ -187,7 +186,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                 numFeatures++;
             }
             long t2 = System.currentTimeMillis();
-            getEntryValues(entry)[IDX_RECORD_COUNT] = Integer.valueOf(numPoints);
+	    entry.setValue(COL_NUMBEROFPOINTS,Integer.valueOf(numPoints));
             getEntryManager().updateEntry(request, entry);
         }
 

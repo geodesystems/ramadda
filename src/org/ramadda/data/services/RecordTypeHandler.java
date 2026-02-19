@@ -45,14 +45,8 @@ import java.util.List;
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
 									   RecordFileContext {
     public static boolean debug = false;
-    private static int IDX = 0;
+
     public static final String COL_NUMBEROFPOINTS="numberofpoints";
-
-
-    public static final int IDX_RECORD_COUNT = IDX++;
-    public static final int IDX_PROPERTIES = IDX++;
-    public static final int IDX_LAST = IDX_PROPERTIES;
-
     public static final String COL_PROPERTIES = "properties";
 
 

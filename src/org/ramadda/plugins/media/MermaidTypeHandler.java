@@ -34,8 +34,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- */
+
 @SuppressWarnings("unchecked")
 public class MermaidTypeHandler extends ConvertibleTypeHandler {
 

@@ -40,7 +40,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class VegaTypeHandler extends ConvertibleTypeHandler {
 
-    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
     public VegaTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -68,8 +67,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
         if ( !tag.equals("vega_chart")) {
             //          return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
         }
-        //          String width  = entry.getValue(request,IDX_WIDTH, "320");
-        //          String height = entry.getValue(request,IDX_HEIGHT, "256");
         String vega = getStorageManager().readSystemResource(entry.getFile());
         StringBuilder sb = new StringBuilder();
         wikiUtil.handleVega(sb, vega, wikiUtil.getHandler());

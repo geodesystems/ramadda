@@ -84,8 +84,9 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
         DbaseRecordFile recordFile = new DbaseRecordFile(request, entry,
 							 new IO.Path(entry.getResource().getPath()),
 							 getDbf(entry));
+	
         String props = recordFile.getEntryFieldsProperties();
-        getEntryValues(entry)[IDX_PROPERTIES] = props;
+	entry.setValue(COL_PROPERTIES,props);
     }
 
     private DbaseFile getDbf(Entry entry) throws Exception {
@@ -110,23 +111,11 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             ShapefileOutputHandler.class);
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public class DbaseRecordFile extends CsvFile {
-
         Request request;
-
         Entry entry;
-
         DbaseFile dbf;
-
         Hashtable props;
-
         String fields;
 
         public DbaseRecordFile(Request request, Entry entry, IO.Path path,
