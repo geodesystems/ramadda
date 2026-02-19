@@ -31,10 +31,8 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     public static final String URL =
         "https://api.weather.gov/stations/{station}/observations";
 
-    private static int IDX =
-        org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
 
-    public static final int IDX_SITE_ID = IDX++;
+    public static final String COL_SITE_ID = "site_id";
 
     public NwsObsTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -45,7 +43,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)throws Exception {
         super.initializeNewEntry(request, entry, newType);                                      
 	if(!isNew(newType)) return;
-	initializeStation(request, entry,  (String) entry.getStringValue(request,IDX_SITE_ID, ""));
+	initializeStation(request, entry,  (String) entry.getStringValue(request,COL_SITE_ID, ""));
    }
 
     @Override
@@ -54,7 +52,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry,forRead);
         }
-        String siteId = entry.getStringValue(request,IDX_SITE_ID, "");
+        String siteId = entry.getStringValue(request,COL_SITE_ID, "");
         String url = URL.replace("{station}", siteId);
         return url;
     }

@@ -33,12 +33,9 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     public static final String URL = "https://aviationweather.gov/api/data/metar?format=json&ids={station}&hours={offset}";
 
-    private static int IDX =
-        org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
-
-    public static final int IDX_SITE_ID = IDX++;
-    public static final int IDX_STATE = IDX++;
-    public static final int IDX_TIME_OFFSET = IDX++;
+    public static final String COL_SITE_ID = "site_id";
+    public static final String COL_STATE = "state";
+    public static final String COL_TIME_OFFSET = "time_offset";
 
     public AwcMetarTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -89,7 +86,6 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	}catch(Exception exc) {
 	    exc.printStackTrace();
 	}
-
     }
 
     @Override
@@ -103,14 +99,17 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) {
 	    super.initializeNewEntry(request, entry, newType);
 	}
-	String id = (String) entry.getStringValue(request,IDX_SITE_ID, "");
+	String id = (String) entry.getStringValue(request,COL_SITE_ID, "");
 	initializeStation(request, entry,  id);
 
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) {
+	    return;
+	}
 
 	HashSet<String> seen = new HashSet<String>();
-	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_id",seen,"^[^-]+$",null);
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,COL_SITE_ID,seen,"^[^-]+$",null);
 	for(Entry newEntry: entries) {
-	    initializeStation(request,newEntry,(String)newEntry.getValue(request,IDX_SITE_ID));
+	    initializeStation(request,newEntry,(String)newEntry.getValue(request,COL_SITE_ID));
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
 
@@ -123,8 +122,8 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry, forRead);
         }
-        String siteId = entry.getStringValue(request,IDX_SITE_ID, "");
-        int    offset = (int) entry.getIntValue(request,IDX_TIME_OFFSET, 24);
+        String siteId = entry.getStringValue(request,COL_SITE_ID, "");
+        int    offset = (int) entry.getIntValue(request,COL_TIME_OFFSET, 24);
         String url = URL.replace("{station}", siteId).replace("{offset}", "" + offset);
         return url;
     }

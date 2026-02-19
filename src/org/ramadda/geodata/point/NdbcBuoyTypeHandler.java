@@ -32,9 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NdbcBuoyTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_STATION_ID = IDX++;
-    private static int IDX_DATA_TYPE = IDX++;
+
+    private static String COL_STATION_ID = "station";
+    private static String COL_DATA_TYPE = "data_type";
+
     private static final String URL_TEMPLATE =
         "https://www.ndbc.noaa.gov/data/realtime2/${station_id}.${data_type}";
 
@@ -48,7 +49,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
 	super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String type = (String)  entry.getValue(request,IDX_DATA_TYPE);	
+	String type = (String)  entry.getValue(request,COL_DATA_TYPE);	
 	initializeNewEntryInner(request, entry,type);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
@@ -63,9 +64,9 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
     private void initializeNewEntryInner(Request request, Entry entry,String type)
             throws Exception {
 
-	String id = (String)  entry.getValue(request,IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,COL_STATION_ID);
 	if(!stringDefined(id)) return;
-	entry.setValue(IDX_DATA_TYPE,type);	
+	entry.setValue(COL_DATA_TYPE,type);	
 	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id.toLowerCase();
 	try {
 	    String html = IO.readUrl(new URL(url));
@@ -108,16 +109,9 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
         String url = URL_TEMPLATE;
         url = url.replace("${station_id}",
-                          "" + entry.getValue(request,IDX_STATION_ID));
-        url = url.replace("${data_type}", "" + entry.getValue(request,IDX_DATA_TYPE));
+                          "" + entry.getValue(request,COL_STATION_ID));
+        url = url.replace("${data_type}", "" + entry.getValue(request,COL_DATA_TYPE));
         return url;
-    }
-
-    public static void main(String[]args) {
-  	String mtd = "<p><b>Owned and maintained by National Data Buoy Center</b><br>\n		<b>3-meter foam buoy</b><br>\n		<b>SCOOP payload</b><br>\n		<b>31.759 N 74.936 W (31&#176;45'33\" N 74&#176;56'10\" W)</b><br>\n		<br>";
-	//	String name =  StringUtil.findPattern(s,"(?i).*currentstnname *= *'+([^'])'.*");
-	System.err.println(StringUtil.findPattern(mtd,"<b>([0-9\\.]+ (N|S))"));
-
     }
 
 }

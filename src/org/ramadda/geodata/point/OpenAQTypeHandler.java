@@ -35,16 +35,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class OpenAQTypeHandler extends PointTypeHandler {
-
-    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
-    private static int IDX_LOCATION_ID = IDX++;
-    private static int IDX_LOCALITY = IDX++;
-    private static int IDX_COUNTRY = IDX++;
-    private static int IDX_PROVIDER = IDX++;    
-    private static int IDX_SENSORS = IDX++;
-    private static int IDX_SENSOR_INDEX = IDX++;        
-    private static int IDX_STATIONARY = IDX++;    
-    private static int IDX_HOURS_OFFSET = IDX++;
+    private static String COL_LOCATION_ID = "location_id";
+    private static String COL_LOCALITY = "locality";
+    private static String COL_COUNTRY = "country";
+    private static String COL_PROVIDER = "provider";    
+    private static String COL_SENSORS = "sensors";
+    private static String COL_SENSOR_INDEX = "sensorindex";        
+    private static String COL_STATIONARY = "stationary";    
+    private static String COL_HOURS_OFFSET = "hours_offset";
 
     private static final String MEASURE_PM25 = "pm25";
 
@@ -85,7 +83,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
+	String id = (String)entry.getValue(request,COL_LOCATION_ID);
 	if(Utils.stringDefined(id)) {
 	    initializeNewEntryInner(request, entry);
 	}
@@ -101,7 +99,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     }
 
     private void initializeNewEntryInner(Request request, Entry entry) throws Exception {
-	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
+	String id = (String)entry.getValue(request,COL_LOCATION_ID);
 	if(!Utils.stringDefined(id)) {
 	    return;
 	}
@@ -123,10 +121,10 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	JSONObject coords = location.getJSONObject("coordinates");
 
 	entry.setName(location.getString("name"));
-	entry.setValue(IDX_LOCALITY,location.optString("locality",""));	
-	entry.setValue(IDX_COUNTRY,JU.readValue(location,"country.name",""));
-	entry.setValue(IDX_PROVIDER,JU.readValue(location,"provider.name",""));	
-	entry.setValue(IDX_STATIONARY,new Boolean(!location.optBoolean("isMobile",false)));
+	entry.setValue(COL_LOCALITY,location.optString("locality",""));	
+	entry.setValue(COL_COUNTRY,JU.readValue(location,"country.name",""));
+	entry.setValue(COL_PROVIDER,JU.readValue(location,"provider.name",""));	
+	entry.setValue(COL_STATIONARY,new Boolean(!location.optBoolean("isMobile",false)));
 	entry.setLatitude(coords.getDouble("latitude"));
 	entry.setLongitude(coords.getDouble("longitude"));	
 
@@ -146,7 +144,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	}
 	//default to pm25 if it is there
 	entry.setValue("sensorindex",new Integer(index));
-	entry.setValue(IDX_SENSORS,Utils.join(ss,","));
+	entry.setValue(COL_SENSORS,Utils.join(ss,","));
     }
 
     @Override
@@ -165,13 +163,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     @Override
     public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
-        String location = entry.getStringValue(request,IDX_LOCATION_ID, (String) null);
+        String location = entry.getStringValue(request,COL_LOCATION_ID, (String) null);
         if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
             return null;
         }
         Date now = new Date();
-        Integer hoursOffset = (Integer) entry.getIntValue(request,IDX_HOURS_OFFSET,
+        Integer hoursOffset = (Integer) entry.getIntValue(request,COL_HOURS_OFFSET,
 							  Integer.valueOf(24*7));
 
         GregorianCalendar cal = new GregorianCalendar();

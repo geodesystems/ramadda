@@ -16,9 +16,9 @@ import java.io.*;
 import java.net.URL;
 
 public class RiseTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    public static final int IDX_RISE_ID = IDX++;
-    public static final int IDX_LOCATION_TYPE = IDX++;
+
+    public static final String COL_RISE_ID = "rise_id";
+    public static final String COL_LOCATION_TYPE = "location_type";
 
     public RiseTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -30,8 +30,8 @@ public class RiseTypeHandler extends PointTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-        String id = (String) entry.getStringValue(request,IDX_RISE_ID, "");
-        if ( !Utils.stringDefined(id)) {
+        String id = (String) entry.getStringValue(request,COL_RISE_ID, "");
+        if (!Utils.stringDefined(id)) {
             return;
         }
 	id =id.trim();
@@ -50,9 +50,9 @@ public class RiseTypeHandler extends PointTypeHandler {
             double lat = coords.getDouble(1);
             entry.setLocation(lat, lon);
             entry.setAltitude(attrs.getDouble("elevation"));
-            entry.setValue(IDX_LOCATION_TYPE,
+            entry.setValue(COL_LOCATION_TYPE,
                            attrs.getString("locationTypeName"));
-            if (Utils.stringDefined(entry.getName())) {
+            if (!Utils.stringDefined(entry.getName())) {
                 entry.setName(attrs.getString("locationName"));
             }
             if (attrs.has("locationRegionNames")) {

@@ -48,13 +48,13 @@ import java.util.List;
 
 public class NasaAmesTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    public static final int IDX_DIMENSIONS = IDX++;
-    public static final int IDX_ORIGINATOR_NAME = IDX++;
-    public static final int IDX_AFFILIATION = IDX++;
-    public static final int IDX_INSTRUMENT = IDX++;
-    public static final int IDX_CAMPAIGN = IDX++;
-    public static final int IDX_COMMENTS = IDX++;
+
+    public static final String COL_DIMENSIONS = "dimensions";
+    public static final String COL_ORIGINATOR_NAME = "originator_name";
+    public static final String COL_AFFILIATION = "affiliation";
+    public static final String COL_INSTRUMENT = "instrument";
+    public static final String COL_CAMPAIGN = "campaign";
+    public static final String COL_COMMENTS = "comments";
 
     public NasaAmesTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -77,12 +77,12 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         NasaAmesRecordFile f =
             (NasaAmesRecordFile) recordEntry.getRecordFile();
         Entry entry = recordEntry.getEntry();
-        entry.setValue(IDX_DIMENSIONS, f.numDimensions);
-        entry.setValue(IDX_ORIGINATOR_NAME, f.name);
-        entry.setValue(IDX_AFFILIATION, f.affiliation);
-        entry.setValue(IDX_INSTRUMENT, f.instrument);
-        entry.setValue(IDX_CAMPAIGN, f.campaign);
-        entry.setValue(IDX_COMMENTS, f.comments);
+        entry.setValue(COL_DIMENSIONS, f.numDimensions);
+        entry.setValue(COL_ORIGINATOR_NAME, f.name);
+        entry.setValue(COL_AFFILIATION, f.affiliation);
+        entry.setValue(COL_INSTRUMENT, f.instrument);
+        entry.setValue(COL_CAMPAIGN, f.campaign);
+        entry.setValue(COL_COMMENTS, f.comments);
         if ( !metadata.hasTimeRange() && (f.startDate != null)) {
             entry.setStartAndEndDate(f.startDate.getTime());
         }

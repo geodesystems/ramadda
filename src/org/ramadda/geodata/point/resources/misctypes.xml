@@ -273,7 +273,7 @@ skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=fal
 
 
 
-  <type name="type_sounding_gsd"  description="GSD Sounding" super="type_sounding"  foruser="true" 
+  <type name="type_sounding_gsd"  description="GSD Sounding" super="type_sounding"  foruser="false" 
         handler="org.ramadda.geodata.point.GsdTypeHandler">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="record.file.cacheok" value="false"/>

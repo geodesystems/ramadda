@@ -29,8 +29,7 @@ import java.util.Hashtable;
 
 public class DaymetTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_STRIDE = IDX++;
+    private static String COL_STRIDE = "stride";
 
     public DaymetTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -104,7 +103,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-	    int                   stride = entry.getIntValue(request,IDX_STRIDE, 7);
+	    int                   stride = entry.getIntValue(request,COL_STRIDE, 7);
 	    //The header is taken care of below
 	    String latlon = loc[0]+","+loc[1];
 	    String[]              args   = new String[] {

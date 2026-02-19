@@ -19,13 +19,12 @@ import java.io.*;
 import java.net.URL;
 
 public class SnotelTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_SITE_NUMBER = IDX++;
-    private static int IDX_SITE_ID = IDX++;
-    private static int IDX_STATE = IDX++;
-    private static int IDX_COUNTY = IDX++;
-    private static int IDX_NETWORK = IDX++;
-    private static int IDX_HUC_ID = IDX++;
+    private static String COL_SITE_NUMBER = "site_number";
+    private static String COL_SITE_ID = "site_id";
+    private static String COL_STATE = "state";
+    private static String COL_COUNTY = "county";
+    private static String COL_NETWORK = "network";
+    private static String COL_HUC_ID = "huc_id";
 
     public SnotelTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -54,7 +53,7 @@ public class SnotelTypeHandler extends PointTypeHandler {
 
     private boolean initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
-        String id = (String) entry.getStringValue(request,IDX_SITE_NUMBER, "");
+        String id = (String) entry.getStringValue(request,COL_SITE_NUMBER, "");
         if ( !Utils.stringDefined(id)) {
             return false;
         }
@@ -99,13 +98,13 @@ public class SnotelTypeHandler extends PointTypeHandler {
                 entry.setName(obj.getString("name"));
             }
 	    String state = obj.getString("stateCode");
-	    entry.setValue(IDX_STATE,state);
-	    entry.setValue(IDX_COUNTY,obj.getString("countyName"));
-	    entry.setValue(IDX_HUC_ID,obj.getString("huc"));
+	    entry.setValue(COL_STATE,state);
+	    entry.setValue(COL_COUNTY,obj.getString("countyName"));
+	    entry.setValue(COL_HUC_ID,obj.getString("huc"));
 	    String network = obj.getString("networkCode");
-	    entry.setValue(IDX_NETWORK,network);
+	    entry.setValue(COL_NETWORK,network);
 	    String siteId  =id+":"+ state+":" + network;
-	    entry.setValue(IDX_SITE_ID,siteId);
+	    entry.setValue(COL_SITE_ID,siteId);
 	    String dataUrl = "http://www.wcc.nrcs.usda.gov/reportGenerator/view_csv/customSingleStationReport/daily/" + siteId+"|name/-14,0/WTEQ::value,WTEQ::delta,SNWD::value,SNWD::delta,PREC::value,TOBS::value,TMIN::value,TMAX::value";
 	    entry.setResource(new Resource(dataUrl));
 	    return true;

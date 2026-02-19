@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ISLRTypeHandler extends PointTypeHandler {
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_STATION_ID = IDX++;
+    private static String COL_STATION = "station";
 
     public ISLRTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -40,7 +39,7 @@ public class ISLRTypeHandler extends PointTypeHandler {
 	//sl_taskforce_scenarios_psmsl_id_759.csv
 	String id = StringUtil.findPattern(entry.getResource().getPath(),".*_(\\d+)\\..*");
 	if(!stringDefined(id)) return;
-	entry.setValue(IDX_STATION_ID,id);
+	entry.setValue(COL_STATION,id);
 	String url = "https://www.sonel.org/?page=altimetrie&psmslId=" + id;
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {

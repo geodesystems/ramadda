@@ -28,8 +28,8 @@ import java.util.List;
 
 public class GsdTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_MODEL = IDX++;
+    private static String COL_MODEL = "model";
+
     private static final String URL_TEMPLATE =
         "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source={model}&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
 
@@ -61,7 +61,7 @@ public class GsdTypeHandler extends PointTypeHandler {
         String lon   = (String) requestProperties.get("longitude");
         String model = (String) requestProperties.get("model");
         if ((model == null) || model.equals("{model}")) {
-            model = (String) entry.getStringValue(request,IDX_MODEL, "GFS");
+            model = (String) entry.getStringValue(request,COL_MODEL, "GFS");
         }
         if (model.length() == 0) {
             model = "GFS";

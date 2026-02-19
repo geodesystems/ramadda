@@ -33,16 +33,16 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
     private static JSONObject siteImages;    
     private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
 
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_SITE_CODE = IDX++;
-    private static int IDX_PRODUCT_CODE = IDX++;
-    private static int IDX_YEAR = IDX++;
-    private static int IDX_MONTH = IDX++;        
-    private static int IDX_DOMAIN = IDX++;        
-    private static int IDX_STATE = IDX++;    
-    private static int IDX_SITE_TYPE = IDX++;
-    private static int IDX_MAXPOINTS = IDX++;
-    private static int IDX_FILEPATTERN = IDX++;            
+
+    private static String COL_SITE_CODE = "sitecode";
+    private static String COL_PRODUCT_CODE = "productcode";
+    private static String COL_YEAR = "productyear";
+    private static String COL_MONTH = "productmonth";        
+    private static String COL_DOMAIN = "domainname";        
+    private static String COL_STATE = "state";    
+    private static String COL_SITE_TYPE = "sitetype";
+    private static String COL_MAXPOINTS = "maxpoints";
+    private static String COL_FILEPATTERN = "filepattern";            
 
     public NeonTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -54,7 +54,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	throws Exception {
 	if(!isNew(newType)) return;
 	initializeNewEntryInner(request, entry,null);
-
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 	HashSet<String> seen = new HashSet<String>();
@@ -67,7 +66,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 
     private void initializeNewEntryInner(Request request, Entry entry,Entry base)
 	throws Exception {	
-	String id = ("" + entry.getValue(request,IDX_SITE_CODE)).trim();
+	String id = ("" + entry.getValue(request,COL_SITE_CODE)).trim();
 	if(!stringDefined(id)) return;
 	if(siteInfo==null) {
 	    siteInfo= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonsites.json"));
@@ -77,15 +76,15 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	//Clone from the base but reset the sitecode
 	if(base!=null) {
 	    entry.setValues(base.getValues().clone());
-	    entry.setValue(IDX_SITE_CODE,id);
+	    entry.setValue(COL_SITE_CODE,id);
 	}
 
     	entry.setLatitude(site.getDouble("latitude"));
     	entry.setLongitude(site.getDouble("longitude"));	
-	entry.setValue(IDX_SITE_TYPE,site.getString("siteType"));
-	entry.setValue(IDX_DOMAIN,site.getString("domainName"));
-	entry.setValue(IDX_STATE,site.getString("stateName"));		
-	String product = (String)entry.getValue(request,IDX_PRODUCT_CODE);
+	entry.setValue(COL_SITE_TYPE,site.getString("siteType"));
+	entry.setValue(COL_DOMAIN,site.getString("domainName"));
+	entry.setValue(COL_STATE,site.getString("stateName"));		
+	String product = (String)entry.getValue(request,COL_PRODUCT_CODE);
 
 	if(!stringDefined(entry.getName())) {
 	    Column siteColumn = findColumn("sitecode");
@@ -118,7 +117,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	if(siteImages==null) {
 	    siteImages= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonimages.json"));
 	}	
-	String siteId = (String)entry.getValue(request,IDX_SITE_CODE);
+	String siteId = (String)entry.getValue(request,COL_SITE_CODE);
 	if(!stringDefined(siteId)) return "";
 	String images = siteImages.optString(siteId.trim(),null);
 	if(images==null) return "";
@@ -147,11 +146,11 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	    return entry.getResource().getPath();
 	}
 	return  getPathForEntry(request, entry,
-				(String)entry.getValue(request,IDX_SITE_CODE),
-				(String)entry.getValue(request,IDX_PRODUCT_CODE),
-				(String)entry.getValue(request,IDX_YEAR),
-				(String)entry.getValue(request,IDX_MONTH),
-				(String)entry.getValue(request,IDX_FILEPATTERN));				
+				(String)entry.getValue(request,COL_SITE_CODE),
+				(String)entry.getValue(request,COL_PRODUCT_CODE),
+				(String)entry.getValue(request,COL_YEAR),
+				(String)entry.getValue(request,COL_MONTH),
+				(String)entry.getValue(request,COL_FILEPATTERN));				
     }
 
     public Result processEntryAction(Request request, Entry entry)

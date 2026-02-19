@@ -34,8 +34,8 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
     private static final String PRODUCT_HIGH_LOW="high_low";        
     private static final String PRODUCT_MONTHLY_MEAN="monthly_mean";
     private static final String PRODUCT_PREDICTIONS="predictions";    
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_STATION_ID = IDX++;
+
+    private static String COL_STATION_ID = "station_id";
 
     public NoaaTidesTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -60,14 +60,12 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
     private  void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {	
-	String id = (String)  entry.getValue(request,IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,COL_STATION_ID);
 	if(!stringDefined(id)) {
 	    //try to extract it from the file name
 	    String resource = entry.getResource().getPath();
 	    if(stringDefined(resource)) {
 		id = StringUtil.findPattern(resource,"(\\d{7})\\.csv");
-		System.err.println(id);
-
 	    }
 	}
 
@@ -78,8 +76,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	try {
 	    //https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/8575512.json?expand=datums,floodlevels,disclaimers,notices,details,benchmarks&units=english
 	    String json = IO.readUrl(new URL(url));
-	    System.out.println(url);
-	    System.out.println(json);
             JSONObject  obj   = new JSONObject(json);
 
 	    JSONArray stations = obj.getJSONArray("stations");	    
@@ -158,7 +154,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	if(entry.isFile()) {
 	    return super.getPathForEntry(request,entry,forRead);
 	}
-	String id = (String)  entry.getValue(request,IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,COL_STATION_ID);
 	if(!Utils.stringDefined(id)) {
 	    throw new IllegalStateException("No station defined for NOAA Tide data:" + entry);
 	}
@@ -195,7 +191,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	}
 
 	String datum = (String)entry.getValue(request,"datum","MLLW");
-	//	System.err.println("product:" + product +" datum:" + datum);
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
 			    "application","NOS.COOPS.TAC.WL",
 			    "time_zone","GMT",

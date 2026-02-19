@@ -41,9 +41,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
 
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    private static int IDX_STRIDE = IDX++;
 
     public WaggleTypeHandler(Repository repository, Element node)
             throws Exception {

@@ -23,7 +23,7 @@ You just need to enter the Sensor ID.
 To find the ID view the map at
 <a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
 click on "Show Details". The ID is in the URL, 
-e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.openaq.org/locations/424</a>
+e.g. 7594 in <a href=https://explore.openaq.org/locations/7594>https://explore.openaq.org/locations/7594</a>
 -callout]]></property>
      <column name="location_id" label="Sensor ID"/>
      <column  name="locality"  label="Locality" type="enumerationplus" cansearch="true"/>

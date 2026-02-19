@@ -44,14 +44,16 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static boolean debug = false;
     private String apiKey;
     private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    public static final int IDX_SENSOR_ID = IDX++;
-    public static final int IDX_PRIVATE_KEY = IDX++;
-    public static final int IDX_ACTIVE = IDX++;
-    public static final int IDX_FIELDS = IDX++;    
-    public static final int IDX_MODEL = IDX++;
-    public static final int IDX_HARDWARE = IDX++;
-    public static final int IDX_LOCATION_TYPE = IDX++;
+
+
+    public static final String COL_SENSOR_ID = "sensor_id";
+    public static final String COL_PRIVATE_KEY = "private_key";
+    public static final String COL_ACTIVE = "active";
+    public static final String COL_FIELDS = "fields";
+    public static final String COL_MODEL = "model";
+    public static final String COL_HARDWARE = "hardware";
+    public static final String COL_LOCATION_TYPE = "location_type";
+
     private static final String FIELDS_STRING_DEFAULT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0";
 
@@ -101,7 +103,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
     private String getFieldsType(Request request,Entry entry) {
-	return (String)entry.getValue(request,IDX_FIELDS);
+	return (String)entry.getValue(request,COL_FIELDS);
     }
 
     private String makeFieldsProperty(Entry entry,List<String>fields) {
@@ -179,7 +181,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                 getEntryManager().getEntriesWithType(request,
                     "type_point_purpleair");
             for (Entry entry : entries) {
-                if ( !entry.getValue(request,IDX_ACTIVE).toString().equals("true")) {
+                if ( !entry.getValue(request,COL_ACTIVE).toString().equals("true")) {
                     if (debug) {
                         System.err.println("\tskipping:" + entry);
                     }
@@ -204,7 +206,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
             return;
         }
-        int points = entry.getIntValue(request,IDX_RECORD_COUNT, 0);
+        int points = entry.getIntValue(request,COL_NUMBEROFPOINTS, 0);
         if (points == 0) {
             //If its the first record
             entry.setStartDate(sensor.date.getTime());
@@ -239,8 +241,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         fos.write(row.toString().getBytes());
         fos.close();
         entry.getResource().setFileSize(file.length());
-
-        entry.setValue(IDX_RECORD_COUNT, points + 1);
+        entry.setValue(COL_NUMBEROFPOINTS, points + 1);
         getEntryManager().updateEntry(request, entry);
 
     }
@@ -250,7 +251,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-        String id = (String) entry.getStringValue(request,IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(request,COL_SENSOR_ID, "");
         File newFile = getStorageManager().getTmpFile(request,
                            id + "_purpleair.csv");
         IOUtil.writeTo(
@@ -292,9 +293,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         entry.setLatitude(sensor.data.getDouble("latitude"));
         entry.setLongitude(sensor.data.getDouble("longitude"));
         entry.setAltitude(sensor.data.getDouble("altitude"));
-        entry.setValue(IDX_MODEL, sensor.data.getString("model"));
-        entry.setValue(IDX_HARDWARE, sensor.data.getString("hardware"));
-        entry.setValue(IDX_LOCATION_TYPE,
+        entry.setValue(COL_MODEL, sensor.data.getString("model"));
+        entry.setValue(COL_HARDWARE, sensor.data.getString("hardware"));
+        entry.setValue(COL_LOCATION_TYPE,
                        (sensor.data.getInt("location_type") == 0)
                        ? "outside"
                        : "inside");
@@ -310,7 +311,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
     private String getPrivateKey(Entry entry) {
-	String privateKey = (String) entry.getStringValue(getAdminRequest(),IDX_PRIVATE_KEY, "");
+	String privateKey = (String) entry.getStringValue(getAdminRequest(),COL_PRIVATE_KEY, "");
         if (Utils.stringDefined(privateKey)) {
             privateKey = privateKey.trim();
             String tmp = getRepository().getProperty(privateKey,
@@ -329,7 +330,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    System.err.println("PurpleAir: no apikey specified");
             return null;
         }
-        String id = (String) entry.getStringValue(request,IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(request,COL_SENSOR_ID, "");
         if ( !Utils.stringDefined(id)) {
 	    System.err.println("PurpleAir: no sensor id in entry");
             return null;
@@ -385,7 +386,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             FileOutputStream fos  = new FileOutputStream(file);
             fos.write(getFileHeader(request,entry).getBytes());
             fos.close();
-            entry.setValue(IDX_RECORD_COUNT, 0);
+            entry.setValue(COL_NUMBEROFPOINTS, 0);
             entry.getResource().setFileSize(file.length());
             getEntryManager().updateEntry(request, entry);
             sb.append(
@@ -449,7 +450,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    String fields = request.getString(ARG_FIELDS,"");
 	    if(!stringDefined(fields)) fields = FIELDS_DOWNLOAD_ALL;
 	    String url = HU.url("https://api.purpleair.com/v1/sensors/" +
-				entry.getStringValue(request,IDX_SENSOR_ID,"")+"/history/csv",
+				entry.getStringValue(request,COL_SENSOR_ID,"")+"/history/csv",
 				ARG_FIELDS,fields,
 				ARG_AVERAGE,request.getString(ARG_AVERAGE,""));
 	    String privateKey = getPrivateKey(entry);

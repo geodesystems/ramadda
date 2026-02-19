@@ -30,8 +30,7 @@ import java.util.List;
 
 public class TmyTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;
-    private static int IDX_STATE = IDX++;
+    private static String COL_STATE = "state";
 
     public TmyTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -64,7 +63,7 @@ public class TmyTypeHandler extends PointTypeHandler {
         //690150,"TWENTYNINE PALMS",CA,-8.0,34.300,-116.167,626
         List<String> toks = StringUtil.split(line, ",");
         entry.setName(toks.get(1).replaceAll("\"", ""));
-        entry.setValue(IDX_STATE, toks.get(2));
+        entry.setValue(COL_STATE, toks.get(2));
         entry.setLocation(Double.parseDouble(toks.get(4)),
                           Double.parseDouble(toks.get(5)));
         fis.close();
