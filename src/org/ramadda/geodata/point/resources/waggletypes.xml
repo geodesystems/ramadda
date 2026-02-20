@@ -1,4 +1,4 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Point Data">
   <type name="type_waggle_data"  description="Waggle Data" super="type_point" 
 	newfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,quit,_default"
 	editfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,_default"

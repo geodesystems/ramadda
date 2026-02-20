@@ -1,4 +1,4 @@
-<types supercategory="Geoscience" category="Plant Data">
+<types supercategory="Geoscience" category="Geoscience Data">
 <type name="type_sapflux" super="point_text_csv" description="Plantflux Test" handler="org.ramadda.data.services.PointTypeHandler">
 <property name="icon" value="/plant/tree.png"/>
 <property name="form.area.show" value="false"/>

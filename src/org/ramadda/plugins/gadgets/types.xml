@@ -53,7 +53,7 @@
      <column name="time_interval" type="int" label="Interval"  suffix="minutes" default="60"/>
 </type>
 
-  <type name="gadgets_clock"  description="Clock" handler="org.ramadda.plugins.gadgets.ClockTypeHandler">
+  <type name="gadgets_clock" foruser="false" description="Clock" handler="org.ramadda.plugins.gadgets.ClockTypeHandler">
      <property name="icon" value="/gadgets/clock.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>

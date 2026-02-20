@@ -6,6 +6,7 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
  handler="org.ramadda.repository.type.GenericTypeHandler" 
  super="type_image" 
  supercategory="Geoscience" 
+ category="Geoscience Data"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>

@@ -1,7 +1,7 @@
-<types supercategory="Miscellaneous">
+<types supercategory="Miscellaneous" >
 
 
-  <type name="trip_report"  description="Trip Report" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Travel" >
+  <type name="trip_report"  description="Trip Report" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Travel" foruser="false" >
      <property name="icon" value="/trip/trip.png"/>
      <property name="form.area.show" value="true"/>
      <property name="form.date.show" value="true"/>
