@@ -654,7 +654,18 @@ public class Seesv implements SeesvCommands {
             }
 
             if (arg.equals(CMD_HEADER)) {
-                myTextReader.setFirstRow(new Row(Utils.split(args.get(++i), ",")));
+		List<String> names =new ArrayList<String>();
+		for(String name:Utils.split(args.get(++i), ",")) {
+		    String[]matches=Utils.findPatterns(name,"\\[(\\d+)\\s*-\\s*(\\d+)\\]");
+		    if(matches!=null) {
+			int s=Integer.parseInt(matches[0]);
+			int e=Integer.parseInt(matches[1]);			
+			for(int j=s;j<=e;j++) names.add("column " + j);
+		    } else {
+			names.add(name.trim());
+		    }
+		}
+                myTextReader.setFirstRow(new Row(names));
                 continue;
             }
 
