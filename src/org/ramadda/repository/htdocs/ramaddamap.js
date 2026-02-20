@@ -1486,16 +1486,11 @@ RepositoryMap.prototype = {
 
 
 	if(fstyle.label) {
-	    ['label','labelAlign','labelOutlineColor','labelOutlineWidth',
-	     'labelSelect','labelXOffset','labelYOffset',
-	     'textBackgroundFillColor','textBackgroundFillOpacity',
-	     'textBackgroundPadding','textBackgroundRadius',
-	     'textBackgroundShape','textBackgroundStrokeColor',
-	     'textBackgroundStrokeWidth'].forEach(attr=>{
-		 if(Utils.isDefined(fstyle[attr])) style[attr] = fstyle[attr];
-	     });
+	    $.extend(style,fstyle);
+	    style.pointRadius=fstyle.pointRadius;
+	    style.textBackgroundStrokeWidth=1;
+	    style.fontWeight='bold';
 	    style.textBackgroundStrokeColor = 'red';
-	    style.textBackgroundStrokeWidth=2;
 	}
 
 	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
