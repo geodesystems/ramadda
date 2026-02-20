@@ -231,7 +231,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private double databaseDfltNum = Double.NaN;
     private String databaseDefaultPropertyName;
     private double dfltDouble = Double.NaN;
-    private int size = 400;
+    private int columnSize = 400;
     private String entryType;
     private double min = Double.NaN;
     private double max = Double.NaN;
@@ -429,7 +429,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
 	enumerationSpecificToType = getAttributeOrTag(element, "enumerationspecifictotype",null);
 
-	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:	isType(DATATYPE_ENTRY_LIST)?5000:size);
+	columnSize           = getAttributeOrTag(element, ATTR_SIZE,
+						 isType(DATATYPE_CLOB)?1_000_000:
+						 isType(DATATYPE_ENTRY_LIST)?5000:columnSize);
 	entryType = getAttributeOrTag(element,"entryType",
 				      getAttributeOrTag(element,"entrytype",null));
 
@@ -1654,7 +1656,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
 		boolean isClob= isType(DATATYPE_CLOB);
                 getDatabaseManager().setString(statement, statementIdx,
-					       getName(), value, isClob?Integer.MAX_VALUE:size);
+					       getName(), value, isClob?Integer.MAX_VALUE:columnSize);
             } else {
                 statement.setString(statementIdx, null);
             }
@@ -1825,20 +1827,20 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
 		    || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
 		    || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST)) {
-            defineColumn(statement, name, "varchar(" + size + ") ",
+            defineColumn(statement, name, "varchar(" + columnSize + ") ",
                          ignoreErrors);
         } else if (isType(DATATYPE_WIKI)) {
             defineColumn(statement, name,
                          getDatabaseManager().convertType("clob", 24000),
                          ignoreErrors);
         } else if (isType(DATATYPE_LIST)) {
-            defineColumn(statement, name, "varchar(" + size + ") ",
+            defineColumn(statement, name, "varchar(" + columnSize + ") ",
                          ignoreErrors);
         } else if (isType(DATATYPE_CLOB)) {
-            String clobType = getDatabaseManager().convertType("clob", size);
+            String clobType = getDatabaseManager().convertType("clob", columnSize);
             defineColumn(statement, name, clobType, ignoreErrors);
         } else if (isEnumeration()) {
-            defineColumn(statement, name, "varchar(" + size + ") ",
+            defineColumn(statement, name, "varchar(" + columnSize + ") ",
                          ignoreErrors);
         } else if (isType(DATATYPE_INT)) {
             defineColumn(statement, name, "int", ignoreErrors);
@@ -2763,7 +2765,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
                         typeHandler.addWikiEditor(request, entry, tmp,
-						  formInfo, urlArg, value, null, false, size,
+						  formInfo, urlArg, value, null, false, columnSize,
 						  true);
                         widget = tmp.toString();
                     } else {
@@ -2776,8 +2778,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 				      HU.id(domId) + " size=\""
 				      + columns + "\"");
                 }
-                if (size > 0) {
-                    formInfo.addMaxSizeValidation(getLabel(), domId, size);
+                if (columnSize > 0) {
+                    formInfo.addMaxSizeValidation(getLabel(), domId, columnSize);
                 }
                 if (required) {
                     formInfo.addRequiredValidation(getLabel(), domId);
@@ -3656,12 +3658,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     public void setSize(int value) {
-        size = value;
+        columnSize = value;
     }
 
     public int getSize() {
-        return size;
-    }
+        return columnSize;
+    }    
+
 
     public void setEditable(boolean value) {
         editable = value;
