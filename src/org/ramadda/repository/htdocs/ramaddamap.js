@@ -1249,22 +1249,9 @@ RepositoryMap.prototype = {
 	let hadStrokeWidth = highlightStyle&&Utils.isDefined(highlightStyle.strokeWidth);
 	let hadFillColor = highlightStyle&&Utils.isDefined(highlightStyle.fillColor);	
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
-	if(!fs) {
-	    console.dir(feature);
-	}
-
 	if(fs && fs.label) {
-	    ['label',
-	     'fontColor','fontSize','fontFamily',
-	     'fontWeight',
-	     'fontStyle',
-	     'labelAlign',
-	     'labelXOffset',
-	     'labelYOffset',
-	     'labelOutlineColor',
-	     'labelOutlineWidth'].forEach(a=>{
-		 if(fs[a]) highlight[a] = fs[a];
-	     });
+	    $.extend(highlight,fs);
+	    highlight.textBackgroundStrokeWidth=1;
 	    highlight.fontWeight='bold';
 	}
 
@@ -1495,6 +1482,7 @@ RepositoryMap.prototype = {
 	    pointRadius: fstyle.highlightPointRadius??this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
+
 
 	if(fstyle.label) {
 	    ['label','labelAlign','labelOutlineColor','labelOutlineWidth',
