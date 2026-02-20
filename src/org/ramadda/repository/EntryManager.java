@@ -1159,9 +1159,16 @@ public class EntryManager extends RepositoryManager {
 			     icon+HU.space(1)+typeHandler.getType());
 
 		String pattern = typeHandler.getFilePattern();
-		if(stringDefined(pattern)) 
-		    HU.formEntry(sb,"File pattern:", pattern);
+		if(stringDefined(pattern))  {
+		    HU.formEntry(sb,"File pattern:", 
+				 HU.href(HU.url(getRepository().getUrlPath("/testpattern"),
+						"pattern",
+						pattern),
+						pattern,HU.attrs("title","Test Pattern",
+								 "target","_pattern")));
+		}
 
+		HU.formEntry(sb,"Priority:", ""+typeHandler.getPriority());
 
 		List<TypeHandler> ancestors = new ArrayList<TypeHandler>();
 		typeHandler.getAncestorTypes(ancestors);
