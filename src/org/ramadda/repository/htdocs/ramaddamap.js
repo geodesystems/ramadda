@@ -1251,6 +1251,7 @@ RepositoryMap.prototype = {
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
 	if(fs && fs.label) {
 	    $.extend(highlight,fs);
+	    highlight.pointRadius=fs.pointRadius;
 	    highlight.textBackgroundStrokeWidth=1;
 	    highlight.fontWeight='bold';
 	}
