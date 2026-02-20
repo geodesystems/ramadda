@@ -9,6 +9,7 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
  category="Point Data" 
  priority="10"
  pattern="(?i)(.*xpod.*xlsx|extra pattern here and here)"
+ canbeindexed="false"
 >
 <property name="record.properties">
 xls.sheet=5
