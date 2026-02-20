@@ -7,7 +7,8 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
  super="type_point" 
  supercategory="Geoscience" 
  category="Point Data" 
-pattern="(?i).*xpod.*xlsx"
+ priority="10"
+ pattern="(?i)(.*xpod.*xlsx|extra pattern here and here)"
 >
 <property name="record.properties">
 xls.sheet=5
