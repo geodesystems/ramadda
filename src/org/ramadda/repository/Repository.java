@@ -5624,6 +5624,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return new Result("",new StringBuilder());
     }
 
+    public Result processTestPattern(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb,"Pattern Test",false);
+	String pattern = request.getString("pattern","");
+	String value = request.getString("value","");	
+	if(Utils.stringDefined(pattern) && Utils.stringDefined(value)) {
+	    boolean matches = value.matches(pattern);
+	    sb.append(matches?"Does Match":"Does not match");
+	}
+	sb.append(HU.form(request.getRequestPath()));
+        sb.append(HU.formTable());
+	HU.formEntry(sb,"Pattern",HU.input("pattern",pattern,HU.SIZE_60));
+	HU.formEntry(sb,"Value",HU.input("value",value,HU.SIZE_60));	
+	HU.formEntry(sb,"",HU.submit("Test Pattern"));
+        sb.append(HU.formTableClose());	
+	sb.append(HU.formClose());
+
+        getPageHandler().sectionClose(request, sb);
+	return new Result("Pattern Test",sb);
+    }
+
+
     public Result processTestAction(Request request) throws Exception {
 	//Make the action
 	ActionManager.Action action = new ActionManager.Action() {
