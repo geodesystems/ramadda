@@ -8,8 +8,8 @@ into some types.xml file
  description="Core Record Data Base" 
  handler="org.ramadda.geodata.geo.CoreRecordBaseTypeHandler" 
  super="type_core_base" 
- supercategory="General" 
- category="Documents" 
+ supercategory="" 
+ category="" 
 foruser="false"
 >
 

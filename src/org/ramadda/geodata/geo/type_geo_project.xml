@@ -55,7 +55,7 @@ message="" width="80%"  useThumbnail="true" }}
 {{display_entrylist   startWithAny=true
 showAncestor=false ancestor=this
 metadataTypes=""
-entryTypes="type_borehole_coreimage,type_borehole_log,type_borehole_las,type_borehole_image,type_borehole_xrf,type_geo_lithology,type_borehole_fieldplot,type_borehole_wcl,type_borehole_dlis"  
+entryTypes="type_core_coreimage,type_core_log,type_core_las,type_core_image,type_core_xrf,type_geo_lithology,type_core_fieldplot,type_core_wcl,type_core_dlis"  
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,map,images" 
 includeNonImages=false
@@ -73,7 +73,7 @@ includeNonImages=false
 <type name="type_geo_site"
       description="Geo Site" 
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-      childtypes="type_geo_borehole_images,type_point_collection"
+      childtypes="type_geo_core_images,type_point_collection"
       >
     <property name="icon" value="/geo/site.png"/>
     <property name="form.area.show" value="false"/>
