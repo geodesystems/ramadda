@@ -987,10 +987,16 @@ public class UserManager extends RepositoryManager {
 	    //            if (user.canChangePassword()) {
 	    //	    sb.append(HU.vspace());
 	    //	    sb.append(RepositoryUtil.header(msgLabel("Password")));
+
+	    passwordSB.append(HU.formTable());
 	    makePasswordForm(request, user, passwordSB);
+	    passwordSB.append(HU.formTableClose());
+
 	    HU.makeTabs(sb,infoSB,passwordSB);
+
 	    //            }
             sb.append(HU.vspace());
+
             //            sb.append(buttons);
         }
         sb.append(HU.formClose());
@@ -1123,7 +1129,6 @@ public class UserManager extends RepositoryManager {
 
     private void makePasswordForm(Request request, User user, Appendable sb,String...header)
 	throws Exception {
-        sb.append(HU.formTable());
 	if(header.length>0) {
             sb.append(HU.formHelp(header[0],true));	    
 	}
@@ -1133,7 +1138,6 @@ public class UserManager extends RepositoryManager {
         sb.append(formEntry(request, msgLabel("New Password Again"),
                             HU.password(ARG_USER_PASSWORD2)));
 
-        sb.append(HU.formTableClose());
     }
 
     public Result adminUserNewForm(Request request) throws Exception {
@@ -2228,7 +2232,7 @@ public class UserManager extends RepositoryManager {
 					ARG_FAVORITE_ID, favorite.getId(),
 					ARG_FAVORITE_DELETE, "true"), HU.img(
 									     getRepository().getIconUrl(ICON_DELETE),
-									     msg("Delete this favorite")));
+									     "Delete this favorite"));
             sb.append(removeLink);
             sb.append(HU.space(1));
             sb.append(getPageHandler().getBreadCrumbs(request,
@@ -3375,6 +3379,7 @@ public class UserManager extends RepositoryManager {
     public Result  makeUserSettingsForm(Request request,String extra) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(HU.sectionOpen(null, false));
+	sb.append("<p>");
         User user = request.getUser();
         request.appendMessage(sb);
 	sb.append(extra);
@@ -3411,16 +3416,22 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.sectionOpen(null, false));
         User user = request.getUser();
         request.appendMessage(sb);
+	sb.append("<center>");
 	sb.append(extra);
 	if (user.canChangePassword()) {
             sb.append(request.formPost(getRepositoryBase().URL_USER_CHANGE_PASSWORD));
+	    sb.append("<p>");
+	    sb.append(HU.formTable());
             makePasswordForm(request, user, sb);
-            sb.append(HU.submit("Change Password", ARG_USER_CHANGE));
-	    sb.append(getAuthManager().getVerification(request));
+	    HU.formEntry(sb,"",getAuthManager().getVerification(request));
+            HU.formEntry(sb,"",HU.submit("Change Password", ARG_USER_CHANGE));
+	    sb.append(HU.formTableClose());
             sb.append(HU.formClose());
+
         } else {
             sb.append(messageWarning("You are not allowed to change the password"));
 	}
+	sb.append("</center>");
         sb.append(HU.sectionClose());
         return makeResult(request, "User Password", sb);
     }
