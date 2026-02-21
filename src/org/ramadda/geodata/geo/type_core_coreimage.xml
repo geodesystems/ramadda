@@ -1,0 +1,30 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_coreimage.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_coreimage" 
+ description="Geo Core Image" 
+ handler="org.ramadda.geodata.geo.CoreImageTypeHandler" 
+ super="type_core_base" 
+ supercategory="" 
+ category="" 
+childtypes="type_core_corebox_xml,type_core_corebox_json.xml"
+isgroup="true"
+pattern="(?i).*annotated-core-photo.*\.jpg"
+>
+
+<!-- Columns-->
+<column  name="resolution"  label="Resolution"  type="double"  default="NaN" showempty="false" showinhtml="true" />
+<column  name="do_rotation"  label="Do Rotation"  type="boolean"  default="false" doinlineedit="true" showinhtml="true" />
+<column  name="annotations_json"  label="Annotations"  type="clob"  candisplay="false" canlist="false" editable="false" showinhtml="false" />
+<column  name="show_visualizer"  label="Show Visualizer"  type="boolean"  default="true" group="Display Settings" showinhtml="false" />
+ <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
+  <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>
+  <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
+  <filename_metadata pattern="(?i)(B[\d+]+)\." metadata_type="geo_box_number"/>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+</type>
+</types>
