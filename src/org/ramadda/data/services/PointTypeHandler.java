@@ -499,7 +499,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         //All point types should have at least:
         //pointCount, properties
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
-        values[0] = Integer.valueOf(metadata.getCount());
+	entry.setValue(COL_NUMBEROFPOINTS, Integer.valueOf(metadata.getCount()));
 
         //If the file has metadata then it better match up with the values that are defined in types.xml
         Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();
@@ -517,12 +517,12 @@ public class PointTypeHandler extends RecordTypeHandler {
         Properties properties = metadata.getProperties();
         if (properties != null) {
             String contents = makePropertiesString(properties);
+	    String currentValue = entry.getStringValue(request,COL_PROPERTIES,null);
             //Append the properties file contents
-            if (values[1] != null) {
-                values[1] = "\n" + contents;
-            } else {
-                values[1] = contents;
-            }
+            if (currentValue != null) {
+                contents = currentValue = "\n" + contents;
+            } 
+	    entry.setValue(COL_PROPERTIES,contents);
         }
 
         List<RecordField> fields = metadata.getFields();

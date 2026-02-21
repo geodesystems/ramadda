@@ -150,12 +150,8 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
      * @throws Exception On badness
      */
     public long getNumRecordsFromEntry(long dflt) throws Exception {
-        Object[] values = entry.getValues();
-        if ((values != null) && (values.length > 0) && (values[0] != null)) {
-            return ((Integer) values[0]).intValue();
-        }
-
-        return dflt;
+	int value = entry.getIntValue(request, RecordTypeHandler.COL_NUMBEROFPOINTS,-1);
+	return value;
     }
 
     /**
