@@ -739,12 +739,7 @@ public class TypeHandler extends RepositoryManager {
                 parent.addChildTypeHandler(this);
 	    }
 
-	    //	    if(isType("type_borehole_point") || isType("type_core_base")) {
-	    /**
-	    if(isType("type_borehole_point")) {
-		printProps(node);
-	    }
-	    */
+	    //	    if(isType("type_geo_corebox_json")) {printProps(node);}
 
 
         } catch (Exception exc) {
@@ -7166,6 +7161,9 @@ public class TypeHandler extends RepositoryManager {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
 	throws Exception {
+	if(parent!=null) return parent.getWikiInclude(wikiUtil,
+						      request, originalEntry, entry,
+						      tag,props);
         return null;
     }
 
