@@ -2238,15 +2238,17 @@ public class ExtEditor extends RepositoryManager {
 	cols.append(HU.script(js.toString()));
 
 	StringBuilder admin = new StringBuilder();
+	HU.div(admin, "If For Import is checked then the generated file will not end in \"types.xml\" so it can be included in a plugin and be imported by some other types.xml",HU.clazz("ramadda-form-help"));
+	admin.append(HU.insetDiv(HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"),
+				 0,30,0,0));
+
+
 	Utils.append(admin,HU.div(HU.b("Extra Comment:")),
 		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
 
 	Utils.append(admin,HU.div(HU.b("Comment:")),
 		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
 
-	HU.div(admin, "If For Import is checked then the generated file will not end in \"types.xml\" so it can be included in a plugin and be imported by some other types.xml",HU.clazz("ramadda-form-help"));
-	admin.append(HU.insetDiv(HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"),
-				 0,30,0,0));
 	if(request.isAdmin()) {
 	    HU.div(admin,"<b>Be careful!</b>. If this entry has database columns and you have changed the types, etc., you may need to drop the database table when installing a new version of this entry type. If you do this then any entries you have created of this type will be removed..",HU.clazz("ramadda-form-help"));
 	    admin.append(HU.insetDiv(

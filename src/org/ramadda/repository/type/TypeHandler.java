@@ -739,7 +739,7 @@ public class TypeHandler extends RepositoryManager {
                 parent.addChildTypeHandler(this);
 	    }
 
-	    //	    if(isType("type_geo_corebox_json")) {printProps(node);}
+	    //	    if(isType("type_borehole_coreimage")) {printProps(node);}
 
 
         } catch (Exception exc) {
