@@ -1948,7 +1948,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String classPath = XU.getAttribute(entryNode,
 						TypeHandler.ATTR_HANDLER, (String) null);
 
-        if (classPath == null) {
+        if (classPath == null || classPath.equals("super")) {
             String superType = XU.getAttribute(entryNode,
 						    TypeHandler.ATTR_SUPER, (String) null);
             if (superType != null) {
