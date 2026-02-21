@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 public class CoreBoxImageImportHandler extends ImportHandler {
 
-    private static final String TYPE_CORE_IMAGE = "type_borehole_coreimage";
+
     public CoreBoxImageImportHandler() {
         super(null);
     }
@@ -120,7 +120,7 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 
 	for (String key : map.keySet()) {
 	    FileHolder parent = map.get(key);
-	    Entry coreEntry = makeEntry(request, TYPE_CORE_IMAGE,
+	    Entry coreEntry = makeEntry(request, CoreUtil.TYPE_CORE_IMAGE,
 					parent, parentEntry);
 
 	    coreEntry.setValue("top_depth",new Double(Double.NaN));
@@ -198,7 +198,7 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 	    if(parent!=null) {
 		name = parent + " - " + name;
 	    }
-	    if(type!=null && type.equals(TYPE_CORE_IMAGE)) name += " image";
+	    if(type!=null && type.equals(CoreUtil.TYPE_CORE_IMAGE)) name += " image";
 	    else if(file.path.endsWith(".xml")) name += " metadata";	    
 	}
 	return name;

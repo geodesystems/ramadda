@@ -11,11 +11,16 @@ import org.ramadda.util.Utils;
 import org.json.*;
 
 public class CoreUtil {
+    public static final String TYPE_CORE_IMAGE = "type_core_coreimage";
+    public static final String TYPE_COREBOX_XML = "type_core_corebox_xml";
+    public static final String TYPE_CORE_XRF = "type_core_xrf";
+
+
     private static JSONArray holes;
     public static void initializeNewEntry(Request request, Entry entry) 
             throws Exception {
 	TypeHandler typeHandler = entry.getTypeHandler();
-	if(typeHandler.isType("type_core_xrf")) {
+	if(typeHandler.isType(TYPE_CORE_XRF)) {
 	    Double d=(Double)entry.getValue(request, "xrf_voltage");
 	    if(d!=null) {	    
 		double voltage = d;

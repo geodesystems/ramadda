@@ -3,14 +3,19 @@
 <!-- project and site -->
 <import resource="type_geo_project.xml"/>
 
-<!-- images -->
-<import resource="type_borehole_images.xml"/>
+
 
 <!-- Base type -->
 <import resource="type_core_base.xml"/>
 
 <!-- Base record type -->
 <import resource="type_core_record_base.xml"/>
+
+
+<!-- images -->
+<import resource="type_core_image_collection.xml"/>
+<import resource="type_core_coreimage.xml"/>
+
 
 
 <!-- Record types -->

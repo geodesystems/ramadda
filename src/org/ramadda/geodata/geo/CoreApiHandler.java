@@ -111,7 +111,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	List<String> entries = new ArrayList<String>();
 	for(Entry child: children) {
-	    if(!child.getTypeHandler().isType("type_borehole_coreimage")) continue;
+	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) continue;
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
 	    List<String> attrs = new ArrayList<String>();
@@ -436,12 +436,12 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    return new Result("", new StringBuilder(JsonUtil.map("error",JU.quote("No entry found"))), JU.MIMETYPE);
 	}
 	List<Entry> children;
-	if(entry.getTypeHandler().isType("type_borehole_coreimage")) {
+	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) {
 	    children = new ArrayList<Entry>();
 	    children.add(entry);
 	} else {
 	    children = new ArrayList<Entry>();
-	    String types ="type_borehole_coreimage";
+	    String types =CoreUtil.TYPE_CORE_IMAGE;
 	    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
 	    getSearchManager().processSearchUrl(request, children,searchUrl);
 	    //	    children = getEntryManager().getChildren(request, entry);
@@ -452,7 +452,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 
     public boolean isBreezeXml(Entry entry) {
-	return entry.getTypeHandler().isType("type_geo_corebox_breeze_xml");
+	return entry.getTypeHandler().isType(CoreUtil.TYPE_COREBOX_XML);
     }
 
     public void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {

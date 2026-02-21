@@ -1,44 +1,4 @@
 <types 	supercategory="Geoscience"  category="Core Data">
-  <type name="type_geo_borehole_images"
-	description="Geo Image Collection"
-	metadata="geo_core_annotation,geo_core_legend"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-	childtypes="type_borehole_coreimage">
-    <property name="icon" value="/media/album.png"/>
-    <property name="form.area.show" value="false"/>
-    <property name="date.nullok" value="true"/>
-    <property name="form.resource.show" value="false"/>
-    <property name="form.time.show" value="false"/>    
-    <column name="show_labels" type="boolean" group="Display Settings"
-	    label="Show Labels"  showinhtml="false" default="true"/>
-    <column name="other_entries" type="string" size="4000"  rows="5"
-	    columns="80"
-	    label="Other Image Collections"
-	    showinhtml="false"
-	    help="One entry ID per line"/>
-
-    <column name="displays" type="string" size="4000"  rows="5"
-	    columns="80"
-	    label="Chart Displays"  showinhtml="false" help="One entry per line. Format:&lt;br&gt;entryid,field1:value1,...,fieldN:valueN&lt;br&gt;e.g.:&lt;br&gt;entryid,fields:gamma,indexField:depth"/>
-    
-    <column name="visualizer_data" type="clob" label="Visualizer Data"
-	    showinhtml="false"
-            candisplay="false" editable="false"/>
-<wiki><![CDATA[
-+section title={{name}}
-:navtop
-{{description wikify=true}}
-{{core_visualizer showLabels="${property:show_labels}"
-displayEntries="${property:displays}"
-}}
-
-:heading Table
-{{table showDate=false}} 
--section
-]]></wiki>
-
-
-  </type>
 
   <type name="type_borehole_image"
 	description="Borehole Image"

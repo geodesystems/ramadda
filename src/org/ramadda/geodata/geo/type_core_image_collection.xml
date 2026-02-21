@@ -1,0 +1,42 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_image_collection.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_image_collection" 
+ description="Geo Image Collection" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+childtypes="type_borehole_coreimage"
+metadata="geo_core_annotation,geo_core_legend"
+>
+
+<!-- Columns-->
+<column  name="show_labels"  label="Show Labels"  type="boolean"  default="true" group="Display Settings" showinhtml="false" />
+<column  name="other_entries"  label="Other Image Collections"  type="string"  columns="80" help="One entry ID per line" rows="5" showinhtml="false" size="4000" />
+<column  name="displays"  label="Chart Displays"  type="string"  columns="80"  showinhtml="false"  help="One entry per line. Format:&lt;br&gt;entryid,field1:value1,...,fieldN:valueN&lt;br&gt;e.g.:&lt;br&gt;entry\  id,fields:gamma,indexField:depth" />
+<column  name="visualizer_data"  label="Visualizer Data"  type="clob"  candisplay="false" editable="false" showinhtml="false" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/media/album.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="date.nullok"  value="true" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{core_visualizer showLabels="${property:show_labels}"
+displayEntries="${property:displays}"
+}}
+
+:heading Table
+{{table showDate=false}} 
+-section]]></wiki>
+</type>
+</types>

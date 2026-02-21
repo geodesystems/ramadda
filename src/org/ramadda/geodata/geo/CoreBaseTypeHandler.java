@@ -55,7 +55,7 @@ public class CoreBaseTypeHandler extends GenericTypeHandler {
 	CoreUtil.initializeNewEntry(request, entry);
 
 	if(entry.getTypeHandler().isType("type_borehole_image") ||
-	   entry.getTypeHandler().isType("type_borehole_coreimage")) {
+	   entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) {
 	    System.err.println("image");
 	    applyService(request,entry,tiffService);
 

@@ -109,7 +109,7 @@ public class CoreRecordBaseTypeHandler extends PointTypeHandler {
 	super.initializeNewEntry(request, entry,newType);
 	if(!isNew(newType)) return;
 
-	if(isType("type_borehole_xrf")) {
+	if(isType(CoreUtil.TYPE_CORE_XRF)) {
 	    Double d=(Double)entry.getValue(request, "xrf_voltage");
 	    if(d!=null) {	    
 		double voltage = d;
