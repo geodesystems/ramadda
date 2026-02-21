@@ -1,7 +1,0 @@
-<type name="type_borehole_wellcad"
-      supercategory="Geoscience"  category="Core Data"
-      super="type_core_base"
-      description="WellCAD Log File"
-      pattern="(?i).*\.wcl">
-  <property name="icon" value="/geo/wcl.png"/>
-</type>

@@ -1,0 +1,32 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_corebox_json.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_corebox_json" 
+ description="Corebox JSON" 
+ handler="org.ramadda.repository.type.TypeHandler" 
+ super="type_core_base" 
+ supercategory="" 
+ category="" 
+pattern="(?i).*corebox.json"
+priority="50"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{json.view wikify="false"}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-section]]></wiki>
+</type>
+</types>

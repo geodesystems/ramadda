@@ -1,8 +1,9 @@
-#####
+#########
 name:Core Data File
 type:type_borehole_point
 super:type_point
 <attributes>
+canbeindexed="false"
 foruser="false"
 handler="org.ramadda.geodata.geo.BoreholeTypeHandler"
 metadata="geo_stratigraphy,geo_measurement"
@@ -16,17 +17,23 @@ form.properties.show=false
 form.area.show=false
 form.location.show=true
 </properties>
+
+# columns
 top_depth,Top Depth,double, default="NaN" doinlineedit="true" group="Core Metadata" htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix="(" suffix=" feet) " scale=3.28084}" showinhtml="true" suffix="meters"
 bottom_depth,Bottom Depth,double, default="NaN" doinlineedit="true" htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix="(" suffix=" feet) " scale=3.28084}" showinhtml="true" suffix="meters"
 hole,Hole,enumerationplus, cansearch="true" showempty="false"
 tool,Tool,enumerationplus, cansearch="true" showempty="false" values="file:/org/ramadda/geodata/geo/resources/tools.txt"
 fields_to_show,Fields to show,string, candisplay="false" canlist="false" cansearch="false" group="Display" showinhtml="false" suffix="Comma separated list of fields, e.g., #2,#3"
 
-#####
+
+
+#########
 name:Multi-Sensor Core Logging
 type:type_core_mscl
 super:type_borehole_point
 <attributes>
+pattern="(?i).*MSCL-XYZ.xls"
+priority="1"
 </attributes>
 <properties>
 record.file.class=org.ramadda.data.point.text.CsvFile
@@ -34,35 +41,204 @@ form.area.show=false
 form.location.show=false
 form.properties.show=false
 record.file.class=org.ramadda.data.point.text.CsvFile
+canbeindexed=false
 </properties>
 
-#####
+<wiki>
++section title={{name}}
+:rem The navtop stands for navigation top - this shows the link to the Information section below
+:navtop
+:rem Only show at most 10000 records
+{{property max=10000}}
+
+:rem The group tag groups the display tag. We can have properties in the group that get in inherited by all of the displays
+{{group 
+filterFields="section" section.filterIncludeAll=false hideFilterWidget=true 
+indexField=section_depth  marginTop=10   marginRight=10 yAxisReverse=true showLegend=false showMenu=true}}
++skip
+Any display can show filters and the filter values are shared with the other displays in the group
+We use the display_filter here so there is one set of widgets shown to the user
+When the section value is changed then all of the displays change
+-skip
+{{display_filter}}
++skip
+Here we are displaying 3 profiles. The fields="#3", etc define what fields are shown
+The other profile properties are defined in the group above, e.g., indexField, marginTop, yAxisReverse, etc.
+The +row/+col gives us a table using bootstrap. There are 12 units and each column has a weight
+For example, if you wanted to have 4 profiles then each column would be +col-3/-col
+-skip
++row
++col-4
+{{display_profile   fields=#4}} 
+-col
++col-4
+{{display_profile   fields=#5}} 
+-col
++col-4
+{{display_profile   fields=#6}} 
+-col
+-row
+
+:heading Table
+{{display_download}}
+{{display_table  showMenu=false}} 
++skip
+I don't know if a scatter plot is useful but I put this here to show what can be done
+The group tag keeps the scatter plots separate from the above filters
+-skip
+{{group  pointSize=2 }}
+:heading Scatter Plots
++row
++col-4
+{{display_scatterplot    showMenu=true fields="#3,#4"}} 
+-col
++col-4
+{{display_scatterplot   showMenu=true fields="#3,#5"}} 
+-col
++col-4
+{{display_scatterplot   showMenu=true fields="#3,#6"}} 
+-col
+-row
+
+----
+:heading Information
+{{information}}
+
+----
+----
+:heading Wiki Text
+:note This would normally not be in here but I added it so you can see the wiki text used
+{{wikitext}}
+
+:heading SeeSV Convert Commands
+:note Likewise this wouldn't normally be here
+{{seesv}}
+-section
+</wiki>
+
+
+
+#########
 name:Borehole Log File
 type:type_borehole_log
 super:type_borehole_point
 <attributes>
+bytescount="100"
+bytesfilepattern="(?i).*\.txt"
+bytespattern="(?m)(?i)^TOP:.*"
 metadata="geo_stratigraphy,geo_measurement"
 </attributes>
 <properties>
 record.patterns=hole:HOLE:\s*([^\s]+),top_depth:TOP:\s*([\d.]+),bottom_depth:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)
 </properties>
 
-#####
+<wiki>
++section title="Borehole log: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}         
+
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+<table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
+{{field name="hole"  row.label="Hole:"}}
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
+</table>
+:vspace 1em
+{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+</wiki>
+
+
+
+#########
 name:Log ASCII Standard
 type:type_borehole_las
 super:type_borehole_point
 <attributes>
 handler="org.ramadda.geodata.geo.LasTypeHandler"
-pattern=".*\.las"
+pattern="(?i).*\.las"
 </attributes>
 <properties>
 record.pattern.date.format=MM/dd/yy
 record.patterns=field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)
 </properties>
+
+# columns
 state,State,enumerationplus, cansearch="true" showempty="false"
 field,Field,enumerationplus, cansearch="true" showempty="false"
 
-#####
+<wiki>
++section title="Log ASCII: {{name}}"
+:navtop 
++row
++col-8
+{{property max=10000}}
+{{group
+requestFields="skip,stride,limit" chartLeft=100 
+requestFieldsShow=false
+}}
+
+{{description wikify=true}}
+:heading Chart
+{{display_filter
+loadingMessage="icon_progress"
+showMenu=false requestFieldsShow=true
+noDataMessage="No data available"}}
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  
+profileMode="lines" indexField=".*depth.*"  #fields="#2"}}         
+
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+<table class="formtable">
+{{field name="field"  row.label="Field:"}}
+{{field name="tool"  row.label="Tool:"}}
+{{field name="hole"  row.label="Hole:"}}
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
+</table>
+</table>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+</wiki>
+
+
+
+#########
 name:Core XRF File
 type:type_borehole_xrf
 super:type_borehole_point
@@ -82,27 +258,259 @@ form.tags.show=false
 addinitialmetadata=false
 profile.fields=k_wt|h_pct,fe_wt|c_pct,ca_wt|o_pct,si_wt|na_pct
 </properties>
+
+# columns
 hole,Hole,enumerationplus, cansearch="true" group="XRF Metadata" initpattern="hole_?([^_]+)_"
 depth_level,Depth Level,enumerationplus, default="NA" initpattern="depth_?([^_\.]+)(_|\.)" values="NA,1 ft,10 cm, 1m"
 xrf_current,Current,double, default="" initpattern="current_?(\d+\.?\d*)" suffix="mA" unit="mA"
 xrf_voltage,Voltage,double, default="" initpattern="(?i)(\d+)kV" suffix="kV" unit="kV"
 scan_rate,Scan Rate,double, default="" initpattern="scan_?(\d+)" suffix="cm/s"
 
-#####
+<wiki>
++section title="Core XRF: {{name}}"
+:navtop 
++row
++col-9
+{{property max="10000"}}
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{group}}
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField="from_m"  }}         
+-col
++col-3
+{{resource  title="Download"  showIcon="true"  simple="false"  }}
+<table class="formtable">
+{{field name="hole"  row.label="Hole:" }}
+{{field name="depth_level"  row.label="Depth:" }}
+{{field name="xrf_current"  row.label="Current:" fieldSuffix="&nbsp;mA"}}
+{{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix="&nbsp;kV"}}
+{{field name="scan_rate"  row.label="Scan Rate:"}}
+</table>
+:vspace 1em
+<div style="max-height:450px;overflow-y:auto">
+{{properties  message=""  metadata.types="!tag:internal"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+</div>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+:heading Table
+{{display_table height="70vh"  maxColumns=50 maxRecords=500}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+
+-section
+</wiki>
+
+
+
+#########
 name:Core Lithology
 type:type_borehole_lithology
 super:type_borehole_point
 <attributes>
-pattern=".*lith.csv"
+pattern="(?i).*lith.csv"
 </attributes>
-<properties>
-</properties>
 
-#####
+<wiki>
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{display_download}}
+{{display_htmltable   scrollY=800px
+colorRowBy="color_description" colorByLiteral=true  colorFullRow=false showColorFooter=false
+}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
++row
++col-8                                                                                                                        
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+{{properties  message=""  metadata.types="geo_project,geo_site"                                                            
+oneLine="true"   includeTitle="false"  separator=""  decorate="false"                         
+inherited="true"  }}
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center                                                                                                                       
+-col                                                                                                                          
+-row       
+-section
+</wiki>
+
+
+
+#########
 name:type_geo_lithology
 type:type_geo_lithology
 super:type_borehole_lithology
 <attributes>
 foruser="false"
 </attributes>
+
+
+
+#########
+name:Core Data
+type:type_core_base
+icon:/geo/drilling-rig.png
+<attributes>
+canbeindexed="false"
+foruser="false"
+handler="org.ramadda.repository.type.GenericTypeHandler"
+icon="/geo/drilling-rig.png"
+</attributes>
+<properties>
+inheritlocationfromtype=type_geo_site
+date.nullok=true
+form.area.show=false
+form.location.show=true
+</properties>
+
+
+
+#########
+name:Digital Log Interchange Standard
+type:type_borehole_dlis
+super:type_core_base
+<attributes>
+pattern="(?i).*\.dlis"
+</attributes>
+<properties>
+icon=/geo/dlis.png
+</properties>
+
+
+
+#########
+name:WellCAD Log File
+type:type_borehole_wellcad
+super:type_core_base
+<attributes>
+pattern="(?i).*\.wcl"
+</attributes>
+<properties>
+icon=/geo/wcl.png
+</properties>
+
+
+
+#########
+name:Borehole Field Plot
+type:type_borehole_fieldplot
+super:type_core_base
+icon:/icons/pdf.png
+<attributes>
+icon="/icons/pdf.png"
+</attributes>
+
+<wiki>
++section title="Borehole Field Plot: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+{{media full=true width=100%}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+<table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
+{{field name="measurement"  row.label="Measurement:"}}
+</table>
+</table>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+</wiki>
+
+
+
+#########
+name:Corelyzer Session
+type:type_core_cml
+super:type_core_base
+<attributes>
+pattern="(?i).*\.cml"
+</attributes>
+<properties>
+record.file.class=org.ramadda.data.point.text.CsvFile
+icon=/geo/corelyzer_icon.jpg
+form.area.show=false
+form.location.show=true
+</properties>
+
+# columns
+showxml,Show XML,boolean, default="true" showinhtml="false"
+
+<wiki>
++section # title="{{name}}"                                                                                                
+{{description wikify="true"}}                                                                                              
+{{information showTitle="false" details="true"}}                                                                           
++if property=showxml                                                                                                       
+{{embed  as="xml" maxheight="600" maxSize="10000" force="true"}}                                                           
+-if                                                                                                                        
+-section
+</wiki>
+
+
+
+#########
+name:Corelyzer Archive
+type:type_core_car
+super:type_core_base
+<attributes>
+pattern="(?i).*\.car"
+</attributes>
+<properties>
+record.file.class=org.ramadda.data.point.text.CsvFile
+icon=/geo/corelyzer_icon.jpg
+form.area.show=false
+form.location.show=true
+</properties>
+
+
+
+#########
+name:PSICAT Scheme
+type:type_core_psicat_scheme
+super:type_core_base
+<attributes>
+pattern="(?i).*\.car"
+</attributes>
+<properties>
+record.file.class=org.ramadda.data.point.text.CsvFile
+icon=/geo/psicat.png
+form.area.show=false
+form.location.show=true
+</properties>
+
+<wiki>
++section title={{name}}                                                                             
+{{description wikify="true"}}     
+{{information}}                                                                                     
+:heading Contents                                                                                   
+{{zipfile}}                                                                                         
+-section
+</wiki>
+
+
 

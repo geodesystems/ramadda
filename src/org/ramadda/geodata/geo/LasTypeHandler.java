@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 
-public class LasTypeHandler extends BoreholeTypeHandler {
+public class LasTypeHandler extends CoreRecordBaseTypeHandler {
     public LasTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);

@@ -7,9 +7,9 @@ into some types.xml file
 <type  name="type_core_cml" 
  description="Corelyzer Session" 
  super="type_core_base" 
- supercategory="Geoscience" 
- category="Core Data" 
-pattern="(?i).*\.cml"
+ supercategory="" 
+ category="" 
+pattern=".*\.cml"
 >
 
 <!-- Columns-->
@@ -25,7 +25,8 @@ pattern="(?i).*\.cml"
 +section # title="{{name}}"                                                                                                
 {{description wikify="true"}}                                                                                              
 {{information showTitle="false" details="true"}}                                                                           
-+if property=showxml                                                                                                       
++if property=showxml       
+:heading Session Data
 {{embed  as="xml" maxheight="600" maxSize="10000" force="true"}}                                                           
 -if                                                                                                                        
 -section]]></wiki>

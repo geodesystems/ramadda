@@ -1,0 +1,19 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_wellcad.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_wellcad" 
+ description="WellCAD Log File" 
+ handler="org.ramadda.repository.type.TypeHandler" 
+ super="type_core_base" 
+ supercategory="" 
+ category="" 
+pattern="(?i).*\.wcl"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/wcl.png" />
+</type>
+</types>

@@ -1,0 +1,41 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_corebox_csv.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_corebox_csv" 
+ description="Corebox CSV" 
+ handler="super" 
+ super="type_core_record_base" 
+ supercategory="" 
+ category="" 
+pattern="(?i).*corebox.cblog"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.properties.show"  value="false" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-tab,-skiplines,1
+
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{display_table height=80vh}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-section]]></wiki>
+</type>
+</types>

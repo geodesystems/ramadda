@@ -7,12 +7,14 @@ into some types.xml file
 <type  name="type_core_psicat_scheme" 
  description="PSICAT Scheme" 
  super="type_core_base" 
- supercategory="Geoscience" 
- category="Core Data" 
-pattern="(?i).*\.car"
+ supercategory="" 
+ category="" 
+pattern=".*\.car"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/psicat.png" />
+<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
 <property  name="icon"  value="/geo/psicat.png" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />

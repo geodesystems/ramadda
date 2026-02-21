@@ -6,32 +6,40 @@
 <!-- images -->
 <import resource="type_borehole_images.xml"/>
 
-<!-- Point types -->
-<import resource="type_borehole_point.xml"/>
+<!-- Base type -->
+<import resource="type_core_base.xml"/>
+
+<!-- Base record type -->
+<import resource="type_core_record_base.xml"/>
+
+
+<!-- Record types -->
+<import resource="type_core_log.xml"/>
 <import resource="type_core_mscl.xml"/>
-<import resource="type_borehole_log.xml"/>
-<import resource="type_borehole_las.xml"/>
-<import resource="type_borehole_xrf.xml"/>
+<import resource="type_core_las.xml"/>
+
+<!--Rutgers/Columbia lithology XRF   - need to make the type id rutgers specific -->
+<import resource="type_core_xrf.xml"/>
 
 <!--Rutgers/Columbia lithology CSV -->
-<import resource="type_borehole_lithology.xml"/>
+<import resource="type_core_lithology.xml"/>
 
 
-<!-- Base type for non point data -->
-<import resource="type_core_base.xml"/>
-<import resource="type_borehole_dlis.xml"/>
-<import resource="type_borehole_wellcad.xml"/>
-<import resource="type_borehole_fieldplot.xml"/>
+
+<!-- plain files -->
+<import resource="type_core_dlis.xml"/>
+<import resource="type_core_wellcad.xml"/>
+<import resource="type_core_fieldplot.xml"/>
 
 <import resource="type_core_cml.xml"/>
 <import resource="type_core_car.xml"/>
 <import resource="type_core_psicat_scheme.xml"/>
 
 
-
 <!-- Prediktera Breeze metadata -->
-<import resource="type_breeze.xml"/>
+<import resource="type_core_corebox_xml.xml"/>
+<import resource="type_core_corebox_csv.xml"/>
+<import resource="type_core_corebox_json.xml"/>
 
-<import resource="type_corebox.xml"/>
 
 </types>

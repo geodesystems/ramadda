@@ -1,0 +1,19 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_dlis.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_dlis" 
+ description="Digital Log Interchange Standard" 
+ handler="org.ramadda.repository.type.TypeHandler" 
+ super="type_core_base" 
+ supercategory="" 
+ category="" 
+pattern="(?i).*\.dlis"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/dlis.png" />
+</type>
+</types>

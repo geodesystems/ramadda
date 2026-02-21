@@ -1,0 +1,34 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_corebox_xml.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_corebox_xml" 
+ description="Corebox XML" 
+ handler="org.ramadda.repository.type.TypeHandler" 
+ super="type_core_base" 
+ supercategory="" 
+ category="" 
+pattern="(?i).*measurement.xml"
+priority="50"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/prediktera.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading XML Metadata
+{{embed  entry=""  skipLines="0"  maxLines="10000" highlight="true" as="xml"
+style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }} 
+:heading Information
+{{information  showBase="true"  showDetails="true"  showTitle="false"  }} 
+-section]]></wiki>
+</type>
+</types>

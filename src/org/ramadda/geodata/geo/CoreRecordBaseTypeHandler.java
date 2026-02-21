@@ -38,18 +38,25 @@ import java.util.List;
 
 
 @SuppressWarnings("unchecked")
-public class BoreholeTypeHandler extends PointTypeHandler {
+public class CoreRecordBaseTypeHandler extends PointTypeHandler {
 
 
     private JSONArray holes;
 
-    public BoreholeTypeHandler(Repository repository, Element node)
+    public CoreRecordBaseTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
 
     }
 
 
+    @Override
+    public boolean isType(String type) {
+	if(type.equals("type_point")) return true;
+	return super.isType(type);
+    }
+
+    @Override
     protected void handleHarvestedMetadata(Request request, RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
@@ -67,6 +74,7 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	    }
 	    index++;
 	}
+	//	System.err.println("depth:" + depthField +" " + depthIndex);
 	Entry entry = recordEntry.getEntry();
 	if(depthIndex>=0) {
 	    double[]range =metadata.getRange(depthIndex);
@@ -74,7 +82,7 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 		double top  =range[0];
 		double bottom  =range[1];		
 		String unit = depthField.getUnit();
-		//		System.err.println("init:" + top +" " + bottom);
+		System.err.println("init:" + top +" " + bottom);
 
 		if(unit!=null) {
 		    unit  = unit.toLowerCase();
@@ -143,7 +151,7 @@ public class BoreholeTypeHandler extends PointTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
 	throws Exception {
-        if (tag.equals("borehole_profiles")) {
+        if (tag.equals("borehole_profiles") || tag.equals("core_profiles")) {
 	    StringBuilder sb = new StringBuilder();
 	    String fields= Utils.getProperty(props,"fields","");
 	    String indexField= Utils.getProperty(props,"indexField",".*depth.*");

@@ -1,0 +1,80 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_xrf.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_xrf" 
+ description="Core XRF File" 
+ handler="super" 
+ super="type_core_record_base" 
+ supercategory="" 
+ category="" 
+editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
+newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
+pattern="(?i).*core(_|-)xrf.*\.csv"
+>
+
+<!-- Columns-->
+<column  name="hole"  label="Hole"  type="enumerationplus"  cansearch="true" group="XRF Metadata" initpattern="hole_?([^_]+)_" />
+<column  name="depth_level"  label="Depth Level"  type="enumerationplus"  default="NA" initpattern="depth_?([^_\.]+)(_|\.)"   values="NA,1 ft,10 cm, 1m" />
+<column  name="xrf_current"  label="Current"  type="double"  default="" initpattern="current_?(\d+\.?\d*)" suffix="mA" unit="mA" />
+<column  name="xrf_voltage"  label="Voltage"  type="double"  default="" initpattern="(?i)(\d+)kV" suffix="kV" unit="kV" />
+<column  name="scan_rate"  label="Scan Rate"  type="double"  default="" initpattern="scan_?(\d+)" suffix="cm/s" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/xray.png" />
+<property  name="form.date.label"  value="Scan Date" />
+<property  name="form.todate.show"  value="false" />
+<property  name="form.url.show"  value="false" />
+<property  name="form.resource.extra.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+<property  name="form.tags.show"  value="false" />
+<property  name="addinitialmetadata"  value="false" />
+<property  name="profile.fields"  value="k_wt|h_pct,fe_wt|c_pct,ca_wt|o_pct,si_wt|na_pct" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Core XRF: {{name}}"
+:navtop 
++row
++col-9
+{{property max="10000"}}
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{group}}
+{{core_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField="from_m"  }}         
+-col
++col-3
+{{resource  title="Download"  showIcon="true"  simple="false"  }}
+<table class="formtable">
+{{field name="hole"  row.label="Hole:" }}
+{{field name="depth_level"  row.label="Depth:" }}
+{{field name="xrf_current"  row.label="Current:" fieldSuffix=" mA"}}
+{{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix=" kV"}}
+{{field name="scan_rate"  row.label="Scan Rate:"}}
+</table>
+:vspace 1em
+<div style="max-height:450px;overflow-y:auto">
+{{properties  message=""  metadata.types="!tag:internal"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+</div>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+:heading Table
+{{display_table height="70vh"  maxColumns=50 maxRecords=500}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+
+-section]]></wiki>
+</type>
+</types>

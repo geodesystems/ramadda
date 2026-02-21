@@ -1,0 +1,23 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_record_base.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_record_base" 
+ description="Core Record Data Base" 
+ handler="org.ramadda.geodata.geo.CoreRecordBaseTypeHandler" 
+ super="type_core_base" 
+ supercategory="General" 
+ category="Documents" 
+foruser="false"
+>
+
+<!-- Columns-->
+<column  name="numberofpoints"  label="Number of Points"  type="int"   showinhtml="false" showinform="false" />
+<column  name="properties"  label="Properties"  type="clob"  size="30000" columns="-1" rows="8"     showinform="true" showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"  	    help="Point data properties" />
+<column  name="fields_to_show"  label="Fields to show"  type="string"  candisplay="false" canlist="false" cansearch="false"   group="Display" showinhtml="false"   suffix="Comma separated list of fields" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+</type>
+</types>

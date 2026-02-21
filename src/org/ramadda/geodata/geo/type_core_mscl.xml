@@ -6,9 +6,10 @@ into some types.xml file
 <types>
 <type  name="type_core_mscl" 
  description="Multi-Sensor Core Logging" 
- super="type_borehole_point" 
- supercategory="Geoscience" 
- category="Core Data" 
+ handler="super" 
+ super="type_core_record_base" 
+ supercategory="" 
+ category="" 
 pattern="(?i).*MSCL-XYZ.xls"
 priority="1"
 >

@@ -1,0 +1,70 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_core_log.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_core_log" 
+ description="Borehole Log File" 
+ handler="super" 
+ super="type_core_record_base" 
+ supercategory="" 
+ category="" 
+bytescount="100"
+bytesfilepattern="(?i).*\.txt"
+bytespattern="(?m)(?i)^TOP:.*"
+>
+<property name="record.properties">                                                                                                 
+picky=false                                                                                                                         
+csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN                               
+csvcommands2=-addheader,                                                                                                            
+</property>
+<property name="bubble">
+<![CDATA[                                                                                                                           
++section  title="Borehole Log: {{name}}"                                                                                            
+{{group}}                                                                                                                           
+{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers                                                 
+profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}                                                                        
+]]></property>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="record.patterns"  value="hole:HOLE:\s*([^\s]+),top_depth:TOP:\s*([\d.]+),bottom_depth:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Borehole Log File: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{core_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}         
+
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+<table class="formtable">
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
+</table>
+:vspace 1em
+{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section]]></wiki>
+</type>
+</types>
