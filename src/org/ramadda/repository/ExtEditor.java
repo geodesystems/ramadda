@@ -2139,11 +2139,13 @@ public class ExtEditor extends RepositoryManager {
 			       "View all Categories","target=_cats");
 	
 	String superCategory = request.getString(ARG_SUPERCATEGORY,"");
-	if(!stringDefined(superCategory))
-	    superCategory = typeHandler.getSuperCategory();
+	if(!stringDefined(superCategory)) {
+	    //	    superCategory = typeHandler.getSuperCategory();
+	}
 	String category = request.getString(ARG_CATEGORY,"");
-	if(!stringDefined(category))
-	    category = typeHandler.getCategory();	
+	if(!stringDefined(category)) {
+	    //	    category = typeHandler.getCategory();
+	}
         main.append(HU.formEntryTop(msgLabel("Super Category"),
 				    HU.input(ARG_SUPERCATEGORY,superCategory,
 					     HU.attrs("placeholder","e.g. Geoscience","size","30")) +
@@ -2490,15 +2492,15 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append("\n");
 	}
 
-	if(request.defined(ARG_SUPERCATEGORY)) {
+	//	if(request.defined(ARG_SUPERCATEGORY)) {
 	    sb.append(XU.attr("supercategory",request.getString(ARG_SUPERCATEGORY,"").trim()));
 	    sb.append("\n");
-	}
+	    //	}
 
-	if(request.defined(ARG_CATEGORY)) {
+	    //	if(request.defined(ARG_CATEGORY)) {
 	    sb.append(XU.attr("category",request.getString(ARG_CATEGORY,"").trim()));
 	    sb.append("\n");
-	}
+	    //	}
 
 	String extraAttributes = request.getString("extraattributes","");
 	if(Utils.stringDefined(extraAttributes)) {
@@ -2538,10 +2540,15 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append("\n");
 	}
 
+	String extraCsv = "";
 	for(String line:Utils.split(request.getString("properties",""),"\n",true,true)) {
 	    if(line.startsWith("#")) continue;
 	    List<String> toks = Utils.splitUpTo(line,"=",2);
 	    if(toks.size()!=2) continue;
+	    if(toks.get(0).equals("record.picky")) {
+		extraCsv+="\npicky=" + toks.get(1)+"\n";
+		continue;
+	    }
 	    sb.append(XU.tag("property",XU.attrs("name",toks.get(0).trim(),"value",toks.get(1).trim())));
 	    sb.append("\n");
 	}
@@ -2553,12 +2560,12 @@ public class ExtEditor extends RepositoryManager {
 	    String csvCommands = Seesv.makeCsvCommands(lines);
 	    if(Utils.stringDefined(csvCommands)) {
 		sb.append("\n");
-		String extraProps="";
 		String sheet = StringUtil.findPattern(csvCommands, "-sheet,([^,]+)");
-		if(sheet!=null) extraProps+="\nxls.sheet=" + sheet+"\n";
+		if(sheet!=null) extraCsv+="\nxls.sheet=" + sheet+"\n";
+
 		//Check for sheet
 		sb.append(XU.comment("SeeSV commands"));
-		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n"+extraProps+"\n")));
+		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n"+extraCsv+"\n")));
 
 	    }
 	}
