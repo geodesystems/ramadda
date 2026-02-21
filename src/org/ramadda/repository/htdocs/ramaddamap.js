@@ -2329,7 +2329,8 @@ RepositoryMap.prototype = {
         }
     },
     getFeatureText: function(layer, feature) {
-	if(feature.textGetter) {
+	if(!feature) return null;
+	if(feature && feature.textGetter) {
 	    let text =  feature.textGetter(feature);
 	    if(text) {
 		if(debugPopup) console.log("getFeatureText-feature has textGetter:");

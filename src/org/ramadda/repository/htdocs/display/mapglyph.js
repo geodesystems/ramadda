@@ -1937,12 +1937,9 @@ MapGlyph.prototype = {
     },
 
     handleClick:function(xy,event) {
-	let bg = this.getLegendDiv().css('background');
+//	console.log('handle click');
         HU.scrollVisible(this.display.getLegendDiv(), this.getLegendDiv(),100);
-	this.getLegendDiv().css('background','yellow');
-	this.getLegendDiv().animate({
-	    backgroundColor: bg,
-	}, 2000);
+	this.display.highlightLegendLabel(this);
     },
     getPopupContents: function() {
 	let contents = this.getPopupText()??'';
@@ -2953,7 +2950,6 @@ MapGlyph.prototype = {
 	    } 
 	    let items = this.jq(ID_LEGEND).find('.' + CLASS_LEGEND_LABEL);
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
-
 	    rows.click(function() {
 		if($(this).hasClass(CLASS_IMDV_STYLEGROUP_SELECTED)) {
 		    $(this).removeClass(CLASS_IMDV_STYLEGROUP_SELECTED);

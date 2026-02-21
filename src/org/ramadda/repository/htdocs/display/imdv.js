@@ -6029,7 +6029,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let feature = e.feature;
 		if(debug)
 		    console.log('featureClick:' + feature);
+
 		if(!feature) return;
+
+		if(feature.layer && feature.layer.selectCallback) {
+		    feature.layer.selectCallback(feature,feature.layer,e);
+		}
 		let mapGlyph = feature.mapGlyph || (feature.layer?feature.layer.mapGlyph:null);
 		if(!mapGlyph) {
  		    if(debug)console.log('\tno mapGlyph');
@@ -6186,12 +6191,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		cb();
 	    };
 
-	    let bg =  mapGlyph.getLegendDiv().css(CSS_BACKGROUND);
-	    mapGlyph.getLegendDiv().css(CSS_BACKGROUND,'yellow');
-	    if(bg!='yellow') {
-		setTimeout(()=>{mapGlyph.getLegendDiv().css(CSS_BACKGROUND,COLOR_WHITE);},2000);
-	    }
-
 	    let heading=  mapGlyph.getLabel({})??'';
 	    let buttons = mapGlyph.makeLegendButtons();
 	    heading=HU.div([ATTR_CLASS,'imdv-popup-heading'],
@@ -6245,12 +6244,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let layer = event.feature.layer;
 		text = this.getMap().getFeatureText(layer, event.feature);
 	    }
-	    
-
-
 	    text= HU.div([],text);
 	    doPopup(heading+text);
 	    return false;
+	},
+	highlightLegendLabel:function(mapGlyph) {
+	    if(mapGlyph.animatingLegendHighlight) return;
+	    mapGlyph.animatingLegendHighlight = true;
+	    mapGlyph.getLegendDiv().css('background','yellow');
+	    mapGlyph.getLegendDiv().animate({
+		backgroundColor: 'white',
+	    }, 2000,()=>{
+		mapGlyph.animatingLegendHighlight = false;
+	    });
 	},
 	getLegendDiv:function () {
 	    return this.jq(ID_IMDV_LEGEND);
