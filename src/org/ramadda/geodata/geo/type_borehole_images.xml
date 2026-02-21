@@ -42,7 +42,7 @@ displayEntries="${property:displays}"
 
   <type name="type_borehole_image"
 	description="Borehole Image"
-	handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
+	handler="org.ramadda.geodata.geo.CoreBaseTypeHandler">      
     <property name="icon" value="/geo/drilling-rig.png"/>
     <property name="date.nullok" value="true"/>
     <property name="inheritlocationfromtype" value="type_geo_site"/>

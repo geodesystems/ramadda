@@ -6,7 +6,7 @@ into some types.xml file
 <types>
 <type  name="type_core_base" 
  description="Core Data Base" 
- handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ handler="org.ramadda.geodata.geo.CoreBaseTypeHandler" 
  supercategory="Geoscience" 
  category="Core Data" 
 canbeindexed="false"

@@ -10,12 +10,12 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
 import org.json.*;
 
-public class BoreholeUtil {
+public class CoreUtil {
     private static JSONArray holes;
     public static void initializeNewEntry(Request request, Entry entry) 
             throws Exception {
 	TypeHandler typeHandler = entry.getTypeHandler();
-	if(typeHandler.isType("type_borehole_xrf")) {
+	if(typeHandler.isType("type_core_xrf")) {
 	    Double d=(Double)entry.getValue(request, "xrf_voltage");
 	    if(d!=null) {	    
 		double voltage = d;

@@ -34,12 +34,12 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class BoreholeBaseTypeHandler extends GenericTypeHandler {
+public class CoreBaseTypeHandler extends GenericTypeHandler {
     private Service tiffService;
     
 
 
-    public BoreholeBaseTypeHandler(Repository repository, Element node)
+    public CoreBaseTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
 	String service = "<service link=\"gdal_tiff2coreimage\"  target=\"attachment\"/>";
@@ -52,7 +52,7 @@ public class BoreholeBaseTypeHandler extends GenericTypeHandler {
             throws Exception {
 	super.initializeNewEntry(request, entry,newType);
 	if(!isNew(newType)) return;
-	BoreholeUtil.initializeNewEntry(request, entry);
+	CoreUtil.initializeNewEntry(request, entry);
 
 	if(entry.getTypeHandler().isType("type_borehole_image") ||
 	   entry.getTypeHandler().isType("type_borehole_coreimage")) {
