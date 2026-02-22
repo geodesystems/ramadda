@@ -414,9 +414,9 @@ public class EntryManager extends RepositoryManager {
 	    //Then filter the entry for this user
 	    entry =  getAccessManager().filterEntry(request, entry);	    
 	    /** for now don't throw an error, just return null
-	    if(entry==null) {
+		if(entry==null) {
 		throw new AccessException(MESSAGE_ACCESS,request);
-	    }
+		}
 	    **/
 	    return entry;
 	}
@@ -428,9 +428,9 @@ public class EntryManager extends RepositoryManager {
 	    //Then filter the entry for this user
 	    entry =   getAccessManager().filterEntry(request, entry);
 	    /**for now don't throw an error
-	    if(entry==null)	{
-		throw new AccessException(MESSAGE_ACCESS,request);
-	    }
+	       if(entry==null)	{
+	       throw new AccessException(MESSAGE_ACCESS,request);
+	       }
 	    */
 	    return entry;
 	}
@@ -1011,11 +1011,11 @@ public class EntryManager extends RepositoryManager {
 
     public Result processEntryShow(Request request) throws Exception {
 	/*
-	System.err.println("show");
-        Connection connection1 = getDatabaseManager().getConnection();
-        Connection connection2 = getDatabaseManager().getConnection();	
-        Connection connection3 = getDatabaseManager().getConnection();
-	Misc.sleepSeconds(10000);
+	  System.err.println("show");
+	  Connection connection1 = getDatabaseManager().getConnection();
+	  Connection connection2 = getDatabaseManager().getConnection();	
+	  Connection connection3 = getDatabaseManager().getConnection();
+	  Misc.sleepSeconds(10000);
 	*/
 
 
@@ -1164,8 +1164,8 @@ public class EntryManager extends RepositoryManager {
 				 HU.href(HU.url(getRepository().getUrlPath("/testpattern"),
 						"pattern",
 						pattern),
-						pattern,HU.attrs("title","Test Pattern",
-								 "target","_pattern")));
+					 pattern,HU.attrs("title","Test Pattern",
+							  "target","_pattern")));
 		}
 
 		HU.formEntry(sb,"Priority:", ""+typeHandler.getPriority());
@@ -1184,20 +1184,10 @@ public class EntryManager extends RepositoryManager {
 		    sb.append(HU.formEntry("Parent Types:",tmp.toString()));
 		}
 
-		List<TypeHandler> children = typeHandler.getChildrenTypes();
-		if(children!=null && children.size()>0) {
-		    StringBuilder tmp = new StringBuilder();
-		    for(TypeHandler child: children) {
-			String childUrl = getRepository().getUrlPath("/entry/types.html?type="  + child.getType());
-			icon = HU.img(child.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
-			HU.div(tmp,HU.href(childUrl, icon+HU.space(1)+child.getDescription() +" - "+ child.getType()));
-		    }
-		    sb.append(HU.formEntry("Sub Types:",tmp.toString()));
-		}
 		List<Column> columns = typeHandler.getColumns();
-		if (columns != null && columns.size()>0) {
+		if (Utils.listNotEmpty(columns)) {
 		    StringBuilder tmp = new StringBuilder();
-		    tmp.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td><td><b>Searchable</b></td><td></td></tr>");
+		    tmp.append("<table width=100%><tr><td width=20% ><b>Column ID</b></td><td width=20% ><b>Label</b></td><td width=20% ><b>Type</b></td><td width=20% ><b>Searchable</b></td><td width=20% ></td></tr>");
 		    for(Column column: columns) {
 			String extra = "";
 			String chelp = column.getHelp();
@@ -1206,23 +1196,37 @@ public class EntryManager extends RepositoryManager {
 			if(stringDefined(suffix)) extra+=suffix+" ";
 			if(stringDefined(extra)) {
 			    extra = getWikiManager().wikify(request,
-							    HU.div(extra,HU.cssClass("ramadda-form-help")));
+							    HU.div(extra,HU.cssClass("")));
 			}
-			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;") +
-					HU.td(column.getLabel()+"&nbsp;&nbsp;") +
-					 HU.td(column.getType()) +
-					 HU.td(column.getCanSearch()+"") +				 
-					 HU.td(extra),"valign=top"));
+			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;","width=20%") +
+					 HU.td(column.getLabel()+"&nbsp;&nbsp;","width=20%") +
+					 HU.td(column.getType(),"width=20%") +
+					 HU.td(column.getCanSearch()+"","width=20%") +				 
+					 HU.td(extra,"width=20%"),"valign=top"));
 		    }
 		    tmp.append(HU.close("table"));
 		    sb.append(HU.formEntry("Columns:",tmp.toString()));
 		}
+
+		StringBuilder subTypes = new StringBuilder();
+		List<TypeHandler> children = typeHandler.getChildrenTypes();
+		getTypeList(subTypes,children);
+		if(subTypes.length()>0) {
+		    sb.append(HU.formEntry("",
+					   HU.makeShowHideBlock("Sub Types", subTypes.toString(),true)));
+		}
+
+
+
 		String wikiText = typeHandler.getWikiTemplate(request, null);
 		if(stringDefined(wikiText)) {
 		    StringBuilder tmp = new StringBuilder();
 		    typeHandler.addReadOnlyWikiEditor(request, null,tmp, wikiText.trim());
 		    sb.append(HU.formEntry("Wiki Text:",tmp.toString()));
 		}
+
+
+
 
 		sb.append(HU.formTableClose());
 		typeHandler.addToEntryTypePage(request, sb);
@@ -1248,7 +1252,7 @@ public class EntryManager extends RepositoryManager {
 					     parent.getDescription(),HU.attrs("title",parent.getType()));
 		    }
 		    String searchLink = HU.href(getSearchManager().getTypeSearchUrl(typeHandler),
-					  HU.getIconImage(ICON_SEARCH));
+						HU.getIconImage(ICON_SEARCH));
 		    sb.append(HU.tr(HU.td(searchLink +HU.space(1) +
 					  HU.href(url,icon+" "+  typeHandler.getDescription(),
 						  HU.attrs("title","Details"))) +
@@ -1301,6 +1305,21 @@ public class EntryManager extends RepositoryManager {
         request.setReturnFilename("types.json");
         request.setCORSHeaderOnResponse();
         return new Result("", sb, JsonUtil.MIMETYPE);
+    }
+
+    private void getTypeList(StringBuilder sb, List<TypeHandler> children) {
+	if(children==null) return;
+	for(TypeHandler child: children) {
+	    String childUrl = getRepository().getUrlPath("/entry/types.html?type="  + child.getType());
+	    String icon = HU.img(child.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+	    HU.div(sb,HU.href(childUrl, icon+HU.space(1)+child.getDescription() +" - "+ child.getType()));
+	    List<TypeHandler> children2 = child.getChildrenTypes();
+	    if(Utils.listNotEmpty(children2)) {
+		sb.append("<div style='margin-left:30px;'>");
+		getTypeList(sb,children2);
+		sb.append("</div>");
+	    }
+	}
     }
 
     public Result processEntryNames(Request request) throws Exception {
@@ -4576,9 +4595,9 @@ public class EntryManager extends RepositoryManager {
     public void addEntryEditHeader(Request request, Entry entry,Appendable sb, RequestUrl url) throws Exception {
 	List links = new ArrayList();
 	for(RequestUrl rurl:new RequestUrl[]{getRepository().URL_ENTRY_FORM,
-						 getMetadataManager().URL_METADATA_FORM,
-						 getMetadataManager().URL_METADATA_ADDFORM,
-						 getAccessManager().URL_ACCESS_FORM}) {
+					     getMetadataManager().URL_METADATA_FORM,
+					     getMetadataManager().URL_METADATA_ADDFORM,
+					     getAccessManager().URL_ACCESS_FORM}) {
 	    links.add(new HtmlUtils.Href(request.entryUrl(rurl,entry),rurl.getLabel(),
 					 rurl.equals(url)?"ramadda-linksheader-on":
 					 "ramadda-linksheader-off"));
@@ -5458,7 +5477,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         String extraDesc = request.getSanitizedString(ARG_DESCRIPTION + "_extra",
-                                             (String) null);
+						      (String) null);
 
         String textFromUser = request.getString(ARG_DESCRIPTION,
 						(encoded == null)
@@ -5602,12 +5621,12 @@ public class EntryManager extends RepositoryManager {
 							     ARG_DESCRIPTION) + HU.br();
 
         OutputHandler.EntrySelect select = getRepository().getHtmlOutputHandler().getSelect(
-									 request, ARG_TO,
-									 HU.highlightable(
-											  HU.image("fas fa-bars")
-											  + HU.SPACE
-											  + msg("Select")
-											  + HU.SPACE), true, "", null, false, false);
+											    request, ARG_TO,
+											    HU.highlightable(
+													     HU.image("fas fa-bars")
+													     + HU.SPACE
+													     + msg("Select")
+													     + HU.SPACE), true, "", null, false, false);
 
         sb.append(HU.hidden(ARG_TO + "_hidden", "",
 			    HU.id(ARG_TO + "_hidden")));
@@ -6202,7 +6221,7 @@ public class EntryManager extends RepositoryManager {
 
         boolean doAnonymousUpload = false;
         String name = EntryUtil.clipEntryName(Utils.getAttributeOrTag(node,
-							       ATTR_NAME, ""));
+								      ATTR_NAME, ""));
 
         String originalId = XmlUtil.getAttribute(node, ATTR_ID,
 						 (String) null);
@@ -8119,8 +8138,8 @@ public class EntryManager extends RepositoryManager {
 
 
     public boolean processHarvesterEntries(Harvester harvester,
-                                  TypeHandler typeHandler,
-                                  List<Entry> entries, boolean makeThemUnique)
+					   TypeHandler typeHandler,
+					   List<Entry> entries, boolean makeThemUnique)
 	throws Exception {
         if (makeThemUnique) {
             entries = getUniqueEntries(entries,null,null);
