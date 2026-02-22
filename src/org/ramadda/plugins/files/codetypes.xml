@@ -87,10 +87,33 @@
       description="Matlab Data File" pattern="(?i).*\.mat" >
 </type>
 
-<type name="type_json"  super="type_convertible" description="JSON File as CSV"
-      priority="100"
+<type name="type_file_json" description="JSON File"
       notpattern="(?i).*imdvmap\.json$"
-      pattern="(?i).*\.(json|json.gz)"
+      pattern="(?i).*\.json"
+      supercategory="General"
+      category="Data">
+     <property name="icon" value="/icons/json.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="showjson" label="Show JSON"
+	    type="boolean" showinhtml="false" default="false"/>	     
+
+     <wiki_inner><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{information details=true}}
++if property=showjson
+{{json.view wikify="false"}}
+-if
+-section
+]]>
+</wiki_inner>
+</type>
+
+
+
+<type name="type_json"  super="type_convertible" description="JSON File as CSV"
       handler="org.ramadda.plugins.files.JsonFileTypeHandler"
       supercategory="General"
       category="Data">
@@ -101,12 +124,17 @@
      <wiki_inner><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{json.view wikify="false"}}
++if property=showjson
+{{json.view wikify="false"}}]
+-if
 -section
 ]]>
 </wiki_inner>
 </type>
   
+<!-- legacy -->
+<type name="notes_json"  super="type_json" foruser="false"/>
+
 <type name="type_file_shell" super="type_file_code"
       description="Shell Script" pattern="(?i).*\.sh" >
   <property name="canbeindexed" value="true"/>
