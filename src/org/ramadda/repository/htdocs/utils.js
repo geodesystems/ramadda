@@ -6722,6 +6722,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    jqid(inputId).focus();
 	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
+		let toks = Utils.split(text,',',true,true);
 		tags.each(function() { 
 		    if(text=='') {
 			$(this).show();
@@ -6731,7 +6732,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    tag+=' ' +($(this).attr(ATTR_DATA_CORPUS)??'');
 		    if(tag) {
 			tag = tag.toLowerCase();
-			if(tag.indexOf(text)>=0)
+			let ok = true;
+			toks.forEach(tok=>{
+			    if(tag.indexOf(tok)<0) {
+				ok = false;
+			    }
+			});
+			if(ok)
 			    $(this).show();
 			else
 			    $(this).hide();
