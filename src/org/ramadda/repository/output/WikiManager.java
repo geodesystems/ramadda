@@ -1939,6 +1939,9 @@ public class WikiManager extends RepositoryManager
 	    }
             return getHtmlOutputHandler().getInformationTabs(myRequest, entry, false,extras,
 							     getProperty(wikiUtil,props,"showResource",true),props);
+        } else if (theTag.equals("createtype")) {
+	    getRepository().getExtEditor().addOutputCreateType(request, entry, sb,null);
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_FA)) {
 	    String icon=
 		getProperty(wikiUtil, props, "icon", "");

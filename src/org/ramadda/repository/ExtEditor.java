@@ -2077,18 +2077,22 @@ public class ExtEditor extends RepositoryManager {
 	if ( !createTypeOK(request)) {
 	    throw new AccessException("Create type not enabled", request);
 	}
-
 	StringBuilder sb = new StringBuilder();
+	addOutputCreateType(request, entry, sb, msg);
+	Result result =  new Result("Create Type - " + entry.getName(),sb);
+        return getEntryManager().addEntryHeader(request, entry, result);
+    }
+
+    public void addOutputCreateType(Request request, Entry entry,StringBuilder sb, String msg)
+	throws Exception {
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	String callout = "";
 	if(request.isAdmin()) {
-	    callout+="+note\nIf you are installing the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
+	    callout+="+note\nIf you are installing the entry type it is best to do this on a development server as the database schema is changed, etc.";
 	}
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
 	callout+="\n-note";
 	sb.append(getWikiManager().wikify(request,callout));
-	//	getWikiManager().makeCallout(sb,request,callout);
-
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
 	if(msg!=null) sb.append(msg);
 
@@ -2303,8 +2307,6 @@ public class ExtEditor extends RepositoryManager {
 
 
 	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result =  new Result("Create Type - " + entry.getName(),sb);
-        return getEntryManager().addEntryHeader(request, entry, result);
     }
 
 
