@@ -50,7 +50,6 @@ public class LasTypeHandler extends CoreRecordBaseTypeHandler {
 		String value = m.group(2).trim();		
 		String longId = m.group(3).trim();
 		if(!stringDefined(value)) continue;
-		System.err.println("id:" + id +" v:" + value +" long:" + longId);
 	    }
 	    
 	}
