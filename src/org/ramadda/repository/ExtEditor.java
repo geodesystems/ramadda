@@ -966,6 +966,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.setEndDate('yyyy-MM-dd')</span>\n" +
 		    "<span>entry.hasLocationDefined()</span>\n"+
 		    "<span>entry.setLocation(lat,lon)</span>\n"+
+		    "<span>entry.setLocationFromParent()</span>\n"+		    
 		    "<span>entry.setOwner('username')</span>\n" +
 		    "<span>entry.getChildren()</span>\n" +
 		    "</div>";
@@ -1823,13 +1824,24 @@ public class ExtEditor extends RepositoryManager {
 	    changed=true;
 	}		
 
-	public void setLocationFromParent() {
+	public void setLocationFromParent(boolean...force) throws Exception {
+	    if(force.length==0 || !force[0]) { 
+		if(entry.isGeoreferenced(request)) {
+		    return;
+		}
+	    }
 	    Entry parent = entry.getParentEntry();
-	    if(parent.hasLocationDefined(request)) {
-		entry.setNorth(parent.getNorth(request));
-		entry.setWest(parent.getWest(request));
-		entry.setSouth(parent.getSouth(request));				
-		entry.setEast(parent.getEast(request));		
+	    if(parent.isGeoreferenced(request)) {
+		ctx.print("setting location:",entry);
+		if(entry.getTypeHandler().okToShowInForm(entry, ARG_AREA)) {
+		    entry.setNorth(parent.getNorth(request));
+		    entry.setWest(parent.getWest(request));
+		    entry.setSouth(parent.getSouth(request));				
+		    entry.setEast(parent.getEast(request));
+		} else 	if(entry.getTypeHandler().okToShowInForm(entry,ARG_LOCATION)) {
+		    entry.setLatitude(parent.getLatitude(request));
+		    entry.setLongitude(parent.getLongitude(request));		    
+		}
 		changed=true;
 	    }
 	}
