@@ -32,11 +32,6 @@
 </type>
 
 
-<!--
-    legacy
--->
- <type name="notes_jsonfile"  super="type_json" description="Json File" foruser="false"></type>
-
 
   <type name="pasteitentry"  description="Paste Text Entry" handler="org.ramadda.plugins.notes.PasteitEntryTypeHandler" >
      <property name="icon" value="/icons/txt.png"/>
