@@ -2,7 +2,7 @@
 
 <!-- project and site -->
 <import resource="type_geo_project.xml"/>
-
+<import resource="type_geo_site.xml"/>
 
 
 <!-- Base type -->

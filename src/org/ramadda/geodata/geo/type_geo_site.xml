@@ -1,0 +1,51 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_geo_site.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_geo_site" 
+ description="Geo Site" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+childtypes="type_display_children,type_geo_core_images"
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/site.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.altitude.show"  value="true" />
+<property  name="search.metadatatypes"  value="" />
+<property  name="date.nullok"  value="true" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
++row
++col-8
+{{description wikify="true"}}
+:heading Data
+{{tabletree  message="No data available" orderby=name ascending=true showType=false showSize=false}}
+-col
++col-4
++center
+{{image  inherited="false" showCaption=true multiples="true" popup=true
+message="" width="80%"  useThumbnail="true" }}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+-col
+-row
+----
+:heading Information
+{{information details=true}}
+-section]]></wiki>
+</type>
+</types>

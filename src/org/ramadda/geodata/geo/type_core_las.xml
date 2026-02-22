@@ -40,5 +40,48 @@ csvcommands2=-change,0-10,-999.*,NaN
 picky=false
 
 ]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Log ASCII: {{name}}"
+:navtop 
++row
++col-8
+{{property max=10000}}
+{{group
+requestFields="skip,stride,limit" chartLeft=100 
+requestFieldsShow=false
+}}
+
+{{description wikify=true}}
+:heading Chart
+{{display_filter
+loadingMessage="icon_progress"
+showMenu=false requestFieldsShow=true
+noDataMessage="No data available"}}
+{{core_profiles showMenu=true yAxisReverse=true marginTop=25  
+profileMode="lines" indexField=".*depth.*"  #fields="#2"}}         
+
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+-col
++col-4
+<table class="formtable">
+{{field name="top_depth"  row.label="Top Depth:"}}
+{{field name="bottom_depth"  row.label="Bottom Depth:"}}
+</table>
+</table>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section]]></wiki>
 </type>
 </types>
