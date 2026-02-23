@@ -716,6 +716,7 @@ public interface Constants {
     public static final String TYPE_ASSOCIATION = "association";
     public static final String TYPE_FILE = "file";
     public static final String TYPE_GROUP = "group";
+    public static final String TYPE_DUMMY = "type_dummy";
 
     public static final String ACTION_ADD = "action.add";
     public static final String ACTION_CLEAR = "action.clear";
