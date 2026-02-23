@@ -36,13 +36,7 @@ import java.util.regex.*;
 
 import java.util.zip.*;
 
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class ZipOutputHandler extends OutputHandler {
 
@@ -195,20 +189,20 @@ public class ZipOutputHandler extends OutputHandler {
 	}
         if (output.equals(OUTPUT_ZIPTREE)) {
             getLogManager().logInfo("Doing zip tree");
-            return toZip(request, group.getName(), children, true, false,false);
+            return toZip(request, group, children, true, false,false);
         }
         if (output.equals(OUTPUT_THUMBNAILS)) {
             getLogManager().logInfo("Doing zip thumbnails");
-            return toZip(request, group.getName(), children, false, false,true);
+            return toZip(request, group, children, false, false,true);
         }	
         if (output.equals(OUTPUT_EXPORT)) {
-            return toZip(request, group.getName(), children, true, true,false);
+            return toZip(request, group, children, true, true,false);
 	} else  if (output.equals(OUTPUT_EXPORT_SHALLOW)) {
-	    return toZip(request, group.getName(), children, false, true,false);
+	    return toZip(request, group, children, false, true,false);
 	} else  if (output.equals(OUTPUT_EXPORT_DEEP)) {
-	    return toZip(request, group.getName(), children, false, true,false);	    
+	    return toZip(request, group, children, false, true,false);	    
         } else {
-            return toZip(request, group.getName(), children, false, false,false);
+            return toZip(request, group, children, false, false,false);
         }
     }
 
@@ -219,6 +213,15 @@ public class ZipOutputHandler extends OutputHandler {
             return super.getMimeType(output);
         }
     }
+
+    public Result toZip(Request request, Entry group, List<Entry> entries,
+                        boolean recurse, boolean forExport,boolean thumbnails,boolean...deep)
+            throws Exception {
+	String prefix = "";
+	if(group!=null && !group.isType(TYPE_DUMMY)) prefix = group.getName();
+	return toZip(request, prefix,entries,recurse,forExport,thumbnails,deep);
+    }
+
 
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport,boolean thumbnails,boolean...deep)
@@ -248,7 +251,7 @@ public class ZipOutputHandler extends OutputHandler {
 
         //Now set the return file name
         if (prefix.length() == 0) {
-            request.setReturnFilename("entry.zip");
+            request.setReturnFilename("download.zip");
         } else {
             request.setReturnFilename(prefix + ".zip");
         }
