@@ -180,6 +180,7 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 	entry.setParentEntry(parentEntry);
 	entry.setName(makeName(file,type));
 
+	System.err.println(entry.getTypeHandler());
 	entry.getTypeHandler().initializeNewEntry(request, entry, TypeHandler.NewType.NEW);
 	return entry;
 

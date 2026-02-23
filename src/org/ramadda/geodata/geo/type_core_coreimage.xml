@@ -27,4 +27,6 @@ pattern="(?i).*annotated-core-photo.*\.jpg"
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 </type>
+<type name="type_borehole_coreimage"
+super="type_core_coreimage"  foruser="false"/>
 </types>

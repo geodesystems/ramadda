@@ -301,9 +301,8 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);
 		} else	if(action==ACTION_CV_ADD) {
 		    let id = $(this).attr(ATTR_ID);
-		    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 		    let localeId = _this.opts.mainEntry;
-		    let types = 'type_borehole_coreimage,type_geo_borehole_images,isgroup';
+		    let types = 'type_core_coreimage,type_core_image_collection,isgroup';
 		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null);	   
 		} else	if(action==ACTION_CV_GALLERY) {
 		    _this.showGallery($(this));
@@ -1304,7 +1303,7 @@ RamaddaCoreDisplay.prototype = {
     },
 
     canSave:function() {
-	return this.getProperty('mainEntryType')=='type_geo_borehole_images' &&
+	return this.getProperty('mainEntryType')=='type_core_image_collection' &&
 	    this.canEdit();
     },
     canEdit:function() {

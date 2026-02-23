@@ -53,12 +53,8 @@ public class CoreBaseTypeHandler extends GenericTypeHandler {
 	super.initializeNewEntry(request, entry,newType);
 	if(!isNew(newType)) return;
 	CoreUtil.initializeNewEntry(request, entry);
-
-	if(entry.getTypeHandler().isType("type_borehole_image") ||
-	   entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) {
-	    System.err.println("image");
-	    applyService(request,entry,tiffService);
-
+	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) {
+	    //	    applyService(request,entry,tiffService);
 	}
 
 
