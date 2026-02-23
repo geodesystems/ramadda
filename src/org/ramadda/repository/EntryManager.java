@@ -8295,7 +8295,7 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Entry getDummyGroup(String name) throws Exception {
-        Entry dummyGroup = new Entry(getRepository().getTypeHandler("type_dummy"),
+        Entry dummyGroup = new Entry(getRepository().getTypeHandler(TYPE_DUMMY),
                                      true, name);
         dummyGroup.setId(getRepository().getGUID());
         dummyGroup.setUser(getUserManager().getAnonymousUser());
