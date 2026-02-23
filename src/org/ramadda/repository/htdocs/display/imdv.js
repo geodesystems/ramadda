@@ -58,6 +58,8 @@ var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
 var PROP_LAYERS_ONE_VISIBLE= "onlyOneLayerVisible";
+var PROP_CURRENTLOCATION_ADD = "addCurrentLocationMarker";
+var PROP_CURRENTLOCATION_UPDATETIME = 'currentLocationUpdateTime';
 
 var PROP_LEVELRANGE_SHOWMARKER = 'showMarkerWhenNotVisible';
 var PROP_LEVELRANGE_RANGE = 'visibleLevelRange';
@@ -4295,9 +4297,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 ...IMDV_PROPERTY_HINTS,
 			 'dragPanEnabled=false',
 			 'zoomPanEnabled=false',			 
-			 'addCurrentLocationMarker=true',
+			 PROP_CURRENTLOCATION_ADD+'=true',
 			 'centerOnCurrentLocation=true',
-			 'currentLocationUpdateTime=seconds',
+			 PROP_CURRENTLOCATION_UPDATETIME+'=seconds',
 			 'showAddress=true',
 			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
@@ -4430,20 +4432,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    timeout           : 27000
 	},
 
-	checkCurrentLocation:function() {
+	checkCurrentLocation:function(andGoTo) {
 	    if(this.currentLocationMarker) {
 		this.getMap().removeMarker(this.currentLocationMarker);
 		this.currentLocationMarker=null;
 	    }
-	    if(!this.getMapProperty('addCurrentLocationMarker',false)) {
+	    if(!this.getMapProperty(PROP_CURRENTLOCATION_ADD,false)) {
 		return;
 	    }
             if (!navigator.geolocation) {
 		console.log('no navigator.geolocation available');
 		return;
 	    }
-
-
+	    let updateTime = parseFloat(this.getMapProperty(PROP_CURRENTLOCATION_UPDATETIME));
             navigator.geolocation.getCurrentPosition(position=> {
 		let lat = position.coords.latitude;
 		let lon = position.coords.longitude;
@@ -4453,7 +4454,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.currentLocationMarker=null;
 		}
 
+
 		let popup = '<center><h2>Current Location</h2></center>';
+		popup+=HU.div([],'Latitude: ' + Utils.trimDecimals(lat,5) +' Longitude:' + Utils.trimDecimals(lon,5));
+		popup+=HU.br();
 
 		if(this.isIsolineEnabled()) {
 		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineForCurrentMarker()',
@@ -4461,7 +4465,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		this.currentLocationMarker =
 		    this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
-		if(this.getMapProperty('centerOnCurrentLocation')) {
+		if(updateTime>0 || andGoTo || this.getMapProperty('centerOnCurrentLocation')) {
 		    this.getMap().setCenter(lonlat);
 		}
             },error=>{
@@ -4470,10 +4474,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    //Add a timeout callback
 	    if(this.checkCurrentLocationTimeout) clearTimeout(this.checkCurrentLocationTimeout);
-	    if(Utils.isDefined(this.getMapProperty('currentLocationUpdateTime'))) {
+	    if(updateTime>0) {
 		this.checkCurrentLocationTimeout = setTimeout(()=>{
 		    this.checkCurrentLocation();
-		},1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
+		},1000*updateTime);
 	    }		
 
 	},
@@ -4564,11 +4568,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return this.menuItem(id,label);
 		}
 	    }
-	    let lbl = (l,i) =>{
+	    let lbl = (l,icon) =>{
 		if(!addLabel) 
-		    return (HU.getIconImage(i));
-		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-								       CSS_WIDTH,HU.px(20))]))+HU.space(1)+
+		    return (HU.getIconImage(icon));
+		
+		if(icon) icon = HU.getIconImage(icon);
+		else icon='';
+		return HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+						 CSS_TEXT_ALIGN,ALIGN_CENTER,
+						  CSS_WIDTH,HU.px(20))],icon)+
+		    HU.space(1)+
 		    HU.span([],l);
 	    }
 
@@ -4582,12 +4591,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-eye');
 
-            if (navigator.geolocation) {
-		html+= make(this.domId(ID_MAP_MYLOCATION+suffix),"Your Location","fas fa-street-view");
-	    }
 
-	    html+= make(this.domId(ID_MAP_REGIONS+suffix),"Regions","fas fa-map");
+	    html+= make(this.domId(ID_MAP_REGIONS+suffix),"Select Region","fas fa-map");
 	    html+= make(this.domId(ID_MAP_CHOOSE+suffix),"Set Location/Zoom","fas fa-compass");
+            if (navigator.geolocation) {
+		html+=HU.thinLine();
+		html+= make(this.domId(ID_MAP_MYLOCATION+suffix),"View Your Location","fas fa-street-view");
+		if(this.getMapProperty(PROP_CURRENTLOCATION_ADD,false)) {
+		    html+= make(this.domId(PROP_CURRENTLOCATION_ADD+suffix),"Remove Current Location",
+				'fas fa-location-pin');
+		} else {
+		    html+= make(this.domId(PROP_CURRENTLOCATION_ADD+suffix),"Add Current Location",
+				'fas fa-location-pin');
+		}
+		if(this.getMapProperty(PROP_CURRENTLOCATION_UPDATETIME,false)) {
+		    html+= make(this.domId(PROP_CURRENTLOCATION_UPDATETIME+suffix),"Don't Track Current Location",
+				'fas fa-shoe-prints');
+		} else {
+		    html+= make(this.domId(PROP_CURRENTLOCATION_UPDATETIME+suffix),"Track Current Location",
+				'fas fa-shoe-prints');
+		}
+
+	    }
 	    html+=HU.thinLine();
 	    html+= make(this.domId(ID_MAP_TOGGLE_OFF+suffix),"Toggle all off","fas fa-toggle-off");
 	    html+= make(this.domId(ID_MAP_TOGGLE_ON+suffix),"Toggle all on","fas fa-toggle-on");
@@ -4613,6 +4638,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.setVisible(true,true);
 		});
 	    });	    
+
+	    this.jq(PROP_CURRENTLOCATION_ADD+suffix).click(()=>{
+		let current = this.getMapProperty(PROP_CURRENTLOCATION_ADD,false);
+		this.setMapProperty(PROP_CURRENTLOCATION_ADD,!current);
+		HU.hidePopupObject(null,true);
+		this.checkCurrentLocation(true);
+	    });
+
+	    this.jq(PROP_CURRENTLOCATION_UPDATETIME+suffix).click(()=>{
+		let current = this.getMapProperty(PROP_CURRENTLOCATION_UPDATETIME,0);
+		if(current==0) {
+		    current = 20;
+		    this.setMapProperty(PROP_CURRENTLOCATION_ADD,true);
+		} else {
+		    current=0;
+		}
+		this.setMapProperty(PROP_CURRENTLOCATION_UPDATETIME,current);
+		HU.hidePopupObject(null,true);
+		this.checkCurrentLocation(true);
+	    });
+
 
 	    this.jq(ID_MAP_CHOOSE+suffix).click(function(){
 		clear();
