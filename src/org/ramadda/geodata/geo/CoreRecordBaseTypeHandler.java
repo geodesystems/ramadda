@@ -82,8 +82,6 @@ public class CoreRecordBaseTypeHandler extends PointTypeHandler {
 		double top  =range[0];
 		double bottom  =range[1];		
 		String unit = depthField.getUnit();
-		System.err.println("init:" + top +" " + bottom);
-
 		if(unit!=null) {
 		    unit  = unit.toLowerCase();
 		    if(unit.equals("f") || unit.equals("feet") ||
