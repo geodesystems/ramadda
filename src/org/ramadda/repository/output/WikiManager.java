@@ -3142,6 +3142,8 @@ public class WikiManager extends RepositoryManager
 		"><iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='" + height+"' frameborder='1'></iframe>\n</div>\n</center>\n";
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             boolean doUrl = getProperty(wikiUtil, props, "dourl",   false);
+            String  as = getProperty(wikiUtil, props, "as",null);
+	    boolean asXml = as!=null && as.equals("xml");
 	    if(doUrl) {
 	    } else {
 		if ( !entry.isFile()) {
@@ -3155,10 +3157,12 @@ public class WikiManager extends RepositoryManager
 		    return HU.getPdfEmbed(url,props);
 		}
 
-		if (( !isTextFile(entry, entry.getResource().getPath())
-		      && !getProperty(wikiUtil, props, ATTR_FORCE,
-				      false))) {
-		    return getProperty(wikiUtil,props,"message","Entry is not a text file");
+		if(!asXml) {
+		    if (( !isTextFile(entry, entry.getResource().getPath())
+			  && !getProperty(wikiUtil, props, ATTR_FORCE,
+					  false))) {
+			return getProperty(wikiUtil,props,"message","Entry is not a text file");
+		    }
 		}
 	    }
             StringBuilder txt = new StringBuilder("");
@@ -3178,14 +3182,13 @@ public class WikiManager extends RepositoryManager
             String maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, null);
 	    boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
 	    boolean highlight = getProperty(wikiUtil, props, "highlight",true);
-            String  as = getProperty(wikiUtil, props, "as",null);
 
             int    lineNumber = 0;
             int    cnt        = 0;
             String line;
 	    int maxSize = Utils.getProperty(props,"maxSize",-1);
 	    int size = 0;
-	    boolean asXml = as!=null && as.equals("xml");
+
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 if (skipLines > 0) {
