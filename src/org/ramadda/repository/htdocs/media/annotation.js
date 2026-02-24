@@ -29,6 +29,10 @@ function RamaddaZoomableImage(attrs,id) {
 	attrs.annotationsField = "annotations_json";
 
     if(!Utils.isDefined(attrs.showToolbar)) attrs.showToolbar= true;
+    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+    if(isFirefox) {
+	attrs.drawer='canvas';
+    }
     let osd =this.osd = OpenSeadragon(attrs);
     if(attrs.doBookmark) {
 	//call the bookmark plugin so the location is tracked in a URL hash
