@@ -1046,17 +1046,17 @@ public class Entry implements Cloneable {
      * @return true if this entry has a location defined
      */
     public boolean hasLocationDefined(Request request) {
-	double north = getNorth(request);
-	double west = getWest(request);	
-	double south = getSouth(request);
-	double east = getEast(request);		
-        if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south)
-	    && Utils.isReal(east) && !hasAreaDefined(request)) {
-            if (Utils.between(east, -180, 180)
-		&& Utils.between(south, -90, 90)) {
+	double latitude = getLatitude(request);
+	double longitude = getLongitude(request);	
+        if ((latitude != NONGEO) && (longitude != NONGEO) && Utils.isReal(latitude)
+	    && Utils.isReal(longitude) && !hasAreaDefined(request)) {
+            if (Utils.between(longitude, -180, 180)
+		&& Utils.between(latitude, -90, 90)) {
+		//		System.err.println(getName() +" LL OK:" + latitude +" " + longitude);
                 return true;
             }
         }
+	//	System.err.println(getName() +" LL NOT OK:" + latitude +" " + longitude+" has area:" + hasAreaDefined(request));
 
         return false;
     }
