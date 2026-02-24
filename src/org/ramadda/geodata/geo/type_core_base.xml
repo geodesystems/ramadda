@@ -20,9 +20,10 @@ metadata="geo_stratigraphy,geo_measurement"
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />
-<property  name="inheritlocationfromtype"  value="type_geo_site" />
+<property  name="inheritlocationfromtype"  value="type_geo_project,type_geo_site" />
 <property  name="date.nullok"  value="true" />
 <property  name="form.area.show"  value="false" />
 <property  name="form.location.show"  value="true" />
+<property  name="form.altitude.show"  value="true" />
 </type>
 </types>

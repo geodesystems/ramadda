@@ -111,7 +111,6 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
     }
 
 
-
     @Override
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {

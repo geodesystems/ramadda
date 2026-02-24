@@ -10,26 +10,22 @@ into some types.xml file
  super="type_core_record_base" 
  supercategory="" 
  category="" 
-pattern="(?i).*MSCL-XYZ.xls"
+pattern="(?i).*(MSCL-XYZ|MSCL-S).xlsx?"
 priority="1"
 >
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="form.area.show"  value="false" />
-<property  name="form.location.show"  value="false" />
-<property  name="form.properties.show"  value="false" />
-<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
-<property  name="canbeindexed"  value="false" />
 
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
 csvcommands1=-encoding,ISO-8859-1,-unitrow,-set,0
-csvcommands2=0,Section,-insert,,top_depth
-csvcommands3=${entry.column:top_depth},-copy,section_depth,scaled_section_depth,-scale
-csvcommands4=scaled_section_depth,0,0.01,0,-operator
-csvcommands5=top_depth\,scaled_section_depth,depth,+,-notcolumns,scaled_section_depth
-csvcommands6=-columnsafter,section,depth,-change,1-50
-csvcommands7=^$,NaN,-addheader,section.type enumeration  surface_depth.unit M
+csvcommands2=0,Section,-numcolumns,-1,-insert
+csvcommands3=,top_depth,${entry.column:top_depth},-copy,section_depth
+csvcommands4=scaled_section_depth,-scale,scaled_section_depth,0,0.01
+csvcommands5=0,-operator,top_depth\,scaled_section_depth,depth,+
+csvcommands6=-notcolumns,scaled_section_depth,-columnsafter,section,depth
+csvcommands7=-change,1-50,^$,NaN,-addheader
+csvcommands8=section.type enumeration  surface_depth.unit M
 
 ]]></property>
 
@@ -92,17 +88,14 @@ The group tag keeps the scatter plots separate from the above filters
 
 ----
 :heading Information
++row
++col-9
 {{information}}
-
-----
-----
-:heading Wiki Text
-:note This would normally not be in here but I added it so you can see the wiki text used
-{{wikitext}}
-
-:heading SeeSV Convert Commands
-:note Likewise this wouldn't normally be here
-{{seesv}}
+-col
++col-3
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+-col
+-row
 -section]]></wiki>
 </type>
 </types>

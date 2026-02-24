@@ -224,7 +224,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				else if(v.startsWith("color:")) stroke = v.substring("color:".length()).trim();
 				else if(v.startsWith("fill:")) fill= v.substring("fill:".length()).trim();
 				else if(v.startsWith("w:")) strokeWidth = v.substring("w:".length()).trim();
-				else if(v.startsWith("width:")) strokeWidth = v.substring("width:".length()).trim();				
+				else if(v.startsWith("width:")) strokeWidth = v.substring("width:".length()).trim();
 				else if(v.startsWith("top:")) top = v.substring(4).trim();
 				else if(v.startsWith("bottom:")) bottom= v.substring(7).trim();
 			    }
@@ -634,7 +634,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 
 	public String toString() {
-	    return "box:" + label +" x/y:" + x +" " + y +" dim:" + width +"x" + height +" depth:" + top +" " + bottom;
+	    return "box:" + label +" x/y:" + x +" " + y +" dim:" + width +"x" + height +" depth:" + top +" - " + bottom;
 	}
 	private static double p(String s) {
 	    if(!Utils.stringDefined(s)) return Double.NaN;

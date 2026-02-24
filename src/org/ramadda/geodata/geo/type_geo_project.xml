@@ -28,7 +28,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 +row 
 +col-8
 :heading Sites
-{{map listentries="true" entry="child:type:type_map_folder" orderby=name}}
+{{map listentries="true" entry="child:type:type_map_folder" orderby=entryorder_up,name_up}}
 :heading Contents
 {{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false
 orderby=entryorder_up ascending=true}} 
