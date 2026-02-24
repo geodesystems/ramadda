@@ -2087,6 +2087,7 @@ public class TypeHandler extends RepositoryManager {
 
     public boolean isType(List<String> types) {
 	for(String type: types) {
+	    if(type.equals("*")) return true;
 	    if(isType(type)) return true;
 	}
 	return false;
@@ -3752,20 +3753,19 @@ public class TypeHandler extends RepositoryManager {
 
         if (newType==NewType.NEW) {
 	    String inheritLocation = getTypeProperty("inheritlocationfromtype",null);
-	    if(inheritLocation!=null
+	    if(stringDefined(inheritLocation)
 	       && !entry.hasLocationDefined(null)  &&
 	       !entry.hasAreaDefined(null)) {
+		List<String> types = Utils.split(inheritLocation,",",true,true);
 		Entry parent = entry.getParentEntry();
 		while(parent!=null) {
-		    if(inheritLocation.equals("*") ||
-		       parent.getTypeHandler().isType(inheritLocation)){
+		    if(parent.getTypeHandler().isType(types)) {
 			if(parent.hasLocationDefined(null) ||
 			   parent.hasAreaDefined(null)) {
 			    entry.setLocation(parent);
 			    break;
 			}
 		    }
-
 		    parent = parent.getParentEntry();
 		}
 	    }
