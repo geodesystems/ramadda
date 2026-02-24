@@ -895,8 +895,14 @@ public abstract class Converter extends Processor {
                 }
             }
             newList.add(0, values.get(colIdx));
+
             for (int i = indices.size() - 1; i >= 0; i--) {
-                newList.add(1, values.get(indices.get(i)));
+		int sourceIndex = indices.get(i);
+		if(row.indexOk(sourceIndex)) {
+		    newList.add(1, values.get(sourceIndex));
+		} else {
+		    newList.add(1, "");
+		}
             }
             for (int i = colIdx - 1; i >= 0; i--) {
                 if (set.contains(i)) {
