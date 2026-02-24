@@ -635,6 +635,13 @@
 
 
 
+  <target name="runramadda">
+    <exec executable="${user.home}/bin/ramadda.sh">
+    </exec>
+  </target>
+
+
+
   <target name="installer" depends="init">
     <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
     <mkdir dir="${installer_dir}"/>
