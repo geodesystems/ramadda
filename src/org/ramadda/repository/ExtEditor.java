@@ -2207,8 +2207,13 @@ public class ExtEditor extends RepositoryManager {
 	StringBuilder props = processTypeProps(request,
 					       "/org/ramadda/repository/resources/colattrs.txt","colattributes",10);
 	StringBuilder wiki = new StringBuilder();
+	String desc = entry.getDescription();
+	if (!entry.getTypeHandler().isWikiText(desc)) {
+	    desc="";
+	}
+	    
 	entry.getTypeHandler().addWikiEditor(request, entry, wiki, formInfo,
-					     ARG_DESCRIPTION, entry.getDescription(), "",
+					     ARG_DESCRIPTION, desc, "",
 					     false, Entry.MAX_DESCRIPTION_LENGTH,
 					     true,"height","500px");
 
@@ -2281,7 +2286,12 @@ public class ExtEditor extends RepositoryManager {
 				      "Columns",
 				      "Wiki Text",
 				      "Admin"},
-			 new Object[]{main,properties,extra,cols,wiki,admin});
+			 new Object[]{main,
+				      properties,
+				      extra,
+				      cols,
+				      wiki,
+				      admin});
 	sb.append(HtmlUtils.formClose());
 
 	List<Metadata> metadataList =
@@ -2588,11 +2598,11 @@ public class ExtEditor extends RepositoryManager {
 
 	String oldDescription = entry.getDescription();
 	String newDescription = request.getString(ARG_DESCRIPTION, null);
-	if(stringDefined(newDescription) && !Misc.equals(oldDescription,newDescription)) {
-	    entry.setDescription(newDescription);
-	    getEntryManager().updateEntry(request, entry);
-	}
-	if (Utils.stringDefined(newDescription) && entry.getTypeHandler().isWikiText(newDescription)) {
+	if (Utils.stringDefined(newDescription)) {
+	    if(!Misc.equals(oldDescription,newDescription)) {
+		entry.setDescription(newDescription);
+		getEntryManager().updateEntry(request, entry);
+	    }
 	    newDescription = newDescription.replace("{skip{","{{");
 	    sb.append("\n");
 	    sb.append(XU.comment("Wiki text"));
