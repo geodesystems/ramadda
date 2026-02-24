@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project  basedir="../../../../../" default="plugin" name="ramadda plugin">
+<project  basedir="../../../../../" default="plugin" >
     <target name="doit">
       <antcall target="movetypes"/>
       <antcall target="plugin"/>
@@ -7,7 +7,8 @@
     </target>
 
   <target name="movetypes">
-    <move todir="${caller.basedir}">
+    <dirname property="build.dir" file="${ant.file}"/>
+    <move todir="${build.dir}">
       <fileset dir="${user.home}/Downloads">
         <include name="type*.xml"/>
       </fileset>
