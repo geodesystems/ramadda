@@ -28,7 +28,7 @@ pattern="(?i).*\.(core|annotated-core-photo)\.(jpeg|jpg|png|gif)"
           icon="fa-regular fa-images" foruser="true" category="view"/>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="search.tabs"  value="list,images,map" />
+<property  name="search.tabs"  value="list,images,map,display" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[

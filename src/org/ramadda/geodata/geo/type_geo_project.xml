@@ -54,7 +54,7 @@ showAncestor=false ancestor=this
 metadataTypes=""
 entryTypes="super:type_core_base,type_geo_site"  
 orderByTypes="name,relevant,createdate,date,size"  
-displayTypes="list,map,images" 
+displayTypes="list,images,map,display" 
 includeNonImages=false
 }} 
 
