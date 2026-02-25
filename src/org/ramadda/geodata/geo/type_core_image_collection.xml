@@ -17,7 +17,7 @@ metadata="geo_core_annotation,geo_core_legend"
 <column  name="show_labels"  label="Show Labels"  type="boolean"  default="true" group="Display Settings" showinhtml="false" />
 <column  name="other_entries"  label="Other Image Collections"  type="string"  columns="80" help="One entry ID per line" rows="5" showinhtml="false" size="4000" />
 <column  name="displays"  label="Chart Displays"  type="string"  columns="80"  showinhtml="false"  help="One entry per line. Format:&lt;br&gt;entryid,field1:value1,...,fieldN:valueN&lt;br&gt;e.g.:&lt;br&gt;entry\  id,fields:gamma,indexField:depth" />
-<column  name="visualizer_data"  label="Visualizer Data"  type="clob"  candisplay="false" editable="false" showinhtml="false" />
+<column  name="visualizer_data"  label="Visualizer Data"  type="clob"  candisplay="false" editable="false" showinhtml="false" containsids="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/media/album.png" />
@@ -28,6 +28,7 @@ metadata="geo_core_annotation,geo_core_legend"
 
 <!-- Wiki text-->
 <wiki><![CDATA[
+<wiki>
 +section title={{name}}
 :navtop
 {{description wikify=true}}
@@ -39,4 +40,7 @@ displayEntries="${property:displays}"
 {{table showDate=false}} 
 -section]]></wiki>
 </type>
+<type name="type_geo_borehole_images" 
+super="type_core_image_collection" 
+foruser="false"/>
 </types>
