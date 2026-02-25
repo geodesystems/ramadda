@@ -22,6 +22,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 
 <!-- Wiki text-->
 <wiki><![CDATA[
+<wiki>
 +section title={{name}}
 :navtop
 {{description wikify=true}}
@@ -51,7 +52,7 @@ message="" width="80%"  useThumbnail="true" }}
 {{display_entrylist   startWithAny=true
 showAncestor=false ancestor=this
 metadataTypes=""
-entryTypes="type_core_coreimage,type_core_log,type_core_las,type_core_image,type_core_xrf,type_geo_lithology,type_core_fieldplot,type_core_wcl,type_core_dlis"  
+entryTypes="super:type_core_base,type_geo_site"  
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,map,images" 
 includeNonImages=false
