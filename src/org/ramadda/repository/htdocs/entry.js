@@ -1258,7 +1258,13 @@ function Entry(props) {
         getFormattedFilesize: function() {
             return GuiUtils.size_format(this.getFilesize());
         },
-        getEntryUrl: function(extraArgs) {
+        getEntryUrl: function(extraArgs,useThumbnail) {
+	    if(useThumbnail) {
+		let thumbnail = this.getThumbnail();
+		if(thumbnail) {
+		    return thumbnail;
+		}
+	    }
             if (this.remoteUrl) return this.remoteUrl;
             //Don't do this as we really want the url to the entry
             //if(this.url) return this.url;
@@ -1278,14 +1284,17 @@ function Entry(props) {
 	    if(this.getThumbnail()) return true;
 	    return false;
         },
-        getImageUrl: function() {
+        getImageUrl: function(useThumbnail) {
+	    let thumbnail = this.getThumbnail();
+	    if(useThumbnail && thumbnail) {
+		return thumbnail;
+	    }
             if (this.url && this.url.search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
                 return this.url;
             }
             if(this.hasResource() && this.getFilename().search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
 		return this.getResourceUrl();
 	    }
-	    let thumbnail = this.getThumbnail();
 	    if(thumbnail) {
 		return thumbnail;
 	    }
