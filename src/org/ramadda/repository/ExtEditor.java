@@ -1850,6 +1850,10 @@ public class ExtEditor extends RepositoryManager {
 	    changed=true;
 	}	
 
+	public void childrenChanged() {
+	    entry.getTypeHandler().childrenChanged(entry,true);
+	}
+
 	public String getDescription() {
 	    return entry.getDescription();
 	}
