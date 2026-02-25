@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.Column;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.auth.*;
@@ -459,13 +460,21 @@ public class ZipOutputHandler extends OutputHandler {
 
 	    if(forExport && deep) {
 		List<Entry> deepEntries = new ArrayList<Entry>();
-		//Hard code hack for now
-		if(entry.getTypeHandler().isType("geo_imdv")) {
+		if(entry.getTypeHandler().getTypeProperty("convertidsinfile", false)) {
 		    try {
 			String json = getStorageManager().readEntry(entry);
 			deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(json),seenEntry));
 		    } catch(Exception exc) {
 			getLogManager().logError("reading deep entries from imdv:" + entry,exc);
+		    }
+		}
+		List<Column> columns = entry.getTypeHandler().getColumnsThatContainIds();
+		if(columns!=null) {
+		    for(Column column: columns) {
+			String value= (String) column.getValue(request, entry);
+			if(value!=null) {
+			    deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(value),seenEntry));
+			}
 		    }
 		}
 		//call this so we pick wiki page entries

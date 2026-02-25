@@ -1939,21 +1939,34 @@ public class TypeHandler extends RepositoryManager {
         return s;
     }
 
+    public List<Column> getColumnsThatContainIds() {
+	List<Column> columns = getColumns();
+	if(columns!=null) {
+	    List<Column>ids = new ArrayList<Column>();
+	    for(Column column: columns) {
+		if(column.isEntryType() || (column.isString() && (column.getContainsIds() ||
+								  column.isWiki()))) {
+		    
+		    ids.add(column);
+		}
+	    }
+	    return ids;
+	}
+	return null;
+    }
+
     public boolean convertIdsFromImport(Request request,
 					Entry newEntry,
                                         List<String[]> idList) throws Exception {
         boolean changed = false;
 
-	List<Column> columns = getColumns();
+	List<Column> columns = getColumnsThatContainIds();
 	if(columns!=null) {
 	    Object[] values = newEntry.getValues();
 	    for(Column column: columns) {
-		if(column.isEntryType() || (column.isString() && (column.getContainsIds() ||
-								  column.isWiki()))) {
-		    String value= (String) column.getValue(request, newEntry);
-		    if(value!=null) value = convertIdsFromImport(value, idList);
-		    column.setValue(newEntry, values, value);
-		}
+		String value= (String) column.getValue(request, newEntry);
+		if(value!=null) value = convertIdsFromImport(value, idList);
+		column.setValue(newEntry, values, value);
 	    }
 	}
         if (getTypeProperty("convertidsinfile", false)) {
