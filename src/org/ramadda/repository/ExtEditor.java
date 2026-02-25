@@ -2599,6 +2599,7 @@ public class ExtEditor extends RepositoryManager {
 	String oldDescription = entry.getDescription();
 	String newDescription = request.getString(ARG_DESCRIPTION, null);
 	if (Utils.stringDefined(newDescription)) {
+	    newDescription=WIKI_PREFIX+"\n" + newDescription;
 	    if(!Misc.equals(oldDescription,newDescription)) {
 		entry.setDescription(newDescription);
 		getEntryManager().updateEntry(request, entry);
