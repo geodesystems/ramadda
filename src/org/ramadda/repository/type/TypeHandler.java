@@ -1948,7 +1948,8 @@ public class TypeHandler extends RepositoryManager {
 	if(columns!=null) {
 	    Object[] values = newEntry.getValues();
 	    for(Column column: columns) {
-		if(column.isEntryType() || (column.isString() && column.isWiki())) {
+		if(column.isEntryType() || (column.isString() && (column.getContainsIds() ||
+								  column.isWiki()))) {
 		    String value= (String) column.getValue(request, newEntry);
 		    if(value!=null) value = convertIdsFromImport(value, idList);
 		    column.setValue(newEntry, values, value);

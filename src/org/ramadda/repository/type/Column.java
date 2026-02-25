@@ -202,6 +202,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean isIndex;
     private boolean doStats = false;
     private boolean isWiki;
+    private boolean containsIds;
     private boolean isCategory;
     private boolean canSearch;
     private boolean includeInSearchIndex= false;
@@ -398,6 +399,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
+        containsIds     = getAttributeOrTag(element, "containsids", false);	
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
         includeInSearchIndex  = getAttributeOrTag(element, "includeinsearchindex", false);	
@@ -3801,6 +3803,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isIndex;
     }
 
+    public boolean getContainsIds() {
+        return containsIds;
+    }
+    
     public void setIsCategory(boolean value) {
         isCategory = value;
     }
