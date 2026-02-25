@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 24 08:01:07 MST 2026";
+var build_date="RAMADDA build date: Wed Feb 25 03:21:32 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -35286,7 +35286,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
                 if (entry.getIsImage()) {
                     imageEntries.push(entry);
-                    let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
+		    let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     imageCnt++;
 		    let imageUrl =entry.getImageUrl();
                     html += HU.tag(TAG_IMG, [ATTR_SRC, imageUrl,
@@ -37979,7 +37979,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				    entry.getStartDate(),
 				    entry.getCreateDate(),				    
 				    entry.getEntryUrl(),
-				    entry.getImageUrl()||defaultImage||"",
+				    entry.getImageUrl(true)||defaultImage||"",
 				    entry.getIconUrl(),
 				    tags,
 				    displayHtml,
