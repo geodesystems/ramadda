@@ -11,6 +11,7 @@ import org.ramadda.util.Utils;
 import org.json.*;
 
 public class CoreUtil {
+    public static final String TYPE_CORE_BASE = "type_core_base";
     public static final String TYPE_CORE_IMAGE = "type_core_coreimage";
     public static final String TYPE_COREBOX_XML = "type_core_corebox_xml";
     public static final String TYPE_CORE_XRF = "type_core_xrf";

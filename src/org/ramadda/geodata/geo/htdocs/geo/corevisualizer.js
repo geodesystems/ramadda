@@ -302,8 +302,10 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		} else	if(action==ACTION_CV_ADD) {
 		    let id = $(this).attr(ATTR_ID);
 		    let localeId = _this.opts.mainEntry;
-		    let types = 'type_core_coreimage,type_core_image_collection,isgroup';
-		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null);	   
+		    let types = 'type_core_coreimage,type_core_image_collection,super:type_core_base,isgroup';
+		    RamaddaUtils.selectInitialClick(event,id,id,
+						    true,null,localeId,
+						    types,null,{showTypeSelector:true});	   
 		} else	if(action==ACTION_CV_GALLERY) {
 		    _this.showGallery($(this));
 		} else	if(action==ACTION_CV_DOWN) {
@@ -360,7 +362,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.legendLayer = new Konva.Layer();    
 	    this.drawLayer = new Konva.Layer();
 	    this.annotationLayer = new Konva.Layer();
-
+	    this.extraDisplayIds={};
 	    this.stage.add(this.annotationLayer);
 	    this.stage.add(this.legendLayer);
 	    this.stage.add(this.entryLayer);
@@ -1705,6 +1707,21 @@ RamaddaCoreDisplay.prototype = {
 	if(!text) return;
 	if(obj &&  obj.dialog) obj.dialog.remove();
 	text = Utils.convertText(text);
+        if (text.indexOf("{") == 0) {
+	    try {
+		let props = JSON.parse(text);
+		text = props.text;
+		if (!text) text = "";
+
+		if(props.imageUrl) {
+		    text = text+HU.br() +HU.image(props.imageUrl,[ATTR_WIDTH,HU.px(300)]);
+		}
+	    } catch(err) {
+		console.error(err);
+		text='';
+	    }
+	}
+
 	let div = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],
 			 text);
 	let dialog =  HU.makeDialog({anchor:this.mainDiv,

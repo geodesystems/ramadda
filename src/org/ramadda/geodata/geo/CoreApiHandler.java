@@ -78,7 +78,9 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    //	    if(tuple==null) continue;
 	    List<String>obj = new ArrayList<String>();
 	    String url = tuple==null?"":tuple[1];
+	    String id = mtd.getId();
 	    Utils.add(obj,
+		      "id",JU.quote(id),
 		      "url",JU.quote(url),
 		      "top",     JU.quote(mtd.getAttr2()),
 		      "bottom",   JU.quote(mtd.getAttr3()),
@@ -91,13 +93,16 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}
 	List<String> annotations=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_annotation"}, true)) {
+	    String id = mtd.getId();
 	    String label = mtd.getAttr1();
 	    String depth = mtd.getAttr2();
 	    String style = mtd.getAttr3();	    
 	    String desc =  mtd.getAttr4();	    
 	    if(Utils.stringDefined(depth)) {
 		List<String> annotation = new ArrayList<String>();
-		Utils.add(annotation,"depth",JU.quote(depth),
+		Utils.add(annotation,
+			  "id",JU.quote(id),
+			  "depth",JU.quote(depth),
 			  "label",JU.quote(label),
 			  "style",JU.quote(style),
 			  "description",JU.quote(desc));
@@ -111,9 +116,26 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	List<String> entries = new ArrayList<String>();
 	for(Entry child: children) {
-	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) continue;
-	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
-	    String url = getEntryManager().getEntryResourceUrl(request, child);
+	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) continue;
+	    String info = getMapManager().makeInfoBubble(request, child);
+	    info =getMapManager().encodeText(info);
+	    String url=null;
+	    if(child.isImage()) {
+		url = getEntryManager().getEntryResourceUrl(request, child);
+	    }
+	    if(url==null) {
+		String[] imageUrl = getMetadataManager().getThumbnailUrl(request, child,true);
+		if(imageUrl!=null) {
+		    url = imageUrl[0];
+		}
+	    }
+	    if(url==null) {
+		url = getPageHandler().makeHtdocsUrl("/geo/placeholder.png");
+	    }
+	    if(url==null) {
+		System.err.println("no image:" + child);
+		continue;
+	    }
 	    List<String> attrs = new ArrayList<String>();
 	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
 	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
@@ -436,12 +458,12 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    return new Result("", new StringBuilder(JsonUtil.map("error",JU.quote("No entry found"))), JU.MIMETYPE);
 	}
 	List<Entry> children;
-	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_IMAGE)) {
+	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) {
 	    children = new ArrayList<Entry>();
 	    children.add(entry);
 	} else {
 	    children = new ArrayList<Entry>();
-	    String types =CoreUtil.TYPE_CORE_IMAGE;
+	    String types =CoreUtil.TYPE_CORE_BASE;
 	    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
 	    getSearchManager().processSearchUrl(request, children,searchUrl);
 	    //	    children = getEntryManager().getChildren(request, entry);
