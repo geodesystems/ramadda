@@ -96,6 +96,8 @@ import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -1271,13 +1273,16 @@ public class EntryManager extends RepositoryManager {
 
         List<String>      types        = new ArrayList<String>();
         boolean           checkCnt     = request.get("checkcount", true);
-        List<TypeHandler>    theTypeHandlers = new ArrayList<TypeHandler>();
+	Set<TypeHandler> theTypeHandlers= new LinkedHashSet<>();
+	    //List<TypeHandler>    theTypeHandlers = new ArrayList<TypeHandler>();
 	String typesList = request.getString(ARG_TYPES,null);
         String            ancestor       = request.getString(ARG_ANCESTOR,null);
 	if(typesList!=null) {
 	    for(String type: Utils.split(typesList,",")) {
-		TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		if(typeHandler!=null) theTypeHandlers.add(typeHandler);
+		List<TypeHandler> foundTypes = getRepository().getTypes(type);
+		//		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+//		if(typeHandler!=null) theTypeHandlers.add(typeHandler);
+		theTypeHandlers.addAll(foundTypes);
 	    }
 	} else {
 	    for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
