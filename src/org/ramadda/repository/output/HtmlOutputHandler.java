@@ -994,10 +994,11 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(request.get("dosearch",false)) {
 		Utils.add(props,"doSearch","true");
 	    }
+	    String type = request.getString(ARG_ENTRYTYPE,"");
 	    searchSB.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
 					       HU.squote(searchId),
 					       HU.squote(target),
-					       HU.squote(request.getString("entrytype","")),
+					       HU.squote(type),
 					       request.get("showtypeselector",false),
 					       JU.map(props))));
 	    HU.close(searchSB, "div");
