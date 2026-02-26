@@ -236,7 +236,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(!addTypesSelector && showTypeSelector) addTypesSelector = true;
 	//If no entry types then get the list of types
 	if(addTypesSelector) {
-	    input = input+HU.div([ATTR_ID,getId('types')]);
+	    input = HU.div([ATTR_ID,getId('types')])+input;
 	}
         let html = input +HU.div([ATTR_CLASS,'ramadda-select-search-results',
 				  ATTR_ID,id+'_results']);
