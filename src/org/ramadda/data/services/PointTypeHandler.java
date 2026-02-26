@@ -876,6 +876,16 @@ public class PointTypeHandler extends RecordTypeHandler {
                                             (String) null);
             StringBuilder sb   = new StringBuilder();
             String        name = getEntryDisplayName(entry);
+	    String imageUrl=null;
+	    if(entry.isImage()) {
+		imageUrl = getEntryManager().getEntryResourceUrl(request, entry);
+	    }
+	    if(imageUrl==null) {
+		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry,true);
+		if(tuple!=null) {
+		    imageUrl = tuple[0];
+		}
+	    }
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
@@ -884,13 +894,18 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             String id = HtmlUtils.getUniqueId("divid_");
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
+	    
+
             return JsonUtil.mapAndQuote(Utils.makeListFromValues("entryId", entry.getId(), "chartType",
-                                    chartType, "chartArgs", chartArgs,
-                                    "fields", chartField, "divId", id,
-                                    "title", "", "text", sb.toString(),
-                                    "minSizeX", minSizeX, "minSizeY",
-                                    minSizeY, "vAxisMinValue", "0",
-                                    "showTitle", "false", ((fields == null)
+								 chartType, "chartArgs", chartArgs,
+								 "fields", chartField, "divId", id,
+								 "title", "",
+								 "text", sb.toString(),
+								 "imageUrl",imageUrl==null?"null":JU.quote(imageUrl),
+								 "minSizeX", minSizeX, 
+								 "minSizeY", minSizeY,
+								 "vAxisMinValue", "0",
+								 "showTitle", "false", ((fields == null)
                     ? "dummy"
                     : "fields"), ((fields == null)
                                   ? ""
