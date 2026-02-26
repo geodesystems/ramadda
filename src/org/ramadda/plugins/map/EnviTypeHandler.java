@@ -44,6 +44,7 @@ public class EnviTypeHandler extends LatLonImageTypeHandler  {
         super(repository, node);
     }
 
+    @Override
     public String getServiceFilePath(Service service, Entry dataEntry) throws Exception {
 	Entry parent = dataEntry.getParentEntry();
 	String dataPath = getStorageManager().getEntryResourcePath(dataEntry);	
