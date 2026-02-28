@@ -811,6 +811,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String        selectType = request.getString(ARG_SELECTTYPE, "");
         boolean       isImage    = Utils.equals(selectType, "image");
         boolean       isFieldName    = Utils.equals(selectType, "fieldname");	
+        boolean       showFirstSearch   = request.get("showfirstsearch",true);
         String        localeId   = request.getString(ARG_LOCALEID, null);
         String        target     = request.getString(ATTR_TARGET, "");
 	List<NamedBuffer>buffers = new ArrayList<NamedBuffer>();
@@ -830,45 +831,41 @@ public class HtmlOutputHandler extends OutputHandler {
             localeEntry = getEntryManager().getEntry(request, localeId);
 	}
 
-        if (firstCall) {
-	    String type = request.getString(ARG_ENTRYTYPE,null);
-	    if(type!=null)  {
-		StringBuilder tmp = new StringBuilder();
-		String typeLabel  = null;
-		if(stringDefined(type)) {
-		    for(String _type:Utils.split(type,",",true,true)) {
-			TypeHandler typeHandler = getRepository().getTypeHandler(_type);
-			if(typeHandler==null) continue;
-			if(tmp.length()>0) tmp.append(" - ");
-			tmp.append(typeHandler.getDescription());
-		    }
-		    typeLabel = tmp.toString();
+	String type = request.getString(ARG_ENTRYTYPE,null);
+        if (showFirstSearch && firstCall && stringDefined(type)) {
+	    StringBuilder tmp = new StringBuilder();
+	    String typeLabel  = null;
+	    List<TypeHandler> types = getRepository().getTypes(type);
+	    for(TypeHandler typeHandler: types) {
+		if(tmp.length()>0) tmp.append(" - ");
+		tmp.append(typeHandler.getDescription());
+	    }
+	    typeLabel = tmp.toString();
+	    if(typeLabel==null)
+		typeLabel  = Utils.makeLabel(type);
+	    if(types.size()>3) typeLabel = "";
+	    typeLabel = request.getString("typelabel",typeLabel);
+	    Request newRequest = new Request(getRepository(), request.getUser());
+	    newRequest.put(Constants.ARG_MAX, "100");
+	    newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
+	    newRequest.put(Constants.ARG_ASCENDING,"false");
+	    List<Entry> byType =   getEntryManager().getEntriesWithType(newRequest, type);
+	    boolean didOne = false;
+	    for(Entry entry: byType) {
+		String link = getSelectLink(request, entry, seen, target);
+		if (link.length() == 0) {
+		    continue;
 		}
-		if(typeLabel==null)
-		    typeLabel  = Utils.makeLabel(type);
-		typeLabel = request.getString("typelabel",typeLabel);
-		Request newRequest = new Request(getRepository(), request.getUser());
-		newRequest.put(Constants.ARG_MAX, "100");
-		newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
-		newRequest.put(Constants.ARG_ASCENDING,"false");
-		List<Entry> byType =   getEntryManager().getEntriesWithType(newRequest, type);
-		boolean didOne = false;
-		for(Entry entry: byType) {
-		    String link = getSelectLink(request, entry, seen, target);
-		    if (link.length() == 0) {
-			continue;
-		    }
-		    if (!didOne) {
-			sb.append(HU.center(HU.b(typeLabel)));
-			HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
-		    }
-		    didOne = true;
-		    sb.append(link);
-		}		    
-		if (didOne) {
-		    HU.close(sb, "div");
-		    sb.append(sectionDivider);
+		if (!didOne) {
+		    sb.append(HU.center(HU.b(typeLabel)));
+		    HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
 		}
+		didOne = true;
+		sb.append(link);
+	    }		    
+	    if (didOne) {
+		HU.close(sb, "div");
+		sb.append(sectionDivider);
 	    }
 	}
 
@@ -994,7 +991,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(request.get("dosearch",false)) {
 		Utils.add(props,"doSearch","true");
 	    }
-	    String type = request.getString(ARG_ENTRYTYPE,"");
 	    searchSB.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
 					       HU.squote(searchId),
 					       HU.squote(target),
