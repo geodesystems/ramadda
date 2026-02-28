@@ -647,20 +647,39 @@ public class PageHandler extends RepositoryManager {
 	List<String> pageLinks = new ArrayList<String>();
 
 	List<Entry> recent = getEntryManager().getSessionEntries(request);
+	StringBuilder recentContents = new StringBuilder();
 	if(Utils.listNotEmpty(recent)) {
-	    StringBuilder recentContents = new StringBuilder();
+	    HU.div(recentContents,"Recent","class=ramadda-favorites-header");
+	    HU.open(recentContents,"div",HU.style("max-height:300px;overflow-y:auto;"));
 	    for(Entry entry: recent) {
 		HU.div(recentContents,getEntryManager().getEntryLink(request, entry,true,""),
-		       HU.attrs("xstyle","padding:4px;","class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
+		       HU.attrs("class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
 	    }
+	    HU.close(recentContents,"div");
 
-	    String link  = HU.span(HU.faIcon("fa fa-clock-rotate-left"),HU.attrs("title","Recent History"));
+	}
+	List<FavoriteEntry> favs = getUserManager().getFavorites(request);
+	if(favs.size()>0) {
+	    HU.div(recentContents,"Favorites","class=ramadda-favorites-header");
+	    HU.open(recentContents,"div",HU.style("max-height:300px;overflow-y:auto;"));
+	    for(FavoriteEntry fav: favs) {
+		HU.div(recentContents,  getEntryManager().getEntryLink(request, fav.getEntry(),true,""),
+		       HU.attrs("class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
+
+	    }
+	    HU.close(recentContents,"div");
+	}
+
+	if(recentContents.length()>0) {
+	    String link  = HU.span(HU.faIcon("fa fa-list"),
+				   HU.attrs("title","Entries"));
 	    String popup = HU.makePopup(null, link,recentContents.toString(),
 					arg("my", "right top"),
 					arg("at", "right bottom"),
 					arg("animate", true));
 	    pageLinks.add(wrapPageLink(popup));
 	}
+
 
 
         if (showSearch) {
@@ -1712,17 +1731,6 @@ public class PageHandler extends RepositoryManager {
         }
 
         List<String> links = new ArrayList<String>();
-	List<FavoriteEntry> favs = getUserManager().getFavorites(request);
-	if(favs.size()>0) {
-	    StringBuilder sb = new StringBuilder();
-	    _links.add(new Link(null,"",HU.div("Favorites","class=ramadda-favorites-header")));
-	    for(FavoriteEntry fav: favs) {
-                String url = getEntryManager().getEntryUrl(request, fav.getEntry());
-		sb.append(HU.div(getEntryIconImage(request,fav.getEntry()) + HU.SPACE + fav.getEntry().getName(),
-				 HU.cssClass("ramadda-user-link")+HU.onMouseClick("document.location=" + HU.squote(url))));
-	    }
-	    _links.add(new Link(null,"",HU.div(sb.toString(),HU.style("max-height:9em;overflow-y:auto;white-space:nowrap;"))));
-	}
         for (Link _link:_links) {
 	    if(_link.getUrl()==null) {
 		links.add(_link.getLabel());
