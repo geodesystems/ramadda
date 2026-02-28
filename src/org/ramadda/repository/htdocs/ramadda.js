@@ -171,15 +171,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(RamaddaUtils.currentSelector) {
 	    RamaddaUtils.currentSelector.cancel();
 	}
-	RamaddaUtils.currentSelector = RamaddaUtils.selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
-	//	setTimeout(()=>{RamaddaUtils.handleEntryCreated(selectorId);},2000);
+	RamaddaUtils.currentSelector = RamaddaUtils.selectCreate(event, selectorId, elementId,
+								 allEntries, selecttype, localeId,
+								 entryType,baseUrl,props);
 	return false;
     },
     selectCreate:function(event, selectorId, elementId,
 			  allEntries, selecttype, localeId, entryType, baseUrl,props) {
 	let key = selectorId + (baseUrl??'');
 	if (true || !selectors[key]) {
-            return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
+            return selectors[selectorId] = selectors[key] =
+		new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
 	} else {
             return selectors[key].handleClick(event);
 	}
@@ -2309,8 +2311,11 @@ var selectors = new Array();
 function Selector(event, selectorId, elementId, allEntries,
 		  selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
-    props = props??{};
-    this.props = props;
+    this.props = {
+	showFirstSearch:true
+    };
+    if(props)
+	this.props = $.extend(this.props,props);
     this.id = selectorId;
     this.elementId = elementId;
     this.domId = HU.getUniqueId('selector_');
@@ -2393,8 +2398,9 @@ function Selector(event, selectorId, elementId, allEntries,
 	    url = HU.url(url,'dosearch',true);
 	}	
 
-	if(this.selecttype) 
+	if(this.selecttype) {
 	    url = HU.url(url,['selecttype',this.selecttype]);
+	}
 	url= HU.url(url,'allentries', this.allEntries,'target', this.id);
 
 	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith('/')) {
@@ -2417,7 +2423,11 @@ function Selector(event, selectorId, elementId, allEntries,
 	}
 	if(Utils.isDefined(this.props.showTypeSelector)) {
             url = HU.url(url,'showtypeselector',this.props.showTypeSelector);
-	}	
+	}
+	console.dir(this.props);
+	if(Utils.isDefined(this.props.showFirstSearch)) {
+            url = HU.url(url,'showfirstsearch',this.props.showFirstSearch);
+	}		
         GuiUtils.loadXML(url, (request,id)=>{_this.handleSelect(request,id)}, this.id);
         return false;
     }
