@@ -7422,7 +7422,11 @@ public class EntryManager extends RepositoryManager {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 	List<Clause> clauses = new ArrayList<Clause>();
 	List<Clause> ors = new ArrayList<Clause>();
-	getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),ors);
+	List<String> typeList  = new ArrayList<String>();
+	for(TypeHandler _typeHandler: getRepository().getTypes(type)) {
+	    typeList.add(_typeHandler.getType());
+	}
+	getDatabaseManager().addTypeClause(getRepository(),request, typeList,ors);
 	clauses.add(Clause.or(ors));
 	return  getEntriesFromDb(request,  clauses, typeHandler);
     }
