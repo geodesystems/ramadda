@@ -2424,7 +2424,6 @@ function Selector(event, selectorId, elementId, allEntries,
 	if(Utils.isDefined(this.props.showTypeSelector)) {
             url = HU.url(url,'showtypeselector',this.props.showTypeSelector);
 	}
-	console.dir(this.props);
 	if(Utils.isDefined(this.props.showFirstSearch)) {
             url = HU.url(url,'showfirstsearch',this.props.showFirstSearch);
 	}		
