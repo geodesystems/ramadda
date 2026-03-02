@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 26 06:17:39 MST 2026";
+var build_date="RAMADDA build date: Mon Mar  2 06:29:00 EST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -48773,7 +48773,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let predefined =  HU.select('',
 					    [ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
 
-		let html = 'Pre-defined layer: ' + predefined;
+		let html = HU.boldLabel('Pre-defined layer') + predefined;
 		html+=wmtHtml;
 		setTimeout(()=>{
 		    HU.makeSelectTagPopup('#'+this.domId('predefined'),{after:true,icon:true,single:true});
@@ -53190,7 +53190,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		baseMapPlaceID=HU.getUniqueId('');
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4)),
 			      ATTR_CLASS,CLASS_LEGEND_OFFSET], 
-			     HU.b('Base Map: ') +
+			     HU.boldLabel('Base Map') +
 			     SPACE + HU.span([ATTR_ID,baseMapPlaceID])+this.getBaseLayersSelect());
 	    }
 
