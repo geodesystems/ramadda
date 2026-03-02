@@ -195,7 +195,12 @@ public class JsonUtil {
         List quoted = new ArrayList();
         for (int i = 0; i < values.size(); i += 2) {
             quoted.add(values.get(i));
-            String value = values.get(i + 1).toString();
+	    Object objectValue = values.get(i + 1);
+	    if(objectValue==null) {
+		quoted.add(NULL);
+		continue;
+	    }
+            String value = objectValue.toString();
 	    if(value.startsWith("\"") && value.endsWith("\"")) {
 		quoted.add(value);
 	    } else {
