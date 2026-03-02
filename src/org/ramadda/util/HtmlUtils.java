@@ -510,6 +510,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     public static Appendable squote(Appendable sb, Object o) {
         try {
+	    if(sb==null) sb = new StringBuilder();
+	    if(o==null) {
+		sb.append(NULL);
+		return sb;
+	    }
 	    String s = o.toString();
             sb.append("'");
             if (s.indexOf("\\'") <= 0) {
