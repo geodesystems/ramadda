@@ -21,7 +21,6 @@ var CreateType  = {
 	let _this = this;
 	this.baseDomId = Utils.getUniqueId('createtype_');
 	let storageKey=entryId+'_createtype';
-//	let formData = json ?? Utils.getLocalStorage(storageKey,true);
 	let formData = json ?? null;
 	let form = jqid(formId);
 	jqid('headerbuttons').append(HU.span([ATTR_CLASS,'ct_bulkupload'],'Bulk Upload'));
@@ -157,6 +156,7 @@ var CreateType  = {
 	});
 	this.initLabel();
 	form.submit(function(event){
+	    WikiUtil.handleWikiEditorSubmit();
 	    _this.initLabel();
 	    let jsonContents = form.find('[name="json_contents"]');
 	    if(jsonContents.length==0) {
@@ -167,7 +167,9 @@ var CreateType  = {
 		jsonContents = form.find('[name="json_contents"]');
 	    }
             let formData = $(this).serializeArray().filter(field=>{
-		return _this.canSaveInput(field.name) && field.value!='';
+//		let ok  =  _this.canSaveInput(field.name) && field.value!='';
+		let ok  =  _this.canSaveInput(field.name);
+		return ok;
 	    }).map(field=>{
 		field.n = field.name;
 		field.v = field.value;
@@ -178,10 +180,8 @@ var CreateType  = {
 
 	    let json =   JSON.stringify(formData);
 	    jsonContents.val(json);
-//	    console.log(jsonContents.length);
 //            event.stopPropagation();
 //	    return false;
-//	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
     },
@@ -222,6 +222,7 @@ var CreateType  = {
 		}
 	    }
 	}
+	WikiUtil.applyTextFromHidden();
     },
 
     checkColumnExtra:function(widget) {
