@@ -2047,6 +2047,9 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_COMMENT = "comment";
     public static final String ARG_EXTRA_XML = "extraxml";
     public static final String ARG_EXTRA_OUTER_XML = "extraouterxml";
+    public static final String ARG_EXT_MAPBUBBLE="mapbubble";
+    public static final String ARG_MAPPOPUP = "mappopup";
+
 
     public boolean createTypeOK(Request request) {
 	return !request.isAnonymous();
@@ -2194,6 +2197,19 @@ public class ExtEditor extends RepositoryManager {
 	extra.append(HU.formTable());
 	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
+	String bubble =request.getString(ARG_MAPPOPUP,"");
+	HU.formEntry(extra,"",HU.div("Wiki text for popups",HU.clazz("ramadda-form-help")));
+	StringBuilder bubbleWiki = new StringBuilder();
+	entry.getTypeHandler().addWikiEditor(request, entry, bubbleWiki, formInfo,
+					     ARG_MAPPOPUP, bubble, "",
+					     false, -1,
+					     true,"height","150px");
+
+
+
+	HU.formEntry(extra,"Popup Text:",bubbleWiki.toString());
+
+
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
 				     HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Extra XML:",
@@ -2202,9 +2218,6 @@ public class ExtEditor extends RepositoryManager {
 		     HU.textArea(ARG_EXTRA_OUTER_XML,
 				 request.getString(ARG_EXTRA_OUTER_XML,""),4,50));	
 
-	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
-	HU.formEntry(extra,"Map Popup:",
-		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
 
         extra.append(HU.formTableClose());	
 
@@ -2216,6 +2229,7 @@ public class ExtEditor extends RepositoryManager {
 	    desc="";
 	}
 	    
+	desc=desc.replace(WIKI_PREFIX,"").trim();
 	entry.getTypeHandler().addWikiEditor(request, entry, wiki, formInfo,
 					     ARG_DESCRIPTION, desc, "",
 					     false, Entry.MAX_DESCRIPTION_LENGTH,
@@ -2318,8 +2332,6 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()),"entryTypeCreateJson")));
 
 	formInfo.addToForm(sb);
-
-
 	getPageHandler().entrySectionClose(request, entry, sb);
     }
 
@@ -2547,7 +2559,7 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(">\n");	
 	sb.append(colSB);
 
-	String mappopup = request.getString("mappopup","");
+	String mappopup = request.getString(ARG_MAPPOPUP,"");
 	if(Utils.stringDefined(mappopup)) {
 	    sb.append("<property name=\"map.popup\">\n<![CDATA[");
 	    sb.append(mappopup);
@@ -2603,6 +2615,7 @@ public class ExtEditor extends RepositoryManager {
 	String oldDescription = entry.getDescription();
 	String newDescription = request.getString(ARG_DESCRIPTION, null);
 	if (Utils.stringDefined(newDescription)) {
+	    newDescription = newDescription.replace(WIKI_PREFIX,"").trim();
 	    newDescription=WIKI_PREFIX+"\n" + newDescription;
 	    if(!Misc.equals(oldDescription,newDescription)) {
 		entry.setDescription(newDescription);
