@@ -16,14 +16,13 @@ pattern="(?i).*\.las"
 <!-- Columns-->
 <column  name="state"  label="State"  type="enumerationplus"  cansearch="true" showempty="false" />
 <column  name="field"  label="Field"  type="enumerationplus"  cansearch="true" showempty="false" />
-<property name="bubble">
-<![CDATA[                                                                                                                           
-+section  title="Log ASCII: {{name}}"                                                                                               
-{{group}}                                                                                                                           
-{{display_profile showMenu=true yAxisReverse=true marginTop=25                                                                      
-profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}                                                                       
+<property name="map.popup">
+<![CDATA[+section  title="Log ASCII: {{name}}"
+{{group}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=25
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}} 
+-section
 ]]></property>
-
 <wikimacro name="core_profiles" label="Core Profiles" tags="forchild">
    <![CDATA[{{core_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers                                   
 profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}]]></wikimacro>
