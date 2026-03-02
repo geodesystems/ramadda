@@ -20,6 +20,8 @@ public interface HtmlUtilsConstants {
         "orange", "cyan", "magenta", "pink", "yellow"
     };
 
+    public static final String NULL = "null";
+
     public static final String HTTP_USER_AGENT = "User-Agent";
     public static final String HTTP_CONTENT_LENGTH = "Content-Length";
     public static final String HTTP_CONTENT_RANGE="Content-Range";
