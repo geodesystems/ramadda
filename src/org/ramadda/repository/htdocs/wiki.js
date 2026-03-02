@@ -53,6 +53,13 @@ if(!window.WikiUtil) {
 		editor.handleSubmit();
             }
 	},
+	applyTextFromHidden: function() {
+            if (!this.wikiEditors) return;
+            for (a in this.wikiEditors) {
+		let editor= this.wikiEditors[a];
+		editor.applyTextFromHidden();
+            }
+	},
 	getWikiEditor: function(id) {
             if (!this.wikiEditors) return null;
             return  this.wikiEditors[id];
@@ -972,9 +979,15 @@ WikiEditor.prototype = {
 	return null;
     },
 
+    applyTextFromHidden: function() {
+	let text = jqid(this.hidden).val();
+	if(text)
+	    this.editor.setValue(text,-1);
+    },
     handleSubmit:function() {
 	if(jqid(this.hidden).length==0) {
 	    console.log('WikiEdit.handleSubmit: no hidden value');
+	    return;
 	}
 	jqid(this.hidden).val(this.getEditor().getValue());
     },
