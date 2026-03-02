@@ -896,12 +896,14 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
 	    
 
-            return JsonUtil.mapAndQuote(Utils.makeListFromValues("entryId", entry.getId(), "chartType",
-								 chartType, "chartArgs", chartArgs,
-								 "fields", chartField, "divId", id,
+            return JsonUtil.mapAndQuote(Utils.makeListFromValues("entryId", entry.getId(),
+								 "chartType", chartType,
+								 "chartArgs", chartArgs,
+								 "fields", chartField,
+								 "divId", id,
 								 "title", "",
 								 "text", sb.toString(),
-								 "imageUrl",imageUrl==null?"null":JU.quote(imageUrl),
+								 "imageUrl",imageUrl==null?null:JU.quote(imageUrl),
 								 "minSizeX", minSizeX, 
 								 "minSizeY", minSizeY,
 								 "vAxisMinValue", "0",
