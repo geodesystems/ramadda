@@ -64,10 +64,11 @@ public class CoreRecordBaseTypeHandler extends PointTypeHandler {
 	int depthIndex=-1;
 	int index=0;
 	//	System.err.println("harvest metadata");
+	List<String> lookingFor = Utils.split(getTypeProperty("core.record.index","depth"),",",true,true);
 	RecordField depthField=null;
 	for(RecordField field: metadata.getFields()) {
 	    String id = field.getName().toLowerCase();
-	    if(id.equals("depth")) {
+	    if(lookingFor.contains(id)) {
 		depthField = field;
 		depthIndex=index;
 		break;
