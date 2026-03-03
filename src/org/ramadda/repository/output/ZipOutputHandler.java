@@ -115,6 +115,11 @@ public class ZipOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
 
+            if (getAccessManager().canDownload(request, state.entry)) {
+		links.add(makeLink(request, state.group, OUTPUT_CORPUS));
+	    }
+
+
             //      if (getAccessManager().canDoExport(request, state.entry)) {
             //          links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
             //      }
