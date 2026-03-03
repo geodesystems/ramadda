@@ -220,7 +220,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     selectorRamaddas:{},
     searchState:{},
     initEntryPopup:function(id,target,entryType,showTypeSelector,props) {
-	let opts = props??{};
+	let selector = selectors[target];
+	let opts = {};
+	if(selector && selector.props) {
+	    $.extend(opts,selector.props);
+	}
+	if(props) {
+	    $.extend(opts,props);
+	}
 	let getId=(suffix) =>{
 	    return id+suffix;
 	}
@@ -323,10 +330,30 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
                     entries.forEach((entry,idx)=>{
 			let title = 'Type: '+entry.getTypeName()+ HU.BR_ENTITY +
 			    'Parent: '+ entry.getParentName();
+			let label = entry.getName();
+			if(opts.searchLabelTemplate) {
+			    label = opts.searchLabelTemplate;
+			    label = label.replace(/\${name}/,entry.getName());
+			    let attributes = entry.getAttributes();
+			    if(attributes) {
+				attributes.forEach(attr=>{
+				    let value = attr.value;
+				    if(Utils.isDefined(value)) value='';
+				    let floatValue = parseFloat(attr.value);
+				    if(!isNaN(floatValue)) {
+					value = Utils.formatNumber(floatValue);
+				    }
+
+				    label = label.replace("\${"+ attr.id+"}",value);
+				});
+			    }
+			    label = label.replace(/\${.*}/,'');
+			}
+
                         html += HU.div([ATTR_INDEX,idx,
 					ATTR_TITLE,title,
 					ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-entry')],
-				       entry.getIconImage() +' ' + entry.getName());
+				       entry.getIconImage() +' ' + label);
                     });
                     results.html(html);
 		    results.find(HU.dotClass('ramadda-entry')).click(function() {
