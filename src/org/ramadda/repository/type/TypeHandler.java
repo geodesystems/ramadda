@@ -2605,10 +2605,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public Column findColumn(String columnName) {
+	if(parent!=null) return parent.findColumn(columnName);
         return null;
     }
 
     public Column findColumn(int index) {
+	if(parent!=null) return parent.findColumn(index);
 	return  null;
     }
 
@@ -5376,6 +5378,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public List<Column> getColumns() {
+	if(parent!=null) return parent.getColumns();
         return null;
     }
 
