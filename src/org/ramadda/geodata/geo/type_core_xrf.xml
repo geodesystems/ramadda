@@ -21,6 +21,14 @@ pattern="(?i).*core(_|-)xrf.*\.csv"
 <column  name="xrf_current"  label="Current"  type="double"  default="" initpattern="current_?(\d+\.?\d*)" suffix="mA" unit="mA" />
 <column  name="xrf_voltage"  label="Voltage"  type="double"  default="" initpattern="(?i)(\d+)kV" suffix="kV" unit="kV" />
 <column  name="scan_rate"  label="Scan Rate"  type="double"  default="" initpattern="scan_?(\d+)" suffix="cm/s" />
+<property name="map.popup">
+<![CDATA[+section title="Core XRF: {{name}}"
+{{property max="10000"}}
+{{group}}
+{{core_profiles showMenu=true yAxisReverse=true 
+marginTop=25  profileMode=markers
+profileMode="lines" indexField="from_m"  }} 
+-section]]></property>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/xray.png" />
@@ -31,6 +39,7 @@ pattern="(?i).*core(_|-)xrf.*\.csv"
 <property  name="form.time.show"  value="false" />
 <property  name="form.tags.show"  value="false" />
 <property  name="addinitialmetadata"  value="false" />
+<property  name="core.record.index"  value="from_m" />
 <property  name="profile.fields"  value="k_wt|h_pct,fe_wt|c_pct,ca_wt|o_pct,si_wt|na_pct" />
 
 <!-- Wiki text-->

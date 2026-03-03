@@ -12,6 +12,13 @@ into some types.xml file
  category="" 
 pattern="(?i).*lith.csv"
 >
+<property name="map.popup">
+<![CDATA[+section title={{name}}
+{{display_htmltable   scrollY=800px
+fields="depth,color,color_description,grain_size,grain_size_description"
+colorRowBy="color_description" colorByLiteral=true  colorFullRow=false showColorFooter=false
+}}
+-section ]]></property>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 

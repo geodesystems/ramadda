@@ -14,18 +14,19 @@ bytescount="100"
 bytesfilepattern="(?i).*\.txt"
 bytespattern="(?m)(?i)^TOP:.*"
 >
+<property name="map.popup">
+<![CDATA[+section  title="Borehole Log: {{name}}"
+{{group}}
+{{display_profile showMenu=true yAxisReverse=true 
+marginTop=25  profileMode=markers 
+profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
+-section]]></property>
 <property name="record.properties">                                                                                                 
 picky=false                                                                                                                         
 csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN                               
 csvcommands2=-addheader,                                                                                                            
 </property>
-<property name="bubble">
-<![CDATA[                                                                                                                           
-+section  title="Borehole Log: {{name}}"                                                                                            
-{{group}}                                                                                                                           
-{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers                                                 
-profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}                                                                        
-]]></property>
+
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="record.patterns"  value="hole:HOLE:\s*([^\s]+),top_depth:TOP:\s*([\d.]+),bottom_depth:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)" />

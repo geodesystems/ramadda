@@ -11,6 +11,11 @@ into some types.xml file
  supercategory="" 
  category="" 
 >
+<property name="map.popup">
+<![CDATA[+section title={{name}}
+{{media full=true width=100%}}
+-section ]]></property>
+ <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/icons/pdf.png" />
