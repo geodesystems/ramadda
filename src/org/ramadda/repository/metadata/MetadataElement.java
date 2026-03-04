@@ -846,7 +846,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
-                                          false)
+                                          false,"ramadda-metadata-form-image")
                             : "");
             if (image == null) {
                 image = "";
@@ -875,12 +875,15 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_ROTATE_RIGHT, "true",false,"Rotate right"));
 	    }
 
-	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
-	    if(Utils.stringDefined(image)) sb.append(space);
+	    String vspace = HU.div("",HU.style("margin-bottom:0.5em;"));
+	    if(Utils.stringDefined(image)) {
+		sb.append(vspace);
+		HU.div(sb,HU.b("Upload new file:"));
+	    }
 	    String fileInput =HU.makeDndFileInput(arg,false);
 	    //HU.fileInput(arg, HU.SIZE_70 + HU.id(inputId))
 
-	    sb.append(fileInput      +space +
+	    sb.append(fileInput      +vspace +
 		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
 	    sb.append(HU.br());
 	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_DELETE, "true",false,"Delete file"));

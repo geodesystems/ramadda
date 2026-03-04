@@ -416,16 +416,15 @@ public class MetadataTypeBase extends RepositoryManager {
 
     public String getFileHtml(Request request, Entry entry,
                               Metadata metadata, MetadataElement element,
-                              boolean forLink) {
+                              boolean forLink,String...clazz) {
         File f = getFile(entry, metadata, element);
         if ((f == null) || !f.exists() || f.isDirectory()) {
             return null;
         }
 
-        String extra = (forLink
-                        ? HU.cssClass(
-				      "ramadda-thumbnail-image img-thumbnail")
-                        : "");
+	String classes = forLink?"ramadda-thumbnail-image img-thumbnail":"";
+	if(clazz.length>0) classes+=" " + clazz[0];
+        String extra = HU.cssClass(classes);
         extra += HU.attrs("style", "max-width:100%;","loading","lazy");
         String tail = getStorageManager().getFileTail(f.toString());
         String path =
