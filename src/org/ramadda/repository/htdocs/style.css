@@ -2563,6 +2563,10 @@ thin_hr,.ramadda-thin-hr {
     margin-left:5px;
 }
 
+.ramadda-metadata-form-image {
+    border:var(--basic-border);
+}
+
 
 .ramadda-metadata-widget-content-thumbnail img {
     border:var(--basic-border);
