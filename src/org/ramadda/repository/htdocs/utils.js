@@ -5325,6 +5325,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } 
 	    
         }
+	let htmlId = HU.getUniqueId('dialoghtml');
+	html = HU.div([ATTR_ID,htmlId],html);
 	let searchDivId;
 	if(opts.searchSelector) {
 	    searchDivId=HU.getUniqueId('');
@@ -5486,6 +5488,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    this.toggleDialogs[opts.toggleid] = popup;
 	}
 	HU.handleNewContent(popup);
+	popup.innerContentsId=htmlId;
         return popup;
     },
     handleNewContent:function(selector) {
