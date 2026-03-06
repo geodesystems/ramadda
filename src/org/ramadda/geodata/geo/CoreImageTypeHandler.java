@@ -311,6 +311,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	HU.close(sb,"div");
 	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/konva.min.js"));
 	HU.cssLink(sb, getPageHandler().makeHtdocsUrl("/geo/corevisualizer.css"));
+	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/tiler.js"));
 	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
 	String id = "viz_" + uid;
 	StringBuilder js = new StringBuilder();
