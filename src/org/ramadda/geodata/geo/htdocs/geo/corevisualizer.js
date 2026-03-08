@@ -500,7 +500,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	let value = HU.getUrlArgument(prop);
 	if(Utils.isDefined(value)) {
-	    this.setCoreProperty(prop,value);
+	    this.setCoreProperty(prop,Utils.getProperty(value));
 	}
     });
 
@@ -556,9 +556,11 @@ RamaddaCoreDisplay.prototype = {
 	if(!Utils.isDefined(v)) return dflt;
 	return v;
     },
-    setCoreProperty:function(key,v) {
+    setCoreProperty:function(key,v,addToUrl) {
 	this.opts[key] = v;
-	return this.propertyChanged(key,v);
+	if(addToUrl)
+	    this.propertyChanged(key,v);
+	return v;
     },    
     propertyChanged:function(prop,value) {
 	HU.addToDocumentUrl(prop,this.getCoreProperty(prop));
@@ -1198,7 +1200,7 @@ RamaddaCoreDisplay.prototype = {
 		    else if(id==ID_CV_STACKED)
 			_this.jq(ID_CV_TILED).prop('checked',false);		    
 		}
-		_this.setCoreProperty(id, on);
+		_this.setCoreProperty(id, on,true);
 		toggleActions[id]();
 	    });
 
@@ -1623,10 +1625,13 @@ RamaddaCoreDisplay.prototype = {
     },
     loadCollections: async function(collections,opts) {
 	this.initTiler();
-
 	if(opts && opts.settings) {
+	    //only initialize the settings if they haven't been set in the URL
 	    Object.keys(opts.settings).forEach(prop=>{
-		this.setCoreProperty(prop,opts.settings[prop]);
+		let fromUrl= HU.getUrlArgument(prop);
+		if(!Utils.isDefined(fromUrl)) {
+		    this.setCoreProperty(prop,opts.settings[prop]);
+		}
 	    });
 	}
 
