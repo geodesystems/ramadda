@@ -543,7 +543,6 @@ RamaddaCoreDisplay.prototype = {
         return false;
     },
 
-
     getHasBoxes:function() {
 	return this.getProperty('hasBoxes');
     },
@@ -2369,6 +2368,7 @@ RamaddaCoreDisplay.prototype = {
 	let haveLegend = false;
 	let maxLegendWidth=-1;
 	let haveAnnotation = false;	
+	this.setHasBoxes(false);
 	this.opts.haveLegend=false;
 	this.collections.forEach(collection=>{
 	    if(collection.legends && collection.legends.length>0) {
@@ -2397,7 +2397,6 @@ RamaddaCoreDisplay.prototype = {
 		if(cmin === null || top<cmin) cmin =+top;
 		if(cmax === null || bottom>cmax) cmax =+bottom;
 	    };
-	    this.setHasBoxes(false);
 	    collection.data.forEach(entry=>{
 		check(entry.topDepth,entry.bottomDepth);
 		if(entry.boxes) {
