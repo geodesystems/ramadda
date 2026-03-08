@@ -1002,7 +1002,8 @@ RamaddaCoreDisplay.prototype = {
 
     addDisplayEntry:function(entryId) {
 	let toks=[];
-	let html = 'Enter display properties. e.g.:<pre>indexField:&lt;field id&gt;\nfields:&lt;field id&gt;\ntitle:Some title\netc.</pre>';
+	let html = 'Enter display properties. e.g.:'+
+	    HU.pre('indexField:&lt;field id&gt;\nfields:&lt;field id&gt;\ntitle:Some title\netc.');
 	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),
 							ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400)),
 							ATTR_ROWS,5]);
@@ -1049,7 +1050,7 @@ RamaddaCoreDisplay.prototype = {
 	let props = {
 	    'displayType':'profile',
 	    'profileMode':'lines',
-	    'indexField':'depth|section_depth',
+	    'indexField':'depth|section_depth|from_m',
 	    //Use second numeric field
 	    'fields':'@2',
 	    'showLegend':false,
@@ -1072,6 +1073,7 @@ RamaddaCoreDisplay.prototype = {
 	    if(key=='fields') value = value.split(',');
 	    props[key] = value; 
 	}
+	console.dir(props);
 	return props;
     },
 
