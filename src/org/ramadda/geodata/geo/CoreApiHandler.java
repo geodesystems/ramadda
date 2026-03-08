@@ -120,7 +120,31 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	List<String> entries = new ArrayList<String>();
 	for(Entry child: children) {
-	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) continue;
+	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
+	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
+	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
+		List<Metadata> mtdList=
+		    getMetadataManager().findMetadata(request, child, new String[]{"geo_depth_range"}, true);
+		if(Utils.listNotEmpty(mtdList)) {
+		    for(Metadata mtd: mtdList) {
+			try {
+			    top = Double.parseDouble(mtd.getAttr1());
+			    bottom = Double.parseDouble(mtd.getAttr2());
+			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
+			} catch(Exception ignore) {
+			    System.err.println("Error parsing depth range:" + ignore);
+			}
+			if(!Double.isNaN(top) && Double.isNaN(bottom)) break;
+		    }
+		}
+	    }
+
+
+	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
+		//		System.err.println("no depth registration for core entry:" + child);
+		continue;
+	    }
+	    //	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) continue;
 	    String info = getMapManager().makeInfoBubble(request, child);
 	    info =getMapManager().encodeText(info);
 	    String url=null;
@@ -141,9 +165,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		continue;
 	    }
 	    List<String> attrs = new ArrayList<String>();
-	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
-	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
-	    if(Double.isNaN(top) || Double.isNaN(bottom)) continue;
+
+
 	    Utils.add(attrs,"url",JU.quote(url),"label",JU.quote(child.getName()),
 		      "entryId",JU.quote(child.getId()),
 		      "topDepth",JU.quote(Double.toString(top)),
@@ -466,11 +489,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    children = new ArrayList<Entry>();
 	    children.add(entry);
 	} else {
-	    children = new ArrayList<Entry>();
-	    String types =CoreUtil.TYPE_CORE_BASE;
-	    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
-	    getSearchManager().processSearchUrl(request, children,searchUrl);
-	    //	    children = getEntryManager().getChildren(request, entry);
+		List<Metadata> mtdList=
+		    getMetadataManager().findMetadata(request, entry, new String[]{"geo_depth_range"}, true);
+		if(Utils.listNotEmpty(mtdList)) {
+		    children = new ArrayList<Entry>();
+		    children.add(entry);
+		} else {
+		    children = new ArrayList<Entry>();
+		    String types =CoreUtil.TYPE_CORE_BASE;
+		    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
+		    getSearchManager().processSearchUrl(request, children,searchUrl);
+		    //	    children = getEntryManager().getChildren(request, entry);
+		}
 	}
 	sb.append(makeEntriesJson(request, entry,children));
 	return new Result("", sb, JU.MIMETYPE);

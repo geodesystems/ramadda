@@ -318,7 +318,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		} else	if(action==ACTION_CV_ADD) {
 		    let id = $(this).attr(ATTR_ID);
 		    let localeId = _this.opts.mainEntry;
-		    let types = 'type_core_coreimage,type_core_image_collection,super:type_core_base,isgroup';
+		    let types = 'any,type_core_coreimage,type_core_image_collection,super:type_core_base,isgroup';
 		    RamaddaUtils.selectInitialClick(event,id,id,
 						    true,null,localeId,
 						    types,null,{showTypeSelector:true,
