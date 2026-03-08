@@ -1545,183 +1545,196 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
-	    for(TypeHandler typeHandler: getRepository().getTypes(request.getUnsafeString(ARG_TYPE))) {
-		String type = typeHandler.getType();
-		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
-		typeQueries.add(new TermQuery(new Term(FIELD_SUPERTYPE, type)));
-		List<Column> columns = typeHandler.getColumns();
-		if (columns == null) continue;
-		BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		int cnt = 0;
-		for (Column column : columns) {
-		    if (!column.getCanSearch()) {
-			continue;
-		    }
-		    String       searchArg = column.getSearchArg();
-		    Query term=null;
-		    String field = getPropertyField(typeHandler,column);
+	    List<TypeHandler> types  =getRepository().getTypes(request.getUnsafeString(ARG_TYPE));
+	    //Check if the ANY type  was passed in. If it was then don't add the type queries
+	    boolean ok = true;
+	    for(TypeHandler typeHandler: types) {
+		if(typeHandler.isType(TypeHandler.TYPE_ANY)) {
+		    ok = false;
+		    break;
+		}
+	    }
 
-		    if(column.isEnumeration()) {
-			List<String> values = (List<String>) request.get(searchArg,new ArrayList<String>());
-			List<Query> ors = new ArrayList<Query>();
-			for(String v: values) {
-			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
-			    if(v.equals("--blank--")) v = "";
-			    ors.add(new TermQuery(new Term(field, v)));
-			}			    
-			if(ors.size()==1) 
-			    term = ors.get(0);
-			else if(ors.size()>1)
-			    term =  makeOr(ors);
-			else continue;
-		    } else if(column.isDouble()) {
-			String expr = request.getEnum(searchArg + "_expr", "", "",
-						      Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
-						      Column.EXPR_BETWEEN, "&lt;=", "&gt;=").trim();
-			expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-			double from  = request.get(searchArg + "_from", Double.NaN);
-			double to    = request.get(searchArg + "_to", Double.NaN);
-			double value = request.get(searchArg, Double.NaN);
-			if (column.isType(Column.DATATYPE_PERCENTAGE)) {
-			    from  = from / 100.0;
-			    to    = to / 100.0;
-			    value = value / 100.0;
+
+	    if(ok) {
+		for(TypeHandler typeHandler: types) {
+		    String type = typeHandler.getType();
+		    //		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
+		    typeQueries.add(new TermQuery(new Term(FIELD_SUPERTYPE, type)));
+		    List<Column> columns = typeHandler.getColumns();
+		    if (columns == null) continue;
+		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+		    int cnt = 0;
+		    for (Column column : columns) {
+			if (!column.getCanSearch()) {
+			    continue;
 			}
-			if (expr.equals("") && (!Double.isNaN(from) || !Double.isNaN(to))) {
-			    term = DoublePoint.newRangeQuery(field,Double.isNaN(from)?Double.MIN_VALUE:from,Double.isNaN(to)?Double.MAX_VALUE:to);
-			}  else {
-			    if (!Double.isNaN(from) && Double.isNaN(to)) {
+			String       searchArg = column.getSearchArg();
+			Query term=null;
+			String field = getPropertyField(typeHandler,column);
+
+			if(column.isEnumeration()) {
+			    List<String> values = (List<String>) request.get(searchArg,new ArrayList<String>());
+			    List<Query> ors = new ArrayList<Query>();
+			    for(String v: values) {
+				if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+				if(v.equals("--blank--")) v = "";
+				ors.add(new TermQuery(new Term(field, v)));
+			    }			    
+			    if(ors.size()==1) 
+				term = ors.get(0);
+			    else if(ors.size()>1)
+				term =  makeOr(ors);
+			    else continue;
+			} else if(column.isDouble()) {
+			    String expr = request.getEnum(searchArg + "_expr", "", "",
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
+							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=").trim();
+			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			    double from  = request.get(searchArg + "_from", Double.NaN);
+			    double to    = request.get(searchArg + "_to", Double.NaN);
+			    double value = request.get(searchArg, Double.NaN);
+			    if (column.isType(Column.DATATYPE_PERCENTAGE)) {
+				from  = from / 100.0;
+				to    = to / 100.0;
+				value = value / 100.0;
+			    }
+			    if (expr.equals("") && (!Double.isNaN(from) || !Double.isNaN(to))) {
+				term = DoublePoint.newRangeQuery(field,Double.isNaN(from)?Double.MIN_VALUE:from,Double.isNaN(to)?Double.MAX_VALUE:to);
+			    }  else {
+				if (!Double.isNaN(from) && Double.isNaN(to)) {
+				    to = from;
+				    expr= Column.EXPR_GE;
+				} else if (Double.isNaN(from) && !Double.isNaN(to)) {
+				    from = to;
+				    expr= Column.EXPR_LE;
+				} else if (!Double.isNaN(from) && !Double.isNaN(to)) {
+				    expr= Column.EXPR_BETWEEN;
+				} else if (Double.isNaN(from) && Double.isNaN(to)) {
+				    from = value;
+				    to   = value;
+				}
+				if (Double.isNaN(from)) continue;
+				if (expr.equals("")) {
+				    term = DoublePoint.newRangeQuery(field,from,to);
+				    expr = Column.EXPR_EQUALS;
+				}
+				double delta = 0.00000001;
+				if (expr.equals(Column.EXPR_EQUALS)) {
+				    term = DoublePoint.newExactQuery(field,from);
+				} else if (expr.equals(Column.EXPR_LE)) {
+				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
+				} else if (expr.equals(Column.EXPR_LT)) {
+				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to-delta);
+				} else if (expr.equals(Column.EXPR_GE)) {
+				    term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
+				} else if (expr.equals(Column.EXPR_GT)) {
+				    term = DoublePoint.newRangeQuery(field,from+delta,Double.MAX_VALUE);				
+				} else if (expr.equals(Column.EXPR_BETWEEN)) {
+				    term = DoublePoint.newRangeQuery(field,from,to);
+				} else if (expr.length() > 0) {
+				    throw new IllegalArgumentException("Unknown expression:"
+								       + expr);
+				}
+			    }
+			} else if(column.isInteger()) {
+			    String expr = request.getEnum(searchArg + "_expr", "", "",
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
+							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
+			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			    int undef = -99999999;
+			    int from  = request.get(searchArg + "_from", undef);
+			    int to    = request.get(searchArg + "_to", undef);
+			    int value = request.get(searchArg, undef);
+			    if ((from != undef) && (to == undef)) {
 				to = from;
-				expr= Column.EXPR_GE;
-			    } else if (Double.isNaN(from) && !Double.isNaN(to)) {
+				expr=Column.EXPR_GE;
+			    } else if ((from == undef) && (to != undef)) {
 				from = to;
-				expr= Column.EXPR_LE;
-			    } else if (!Double.isNaN(from) && !Double.isNaN(to)) {
-				expr= Column.EXPR_BETWEEN;
-			    } else if (Double.isNaN(from) && Double.isNaN(to)) {
+				expr=Column.EXPR_LE;
+			    } else if ((from != undef) && (to != undef)) {
+				expr=Column.EXPR_BETWEEN;
+			    } else if ((from == undef) && (to == undef)) {
 				from = value;
 				to   = value;
 			    }
-			    if (Double.isNaN(from)) continue;
+			    if (from == undef) continue;
 			    if (expr.equals("")) {
-				term = DoublePoint.newRangeQuery(field,from,to);
 				expr = Column.EXPR_EQUALS;
 			    }
-			    double delta = 0.00000001;
 			    if (expr.equals(Column.EXPR_EQUALS)) {
-				term = DoublePoint.newExactQuery(field,from);
+				term = IntPoint.newExactQuery(field,from);
 			    } else if (expr.equals(Column.EXPR_LE)) {
-				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
+				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
 			    } else if (expr.equals(Column.EXPR_LT)) {
-				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to-delta);
+				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to-1);				
 			    } else if (expr.equals(Column.EXPR_GE)) {
-				term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
+				term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
 			    } else if (expr.equals(Column.EXPR_GT)) {
-				term = DoublePoint.newRangeQuery(field,from+delta,Double.MAX_VALUE);				
+				term = IntPoint.newRangeQuery(field,from+1,Integer.MAX_VALUE);				
 			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
-				term = DoublePoint.newRangeQuery(field,from,to);
+				term = IntPoint.newRangeQuery(field,from,to);
 			    } else if (expr.length() > 0) {
 				throw new IllegalArgumentException("Unknown expression:"
 								   + expr);
 			    }
-			}
-		    } else if(column.isInteger()) {
-			String expr = request.getEnum(searchArg + "_expr", "", "",
-						      Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
-						      Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
-			expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-			int undef = -99999999;
-			int from  = request.get(searchArg + "_from", undef);
-			int to    = request.get(searchArg + "_to", undef);
-			int value = request.get(searchArg, undef);
-			if ((from != undef) && (to == undef)) {
-			    to = from;
-			    expr=Column.EXPR_GE;
-			} else if ((from == undef) && (to != undef)) {
-			    from = to;
-			    expr=Column.EXPR_LE;
-			} else if ((from != undef) && (to != undef)) {
-			    expr=Column.EXPR_BETWEEN;
-			} else if ((from == undef) && (to == undef)) {
-			    from = value;
-			    to   = value;
-			}
-			if (from == undef) continue;
-			if (expr.equals("")) {
-			    expr = Column.EXPR_EQUALS;
-			}
-			if (expr.equals(Column.EXPR_EQUALS)) {
-			    term = IntPoint.newExactQuery(field,from);
-			} else if (expr.equals(Column.EXPR_LE)) {
-			    term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
-			} else if (expr.equals(Column.EXPR_LT)) {
-			    term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to-1);				
-			} else if (expr.equals(Column.EXPR_GE)) {
-			    term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
-			} else if (expr.equals(Column.EXPR_GT)) {
-			    term = IntPoint.newRangeQuery(field,from+1,Integer.MAX_VALUE);				
-			} else if (expr.equals(Column.EXPR_BETWEEN)) {
-			    term = IntPoint.newRangeQuery(field,from,to);
-			} else if (expr.length() > 0) {
-			    throw new IllegalArgumentException("Unknown expression:"
-							       + expr);
-			}
-		    } else if(column.isLatLon()) {
-			double[] nwse  = column.getAreaSearchArgs(request);
-			SelectionRectangle rectangle = new SelectionRectangle(nwse);
-			if(!rectangle.anyDefined()) continue;
-			List<SelectionRectangle> rects = getEntryUtil().getSelectionRectangles(rectangle);
-			makeAreaQueries(rects, queries, column.getAreaSearchContains(request),
-					field+SUFFIX_LATITUDE,
-					field+SUFFIX_LONGITUDE,
-					null,null);
-			continue;
-		    } else if(column.isDate()) {
-			Date[] dateRange = request.getDateRange(searchArg+"_from",   searchArg+"_to", null);
-			Date date1 = dateRange[0];
-			Date date2 = dateRange[1];
-			if(date1!=null || date2!=null) {
-			    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():dateMin,
-										      date2!=null?date2.getTime():dateMax));
-			}
-			continue;
-		    } else {
-			String s = request.getUnsafeString(searchArg,null);
-			if(!Utils.stringDefined(s)||s.equals(TypeHandler.ALL)) continue;
-			String v = s.toLowerCase();
-			List<Query> ors = new ArrayList<Query>();
-			if(column.getTokenizeSearch()) {
-			    ors.add(new TermQuery(new Term(field+SUFFIX_EXACT, s)));
-			}			    
-			v = v.toLowerCase();
-			if(v.indexOf(" ")>=0) {
-			    PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
-			    for(String tok: Utils.split(v," ",true,true)) {
-				phraseBuilder.add(makeTerm(field, tok));
+			} else if(column.isLatLon()) {
+			    double[] nwse  = column.getAreaSearchArgs(request);
+			    SelectionRectangle rectangle = new SelectionRectangle(nwse);
+			    if(!rectangle.anyDefined()) continue;
+			    List<SelectionRectangle> rects = getEntryUtil().getSelectionRectangles(rectangle);
+			    makeAreaQueries(rects, queries, column.getAreaSearchContains(request),
+					    field+SUFFIX_LATITUDE,
+					    field+SUFFIX_LONGITUDE,
+					    null,null);
+			    continue;
+			} else if(column.isDate()) {
+			    Date[] dateRange = request.getDateRange(searchArg+"_from",   searchArg+"_to", null);
+			    Date date1 = dateRange[0];
+			    Date date2 = dateRange[1];
+			    if(date1!=null || date2!=null) {
+				queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():dateMin,
+											  date2!=null?date2.getTime():dateMax));
 			    }
-			    ors.add(phraseBuilder.build());
+			    continue;
 			} else {
-			    ors.add(new WildcardQuery(makeTerm(field, v)));
+			    String s = request.getUnsafeString(searchArg,null);
+			    if(!Utils.stringDefined(s)||s.equals(TypeHandler.ALL)) continue;
+			    String v = s.toLowerCase();
+			    List<Query> ors = new ArrayList<Query>();
+			    if(column.getTokenizeSearch()) {
+				ors.add(new TermQuery(new Term(field+SUFFIX_EXACT, s)));
+			    }			    
+			    v = v.toLowerCase();
+			    if(v.indexOf(" ")>=0) {
+				PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
+				for(String tok: Utils.split(v," ",true,true)) {
+				    phraseBuilder.add(makeTerm(field, tok));
+				}
+				ors.add(phraseBuilder.build());
+			    } else {
+				ors.add(new WildcardQuery(makeTerm(field, v)));
+			    }
+			    if(ors.size()==1) 
+				term = ors.get(0);
+			    else if(ors.size()>1)
+				term =  makeOr(ors);
 			}
-			if(ors.size()==1) 
-			    term = ors.get(0);
-			else if(ors.size()>1)
-			    term =  makeOr(ors);
+			cnt++;
+			if(term!=null) {
+			    builder.add(term, BooleanClause.Occur.MUST);
+			}
 		    }
-		    cnt++;
-		    if(term!=null) {
-			builder.add(term, BooleanClause.Occur.MUST);
-		    }
+		    if(cnt>0) queries.add(builder.build());
 		}
-		if(cnt>0) queries.add(builder.build());
-	    }
-	    if(typeQueries.size()==1) {
-		queries.add(typeQueries.get(0));
-	    } else if(typeQueries.size()>1) {
-		BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		for(Query q: typeQueries)
-		    builder.add(q,BooleanClause.Occur.SHOULD);
-		queries.add(builder.build());
+		if(typeQueries.size()==1) {
+		    queries.add(typeQueries.get(0));
+		} else if(typeQueries.size()>1) {
+		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+		    for(Query q: typeQueries)
+			builder.add(q,BooleanClause.Occur.SHOULD);
+		    queries.add(builder.build());
+		}
 	    }
 	}
 
