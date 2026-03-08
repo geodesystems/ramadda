@@ -27,7 +27,6 @@ var ACTION_CV_ADD='add';
 var ACTION_CV_ZOOMOUT='zoomout';
 var ACTION_CV_ZOOMIN='zoomin';
 
-
 var ATTR_CV_COLLECTION_INDEX='collection-index';
 
 var ID_CV_MEASURE = 'measure';
@@ -63,8 +62,9 @@ var ID_CV_COLLECTIONS= 'collections';
 var CV_COLOR_BUTTON_HIGHLIGHT='rgba(25, 118, 210, 0.16)';
 var CV_COLOR_LINE='#aaa';
 var CV_COLOR_HIGHLIGHT = 'red';
-var CV_COLOR_SAMPLE = 'red';
-var CV_COLOR_BOX = 'red';
+var CV_COLOR_SAMPLE = CV_COLOR_HIGHLIGHT;
+var CV_COLOR_MEASURE = CV_COLOR_HIGHLIGHT;
+var CV_COLOR_BOX = CV_COLOR_HIGHLIGHT;
 
 var CV_STROKE_WIDTH = 0.4;
 var CV_AXIS_WIDTH=60;
@@ -74,6 +74,8 @@ var CV_OFFSET_X=170;
 var CV_FONT_SIZE = 15;
 var CV_FONT_SIZE_SMALL = 10;
 var CV_TICK_WIDTH = 8;
+var CV_MIN_WIDTH = -100000;
+var CV_MAX_WIDTH = 100000;
 
 
 function RamaddaCoreDisplay(displayManager, id, args) {
@@ -312,7 +314,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		    let types = 'super:type_core_record_base';
 		    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,types,null,
 						    {showTypeSelector:true,
-								showFirstSearch:false});
+						     showFirstSearch:false});
 		} else	if(action==ACTION_CV_ADD) {
 		    let id = $(this).attr(ATTR_ID);
 		    let localeId = _this.opts.mainEntry;
@@ -482,25 +484,25 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
     $.extend(this.opts,args);
     //define setters/getters & check for url override
-	CV_MAIN_PROPS.forEach(prop=>{
-	 let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
-	 let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
-	 let getFunc = (dflt)=>{
-	     return  this.getCoreProperty(prop,dflt);
-	 };
-	 let setFunc = (v)=>{
-	     this.setCoreProperty(prop,v);
-	 };
-	 if(!this[getName])
-	     this[getName] = getFunc;
-	 if(!this[setName])
-	     this[setName] = setFunc;	
+    CV_MAIN_PROPS.forEach(prop=>{
+	let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
+	let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
+	let getFunc = (dflt)=>{
+	    return  this.getCoreProperty(prop,dflt);
+	};
+	let setFunc = (v)=>{
+	    this.setCoreProperty(prop,v);
+	};
+	if(!this[getName])
+	    this[getName] = getFunc;
+	if(!this[setName])
+	    this[setName] = setFunc;	
 
-	 let value = HU.getUrlArgument(prop);
-	 if(Utils.isDefined(value)) {
-	     this.setCoreProperty(prop,value);
-	 }
-     });
+	let value = HU.getUrlArgument(prop);
+	if(Utils.isDefined(value)) {
+	    this.setCoreProperty(prop,value);
+	}
+    });
 
     this.opts.top =+this.opts.top;
 
@@ -529,7 +531,7 @@ RamaddaCoreDisplay.prototype = {
 
     initTiler:function() {
 	this.tiler = new CoreTiler (
-//	this.tiler = new CoreStripedTiler(
+	    //	this.tiler = new CoreStripedTiler(
 	    { 
 		padX:50,
 		minX:3*this.getAxisWidth(),
@@ -599,7 +601,7 @@ RamaddaCoreDisplay.prototype = {
 	let h=this.getCanvasHeight();
 	let world =  (r*c)/h;
 	world = world/this.opts.scaleY;
-//	console.log('canvasToWorld',c,world);
+	//	console.log('canvasToWorld',c,world);
 	return world;
     },
     calculateDistance:function(x1, y1, x2, y2) {
@@ -611,14 +613,26 @@ RamaddaCoreDisplay.prototype = {
 	    this.measureState.line.destroy();
 	    this.measureState.line=null;
 	}
-	if(this.measureState.text1) {
-	    this.destroy(this.measureState.text1);
-	    this.measureState.text1=null;
+	if(this.measureState.topBar) {
+	    this.measureState.topBar.destroy();
+	    this.measureState.topBar=null;
+	}
+	if(this.measureState.bottomBar) {
+	    this.measureState.bottomBar.destroy();
+	    this.measureState.bottomBar=null;
+	}		
+	if(this.measureState.topText) {
+	    this.destroy(this.measureState.topText);
+	    this.measureState.topText=null;
 	}	
-	if(this.measureState.text2) {
-	    this.destroy(this.measureState.text2);
-	    this.measureState.text2=null;
-	}	
+	if(this.measureState.bottomText) {
+	    this.destroy(this.measureState.bottomText);
+	    this.measureState.bottomText=null;
+	}
+	if(this.measureState.centerText) {
+	    this.destroy(this.measureState.centerText);
+	    this.measureState.centerText=null;
+	}		
 	this.drawLayer.draw();
     },
     isSampling: function() {
@@ -822,59 +836,117 @@ RamaddaCoreDisplay.prototype = {
 	if(this.measureState) return;
 	this.measureState= {
 	    start:null,
-	    line:null
+	    line:null,
+	    bar:null
 	}
 
 	this.stage.on(EVENT_MOUSEDOWN, (e) => {
 	    if(!this.isMeasuring()) return;
 	    this.clearMeasure();
 	    const pos = this.stage.getRelativePointerPosition();
-	    this.measureState.start = pos;
-	    this.measureState.line = new Konva.Line({
+	    let state= 	    this.measureState;
+	    state.mouseDown = state.start = pos;
+	    state.line = new Konva.Line({
 		points: [pos.x, pos.y, pos.x, pos.y],
-		stroke: CV_COLOR_SAMPLE,
-		strokeWidth: 2,
+		stroke: CV_COLOR_MEASURE,
+		strokeWidth: 1,
 		lineCap: 'round',
 		lineJoin: 'round',
 	    });
-	    this.scaleLine(this.measureState.line);
-	    this.drawLayer.add(this.measureState.line);
-	    let world  =this.canvasToWorld(pos.y);	    
-	    this.measureState.text1 = this.makeText(this.drawLayer,
-						    this.formatDepth(world),
-						    this.measureState.start.x+5,
-						    pos.y,
-						    $.extend({debug:true},this.opts.measureStyle));
+	    this.scaleLine(state.line);
+	    this.drawLayer.add(state.line);
+
+	    state.topBar = new Konva.Line({
+		points: [CV_MIN_WIDTH, pos.y, CV_MAX_WIDTH, pos.y],
+		stroke: CV_COLOR_MEASURE,
+		strokeWidth: 1,
+		lineCap: 'round',
+		lineJoin: 'round',
+	    });
+	    this.scaleLine(state.topBar);
+	    this.drawLayer.add(state.topBar);
+
+	    state.bottomBar = new Konva.Line({
+		points: [CV_MIN_WIDTH, pos.y, CV_MAX_WIDTH, pos.y],
+		stroke: CV_COLOR_MEASURE,
+		strokeWidth: 1,
+		lineCap: 'round',
+		lineJoin: 'round',
+	    });
+	    this.scaleLine(state.bottomBar);
+	    this.drawLayer.add(state.bottomBar);
+	    state.topText = this.makeMeasureText(state.mouseDown);
 	    this.drawLayer.draw();
+	    this.scaleLine(state.topText.backgroundRect);
 	});
 
 	this.stage.on(EVENT_MOUSEMOVE, (e) => {
 	    if(!this.isMeasuring()) return;
-	    if (!this.measureState.line || !this.measureState.start) return;
+	    let state = this.measureState;
+	    if(!state.start)return;
 	    const pos = this.stage.getRelativePointerPosition();
-	    if(this.measureState.text2)this.destroy(this.measureState.text2);
-	    this.measureState.text2 = this.makeText(this.drawLayer,
-						    this.formatDepth(this.canvasToWorld(pos.y)),
-						    this.measureState.start.x+5,
-						    pos.y,
-						    this.opts.measureStyle);
-	    this.drawLayer.add(this.measureState.text2);
-	    this.measureState.line.points([this.measureState.start.x, this.measureState.start.y,
-					   this.measureState.start.x, pos.y]);
-	    this.drawLayer.draw();
+	    this.measureState.end = pos.y;
+	    this.drawMeasure();
 	});
 
 	this.stage.on(EVENT_MOUSEUP, (e) => {
-	    if(!this.isMeasuring()) return;
-	    if (!this.measureState.start) return;
+	    if(!this.isMeasuring()) {
+		return;
+	    }
+	    let state = this.measureState;
+	    if (!state.start) return;
 	    const pos = this.stage.getRelativePointerPosition();
-	    const distance = this.calculateDistance(this.measureState.start.x, this.measureState.start.y, this.measureState.start.x, pos.y);
+	    const distance = this.calculateDistance(state.mouseDown.x, state.mouseDown.y, state.mouseDown.x, pos.y);
 	    // Display the measurement as text on the canvas
 	    this.drawLayer.draw();
-	    this.measureState.start=null;
+	    state.start=null;
 	});
     },
 
+
+    makeMeasureText:function(pos) {
+	return  this.makeText(this.drawLayer,
+			      this.formatDepth(this.canvasToWorld(pos.y)),
+			      this.measureState.mouseDown.x+5,
+			      pos.y,
+			      $.extend({debug:true},this.opts.measureStyle));
+    },
+    drawMeasure:function(force) {
+	if(!this.isMeasuring()) {
+	    return;
+	}
+	let state = this.measureState;
+	if(!state) {
+	    return;
+	}
+	if (!state.line || !Utils.isDefined(state.mouseDown)) {
+	    return;
+	}
+	if(state.bottomText)this.destroy(state.bottomText);
+	if(state.centerText)this.destroy(state.centerText);	    
+	state.bottomText = this.makeText(this.drawLayer,
+					 this.formatDepth(this.canvasToWorld(state.end)),
+					 state.mouseDown.x+5,
+					 state.end,
+					 this.opts.measureStyle);
+	this.scaleLine(state.bottomText.backgroundRect);	    
+	state.centerText = this.makeText(this.drawLayer,
+					 this.formatDepth(Math.abs(this.canvasToWorld(state.end)-this.canvasToWorld(state.mouseDown.y))),
+					 state.mouseDown.x+5,
+					 state.mouseDown.y+(state.end-state.mouseDown.y)/2,
+					 $.extend({},this.opts.measureStyle,{doOffsetWidth:true}));	    
+	this.scaleLine(state.centerText.backgroundRect);
+	state.line.points([state.mouseDown.x, state.mouseDown.y,
+			   state.mouseDown.x, state.end]);
+	state.bottomBar.points([CV_MIN_WIDTH, state.end,CV_MAX_WIDTH, state.end]);	    
+
+	if(force) {
+	    if(state.topText)this.destroy(state.topText);
+	    state.topText = this.makeMeasureText(state.mouseDown);
+	}
+
+	this.drawLayer.draw();
+    },
     deleteDisplay:function(e) {
 	jqid(e.props.divid).remove();
 	const indexToRemove = this.displayEntries.findIndex(item => item.props.divid === e.props.divid);
@@ -1011,6 +1083,7 @@ RamaddaCoreDisplay.prototype = {
 	let inLabel = false;
 	let drawAll=()=>{
 	    _this.drawCollections({forceNewImages:true,resetZoom:true});
+	    _this.drawMeasure(true);
 	}
 	let makeLabel = label=>{
 	    if(inLabel) html+=HU.close(TAG_DIV);
@@ -1018,12 +1091,16 @@ RamaddaCoreDisplay.prototype = {
 	    inLabel = true;
 	    html+=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))]);
 	}
-	let makeToggle = (id,label,callback,prefix)=>{
+	let makeToggle = (id,label,callback,args)=>{
+	    args = args??{};
+	    let prefix = args.prefix;
+	    let title = args.title??'';
 	    toggleActions[id]=callback??(()=>{});
 	    html+=HU.div([],
 			 (prefix??'')+
 			 HU.checkbox(this.domId(id),
-				 [ATTR_ID,this.domId(id)],
+				     [ATTR_ID,this.domId(id),
+				      ATTR_TITLE,title],
 				     this.getCoreProperty(id),label));
 	}
 	if(this.getHasBoxes()) {
@@ -1032,24 +1109,16 @@ RamaddaCoreDisplay.prototype = {
 	    makeToggle(ID_CV_SHOWBOXES,'Highlight Segments',   ()=>{_this.toggleBoxes();});
 	    makeToggle(ID_CV_SHOWALLDEPTHS,'Show Segment Depths',
 		       ()=>{_this.toggleBoxes();},
-		       HU.space(2));
+		       {prefix:HU.space(2)});
 	}
 
 	makeLabel('Layout');
 	makeToggle(ID_CV_STACKED,'Stacked', drawAll);
-	makeToggle(ID_CV_TILED,'Tiled', drawAll);
+	makeToggle(ID_CV_TILED,'Tiled', drawAll,{title:'Do tiled layout'});
 	makeToggle(ID_CV_DOROTATION,'Do Rotation',
 		   ()=>{_this.drawCollections({forceNewImages:true})});
 
 
-	makeLabel('Display');
-	makeToggle(ID_CV_SHOWLABELS,'Show Labels',   ()=>{_this.toggleLabels()});
-	makeToggle(ID_CV_SHOWHIGHLIGHT,'Show Highlight',  ()=>{_this.toggleHighlight();});	
-	makeToggle(ID_CV_SHOWANNOTATIONS,'Show Annotations',drawAll);
-	if(this.opts.haveLegend) {
-	    makeToggle(ID_CV_SHOWLEGEND,'Show Legend',drawAll);
-	}
-	makeToggle(ID_CV_ASFEET, 'Display Feet',drawAll);
 	html+= HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.em(0.5))],
 		      'Image Width Scale: ' +
 		      HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
@@ -1061,11 +1130,21 @@ RamaddaCoreDisplay.prototype = {
 				     ATTR_ID,this.domId(ID_CV_IMAGEWIDTHSCALE)])));
 
 	html+= HU.div([],
-		      'Column width: ' +
+		      Utils.msgLabel('Column width') +
 		      HU.input('',this.opts.maxColumnWidth,
 			       [ATTR_ID,this.domId(ID_CV_COLUMN_WIDTH),
 				ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(40))]));
 
+
+
+	makeLabel('Display');
+	makeToggle(ID_CV_SHOWLABELS,'Show Labels',   ()=>{_this.toggleLabels()});
+	makeToggle(ID_CV_SHOWHIGHLIGHT,'Show Highlight',  ()=>{_this.toggleHighlight();});	
+	makeToggle(ID_CV_SHOWANNOTATIONS,'Show Annotations',drawAll);
+	if(this.opts.haveLegend) {
+	    makeToggle(ID_CV_SHOWLEGEND,'Show Legend',drawAll);
+	}
+	makeToggle(ID_CV_ASFEET, 'Display Feet',drawAll);
 
 	html+=HU.close(TAG_DIV);
 	html=HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(10))], html);
@@ -1110,7 +1189,14 @@ RamaddaCoreDisplay.prototype = {
 	
 	Object.keys(toggleActions).forEach(id=>{
 	    this.jq(id).change(function(){
-		_this.setCoreProperty(id, HU.isChecked($(this)));
+		let on = HU.isChecked($(this));
+		if(on) {
+		    if(id==ID_CV_TILED)
+			_this.jq(ID_CV_STACKED).prop('checked',false);
+		    else if(id==ID_CV_STACKED)
+			_this.jq(ID_CV_TILED).prop('checked',false);		    
+		}
+		_this.setCoreProperty(id, on);
 		toggleActions[id]();
 	    });
 
@@ -1263,7 +1349,7 @@ RamaddaCoreDisplay.prototype = {
 		    let newWidth = newHeight * aspectRatio;
 		    image.setAttrs({
 			x: this.opts.legendWidth-newWidth,
-//			x: -newWidth+10,
+			//			x: -newWidth+10,
 			y: y1,
 			width:newWidth,
 			height:newHeight});
@@ -1912,12 +1998,12 @@ RamaddaCoreDisplay.prototype = {
 
 	/*
 	  if(stageScale<0.3) {
-	    this.toggleLabels(null,false);
-	    this.toggleBoxes(null, false);
-	} else {
-	    this.toggleLabels(null);
-	    this.toggleBoxes(null);
-	}*/
+	  this.toggleLabels(null,false);
+	  this.toggleBoxes(null, false);
+	  } else {
+	  this.toggleLabels(null);
+	  this.toggleBoxes(null);
+	  }*/
 
 	const scaleLines = obj=>{
 	    this.scaleLine(obj);
@@ -1955,12 +2041,12 @@ RamaddaCoreDisplay.prototype = {
 	const stagePos = stage.position();
 	// Fix x position at axisWidth in screen coordinates
 	const newX = (axisWidth - stagePos.x) / scale;
-//	console.log(axisWidth,stagePos.x,newX);
+	//	console.log(axisWidth,stagePos.x,newX);
 	legendLayer.x(newX);
 	// Counteract x-axis zoom, but keep y-axis zoom
 	legendLayer.scaleX(1 / scale);
 	legendLayer.scaleY(1);
-  
+	
 	if(this.legendLine) {
 	    this.legendLine.attrs.strokeWidth =  1/(scale*2);
 	}
@@ -2008,7 +2094,7 @@ RamaddaCoreDisplay.prototype = {
 	const stagePos = stage.position();
 	// Fix x position at axisWidth in screen coordinates
 	const newX = (axisWidth - stagePos.x) / scale;
-//	console.log(axisWidth,stagePos.x,newX);
+	//	console.log(axisWidth,stagePos.x,newX);
 	layer.x(newX);
 	// Counteract x-axis zoom, but keep y-axis zoom
 	layer.scaleX(1 / scale);
@@ -2162,7 +2248,7 @@ RamaddaCoreDisplay.prototype = {
     },
 
     makeText:function(layer,t,x,y,args) {
-//	if(t=='616.642') console.asds();
+	//	if(t=='616.642') console.asds();
 	let opts = {
 	    doOffsetWidth:false,
 	    fill:'#000',
@@ -2293,7 +2379,7 @@ RamaddaCoreDisplay.prototype = {
 	if(debug)	console.log('checkRange','range',this.opts.range);
 	if(!this.opts.hadLegendWidth) {
 	    this.opts.legendWidth=0;
-//	    this.opts.legendWidth=CV_LEGEND_WIDTH;
+	    //	    this.opts.legendWidth=CV_LEGEND_WIDTH;
 	    if(haveLegend) {
 		if(maxLegendWidth>0) this.opts.legendWidth=maxLegendWidth;
 		else this.opts.legendWidth=CV_LEGEND_WIDTH;
@@ -2308,8 +2394,8 @@ RamaddaCoreDisplay.prototype = {
 		this.opts.axisWidth=CV_AXIS_WIDTH+100;
 	    }
 	}
-//	console.log(haveAnnotation,haveLegend);
-//	console.log('legend width',this.opts.legendWidth,'axis width',this.opts.axisWidth);		
+	//	console.log(haveAnnotation,haveLegend);
+	//	console.log('legend width',this.opts.legendWidth,'axis width',this.opts.axisWidth);		
     },
 
     getAxisX:function() {
@@ -2610,11 +2696,11 @@ RamaddaCoreDisplay.prototype = {
 	let group = new Konva.Group({
 	    draggable:this.isEditing(),
 	    /*xclip: {
-		x: baseX-100,
-		y: imageY-100,
-		width: 100+maxWidth,
-		height: 10000,
-            },*/
+	      x: baseX-100,
+	      y: imageY-100,
+	      width: 100+maxWidth,
+	      height: 10000,
+              },*/
 	    dragBoundFunc: function(pos) {
 		return {
 		    x: this.getAbsolutePosition().x,  
@@ -2645,7 +2731,7 @@ RamaddaCoreDisplay.prototype = {
 	    y:imageY+image.height()/2
 	}	
 
-//	console.dir(entry.label,'tile x',tile.x,imageAttrs.y,imageAttrs.y+imageAttrs.height);
+	//	console.dir(entry.label,'tile x',tile.x,imageAttrs.y,imageAttrs.y+imageAttrs.height);
 
 	let imageRect = image.getClientRect();
 	let imageScale = canvasHeight/imageRect.height;
@@ -2822,11 +2908,11 @@ RamaddaCoreDisplay.prototype = {
 		if(box.marker) return;
 		let boxGroup = new Konva.Group({
 		    /*xclip: {
-			x: baseX+scale(box.x),
-			y: imageY+scale(box.y),
-			width: scale(box.width),
-			height:scale(box.height),
-		    }*/});
+		      x: baseX+scale(box.x),
+		      y: imageY+scale(box.y),
+		      width: scale(box.width),
+		      height:scale(box.height),
+		      }*/});
 		group.add(boxGroup);
 		let x = baseX;
 		let y = this.worldToCanvas(box.top);
@@ -2935,8 +3021,8 @@ RamaddaCoreDisplay.prototype = {
 	    let top = pos.top;
 	    let bottom = pos.bottom;	    
 	    if(event.shiftKey) {
-//		bottom=top;
-//		top=lastPos.top;
+		//		bottom=top;
+		//		top=lastPos.top;
 	    }
 	    group.ticks.l1.text(this.formatDepth(top));
 	    group.ticks.l2.text(this.formatDepth(bottom));	    
@@ -2944,15 +3030,15 @@ RamaddaCoreDisplay.prototype = {
 	    lastPos = pos;
 	});
 
-/*
-	group.on(EVENT_DRAGEND, (e)=> {
-	    let event = e.evt;
-	    event.stopPropagation();
-	    console.dir(event.shiftKey);
-	    let pos  = getPos(e.target);
-	    this.editEntry(entry,pos.top,pos.bottom);
-	    });
-	    */
+	/*
+	  group.on(EVENT_DRAGEND, (e)=> {
+	  let event = e.evt;
+	  event.stopPropagation();
+	  console.dir(event.shiftKey);
+	  let pos  = getPos(e.target);
+	  this.editEntry(entry,pos.top,pos.bottom);
+	  });
+	*/
 
     }
 }
