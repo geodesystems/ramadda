@@ -347,7 +347,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				    label = label.replace("\${"+ attr.id+"}",value);
 				});
 			    }
-			    label = label.replace(/\${.*}/,'');
+			    if(label.indexOf("${")>=0) {
+				label = entry.getName();
+			    }
+//			    label = label.replace(/\${.*}/,'');
 			}
 
                         html += HU.div([ATTR_INDEX,idx,
