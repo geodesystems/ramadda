@@ -71,7 +71,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
     public String makeEntriesJson(Request request, Entry entry,List<Entry> children)  throws Exception {
 	List<String> collection = new ArrayList<String>();
-	Utils.add(collection,"name",JU.quote(entry.getName()),"entryId",JU.quote(entry.getId()));
+	Utils.add(collection,
+		  "name",	  JU.quote(entry.getName()),
+		  "entryId",JU.quote(entry.getId()),
+		  "type",JU.quote(entry.getTypeHandler().getDescription()),
+		  "icon",JU.quote(entry.getTypeHandler().getTypeIconUrl()));		  
 	List<String> legends=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_legend"}, true)) {
 	    String[]tuple=  getMetadataManager().getFileUrl(request, entry, mtd);

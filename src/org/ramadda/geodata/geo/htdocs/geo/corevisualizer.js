@@ -284,7 +284,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    this.jq(ACTION_CV_ADD).button();
 	    addHandler({
 		selectClick:function(type,id,entryId,value) {
-		    _this.loadCollection(entryId);
+		    _this.loadCollection({id:entryId,visible:true});
 		}
 	    },this.domId(ACTION_CV_ADD));
 
@@ -1467,6 +1467,38 @@ RamaddaCoreDisplay.prototype = {
 	    if(o.backgroundRect) o.backgroundRect.destroy();
 	});
     },
+    editCollection:function(collection) {
+	let _this  = this;
+	let html = '';
+	html+=HU.formTable();
+	html+=HU.formEntryLabel('Name',HU.input('',collection.name??'',
+						[ATTR_SIZE,40,
+						 ATTR_ID,this.domId('editname')]));
+	html+=HU.formTableClose();
+	let buttonList =[
+	    HU.div([ATTR_ACTION,ACTION_CANCEL,
+		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],LABEL_CANCEL),
+	    HU.div([ATTR_ACTION,ACTION_OK,
+		    ATTR_CLASS,HU.classes(CLASS_BUTTON,CLASS_CLICKABLE)],
+		   'Change Collection')];
+	html+=HU.buttons(buttonList);
+	let dialog = HU.makeDialog({anchor:this.mainDiv,
+				    decorate:true,
+				    at:'left top',
+				    my:'left top',
+				    header:true,
+				    content:html,
+				    draggable:true});
+	dialog.find(HU.dotClass(CLASS_BUTTON)).button().click(function(){
+	    let ok = $(this).attr(ATTR_ACTION)==ACTION_OK;
+	    if(ok) {
+		collection.name = _this.jq('editname').val();
+		_this.drawCollections();
+	    }
+	    dialog.remove();
+	});
+    },
+
     removeCollection:function(collection) {
 	this.collections.splice(collection.collectionIndex, 1);
 	this.destroy(collection.annotationObjects);
@@ -1552,7 +1584,11 @@ RamaddaCoreDisplay.prototype = {
 	let json ={};
 	json.collections = [];
 	this.collections.forEach((collection,idx)=>{
-	    json.collections.push({id:collection.entryId,visible:collection.visible});
+	    let info = 		{id:collection.entryId};
+	    ['name','visible'].forEach(prop=>{
+		info[prop] = collection[prop];
+	    });
+	    json.collections.push(info);
 	});
 	json.stage = {
 	    scale:this.getScale(),
@@ -1597,7 +1633,7 @@ RamaddaCoreDisplay.prototype = {
 	for (const collection of collections) {
 	    let id = collection.id;
 	    let visible = Utils.isDefined(collection.visible)?collection.visible:true;
-	    await   this.loadCollection(id,visible);
+	    await   this.loadCollection(collection);
 	}
 	if(opts) {
 	    if(opts?.stage?.scale) {
@@ -1621,7 +1657,8 @@ RamaddaCoreDisplay.prototype = {
 	}
     },
 
-    loadCollection:async function(entryId,visible) {
+    loadCollection:async function(collection) {
+	let entryId  = collection.id;
 	let _this = this;
 	let url = RamaddaUtils.getUrl('/core/entries');
 	url =HU.url(url,'entryid', entryId);
@@ -1630,7 +1667,7 @@ RamaddaCoreDisplay.prototype = {
 		console.log('Error loading collection:' + entryId +' error:' + data.error);
 		return;
 	    }
-	    _this.addCollection(data,visible);
+	    _this.addCollection(data,collection);
 	}).fail((data)=>{
 	    window.alert('Failed to load entries');
 	});
@@ -1657,9 +1694,14 @@ RamaddaCoreDisplay.prototype = {
 	    collection.collectionIndex = idx;
 	    let style = HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK);
 	    if(!collection.visible) style+=HU.css(CSS_BACKGROUND,'#aaa');
+	    let label = HU.image(collection.icon,
+				 [ATTR_WIDTH,ramaddaGlobals.iconWidth])
+		+ SPACE+
+		collection.name;
 	    html+=HU.span([ATTR_CV_COLLECTION_INDEX,idx,
+			   ATTR_TITLE,collection.type?collection.type:'',
 			   ATTR_CLASS,'ramadda-button',
-			   ATTR_STYLE,style],collection.name);
+			   ATTR_STYLE,style],label);
 	    this.checkAnnotations(collection);
 	    if(collection.visible) {
 		collection.displayIndex=displayIndex++;
@@ -1736,6 +1778,9 @@ RamaddaCoreDisplay.prototype = {
 
 	html+=HU.thinLine();
 	html+=HU.div([ATTR_CLASS,clazz,
+		      ATTR_ACTION,'edit'],'Edit');
+	html+=HU.thinLine();
+	html+=HU.div([ATTR_CLASS,clazz,
 		      ATTR_ACTION,'delete'],'Delete');
 	html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200))], html);
 	let opts = {anchor:target,
@@ -1751,6 +1796,8 @@ RamaddaCoreDisplay.prototype = {
 	    let action = $(this).attr(ATTR_ACTION);
 	    if(action=='delete') {
 		_this.removeCollection(collection);
+	    } else if(action=='edit') {
+		_this.editCollection(collection);
 	    } else if(action=='justshowthis') {
 		_this.collections.forEach(c=>{
 		    c.visible=false;
@@ -1797,10 +1844,14 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	});
     },
-    addCollection:function(collection,visible) {
-	collection.visible= Utils.isDefined(visible)?visible:true;
-	if(!Utils.isDefined(window.cv_collection_id))
+    addCollection:function(collection,baseCollection) {
+	collection.visible= Utils.isDefined(baseCollection.visible)?baseCollection.visible:true;
+	collection.name= Utils.isDefined(baseCollection.name)?baseCollection.name:collection.name;
+	collection.icon= Utils.stringDefined(baseCollection.icon)?baseCollection.icon:collection.icon;	
+
+	if(!Utils.isDefined(window.cv_collection_id)) {
 	    window.cv_collection_id = 0;
+	}
 	window.cv_collection_id++;
 	collection.collectionId=window.cv_collection_id;
 	this.collections.push(collection);
