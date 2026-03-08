@@ -1586,9 +1586,13 @@ RamaddaCoreDisplay.prototype = {
 	json.collections = [];
 	this.collections.forEach((collection,idx)=>{
 	    let info = 		{id:collection.entryId};
-	    ['name','visible'].forEach(prop=>{
+	    ['visible'].forEach(prop=>{
 		info[prop] = collection[prop];
 	    });
+	    if(collection.name!=collection.originalName) {
+		info.name  = collection.name;
+	    }
+	    console.dir(info);
 	    json.collections.push(info);
 	});
 	json.stage = {
@@ -1850,6 +1854,7 @@ RamaddaCoreDisplay.prototype = {
     },
     addCollection:function(collection,baseCollection) {
 	collection.visible= Utils.isDefined(baseCollection.visible)?baseCollection.visible:true;
+	collection.originalName = collection.name;
 	collection.name= Utils.isDefined(baseCollection.name)?baseCollection.name:collection.name;
 	collection.icon= Utils.stringDefined(baseCollection.icon)?baseCollection.icon:collection.icon;	
 
