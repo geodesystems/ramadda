@@ -15,6 +15,17 @@
     </move>
   </target>
 
+  <target name="js">
+    <dirname property="build.dir" file="${ant.file}"/>
+    <copy todir="${build.dir}/htdocs/geo">
+      <fileset dir="${user.home}/ramadda/htdocs/geo">
+        <include name="corevisualizer.js"/>
+        <include name="corevisualizer.css"/>
+        <include name="tiler.js"/>		
+      </fileset>
+    </copy>
+  </target>
+
 
 
     <target name="plugin">
