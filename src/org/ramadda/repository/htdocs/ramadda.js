@@ -2342,7 +2342,8 @@ function Selector(event, selectorId, elementId, allEntries,
 		  selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
     this.props = {
-	showFirstSearch:true
+	showFirstSearch:true,
+	appendTo:TAG_BODY
     };
     if(props)
 	this.props = $.extend(this.props,props);
@@ -2398,7 +2399,7 @@ function Selector(event, selectorId, elementId, allEntries,
 	}
 
         HU.hidePopupObject(event);
-	let container = $(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)])).appendTo(TAG_BODY);
+	let container = $(HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)])).appendTo(this.props.appendTo??TAG_BODY);
         $(HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(200),CSS_MIN_HEIGHT,HU.px(200)),
 		  ATTR_CLASS,'ramadda-selectdiv',
 		  ATTR_ID,this.domId])).appendTo(container);
