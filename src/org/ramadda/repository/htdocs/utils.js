@@ -5241,6 +5241,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     makeDialog: function(args) {
         let opts  = {
+	    appendTo:TAG_BODY,
 	    hidePopup:true,
 	    closeOnClick:false,
             modal:false,
@@ -5270,6 +5271,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         };
 
         if(args) {
+	    if(!args.appendTo) delete args.appendTo;
             if(args.at=="") delete args.at;
             if(args.my=="") delete args.my;
 	    //          console.log(JSON.stringify(args,null,2));
@@ -5370,7 +5372,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             html = HU.div([ATTR_CLASS,'ramadda-modal ' + (opts.modalStrict?'ramadda-modal-strict':'')],html);
         }
 
-        let popup=   $(html).appendTo(TAG_BODY);
+        let popup=   $(html).appendTo(opts.appendTo??TAG_BODY);
 	if(opts.doTooltip) {
 	    popup.find('a,div').tooltip({
 		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
