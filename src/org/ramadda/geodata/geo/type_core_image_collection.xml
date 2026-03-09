@@ -28,13 +28,14 @@ metadata="geo_core_annotation,geo_core_legend"
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-<wiki>
 +section title={{name}}
 :navtop
++fullscreen 
 {{description wikify=true}}
 {{core_visualizer showLabels="${property:show_labels}"
 displayEntries="${property:displays}"
 }}
+-fullscreen
 
 :heading Table
 {{table showDate=false}} 
