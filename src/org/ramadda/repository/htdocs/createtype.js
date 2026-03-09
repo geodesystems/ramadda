@@ -183,7 +183,6 @@ var CreateType  = {
 //            event.stopPropagation();
 //	    return false;
 	});
-
     },
     clearColumns:function() {
 	for(let i=0;i<COLUMNS_MAX_ROWS;i++) {
@@ -201,6 +200,7 @@ var CreateType  = {
 	    let item = formData[i];
 	    if(item.name) item.n = item.name;
 	    if(item.value) item.v = item.value;
+	    if(item.n=='description') continue;
 	    if(!this.canSaveInput(item.n)) continue;
 	    let input = form.find('input[name="' + item.n+'"]');
 	    if(input.length==0)
@@ -248,7 +248,7 @@ var CreateType  = {
 	return name!='droptable' &&
 	    name!='install' &&
 	    name!='extrapassword' &&
-	    name != 'json_contents' &&
+	    name!='json_contents' &&
 	    name!='entryid';
     },
     handleRowAction(c,action) {
