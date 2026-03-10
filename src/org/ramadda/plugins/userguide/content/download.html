@@ -1,13 +1,12 @@
 [ht::head {Downloading and Exporting Entries}]
 
 <%nochildlist%>
-
+:navtop
 There are a number of ways to access the files and other content stored by RAMADDA.
+:p
 
-When you are viewing a Folder or other container entry open the menu (<img src="images/menu_arrow.gif">) and under the File menu are options - Zip and Download Tree and Bulk Download Script. If you are logged in there is also a Export Entries service.
 
-[ht::cimg images/downloadmenu.png {} {border=0}]
-
+:heading Zip and Download Tree
 The Zip and Download Tree will produce a .zip file of the entire entry hierarchy.
 There are 2 size limits, one for anonymous (non-logged in) users, one for logged in users. The defaults are 4GB and 8GB respectively.
 These can be overwritten by setting the RAMADDA properties:
@@ -22,14 +21,17 @@ ramadda.zip.registered.maxsizemb=160000
 </pre>
 
 
-The Bulk Download Script will return a shell script that, when run on your machine, will recreate the entry hierarchy a directories on your machine and will download the files. Note: this uses some shell programming and the curl program to download the files. This has been tested on Mac and Unix machines but not in Windows.
-
+:heading Bulk Download
+The Bulk Download Script will return a shell script that, when run on your machine, will recreate the entry hierarchy a directories on
+your machine and will download the files. Note: this uses some shell programming and the curl program to download the files.
+This has been tested on Mac and Unix machines but not in Windows.
+:p
 You can change the default behavior of the service, e.g., adding download of xml metadata files, overwriting the files, etc. by copy-and-pasting the URL and adding new URL arguments.
-
+:p
 e.g.:
 
 <pre>
-https://ramadda.org/repository/entry/show/RINEX_download.sh?entryid=d8e8c047-d990-40f7-9eb9-07c89323bbe4&output=bulk.curl
+https://ramadda.org/repository/entry/show/Grids_download.sh/RAMADDA+Home/RAMADDA+/Development/Grids?entryid=fb97d4b7-3f95-439e-8417-c114303851f0&output=bulk.curl
 </pre>
 
 

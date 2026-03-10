@@ -43,12 +43,12 @@ from the web pages and create entries for those files.
 The HTML Importer works through the normal entry Import.
 Specify the URL you want to crawl and for Type specify "Links an in HTML Page"
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport1.png?version=979"><img  src="images/htmlimport1.png?version=979"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport1.png?version=979" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport1.png?version=548"><img  src="images/htmlimport1.png?version=548"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport1.png?version=548" ></a></div></div>
 
 :heading Import Form
 The HTML Import form allows  you to specify the source URL, whether that
 page should be recursed down and how to handle the files.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport2.png?version=979"><img  src="images/htmlimport2.png?version=979"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport2.png?version=979" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport2.png?version=548"><img  src="images/htmlimport2.png?version=548"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport2.png?version=548" ></a></div></div>
 
 The simple case is that the source page has links to one or more  files of interest
 (e.g., images, PDFs, etc).
@@ -60,7 +60,7 @@ or simply add the URL as a Link entry.
 :p
 
 * Recurse - Should the web pages that the page links to be themselves crawled
-* Recurse Pattern  - A regular expression pattern that is u
+* Recurse Pattern  - A regular expression pattern that is used to match links to recurse to
 * Add intermediate folders - If checked then RAMADDA will add Folder entries that correspond to each web page
 * Entry Pattern - A regular expression for determining what links are downloaded and added to RAMADDA
 * Not Pattern - A regular expression that allows you to exclude specific files
@@ -92,7 +92,7 @@ interested in the ones that point to the map pages, e.g.
 <pre>
  https://www.blm.gov/documents/colorado/public-room/map/co-surface-management-status-alamosa-map
 </pre>  
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport3.png?version=979"><img  src="images/htmlimport3.png?version=979"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport3.png?version=979" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport3.png?version=548"><img  src="images/htmlimport3.png?version=548"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport3.png?version=548" ></a></div></div>
 
 So, now we check on "Recurse" and we specify a Recurse Pattern and run the Partial Test again
 +pre
@@ -100,7 +100,7 @@ So, now we check on "Recurse" and we specify a Recurse Pattern and run the Parti
 -pre
 
 This time we see just the pages we want-
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport4.png?version=979"><img  src="images/htmlimport4.png?version=979"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport4.png?version=979" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport4.png?version=548"><img  src="images/htmlimport4.png?version=548"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport4.png?version=548" ></a></div></div>
 
 Next up we want to specify an Entry Pattern that matches PDF files-
 +pre
@@ -114,7 +114,7 @@ https://www.blm.gov/sites/default/files/documents/files/Alamosa_2009.pdf
 Because we ran a Partial Test only the first page recursed
 (the Alamosa page) is processed. If we ran a Full Test then all
 of the pages would have been processed.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport5.png?version=979"><img  src="images/htmlimport5.png?version=979"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport5.png?version=979" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/htmlimport5.png?version=548"><img  src="images/htmlimport5.png?version=548"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/htmlimport5.png?version=548" ></a></div></div>
 
 
 Once we are happy with the results we can press Create Entries.
