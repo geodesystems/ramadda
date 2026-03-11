@@ -122,6 +122,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	for(Entry child: children) {
 	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
 	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
+	    boolean hasDepthField=true;
 	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
 		List<Metadata> mtdList=
 		    getMetadataManager().findMetadata(request, child, new String[]{"geo_depth_range"}, true);
@@ -130,6 +131,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			try {
 			    top = Double.parseDouble(mtd.getAttr1());
 			    bottom = Double.parseDouble(mtd.getAttr2());
+			    hasDepthField=false;
 			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
 			} catch(Exception ignore) {
 			    System.err.println("Error parsing depth range:" + ignore);
@@ -172,7 +174,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		      "topDepth",JU.quote(Double.toString(top)),
 		      "bottomDepth",JU.quote(Double.toString(bottom)),
 		      "doRotation",child.getStringValue(request,"do_rotation","false"),
-		      "text",JU.quote(info));
+		      "text",JU.quote(info),
+		      "hasDepthField",hasDepthField);
 	    List<String>boxes = null;
 	    List<Box> _boxes = getBoxes(request, child);
 
