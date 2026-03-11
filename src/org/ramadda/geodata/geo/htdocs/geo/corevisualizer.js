@@ -1102,7 +1102,6 @@ RamaddaCoreDisplay.prototype = {
 	    if(key=='fields') value = value.split(',');
 	    props[key] = value; 
 	}
-	console.dir(props);
 	return props;
     },
 
@@ -1113,7 +1112,7 @@ RamaddaCoreDisplay.prototype = {
 	let toggleActions={};
 	let inLabel = false;
 	let drawAll=()=>{
-	    _this.drawCollections({forceNewImages:true,resetZoom:true});
+	    _this.drawCollections({xxxforceNewImages:true,resetZoom:true});
 	    _this.drawMeasure(true);
 	}
 	let makeLabel = label=>{
@@ -1123,21 +1122,29 @@ RamaddaCoreDisplay.prototype = {
 	    html+=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))]);
 	}
 	let makeToggle = (id,label,callback,args)=>{
-	    args = args??{};
-	    let prefix = args.prefix;
-	    let title = args.title??'';
+	    let opts = {
+		inDiv:true
+	    }
+	    if(args) $.extend(opts,args);
+	    let prefix = opts.prefix;
+	    let title = opts.title??'';
 	    toggleActions[id]=callback??(()=>{});
-	    html+=HU.div([],
-			 (prefix??'')+
-			 HU.checkbox(this.domId(id),
-				     [ATTR_ID,this.domId(id),
-				      ATTR_TITLE,title],
-				     this.getCoreProperty(id),label));
+	    let toggle =
+ 		(prefix??'')+
+		HU.checkbox(this.domId(id),
+			    [ATTR_ID,this.domId(id),
+			     ATTR_TITLE,title],
+			    this.getCoreProperty(id),label)
+	    if(opts.inDiv) {
+		toggle  = HU.div([],toggle);
+	    }
+	    html+=toggle
 	}
 
 	makeLabel('Layout');
-	makeToggle(ID_CV_STACKED,'Stacked', drawAll);
-	makeToggle(ID_CV_TILED,'Tiled', drawAll,{title:'Do tiled layout'});
+	makeToggle(ID_CV_STACKED,'Stacked', drawAll,{inDiv:false});
+	html+=SPACE2;
+	makeToggle(ID_CV_TILED,'Tiled', drawAll,{inDiv:false,title:'Do tiled layout'});
 	makeToggle(ID_CV_DOROTATION,'Do Rotation',
 		   ()=>{_this.drawCollections({forceNewImages:true})});
 
@@ -1225,10 +1232,13 @@ RamaddaCoreDisplay.prototype = {
 	    this.jq(id).change(function(){
 		let on = HU.isChecked($(this));
 		if(on) {
-		    if(id==ID_CV_TILED)
+		    if(id==ID_CV_TILED) {
+			_this.setCoreProperty(ID_CV_STACKED, false);
 			_this.jq(ID_CV_STACKED).prop('checked',false);
-		    else if(id==ID_CV_STACKED)
-			_this.jq(ID_CV_TILED).prop('checked',false);		    
+		    }     else if(id==ID_CV_STACKED) {
+			_this.setCoreProperty(ID_CV_TILED, false);
+			_this.jq(ID_CV_TILED).prop('checked',false);
+		    }
 		}
 		_this.setCoreProperty(id, on,true);
 		toggleActions[id]();
@@ -1730,6 +1740,9 @@ RamaddaCoreDisplay.prototype = {
 	    resetZoom:false
 	}
 	if(args) $.extend(opts,args);
+	if(opts.doLayout) {
+	    this.layoutCollections();
+	}
 	if(this.loadingMessage) {
 	    this.loadingMessage.destroy();
 	    this.loadingMessage=null;
@@ -2676,7 +2689,8 @@ RamaddaCoreDisplay.prototype = {
 		    alert('An error has occurred: '+data.error);
 		    return;
 		}
-		alert('Entry has changed');
+		_this.showMessage('Entry has changed');
+		_this.drawCollections({doLayout:true,xxxforceNewImages:true,resetZoom:true});
 	    }).fail(data=>{
 		console.dir(data);
 		alert('An error occurred:' + data);
