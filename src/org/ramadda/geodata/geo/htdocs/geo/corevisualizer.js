@@ -2679,11 +2679,20 @@ RamaddaCoreDisplay.prototype = {
 	    editInfo.currentEntry.bottomDepth = bottom;
 	    let what = 'name';
 	    let value = name;
-	    let url = HU.url(RamaddaUtils.getUrl('/entry/changefield'),
-			     [ARG_ENTRYID,editInfo.currentEntry.entryId,
-			      'what1','name','value1',name,
-			      'what2','top_depth','value2',top,
-			      'what3','bottom_depth','value3',bottom]);			     				     
+	    let args = [ARG_ENTRYID,editInfo.currentEntry.entryId,
+			'what1','name','value1',name];
+
+	    if(editInfo.currentEntry.hasDepthField) {
+		args.push('what2','top_depth','value2',top,
+			  'what3','bottom_depth','value3',bottom);			     				     
+	    } else if(editInfo.currentEntry.depthMetadataID) {
+		args.push("metadata1",editInfo.currentEntry.depthMetadataID,
+			  "metadata1.attr1",top,"metadata1.attr2",bottom);
+		
+	    }
+	    let url = HU.url(RamaddaUtils.getUrl('/entry/changefield'),args);
+	    console.dir(args);
+
 	    $.getJSON(url, function(data) {
 		if(data.error) {
 		    alert('An error has occurred: '+data.error);
