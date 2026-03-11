@@ -1445,6 +1445,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
+	if(Utils.getProperty(mapProps,"zoomLevel")!=null) {
+	    forceBounds = false;
+	}
+
 
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString(request);
