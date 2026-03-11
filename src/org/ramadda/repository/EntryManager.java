@@ -2351,6 +2351,36 @@ public class EntryManager extends RepositoryManager {
 		}
 		cnt++;
 	    }
+	    cnt=0;
+	    List<Metadata> existingMetadata = getMetadataManager().getMetadata(request,entry);
+	    while(cnt++<10) {
+		String base = "metadata"+cnt;
+		String metadataID = request.getString(base,null);
+		if(!stringDefined(metadataID)) {
+		    continue;
+		}
+		Metadata theMetadata=null;
+		for(Metadata mtd:existingMetadata) {
+		    if(mtd.getId().equals(metadataID)) {
+			theMetadata = mtd;
+			break;
+		    }
+		}
+		if(theMetadata==null) {
+		    //throw an error?
+		    continue;
+		}
+
+		for(int metadataIdx =1;metadataIdx<10;metadataIdx++) {
+		    String metadataValue = request.getString(base+".attr" + metadataIdx,null);
+		    if(metadataValue!=null) {
+			theMetadata.setAttr(metadataIdx,metadataValue);
+		    }
+		}
+		entry.setMetadataChanged(true);
+	    }
+
+
 	} catch(Exception exc) {
 	    getLogManager().logException("Error applying changeField to:" + entry.getName(),exc);
 	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "An error has occurred:" + exc)));
@@ -2361,7 +2391,7 @@ public class EntryManager extends RepositoryManager {
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
-    private Result applyProperty(Request request,Entry entry, String what, String value) throws Exception {
+    public Result applyProperty(Request request,Entry entry, String what, String value) throws Exception {
 	if(what==null || value==null) return null;
 	if(what.equals("entryorder")) {
 	    entry.setEntryOrder(Integer.parseInt(value));
@@ -5578,7 +5608,6 @@ public class EntryManager extends RepositoryManager {
                     }
                 }
                 updateEntry(request, entry);
-
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
 	    }
