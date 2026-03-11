@@ -122,6 +122,7 @@ function RepositoryMap(mapId, params) {
 	if(debugBounds) console.log("setting initial zoom:",params.initialZoom);
     } else {
 	if(debugBounds) console.log("initial zoom already set:",params.initialZoom);
+	this.hadInitialZoom = true;
     }
 
 
@@ -477,6 +478,10 @@ RepositoryMap.prototype = {
 	return !isNaN(b.bottom) && !isNaN(b.left) && !isNaN(b.right) && !isNaN(b.top);
     },
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
+	if(!force) {
+	    if(this.hadInitialZoom) return;	
+	}
+
 	if(this.hadDefaultPosition) {
 	    this.hadDefaultPosition = false;
 	    if(debugBounds) {
