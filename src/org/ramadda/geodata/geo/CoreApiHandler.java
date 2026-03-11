@@ -120,6 +120,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	List<String> entries = new ArrayList<String>();
 	for(Entry child: children) {
+	    List<String> attrs = new ArrayList<String>();
 	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
 	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
 	    boolean hasDepthField=true;
@@ -132,6 +133,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    top = Double.parseDouble(mtd.getAttr1());
 			    bottom = Double.parseDouble(mtd.getAttr2());
 			    hasDepthField=false;
+			    Utils.add(attrs,"depthMetadataID",JU.quote(mtd.getId()));
 			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
 			} catch(Exception ignore) {
 			    System.err.println("Error parsing depth range:" + ignore);
@@ -166,9 +168,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		System.err.println("no image:" + child);
 		continue;
 	    }
-	    List<String> attrs = new ArrayList<String>();
-
-
 	    Utils.add(attrs,"url",JU.quote(url),"label",JU.quote(child.getName()),
 		      "entryId",JU.quote(child.getId()),
 		      "topDepth",JU.quote(Double.toString(top)),
@@ -479,6 +478,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	}
     }
+
 
 
     public Result processEntriesApi(Request request) throws Exception {
