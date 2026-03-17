@@ -158,16 +158,21 @@ Java stack trace.
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 For security reasons you can configure what IP addresses users are allowed to login from.
-In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
+In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,
+<pre>
 &lt;home&gt;/.ramadda/repository.properties</pre>
-add the property:<pre>
-
+add the property:
++pre
 ##Comma separated list of ip addresses (or prefixes) that are the ones where the user can login
 ##If blank then login is allowed from anywhere
 ramadda.login.allowedips=
 ##e.g.:
 ramadda.login.allowedips=127.0.0,201.43.72.5
-</pre>
+-pre
+If you wanted to disallow logins from anywhere you could just add a dummy IP address, e.g.:
++pre
+ramadda.login.allowedips=nowhere
+-pre
 </div>
 <p><hr align="center" width="10%"></div><p><a name="terms"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.8.  I want my users to agree to certain terms when they log in</h3>
