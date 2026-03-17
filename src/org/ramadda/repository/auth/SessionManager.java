@@ -36,6 +36,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.security.SecureRandom; 
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -45,6 +47,8 @@ import java.util.Properties;
 
 @SuppressWarnings("unchecked")
 public class SessionManager extends RepositoryManager {
+
+    private SecureRandom secureRandom = new SecureRandom();
 
     public static final String SESSION_PROPERTY_MESSAGES = "messages";
 
@@ -752,11 +756,14 @@ public class SessionManager extends RepositoryManager {
         return cookieName;
     }
 
-    public String createSessionId() {
-	String session = getRepository().getGUID() + "_" + Math.random();
-	//	System.err.println("create session id:" + Utils.clip(session,10,"..."));
-	//	System.err.println(Utils.getStack(10));
-	return session;
+    public synchronized String createSessionId() {
+	//Use securerandom to create the session ID
+	byte[] bytes = new byte[16];
+	secureRandom.nextBytes(bytes);
+	String sessionId = Base64.getUrlEncoder()
+                         .withoutPadding()
+                         .encodeToString(bytes);
+	return sessionId;
     }
 
     public UserSession createSession(Request request, User user)
