@@ -4907,7 +4907,7 @@ img.ramadda-user-menu-image:hover {
     padding-left:8px;
     margin-top:1px;
     text-align:left;
-    border-bottom: 1px #aaa solid;
+    border-bottom : var(--basic-border);
 }
 
 
