@@ -236,7 +236,7 @@ public class UserManager extends RepositoryManager {
         }
 
         if (allowedIpsForLogin.size() > 0) {
-            String requestIp = request.getIp();
+            String requestIp = request.getOriginalIp();
             if (requestIp == null) {
                 return false;
             }
@@ -3247,7 +3247,7 @@ public class UserManager extends RepositoryManager {
 	try {
 	    getDatabaseManager().executeInsert(Tables.USER_ACTIVITY.INSERT,
 					       new Object[] { user,
-						   new Date(), what, extra, request.getIp() });
+						   new Date(), what, extra, request.getOriginalIp() });
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}

@@ -669,7 +669,7 @@ public class EntryManager extends RepositoryManager {
                 Entry  tmp     = getEntry(request, entryId, false);
                 if (tmp != null) {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
-                            + request.getIp());
+                            + request.getOriginalIp());
                     logInfo("Request:" + request);
                     throw new IllegalArgumentException(MESSAGE_ACCESS);
                 }
@@ -1387,7 +1387,7 @@ public class EntryManager extends RepositoryManager {
 
 	getDatabaseManager().executeInsert(Tables.ENTRY_ACTIVITY.INSERT,
 					   new Object[] {entry.getId(),dttm,new Date(week),
-					       activity, request.getIp()});
+					       activity, request.getOriginalIp()});
 
     }    
 
@@ -2499,7 +2499,7 @@ public class EntryManager extends RepositoryManager {
         String ips = getRepository().getProperty("ramadda.type."
 						 + typeHandler.getType() + ".ips", null);
         if (ips != null) {
-            String  requestIp = request.getIp();
+            String  requestIp = request.getOriginalIp();
             boolean ok        = false;
             for (String ip : Utils.split(ips, ";", true, true)) {
                 if (requestIp.startsWith(ip)) {
@@ -4374,7 +4374,7 @@ public class EntryManager extends RepositoryManager {
 						      getRepository().getGUID(), entry.getId(),
 						      getMetadataManager().findType(AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD),
 						      false, user,
-						      request.getIp(), ((oldType != null)
+						      request.getOriginalIp(), ((oldType != null)
 									? oldType
 									: ""), fromEmail, ""));
         User parentUser = parentEntry.getUser();
@@ -4436,7 +4436,7 @@ public class EntryManager extends RepositoryManager {
 	    getPageHandler().entrySectionClose(request, group, sb);
         } else {
 	    getPageHandler().entrySectionOpen(request, group, sb,"Upload a File");
-	    String ip = request.getIp();
+	    String ip = request.getOriginalIp();
 	    Integer cnt = uploadCounts.get(ip);
 	    if(cnt==null) uploadCounts.put(ip,cnt=new Integer(0));
 	    if(cnt>8) {
@@ -7169,7 +7169,7 @@ public class EntryManager extends RepositoryManager {
                                  false);
             if (tmp != null) {
                 logInfo("Cannot access entry:" + entryId + "  IP:"
-                        + request.getIp());
+                        + request.getOriginalIp());
 
                 logInfo("Request:" + request);
 

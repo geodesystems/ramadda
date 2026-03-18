@@ -177,7 +177,7 @@ public class JobInfo implements Constants {
         this.jobId        = jobId;
         this.urlArguments = new Hashtable(request.getArgs());
         this.ipAddress = request.getEncodedString(ARG_REQUEST_IP,
-                request.getIp());
+                request.getOriginalIp());
         this.user        = request.getUser().getId();
         this.email       = request.getEncodedString(ARG_JOB_EMAIL, "");
         this.logEmail    = request.getEncodedString(ARG_REQUEST_EMAIL, "");

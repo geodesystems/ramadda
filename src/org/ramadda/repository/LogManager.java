@@ -161,7 +161,7 @@ public class LogManager extends RepositoryManager {
     public void logRequest(Request request, int response) {
         int count = 0;
         requestCount++;
-        String ip        = request.getIp();
+	String ip = request.getOriginalIp();
         String uri       = request.getRequestPath();
 	String id = request.getString(ARG_ENTRYID,null);
 	if(id!=null) uri = uri +"?" + ARG_ENTRYID +"="+id;
@@ -176,6 +176,8 @@ public class LogManager extends RepositoryManager {
             referer = "-";
         }
         String message = LOG_TEMPLATE;
+
+	
 
         message = message.replace(LOG_MACRO_IP, ip);
         message = message.replace(LOG_MACRO_TIME, time);
@@ -352,7 +354,7 @@ public class LogManager extends RepositoryManager {
         MyLogger logger = getEntryActivityLogger();
 
         List     cols   = new ArrayList();
-        cols.add(request.getIp());
+        cols.add(request.getOriginalIp());
         cols.add(request.getUserAgent("none"));
         cols.add(entry.getId());
         cols.add(entry.getName());

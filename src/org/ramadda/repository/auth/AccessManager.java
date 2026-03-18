@@ -488,7 +488,7 @@ public class AccessManager extends RepositoryManager {
             user = getUserManager().getAnonymousUser();
         } else {
             user      = request.getUser();
-            requestIp = request.getIp();
+            requestIp = request.getOriginalIp();
         }
 
         return canDoAction(request, requestIp, user, log, entry, action);
