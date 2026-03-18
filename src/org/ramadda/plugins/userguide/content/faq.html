@@ -27,6 +27,21 @@ select Reindex.
 
 
 
+<faqitem cat="Administration" id="proxies" q="How does RAMADDA handle proxy servers?" >
+The request IP address is used for a variety of purposes - logging, checking against the IP blacklist,
+checking against the allowed login whitelist, etc. If you have a proxy server or load balancer fronting
+your RAMADDA the physical IP address of the request is the IP address of the proxy server.
+However, RAMADDA can handle the HTTP header argument <i>X-Forwarded-For</i> which it treats as
+a comma separated list of source IP address.
+<p>
+However to prevent address spoofing (i.e., the client sending its own X-Forwarded-For argument)
+RAMADDA will check the physical address against a list of trusted proxy servers.
+This list can be set with the property:
+<pre>
+ramadda.trustedproxies=123.456.789.123,127.0.0.1,etc...
+</pre>
+</faqitem>
+
 <faqitem cat="Administration" id="blacklist" q="I want to blacklist certain IP address" >
 If you add an "ipblacklist.txt" file  into your RAMADDA home directory the IP addresses
 in the file will be blacklisted.
