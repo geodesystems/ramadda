@@ -1530,6 +1530,9 @@ public class Request implements Constants, Cloneable {
         if (arg == null) {
             arg = (String) httpHeaderArgs.get(name.toLowerCase());
         }
+        if (arg == null) {
+            arg = (String) httpHeaderArgs.get(name.toUpperCase());
+        }	
 
         return arg;
     }
@@ -1646,6 +1649,40 @@ public class Request implements Constants, Cloneable {
 
         return ip;
     }
+
+    
+    public String getOriginalIp() {
+	String ip = getHeaderArg("X-Forwarded-For");
+	String physicalIp = getIp();
+	if(ip==null) return physicalIp;
+	physicalIp = normalizeIp(physicalIp);
+	if(!getRepository().isTrustedProxy(physicalIp)) {
+	    getRepository().getLogManager().logInfoAndPrint("Proxy request coming from non trusted proxy:" + physicalIp);
+	    return physicalIp;
+	}
+	List<String> ips = Utils.split(ip,",",true,true);
+	if(ips.size()>0) {
+	    return ips.get(0);
+	}
+	return physicalIp;
+    }
+
+   private static String normalizeIp(String ip) {
+        if (ip == null) {
+            return "";
+        }
+
+        ip = ip.trim();
+
+        // Handle IPv4-mapped IPv6 addresses like ::ffff:192.0.2.1
+        if (ip.startsWith("::ffff:")) {
+            return ip.substring(7);
+        }
+
+        return ip;
+    }
+
+
 
     public String getIpRaw() {
         return ip;
