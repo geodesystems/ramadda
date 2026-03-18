@@ -407,6 +407,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private Date startTime = new Date();
 
     private HashSet blacklist;
+    private HashSet trustedProxies;
 
     private List<String> blacklistList;    
 
@@ -1485,19 +1486,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp() +" user:" + request.getUserAgent());
+	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getOriginalIp() +" user:" + request.getUserAgent());
 	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false));
 	    return null;
 	}
 
 	Integer count = null;
 	synchronized(humanIPs) {
-	    count = humanIPs.get(request.getIp());
+	    String ip = request.getOriginalIp();
+	    count = humanIPs.get(ip);
 	    if(count==null) {
 		count = new Integer(0);
 	    }
 	    count = new Integer(count.intValue()+1);
-	    humanIPs.put(request.getIp(),count);
+	    humanIPs.put(ip,count);
 	}
 	StringBuilder sb = new StringBuilder();
 	boolean barebones = true;
@@ -1525,7 +1527,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 	if(isHuman!=null) {
-	    getLogManager().logInfoAndPrint("Human check:", "failed: " + request.getIp());
+	    getLogManager().logInfoAndPrint("Human check:", "failed: " + request.getOriginalIp());
 	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
 	}
 
@@ -1546,7 +1548,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	getPageHandler().sectionClose(request,sb);
 	if(barebones)
 	    sb.append("</body></html>");
-	String logMessage = "checking:" + " IP:" + request.getIp() +" count: " +count;
+	String logMessage = "checking:" + " IP:" + request.getOriginalIp() +" count: " +count;
 	String entryId = request.getString(ARG_ENTRYID,null);
 	if(entryId!=null) logMessage+=" entry:" + entryId;
 	getLogManager().logInfoAndPrint("Human check:",logMessage);
@@ -3246,7 +3248,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private Hashtable<String,Boolean> googleBotIps = new Hashtable<String,Boolean>();
 
     private   boolean isVerifiedGoogleBot(Request request) {
-	String ipAddress=request.getIpRaw();
+	String ipAddress=request.getOriginalIp();
 	if(ipAddress==null) {
 	    getLogManager().logSpecial("is googlebot: no ipAddress user agent:" + request.getUserAgent());
 	    return false;
@@ -3379,7 +3381,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
         if (blacklist != null) {
-            String ip = request.getIpRaw();
+            String ip = request.getOriginalIp();
 	    if(ip!=null) {
 		if (blacklist.contains(ip)) {
 		    return makeBlockedResult(request,true);
@@ -4231,6 +4233,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,   false);
         cdnOk                 = getProperty(PROP_CDNOK, true);
 
+	trustedProxies = null;
+
+	String proxyIps    = getProperty("ramadda.trustedproxies",null);
+	if(proxyIps!=null) {
+	    trustedProxies = Utils.makeHashSet(Utils.split(proxyIps,",",true,true));
+	}
+
 	//Create the default http headers
 	List<String[]>tmpHttpHeaders = new ArrayList<String[]>();
 	int i=1;
@@ -4252,6 +4261,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	httpHeaders = tmpHttpHeaders;
     }
+
+    public boolean isTrustedProxy(String ip) {
+	if(trustedProxies==null) return false;
+	return trustedProxies.contains(ip);
+    }
+
+
 
     public void initAttributes() {
         initRepositoryAttributes();
