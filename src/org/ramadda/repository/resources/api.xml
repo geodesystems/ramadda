@@ -30,8 +30,10 @@
   </group>
 
   <group handler="entrymanager">
-    <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
+    <api request="/entry/show"
+         method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
     <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
+    <api request="/entry/md5"             method="processEntryMd5"/>
     <api request="/entry/test"             method="processEntryTest"/>
     <api request="/entry/data"             method="processEntryData"/>
     <api request="/entry/names"             method="processEntryNames"/>      
