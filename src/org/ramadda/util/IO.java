@@ -19,6 +19,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.security.MessageDigest;
 import java.awt.Image;
 import java.util.Date;
 
@@ -805,28 +806,28 @@ public class IO {
     public static Result getHttpResult(Path path) throws Exception {	
 	URL url = new URL(path.getPath());
         checkFile(url);
-/*        HttpURLConnection connection =
-            (HttpURLConnection) url.openConnection();
-	if(path.method.equals(HTTP_METHOD_POST)) 
-	    connection.setDoOutput(true);
-        //        connection.setDoInput(true);
-        //        connection.setInstanceFollowRedirects(false);
-	connection.setRequestMethod(path.method);
-        //        connection.setRequestProperty("charset", "utf-8");
-        //      System.err.println("header:");
-	if(path.requestArgs!=null) {
-	    for (int i = 0; i < path.requestArgs.length; i += 2) {
-		//            System.err.println(args[i]+":" + args[i+1]);
-		connection.setRequestProperty(path.requestArgs[i], path.requestArgs[i + 1]);
-	    }
-	}
-        if (path.body != null) {
-	    connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Length",
-                                          Integer.toString(path.body.length()));
-            connection.getOutputStream().write(path.body.getBytes("UTF-8"));
-        }
-*/
+	/*        HttpURLConnection connection =
+		  (HttpURLConnection) url.openConnection();
+		  if(path.method.equals(HTTP_METHOD_POST)) 
+		  connection.setDoOutput(true);
+		  //        connection.setDoInput(true);
+		  //        connection.setInstanceFollowRedirects(false);
+		  connection.setRequestMethod(path.method);
+		  //        connection.setRequestProperty("charset", "utf-8");
+		  //      System.err.println("header:");
+		  if(path.requestArgs!=null) {
+		  for (int i = 0; i < path.requestArgs.length; i += 2) {
+		  //            System.err.println(args[i]+":" + args[i+1]);
+		  connection.setRequestProperty(path.requestArgs[i], path.requestArgs[i + 1]);
+		  }
+		  }
+		  if (path.body != null) {
+		  connection.setDoOutput(true);
+		  connection.setRequestProperty("Content-Length",
+		  Integer.toString(path.body.length()));
+		  connection.getOutputStream().write(path.body.getBytes("UTF-8"));
+		  }
+	*/
 	HttpURLConnection[] connection=new HttpURLConnection[]{null};
         try {
 	    InputStream inputStream = doMakeInputStream(path, true, 0,connection,false);
@@ -1895,6 +1896,32 @@ public class IO {
 	}
 	return null;
     }
+
+    public static String getMd5(String filePath)  {
+	try {
+	    MessageDigest md = MessageDigest.getInstance("MD5");
+	    try (InputStream is = new FileInputStream(filePath)) {
+		byte[] buffer = new byte[8192];
+		int bytesRead;
+		while ((bytesRead = is.read(buffer)) != -1) {
+		    md.update(buffer, 0, bytesRead);
+		}
+	    }
+
+	    byte[] digest = md.digest();
+
+	    // Convert to hex string
+	    StringBuilder hexString = new StringBuilder();
+	    for (byte b : digest) {
+		hexString.append(String.format("%02x", b));
+	    }
+
+	    return hexString.toString();
+	} catch(Exception exc) {
+	    return null;
+	}
+    }
+
 
 
 }
