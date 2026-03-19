@@ -3288,20 +3288,15 @@ public class TypeHandler extends RepositoryManager {
 		resourceLink =
 		    resourceLink + HU.space(2)
 		    + formatFileLength(entry.getResource().getFileSize());
-	    }
-	    addEntryProperty(request, sb, resourceLabel, resourceLink);
-	    /**** not now
-	    if (!request.getUser().getAnonymous()) {
-		File corpus = getSearchManager().getCorpusFile(request, entry);
-		if(corpus.exists()) {
-		    String length =  formatFileLength(corpus.length());
-		    addEntryProperty(request, sb, "Text corpus size",length);
+		if(getPageHandler().showMd5Link() && entry.isFile()) {
+		    String md5Url =
+			request.makeUrl(getRepository().URL_ENTRY_MD5, ARG_ENTRYID,
+					entry.getId());
+		    
+		    resourceLink+=HU.space(2) + HU.href(md5Url,"(md5)");
 		}
 	    }
-	    */
-
-
-
+	    addEntryProperty(request, sb, resourceLabel, resourceLink);
 	}
     }
 
