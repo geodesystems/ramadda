@@ -135,6 +135,7 @@ public class PageHandler extends RepositoryManager {
     public static final String TEMPLATE_CONTENT = "content";
     public static final String TEMPLATE_DEFAULT = "default";    
     private boolean showCreateDate;
+    private boolean showMd5Link;
     private boolean showJsonLd;    
     private boolean showTwitterCard;
     private boolean showSearch;
@@ -190,6 +191,7 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
 
+	showMd5Link= getRepository().getProperty("ramadda.showmd5link", false);
         showJsonLd = getRepository().getProperty("ramadda.showjsonld", false);
         showTwitterCard = getRepository().getProperty("ramadda.showtwittercard", true);	
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
@@ -2735,6 +2737,10 @@ public class PageHandler extends RepositoryManager {
 
     public boolean showEntryTableCreateDate() {
         return showCreateDate;
+    }
+
+    public boolean showMd5Link() {
+	return showMd5Link;
     }
 
     private List<MapLayer> getMapLayers() {
