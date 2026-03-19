@@ -1011,19 +1011,22 @@ public class EntryManager extends RepositoryManager {
 	return result;
     }
 
+
     public Result processEntryMd5(Request request) throws Exception {
-	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
-					  getRepository().URL_ENTRY_SHOW,false);
-	if(entry==null) {
-	    request.put(ARG_RESPONSE,RESPONSE_JSON);
-	    throw new RepositoryUtil.MissingEntryException("no entry");
-	}
 	StringBuilder sb = new StringBuilder();
-	String md5 = entry.getResource().createMd5();
-	if(md5!=null) 
-	    sb.append(md5);
-	else
-	    sb.append("none");
+	if(!request.getIsRobot())  {
+	    Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
+					      getRepository().URL_ENTRY_SHOW,false);
+	    if(entry==null) {
+		request.put(ARG_RESPONSE,RESPONSE_JSON);
+		throw new RepositoryUtil.MissingEntryException("no entry");
+	    }
+	    String md5 = entry.getResource().createMd5();
+	    if(md5!=null) 
+		sb.append(md5);
+	    else
+		sb.append("none");
+	}
 	Result result  = new Result("", sb, IO.MIME_TEXT);
 	result.setShouldDecorate(false);
 	return result;

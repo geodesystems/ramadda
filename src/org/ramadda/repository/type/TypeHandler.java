@@ -3293,7 +3293,8 @@ public class TypeHandler extends RepositoryManager {
 			request.makeUrl(getRepository().URL_ENTRY_MD5, ARG_ENTRYID,
 					entry.getId());
 		    
-		    resourceLink+=HU.space(2) + HU.href(md5Url,"(md5)");
+		    resourceLink+=HU.space(2) + HU.href(md5Url,"(md5)",
+							HU.attrs("rel","nofollow"));
 		}
 	    }
 	    addEntryProperty(request, sb, resourceLabel, resourceLink);
