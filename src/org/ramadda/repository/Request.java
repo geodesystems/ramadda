@@ -1651,13 +1651,21 @@ public class Request implements Constants, Cloneable {
     }
 
     
+    private static HashSet seenProxies = new HashSet();
     public String getOriginalIp() {
 	String ip = getHeaderArg("X-Forwarded-For");
 	String physicalIp = getIp();
 	if(ip==null) return physicalIp;
 	physicalIp = normalizeIp(physicalIp);
 	if(!getRepository().isTrustedProxy(physicalIp)) {
-	    getRepository().getLogManager().logInfoAndPrint("Proxy request coming from non trusted proxy:" + physicalIp);
+	    if(!seenProxies.contains(physicalIp)) {
+		seenProxies.add(physicalIp);
+		if(getRepository().hasTrustedProxies()) {
+		    getRepository().getLogManager().logInfoAndPrint("Proxy request: a request came from a non-trusted proxy:" + physicalIp);
+		} else {
+		    getRepository().getLogManager().logInfoAndPrint("Proxy request: an X-Forwarded-For request has been received and no trusted proxies have been set. Physical IP:" + physicalIp);
+		}
+	    }
 	    return physicalIp;
 	}
 	List<String> ips = Utils.split(ip,",",true,true);

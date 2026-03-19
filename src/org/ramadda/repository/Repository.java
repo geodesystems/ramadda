@@ -4239,6 +4239,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	httpHeaders = tmpHttpHeaders;
     }
 
+    public boolean hasTrustedProxies() {
+	if(trustedProxies==null || trustedProxies.size()==0) return false;
+	return true;
+    }
+
+
     public boolean isTrustedProxy(String ip) {
 	if(trustedProxies==null) return false;
 	return trustedProxies.contains(ip);
