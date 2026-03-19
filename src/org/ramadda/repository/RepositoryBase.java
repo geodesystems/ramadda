@@ -92,6 +92,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_SHOW = new RequestUrl(this,
                                                  "/entry/show",
                                                  "View " + LABEL_ENTRY);
+    public final RequestUrl URL_ENTRY_MD5 = new RequestUrl(this,
+                                                 "/entry/md5",
+							   "File Checksum");
 
     /**  */
     public final RequestUrl URL_ENTRY_DATA = new RequestUrl(this,
