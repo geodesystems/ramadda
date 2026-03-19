@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import java.io.File;
 import java.net.URL;
@@ -241,14 +242,18 @@ public class Resource {
     }
 
     public String getMd5() {
-        if (md5 == null) {
-            //For now don't do this because big files take a long time
-            //            File file = getTheFile();
-            //            if(file.exists()) {
-            //                md5 = IOUtil.getMd5(file.toString());
-            //            }
-        }
+	return getMd5(false);
+    }
 
+
+    public String getMd5(boolean force) {
+	if(force && md5==null) {
+	    File file = getTheFile();
+	    if(file.exists()) {
+		//		System.err.println("making md5:" + file.getName());
+		md5= IO.getMd5(file.toString());
+	    }
+	}
         return md5;
     }
 

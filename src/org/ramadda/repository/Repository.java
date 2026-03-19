@@ -434,19 +434,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     String[] args;
 
     public static boolean debug = false;
-
     public static boolean debugSession = false;
-
     private GroupTypeHandler groupTypeHandler;
-
     private TypeHandler fileTypeHandler;    
-
     private List categoryList = null;
-
     private List<String> htdocRoots = new ArrayList<String>();
-
     private int htdocsCacheSize = 0;
-
     private boolean cacheHtdocs = true;
 
     private static final int HTDOCS_CACHE_LIMIT = 10_000_000;
@@ -458,36 +451,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String>();
 
     private List<File> localFilePaths = new ArrayList<File>();
-
     private HttpClient httpClient;
-
     private boolean repositoryInitialized = false;
-
     private boolean isActive = true;
-
     private boolean readOnly = false;
-
     private boolean generateEntryDocs = false;
-
     private PrintWriter entryDocsWriter;
-
     private List<String> dropTables = new ArrayList<String>();
-
     private boolean doCache = true;
-
     private boolean adminOnly = false;
-
     private boolean requireLogin = false;
-
     private boolean allSsl = false;
-
     private boolean sslIgnore = false;
-
     private boolean checkHuman = false;
-
     private String humanCookie;
-
-
     private boolean cacheResources = false;
 
     private String repositoryName = "Repository";
