@@ -257,4 +257,13 @@ public class Resource {
         return md5;
     }
 
+    public String createMd5() {
+	File file = getTheFile();
+	if(file.exists()) {
+	    return  IO.getMd5(file.toString());
+	}
+        return null;
+    }    
+
+
 }

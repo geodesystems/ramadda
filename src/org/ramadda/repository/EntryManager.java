@@ -1019,7 +1019,11 @@ public class EntryManager extends RepositoryManager {
 	    throw new RepositoryUtil.MissingEntryException("no entry");
 	}
 	StringBuilder sb = new StringBuilder();
-	sb.append(entry.getResource().getMd5(true));
+	String md5 = entry.getResource().createMd5();
+	if(md5!=null) 
+	    sb.append(md5);
+	else
+	    sb.append("none");
 	Result result  = new Result("", sb, IO.MIME_TEXT);
 	result.setShouldDecorate(false);
 	return result;
