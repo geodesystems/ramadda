@@ -1011,6 +1011,22 @@ public class EntryManager extends RepositoryManager {
 	return result;
     }
 
+    public Result processEntryMd5(Request request) throws Exception {
+	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
+					  getRepository().URL_ENTRY_SHOW,false);
+	if(entry==null) {
+	    request.put(ARG_RESPONSE,RESPONSE_JSON);
+	    throw new RepositoryUtil.MissingEntryException("no entry");
+	}
+	StringBuilder sb = new StringBuilder();
+	sb.append(entry.getResource().getMd5(true));
+	Result result  = new Result("", sb, IO.MIME_TEXT);
+	result.setShouldDecorate(false);
+	return result;
+    }
+
+
+
     public Result processEntryShow(Request request) throws Exception {
 	/*
 	  System.err.println("show");
@@ -3041,8 +3057,10 @@ public class EntryManager extends RepositoryManager {
 		    entry.putTransientProperty("noname","true");
 
 
+		Resource newResource = new Resource(theResource, resourceType);
+		processMd5(entry,newResource);
                 initEntry(entry, name, description, info.parent, request.getUser(),
-			  new Resource(theResource, resourceType),
+			  newResource,
 			  category, entryOrder,
 			  createDate.getTime(),
 			  createDate.getTime(),
@@ -3054,12 +3072,13 @@ public class EntryManager extends RepositoryManager {
 
                 setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
-            }
+	    }
 	} else {
             boolean fileUpload      = false;
             String  newResourceName = request.getUploadedFile(ARG_FILE);
             String  newResourceType = null;
 
+	    boolean isNewResource = false;
             //Did they upload a new file???
             if (newResourceName != null) {
 		if(!testNew) {
@@ -3067,6 +3086,7 @@ public class EntryManager extends RepositoryManager {
 									new File(newResourceName)).toString();
 		}
                 newResourceType = Resource.TYPE_STOREDFILE;
+		isNewResource = true;
             } else if (serverFile != null) {
                 newResourceName = serverFile.toString();
                 newResourceType = Resource.TYPE_LOCAL_FILE;
@@ -3104,8 +3124,13 @@ public class EntryManager extends RepositoryManager {
 		if(clear && entry.getResource().isUrl()) {
                     entry.setResource(new Resource());
 		} else  if (newResourceName != null) {
-                    entry.setResource(new Resource(newResourceName,
-						   newResourceType));
+		    Resource newResource = new Resource(newResourceName,
+							newResourceType);
+		    if(isNewResource) {
+			newResource.setMd5(null);
+			processMd5(entry, newResource);
+		    }
+                    entry.setResource(newResource);
                 } else {
                     entry.setResource(new Resource());
                 }
@@ -3315,6 +3340,12 @@ public class EntryManager extends RepositoryManager {
 	return history;
     }
 
+    public String processMd5(Entry entry,Resource newResource) {
+	//for now don't force the md5
+	//	return newResource.getMd5(true);
+	return newResource.getMd5();
+    }
+    
     private List<Entry.EntryHistory> getEntryHistory(Entry entry) {
 	if(entry==null) return null;
 	return entryHistories.get(entry.getId());
