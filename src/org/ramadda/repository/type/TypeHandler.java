@@ -3294,7 +3294,9 @@ public class TypeHandler extends RepositoryManager {
 					entry.getId());
 		    
 		    resourceLink+=HU.space(2) + HU.href(md5Url,"(md5)",
-							HU.attrs("rel","nofollow"));
+							HU.attrs("title",
+								 "View the MD5 checksum",
+								 "rel","nofollow"));
 		}
 	    }
 	    addEntryProperty(request, sb, resourceLabel, resourceLink);
