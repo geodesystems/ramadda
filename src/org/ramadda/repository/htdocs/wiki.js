@@ -120,9 +120,9 @@ if(!window.WikiUtil) {
 		 sticky:true,
 		 draggable:true,
 		 modal:true});
-		
+	    
 	    HU.findClass(dialog,CLASS_BUTTON).button();
-		
+	    
 	    HU.findClass(dialog,CLASS_CLICKABLE).click(function(){
 		WikiUtil.insertText(id,$(this).attr('data-attr')+'=' +
 				    HU.quote($(this).attr(ATTR_DATA_VALUE)));
@@ -611,7 +611,7 @@ WikiEditor.prototype = {
 			       "\n #caption=" + HU.quote((image.label??'')) +
 			       "\n #width=75% #screenshot=true bordercolor=\"#ccc\" align=center  }} ");
 		    };
-					    
+		    
 
 		    if(images.length==1) {
 			addImage(images[0]);
@@ -1483,12 +1483,13 @@ WikiEditor.prototype = {
 		ctDialog.remove();
 	    });
 	}
-
-	//a hack for the search display
-	if(tagInfo.type!='search' && tagInfo.type!='simplesearch') {
-	    blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
+	
+	if(tagInfo.tag=='display') {	
+	    //a hack for the search display
+	    if(tagInfo.type!='search' && tagInfo.type!='simplesearch') {
+		blocks.push({title:"Color table",items:ctItems,callback:popupColorTable});
+	    }
 	}
-	//	}
 
 
 	if(!title) {
@@ -1645,8 +1646,8 @@ WikiEditor.prototype = {
 	if(ids.length) {
 	    let id = Utils.getUniqueId('entrieslist');
 	    let toggle = HU.toggleBlock('Entries',
-				  HU.div([ATTR_ID,id,ATTR_CLASS,'wiki-editor-popup-items'],'Loading ...'),
-				  false,{imgopen:'fas fa-bars',imgclosed:'fas fa-bars'});
+					HU.div([ATTR_ID,id,ATTR_CLASS,'wiki-editor-popup-items'],'Loading ...'),
+					false,{imgopen:'fas fa-bars',imgclosed:'fas fa-bars'});
 	    menu+=toggle;
 	    this.handleEntriesPopup(ids,id);
 	}	
@@ -2227,9 +2228,9 @@ WikiEditor.prototype = {
 			      ATTR_ID,this.domId(ID_EXPAND_WIKI_MENU)], 
 			     HU.getIconImage("fas fa-maximize"));
 	let header = HU.input('','',[ATTR_PLACEHOLDER,'Search',
-					       ATTR_ID,this.domId('displaysearch'),
-					       ATTR_WIDTH,10])+
-			       HU.space(2) + expand;
+				     ATTR_ID,this.domId('displaysearch'),
+				     ATTR_WIDTH,10])+
+	    HU.space(2) + expand;
 
 
 	let contents = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],
@@ -2656,7 +2657,7 @@ WikiEditor.prototype = {
 		    'my=""',
 		    'at=""',
 		    'animate=false'
-		    ]
+		]
 	    },
 	    tabs: {
 		title:'Tabs',
@@ -2669,7 +2670,7 @@ WikiEditor.prototype = {
 		    {p:'minHeight="200px"',label:'Min Height'},		    
 		    {p:'noBorder=true',label:'No Border'},		    
 		    {p:'cullEmpty=true',label:'Cull Empty'},
-		    ]
+		]
 	    },
 	    accordion:{
 		attributes:[
@@ -2737,13 +2738,13 @@ WikiEditor.prototype = {
 	    pre:['addCopy=true','addDownload=true'],
 	    row: ['tight=true'],
 	    col:{title:'Column',
-		attributes:['style=""']
-	    },
+		 attributes:['style=""']
+		},
 	    pagesearch: {title:'Page Search',
-		attributes:[{p:'focus=true'},
-			    {p:'selector=""'},
-			    {p:'hideAll=true'}]
-	    }
+			 attributes:[{p:'focus=true'},
+				     {p:'selector=""'},
+				     {p:'hideAll=true'}]
+			}
 	}
 
 	this.wikiAttributes = {
