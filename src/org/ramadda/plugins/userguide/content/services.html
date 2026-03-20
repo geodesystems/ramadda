@@ -1,108 +1,281 @@
 [ht::head {Service Integration Framework}]
 :navtop
 
-+callout-info
-The Service Integration Framework makes it easy to integrate command line  tools that are installed  on 
-the server as services that operate on  data and content within  RAMADDA.
--callout
 
+
+[proc item {header  contents} {
+return "<div class=configitem>\n:heading $header\n$contents</div>"
+}]
+
+
++callout-info
+Command line  tools that are installed  on the server can be integrated into RAMADDA with the 
+Service Integration Framework.
 There are a number of examples at  <a href="https://ramadda.org/alias/services">ramadda.org</a>.
 All RAMADDA repositories (running the latest release) have their list of enabled services at
 <a href="https://ramadda.org/repository/services/list">https://ramadda.org/repository/services/list</a>.
-
-
-<subhead  id="configuration"  intoc="false">Configuration</subhead>
 To enable an installed service you need to specify one or more properties 
 in a .properties file in your RAMADDA home directory that specify the 
 location of the installed software.
-
-Below is the full set of properties that ramadda.org is using for the various plugins that are available.
-The <i>/usr/local/bin</i> and <i>/opt/local/bin</i>  are just where different packages happened
-to be installed.
-
-<pre style="max-height:300px; overflow-y: auto;margin-left:10px;border:1px #ccc solid;" >
-#################################
-#General media
-#################################
-
-#<a href="http://www.imagemagick.org/">ImageMagick</a>
-#Where convert, etc., are installed
-service.imagemagick=/opt/local/bin
-
-#PDF Services:
-#Download the pdfbox.sh from:
-#https://github.com/geodesystems/ramadda/blob/master/bin/pdfbox.sh
-
-#you will also need to download pdfbox-app-3.0.4.jar from https://pdfbox.apache.org/download.html
-#and copy it to the same dir as the script
+-callout
 
 
-#Then set the following property
++center
+:pagesearch selector=.configitem
+-center
+
+
+<a name="pdf"></a>
+[item {PDF Thumbnails} {
+Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
+package to automatically generate a thumbnail image of the the page of a PDF file by
+setting the property:
+
++pre addCopy=true
+service.gs=/path/to/bin/gs
+-pre
+
+If on Amazon AWS you can do:
++pre addCopy=true
+sudo yum install ghostscript
+-pre
+
+To find out where GS is located do:
++pre addCopy=true
+which gs
+-pre
+
+
+}]
+
+[item {PDF Services} {
+RAMADDA can use pdfbox to provide a number of services for PDF files - extract images, split into separate files,
+encrypt, etc. To install download the pdfbox.sh from
+<a href=https://github.com/geodesystems/ramadda/blob/master/bin/pdfbox.sh>
+  https://github.com/geodesystems/ramadda/blob/master/bin/pdfbox.sh</a>.
+You will also need to download pdfbox-app-3.0.4.jar from https://pdfbox.apache.org/download.html
+and copy it to the same dir as the script. Once installed 
+set the following property
++pre addCopy=true
 service.pdfbox=&lt;path&gt;/pdfbox.sh
+-pre
+}]
 
 
 
-#<a href="http://www.omino.com/sw/qt_tools/">Quicktime tools</a>  
-#Where qt_info, qt_export, etc. are 
-service.qttools=/usr/local/bin
+<a name="zoomable"></a>
+[item {Zoomable Images} {
+The Zoomable Image entry type uses an external script, magick-slicer.sh,
+that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
+
++pre addCopy=true
+ramadda.image.slicer=/path/to/magick-slicer.sh
+-pre
+
+If running on Amazon AWS you can install ImageMagick with:
++pre addCopy=true
+sudo yum install -y ImageMagick ImageMagick-devel
+-pre
+
+}]
 
 
-#################################
-# Geo data
-#################################
+<a name="tesseract"></a>
+[item {Tesseract OCR} {
+When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
+This text can then be used for searching. To configure this first install
+<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
+Once installed add the below property to your repository.properties file:
 
-#<a href="http://nco.sourceforge.net/">NetCDF Operators - NCO </a>
-service.nco.ncwa=/opt/local/bin/ncwa
++pre addCopy=true
+ramadda.tesseract=/path/to/tesseract
+-pre
 
-#<a href="https://code.zmaw.de/projects/cdo">Climate data operators - CDO </a>
-service.cdo=/opt/local/bin/cdo
+Some systems have Tesseract available via package manager. Unfortunately Amazon Linux is not one of those. Here
+are the instructions on how to build Tessearct.
+:p
+<b>Build leptonica</b>
++pre addCopy=true
+wget https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.83.1.tar.gz
+tar -xvzf 1.83.1.tar.gz
+cd leptonica-1.83.1
+./autobuild
+./configure
+make
+sudo make install
+-pre
 
-#GDAL
+Then call:
++pre addCopy=true
+export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
+-pre
+
+Download tesseract and build Tesseract
++pre addCopy=true
+wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.3.1.tar.gz
+tar -xvzf 5.3.1.tar.gz
+cd tesseract-5.3.1
+./autogen.sh
+./configure
+make
+sudo make install
+sudo ldconfig
+-pre
+
+Download the Tesseract training data
++pre addCopy=true
+# Navigate to the tessdata directory
+sudo mkdir -p /usr/local/share/tessdata
+cd /usr/local/share/tessdata
+
+# Download the English language training data, for example
+sudo wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata
+-pre
+
+
+
+You can override where Tika looks for Tesseract by copying the
+extra <a href=tika.xml>tika.xml</a> file onto your server. Consult
+the file for what needs to be set.
+
+}]
+
+
+
+<a name="jupyter"></a>
+[item {Jupyter Notebooks} {
+RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
+of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
+by setting the following property value:
++pre addCopy=true
+ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
+-pre
+}]
+
+[item {GDAL} {
+RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this install GDAL and set the following properties:
++pre addCopy=true
 service.gdal=/usr/local/bin
 service.gdal.gdal_translate=/usr/local/bin/gdal_translate
 service.gdal.gdalinfo=/usr/local/bin/gdalinfo
+service.gdal.ogrinfo=/usr/local/bin/ogrinfo
 service.gdal.gdalwarp=/usr/local/bin/gdalwarp
 service.gdal.gdaldem=/usr/local/bin/gdaldem
 service.gdal.ogr2ogr=/usr/local/bin/ogr2ogr
+-pre
+
+To install gdal it might be available on your system's package manager (e.g, yum, brew).
+Alternatively, you can use pixi to easily install gdal.
+See <a href=https://www.youtube.com/watch?v=2GNmhmoIiJs>https://www.youtube.com/watch?v=2GNmhmoIiJs</a>
+:p
+
+Install pixi:
++pre addCopy=true
+curl -fsSL https://pixi.sh/install.sh | bash
+-pre
+
+Make a geo dir and init pixi:
++pre addCopy=true
+mkdir geo
+cd geo
+pixi init
+-pre
+
+Add gdal:
++pre addCopy=true
+pixi add gdal
+-pre
+
+pixi will install gdal into:
++pre addCopy=true
+/home/ec2-user/geo/.pixi/envs/default/bin
+-pre
+You can add it to your PATH in the .bashrc
++pre addCopy=true
+set PATH="$PATH:/home/ec2-user/geo/.pixi/envs/default/bin"
+-pre
+
+Then add the properties to repository.properties
++pre addCopy=true
+service.gdal=/home/ec2-user/geo/.pixi/envs/default/bin
+service.gdal.gdal_translate=/home/ec2-user/geo/.pixi/envs/default/bin/gdal_translate
+service.gdal.gdalinfo=/home/ec2-user/geo/.pixi/envs/default/bin/gdalinfo
+service.gdal.gdalwarp=/home/ec2-user/geo/.pixi/envs/default/bin/gdalwarp
+service.gdal.gdaldem=/home/ec2-user/geo/.pixi/envs/default/bin/gdaldem
+service.gdal.ogr2ogr=/home/ec2-user/geo/.pixi/envs/default/bin/ogr2ogr
+-pre
+
+}]
 
 
-#<a href="http://www.hdfgroup.org/products/hdf5_tools/">HDF5 tools</a> 
+[item {Quicktime} {
+Install <a href="http://www.omino.com/sw/qt_tools/">Quicktime tools</a>  and specify the location of the install
+- where qt_info, qt_export, etc. - with:
++pre addCopy=true
+service.qttools=/usr/local/bin
+-pre
+}]
+
+
+
+[item {Geo data} {
+
+<a href="http://nco.sourceforge.net/">NetCDF Operators - NCO </a>
++pre addCopy=true
+service.nco.ncwa=/opt/local/bin/ncwa
+-pre
+
+<a href="https://code.zmaw.de/projects/cdo">Climate data operators - CDO </a>
++pre addCopy=true
+service.cdo=/opt/local/bin/cdo
+-pre
+<a href="http://www.hdfgroup.org/products/hdf5_tools/">HDF5 tools</a> 
++pre addCopy=true
 service.hdf5.h5ls=/opt/local/bin/h5ls
+-pre
 
-
-#<a href="http://www.ldeo.columbia.edu/res/pi/MB-System/">MB System Bathymetry  data</a> 
+<a href="http://www.ldeo.columbia.edu/res/pi/MB-System/">MB System Bathymetry  data</a> 
++pre addCopy=true
 service.mb.mbinfo=/usr/local/bin/mbinfo
 service.mb.mblist=/usr/local/bin/mblist
+-pre
+
+}]
 
 
-#################################
-#Bioinformatics
-#################################
 
-#Dicom image tools <a href="http://sourceforge.net/projects/dcm4che/">dcm4che</a>
+[item {Bioinformatics} {
+Dicom image tools <a href="http://sourceforge.net/projects/dcm4che/">dcm4che</a>
++pre addCopy=true
 service.dicom.dcm4che=&lt;path&gt;/dcm4che-2.0.28/bin
-
-#OME Bio-Formats                                                                
-#http://www.openmicroscopy.org/site/support/bio-formats5/users/comlinetools/    
+-pre
+<a href=http://www.openmicroscopy.org/site/support/bio-formats5/users/comlinetools/>
+OME Bio-Formats                                                                
+</a>
++pre addCopy=true
 service.bfconvert = &lt;path&gt;/bftools/bfconvert
+-pre
 
-#SRATools - 
+SRATools - 
++pre addCopy=true
 service.sratools=&lt;path&gt;/sratoolkit.2.3.5-2/bin
+-pre
 
-#HMMER Tools - 
+HMMER Tools - 
++pre addCopy=true
 service.hmmertools=&lt;path&gt;/hmmer-3.1b1-macosx-intel/binaries
-
-#Picard - 
+-pre
+Picard - 
++pre addCopy=true
 service.picard=&lt;path&gt;/picard-tools-1.119/picard.sh
+-pre
+}]
 
-</pre>
 
-
-<subhead  id="run"  intoc="false">Service XML</subhead>
++div class=configitem
+:heading Service XML
++draft
 A service is specified as either an outputhandler XML file or a services XML plugin.
-There are numerous examples under the SVN source tree  at 
-<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/">http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/</a>
-
 Below is an example of two output services, one defined inline and the other referencing a service defined in the below services.xml file.
 
 There are enabled by setting the properties in a .properties file:<pre>
@@ -112,12 +285,9 @@ service.test2=/path/to/program</pre>
 Note: To install as a plugin remove the "_ex1" so you have an outputhandlers.xml plugin file.
 [importxml examples/outputhandlers_ex1.xml]
 
-
 Services can be defined in a separate services.xml file.
 [importxml examples/services_ex1.xml]
 
-
-<subhead  id="faq"  intoc="false">Common Argument Constructs</subhead>
 
 <h3>One command line argument made up of multiple  user choices.</h3>
 Use the <i>include</i> attribute to provide a user interface element (e.g., date select) but not directly add the value to the 
@@ -148,6 +318,7 @@ From  org/ramadda/bio/image/services.xml
 
 </pre>
 
-
+-draft
+-div
 
 [ht::foot]

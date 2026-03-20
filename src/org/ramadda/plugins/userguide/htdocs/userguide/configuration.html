@@ -14,7 +14,7 @@
 <td width=50% align=center>
 <div class="ramadda-page-title"><a href="#">Section 9.4: Server Configuration Options</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="pageconfig.html"><table><tr valign=center><td>Page Configuration</td><td><span title="Next: Page Configuration"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="services.html"><table><tr valign=center><td>Service Integration Framework</td><td><span title="Next: Service Integration Framework"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -33,12 +33,6 @@ pre {
 
 :navleft
 
-+center
-:pagesearch selector=.configitem
--center
-
-
-
 
 
 
@@ -46,39 +40,18 @@ pre {
 There are lots of ways  of configuring your RAMADDA server.
 Along with these configuration options there are a number of other
 services that can be configured. See <a href=services.html>here</a> for more information.
--callout
-
-+callout-info
+:br
 Most of these configuration options require setting one or more properties. These
 can be added to any ".properties" (e.g.,  <i>repository.properties</i>)
 file in your RAMADDA home directory.
 -callout
 
 
-<a name="pdf"></a>
-<div class=configitem>
-:heading Generating thumbnails of PDFs
-
-Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
-package to automatically generate a thumbnail image of the the page of a PDF file by
-setting the property:
-
-+pre addCopy=true
-service.gs=/path/to/bin/gs
--pre
-
-If on Amazon AWS you can do:
-+pre addCopy=true
-sudo yum install ghostscript
--pre
-
-To find out where GS is located do:
-+pre addCopy=true
-which gs
--pre
++center
+:pagesearch selector=.configitem
+-center
 
 
-</div>
 
 
 <div class=configitem>
@@ -105,155 +78,6 @@ ramadda.google.tag=&lt;your measurement ID&gt;
 
 
 
-<a name="zoomable"></a>
-<div class=configitem>
-:heading Zoomable Images
-
-The Zoomable Image entry type uses an external script, magick-slicer.sh,
-that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.image.slicer=/path/to/magick-slicer.sh
--pre
-
-If running on Amazon AWS you can install ImageMagick with:
-+pre addCopy=true
-sudo yum install -y ImageMagick ImageMagick-devel
--pre
-
-</div>
-
-
-<a name="tesseract"></a>
-<div class=configitem>
-:heading Tesseract OCR
-
-When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
-This text can then be used for searching. To configure this first install
-<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
-Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.tesseract=/path/to/tesseract
--pre
-</div>
-
-Some systems have Tesseract available via package manager. Unfortunately Amazon Linux is not one of those. Here
-are the instructions on how to build Tessearct.
-:p
-<b>Build leptonica</b>
-+pre addCopy=true
-wget https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.83.1.tar.gz
-tar -xvzf 1.83.1.tar.gz
-cd leptonica-1.83.1
-./autobuild
-./configure
-make
-sudo make install
--pre
-
-Then call:
-+pre addCopy=true
-export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
--pre
-
-Download tesseract and build Tesseract
-+pre addCopy=true
-wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.3.1.tar.gz
-tar -xvzf 5.3.1.tar.gz
-cd tesseract-5.3.1
-./autogen.sh
-./configure
-make
-sudo make install
-sudo ldconfig
--pre
-
-Download the Tesseract training data
-+pre addCopy=true
-# Navigate to the tessdata directory
-sudo mkdir -p /usr/local/share/tessdata
-cd /usr/local/share/tessdata
-
-# Download the English language training data, for example
-sudo wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata
--pre
-
-
-
-You can override where Tika looks for Tesseract by copying the
-extra <a href=tika.xml>tika.xml</a> file onto your server. Consult
-the file for what needs to be set.
-
-
-<a name="jupyter"></a>
-<div class=configitem>
-:heading Rendering Jupyter Notebooks
-
-RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
-of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
-by setting the following property value:
-+pre addCopy=true
-ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
--pre
-</div>
-
-<div class=configitem>
-:heading GDAL services
-
-RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this install GDAL and set the following properties:
-+pre addCopy=true
-service.gdal=/usr/local/bin
-service.gdal.gdal_translate=/usr/local/bin/gdal_translate
-service.gdal.gdalinfo=/usr/local/bin/gdalinfo
-service.gdal.ogrinfo=/usr/local/bin/ogrinfo
-service.gdal.gdalwarp=/usr/local/bin/gdalwarp
-service.gdal.gdaldem=/usr/local/bin/gdaldem
-service.gdal.ogr2ogr=/usr/local/bin/ogr2ogr
--pre
-
-To install gdal it might be available on your system's package manager (e.g, yum, brew).
-Alternatively, you can use pixi to easily install gdal.
-See <a href=https://www.youtube.com/watch?v=2GNmhmoIiJs>https://www.youtube.com/watch?v=2GNmhmoIiJs</a>
-:p
-
-Install pixi:
-+pre addCopy=true
-curl -fsSL https://pixi.sh/install.sh | bash
--pre
-
-Make a geo dir and init pixi:
-+pre addCopy=true
-mkdir geo
-cd geo
-pixi init
--pre
-
-Add gdal:
-+pre addCopy=true
-pixi add gdal
--pre
-
-pixi will install gdal into:
-+pre addCopy=true
-/home/ec2-user/geo/.pixi/envs/default/bin
--pre
-You can add it to your PATH in the .bashrc
-+pre addCopy=true
-set PATH="$PATH:/home/ec2-user/geo/.pixi/envs/default/bin"
--pre
-
-Then add the properties to repository.properties
-+pre addCopy=true
-service.gdal=/home/ec2-user/geo/.pixi/envs/default/bin
-service.gdal.gdal_translate=/home/ec2-user/geo/.pixi/envs/default/bin/gdal_translate
-service.gdal.gdalinfo=/home/ec2-user/geo/.pixi/envs/default/bin/gdalinfo
-service.gdal.gdalwarp=/home/ec2-user/geo/.pixi/envs/default/bin/gdalwarp
-service.gdal.gdaldem=/home/ec2-user/geo/.pixi/envs/default/bin/gdaldem
-service.gdal.ogr2ogr=/home/ec2-user/geo/.pixi/envs/default/bin/ogr2ogr
--pre
-
-</div>
 
 
 
@@ -430,12 +254,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=838"><img  src="images/twittercard1.png?version=838"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=838" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=920"><img  src="images/twittercard1.png?version=920"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=920" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=838"><img  src="images/twittercard2.png?version=838"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=838" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=920"><img  src="images/twittercard2.png?version=920"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=920" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -636,7 +460,7 @@ ramadda.search.providers.show=false
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="loginsecurity.html"><table><td valign=center><td><span title="Previous: Login and Security"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Login and Security</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="pageconfig.html"><table><tr valign=center><td>Page Configuration</td><td><span title="Next: Page Configuration"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="services.html"><table><tr valign=center><td>Service Integration Framework</td><td><span title="Next: Service Integration Framework"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>

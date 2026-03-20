@@ -50,6 +50,7 @@ index.html
 >>awsec2.html
 >>loginsecurity.html
 >>configuration.html
+>>services.html
 >>pageconfig.html
 >>templates.html
 >>entrydisplay.html
@@ -61,7 +62,6 @@ index.html
 >>plugins.html
 >>entrytypes.html
 >>maps.html
->>services.html
 >>admin.html
 >>maintenance.html
 >>adminusers.html
