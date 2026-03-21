@@ -133,6 +133,7 @@ var CLASS_INPUT='input';
 var CLASS_LINK = 'ramadda-link';
 var CLASS_MENUBAR = 'ramadda-menubar';
 var CLASS_MENUITEM = 'ramadda-menu-item';
+var CLASS_MENU_DIVIDER= 'ramadda-menu-divider';
 var CLASS_MENU_BUTTON = 'ramadda-menu-button';
 var CLASS_MENU_ITEM = 'ramadda-menu-item';
 var CLASS_POPUP='ramadda-popup';

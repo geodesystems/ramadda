@@ -26,6 +26,7 @@ var ID_INMAP_LABEL='inmaplabel';
 var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
 var ATTR_IMAGEID='imageid';
+var ID_SEARCHTEXT='searchtext';
 
 var ID_FILLCOLORS = 'fillcolors';
 var ID_STROKECOLORS = 'strokecolors';
@@ -2308,11 +2309,11 @@ MapGlyph.prototype = {
 
 
 	if(this.haveChildren()) {
-	    if(this.getProperty('showTextSearch',false)) {
-		let input =  HU.input('',this.getProperty('searchtext')??'',
+	    if(this.getProperty(PROP_SHOW_TEXT_SEARCH,false)) {
+		let input =  HU.input('',this.getProperty(ID_SEARCHTEXT)??'',
 				      [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
 				       ATTR_PLACEHOLDER,'Search Text',
-				       ATTR_ID,this.domId('searchtext')]);
+				       ATTR_ID,this.domId(ID_SEARCHTEXT)]);
 		body+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 						CSS_MARGIN_LEFT,HU.px(8),
 						CSS_MARGIN_RIGHT,HU.px(8))],input);
@@ -3053,9 +3054,9 @@ MapGlyph.prototype = {
 	    }});
 	
 	if(this.haveChildren()) {
-	    this.jq('searchtext').change(function(){
+	    this.jq(ID_SEARCHTEXT).change(function(){
 		let text=$(this).val();
-		_this.setProperty('searchtext', text);
+		_this.setProperty(ID_SEARCHTEXT, text);
 		_this.applyChildren(child=>{
 		    child.applyFeatureFilters();
 		},true);
@@ -4194,8 +4195,14 @@ MapGlyph.prototype = {
 	}
 	
 	if(!attrs) return null;
-	let name = attrs.name;
-	if(!name) {
+	let name;
+	['name','NAME','label','LABEL'].every(prop=>{
+	    name = attrs[prop];
+	    return !Utils.stringDefined(name);
+	});
+
+
+	if(!Utils.stringDefined(name)) {
 	    Object.keys(attrs).every(key=>{
 		let _key = key.toLowerCase();
 		if(_key.indexOf('name')>0) {
@@ -4466,7 +4473,7 @@ MapGlyph.prototype = {
 	if(features && features.length>0) {
 	    let limit=2000;
 	    let table = '';
-	    table+='Total features: ' + features.length;
+	    table+=HU.boldLabel('Total features') + features.length;
 	    if(limit<features.length) table+=' Showing: ' + limit;
 	    table+=SPACE4;
 	    table+=HU.div([ATTR_ID,this.domId('dialog_features_makemap')],'Make Map');
@@ -4937,19 +4944,26 @@ MapGlyph.prototype = {
 						     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(12))],
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
-	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
-	    filtersHeader = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
-				   HU.leftRightTable(filtersHeader, clearAll));
+	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],
+				       Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
+	    filtersHeader = HU.span([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				   filtersHeader+clearAll);
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
-		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
-		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],toggle.header+toggle.body));
+		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,
+					       filtersHeader + widgets,this.getFiltersVisible(),
+					       {separate:true,
+						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+						callback:null});
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,
+						    HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+						   toggle.header+toggle.body));
 		HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
 	    } else  {
-		filtersHeader+=filtersCount;
-		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],filtersHeader  + 
-						   widgets));
+		filtersHeader+=SPACE1+filtersCount;
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+						   filtersHeader  +   widgets));
 		this.setFiltersVisible(true);		    
 	    }
 
@@ -5812,7 +5826,8 @@ MapGlyph.prototype = {
 
 
 	let redrawFeatures = false;
-	let text = this.getProperty('showTextSearch',null,true)?this.getProperty('searchtext',null,true):null;
+	let text = this.getProperty(PROP_SHOW_TEXT_SEARCH,null,true)?
+	    this.getProperty(ID_SEARCHTEXT,null,true):null;
 	//	debug = true;
 	if(!Utils.stringDefined(text)) { text=null;}
 	else text = text.toLowerCase();
@@ -6593,7 +6608,8 @@ MapGlyph.prototype = {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
-		wiki = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],wiki);
+		wiki = HU.div([ATTR_STYLE,
+			       HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],wiki);
 		jqid(id).html(wiki);
 		initFixed();
 	    });

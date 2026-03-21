@@ -57,6 +57,7 @@ var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+var PROP_SHOW_TEXT_SEARCH='showTextSearch';
 var PROP_LAYERS_ONE_VISIBLE= "onlyOneLayerVisible";
 var PROP_CURRENTLOCATION_ADD = "addCurrentLocationMarker";
 var PROP_CURRENTLOCATION_UPDATETIME = 'currentLocationUpdateTime';
@@ -76,6 +77,7 @@ var ATTR_GLYPH_ID='glyphid';
 var ATTR_WIDGET_ID='widget-id';
 var ATTR_SLIDER_ID='slider-id';
 var ATTR_COLOR='color';
+var ATTR_BASEID='baseid';
 
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
@@ -102,7 +104,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showRotationSlider=true',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
-			  'showTextSearch=true',
+			  PROP_SHOW_TEXT_SEARCH+'=true',
 			  'linelabels.show=true',
 			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
 			  'linelabels.location=first|last|middle|center',
@@ -2003,7 +2005,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	    query +=');\nout body;';
-	    console.log('osm query:',query);
+//	    console.log('osm query:',query);
 	    this.setOSMLabel(HU.image(icon_progress) +SPACE2+'Searching...');
 	    let url = "https://overpass-api.de/api/interpreter";
 	    let callback = data => {
@@ -2145,7 +2147,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					ATTR_TITLE,'Look for catatalogs on stacindex.org']);
 		    let input = HU.input('','',[ATTR_ID,_this.domId('stac_add_url'),
 						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))])+' ' +link;
-		    let html = HU.b('STAC  Catalog URL: ') + input;
+		    let html = HU.boldLabel('STAC  Catalog URL') + input;
 		    html+= HU.buttons([
 			HU.div([ATTR_CLASS,'stac-add-ok display-button'], LABEL_OK),
 			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], LABEL_CANCEL)]);
@@ -2161,7 +2163,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    dialog.remove();
 			}
 		    });
-		    dialog.find('.display-button').button().click(function() {
+		    dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function() {
 			if($(this).hasClass('stac-add-ok')) {
 			    let url = _this.jq('stac_add_url').val();
 			    if(Utils.stringDefined(url))
@@ -3155,14 +3157,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget+=SPACE1;
 			    widget +=  HU.input("",v,[ATTR_STYLE,HU.css(CSS_BORDER_RADIUS,'var(--default-radius)'),
 						      ATTR_TYPE,'color',
-						      'baseid',domId,
+						      ATTR_BASEID,domId,
 						      ATTR_CLASS,'ramadda-imdv-color-hidden',
 						      ATTR_ID,domId+'colorinput',
 						      ATTR_SIZE,8]);
 
 			    /*
 			      widget +=  HU.span([ATTR_TITLE,'Show color chooser',
-			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-color-select'),'baseid',domId,
+			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-color-select'),ATTR_BASEID,domId,
 			      ID,domId+'_select'],HU.getIconImage('fas fa-palette'));
 			    */
 			    
@@ -3328,14 +3330,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return widget+container;
 	},
 	doProperties: function(style, apply,mapGlyph,_anchor) {
+	    this.clearCommands();
 	    let _this = this;
 	    style = style ?? mapGlyph?mapGlyph.getStyle():style;
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
-	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
+	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
 	    buttons += SPACE2;
-	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_OK], LABEL_OK);
+	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_OK], LABEL_OK);
 	    buttons += SPACE2;
 	    if(mapGlyph) {
 		buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_DELETE], LABEL_DELETE);
@@ -3564,7 +3567,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    let tryIt = true;
 		    html = buttons+
-			HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear')+HU.space(1)+
+			HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_DISPLAY_BUTTON)], 'Clear')+HU.space(1)+
 			HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_ID,'pathtry',
 				 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(4))],
@@ -3691,14 +3694,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	    dialog.find('.ramadda-imdv-color-hidden').on('input',function() {
-		let id = $(this).attr('baseid');
+		let id = $(this).attr(ATTR_BASEID);
 		let val = $(this).val();
 		jqid(id).val(val);
 		jqid(id+'_display').css(CSS_BACKGROUND,val);
 		ifApply();
 	    });
 	    dialog.find('.ramadda-imdv-color-select').click(function() {
-		let base = $(this).attr('baseid');
+		let base = $(this).attr(ATTR_BASEID);
 		jqid(base+'colorinput').click();
 	    });
 	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).focus(function() {
@@ -3725,7 +3728,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
-	    dialog.find('.display-button').button().click(function() {
+	    dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function() {
 		let command = $(this).attr(ATTR_COMMAND);
 		switch(command) {
 		case ID_OK: 
@@ -4492,7 +4495,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	showFileMenu: function(button) {
 	    let _this = this;
 	    let html ="";
-	    let div = HU.div([ATTR_CLASS,'ramadda-menu-divider']);
+	    let div = HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER]);
 	    if(this.canEdit()) {
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
 	    }
@@ -4772,7 +4775,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	showViewMenu: function(button) {
 	    let html ="";
-	    let div = HU.div([ATTR_CLASS,'ramadda-menu-divider'])
+	    let div = HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER])
 	    html+=this.makeViewMenu(true);
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -4896,8 +4899,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			null,
 			[ID_EDIT,'Edit Properties','P']].reduce((prev,tuple)=>{
 			    prev = prev || '';
-			    if(!tuple) return prev+ HU.div([ATTR_CLASS,'ramadda-menu-divider']);						
-			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
+			    if(!tuple) return prev+ HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER]);
+			    return prev + this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
@@ -6321,7 +6324,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New'],[ID_MENU_VIEW,'View']].forEach(t=>{
 		menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
 				    ATTR_CLASS,'ramadda-menubar-button'],t[1])});
-	    menuBar = HU.div([ATTR_CLASS,'ramadda-menubar'], menuBar);
+	    menuBar = HU.div([ATTR_CLASS,CLASS_MENUBAR], menuBar);
 
 	    let address =
 		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)], 

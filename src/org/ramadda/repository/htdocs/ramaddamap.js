@@ -2994,9 +2994,8 @@ RepositoryMap.prototype = {
 		if(l!="") l+=",";
 		l+=mapLayer.id+":" + newLayer.name;
                 newLayer.ramaddaId = mapLayer.id;
-
 		if(!newLayer.isBaseLayer) {
-		    this.addLayer(newLayer);
+		    this.addLayer(newLayer,true);
 		} else {
 		    this.baseLayers[mapLayer.id] = newLayer;
                     if (mapLayer.id == this.params.defaultMapLayer) {
