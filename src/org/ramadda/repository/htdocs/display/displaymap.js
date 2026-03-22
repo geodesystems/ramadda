@@ -2941,28 +2941,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
-		if(args.source=="animation") return;
-		if(!this.getCenterOnFilterChange()) return;
-		if(this.getShowPoints() && records && records.length) {
-		    //If we have our own features then just zoom to that layer and return
-		    if(this.myFeatureLayer?.features?.length) {
-			this.map.zoomToLayer(this.myFeatureLayer);
-			return
-		    }
-		    this.map.centerOnMarkers(null, false, true);
-		    return;
-		}
-		if (this.vectorLayer && this.showVectorLayer) {
-		    this.map.zoomToLayer(this.vectorLayer,1.2);
-		} else if(this.lastImageLayer) {
-		    this.map.zoomToLayer(this.lastImageLayer);
-		} else {
-		    //true -> Just markers
-		    if(records && records.length)
-			this.map.centerOnMarkers(null, false, true);
-		}
-	    }});
+	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,
+			   callback: (records)=>{
+			       if(args.source=="animation") return;
+			       if(!this.getCenterOnFilterChange()) return;
+			       if(this.getShowPoints(true) && records && records.length) {
+				   //If we have our own features then just zoom to that layer and return
+				   if(this.myFeatureLayer?.features?.length) {
+				       this.map.zoomToLayer(this.myFeatureLayer);
+				       return
+				   }
+				   this.map.centerOnMarkers(null, false, true);
+				   return;
+			       }
+			       if (this.vectorLayer && this.showVectorLayer) {
+				   this.map.zoomToLayer(this.vectorLayer,1.2);
+			       } else if(this.lastImageLayer) {
+				   this.map.zoomToLayer(this.lastImageLayer);
+			       } else {
+				   //true -> Just markers
+				   if(records && records.length)
+				       this.map.centerOnMarkers(null, false, true);
+			       }
+			   }});
 	},
 	requiresGeoLocation: function() {
 	    if(this.fakeLocations()) return false;
