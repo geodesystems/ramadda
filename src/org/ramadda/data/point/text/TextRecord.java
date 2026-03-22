@@ -476,6 +476,7 @@ public class TextRecord extends DataRecord {
 
     private Date parseDate(RecordField field, String tok) throws Exception {
 	boolean debug = debugDate;
+	//	debug=true;
         tok = tok.trim();
 	if(debug) System.err.println("parseDate:" + tok);
         if (tok.equals("") || tok.equals("null")) {
@@ -549,7 +550,7 @@ public class TextRecord extends DataRecord {
             date = getDateFormat(field).parse(tok);
 	    if(debug) System.err.println("\tgot:" + date);
         } catch (java.text.ParseException ignore) {
-	    if(debug) System.err.println("\terror:" + ignore);
+	    //	    if(debug) System.err.println("\terror:" + ignore);
             //Try to guess
 	    SimpleDateFormat sdf2 = Utils.findDateFormat(tok);
 	    if(sdf2!=null) {
@@ -559,7 +560,7 @@ public class TextRecord extends DataRecord {
 	    if(debug)System.err.println("\textract:" + date);
             if (date == null) {
                 //Check for year
-                if (tok.length() == 4) {
+                if (tok.length() == 4 || tok.length()==3) {
                     date = Utils.parseDate(tok);
 		    if(debug)System.err.println("\tyear:" + date);
                 }
