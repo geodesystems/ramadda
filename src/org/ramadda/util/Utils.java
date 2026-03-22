@@ -2731,7 +2731,8 @@ public class Utils extends IO {
         new DateFormat("yyyy/MM", true),
 	new DateFormat("yyyyMMdd", true),
         new DateFormat("yyyyMM", true),
-	new DateFormat("yyyy", true)
+	new DateFormat("yyyy", true),
+	new DateFormat("yyy", true)
     };
     //j++
 
@@ -2748,7 +2749,9 @@ public class Utils extends IO {
 	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
 	"^\\d{6}$", "yyyyMMdd",
 	"^\\d{4}-\\d{2}$","yyyy-MM",
-	"^\\d{4}$","yyyy"	
+	"^\\d{4}$","yyyy",
+	"^\\d{3}$","yyy"	
+	
     };
 
     public static final SimpleDateFormat findDateFormat(String s) {
