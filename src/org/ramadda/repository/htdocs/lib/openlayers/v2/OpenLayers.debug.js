@@ -73438,25 +73438,41 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
         var x = evt.clientX, y = evt.clientY,
             features = [], targets = [], layers = [],
             layer, renderer, target, feature, i, len, featureId;
+	
+	//jeffmc: do the new way by getting all of the elements at the point then checking the selectable layers
+	let newWay = true;
+	let elements = document.elementsFromPoint(x, y);
+
         // go through all layers looking for targets
         for (i=this.map.layers.length-1; i>=0; --i) {
             layer = this.map.layers[i];
             renderer = layer.renderer;
-            if (layer.div.style.display !== "none") {
+	    if (layer.div.style.display !== "none" && layer.canSelect!== false) {
                 if (renderer instanceof OpenLayers.Renderer.Elements) {
                     if (layer instanceof OpenLayers.Layer.Vector) {
-                        target = document.elementFromPoint(x, y);
-                        while (target && (featureId = renderer.getFeatureIdFromEvent({target: target}))) {
-                            feature = layer.getFeatureById(featureId);
-                            if (feature) {
-                                features.push(feature);
-                                target.style.display = "none";
-                                targets.push(target);
-                                target = document.elementFromPoint(x, y);
-                            } else {
-                                // sketch, all bets off
-                                target = false;
-                            }
+			if(newWay) {
+                            elements.forEach((element,idx)=>{
+                                let featureId = renderer.getFeatureIdFromEvent({target: element});
+				if(!featureId) return;
+                                let feature = layer.getFeatureById(featureId);
+                                if (feature) {
+                                    features.push(feature);
+				}
+                            });
+			} else {
+                            target = document.elementFromPoint(x, y);
+                            while (target && (featureId = renderer.getFeatureIdFromEvent({target: target}))) {
+				feature = layer.getFeatureById(featureId);
+				if (feature) {
+                                    features.push(feature);
+                                    target.style.display = "none";
+                                    targets.push(target);
+                                    target = document.elementFromPoint(x, y);
+				} else {
+                                    // sketch, all bets off
+                                    target = false;
+				}
+			    }				
                         }
                     }
                     layers.push(layer);
