@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Mar 20 06:32:47 MDT 2026";
+var build_date="RAMADDA build date: Sun Mar 22 08:25:49 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47434,6 +47434,7 @@ var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+var PROP_SHOW_TEXT_SEARCH='showTextSearch';
 var PROP_LAYERS_ONE_VISIBLE= "onlyOneLayerVisible";
 var PROP_CURRENTLOCATION_ADD = "addCurrentLocationMarker";
 var PROP_CURRENTLOCATION_UPDATETIME = 'currentLocationUpdateTime';
@@ -47453,6 +47454,7 @@ var ATTR_GLYPH_ID='glyphid';
 var ATTR_WIDGET_ID='widget-id';
 var ATTR_SLIDER_ID='slider-id';
 var ATTR_COLOR='color';
+var ATTR_BASEID='baseid';
 
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
@@ -47479,7 +47481,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showRotationSlider=true',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
-			  'showTextSearch=true',
+			  PROP_SHOW_TEXT_SEARCH+'=true',
 			  'linelabels.show=true',
 			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
 			  'linelabels.location=first|last|middle|center',
@@ -49380,7 +49382,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	    query +=');\nout body;';
-	    console.log('osm query:',query);
+//	    console.log('osm query:',query);
 	    this.setOSMLabel(HU.image(icon_progress) +SPACE2+'Searching...');
 	    let url = "https://overpass-api.de/api/interpreter";
 	    let callback = data => {
@@ -49522,7 +49524,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					ATTR_TITLE,'Look for catatalogs on stacindex.org']);
 		    let input = HU.input('','',[ATTR_ID,_this.domId('stac_add_url'),
 						ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(400))])+' ' +link;
-		    let html = HU.b('STAC  Catalog URL: ') + input;
+		    let html = HU.boldLabel('STAC  Catalog URL') + input;
 		    html+= HU.buttons([
 			HU.div([ATTR_CLASS,'stac-add-ok display-button'], LABEL_OK),
 			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], LABEL_CANCEL)]);
@@ -49538,7 +49540,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    dialog.remove();
 			}
 		    });
-		    dialog.find('.display-button').button().click(function() {
+		    dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function() {
 			if($(this).hasClass('stac-add-ok')) {
 			    let url = _this.jq('stac_add_url').val();
 			    if(Utils.stringDefined(url))
@@ -50532,14 +50534,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget+=SPACE1;
 			    widget +=  HU.input("",v,[ATTR_STYLE,HU.css(CSS_BORDER_RADIUS,'var(--default-radius)'),
 						      ATTR_TYPE,'color',
-						      'baseid',domId,
+						      ATTR_BASEID,domId,
 						      ATTR_CLASS,'ramadda-imdv-color-hidden',
 						      ATTR_ID,domId+'colorinput',
 						      ATTR_SIZE,8]);
 
 			    /*
 			      widget +=  HU.span([ATTR_TITLE,'Show color chooser',
-			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-color-select'),'baseid',domId,
+			      ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-color-select'),ATTR_BASEID,domId,
 			      ID,domId+'_select'],HU.getIconImage('fas fa-palette'));
 			    */
 			    
@@ -50705,14 +50707,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return widget+container;
 	},
 	doProperties: function(style, apply,mapGlyph,_anchor) {
+	    this.clearCommands();
 	    let _this = this;
 	    style = style ?? mapGlyph?mapGlyph.getStyle():style;
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
-	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
+	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
 	    buttons += SPACE2;
-	    buttons +=HU.div([ATTR_CLASS,"display-button",ATTR_COMMAND,ID_OK], LABEL_OK);
+	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_OK], LABEL_OK);
 	    buttons += SPACE2;
 	    if(mapGlyph) {
 		buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_DELETE], LABEL_DELETE);
@@ -50941,7 +50944,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    let tryIt = true;
 		    html = buttons+
-			HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear')+HU.space(1)+
+			HU.div([ATTR_CLASS,HU.classes('ramadda-button-clear',CLASS_DISPLAY_BUTTON)], 'Clear')+HU.space(1)+
 			HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 				 ATTR_ID,'pathtry',
 				 ATTR_STYLE,HU.css(CSS_WIDTH,HU.em(4))],
@@ -51068,14 +51071,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	    dialog.find('.ramadda-imdv-color-hidden').on('input',function() {
-		let id = $(this).attr('baseid');
+		let id = $(this).attr(ATTR_BASEID);
 		let val = $(this).val();
 		jqid(id).val(val);
 		jqid(id+'_display').css(CSS_BACKGROUND,val);
 		ifApply();
 	    });
 	    dialog.find('.ramadda-imdv-color-select').click(function() {
-		let base = $(this).attr('baseid');
+		let base = $(this).attr(ATTR_BASEID);
 		jqid(base+'colorinput').click();
 	    });
 	    dialog.find(HU.dotClass(CLASS_IMDV_COLOR)).focus(function() {
@@ -51102,7 +51105,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
-	    dialog.find('.display-button').button().click(function() {
+	    dialog.find(HU.dotClass(CLASS_DISPLAY_BUTTON)).button().click(function() {
 		let command = $(this).attr(ATTR_COMMAND);
 		switch(command) {
 		case ID_OK: 
@@ -51869,7 +51872,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	showFileMenu: function(button) {
 	    let _this = this;
 	    let html ="";
-	    let div = HU.div([ATTR_CLASS,'ramadda-menu-divider']);
+	    let div = HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER]);
 	    if(this.canEdit()) {
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
 	    }
@@ -52149,7 +52152,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	showViewMenu: function(button) {
 	    let html ="";
-	    let div = HU.div([ATTR_CLASS,'ramadda-menu-divider'])
+	    let div = HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER])
 	    html+=this.makeViewMenu(true);
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -52273,8 +52276,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			null,
 			[ID_EDIT,'Edit Properties','P']].reduce((prev,tuple)=>{
 			    prev = prev || '';
-			    if(!tuple) return prev+ HU.div([ATTR_CLASS,'ramadda-menu-divider']);						
-			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
+			    if(!tuple) return prev+ HU.div([ATTR_CLASS,CLASS_MENU_DIVIDER]);
+			    return prev + this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
@@ -53698,7 +53701,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New'],[ID_MENU_VIEW,'View']].forEach(t=>{
 		menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
 				    ATTR_CLASS,'ramadda-menubar-button'],t[1])});
-	    menuBar = HU.div([ATTR_CLASS,'ramadda-menubar'], menuBar);
+	    menuBar = HU.div([ATTR_CLASS,CLASS_MENUBAR], menuBar);
 
 	    let address =
 		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)], 
@@ -54577,6 +54580,7 @@ var ID_INMAP_LABEL='inmaplabel';
 var ID_MISCPROPERTIES='miscproperties';
 var ID_CANSELECT='canselect';
 var ATTR_IMAGEID='imageid';
+var ID_SEARCHTEXT='searchtext';
 
 var ID_FILLCOLORS = 'fillcolors';
 var ID_STROKECOLORS = 'strokecolors';
@@ -56859,11 +56863,11 @@ MapGlyph.prototype = {
 
 
 	if(this.haveChildren()) {
-	    if(this.getProperty('showTextSearch',false)) {
-		let input =  HU.input('',this.getProperty('searchtext')??'',
+	    if(this.getProperty(PROP_SHOW_TEXT_SEARCH,false)) {
+		let input =  HU.input('',this.getProperty(ID_SEARCHTEXT)??'',
 				      [ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
 				       ATTR_PLACEHOLDER,'Search Text',
-				       ATTR_ID,this.domId('searchtext')]);
+				       ATTR_ID,this.domId(ID_SEARCHTEXT)]);
 		body+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
 						CSS_MARGIN_LEFT,HU.px(8),
 						CSS_MARGIN_RIGHT,HU.px(8))],input);
@@ -57604,9 +57608,9 @@ MapGlyph.prototype = {
 	    }});
 	
 	if(this.haveChildren()) {
-	    this.jq('searchtext').change(function(){
+	    this.jq(ID_SEARCHTEXT).change(function(){
 		let text=$(this).val();
-		_this.setProperty('searchtext', text);
+		_this.setProperty(ID_SEARCHTEXT, text);
 		_this.applyChildren(child=>{
 		    child.applyFeatureFilters();
 		},true);
@@ -58745,8 +58749,14 @@ MapGlyph.prototype = {
 	}
 	
 	if(!attrs) return null;
-	let name = attrs.name;
-	if(!name) {
+	let name;
+	['name','NAME','label','LABEL'].every(prop=>{
+	    name = attrs[prop];
+	    return !Utils.stringDefined(name);
+	});
+
+
+	if(!Utils.stringDefined(name)) {
 	    Object.keys(attrs).every(key=>{
 		let _key = key.toLowerCase();
 		if(_key.indexOf('name')>0) {
@@ -59017,7 +59027,7 @@ MapGlyph.prototype = {
 	if(features && features.length>0) {
 	    let limit=2000;
 	    let table = '';
-	    table+='Total features: ' + features.length;
+	    table+=HU.boldLabel('Total features') + features.length;
 	    if(limit<features.length) table+=' Showing: ' + limit;
 	    table+=SPACE4;
 	    table+=HU.div([ATTR_ID,this.domId('dialog_features_makemap')],'Make Map');
@@ -59488,19 +59498,26 @@ MapGlyph.prototype = {
 						     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(12))],
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
-	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
-	    filtersHeader = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
-				   HU.leftRightTable(filtersHeader, clearAll));
+	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],
+				       Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
+	    filtersHeader = HU.span([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
+				   filtersHeader+clearAll);
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
-		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
-		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],toggle.header+toggle.body));
+		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,
+					       filtersHeader + widgets,this.getFiltersVisible(),
+					       {separate:true,
+						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+						callback:null});
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,
+						    HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+						   toggle.header+toggle.body));
 		HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
 	    } else  {
-		filtersHeader+=filtersCount;
-		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],filtersHeader  + 
-						   widgets));
+		filtersHeader+=SPACE1+filtersCount;
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+						   filtersHeader  +   widgets));
 		this.setFiltersVisible(true);		    
 	    }
 
@@ -60363,7 +60380,8 @@ MapGlyph.prototype = {
 
 
 	let redrawFeatures = false;
-	let text = this.getProperty('showTextSearch',null,true)?this.getProperty('searchtext',null,true):null;
+	let text = this.getProperty(PROP_SHOW_TEXT_SEARCH,null,true)?
+	    this.getProperty(ID_SEARCHTEXT,null,true):null;
 	//	debug = true;
 	if(!Utils.stringDefined(text)) { text=null;}
 	else text = text.toLowerCase();
@@ -61144,7 +61162,8 @@ MapGlyph.prototype = {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
-		wiki = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],wiki);
+		wiki = HU.div([ATTR_STYLE,
+			       HU.css(CSS_MAX_HEIGHT,HU.px(300),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],wiki);
 		jqid(id).html(wiki);
 		initFixed();
 	    });
