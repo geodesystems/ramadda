@@ -1614,10 +1614,12 @@ RepositoryMap.prototype = {
 	layer.initialVisibility  = layer.getVisibility();
 	if (this.map != null) {
             this.getMap().addLayer(layer);
-	    if(nonSelectable)
+	    if(nonSelectable) {
+		layer.canSelect=false;
 		this.nonSelectLayers.push(layer);
-	    else
+	    }  else {
 		this.loadedLayers.push(layer);
+	    }
 	    this.checkLayerOrder();
         } else {
             this.initialLayers.push(layer);
