@@ -101,6 +101,7 @@ public class XlsUtil {
                         .open(is);
 			*/
                         //Only read the first sheet
+			int maxColumns   = -1;
                         for (Sheet sheet : wb) {
 			    if(--_sheetNumber>0) {
 				continue;
@@ -117,17 +118,22 @@ public class XlsUtil {
 				//                                short firstCol = row.getFirstCellNum();
 				//Always start at 0 
                                 short firstCol = 0;
-                                for (short col = firstCol;
-                                        col < row.getLastCellNum(); col++) {
+				boolean debug = false;
+				if(debug)
+				    System.err.println(rowIdx+" last: "+row.getLastCellNum());
+				maxColumns  = Math.max(maxColumns, row.getLastCellNum());
+                                for (short col = firstCol; col < maxColumns; col++) {
                                     Cell cell = row.getCell(col);
-				    //Don't skip null cells
-				    //                                    if (cell == null) {break;}
 				    String value = cell==null?"":getCellValue(cell);
+				    if(debug)
+					System.err.print(" [" + value+"] ");
                                     if (col > firstCol) {
                                         pw.print(",");
                                     }
                                     pw.print(clean(value));
                                 }
+				if(debug)
+				    System.err.println("");
                                 pw.println("");
                             }
 
