@@ -5137,7 +5137,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    args.operator = this.getProperty('hm.operator',this.getProperty('hmOperator','max')),
 	    args.doHeatmap=true;
 	    let fields = this.getFields();
-	    let img = Gfx.gridData(this.getId(),fields, records,args);
+	    let img = MapHelper.gridData(this.getId(),fields, records,args);
 	    this.jq("inner").html(HU.image(img,[ATTR_TITLE,"",
 						ATTR_ID,this.domId("image")]));
 	    this.jq("inner").append(HU.div([ATTR_ID,this.domId("tooltip"),
