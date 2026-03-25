@@ -1275,18 +1275,22 @@ function  SeesvForm(inputId, entry,params) {
 			    line = line.replace("#fields=","");
 			    line = line.replace(/(\] *),/g,"$1\n");
 			    let tmp ="<table><tr><td><b>Field</b></td><td><b>Properties</b></td></tr>";
+
 			    toks = line.split("\n");
 			    let rows=[];
 			    for(let i=0;i<toks.length;i++) {
 				let l = toks[i];
 				l = l.replace(/^(.*?)\[/,"<td><span class=csv_addheader_field field='$1' title='Add to input'>$1</span>&nbsp;</td><td>");
+				l = l.replace(/type\s*=\s*"([^"]+)"/,'type="<span style=\'font-weight:bold;\'>$1</span>"');
+				l = l.replace(/label\s*=\s*"([^"]+)"/,'<b>$1:</b>');				
+				l = l.replace(/=/g,':');
 				l = l.replace(/\]/,'');
 				l+='</td>';
 				rows.push(l);
 			    }
 			    tmp +=Utils.wrap(rows,'<tr>','</tr>');
 			    tmp+=HU.close(TAG_TABLE);
-			    tmp = HU.div([],'Click on field to set properties') + tmp;
+			    tmp = HU.div([],'Click on a field to set properties') + tmp;
 			    result = tmp; 
 			    output.html(result);
 			} else {		 	    
