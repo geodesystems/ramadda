@@ -352,17 +352,33 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.steps = steps.split(",");
     }
 
-
-
     this.colorByLog = this.getProperty("Log", false);
     this.colorByLog10 = this.getProperty("Log10", false);
     this.colorByLog2 = this.getProperty("Log2", false);
     if(this.colorByLog) {
 	this.colorByFunc = Math.log;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log(minValue);
+	    const logMax = Math.log(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.exp(logValue);
+	}
     }   else if(this.colorByLog10) {
 	this.colorByFunc = Math.log10;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log10(minValue);
+	    const logMax = Math.log10(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(10, logValue);
+	}
     }   else if(this.colorByLog2) {
 	this.colorByFunc = Math.log2;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log2(minValue);
+	    const logMax = Math.log2(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(2, logValue);
+	}
     }
 
     this.setRange(this.getProperty("Min", this.minValue),
@@ -488,13 +504,15 @@ ColorByInfo.prototype = {
 		if(this.doingDates) return new Date(v);
 		return v;
 	    }
-	    this.display.displayColorTable(colors, domId, getValue(this.origMinValue),
+	    this.display.displayColorTable(colors, domId,
+					   getValue(this.origMinValue),
 					   getValue(this.origMaxValue), {
 					       label:this.getDoCount()?'Count':null,
 					       field: this.field,
 					       colorByInfo:this,
 					       width:width,
-					       stringValues: cbs
+					       stringValues: cbs,
+					       getValueFunction:this.inverseColorByFunc
 					   });
 	}
     },
@@ -895,13 +913,14 @@ function SizeBy(display,records,fieldProperty) {
     this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
     this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
     this.offset = 0;
-    this.sizeByLog = this.display.getProperty("sizeByLog", false);
+    let sizeByLog = this.display.getProperty("sizeByLog", false);
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
 
     this.maxValue = Math.max(this.minValue,this.maxValue);
-    if (this.sizeByLog) {
-	this.func = Math.log;
+    if (sizeByLog) {
+	this.func = sizeByLog=='2'?Math.log2:
+	    sizeByLog=='10'?Math.log10:Math.log;
         if (this.minValue < 1) {
             this.offset = 1 - this.minValue;
         }
