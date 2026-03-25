@@ -2107,7 +2107,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
 	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
-	{p:'colorByLog',ex:'true',tt:'Use a log scale for the color by'},
+	{p:'colorByLog',ex:'true',tt:'Use a natural log scale for the color by'},
+	{p:'colorByLog10',ex:'true',tt:'Use base 10 log scale for the color by'},
+	{p:'colorByLog2',ex:'true',tt:'Use base 2 log scale for the color by'},		
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -2415,12 +2417,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    dom.append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    dom.find('.display-colortable-slice').css(CSS_CURSOR,CURSOR_POINTER);
+	    let slices = dom.find('.display-colortable-slice');
+	    slices.css(CSS_CURSOR,CURSOR_POINTER);
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
 	    }		
-	    dom.find('.display-colortable-slice').click(function(e) {
+	    slices.click(function(e) {
 		let val = $(this).attr(ATTR_DATA_VALUE);
 		let html = '';
 		let items = [];
