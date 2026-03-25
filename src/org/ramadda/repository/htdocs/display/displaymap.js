@@ -3696,9 +3696,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.addPoints(records,fields,points,pointBounds,debug);
 	    let t3= new Date();
             this.addLabels(records,fields);
-            this.applyVectorMap(true, this.textGetter,args);
 	    let t4= new Date();
-	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3,t4], true);
+            this.applyVectorMap(true, this.textGetter,args);
+	    let t5= new Date();
+//	    Utils.displayTimes("label:",[t3,t4], true);
+	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3,t4,t5], true);
 	    this.lastUpdateTime = new Date();
 	},
 	xcnt:0,
@@ -4862,7 +4864,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHandleCollisions()) {
 		let collisionTooltip = this.getCollisionTooltip('${default}');
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
-		    let html = "#" + records.length+" records"+ HU.thinLine();
+		    let html = records.length+" records"+ HU.thinLine();
 		    records.forEach(record=>{
 			html+=HU.div([ATTR_STYLE,HU.css(CSS_BORDER_BOTTOM,HU.border(1,COLOR_LIGHT_GRAY))],
 				     this.getRecordHtml(record, null,collisionTooltip));
@@ -5632,6 +5634,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
+	    let textGetter = this.getTextGetter();
             let labelRecordTemplate = this.getProperty('labelRecordTemplate');
 	    //	    if(!labelRecordTemplate) return;
 	    let labelKeyField;
@@ -5706,7 +5709,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let text = this.applyRecordTemplate(record,this.getDataValues(record),null, labelTemplate);
 		let style = $.extend({label:text},labelStyle);
 		let labelFeature = MapUtils.createVector(center,null,style);
-                labelFeature.noSelect = true;
+//                labelFeature.noSelect = true;
+		labelFeature.textGetter = textGetter;
+		labelFeature.record  = record;
                 labelFeature.attributes = {};
                 labelFeature.attributes[ATTR_RECORD_INDEX] = (i+1);
                 labelFeature.attributes["recordIndex"] = (i+1)+"";
@@ -5751,7 +5756,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    if(this.labelFeatures)
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
-            this.map.labelLayer.addFeatures(features);
+            this.map.labelLayer.addFeatures(features,
+					    {drawFeature:!this.getDeclutterLabels(),
+					     silent:true});
 	    this.labelFeatures = features;
 	    if(this.getDeclutterLabels()) {
 		this.declutterLabels();
@@ -5762,7 +5769,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	declutterLabels:function() {
 	    if(!this.labelFeatures) return;
+	    let t1= new Date();
 	    MapUtils.declutter(this.getMap(), this.labelFeatures,this.getDeclutterArgs());
+	    let t2= new Date();
+//	    Utils.displayTimes("declutter:",[t1,t2], true);
 	    this.map.labelLayer.redraw();
 	},
 	getDeclutterArgs:function() {
