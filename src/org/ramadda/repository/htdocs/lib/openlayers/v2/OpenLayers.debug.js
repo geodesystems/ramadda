@@ -54832,7 +54832,9 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
         if (!(OpenLayers.Util.isArray(features))) {
             features = [features];
         }
-        
+	//jeffmc: add check for drawFeature
+        var drawFeature = !options || options.drawFeature || (typeof options.drawFeature=='undefined');
+
         var notify = !options || !options.silent;
         if(notify) {
             var event = {features: features};
@@ -54877,7 +54879,10 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
 
             featuresAdded.push(feature);
             this.features.push(feature);
-            this.drawFeature(feature);
+	    if(drawFeature) {
+		this.drawFeature(feature);
+	    }
+
             
             if (notify) {
                 this.events.triggerEvent("featureadded", {
