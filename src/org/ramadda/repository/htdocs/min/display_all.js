@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Mar 22 12:53:21 MDT 2026";
+var build_date="RAMADDA build date: Wed Mar 25 04:36:43 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -316,6 +316,9 @@ $.extend(Utils,{
         nums.forEach((i,idx)=>{
             let extra = "";
             let val = min + step * i;
+	    if(args.getValueFunction) {
+		val = args.getValueFunction(min,max,idx/nums.length);
+	    }
             let attrs = [];
             if(options.showColorTableDots) {
                 let val2 = min + step * (i+1);
@@ -1379,447 +1382,6 @@ Annotations.prototype = {
 }
 
 
-
-let Gfx = {
-    gridData: function(gridId,fields, records,args) {
-	
-
-	if(!args) args = {};
-	if(isNaN(args.cellSize) || args.cellSize == null)
-	    args.cellSize = args.cellSizeX;
-	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
-	    args.cellSizeX= args.cellSize;
-	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
-	    args.cellSizeY= args.cellSizeX;
-	let opts = {
-	    shape:"rect",
-	    color:"blue",
-	    w:800,
-	    h:400,
-	    scale:1,
-	    cellSize:2,
-	    cellSizeX:2,
-	    cellSizeY:2,
-	    operator:"average"
-	}
-	$.extend(opts,args);
-	//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
-	let id = HU.getUniqueId();
-	opts.scale=+opts.scale;
-	let scale = opts.scale;
-	//	scale=1;
-	opts.w*=opts.scale;
-	opts.h*=opts.scale;
-	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
-						   ATTR_ID,id,
-						   ATTR_WIDTH,opts.w,
-						   ATTR_HEIGHT,opts.h]));
-	let canvas = document.getElementById(id);
-	let ctx = canvas.getContext("2d");
-	let cnt = 0;
-	let earthWidth = args.bounds.east-args.bounds.west;
-	let earthHeight= args.bounds.north-args.bounds.south;
-	ctx.font = opts.cellFont || "8pt Arial;"
-	let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-	gradient.addColorStop(0,'white');
-	gradient.addColorStop(1,'red');
-
-	let scaleX = (lat,lon)=>{
-	    return Math.floor(opts.w*(lon-args.bounds.west)/earthWidth);
-	};
-	let scaleY;
-	if(opts.display && opts.display.map) {
-	    //Get the global bounds so we can map down to the image
-	    let n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
-	    let s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
-	    let n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
-	    let s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
-	    scaleY = (lat,lon)=> {
-		let pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
-		let dy = n2.lat-pt.lat;
-		let perc = dy/(n2.lat-s2.lat)
-		return Math.floor(perc*opts.h);
-	    };
-	} else {
-	    scaleY= (lat,lon)=> {
-		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
-	    }
-	}
-	ctx.lineStyle = COLOR_BLACK;
-	if(opts.doHeatmap) {
-	    let cols = Math.floor(opts.w/opts.cellSizeX);
-	    let rows = Math.floor(opts.h/opts.cellSizeY);
-	    let points = [];
-	    records.forEach((record,idx)=>{
-		let lat = record.getLatitude();
-		let lon = record.getLongitude();
-		let x = scaleX(lat,lon);
-		let y = scaleY(lat,lon);
-		record[gridId+"_coordinates"] = {x:x,y:y};
-		let colorValue = 0;
-		if(opts.colorBy && opts.colorBy.index>=0) {
-		    colorValue = record.getValue(opts.colorBy.index);
-		}
-		let lengthValue = 0;
-		if(opts.lengthBy && opts.lengthBy.index>=0) {
-		    lengthValue = record.getValue(opts.lengthBy.index);
-		}		
-		x =Math.floor(x/opts.cellSizeX);
-		y =Math.floor(y/opts.cellSizeY);
-		if(x<0) x=0;
-		if(y<0) y=0;
-		if(x>=cols) x=cols-1;
-		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,colorValue:colorValue,r:record});
-		//		console.log(x+" " + y +" " + colorValue);
-	    });
-
-
-	    let grid = Gfx.gridPoints(rows,cols,points,args);
-	    opts.cellSizeX = +opts.cellSizeX;
-	    opts.cellSizeY = +opts.cellSizeY;
-	    this.applyFilter(opts,grid);
-	    //get the new min/max from the filtered grid
-	    let mm = this.getMinMaxGrid(grid,v=>v.v);
-	    if(opts.colorBy) {
-		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
-		    opts.colorBy.setRange(mm.min,mm.max);
-		}  
-		opts.colorBy.index=0;
-	    }
-
-	    let countThreshold = opts.display.getProperty("hmCountThreshold",opts.operator=="count"?1:0);
-	    let glyph = new Glyph(opts.display,
-				  scale,
-				  fields,
-				  records,
-				  {type:opts.shape,
-				   canvasWidth:canvas.width,
-				   canvasHeight: canvas.height,
-				   colorByInfo:opts.colorBy,
-				   width: opts.cellSizeX,
-				   height: opts.cellSizeY,
-				   stroke:false,
-				   pos:"c",
-				   dx:opts.cellSizeX/2,
-				   dy:opts.cellSizeY/2,				   
-				  },
-				  "");
-	    for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
-		let row = grid[rowIdx];
-		for(let colIdx=0;colIdx<cols;colIdx++)  {
-		    let cell = row[colIdx];
-		    let v = cell.v;
-		    if(isNaN(v)) continue;
-		    let x = colIdx*opts.cellSizeX;
-		    let y = rowIdx*opts.cellSizeY;
-		    if(cell.count>=countThreshold)
-			glyph.draw(opts, canvas, ctx, x,y,{
-			    colorValue:cell.v,
-			    col:colIdx,row:rowIdx,cell:cell, grid:grid});
-		}
-	    }
-	} else {
-	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
-	    let glyphs=[];
-	    let cnt = 1;
-	    while(cnt<11) {
-		let attr = opts.display.getProperty("glyph" + (cnt++));
-		if(!attr)
-		    continue;
-		glyphs.push(new Glyph(opts.display,scale, fields,records,{
-		    canvasWidth:canvas.width,
-		    canvasHeight: canvas.height
-		},attr));
-	    }
-	    glyphs.forEach(glyph=>{
-		records.forEach((record,idx)=>{
-		    let lat = record.getLatitude();
-		    let lon = record.getLongitude();
-		    let x = scaleX(lat,lon);
-		    let y = scaleY(lat,lon);
-		    record[gridId+"_coordinates"] = {x:x,y:y};
-		    let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
-		    let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
-		    glyph.draw(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record},idx<10);
-		});
-	    });
-	}
-
-	let alpha = opts.display.getProperty("colorTableAlpha",-1);
-	//add in the color table alpha
-	if(alpha>0) {
-	    let image = ctx.getImageData(0, 0, opts.w, opts.h);
-	    let imageData = image.data,
-		length = imageData.length;
-	    for(let i=3; i < length; i+=4){  
-		if(imageData[i]) {
-		    imageData[i] = alpha*255;
-		}
-	    }
-	    image.data = imageData;
-	    ctx.putImageData(image, 0, 0);
-	}
-
-	let img =  canvas.toDataURL("image/png");
-	canvas.parentNode.removeChild(canvas);
-	return img;
-    },
-    gridPoints: function(rows,cols,points,args) {
-	let debug = displayDebug.gridPoints;
-	let values = [];
-	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    let row = [];
-	    values.push(row);
-	    for(let colIdx=0;colIdx<cols;colIdx++)  {
-		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
-	    }
-	}
-
-	points.forEach((p,idx)=>{
-	    let cell = values[p.y][p.x];
-	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
-	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
-	    cell.count++;
-	    cell.total += p.colorValue;
-	});
-
-
-	let minValue = NaN;
-	let maxValue = NaN;
-	let maxCount=0;
-	let minCount=0;
-
-	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    for(let colIdx=0;colIdx<cols;colIdx++)  {
-		let cell = values[rowIdx][colIdx];
-		if(cell.count==0) continue;
-		let v;
-		if(args.operator=="count")
-		    v = cell.count;
-		else if(args.operator=="min")
-		    v =  cell.min;
-		else if(args.operator=="max")
-		    v =  cell.max;
-		else if(args.operator=="total")
-		    v =  cell.total;
-		else
-		    v =  cell.total/cell.count;
-		cell.v = v;
-		if(!isNaN(v)) {
-		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
-		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
-		}
-		maxCount = Math.max(maxCount, cell.count);
-		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
-	    }
-	}	
-	if(debug)
-	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
-	values.minValue = minValue;
-	values.maxValue = maxValue;
-	values.minCount = minCount;
-	values.maxCount = maxCount;
-	return values;
-    },
-
-
-    
-    //This gets the value at row/col if its defined. else 0
-    //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
-    getGridValue:function(src,row,col,mult,total,goodones) {
-	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
-	    if(isNaN(src[row][col])) return 0;
-	    total[0]+=mult;
-	    goodones[0]++;
-	    return src[row][col]*mult;
-	}
-	return 0;
-    },
-    applyKernel: function(src, kernel) {
-	let result = this.cloneGrid(src,null,0);
-	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = result[rowIdx];
-	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
-		//		if(isNaN(row[colIdx])) continue;
-		if(isNaN(row[colIdx])) row[colIdx] = 0;
-		let total =[0];
-		let goodones =[0];
-		let sum = 0;
-		kernel.every(t=>{
-		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],total,goodones); 
-		    return true;
-		});
-		if(goodones[0]>0)
-		    row[colIdx] = sum/total[0];
-		else
-		    row[colIdx] = NaN;
-	    }
-	}
-	return result;
-    },
-    blurGrid: function(type, src) {
-	let kernels = {
-	    average5: [
-		[0,1,0],
-		[1,1,1],
-		[0,1,0],
-	    ],
-	    average9: [
-		[1,1,1],
-		[1,1,1],
-		[1,1,1],
-	    ],
-	    average25:[
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-	    ],
-	    average49:[
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-	    ],
-	    gauss9:[
-		[0.077847,0.123317,0.077847],
-		[0.123317,0.195346,0.123317],
-		[0.077847,0.123317,0.077847]
-	    ],
-	    gauss25:[
-		[0.003765,0.015019,0.023792,0.015019,0.003765],
-		[0.015019,0.059912,0.094907,0.059912,0.015019],
-		[0.023792,0.094907,0.150342,0.094907,0.023792],
-		[0.015019,0.059912,0.094907,0.059912,0.015019],
-		[0.003765,0.015019,0.023792,0.015019,0.003765],
-	    ],
-	    gauss49: [
-		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067],
-		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
-		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
-		[0.00038771 ,0.01330373 ,0.11098164 ,0.22508352 ,0.11098164 ,0.01330373 ,0.00038771],
-		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
-		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
-		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
-	    ]
-	}
-	let a = kernels[type];
-	if(!a) {
-	    if(type.startsWith("average"))
-		a=kernels.average5;
-	    else if(type.startsWith("gauss"))
-		a=kernels.gauss9;
-	}
-	if(!a) return src;
-	return this.applyKernel(src, this.makeKernel(a));
-    },
-    makeKernel: function(kernel) {
-	let a = [];
-	let mid = (kernel.length-1)/2;
-	for(let rowIdx=0;rowIdx<kernel.length;rowIdx++) {
-	    let row = kernel[rowIdx];
-	    let rowOffset = rowIdx-mid;
-	    for(let colIdx=0;colIdx<row.length;colIdx++) {
-		let colOffset = colIdx-mid;
-		a.push([rowOffset,colOffset,kernel[rowIdx][colIdx]]);
-	    }
-	}
-	return a;
-    },
-    printGrid: function(grid) {
-	console.log("grid:");
-	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
-	    let row = grid[rowIdx];
-	    let h = "";
-	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
-		if(Utils.isDefined(row[colIdx].v))
-		    h+=row[colIdx].v+",";
-		else
-		    h+=row[colIdx]+",";
-	    }
-	    console.log(h);
-	}
-    },
-    applyFilter(opts, grid) {
-	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
-	    return;
-	}
-
-	let copy = this.cloneGrid(grid,v=>v.v);
-	let filtered = copy;
-	let filterPasses = opts.display.getProperty("hmFilterPasses",1);
-	for(let i=0;i<filterPasses;i++) {
-	    filtered = this.blurGrid(opts.filter,filtered);
-	}
-	let filterThreshold = opts.display.getProperty("hmFilterThreshold",-999);
-	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
-	    let row = grid[rowIdx];
-	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
-		let cell = row[colIdx];
-		let filterValue = filtered[rowIdx][colIdx];
-		if(filterThreshold!=-999) {
-		    if(filterValue<filterThreshold)
-			filterValue = cell.v;
-		}
-		cell.v = filterValue;
-	    }
-	}
-    },
-    getMinMaxGrid: function(src,valueGetter) {
-	let min = NaN;
-	let max = NaN;
-	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = src[rowIdx];
-	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
-		let v = row[colIdx]
-		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
-		if(isNaN(v)) continue;
-		min = isNaN(min)?v:Math.min(min,v);
-		max = isNaN(max)?v:Math.max(max,v);
-	    }
-	}
-	return {min:min,max:max};
-    },
-
-
-
-    cloneGrid: function(src,valueGetter,dflt) {
-	let dest = [];
-	let hasDflt = Utils.isDefined(dflt);
-	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = src[rowIdx];
-	    let nrow=[];
-	    dest.push(nrow);
-	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
-		let v = row[colIdx]
-		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
-		if(hasDflt)
-		    nrow.push(dflt);
-		else
-		    nrow.push(v);
-	    }
-	}
-	return dest;
-    },
-    convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
-	let mapLonLeft = bounds.west;
-	let mapLonRight = bounds.east;
-	let mapLonDelta = mapLonRight - mapLonLeft;
-	let mapLatBottom = bounds.south;
-	let mapLatBottomDegree = mapLatBottom * Math.PI / 180;
-	let x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
-	lat = lat * Math.PI / 180;
-	let worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
-	let mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
-	let y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
-	return [x, y];
-    },
-}
 
 
 /**
@@ -3105,17 +2667,33 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.steps = steps.split(",");
     }
 
-
-
     this.colorByLog = this.getProperty("Log", false);
     this.colorByLog10 = this.getProperty("Log10", false);
     this.colorByLog2 = this.getProperty("Log2", false);
     if(this.colorByLog) {
 	this.colorByFunc = Math.log;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log(minValue);
+	    const logMax = Math.log(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.exp(logValue);
+	}
     }   else if(this.colorByLog10) {
 	this.colorByFunc = Math.log10;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log10(minValue);
+	    const logMax = Math.log10(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(10, logValue);
+	}
     }   else if(this.colorByLog2) {
 	this.colorByFunc = Math.log2;
+	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log2(minValue);
+	    const logMax = Math.log2(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(2, logValue);
+	}
     }
 
     this.setRange(this.getProperty("Min", this.minValue),
@@ -3241,13 +2819,15 @@ ColorByInfo.prototype = {
 		if(this.doingDates) return new Date(v);
 		return v;
 	    }
-	    this.display.displayColorTable(colors, domId, getValue(this.origMinValue),
+	    this.display.displayColorTable(colors, domId,
+					   getValue(this.origMinValue),
 					   getValue(this.origMaxValue), {
 					       label:this.getDoCount()?'Count':null,
 					       field: this.field,
 					       colorByInfo:this,
 					       width:width,
-					       stringValues: cbs
+					       stringValues: cbs,
+					       getValueFunction:this.inverseColorByFunc
 					   });
 	}
     },
@@ -3648,13 +3228,14 @@ function SizeBy(display,records,fieldProperty) {
     this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
     this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
     this.offset = 0;
-    this.sizeByLog = this.display.getProperty("sizeByLog", false);
+    let sizeByLog = this.display.getProperty("sizeByLog", false);
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
 
     this.maxValue = Math.max(this.minValue,this.maxValue);
-    if (this.sizeByLog) {
-	this.func = Math.log;
+    if (sizeByLog) {
+	this.func = sizeByLog=='2'?Math.log2:
+	    sizeByLog=='10'?Math.log10:Math.log;
         if (this.minValue < 1) {
             this.offset = 1 - this.minValue;
         }
@@ -6410,7 +5991,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
 	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
-	{p:'colorByLog',ex:'true',tt:'Use a log scale for the color by'},
+	{p:'colorByLog',ex:'true',tt:'Use a natural log scale for the color by'},
+	{p:'colorByLog10',ex:'true',tt:'Use base 10 log scale for the color by'},
+	{p:'colorByLog2',ex:'true',tt:'Use base 2 log scale for the color by'},		
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -6718,12 +6301,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    dom.append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    dom.find('.display-colortable-slice').css(CSS_CURSOR,CURSOR_POINTER);
+	    let slices = dom.find('.display-colortable-slice');
+	    slices.css(CSS_CURSOR,CURSOR_POINTER);
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
 	    }		
-	    dom.find('.display-colortable-slice').click(function(e) {
+	    slices.click(function(e) {
 		let val = $(this).attr(ATTR_DATA_VALUE);
 		let html = '';
 		let items = [];
@@ -40692,6 +40276,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		layer = MapUtils.createLayerVector(name,
 						   {projection: this.getMap().getMap().displayProjection},
 						   style);
+		if(style)
+		    layer.styleMap = this.getMap().getVectorLayerStyleMap(layer,style);
 		this.getMap().addLayer(layer);
 		layer.ramaddaLayerIndex = 100;
 		if(Utils.isDefined(this.layerVisible) && !this.layerVisible)
@@ -41763,6 +41349,54 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.getDisplayManager().notifyEvent(DisplayEvent.dataSelection, this, {data:newData});
 	    },100);
 	},
+	contourData: function(records,field,args) {
+	    let contourData = records.map((record,idx)=>{
+		let value  = idx;
+		if(field) {
+		    value = record.getValue(field.getIndex());
+		}
+		return {
+			lat:record.getLatitude(),
+			lon:record.getLongitude(),
+			value:value}});
+	    const density = d3.contourDensity()
+		  .x(d=>d.lon + 180)
+		  .y(d=>90-d.lat)
+		  .weight(d => d.value)   
+		  .size([360, 180])
+	    	  .bandwidth(2);
+//		  .thresholds(8);	    
+
+		  
+
+	    let contours = density(contourData); 
+	    //add the properties to the features
+	    console.dir(records.length,contours.length);
+	    contours = contours.map(c => ({
+		type: "Feature",
+		properties: {
+		    value: c.value,
+		    label: `${c.value.toFixed(1)} m`,
+		},
+		geometry: {
+		    type: "MultiPolygon",
+		    coordinates: c.coordinates.map(poly =>
+			poly.map(ring =>
+			    ring.map(([x, y]) => [x - 180, 90 - y])
+			)
+		    )
+		}
+	    }));
+
+	    let geojson = '{"type": "FeatureCollection",\n"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\n"features": ';
+	    geojson+=JSON.stringify(contours);
+	    geojson+='\n}';
+//	    Utils.makeDownloadFile('test.geojson',geojson);
+	    let style = {fillColor:'transparent'};
+	    this.contourLayer = this.createGeoJsonLayer('contours',geojson,this.contourLayer,style);
+	    return geojson;
+	},
+
 	applyToFeatureLayers:function(func) {
 	    if(this.myFeatureLayer) func(this.myFeatureLayer);
 	    if(this.myFeatureLayerNoSelect) func(this.myFeatureLayerNoSelect);
@@ -44193,7 +43827,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug && idx<5)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 
-		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
+		let img = MapHelper.gridData(this.getId(),fields, recordsAtTime,args);
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
@@ -44732,11 +44366,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    this.notifyExternalDisplay();	    
-
-
-
 	},
-	
 
 
         addPoints: function(records, fields, points,bounds,debug) {
@@ -44757,6 +44387,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return;
 	    }	    
 
+
+	    if(this.getProperty('doContours')) {
+		let contourField = this.getFieldById(null,this.getProperty('contourField'));
+		this.contourData(records,contourField,{});
+	    }
 
 	    if(this.getDoGridPoints()|| this.getDoHeatmap(false)) {
 		let showMarkers = this.showMarkers;
@@ -46217,6 +45852,450 @@ function MapEntryInfo(entry) {
 
 
 
+var MapHelper = {
+
+
+    gridData: function(gridId,fields, records,args) {
+
+
+	if(!args) args = {};
+	if(isNaN(args.cellSize) || args.cellSize == null)
+	    args.cellSize = args.cellSizeX;
+	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
+	    args.cellSizeX= args.cellSize;
+	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
+	    args.cellSizeY= args.cellSizeX;
+	let opts = {
+	    shape:"rect",
+	    color:"blue",
+	    w:800,
+	    h:400,
+	    scale:1,
+	    cellSize:2,
+	    cellSizeX:2,
+	    cellSizeY:2,
+	    operator:"average"
+	}
+	$.extend(opts,args);
+	//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
+	let id = HU.getUniqueId();
+	opts.scale=+opts.scale;
+	let scale = opts.scale;
+	//	scale=1;
+	opts.w*=opts.scale;
+	opts.h*=opts.scale;
+	$(document.body).append(HU.tag(TAG_CANVAS,[ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE),
+						   ATTR_ID,id,
+						   ATTR_WIDTH,opts.w,
+						   ATTR_HEIGHT,opts.h]));
+	let canvas = document.getElementById(id);
+	let ctx = canvas.getContext("2d");
+	let cnt = 0;
+	let earthWidth = args.bounds.east-args.bounds.west;
+	let earthHeight= args.bounds.north-args.bounds.south;
+	ctx.font = opts.cellFont || "8pt Arial;"
+	let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+	gradient.addColorStop(0,'white');
+	gradient.addColorStop(1,'red');
+
+	let scaleX = (lat,lon)=>{
+	    return Math.floor(opts.w*(lon-args.bounds.west)/earthWidth);
+	};
+	let scaleY;
+	if(opts.display && opts.display.map) {
+	    //Get the global bounds so we can map down to the image
+	    let n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
+	    let s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
+	    let n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
+	    let s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
+	    scaleY = (lat,lon)=> {
+		let pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
+		let dy = n2.lat-pt.lat;
+		let perc = dy/(n2.lat-s2.lat)
+		return Math.floor(perc*opts.h);
+	    };
+	} else {
+	    scaleY= (lat,lon)=> {
+		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
+	    }
+	}
+	ctx.lineStyle = COLOR_BLACK;
+	if(opts.doHeatmap) {
+	    let cols = Math.floor(opts.w/opts.cellSizeX);
+	    let rows = Math.floor(opts.h/opts.cellSizeY);
+	    let points = [];
+	    records.forEach((record,idx)=>{
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();
+		let x = scaleX(lat,lon);
+		let y = scaleY(lat,lon);
+		record[gridId+"_coordinates"] = {x:x,y:y};
+		let colorValue = 0;
+		if(opts.colorBy && opts.colorBy.index>=0) {
+		    colorValue = record.getValue(opts.colorBy.index);
+		}
+		let lengthValue = 0;
+		if(opts.lengthBy && opts.lengthBy.index>=0) {
+		    lengthValue = record.getValue(opts.lengthBy.index);
+		}		
+		x =Math.floor(x/opts.cellSizeX);
+		y =Math.floor(y/opts.cellSizeY);
+		if(x<0) x=0;
+		if(y<0) y=0;
+		if(x>=cols) x=cols-1;
+		if(y>=rows) y=rows-1;
+		points.push({x:x,y:y,colorValue:colorValue,r:record});
+		//		console.log(x+" " + y +" " + colorValue);
+	    });
+
+
+	    let grid = MapHelper.gridPoints(rows,cols,points,args);
+	    opts.cellSizeX = +opts.cellSizeX;
+	    opts.cellSizeY = +opts.cellSizeY;
+	    this.applyFilter(opts,grid);
+	    //get the new min/max from the filtered grid
+	    let mm = this.getMinMaxGrid(grid,v=>v.v);
+	    if(opts.colorBy) {
+		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
+		    opts.colorBy.setRange(mm.min,mm.max);
+		}  
+		opts.colorBy.index=0;
+	    }
+
+	    let countThreshold = opts.display.getProperty("hmCountThreshold",opts.operator=="count"?1:0);
+	    let glyph = new Glyph(opts.display,
+				  scale,
+				  fields,
+				  records,
+				  {type:opts.shape,
+				   canvasWidth:canvas.width,
+				   canvasHeight: canvas.height,
+				   colorByInfo:opts.colorBy,
+				   width: opts.cellSizeX,
+				   height: opts.cellSizeY,
+				   stroke:false,
+				   pos:"c",
+				   dx:opts.cellSizeX/2,
+				   dy:opts.cellSizeY/2,				   
+				  },
+				  "");
+	    for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = grid[rowIdx];
+		for(let colIdx=0;colIdx<cols;colIdx++)  {
+		    let cell = row[colIdx];
+		    let v = cell.v;
+		    if(isNaN(v)) continue;
+		    let x = colIdx*opts.cellSizeX;
+		    let y = rowIdx*opts.cellSizeY;
+		    if(cell.count>=countThreshold)
+			glyph.draw(opts, canvas, ctx, x,y,{
+			    colorValue:cell.v,
+			    col:colIdx,row:rowIdx,cell:cell, grid:grid});
+		}
+	    }
+	} else {
+	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
+	    let glyphs=[];
+	    let cnt = 1;
+	    while(cnt<11) {
+		let attr = opts.display.getProperty("glyph" + (cnt++));
+		if(!attr)
+		    continue;
+		glyphs.push(new Glyph(opts.display,scale, fields,records,{
+		    canvasWidth:canvas.width,
+		    canvasHeight: canvas.height
+		},attr));
+	    }
+	    glyphs.forEach(glyph=>{
+		records.forEach((record,idx)=>{
+		    let lat = record.getLatitude();
+		    let lon = record.getLongitude();
+		    let x = scaleX(lat,lon);
+		    let y = scaleY(lat,lon);
+		    record[gridId+"_coordinates"] = {x:x,y:y};
+		    let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		    let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
+		    glyph.draw(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record},idx<10);
+		});
+	    });
+	}
+
+	let alpha = opts.display.getProperty("colorTableAlpha",-1);
+	//add in the color table alpha
+	if(alpha>0) {
+	    let image = ctx.getImageData(0, 0, opts.w, opts.h);
+	    let imageData = image.data,
+		length = imageData.length;
+	    for(let i=3; i < length; i+=4){  
+		if(imageData[i]) {
+		    imageData[i] = alpha*255;
+		}
+	    }
+	    image.data = imageData;
+	    ctx.putImageData(image, 0, 0);
+	}
+
+	let img =  canvas.toDataURL("image/png");
+	canvas.parentNode.removeChild(canvas);
+	return img;
+    },
+    gridPoints: function(rows,cols,points,args) {
+	let debug = displayDebug.gridPoints;
+	let values = [];
+	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    let row = [];
+	    values.push(row);
+	    for(let colIdx=0;colIdx<cols;colIdx++)  {
+		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
+	    }
+	}
+
+	points.forEach((p,idx)=>{
+	    if(!values[p.y]) return;
+	    let cell = values[p.y][p.x];
+	    if(!cell) return;
+	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
+	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
+	    cell.count++;
+	    cell.total += p.colorValue;
+	});
+
+
+	let minValue = NaN;
+	let maxValue = NaN;
+	let maxCount=0;
+	let minCount=0;
+
+	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(let colIdx=0;colIdx<cols;colIdx++)  {
+		let cell = values[rowIdx][colIdx];
+		if(cell.count==0) continue;
+		let v;
+		if(args.operator=="count")
+		    v = cell.count;
+		else if(args.operator=="min")
+		    v =  cell.min;
+		else if(args.operator=="max")
+		    v =  cell.max;
+		else if(args.operator=="total")
+		    v =  cell.total;
+		else
+		    v =  cell.total/cell.count;
+		cell.v = v;
+		if(!isNaN(v)) {
+		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
+		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		}
+		maxCount = Math.max(maxCount, cell.count);
+		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
+	    }
+	}	
+	if(debug)
+	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	values.minValue = minValue;
+	values.maxValue = maxValue;
+	values.minCount = minCount;
+	values.maxCount = maxCount;
+	return values;
+    },
+
+
+    
+    //This gets the value at row/col if its defined. else 0
+    //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
+    getGridValue:function(src,row,col,mult,total,goodones) {
+	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
+	    if(isNaN(src[row][col])) return 0;
+	    total[0]+=mult;
+	    goodones[0]++;
+	    return src[row][col]*mult;
+	}
+	return 0;
+    },
+    applyKernel: function(src, kernel) {
+	let result = this.cloneGrid(src,null,0);
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = result[rowIdx];
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
+		//		if(isNaN(row[colIdx])) continue;
+		if(isNaN(row[colIdx])) row[colIdx] = 0;
+		let total =[0];
+		let goodones =[0];
+		let sum = 0;
+		kernel.every(t=>{
+		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],total,goodones); 
+		    return true;
+		});
+		if(goodones[0]>0)
+		    row[colIdx] = sum/total[0];
+		else
+		    row[colIdx] = NaN;
+	    }
+	}
+	return result;
+    },
+    blurGrid: function(type, src) {
+	let kernels = {
+	    average5: [
+		[0,1,0],
+		[1,1,1],
+		[0,1,0],
+	    ],
+	    average9: [
+		[1,1,1],
+		[1,1,1],
+		[1,1,1],
+	    ],
+	    average25:[
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+	    ],
+	    average49:[
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+	    ],
+	    gauss9:[
+		[0.077847,0.123317,0.077847],
+		[0.123317,0.195346,0.123317],
+		[0.077847,0.123317,0.077847]
+	    ],
+	    gauss25:[
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.023792,0.094907,0.150342,0.094907,0.023792],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+	    ],
+	    gauss49: [
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00038771 ,0.01330373 ,0.11098164 ,0.22508352 ,0.11098164 ,0.01330373 ,0.00038771],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
+	    ]
+	}
+	let a = kernels[type];
+	if(!a) {
+	    if(type.startsWith("average"))
+		a=kernels.average5;
+	    else if(type.startsWith("gauss"))
+		a=kernels.gauss9;
+	}
+	if(!a) return src;
+	return this.applyKernel(src, this.makeKernel(a));
+    },
+    makeKernel: function(kernel) {
+	let a = [];
+	let mid = (kernel.length-1)/2;
+	for(let rowIdx=0;rowIdx<kernel.length;rowIdx++) {
+	    let row = kernel[rowIdx];
+	    let rowOffset = rowIdx-mid;
+	    for(let colIdx=0;colIdx<row.length;colIdx++) {
+		let colOffset = colIdx-mid;
+		a.push([rowOffset,colOffset,kernel[rowIdx][colIdx]]);
+	    }
+	}
+	return a;
+    },
+    printGrid: function(grid) {
+	console.log("grid:");
+	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    let h = "";
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
+		if(Utils.isDefined(row[colIdx].v))
+		    h+=row[colIdx].v+",";
+		else
+		    h+=row[colIdx]+",";
+	    }
+	    console.log(h);
+	}
+    },
+    applyFilter(opts, grid) {
+	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
+	    return;
+	}
+
+	let copy = this.cloneGrid(grid,v=>v.v);
+	let filtered = copy;
+	let filterPasses = opts.display.getProperty("hmFilterPasses",1);
+	for(let i=0;i<filterPasses;i++) {
+	    filtered = this.blurGrid(opts.filter,filtered);
+	}
+	let filterThreshold = opts.display.getProperty("hmFilterThreshold",-999);
+	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
+		let cell = row[colIdx];
+		let filterValue = filtered[rowIdx][colIdx];
+		if(filterThreshold!=-999) {
+		    if(filterValue<filterThreshold)
+			filterValue = cell.v;
+		}
+		cell.v = filterValue;
+	    }
+	}
+    },
+    getMinMaxGrid: function(src,valueGetter) {
+	let min = NaN;
+	let max = NaN;
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(isNaN(v)) continue;
+		min = isNaN(min)?v:Math.min(min,v);
+		max = isNaN(max)?v:Math.max(max,v);
+	    }
+	}
+	return {min:min,max:max};
+    },
+
+
+
+    cloneGrid: function(src,valueGetter,dflt) {
+	let dest = [];
+	let hasDflt = Utils.isDefined(dflt);
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    let nrow=[];
+	    dest.push(nrow);
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(hasDflt)
+		    nrow.push(dflt);
+		else
+		    nrow.push(v);
+	    }
+	}
+	return dest;
+    },
+    convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
+	let mapLonLeft = bounds.west;
+	let mapLonRight = bounds.east;
+	let mapLonDelta = mapLonRight - mapLonLeft;
+	let mapLatBottom = bounds.south;
+	let mapLatBottomDegree = mapLatBottom * Math.PI / 180;
+	let x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
+	lat = lat * Math.PI / 180;
+	let worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
+	let mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
+	let y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
+	return [x, y];
+    },
+}
 
 const DISPLAY_MAPGRID = "mapgrid";
 const DISPLAY_MAPCHART = "mapchart";
@@ -66869,7 +66948,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    args.operator = this.getProperty('hm.operator',this.getProperty('hmOperator','max')),
 	    args.doHeatmap=true;
 	    let fields = this.getFields();
-	    let img = Gfx.gridData(this.getId(),fields, records,args);
+	    let img = MapHelper.gridData(this.getId(),fields, records,args);
 	    this.jq("inner").html(HU.image(img,[ATTR_TITLE,"",
 						ATTR_ID,this.domId("image")]));
 	    this.jq("inner").append(HU.div([ATTR_ID,this.domId("tooltip"),
