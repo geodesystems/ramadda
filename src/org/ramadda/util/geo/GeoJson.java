@@ -179,8 +179,9 @@ public class GeoJson extends JsonUtil {
 	if(features!=null) {
 	    for (int i = 0; i < features.length(); i++) {
 		JSONObject feature = features.getJSONObject(i);
-		JSONObject props   = feature.getJSONObject("properties");
-		String[] nameList = JSONObject.getNames(props);
+		JSONObject props= feature.has("properties")?
+		    feature.getJSONObject("properties"):null;
+		String[] nameList = props==null?null:JSONObject.getNames(props);
 		if(nameList!=null) {
 		    for (String name : nameList) {
 			if ( !names.contains(name)) {
@@ -1006,7 +1007,7 @@ public class GeoJson extends JsonUtil {
             }
             List<String>      values  = new ArrayList<String>();
             JSONObject        feature = features.getJSONObject(featureIdx++);
-            JSONObject        props   = feature.getJSONObject("properties");
+            JSONObject        props   = feature.has("properties")?feature.getJSONObject("properties"):null;
             List<List<Point>> pts     = null;
             if (addPolygon) {
                 pts = new ArrayList<List<Point>>();
