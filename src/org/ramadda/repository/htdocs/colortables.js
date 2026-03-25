@@ -314,6 +314,9 @@ $.extend(Utils,{
         nums.forEach((i,idx)=>{
             let extra = "";
             let val = min + step * i;
+	    if(args.getValueFunction) {
+		val = args.getValueFunction(min,max,idx/nums.length);
+	    }
             let attrs = [];
             if(options.showColorTableDots) {
                 let val2 = min + step * (i+1);
