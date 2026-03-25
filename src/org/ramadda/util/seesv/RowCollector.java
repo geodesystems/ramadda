@@ -1626,7 +1626,9 @@ public class RowCollector extends Processor {
 
             public Date getDate(Object v) {
                 try {
-                    return getSdf().parse(v.toString());
+		    String s = v.toString();
+		    if(s.length()==0) return null;
+                    return getSdf().parse(s);
                 } catch (Exception exc) {
 		    if(!loggedError) {
 			System.err.println("Unable to parse date:" + v +" with format:" + this.format);
