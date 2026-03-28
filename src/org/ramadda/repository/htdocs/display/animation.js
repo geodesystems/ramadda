@@ -26,6 +26,7 @@ function DisplayAnimation(display, enabled,attrs) {
     const ID_SLOWER = "slower";
     const ID_RESET = "reset";    
     const ID_ANIMATION_LABEL = "animationlabel";
+    const MODE_CUMULATIVE = "cumulative";
     const MODE_FRAME = "frame";
     const MODE_SLIDING = "sliding";
     $.extend(this,{
@@ -44,10 +45,10 @@ function DisplayAnimation(display, enabled,attrs) {
         dateMax: null,
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyymmdd")),
-        mode: display.getProperty("animationMode", "cumulative"),
+        mode: display.getAnimationMode(MODE_CUMULATIVE),
         startAtBeginning: display.getProperty("animationStartAtBeginning", true),	
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        useIndex: display.getProperty("animationUseIndex",false),
+        useIndex: display.getAnimationUseIndex(false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
         dwell: parseInt(display.getProperty("animationDwell", 1000)),
 	getEnabled: function() {
@@ -88,8 +89,22 @@ function DisplayAnimation(display, enabled,attrs) {
 		value:idx};
 	},
 
+	makeValue:function(value) {
+	    return {
+		wrapper:true,
+		isValue:true,
+		value:value,
+		fields:this.fields,
+		getTime:function() {return this.value;}
+	    };
+	},
+
+
 	makeDate: function(date) {
 	    if(!date) return null;
+	    if(this.fields) {
+		return this.makeValue(Utils.isDefined(date.index)?date.index:date.getTime());
+	    }
 	    if(this.useIndex) {
 		return this.makeIndex(Utils.isDefined(date.index)?date.index:date.getTime());
 	    }
@@ -102,13 +117,24 @@ function DisplayAnimation(display, enabled,attrs) {
 		getTime:function() {return this.value;}
 	    }
 	},
-	init: function(dateMin, dateMax, records) {
+	init: function(dateMin, dateMax, records,animationInfo) {
+	    //If fields is set then we animate on value, not date
+	    if(animationInfo) {
+		this.animationValues = animationInfo.values;
+		if(this.animationValues) {
+		    this.animationValues.sort((a, b) => a - b);
+		}		    
+		this.fields=animationInfo.fields;
+	    }
 	    let debug = false;
 	    if(debug)
 		console.log("animation.init:" +dateMin +" " + dateMax +" " +(records?"#records:" + records.length: "no records") );
 	    let _this = this;
 	    this.records = records;
-	    if(this.useIndex) {
+	    if(this.fields) {
+		this.dateMin = this.makeValue(this.animationValues[0]);
+		this.dateMax = this.makeValue(this.animationValues[this.animationValues.length-1]);		
+	    } else     if(this.useIndex) {
 		this.dateMin = this.makeIndex(0);
 		this.dateMax = this.makeIndex(records.length-1);		
 	    } else {
@@ -124,6 +150,12 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let seen = {};
 	    this.dateToRecordMap = {};
 	    records.every((r,idx)=>{
+		if(this.fields) {
+		    let value = r.getValue(this.fields[0].getIndex());
+		    this.dates.push(this.makeValue(value));
+		    this.dateToRecordMap[value] = r;
+		    return true;
+		}
 		if(this.useIndex) {
 		    this.dates.push(this.makeIndex(idx));
 		    this.dateToRecordMap[idx] = r;
@@ -475,8 +507,8 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    let _this  =this;
             this.jq(ID_SETTINGS).button().click(function(){
-		let window = _this.display.getProperty("animationWindow");
-		let step = _this.display.getProperty("animationStep", window);		
+		let window = _this.display.getAnimationWindow();
+		let step = _this.display.getAnimationStep(window);		
 		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
 		let html = HU.div([ATTR_ID,_this.domId(ID_FASTER),
 				   ATTR_TITLE, "Faster",
@@ -795,7 +827,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	    for(let i=0;i<this.records.length;i++) {
 		let record = this.records[i];
 		let date;
-		if(this.useIndex) {
+		if(this.fields) {
+		    date = record.getValue(this.fields[0].getIndex());
+		} else 	if(this.useIndex) {
 		    date = i;
 		}  else {
 		    let dttm = record.getDate();
@@ -911,7 +945,13 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
         formatAnimationDate: function(date,format,debug) {
-	    if(Utils.isDefined(date.index)) return "#" +(date.index+1);
+	    if(!date) return '';
+	    if(date.isIndex) {
+		return "#" +(date.index+1);
+	    }
+	    if(date.isValue) {
+		return ''+(date.value);
+	    }
 	    if(date.date) date = date.date;
 	    let timeZoneOffset =this.display.getTimeZoneOffset();
 	    let timeZone =this.display.getTimeZone();	    

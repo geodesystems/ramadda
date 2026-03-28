@@ -1166,7 +1166,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
-	    let dateInfo = this.getDateInfo(records);
+	    let dateInfo = this.getAnimationInfo(records);
 	    let years = {
 	    }
 	    if(!this.getPropertyShowYears(false)) {
@@ -1195,14 +1195,14 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 
 		let info=years[year];
-		let dateInfo = this.getDateInfo(info.records);
+		let dateInfo = this.getAnimationInfo(info.records);
 		let animation = new DisplayAnimation(this,true,{baseDomId:ID_ANIMATION+year,targetDiv:this.jq(ID_ANIMATION+year)});
 		animation.makeControls();
 		if(year!="all") {
 		    dateInfo.dateMin = new Date(Date.UTC(year,0,1));
 		    dateInfo.dateMax = new Date(Date.UTC(year,11,31));
 		}
-		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
+		animation.init(dateInfo.min, dateInfo.max,info.records);
 	    });
 	}
     });
