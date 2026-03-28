@@ -196,15 +196,14 @@ public class Utils extends IO {
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
     public static final SimpleDateFormat sdf;
     public static final SimpleDateFormat simpleSdf;
-    public static final SimpleDateFormat isoSdf;
+    public static final MyDateFormat isoSdf;
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TIMEZONE_DEFAULT);
         simpleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         simpleSdf.setTimeZone(TIMEZONE_DEFAULT);
-        isoSdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ");
-        isoSdf.setTimeZone(TIMEZONE_DEFAULT);
+        isoSdf = new MyDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ",TIMEZONE_DEFAULT);
     }
 
     public static String ansi(String ansi,Object text)  {
@@ -280,8 +279,8 @@ public class Utils extends IO {
 
     public static String formatIso(Date date) {
         synchronized (isoSdf) {
-            //The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
-            return isoSdf.format(date);
+            String f = isoSdf.format(date);
+	    return f;
         }
     }
 
