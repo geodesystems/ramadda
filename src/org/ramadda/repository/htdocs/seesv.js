@@ -1282,8 +1282,8 @@ function  SeesvForm(inputId, entry,params) {
 				let l = toks[i];
 				l = l.replace(/^(.*?)\[/,"<td><span class=csv_addheader_field field='$1' title='Add to input'>$1</span>&nbsp;</td><td>");
 				l = l.replace(/type\s*=\s*"([^"]+)"/,'type="<span style=\'font-weight:bold;\'>$1</span>"');
-				l = l.replace(/label\s*=\s*"([^"]+)"/,'<b>$1:</b>');				
-				l = l.replace(/=/g,':');
+//				l = l.replace(/label\s*=\s*"([^"]+)"/,'<b>$1:</b>');				
+//				l = l.replace(/=/g,':');
 				l = l.replace(/\]/,'');
 				l+='</td>';
 				rows.push(l);
