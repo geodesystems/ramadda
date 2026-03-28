@@ -28,6 +28,14 @@ import java.nio.*;
 import java.nio.channels.*;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+
+
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -477,6 +485,7 @@ public class TextRecord extends DataRecord {
     private Date parseDate(RecordField field, String tok) throws Exception {
 	boolean debug = debugDate;
 	//	debug=true;
+	//	debug=true;
         tok = tok.trim();
 	if(debug) System.err.println("parseDate:" + tok);
         if (tok.equals("") || tok.equals("null")) {
@@ -493,7 +502,7 @@ public class TextRecord extends DataRecord {
             }
         }
         String unit = field.getUnit();
-	MyDateFormat sdf  = field.getDateFormat();
+	MyDateFormat fieldSdf  = field.getDateFormat();
 	String sfmt=null;
         if (unit != null
                 && unit.equals("s since 1970-01-01 00:00:00.000 UTC")) {
@@ -529,7 +538,8 @@ public class TextRecord extends DataRecord {
                 }
 
             } else if (sfmt.equals("yyyy")) {
-                //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
+		if(debug)
+		    System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
                 //
             }
@@ -537,9 +547,9 @@ public class TextRecord extends DataRecord {
 
         Date date   = null;
         int  offset = field.getUtcOffset();
-	if(sdf!=null) {
+	if(fieldSdf!=null) {
 	    try {
-		date = sdf.parse(tok);
+		date = fieldSdf.parse(tok);
 	    } catch(Exception exc) {
 	    }
 	}
@@ -550,7 +560,7 @@ public class TextRecord extends DataRecord {
             date = getDateFormat(field).parse(tok);
 	    if(debug) System.err.println("\tgot:" + date);
         } catch (java.text.ParseException ignore) {
-	    //	    if(debug) System.err.println("\terror:" + ignore);
+	    if(debug) System.err.println("\terror:" + ignore);
             //Try to guess
 	    SimpleDateFormat sdf2 = Utils.findDateFormat(tok);
 	    if(sdf2!=null) {
@@ -831,6 +841,19 @@ public class TextRecord extends DataRecord {
     }
 
     public static void main(String[] args) throws Exception {
+	MyDateFormat sdf = new MyDateFormat("uuuu");
+	for(String d: args) {
+	    Date date = sdf.parse(d);
+	    Instant instant = date.toInstant();
+	    String s = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss")
+		.withZone(ZoneId.of("UTC"))
+		.format(instant);
+
+	    System.err.println("date:" + new MyDateFormat("uuuu-MM-dd HH:mm:ss").format(date));
+	    System.err.println("date:" + s);
+	}
+	if(true) return;
+
         TextRecord record = new TextRecord();
         record.setDelimiter(",");
         record.testing = true;
