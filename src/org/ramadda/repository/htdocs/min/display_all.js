@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 25 05:41:58 MDT 2026";
+var build_date="RAMADDA build date: Sat Mar 28 08:56:42 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1412,6 +1412,7 @@ function DisplayAnimation(display, enabled,attrs) {
     const ID_SLOWER = "slower";
     const ID_RESET = "reset";    
     const ID_ANIMATION_LABEL = "animationlabel";
+    const MODE_CUMULATIVE = "cumulative";
     const MODE_FRAME = "frame";
     const MODE_SLIDING = "sliding";
     $.extend(this,{
@@ -1430,10 +1431,10 @@ function DisplayAnimation(display, enabled,attrs) {
         dateMax: null,
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyymmdd")),
-        mode: display.getProperty("animationMode", "cumulative"),
+        mode: display.getAnimationMode(MODE_CUMULATIVE),
         startAtBeginning: display.getProperty("animationStartAtBeginning", true),	
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        useIndex: display.getProperty("animationUseIndex",false),
+        useIndex: display.getAnimationUseIndex(false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
         dwell: parseInt(display.getProperty("animationDwell", 1000)),
 	getEnabled: function() {
@@ -1474,8 +1475,22 @@ function DisplayAnimation(display, enabled,attrs) {
 		value:idx};
 	},
 
+	makeValue:function(value) {
+	    return {
+		wrapper:true,
+		isValue:true,
+		value:value,
+		fields:this.fields,
+		getTime:function() {return this.value;}
+	    };
+	},
+
+
 	makeDate: function(date) {
 	    if(!date) return null;
+	    if(this.fields) {
+		return this.makeValue(Utils.isDefined(date.index)?date.index:date.getTime());
+	    }
 	    if(this.useIndex) {
 		return this.makeIndex(Utils.isDefined(date.index)?date.index:date.getTime());
 	    }
@@ -1488,13 +1503,24 @@ function DisplayAnimation(display, enabled,attrs) {
 		getTime:function() {return this.value;}
 	    }
 	},
-	init: function(dateMin, dateMax, records) {
+	init: function(dateMin, dateMax, records,animationInfo) {
+	    //If fields is set then we animate on value, not date
+	    if(animationInfo) {
+		this.animationValues = animationInfo.values;
+		if(this.animationValues) {
+		    this.animationValues.sort((a, b) => a - b);
+		}		    
+		this.fields=animationInfo.fields;
+	    }
 	    let debug = false;
 	    if(debug)
 		console.log("animation.init:" +dateMin +" " + dateMax +" " +(records?"#records:" + records.length: "no records") );
 	    let _this = this;
 	    this.records = records;
-	    if(this.useIndex) {
+	    if(this.fields) {
+		this.dateMin = this.makeValue(this.animationValues[0]);
+		this.dateMax = this.makeValue(this.animationValues[this.animationValues.length-1]);		
+	    } else     if(this.useIndex) {
 		this.dateMin = this.makeIndex(0);
 		this.dateMax = this.makeIndex(records.length-1);		
 	    } else {
@@ -1510,6 +1536,12 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let seen = {};
 	    this.dateToRecordMap = {};
 	    records.every((r,idx)=>{
+		if(this.fields) {
+		    let value = r.getValue(this.fields[0].getIndex());
+		    this.dates.push(this.makeValue(value));
+		    this.dateToRecordMap[value] = r;
+		    return true;
+		}
 		if(this.useIndex) {
 		    this.dates.push(this.makeIndex(idx));
 		    this.dateToRecordMap[idx] = r;
@@ -1861,8 +1893,8 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    let _this  =this;
             this.jq(ID_SETTINGS).button().click(function(){
-		let window = _this.display.getProperty("animationWindow");
-		let step = _this.display.getProperty("animationStep", window);		
+		let window = _this.display.getAnimationWindow();
+		let step = _this.display.getAnimationStep(window);		
 		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
 		let html = HU.div([ATTR_ID,_this.domId(ID_FASTER),
 				   ATTR_TITLE, "Faster",
@@ -2181,7 +2213,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	    for(let i=0;i<this.records.length;i++) {
 		let record = this.records[i];
 		let date;
-		if(this.useIndex) {
+		if(this.fields) {
+		    date = record.getValue(this.fields[0].getIndex());
+		} else 	if(this.useIndex) {
 		    date = i;
 		}  else {
 		    let dttm = record.getDate();
@@ -2297,7 +2331,13 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
         formatAnimationDate: function(date,format,debug) {
-	    if(Utils.isDefined(date.index)) return "#" +(date.index+1);
+	    if(!date) return '';
+	    if(date.isIndex) {
+		return "#" +(date.index+1);
+	    }
+	    if(date.isValue) {
+		return ''+(date.value);
+	    }
 	    if(date.date) date = date.date;
 	    let timeZoneOffset =this.display.getTimeZoneOffset();
 	    let timeZone =this.display.getTimeZone();	    
@@ -4276,7 +4316,7 @@ function displayGetFunctionValue(v) {
 function ramaddaDisplayStepAnimation() {
     Utils.displaysList.forEach(d=>{
 	if(d.getProperty && d.getAnimation)  {
-	    if(d.getProperty("doAnimation")) {
+	    if(d.getProperty('doAnimation')) {
 		d.getAnimation().doNext();
 	    }
 	}
@@ -6034,6 +6074,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationMode',tt:'How to operate the animation, e.g. sliding, frame, cumulative',
 	 ex:'sliding|frame|cumulative'},
 	{p:'animationUseIndex',ex:'true',tt:'Instead of animating on time animate on record index'},
+	{p:'animationFields',tt:'Animation on field values',ex:'comma separated list of fields'},
 	{p:'animationInitRange',ex:'start idx,end idx  e.g. "-50,end" or "0,10" or "0,end"'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
@@ -8327,7 +8368,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //	    if(debug)   this.logMsg("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
-		return this.dateInRange(date,idx,idx<5 && debug);
+		return this.dateInRange(record,date,idx,idx<5 && debug);
 	    });
 	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
 
@@ -11773,15 +11814,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
 	    if(!filteredRecords) filteredRecords = this.getRecords();
-	    let dateInfo = this.getDateInfo(filteredRecords);
+	    let animationInfo = this.getAnimationInfo(filteredRecords);
 	    if(debug) console.log("initializeAnimation-1");
-	    if (dateInfo.dateMax) {
-		if(debug) console.log("initializeAnimationr-getAnimation");
+	    if (Utils.isDefined(animationInfo.max)) {
+		if(debug) console.log("initializeAnimation-getAnimation");
 		let animation = this.getAnimation();
 		if(animation.getEnabled()) {
 		    if(debug) console.log("initializeAnimation-calling animation.init");
 		    //		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+		    animation.init(animationInfo.min, animationInfo.max,filteredRecords,animationInfo);
 		    if(debug) console.log("initializeAnimation-done calling animation.init");
 		    if(!this.minDateObj) {
 			if(debug) console.log("initializeAnimation-calling setDateRange");
@@ -11795,28 +11836,66 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 
-	getDateInfo:function(records) {
-	    let dateMin = null;
-	    let dateMax = null;
-	    let dates =[];
-	    records.every(record=>{
-		if (dateMin == null) {
-		    dateMin = record.getDate();
-		    dateMax = record.getDate();
+	getMinMax:function(fields,record,uniques,values) {
+	    let minValue=NaN;
+	    let maxValue =NaN;
+	    fields.forEach(field=>{
+		let value = field.getValue(record);
+		if(!isNaN(value)) {
+		    if(uniques && values && !Utils.isDefined(uniques[value])) {
+			uniques[value] = true;
+			values.push(value);
+		    }
+		    if(isNaN(minValue)) {
+			minValue = maxValue= value;
+		    } else  {
+			minValue = Math.min(minValue,value);
+			maxValue = Math.min(maxValue,value);				
+		    }
+		}
+	    });
+	    return {min:minValue,max:maxValue};
+	},
+
+	getAnimationInfo:function(records) {
+	    let minValue = null;
+	    let maxValue = null;
+	    let values =[];
+	    let fields = this.getFieldsByIds(null, this.getAnimationFields());
+	    let uniques={};
+	    records.every((record,idx)=>{
+		if(fields.length>0) {
+		    let pair = this.getMinMax(fields,record,uniques,values);
+		    minValue = pair.min;
+		    maxValue=pair.max;
+		    return true;
+		}
+		if (minValue == null) {
+		    minValue = record.getDate();
+		    maxValue = record.getDate();
 		} else {
 		    let date = record.getDate();
 		    if (date) {
-			dates.push(date);
-			if (date.getTime() < dateMin.getTime())
-			    dateMin = date;
-			if (date.getTime() > dateMax.getTime())
-			    dateMax = date;
+			if(!uniques[date]) {
+			    uniques[date] = true;
+			    values.push(date);
+			}
+			if (date.getTime() < minValue.getTime())
+			    minValue = date;
+			if (date.getTime() > maxValue.getTime())
+			    maxValue = date;
 		    }
 		}
 		return true;
 	    });
-	    return { dateMin:dateMin, dateMax:dateMax, dates:dates};
+	    return {fields:fields.length?fields:null,
+		    min:minValue,
+		    max:maxValue,
+		    values:values};
 	},
+	
+
+
 	
 	getHighlightColor: function() {
 	    return this.getProperty("highlightColor", HIGHLIGHT_COLOR);
@@ -12621,22 +12700,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return this.hasDate;
         },
-        dateInRange: function(date, idx, debug) {
+        dateInRange: function(record, date, idx, debug) {
 	    if(debug) {
 		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
 	    }
 
 	    //	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
-	    if(this.minDateObj &&this.minDateObj.isIndex) {
-		if(debug)
-		    console.dir('min',this.minDateObj.index,idx);
-		if(idx<this.minDateObj.index) return false;
+	    if(this.minDateObj) {
+		if(this.minDateObj.isIndex) {
+		    if(idx<this.minDateObj.index) return false;
+		}
+		if(this.minDateObj.isValue) {
+		    let pair = this.getMinMax(this.minDateObj.fields,record);
+		    let min  = pair.min;
+		    if(min<this.minDateObj.value) return false;
+		}
 	    }
-	    if(this.maxDateObj &&this.maxDateObj.isIndex) {
-		if(debug)
-		    console.dir('max',this.maxDateObj.index,idx);
-		if(idx>this.maxDateObj.index) return false;
-		return true;
+	    if(this.maxDateObj) {
+		if(this.maxDateObj.isIndex) {
+		    if(idx>this.maxDateObj.index) return false;
+		}
+		if(this.maxDateObj.isValue) {
+		    let pair = this.getMinMax(this.minDateObj.fields,record);
+		    if(pair.max>this.maxDateObj.value) return false;
+		}
 	    }	    
 
             if (date != null) {
@@ -12937,7 +13024,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let record = records[rowIdx];
                 let date = record.getDate();
-                if (!this.dateInRange(date,rowIdx)) {
+                if (!this.dateInRange(record,date,rowIdx)) {
 		    continue;
 		}
                 rowCnt++;
@@ -27098,7 +27185,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
-	    let dateInfo = this.getDateInfo(records);
+	    let dateInfo = this.getAnimationInfo(records);
 	    let years = {
 	    }
 	    if(!this.getPropertyShowYears(false)) {
@@ -27127,14 +27214,14 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 
 		let info=years[year];
-		let dateInfo = this.getDateInfo(info.records);
+		let dateInfo = this.getAnimationInfo(info.records);
 		let animation = new DisplayAnimation(this,true,{baseDomId:ID_ANIMATION+year,targetDiv:this.jq(ID_ANIMATION+year)});
 		animation.makeControls();
 		if(year!="all") {
 		    dateInfo.dateMin = new Date(Date.UTC(year,0,1));
 		    dateInfo.dateMax = new Date(Date.UTC(year,11,31));
 		}
-		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
+		animation.init(dateInfo.min, dateInfo.max,info.records);
 	    });
 	}
     });
