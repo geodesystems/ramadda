@@ -15,6 +15,7 @@ import org.ramadda.data.services.RecordTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
 
@@ -47,7 +48,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     private static final String MEASURE_PM25 = "pm25";
 
 
-    private SimpleDateFormat dateSDF;
+    private MyDateFormat dateSDF;
 
     private static final String[]
 	SEESV_ARGS = new String[] {

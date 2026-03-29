@@ -16,31 +16,17 @@ this gets it from the type_point super class
      <column  name="argos_id"  type="enumerationplus" label="Argos ID" cansearch="true"/>
 <wiki_inner>
 <![CDATA[
-+inset
-
-<table width="100%">
-
-<tr valign=top>
-<td width="50%">
+:title {{name}}
 {{description wikify=true}}
-{{information details="true"}}
-</td>
-<td wdith="50%">
-
 {{displaygroup  layoutType="columns"}}
-
 {{display type="linechart" fields="Temperature" title="Temperature"}}
-
 {{display type="linechart" fields="Pressure" title="Pressure"}}
 
-</td>
-</tr></table>
--inset
+:heading Information
+{{information details="true"}}
 ]]>
 </wiki_inner>
-
-
-  </type>
+</type>
 
 
   <type name="type_point_amrc_freewave"  super="type_point_amrc" description="AMRC Freewave  Data"  handler="org.ramadda.data.services.PointTypeHandler">

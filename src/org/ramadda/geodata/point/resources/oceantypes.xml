@@ -672,7 +672,7 @@ commentLineStart=%
 fieldRow=-2
 stripBom=true
 record.type.time=date
-record.format.time=MM/dd/yyyy hh:mm:ss a
+record.format.time=M/d/yyyy h:mm:ss a
 </property>
 <property name="bubble">
 <![CDATA[

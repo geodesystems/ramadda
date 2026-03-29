@@ -87,7 +87,7 @@ public class AmrcFinalQCPointFile extends CsvFile {
     public static final double MISSING = 444.0;
 
     /** date formatter */
-    private MyDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
+    private MyDateFormat sdf = makeDateFormat("yyyy-M-d HHmm");
 
     /** buffer */
     private StringBuffer dttm = new StringBuffer();
