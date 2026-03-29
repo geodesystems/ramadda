@@ -6,6 +6,7 @@
 package org.ramadda.util.seesv;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyDateFormat;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.MyDateFormat;
@@ -1294,8 +1295,8 @@ public class RowCollector extends Processor {
     }
 
     public static class Stats extends Html {
-        private static SimpleDateFormat fmtSdf =
-            new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        private static MyDateFormat fmtSdf =
+            new MyDateFormat("yyyy-MM-dd hh:mm");
 
         private Seesv util;
         private boolean justStats;
@@ -1607,7 +1608,7 @@ public class RowCollector extends Processor {
                     this.format = Utils.getProperty(props, name + ".format",
 						    Utils.getProperty(props, "format", this.format));
                     if (this.format != null) {
-			//                        sdf = new SimpleDateFormat(this.format);
+			//                        sdf = new MyDateFormat(this.format);
                     }
                 }
             }
@@ -2381,11 +2382,11 @@ public class RowCollector extends Processor {
         private List<String> keyValues = new ArrayList<String>();
         private String colName;
         private int col = -1;
-        private SimpleDateFormat sdf;
+        private MyDateFormat sdf;
         private Row header;
 
         public DateLatest(TextReader ctx, List<String> cols, String colName,
-                          SimpleDateFormat sdf) {
+                          MyDateFormat sdf) {
             this.keys    = cols;
             this.colName = colName;
             this.sdf     = sdf;

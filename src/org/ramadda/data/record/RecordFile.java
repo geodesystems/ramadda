@@ -78,7 +78,7 @@ public abstract class RecordFile {
     private Date baseDate;
     private List<String[]> unitPatterns;
     private MyDateFormat[] mySdfs;
-    private SimpleDateFormat outputDateFormat;
+    private MyDateFormat outputDateFormat;
 
     private static MyDateFormat[][] SDFS = {
         { makeDateFormat("yyyy") },
@@ -491,7 +491,7 @@ public abstract class RecordFile {
         return record;
     }
 
-    public void setOutputDateFormat(SimpleDateFormat sdf) {
+    public void setOutputDateFormat(MyDateFormat sdf) {
 	outputDateFormat=sdf;
     }
 

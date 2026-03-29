@@ -47,8 +47,8 @@ import java.util.List;
 public class TextRecord extends DataRecord {
     public static final boolean debugDate = false;
     public static final int ATTR_FIRST =   org.ramadda.data.point.PointRecord.ATTR_LAST;
-    private SimpleDateFormat yearFormat = Utils.makeDateFormat("yyyy-MM");
-    private SimpleDateFormat sdf;
+    private MyDateFormat yearFormat = Utils.makeDateFormat("yyyy-MM");
+    private MyDateFormat sdf;
     private String delimiter = ",";
     private boolean delimiterIsSpace = false;
     private boolean delimiterIsSpaces = false;
@@ -419,8 +419,9 @@ public class TextRecord extends DataRecord {
 		    try {
 			date = parseDate(field, tok);
 		    } catch(Exception exc) {
-			if(dateErrorCnt++<10)
-			    System.err.println("bad date:" + tok);
+			if(dateErrorCnt++<10) {
+			    System.err.println("bad date:" + tok +" format:" + getDateFormat(field,tok));
+			}
 		    }
                     if (date == null) {
                         objectValues[fieldCnt] = tok;
@@ -484,7 +485,6 @@ public class TextRecord extends DataRecord {
 
     private Date parseDate(RecordField field, String tok) throws Exception {
 	boolean debug = debugDate;
-	//	debug=true;
 	//	debug=true;
         tok = tok.trim();
 	if(debug) System.err.println("parseDate:" + tok);
@@ -557,15 +557,24 @@ public class TextRecord extends DataRecord {
 	if(date!=null) return date;
 
         try {
-            date = getDateFormat(field).parse(tok);
+	    //	    if(debug)	System.err.println("\tgetDateFormat(field):" + getDateFormat(field,tok));
+	    MyDateFormat format = getDateFormat(field,tok);
+	    if(debug) System.err.println("\ttrying:" + format);
+	    date = format.parse(tok);
 	    if(debug) System.err.println("\tgot:" + date);
         } catch (java.text.ParseException ignore) {
-	    if(debug) System.err.println("\terror:" + ignore);
-            //Try to guess
-	    SimpleDateFormat sdf2 = Utils.findDateFormat(tok);
-	    if(sdf2!=null) {
-		return sdf2.parse(tok);
+	    MyDateFormat format = Utils.findDateFormat(tok);
+	    if(format!=null) {
+		try {
+		    date = format.parse(tok);
+		    field.setDateFormat(format);
+		    if(debug) System.err.println("\t2nd try:" + format);
+		    return date;
+		} catch(Exception ignore2) {
+		}
 	    }
+
+
             date = Utils.extractDate(tok);
 	    if(debug)System.err.println("\textract:" + date);
             if (date == null) {
@@ -578,7 +587,8 @@ public class TextRecord extends DataRecord {
                     //Try tacking on UTC
                     try {
 			if(debug)System.err.println("\ttacking on UTC");
-                        date = getDateFormat(field).parse(tok + " UTC");
+			String tmp = tok + " UTC";
+                        date = getDateFormat(field,tmp).parse(tmp);
                     } catch (java.text.ParseException ignoreThisOne) {
                         throw ignore;
                     }
@@ -595,13 +605,19 @@ public class TextRecord extends DataRecord {
         return date;
     }
 
-    private MyDateFormat getDateFormat(RecordField field) {
+    private MyDateFormat getDateFormat(RecordField field,String tok) {
         MyDateFormat sdf = field.getDateFormat();
-        if (sdf == null) {
-            field.setDateFormat(sdf =
-                getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));
-        }
-
+	if(sdf!=null) {
+	    //	    System.err.println("\tFrom field:"  +tok +" " +sdf);
+	}
+	if(sdf==null) {
+	    sdf = Utils.findDateFormat(tok);
+	    //	    System.err.println("\tFrom Utils:"  +tok +" " +sdf);
+	}
+	if(sdf==null) {
+	    sdf =  getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT);
+	}
+	field.setDateFormat(sdf);
         return sdf;
     }
 
@@ -936,7 +952,7 @@ public class TextRecord extends DataRecord {
     public void setBaseDate(Date value) {
         baseDate = value;
         if (baseDate != null) {
-            baseDateString = new SimpleDateFormat("yyyy-MM-dd").format(value);
+            baseDateString = new MyDateFormat("yyyy-MM-dd").format(value);
         }
     }
 

@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.record;
 
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Utils;
 
 import java.text.SimpleDateFormat;
@@ -54,7 +55,7 @@ public class BaseRecord implements Cloneable {
 
     private long recordTime = UNDEFINED_TIME;
 
-    private SimpleDateFormat outputDateFormat;
+    private MyDateFormat outputDateFormat;
 
     public BaseRecord() {
     }
@@ -73,7 +74,7 @@ public class BaseRecord implements Cloneable {
         this.bigEndian  = bigEndian;
     }
 
-    public void setOutputDateFormat(SimpleDateFormat sdf) {
+    public void setOutputDateFormat(MyDateFormat sdf) {
 	outputDateFormat=sdf;
     }
 

@@ -26,20 +26,26 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class MyDateFormat {
-    private final String format;
-    private final TimeZone timezone;
-    private final ZoneId zoneId;
-    private final DateTimeFormatter formatter;
+    private String format;
+    private TimeZone timezone;
+    private ZoneId zoneId;
+    private DateTimeFormatter formatter;
 
     public MyDateFormat(String format) {
         this(format, Utils.TIMEZONE_DEFAULT);
     }
+
 
     public MyDateFormat(String format, TimeZone timezone) {
         this.format = format;
         this.timezone = timezone != null ? timezone : Utils.TIMEZONE_DEFAULT;
         this.zoneId = this.timezone.toZoneId();
 	//        this.formatter = DateTimeFormatter.ofPattern(format).withZone(zoneId);
+        this.formatter = makeFormatter(format,zoneId);
+    }
+
+    public void setTimeZone(TimeZone timezone) {
+        this.timezone = timezone;
         this.formatter = makeFormatter(format,zoneId);
     }
 
@@ -97,7 +103,7 @@ public class MyDateFormat {
         return format;
     }
 
-    public String format(Date date) {
+    public synchronized String format(Date date) {
         if (date == null) {
             return null;
         }
@@ -116,7 +122,7 @@ public class MyDateFormat {
         return formatter.format(instant.atZone(zoneId));
     }
 
-    public Date parse(String s) throws ParseException {
+    public synchronized Date parse(String s) throws ParseException {
         if (s == null) {
             return null;
         }

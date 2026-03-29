@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util.seesv;
 
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.StringUtil;
@@ -232,7 +233,7 @@ public abstract class DateOps extends Processor {
     public static class FormatDateOffset extends Converter {
         private int what = GregorianCalendar.HOUR_OF_DAY;
 	private String name;
-	private SimpleDateFormat sdf;
+	private MyDateFormat sdf;
 	private Date start;
 
         public FormatDateOffset(String col, String what) {

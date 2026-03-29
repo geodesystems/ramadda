@@ -9,6 +9,7 @@ import org.json.*;
 
 import org.ramadda.util.S3File;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.IO;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
@@ -4472,7 +4473,7 @@ public class Seesv implements SeesvCommands {
 		    if (date.equals("now")) {
 			dttm = new Date();
 		    } else {
-			SimpleDateFormat sdf = Utils.findDateFormat(date);
+			MyDateFormat sdf = Utils.findDateFormat(date);
 			dttm = sdf.parse(date);
 		    }
 		    ctx.addProcessor(new DateOps.DateBefore(col, dttm));
@@ -4490,7 +4491,7 @@ public class Seesv implements SeesvCommands {
 		    if (date.equals("now")) {
 			dttm = new Date();
 		    } else {
-			SimpleDateFormat sdf = Utils.findDateFormat(date);
+			MyDateFormat sdf = Utils.findDateFormat(date);
 			if(sdf==null) throw new IllegalArgumentException("Unable to find date format for:"  +date);
 			dttm = sdf.parse(date);
 		    }
@@ -6093,9 +6094,9 @@ public class Seesv implements SeesvCommands {
     public static class Dater {
 	private boolean hadError = false;
 	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
-	private static final SimpleDateFormat sdf =  Utils.makeDateFormat(DFLT_DATEFORMAT);
+	private static final MyDateFormat sdf =  Utils.makeDateFormat(DFLT_DATEFORMAT);
 	private String sdfString = DFLT_DATEFORMAT;
-	private List<SimpleDateFormat> sdfs = new ArrayList<SimpleDateFormat>();
+	private List<MyDateFormat> sdfs = new ArrayList<MyDateFormat>();
 	private String timezone="UTC";
 
 	public Dater() {
@@ -6111,9 +6112,9 @@ public class Seesv implements SeesvCommands {
 	    if(Utils.stringDefined(timezone)) {
 		this.timezone = timezone;
 	    }
-	    sdfs = new ArrayList<SimpleDateFormat>();
+	    sdfs = new ArrayList<MyDateFormat>();
 	    for(String format: Utils.split(fmt,";",true,true)){
-		SimpleDateFormat sdf = Utils.makeDateFormat(format);
+		MyDateFormat sdf = Utils.makeDateFormat(format);
 		sdf.setTimeZone(TimeZone.getTimeZone(this.timezone));
 		sdfs.add(sdf);
 	    }
@@ -6127,7 +6128,7 @@ public class Seesv implements SeesvCommands {
 	    }
 
 	    Exception lastException=null;
-	    for(SimpleDateFormat sdf:sdfs) {
+	    for(MyDateFormat sdf:sdfs) {
 		try {
 		    return sdf.parse(d);
 		} catch (Exception exc) {
@@ -6135,7 +6136,7 @@ public class Seesv implements SeesvCommands {
 		}
             } 
 	    if(!hadError) {
-		SimpleDateFormat sdf = Utils.findDateFormat(d);
+		MyDateFormat sdf = Utils.findDateFormat(d);
 		hadError=true;
 		try {
 		    Date date = sdf.parse(d);
