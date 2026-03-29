@@ -277,6 +277,24 @@ public class Utils extends IO {
         }
     }    
 
+
+    //Formats in a synchronized block
+    public static String format(MyDateFormat sdf,Date date) {
+        synchronized (sdf) {
+            return sdf.format(date);
+        }
+    }    
+
+    //Formats in a synchronized block
+    public static String format(MyDateFormat sdf,long date) {
+        synchronized (sdf) {
+            return sdf.format(new Date(date));
+        }
+    }    
+
+
+
+
     public static String formatIso(Date date) {
         synchronized (isoSdf) {
             String f = isoSdf.format(date);
@@ -1082,7 +1100,7 @@ public class Utils extends IO {
 	return "********";
     }
 
-    public static SimpleDateFormat makeDateFormat(String format) {
+    public static MyDateFormat makeDateFormat(String format) {
         return makeDateFormat(format, "UTC");
     }
 
@@ -1097,12 +1115,13 @@ public class Utils extends IO {
 	return format;
     }
 
-    public static SimpleDateFormat makeDateFormat(String format,
+    public static MyDateFormat makeDateFormat(String format,
 						  String ...timezone) {
 	format = convertDateFormat(format);
-        SimpleDateFormat sdf =  new SimpleDateFormat(format);
+        MyDateFormat sdf =  new MyDateFormat(format,
+					     timezone.length>0?TimeZone.getTimeZone(timezone[0]):null);
         if (timezone.length>0) {
-            sdf.setTimeZone(TimeZone.getTimeZone(timezone[0]));
+	    //            sdf.setTimeZone(TimeZone.getTimeZone(timezone[0]));
         }
         return sdf;
     }
@@ -1829,8 +1848,8 @@ public class Utils extends IO {
         Date              currentDate = now;
         TimeZone          tz          = TimeZone.getTimeZone("UTC");
         g.setTime(currentDate);
-	SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd");
-	SimpleDateFormat parseSdf = sdf;
+	MyDateFormat sdf = makeDateFormat("yyyy-MM-dd");
+	MyDateFormat parseSdf = sdf;
 
 	for(Macro macro:splitMacros(f)) {
 	    if(macro.isText) {
@@ -1903,7 +1922,7 @@ public class Utils extends IO {
                 Date newDate = parseMacroDate(macro, parseSdf,  now, currentDate);
 		String fmt = (String)macro.getProperty("format");
                 if (newDate != null) {
-		    SimpleDateFormat thisSdf = sdf;	
+		    MyDateFormat thisSdf = sdf;	
 		    if(fmt!=null) {
 			thisSdf = makeDateFormat(fmt);
 			if(tz!=null)
@@ -1929,7 +1948,8 @@ public class Utils extends IO {
 	return cal;
     }
 
-    private static Date parseMacroDate(Macro macro,SimpleDateFormat parseSdf, Date now,Date currentDate) throws Exception {
+    private static Date parseMacroDate(Macro macro,
+				       MyDateFormat parseSdf, Date now,Date currentDate) throws Exception {
 	Date newDate = currentDate;
 	String fmt = (String)macro.getProperty("format");
 	String parseFormat = (String)macro.getProperty("parseFormat");		
@@ -1939,7 +1959,7 @@ public class Utils extends IO {
 	    if(date.equals("now")) {
 		newDate = now;
 	    } else {
-		SimpleDateFormat psdf = parseSdf;
+		MyDateFormat psdf = parseSdf;
 		if(parseFormat!=null) psdf  = makeDateFormat(parseFormat);
 		newDate = psdf.parse(date);
 	    }
@@ -2738,6 +2758,8 @@ public class Utils extends IO {
     /** a set of regular expressions that go along with the below DATE_FORMATS */
     public static final String[] FIND_DATE_PATTERNS = {
 	"\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} (AM|PM)", "MM/dd/yyyy hh:mm:ss a",
+	"\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}","yyyy-MM-dd HH:mm:ss.SSS",
+	"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$","yyyy-MM-dd'T'HH:mm:ss'Z'",
 	"\\d{4}-\\d{2}'T'\\d{2}:\\d{2}:\\d{2}",	"yyyy-MM-dd'T'HH:mm:ss",
 	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss",
 	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm",
@@ -2753,7 +2775,7 @@ public class Utils extends IO {
 	
     };
 
-    public static final SimpleDateFormat findDateFormat(String s) {
+    public static final MyDateFormat findDateFormat(String s) {
 	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
 	    String pattern = FIND_DATE_PATTERNS[i];
 	    if(s.matches(pattern)) {
@@ -4823,6 +4845,14 @@ public class Utils extends IO {
     }
 
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for(String date: args) {
+		System.err.println("Date:" + date+"  format:" + findDateFormat(date));
+	    }
+	    return;
+	}
+
+
 	if(true) {
 	    for(String s: args)
 		System.err.println(nameCase(s));
