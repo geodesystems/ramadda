@@ -223,8 +223,9 @@ public class NcssTypeHandler extends PointTypeHandler {
         entry.getResource().setPath(url);
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
+
         properties.append(
-            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss'Z'\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
 	//        properties.append(
 	//            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         if (addVertCoord) {
