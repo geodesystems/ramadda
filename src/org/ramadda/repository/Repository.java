@@ -5852,6 +5852,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result(BLANK, sb);
     }
 
+
+    /**  patch an exploit
     public Result processGetTmpFile(Request request) throws Exception {
         String file     = request.getString("file", "");
         File   f        = getStorageManager().getTmpFilePath(request, file);
@@ -5863,12 +5865,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         request.setReturnFilename(fileName);
 
         InputStream inputStream = getStorageManager().getFileInputStream(f);
-
         Result      result      = new Result(BLANK, inputStream, "");
-
         return result;
     }
 
+    ***/
+    
     public Result processTest(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("HttpServletRequest.getServerName: ");
