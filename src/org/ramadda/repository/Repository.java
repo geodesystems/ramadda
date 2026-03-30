@@ -5853,7 +5853,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**  patch an exploit
+
+    /*
     public Result processGetTmpFile(Request request) throws Exception {
         String file     = request.getString("file", "");
         File   f        = getStorageManager().getTmpFilePath(request, file);
@@ -5869,7 +5870,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
-    ***/
+    */
     
     public Result processTest(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
