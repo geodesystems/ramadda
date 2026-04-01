@@ -2343,6 +2343,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let url = RamaddaUtil.getUrl("/wikify");
 	    ramaddaDoingWiki++;
 	    let handleResult = (data)=>{
+		data = Utils.convertText(data);
+
+
 		wikiCallback(data);
 		ramaddaDoingWiki--;
 	    }
@@ -2893,11 +2896,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setProperty("patternFilterField", args.field.getId());
             this.callUpdateUI();
         },
-        setDateRange: function(min, max, doDay) {
+        setDateRange: function(min, max, doDay,showAll) {
 	    this.minDateObj = min;
 	    this.maxDateObj = max;
 	    this.dateRangeDoDay = doDay;
-	    //	    console.log("setDateRange: " + this.minDateObj +" " + this.maxDateObj);
+	    this.animationShowingAll = showAll;
 	},
         handleDateRangeChanged: function(source, prop) {
 	    this.setDateRange(prop.minDate, prop.maxDate);
@@ -8224,8 +8227,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	animationStart: function(animation) {
 	},
 	animationApply: function(animation, skipUpdateUI) {
-	    if(this.getProperty("animationFilter", true))
-		this.setDateRange(animation.begin, animation.end);
+	    if(this.getProperty("animationFilter", true)) {
+		this.setDateRange(animation.begin, animation.end,false,animation.showingAll());
+	    }
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		this.dataFilterChanged({source:"animation"});
@@ -8780,28 +8784,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) {
 		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
 	    }
-
-	    //	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
+	    let minMaxPair;
 	    if(this.minDateObj) {
 		if(this.minDateObj.isIndex) {
 		    if(idx<this.minDateObj.index) return false;
-		}
-		if(this.minDateObj.isValue) {
-		    let pair = this.getMinMax(this.minDateObj.fields,record);
-		    let min  = pair.min;
+		} else 	if(this.minDateObj.isValue) {
+		    minMaxPair = this.getMinMax(this.minDateObj.fields,record);
+		    let min  = minMaxPair.min;
 		    if(min<this.minDateObj.value) return false;
 		}
 	    }
 	    if(this.maxDateObj) {
 		if(this.maxDateObj.isIndex) {
 		    if(idx>this.maxDateObj.index) return false;
-		}
-		if(this.maxDateObj.isValue) {
-		    let pair = this.getMinMax(this.minDateObj.fields,record);
-		    if(pair.max>this.maxDateObj.value) return false;
+		} else if(this.maxDateObj.isValue) {
+		    if(!minMaxPair)
+			minMaxPair = this.getMinMax(this.maxDateObj.fields,record);
+		    if(minMaxPair.max>this.maxDateObj.value) return false;
 		}
 	    }	    
+	    if(minMaxPair && isNaN(minMaxPair.min) && isNaN(minMaxPair.max)) {
+		if(!this.animationShowingAll) {
+		    return false;
+		}
+	    }
 
+//	    console.log(minMaxPair);
             if (date != null) {
 		if(this.dateRangeDoDay && this.minDateObj) {
 		    if(date.getUTCFullYear()!=this.minDateObj.getUTCFullYear() ||

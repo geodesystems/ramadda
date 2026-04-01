@@ -1337,6 +1337,7 @@ WikiEditor.prototype = {
 	    this.previewShown = true;
 	}
 	let wikiCallback = (html,status,xhr) =>{
+	    html = Utils.convertText(html);
 	    let _this = this;
 	    if(inPlace) {
 		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);

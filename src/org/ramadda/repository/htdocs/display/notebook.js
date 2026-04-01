@@ -989,7 +989,9 @@ function NotebookState(cell, div) {
 					   'doImports','false',
 					   ARG_ENTRYID,entry,
 					   'wikitext',s),
-				    callback);
+				    (html)=>{
+					html = Utils.convertText(html);
+					callback(html);});
         },
         //These are for the iodiode mimic
         addOutputRenderer: function(renderer) {
