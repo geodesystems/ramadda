@@ -1699,6 +1699,7 @@ public class WikiManager extends RepositoryManager
         } else {
             wiki = wikify(request, wiki);
         }
+	wiki = "base64:" + Utils.encodeBase64(wiki);
         Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
         return result;
