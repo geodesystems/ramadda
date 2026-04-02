@@ -795,6 +795,18 @@ new MapLayer('usfs','Forest Service',
 	     'https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',
 	     {attribution:'Map courtesy of Caltopo'});
 
+new MapLayer('usfswhite','Forest Service White',
+	     'https://caltopo.com/tile/f/${z}/${x}/${y}@2x.png',
+	     {attribution:'Map courtesy of Caltopo'});
+
+new MapLayer('contours','Contours',
+	     'https://caltopo.com/tile/mb_clear-0-0-c22BB6100/{z}/{x}/{y}@2x.png',
+	     {attribution:'Contour map courtesy of Caltopo'});
+
+
+
+
+
 new MapLayer('caltopo.mb_topo','MapBuilder Topo',
 	     'https://caltopo.com/tile/mb_topo/${z}/${x}/${y}@2x.png',
 	     {attribution:'Map courtesy of Caltopo'});
