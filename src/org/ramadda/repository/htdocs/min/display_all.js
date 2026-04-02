@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Mar 29 06:09:03 MDT 2026";
+var build_date="RAMADDA build date: Thu Apr  2 07:53:00 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1406,6 +1406,7 @@ function DisplayAnimation(display, enabled,attrs) {
     const ID_TOOLTIP = "tooltip";    
     const ID_SHOWALL = "showall";
     const ID_WINDOW = "window";
+    const ID_MODE = "mode";
     const ID_STEP = "step";        
     const ID_SETTINGS = "settings";
     const ID_FASTER = "faster";
@@ -1568,7 +1569,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(!this.display.getProperty("animationStartShowAll",false)) { 
 		this.resetRange();
 	    }
-	    let sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
+	    let sliderValues = this.getMode() != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
 	    let tooltipFunc = {
 		mouseleave: function(e) {
 		    if(_this.tooltip)
@@ -1598,7 +1599,7 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    if(this.makeSlider) {
 		let slider = this.slider = this.jq(ID_SLIDER).slider({
-		    range: _this.mode != MODE_FRAME,
+		    range: _this.getMode() != MODE_FRAME,
 		    min: _this.dateMin.getTime(),
 		    max: _this.dateMax.getTime(),
 		    values: sliderValues,
@@ -1670,14 +1671,14 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(this.startAtEnd) {
 		this.setBegin(this.dateMax);
 		this.setEnd(this.dateMax);
-		if (this.mode == MODE_FRAME) {
+		if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = this.dates.length-1;
 		}		    
 	    } else   if(this.startAtBeginning) {
 		this.setBegin(this.dateMin);
 		this.setEnd(new Date(this.begin.getTime()+this.window));
 	    }
-	    if (this.mode == MODE_FRAME) {
+	    if (this.getMode() == MODE_FRAME) {
 		this.setEnd(this.begin);
 	    }
 	},
@@ -1715,7 +1716,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let debug = false;
 	    if(debug)
 		console.log(this.display.type+" animation.setSliderValues");
-	    if(this.mode != MODE_FRAME) {
+	    if(this.getMode() != MODE_FRAME) {
 		this.setBegin(new Date(v[0]));
 		this.setEnd(new Date(v[1]));
 	    } else {
@@ -1743,6 +1744,16 @@ function DisplayAnimation(display, enabled,attrs) {
 	    } else {
 		element.removeClass("display-animation-tick-highlight");
 	    }
+	},
+	getMode: function() {
+	    return this.mode;
+	},
+	showingAll: function() {
+	    if(this.begin && this.dateMin && this.end && this.dateMax) {
+		return this.begin.getTime() == this.dateMin.getTime() &&
+		    this.end.getTime() == this.dateMax.getTime();
+	    }
+	    return false;
 	},
 	makeControls:function() {
 	    this.tickHeight = this.display.getProperty("animationHeight",HU.px(15));
@@ -1893,6 +1904,7 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    let _this  =this;
             this.jq(ID_SETTINGS).button().click(function(){
+		let mode = _this.getMode();
 		let window = _this.display.getAnimationWindow();
 		let step = _this.display.getAnimationStep(window);		
 		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
@@ -1908,7 +1920,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		    HU.div([ATTR_ID,_this.domId(ID_SHOWALL),
 			    ATTR_TITLE, "Show all",
 			    ATTR_CLASS,clazz], "Show all");
-		if(window) {
+		html+=HU.thinLine();
+		html+=HU.div([],HU.b('Current mode: ') + _this.mode);
+		if(mode==MODE_SLIDING) {
 		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
 				 "Window:"+ HU.br() +SPACE2 +
 				 HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
@@ -1919,6 +1933,16 @@ function DisplayAnimation(display, enabled,attrs) {
 				 HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),
 						   ATTR_SIZE,10]));
 		}
+
+		[MODE_CUMULATIVE, MODE_FRAME, MODE_SLIDING].forEach(m=>{
+		    if(mode==m) return;
+		    html+=HU.div([ATTR_TITLE, 'Change animation mode',
+				  ATTR_CLASS,clazz+' animation-mode',
+				  'mode',m],
+				 'Set mode to '+ m);
+
+
+		});
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({
 		    content:html,
@@ -1936,6 +1960,13 @@ function DisplayAnimation(display, enabled,attrs) {
 			_this.dateRangeChanged();
 		    }
 		};
+		_this.dialog.find('.animation-mode').click(function() {
+		    _this.mode = $(this).attr('mode');
+		    _this.setWindow();
+		    _this.resetRange();
+		    _this.dateRangeChanged();
+		    _this.dialog.hide();
+		});
 		_this.jq(ID_WINDOW).keyup(key);
 		_this.jq(ID_STEP).keyup(key);
 		_this.jq(ID_FASTER).click(()=>{
@@ -1978,9 +2009,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		let diff = this.getDiff();
 		let fullRange = this.fullRange();
 		this.setBegin(this.dateMin);
-		if (this.mode == MODE_SLIDING) {
+		if (this.getMode() == MODE_SLIDING) {
 		    this.end = this.makeDate(new Date(this.begin.getTime()+(fullRange?this.window:diff)));
-		} else if (this.mode == MODE_FRAME) {
+		} else if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = 0;
 		    let date = this.deltaFrame(0);
 		    this.setBeginEnd(date);
@@ -1994,9 +2025,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		let diff = this.getDiff();
 		let fullRange = this.fullRange();
 		this.end = this.dateMax;
-		if (this.mode == MODE_SLIDING) {
+		if (this.getMode() == MODE_SLIDING) {
 		    this.setBegin(new Date(this.end.getTime()-(fullRange?this.window:diff)));
-		} else if (this.mode == MODE_FRAME) {
+		} else if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = this.dates.length+1;
 		    this.setBeginEnd(this.deltaFrame(0));
 		} else {
@@ -2031,12 +2062,12 @@ function DisplayAnimation(display, enabled,attrs) {
 	doPrev: function()  {
 	    let diff = this.getDiff()||this.window;
 	    diff = this.window||this.getDiff();
-	    if (this.mode == MODE_SLIDING) {
+	    if (this.getMode() == MODE_SLIDING) {
 		this.setBegin(new Date(this.begin.getTime()-diff));
 		if(this.begin.getTime()<this.dateMin.getTime())
 		    this.setBegin(this.dateMin);
 		this.setEnd(new Date(this.begin.getTime()+diff));
-	    } else if (this.mode == MODE_FRAME) {
+	    } else if (this.getMode() == MODE_FRAME) {
 		this.setBeginEnd(this.deltaFrame(-1));
 	    } else {
 		this.setEnd(new Date(this.end.getTime()-this.window));
@@ -2050,9 +2081,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
 	    //	    debug=true;
-	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
+	    if(debug) console.log("animation.doNext:" + this.getMode() +" atEnd=" + wasAtEnd);
 
-	    if (this.mode == MODE_SLIDING) {
+	    if (this.getMode() == MODE_SLIDING) {
 		let window = this.window||this.getDiff();
 		this.setBegin(new Date(this.begin.getTime()+this.step));
 		this.setEnd(new Date(this.end.getTime()+this.step));
@@ -2063,7 +2094,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
-	    } else if (this.mode == MODE_FRAME) {
+	    } else if (this.getMode() == MODE_FRAME) {
 		this.setBeginEnd(this.deltaFrame(1));
 		if(this.running) {
 		    if(wasAtEnd) {
@@ -2120,7 +2151,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if (!this.inAnimation) {
                 this.inAnimation = true;
                 this.label.html("");
-		if (this.mode == MODE_FRAME) {
+		if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex =0;
 		    this.setBeginEnd(this.deltaFrame(0));
 		    this.display.animationStart();
@@ -2323,7 +2354,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    //it has filtered its records
 		    return;
 		}
-		if (this.mode == MODE_FRAME && this.begin.getTime() == this.end.getTime()) {
+		if (this.getMode() == MODE_FRAME && this.begin.getTime() == this.end.getTime()) {
 		    this.label.html(this.makeLabel(this.formatAnimationDate(this.begin)));
 		} else {
 		    this.label.html(this.makeLabel(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end)));
@@ -2360,48 +2391,145 @@ function DisplayAnimation(display, enabled,attrs) {
 
 var debugColorBy = false;
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable,
-		     propPrefix, theField, props,lastColorBy) {
+function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
     this.properties = props || {};
-    if(!prop) prop = "colorBy";
+    this.display = display;
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
     if(Utils.isDefined(this.properties.maxValue)) this.properties.hasMaxValue = true;    
 
+ 
     if ( !propPrefix ) {
-	propPrefix = ["colorBy",""];
+	propPrefix = [fieldProperty,""];
     } else if( !Array.isArray(propPrefix) ) {
 	propPrefix = [propPrefix];
     }
-    $.extend(this, {
-	display:display,
-	fieldProp: prop,
-	fieldValue:display.getProperty(prop),
-	propPrefix: propPrefix,
-	colorHistory:{}
-    });
 
-    let colorByAttr = this.getProperty(prop||"colorBy", null);
+    this.propPrefix=propPrefix;
+    let valueAttr = this.getProperty(fieldProperty, null);
     if(theField==null) {
-	if(prop.getId) {
-	    theField = prop;
+	if(fieldProperty.getId) {
+	    theField = fieldProperty;
 	} else {
-	    theField = display.getFieldById(null, colorByAttr);
+	    theField = display.getFieldById(null, valueAttr);
 	}
     }
 
     if(theField) {
 	this.field = theField;
-	propPrefix = [theField.getId()+".",""];
-	colorByAttr =theField.getId();
-	this.propPrefix.unshift(theField.getId()+".colorBy");
-	this.propPrefix.push("colorBy");
+	valueAttr =theField.getId();
+	propPrefix.unshift(theField.getId()+'.'+ fieldProperty);
+	propPrefix.push(fieldProperty);
     }
-
+    
     $.extend(this, {
-	display:display,
-        id: colorByAttr,
+        id: valueAttr,
+	valueAttr:valueAttr,
+	fieldValue:display.getProperty(fieldProperty),
+	propPrefix: propPrefix,
+	origRange:null,
+	origMinValue:0,
+	origMaxValue:0,
+	valueOffset: 0,
+        minValue: 0,
+        maxValue: 0,
+	toMinValue: 0,
+        toMaxValue: 100
+    });
+
+    let valueFunction = this.getProperty("Function", false);
+    if(this.getProperty("Log", false)) valueFunction=='log';
+    else if(this.getProperty("Log10", false)) valueFunction=='log10';
+    else if(this.getProperty("Log2", false)) valueFunction=='log2';        
+    this.valueFunctionPercentile= valueFunction=='percentile';
+    if(valueFunction=='log') {
+	this.valueFunction = Math.log;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log(minValue);
+	    const logMax = Math.log(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.exp(logValue);
+	}
+    } else if(valueFunction=='log10') {
+	this.valueFunction = Math.log10;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log10(minValue);
+	    const logMax = Math.log10(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(10, logValue);
+	}
+    } else if(valueFunction=='log2') {
+	this.valueFunction = Math.log2;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log2(minValue);
+	    const logMax = Math.log2(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(2, logValue);
+	}
+    }
+    
+
+}
+
+ValueMapper.prototype = {
+    processRecords:function(records) {
+	this.uniqueValues = [];
+	let seenValue = {};
+	let min = NaN;
+	let max = NaN;
+	records.forEach((record,idx)=>{
+            let tuple = record.getData();
+	    let v;
+            if(this.timeField) {
+		if(this.timeField=="hour")
+		    v = record.getTime().getHours();
+		else
+		    v = record.getTime().getTime();
+	    } else {
+		v = tuple[this.index];		
+	    }
+	    if(!seenValue[v]) {
+		seenValue[v] = true;
+		this.uniqueValues.push(v);
+	    }
+
+            if (this.isString) {
+		return;
+	    }
+            if (this.excludeZero && v === 0) {
+		return;
+            }
+	    min = Utils.min(min,v);
+	    max = Utils.max(max,v);
+	});
+
+	this.minValue =min;
+	this.maxValue =max;	
+	this.origRange = [min,max];
+	this.sortedValues = [...this.uniqueValues].sort((a, b) => a - b);
+    },
+    getProperty: function(prop, dflt, debug) {
+	if(this.properties[prop]) return this.properties[prop];
+	if(this.debug) console.log("getProperty:" + prop);
+	for(let i=0;i<this.propPrefix.length;i++) {
+	    this.display.debugGetProperty = debug;
+	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
+	    let v = this.display.getProperty(this.propPrefix[i]+prop);
+	    this.display.debugGetProperty = false;
+	    if(Utils.isDefined(v)) return v;
+	}
+	return dflt;
+    },
+    
+}
+
+function ColorByInfo(display, fields, records,
+		     fieldProperty,colorByMapProp, defaultColorTable,
+		     propPrefix, theField, props,lastColorBy) {
+    let SUPER = new ValueMapper(display,fieldProperty??'colorBy', propPrefix,theField,props);
+    $.extend(this, SUPER);
+    $.extend(this, {
+	colorHistory:{},
 	fields:fields,
-        field: theField,
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	literal:display.getProperty("colorByLiteral"),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
@@ -2410,20 +2538,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
-	origRange:null,
-	origMinValue:0,
-	origMaxValue:0,
-        minValue: 0,
-        maxValue: 0,
-	toMinValue: 0,
-        toMaxValue: 100,
         isString: this.properties.isString,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
 	colorByMinPerc: this.getProperty("MinPercentile", -1),
 	colorByMaxPerc: this.getProperty("MaxPercentile", -1),
-	colorByOffset: 0,
+
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
     });
@@ -2520,8 +2641,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     let colors = null;
     let colorTabelSteps = null;
-    if(colorByAttr) {
-	let c = this.display.getProperty(colorByAttr +".colors");
+    if(this.valueAttr) {
+	let c = this.display.getProperty(this.valueAttr +".colors");
 	if(c) colors = c.split(",");
     }
 
@@ -2540,7 +2661,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    }
 	} else {
 	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
-						       colorByAttr +".colorTable",
+						       this.valueAttr +".colorTable",
 						       "colorTable"]);
 	}
 
@@ -2548,7 +2669,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(!colors) {
 	let colorTableObject  = defaultColorTable??
 	    this.display.getColorTable(false,[this.properties.colorTableProperty,
-					      colorByAttr +".colorTable",
+					      this.valueAttr +".colorTable",
 					      "colorTable"]);
 
 	if(colorTableObject)
@@ -2561,7 +2682,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     //    }
 
     if(!colors) {
-	var c = this.getProperty(colorByAttr +".colors");
+	var c = this.getProperty(this.valueAttr +".colors");
 	if(c)
 	    colors = c.split(",");
     }
@@ -2636,45 +2757,15 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
-    let uniqueValues = [];
-    let seenValue = {};
     if(this.index>=0 || this.timeField) {
-	let min = NaN;
-	let max = NaN;
-	records.forEach((record,idx)=>{
-            let tuple = record.getData();
-	    let v;
-            if(this.timeField) {
-		if(this.timeField=="hour")
-		    v = record.getTime().getHours();
-		else
-		    v = record.getTime().getTime();
-	    } else {
-		v = tuple[this.index];		
-	    }
-            if (this.isString) {
-		if(!seenValue[v]) {
-		    seenValue[v] = true;
-		    uniqueValues.push(v);
-		}
-		return;
-	    }
-            if (this.excludeZero && v === 0) {
-		return;
-            }
-	    min = Utils.min(min,v);
-	    max = Utils.max(max,v);
-	});
-	this.minValue =min;
-	this.maxValue =max;	
-	this.origRange = [min,max];
+	this.processRecords(records);
     }
 
-    if(uniqueValues.length>0) {
-	uniqueValues.sort((a,b)=>{
+    if(this.isString && this.uniqueValues.length>0) {
+	this.uniqueValues.sort((a,b)=>{
 	    return a.toString().localeCompare(b.toString());
 	});
-	uniqueValues.forEach(v=>{
+	this.uniqueValues.forEach(v=>{
 	    if (!Utils.isDefined(this.colorByMap[v])) {
 		let index = this.colorByValues.length;
                 let color;
@@ -2707,35 +2798,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.steps = steps.split(",");
     }
 
-    this.colorByLog = this.getProperty("Log", false);
-    this.colorByLog10 = this.getProperty("Log10", false);
-    this.colorByLog2 = this.getProperty("Log2", false);
-    if(this.colorByLog) {
-	this.colorByFunc = Math.log;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log(minValue);
-	    const logMax = Math.log(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.exp(logValue);
-	}
-    }   else if(this.colorByLog10) {
-	this.colorByFunc = Math.log10;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log10(minValue);
-	    const logMax = Math.log10(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.pow(10, logValue);
-	}
-    }   else if(this.colorByLog2) {
-	this.colorByFunc = Math.log2;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log2(minValue);
-	    const logMax = Math.log2(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.pow(2, logValue);
-	}
-    }
-
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
 
@@ -2755,18 +2817,6 @@ ColorByInfo.prototype = {
     },
     getId:function() {
 	return this.id;
-    },
-    getProperty: function(prop, dflt, debug) {
-	if(this.properties[prop]) return this.properties[prop];
-	if(this.debug) console.log("getProperty:" + prop);
-	for(let i=0;i<this.propPrefix.length;i++) {
-	    this.display.debugGetProperty = debug;
-	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
-	    let v = this.display.getProperty(this.propPrefix[i]+prop);
-	    this.display.debugGetProperty = false;
-	    if(Utils.isDefined(v)) return v;
-	}
-	return dflt;
     },
     isEnabled: function() {
 	return this.enabled ||this.getDoCount();
@@ -2867,7 +2917,7 @@ ColorByInfo.prototype = {
 					       colorByInfo:this,
 					       width:width,
 					       stringValues: cbs,
-					       getValueFunction:this.inverseColorByFunc
+					       getValueFunction:this.inverseValueFunc
 					   });
 	}
     },
@@ -2880,7 +2930,7 @@ ColorByInfo.prototype = {
 	if(this.display.getColorByAllRecords() && !force) {
 	    return;
 	}
-	if(this.display.getProperty("useDataForColorRange") && this.origRange) {
+	if(this.getProperty("useDataForColorRange") && this.origRange) {
 	    minValue = this.origRange[0];
 	    maxValue = this.origRange[1];	    
 	}	    
@@ -2892,16 +2942,14 @@ ColorByInfo.prototype = {
 	this.origMaxValue = maxValue;
 
 
-	if (this.colorByFunc) {
-	    if (minValue < 0) {
-		this.colorByOffset =  -minValue;
-	    } else if(minValue == 0) {
-		this.colorByOffset =  1;
+	this.valueOffset = 0;
+
+	if (this.valueFunction) {
+	    if (minValue <= 0) {
+		this.valueOffset =  Math.abs(minValue)+ Utils.epsilon;
 	    }
-	    //	    if(minValue>0)
-	    minValue = this.colorByFunc(minValue + this.colorByOffset);
-	    //	    if(maxValue>0)
-	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+	    minValue = this.valueFunction(minValue + this.valueOffset);
+	    maxValue = this.valueFunction(maxValue + this.valueOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
@@ -2909,7 +2957,6 @@ ColorByInfo.prototype = {
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
-	//	console.log("min/max:" + this.minValue +" " + this.maxValue);
     },
     getValuePercent: function(v) {
 	let perc =   (v - this.minValue) / this.range;
@@ -3024,6 +3071,8 @@ ColorByInfo.prototype = {
 		value = value.getTime();
 		this.doingDates = true;
 	    }
+
+
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
 	    this.lastValue = value;
@@ -3070,6 +3119,8 @@ ColorByInfo.prototype = {
 	if(c==null) c=this.nullColor;
 	return c;
     },
+
+
 
     getColorInner: function(value, pointRecord,debug) {
 	if(this.colorTableSteps) {
@@ -3123,20 +3174,22 @@ ColorByInfo.prototype = {
 		if(color) return color;
             }
 	    let tmp = v;
-            v += this.colorByOffset;
-            if (this.colorByFunc && v>0) {
-                v = this.colorByFunc(v);
-            }
+            v += this.valueOffset;
 	    if(isNaN(v)) {
-		//	    if(debugColorBy)console.log("value is nan:" + value);
 		return this.nullColor;
 	    }	    
-            percent = this.range?(v - this.minValue) / this.range:0.5;
-	    //	    console.log(this.display.getName(),v,percent,this.range,this.minValue);
-	    //	    if(tmp>3 && tmp<6)
-	    //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
-        }
 
+	    if(this.valueFunctionPercentile) {
+		let index = Utils.binarySearch(this.sortedValues, v);
+		percent =  index / (this.sortedValues.length - 1);
+	    } else {
+		if (this.valueFunction) {
+		    v = Math.max(v, Utils.epsilon);
+                    v = this.valueFunction(v);
+		}
+		percent = Math.max(0, Math.min(1,this.range?((v - this.minValue) / this.range):0.5));
+	    }
+        }
 
 	let index=0;
 	if(this.steps) {
@@ -3210,15 +3263,14 @@ ColorByInfo.prototype = {
 
 
 function SizeBy(display,records,fieldProperty) {
-    this.display = display;
+    let SUPER = new ValueMapper(display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
+    $.extend(this, SUPER);
+
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData?pointData.getRecordFields():[];
     $.extend(this, {
-        id: this.display.getProperty(fieldProperty|| "sizeBy"),
-        minValue: 0,
-        maxValue: 0,
-	threshold:parseFloat(this.display.getProperty('sizeByThreshold',NaN)),
+	threshold:parseFloat(this.getProperty('sizeByThreshold',NaN)),
         field: null,
         index: -1,
         isString: false,
@@ -3226,7 +3278,7 @@ function SizeBy(display,records,fieldProperty) {
     });
 
 
-    let sizeByMap = this.display.getProperty("sizeByMap");
+    let sizeByMap = this.getProperty("sizeByMap");
     if (sizeByMap) {
         let toks = sizeByMap.split(",");
         for (let i = 0; i < toks.length; i++) {
@@ -3250,42 +3302,40 @@ function SizeBy(display,records,fieldProperty) {
 	let col = this.display.getColumnValues(records, this.field);
 	this.minValue = col.min;
 	this.maxValue =  col.max;
-	if(Utils.isDefined(this.display.getProperty("sizeByMin"))) {
-	    this.minValue = +this.display.getProperty("sizeByMin",0)
+	if(Utils.isDefined(this.getProperty("sizeByMin"))) {
+	    this.minValue = +this.getProperty("sizeByMin",0)
 	}
-	if(Utils.isDefined(this.display.getProperty("sizeByMax"))) {
-	    this.maxValue = +this.display.getProperty("sizeByMax",0)
+	if(Utils.isDefined(this.getProperty("sizeByMax"))) {
+	    this.maxValue = +this.getProperty("sizeByMax",0)
 	}
     }
 
-    if(this.display.getProperty("sizeBySteps")) {
+    if(this.getProperty("sizeBySteps")) {
 	this.steps = [];
-	this.display.getProperty("sizeBySteps").split(",").forEach(tuple=>{
+	this.getProperty("sizeBySteps").split(",").forEach(tuple=>{
 	    let [value,size] = tuple.split(":");
 	    this.steps.push({value:+value,size:+size});
 	});
     }
-    this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
-    this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
-    this.offset = 0;
-    let sizeByLog = this.display.getProperty("sizeByLog", false);
+    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
+    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", -1));
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
-
     this.maxValue = Math.max(this.minValue,this.maxValue);
-    if (sizeByLog) {
-	this.func = sizeByLog=='2'?Math.log2:
-	    sizeByLog=='10'?Math.log10:Math.log;
+    if (this.valueFunction) {
         if (this.minValue < 1) {
-            this.offset = 1 - this.minValue;
+            this.valueOffset = 1 - this.minValue;
         }
-        this.minValue = this.func(this.minValue + this.offset);
-        this.maxValue = this.func(this.maxValue + this.offset);
+        this.minValue = this.valueFunction(this.minValue + this.valueOffset);
+        this.maxValue = this.valueFunction(this.maxValue + this.valueOffset);
     }
 }
 
 SizeBy.prototype = {
-    getMaxSize:function() {
+    isEnabled:function() {
+	return this.index>=0;
+    },
+    getMaxValueSize:function() {
 	return this.getSizeFromValue(this.origMaxValue);
     },
     getSize: function(values, dflt, func) {
@@ -3319,7 +3369,7 @@ SizeBy.prototype = {
 	    return size;
         } else {
             let denom = this.maxValue - this.minValue;
-            let v = value + this.offset;
+            let v = value + this.valueOffset;
             if (this.func) v = this.func(v);
             let percent = (denom == 0 ? NaN : (v - this.minValue) / denom);
 	    let size;
@@ -3327,6 +3377,7 @@ SizeBy.prototype = {
                 size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
             } else {
                 size = 6 + parseInt(15 * percent);
+		console.log(v,percent,size);
             }
 	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" percent:" + percent +" v:" + v +" size:" + size);
 	    if(isNaN(size)) size =  this.radiusMin;
@@ -3353,6 +3404,7 @@ SizeBy.prototype = {
 	    for(let i=0;i<=cnt;i++) {
 		let v = this.origMinValue+ i/cnt*(this.origMaxValue-this.origMinValue);
 		let size  =this.getSizeFromValue(v,null,false);
+		size = Math.min(size,100);
 		if(isNaN(size) || size==0) continue;
 		v = this.display.formatNumber(v);
 		let dim = HU.px(size*2);
@@ -6030,10 +6082,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Color'},
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
-	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
-	{p:'colorByLog',ex:'true',tt:'Use a natural log scale for the color by'},
-	{p:'colorByLog10',ex:'true',tt:'Use base 10 log scale for the color by'},
-	{p:'colorByLog2',ex:'true',tt:'Use base 2 log scale for the color by'},		
+	{p:'colorByFields',ex:'',tt:'Comma separated list of fields. Show menu'},
+	{p:'colorByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to color by'},
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -6156,7 +6206,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
 	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
-		{p:'sizeByLog',ex:true,tt:'Use log scale for size by'},
+		{p:'sizeByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to for size by'},
 		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
 		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
@@ -6267,6 +6317,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let url = RamaddaUtil.getUrl("/wikify");
 	    ramaddaDoingWiki++;
 	    let handleResult = (data)=>{
+		data = Utils.convertText(data);
+
+
 		wikiCallback(data);
 		ramaddaDoingWiki--;
 	    }
@@ -6359,8 +6412,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				   ATTR_WHAT,'reset'],'Reset range'),
 			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
 				   ATTR_WHAT,'ussedata'],'Use data range'));
-		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
-				       _this.getProperty('colorByLog'),'Use Log Scale'));
+		let colorByFunctions=['value','percentile','log','log2','log10'];
+		items.push(HU.boldLabel('Function') +
+			   HU.select("",[ATTR_ID,'colortablefunction'],colorByFunctions,
+				     _this.getColorByFunction('value')));
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
 							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
@@ -6408,8 +6463,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.forceUpdateUI();
 		    }		    
 		});
-		dialog.find('#colortableuselog').change(function() {
-		    _this.setProperty('colorByLog',HU.isChecked($(this)));
+		dialog.find('#colortablefunction').change(function() {
+		    _this.setProperty('colorByFunction',$(this).val());
 		    _this.forceUpdateUI();
 		});
 		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
@@ -6817,11 +6872,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setProperty("patternFilterField", args.field.getId());
             this.callUpdateUI();
         },
-        setDateRange: function(min, max, doDay) {
+        setDateRange: function(min, max, doDay,showAll) {
 	    this.minDateObj = min;
 	    this.maxDateObj = max;
 	    this.dateRangeDoDay = doDay;
-	    //	    console.log("setDateRange: " + this.minDateObj +" " + this.maxDateObj);
+	    this.animationShowingAll = showAll;
 	},
         handleDateRangeChanged: function(source, prop) {
 	    this.setDateRange(prop.minDate, prop.maxDate);
@@ -12148,8 +12203,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	animationStart: function(animation) {
 	},
 	animationApply: function(animation, skipUpdateUI) {
-	    if(this.getProperty("animationFilter", true))
-		this.setDateRange(animation.begin, animation.end);
+	    if(this.getProperty("animationFilter", true)) {
+		this.setDateRange(animation.begin, animation.end,false,animation.showingAll());
+	    }
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		this.dataFilterChanged({source:"animation"});
@@ -12704,28 +12760,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) {
 		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
 	    }
-
-	    //	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
+	    let minMaxPair;
 	    if(this.minDateObj) {
 		if(this.minDateObj.isIndex) {
 		    if(idx<this.minDateObj.index) return false;
-		}
-		if(this.minDateObj.isValue) {
-		    let pair = this.getMinMax(this.minDateObj.fields,record);
-		    let min  = pair.min;
+		} else 	if(this.minDateObj.isValue) {
+		    minMaxPair = this.getMinMax(this.minDateObj.fields,record);
+		    let min  = minMaxPair.min;
 		    if(min<this.minDateObj.value) return false;
 		}
 	    }
 	    if(this.maxDateObj) {
 		if(this.maxDateObj.isIndex) {
 		    if(idx>this.maxDateObj.index) return false;
-		}
-		if(this.maxDateObj.isValue) {
-		    let pair = this.getMinMax(this.minDateObj.fields,record);
-		    if(pair.max>this.maxDateObj.value) return false;
+		} else if(this.maxDateObj.isValue) {
+		    if(!minMaxPair)
+			minMaxPair = this.getMinMax(this.maxDateObj.fields,record);
+		    if(minMaxPair.max>this.maxDateObj.value) return false;
 		}
 	    }	    
+	    if(minMaxPair && isNaN(minMaxPair.min) && isNaN(minMaxPair.max)) {
+		if(!this.animationShowingAll) {
+		    return false;
+		}
+	    }
 
+//	    console.log(minMaxPair);
             if (date != null) {
 		if(this.dateRangeDoDay && this.minDateObj) {
 		    if(date.getUTCFullYear()!=this.minDateObj.getUTCFullYear() ||
@@ -17805,7 +17865,7 @@ var DataUtils = {
 	    if(this.timeMap[unit]) {
 		scale = this.timeMap[unit];
 	    } else {
-		console.log("Unknown unit:" + unit);
+//		console.log("Unknown unit:" + unit);
 	    }
 	}
 	return  cnt*scale;
@@ -28406,7 +28466,9 @@ function NotebookState(cell, div) {
 					   'doImports','false',
 					   ARG_ENTRYID,entry,
 					   'wikitext',s),
-				    callback);
+				    (html)=>{
+					html = Utils.convertText(html);
+					callback(html);});
         },
         //These are for the iodiode mimic
         addOutputRenderer: function(renderer) {
@@ -45408,7 +45470,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    let img = canvas.toDataURL();
 		    let size = glyphSize;
-		    if(sizeBy.index>=0) {
+		    if(sizeBy.isEnabled()) {
 			size = props.pointRadius;
 		    }
 		    mapPoint = this.map.createMarker("pt-" + featureCnt, point, img, "pt-" + featureCnt,null,null,size);
@@ -45517,12 +45579,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
 		    if(label) legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
+		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
+						     CSS_OVERFLOW_X,OVERFLOW_AUTO,
+						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],legend);
 		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([ATTR_STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
 		    this.callingUpdateSize = true;
 		    this.map.getMap().updateSize();
 		    this.callingUpdateSize = false;
+
 		}
 	    }
 	    times = [new Date()];
@@ -67641,7 +67707,8 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		fields = this.getPointData().getRecordFields();
 	    }
 	    let dotSize = this.getPropertyDotSize();
-	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let sizeBy = new SizeBy(this,
+				    this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 	    let size = dotSize;
 	    let cols = {};
 	    let html = HU.open(TAG_TABLE,[ATTR_WIDTH,'100%']);
@@ -67649,7 +67716,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    let selectedRecord;
 	    let maxHeight = dotSize;
 	    if(sizeBy.field)
-		maxHeight=2*sizeBy.getMaxSize();
+		maxHeight=2*sizeBy.getMaxValueSize();
 	    fields.forEach((f,idx)=>{
 		if(!f.isFieldNumeric()) return;
 
@@ -71207,7 +71274,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    let heightBy;
 	    let heightScale = this.getHeightScale();
 	    if(this.getProperty("heightField")) {
-		heightBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,"heightField");
+		heightBy = new SizeBy(this,
+				      this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,"heightField");
 	    }
 
 	    if(colorBys.length==0) colorBys=[colorBy];
