@@ -32,6 +32,7 @@ var Utils =  {
     loadFunctions:[],
     mouseMoveCnt:0,
     mouseIsDown: false,
+    epsilon:1e-6,
     entryGroups: new Array(),
     groupList: new Array(),
     tooltipObject:null,
@@ -725,6 +726,20 @@ var Utils =  {
         });
         return l;
     },
+    binarySearch:function(sorted, value) {
+	let low = 0;
+	let high = sorted.length;
+	while (low < high) {
+            let mid = Math.floor((low + high) / 2);
+            if (sorted[mid] < value) {
+		low = mid + 1;
+            } else {
+		high = mid;
+            }
+	}
+	return low; // insertion index
+    },
+
     sortNumbers:function(l) {
         l.sort((a,b)=>{return +a - +b});
         return l;
