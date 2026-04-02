@@ -3133,7 +3133,7 @@ var DataUtils = {
 	    if(this.timeMap[unit]) {
 		scale = this.timeMap[unit];
 	    } else {
-		console.log("Unknown unit:" + unit);
+//		console.log("Unknown unit:" + unit);
 	    }
 	}
 	return  cnt*scale;
