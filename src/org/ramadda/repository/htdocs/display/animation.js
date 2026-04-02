@@ -20,6 +20,7 @@ function DisplayAnimation(display, enabled,attrs) {
     const ID_TOOLTIP = "tooltip";    
     const ID_SHOWALL = "showall";
     const ID_WINDOW = "window";
+    const ID_MODE = "mode";
     const ID_STEP = "step";        
     const ID_SETTINGS = "settings";
     const ID_FASTER = "faster";
@@ -182,7 +183,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(!this.display.getProperty("animationStartShowAll",false)) { 
 		this.resetRange();
 	    }
-	    let sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
+	    let sliderValues = this.getMode() != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
 	    let tooltipFunc = {
 		mouseleave: function(e) {
 		    if(_this.tooltip)
@@ -212,7 +213,7 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    if(this.makeSlider) {
 		let slider = this.slider = this.jq(ID_SLIDER).slider({
-		    range: _this.mode != MODE_FRAME,
+		    range: _this.getMode() != MODE_FRAME,
 		    min: _this.dateMin.getTime(),
 		    max: _this.dateMax.getTime(),
 		    values: sliderValues,
@@ -284,14 +285,14 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(this.startAtEnd) {
 		this.setBegin(this.dateMax);
 		this.setEnd(this.dateMax);
-		if (this.mode == MODE_FRAME) {
+		if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = this.dates.length-1;
 		}		    
 	    } else   if(this.startAtBeginning) {
 		this.setBegin(this.dateMin);
 		this.setEnd(new Date(this.begin.getTime()+this.window));
 	    }
-	    if (this.mode == MODE_FRAME) {
+	    if (this.getMode() == MODE_FRAME) {
 		this.setEnd(this.begin);
 	    }
 	},
@@ -329,7 +330,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let debug = false;
 	    if(debug)
 		console.log(this.display.type+" animation.setSliderValues");
-	    if(this.mode != MODE_FRAME) {
+	    if(this.getMode() != MODE_FRAME) {
 		this.setBegin(new Date(v[0]));
 		this.setEnd(new Date(v[1]));
 	    } else {
@@ -357,6 +358,16 @@ function DisplayAnimation(display, enabled,attrs) {
 	    } else {
 		element.removeClass("display-animation-tick-highlight");
 	    }
+	},
+	getMode: function() {
+	    return this.mode;
+	},
+	showingAll: function() {
+	    if(this.begin && this.dateMin && this.end && this.dateMax) {
+		return this.begin.getTime() == this.dateMin.getTime() &&
+		    this.end.getTime() == this.dateMax.getTime();
+	    }
+	    return false;
 	},
 	makeControls:function() {
 	    this.tickHeight = this.display.getProperty("animationHeight",HU.px(15));
@@ -507,6 +518,7 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    let _this  =this;
             this.jq(ID_SETTINGS).button().click(function(){
+		let mode = _this.getMode();
 		let window = _this.display.getAnimationWindow();
 		let step = _this.display.getAnimationStep(window);		
 		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
@@ -522,7 +534,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		    HU.div([ATTR_ID,_this.domId(ID_SHOWALL),
 			    ATTR_TITLE, "Show all",
 			    ATTR_CLASS,clazz], "Show all");
-		if(window) {
+		html+=HU.thinLine();
+		html+=HU.div([],HU.b('Current mode: ') + _this.mode);
+		if(mode==MODE_SLIDING) {
 		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
 				 "Window:"+ HU.br() +SPACE2 +
 				 HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
@@ -533,6 +547,16 @@ function DisplayAnimation(display, enabled,attrs) {
 				 HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),
 						   ATTR_SIZE,10]));
 		}
+
+		[MODE_CUMULATIVE, MODE_FRAME, MODE_SLIDING].forEach(m=>{
+		    if(mode==m) return;
+		    html+=HU.div([ATTR_TITLE, 'Change animation mode',
+				  ATTR_CLASS,clazz+' animation-mode',
+				  'mode',m],
+				 'Set mode to '+ m);
+
+
+		});
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({
 		    content:html,
@@ -550,6 +574,13 @@ function DisplayAnimation(display, enabled,attrs) {
 			_this.dateRangeChanged();
 		    }
 		};
+		_this.dialog.find('.animation-mode').click(function() {
+		    _this.mode = $(this).attr('mode');
+		    _this.setWindow();
+		    _this.resetRange();
+		    _this.dateRangeChanged();
+		    _this.dialog.hide();
+		});
 		_this.jq(ID_WINDOW).keyup(key);
 		_this.jq(ID_STEP).keyup(key);
 		_this.jq(ID_FASTER).click(()=>{
@@ -592,9 +623,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		let diff = this.getDiff();
 		let fullRange = this.fullRange();
 		this.setBegin(this.dateMin);
-		if (this.mode == MODE_SLIDING) {
+		if (this.getMode() == MODE_SLIDING) {
 		    this.end = this.makeDate(new Date(this.begin.getTime()+(fullRange?this.window:diff)));
-		} else if (this.mode == MODE_FRAME) {
+		} else if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = 0;
 		    let date = this.deltaFrame(0);
 		    this.setBeginEnd(date);
@@ -608,9 +639,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		let diff = this.getDiff();
 		let fullRange = this.fullRange();
 		this.end = this.dateMax;
-		if (this.mode == MODE_SLIDING) {
+		if (this.getMode() == MODE_SLIDING) {
 		    this.setBegin(new Date(this.end.getTime()-(fullRange?this.window:diff)));
-		} else if (this.mode == MODE_FRAME) {
+		} else if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex = this.dates.length+1;
 		    this.setBeginEnd(this.deltaFrame(0));
 		} else {
@@ -645,12 +676,12 @@ function DisplayAnimation(display, enabled,attrs) {
 	doPrev: function()  {
 	    let diff = this.getDiff()||this.window;
 	    diff = this.window||this.getDiff();
-	    if (this.mode == MODE_SLIDING) {
+	    if (this.getMode() == MODE_SLIDING) {
 		this.setBegin(new Date(this.begin.getTime()-diff));
 		if(this.begin.getTime()<this.dateMin.getTime())
 		    this.setBegin(this.dateMin);
 		this.setEnd(new Date(this.begin.getTime()+diff));
-	    } else if (this.mode == MODE_FRAME) {
+	    } else if (this.getMode() == MODE_FRAME) {
 		this.setBeginEnd(this.deltaFrame(-1));
 	    } else {
 		this.setEnd(new Date(this.end.getTime()-this.window));
@@ -664,9 +695,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
 	    //	    debug=true;
-	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
+	    if(debug) console.log("animation.doNext:" + this.getMode() +" atEnd=" + wasAtEnd);
 
-	    if (this.mode == MODE_SLIDING) {
+	    if (this.getMode() == MODE_SLIDING) {
 		let window = this.window||this.getDiff();
 		this.setBegin(new Date(this.begin.getTime()+this.step));
 		this.setEnd(new Date(this.end.getTime()+this.step));
@@ -677,7 +708,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
-	    } else if (this.mode == MODE_FRAME) {
+	    } else if (this.getMode() == MODE_FRAME) {
 		this.setBeginEnd(this.deltaFrame(1));
 		if(this.running) {
 		    if(wasAtEnd) {
@@ -734,7 +765,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if (!this.inAnimation) {
                 this.inAnimation = true;
                 this.label.html("");
-		if (this.mode == MODE_FRAME) {
+		if (this.getMode() == MODE_FRAME) {
 		    this.frameIndex =0;
 		    this.setBeginEnd(this.deltaFrame(0));
 		    this.display.animationStart();
@@ -937,7 +968,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    //it has filtered its records
 		    return;
 		}
-		if (this.mode == MODE_FRAME && this.begin.getTime() == this.end.getTime()) {
+		if (this.getMode() == MODE_FRAME && this.begin.getTime() == this.end.getTime()) {
 		    this.label.html(this.makeLabel(this.formatAnimationDate(this.begin)));
 		} else {
 		    this.label.html(this.makeLabel(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end)));

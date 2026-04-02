@@ -2106,10 +2106,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Color'},
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
-	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
-	{p:'colorByLog',ex:'true',tt:'Use a natural log scale for the color by'},
-	{p:'colorByLog10',ex:'true',tt:'Use base 10 log scale for the color by'},
-	{p:'colorByLog2',ex:'true',tt:'Use base 2 log scale for the color by'},		
+	{p:'colorByFields',ex:'',tt:'Comma separated list of fields. Show menu'},
+	{p:'colorByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to color by'},
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -2232,7 +2230,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
 	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
-		{p:'sizeByLog',ex:true,tt:'Use log scale for size by'},
+		{p:'sizeByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to for size by'},
 		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
 		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
@@ -2438,8 +2436,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				   ATTR_WHAT,'reset'],'Reset range'),
 			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
 				   ATTR_WHAT,'ussedata'],'Use data range'));
-		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
-				       _this.getProperty('colorByLog'),'Use Log Scale'));
+		let colorByFunctions=['value','percentile','log','log2','log10'];
+		items.push(HU.boldLabel('Function') +
+			   HU.select("",[ATTR_ID,'colortablefunction'],colorByFunctions,
+				     _this.getColorByFunction('value')));
 		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
 							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
@@ -2487,8 +2487,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.forceUpdateUI();
 		    }		    
 		});
-		dialog.find('#colortableuselog').change(function() {
-		    _this.setProperty('colorByLog',HU.isChecked($(this)));
+		dialog.find('#colortablefunction').change(function() {
+		    _this.setProperty('colorByFunction',$(this).val());
 		    _this.forceUpdateUI();
 		});
 		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {

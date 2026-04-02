@@ -1050,7 +1050,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    let heightBy;
 	    let heightScale = this.getHeightScale();
 	    if(this.getProperty("heightField")) {
-		heightBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,"heightField");
+		heightBy = new SizeBy(this,
+				      this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,"heightField");
 	    }
 
 	    if(colorBys.length==0) colorBys=[colorBy];

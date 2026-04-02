@@ -5390,7 +5390,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    let img = canvas.toDataURL();
 		    let size = glyphSize;
-		    if(sizeBy.index>=0) {
+		    if(sizeBy.isEnabled()) {
 			size = props.pointRadius;
 		    }
 		    mapPoint = this.map.createMarker("pt-" + featureCnt, point, img, "pt-" + featureCnt,null,null,size);
@@ -5499,12 +5499,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
 		    if(label) legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
+		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
+						     CSS_OVERFLOW_X,OVERFLOW_AUTO,
+						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],legend);
 		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([ATTR_STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
 		    this.callingUpdateSize = true;
 		    this.map.getMap().updateSize();
 		    this.callingUpdateSize = false;
+
 		}
 	    }
 	    times = [new Date()];

@@ -5733,7 +5733,8 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		fields = this.getPointData().getRecordFields();
 	    }
 	    let dotSize = this.getPropertyDotSize();
-	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let sizeBy = new SizeBy(this,
+				    this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 	    let size = dotSize;
 	    let cols = {};
 	    let html = HU.open(TAG_TABLE,[ATTR_WIDTH,'100%']);
@@ -5741,7 +5742,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    let selectedRecord;
 	    let maxHeight = dotSize;
 	    if(sizeBy.field)
-		maxHeight=2*sizeBy.getMaxSize();
+		maxHeight=2*sizeBy.getMaxValueSize();
 	    fields.forEach((f,idx)=>{
 		if(!f.isFieldNumeric()) return;
 

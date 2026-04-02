@@ -5,48 +5,145 @@
 
 var debugColorBy = false;
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable,
-		     propPrefix, theField, props,lastColorBy) {
+function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
     this.properties = props || {};
-    if(!prop) prop = "colorBy";
+    this.display = display;
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
     if(Utils.isDefined(this.properties.maxValue)) this.properties.hasMaxValue = true;    
 
+ 
     if ( !propPrefix ) {
-	propPrefix = ["colorBy",""];
+	propPrefix = [fieldProperty,""];
     } else if( !Array.isArray(propPrefix) ) {
 	propPrefix = [propPrefix];
     }
-    $.extend(this, {
-	display:display,
-	fieldProp: prop,
-	fieldValue:display.getProperty(prop),
-	propPrefix: propPrefix,
-	colorHistory:{}
-    });
 
-    let colorByAttr = this.getProperty(prop||"colorBy", null);
+    this.propPrefix=propPrefix;
+    let valueAttr = this.getProperty(fieldProperty, null);
     if(theField==null) {
-	if(prop.getId) {
-	    theField = prop;
+	if(fieldProperty.getId) {
+	    theField = fieldProperty;
 	} else {
-	    theField = display.getFieldById(null, colorByAttr);
+	    theField = display.getFieldById(null, valueAttr);
 	}
     }
 
     if(theField) {
 	this.field = theField;
-	propPrefix = [theField.getId()+".",""];
-	colorByAttr =theField.getId();
-	this.propPrefix.unshift(theField.getId()+".colorBy");
-	this.propPrefix.push("colorBy");
+	valueAttr =theField.getId();
+	propPrefix.unshift(theField.getId()+'.'+ fieldProperty);
+	propPrefix.push(fieldProperty);
     }
-
+    
     $.extend(this, {
-	display:display,
-        id: colorByAttr,
+        id: valueAttr,
+	valueAttr:valueAttr,
+	fieldValue:display.getProperty(fieldProperty),
+	propPrefix: propPrefix,
+	origRange:null,
+	origMinValue:0,
+	origMaxValue:0,
+	valueOffset: 0,
+        minValue: 0,
+        maxValue: 0,
+	toMinValue: 0,
+        toMaxValue: 100
+    });
+
+    let valueFunction = this.getProperty("Function", false);
+    if(this.getProperty("Log", false)) valueFunction=='log';
+    else if(this.getProperty("Log10", false)) valueFunction=='log10';
+    else if(this.getProperty("Log2", false)) valueFunction=='log2';        
+    this.valueFunctionPercentile= valueFunction=='percentile';
+    if(valueFunction=='log') {
+	this.valueFunction = Math.log;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log(minValue);
+	    const logMax = Math.log(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.exp(logValue);
+	}
+    } else if(valueFunction=='log10') {
+	this.valueFunction = Math.log10;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log10(minValue);
+	    const logMax = Math.log10(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(10, logValue);
+	}
+    } else if(valueFunction=='log2') {
+	this.valueFunction = Math.log2;
+	this.inverseValueFunc = (minValue,maxValue,percent)=>{
+	    const logMin = Math.log2(minValue);
+	    const logMax = Math.log2(maxValue);
+	    const logValue = logMin + percent * (logMax - logMin);
+	    return Math.pow(2, logValue);
+	}
+    }
+    
+
+}
+
+ValueMapper.prototype = {
+    processRecords:function(records) {
+	this.uniqueValues = [];
+	let seenValue = {};
+	let min = NaN;
+	let max = NaN;
+	records.forEach((record,idx)=>{
+            let tuple = record.getData();
+	    let v;
+            if(this.timeField) {
+		if(this.timeField=="hour")
+		    v = record.getTime().getHours();
+		else
+		    v = record.getTime().getTime();
+	    } else {
+		v = tuple[this.index];		
+	    }
+	    if(!seenValue[v]) {
+		seenValue[v] = true;
+		this.uniqueValues.push(v);
+	    }
+
+            if (this.isString) {
+		return;
+	    }
+            if (this.excludeZero && v === 0) {
+		return;
+            }
+	    min = Utils.min(min,v);
+	    max = Utils.max(max,v);
+	});
+
+	this.minValue =min;
+	this.maxValue =max;	
+	this.origRange = [min,max];
+	this.sortedValues = [...this.uniqueValues].sort((a, b) => a - b);
+    },
+    getProperty: function(prop, dflt, debug) {
+	if(this.properties[prop]) return this.properties[prop];
+	if(this.debug) console.log("getProperty:" + prop);
+	for(let i=0;i<this.propPrefix.length;i++) {
+	    this.display.debugGetProperty = debug;
+	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
+	    let v = this.display.getProperty(this.propPrefix[i]+prop);
+	    this.display.debugGetProperty = false;
+	    if(Utils.isDefined(v)) return v;
+	}
+	return dflt;
+    },
+    
+}
+
+function ColorByInfo(display, fields, records,
+		     fieldProperty,colorByMapProp, defaultColorTable,
+		     propPrefix, theField, props,lastColorBy) {
+    let SUPER = new ValueMapper(display,fieldProperty??'colorBy', propPrefix,theField,props);
+    $.extend(this, SUPER);
+    $.extend(this, {
+	colorHistory:{},
 	fields:fields,
-        field: theField,
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	literal:display.getProperty("colorByLiteral"),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
@@ -55,20 +152,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
-	origRange:null,
-	origMinValue:0,
-	origMaxValue:0,
-        minValue: 0,
-        maxValue: 0,
-	toMinValue: 0,
-        toMaxValue: 100,
         isString: this.properties.isString,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
 	colorByMinPerc: this.getProperty("MinPercentile", -1),
 	colorByMaxPerc: this.getProperty("MaxPercentile", -1),
-	colorByOffset: 0,
+
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
     });
@@ -165,8 +255,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     let colors = null;
     let colorTabelSteps = null;
-    if(colorByAttr) {
-	let c = this.display.getProperty(colorByAttr +".colors");
+    if(this.valueAttr) {
+	let c = this.display.getProperty(this.valueAttr +".colors");
 	if(c) colors = c.split(",");
     }
 
@@ -185,7 +275,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    }
 	} else {
 	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
-						       colorByAttr +".colorTable",
+						       this.valueAttr +".colorTable",
 						       "colorTable"]);
 	}
 
@@ -193,7 +283,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(!colors) {
 	let colorTableObject  = defaultColorTable??
 	    this.display.getColorTable(false,[this.properties.colorTableProperty,
-					      colorByAttr +".colorTable",
+					      this.valueAttr +".colorTable",
 					      "colorTable"]);
 
 	if(colorTableObject)
@@ -206,7 +296,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     //    }
 
     if(!colors) {
-	var c = this.getProperty(colorByAttr +".colors");
+	var c = this.getProperty(this.valueAttr +".colors");
 	if(c)
 	    colors = c.split(",");
     }
@@ -281,45 +371,15 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
-    let uniqueValues = [];
-    let seenValue = {};
     if(this.index>=0 || this.timeField) {
-	let min = NaN;
-	let max = NaN;
-	records.forEach((record,idx)=>{
-            let tuple = record.getData();
-	    let v;
-            if(this.timeField) {
-		if(this.timeField=="hour")
-		    v = record.getTime().getHours();
-		else
-		    v = record.getTime().getTime();
-	    } else {
-		v = tuple[this.index];		
-	    }
-            if (this.isString) {
-		if(!seenValue[v]) {
-		    seenValue[v] = true;
-		    uniqueValues.push(v);
-		}
-		return;
-	    }
-            if (this.excludeZero && v === 0) {
-		return;
-            }
-	    min = Utils.min(min,v);
-	    max = Utils.max(max,v);
-	});
-	this.minValue =min;
-	this.maxValue =max;	
-	this.origRange = [min,max];
+	this.processRecords(records);
     }
 
-    if(uniqueValues.length>0) {
-	uniqueValues.sort((a,b)=>{
+    if(this.isString && this.uniqueValues.length>0) {
+	this.uniqueValues.sort((a,b)=>{
 	    return a.toString().localeCompare(b.toString());
 	});
-	uniqueValues.forEach(v=>{
+	this.uniqueValues.forEach(v=>{
 	    if (!Utils.isDefined(this.colorByMap[v])) {
 		let index = this.colorByValues.length;
                 let color;
@@ -352,35 +412,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.steps = steps.split(",");
     }
 
-    this.colorByLog = this.getProperty("Log", false);
-    this.colorByLog10 = this.getProperty("Log10", false);
-    this.colorByLog2 = this.getProperty("Log2", false);
-    if(this.colorByLog) {
-	this.colorByFunc = Math.log;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log(minValue);
-	    const logMax = Math.log(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.exp(logValue);
-	}
-    }   else if(this.colorByLog10) {
-	this.colorByFunc = Math.log10;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log10(minValue);
-	    const logMax = Math.log10(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.pow(10, logValue);
-	}
-    }   else if(this.colorByLog2) {
-	this.colorByFunc = Math.log2;
-	this.inverseColorByFunc = (minValue,maxValue,percent)=>{
-	    const logMin = Math.log2(minValue);
-	    const logMax = Math.log2(maxValue);
-	    const logValue = logMin + percent * (logMax - logMin);
-	    return Math.pow(2, logValue);
-	}
-    }
-
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
 
@@ -400,18 +431,6 @@ ColorByInfo.prototype = {
     },
     getId:function() {
 	return this.id;
-    },
-    getProperty: function(prop, dflt, debug) {
-	if(this.properties[prop]) return this.properties[prop];
-	if(this.debug) console.log("getProperty:" + prop);
-	for(let i=0;i<this.propPrefix.length;i++) {
-	    this.display.debugGetProperty = debug;
-	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
-	    let v = this.display.getProperty(this.propPrefix[i]+prop);
-	    this.display.debugGetProperty = false;
-	    if(Utils.isDefined(v)) return v;
-	}
-	return dflt;
     },
     isEnabled: function() {
 	return this.enabled ||this.getDoCount();
@@ -512,7 +531,7 @@ ColorByInfo.prototype = {
 					       colorByInfo:this,
 					       width:width,
 					       stringValues: cbs,
-					       getValueFunction:this.inverseColorByFunc
+					       getValueFunction:this.inverseValueFunc
 					   });
 	}
     },
@@ -525,7 +544,7 @@ ColorByInfo.prototype = {
 	if(this.display.getColorByAllRecords() && !force) {
 	    return;
 	}
-	if(this.display.getProperty("useDataForColorRange") && this.origRange) {
+	if(this.getProperty("useDataForColorRange") && this.origRange) {
 	    minValue = this.origRange[0];
 	    maxValue = this.origRange[1];	    
 	}	    
@@ -537,16 +556,14 @@ ColorByInfo.prototype = {
 	this.origMaxValue = maxValue;
 
 
-	if (this.colorByFunc) {
-	    if (minValue < 0) {
-		this.colorByOffset =  -minValue;
-	    } else if(minValue == 0) {
-		this.colorByOffset =  1;
+	this.valueOffset = 0;
+
+	if (this.valueFunction) {
+	    if (minValue <= 0) {
+		this.valueOffset =  Math.abs(minValue)+ Utils.epsilon;
 	    }
-	    //	    if(minValue>0)
-	    minValue = this.colorByFunc(minValue + this.colorByOffset);
-	    //	    if(maxValue>0)
-	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+	    minValue = this.valueFunction(minValue + this.valueOffset);
+	    maxValue = this.valueFunction(maxValue + this.valueOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
@@ -554,7 +571,6 @@ ColorByInfo.prototype = {
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
-	//	console.log("min/max:" + this.minValue +" " + this.maxValue);
     },
     getValuePercent: function(v) {
 	let perc =   (v - this.minValue) / this.range;
@@ -669,6 +685,8 @@ ColorByInfo.prototype = {
 		value = value.getTime();
 		this.doingDates = true;
 	    }
+
+
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
 	    this.lastValue = value;
@@ -715,6 +733,8 @@ ColorByInfo.prototype = {
 	if(c==null) c=this.nullColor;
 	return c;
     },
+
+
 
     getColorInner: function(value, pointRecord,debug) {
 	if(this.colorTableSteps) {
@@ -768,20 +788,22 @@ ColorByInfo.prototype = {
 		if(color) return color;
             }
 	    let tmp = v;
-            v += this.colorByOffset;
-            if (this.colorByFunc && v>0) {
-                v = this.colorByFunc(v);
-            }
+            v += this.valueOffset;
 	    if(isNaN(v)) {
-		//	    if(debugColorBy)console.log("value is nan:" + value);
 		return this.nullColor;
 	    }	    
-            percent = this.range?(v - this.minValue) / this.range:0.5;
-	    //	    console.log(this.display.getName(),v,percent,this.range,this.minValue);
-	    //	    if(tmp>3 && tmp<6)
-	    //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
-        }
 
+	    if(this.valueFunctionPercentile) {
+		let index = Utils.binarySearch(this.sortedValues, v);
+		percent =  index / (this.sortedValues.length - 1);
+	    } else {
+		if (this.valueFunction) {
+		    v = Math.max(v, Utils.epsilon);
+                    v = this.valueFunction(v);
+		}
+		percent = Math.max(0, Math.min(1,this.range?((v - this.minValue) / this.range):0.5));
+	    }
+        }
 
 	let index=0;
 	if(this.steps) {
@@ -855,15 +877,14 @@ ColorByInfo.prototype = {
 
 
 function SizeBy(display,records,fieldProperty) {
-    this.display = display;
+    let SUPER = new ValueMapper(display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
+    $.extend(this, SUPER);
+
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData?pointData.getRecordFields():[];
     $.extend(this, {
-        id: this.display.getProperty(fieldProperty|| "sizeBy"),
-        minValue: 0,
-        maxValue: 0,
-	threshold:parseFloat(this.display.getProperty('sizeByThreshold',NaN)),
+	threshold:parseFloat(this.getProperty('sizeByThreshold',NaN)),
         field: null,
         index: -1,
         isString: false,
@@ -871,7 +892,7 @@ function SizeBy(display,records,fieldProperty) {
     });
 
 
-    let sizeByMap = this.display.getProperty("sizeByMap");
+    let sizeByMap = this.getProperty("sizeByMap");
     if (sizeByMap) {
         let toks = sizeByMap.split(",");
         for (let i = 0; i < toks.length; i++) {
@@ -895,42 +916,40 @@ function SizeBy(display,records,fieldProperty) {
 	let col = this.display.getColumnValues(records, this.field);
 	this.minValue = col.min;
 	this.maxValue =  col.max;
-	if(Utils.isDefined(this.display.getProperty("sizeByMin"))) {
-	    this.minValue = +this.display.getProperty("sizeByMin",0)
+	if(Utils.isDefined(this.getProperty("sizeByMin"))) {
+	    this.minValue = +this.getProperty("sizeByMin",0)
 	}
-	if(Utils.isDefined(this.display.getProperty("sizeByMax"))) {
-	    this.maxValue = +this.display.getProperty("sizeByMax",0)
+	if(Utils.isDefined(this.getProperty("sizeByMax"))) {
+	    this.maxValue = +this.getProperty("sizeByMax",0)
 	}
     }
 
-    if(this.display.getProperty("sizeBySteps")) {
+    if(this.getProperty("sizeBySteps")) {
 	this.steps = [];
-	this.display.getProperty("sizeBySteps").split(",").forEach(tuple=>{
+	this.getProperty("sizeBySteps").split(",").forEach(tuple=>{
 	    let [value,size] = tuple.split(":");
 	    this.steps.push({value:+value,size:+size});
 	});
     }
-    this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
-    this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
-    this.offset = 0;
-    let sizeByLog = this.display.getProperty("sizeByLog", false);
+    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
+    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", -1));
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
-
     this.maxValue = Math.max(this.minValue,this.maxValue);
-    if (sizeByLog) {
-	this.func = sizeByLog=='2'?Math.log2:
-	    sizeByLog=='10'?Math.log10:Math.log;
+    if (this.valueFunction) {
         if (this.minValue < 1) {
-            this.offset = 1 - this.minValue;
+            this.valueOffset = 1 - this.minValue;
         }
-        this.minValue = this.func(this.minValue + this.offset);
-        this.maxValue = this.func(this.maxValue + this.offset);
+        this.minValue = this.valueFunction(this.minValue + this.valueOffset);
+        this.maxValue = this.valueFunction(this.maxValue + this.valueOffset);
     }
 }
 
 SizeBy.prototype = {
-    getMaxSize:function() {
+    isEnabled:function() {
+	return this.index>=0;
+    },
+    getMaxValueSize:function() {
 	return this.getSizeFromValue(this.origMaxValue);
     },
     getSize: function(values, dflt, func) {
@@ -964,7 +983,7 @@ SizeBy.prototype = {
 	    return size;
         } else {
             let denom = this.maxValue - this.minValue;
-            let v = value + this.offset;
+            let v = value + this.valueOffset;
             if (this.func) v = this.func(v);
             let percent = (denom == 0 ? NaN : (v - this.minValue) / denom);
 	    let size;
@@ -972,6 +991,7 @@ SizeBy.prototype = {
                 size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
             } else {
                 size = 6 + parseInt(15 * percent);
+		console.log(v,percent,size);
             }
 	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" percent:" + percent +" v:" + v +" size:" + size);
 	    if(isNaN(size)) size =  this.radiusMin;
@@ -998,6 +1018,7 @@ SizeBy.prototype = {
 	    for(let i=0;i<=cnt;i++) {
 		let v = this.origMinValue+ i/cnt*(this.origMaxValue-this.origMinValue);
 		let size  =this.getSizeFromValue(v,null,false);
+		size = Math.min(size,100);
 		if(isNaN(size) || size==0) continue;
 		v = this.display.formatNumber(v);
 		let dim = HU.px(size*2);
