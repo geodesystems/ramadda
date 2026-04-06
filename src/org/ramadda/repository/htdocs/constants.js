@@ -13,6 +13,8 @@ var root = ramaddaBaseUrl;
 
 var NAMESPACE_SVG='http://www.w3.org/2000/svg';
 
+var FILTER_ALL = "-all-";
+
 var ACTION_OK='ok';
 var ACTION_NO='no';
 var ACTION_CANCEL='cancel';
