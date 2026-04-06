@@ -320,7 +320,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	getBeginTime: function() {
 	    return this.begin;
 	},
-	handleEventAnimationChanged(args) {
+	handleEventAnimationChanged:function(args) {
 	    this.setBegin(args.begin);
 	    this.setEnd(args.end);
 	    this.stopAnimation();
