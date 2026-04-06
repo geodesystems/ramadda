@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  6 11:00:18 MDT 2026";
+var build_date="RAMADDA build date: Mon Apr  6 12:30:17 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -41596,12 +41596,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			args.layer = list[1];
 		    }
 		    if(!args.layer) {
-			this.logMsg("Could not find base layer:",tuple);
+			console.log(this.getLogLabel(),
+				    "Could not find base layer:",tuple);
 			return;
 		    }
-		    let layer = this.map.getBaseLayer(args.layer);
+
+		    let layer = this.map.createMapLayer(args.layer);		    
 		    if(!layer) {
-			this.logMsg("Could not find base layer:",tuple);
+			console.log(this.getLogLabel(),
+				    "Could not find base layer:",':'+args.layer+':','tuple:',tuple);
 		    } else {
 			layer.setVisibility(true);
 		    }
