@@ -4,7 +4,6 @@
 */
 
 
-var FILTER_ALL = "-all-";
 
 var ATTR_FIELDID = 'fieldId';
 
@@ -532,7 +531,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 
 	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
-	    let showPopupSelect = multi ||this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup',multi))
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		if(!Utils.isDefined(multi)) multi=false;
@@ -769,7 +768,8 @@ function RecordFilter(display,filterFieldId, properties) {
 								      this.getProperty("filter.includeAll", true))));
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
-	    let labelVertical =   this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
+	    let labelVertical =
+		this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -1156,21 +1156,22 @@ function RecordFilter(display,filterFieldId, properties) {
 		    else widgetLabel = widgetLabel+": ";
 		}
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
-//		if(labelVertical) widgetLabel = widgetLabel+HU.br();
 		if(vertical) {
 		    widget = HU.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],
+		    widget = HU.div([ATTR_CLASS,'display-filter-widget '+(labelVertical?'display-filter-widget-vertical':''),
+//				     ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)
+				    ],
 				    (showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }
-	    if(!vertical)
-		widget= widget +(this.hideFilterWidget?"":SPACE2);
+	    if(!vertical) {
+//		widget= widget +(this.hideFilterWidget?"":SPACE2);
+	    }
 	    if(this.prefix) widget = this.prefix+widget;
 
 	    let show = this.getProperty(this.getId() +".filterShow",this.getProperty("filterShow",true));
 	    if(!show) widget=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)], widget);
-
 	    return widget;
 	},
 	getWidgetId:function() {
