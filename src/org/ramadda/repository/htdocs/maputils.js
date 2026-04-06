@@ -706,6 +706,7 @@ MapUtils.circleHiliteAttrs =  {
 
 
 
+
 var RAMADDA_MAP_LAYERS= [];
 var RAMADDA_MAP_LAYERS_MAP= {};
 function MapLayer(id,name,url,opts) {
@@ -720,6 +721,9 @@ function MapLayer(id,name,url,opts) {
     this.url = url;
     RAMADDA_MAP_LAYERS.push(this);
     RAMADDA_MAP_LAYERS_MAP[id] = this;    
+    if(this.opts.alias) {
+	RAMADDA_MAP_LAYERS_MAP[this.opts.alias] = this;
+    }
 }
 
 
