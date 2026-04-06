@@ -135,6 +135,10 @@ ValueMapper.prototype = {
 	}
 	return dflt;
     },
+    getDoCount:function() {
+	return this.doCount;
+    },
+
     getValuePercent:function(value) {
 	if(this.getDoCount()) {
 	    if(this.range>0) {
@@ -598,9 +602,6 @@ ColorByInfo.prototype = {
     scaleToValue: function(v) {
 	let perc = this.getValuePercent(v);
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
-    },
-    getDoCount:function() {
-	return this.doCount;
     },
     getDoTotal:function() {
 	return this.doTotalCount;
