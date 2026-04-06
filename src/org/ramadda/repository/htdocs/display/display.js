@@ -435,10 +435,33 @@ addGlobalDisplayType({
 */
 function DisplayThing(argId, argProperties) {
     this.isDisplayThing = true;
-
     if (argProperties == null) {
         argProperties = {};
     }
+    
+
+
+    let tmpProperties = {};
+    Object.keys(argProperties).forEach(key=>{
+	let value = argProperties[key];
+	if(key.indexOf(',')<0) {
+	    tmpProperties[key]  =value;
+	    return;
+	}
+
+	//look for prop1,prop2.suffix
+	let dotIndex = key.indexOf('.');
+	let suffix = '';
+	if(dotIndex>=0) {
+	    suffix = key.substring(dotIndex);
+	    key = key.substring(0,dotIndex);
+	}
+
+	Utils.split(key,',',true,true).forEach(tok=>{
+	    argProperties[tok+suffix] = value;
+	});
+    });
+    argProperties = tmpProperties;
 
 
     //check for booleans as strings
@@ -1933,6 +1956,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
 	{p:'&lt;field&gt;.type',ex:'enumeration|string|boolean'},
 	{p:'&lt;field&gt;.filterShow',ex:'false'},
+	{p:'&lt;field&gt;.filterBreak',ex:true,tt:'add a break before the filter widget'},
 	{p:'&lt;field&gt;.filterLabel'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
@@ -2107,7 +2131,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
 	{p:'colorByFields',ex:'',tt:'Comma separated list of fields. Show menu'},
-	{p:'colorByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to color by'},
+	{p:'colorByMethod',ex:MAPPER_METHOD_ALL,tt:'What function to use to color by'},
+	{p:'colorByClipMin',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},
+	{p:'colorByClipMax',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},		
+	{p:'colorByGamma',ex:'0',tt:'For gamma clip method'},
+	{p:'colorByCenter',ex:'0',tt:'For clip method'},
+	{p:'colorByClamp',ex:'0',tt:'For clip method'},				
+
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -2227,16 +2257,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return helpUrl;
 	},
 	defineSizeByProperties: function() {
+	    if(this.sizeByMethodsDefined) return;
+	    this.sizeByMethodsDefined= true;
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
 	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
-		{p:'sizeByFunction',ex:'value|percentile|log|log2|log10',tt:'What function to use to for size by'},
+		{p:'sizeByMethod',ex:MAPPER_METHOD_ALL,tt:'What function to use to for size by'},
 		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
 		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
+		{p:'sizeByClipMin',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},
+		{p:'sizeByClipMax',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},		
+		{p:'sizeByGamma',ex:'0',tt:'For gamma clip method'},
+		{p:'sizeByCenter',ex:'0',tt:'For clip method'},
+		{p:'sizeByClamp',ex:'0',tt:'For clip method'},				
 		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
-		{p:'sizeByLegendLabel'},		
+		{p:'sizeByLegendLabel',d:'${field}'},		
 		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},
@@ -2386,6 +2423,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         displayColorTable: function(ct, domId, min, max, args) {
+	    this.colorTableSettings = {
+		min:min,max:max
+	    }
 	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
@@ -2426,87 +2466,92 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.originalColorRange = [min,max];
 	    }		
 	    slices.click(function(e) {
-		let val = $(this).attr(ATTR_DATA_VALUE);
-		let html = '';
-		let items = [];
-		items.push(HU.boldLabel('Range') +
-			   HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
-			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
-		items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   ATTR_WHAT,'reset'],'Reset range'),
-			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   ATTR_WHAT,'ussedata'],'Use data range'));
-		let colorByFunctions=['value','percentile','log','log2','log10'];
-		items.push(HU.boldLabel('Function') +
-			   HU.select("",[ATTR_ID,'colortablefunction'],colorByFunctions,
-				     _this.getColorByFunction('value')));
-		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
-							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
-		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
-				Utils.getColorTablePopup({showToggle:false,addSearch:true})]);
-		html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
-		if(_this.colorTableDialog) _this.colorTableDialog.remove();
-		let dialog =  _this.colorTableDialog =
-		    HU.makeDialog({
-			content:html,
-			title:'Color Table Settings',
-			anchor:$(this),
-			draggable:true,
-			header:true});
-
-		Utils.initColorTablePopup(dialog);
-		let minInput =dialog.find('.colortable-min');
-		let maxInput =dialog.find('.colortable-max');		
-		minInput.keypress(function(event) {
-		    let keycode = (event.keyCode ? event.keyCode : event.which);
-                    if (keycode!= 13) return;
-		    if(!Utils.isDefined(_this.getProperty('colorByMinOrig'))) {
-			_this.setProperty('colorByMinOrig',_this.getProperty('colorByMin'));
-		    }
-		    _this.setProperty('colorByMin',$(this).val());
-		    _this.setProperty('overrideColorRange', true);
-		    _this.forceUpdateUI();
-		});
-
-		maxInput.keypress(function(event) {
-		    let keycode = (event.keyCode ? event.keyCode : event.which);
-                    if (keycode!= 13) return;
-		    if(!Utils.isDefined(_this.getProperty('colorByMaxOrig'))) {
-			_this.setProperty('colorByMaxOrig',_this.getProperty('colorByMax'));
-		    }
-		    _this.setProperty('colorByMax',$(this).val());
-		    _this.setProperty('overrideColorRange', true);
-		    _this.forceUpdateUI();
-		});
-
-
-		dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
-		    let ct = $(this).attr(ATTR_COLORTABLE);
-		    if(ct) {
-			_this.setProperty('colorTable',ct);
-			_this.forceUpdateUI();
-		    }		    
-		});
-		dialog.find('#colortablefunction').change(function() {
-		    _this.setProperty('colorByFunction',$(this).val());
-		    _this.forceUpdateUI();
-		});
-		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
-		    let what = $(this).attr(ATTR_WHAT);
-		    _this.setProperty('useDataForColorRange', false);
-		    if(what == 'reset') {
-			_this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
-			_this.setProperty('colorByMax',_this.getProperty('colorByMaxOrig'));
-			_this.setProperty('overrideColorRange', false);
-		    } else  if(what == 'ussedata') {
-			_this.setProperty('useDataForColorRange', true);
-		    }
-		    _this.forceUpdateUI();
-		    minInput.val(_this.getProperty('colorByMinOrig')??min);
-		    maxInput.val(_this.getProperty('colorByMaxOrig')??max);
-		});
+		_this.showColorTableSettings($(this));
 	    });
         },
+	showColorTableSettings:function(anchor) {
+	    let min =this.colorTableSettings?.min??'';
+	    let max =this.colorTableSettings?.max??'';	    
+	    let _this = this;
+	    //let val = $(this).attr(ATTR_DATA_VALUE);
+	    let html = '';
+	    let items = [];
+	    items.push(HU.boldLabel('Range') +
+		       HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
+		       HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
+	    items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
+			       ATTR_WHAT,'reset'],'Reset range'),
+		       HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
+			       ATTR_WHAT,'ussedata'],'Use data range'));
+	    let colorByMethods=MAPPER_METHOD_ALL.split('|');
+	    items.push(HU.boldLabel('Function') +
+		       HU.select("",[ATTR_ID,'colortablemethod'],colorByMethods,
+				 _this.getColorByMethod(MAPPER_METHOD.LINEAR)));
+	    html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
+						     HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
+	    html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
+			    Utils.getColorTablePopup({showToggle:false,addSearch:true})]);
+	    html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
+	    if(_this.colorTableDialog) _this.colorTableDialog.remove();
+	    let dialog =  _this.colorTableDialog =
+		HU.makeDialog({
+		    content:html,
+		    title:'Color Table Settings',
+		    anchor:anchor,
+		    draggable:true,
+		    header:true});
+
+	    Utils.initColorTablePopup(dialog);
+	    let minInput =dialog.find('.colortable-min');
+	    let maxInput =dialog.find('.colortable-max');		
+	    minInput.keypress(function(event) {
+		if(!Utils.isReturnKey(event)) return;
+		if(!Utils.isDefined(_this.getProperty('colorByMinOrig'))) {
+		    _this.setProperty('colorByMinOrig',_this.getProperty('colorByMin'));
+		}
+		_this.setProperty('colorByMin',$(this).val());
+		_this.setProperty('overrideColorRange', true);
+		_this.forceUpdateUI();
+	    });
+
+	    maxInput.keypress(function(event) {
+		let keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode!= 13) return;
+		if(!Utils.isDefined(_this.getProperty('colorByMaxOrig'))) {
+		    _this.setProperty('colorByMaxOrig',_this.getProperty('colorByMax'));
+		}
+		_this.setProperty('colorByMax',$(this).val());
+		_this.setProperty('overrideColorRange', true);
+		_this.forceUpdateUI();
+	    });
+
+
+	    dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
+		let ct = $(this).attr(ATTR_COLORTABLE);
+		if(ct) {
+		    _this.setProperty('colorTable',ct);
+		    _this.forceUpdateUI();
+		}		    
+	    });
+	    dialog.find('#colortablemethod').change(function() {
+		_this.setProperty('colorByMethod',$(this).val());
+		_this.forceUpdateUI();
+	    });
+	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
+		let what = $(this).attr(ATTR_WHAT);
+		_this.setProperty('useDataForColorRange', false);
+		if(what == 'reset') {
+		    _this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
+		    _this.setProperty('colorByMax',_this.getProperty('colorByMaxOrig'));
+		    _this.setProperty('overrideColorRange', false);
+		} else  if(what == 'ussedata') {
+		    _this.setProperty('useDataForColorRange', true);
+		}
+		_this.forceUpdateUI();
+		minInput.val(_this.getProperty('colorByMinOrig')??min);
+		maxInput.val(_this.getProperty('colorByMaxOrig')??max);
+	    });
+	},
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -7266,10 +7311,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
+		let extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+				    ATTR_TITLE,'Color table settings',
+				    ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
 		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
-				   label+ HU.select("",[ATTR_ID,this.getDomId("colorbyselect")],
-						    enums,selected,20))+SPACE;
+				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
+						    enums,selected,20))+extra+SPACE2;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -7331,13 +7379,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
+		enums.push(['','--']);
 		this.sizeByFields.forEach(field=>{
 		    enums.push([field.getId(),field.getLabel()]);
 		});
+		let extra = '';
+		extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+				ATTR_TITLE,'Size by settings',
+				ATTR_ID,this.domId('sizebysettings')],HU.getIconImage('fas fa-cog'));
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   this.makeFilterLabel("Size by: ") +
 				   HU.select("",[ATTR_ID,this.getDomId("sizebyselect")],
-					     enums,this.getProperty("sizeBy","")))+SPACE;
+					     enums,this.getProperty("sizeBy",""))+extra)+SPACE;
 	    }
 
 
@@ -7479,6 +7532,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(groupHtml!=null) {
 			searchBar+=HU.toggleBlock(group,groupHtml,false);
 			groupHtml=null;
+		    }
+		    if(this.getProperty(filter.getId()+'.filterBreak')) {
+			searchBar+='<div class=display-filter-break></div>';
 		    }
 		    searchBar +=widget;
 		});
@@ -7840,7 +7896,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            this.jq("colorbyselect").change(function(){
+	    this.jq('colortablesettings').click(function() {
+		_this.showColorTableSettings($(this));
+	    });
+            this.jq('colorbyselect').change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
 	    this.jq('uniquefields').change(()=>{
@@ -7862,6 +7921,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let val = $(this).val();
 		_this.setProperty("sortAscending",val=="up");
 		_this.forceUpdateUI();
+	    });
+            this.jq("sizebysettings").click(function(){
+		if(_this.sizeBy) _this.sizeBy.showSettings($(this));
 	    });
             this.jq("sizebyselect").change(function(){
 		_this.sizeByFieldChanged($(this).val());
@@ -7920,17 +7982,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let maxValue =NaN;
 	    fields.forEach(field=>{
 		let value = field.getValue(record);
-		if(!isNaN(value)) {
-		    if(uniques && values && !Utils.isDefined(uniques[value])) {
-			uniques[value] = true;
-			values.push(value);
-		    }
-		    if(isNaN(minValue)) {
-			minValue = maxValue= value;
-		    } else  {
-			minValue = Math.min(minValue,value);
-			maxValue = Math.min(maxValue,value);				
-		    }
+		if(isNaN(value)) return;
+		if(uniques && values && !Utils.isDefined(uniques[value])) {
+		    uniques[value] = true;
+		    values.push(value);
+		}
+		if(isNaN(minValue)) {
+		    minValue = maxValue= value;
+		} else  {
+		    minValue = Math.min(minValue,value);
+		    maxValue = Math.max(maxValue,value);				
 		}
 	    });
 	    return {min:minValue,max:maxValue};
@@ -8781,17 +8842,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.hasDate;
         },
         dateInRange: function(record, date, idx, debug) {
+//	    debug = this.minDateObj!=null && idx<20;
 	    if(debug) {
-		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
+//		this.logMsg("dateInRange: date:"+date+" minDate:"+ this.minDateObj +" maxDate:"+ this.maxDateObj);
+//		console.log("dateInRange: date:",date," minDate:", this.minDateObj ," maxDate:", this.maxDateObj);
 	    }
+
 	    let minMaxPair;
+	    if(this.minDateObj && this.maxDateObj && this.minDateObj.value) {
+		minMaxPair = this.getMinMax(this.minDateObj.fields,record);
+
+		if(!isNaN(minMaxPair.min) && !isNaN(minMaxPair.max)) {
+		    let rangeMin =this.minDateObj.value;
+		    let rangeMax =this.maxDateObj.value; 		
+		    let recordMin = minMaxPair.min;
+		    let recordMax = minMaxPair.max;
+		    const intersects =  !(recordMax < rangeMin || recordMin > rangeMax);
+		    const contained =  recordMin >= rangeMin && recordMax <= rangeMax;
+		    if(debug) console.dir('range OK?',intersects || contained,
+					  'range:',rangeMin,rangeMax,
+					  'record:', recordMin,recordMax);
+		    return intersects || contained;
+		}
+	    }
+
 	    if(this.minDateObj) {
 		if(this.minDateObj.isIndex) {
 		    if(idx<this.minDateObj.index) return false;
 		} else 	if(this.minDateObj.isValue) {
 		    minMaxPair = this.getMinMax(this.minDateObj.fields,record);
-		    let min  = minMaxPair.min;
-		    if(min<this.minDateObj.value) return false;
+		    let recordMin  = minMaxPair.min;
+//		    if(debug) console.dir('min value:',this.minDateObj.value,'record:',minMaxPair.min +' - ' +minMaxPair.max);
+		    if(recordMin<this.minDateObj.value) {
+			if(debug) console.log('min not ok',recordMin);
+			return false;
+		    }
 		}
 	    }
 	    if(this.maxDateObj) {
@@ -8800,11 +8885,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else if(this.maxDateObj.isValue) {
 		    if(!minMaxPair)
 			minMaxPair = this.getMinMax(this.maxDateObj.fields,record);
-		    if(minMaxPair.max>this.maxDateObj.value) return false;
+//		    if(debug) console.dir('max value:',this.maxDateObj.value,'record:',minMaxPair.min +' - ' +minMaxPair.max);
+		    if(minMaxPair.max>this.maxDateObj.value) {
+			if(debug) console.log('max not ok');
+			return false;
+		    }
 		}
 	    }	    
 	    if(minMaxPair && isNaN(minMaxPair.min) && isNaN(minMaxPair.max)) {
 		if(!this.animationShowingAll) {
+		    if(debug) console.log("not ok - value is NaN");
 		    return false;
 		}
 	    }
