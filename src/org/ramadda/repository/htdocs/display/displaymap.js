@@ -14,6 +14,7 @@ let displayMapMarkerIcons = {};
 var ID_REGION_SELECTOR = "regionselector";
 var ID_LEGENDID="legendid";
 var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
+var ID_SHOWLABELSTOGGLE="showLabelsToggle";
 var ID_BASELAYERS='baselayers';
 
 var debugit = false;
@@ -183,9 +184,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (height < 0) {
 		height = HU.perc(-height);
 	    }
-	    height = HU.getDimension(height);
+	    height = this.mapHeight = HU.getDimension(height);
             extraStyle += HU.css(ATTR_HEIGHT, height);
-
 	    let map =HU.div([ATTR_TABINDEX,1,
 			     ATTR_CLASS, HU.classes('display-map-map','ramadda-expandable-target'),
 			     ATTR_STYLE,  extraStyle,
@@ -471,6 +471,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 return;
             }
             let d = this.jq(ID_MAP);
+
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
@@ -1027,7 +1028,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'defaultShape',ex:shapes},
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
-	{p:'hideMissingColor',ex:true,tt:'hide points when no color by value'},
+	{p:'hideMissingColor',
+	 ex:true,tt:'hide points when no color by value'},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
@@ -1064,7 +1066,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
 	{p:'filterBadLocations',ex:'false',d:true,tt:'Do not show records with bad lat/lon'},
-	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
+	{p:'hideNaN',ex:false,
+	 tt:'If doing color by do not show the points with missing values'},
 
 
 	{label:'Map GUI'},
@@ -1156,6 +1159,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Labels'},
 	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'showLabelsToggle',d:false},
+	{p:'labelsVisibility',d:true},
 	{p:'declutterLabels',d:true},
 	{p:'labelRecordTemplate',ex:'${field}',tt:'Apply the template to the records. Use ${recordtemplate} for the labelTemplate'},
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
@@ -2984,7 +2989,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	sizeByFieldChanged:function(field) {
 	    this.haveCalledUpdateUI = false;
-	    this.setProperty("sizeBy", field);
+	    this.setProperty('sizeBy', field);
 	    this.vectorMapApplied  = false;
 	    this.updateUI({fieldChanged:true});
 	},
@@ -3046,6 +3051,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    [ATTR_ID,this.domId(ID_SHOWMARKERSTOGGLE)],dflt,
 				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
 	    }
+
+	    if(this.getShowLabelsToggle()) {
+		let dflt = this.getLabelsVisibility();
+		html += HU.checkbox(this.domId(ID_SHOWLABELSTOGGLE),
+				    [ATTR_ID,this.domId(ID_SHOWLABELSTOGGLE)],dflt,
+				    "Show Labels") +SPACE2;
+	    }	    
 
 	    if(this.getShowBaseLayersSelect()) {
 		html+=this.getBaseLayersSelect();
@@ -3230,6 +3242,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let visible = HU.isChecked($(this));
 		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
+	    this.jq(ID_SHOWLABELSTOGGLE).change(function() {
+		_this.forceUpdateUI();
+	    });	    
 	    this.jq("showVectorLayerToggle").change(function() {
 		_this.toggleVectorLayer();
 	    });
@@ -4507,7 +4522,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let hideMissingColor = this.getHideMissingColor();
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    let hideNaN = this.getHideNaN();
-
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getPolygonField());
@@ -4713,7 +4727,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let sizeBy = this.sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
@@ -5152,7 +5166,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
-		    if(gv)  {
+		    if(gv!==null)  {
 			let _gv = String(gv).toLowerCase();
 			let shape = null;
 			shapeBy.patterns.every(pattern=>{
@@ -5164,10 +5178,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 
 			if(!shape) shape = shapeBy.map[_gv];
-
-
-
-
 			if(!shape) {
 			    if(dfltShape) {
 				//				shape = shapeBy.map[_gv] =  dfltShape;
@@ -5214,7 +5224,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} else {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
-			if(hideNaN && isNaN(value)) return;
+			if(hideNaN && isNaN(value)) {
+			    return;
+			}
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 		    }
@@ -5436,8 +5448,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordFeatures.forEach(f=>{features.push(f);});
 		}
                 let date = record.getDate();
+		if(props.pointRadius>50)
+		    console.log(props.pointRadius);
 
 		recordFeatures.forEach(mapPoint=>{
+
+
 		    if(highlight) {
 			mapPoint.highlightTextGetter = highlightGetter;
 			mapPoint.highlightSize = highlightSize;
@@ -5494,22 +5510,37 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    let legendSide = this.getSizeByLegendSide();
-	    if(legendSide) {
-		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
+	    if(sizeBy.isEnabled() && legendSide) {
+		let legend = sizeBy.getLegend(8,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
-		    if(label) legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
-		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
+		    if(label) {
+			if(sizeBy.getField()) {
+			    label = label.replace('${field}',sizeBy.getField().getLabel());
+			}
+			legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
+		    }
+		    let height = this.mapHeight;
+
+
+		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(150),
+						     CSS_WIDTH,HU.px(150),
+						     CSS_HEIGHT,height,
+						     CSS_MAX_HEIGHT,height,
 						     CSS_OVERFLOW_X,OVERFLOW_AUTO,
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],legend);
 		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([ATTR_STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
+		    sizeBy.initLegend(this.jq(ID_SIZEBY_LEGEND));
+
 		    this.callingUpdateSize = true;
 		    this.map.getMap().updateSize();
 		    this.callingUpdateSize = false;
 
 		}
+	    } else {
+		this.jq(ID_SIZEBY_LEGEND).html('');
 	    }
 	    times = [new Date()];
 	    if (didColorBy) {
@@ -5531,6 +5562,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let shapes = shapeBy.field.getLabel()+": ";
 		for(v in shapeBy.map) {
 		    let label = shapeBy.labels[v]??v;
+		    if(!Utils.stringDefined(label)) label='&lt;blank&gt;';
 		    let shape = shapeBy.map[v];
 		    if(shape=="circle") shape=HU.getIconImage("fa-circle");
 		    else if(shape=="square") shape=HU.getIconImage("fa-square");		    
@@ -5635,6 +5667,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         addLabels:function(records, fields) {
+	    let cbx =this.jq(ID_SHOWLABELSTOGGLE);
+	    if(cbx.length>0 && !HU.isChecked(cbx)) return;
+
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
