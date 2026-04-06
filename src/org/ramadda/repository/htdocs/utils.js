@@ -726,19 +726,6 @@ var Utils =  {
         });
         return l;
     },
-    binarySearch:function(sorted, value) {
-	let low = 0;
-	let high = sorted.length;
-	while (low < high) {
-            let mid = Math.floor((low + high) / 2);
-            if (sorted[mid] < value) {
-		low = mid + 1;
-            } else {
-		high = mid;
-            }
-	}
-	return low; // insertion index
-    },
 
     sortNumbers:function(l) {
         l.sort((a,b)=>{return +a - +b});
@@ -5055,6 +5042,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], LABEL_CANCEL)]);
 	return buttons;
     },
+    makeApplyOkCancelButtons:function() {
+	let buttons = HU.buttons([
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_APPLY,CLASS_BUTTON)], LABEL_APPLY),
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], LABEL_OK),
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], LABEL_CANCEL)]);
+	return buttons;
+    },    
     initOkCancelButtons(dialog,ok,cancel) {
 	dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
 	dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
@@ -6612,8 +6606,28 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
 	    if(!option) return;
-	    let selected=HU.isChecked(cbx);
-	    option.prop('selected',selected);
+//	    let selected=HU.isChecked(cbx);
+//	    option.prop('selected',selected);
+	    if(!opts.single) {
+		let selectedOptions = [];
+		let allOption;
+		Object.keys(optionMap).forEach(id=>{
+		    let option=optionMap[id];
+		    let cbx = jqid(id);
+		    if(HU.isChecked(cbx)) {
+			if(option.val()==FILTER_ALL) {
+			    allOption=option;
+			} else {
+			    selectedOptions.push(option.val());
+			}
+		    }
+		});
+		if(allOption && selectedOptions.length==0) {
+		    selectedOptions.push(allOption.val());
+		}
+		select.val(selectedOptions);
+	    }
+
 	    if(trigger) {
 		select.change();
 		if(select.iconselectmenu && select.iconselectmenu('instance')) {
@@ -6623,7 +6637,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(opts.single && !opts.single) {
 		dialog.remove();
 	    }
-
 	}
 
 	let cbxChange = function() {
