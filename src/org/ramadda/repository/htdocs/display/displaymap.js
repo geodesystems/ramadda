@@ -837,12 +837,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			args.layer = list[1];
 		    }
 		    if(!args.layer) {
-			this.logMsg("Could not find base layer:",tuple);
+			console.log(this.getLogLabel(),
+				    "Could not find base layer:",tuple);
 			return;
 		    }
-		    let layer = this.map.getBaseLayer(args.layer);
+
+		    let layer = this.map.createMapLayer(args.layer);		    
 		    if(!layer) {
-			this.logMsg("Could not find base layer:",tuple);
+			console.log(this.getLogLabel(),
+				    "Could not find base layer:",':'+args.layer+':','tuple:',tuple);
 		    } else {
 			layer.setVisibility(true);
 		    }
