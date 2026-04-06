@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr  4 09:33:48 MDT 2026";
+var build_date="RAMADDA build date: Mon Apr  6 06:34:41 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1706,7 +1706,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	getBeginTime: function() {
 	    return this.begin;
 	},
-	handleEventAnimationChanged(args) {
+	handleEventAnimationChanged:function(args) {
 	    this.setBegin(args.begin);
 	    this.setEnd(args.end);
 	    this.stopAnimation();
@@ -2889,8 +2889,6 @@ class Mapper {
 var debugColorBy = false;
 
 
-
-
 function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
     this.properties = props || {};
     this.display = display;
@@ -2936,14 +2934,6 @@ function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
 	toMinValue: 0,
         toMaxValue: 100
     });
-
-/*
-    let valueFunction = this.getProperty("Method", false);
-    if(this.getProperty("Log", false)) valueFunction==MAPPER_METHOD.LOG;
-    else if(this.getProperty("Log10", false)) valueFunction==MAPPER_METHOD.LOG10;
-    else if(this.getProperty("Log2", false)) valueFunction==MAPPER_METHOD.LOG2;        
-    this.valueFunctionPercentile= valueFunction==MAPPER_METHOD.PERCENTILE;
-    */
 }
 
 ValueMapper.prototype = {
@@ -2969,7 +2959,7 @@ ValueMapper.prototype = {
 	    }
 	    if(!seenValue[v]) {
 		seenValue[v] = true;
-		if(!isNaN(v)) {
+		if(this.isString || !isNaN(v)) {
 		    this.uniqueValues.push(v);
 		}
 	    }
@@ -2984,21 +2974,34 @@ ValueMapper.prototype = {
 	    max = Utils.max(max,v);
 	});
 
+	if(this.isString) {
+	    return;
+	}
 	this.minValue =min;
 	this.maxValue =max;	
-	this.range = max-min;
 	this.origRange = [min,max];
 	this.allValues = values;
 
 	this.stats = new Stats(values);
+	let clipMin=this.getProperty('ClipMin',this.stats.p5Value);
+	if(String(clipMin).startsWith('p')) {
+	    clipMin = parseFloat(clipMin.substring(1).trim())/100;
+	    clipMin = Stats.quantile(this.stats.sorted, clipMin);
+	}
+	let clipMax=this.getProperty('ClipMax',this.stats.p5Value);
+	if(String(clipMax).startsWith('p')) {
+	    clipMax = parseFloat(clipMax.substring(1).trim())/100;
+	    clipMax = Stats.quantile(this.stats.sorted, clipMax);
+	}
+
 	this.mapper = new Mapper(this.stats,
-				 {method: this.getProperty("Method", MAPPER_METHOD.LINEAR),
-				  clipMin:this.getProperty("ClipMin",this.stats.p5Value),
-				  clipMax:this.getProperty("ClipMax",this.stats.p95Value),				  
+				 {method: this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR)),
+				  clipMin:clipMin,
+				  clipMax:clipMax,
 				  // boosts low values
-				  gamma: this.getProperty("Gamma",0.5),
-				  center: this.getProperty("Center",0),
-				  clamp: this.getProperty("Clamp",true),
+				  gamma: this.getProperty('Gamma',0.5),
+				  center: this.getProperty('Center',0),
+				  clamp: this.getProperty('Clamp',true),
 				  epsilon: 1e-9
 				 });
 	//	console.dir(this.stats.summary());
@@ -3016,6 +3019,13 @@ ValueMapper.prototype = {
 	return dflt;
     },
     getValuePercent:function(value) {
+	if(this.isString) {
+	    let index = this.uniqueValues.indexOf(value);
+	    if(index<0) return NaN;
+	    return   index / (this.uniqueValues.length - 1);
+	}
+
+
 	let percent = this.mapper.map(value);
 	if(this.inverse) percent = 1-percent;
 	return percent;
@@ -3031,20 +3041,20 @@ function ColorByInfo(display, fields, records,
     $.extend(this, {
 	colorHistory:{},
 	fields:fields,
-	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
-	literal:display.getProperty("colorByLiteral"),
-	aboveColor: display.getProperty("colorThresholdAbove","red"),
-	belowColor:display.getProperty("colorThresholdBelow","blue"),
-	nullColor:display.getProperty("nullColor",null),	
+	colorThresholdField:display.getFieldById(null, display.getProperty('colorThresholdField')),
+	literal:display.getProperty('colorByLiteral'),
+	aboveColor: display.getProperty('colorThresholdAbove','red'),
+	belowColor:display.getProperty('colorThresholdBelow','blue'),
+	nullColor:display.getProperty('nullColor',null),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
-	overrideRange: this.getProperty("overrideColorRange",false),
-	inverse: this.getProperty("Inverse",false),
+	overrideRange: this.getProperty('overrideColorRange',false),
+	inverse: this.getProperty('Inverse',false),
         isString: this.properties.isString,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
         pctFields:null,
-	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
+	compareFields: display.getFieldsByIds(null, this.getProperty('CompareFields', '')),
     });
     //Reuse the last color map if there is one so the string->color stays the same
     if(lastColorBy && !lastColorBy.colorOverflow) {
@@ -3286,12 +3296,7 @@ function ColorByInfo(display, fields, records,
 	});
     }
 
-    if (this.display.showPercent) {
-        this.setRange(0, 100,true);
-    }
-
     var steps = this.getProperty("Steps");
-
     if(steps) {
 	this.steps = steps.split(",");
     }
@@ -3433,7 +3438,7 @@ ColorByInfo.prototype = {
 	if(this.display.getColorByAllRecords() && !force) {
 	    return;
 	}
-	if(this.getProperty("useDataForColorRange") && this.origRange) {
+	if(this.getProperty('useDataForColorRange') && this.origRange) {
 	    minValue = this.origRange[0];
 	    maxValue = this.origRange[1];	    
 	}	    
@@ -3443,20 +3448,13 @@ ColorByInfo.prototype = {
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
-
-
 	this.valueOffset = 0;
-
-	if (this.valueFunction) {
-	    if (minValue <= 0) {
-		this.valueOffset =  Math.abs(minValue)+ Utils.epsilon;
-	    }
-	    minValue = this.valueFunction(minValue + this.valueOffset);
-	    maxValue = this.valueFunction(maxValue + this.valueOffset);
-	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
-	this.range = this.maxValue -this.minValue;
+	if(this.stats) {
+	    this.stats.min  = minValue;
+	    this.stats.max  = maxValue;	    
+	}
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
@@ -3787,8 +3785,7 @@ function SizeBy(display,records,fieldProperty) {
     }
 
     this.index = this.field != null ? this.field.getIndex() : -1;
-    if (!this.isString && this.field) {
-	let col = this.display.getColumnValues(records, this.field);
+    if (this.field) {
 	this.processRecords(records);
 	if(Utils.isDefined(this.getProperty("sizeByMin"))) {
 	    this.minValue = +this.getProperty("sizeByMin",0)
@@ -3810,13 +3807,6 @@ function SizeBy(display,records,fieldProperty) {
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
     this.maxValue = Math.max(this.minValue,this.maxValue);
-    if (this.valueFunction) {
-        if (this.minValue < 1) {
-            this.valueOffset = 1 - this.minValue;
-        }
-        this.minValue = this.valueFunction(this.minValue + this.valueOffset);
-        this.maxValue = this.valueFunction(this.maxValue + this.valueOffset);
-    }
 }
 
 SizeBy.prototype = {
@@ -3825,6 +3815,9 @@ SizeBy.prototype = {
     },
     getMaxValueSize:function() {
 	return this.getSizeFromValue(this.origMaxValue);
+    },
+    getField:function() {
+        return this.field;
     },
     getSize: function(values, dflt, func) {
         if (this.index <= 0) {
@@ -3838,6 +3831,7 @@ SizeBy.prototype = {
 	let minMax = this.sizeToMinMax[size];
 	minMax.min = Math.min(minMax.min,value);
 	minMax.max = Math.max(minMax.max,value);	
+	minMax.value = value;
 	return size;
     },
 
@@ -3849,86 +3843,94 @@ SizeBy.prototype = {
 	    }
 	    return this.steps[this.steps.length-1].size;
 	}
+	let percent=NaN;
         if (this.isString) {
-	    let size;
+	    let size = NaN;
             if (Utils.isDefined(this.stringMap[value])) {
-                let v = parseInt(this.stringMap[value]);
-                size = v;
+                size = parseInt(this.stringMap[value]);
             } else if (Utils.isDefined(this.stringMap["*"])) {
-                let v = parseInt(this.stringMap["*"]);
-                size = v;
+                size = parseInt(this.stringMap["*"]);
             } 
-	    if(isNaN(size)) size =  this.radiusMin;
-	    if(func) func(NaN,size);
-	    return size;
+	    if(isNaN(size)) {
+		percent  = this.getValuePercent(value);
+		size =  this.radiusMin;
+	    }
+	    if(isNaN(percent)) {
+		if(func) func(NaN,size);
+		return size;
+	    }
+        } 
+	if(isNaN(percent)) {
+	    percent  = this.getValuePercent(value);
+	}
+	let size;
+        if (this.radiusMax >= 0 && this.radiusMin >= 0) {
+            size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
         } else {
-	    let percent  = this.getValuePercent(value);
-	    let size;
-            if (this.radiusMax >= 0 && this.radiusMin >= 0) {
-                size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
-            } else {
-                size = 6 + parseInt(15 * percent);
-            }
-//	    console.log('value:',value,'percent:',percent,'size',size);
-	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" percent:" + percent +" v:" + v +" size:" + size);
-	    if(isNaN(size)) size =  this.radiusMin;
-	    if(func) func(percent, size);
-	    return size;
+            size = 6 + parseInt(15 * percent);
         }
+	if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" percent:" + percent +" v:" + v +" size:" + size);
+	if(isNaN(size)) size =  this.radiusMin;
+	if(func) func(percent, size);
+	return size;
+    },
+    showSettings: function(anchor) {
+	let _this = this;
+	let html ='';
+	let colorByFunctions=MAPPER_METHOD_ALL.split('|');
+	html+=HU.formTable();
+	html +=HU.formEntry('Function:',
+			    HU.select("",[ATTR_ID,'sizebyfunction'],colorByFunctions,
+				      _this.display.getSizeByMethod(MAPPER_METHOD.LINEAR)));
+	html +=HU.formEntry('Radius Range:',
+			    HU.input("", _this.radiusMin,
+				     [ATTR_SIZE, 7,
+				      ATTR_ID, 'radiusmin']) + ' - ' +
+			    HU.input("", _this.radiusMax,
+				     [ATTR_SIZE, 7,
+				      ATTR_ID, 'radiusmax']));
+
+	html+=HU.formTableClose();
+	html+=HU.makeApplyOkCancelButtons();
+	html = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
+	let display = _this.display;
+	if(display.sizeByDialog) display.sizeByDialog.remove();
+
+	let dialog =  display.sizeByDialog =
+	    HU.makeDialog({
+		content:html,
+		title:'Size by Settings',
+		anchor:anchor,
+		draggable:true,
+		header:true});
+	let apply = ()=>{
+	    let apply2 = (suffix,value) =>{
+		_this.display.setProperty(suffix,value);
+		if(_this.fieldValue) {
+		    _this.display.setProperty(_this.fieldValue+'.'+suffix,value);
+		}
+	    }
+	    apply2('sizeByMethod',dialog.find('#sizebyfunction').val());
+	    apply2('sizeByRadiusMin',dialog.find('#radiusmin').val());
+	    apply2('sizeByRadiusMax',dialog.find('#radiusmax').val());
+	    _this.display.forceUpdateUI();
+	}
+	dialog.find(HU.dotClass(CLASS_BUTTON_APPLY)).button().click(()=>{
+	    apply();
+	});
+	dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
+	    apply();
+	    dialog.remove();
+	});
+	dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
+	    dialog.remove();
+	});
+
     },
     initLegend: function(selector) {
 	let _this = this;
 	selector.find('.display-size-legend-item').click(function() {
-	    let html ='';
-	    let colorByFunctions=MAPPER_METHOD_ALL.split('|');
-	    html+=HU.formTable();
-	    html +=HU.formEntry('Function:',
-				HU.select("",[ATTR_ID,'sizebyfunction'],colorByFunctions,
-					  _this.display.getSizeByMethod(MAPPER_METHOD.LINEAR)));
-	    html +=HU.formEntry('Radius Range:',
-				HU.input("", _this.radiusMin,
-					 [ATTR_SIZE, 7,
-					  ATTR_ID, 'radiusmin']) + ' - ' +
-				HU.input("", _this.radiusMax,
-					 [ATTR_SIZE, 7,
-					  ATTR_ID, 'radiusmax']));
-
-	    html+=HU.formTableClose();
-	    html+=HU.makeApplyOkCancelButtons();
-	    html = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
-	    let display = _this.display;
-	    if(display.sizeByDialog) display.sizeByDialog.remove();
-
-	    let dialog =  display.sizeByDialog =
-		HU.makeDialog({
-		    content:html,
-		    title:'Size by Settings',
-		    anchor:$(this),
-		    draggable:true,
-		    header:true});
-	    let apply = ()=>{
-		let apply2 = (suffix,value) =>{
-		    _this.display.setProperty(suffix,value);
-		    if(_this.fieldValue) {
-			_this.display.setProperty(_this.fieldValue+'.'+suffix,value);
-		    }
-		}
-		apply2('sizeByMethod',dialog.find('#sizebyfunction').val());
-		apply2('sizeByRadiusMin',dialog.find('#radiusmin').val());
-		apply2('sizeByRadiusMax',dialog.find('#radiusmax').val());
-		_this.display.forceUpdateUI();
-	    }
-	    dialog.find(HU.dotClass(CLASS_BUTTON_APPLY)).button().click(()=>{
-		apply();
-	    });
-	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
-		apply();
-		dialog.remove();
-	    });
-	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
-		dialog.remove();
-	    });
-
+	    _this.showSettings($(this));
 	});
     },
     getLegend: function(cnt,bg,vert) {
@@ -3961,14 +3963,19 @@ SizeBy.prototype = {
 		let min = minMax.min;
 		let max = this.sizeToMinMax[size].max;		
 		if(isNaN(size) || size==0) continue;
-		let label = this.display.formatNumber(min) +' - '+
-		    this.display.formatNumber(max);
-
-		if(isNaN(min)) {
-		    label = '--';
-		} else if(min==max) {
-		    label = min;
-		}		    
+		let label;
+		if(this.isString) {
+		    label = minMax.value;
+		    if(!Utils.stringDefined(label)) label='&lt;blank&gt;';
+		} else {
+		    label =  this.display.formatNumber(min) +' - '+
+			this.display.formatNumber(max);
+		    if(isNaN(min)) {
+			label = '--';
+		    } else if(min==max) {
+			label = min;
+		    }
+		}
 		let dim = HU.px(size*2);
 		html += HU.div([ATTR_CLASS,'display-size-legend-item',
 			       ATTR_TITLE,'Click for settings dialog'],
@@ -4974,10 +4981,33 @@ addGlobalDisplayType({
 */
 function DisplayThing(argId, argProperties) {
     this.isDisplayThing = true;
-
     if (argProperties == null) {
         argProperties = {};
     }
+    
+
+
+    let tmpProperties = {};
+    Object.keys(argProperties).forEach(key=>{
+	let value = argProperties[key];
+	if(key.indexOf(',')<0) {
+	    tmpProperties[key]  =value;
+	    return;
+	}
+
+	//look for prop1,prop2.suffix
+	let dotIndex = key.indexOf('.');
+	let suffix = '';
+	if(dotIndex>=0) {
+	    suffix = key.substring(dotIndex);
+	    key = key.substring(0,dotIndex);
+	}
+
+	Utils.split(key,',',true,true).forEach(tok=>{
+	    argProperties[tok+suffix] = value;
+	});
+    });
+    argProperties = tmpProperties;
 
 
     //check for booleans as strings
@@ -6472,6 +6502,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
 	{p:'&lt;field&gt;.type',ex:'enumeration|string|boolean'},
 	{p:'&lt;field&gt;.filterShow',ex:'false'},
+	{p:'&lt;field&gt;.filterBreak',ex:true,tt:'add a break before the filter widget'},
 	{p:'&lt;field&gt;.filterLabel'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
@@ -6647,6 +6678,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
 	{p:'colorByFields',ex:'',tt:'Comma separated list of fields. Show menu'},
 	{p:'colorByMethod',ex:MAPPER_METHOD_ALL,tt:'What function to use to color by'},
+	{p:'colorByClipMin',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},
+	{p:'colorByClipMax',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},		
+	{p:'colorByGamma',ex:'0',tt:'For gamma clip method'},
+	{p:'colorByCenter',ex:'0',tt:'For clip method'},
+	{p:'colorByClamp',ex:'0',tt:'For clip method'},				
+
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
 	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
@@ -6766,6 +6803,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return helpUrl;
 	},
 	defineSizeByProperties: function() {
+	    if(this.sizeByMethodsDefined) return;
+	    this.sizeByMethodsDefined= true;
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
 	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
@@ -6773,9 +6812,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
 		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
+		{p:'sizeByClipMin',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},
+		{p:'sizeByClipMax',ex:'0 or p&lt;percentile&gt; e.g. p75',tt:'For clip method'},		
+		{p:'sizeByGamma',ex:'0',tt:'For gamma clip method'},
+		{p:'sizeByCenter',ex:'0',tt:'For clip method'},
+		{p:'sizeByClamp',ex:'0',tt:'For clip method'},				
 		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
-		{p:'sizeByLegendLabel'},		
+		{p:'sizeByLegendLabel',d:'${field}'},		
 		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},
@@ -6925,6 +6969,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         displayColorTable: function(ct, domId, min, max, args) {
+	    this.colorTableSettings = {
+		min:min,max:max
+	    }
 	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
@@ -6965,87 +7012,92 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.originalColorRange = [min,max];
 	    }		
 	    slices.click(function(e) {
-		let val = $(this).attr(ATTR_DATA_VALUE);
-		let html = '';
-		let items = [];
-		items.push(HU.boldLabel('Range') +
-			   HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
-			   HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
-		items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   ATTR_WHAT,'reset'],'Reset range'),
-			   HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
-				   ATTR_WHAT,'ussedata'],'Use data range'));
-		let colorByFunctions=VALUE_FUNCTION_ALL.split('|');
-		items.push(HU.boldLabel('Function') +
-			   HU.select("",[ATTR_ID,'colortablefunction'],colorByFunctions,
-				     _this.getColorByMethod(MAPPER_METHOD.LINEAR)));
-		html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
-							 HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
-		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
-				Utils.getColorTablePopup({showToggle:false,addSearch:true})]);
-		html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
-		if(_this.colorTableDialog) _this.colorTableDialog.remove();
-		let dialog =  _this.colorTableDialog =
-		    HU.makeDialog({
-			content:html,
-			title:'Color Table Settings',
-			anchor:$(this),
-			draggable:true,
-			header:true});
-
-		Utils.initColorTablePopup(dialog);
-		let minInput =dialog.find('.colortable-min');
-		let maxInput =dialog.find('.colortable-max');		
-		minInput.keypress(function(event) {
-		    let keycode = (event.keyCode ? event.keyCode : event.which);
-                    if (keycode!= 13) return;
-		    if(!Utils.isDefined(_this.getProperty('colorByMinOrig'))) {
-			_this.setProperty('colorByMinOrig',_this.getProperty('colorByMin'));
-		    }
-		    _this.setProperty('colorByMin',$(this).val());
-		    _this.setProperty('overrideColorRange', true);
-		    _this.forceUpdateUI();
-		});
-
-		maxInput.keypress(function(event) {
-		    let keycode = (event.keyCode ? event.keyCode : event.which);
-                    if (keycode!= 13) return;
-		    if(!Utils.isDefined(_this.getProperty('colorByMaxOrig'))) {
-			_this.setProperty('colorByMaxOrig',_this.getProperty('colorByMax'));
-		    }
-		    _this.setProperty('colorByMax',$(this).val());
-		    _this.setProperty('overrideColorRange', true);
-		    _this.forceUpdateUI();
-		});
-
-
-		dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
-		    let ct = $(this).attr(ATTR_COLORTABLE);
-		    if(ct) {
-			_this.setProperty('colorTable',ct);
-			_this.forceUpdateUI();
-		    }		    
-		});
-		dialog.find('#colortablefunction').change(function() {
-		    _this.setProperty('colorByFunction',$(this).val());
-		    _this.forceUpdateUI();
-		});
-		dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
-		    let what = $(this).attr(ATTR_WHAT);
-		    _this.setProperty('useDataForColorRange', false);
-		    if(what == 'reset') {
-			_this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
-			_this.setProperty('colorByMax',_this.getProperty('colorByMaxOrig'));
-			_this.setProperty('overrideColorRange', false);
-		    } else  if(what == 'ussedata') {
-			_this.setProperty('useDataForColorRange', true);
-		    }
-		    _this.forceUpdateUI();
-		    minInput.val(_this.getProperty('colorByMinOrig')??min);
-		    maxInput.val(_this.getProperty('colorByMaxOrig')??max);
-		});
+		_this.showColorTableSettings($(this));
 	    });
         },
+	showColorTableSettings:function(anchor) {
+	    let min =this.colorTableSettings?.min??'';
+	    let max =this.colorTableSettings?.max??'';	    
+	    let _this = this;
+	    //let val = $(this).attr(ATTR_DATA_VALUE);
+	    let html = '';
+	    let items = [];
+	    items.push(HU.boldLabel('Range') +
+		       HU.input('',min,[ATTR_SIZE,4,ATTR_CLASS,'colortable-min']) + ' - ' +
+		       HU.input('',max,[ATTR_SIZE,4,ATTR_CLASS,'colortable-max']));
+	    items.push(HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
+			       ATTR_WHAT,'reset'],'Reset range'),
+		       HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_MENU_ITEM),
+			       ATTR_WHAT,'ussedata'],'Use data range'));
+	    let colorByMethods=MAPPER_METHOD_ALL.split('|');
+	    items.push(HU.boldLabel('Function') +
+		       HU.select("",[ATTR_ID,'colortablemethod'],colorByMethods,
+				 _this.getColorByMethod(MAPPER_METHOD.LINEAR)));
+	    html = Utils.wrap(items,HU.open(TAG_DIV,[ATTR_STYLE,
+						     HU.css(CSS_MARGIN_BOTTOM,HU.px(4))]),HU.close(TAG_DIV));
+	    html = HU.hbox([html, HU.space(3),HU.b('Color Table') +HU.br() +
+			    Utils.getColorTablePopup({showToggle:false,addSearch:true})]);
+	    html =HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(8))], html);
+	    if(_this.colorTableDialog) _this.colorTableDialog.remove();
+	    let dialog =  _this.colorTableDialog =
+		HU.makeDialog({
+		    content:html,
+		    title:'Color Table Settings',
+		    anchor:anchor,
+		    draggable:true,
+		    header:true});
+
+	    Utils.initColorTablePopup(dialog);
+	    let minInput =dialog.find('.colortable-min');
+	    let maxInput =dialog.find('.colortable-max');		
+	    minInput.keypress(function(event) {
+		if(!Utils.isReturnKey(event)) return;
+		if(!Utils.isDefined(_this.getProperty('colorByMinOrig'))) {
+		    _this.setProperty('colorByMinOrig',_this.getProperty('colorByMin'));
+		}
+		_this.setProperty('colorByMin',$(this).val());
+		_this.setProperty('overrideColorRange', true);
+		_this.forceUpdateUI();
+	    });
+
+	    maxInput.keypress(function(event) {
+		let keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode!= 13) return;
+		if(!Utils.isDefined(_this.getProperty('colorByMaxOrig'))) {
+		    _this.setProperty('colorByMaxOrig',_this.getProperty('colorByMax'));
+		}
+		_this.setProperty('colorByMax',$(this).val());
+		_this.setProperty('overrideColorRange', true);
+		_this.forceUpdateUI();
+	    });
+
+
+	    dialog.find(HU.dotClass(CLASS_COLORTABLE_SELECT)).click(function() {
+		let ct = $(this).attr(ATTR_COLORTABLE);
+		if(ct) {
+		    _this.setProperty('colorTable',ct);
+		    _this.forceUpdateUI();
+		}		    
+	    });
+	    dialog.find('#colortablemethod').change(function() {
+		_this.setProperty('colorByMethod',$(this).val());
+		_this.forceUpdateUI();
+	    });
+	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
+		let what = $(this).attr(ATTR_WHAT);
+		_this.setProperty('useDataForColorRange', false);
+		if(what == 'reset') {
+		    _this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
+		    _this.setProperty('colorByMax',_this.getProperty('colorByMaxOrig'));
+		    _this.setProperty('overrideColorRange', false);
+		} else  if(what == 'ussedata') {
+		    _this.setProperty('useDataForColorRange', true);
+		}
+		_this.forceUpdateUI();
+		minInput.val(_this.getProperty('colorByMinOrig')??min);
+		maxInput.val(_this.getProperty('colorByMaxOrig')??max);
+	    });
+	},
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -11805,10 +11857,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
+		let extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+				    ATTR_TITLE,'Color table settings',
+				    ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
 		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
-				   label+ HU.select("",[ATTR_ID,this.getDomId("colorbyselect")],
-						    enums,selected,20))+SPACE;
+				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
+						    enums,selected,20))+extra+SPACE2;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -11874,10 +11929,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.sizeByFields.forEach(field=>{
 		    enums.push([field.getId(),field.getLabel()]);
 		});
+		let extra = '';
+		extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+				ATTR_TITLE,'Size by settings',
+				ATTR_ID,this.domId('sizebysettings')],HU.getIconImage('fas fa-cog'));
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   this.makeFilterLabel("Size by: ") +
 				   HU.select("",[ATTR_ID,this.getDomId("sizebyselect")],
-					     enums,this.getProperty("sizeBy","")))+SPACE;
+					     enums,this.getProperty("sizeBy",""))+extra)+SPACE;
 	    }
 
 
@@ -12019,6 +12078,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(groupHtml!=null) {
 			searchBar+=HU.toggleBlock(group,groupHtml,false);
 			groupHtml=null;
+		    }
+		    if(this.getProperty(filter.getId()+'.filterBreak')) {
+			searchBar+='<div class=display-filter-break></div>';
 		    }
 		    searchBar +=widget;
 		});
@@ -12380,7 +12442,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            this.jq("colorbyselect").change(function(){
+	    this.jq('colortablesettings').click(function() {
+		_this.showColorTableSettings($(this));
+	    });
+            this.jq('colorbyselect').change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
 	    this.jq('uniquefields').change(()=>{
@@ -12402,6 +12467,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let val = $(this).val();
 		_this.setProperty("sortAscending",val=="up");
 		_this.forceUpdateUI();
+	    });
+            this.jq("sizebysettings").click(function(){
+		if(_this.sizeBy) _this.sizeBy.showSettings($(this));
 	    });
             this.jq("sizebyselect").change(function(){
 		_this.sizeByFieldChanged($(this).val());
@@ -12460,17 +12528,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let maxValue =NaN;
 	    fields.forEach(field=>{
 		let value = field.getValue(record);
-		if(!isNaN(value)) {
-		    if(uniques && values && !Utils.isDefined(uniques[value])) {
-			uniques[value] = true;
-			values.push(value);
-		    }
-		    if(isNaN(minValue)) {
-			minValue = maxValue= value;
-		    } else  {
-			minValue = Math.min(minValue,value);
-			maxValue = Math.min(maxValue,value);				
-		    }
+		if(isNaN(value)) return;
+		if(uniques && values && !Utils.isDefined(uniques[value])) {
+		    uniques[value] = true;
+		    values.push(value);
+		}
+		if(isNaN(minValue)) {
+		    minValue = maxValue= value;
+		} else  {
+		    minValue = Math.min(minValue,value);
+		    maxValue = Math.max(maxValue,value);				
 		}
 	    });
 	    return {min:minValue,max:maxValue};
@@ -13321,17 +13388,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.hasDate;
         },
         dateInRange: function(record, date, idx, debug) {
+//	    debug = this.minDateObj!=null && idx<20;
 	    if(debug) {
-		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
+//		this.logMsg("dateInRange: date:"+date+" minDate:"+ this.minDateObj +" maxDate:"+ this.maxDateObj);
+//		console.log("dateInRange: date:",date," minDate:", this.minDateObj ," maxDate:", this.maxDateObj);
 	    }
+
 	    let minMaxPair;
+	    if(this.minDateObj && this.maxDateObj && this.minDateObj.value) {
+		minMaxPair = this.getMinMax(this.minDateObj.fields,record);
+
+		if(!isNaN(minMaxPair.min) && !isNaN(minMaxPair.max)) {
+		    let rangeMin =this.minDateObj.value;
+		    let rangeMax =this.maxDateObj.value; 		
+		    let recordMin = minMaxPair.min;
+		    let recordMax = minMaxPair.max;
+		    const intersects =  !(recordMax < rangeMin || recordMin > rangeMax);
+		    const contained =  recordMin >= rangeMin && recordMax <= rangeMax;
+		    if(debug) console.dir('range OK?',intersects || contained,
+					  'range:',rangeMin,rangeMax,
+					  'record:', recordMin,recordMax);
+		    return intersects || contained;
+		}
+	    }
+
 	    if(this.minDateObj) {
 		if(this.minDateObj.isIndex) {
 		    if(idx<this.minDateObj.index) return false;
 		} else 	if(this.minDateObj.isValue) {
 		    minMaxPair = this.getMinMax(this.minDateObj.fields,record);
-		    let min  = minMaxPair.min;
-		    if(min<this.minDateObj.value) return false;
+		    let recordMin  = minMaxPair.min;
+//		    if(debug) console.dir('min value:',this.minDateObj.value,'record:',minMaxPair.min +' - ' +minMaxPair.max);
+		    if(recordMin<this.minDateObj.value) {
+			if(debug) console.log('min not ok',recordMin);
+			return false;
+		    }
 		}
 	    }
 	    if(this.maxDateObj) {
@@ -13340,11 +13431,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else if(this.maxDateObj.isValue) {
 		    if(!minMaxPair)
 			minMaxPair = this.getMinMax(this.maxDateObj.fields,record);
-		    if(minMaxPair.max>this.maxDateObj.value) return false;
+//		    if(debug) console.dir('max value:',this.maxDateObj.value,'record:',minMaxPair.min +' - ' +minMaxPair.max);
+		    if(minMaxPair.max>this.maxDateObj.value) {
+			if(debug) console.log('max not ok');
+			return false;
+		    }
 		}
 	    }	    
 	    if(minMaxPair && isNaN(minMaxPair.min) && isNaN(minMaxPair.max)) {
 		if(!this.animationShowingAll) {
+		    if(debug) console.log("not ok - value is NaN");
 		    return false;
 		}
 	    }
@@ -19198,7 +19294,6 @@ function makeCsvData(display, csv,src) {
 */
 
 
-var FILTER_ALL = "-all-";
 
 var ATTR_FIELDID = 'fieldId';
 
@@ -19726,7 +19821,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 
 	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
-	    let showPopupSelect = multi ||this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup',multi))
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		if(!Utils.isDefined(multi)) multi=false;
@@ -19963,7 +20058,8 @@ function RecordFilter(display,filterFieldId, properties) {
 								      this.getProperty("filter.includeAll", true))));
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
-	    let labelVertical =   this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
+	    let labelVertical =
+		this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -20350,21 +20446,22 @@ function RecordFilter(display,filterFieldId, properties) {
 		    else widgetLabel = widgetLabel+": ";
 		}
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
-//		if(labelVertical) widgetLabel = widgetLabel+HU.br();
 		if(vertical) {
 		    widget = HU.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],
+		    widget = HU.div([ATTR_CLASS,'display-filter-widget '+(labelVertical?'display-filter-widget-vertical':''),
+//				     ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)
+				    ],
 				    (showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }
-	    if(!vertical)
-		widget= widget +(this.hideFilterWidget?"":SPACE2);
+	    if(!vertical) {
+//		widget= widget +(this.hideFilterWidget?"":SPACE2);
+	    }
 	    if(this.prefix) widget = this.prefix+widget;
 
 	    let show = this.getProperty(this.getId() +".filterShow",this.getProperty("filterShow",true));
 	    if(!show) widget=HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)], widget);
-
 	    return widget;
 	},
 	getWidgetId:function() {
@@ -40658,6 +40755,7 @@ let displayMapMarkerIcons = {};
 var ID_REGION_SELECTOR = "regionselector";
 var ID_LEGENDID="legendid";
 var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
+var ID_SHOWLABELSTOGGLE="showLabelsToggle";
 var ID_BASELAYERS='baselayers';
 
 var debugit = false;
@@ -40827,9 +40925,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (height < 0) {
 		height = HU.perc(-height);
 	    }
-	    height = HU.getDimension(height);
+	    height = this.mapHeight = HU.getDimension(height);
             extraStyle += HU.css(ATTR_HEIGHT, height);
-
 	    let map =HU.div([ATTR_TABINDEX,1,
 			     ATTR_CLASS, HU.classes('display-map-map','ramadda-expandable-target'),
 			     ATTR_STYLE,  extraStyle,
@@ -41672,7 +41769,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'defaultShape',ex:shapes},
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
-	{p:'hideMissingColor',ex:true,tt:'hide points when no color by value'},
+	{p:'hideMissingColor',
+	 ex:true,tt:'hide points when no color by value'},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
@@ -41709,7 +41807,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
 	{p:'filterBadLocations',ex:'false',d:true,tt:'Do not show records with bad lat/lon'},
-	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
+	{p:'hideNaN',ex:false,
+	 tt:'If doing color by do not show the points with missing values'},
 
 
 	{label:'Map GUI'},
@@ -41801,6 +41900,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Labels'},
 	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'showLabelsToggle',d:false},
+	{p:'labelsVisibility',d:true},
 	{p:'declutterLabels',d:true},
 	{p:'labelRecordTemplate',ex:'${field}',tt:'Apply the template to the records. Use ${recordtemplate} for the labelTemplate'},
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
@@ -43692,6 +43793,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
 	    }
 
+	    if(this.getShowLabelsToggle()) {
+		let dflt = this.getLabelsVisibility();
+		html += HU.checkbox(this.domId(ID_SHOWLABELSTOGGLE),
+				    [ATTR_ID,this.domId(ID_SHOWLABELSTOGGLE)],dflt,
+				    "Show Labels") +SPACE2;
+	    }	    
+
 	    if(this.getShowBaseLayersSelect()) {
 		html+=this.getBaseLayersSelect();
 	    }
@@ -43875,6 +43983,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let visible = HU.isChecked($(this));
 		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
+	    this.jq(ID_SHOWLABELSTOGGLE).change(function() {
+		_this.forceUpdateUI();
+	    });	    
 	    this.jq("showVectorLayerToggle").change(function() {
 		_this.toggleVectorLayer();
 	    });
@@ -45152,7 +45263,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let hideMissingColor = this.getHideMissingColor();
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    let hideNaN = this.getHideNaN();
-
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getPolygonField());
@@ -45358,7 +45468,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let sizeBy = this.sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
@@ -45797,7 +45907,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
-		    if(gv)  {
+		    if(gv!==null)  {
 			let _gv = String(gv).toLowerCase();
 			let shape = null;
 			shapeBy.patterns.every(pattern=>{
@@ -45809,10 +45919,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 
 			if(!shape) shape = shapeBy.map[_gv];
-
-
-
-
 			if(!shape) {
 			    if(dfltShape) {
 				//				shape = shapeBy.map[_gv] =  dfltShape;
@@ -45859,7 +45965,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} else {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
-			if(hideNaN && isNaN(value)) return;
+			if(hideNaN && isNaN(value)) {
+			    return;
+			}
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 		    }
@@ -46081,8 +46189,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordFeatures.forEach(f=>{features.push(f);});
 		}
                 let date = record.getDate();
+		if(props.pointRadius>50)
+		    console.log(props.pointRadius);
 
 		recordFeatures.forEach(mapPoint=>{
+
+
 		    if(highlight) {
 			mapPoint.highlightTextGetter = highlightGetter;
 			mapPoint.highlightSize = highlightSize;
@@ -46139,14 +46251,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    let legendSide = this.getSizeByLegendSide();
-	    if(legendSide) {
+	    if(sizeBy.isEnabled() && legendSide) {
 		let legend = sizeBy.getLegend(8,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
-		    if(label) legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
-		    let height = this.jq(ID_MAP).height();
-		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(300),
-						     CSS_MAX_HEIGHT,height+'px',
+		    if(label) {
+			if(sizeBy.getField()) {
+			    label = label.replace('${field}',sizeBy.getField().getLabel());
+			}
+			legend=HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER,CSS_FONT_WEIGHT,FONT_BOLD)],label)+legend;
+		    }
+		    let height = this.mapHeight;
+
+
+		    legend=HU.div([ATTR_STYLE,HU.css(CSS_MAX_WIDTH,HU.px(150),
+						     CSS_WIDTH,HU.px(150),
+						     CSS_HEIGHT,height,
+						     CSS_MAX_HEIGHT,height,
 						     CSS_OVERFLOW_X,OVERFLOW_AUTO,
 						     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],legend);
 		    let style = this.getSizeByLegendStyle();
@@ -46159,6 +46280,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.callingUpdateSize = false;
 
 		}
+	    } else {
+		this.jq(ID_SIZEBY_LEGEND).html('');
 	    }
 	    times = [new Date()];
 	    if (didColorBy) {
@@ -46180,6 +46303,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let shapes = shapeBy.field.getLabel()+": ";
 		for(v in shapeBy.map) {
 		    let label = shapeBy.labels[v]??v;
+		    if(!Utils.stringDefined(label)) label='&lt;blank&gt;';
 		    let shape = shapeBy.map[v];
 		    if(shape=="circle") shape=HU.getIconImage("fa-circle");
 		    else if(shape=="square") shape=HU.getIconImage("fa-square");		    
@@ -46284,6 +46408,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         addLabels:function(records, fields) {
+	    let cbx =this.jq(ID_SHOWLABELSTOGGLE);
+	    if(cbx.length>0 && !HU.isChecked(cbx)) return;
+
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
