@@ -136,12 +136,23 @@ ValueMapper.prototype = {
 	return dflt;
     },
     getValuePercent:function(value) {
+	if(this.getDoCount()) {
+	    if(this.range>0) {
+		return value/this.range;
+	    }
+	    return 0.5;
+	}
 	if(this.isString) {
 	    let index = this.uniqueValues.indexOf(value);
 	    if(index<0) return NaN;
 	    return   index / (this.uniqueValues.length - 1);
 	}
 
+	if(!this.mapper) {
+	    console.log('No mapper defined',this.field);
+	    return 0.5;
+
+	}
 
 	let percent = this.mapper.map(value);
 	if(this.inverse) percent = 1-percent;
@@ -153,6 +164,7 @@ ValueMapper.prototype = {
 function ColorByInfo(display, fields, records,
 		     fieldProperty,colorByMapProp, defaultColorTable,
 		     propPrefix, theField, props,lastColorBy) {
+
     let SUPER = new ValueMapper(display,fieldProperty??'colorBy', propPrefix,theField,props);
     $.extend(this, SUPER);
     $.extend(this, {
@@ -312,7 +324,6 @@ function ColorByInfo(display, fields, records,
 	    colors = c.split(",");
     }
 
-
     if(!colors) {
 	colors = this.display.getColorTable(true);
     }
@@ -380,10 +391,18 @@ function ColorByInfo(display, fields, records,
 
 
     if(this.field && this.field.isString()) this.isString = true;
+    if(!this.field) {
+//	console.log('no field');
+    } else {
+//	console.log('field',this.field.getLabel(),this.isString);
+    }
+
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0 || this.timeField) {
 	this.processRecords(records);
+    } else {
+//	console.log('not processing records');
     }
 
     if(this.isString && this.uniqueValues.length>0) {
@@ -684,7 +703,6 @@ ColorByInfo.prototype = {
 		value = value.getTime();
 		this.doingDates = true;
 	    }
-
 
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
