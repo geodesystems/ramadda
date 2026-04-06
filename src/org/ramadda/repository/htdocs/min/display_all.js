@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  6 12:30:17 MDT 2026";
+var build_date="RAMADDA build date: Mon Apr  6 12:49:20 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -3018,6 +3018,10 @@ ValueMapper.prototype = {
 	}
 	return dflt;
     },
+    getDoCount:function() {
+	return this.doCount;
+    },
+
     getValuePercent:function(value) {
 	if(this.getDoCount()) {
 	    if(this.range>0) {
@@ -3481,9 +3485,6 @@ ColorByInfo.prototype = {
     scaleToValue: function(v) {
 	let perc = this.getValuePercent(v);
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
-    },
-    getDoCount:function() {
-	return this.doCount;
     },
     getDoTotal:function() {
 	return this.doTotalCount;
@@ -41596,15 +41597,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			args.layer = list[1];
 		    }
 		    if(!args.layer) {
-			console.log(this.getLogLabel(),
-				    "Could not find base layer:",tuple);
+			console.error(this.getLogLabel(),
+				    "Could not find map layer:",tuple);
 			return;
 		    }
 
 		    let layer = this.map.createMapLayer(args.layer);		    
 		    if(!layer) {
-			console.log(this.getLogLabel(),
-				    "Could not find base layer:",':'+args.layer+':','tuple:',tuple);
+			console.error(this.getLogLabel(),
+				    "Could not find map layer:",':'+args.layer+':','tuple:',tuple);
 		    } else {
 			layer.setVisibility(true);
 		    }
@@ -41620,12 +41621,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		} else if(type=="wms") {
 		    let url = args.url;
 		    if(!url) {
-			console.log("no url in wms:",args);
+			console.error("no url in wms:",args);
 			return;
 		    }
 		    let layer=args.layer;
 		    if(!layer) {
-			console.log("no layer in wms:",args);
+			console.error("no layer in wms:",args);
 			return;
 		    }
 		    let opacity = args.opacity??1;
@@ -41636,7 +41637,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		} else if(type=="xyz") {
 		    let url = args.url;
 		    if(!url) {
-			console.log("no url in xyz:",args);
+			console.error("no url in xyz:",args);
 			return;
 		    }
 		    let layer = this.map.createXYZLayer(name,url,args.attribution,!isBaseLayer,visible);
@@ -41645,7 +41646,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			this.map.getMap().setBaseLayer(layer);
 		    }
 		} else {
-		    console.log("Unknown map type:" + type)
+		    console.error("Unknown map type:" + type)
 		}
 	    });
 	},
