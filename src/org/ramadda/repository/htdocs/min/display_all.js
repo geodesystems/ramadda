@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  6 06:34:41 MDT 2026";
+var build_date="RAMADDA build date: Mon Apr  6 09:55:20 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -13395,7 +13395,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    let minMaxPair;
-	    if(this.minDateObj && this.maxDateObj && this.minDateObj.value) {
+	    if(this.minDateObj && this.maxDateObj && this.minDateObj.isValue) {
 		minMaxPair = this.getMinMax(this.minDateObj.fields,record);
 
 		if(!isNaN(minMaxPair.min) && !isNaN(minMaxPair.max)) {
