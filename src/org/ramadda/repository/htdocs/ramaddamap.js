@@ -2953,7 +2953,7 @@ RepositoryMap.prototype = {
 
     addBaseLayers:  function() {
 	this.mapLayers = Utils.mergeLists([], RAMADDA_MAP_LAYERS);
-	let overlays = {};
+	let overlays = this.overlays = {};
 	if(this.params.overlays) {
 	    Utils.split(this.params.overlays,',',true,true).forEach(l=>{
 		overlays[l] = true;
@@ -2981,34 +2981,14 @@ RepositoryMap.prototype = {
 	this.baseLayers = {};
 	this.numberOfBaseLayers = 0;
 
-	let l = "";
         for (let i = 0; i < this.mapLayers.length; i++) {
             let mapLayer = this.mapLayers[i];
-	    if(!mapLayer.isForMap()) continue;
-            let newLayer = this.makeMapLayer(mapLayer);
-	    newLayer.ramaddaMapLayer = mapLayer;
-            if (this.firstLayer == null) {
-                this.firstLayer = newLayer;
-            }
-            if (newLayer != null) {
-		if(overlays[mapLayer.id])
-		    newLayer.visibility=true;
-		if(l!="") l+=",";
-		l+=mapLayer.id+":" + newLayer.name;
-                newLayer.ramaddaId = mapLayer.id;
-		if(!newLayer.isBaseLayer) {
-		    this.addLayer(newLayer,true);
-		} else {
-		    this.baseLayers[mapLayer.id] = newLayer;
-                    if (mapLayer.id == this.params.defaultMapLayer) {
-			this.defaultOLMapLayer = newLayer;
-                    }
-		    this.addBaseLayer(newLayer);
-		}
-            }
-	}
-	//	console.log(l);
+	    if(!mapLayer.isForMap()) {
+		continue;
+	    }		
 
+	    this.createMapLayer(mapLayer);
+	}
 	this.graticule= this.createGraticule({
 	    strokeColor: "#888",
 	    strokeWidth: 2,
@@ -3016,6 +2996,35 @@ RepositoryMap.prototype = {
 	});
         this.getMap().addControl(this.graticule);
     },
+    createMapLayer:function(mapLayer) {
+	if(typeof mapLayer=='string') {
+	    mapLayer = RAMADDA_MAP_LAYERS_MAP[mapLayer];
+	    if(!mapLayer) return null;
+	}
+        let newLayer = this.makeMapLayer(mapLayer);
+	newLayer.ramaddaMapLayer = mapLayer;
+        if (this.firstLayer == null) {
+            this.firstLayer = newLayer;
+        }
+        if (newLayer != null) {
+	    if(this.overlays[mapLayer.id])
+		newLayer.visibility=true;
+	    //		if(l!="") l+=",";
+	    //		l+=mapLayer.id+":" + newLayer.name;
+            newLayer.ramaddaId = mapLayer.id;
+	    if(!newLayer.isBaseLayer) {
+		this.addLayer(newLayer,true);
+	    } else {
+		this.baseLayers[mapLayer.id] = newLayer;
+                if (mapLayer.id == this.params.defaultMapLayer) {
+		    this.defaultOLMapLayer = newLayer;
+                }
+		this.addBaseLayer(newLayer);
+	    }
+        }
+	return newLayer;
+    },
+
     createGraticule:function(style) {
 	return MapUtils.createGraticule({
             layerName: "Lat/Lon Lines",
