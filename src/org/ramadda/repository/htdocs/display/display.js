@@ -8849,7 +8849,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    let minMaxPair;
-	    if(this.minDateObj && this.maxDateObj && this.minDateObj.value) {
+	    if(this.minDateObj && this.maxDateObj && this.minDateObj.isValue) {
 		minMaxPair = this.getMinMax(this.minDateObj.fields,record);
 
 		if(!isNaN(minMaxPair.min) && !isNaN(minMaxPair.max)) {
