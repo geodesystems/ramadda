@@ -5036,6 +5036,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
         });
     },
+    makeCancelButton:function() {
+	let buttons = HU.buttons([
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], LABEL_CANCEL)]);
+	return buttons;
+    },
+    makeCloseButton:function() {
+	let buttons = HU.buttons([
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CLOSE,CLASS_BUTTON)], LABEL_CLOSE)]);
+	return buttons;
+    },
+
     makeOkCancelButtons:function() {
 	let buttons = HU.buttons([
 	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_BUTTON)], LABEL_OK),
@@ -5386,7 +5397,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    popup.find('a,div').tooltip({
 		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
 		content: function () {
-		    return $(this).prop(ATTR_TITLE);
+		    let title = $(this).prop(ATTR_TITLE);
+		    title = title.replace(/</g,'&lt;');
+		    title = title.replace(/>/g,'&gt;');		    
+		    return title;
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
 		position: { my: POS_LEFT_TOP, at: POS_RIGHT_TOP }
