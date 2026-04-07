@@ -610,11 +610,8 @@ public class WikiManager extends RepositoryManager
 	}
 	if(props==null) props = new Hashtable();
 	Entry entry = findEntryFromId(request, null, dummyWikiUtil, props, entryId);
-	System.err.println("entry:"  + entryId +" " + entry+ " props:" + props);
 	if(entry==null) {
-	    sb.append("error: could not find entry:" + entryId);
-	    System.err.println("\t" + sb);
-	    return new Result("", sb);
+	    throw new RepositoryUtil.MissingEntryException("error: could not find entry:" + entryId);
 	}
 	String xml = "<entries>" + getXmlOutputHandler().getEntryXml(request, entry) +"</entries>";
 	sb.append(xml);

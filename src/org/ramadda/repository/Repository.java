@@ -3635,7 +3635,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result makeErrorResult(Request request, String msg,boolean decorate, boolean sanitize,boolean...asText) {	
-	StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg,sanitize):sanitize?HU.strictSanitizeString(msg):msg);
+	StringBuilder sb =
+	    new StringBuilder(decorate?makeErrorResponse(request, msg,sanitize):sanitize?HU.strictSanitizeString(msg):msg);
         Result        result = null;
         if (request.responseAsJson()) {
             result = new Result("", sb, JsonUtil.MIMETYPE);
