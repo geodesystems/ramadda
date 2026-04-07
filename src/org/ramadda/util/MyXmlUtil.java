@@ -27,6 +27,10 @@ import org.w3c.dom.*;
 
 import org.xml.sax.*;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import ucar.unidata.util.GuiUtils;
 
 import ucar.unidata.util.IOUtil;
@@ -55,6 +59,15 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import java.io.StringReader;
+
+
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+
 
 /**
  * A collection of utilities for xml.
@@ -1069,6 +1082,45 @@ public abstract class MyXmlUtil {
         return getDocument(stream).getDocumentElement();
     }
 
+
+
+
+
+
+    public static DocumentBuilder getSafeDocumentBuilder() throws Exception {
+	//from chatgpt
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+
+        // Best defense: disallow DOCTYPE completely
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+        // Disable external entities
+        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+        // Disable loading external DTDs
+        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        // Additional hardening
+        dbf.setXIncludeAware(false);
+        dbf.setExpandEntityReferences(false);
+        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        // JAXP external access restrictions
+        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
+        DocumentBuilder builder = dbf.newDocumentBuilder();
+        // Extra safety: block any entity resolution
+        builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+	return builder;
+    }
+
+
+
+
+
     /**
      *  Read in the xml contained in the given filename, parse it and return the
      *  root Element.
@@ -1085,8 +1137,7 @@ public abstract class MyXmlUtil {
         if (filename.startsWith("xml:")) {
             xml = filename.substring(4);
         } else {
-            DocumentBuilder builder =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder =getSafeDocumentBuilder();
             InputStream is = null;
             try {
                 is = IOUtil.getInputStream(filename, MyXmlUtil.class);
@@ -1096,9 +1147,9 @@ public abstract class MyXmlUtil {
             MyErrorHandler errorHandler = new MyErrorHandler();
             builder.setErrorHandler(errorHandler);
             try {
-                ucar.unidata.util.Trace.call1("XmlUtil.getDocument");
+                ucar.unidata.util.Trace.call1("MyXmlUtil.getDocument");
                 Document doc = builder.parse(is);
-                ucar.unidata.util.Trace.call2("XmlUtil.getDocument");
+                ucar.unidata.util.Trace.call2("MyXmlUtil.getDocument");
                 return doc;
             } catch (Exception exc) {
                 throw new IllegalStateException("Error parsing xml: "
@@ -1281,8 +1332,7 @@ public abstract class MyXmlUtil {
      */
     public static Document getDocument(String xml) throws Exception {
         xml = xml.trim();
-        DocumentBuilder builder =
-            DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	DocumentBuilder builder =getSafeDocumentBuilder();
         if (xml.length() == 0) {
             return builder.newDocument();
         }
@@ -1312,8 +1362,7 @@ public abstract class MyXmlUtil {
      *  @throws Exception When something goes wrong.
      */
     public static Document getDocument(InputStream stream) throws Exception {
-        DocumentBuilder builder =
-            DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	DocumentBuilder builder =getSafeDocumentBuilder();
         try {
             return builder.parse(stream);
         } catch (Exception exc) {
@@ -1770,7 +1819,7 @@ public abstract class MyXmlUtil {
               case Node.CDATA_SECTION_NODE : {
                   String value = node.getNodeValue();
                   if (value != null) {
-                      if (value.startsWith("XmlUtil.COMMENT:")) {
+                      if (value.startsWith("MyXmlUtil.COMMENT:")) {
                           xml.append("\n<!--" + value.substring(16)
                                      + " -->\n");
                       } else {
@@ -2030,8 +2079,7 @@ public abstract class MyXmlUtil {
 
                 Trace.call1("new way");
                 FileInputStream fis = new FileInputStream(args[i]);
-                DocumentBuilder builder =
-                    DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder =getSafeDocumentBuilder();
                 Document doc = builder.parse(fis);
                 Trace.call2("new way");
             }
@@ -2238,11 +2286,11 @@ public abstract class MyXmlUtil {
     }
 
     public static Document loadXml(final String xmlFile) {
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(false);
+	//        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	//        factory.setNamespaceAware(false);
         try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
+	    DocumentBuilder builder =getSafeDocumentBuilder();
+	    //            DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.parse(xmlFile);
         } catch (Exception e) {
             throw new RuntimeException("Error loading XML file: "+e.getMessage(), e);
@@ -2287,4 +2335,73 @@ public abstract class MyXmlUtil {
             throw new UnsupportedOperationException("not implemented");
         }
     }
+
+    //Added jeffmc
+    public static List findChildren(Node parent, String... tagList) {
+	ArrayList found    = new ArrayList();
+        NodeList  children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+	    if(tagList.length==0) {
+		found.add(child);
+		continue;
+	    }
+	    for(String tag: tagList) {
+		if (MyXmlUtil.isTag(child, tag)) {
+		    found.add(child);
+		    break;
+		}
+            }
+        }
+        return found;
+    }
+
+    public static void appendCdataBytes(Appendable sb, byte[] bytes)
+	throws Exception {
+        sb.append("<![CDATA[");
+        sb.append(MyXmlUtil.encodeBase64(bytes));
+        sb.append("]]>");
+    }
+
+    public static void appendCdata(Appendable sb, String s) throws Exception {
+        sb.append("<![CDATA[");
+        sb.append(s);
+        sb.append("]]>");
+    }
+
+    public static String elementToString(Element element) {
+	try { 
+	    removeWhitespaceTextNodes(element);
+	    Transformer t =TransformerFactory.newInstance().newTransformer();
+ 	    t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	    t.setOutputProperty(OutputKeys.INDENT, "yes");
+	    t.setOutputProperty(OutputKeys.METHOD, "xml");
+	    t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+	    t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
+	    StringWriter writer = new StringWriter();
+	    t.transform(new DOMSource(element), new StreamResult(writer));
+	    return writer.toString();
+	} catch (TransformerException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+
+
+
+    public static void removeWhitespaceTextNodes(Node node) {
+	NodeList children = node.getChildNodes();
+	for (int i = children.getLength() - 1; i >= 0; i--) {
+	    Node child = children.item(i);
+	    if (child.getNodeType() == Node.TEXT_NODE) {
+		if (child.getTextContent().trim().isEmpty()) {
+		    node.removeChild(child);
+		}
+	    } else if (child.getNodeType() == Node.ELEMENT_NODE) {
+		removeWhitespaceTextNodes(child);
+	    }
+	}
+    }
+    
+
+
 }
