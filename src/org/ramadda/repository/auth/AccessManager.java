@@ -25,7 +25,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -276,8 +276,8 @@ public class AccessManager extends RepositoryManager {
 
     public void applyEntryXml(Entry entry,  Element node) throws Exception {
         List<Permission> permissions = new ArrayList<Permission>();
-	for(Element permissionNode: (List<Element>) XmlUtil.findChildren(node,TAG_PERMISSION)) {
-	    String dataPolicyId = XmlUtil.getAttribute(permissionNode, ATTR_DATAPOLICY,(String)null);
+	for(Element permissionNode: (List<Element>) MyXmlUtil.findChildren(node,TAG_PERMISSION)) {
+	    String dataPolicyId = MyXmlUtil.getAttribute(permissionNode, ATTR_DATAPOLICY,(String)null);
 	    List<Role> roles = new ArrayList<Role>();
 	    if(stringDefined(dataPolicyId)) {
 		DataPolicy dataPolicy = getDataPolicy(dataPolicyId);
@@ -288,14 +288,14 @@ public class AccessManager extends RepositoryManager {
 		permissions.addAll(dataPolicy.getPermissions());
 		continue;
 	    } 
-	    String action = XmlUtil.getAttribute(permissionNode, ATTR_ACTION,(String)null);
+	    String action = MyXmlUtil.getAttribute(permissionNode, ATTR_ACTION,(String)null);
 	    if(!stringDefined(action) || !isActionExportable(action)) {
 		System.err.println("AccessManager.applyEntryXml: action not exportable:" + action);
 		continue;
 	    }
-	    for(Element roleNode: (List<Element>) XmlUtil.findChildren(permissionNode,TAG_ROLE)) {
+	    for(Element roleNode: (List<Element>) MyXmlUtil.findChildren(permissionNode,TAG_ROLE)) {
 
-		roles.add(new Role(XmlUtil.getAttribute(roleNode, ATTR_ROLE,(String) null)));
+		roles.add(new Role(MyXmlUtil.getAttribute(roleNode, ATTR_ROLE,(String) null)));
 	    }
 	    permissions.add(new  Permission(action, roles));
 	}
@@ -312,10 +312,10 @@ public class AccessManager extends RepositoryManager {
 	    if(!stringDefined(dataPolicyId) && !isActionExportable(action)) continue;
 
 	    if(permissionsNode==null) {
-		permissionsNode= XmlUtil.create(doc, TAG_PERMISSIONS, node);
+		permissionsNode= MyXmlUtil.create(doc, TAG_PERMISSIONS, node);
 	    }
 
-	    Element actionNode = XmlUtil.create(doc, TAG_PERMISSION, permissionsNode);
+	    Element actionNode = MyXmlUtil.create(doc, TAG_PERMISSION, permissionsNode);
 
 	    if(stringDefined(dataPolicyId)) {
 		actionNode.setAttribute(ATTR_DATAPOLICY, dataPolicyId);
@@ -328,7 +328,7 @@ public class AccessManager extends RepositoryManager {
 	    */
 	    List<Role> roles = permission.getRoles();
 	    for(Role role: roles) {
-		Element roleNode = XmlUtil.create(doc, TAG_ROLE, actionNode);
+		Element roleNode = MyXmlUtil.create(doc, TAG_ROLE, actionNode);
 		roleNode.setAttribute(ATTR_ROLE, role.getRole());
 
 	    }

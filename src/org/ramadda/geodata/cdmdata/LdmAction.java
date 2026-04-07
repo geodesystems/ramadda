@@ -16,7 +16,7 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.File;

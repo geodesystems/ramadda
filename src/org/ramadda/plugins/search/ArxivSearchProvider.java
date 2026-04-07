@@ -21,7 +21,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -112,7 +112,7 @@ public class ArxivSearchProvider extends SearchProvider {
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is = connection.getInputStream();
         String  xml  = IOUtil.readContents(is);
-        Element root = XmlUtil.getRoot(xml);
+        Element root = MyXmlUtil.getRoot(xml);
         org.ramadda.plugins.feed.FeedTypeHandler fth =
             (org.ramadda.plugins.feed
                 .FeedTypeHandler) getRepository().getTypeHandler("feed");

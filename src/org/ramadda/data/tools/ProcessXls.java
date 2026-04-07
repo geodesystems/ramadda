@@ -12,7 +12,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.*;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -78,7 +78,7 @@ public class ProcessXls {
         sb.append("<entries>");
         /*
 
-        sb.append(XmlUtil.tag("entry", XmlUtil.attrs(new String[]{
+        sb.append(MyXmlUtil.tag("entry", MyXmlUtil.attrs(new String[]{
                         "type",
                         "group",
                         "name",
@@ -153,13 +153,13 @@ public class ProcessXls {
         lon  = getLatLon(cols[4]);
         String shortName = "CRRN-" + ((int) (Double.parseDouble(cols[0])));
 
-        inner.append(XmlUtil.tag("network", "", XmlUtil.getCdata("CCRN")));
-        inner.append(XmlUtil.tag("status", "", XmlUtil.getCdata("active")));
-        inner.append(XmlUtil.tag("short_name", "",
-                                 XmlUtil.getCdata(shortName)));
-        inner.append(XmlUtil.tag("site_type", "",
-                                 XmlUtil.getCdata("multipurpose")));
-        sb.append(XmlUtil.tag("entry", XmlUtil.attrs(new String[] {
+        inner.append(MyXmlUtil.tag("network", "", MyXmlUtil.getCdata("CCRN")));
+        inner.append(MyXmlUtil.tag("status", "", MyXmlUtil.getCdata("active")));
+        inner.append(MyXmlUtil.tag("short_name", "",
+                                 MyXmlUtil.getCdata(shortName)));
+        inner.append(MyXmlUtil.tag("site_type", "",
+                                 MyXmlUtil.getCdata("multipurpose")));
+        sb.append(MyXmlUtil.tag("entry", MyXmlUtil.attrs(new String[] {
             "type", "project_site", "name", name,
             //                        "url",
             //                        url,
@@ -206,8 +206,8 @@ public class ProcessXls {
                 continue;
             }
             //            System.out.println(s);
-            inner.append(XmlUtil.tag("metadata",
-                                     XmlUtil.attrs("type", "project_funding",
+            inner.append(MyXmlUtil.tag("metadata",
+                                     MyXmlUtil.attrs("type", "project_funding",
                                          "attr1", s)));
         }
     }
@@ -254,7 +254,7 @@ public class ProcessXls {
         //            }
 
         if (startDate.length() == 4) {
-            attrs.append(XmlUtil.attr("fromdate", startDate + "-01-01"));
+            attrs.append(MyXmlUtil.attr("fromdate", startDate + "-01-01"));
         } else {
             //                System.out.println("unknown start date:" + startDate);
         }
@@ -280,7 +280,7 @@ public class ProcessXls {
                 String yyyy = StringUtil.findPattern(endDate,
                                   ".*(\\d\\d\\d\\d).*");
                 if (yyyy != null) {
-                    attrs.append(XmlUtil.attr("todate", yyyy + "-12-31"));
+                    attrs.append(MyXmlUtil.attr("todate", yyyy + "-12-31"));
                     status = "inactive";
                 } else {
                     status = "inactive";

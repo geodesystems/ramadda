@@ -20,7 +20,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -139,16 +139,16 @@ public class EntrezSearchProvider extends SearchProvider {
         IOUtil.close(is);
 
 
-        Element      root    = XmlUtil.getRoot(xml);
-        Element      idList  = XmlUtil.getElement(root, "IdList");
+        Element      root    = MyXmlUtil.getRoot(xml);
+        Element      idList  = MyXmlUtil.getElement(root, "IdList");
 	if(idList == null) {
 	    return entries;
 	}
-        NodeList     idNodes = XmlUtil.getElements(idList, "Id");
+        NodeList     idNodes = MyXmlUtil.getElements(idList, "Id");
         List<String> ids     = new ArrayList<String>();
         for (int childIdx = 0; childIdx < idNodes.getLength(); childIdx++) {
             Element id = (Element) idNodes.item(childIdx);
-            ids.add(XmlUtil.getChildText(id));
+            ids.add(MyXmlUtil.getChildText(id));
         }
 
 
@@ -163,18 +163,18 @@ public class EntrezSearchProvider extends SearchProvider {
             xml = IOUtil.readContents(is);
             IOUtil.close(is);
 	    //	    System.out.println(xml);
-	    Element summaryRoot = XmlUtil.getRoot(xml);
+	    Element summaryRoot = MyXmlUtil.getRoot(xml);
 	    Element docRoot = summaryRoot;
 	    if(docRoot==null) {
 		System.err.println("Entrez: no eSummaryResult");
 		return entries;
 	    }
-            NodeList docSums = XmlUtil.getElements(docRoot,
+            NodeList docSums = MyXmlUtil.getElements(docRoot,
 						   "DocSum");
             for (int childIdx = 0; childIdx < docSums.getLength();
                     childIdx++) {
                 Element docSum   = (Element) docSums.item(childIdx);
-                String  id       = XmlUtil.getGrandChildText(docSum, "Id",
+                String  id       = MyXmlUtil.getGrandChildText(docSum, "Id",
                                        "");
 
                 Entry   newEntry = new Entry(makeSynthId(db, id),
@@ -182,52 +182,52 @@ public class EntrezSearchProvider extends SearchProvider {
                 newEntry.setIcon("/entrez/entrez.png");
 	    
 
-                String        name       = XmlUtil.getGrandChildText(docSum,"Project_Name",null);
-		if(name==null) name       = XmlUtil.getGrandChildText(docSum,"Project_Title",null);
+                String        name       = MyXmlUtil.getGrandChildText(docSum,"Project_Name",null);
+		if(name==null) name       = MyXmlUtil.getGrandChildText(docSum,"Project_Title",null);
                 String        backupName = null;
 
                 StringBuilder desc       = new StringBuilder();
-		desc.append(XmlUtil.getGrandChildText(docSum,"Project_Description",""));
+		desc.append(MyXmlUtil.getGrandChildText(docSum,"Project_Description",""));
                 StringBuilder table =
                     new StringBuilder(HtmlUtils.formTable());
 
 		//TODO: None of this is valid with their latest xml
-                NodeList items = XmlUtil.getElements(docSum, "Item");
+                NodeList items = MyXmlUtil.getElements(docSum, "Item");
                 for (int itemIdx = 0; itemIdx < items.getLength();
                         itemIdx++) {
                     Element item          = (Element) items.item(itemIdx);
-                    String  itemName = XmlUtil.getAttribute(item, "Name", "");
+                    String  itemName = MyXmlUtil.getAttribute(item, "Name", "");
                     String  itemNameLower = itemName.toLowerCase();
                     boolean hasName       = Utils.stringDefined(name);
                     if ( !hasName && itemNameLower.matches("(title)")) {
-                        name = XmlUtil.getChildText(item);
+                        name = MyXmlUtil.getChildText(item);
                     } else if ((backupName == null) && itemNameLower.matches(
                             "(organism_name|registrynumber|pdbdescr|commonname|assayname|caption|definition)")) {
-                        backupName = XmlUtil.getChildText(item);
+                        backupName = MyXmlUtil.getChildText(item);
                     } else if ((backupName == null)
                                && itemNameLower.equals("biosystem")) {
-                        Element titleNode = XmlUtil.findElement(item, "Item",
+                        Element titleNode = MyXmlUtil.findElement(item, "Item",
                                                 "Name", "biosystemname");
                         if (titleNode != null) {
-                            backupName = XmlUtil.getChildText(titleNode);
+                            backupName = MyXmlUtil.getChildText(titleNode);
                         }
 
                     } else if ((backupName == null)
                                && itemNameLower.equals("titlemainlist")) {
-                        Element titleNode = XmlUtil.findElement(item, "Item",
+                        Element titleNode = MyXmlUtil.findElement(item, "Item",
                                                 "Name", "Title");
                         if (titleNode != null) {
-                            backupName = XmlUtil.getChildText(titleNode);
+                            backupName = MyXmlUtil.getChildText(titleNode);
                         }
                     } else if (itemNameLower.equals("extra")) {
-                        desc.append(XmlUtil.getChildText(item));
+                        desc.append(MyXmlUtil.getChildText(item));
                         desc.append("<br>");
                     } else if (itemNameLower.matches(
                             "(synonymlist|ds_meshterms)")) {
                         for (Element node :
-                                (List<Element>) XmlUtil.findChildren(item,
+                                (List<Element>) MyXmlUtil.findChildren(item,
                                     "Item")) {
-                            String text = XmlUtil.getChildText(node);
+                            String text = MyXmlUtil.getChildText(node);
                             if ( !Utils.stringDefined(backupName)) {
                                 backupName = text;
                             } else {
@@ -241,7 +241,7 @@ public class EntrezSearchProvider extends SearchProvider {
                         }
 
                     } else {
-                        String v = XmlUtil.getChildText(item).trim();
+                        String v = MyXmlUtil.getChildText(item).trim();
                         if (v.length() > 0) {
                             table.append(HtmlUtils.formEntry(itemName + ":",
                                     v));

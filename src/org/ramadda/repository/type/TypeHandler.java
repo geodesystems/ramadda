@@ -60,7 +60,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.geom.Rectangle2D;
 import java.io.*;
@@ -98,8 +98,6 @@ import java.util.function.BiConsumer;
  */
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
-
-    public static final XmlUtil XU = null;
     public enum CorpusType {
 	LLM,
 	SEARCH
@@ -395,24 +393,24 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        List propertyNodes = XmlUtil.findChildren(node, TAG_PROPERTY);
+        List propertyNodes = MyXmlUtil.findChildren(node, TAG_PROPERTY);
 	int cnt = 0;
         for (int propIdx = 0; propIdx < propertyNodes.size(); propIdx++) {
             Element propertyNode = (Element) propertyNodes.get(propIdx);
-            if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
+            if (MyXmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
 		if(cnt++==0) {
 		    System.out.println("<properties>");
 		}
-		String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
-		System.out.println(name+"="+ XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
+		String name =  MyXmlUtil.getAttribute(propertyNode, ATTR_NAME);
+		System.out.println(name+"="+ MyXmlUtil.getAttribute(propertyNode, ATTR_VALUE));
 	    } else {
-		//		String value = XmlUtil.getChildText(propertyNode);
+		//		String value = MyXmlUtil.getChildText(propertyNode);
 	    }
 	}
 	if(cnt>0)
 	    System.out.println("</properties>");
 
-        List columnNodes = XmlUtil.findChildren(node, TAG_COLUMN);
+        List columnNodes = MyXmlUtil.findChildren(node, TAG_COLUMN);
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
 	    if(colIdx==0) System.out.println("\n# columns");
             Element cn = (Element) columnNodes.get(colIdx);
@@ -475,8 +473,8 @@ public class TypeHandler extends RepositoryManager {
 							  "displaytemplate", displayTemplatePath);
 
 	    //printAttrs(node,true);
-            iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
-            priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
+            iconPath = MyXmlUtil.getAttributeFromTree(node, "icon",  iconPath);
+            priority    = MyXmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
 	    /*
@@ -504,7 +502,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-	    List nodes = XmlUtil.findChildren(node, "filename_metadata");
+	    List nodes = MyXmlUtil.findChildren(node, "filename_metadata");
 	    for (int i = 0; i < nodes.size(); i++) {
 		Element pnode= (Element) nodes.get(i);
 		if(metadataPatterns==null)
@@ -534,14 +532,14 @@ public class TypeHandler extends RepositoryManager {
 	    if(newHelp!=null) {
 		newHelp = newHelp.replace("\\n","\n");
 	    }
-            mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
+            mimeType     = MyXmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
-	    superCategory = XmlUtil.getAttributeFromTree(node,
+	    superCategory = MyXmlUtil.getAttributeFromTree(node,
 							 ATTR_SUPERCATEGORY, superCategory);
 
 	    category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, null);
 	    if (category == null) {
-		category = XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
+		category = MyXmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
 							CATEGORY_DEFAULT);
 	    }
 
@@ -557,16 +555,16 @@ public class TypeHandler extends RepositoryManager {
 
             defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
 
-            List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
+            List metadataNodes = MyXmlUtil.findChildren(node, TAG_METADATA);
             for (int i = 0; i < metadataNodes.size(); i++) {
                 Element metadataNode = (Element) metadataNodes.get(i);
                 requiredMetadata.add(new String[] {
-			XmlUtil.getAttribute(metadataNode, ATTR_ID),
-			XmlUtil.getAttribute(metadataNode, "label",
+			MyXmlUtil.getAttribute(metadataNode, ATTR_ID),
+			MyXmlUtil.getAttribute(metadataNode, "label",
 					     (String) null) });
             }
 
-            List serviceNodes = XmlUtil.findChildren(node,
+            List serviceNodes = MyXmlUtil.findChildren(node,
 						     Service.TAG_SERVICE);
             for (int i = 0; i < serviceNodes.size(); i++) {
                 Element serviceNode = (Element) serviceNodes.get(i);
@@ -609,7 +607,7 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 
-	    List macros = XmlUtil.findChildrenRecurseUp(node,"wikimacro");
+	    List macros = MyXmlUtil.findChildrenRecurseUp(node,"wikimacro");
 	    for (int i = 0; i < macros.size(); i++) {
 		Element macro= (Element) macros.get(i);
 		if(wikiMacros==null)  {
@@ -632,15 +630,15 @@ public class TypeHandler extends RepositoryManager {
 		wikiMacros.add(m);
 	    }
 
-	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
+	    List wikis = MyXmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
-		String tag =XmlUtil.getAttribute(wiki,"tag");
-		String text = XmlUtil.getChildText(wiki);
+		String tag =MyXmlUtil.getAttribute(wiki,"tag");
+		String text = MyXmlUtil.getChildText(wiki);
 		if(text!=null)
 		    wikiText.put(tag,Utils.trimLinesLeft(text));
 		else
-		    System.err.println("No text in wiki tag:" + XmlUtil.toString(wiki));
+		    System.err.println("No text in wiki tag:" + MyXmlUtil.toString(wiki));
 	    }
 
             wikiTemplateInner = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI_INNER, wikiTemplateInner));
@@ -649,18 +647,18 @@ public class TypeHandler extends RepositoryManager {
 						      "includeInSearch", includeInSearch);
 
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
-					      XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
+					      MyXmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
 									   forUser));
             isSynthType = Utils.getAttributeOrTag(node, "issynth",
-						  XmlUtil.getAttributeFromTree(node, "issynth",false));
+						  MyXmlUtil.getAttributeFromTree(node, "issynth",false));
             adminOnly = Utils.getAttributeOrTag(node, "adminonly",
-						XmlUtil.getAttributeFromTree(node, "adminonly", false));
+						MyXmlUtil.getAttributeFromTree(node, "adminonly", false));
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
-					      XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
+					      MyXmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
-	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki",null);
+	    embedWiki = MyXmlUtil.getGrandChildText(node,"embedwiki",null);
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
-							 XmlUtil.getAttributeFromTree(node,
+							 MyXmlUtil.getAttributeFromTree(node,
 										      "canCache", (String) null));
 
             if (tmpCanCache != null) {
@@ -701,26 +699,26 @@ public class TypeHandler extends RepositoryManager {
 		addAction(new Action(ACTION_ENTRYLLM,"Entry LLM","/icons/chatbot.png",true,false,false,"view"));
 	    }
 
-            List actionNodes = XmlUtil.findChildren(node, "action");
+            List actionNodes = MyXmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
 		addAction(new Action(
-				     XmlUtil.getAttribute(actionNode, "name"),
-				     XmlUtil.getAttribute(actionNode, "label"),
-				     XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
-				     XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
-				     XmlUtil.getAttribute(actionNode, "foradmin","false").equals("true"),
-				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
-				     XmlUtil.getAttribute(actionNode, "category","file")));
+				     MyXmlUtil.getAttribute(actionNode, "name"),
+				     MyXmlUtil.getAttribute(actionNode, "label"),
+				     MyXmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
+				     MyXmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
+				     MyXmlUtil.getAttribute(actionNode, "foradmin","false").equals("true"),
+				     MyXmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
+				     MyXmlUtil.getAttribute(actionNode, "category","file")));
             }
-            List wikiViewNodes = XmlUtil.findChildren(node, "wikiview");
+            List wikiViewNodes = MyXmlUtil.findChildren(node, "wikiview");
             for (int i = 0; i < wikiViewNodes.size(); i++) {
                 Element actionNode = (Element) wikiViewNodes.get(i);
 		addAction(new Action(
-				     XmlUtil.getAttribute(actionNode, "name"),
-				     XmlUtil.getAttribute(actionNode, "label"),
-				     XmlUtil.getAttribute(actionNode, "icon", getIconProperty(ICON_WIKI)),
-				     XmlUtil.getChildText(actionNode)));
+				     MyXmlUtil.getAttribute(actionNode, "name"),
+				     MyXmlUtil.getAttribute(actionNode, "label"),
+				     MyXmlUtil.getAttribute(actionNode, "icon", getIconProperty(ICON_WIKI)),
+				     MyXmlUtil.getChildText(actionNode)));
             }	    
 
 	    String  startDateTemplate = getTypeProperty("startdate.template",null);
@@ -748,7 +746,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     private String getAttributeOrProperty(Element node, String attr) {
-	String value = XmlUtil.getAttributeFromTree(node, attr, null);	    
+	String value = MyXmlUtil.getAttributeFromTree(node, attr, null);	    
 	if(value==null) {
 	    value = getTypeProperty(attr,null);
 	}
@@ -2192,7 +2190,7 @@ public class TypeHandler extends RepositoryManager {
         try {
             //Check if there is a default set of children entries
             if (defaultChildrenEntries != null) {
-                Element root = XmlUtil.getRoot(defaultChildrenEntries);
+                Element root = MyXmlUtil.getRoot(defaultChildrenEntries);
                 List<Entry> newEntries =
                     getEntryManager().processEntryXml(request, root, entry,
 						      new Hashtable<String, File>(), new StringBuilder());
@@ -2623,24 +2621,24 @@ public class TypeHandler extends RepositoryManager {
         if (debug) {
             System.err.println("set Properties");
         }
-        List propertyNodes = XmlUtil.findChildren(entryNode, TAG_PROPERTY);
+        List propertyNodes = MyXmlUtil.findChildren(entryNode, TAG_PROPERTY);
 
         for (int propIdx = 0; propIdx < propertyNodes.size(); propIdx++) {
             Element propertyNode = (Element) propertyNodes.get(propIdx);
-            if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
+            if (MyXmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
                 if (false) {
-		    String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
+		    String name =  MyXmlUtil.getAttribute(propertyNode, ATTR_NAME);
 		    if(!seenProps.contains(name)) {
 			seenProps.add(name);
 			System.out.println(name+"="+
-					   XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
+					   MyXmlUtil.getAttribute(propertyNode, ATTR_VALUE));
 		    }
                 }
-                putProperty(XmlUtil.getAttribute(propertyNode, ATTR_NAME),
-                            XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
+                putProperty(MyXmlUtil.getAttribute(propertyNode, ATTR_NAME),
+                            MyXmlUtil.getAttribute(propertyNode, ATTR_VALUE));
             } else {
-                putProperty(XmlUtil.getAttribute(propertyNode, ATTR_NAME),
-                            XmlUtil.getChildText(propertyNode));
+                putProperty(MyXmlUtil.getAttribute(propertyNode, ATTR_NAME),
+                            MyXmlUtil.getChildText(propertyNode));
             }
         }
     }
@@ -7188,8 +7186,8 @@ public class TypeHandler extends RepositoryManager {
             String arg   = (String) keys.nextElement();
             String value = (String) properties.get(arg);
             Utils.append(inner,
-                         XmlUtil.tag(TypeHandler.TAG_PROPERTY,
-                                     XmlUtil.attrs(ATTR_NAME, arg,
+                         MyXmlUtil.tag(TypeHandler.TAG_PROPERTY,
+                                     MyXmlUtil.attrs(ATTR_NAME, arg,
 						   TypeHandler.ATTR_VALUE, value)));
         }
     }

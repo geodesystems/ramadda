@@ -33,7 +33,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Trace;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -459,8 +459,8 @@ public class JobManager extends RepositoryManager {
 
         if (jobInfo.isCancelled()) {
             if (request.responseAsXml()) {
-                xml.append(XmlUtil.tag(TAG_JOB,
-                                       XmlUtil.attrs(new String[] {
+                xml.append(MyXmlUtil.tag(TAG_JOB,
+                                       MyXmlUtil.attrs(new String[] {
 					       JobManager.ATTR_STATUS,
 					       STATUS_CANCELLED })));
 
@@ -637,8 +637,8 @@ public class JobManager extends RepositoryManager {
                                       String message)
 	throws Exception {
         if (request.responseAsXml()) {
-            return new Result(XmlUtil.tag(TAG_RESPONSE,
-                                          XmlUtil.attr(ATTR_CODE, CODE_OK),
+            return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+                                          MyXmlUtil.attr(ATTR_CODE, CODE_OK),
                                           message), MIME_XML);
 
         }

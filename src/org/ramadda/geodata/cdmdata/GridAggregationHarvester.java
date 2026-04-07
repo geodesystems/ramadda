@@ -28,7 +28,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.*;
@@ -122,9 +122,9 @@ public class GridAggregationHarvester extends PatternHarvester {
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        aggregationCoordinate = XmlUtil.getAttribute(element,
+        aggregationCoordinate = MyXmlUtil.getAttribute(element,
                 ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate);
-        aggregationType = XmlUtil.getAttribute(element, ATTR_AGGREGATIONTYPE,
+        aggregationType = MyXmlUtil.getAttribute(element, ATTR_AGGREGATIONTYPE,
                 aggregationType);
 
     }

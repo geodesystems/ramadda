@@ -16,7 +16,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -110,7 +110,7 @@ public class MetadataTypeBase extends RepositoryManager {
 				ARG_TIMESTAMP,""+f.lastModified());
             //TODO:
             if (templateType.equals(TEMPLATETYPE_THREDDS)) {
-                XmlUtil.create(parent.getOwnerDocument(), "property", parent,
+                MyXmlUtil.create(parent.getOwnerDocument(), "property", parent,
                                new String[] { "name", (element.getThumbnail()
 						       ? "thumbnail"
 						       : "attachment"), "value", url });
@@ -163,7 +163,7 @@ public class MetadataTypeBase extends RepositoryManager {
 	    value = getRepository().getPageHandler().applyBaseMacros(value);		
 	    value = value.replaceAll("[\\r\\n]+", " ").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\"", "&quot;");
 
-	    if(macro.getProperty("encoded", false)) value = XmlUtil.encodeString(value);
+	    if(macro.getProperty("encoded", false)) value = MyXmlUtil.encodeString(value);
 	    if(macro.getProperty("cdata", false)) value = wrapCdata(value);
 	    boolean addSearch = macro.getProperty("addSearch",false);
 	    String prefix = macro.getProperty("prefix","");
@@ -187,7 +187,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if (value == null) {
             value = "";
         }
-        //        value = XmlUtil.encodeString(value);
+        //        value = MyXmlUtil.encodeString(value);
         value = getRepository().getPageHandler().applyBaseMacros(value);
         value = value.replaceAll("[\\r\\n]+", " ").replaceAll("&",
 							      "&amp;").replaceAll("<",
@@ -219,7 +219,7 @@ public class MetadataTypeBase extends RepositoryManager {
             macros.put(key, value);
             macros.put(key + ".label", label);
             macros.put(key + ".cdata", wrapCdata(value));
-            macros.put(key + ".encoded", XmlUtil.encodeString(value));
+            macros.put(key + ".encoded", MyXmlUtil.encodeString(value));
         }
 
         //        System.err.println ("Template:" + template);
@@ -249,17 +249,17 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
     public void init(Element node) throws Exception {
-        setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
-        setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
+        setName(MyXmlUtil.getAttribute(node, ATTR_NAME, ""));
+        setLabel(MyXmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
 	help  = Utils.getAttributeOrTag(node, "help",   (String) null);
         setSuffixLabel(Utils.getAttributeOrTag(node, ATTR_SUFFIX,
 					       (String) null));
 
-	entryType = XmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
-        setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
-        setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,  false));
+	entryType = MyXmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
+        setShowInHtml(MyXmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
+        setSearchable(MyXmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,  false));
 
-        setIsTitle(XmlUtil.getAttribute(node, "istitle",false));
+        setIsTitle(MyXmlUtil.getAttribute(node, "istitle",false));
 
         NamedNodeMap nnm = node.getAttributes();
         if (nnm != null) {
@@ -272,7 +272,7 @@ public class MetadataTypeBase extends RepositoryManager {
             }
         }
 
-        NodeList children = XmlUtil.getElements(node);
+        NodeList children = MyXmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
             if (childNode.getTagName().equals(TAG_TEMPLATE)) {
@@ -282,18 +282,18 @@ public class MetadataTypeBase extends RepositoryManager {
             else if (childNode.getTagName().equals("suffix")) {}
             else {
                 logError("Unknown metadata xml tag:"
-                         + XmlUtil.toString(childNode), null);
+                         + MyXmlUtil.toString(childNode), null);
             }
         }
 
-        List childrenElements = XmlUtil.findChildren(node, TAG_ELEMENT);
+        List childrenElements = MyXmlUtil.findChildren(node, TAG_ELEMENT);
         int  lastIndex        = 0;
         for (int j = 0; j < childrenElements.size(); j++) {
             Element elementNode = (Element) childrenElements.get(j);
             int     index       = lastIndex + 1;
-            if (XmlUtil.hasAttribute(elementNode,
+            if (MyXmlUtil.hasAttribute(elementNode,
                                      MetadataElement.ATTR_INDEX)) {
-                index = XmlUtil.getAttribute(elementNode,
+                index = MyXmlUtil.getAttribute(elementNode,
                                              MetadataElement.ATTR_INDEX,
                                              index);
             }
@@ -310,13 +310,13 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
     public void processTemplateTag(Element childNode) throws Exception {
-        String templateType = XmlUtil.getAttribute(childNode, ATTR_TYPE);
-        if (XmlUtil.hasAttribute(childNode, ATTR_FILE)) {
+        String templateType = MyXmlUtil.getAttribute(childNode, ATTR_TYPE);
+        if (MyXmlUtil.hasAttribute(childNode, ATTR_FILE)) {
 
             processTemplate(templateType,
-                            XmlUtil.getAttribute(childNode, ATTR_FILE));
+                            MyXmlUtil.getAttribute(childNode, ATTR_FILE));
         } else {
-            processTemplate(templateType, XmlUtil.getChildText(childNode));
+            processTemplate(templateType, MyXmlUtil.getChildText(childNode));
         }
     }
 

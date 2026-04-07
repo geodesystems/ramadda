@@ -18,7 +18,7 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -75,7 +75,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        makeRecordCollection = XmlUtil.getAttribute(element,
+        makeRecordCollection = MyXmlUtil.getAttribute(element,
                 ATTR_MAKERECORDCOLLECTION, makeRecordCollection);
     }
 

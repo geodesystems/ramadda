@@ -21,7 +21,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 import java.lang.reflect.*;
@@ -55,7 +55,7 @@ public class WebHarvester extends Harvester {
 
     protected void init(Element element) throws Exception {
         super.init(element);
-        List children = XmlUtil.findChildren(element,
+        List children = MyXmlUtil.findChildren(element,
                                              HarvesterEntry.TAG_URLENTRY);
         urlEntries = new ArrayList<HarvesterEntry>();
         for (int i = 0; i < children.size(); i++) {

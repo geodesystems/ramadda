@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 import org.w3c.dom.*;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -363,13 +363,13 @@ public class IsoUtil {
      */
 
     public static Element makeRoot() throws Exception {
-        return XmlUtil.getRoot(makeRootTag()
-                               + XmlUtil.closeTag(TAG_GMI_MI_METADATA));
+        return MyXmlUtil.getRoot(makeRootTag()
+                               + MyXmlUtil.closeTag(TAG_GMI_MI_METADATA));
     }
 
     public static String makeRootTag() {
-        return XmlUtil.openTag(TAG_GMI_MI_METADATA,
-                               XmlUtil.attrs(new String[] {
+        return MyXmlUtil.openTag(TAG_GMI_MI_METADATA,
+                               MyXmlUtil.attrs(new String[] {
             ATTR_XMLNS_GCO, XMLNS_GCO, ATTR_XMLNS_GMD, XMLNS_GMD,
             ATTR_XMLNS_GML, XMLNS_GML, ATTR_XMLNS_GTS, XMLNS_GTS,
             ATTR_XMLNS_XSI, XMLNS_XSI, ATTR_XMLNS_GMI, XMLNS_GMI,
@@ -383,8 +383,8 @@ public class IsoUtil {
 
     public static void addDateStamp(Element parent, Date date)
             throws Exception {
-        Element dateStamp = XmlUtil.create(TAG_GMD_DATESTAMP, parent);
-        Element dateTag = XmlUtil.create(TAG_GCO_DATETIME, dateStamp,
+        Element dateStamp = MyXmlUtil.create(TAG_GMD_DATESTAMP, parent);
+        Element dateTag = MyXmlUtil.create(TAG_GCO_DATETIME, dateStamp,
                                          format(date));
     }
 
@@ -399,20 +399,20 @@ public class IsoUtil {
 
     public static void xaddCharacterTag(Element parent, String contents)
             throws Exception {
-        Element node = XmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
+        Element node = MyXmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
                                       (String) null);
-        XmlUtil.createCDataNode(node, contents);
+        MyXmlUtil.createCDataNode(node, contents);
     }
 
     public static String makeCharacterTag(String contents) {
-        return XmlUtil.tag(TAG_GCO_CHARACTERSTRING,
-                           XmlUtil.getCdata(contents));
+        return MyXmlUtil.tag(TAG_GCO_CHARACTERSTRING,
+                           MyXmlUtil.getCdata(contents));
     }
 
     public static Element addTextTag(Element parent, String tagName,
                                      String contents)
             throws Exception {
-        Element node = XmlUtil.create(tagName, parent, (String) null);
+        Element node = MyXmlUtil.create(tagName, parent, (String) null);
         addCharacterTag(node, contents);
 
         return node;
@@ -420,10 +420,10 @@ public class IsoUtil {
 
     public static void addCharacterTag(Element parent, String contents)
             throws Exception {
-        Element node = XmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
+        Element node = MyXmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
                                       (String) null);
 
-        node.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
+        node.appendChild(MyXmlUtil.makeCDataNode(node.getOwnerDocument(),
                 contents, false));
     }
 

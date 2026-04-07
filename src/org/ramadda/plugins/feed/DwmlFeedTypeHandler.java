@@ -16,6 +16,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.WikiUtil;
 
 import org.ramadda.data.point.text.*;
@@ -23,9 +24,6 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
-
-import ucar.unidata.xml.XmlUtil;
-
 
 import org.w3c.dom.*;
 
@@ -188,9 +186,9 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                                 "" + entry.getLatitude(request)).replace("${lon}",
 								  "" + entry.getLongitude(request));
                 String  xml  = Utils.readUrl(url);
-                Element root = XmlUtil.getRoot(xml);
+                Element root = MyXmlUtil.getRoot(xml);
                 Element forecastNode =
-                    XmlUtil.findElement(XmlUtil.getElements(root, "data"),
+                    MyXmlUtil.findElement(MyXmlUtil.getElements(root, "data"),
                                         "type", "forecast");
                 if (forecastNode == null) {
                     return null;
@@ -199,7 +197,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                 forecastCache.put(key, forecast);
 
                 Element currentNode =
-                    XmlUtil.findElement(XmlUtil.getElements(root, "data"),
+                    MyXmlUtil.findElement(MyXmlUtil.getElements(root, "data"),
                                         "type", "current observations");
                 if (currentNode != null) {
                     current = new Weather(currentNode);
@@ -563,18 +561,18 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                             Hashtable<String, Element> times, Element node,
                             Appendable sb)
 	throws Exception {
-        Element time = times.get(XmlUtil.getAttribute(node, "time-layout",
+        Element time = times.get(MyXmlUtil.getAttribute(node, "time-layout",
 						      ""));
         if (time == null) {
             return;
         }
-        times.remove(XmlUtil.getAttribute(node, "time-layout", ""));
-        NodeList children = XmlUtil.getElements(time, "start-valid-time");
+        times.remove(MyXmlUtil.getAttribute(node, "time-layout", ""));
+        NodeList children = MyXmlUtil.getElements(time, "start-valid-time");
         sb.append("<tr>\n");
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element timeNode = (Element) children.item(childIdx);
             sb.append("<td style=\"padding:10px;\" align=center>");
-            sb.append(XmlUtil.getAttribute(timeNode, "period-name", ""));
+            sb.append(MyXmlUtil.getAttribute(timeNode, "period-name", ""));
             sb.append("</td>");
         }
     }
@@ -593,13 +591,13 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	    List<Time>>();
 
         public Weather(Element node) throws Exception {
-            moreWeather = XmlUtil.getGrandChildText(node,
+            moreWeather = MyXmlUtil.getGrandChildText(node,
 						    "moreWeatherInformation", (String) null);
-            Element location = XmlUtil.findChild(node, "location");
+            Element location = MyXmlUtil.findChild(node, "location");
             if (location != null) {
-                this.location = XmlUtil.getGrandChildText(location,
+                this.location = MyXmlUtil.getGrandChildText(location,
 							  "area-description",
-							  XmlUtil.getGrandChildText(location, "description",
+							  MyXmlUtil.getGrandChildText(location, "description",
 										    ""));
             }
             processTimes(node);
@@ -620,33 +618,33 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
         private void processParams(Element dataNode) throws Exception {
 
-            Element params = XmlUtil.getElement(dataNode, "parameters");
+            Element params = MyXmlUtil.getElement(dataNode, "parameters");
             if (params == null) {
                 return;
             }
-            NodeList children = XmlUtil.getElements(params);
+            NodeList children = MyXmlUtil.getElements(params);
             for (int childIdx = 0; childIdx < children.getLength();
 		 childIdx++) {
                 Element node = (Element) children.item(childIdx);
                 String  tag  = node.getTagName();
-                String  key  = XmlUtil.getAttribute(node, "time-layout", "");
+                String  key  = MyXmlUtil.getAttribute(node, "time-layout", "");
 
                 if (tag.equals("hazards")) {
-                    NodeList children2 = XmlUtil.getElements(node,
+                    NodeList children2 = MyXmlUtil.getElements(node,
 							     "hazard-conditions");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        NodeList children3 = XmlUtil.getElements(child,
+                        NodeList children3 = MyXmlUtil.getElements(child,
 								 "hazard");
                         for (int j = 0; j < children3.getLength(); j++) {
                             Element child3 = (Element) children3.item(i);
-                            String url = XmlUtil.getGrandChildText(child3,
+                            String url = MyXmlUtil.getGrandChildText(child3,
 								   "hazardTextURL", null);
                             if (url != null) {
                                 addHazard(
 					  HU.href(
 						  url,
-						  XmlUtil.getAttribute(
+						  MyXmlUtil.getAttribute(
 								       child3, "headline",
 								       "Link"), HU.style(
 											 "bold;color:#A80000;")));
@@ -663,32 +661,32 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                 List<Time> times = keyMap.get(key);
                 if (times == null) {
                     System.err.println("no key map:"
-                                       + XmlUtil.toString(node));
+                                       + MyXmlUtil.toString(node));
 
                     continue;
                 }
                 if (tag.equals("conditions-icon")) {
-                    NodeList children2 = XmlUtil.getElements(node,
+                    NodeList children2 = MyXmlUtil.getElements(node,
 							     "icon-link");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        String  icon  = XmlUtil.getChildText(child);
+                        String  icon  = MyXmlUtil.getChildText(child);
                         icon = icon.replace("http://forecast.weather.gov",
                                             "https://forecast.weather.gov");
                         times.get(i).icon = icon;
                     }
                 } else if (tag.equals("wordedForecast")) {
-                    NodeList children2 = XmlUtil.getElements(node, "text");
+                    NodeList children2 = MyXmlUtil.getElements(node, "text");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).words = XmlUtil.getChildText(child);
+                        times.get(i).words = MyXmlUtil.getChildText(child);
                     }
                 } else if (tag.equals("weather")) {
-                    NodeList children2 = XmlUtil.getElements(node,
+                    NodeList children2 = MyXmlUtil.getElements(node,
 							     "weather-conditions");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        String summary = XmlUtil.getAttribute(child,
+                        String summary = MyXmlUtil.getAttribute(child,
 							      "weather-summary",
 							      (String) null);
                         if (summary != null) {
@@ -696,39 +694,39 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                         }
                     }
                 } else if (tag.equals("probability-of-precipitation")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).precip = XmlUtil.getChildText(child);
+                        times.get(i).precip = MyXmlUtil.getChildText(child);
                     }
                 } else if (tag.equals("humidity")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).humidity = XmlUtil.getChildText(child);
+                        times.get(i).humidity = MyXmlUtil.getChildText(child);
                     }
                 } else if (tag.equals("pressure")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).pressure = XmlUtil.getChildText(child);
+                        times.get(i).pressure = MyXmlUtil.getChildText(child);
                     }
                 } else if (tag.equals("direction")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).direction = XmlUtil.getChildText(child);
+                        times.get(i).direction = MyXmlUtil.getChildText(child);
                     }
                 } else if (tag.equals("temperature")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
-                    String   type = XmlUtil.getAttribute(node, "type", "");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
+                    String   type = MyXmlUtil.getAttribute(node, "type", "");
                     boolean  max       = type.equals("maximum");
                     boolean  min       = type.equals("minimum");
                     boolean  apparent  = type.equals("apparent");
                     boolean  dewpoint  = type.equals("dew point");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        String  value = XmlUtil.getChildText(child);
+                        String  value = MyXmlUtil.getChildText(child);
                         if (max) {
                             times.get(i).max = value;
                         } else if (min) {
@@ -740,12 +738,12 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                         }
                     }
                 } else if (tag.equals("wind-speed")) {
-                    NodeList children2 = XmlUtil.getElements(node, "value");
-                    String   type = XmlUtil.getAttribute(node, "type", "");
+                    NodeList children2 = MyXmlUtil.getElements(node, "value");
+                    String   type = MyXmlUtil.getAttribute(node, "type", "");
                     boolean  gust      = type.equals("gust");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        String  value = XmlUtil.getChildText(child);
+                        String  value = MyXmlUtil.getChildText(child);
                         if (gust) {
                             times.get(i).gust = value;
                         } else {
@@ -763,39 +761,39 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             SimpleDateFormat sdf2 =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Hashtable<Date, Time> timeMap = new Hashtable<Date, Time>();
-            NodeList timeNodes = XmlUtil.getElements(dataNode, "time-layout");
+            NodeList timeNodes = MyXmlUtil.getElements(dataNode, "time-layout");
             //            System.err.println(timeNodes);
             for (int childIdx = 0; childIdx < timeNodes.getLength();
 		 childIdx++) {
                 Element    timeLayoutNode =
                     (Element) timeNodes.item(childIdx);
                 List<Time> timesForThisKey = new ArrayList<Time>();
-                String key = XmlUtil.getGrandChildText(timeLayoutNode,
+                String key = MyXmlUtil.getGrandChildText(timeLayoutNode,
 						       "layout-key", "");
                 keyMap.put(key, timesForThisKey);
-                NodeList timesList = XmlUtil.getElements(timeLayoutNode,
+                NodeList timesList = MyXmlUtil.getElements(timeLayoutNode,
 							 "start-valid-time");
                 for (int i = 0; i < timesList.getLength(); i++) {
                     Element timeNode = (Element) timesList.item(i);
                     Date    dttm     = null;
                     try {
-                        dttm = sdf.parse(XmlUtil.getChildText(timeNode));
+                        dttm = sdf.parse(MyXmlUtil.getChildText(timeNode));
                     } catch (Exception exc) {
 			try {
-			    dttm = sdf2.parse(XmlUtil.getChildText(timeNode));
+			    dttm = sdf2.parse(MyXmlUtil.getChildText(timeNode));
 			} catch (Exception exc2) {
 			}
                     }
                     Time time = dttm==null?null:timeMap.get(dttm);
                     if (time == null) {
                         time = new Time(dttm,
-                                        XmlUtil.getAttribute(timeNode,
+                                        MyXmlUtil.getAttribute(timeNode,
 							     "period-name", ""));
                         timeMap.put(dttm, time);
                         times.add(time);
                     } else {
                         if ( !Utils.stringDefined(time.label)) {
-                            time.label = XmlUtil.getAttribute(timeNode,
+                            time.label = MyXmlUtil.getAttribute(timeNode,
 							      "period-name", "");
                         }
                     }
@@ -883,8 +881,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             "https://forecast.weather.gov/MapClick.php?lat=40.0157&lon=-105.2792&unit=0&lg=english&FcstType=dwml";
         String xml = Utils.readUrl(url);
         System.out.println(xml);
-        Element root = XmlUtil.getRoot(xml);
-        Element forecastNode = XmlUtil.findElement(XmlUtil.getElements(root,
+        Element root = MyXmlUtil.getRoot(xml);
+        Element forecastNode = MyXmlUtil.findElement(MyXmlUtil.getElements(root,
 								       "data"), "type", "forecast");
         Weather forecast = new Weather(forecastNode);
     }

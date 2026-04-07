@@ -38,7 +38,6 @@ import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.XlsUtil;
-import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
 import org.w3c.dom.*;
 
@@ -49,7 +48,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 

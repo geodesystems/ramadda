@@ -9,7 +9,7 @@ package org.ramadda.geodata.cdmdata;
 import org.ramadda.repository.Entry;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.util.ArrayList;
@@ -144,8 +144,8 @@ public class NcmlUtil {
      * @param sb  the StringBuilder to add to
      */
     public static void openNcml(StringBuilder sb) {
-        sb.append(XmlUtil.openTag(TAG_NETCDF,
-                                  XmlUtil.attrs(new String[] { "xmlns",
+        sb.append(MyXmlUtil.openTag(TAG_NETCDF,
+                                  MyXmlUtil.attrs(new String[] { "xmlns",
                 XMLNS_XMLNS })));
     }
 
@@ -187,15 +187,15 @@ public class NcmlUtil {
                 buf.append(ensNum + " ");
                 ensNum++;
             }
-            values = XmlUtil.tag("values", "", buf.toString().trim());
+            values = MyXmlUtil.tag("values", "", buf.toString().trim());
         }
 
-        sb.append(XmlUtil.tag(TAG_VARIABLE, XmlUtil.attrs(new String[] {
+        sb.append(MyXmlUtil.tag(TAG_VARIABLE, MyXmlUtil.attrs(new String[] {
             ATTR_NAME, name, ATTR_TYPE, "int", ATTR_SHAPE, name
-        }), XmlUtil.tag(TAG_ATTRIBUTE, XmlUtil.attrs(new String[] { ATTR_NAME,
+        }), MyXmlUtil.tag(TAG_ATTRIBUTE, MyXmlUtil.attrs(new String[] { ATTR_NAME,
                 "long_name", ATTR_VALUE,
-                "ensemble coordinate" })) + XmlUtil.tag(TAG_ATTRIBUTE,
-                    XmlUtil.attrs(new String[] { ATTR_NAME,
+                "ensemble coordinate" })) + MyXmlUtil.tag(TAG_ATTRIBUTE,
+                    MyXmlUtil.attrs(new String[] { ATTR_NAME,
                 "_CoordinateAxisType", ATTR_VALUE, "Ensemble" })) + values));
     }
 

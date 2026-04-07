@@ -8,7 +8,6 @@ package org.ramadda.util.geo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.XmlUtils;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -19,7 +18,7 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Color;
 
@@ -172,14 +171,14 @@ public class KmlUtil {
                 String name = ze.getName().toLowerCase();
                 if (name.toLowerCase().endsWith(".kml")) {
                     kmlRoot =
-                        XmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
+                        MyXmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
 
                     break;
                 }
             }
             IOUtil.close(zin);
         } else {
-            kmlRoot = XmlUtil.getRoot(IO.readContents(path));
+            kmlRoot = MyXmlUtil.getRoot(IO.readContents(path));
         }
 
         return kmlRoot;
@@ -204,14 +203,14 @@ public class KmlUtil {
                 String name = ze.getName().toLowerCase();
                 if (name.toLowerCase().endsWith(".kml")) {
                     kmlRoot =
-                        XmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
+                        MyXmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
 
                     break;
                 }
             }
             IOUtil.close(zin);
         } else {
-            kmlRoot = XmlUtil.getRoot(IO.readInputStream(inputStream));
+            kmlRoot = MyXmlUtil.getRoot(IO.readInputStream(inputStream));
         }
 
         return kmlRoot;
@@ -240,7 +239,7 @@ public class KmlUtil {
      * @return  the kml element
      */
     public static Element kml(String name) {
-        Document doc   = XmlUtil.makeDocument();
+        Document doc   = MyXmlUtil.makeDocument();
         Element  child = doc.createElement(TAG_KML);
         child.setAttribute("xmlns", XMLNS_KML2_2);
 
@@ -1357,7 +1356,7 @@ public class KmlUtil {
      */
     public static List<Element> findPlacemarks(Element root)
             throws Exception {
-        return (List<Element>) XmlUtil.findDescendants(root, TAG_PLACEMARK);
+        return (List<Element>) MyXmlUtil.findDescendants(root, TAG_PLACEMARK);
     }
 
     /**
@@ -1372,7 +1371,7 @@ public class KmlUtil {
             throws Exception {
         List<double[]> d = new ArrayList<double[]>();
         for (Element coord : (List<Element>) coords) {
-            String c = XmlUtil.getChildText(coord);
+            String c = MyXmlUtil.getChildText(coord);
             for (String triple : StringUtil.split(c, " ")) {
                 List<String> toks = StringUtil.split(triple, ",");
                 if (toks.size() < 2) {
@@ -1391,24 +1390,24 @@ public class KmlUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        Element root = XmlUtil.getRoot(IOUtil.readContents(args[0],
+        Element root = MyXmlUtil.getRoot(IOUtil.readContents(args[0],
                            KmlUtil.class));
-        List placemarks = XmlUtil.findDescendants(root, TAG_PLACEMARK);
+        List placemarks = MyXmlUtil.findDescendants(root, TAG_PLACEMARK);
 	int cnt = 0;
 	StringBuilder sb = new StringBuilder();
 	sb.append("{\"type\": \"FeatureCollection\",\n\"features\": [\n");
         for (Element placemark : (List<Element>) placemarks) {
 
-            String        name = XmlUtil.getGrandChildText(placemark, "name");
-            String desc = XmlUtil.getGrandChildText(placemark, "description",
+            String        name = MyXmlUtil.getGrandChildText(placemark, "name");
+            String desc = MyXmlUtil.getGrandChildText(placemark, "description",
                               "");
             desc = desc.replaceAll(" + ", " ");
             desc = desc.replaceAll("\n+\n", "\n");
 	    List<double[]> points = new ArrayList<double[]>();
-            List coords  = XmlUtil.findDescendants(placemark,
+            List coords  = MyXmlUtil.findDescendants(placemark,
 						   TAG_COORDINATES);
             for (Element coord : (List<Element>) coords) {
-                String c = XmlUtil.getChildText(coord);
+                String c = MyXmlUtil.getChildText(coord);
 		List<String> locToks = Utils.split(c, " ");
                 for (String triple : locToks) {
                     List<String> toks = StringUtil.split(triple, ",");
@@ -1422,9 +1421,9 @@ public class KmlUtil {
                 }
             }
 	    if(points.size()==0) {
-		coords = XmlUtil.findDescendants(placemark,"coord");
+		coords = MyXmlUtil.findDescendants(placemark,"coord");
 		for (Element coord : (List<Element>) coords) {
-		    String c = XmlUtil.getChildText(coord);
+		    String c = MyXmlUtil.getChildText(coord);
 		    List<String> toks = Utils.split(c," ");
 		    double lon = Double.parseDouble(toks.get(0));
 		    double lat = Double.parseDouble(toks.get(1));

@@ -26,14 +26,14 @@ import org.w3c.dom.*;
 
 import ucar.unidata.ui.HttpFormEntry;
 import org.ramadda.util.ImageUtils;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import ucar.unidata.util.IOUtil;
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 import java.awt.Image;

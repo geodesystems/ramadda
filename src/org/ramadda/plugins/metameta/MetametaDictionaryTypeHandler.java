@@ -17,7 +17,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -193,7 +193,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         StringBuffer xml      = new StringBuffer();
         generateEntryXml(request, xml, entry, children);
 
-        Element root = XmlUtil.getRoot(xml.toString());
+        Element root = MyXmlUtil.getRoot(xml.toString());
         //true says to reload the typehandler if its already loaded
         TypeHandler newTypeHandler = getRepository().loadTypeHandlers(root,"",
 								      true,false).get(0);
@@ -229,7 +229,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      */
     public Result handleBulkCreate(Request request, Entry entry)
             throws Exception {
-        StringBuffer xml = new StringBuffer(XmlUtil.openTag(TAG_ENTRIES));
+        StringBuffer xml = new StringBuffer(MyXmlUtil.openTag(TAG_ENTRIES));
         xml.append("\n");
         for (String line :
                 StringUtil.split(request.getString(ARG_METAMETA_BULK, ""),
@@ -257,26 +257,26 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             }
 
             StringBuffer inner = new StringBuffer();
-            inner.append(XmlUtil.tag(MetametaFieldTypeHandler.FIELD_FIELD_ID,
-                                     "", XmlUtil.getCdata(id)));
+            inner.append(MyXmlUtil.tag(MetametaFieldTypeHandler.FIELD_FIELD_ID,
+                                     "", MyXmlUtil.getCdata(id)));
             inner.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     FIELD_PROPERTIES, "",
-                    XmlUtil.getCdata(properties.toString())));
-            inner.append(XmlUtil.tag(MetametaFieldTypeHandler.FIELD_DATATYPE,
-                                     "", XmlUtil.getCdata(type)));
-            xml.append(XmlUtil.tag(TAG_ENTRY,
-                                   XmlUtil.attrs(ATTR_NAME, label, ATTR_TYPE,
+                    MyXmlUtil.getCdata(properties.toString())));
+            inner.append(MyXmlUtil.tag(MetametaFieldTypeHandler.FIELD_DATATYPE,
+                                     "", MyXmlUtil.getCdata(type)));
+            xml.append(MyXmlUtil.tag(TAG_ENTRY,
+                                   MyXmlUtil.attrs(ATTR_NAME, label, ATTR_TYPE,
                                        MetametaFieldTypeHandler.TYPE,
                                        ATTR_PARENT,
                                        entry.getId()), inner.toString()));
             xml.append("\n");
         }
-        xml.append(XmlUtil.closeTag(TAG_ENTRIES));
+        xml.append(MyXmlUtil.closeTag(TAG_ENTRIES));
 
         //Create them from XML
         List<Entry> newEntries = getEntryManager().processEntryXml(request,
-                                     XmlUtil.getRoot(xml.toString()), entry,
+                                     MyXmlUtil.getRoot(xml.toString()), entry,
                                      null, new StringBuilder());
 
         //Now tell them to update again to update their sort order
@@ -428,7 +428,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                     "searchable", "value", "pattern" }) {
                 String value = (String) fprops.get(propAttr);
                 if (value != null) {
-                    fields.append(XmlUtil.attr(propAttr, value));
+                    fields.append(MyXmlUtil.attr(propAttr, value));
                 }
             }
 
@@ -458,7 +458,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             throws Exception {
         boolean first = xml.length() == 0;
         if (first) {
-            xml.append(XmlUtil.openTag("tables", ""));
+            xml.append(MyXmlUtil.openTag("tables", ""));
 	    xml.append("\n");
 	    xml.append("<!-- This is a generated plugin that defines a database.\nCopy it into the plugins directory in your RAMADDA home directory -->\n");
         }
@@ -476,19 +476,19 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         if ( !Utils.stringDefined(handlerClass)) {
             handlerClass = "org.ramadda.plugins.db.DbTypeHandler";
         }
-	String tableAttrs = XmlUtil.attrs("id", shortName, "name",
+	String tableAttrs = MyXmlUtil.attrs("id", shortName, "name",
 					  parent.getName(), ATTR_HANDLER,
 					  handlerClass, "icon", icon);
 	
 	String tmp;
 	for(String prop:new String[]{"cansearch","canlist"}) {
 	    if((tmp = Misc.getProperty(props, prop, (String) null))!=null) {
-		tableAttrs+=XmlUtil.attrs(prop,tmp);
+		tableAttrs+=MyXmlUtil.attrs(prop,tmp);
 		props.remove(prop);
 	    }
 	}
 
-        xml.append(XmlUtil.openTag("table", tableAttrs));
+        xml.append(MyXmlUtil.openTag("table", tableAttrs));
 	
 
 
@@ -496,7 +496,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         String  wikiText  = (String) parent.getValue(request, INDEX_WIKI_TEXT);
 	if(Utils.stringDefined(wikiText)) {
 	    xml.append("\n");
-            xml.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
+            xml.append(MyXmlUtil.tag("wiki", "", MyXmlUtil.getCdata(wikiText)));
             xml.append("\n");
 	}
 
@@ -523,10 +523,10 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                 (MetametaFieldTypeHandler) recordFieldEntry.getTypeHandler();
             field.generateDbXml(request, xml, recordFieldEntry);
         }
-        xml.append(XmlUtil.closeTag("table"));
+        xml.append(MyXmlUtil.closeTag("table"));
 
         if (first) {
-            xml.append(XmlUtil.closeTag("tables"));
+            xml.append(MyXmlUtil.closeTag("tables"));
         }
     }
 
@@ -548,7 +548,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         boolean first = xml.length() == 0;
         if (first) {
-            xml.append(XmlUtil.openTag(TAG_TYPES, ""));
+            xml.append(MyXmlUtil.openTag(TAG_TYPES, ""));
         }
         boolean isPoint   = isPoint(request, parent);
 
@@ -580,16 +580,16 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         StringBuffer attrs = new StringBuffer();
         StringBuffer inner = new StringBuffer();
         if (Utils.stringDefined(wikiText)) {
-            inner.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
+            inner.append(MyXmlUtil.tag("wiki", "", MyXmlUtil.getCdata(wikiText)));
             inner.append("\n");
         }
 
         if (Utils.stringDefined(superType)) {
-            attrs.append(XmlUtil.attrs(ATTR_SUPER, superType));
+            attrs.append(MyXmlUtil.attrs(ATTR_SUPER, superType));
         }
 
 
-        attrs.append(XmlUtil.attrs(ATTR_NAME, shortName, ATTR_DESCRIPTION,
+        attrs.append(MyXmlUtil.attrs(ATTR_NAME, shortName, ATTR_DESCRIPTION,
                                    parent.getName(), ATTR_HANDLER,
                                    handlerClass));
 
@@ -600,12 +600,12 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         for (String attrProp : attrProps) {
             String v = (String) getAndRemoveProperty(props, attrProp, null);
             if (v != null) {
-                attrs.append(XmlUtil.attr(attrProp, v));
+                attrs.append(MyXmlUtil.attr(attrProp, v));
             }
         }
 
 
-        xml.append(XmlUtil.openTag(TAG_TYPE, attrs.toString()));
+        xml.append(MyXmlUtil.openTag(TAG_TYPE, attrs.toString()));
 
         if (isPoint) {
             StringBuffer propSB = getPointProperties(request, parent);
@@ -630,11 +630,11 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         xml.append(inner);
 
-        xml.append(XmlUtil.closeTag(TAG_TYPE));
+        xml.append(MyXmlUtil.closeTag(TAG_TYPE));
 
 
         if (first) {
-            xml.append(XmlUtil.closeTag(TAG_TYPES));
+            xml.append(MyXmlUtil.closeTag(TAG_TYPES));
         }
 
     }
@@ -797,8 +797,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @return _more_
      */
     public String propertyTag(String name, String value) {
-        return XmlUtil.tag(TAG_PROPERTY,
-                           XmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
+        return MyXmlUtil.tag(TAG_PROPERTY,
+                           MyXmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
     }
 
     /**
@@ -810,8 +810,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @return _more_
      */
     public String propertyTextTag(String name, String value) {
-        return XmlUtil.tag(TAG_PROPERTY, XmlUtil.attrs("name", name),
-                           XmlUtil.getCdata(value));
+        return MyXmlUtil.tag(TAG_PROPERTY, MyXmlUtil.attrs("name", name),
+                           MyXmlUtil.getCdata(value));
     }
 
     /**

@@ -30,7 +30,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 
@@ -177,9 +177,9 @@ public class CatalogHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        topUrl   = XmlUtil.getAttribute(element, ATTR_TOPURL, topUrl);
-        recurse  = XmlUtil.getAttribute(element, ATTR_RECURSE, recurse);
-        download = XmlUtil.getAttribute(element, ATTR_DOWNLOAD, download);
+        topUrl   = MyXmlUtil.getAttribute(element, ATTR_TOPURL, topUrl);
+        recurse  = MyXmlUtil.getAttribute(element, ATTR_RECURSE, recurse);
+        download = MyXmlUtil.getAttribute(element, ATTR_DOWNLOAD, download);
     }
 
 
@@ -332,7 +332,7 @@ public class CatalogHarvester extends Harvester {
         catalogCnt++;
         seenCatalog.add(url);
         try {
-            Element root = XmlUtil.getRoot(url, getClass());
+            Element root = MyXmlUtil.getRoot(url, getClass());
             if (root == null) {
                 logHarvesterInfo("Could not load catalog:" + url);
 
@@ -341,14 +341,14 @@ public class CatalogHarvester extends Harvester {
                 return true;
             }
             //                System.err.println("loaded:" + url);
-            NodeList children    = XmlUtil.getElements(root);
+            NodeList children    = MyXmlUtil.getElements(root);
             int      cnt         = 0;
             Element  datasetNode = null;
             for (int i = 0; i < children.getLength(); i++) {
                 Element child = (Element) children.item(i);
-                if (XmlUtil.isTag(child, CatalogUtil.TAG_DATASET)
-                        || XmlUtil.isTag(child, CatalogUtil.TAG_CATALOGREF)) {
-                    if (XmlUtil.isTag(child, CatalogUtil.TAG_DATASET)) {
+                if (MyXmlUtil.isTag(child, CatalogUtil.TAG_DATASET)
+                        || MyXmlUtil.isTag(child, CatalogUtil.TAG_CATALOGREF)) {
+                    if (MyXmlUtil.isTag(child, CatalogUtil.TAG_DATASET)) {
                         datasetNode = (Element) child;
                     }
                     cnt++;
@@ -456,16 +456,16 @@ public class CatalogHarvester extends Harvester {
 
         URL catalogUrl = new URL(catalogUrlPath);
         String name =
-            XmlUtil.getAttribute(node, ATTR_NAME,
+            MyXmlUtil.getAttribute(node, ATTR_NAME,
                                  IOUtil.getFileTail(catalogUrlPath));
-        NodeList elements = XmlUtil.getElements(node);
-        String urlPath = XmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
+        NodeList elements = MyXmlUtil.getElements(node);
+        String urlPath = MyXmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
                              (String) null);
         if (urlPath == null) {
-            Element accessNode = XmlUtil.findChild(node,
+            Element accessNode = MyXmlUtil.findChild(node,
                                      CatalogUtil.TAG_ACCESS);
             if (accessNode != null) {
-                urlPath = XmlUtil.getAttribute(accessNode,
+                urlPath = MyXmlUtil.getAttribute(accessNode,
                         CatalogUtil.ATTR_URLPATH);
             }
         }
@@ -473,7 +473,7 @@ public class CatalogHarvester extends Harvester {
         boolean haveChildDatasets = false;
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
-            if (XmlUtil.isTag(child, CatalogUtil.TAG_DATASET)) {
+            if (MyXmlUtil.isTag(child, CatalogUtil.TAG_DATASET)) {
                 haveChildDatasets = true;
 
                 break;
@@ -531,7 +531,7 @@ public class CatalogHarvester extends Harvester {
 
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
-            String  tag   = XmlUtil.getLocalName(child);
+            String  tag   = MyXmlUtil.getLocalName(child);
             if (tag.equals(CatalogUtil.TAG_DATASET)) {
                 recurseCatalog(child, group, catalogUrlPath, xmlDepth + 1,
                                recurseDepth, timestamp);
@@ -539,7 +539,7 @@ public class CatalogHarvester extends Harvester {
                 if ( !recurse) {
                     continue;
                 }
-                String url = XmlUtil.getAttribute(child, "xlink:href");
+                String url = MyXmlUtil.getAttribute(child, "xlink:href");
                 URL    newCatalogUrl = new URL(catalogUrl, url);
                 //                System.err.println("url:" + newCatalogUrl);
                 if ( !importCatalog(newCatalogUrl.toString(), group,
@@ -547,7 +547,7 @@ public class CatalogHarvester extends Harvester {
                     logHarvesterInfo("Could not load catalog:" + url);
                     logHarvesterInfo("Base catalog:" + catalogUrl);
                     logHarvesterInfo("Base URL:"
-                                     + XmlUtil.getAttribute(child,
+                                     + MyXmlUtil.getAttribute(child,
                                          "xlink:href"));
                 }
             }
@@ -583,9 +583,9 @@ public class CatalogHarvester extends Harvester {
 
         boolean isOpendap = false;
         if (serviceNode != null) {
-            String path = XmlUtil.getAttribute(serviceNode, "base");
+            String path = MyXmlUtil.getAttribute(serviceNode, "base");
             urlPath = new URL(catalogUrl, path + urlPath).toString();
-            String serviceType = XmlUtil.getAttribute(serviceNode,
+            String serviceType = MyXmlUtil.getAttribute(serviceNode,
                                      CatalogUtil.ATTR_SERVICETYPE,
                                      "").toLowerCase();
             isOpendap = serviceType.equals("opendap")

@@ -21,7 +21,7 @@ import ucar.unidata.util.PatternFileFilter;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.geom.Rectangle2D;
 
@@ -250,15 +250,15 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         ncmlUtil.openNcml(sb);
         if (ncmlUtil.isJoinExisting()) {
-            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
-                                      XmlUtil.attrs(new String[] {
+            sb.append(MyXmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      MyXmlUtil.attrs(new String[] {
                 NcmlUtil.ATTR_TYPE, NcmlUtil.AGG_JOINEXISTING,
                 NcmlUtil.ATTR_DIMNAME, timeCoordinate,
                 NcmlUtil.ATTR_TIMEUNITSCHANGE, "true"
             })));
         } else if (ncmlUtil.isUnion()) {
-            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
-                                      XmlUtil.attrs(new String[] {
+            sb.append(MyXmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      MyXmlUtil.attrs(new String[] {
                                           NcmlUtil.ATTR_TYPE,
                                           NcmlUtil.AGG_UNION, })));
         } else if (ncmlUtil.isJoinNew()) {
@@ -267,15 +267,15 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             /* Ensemble is now handled below
               String ensembleDimName = "ens";
               ncmlUtil.addEnsembleVariables(sb, ensembleDimName);
-              sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
-                                        XmlUtil.attrs(new String[] {
+              sb.append(MyXmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                        MyXmlUtil.attrs(new String[] {
                                             NcmlUtil.ATTR_DIMNAME,
                                             ensembleDimName,
                                             NcmlUtil.ATTR_TYPE,
                                             NcmlUtil.AGG_JOINNEW })));
               for (String var : fields) {
-                  sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
-                                        XmlUtil.attrs(new String[] {
+                  sb.append(MyXmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
+                                        MyXmlUtil.attrs(new String[] {
                                             NcmlUtil.ATTR_NAME,
                                             var })));
               }
@@ -422,15 +422,15 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             String ensembleDimName = "ens";
             ncmlUtil.addEnsembleVariables(sb, ensembleDimName,
                                           sortedChillens);
-            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
-                                      XmlUtil.attrs(new String[] {
+            sb.append(MyXmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      MyXmlUtil.attrs(new String[] {
                                           NcmlUtil.ATTR_DIMNAME,
                                           ensembleDimName,
                                           NcmlUtil.ATTR_TYPE,
                                           NcmlUtil.AGG_JOINNEW })));
             for (String var : fields) {
-                sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
-                                      XmlUtil.attrs(new String[] {
+                sb.append(MyXmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
+                                      MyXmlUtil.attrs(new String[] {
                                           NcmlUtil.ATTR_NAME,
                                           var })));
             }
@@ -443,16 +443,16 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             File   f = new File(s);
             timestamp[0] = timestamp[0] ^ f.lastModified() ^ s.hashCode();
             sb.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     NcmlUtil.TAG_NETCDF,
-                    XmlUtil.attrs(
+                    MyXmlUtil.attrs(
                         NcmlUtil.ATTR_LOCATION,
                         IOUtil.getURL(s, getClass()).toString(),
                         NcmlUtil.ATTR_ENHANCE, "true"), ""));
         }
 
-        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
-        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
+        sb.append(MyXmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
+        sb.append(MyXmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
 
         //        System.err.println(sb);
 

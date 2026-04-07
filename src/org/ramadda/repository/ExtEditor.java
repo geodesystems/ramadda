@@ -36,7 +36,7 @@ import java.awt.Image;
 import org.json.*;
 
 import ucar.unidata.util.LogUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
@@ -2518,7 +2518,7 @@ public class ExtEditor extends RepositoryManager {
 	    handler = "org.ramadda.repository.type.GenericTypeHandler";
 	}
 
-	sb.append(XmlUtil.comment(comment));
+	sb.append(MyXmlUtil.comment(comment));
 	sb.append("<types>\n");
 	sb.append("<type ");
 	sb.append(XU.attrs("name",id));

@@ -22,7 +22,7 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -155,7 +155,7 @@ public class AtomOutputHandler extends OutputHandler {
 
             StringBuffer extra = new StringBuffer();
             Document doc =
-                XmlUtil.getDocument("<content type=\"text/xml\"></content>");
+                MyXmlUtil.getDocument("<content type=\"text/xml\"></content>");
             Element root = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
@@ -217,7 +217,7 @@ public class AtomOutputHandler extends OutputHandler {
                              + entry.getEast(request) + "</georss:box>\n");
             }
 
-            extra.append(XmlUtil.toString(root));
+            extra.append(MyXmlUtil.toString(root));
 
             String desc = entry.getDescription();
             if (TypeHandler.isWikiText(desc)) {

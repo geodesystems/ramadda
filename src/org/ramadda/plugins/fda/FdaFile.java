@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 

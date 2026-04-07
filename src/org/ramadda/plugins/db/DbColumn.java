@@ -16,7 +16,7 @@ import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.ArrayList;
 import java.util.List;

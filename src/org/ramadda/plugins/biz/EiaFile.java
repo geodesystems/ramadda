@@ -14,7 +14,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.RepositoryUtil;
 import org.w3c.dom.Element;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -117,24 +117,24 @@ public class EiaFile extends CsvFile {
 									 "\n");
 		}
 		/*
-                Element     root   = XmlUtil.getRoot(source);
-                Element     series = XmlUtil.findChild(root, Eia.TAG_SERIES);
-                series = XmlUtil.findChild(series, Eia.TAG_ROW);
+                Element     root   = MyXmlUtil.getRoot(source);
+                Element     series = MyXmlUtil.findChild(root, Eia.TAG_SERIES);
+                series = MyXmlUtil.findChild(series, Eia.TAG_ROW);
 
-                Element data = XmlUtil.findChild(series, Eia.TAG_DATA);
-                String name = XmlUtil.getGrandChildText(series, Eia.TAG_NAME,
+                Element data = MyXmlUtil.findChild(series, Eia.TAG_DATA);
+                String name = MyXmlUtil.getGrandChildText(series, Eia.TAG_NAME,
                                   "").trim();
-                String desc = XmlUtil.getGrandChildText(series,
+                String desc = MyXmlUtil.getGrandChildText(series,
                                   Eia.TAG_DESCRIPTION, "").trim();
 
 
                 String format = "yyyyMMdd";
-                String unit = XmlUtil.getGrandChildText(series,
+                String unit = MyXmlUtil.getGrandChildText(series,
                                   Eia.TAG_UNITS, "").trim();
-                List nodes = XmlUtil.findChildren(data, Eia.TAG_ROW);
+                List nodes = MyXmlUtil.findChildren(data, Eia.TAG_ROW);
                 for (int i = 0; i < nodes.size(); i++) {
                     Element node = (Element) nodes.get(i);
-                    String dttm = XmlUtil.getGrandChildText(node,
+                    String dttm = MyXmlUtil.getGrandChildText(node,
                                       Eia.TAG_DATE, "").trim().toLowerCase();
 
 		}

@@ -32,7 +32,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 import ucar.unidata.util.WrapperException;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -91,15 +91,15 @@ public class GenericTypeHandler extends TypeHandler {
             //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
         }
 
-        meFirst = XmlUtil.getAttribute(entryNode, "mefirst", meFirst);
-        setDefaultCategory(XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
+        meFirst = MyXmlUtil.getAttribute(entryNode, "mefirst", meFirst);
+        setDefaultCategory(MyXmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                 (String) null));
 
-        List columnNodes = XmlUtil.findChildren(entryNode, TAG_COLUMN);
+        List columnNodes = MyXmlUtil.findChildren(entryNode, TAG_COLUMN);
         if (columnNodes.size() == 0) {
             return;
         }
-	boolean ignoreErrors = XmlUtil.getAttribute(entryNode,"ignoreerrors",true);
+	boolean ignoreErrors = MyXmlUtil.getAttribute(entryNode,"ignoreerrors",true);
         initColumns((List<Element>) columnNodes,ignoreErrors);
     }
 
@@ -162,7 +162,7 @@ public class GenericTypeHandler extends TypeHandler {
 	String lastGroup =null;
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
-            String className = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
+            String className = MyXmlUtil.getAttribute(columnNode, ATTR_CLASS,
                                    Column.class.getName());
             Class c = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
@@ -357,7 +357,7 @@ public class GenericTypeHandler extends TypeHandler {
         Hashtable<String, Element> nodes    = new Hashtable<String,
                                                   Element>();
 
-        NodeList                   elements = XmlUtil.getElements(node);
+        NodeList                   elements = MyXmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             nodes.put(child.getTagName(), child);
@@ -367,13 +367,13 @@ public class GenericTypeHandler extends TypeHandler {
             String  value = null;
             Element child = nodes.get(column.getName());
             if (child != null) {
-                value = XmlUtil.getChildText(child);
-                if (XmlUtil.getAttribute(child, "encoded", false)) {
+                value = MyXmlUtil.getChildText(child);
+                if (MyXmlUtil.getAttribute(child, "encoded", false)) {
                     value = new String(Utils.decodeBase64(value));
                 }
             }
             if (value == null) {
-                value = XmlUtil.getAttribute(node, column.getName(),
+                value = MyXmlUtil.getAttribute(node, column.getName(),
                                              (String) null);
             }
             if (value == null) {
@@ -446,8 +446,8 @@ public class GenericTypeHandler extends TypeHandler {
             sb.append(RepositoryUtil.header(title));
             sb.append("<ul>");
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {
-            sb.append(XmlUtil.XML_HEADER + "\n");
-            sb.append(XmlUtil.openTag(tag + "s"));
+            sb.append(MyXmlUtil.XML_HEADER + "\n");
+            sb.append(MyXmlUtil.openTag(tag + "s"));
         }
 
         Properties properties =
@@ -461,7 +461,7 @@ public class GenericTypeHandler extends TypeHandler {
                 sb.append("<li>");
                 sb.append(longName);
             } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {
-                String attrs = XmlUtil.attrs(ATTR_ID, values[i]);
+                String attrs = MyXmlUtil.attrs(ATTR_ID, values[i]);
                 if (properties != null) {
                     for (Enumeration keys = properties.keys();
                             keys.hasMoreElements(); ) {
@@ -470,11 +470,11 @@ public class GenericTypeHandler extends TypeHandler {
                             String value = (String) properties.get(key);
                             value = value.replace("${value}", values[i]);
                             key   = key.substring((values[i] + ".").length());
-                            attrs = attrs + XmlUtil.attr(key, value);
+                            attrs = attrs + MyXmlUtil.attr(key, value);
                         }
                     }
                 }
-                sb.append(XmlUtil.tag(tag, attrs));
+                sb.append(MyXmlUtil.tag(tag, attrs));
             } else if (output.equals(CsvOutputHandler.OUTPUT_CSV)) {
                 sb.append(SqlUtil.comma(values[i], longName));
                 sb.append("\n");
@@ -483,7 +483,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (output.equals(OutputHandler.OUTPUT_HTML)) {
             sb.append("</ul>");
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {
-            sb.append(XmlUtil.closeTag(tag + "s"));
+            sb.append(MyXmlUtil.closeTag(tag + "s"));
         }
 
         return new Result(

@@ -7,7 +7,7 @@ package org.ramadda.plugins.db;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 public class DbTemplate {
     String id;
@@ -18,11 +18,11 @@ public class DbTemplate {
     String mime;
 
     public DbTemplate(Element node) {
-        id     = XmlUtil.getAttribute(node, "id");
-        name   = XmlUtil.getAttribute(node, "name", id);
-        entry  = XmlUtil.getGrandChildText(node, "contents");
-        prefix = XmlUtil.getGrandChildText(node, "prefix");
-        suffix = XmlUtil.getGrandChildText(node, "suffix");
-        mime   = XmlUtil.getAttribute(node, "mimetype", (String) null);
+        id     = MyXmlUtil.getAttribute(node, "id");
+        name   = MyXmlUtil.getAttribute(node, "name", id);
+        entry  = MyXmlUtil.getGrandChildText(node, "contents");
+        prefix = MyXmlUtil.getGrandChildText(node, "prefix");
+        suffix = MyXmlUtil.getGrandChildText(node, "suffix");
+        mime   = MyXmlUtil.getAttribute(node, "mimetype", (String) null);
     }
 }

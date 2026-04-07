@@ -17,7 +17,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.*;
@@ -72,10 +72,10 @@ public class OwlConverter extends ImportHandler {
         if ( !isOwl) {
             return null;
         }
-        StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer xml = new StringBuffer(MyXmlUtil.XML_HEADER);
         xml.append("<entries>\n");
         List<AssociationInfo> links = new ArrayList<AssociationInfo>();
-        StringBuffer associations = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer associations = new StringBuffer(MyXmlUtil.XML_HEADER);
         HashSet<String>       seen    = new HashSet<String>();
         List<EntryInfo>       entries = new ArrayList<EntryInfo>();
         Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
@@ -142,11 +142,11 @@ public class OwlConverter extends ImportHandler {
                 OwlConverter.class));
 
         File         f   = new File("owl");
-        StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer xml = new StringBuffer(MyXmlUtil.XML_HEADER);
         xml.append("<entries>\n");
 
         List<AssociationInfo> links = new ArrayList<AssociationInfo>();
-        StringBuffer associations = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer associations = new StringBuffer(MyXmlUtil.XML_HEADER);
         HashSet<String>       seen    = new HashSet<String>();
         List<EntryInfo>       entries = new ArrayList<EntryInfo>();
         Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
@@ -173,8 +173,8 @@ public class OwlConverter extends ImportHandler {
                 IOUtil.stripExtension(IOUtil.getFileTail(file.toString()));
             String topLevelLabel = (String) topLevelMap.get(group);
             if (topLevelLabel != null) {
-                xml.append(XmlUtil.tag("entry",
-                                       XmlUtil.attrs("type",
+                xml.append(MyXmlUtil.tag("entry",
+                                       MyXmlUtil.attrs("type",
                                            RdfUtil.TYPE_ONTOLOGY, "name",
                                            getName(topLevelLabel), "id",
                                            group)));
@@ -186,8 +186,8 @@ public class OwlConverter extends ImportHandler {
                     System.err.println("?:" + group + " " + currentTopLevel);
                 }
                 String name = getName(group.replace(currentTopLevel, ""));
-                xml.append(XmlUtil.tag("entry",
-                                       XmlUtil.attrs("type",
+                xml.append(MyXmlUtil.tag("entry",
+                                       MyXmlUtil.attrs("type",
                                            RdfUtil.TYPE_ONTOLOGY, "name",
                                            name, "id", group, "parent",
                                            currentTopLevel)));
@@ -225,13 +225,13 @@ public class OwlConverter extends ImportHandler {
             throws Exception {
 
         String  filePrefix = IOUtil.getFileTail(file.toString());
-        Element root = XmlUtil.getRoot(file.toString(), OwlConverter.class);
+        Element root = MyXmlUtil.getRoot(file.toString(), OwlConverter.class);
         if (root == null) {
             System.err.println("failed to read:" + file);
 
             return;
         }
-        NodeList children = XmlUtil.getElements(root);
+        NodeList children = MyXmlUtil.getElements(root);
         for (int i = 0; i < children.getLength(); i++) {
             String  parent      = groupId;
             Element node        = (Element) children.item(i);
@@ -250,9 +250,9 @@ public class OwlConverter extends ImportHandler {
                 int idx = tag.indexOf(":");
                 if (idx >= 0) {
                     String[] toks = tag.split(":");
-                    if (XmlUtil.hasAttribute(root, "xmlns:" + toks[0])) {
+                    if (MyXmlUtil.hasAttribute(root, "xmlns:" + toks[0])) {
                         okToProcess = true;
-                        parent = XmlUtil.getAttribute(root,
+                        parent = MyXmlUtil.getAttribute(root,
                                 "xmlns:" + toks[0]) + "" + toks[1];
                         parent =
                             parent.replace("http://sweet.jpl.nasa.gov/2.1/",
@@ -267,15 +267,15 @@ public class OwlConverter extends ImportHandler {
 
             if (okToProcess) {
                 String id;
-                if (XmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ABOUT)) {
-                    id = XmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ABOUT,
+                if (MyXmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ABOUT)) {
+                    id = MyXmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ABOUT,
                             "").trim();
                     id = id.replace("http://sweet.jpl.nasa.gov/2.1/", "");
                     if (id.startsWith("#")) {
                         id = filePrefix + id;
                     }
-                } else if (XmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ID)) {
-                    id = XmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ID,
+                } else if (MyXmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ID)) {
+                    id = MyXmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ID,
                             "").trim();
                     if (id.startsWith("#")) {
                         id = filePrefix + id;
@@ -288,7 +288,7 @@ public class OwlConverter extends ImportHandler {
 
                 String desc = null;
                 seen.add(id);
-                NodeList children2 = XmlUtil.getElements(node);
+                NodeList children2 = MyXmlUtil.getElements(node);
                 for (int j = 0; j < children2.getLength(); j++) {
                     Element child     = (Element) children2.item(j);
                     String  childName = child.getTagName();
@@ -296,11 +296,11 @@ public class OwlConverter extends ImportHandler {
                             || childName.equals(RdfUtil.TAG_OWL_DISJOINTWITH)
                             || childName.equals(
                                 RdfUtil.TAG_OWL_EQUIVALENTCLASS)) {
-                        if ( !XmlUtil.hasAttribute(child,
+                        if ( !MyXmlUtil.hasAttribute(child,
                                 RdfUtil.ATTR_RDF_RESOURCE)) {
                             continue;
                         }
-                        String resource = XmlUtil.getAttribute(child,
+                        String resource = MyXmlUtil.getAttribute(child,
                                               RdfUtil.ATTR_RDF_RESOURCE);
                         resource = resource.replace(
                             "http://sweet.jpl.nasa.gov/2.1/", "");
@@ -310,7 +310,7 @@ public class OwlConverter extends ImportHandler {
                         links.add(new AssociationInfo(id, resource,
                                 childName));
                     } else if (childName.equals(RdfUtil.TAG_RDFS_COMMENT)) {
-                        desc = XmlUtil.getChildText(child);
+                        desc = MyXmlUtil.getChildText(child);
                     } else if (childName.equals(RdfUtil.TAG_RDFS_LABEL)) {}
                     else {
                         //                            System.err.println("   ??:" + childName);
@@ -319,8 +319,8 @@ public class OwlConverter extends ImportHandler {
 
                 StringBuffer childTags = new StringBuffer();
                 if (desc != null) {
-                    childTags.append(XmlUtil.tag("description", "",
-                            XmlUtil.getCdata(desc.toString())));
+                    childTags.append(MyXmlUtil.tag("description", "",
+                            MyXmlUtil.getCdata(desc.toString())));
                 }
                 EntryInfo entryInfo = new EntryInfo(id, getName(id), parent,
                                           RdfUtil.TYPE_CLASS,

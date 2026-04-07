@@ -14,7 +14,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -209,19 +209,19 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
 
         StringBuffer attrs = new StringBuffer();
         StringBuffer inner = new StringBuffer();
-        attrs.append(XmlUtil.attr("name", id));
-        attrs.append(XmlUtil.attr("label", entry.getName()));
-        attrs.append(XmlUtil.attr("type", type));
+        attrs.append(MyXmlUtil.attr("name", id));
+        attrs.append(MyXmlUtil.attr("label", entry.getName()));
+        attrs.append(MyXmlUtil.attr("type", type));
 
         if (Utils.stringDefined(enums)
                 && (type.equals(DataTypes.DATATYPE_ENUMERATION)
                     || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS))) {
 	    enums = enums.trim();
             if (enums.startsWith("file:")) {
-                attrs.append(XmlUtil.attr("values", enums.trim()));
+                attrs.append(MyXmlUtil.attr("values", enums.trim()));
             } else {
-                inner.append(XmlUtil.tag("values", "",
-                                         XmlUtil.getCdata(enums)));
+                inner.append(MyXmlUtil.tag("values", "",
+                                         MyXmlUtil.getCdata(enums)));
             }
         }
 
@@ -234,23 +234,23 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
             String v = (String) props.get(attrProp);
             if (v != null) {
                 props.remove(attrProp);
-                attrs.append(XmlUtil.attr(attrProp, v));
+                attrs.append(MyXmlUtil.attr(attrProp, v));
             }
         }
 
         if (Misc.getProperty(props, Column.ATTR_CANSEARCH, false)) {
-            attrs.append(XmlUtil.attr(Column.ATTR_CANSEARCH, "true"));
+            attrs.append(MyXmlUtil.attr(Column.ATTR_CANSEARCH, "true"));
             props.remove(Column.ATTR_CANSEARCH);
         }
 
         if ( !Misc.getProperty(props, Column.ATTR_CANLIST, true)) {
-            attrs.append(XmlUtil.attr(Column.ATTR_CANLIST, "false"));
+            attrs.append(MyXmlUtil.attr(Column.ATTR_CANLIST, "false"));
             props.remove(Column.ATTR_CANLIST);
         }
 
         if (type.equals(Column.DATATYPE_STRING)
                 || type.equals(Column.DATATYPE_LIST)) {
-            attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
+            attrs.append(MyXmlUtil.attr(Column.ATTR_SIZE, "" + size));
         }
 
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -264,14 +264,14 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
         String propValues = Misc.getProperty(props, Column.ATTR_VALUES,
                                              (String) null);
         if (propValues != null) {
-            attrs.append(XmlUtil.attr(Column.ATTR_VALUES, propValues));
+            attrs.append(MyXmlUtil.attr(Column.ATTR_VALUES, propValues));
         }
 
         if (Misc.getProperty(props, Column.ATTR_LABEL, false)) {
             inner.append(propertyTag(Column.ATTR_LABEL, "true"));
         }
 
-        xml.append(XmlUtil.tag(TAG_COLUMN, attrs.toString(),
+        xml.append(MyXmlUtil.tag(TAG_COLUMN, attrs.toString(),
                                inner.toString()));
 
     }
@@ -285,8 +285,8 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
      * @return _more_
      */
     public String propertyTag(String name, String value) {
-        return XmlUtil.tag(TAG_PROPERTY,
-                           XmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
+        return MyXmlUtil.tag(TAG_PROPERTY,
+                           MyXmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
     }
 
 

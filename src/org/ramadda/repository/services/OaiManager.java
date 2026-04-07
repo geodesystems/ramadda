@@ -16,7 +16,7 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 import java.io.File;
@@ -237,16 +237,16 @@ public class OaiManager extends RepositoryManager {
     }
 
     private Element getRoot(Request request) throws Exception {
-        Document doc  = XmlUtil.makeDocument();
-        Element  root = XmlUtil.create(doc, TAG_OAI_PMH, (String[]) null);
-        XmlUtil.setAttributes(root, new String[] {
+        Document doc  = MyXmlUtil.makeDocument();
+        Element  root = MyXmlUtil.create(doc, TAG_OAI_PMH, (String[]) null);
+        MyXmlUtil.setAttributes(root, new String[] {
             ATTR_XMLNS, "http://www.openarchives.org/OAI/2.0/",
             ATTR_XMLNS_XSI, "http://www.w3.org/2001/XMLSchema-instance",
             ATTR_XSI_SCHEMALOCATION,
             "http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
         });
 
-        XmlUtil.create(TAG_RESPONSEDATE, root, format(new Date()));
+        MyXmlUtil.create(TAG_RESPONSEDATE, root, format(new Date()));
 
         return root;
     }
@@ -254,7 +254,7 @@ public class OaiManager extends RepositoryManager {
     private void addRequest(Request request, Element root) throws Exception {
         String  url         =
             request.getAbsoluteUrl(request.getRequestPath());
-        Element requestNode = XmlUtil.create(TAG_REQUEST, root, url);
+        Element requestNode = MyXmlUtil.create(TAG_REQUEST, root, url);
 
         if ( !Misc.equals(request.getString(ARG_METADATAPREFIX, "oai_dc"),
                           "oai_dc")) {
@@ -345,7 +345,7 @@ public class OaiManager extends RepositoryManager {
         if ( !verbSet.contains(verb)) {
             //Add in an attributeless request node
             String url = request.getAbsoluteUrl(request.getRequestPath());
-            XmlUtil.create(TAG_REQUEST, root, url);
+            MyXmlUtil.create(TAG_REQUEST, root, url);
             handleError(request, root, ERROR_BADVERB, "Bad verb:" + verb);
 
             return;
@@ -390,7 +390,7 @@ public class OaiManager extends RepositoryManager {
 
     private Result makeResult(Request request, Element root)
             throws Exception {
-        return new Result("", new StringBuffer(XmlUtil.toString(root, true)),
+        return new Result("", new StringBuffer(MyXmlUtil.toString(root, true)),
                           "text/xml");
     }
 
@@ -403,40 +403,40 @@ public class OaiManager extends RepositoryManager {
                              String contents)
             throws Exception {
         if (contents != null) {
-            XmlUtil.create(TAG_ERROR, root, contents,
+            MyXmlUtil.create(TAG_ERROR, root, contents,
                            new String[] { ATTR_CODE,
                                           code });
         } else {
-            XmlUtil.create(TAG_ERROR, root, new String[] { ATTR_CODE, code });
+            MyXmlUtil.create(TAG_ERROR, root, new String[] { ATTR_CODE, code });
         }
     }
 
     private void handleIdentify(Request request, Element root)
             throws Exception {
-        Element id = XmlUtil.create(TAG_IDENTIFY, root);
-        XmlUtil.create(TAG_REPOSITORYNAME, id,
+        Element id = MyXmlUtil.create(TAG_IDENTIFY, root);
+        MyXmlUtil.create(TAG_REPOSITORYNAME, id,
                        repository.getRepositoryName());
         String url = request.getAbsoluteUrl(request.getUrl());
-        XmlUtil.create(TAG_BASEURL, id, url);
-        XmlUtil.create(TAG_PROTOCOLVERSION, id, "2.0");
-        XmlUtil.create(TAG_ADMINEMAIL, id,
+        MyXmlUtil.create(TAG_BASEURL, id, url);
+        MyXmlUtil.create(TAG_PROTOCOLVERSION, id, "2.0");
+        MyXmlUtil.create(TAG_ADMINEMAIL, id,
                        getRepository().getProperty(PROP_ADMIN_EMAIL, ""));
-        XmlUtil.create(TAG_EARLIESTDATESTAMP, id, "1990-01-01T00:00:00Z");
-        XmlUtil.create(TAG_DELETEDRECORD, id, "no");
-        XmlUtil.create(TAG_GRANULARITY, id, "YYYY-MM-DDThh:mm:ssZ");
-        Element desc = XmlUtil.create(TAG_DESCRIPTION, id);
-        Element oai  = XmlUtil.create(TAG_OAI_IDENTIFIER, desc, new String[] {
+        MyXmlUtil.create(TAG_EARLIESTDATESTAMP, id, "1990-01-01T00:00:00Z");
+        MyXmlUtil.create(TAG_DELETEDRECORD, id, "no");
+        MyXmlUtil.create(TAG_GRANULARITY, id, "YYYY-MM-DDThh:mm:ssZ");
+        Element desc = MyXmlUtil.create(TAG_DESCRIPTION, id);
+        Element oai  = MyXmlUtil.create(TAG_OAI_IDENTIFIER, desc, new String[] {
             ATTR_XMLNS, "http://www.openarchives.org/OAI/2.0/oai-identifier",
             ATTR_XMLNS_XSI, "http://www.w3.org/2001/XMLSchema-instance",
             ATTR_XSI_SCHEMALOCATION,
             "http://www.openarchives.org/OAI/2.0/oai-identifier  http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"
         });
 
-        XmlUtil.create(TAG_SCHEME, oai, "oai");
-        XmlUtil.create(TAG_REPOSITORYIDENTIFIER, oai,
+        MyXmlUtil.create(TAG_SCHEME, oai, "oai");
+        MyXmlUtil.create(TAG_REPOSITORYIDENTIFIER, oai,
                        getRepositoryIdentifier());
-        XmlUtil.create(TAG_DELIMITER, oai, ":");
-        XmlUtil.create(TAG_SAMPLEIDENTIFIER, oai,
+        MyXmlUtil.create(TAG_DELIMITER, oai, ":");
+        MyXmlUtil.create(TAG_SAMPLEIDENTIFIER, oai,
                        makeId(getEntryManager().getRootEntry().getId()));
     }
 
@@ -452,12 +452,12 @@ public class OaiManager extends RepositoryManager {
             }
         }
 
-        Element node = XmlUtil.create(TAG_LISTMETADATAFORMATS, root);
-        Element fmt  = XmlUtil.create(TAG_METADATAFORMAT, node);
-        XmlUtil.create(TAG_METADATAPREFIX, fmt, "oai_dc");
-        XmlUtil.create(TAG_SCHEMA, fmt,
+        Element node = MyXmlUtil.create(TAG_LISTMETADATAFORMATS, root);
+        Element fmt  = MyXmlUtil.create(TAG_METADATAFORMAT, node);
+        MyXmlUtil.create(TAG_METADATAPREFIX, fmt, "oai_dc");
+        MyXmlUtil.create(TAG_SCHEMA, fmt,
                        "http://www.openarchives.org/OAI/2.0/oai_dc.xsd");
-        XmlUtil.create(TAG_METADATANAMESPACE, fmt,
+        MyXmlUtil.create(TAG_METADATANAMESPACE, fmt,
                        "http://www.openarchives.org/OAI/2.0/oai_dc/");
     }
 
@@ -506,9 +506,9 @@ public class OaiManager extends RepositoryManager {
     }
 
     private void makeHeader(Entry entry, Element node) throws Exception {
-        Element header = XmlUtil.create(TAG_HEADER, node);
-        XmlUtil.create(TAG_IDENTIFIER, header, makeId(entry.getId()));
-        XmlUtil.create(TAG_DATESTAMP, header,
+        Element header = MyXmlUtil.create(TAG_HEADER, node);
+        MyXmlUtil.create(TAG_IDENTIFIER, header, makeId(entry.getId()));
+        MyXmlUtil.create(TAG_DATESTAMP, header,
                        format(new Date(entry.getStartDate())));
     }
 
@@ -573,11 +573,11 @@ public class OaiManager extends RepositoryManager {
                                EntryList entries)
             throws Exception {
         if (entries.resumptionToken != null) {
-            XmlUtil.create(TAG_RESUMPTIONTOKEN, root,
+            MyXmlUtil.create(TAG_RESUMPTIONTOKEN, root,
                            entries.resumptionToken);
         } else if (request.exists(ARG_RESUMPTIONTOKEN)) {
             //Put in the blank one
-            XmlUtil.create(TAG_RESUMPTIONTOKEN, root, "");
+            MyXmlUtil.create(TAG_RESUMPTIONTOKEN, root, "");
         }
 
     }
@@ -599,7 +599,7 @@ public class OaiManager extends RepositoryManager {
             return;
         }
 
-        Element listNode = XmlUtil.create(TAG_LISTIDENTIFIERS, root);
+        Element listNode = MyXmlUtil.create(TAG_LISTIDENTIFIERS, root);
         for (Entry entry : entryList.entries) {
             makeHeader(entry, listNode);
         }
@@ -628,7 +628,7 @@ public class OaiManager extends RepositoryManager {
 
             return;
         }
-        Element listRecordNode = XmlUtil.create(TAG_LISTRECORDS, root);
+        Element listRecordNode = MyXmlUtil.create(TAG_LISTRECORDS, root);
         for (Entry entry : entryList.entries) {
             makeRecord(request, entry, listRecordNode);
         }
@@ -674,17 +674,17 @@ public class OaiManager extends RepositoryManager {
             return;
         }
 
-        Element node = XmlUtil.create(TAG_GETRECORD, root);
+        Element node = MyXmlUtil.create(TAG_GETRECORD, root);
         makeRecord(request, entry, node);
     }
 
     private void makeRecord(Request request, Entry entry, Element node)
             throws Exception {
-        Element record = XmlUtil.create(TAG_RECORD, node);
+        Element record = MyXmlUtil.create(TAG_RECORD, node);
         makeHeader(entry, record);
 
-        Element metadata = XmlUtil.create(TAG_METADATA, record);
-        Element oaidc = XmlUtil.create(TAG_OAIDC_DC, metadata, new String[] {
+        Element metadata = MyXmlUtil.create(TAG_METADATA, record);
+        Element oaidc = MyXmlUtil.create(TAG_OAIDC_DC, metadata, new String[] {
             ATTR_XMLNS_OAIDC, "http://www.openarchives.org/OAI/2.0/oai_dc/",
             ATTR_XMLNS_DC, "http://purl.org/dc/elements/1.1/", ATTR_XMLNS_XSI,
             "http://www.w3.org/2001/XMLSchema-instance",
@@ -695,9 +695,9 @@ public class OaiManager extends RepositoryManager {
         String entryUrl = request.getAbsoluteUrl(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry));
-        XmlUtil.create(TAG_DC_IDENTIFIER, oaidc, entryUrl);
-        XmlUtil.create(TAG_DC_TITLE, oaidc, entry.getName());
-        XmlUtil.create(TAG_DC_DESCRIPTION, oaidc, entry.getDescription());
+        MyXmlUtil.create(TAG_DC_IDENTIFIER, oaidc, entryUrl);
+        MyXmlUtil.create(TAG_DC_TITLE, oaidc, entry.getName());
+        MyXmlUtil.create(TAG_DC_DESCRIPTION, oaidc, entry.getDescription());
         addMetadata(request, entry, oaidc);
 
     }

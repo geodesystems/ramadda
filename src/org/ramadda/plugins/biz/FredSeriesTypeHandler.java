@@ -25,7 +25,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -114,21 +114,21 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
         args.add(Fred.ARG_SERIES_ID);
         args.add(seriesId);
         Element root = fcth.call(Fred.URL_SERIES, args);
-        //        System.err.println(XmlUtil.toString(root));
+        //        System.err.println(MyXmlUtil.toString(root));
 
         Object[] values = getEntryValues(entry);
-        Element  node   = XmlUtil.findChild(root, Fred.TAG_SERIES);
+        Element  node   = MyXmlUtil.findChild(root, Fred.TAG_SERIES);
 
         if (node != null) {
-            entry.setName(XmlUtil.getAttribute(node, Fred.ATTR_TITLE,
+            entry.setName(MyXmlUtil.getAttribute(node, Fred.ATTR_TITLE,
                     entry.getName()));
-            entry.setDescription(XmlUtil.getAttribute(node, Fred.ATTR_NOTES,
+            entry.setDescription(MyXmlUtil.getAttribute(node, Fred.ATTR_NOTES,
                     ""));
-            values[IDX_FREQUENCY] = XmlUtil.getAttribute(node,
+            values[IDX_FREQUENCY] = MyXmlUtil.getAttribute(node,
                     Fred.ATTR_FREQUENCY_SHORT, "");
-            values[IDX_UNITS] = XmlUtil.getAttribute(node, Fred.ATTR_UNITS,
+            values[IDX_UNITS] = MyXmlUtil.getAttribute(node, Fred.ATTR_UNITS,
                     "");
-            values[IDX_SEASONAL_ADJUSTMENT] = XmlUtil.getAttribute(node,
+            values[IDX_SEASONAL_ADJUSTMENT] = MyXmlUtil.getAttribute(node,
                     Fred.ATTR_SEASONAL_ADJUSTMENT, "");
 
         }

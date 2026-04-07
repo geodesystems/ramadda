@@ -20,7 +20,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -142,11 +142,11 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
             throws Exception {
         Document doc = root.getOwnerDocument();
         Element temporalCoverage =
-            XmlUtil.create(AtomUtil.TAG_GML_TIMEPERIOD, root);
-        XmlUtil.create(
+            MyXmlUtil.create(AtomUtil.TAG_GML_TIMEPERIOD, root);
+        MyXmlUtil.create(
             doc, AtomUtil.TAG_GML_BEGIN, temporalCoverage,
             Utils.format(new Date(collectionEntry.getStartDate())), null);
-        XmlUtil.create(doc, AtomUtil.TAG_GML_END, temporalCoverage,
+        MyXmlUtil.create(doc, AtomUtil.TAG_GML_END, temporalCoverage,
                        Utils.format(new Date(collectionEntry.getEndDate())),
                        null);
 
@@ -163,12 +163,12 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
   <attribute name="searchable" value="true" />
  </parameter>
             */
-            Element fieldsNode       = XmlUtil.create(doc, TAG_FIELDS, root);
+            Element fieldsNode       = MyXmlUtil.create(doc, TAG_FIELDS, root);
             List<RecordField> fields = childEntry.getRecordFile().getFields();
             for (RecordField field : fields) {
                 //                System.err.println ("field: " +field);
                 //Add the xml node to the above fieldsNode with a name attribute
-                Element fieldNode = XmlUtil.create(doc, TAG_FIELD,
+                Element fieldNode = MyXmlUtil.create(doc, TAG_FIELD,
                                         fieldsNode, new String[] { ATTR_NAME,
                         field.getName() });
                 String[][] attrs = new String[][] {
@@ -194,7 +194,7 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
 
                 for (String[] pair : attrs) {
                     if ((pair[1] != null) && (pair[1].length() > 0)) {
-                        XmlUtil.create(doc, TAG_ATTRIBUTE, fieldNode,
+                        MyXmlUtil.create(doc, TAG_ATTRIBUTE, fieldNode,
                                        new String[] { ATTR_NAME,
                                 pair[0], ATTR_VALUE, pair[1] });
                     }

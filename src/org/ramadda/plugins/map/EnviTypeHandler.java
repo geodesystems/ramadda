@@ -23,7 +23,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 import java.awt.image.*;

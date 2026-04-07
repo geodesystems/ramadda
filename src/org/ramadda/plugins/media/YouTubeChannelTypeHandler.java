@@ -15,13 +15,14 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.net.URL;
 
@@ -135,10 +136,10 @@ public class YouTubeChannelTypeHandler extends ExtensibleGroupTypeHandler {
 
         String  desc    = "";
         Element root    = call(Fred.URL_CATEGORY, args);
-        Element catNode = XmlUtil.findChild(root, Fred.TAG_CATEGORY);
+        Element catNode = MyXmlUtil.findChild(root, Fred.TAG_CATEGORY);
 
         if (catNode != null) {
-            name = XmlUtil.getAttribute(catNode, ATTR_NAME, categoryId);
+            name = MyXmlUtil.getAttribute(catNode, ATTR_NAME, categoryId);
         }
         entry = new Entry(id, this);
         String fredUrl = "https://research.stlouisfed.org/fred2/categories/"

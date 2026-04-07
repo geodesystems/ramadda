@@ -10,7 +10,7 @@ import org.json.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.Element;
 import java.io.IOException;
@@ -670,8 +670,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 		if(chunk.type==chunk.TYPE_XML) {
 		    if(Utils.getProperty(props,"format",false)) {
 			try {
-			    Element root = XmlUtil.getRoot(s);
-			    s = XmlUtils.elementToString(root);
+			    Element root = MyXmlUtil.getRoot(s);
+			    s = MyXmlUtil.elementToString(root);
 			} catch(Exception exc) {
 			    System.err.println("WikiUtil.xml error:" + exc);
 			}

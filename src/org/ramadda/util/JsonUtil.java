@@ -13,7 +13,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -752,8 +752,8 @@ public class JsonUtil {
                 }
                 inner += HtmlUtils.tag("description", "",
                                        "<![CDATA[" + desc + "]]>");
-                System.out.println(XmlUtil.tag("entry",
-					       XmlUtil.attrs(new String[] {
+                System.out.println(MyXmlUtil.tag("entry",
+					       MyXmlUtil.attrs(new String[] {
 						       "type", "type_image_webcam", "url", url, "latitude",
 						       lat + "", "longitude", "" + lon, "name", name
 						   }), inner));
@@ -787,7 +787,7 @@ public class JsonUtil {
                 attrs.add(quote(attr.getNodeValue()));
             }
         }
-        String text = XmlUtil.getChildText(node);
+        String text = MyXmlUtil.getChildText(node);
         if (Utils.stringDefined(text)) {
             text = text.replaceAll("\"", "\\\"");
             attrs.add("xml_text");

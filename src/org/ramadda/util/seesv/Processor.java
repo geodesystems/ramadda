@@ -23,9 +23,9 @@ import org.json.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -1801,12 +1801,12 @@ public abstract class Processor extends SeesvOperator {
                 writer.println("<tables>");
 		String comment = (String)reader.getProperty("db.comment");
 		if(comment!=null)
-		    writer.println(XmlUtil.comment(comment));
+		    writer.println(MyXmlUtil.comment(comment));
             }
 
-            String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
+            String tableAttrs = MyXmlUtil.attrs("id", tableId, "name", label);
             if (labels.length() > 0) {
-                tableAttrs += XmlUtil.attrs("labelColumns", labels);
+                tableAttrs += MyXmlUtil.attrs("labelColumns", labels);
             }
 
             for (String prop : new String[] {
@@ -1818,11 +1818,11 @@ public abstract class Processor extends SeesvOperator {
 		}) {
                 String v = getDbProp("table", prop, (String) null);
                 if (v != null) {
-                    tableAttrs += XmlUtil.attr(prop, v);
+                    tableAttrs += MyXmlUtil.attr(prop, v);
                 }
             }
 
-            writer.println(XmlUtil.openTag("table", tableAttrs));
+            writer.println(MyXmlUtil.openTag("table", tableAttrs));
 
             for (String prop : new String[] { "searchForLabel",
 					      "addressTemplate", "mapLabelTemplate",
@@ -1948,27 +1948,27 @@ public abstract class Processor extends SeesvOperator {
 		boolean addRawInput =dfltAddRawInput;
                 boolean       canSort   = dfltCanSort;
 
-                attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
+                attrs.append(MyXmlUtil.attrs(new String[] { "name", colId }));
                 if (suffix != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "suffix",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "suffix",
 							      suffix }));
                 }
                 if (help != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "help",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "help",
 							      help }));
                 }
 
                 String placeholderMin = getDbProp(colId, "placeholderMin",
 						  (String) null);
                 if (placeholderMin != null) {
-                    attrs.append(XmlUtil.attrs(new String[] {
+                    attrs.append(MyXmlUtil.attrs(new String[] {
 				"placeholderMin",
 				placeholderMin }));
                 }
                 String placeholderMax = getDbProp(colId, "placeholderMax",
 						  (String) null);
                 if (placeholderMax != null) {
-                    attrs.append(XmlUtil.attrs(new String[] {
+                    attrs.append(MyXmlUtil.attrs(new String[] {
 				"placeholderMax",
 				placeholderMax }));
                 }
@@ -1976,33 +1976,33 @@ public abstract class Processor extends SeesvOperator {
 						  "addfiletosearch" }) {
                     String v = getDbProp(colId, prop, (String) null);
                     if (v != null) {
-                        attrs.append(XmlUtil.attrs(new String[] { prop, v }));
+                        attrs.append(MyXmlUtil.attrs(new String[] { prop, v }));
                     }
                 }
 
                 String placeholder = getDbProp(colId, "placeholder",
 					       (String) null);
                 if (placeholder != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "placeholder",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "placeholder",
 							      placeholder }));
                 }
                 String numberOfSearchWidgets = getDbProp(colId,
 							 "numberOfSearchWidgets",
 							 (String) null);
                 if (numberOfSearchWidgets != null) {
-                    attrs.append(XmlUtil.attrs(new String[] {
+                    attrs.append(MyXmlUtil.attrs(new String[] {
 				"numberOfSearchWidgets",
 				numberOfSearchWidgets }));
 
                 }
                 if (getDbProp(colId, "changetype",
                               dfltChangeType).equals("true")) {
-                    attrs.append(XmlUtil.attrs(new String[] { "changetype",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "changetype",
 							      "true" }));
                 }
                 String size = getDbProp(colId, "size", null);
                 if (size != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "size",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "size",
 							      size }));
                 }
 
@@ -2027,27 +2027,27 @@ public abstract class Processor extends SeesvOperator {
                 String defaultsort = getDbProp(colId, "defaultsort",
 					       (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
-                    attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "defaultsort",
 							      "true" }));
                     String asc = getDbProp(colId, "ascending", (String) null);
                     if (asc != null) {
-                        attrs.append(XmlUtil.attrs(new String[] { "ascending",
+                        attrs.append(MyXmlUtil.attrs(new String[] { "ascending",
 								  asc }));
                     }
                 }
 
 		boolean doPolygonSearch ="true".equals(getDbProp(colId, "dopolygonsearch","false"));
 		if(doPolygonSearch)
-		    attrs.append(XmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
+		    attrs.append(MyXmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
 
 		String showMultiples =getDbProp(colId, "show_multiples",dfltShowMultiples);
 		if(showMultiples!=null && type.startsWith("enumeration")) {
-		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_search_multiples",showMultiples}));
+		    attrs.append(MyXmlUtil.attrs(new String[] {"enumeration_search_multiples",showMultiples}));
 		}
 
 		String showPopup =getDbProp(colId, "showenumerationpopup",dfltShowEnumerationPopup);
 		if(showPopup!=null) {
-		    attrs.append(XmlUtil.attrs(new String[] {"showenumerationpopup",showPopup}));
+		    attrs.append(MyXmlUtil.attrs(new String[] {"showenumerationpopup",showPopup}));
 		}
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
@@ -2061,18 +2061,18 @@ public abstract class Processor extends SeesvOperator {
 		    dfltCanList=!dfltCanList;
 		}
 
-                attrs.append(XmlUtil.attrs(new String[] {
+                attrs.append(MyXmlUtil.attrs(new String[] {
 			    "type", type, "label", label,
 			    "cansearch", "" + canSearch,
 			    "canlist", "" + canList
 			}));
 		if(getDbProp(colId, "includeinsearchindex",false)) {
-		    attrs.append(XmlUtil.attrs(new String[] {
+		    attrs.append(MyXmlUtil.attrs(new String[] {
 				"includeinsearchindex","true"}));
 		}
 
 		if(addRawInput) {
-		    attrs.append(XmlUtil.attrs(new String[] {
+		    attrs.append(MyXmlUtil.attrs(new String[] {
 				"addrawinput", "" + addRawInput
 			    }));
 
@@ -2084,41 +2084,41 @@ public abstract class Processor extends SeesvOperator {
 
                 String group = getDbProp(colId, "group", (String) null);
                 if (group != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "group",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "group",
 							      group }));
                 }
 
                 if (canSort) {
-                    attrs.append(XmlUtil.attrs(new String[] { "cansort",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "cansort",
 							      "true" }));
                 }
                 if (values != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "values",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "values",
 							      values }));
                 }
                 String lookupDB = getDbProp(colId, "lookupdb", (String) null);
 
                 if (lookupDB != null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "lookupdb",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "lookupdb",
 							      lookupDB }));
                 }
                 if (searchRows!=null && searchRows.length() > 0) {
-                    attrs.append(XmlUtil.attrs(new String[] { "searchrows",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "searchrows",
 							      searchRows }));
                 }
                 if (type.equals("date") || type.equals("datetime")) {
-                    attrs.append(XmlUtil.attrs(new String[] { "format",
+                    attrs.append(MyXmlUtil.attrs(new String[] { "format",
 							      getDbProp(colId, "format", format) }));
 		    String fmt = getDbProp(colId, "displayFormat", displayFormat);
 		    if(fmt!=null) 
-			attrs.append(XmlUtil.attrs(new String[] { "displayFormat",
+			attrs.append(MyXmlUtil.attrs(new String[] { "displayFormat",
 								  fmt}));
 
                 }
 
 		String numFmt = getDbProp(colId, "numberFormat", numberFormat);
 		if(numFmt!=null) 
-		    attrs.append(XmlUtil.attrs(new String[] { "numberFormat",
+		    attrs.append(MyXmlUtil.attrs(new String[] { "numberFormat",
 							      numFmt}));
 
                 StringBuffer inner = new StringBuffer();
@@ -2126,7 +2126,7 @@ public abstract class Processor extends SeesvOperator {
 							  "false"));
 
                 if (isindex) {
-		    attrs.append(XmlUtil.attrs(new String[] { "isindex","true"}));
+		    attrs.append(MyXmlUtil.attrs(new String[] { "isindex","true"}));
 
                 }
 
@@ -2134,37 +2134,37 @@ public abstract class Processor extends SeesvOperator {
 							  dfltDoStats + ""));
 
                 if (doStats) {
-		    attrs.append(XmlUtil.attrs(new String[] { "dostats","true"}));
+		    attrs.append(MyXmlUtil.attrs(new String[] { "dostats","true"}));
                 }
                 if (Seesv.getDbProp(props, colId, "iscategory", false)) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
+                    inner.append(MyXmlUtil.tag("property",
+                                             MyXmlUtil.attrs(new String[] {
 						     "name",
 						     "iscategory", "value", "true" })));
                 }
                 if (Seesv.getDbProp(props, colId, "formap", false)) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
+                    inner.append(MyXmlUtil.tag("property",
+                                             MyXmlUtil.attrs(new String[] {
 						     "name",
 						     "formap", "value", "true" })));
                 }
 
                 if (Seesv.getDbProp(props, colId, "islabel", false)) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
+                    inner.append(MyXmlUtil.tag("property",
+                                             MyXmlUtil.attrs(new String[] {
 						     "name",
 						     "islabel", "value", "true" })));
                 }
 
                 if (inner.length() > 0) {
-                    writer.println(XmlUtil.tag("column", attrs.toString(),
+                    writer.println(MyXmlUtil.tag("column", attrs.toString(),
 					       inner.toString()));
                 } else {
-                    writer.println(XmlUtil.tag("column", attrs.toString()));
+                    writer.println(MyXmlUtil.tag("column", attrs.toString()));
                 }
             }
-            writer.print(XmlUtil.closeTag("table"));
-            writer.print(XmlUtil.closeTag("tables"));	    
+            writer.print(MyXmlUtil.closeTag("table"));
+            writer.print(MyXmlUtil.closeTag("tables"));	    
             writer.flush();
 	    writer.close();
             return null;
@@ -2870,12 +2870,12 @@ public abstract class Processor extends SeesvOperator {
                 if (value.length() == 0) {
                     continue;
                 }
-                String contents = XmlUtil.tag("attr",
-					      XmlUtil.attr("encoded", "false")
-					      + XmlUtil.attr("index",
-							     "1"), XmlUtil.getCdata(value));
-                sb.append(XmlUtil.tag("metadata",
-                                      XmlUtil.attr("type", "netflix_" + tag),
+                String contents = MyXmlUtil.tag("attr",
+					      MyXmlUtil.attr("encoded", "false")
+					      + MyXmlUtil.attr("index",
+							     "1"), MyXmlUtil.getCdata(value));
+                sb.append(MyXmlUtil.tag("metadata",
+                                      MyXmlUtil.attr("type", "netflix_" + tag),
                                       contents));
                 sb.append("\n");
             }
@@ -2884,8 +2884,8 @@ public abstract class Processor extends SeesvOperator {
         }
 
         private String makeTag(String tag, Object v) {
-            return XmlUtil.tag(tag, "",
-                               XmlUtil.getCdata(v.toString().trim()));
+            return MyXmlUtil.tag(tag, "",
+                               MyXmlUtil.getCdata(v.toString().trim()));
         }
 
         public Row processRowInner(TextReader ctx, Row row) throws Exception {
@@ -2908,18 +2908,18 @@ public abstract class Processor extends SeesvOperator {
                 genre = "Miscellaneous";
             }
             if ( !genres.contains(genre)) {
-                ctx.print(XmlUtil.tag("entry",
-				      XmlUtil.attr("type", "group")
-				      + XmlUtil.attr("id", genre)
-				      + XmlUtil.attr("name", genre), ""));
+                ctx.print(MyXmlUtil.tag("entry",
+				      MyXmlUtil.attr("type", "group")
+				      + MyXmlUtil.attr("id", genre)
+				      + MyXmlUtil.attr("name", genre), ""));
                 genres.add(genre);
             }
 
-            ctx.print("<entry " + XmlUtil.attr("type", "type_netflix_movie")
-		      + XmlUtil.attr("parent", genre));
+            ctx.print("<entry " + MyXmlUtil.attr("type", "type_netflix_movie")
+		      + MyXmlUtil.attr("parent", genre));
             if (dttm.length() > 0) {
                 Date date = sdf.parse(dttm);
-                ctx.print(XmlUtil.attr("fromdate", sdf2.format(date)));
+                ctx.print(MyXmlUtil.attr("fromdate", sdf2.format(date)));
             }
             ctx.println(">");
             ctx.print(makeTag("name", row.get(0)));

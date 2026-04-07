@@ -19,7 +19,6 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
 
 import org.w3c.dom.*;
@@ -31,7 +30,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -340,12 +339,12 @@ public abstract class ValueIterator implements DbConstants {
             columns     = db.getColumnsToUse(request, false);
             columnNames = Column.getNames(columns);
             Appendable sb = getBuffer();
-            sb.append(XmlUtil.XML_HEADER + "\n");
-            sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
-                                      XmlUtil.attrs(ATTR_RSS_VERSION,
+            sb.append(MyXmlUtil.XML_HEADER + "\n");
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_RSS,
+                                      MyXmlUtil.attrs(ATTR_RSS_VERSION,
                                           "2.0")));
-            sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
-            sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_CHANNEL));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
         }
 
         public void processRow(Request request, Object[] values)
@@ -363,34 +362,34 @@ public abstract class ValueIterator implements DbConstants {
 
             String info = db.getHtml(request, entry, dbid, db.getDbColumns(),
                                      values, dateSdf,dateTimeSdf,false,-1);
-            sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
-            sb.append(XmlUtil.tag(RssUtil.TAG_PUBDATE, "",
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_ITEM));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_PUBDATE, "",
                                   rssSdf.format(date)));
-            sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", label));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_TITLE, "", label));
 
             String url = db.getViewUrl(request, entry,
                                        "" + values[IDX_DBID]);
             url = request.getAbsoluteUrl(url);
-            sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "",
-                                  XmlUtil.getCdata(url)));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_LINK, "",
+                                  MyXmlUtil.getCdata(url)));
 
-            sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "",
-                                  XmlUtil.getCdata(url)));
-            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
-            XmlUtils.appendCdata(sb, info);
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_GUID, "",
+                                  MyXmlUtil.getCdata(url)));
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
+            MyXmlUtil.appendCdata(sb, info);
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (dbInfo.getHasLocation()) {
                 double[] ll = db.getLocation(request,values);
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "", "" + ll[0]));
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "", "" + ll[1]));
+                sb.append(MyXmlUtil.tag(RssUtil.TAG_GEOLAT, "", "" + ll[0]));
+                sb.append(MyXmlUtil.tag(RssUtil.TAG_GEOLON, "", "" + ll[1]));
             }
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
 
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_CHANNEL));
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_RSS));
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_CHANNEL));
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_RSS));
             super.finish(request);
         }
     }
@@ -1182,7 +1181,7 @@ public abstract class ValueIterator implements DbConstants {
 
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
-            sb.append(XmlUtil.toString(root));
+            sb.append(MyXmlUtil.toString(root));
             super.finish(request);
         }
 

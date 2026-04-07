@@ -48,7 +48,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.*;
@@ -2015,7 +2015,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public Result processOpenSearch(Request request) throws Exception {
 
-        Document doc  = XmlUtil.makeDocument();
+        Document doc  = MyXmlUtil.makeDocument();
         Element  root = OpenSearchUtil.getRoot();
         /*
 	  <ShortName>Web Search</ShortName>
@@ -2027,9 +2027,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				    root, getRepository().getRepositoryName(),
 				    getRepository().getRepositoryDescription(),
 				    getRepository().getRepositoryEmail());
-        ((Element) XmlUtil.create(
+        ((Element) MyXmlUtil.create(
 				  OpenSearchUtil.TAG_IMAGE, root)).appendChild(
-									       XmlUtil.makeCDataNode(
+									       MyXmlUtil.makeCDataNode(
 												     root.getOwnerDocument(),
 												     getPageHandler().getLogoImage(null), false));
 
@@ -2042,12 +2042,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		OpenSearchUtil.MACRO_TIME_END,
 	    }, false);
 
-        XmlUtil.create(OpenSearchUtil.TAG_URL, root, "",
+        MyXmlUtil.create(OpenSearchUtil.TAG_URL, root, "",
                        new String[] { OpenSearchUtil.ATTR_TYPE,
 				      "application/atom+xml",
 				      OpenSearchUtil.ATTR_TEMPLATE, url });
 
-        String xml = XmlUtil.getHeader() + XmlUtil.toString(root);
+        String xml = MyXmlUtil.getHeader() + MyXmlUtil.toString(root);
 
         return new Result(xml, OpenSearchUtil.MIMETYPE);
     }
@@ -3106,8 +3106,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if ((running != null) && !running[0]) {
 			    return;
 			}
-			Element  root     = XmlUtil.getRoot(entriesXml);
-			NodeList children = XmlUtil.getElements(root);
+			Element  root     = MyXmlUtil.getRoot(entriesXml);
+			NodeList children = MyXmlUtil.getElements(root);
 			//Synchronize on the list so only one thread at  a time adds its entries to it
 			Hashtable<String,Entry> entryMap  = new Hashtable<String,Entry>();
 			Hashtable<String,String> idMap  = new Hashtable<String,String>();			
@@ -3128,9 +3128,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    Entry entry = entryList.get(0);
 
 			    entry.setResource(new Resource("remote:"
-							   + XmlUtil.getAttribute(node, ATTR_RESOURCE,
+							   + MyXmlUtil.getAttribute(node, ATTR_RESOURCE,
 										  ""), Resource.TYPE_REMOTE_FILE));
-			    String id = XmlUtil.getAttribute(node, ATTR_ID);
+			    String id = MyXmlUtil.getAttribute(node, ATTR_ID);
 			    entry.setId(
 					getEntryManager().getRemoteEntryId(
 									   serverUrl, id));

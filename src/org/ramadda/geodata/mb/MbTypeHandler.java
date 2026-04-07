@@ -25,7 +25,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -108,22 +108,22 @@ public class MbTypeHandler extends GenericTypeHandler {
 
         //        System.err.println(xml);
         try {
-            root = XmlUtil.getRoot(xml);
+            root = MyXmlUtil.getRoot(xml);
         } catch (Exception exc) {
             xml  = Utils.removeNonAscii(xml);
-            root = XmlUtil.getRoot(xml);
+            root = MyXmlUtil.getRoot(xml);
         }
-        Element limits   = XmlUtil.findChild(root, MbUtil.TAG_LIMITS);
+        Element limits   = MyXmlUtil.findChild(root, MbUtil.TAG_LIMITS);
 
-        Element fileInfo = XmlUtil.findChild(root, MbUtil.TAG_FILE_INFO);
-        String desc = XmlUtil.getGrandChildText(fileInfo,
+        Element fileInfo = MyXmlUtil.findChild(root, MbUtil.TAG_FILE_INFO);
+        String desc = MyXmlUtil.getGrandChildText(fileInfo,
                           MbUtil.TAG_INFORMAL_DESCRIPTION);
 
         desc = Utils.removeNonAscii(desc);
         entry.setDescription(desc);
 
         for (String attr :
-                StringUtil.split(XmlUtil.getGrandChildText(fileInfo,
+                StringUtil.split(MyXmlUtil.getGrandChildText(fileInfo,
                     MbUtil.TAG_ATTRIBUTES), ",", true, true)) {
             getMetadataManager().addMetadata(request,
                 entry,
@@ -133,26 +133,26 @@ public class MbTypeHandler extends GenericTypeHandler {
 
         }
 
-        entry.setNorth(Double.parseDouble(XmlUtil.getGrandChildText(limits,
+        entry.setNorth(Double.parseDouble(MyXmlUtil.getGrandChildText(limits,
                 MbUtil.TAG_MAXIMUM_LATITUDE)));
-        entry.setSouth(Double.parseDouble(XmlUtil.getGrandChildText(limits,
+        entry.setSouth(Double.parseDouble(MyXmlUtil.getGrandChildText(limits,
                 MbUtil.TAG_MINIMUM_LATITUDE)));
-        entry.setEast(Double.parseDouble(XmlUtil.getGrandChildText(limits,
+        entry.setEast(Double.parseDouble(MyXmlUtil.getGrandChildText(limits,
                 MbUtil.TAG_MAXIMUM_LONGITUDE)));
-        entry.setWest(Double.parseDouble(XmlUtil.getGrandChildText(limits,
+        entry.setWest(Double.parseDouble(MyXmlUtil.getGrandChildText(limits,
                 MbUtil.TAG_MINIMUM_LONGITUDE)));
 
 
-        Element startOfData = XmlUtil.findChild(root,
+        Element startOfData = MyXmlUtil.findChild(root,
                                   MbUtil.TAG_START_OF_DATA);
-        Element endOfData = XmlUtil.findChild(root, MbUtil.TAG_END_OF_DATA);
+        Element endOfData = MyXmlUtil.findChild(root, MbUtil.TAG_END_OF_DATA);
 
 
         Date startDate =
-            DateUnit.getStandardOrISO(XmlUtil.getGrandChildText(startOfData,
+            DateUnit.getStandardOrISO(MyXmlUtil.getGrandChildText(startOfData,
                 MbUtil.TAG_TIME_ISO));
         Date endDate =
-            DateUnit.getStandardOrISO(XmlUtil.getGrandChildText(endOfData,
+            DateUnit.getStandardOrISO(MyXmlUtil.getGrandChildText(endOfData,
                 MbUtil.TAG_TIME_ISO));
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(endDate.getTime());
@@ -160,16 +160,16 @@ public class MbTypeHandler extends GenericTypeHandler {
 
         int numberOfRecords =
             Integer.parseInt(
-                XmlUtil.getGrandChildText(
-                    XmlUtil.findChild(root, MbUtil.TAG_DATA_TOTALS),
+                MyXmlUtil.getGrandChildText(
+                    MyXmlUtil.findChild(root, MbUtil.TAG_DATA_TOTALS),
                     MbUtil.TAG_NUMBER_OF_RECORDS));
 
         Object[] values = getEntryValues(entry);
         values[1] = Integer.valueOf(numberOfRecords);
 
-        Element navTotals = XmlUtil.findChild(root,
+        Element navTotals = MyXmlUtil.findChild(root,
                                 MbUtil.TAG_TNAVIGATION_TOTALS);
-        values[2] = Double.valueOf(XmlUtil.getGrandChildText(navTotals,
+        values[2] = Double.valueOf(MyXmlUtil.getGrandChildText(navTotals,
 							     MbUtil.TAG_TOTAL_TRACK_LENGTH_KM));
 
     }

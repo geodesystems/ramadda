@@ -22,7 +22,7 @@ import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -249,40 +249,40 @@ public class RepositorySearch extends RepositoryClient {
      * @throws Exception _more_
      */
     private void handleMetadata(String xml) throws Exception {
-        Element root = XmlUtil.getRoot(xml);
-        System.err.println(XmlUtil.toString(root));
-        List children = XmlUtil.findChildren(root, "entry");
+        Element root = MyXmlUtil.getRoot(xml);
+        System.err.println(MyXmlUtil.toString(root));
+        List children = MyXmlUtil.findChildren(root, "entry");
         if (children.size() == 0) {
             System.err.println("no results found:\n"
-                               + XmlUtil.toString(root));
+                               + MyXmlUtil.toString(root));
         }
         for (int i = 0; i < children.size(); i++) {
             Element entry = (Element) children.get(i);
             System.out.println("name: "
-                               + XmlUtil.getAttribute(entry, "name", ""));
+                               + MyXmlUtil.getAttribute(entry, "name", ""));
             System.out.println("path: "
-                               + XmlUtil.getAttribute(entry, "path", ""));
+                               + MyXmlUtil.getAttribute(entry, "path", ""));
             System.out.println("\tcreate date: "
-                               + XmlUtil.getAttribute(entry, "createdate",
+                               + MyXmlUtil.getAttribute(entry, "createdate",
                                    ""));
             System.out.println("\tfrom date: "
-                               + XmlUtil.getAttribute(entry, "fromdate", ""));
+                               + MyXmlUtil.getAttribute(entry, "fromdate", ""));
             System.out.println("\tto date: "
-                               + XmlUtil.getAttribute(entry, "todate", ""));
+                               + MyXmlUtil.getAttribute(entry, "todate", ""));
             System.out.println("\tfile size: "
-                               + XmlUtil.getAttribute(entry, "filesize",
+                               + MyXmlUtil.getAttribute(entry, "filesize",
                                    "0"));
-            List mdts = XmlUtil.findChildren(entry, "metadata");
+            List mdts = MyXmlUtil.findChildren(entry, "metadata");
             for (int j = 0; j < mdts.size(); j++) {
                 Element mdt  = (Element) mdts.get(j);
-                String  type = XmlUtil.getAttribute(mdt, "type", "");
+                String  type = MyXmlUtil.getAttribute(mdt, "type", "");
                 System.out.println("\tmetadata: " + type);
-                List attrs = XmlUtil.findChildren(mdt, "attr");
+                List attrs = MyXmlUtil.findChildren(mdt, "attr");
                 for (int k = 0; k < attrs.size(); k++) {
                     Element attr = (Element) attrs.get(k);
                     String childText = new String(
                                            Utils.decodeBase64(
-                                               XmlUtil.getChildText(attr)));
+                                               MyXmlUtil.getChildText(attr)));
                     System.out.println("\t\tattr[" + k + "]=" + childText);
                 }
 

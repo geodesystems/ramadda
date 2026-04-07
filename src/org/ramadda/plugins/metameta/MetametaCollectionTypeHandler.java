@@ -11,7 +11,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -95,7 +95,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
-        xml.append(XmlUtil.openTag("tables", ""));
+        xml.append(MyXmlUtil.openTag("tables", ""));
         for (Entry defEntry : children) {
             MetametaDictionaryTypeHandler defTypeHandler =
                 (MetametaDictionaryTypeHandler) defEntry.getTypeHandler();
@@ -103,7 +103,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
                                      defEntry, null);
             defTypeHandler.generateDbXml(request, xml, defEntry, fields);
         }
-        xml.append(XmlUtil.closeTag("tables"));
+        xml.append(MyXmlUtil.closeTag("tables"));
     }
 
 
@@ -122,7 +122,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
     public void generateEntryXml(Request request, StringBuffer xml,
                                  Entry parent, List<Entry> children)
             throws Exception {
-        xml.append(XmlUtil.openTag(TAG_TYPES, ""));
+        xml.append(MyXmlUtil.openTag(TAG_TYPES, ""));
         for (Entry defEntry : children) {
             MetametaDictionaryTypeHandler defTypeHandler =
                 (MetametaDictionaryTypeHandler) defEntry.getTypeHandler();
@@ -130,7 +130,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
                                      defEntry, null);
             defTypeHandler.generateEntryXml(request, xml, defEntry, fields);
         }
-        xml.append(XmlUtil.closeTag(TAG_TYPES));
+        xml.append(MyXmlUtil.closeTag(TAG_TYPES));
     }
 
 

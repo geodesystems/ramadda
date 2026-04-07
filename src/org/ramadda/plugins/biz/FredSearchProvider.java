@@ -18,7 +18,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -136,17 +136,17 @@ public class FredSearchProvider extends SearchProvider {
         //<series id="MSIM2" realtime_start="2013-08-14" realtime_end="2013-08-14" title="Monetary Services Index: M2 (preferred)" observation_start="1967-01-01" observation_end="2013-06-01" frequency="Monthly" frequency_short="M" units="Billions of Dollars" units_short="Bil. of $" seasonal_adjustment="Seasonally Adjusted" seasonal_adjustment_short="SA" last_updated="2013-07-12 11:01:06-05" popularity="52" notes="..."/>
 
 
-        Element  root     = XmlUtil.getRoot(xml);
-        NodeList children = XmlUtil.getElements(root, "series");
+        Element  root     = MyXmlUtil.getRoot(xml);
+        NodeList children = MyXmlUtil.getElements(root, "series");
         Entry    parent   = getSynthTopLevelEntry();
         TypeHandler typeHandler =
             getRepository().getTypeHandler("type_fred_series");
 
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String  name = XmlUtil.getAttribute(item, "title", "");
-            String  desc = XmlUtil.getAttribute(item, "notes", "");
-            String  id   = XmlUtil.getAttribute(item, "id", "");
+            String  name = MyXmlUtil.getAttribute(item, "title", "");
+            String  desc = MyXmlUtil.getAttribute(item, "notes", "");
+            String  id   = MyXmlUtil.getAttribute(item, "id", "");
             Date    dttm = null;
 
 
@@ -156,9 +156,9 @@ public class FredSearchProvider extends SearchProvider {
 
             Date fromDate = dttm,
                  toDate   = dttm;
-            String start = XmlUtil.getAttribute(item, "observation_start",
+            String start = MyXmlUtil.getAttribute(item, "observation_start",
                                (String) null);
-            String end = XmlUtil.getAttribute(item, "observation_end",
+            String end = MyXmlUtil.getAttribute(item, "observation_end",
                              (String) null);
             if (start != null) {
                 fromDate = Utils.parseDate(start);
@@ -180,7 +180,7 @@ public class FredSearchProvider extends SearchProvider {
                                dttm.getTime(), fromDate.getTime(),
                                toDate.getTime(), values);
             for (String attr : TAGS) {
-                String v = XmlUtil.getAttribute(item, attr, (String) null);
+                String v = MyXmlUtil.getAttribute(item, attr, (String) null);
                 if (v != null) {
                     Metadata metadata =
                         new Metadata(getRepository().getGUID(),

@@ -37,7 +37,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 import java.util.Base64;
@@ -2195,8 +2195,8 @@ public class UserManager extends RepositoryManager {
         User user = request.getUser();
         if (user.getAnonymous()) {
             if (responseAsXml) {
-                return new Result(XmlUtil.tag(TAG_RESPONSE,
-					      XmlUtil.attr(ATTR_CODE, CODE_ERROR),
+                return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+					      MyXmlUtil.attr(ATTR_CODE, CODE_ERROR),
 					      "No user defined"), MIME_XML);
             }
             String msg = msg("You are not signed in");
@@ -2214,8 +2214,8 @@ public class UserManager extends RepositoryManager {
         }
 
         if (responseAsXml) {
-            return new Result(XmlUtil.tag(TAG_RESPONSE,
-                                          XmlUtil.attr(ATTR_CODE, "ok"),
+            return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+                                          MyXmlUtil.attr(ATTR_CODE, "ok"),
                                           user.getId()), MIME_XML);
         }
 

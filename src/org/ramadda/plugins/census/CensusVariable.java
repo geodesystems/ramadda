@@ -8,12 +8,12 @@ package org.ramadda.plugins.census;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,17 +158,17 @@ public class CensusVariable implements Comparable, Cloneable {
                         "/org/ramadda/plugins/census/resources/variables.xml",
                         AcsFile.class);
                 long    t2   = System.currentTimeMillis();
-                Element root = XmlUtil.getRoot(xml);
+                Element root = MyXmlUtil.getRoot(xml);
                 xml = null;
                 long     t3       = System.currentTimeMillis();
-                Element  vars     = XmlUtil.findChild(root, "vars");
-                NodeList children = XmlUtil.getElements(vars, "var");
+                Element  vars     = MyXmlUtil.findChild(root, "vars");
+                NodeList children = MyXmlUtil.getElements(vars, "var");
                 for (int childIdx = 0; childIdx < children.getLength();
                         childIdx++) {
                     Element item   = (Element) children.item(childIdx);
-                    String  id     = XmlUtil.getAttribute(item, "xml:id");
-                    String  label  = XmlUtil.getAttribute(item, "label");
-                    String concept = XmlUtil.getAttribute(item, "concept");
+                    String  id     = MyXmlUtil.getAttribute(item, "xml:id");
+                    String  label  = MyXmlUtil.getAttribute(item, "label");
+                    String concept = MyXmlUtil.getAttribute(item, "concept");
                     CensusVariable var = new CensusVariable(id, label,
                                              concept);
                     tmp.put(var.id, var);

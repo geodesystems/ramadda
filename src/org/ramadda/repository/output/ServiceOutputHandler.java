@@ -23,7 +23,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 import java.io.File;
@@ -63,7 +63,7 @@ public class ServiceOutputHandler extends OutputHandler {
     }
 
     private void init(Element element) throws Exception {
-        String serviceId = XmlUtil.getAttribute(element, "serviceId",
+        String serviceId = MyXmlUtil.getAttribute(element, "serviceId",
                                (String) null);
         if (serviceId != null) {
             service = getRepository().getJobManager().getService(serviceId);
@@ -78,7 +78,7 @@ public class ServiceOutputHandler extends OutputHandler {
         }
 
         if (service == null) {
-            NodeList children = XmlUtil.getElements(element,
+            NodeList children = MyXmlUtil.getElements(element,
                                     Service.TAG_SERVICE);
             Element serviceNode = element;
             if (children.getLength() > 0) {
@@ -90,22 +90,22 @@ public class ServiceOutputHandler extends OutputHandler {
         if (service == null) {
             getLogManager().logError(
                 "ServiceOutputHandler: could not find service:"
-                + XmlUtil.toString(element));
+                + MyXmlUtil.toString(element));
 
             return;
         }
 
         outputType = new OutputType(
-            XmlUtil.getAttribute(element, ATTR_LABEL, service.getLabel()),
-            XmlUtil.getAttribute(element, ATTR_ID, service.getId()),
+            MyXmlUtil.getAttribute(element, ATTR_LABEL, service.getLabel()),
+            MyXmlUtil.getAttribute(element, ATTR_ID, service.getId()),
             OutputType.TYPE_SERVICE|OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT, "",
-            XmlUtil.getAttribute(element, ATTR_ICON, service.getIcon()));
+            MyXmlUtil.getAttribute(element, ATTR_ICON, service.getIcon()));
         addType(outputType);
-        groupOutputType = new OutputType(XmlUtil
+        groupOutputType = new OutputType(XU
             .getAttribute(element, ATTR_LABEL, service.getLabel()), "group_"
-                + XmlUtil
+					 + XU
                     .getAttribute(element, ATTR_ID, service
-                        .getId()), OutputType.TYPE_OTHER, "", XmlUtil
+                        .getId()), OutputType.TYPE_OTHER, "", XU
                             .getAttribute(element, ATTR_ICON, service
                                 .getIcon()));
         addType(groupOutputType);
@@ -653,10 +653,10 @@ public class ServiceOutputHandler extends OutputHandler {
         desc = "<wiki>\n+section title={{name}}\n" + desc
                + "\n-section\n";
         xml.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 "entry",
-                XmlUtil.attrs("type", "group", "name", "Processing Results"),
-                XmlUtil.tag("description", "", XmlUtil.getCdata(desc))));
+                MyXmlUtil.attrs("type", "group", "name", "Processing Results"),
+                MyXmlUtil.tag("description", "", MyXmlUtil.getCdata(desc))));
 
         IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
                 ".this.ramadda.xml")), xml.toString());

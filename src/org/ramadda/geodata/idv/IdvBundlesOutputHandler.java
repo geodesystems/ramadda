@@ -18,7 +18,7 @@ import org.ramadda.repository.output.OutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.util.List;
@@ -113,8 +113,8 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                               ? children.get(0).getName()
                               : group.getName());
         title = request.getString(ARG_TITLE, title);
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_BUNDLES, null,
+        Document doc = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, TAG_BUNDLES, null,
                                       new String[] { ATTR_NAME,
                 title });
 
@@ -127,8 +127,8 @@ public class IdvBundlesOutputHandler extends OutputHandler {
             }
         }
 
-        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.XML_HEADER);
+        sb.append(MyXmlUtil.toString(root));
         Result result = new Result(title, sb, "text/xml");
         result.setReturnFilename(title + ".bundles.xml");
 
@@ -171,7 +171,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
             String url = request.getAbsoluteUrl(
                              getEntryManager().getEntryResourceUrl(
 								   request, entry, EntryManager.ARG_INLINE_DFLT, false, false));
-            XmlUtil.create(TAG_BUNDLE, root, new String[] {
+            MyXmlUtil.create(TAG_BUNDLE, root, new String[] {
                 ATTR_CATEGORY, category, ATTR_NAME, name, ATTR_URL, url
             });
         }

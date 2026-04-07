@@ -16,7 +16,7 @@ import org.ramadda.repository.RepositoryUtil;
 
 import org.w3c.dom.Element;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -58,25 +58,25 @@ public class MisoForecastFile extends CsvFile {
     @Override
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         InputStream source = super.doMakeInputStream(buffered);
-        Element     root   = XmlUtil.getRoot(source);
-        //            System.err.println (XmlUtil.toString(root));
+        Element     root   = MyXmlUtil.getRoot(source);
+        //            System.err.println (MyXmlUtil.toString(root));
         windForecast = root.getTagName().equals("WindForecastDayAhead");
 
         StringBuilder s     = new StringBuilder("#converted stream\n");
 
-        List          nodes = XmlUtil.findChildren(root, windForecast
+        List          nodes = MyXmlUtil.findChildren(root, windForecast
                 ? "Forecast"
                 : "instance");
 
         for (int i = 0; i < nodes.size(); i++) {
             Element node = (Element) nodes.get(i);
-            String dttm = XmlUtil.getGrandChildText(node,
+            String dttm = MyXmlUtil.getGrandChildText(node,
                               "ForecastDateTimeEST", null);
-            String hour = XmlUtil.getGrandChildText(node,
+            String hour = MyXmlUtil.getGrandChildText(node,
                               "ForecastHourEndingEST", null);
-            String forecastValue = XmlUtil.getGrandChildText(node,
+            String forecastValue = MyXmlUtil.getGrandChildText(node,
                                        "ForecasetValue", "NaN");
-            String value = XmlUtil.getGrandChildText(node, "ActualValue",
+            String value = MyXmlUtil.getGrandChildText(node, "ActualValue",
                                "NaN");
             s.append(dttm + "," + hour + "," + forecastValue + "," + value
                      + "\n");

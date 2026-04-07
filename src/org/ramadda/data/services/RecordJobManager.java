@@ -28,7 +28,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -461,19 +461,19 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         String jobAttrs;
         if (stillRunning) {
-            jobAttrs = XmlUtil.attrs(new String[] {
+            jobAttrs = MyXmlUtil.attrs(new String[] {
                 JobManager.ATTR_STATUS, STATUS_RUNNING, ATTR_NUMBEROFPOINTS,
                 "" + jobInfo.getNumPoints(), ATTR_ELAPSEDTIME,
                 "" + ((endTime - startTime) / 1000)
             });
         } else {
-            jobAttrs = XmlUtil.attrs(new String[] {
+            jobAttrs = MyXmlUtil.attrs(new String[] {
                 ATTR_NUMBEROFPOINTS, "" + jobInfo.getNumPoints(), ATTR_STATUS,
                 STATUS_DONE, ATTR_ELAPSEDTIME,
                 "" + ((endTime - startTime) / 1000),
             });
         }
-        xml.append(XmlUtil.openTag(TAG_JOB, jobAttrs));
+        xml.append(MyXmlUtil.openTag(TAG_JOB, jobAttrs));
 
         if (jobInfo.isInError()) {
             sb.append(
@@ -520,7 +520,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             //List the files available
             int    fileCnt = 0;
             File[] files   = productDir.listFiles();
-            xml.append(XmlUtil.openTag(TAG_PRODUCTS));
+            xml.append(MyXmlUtil.openTag(TAG_PRODUCTS));
             for (File f : files) {
                 if (f.getName().startsWith(".")) {
                     continue;
@@ -536,10 +536,10 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
                     ARG_POINT_PRODUCT, f.getName()
                 });
-                //                xml.append(XmlUtil.openTag(TAG_URL));
+                //                xml.append(MyXmlUtil.openTag(TAG_URL));
                 xml.append("<" + TAG_URL + ">");
-                XmlUtil.appendCdata(xml, request.getAbsoluteUrl(getFileUrl));
-                xml.append(XmlUtil.closeTag(TAG_URL));
+                MyXmlUtil.appendCdata(xml, request.getAbsoluteUrl(getFileUrl));
+                xml.append(MyXmlUtil.closeTag(TAG_URL));
                 productSB.append("<tr><td>");
                 productSB.append(HtmlUtils.href(getFileUrl, f.getName()));
                 productSB.append("</td><td align=right>");
@@ -548,7 +548,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 productSB.append("</td></tr>");
             }
 
-            xml.append(XmlUtil.closeTag(TAG_PRODUCTS));
+            xml.append(MyXmlUtil.closeTag(TAG_PRODUCTS));
             if (fileCnt > 1) {
                 String getFileUrl =
                     HtmlUtils.url(getRepository().URL_ENTRY_SHOW
@@ -626,7 +626,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                         jobInfo.getNumPoints()) + " points"));
         }
 
-        xml.append(XmlUtil.closeTag(TAG_JOB));
+        xml.append(MyXmlUtil.closeTag(TAG_JOB));
         sb.append(HtmlUtils.formTableClose());
 
         if (request.responseAsXml()) {
@@ -772,19 +772,19 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 ARG_CANCEL, "true"
             });
 
-            xml.append(XmlUtil.openTag(TAG_URL,
-                                       XmlUtil.attrs(new String[] {
+            xml.append(MyXmlUtil.openTag(TAG_URL,
+                                       MyXmlUtil.attrs(new String[] {
                                            JobManager.ATTR_TYPE,
                                            TYPE_STATUS })));
-            XmlUtil.appendCdata(xml, request.getAbsoluteUrl(statusUrl));
-            xml.append(XmlUtil.closeTag(TAG_URL));
+            MyXmlUtil.appendCdata(xml, request.getAbsoluteUrl(statusUrl));
+            xml.append(MyXmlUtil.closeTag(TAG_URL));
 
-            xml.append(XmlUtil.openTag(TAG_URL,
-                                       XmlUtil.attrs(new String[] {
+            xml.append(MyXmlUtil.openTag(TAG_URL,
+                                       MyXmlUtil.attrs(new String[] {
                                            JobManager.ATTR_TYPE,
                                            TYPE_CANCEL })));
-            XmlUtil.appendCdata(xml, request.getAbsoluteUrl(cancelUrl));
-            xml.append(XmlUtil.closeTag(TAG_URL));
+            MyXmlUtil.appendCdata(xml, request.getAbsoluteUrl(cancelUrl));
+            xml.append(MyXmlUtil.closeTag(TAG_URL));
 
             return getRepository().makeOkResult(request, xml.toString());
 

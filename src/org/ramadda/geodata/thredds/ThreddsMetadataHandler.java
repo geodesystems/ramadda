@@ -48,7 +48,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import visad.Unit;
 import visad.UnitException;
@@ -970,13 +970,13 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
         if (metadata.getType().equals(TYPE_VARIABLE)
                 && xmlType.equals(MetadataTypeBase.TEMPLATETYPE_THREDDS)) {
-            Element variablesNode = XmlUtil.getElement(datasetNode,
+            Element variablesNode = MyXmlUtil.getElement(datasetNode,
                                         TAG_VARIABLES);
             if (variablesNode == null) {
-                variablesNode = XmlUtil.create(doc, TAG_VARIABLES,
+                variablesNode = MyXmlUtil.create(doc, TAG_VARIABLES,
                         datasetNode);
             }
-            XmlUtil.create(doc, getTag(TYPE_VARIABLE), variablesNode,
+            MyXmlUtil.create(doc, getTag(TYPE_VARIABLE), variablesNode,
                            metadata.getAttr2(), new String[] { ATTR_NAME,
                     metadata.getAttr1(), ATTR_UNITS, metadata.getAttr3() });
 
@@ -1013,19 +1013,19 @@ public class ThreddsMetadataHandler extends MetadataHandler {
     public Metadata makeMetadataFromCatalogNode(Element child) {
         String tag = child.getTagName();
         if (isTag(tag, TYPE_DOCUMENTATION)) {
-            if (XmlUtil.hasAttribute(child, "xlink:href")) {
-                String url = XmlUtil.getAttribute(child, "xlink:href");
+            if (MyXmlUtil.hasAttribute(child, "xlink:href")) {
+                String url = MyXmlUtil.getAttribute(child, "xlink:href");
 
                 return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_LINK),
                                     DFLT_INHERITED,
-                                    XmlUtil.getAttribute(child,
+                                    MyXmlUtil.getAttribute(child,
                                         "xlink:title", url), url,
                                             Metadata.DFLT_ATTR,
                                             Metadata.DFLT_ATTR,
                                             Metadata.DFLT_EXTRA);
             } else {
-                String type = XmlUtil.getAttribute(child, "type", "summary");
-                String text = XmlUtil.getChildText(child).trim();
+                String type = MyXmlUtil.getAttribute(child, "type", "summary");
+                String text = MyXmlUtil.getChildText(child).trim();
 
                 return new Metadata(getRepository().getGUID(), "",
                                     getMetadataManager().findType(TYPE_DOCUMENTATION), DFLT_INHERITED, type,
@@ -1033,34 +1033,34 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                     Metadata.DFLT_ATTR, Metadata.DFLT_EXTRA);
             }
         } else if (isTag(tag, TYPE_PROJECT)) {
-            String text = XmlUtil.getChildText(child).trim();
+            String text = MyXmlUtil.getChildText(child).trim();
 
             return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_PROJECT),
                                 DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child, ATTR_VOCABULARY,
+                                MyXmlUtil.getAttribute(child, ATTR_VOCABULARY,
                                     ""), Metadata.DFLT_ATTR,
                                          Metadata.DFLT_ATTR,
                                          Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_CONTRIBUTOR)) {
-            String text = XmlUtil.getChildText(child).trim();
+            String text = MyXmlUtil.getChildText(child).trim();
 
             return new Metadata(getRepository().getGUID(), "",
                                 getMetadataManager().findType(TYPE_CONTRIBUTOR), DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child, ATTR_ROLE, ""),
+                                MyXmlUtil.getAttribute(child, ATTR_ROLE, ""),
                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_PUBLISHER) || isTag(tag, TYPE_CREATOR)) {
-            Element nameNode = XmlUtil.findChild(child, CatalogUtil.TAG_NAME);
-            String  name     = XmlUtil.getChildText(nameNode).trim();
-            String vocabulary = XmlUtil.getAttribute(nameNode,
+            Element nameNode = MyXmlUtil.findChild(child, CatalogUtil.TAG_NAME);
+            String  name     = MyXmlUtil.getChildText(nameNode).trim();
+            String vocabulary = MyXmlUtil.getAttribute(nameNode,
                                     ATTR_VOCABULARY, "");
             String email = "";
             String url   = "";
-            Element contactNode = XmlUtil.findChild(child,
+            Element contactNode = MyXmlUtil.findChild(child,
                                       CatalogUtil.TAG_CONTACT);
             if (contactNode != null) {
-                email = XmlUtil.getAttribute(contactNode, ATTR_EMAIL, "");
-                url   = XmlUtil.getAttribute(contactNode, ATTR_URL, "");
+                email = MyXmlUtil.getAttribute(contactNode, ATTR_EMAIL, "");
+                url   = MyXmlUtil.getAttribute(contactNode, ATTR_URL, "");
             }
 
             return new Metadata(getRepository().getGUID(), "",
@@ -1068,21 +1068,21 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                 name, vocabulary, email, url,
                                 Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_KEYWORD)) {
-            String text = XmlUtil.getChildText(child).trim();
+            String text = MyXmlUtil.getChildText(child).trim();
             //Some of the catalogs have new lines in the keyword
             text = text.replace("\r\n", " ");
             text = text.replace("\n", " ");
 
             return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_KEYWORD),
                                 DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child, ATTR_VOCABULARY,
+                                MyXmlUtil.getAttribute(child, ATTR_VOCABULARY,
                                     ""), Metadata.DFLT_ATTR,
                                          Metadata.DFLT_ATTR,
                                          Metadata.DFLT_EXTRA);
 
         } else if (isTag(tag, TYPE_AUTHORITY) || isTag(tag, TYPE_DATATYPE)
                    || isTag(tag, TYPE_DATAFORMAT)) {
-            String text = XmlUtil.getChildText(child).trim();
+            String text = MyXmlUtil.getChildText(child).trim();
             text = text.replace("\n", "");
 
             return new Metadata(getRepository().getGUID(), "",
@@ -1092,8 +1092,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         } else if (isTag(tag, TYPE_PROPERTY)) {
             return new Metadata(getRepository().getGUID(), "",
                                 getType("thredds." + tag), DFLT_INHERITED,
-                                XmlUtil.getAttribute(child, ATTR_NAME),
-                                XmlUtil.getAttribute(child, ATTR_VALUE),
+                                MyXmlUtil.getAttribute(child, ATTR_NAME),
+                                MyXmlUtil.getAttribute(child, ATTR_VALUE),
                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
         }

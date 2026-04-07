@@ -14,7 +14,7 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -134,16 +134,16 @@ public class OpendapImporter extends ImportHandler {
                 }
             }
 
-            innerXml.append(XmlUtil.tag("collection_id", "", parent.getId()));
-            innerXml.append(XmlUtil.tag("model", "", model));
-            innerXml.append(XmlUtil.tag("experiment", "", experiment));
-            innerXml.append(XmlUtil.tag("ensemble", "", ensemble));
-            innerXml.append(XmlUtil.tag("variable", "", variable));
-            String attrs = XmlUtil.attrs(new String[] {
+            innerXml.append(MyXmlUtil.tag("collection_id", "", parent.getId()));
+            innerXml.append(MyXmlUtil.tag("model", "", model));
+            innerXml.append(MyXmlUtil.tag("experiment", "", experiment));
+            innerXml.append(MyXmlUtil.tag("ensemble", "", ensemble));
+            innerXml.append(MyXmlUtil.tag("variable", "", variable));
+            String attrs = MyXmlUtil.attrs(new String[] {
                 ATTR_URL, line, ATTR_TYPE, entryType, ATTR_NAME, name,
                 ATTR_DESCRIPTION, desc
             });
-            sb.append(XmlUtil.tag("entry", attrs, innerXml.toString()));
+            sb.append(MyXmlUtil.tag("entry", attrs, innerXml.toString()));
         }
 
     }

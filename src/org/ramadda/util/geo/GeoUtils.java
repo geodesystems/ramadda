@@ -23,7 +23,7 @@ import ucar.unidata.util.StringUtil;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Polygon;
 

@@ -55,7 +55,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.ThreeDSize;
 import ucar.unidata.util.Trace;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import visad.Unit;
 
@@ -558,8 +558,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
         int width  = request.get(ARG_IMAGE_WIDTH, 600);
         int height = request.get(ARG_IMAGE_HEIGHT, 400);
-        isl.append(XmlUtil.attrs(ImageGenerator.ATTR_WIDTH, "" + width)
-                   + XmlUtil.attrs(ImageGenerator.ATTR_HEIGHT, "" + height));
+        isl.append(MyXmlUtil.attrs(ImageGenerator.ATTR_WIDTH, "" + width)
+                   + MyXmlUtil.attrs(ImageGenerator.ATTR_HEIGHT, "" + height));
         isl.append(" />\n");
         isl.append("<pause/>\n");
         if (isMovie) {
@@ -1894,7 +1894,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         String clip = "";
         if (request.get(ARG_CLIP, false)) {
-            clip = XmlUtil.tag("clip", "");
+            clip = MyXmlUtil.tag("clip", "");
         }
 
         // TODO:  When the IDV selects png automatically for kmz, then there is no need for
@@ -1902,8 +1902,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String bgTrans  = "";
         String bgSuffix = "";
         if (request.get(ARG_BACKGROUND_TRANSPARENT, false)) {
-            bgTrans = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
-            bgSuffix = XmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
+            bgTrans = MyXmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
+            bgSuffix = MyXmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
                                     ".png");
         }
 
@@ -1945,10 +1945,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         //For now don't do this if we are doing jnlp
         if ( !forJnlp) {
             isl.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     ImageGenerator.TAG_VIEW,
-                    XmlUtil.attrs(ImageGenerator.ATTR_WIDTH, "" + width)
-                    + XmlUtil.attrs(
+                    MyXmlUtil.attrs(ImageGenerator.ATTR_WIDTH, "" + width)
+                    + MyXmlUtil.attrs(
                         ImageGenerator.ATTR_HEIGHT,
                         "" + height), viewProps.toString()));
         }
@@ -1962,11 +1962,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     "theLayer",
                     request.getString(ARG_VIEW_BACKGROUNDIMAGE, "")));
             StringBuffer attrs = new StringBuffer();
-            attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_TYPE,
+            attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_TYPE,
                                        "wmscontrol"));
 
 
-            isl.append(XmlUtil.tag(ImageGenerator.TAG_DISPLAY,
+            isl.append(MyXmlUtil.tag(ImageGenerator.TAG_DISPLAY,
                                    attrs.toString(), propSB.toString()));
         }
 
@@ -1974,15 +1974,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         if (forIsl) {
             isl.append(
-                XmlUtil.openTag(
+                MyXmlUtil.openTag(
                     ImageGenerator.TAG_DATASOURCE,
-                    XmlUtil.attrs(
+                    MyXmlUtil.attrs(
                         "id", "datasource", "url",
                         request.getAbsoluteUrl(
                             getDataOutputHandler().getOpendapUrl(entry)))));
         } else {
-            isl.append(XmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
-                                       XmlUtil.attrs("id", "datasource",
+            isl.append(MyXmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
+                                       MyXmlUtil.attrs("id", "datasource",
                                            "times", "0")));
         }
 
@@ -2014,8 +2014,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                  "");
 
             StringBuffer propSB = new StringBuffer();
-            propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                                      XmlUtil.attrs("name", "id", "value",
+            propSB.append(MyXmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                                      MyXmlUtil.attrs("name", "id", "value",
                                           "thedisplay" + displayIdx)));
 
 
@@ -2037,8 +2037,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 }
                 String s = "visible=true;orientation=" + orientation
                            + ";placement=" + placement;
-                propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                                          XmlUtil.attrs("name",
+                propSB.append(MyXmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                                          MyXmlUtil.attrs("name",
                                               "colorScaleInfo", "value",
                                                   s.toString())));
 
@@ -2087,15 +2087,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 s.append("labels="
                          + request.get(ARG_CONTOUR_LABELS + displayIdx,
                                        false) + ";");
-                propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                                          XmlUtil.attrs("name",
+                propSB.append(MyXmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                                          MyXmlUtil.attrs("name",
                                               "contourInfoParams", "value",
                                                   s.toString())));
             }
 
             /*
-                propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                                          XmlUtil.attrs("name",
+                propSB.append(MyXmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                                          MyXmlUtil.attrs("name",
                                               "contourInfoParams", "value",
                                                   s.toString())));
             */
@@ -2104,9 +2104,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if (request.defined(ARG_RANGE_MIN + displayIdx)
                     && request.defined(ARG_RANGE_MAX + displayIdx)) {
                 propSB.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             "name", "range", "value",
                             request.getString(
                                 ARG_RANGE_MIN + displayIdx, "").trim() + ":"
@@ -2121,9 +2121,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             if (request.defined(ARG_COLORTABLE + displayIdx)) {
                 propSB.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             "name", "colorTableName", "value",
                             request.getString(
                                 ARG_COLORTABLE + displayIdx, ""))));;
@@ -2183,9 +2183,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if (display.equals(DISPLAY_ISOSURFACE)) {
                 if (request.defined(ARG_ISOSURFACEVALUE + displayIdx)) {
                     propSB.append(
-                        XmlUtil.tag(
+                        MyXmlUtil.tag(
                             ImageGenerator.TAG_PROPERTY,
-                            XmlUtil.attrs(
+                            MyXmlUtil.attrs(
                                 "name", "surfaceValue", "value",
                                 request.getString(
                                     ARG_ISOSURFACEVALUE + displayIdx, ""))));
@@ -2194,7 +2194,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if ( !vertControls.contains(display)) {
                 String level = request.getString(ARG_LEVELS + displayIdx,
                                    "0");
-                attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_LEVEL_FROM,
+                attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_LEVEL_FROM,
                                            "#" + level,
                                            ImageGenerator.ATTR_LEVEL_TO,
                                            "#" + level));
@@ -2204,9 +2204,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             if (request.defined(ARG_IDV_DISPLAYLISTLABEL + displayIdx)) {
                 propSB.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             "name", "displayListTemplate", "value",
                             request.getString(
                                 ARG_IDV_DISPLAYLISTLABEL + displayIdx, ""))));
@@ -2216,9 +2216,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             if (request.defined(ARG_IDV_DISPLAYUNIT + displayIdx)) {
                 propSB.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             "name", "settingsDisplayUnit", "value",
                             request.getString(
                                 ARG_IDV_DISPLAYUNIT + displayIdx, ""))));
@@ -2227,19 +2227,19 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-            attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_TYPE, display,
+            attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_TYPE, display,
                                        ImageGenerator.ATTR_PARAM, param));
 
 
             if (request.defined(ARG_STRIDE + displayIdx)) {
-                attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_STRIDE,
+                attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_STRIDE,
                                            request.getString(ARG_STRIDE
                                                + displayIdx, "1")));
             }
 
             List members = request.get(ARG_ENS + displayIdx, new ArrayList());
             if ( !members.isEmpty()) {
-                attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_ENSEMBLES,
+                attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_ENSEMBLES,
                                            StringUtil.join(",", members)));
             }
 
@@ -2248,7 +2248,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 if (times.size() > 1) {
                     multipleTimes = true;
                 }
-                attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_TIMES,
+                attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_TIMES,
                                            StringUtil.join(",", times)));
             }
 
@@ -2259,7 +2259,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                  ? firstDisplays
                  : secondDisplays);
 
-            which.append(XmlUtil.tag(ImageGenerator.TAG_DISPLAY,
+            which.append(MyXmlUtil.tag(ImageGenerator.TAG_DISPLAY,
                                      attrs.toString(), propSB.toString()));
         }
 
@@ -2270,24 +2270,24 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         isl.append("<pause/>\n");
 
         if (request.defined(ARG_AZIMUTH) && request.defined(ARG_TILT)) {
-            isl.append(XmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
-                                   XmlUtil.attrs(ImageGenerator.ATTR_AZIMUTH,
+            isl.append(MyXmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
+                                   MyXmlUtil.attrs(ImageGenerator.ATTR_AZIMUTH,
                                        request.getString(ARG_AZIMUTH, ""),
                                        ImageGenerator.ATTR_TILT,
                                        request.getString(ARG_TILT, ""))));
         }
 
         if (request.defined(ARG_VIEWDIR)) {
-            isl.append(XmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
-                                   XmlUtil.attrs(ImageGenerator.ATTR_VIEWDIR,
+            isl.append(MyXmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
+                                   MyXmlUtil.attrs(ImageGenerator.ATTR_VIEWDIR,
                                        request.getString(ARG_VIEWDIR, ""))));
         }
 
 
         if ( !forIsl) {
-            isl.append(XmlUtil.tag((multipleTimes
+            isl.append(MyXmlUtil.tag((multipleTimes
                                     ? "movie"
-                                    : "image"), XmlUtil.attr(
+                                    : "image"), MyXmlUtil.attr(
                                         "file", imageFile.toString()) + " "
                                             + bgSuffix, clip + bgTrans));
         }
@@ -2518,8 +2518,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 "<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
 
             StringBuffer viewProps = new StringBuffer();
-            viewProps.append(XmlUtil.tag("property",
-                                         XmlUtil.attrs("name", "wireframe",
+            viewProps.append(MyXmlUtil.tag("property",
+                                         MyXmlUtil.attrs("name", "wireframe",
                                              "value", "true")));
 
 
@@ -2553,9 +2553,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             //For now don't do this if we are doing jnlp
             if ( !forJnlp) {
                 isl.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         ImageGenerator.TAG_VIEW,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             ImageGenerator.ATTR_WIDTH, "" + width,
                             ImageGenerator.ATTR_HEIGHT,
                             "" + height), viewProps.toString()));
@@ -2564,16 +2564,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             if (forIsl) {
                 isl.append(
-                    XmlUtil.openTag(
+                    MyXmlUtil.openTag(
                         ImageGenerator.TAG_DATASOURCE,
-                        XmlUtil.attrs(
+                        MyXmlUtil.attrs(
                             "id", "datasource", "url",
                             request.getAbsoluteUrl(
                                 getDataOutputHandler().getOpendapUrl(
                                     entry)))));
             } else {
-                isl.append(XmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
-                                           XmlUtil.attrs("id",
+                isl.append(MyXmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
+                                           MyXmlUtil.attrs("id",
                                                "datasource")));
             }
 
@@ -2588,11 +2588,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     request.getString(ARG_POINT_LAYOUTMODEL, "Location")));
 
 
-            attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_TYPE,
+            attrs.append(MyXmlUtil.attrs(ImageGenerator.ATTR_TYPE,
                                        "stationmodelcontrol",
                                        ImageGenerator.ATTR_PARAM, "*"));
 
-            isl.append(XmlUtil.tag(ImageGenerator.TAG_DISPLAY,
+            isl.append(MyXmlUtil.tag(ImageGenerator.TAG_DISPLAY,
                                    attrs.toString(), propSB.toString()));
             isl.append("</datasource>\n");
             isl.append("<pause/>\n");
@@ -2601,13 +2601,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             String clip = "";
             if (request.get(ARG_CLIP, false)) {
-                clip = XmlUtil.tag("clip", "");
+                clip = MyXmlUtil.tag("clip", "");
             }
 
             boolean multipleTimes = request.get(ARG_POINT_DOANIMATION, false);
-            isl.append(XmlUtil.tag((multipleTimes
+            isl.append(MyXmlUtil.tag((multipleTimes
                                     ? "movie"
-                                    : "image"), XmlUtil.attr("file",
+                                    : "image"), MyXmlUtil.attr("file",
                                     image.toString()), clip));
             isl.append("</isl>\n");
 
@@ -2693,8 +2693,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * @return  the property as a String
      */
     private String makeProperty(String name, String value) {
-        return XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                           XmlUtil.attrs("name", name, "value", value));
+        return MyXmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                           MyXmlUtil.attrs("name", name, "value", value));
     }
 
 

@@ -22,8 +22,8 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
+
 
 import java.io.*;
 
@@ -93,7 +93,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         InputStream fis = getStorageManager().getFileInputStream(
                               entry.getResource().getPath());
         String  xml  = IOUtil.readContents(fis);
-        Element root = XmlUtil.getRoot(xml);
+        Element root = MyXmlUtil.getRoot(xml);
 
         return root;
     }
@@ -113,14 +113,14 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
         Element root   = getRoot(entry);
-        Element record = XmlUtil.findChild(root, "record");
+        Element record = MyXmlUtil.findChild(root, "record");
         //<title>SAMPLE 001: Interview with Georgia Davis Powers, April 26, 2013</title>
-        String title = XmlUtil.getGrandChildText(record, "title", null);
+        String title = MyXmlUtil.getGrandChildText(record, "title", null);
 	entry.setName(title);
         //<date format="yyyy-mm-dd" value="2013-05-29"/>
-        Element date = XmlUtil.findChild(record, "date");
-        String  dt   = XmlUtil.getAttribute(date, "value");
-        String  fmt  = XmlUtil.getAttribute(date, "format");
+        Element date = MyXmlUtil.findChild(record, "date");
+        String  dt   = MyXmlUtil.getAttribute(date, "value");
+        String  fmt  = MyXmlUtil.getAttribute(date, "format");
         //Fix the format
         fmt = fmt.replaceAll("m", "M");
         Date dttm = null;
@@ -139,21 +139,21 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             "repository", "repository_url"
         };
 
-        String type = XmlUtil.getGrandChildText(record, "type", null);
+        String type = MyXmlUtil.getGrandChildText(record, "type", null);
         if (type != null) {
             entry.setValue(IDX_TYPE, type);
         }
         if ( !Utils.stringDefined(entry.getDescription())) {
-            entry.setDescription(XmlUtil.getGrandChildText(record,
+            entry.setDescription(MyXmlUtil.getGrandChildText(record,
                     "description", ""));
         }
         entry.setValue(IDX_RIGHTS,
-                       XmlUtil.getGrandChildText(record, "rights", ""));
+                       MyXmlUtil.getGrandChildText(record, "rights", ""));
         entry.setValue(IDX_USAGE,
-                       XmlUtil.getGrandChildText(record, "usage", ""));
+                       MyXmlUtil.getGrandChildText(record, "usage", ""));
 
         for (int i = 0; i < props.length; i++) {
-            String v = XmlUtil.getGrandChildText(record, props[i], null);
+            String v = MyXmlUtil.getGrandChildText(record, props[i], null);
             if (v != null) {
                 entry.setValue(IDX_INTERVIEWEE + i, v);
             }
@@ -165,9 +165,9 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         addProperties(request,entry, root, "subjects", "content.subject");
 
         Bounds bounds = null;
-        for (Object o : XmlUtil.findDescendants(root, "gps")) {
+        for (Object o : MyXmlUtil.findDescendants(root, "gps")) {
             Element gps = (Element) o;
-            String  t   = XmlUtil.getChildText(gps);
+            String  t   = MyXmlUtil.getChildText(gps);
             if ( !Utils.stringDefined(t)) {
                 continue;
             }
@@ -186,9 +186,9 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             entry.setBounds(bounds);
         }
 
-        Element media   = XmlUtil.findChild(record, "mediafile");
-        String  host    = XmlUtil.getGrandChildText(media, "host", "");
-        String mediaUrl = XmlUtil.getGrandChildText(record, "media_url",
+        Element media   = MyXmlUtil.findChild(record, "mediafile");
+        String  host    = MyXmlUtil.getGrandChildText(media, "host", "");
+        String mediaUrl = MyXmlUtil.getGrandChildText(record, "media_url",
                               null);
 
         entry.setValue(IDX_MEDIA_TYPE, host);
@@ -197,7 +197,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             YouTubeVideoTypeHandler.addYoutubeThumbnail(getRepository(), request,
                     entry, youTubeId);
         } else if (host.equals("Vimeo")) {
-            String embed = XmlUtil.getGrandChildText(record, "kembed", null);
+            String embed = MyXmlUtil.getGrandChildText(record, "kembed", null);
             if (Utils.stringDefined(embed)) {
                 String[] toks = Utils.findPatterns(embed,
                                     "player.vimeo.com/video/([0-9]+)");
@@ -263,34 +263,34 @@ public class OhmsTypeHandler extends MediaTypeHandler {
     @Override
     public String getTranscriptions(Request request, Entry entry) throws Exception {
         Element       root   = getRoot(entry);
-        Element       record = XmlUtil.findChild(root, "record");
-        Element       media  = XmlUtil.findChild(record, "mediafile");
-        String mediaType   = XmlUtil.getGrandChildText(media, "host", "");
-        Element       index  = XmlUtil.findChild(record, "index");
+        Element       record = MyXmlUtil.findChild(root, "record");
+        Element       media  = MyXmlUtil.findChild(record, "mediafile");
+        String mediaType   = MyXmlUtil.getGrandChildText(media, "host", "");
+        Element       index  = MyXmlUtil.findChild(record, "index");
         List<String>  points = new ArrayList<String>();
         if (index != null) {
-            for (Object o : XmlUtil.findDescendants(index, "point")) {
+            for (Object o : MyXmlUtil.findDescendants(index, "point")) {
                 Element point = (Element) o;
-                String  time  = XmlUtil.getGrandChildText(point, "time",
+                String  time  = MyXmlUtil.getGrandChildText(point, "time",
                                     null);
                 if (time == null) {
                     continue;
                 }
-                String title = XmlUtil.getGrandChildText(point, "title", "");
+                String title = MyXmlUtil.getGrandChildText(point, "title", "");
                 List attrs =
                     JsonUtil.quoteList(
                         Utils.makeListFromValues(
                             "time", time, "title", title, "transcript",
-                            XmlUtil.getGrandChildText(
+                            MyXmlUtil.getGrandChildText(
                                 point, "partial_transcript", ""), "synopsis",
-                                    XmlUtil.getGrandChildText(
+                                    MyXmlUtil.getGrandChildText(
 							      point, "synopsis", "")));
 		Utils.add(attrs,"keywords",
-			    JU.quoteAll(Utils.split(XmlUtil.getGrandChildText(
+			    JU.quoteAll(Utils.split(MyXmlUtil.getGrandChildText(
 								  point, "keywords",
 								  ""), ";",true,true)));
 		Utils.add(attrs, "subjects",
-			  JU.quoteAll(Utils.split(XmlUtil.getGrandChildText(
+			  JU.quoteAll(Utils.split(MyXmlUtil.getGrandChildText(
 									point, "subjects",
 									""),";",true,true)));
                 Utils.add(points, JsonUtil.map(attrs));
@@ -313,10 +313,10 @@ public class OhmsTypeHandler extends MediaTypeHandler {
                                String metadataType)
             throws Exception {
         HashSet<String> seen     = new HashSet<String>();
-        List            keywords = XmlUtil.findDescendants(root, prop);
+        List            keywords = MyXmlUtil.findDescendants(root, prop);
         for (Object o : keywords) {
             Element k    = (Element) o;
-            String  text = XmlUtil.getChildText(k);
+            String  text = MyXmlUtil.getChildText(k);
             for (String word : Utils.split(text, ";", true, true)) {
                 if (seen.contains(word)) {
                     continue;
@@ -342,32 +342,32 @@ public class OhmsTypeHandler extends MediaTypeHandler {
         }
 
         Element       root   = getRoot(entry);
-        Element       record = XmlUtil.findChild(root, "record");
-        Element       media  = XmlUtil.findChild(record, "mediafile");
-        String mediaType   = XmlUtil.getGrandChildText(media, "host", "");
-        Element       index  = XmlUtil.findChild(record, "index");
+        Element       record = MyXmlUtil.findChild(root, "record");
+        Element       media  = MyXmlUtil.findChild(record, "mediafile");
+        String mediaType   = MyXmlUtil.getGrandChildText(media, "host", "");
+        Element       index  = MyXmlUtil.findChild(record, "index");
         List<String>  points = new ArrayList<String>();
         if (index != null) {
-            for (Object o : XmlUtil.findDescendants(index, "point")) {
+            for (Object o : MyXmlUtil.findDescendants(index, "point")) {
                 Element point = (Element) o;
-                String  time  = XmlUtil.getGrandChildText(point, "time",
+                String  time  = MyXmlUtil.getGrandChildText(point, "time",
                                     null);
                 if (time == null) {
                     continue;
                 }
-                String title = XmlUtil.getGrandChildText(point, "title", "");
+                String title = MyXmlUtil.getGrandChildText(point, "title", "");
                 List attrs =
                     JsonUtil.quoteList(
                         Utils.makeListFromValues(
                             "time", time, "title", title, "transcript",
-                            XmlUtil.getGrandChildText(
+                            MyXmlUtil.getGrandChildText(
                                 point, "partial_transcript", ""), "synopsis",
-                                    XmlUtil.getGrandChildText(
+                                    MyXmlUtil.getGrandChildText(
                                         point, "synopsis", ""), "keywords",
-                                            XmlUtil.getGrandChildText(
+                                            MyXmlUtil.getGrandChildText(
                                                 point, "keywords",
                                                 ""), "subjects",
-                                                    XmlUtil.getGrandChildText(
+                                                    MyXmlUtil.getGrandChildText(
                                                         point, "subjects",
                                                         "")));
                 Utils.add(points, JsonUtil.map(attrs));
@@ -375,8 +375,8 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             }
         }
 
-        String mediaUrl = XmlUtil.getGrandChildText(record, "media_url",  null);
-        String embed     = XmlUtil.getGrandChildText(record, "kembed", null);
+        String mediaUrl = MyXmlUtil.getGrandChildText(record, "media_url",  null);
+        String embed     = MyXmlUtil.getGrandChildText(record, "kembed", null);
 	return  addMedia(request, entry, props, mediaType,  embed, mediaUrl,  points);
     }
 

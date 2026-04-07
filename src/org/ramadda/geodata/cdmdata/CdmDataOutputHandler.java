@@ -77,7 +77,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -270,8 +270,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return;
         }
         String  url         = getAbsoluteOpendapUrl(request, entry);
-        Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
-        XmlUtil.setAttributes(serviceNode, new String[] { ATTR_TYPE,
+        Element serviceNode = MyXmlUtil.create(TAG_SERVICE, node);
+        MyXmlUtil.setAttributes(serviceNode, new String[] { ATTR_TYPE,
                 SERVICE_OPENDAP, ATTR_URL, url });
 
     }
@@ -2378,7 +2378,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                               "" + po.getNominalTimeAsCalendarDate(),
                               info.toString(), lat, lon, alt, null);
         }
-        pw.print(XmlUtil.toString(root));
+        pw.print(MyXmlUtil.toString(root));
         getCdmManager().returnPointDataset(path, pod);
     }
 

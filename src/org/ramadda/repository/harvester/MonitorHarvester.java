@@ -24,7 +24,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -62,11 +62,11 @@ public class MonitorHarvester extends Harvester {
     @Override
     protected void init(Element element) throws Exception {
         super.init(element);
-        emails   = XmlUtil.getAttribute(element, ATTR_EMAILS, emails);
-        url      = XmlUtil.getAttribute(element, ATTR_URL, url);
-        message  = XmlUtil.getAttribute(element, ATTR_MESSAGE, message);
-        failures = XmlUtil.getAttribute(element, ATTR_FAILURES, failures);
-        minutes  = XmlUtil.getAttribute(element, ATTR_MINUTES, minutes);
+        emails   = MyXmlUtil.getAttribute(element, ATTR_EMAILS, emails);
+        url      = MyXmlUtil.getAttribute(element, ATTR_URL, url);
+        message  = MyXmlUtil.getAttribute(element, ATTR_MESSAGE, message);
+        failures = MyXmlUtil.getAttribute(element, ATTR_FAILURES, failures);
+        minutes  = MyXmlUtil.getAttribute(element, ATTR_MINUTES, minutes);
     }
 
     @Override

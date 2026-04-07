@@ -28,7 +28,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -254,9 +254,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (asXml) {
-            StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
+            StringBuffer xml = new StringBuffer(MyXmlUtil.XML_HEADER);
             xml.append("\n<content>\n");
-            XmlUtil.appendCdata(xml, html);
+            MyXmlUtil.appendCdata(xml, html);
             xml.append("\n</content>");
 
             return new Result("", xml, "text/xml");
@@ -286,7 +286,7 @@ public class HtmlOutputHandler extends OutputHandler {
             contents = sb.toString();
         }
         StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml,contents);
+        MyXmlUtil.appendCdata(xml,contents);
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");
@@ -304,7 +304,7 @@ public class HtmlOutputHandler extends OutputHandler {
         inner.append(cLink);
         inner.append(HU.br());
         inner.append(links);
-        XmlUtil.appendCdata(sb, inner.toString());
+        MyXmlUtil.appendCdata(sb, inner.toString());
         sb.append("\n</content>");
 
         return new Result("", sb, "text/xml");
@@ -364,7 +364,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
                 StringBuffer xml = new StringBuffer("<content>\n");
-                XmlUtil.appendCdata(xml,
+                MyXmlUtil.appendCdata(xml,
                                     "<div class=inline>" + inline + "</div>");
                 xml.append("\n</content>");
 
@@ -683,7 +683,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 OutputType.TYPE_ALL));
 
         StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml,sb.toString());
+        MyXmlUtil.appendCdata(xml,sb.toString());
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");
@@ -744,11 +744,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
-        XmlUtil.appendCdata(xml, sb.toString());
+        MyXmlUtil.appendCdata(xml, sb.toString());
         xml.append("\n</content>");
 
         xml.append("<javascript>");
-        XmlUtil.appendCdata(xml, jsSB.toString());
+        MyXmlUtil.appendCdata(xml, jsSB.toString());
         xml.append("</javascript>");
         xml.append("\n</response>");
 

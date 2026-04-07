@@ -22,7 +22,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Image;
 
@@ -146,10 +146,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                               List<MetadataType> types)
 	throws Exception {
 
-        NodeList children = XmlUtil.getElements(root);
+        NodeList children = MyXmlUtil.getElements(root);
         if ((children.getLength() == 0)
 	    && root.getTagName().equals(TAG_HANDLER)) {
-            Class c = Misc.findClass(XmlUtil.getAttribute(root, ATTR_CLASS));
+            Class c = Misc.findClass(MyXmlUtil.getAttribute(root, ATTR_CLASS));
             MetadataHandler handler = manager.getHandler(c);
         }
 
@@ -161,19 +161,19 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
 
             if (node.getTagName().equals(TAG_TEMPLATE)) {
-                String templateType = XmlUtil.getAttribute(node, ATTR_TYPE);
-                String metadataType = XmlUtil.getAttribute(node,
+                String templateType = MyXmlUtil.getAttribute(node, ATTR_TYPE);
+                String metadataType = MyXmlUtil.getAttribute(node,
 							   ATTR_METADATATYPE);
 
-                if (XmlUtil.hasAttribute(node, ATTR_FILE)) {
+                if (MyXmlUtil.hasAttribute(node, ATTR_FILE)) {
                     manager.addTemplate(
 					metadataType, templateType,
 					manager.getStorageManager().readSystemResource(
-										       XmlUtil.getAttribute(node, ATTR_FILE)));
+										       MyXmlUtil.getAttribute(node, ATTR_FILE)));
 
                 } else {
                     manager.addTemplate(metadataType, templateType,
-                                        XmlUtil.getChildText(node));
+                                        MyXmlUtil.getChildText(node));
                 }
 
                 continue;
@@ -185,14 +185,14 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
             if ( !node.getTagName().equals(TAG_TYPE)) {
                 manager.logError("Unknown metadata xml tag:"
-                                 + XmlUtil.toString(node), null);
+                                 + MyXmlUtil.toString(node), null);
             }
 
-            Class c = Misc.findClass(XmlUtil.getAttributeFromTree(node,
+            Class c = Misc.findClass(MyXmlUtil.getAttributeFromTree(node,
 								  ATTR_CLASS,
 								  "org.ramadda.repository.metadata.MetadataHandler"));
 
-            String          id           = XmlUtil.getAttribute(node, ATTR_ID);
+            String          id           = MyXmlUtil.getAttribute(node, ATTR_ID);
 
             MetadataHandler handler      = manager.getHandler(c);
 
@@ -213,27 +213,27 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     public void init(Element node) throws Exception {
         super.init(node);
-        setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
-        isGeo = XmlUtil.getAttributeFromTree(node, "isgeo",false);
-	restrictions=Utils.split(XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE),",",true,true);
-	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
-	addNot = XmlUtil.getAttributeFromTree(node, "addnot", false);
-	makeSearchLink = XmlUtil.getAttributeFromTree(node, "makesearchlink", false);
-	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
-	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
-        setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
-        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,(String) null);
-        priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,priority);
-	textLengthLimit= XmlUtil.getAttributeFromTree(node, "textLengthLimit",textLengthLimit);
-        setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,  false));
-        setDisplayCategory(XmlUtil.getAttributeFromTree(node,
+        setAdminOnly(MyXmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
+        isGeo = MyXmlUtil.getAttributeFromTree(node, "isgeo",false);
+	restrictions=Utils.split(MyXmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE),",",true,true);
+	canView = MyXmlUtil.getAttributeFromTree(node, "canview", true);
+	addNot = MyXmlUtil.getAttributeFromTree(node, "addnot", false);
+	makeSearchLink = MyXmlUtil.getAttributeFromTree(node, "makesearchlink", false);
+	canDisplay = MyXmlUtil.getAttributeFromTree(node, "candisplay", true);    	
+	showLabel = MyXmlUtil.getAttributeFromTree(node, "showlabel", true);    	
+        setForUser(MyXmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
+        entryType = MyXmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,(String) null);
+        priority = MyXmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,priority);
+	textLengthLimit= MyXmlUtil.getAttributeFromTree(node, "textLengthLimit",textLengthLimit);
+        setBrowsable(MyXmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,  false));
+        setDisplayCategory(MyXmlUtil.getAttributeFromTree(node,
 							ATTR_DISPLAYCATEGORY, "Properties"));
 
-	tag = XmlUtil.getAttributeFromTree(node, "tag",  (String) null);
+	tag = MyXmlUtil.getAttributeFromTree(node, "tag",  (String) null);
 
-        setDisplayGroup(XmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
+        setDisplayGroup(MyXmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
 						     (String) null));
-        setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
+        setCategory(MyXmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
 						 handler.getHandlerGroupName()));
 
     }
@@ -308,26 +308,26 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             //      System.err.println("\tinternal: " + internal  +" "  + entry.getIsRemoteEntry());
             return true;
         }
-        NodeList elements = XmlUtil.getElements(node);
+        NodeList elements = MyXmlUtil.getElements(node);
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             String fileArg = null;
-            Element attrNode = XmlUtil.findElement(elements,
+            Element attrNode = MyXmlUtil.findElement(elements,
 						   Metadata.ATTR_INDEX,
 						   "" + element.getIndex());
             if (attrNode == null) {
-                fileArg = XmlUtil.getAttribute(node,
+                fileArg = MyXmlUtil.getAttribute(node,
 					       "attr" + element.getIndex(), (String) null);
                 if (fileArg == null) {
                     System.err.println("Could not find attr node:"
-                                       + XmlUtil.toString(node));
+                                       + MyXmlUtil.toString(node));
 
                     continue;
                 }
             } else {
-                fileArg = XmlUtil.getAttribute(attrNode, "fileid",
+                fileArg = MyXmlUtil.getAttribute(attrNode, "fileid",
 					       (String) null);
             }
 
@@ -430,7 +430,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         Element root = null;
         try {
 	    long t1= System.currentTimeMillis();
-            root = XmlUtil.getRoot(new ByteArrayInputStream(xml.getBytes()));
+            root = MyXmlUtil.getRoot(new ByteArrayInputStream(xml.getBytes()));
 	    long t2= System.currentTimeMillis();
 	    //	    System.err.println("time:" + (t2-t1));
         } catch (Exception exc) {
@@ -441,7 +441,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if (root == null) {
             throw new IllegalStateException("Could not create xml:" + xml);
         }
-        NodeList children = XmlUtil.getElements(root);
+        NodeList children = MyXmlUtil.getElements(root);
         for (int i = 0; i < children.getLength(); i++) {
             Element node = (Element) children.item(i);
             node = (Element) parent.getOwnerDocument().importNode(node, true);

@@ -25,7 +25,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -126,41 +126,41 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
     private void processXml(Request request,String xml, Entry entry) throws Exception {
 
 
-        Element root         = root = XmlUtil.getRoot(xml);
-        Element experiment   = XmlUtil.findChild(root, "Experiment");
-        Element experimenter = XmlUtil.findChild(root, "Experimenter");
+        Element root         = root = MyXmlUtil.getRoot(xml);
+        Element experiment   = MyXmlUtil.findChild(root, "Experiment");
+        Element experimenter = MyXmlUtil.findChild(root, "Experimenter");
 
         if (experiment != null) {
-            Element ref = XmlUtil.findChild(experiment, "ExperimenterRef");
+            Element ref = MyXmlUtil.findChild(experiment, "ExperimenterRef");
             getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     getMetadataManager().findType("bio_ome_experiment"), false,
-                    XmlUtil.getAttribute(experiment, "Type", ""),
-                    XmlUtil.getGrandChildText(experiment, "Description"),
-                    XmlUtil.getAttribute(experiment, "ID", ""), ((ref != null)
-                    ? XmlUtil.getAttribute(ref, "ID", "")
+                    MyXmlUtil.getAttribute(experiment, "Type", ""),
+                    MyXmlUtil.getGrandChildText(experiment, "Description"),
+                    MyXmlUtil.getAttribute(experiment, "ID", ""), ((ref != null)
+                    ? MyXmlUtil.getAttribute(ref, "ID", "")
                     : ""), null));
             //            type,description,experimenter,id
         }
 
         if (experiment != null) {
-            Element ref = XmlUtil.findChild(experiment, "ExperimenterRef");
+            Element ref = MyXmlUtil.findChild(experiment, "ExperimenterRef");
             Hashtable<Integer, String> mapToExtra = new Hashtable<Integer,
                                                         String>();
 
             //For extra metadata we put it into a hash
-            mapToExtra.put(5, XmlUtil.getAttribute(experimenter, "ID", ""));
+            mapToExtra.put(5, MyXmlUtil.getAttribute(experimenter, "ID", ""));
             getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     getMetadataManager().findType("bio_ome_experimenter"), false,
-                    XmlUtil.getAttribute(experimenter, "FirstName", ""),
-                    XmlUtil.getAttribute(experimenter, "LastName", ""),
-                    XmlUtil.getAttribute(experimenter, "Email", ""),
-                    XmlUtil.getAttribute(experimenter, "Institution", ""),
+                    MyXmlUtil.getAttribute(experimenter, "FirstName", ""),
+                    MyXmlUtil.getAttribute(experimenter, "LastName", ""),
+                    MyXmlUtil.getAttribute(experimenter, "Email", ""),
+                    MyXmlUtil.getAttribute(experimenter, "Institution", ""),
                     Metadata.mapToExtra(mapToExtra)));
             //first,last,email,inst,id
         }

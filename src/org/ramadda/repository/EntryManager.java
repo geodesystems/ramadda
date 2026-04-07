@@ -58,7 +58,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlNodeList;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Image;
 
@@ -876,11 +876,11 @@ public class EntryManager extends RepositoryManager {
 	    StringBuilder entriesXml = new StringBuilder("<entries>\n");
 	    String htmlFileName =  IO.stripExtension(entry.getName())+".html";
 	    String htmlEntryId = getRepository().getGUID();
-	    entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",entry.getName()+" snapshot") +
-					  XmlUtil.attr("id",htmlEntryId) +
-					  XmlUtil.attr("type","type_document_html") +
-					  XmlUtil.attr("embed_type","embed") +
-					  XmlUtil.attr("file",htmlFileName)));
+	    entriesXml.append(MyXmlUtil.tag("entry",MyXmlUtil.attr("name",entry.getName()+" snapshot") +
+					  MyXmlUtil.attr("id",htmlEntryId) +
+					  MyXmlUtil.attr("type","type_document_html") +
+					  MyXmlUtil.attr("embed_type","embed") +
+					  MyXmlUtil.attr("file",htmlFileName)));
 	    html = html.replaceAll("(?s)" + PageHandler.IMPORTS_BEGIN+".*?" + PageHandler.IMPORTS_END,"");
 	    for(String[]tuple: snapshotFiles) {
 		String tmpFile =tuple[0];
@@ -891,11 +891,11 @@ public class EntryManager extends RepositoryManager {
 		FileInputStream fis =new FileInputStream(tmpFile);
                 zipFileWriter.writeFile(jsonFileName, fis);
 		IO.close(fis);
-		entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",dataEntryName+" data") +
-					      XmlUtil.attr("id",jsonFileId) +
-					      XmlUtil.attr("parent",htmlEntryId) +
-					      XmlUtil.attr("type","type_datafile_json") +
-					      XmlUtil.attr("file",jsonFileName)));
+		entriesXml.append(MyXmlUtil.tag("entry",MyXmlUtil.attr("name",dataEntryName+" data") +
+					      MyXmlUtil.attr("id",jsonFileId) +
+					      MyXmlUtil.attr("parent",htmlEntryId) +
+					      MyXmlUtil.attr("type","type_datafile_json") +
+					      MyXmlUtil.attr("file",jsonFileName)));
 		entriesXml.append("\n");
 	    }
 	    entriesXml.append("</entries>\n");
@@ -5495,8 +5495,8 @@ public class EntryManager extends RepositoryManager {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
                 exc.printStackTrace();
 
-                return new Result(XmlUtil.tag(TAG_RESPONSE,
-					      XmlUtil.attr(ATTR_CODE, CODE_ERROR),
+                return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+					      MyXmlUtil.attr(ATTR_CODE, CODE_ERROR),
 					      "" + exc.getMessage()), MIME_XML);
             }
 
@@ -5513,8 +5513,8 @@ public class EntryManager extends RepositoryManager {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
                 exc.printStackTrace();
 
-                return new Result(XmlUtil.tag(TAG_RESPONSE,
-					      XmlUtil.attr(ATTR_CODE, CODE_ERROR),
+                return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+					      MyXmlUtil.attr(ATTR_CODE, CODE_ERROR),
 					      "" + exc.getMessage()), MIME_XML);
             }
 
@@ -5980,7 +5980,7 @@ public class EntryManager extends RepositoryManager {
             IO.close(fis);
         }
 
-        Element root = XmlUtil.getRoot(entriesXml);
+        Element root = MyXmlUtil.getRoot(entriesXml);
         for (ImportHandler importHandler :
 		 getRepository().getImportHandlers()) {
             Element newRoot = importHandler.getDOM(request, root);
@@ -6000,18 +6000,18 @@ public class EntryManager extends RepositoryManager {
         }
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
             //TODO: Return a list of the newly created entries
-            Element resultRoot = XmlUtil.create(XmlUtil.makeDocument(),
+            Element resultRoot = MyXmlUtil.create(MyXmlUtil.makeDocument(),
 						TAG_RESPONSE, null,
 						new String[] { ATTR_CODE,
 							       CODE_OK });
 
             for (Entry entry : newEntries) {
-                XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
+                MyXmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
                                resultRoot, new String[] { ATTR_ID,
 							  entry.getId() });
 
             }
-            String xml = XmlUtil.toString(resultRoot);
+            String xml = MyXmlUtil.toString(resultRoot);
             return new Result(xml, MIME_XML);
         }
 
@@ -6062,7 +6062,7 @@ public class EntryManager extends RepositoryManager {
             children = new XmlNodeList();
             ((XmlNodeList) children).add(root);
         } else {
-            children = XmlUtil.getElements(root);
+            children = MyXmlUtil.getElements(root);
         }
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -6085,17 +6085,17 @@ public class EntryManager extends RepositoryManager {
 						       INTERNAL.YES,msg);
 
             newEntries.addAll(entryList);
-            if (XmlUtil.hasAttribute(node, ATTR_ID)) {
+            if (MyXmlUtil.hasAttribute(node, ATTR_ID)) {
                 for (Entry entry : entryList) {
                     idList.add(new String[] {
-			    XmlUtil.getAttribute(node, ATTR_ID, ""),
+			    MyXmlUtil.getAttribute(node, ATTR_ID, ""),
 			    entry.getId() });
                 }
             }
 
-            if (XmlUtil.getAttribute(node, ATTR_ADDMETADATA, false)) {
+            if (MyXmlUtil.getAttribute(node, ATTR_ADDMETADATA, false)) {
                 addInitialMetadata(request, entryList, true, false);
-            } else if (XmlUtil.getAttribute(node, ATTR_ADDSHORTMETADATA,
+            } else if (MyXmlUtil.getAttribute(node, ATTR_ADDSHORTMETADATA,
                                             false)) {
                 addInitialMetadata(request, entryList, true, true);
             }
@@ -6181,7 +6181,7 @@ public class EntryManager extends RepositoryManager {
 	//            System.err.println("Remote URL:" + remoteSearchUrl);
 	//	System.out.println(entriesXml);
 	try {
-	    Element  root     = XmlUtil.getRoot(entriesXml);
+	    Element  root     = MyXmlUtil.getRoot(entriesXml);
 	    List<Element> elements = new ArrayList<Element>();
 	    if(root==null || root.getTagName()==null) {
 		getLogManager().logSpecial("Empty XML creating remote entries:" + serverInfo);
@@ -6189,10 +6189,10 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 	    //Is this a search result
-	    if(XmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy") ||
-	       (XmlUtil.getAttribute(root,"name","").equals("Results") &&
-		XmlUtil.getAttribute(root,"parent","").equals(""))) {
-		NodeList children = XmlUtil.getElements(root,TAG_ENTRY);
+	    if(MyXmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy") ||
+	       (MyXmlUtil.getAttribute(root,"name","").equals("Results") &&
+		MyXmlUtil.getAttribute(root,"parent","").equals(""))) {
+		NodeList children = MyXmlUtil.getElements(root,TAG_ENTRY);
 		for (int i = 0; i < children.getLength(); i++) {
 		    elements.add((Element) children.item(i));
 		}
@@ -6221,19 +6221,19 @@ public class EntryManager extends RepositoryManager {
 		entry.setRemoteServer(serverInfo);
 		Resource resource =  new Resource(
 						  "remote:"
-						  + XmlUtil.getAttribute(
+						  + MyXmlUtil.getAttribute(
 									 node, ATTR_RESOURCE,
 									 ""), Resource.TYPE_REMOTE_FILE);
-		String fileSize = XmlUtil.getAttribute(node,ATTR_FILESIZE,(String)null);
+		String fileSize = MyXmlUtil.getAttribute(node,ATTR_FILESIZE,(String)null);
 		if(stringDefined(fileSize)) resource.setFileSize(Long.parseLong(fileSize));
 		entry.setResource(resource);
-		Date createDate = (XmlUtil.hasAttribute(node, ATTR_CREATEDATE)
+		Date createDate = (MyXmlUtil.hasAttribute(node, ATTR_CREATEDATE)
 				   ? getDateHandler().parseDate(
-								XmlUtil.getAttribute(
+								MyXmlUtil.getAttribute(
 										     node, ATTR_CREATEDATE))
 				   : null);
 		if(createDate!=null) entry.setCreateDate(createDate.getTime());
-		String id = XmlUtil.getAttribute(node, ATTR_ID);
+		String id = MyXmlUtil.getAttribute(node, ATTR_ID);
 		entry.setId(getEntryManager().getRemoteEntryId(serverUrl, id));
 		entry.setRemoteServer(serverInfo);
 		entry.setRemoteUrl(serverUrl + "/entry/show?entryid=" + id);
@@ -6254,7 +6254,7 @@ public class EntryManager extends RepositoryManager {
                                           boolean checkAccess,TEMPLATE isTemplate,
 					  INTERNAL  internal,StringBuilder msg)
 	throws Exception {
-        String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
+        String parentId    = MyXmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry =  entryMap.get(parentId);
         if (parentEntry == null) {
             parentEntry = (Entry) getEntry(request, parentId);
@@ -6270,7 +6270,7 @@ public class EntryManager extends RepositoryManager {
         if (parentEntry == null) {
             // Lets not check for now. Some entry xml doesn't have a parent
 	    throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId);
-	    // +" xml:" + XmlUtil.toString(node));
+	    // +" xml:" + MyXmlUtil.toString(node));
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
@@ -6295,7 +6295,7 @@ public class EntryManager extends RepositoryManager {
         String name = EntryUtil.clipEntryName(Utils.getAttributeOrTag(node,
 								      ATTR_NAME, ""));
 
-        String originalId = XmlUtil.getAttribute(node, ATTR_ID,
+        String originalId = MyXmlUtil.getAttribute(node, ATTR_ID,
 						 (String) null);
 
         String category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, "");
@@ -6304,12 +6304,12 @@ public class EntryManager extends RepositoryManager {
 						     (String) null);
 
         if (description == null) {
-            Element descriptionNode = XmlUtil.findChild(node,
+            Element descriptionNode = MyXmlUtil.findChild(node,
 							TAG_DESCRIPTION);
             if (descriptionNode != null) {
-                description = XmlUtil.getChildText(descriptionNode);
+                description = MyXmlUtil.getChildText(descriptionNode);
                 if ((description != null)
-		    && XmlUtil.getAttribute(descriptionNode, "encoded",
+		    && MyXmlUtil.getAttribute(descriptionNode, "encoded",
 					    false)) {
                     description = new String(Utils.decodeBase64(description));
                 }
@@ -6369,10 +6369,10 @@ public class EntryManager extends RepositoryManager {
 
         String url = Utils.getAttributeOrTag(node, ATTR_URL, (String) null);
         if (url == null) {
-            url = XmlUtil.getGrandChildText(node, ATTR_URL, (String) null);
+            url = MyXmlUtil.getGrandChildText(node, ATTR_URL, (String) null);
         }
         if (url == null) {
-            if (Misc.equals(XmlUtil.getAttribute(node, ATTR_RESOURCE_TYPE,
+            if (Misc.equals(MyXmlUtil.getAttribute(node, ATTR_RESOURCE_TYPE,
 						 (String) null), Resource.TYPE_URL)) {
                 url = Utils.getAttributeOrTag(node, ATTR_RESOURCE,
 					      (String) null);
@@ -6380,7 +6380,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if ((url != null)
-	    && XmlUtil.getAttribute(node, "download",
+	    && MyXmlUtil.getAttribute(node, "download",
 				    "").equals("true")) {
             URL u = new URL(url);
             File f = getStorageManager().getTmpFile(IO.getFileTail(u.getFile()));
@@ -6393,15 +6393,15 @@ public class EntryManager extends RepositoryManager {
 						     f.getName()).toString();
         }
 
-        String localFile = XmlUtil.getAttribute(node, ATTR_LOCALFILE,
+        String localFile = MyXmlUtil.getAttribute(node, ATTR_LOCALFILE,
 						(String) null);
-        String localFileToMove = XmlUtil.getAttribute(node,
+        String localFileToMove = MyXmlUtil.getAttribute(node,
 						      ATTR_LOCALFILETOMOVE, (String) null);
 
-        String directory = XmlUtil.getAttribute(node, ATTR_DIRECTORY,
+        String directory = MyXmlUtil.getAttribute(node, ATTR_DIRECTORY,
 						(String) null);
-	boolean unique = XmlUtil.getAttributeFromTree(node, ATTR_UNIQUE,false);
-	boolean nameUnique = XmlUtil.getAttributeFromTree(node, "nameUnique",false);	
+	boolean unique = MyXmlUtil.getAttributeFromTree(node, ATTR_UNIQUE,false);
+	boolean nameUnique = MyXmlUtil.getAttributeFromTree(node, "nameUnique",false);	
         List<Resource> resources = new ArrayList<Resource>();
 
         if (file != null) {
@@ -6419,7 +6419,7 @@ public class EntryManager extends RepositoryManager {
             }
             File dir = getStorageManager().checkReadFile(new File(directory));
             File[] children = dir.listFiles();
-            String pattern = XmlUtil.getAttribute(node, ATTR_FILE_PATTERN,
+            String pattern = MyXmlUtil.getAttribute(node, ATTR_FILE_PATTERN,
 						  (String) null);
 
             for (File childFile : children) {
@@ -6452,7 +6452,7 @@ public class EntryManager extends RepositoryManager {
         } else if (url != null) {
             Resource resource = new Resource(url, Resource.TYPE_URL);
             resources.add(resource);
-            int size = XmlUtil.getAttribute(node, ATTR_SIZE, 0);
+            int size = MyXmlUtil.getAttribute(node, ATTR_SIZE, 0);
             resource.setFileSize(size);
         } else {
             resources.add(new Resource("", Resource.TYPE_UNKNOWN));
@@ -6506,14 +6506,14 @@ public class EntryManager extends RepositoryManager {
 						   + typeHandler.getDescription());
             }
 
-            Date createDate = (XmlUtil.hasAttribute(node, ATTR_CREATEDATE)
+            Date createDate = (MyXmlUtil.hasAttribute(node, ATTR_CREATEDATE)
                                ? getDateHandler().parseDate(
-							    XmlUtil.getAttribute(
+							    MyXmlUtil.getAttribute(
 										 node, ATTR_CREATEDATE))
                                : now);
-            Date changeDate = (XmlUtil.hasAttribute(node, ATTR_CHANGEDATE)
+            Date changeDate = (MyXmlUtil.hasAttribute(node, ATTR_CHANGEDATE)
                                ? getDateHandler().parseDate(
-							    XmlUtil.getAttribute(
+							    MyXmlUtil.getAttribute(
 										 node, ATTR_CHANGEDATE))
                                : createDate);
             //don't use the create and change date from the xml
@@ -6552,7 +6552,7 @@ public class EntryManager extends RepositoryManager {
 		      toDate==null?DateHandler.NULL_DATE:toDate.getTime(),
 		      null);
 
-	    Element permissions  =XmlUtil.findChild(node,AccessManager.TAG_PERMISSIONS);
+	    Element permissions  =MyXmlUtil.findChild(node,AccessManager.TAG_PERMISSIONS);
 	    if(permissions!=null) {
 		entry.putProperty(AccessManager.TAG_PERMISSIONS, permissions);
 	    }
@@ -6563,7 +6563,7 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 	    if(isInternal==INTERNAL.NO) {
-		entry.setRemoteParentEntryId(XmlUtil.getAttribute(node,"parent",(String)null));
+		entry.setRemoteParentEntryId(MyXmlUtil.getAttribute(node,"parent",(String)null));
 	    }
 
             if (doAnonymousUpload) {
@@ -6578,15 +6578,15 @@ public class EntryManager extends RepositoryManager {
                 entry.setWest(GeoUtils.decodeLatLon(lon));
                 entry.setEast(entry.getWest(request));
             } else {
-                entry.setNorth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setNorth(GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(node,
 									  ATTR_NORTH,
 									  entry.getNorth(request) + "")));
-                entry.setSouth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setSouth(GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(node,
 									  ATTR_SOUTH,
 									  entry.getSouth(request) + "")));
-                entry.setEast(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setEast(GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(node,
 									 ATTR_EAST, entry.getEast(request) + "")));
-                entry.setWest(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setWest(GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(node,
 									 ATTR_WEST, entry.getWest(request) + "")));
             }
 
@@ -6599,14 +6599,14 @@ public class EntryManager extends RepositoryManager {
             entry.setAltitudeBottom(Utils.getAttributeOrTag(node,
 							    ATTR_ALTITUDE, entry.getAltitudeBottom()));
 
-            NodeList entryChildren = XmlUtil.getElements(node);
+            NodeList entryChildren = MyXmlUtil.getElements(node);
             for (Element entryChild : (List<Element>) entryChildren) {
                 String tag = entryChild.getTagName();
                 if (tag.equals("tag")) {
                     getMetadataManager().addMetadata(request,entry,
 						     new Metadata(getRepository().getGUID(),
 								  entry.getId(), getMetadataManager().findType("enum_tag"), true,
-								  XmlUtil.getChildText(entryChild),
+								  MyXmlUtil.getChildText(entryChild),
 								  "", "", "", ""));
 
                 } else if (tag.equals(TAG_METADATA)) {
@@ -6623,7 +6623,7 @@ public class EntryManager extends RepositoryManager {
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
 							  node, filesMap);
 
-	    if(XmlUtil.getAttribute(node,"isnew",false)) {
+	    if(MyXmlUtil.getAttribute(node,"isnew",false)) {
 		entry.getTypeHandler().initializeNewEntry(request, entry, TypeHandler.NewType.NEW);
 	    }
 
@@ -6635,13 +6635,13 @@ public class EntryManager extends RepositoryManager {
     }
 
     private void addImportedEntries(Element node, Hashtable<String,Entry> entries, List<Entry> entryList) {
-	String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+	String tmpid = MyXmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             for (Entry entry : entryList) {
                 entries.put(tmpid, entry);
             }
         }
-        String aliases = XmlUtil.getAttribute(node, "aliases", (String) null);
+        String aliases = MyXmlUtil.getAttribute(node, "aliases", (String) null);
         if (aliases != null) {
 	    for(String alias: Utils.split(aliases,",",true,true)) {
 		for (Entry entry : entryList) {
@@ -9004,15 +9004,15 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder msg = new StringBuilder();
 	if(entriesMap == null) entriesMap = new Hashtable<String,Entry> ();
         Element root =
-            XmlUtil.getRoot(getStorageManager().readSystemResource(xmlFile));
+            MyXmlUtil.getRoot(getStorageManager().readSystemResource(xmlFile));
 
         List<Element> associationNodes = new ArrayList<Element>();
-        associationNodes.addAll((List<Element>) XmlUtil.findDescendants(root,
+        associationNodes.addAll((List<Element>) MyXmlUtil.findDescendants(root,
 									TAG_ASSOCIATION));
 
         if (root.getTagName().equals(TAG_ENTRIES)) {
             //Look for the child entry
-            Element child = XmlUtil.findChild(root, TAG_ENTRY);
+            Element child = MyXmlUtil.findChild(root, TAG_ENTRY);
             if (child == null) {
                 throw new IllegalArgumentException(
 						   "Could not find entry xml definition in:" + xmlFile);
@@ -9032,16 +9032,16 @@ public class EntryManager extends RepositoryManager {
 
         if (isInternal == INTERNAL.YES) {
             for (Element assNode : associationNodes) {
-                String fromId = XmlUtil.getAttribute(assNode, ATTR_FROM);
-                String toId   = XmlUtil.getAttribute(assNode, ATTR_TO);
+                String fromId = MyXmlUtil.getAttribute(assNode, ATTR_FROM);
+                String toId   = MyXmlUtil.getAttribute(assNode, ATTR_TO);
                 //                if(fromId.equals("this")) fromId  = entry.getId();
                 //                if(toId.equals("this")) toId  = entry.getId();
                 for (Entry entry : entryList) {
                     entry.addAssociation(
 					 new Association(
 							 getRepository().getGUID(),
-							 XmlUtil.getAttribute(assNode, ATTR_NAME, ""),
-							 XmlUtil.getAttribute(assNode, ATTR_TYPE, ""),
+							 MyXmlUtil.getAttribute(assNode, ATTR_NAME, ""),
+							 MyXmlUtil.getAttribute(assNode, ATTR_TYPE, ""),
 							 fromId, toId));
                 }
             }

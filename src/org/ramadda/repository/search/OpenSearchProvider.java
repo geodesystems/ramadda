@@ -21,7 +21,7 @@ import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 import java.net.URL;
@@ -81,24 +81,24 @@ public class OpenSearchProvider extends SearchProvider {
         String      xml = IOUtil.readContents(is);
         System.out.println("xml:" + xml);
 
-        Element     root        = XmlUtil.getRoot(xml);
+        Element     root        = MyXmlUtil.getRoot(xml);
         Entry       parent      = getSynthTopLevelEntry();
         TypeHandler typeHandler = getLinkTypeHandler();
-        NodeList    children = XmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
+        NodeList    children = MyXmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            Element link = XmlUtil.findChild(item, AtomUtil.TAG_LINK);
-            String name = XmlUtil.getGrandChildText(item, AtomUtil.TAG_TITLE,
+            Element link = MyXmlUtil.findChild(item, AtomUtil.TAG_LINK);
+            String name = MyXmlUtil.getGrandChildText(item, AtomUtil.TAG_TITLE,
                               "");
-            String desc = XmlUtil.getGrandChildText(item,
+            String desc = MyXmlUtil.getGrandChildText(item,
                               AtomUtil.TAG_SUMMARY, "");
-            String id = XmlUtil.getGrandChildText(item, AtomUtil.TAG_ID, "");
+            String id = MyXmlUtil.getGrandChildText(item, AtomUtil.TAG_ID, "");
             Date   dttm     = new Date();
             Date   fromDate = null,
                    toDate   = null;
             String dateString;
 
-            dateString = XmlUtil.getGrandChildText(item, "dc:date",
+            dateString = MyXmlUtil.getGrandChildText(item, "dc:date",
                     (String) null);
             if (Utils.stringDefined(dateString)) {
                 List<String> toks = Utils.splitUpTo(dateString, "/", 2);
@@ -111,7 +111,7 @@ public class OpenSearchProvider extends SearchProvider {
             }
 
             if (fromDate == null) {
-                dateString = XmlUtil.getGrandChildText(item,
+                dateString = MyXmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_TIME_START, (String) null);
                 if (Utils.stringDefined(dateString)) {
                     fromDate = Utils.parseDate(dateString);
@@ -119,7 +119,7 @@ public class OpenSearchProvider extends SearchProvider {
             }
 
             if (toDate == null) {
-                dateString = XmlUtil.getGrandChildText(item,
+                dateString = MyXmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_TIME_END, (String) null);
                 if (Utils.stringDefined(dateString)) {
                     toDate = Utils.parseDate(dateString);
@@ -133,7 +133,7 @@ public class OpenSearchProvider extends SearchProvider {
                 toDate = dttm;
             }
 
-            String itemUrl = XmlUtil.getAttribute(link, AtomUtil.ATTR_HREF,
+            String itemUrl = MyXmlUtil.getAttribute(link, AtomUtil.ATTR_HREF,
                                  "");
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + TypeHandler.ID_DELIMITER

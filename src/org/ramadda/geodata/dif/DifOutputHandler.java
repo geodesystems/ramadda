@@ -23,7 +23,7 @@ import ucar.unidata.util.Misc;
 
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.text.SimpleDateFormat;
 
@@ -131,7 +131,7 @@ public class DifOutputHandler extends OutputHandler {
      */
     private Element tag(String tag, Element parent, String text)
             throws Exception {
-        return XmlUtil.create(parent.getOwnerDocument(), tag, parent, text,
+        return MyXmlUtil.create(parent.getOwnerDocument(), tag, parent, text,
                               null);
     }
 
@@ -150,8 +150,8 @@ public class DifOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, DifUtil.TAG_DIF, null,
+        Document doc = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, DifUtil.TAG_DIF, null,
                                       new String[] {
             "xmlns", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/",
             "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance",
@@ -201,12 +201,12 @@ public class DifOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         if (outputType.equals(OUTPUT_DIF_TEXT)) {
-            XmlUtil.toHtml(sb, root);
+            MyXmlUtil.toHtml(sb, root);
 
             return new Result("DIF-Text", sb);
         } else {
-            sb.append(XmlUtil.XML_HEADER);
-            sb.append(XmlUtil.toString(root));
+            sb.append(MyXmlUtil.XML_HEADER);
+            sb.append(MyXmlUtil.toString(root));
 
             return new Result("dif", sb, "text/xml");
         }

@@ -11,7 +11,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -301,27 +301,27 @@ public class IngestNCBI {
             attrs.add("type");
             attrs.add("bio_taxonomy");
             StringBuffer contents = new StringBuffer();
-            contents.append(XmlUtil.tag("description", "",
-                                        XmlUtil.getCdata(toks.get(12))));
+            contents.append(MyXmlUtil.tag("description", "",
+                                        MyXmlUtil.getCdata(toks.get(12))));
 
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i] == null) {
                     continue;
                 }
-                contents.append(XmlUtil.tag(fields[i], "", toks.get(i)));
+                contents.append(MyXmlUtil.tag(fields[i], "", toks.get(i)));
             }
 
 
             if ((aliases != null) && (aliases.size() > 0)) {
                 contents.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         "aliases", "",
-                        XmlUtil.getCdata(StringUtil.join("\n", aliases))));
+                        MyXmlUtil.getCdata(StringUtil.join("\n", aliases))));
             }
 
             sb.append(
-                XmlUtil.tag(
-                    "entry", XmlUtil.attrs(Utils.toStringArray(attrs)),
+                MyXmlUtil.tag(
+                    "entry", MyXmlUtil.attrs(Utils.toStringArray(attrs)),
                     contents.toString()));
             StringBuffer desc = new StringBuffer();
 

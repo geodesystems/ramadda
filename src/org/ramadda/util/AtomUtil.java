@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,12 +66,12 @@ public class AtomUtil {
     public static final String ATTR_TITLE = "title";
 
     public static String makeTimeRange(Date date1, Date date2) {
-        return XmlUtil.tag(TAG_TIME_START, "", Utils.format(date1))
-               + XmlUtil.tag(TAG_TIME_END, "", Utils.format(date2));
+        return MyXmlUtil.tag(TAG_TIME_START, "", Utils.format(date1))
+               + MyXmlUtil.tag(TAG_TIME_END, "", Utils.format(date2));
     }
 
     public static String makeTitle(String title) {
-        return XmlUtil.tag(TAG_TITLE, "", XmlUtil.getCdata(title));
+        return MyXmlUtil.tag(TAG_TITLE, "", MyXmlUtil.getCdata(title));
     }
 
     public static String makeLink(String href) {
@@ -81,52 +81,52 @@ public class AtomUtil {
     public static String makeLink(Link link) {
         StringBuffer attrs = new StringBuffer();
         if ((link.mimeType != null) && (link.mimeType.length() > 0)) {
-            attrs.append(XmlUtil.attrs(ATTR_TYPE, link.mimeType));
+            attrs.append(MyXmlUtil.attrs(ATTR_TYPE, link.mimeType));
         }
         if ((link.rel != null) && (link.rel.length() > 0)) {
-            attrs.append(XmlUtil.attrs(ATTR_REL, link.rel));
+            attrs.append(MyXmlUtil.attrs(ATTR_REL, link.rel));
         }
         if ((link.title != null) && (link.title.length() > 0)) {
-            attrs.append(XmlUtil.attrs(ATTR_TITLE, link.title));
+            attrs.append(MyXmlUtil.attrs(ATTR_TITLE, link.title));
         }
 
-        return XmlUtil.tag(TAG_LINK,
-                           attrs + XmlUtil.attrs(ATTR_HREF, link.url));
+        return MyXmlUtil.tag(TAG_LINK,
+                           attrs + MyXmlUtil.attrs(ATTR_HREF, link.url));
 
     }
 
     public static String makeLink(String rel, String href) {
-        return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_REL, rel, ATTR_HREF, href));
+        return MyXmlUtil.tag(TAG_LINK,
+                           MyXmlUtil.attrs(ATTR_REL, rel, ATTR_HREF, href));
     }
 
     public static String makeContent(String type, String content) {
-        return XmlUtil.tag(TAG_LINK, XmlUtil.attrs(ATTR_TYPE, type),
-                           XmlUtil.getCdata(content));
+        return MyXmlUtil.tag(TAG_LINK, MyXmlUtil.attrs(ATTR_TYPE, type),
+                           MyXmlUtil.getCdata(content));
     }
 
     public static String openFeed(String id) {
         String blobOfNamespaces =
             " xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:time=\"http://a9.com/-/opensearch/extensions/time/1.0/\"  xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gmi=\"http://www.isotc211.org/2005/gmi\" xmlns:gml=\"http://www.opengis.net/gml\" ";
 
-        return XmlUtil.openTag(
+        return MyXmlUtil.openTag(
             TAG_FEED,
-            XmlUtil.attrs(ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS, XMLNS_GEORSS)
-            + blobOfNamespaces) + XmlUtil.tag(TAG_ID, "", id)
-                                + XmlUtil.tag(
+            MyXmlUtil.attrs(ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS, XMLNS_GEORSS)
+            + blobOfNamespaces) + MyXmlUtil.tag(TAG_ID, "", id)
+                                + MyXmlUtil.tag(
                                     TAG_UPDATED, "",
                                     Utils.format(new Date()));
     }
 
     public static String closeFeed() {
-        return XmlUtil.closeTag(TAG_FEED);
+        return MyXmlUtil.closeTag(TAG_FEED);
     }
 
     public static String makeAuthor(String name, String uri) {
         // <author>   <name>Xah Lee</name>   <uri>http://xahlee.org/</uri> </author>
-        return XmlUtil.tag(TAG_AUTHOR, "",
-                           XmlUtil.tag(TAG_NAME, "", name)
-                           + XmlUtil.tag(TAG_URI, "", uri));
+        return MyXmlUtil.tag(TAG_AUTHOR, "",
+                           MyXmlUtil.tag(TAG_NAME, "", name)
+                           + MyXmlUtil.tag(TAG_URI, "", uri));
     }
 
     public static String makeEntry(String title, String id, Date published,
@@ -152,16 +152,16 @@ public class AtomUtil {
   <link rel="alternate" href="pd.html"/>
   </entry>*/
 
-        sb.append(XmlUtil.openTag(TAG_ENTRY));
-        sb.append(XmlUtil.tag(TAG_TITLE, "", title));
-        sb.append(XmlUtil.tag(TAG_ID, "", id));
+        sb.append(MyXmlUtil.openTag(TAG_ENTRY));
+        sb.append(MyXmlUtil.tag(TAG_TITLE, "", title));
+        sb.append(MyXmlUtil.tag(TAG_ID, "", id));
 
         if (published != null) {
-            sb.append(XmlUtil.tag(TAG_PUBLISHED, "",
+            sb.append(MyXmlUtil.tag(TAG_PUBLISHED, "",
                                   Utils.format(published)));
         }
         if (updated != null) {
-            sb.append(XmlUtil.tag(TAG_UPDATED, "", Utils.format(updated)));
+            sb.append(MyXmlUtil.tag(TAG_UPDATED, "", Utils.format(updated)));
         }
 
         if ((fromDate != null) && (toDate != null)) {
@@ -170,13 +170,13 @@ public class AtomUtil {
         sb.append(makeAuthor(author, authorUrl));
 
         if ((summary != null) && (summary.length() > 0)) {
-            sb.append(XmlUtil.tag(TAG_SUMMARY,
-                                  XmlUtil.attrs(ATTR_TYPE, "html"),
-                                  XmlUtil.getCdata(summary)));
+            sb.append(MyXmlUtil.tag(TAG_SUMMARY,
+                                  MyXmlUtil.attrs(ATTR_TYPE, "html"),
+                                  MyXmlUtil.getCdata(summary)));
         }
         if ((content != null) && (content.length() > 0)) {
-            sb.append(XmlUtil.tag(TAG_CONTENT, "",
-                                  XmlUtil.getCdata(content)));
+            sb.append(MyXmlUtil.tag(TAG_CONTENT, "",
+                                  MyXmlUtil.getCdata(content)));
         }
 
         if (extraStuff != null) {
@@ -189,7 +189,7 @@ public class AtomUtil {
                 sb.append("\n");
             }
         }
-        sb.append(XmlUtil.closeTag(TAG_ENTRY));
+        sb.append(MyXmlUtil.closeTag(TAG_ENTRY));
         sb.append("\n");
 
         return sb.toString();

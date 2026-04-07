@@ -31,7 +31,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -400,7 +400,7 @@ public class MetadataManager extends RepositoryManager {
     }
 
     private void addMetadataTag(Appendable sb, String tag, String v) throws Exception {
-	sb.append("<meta name=\"" + tag+"\" content=\"" + XmlUtil.encodeString(v) +"\">\n");
+	sb.append("<meta name=\"" + tag+"\" content=\"" + MyXmlUtil.encodeString(v) +"\">\n");
 	//	System.err.println("meta tag:" + tag + " " + v);
     }
 
@@ -1356,7 +1356,7 @@ public class MetadataManager extends RepositoryManager {
                     continue;
                 }
                 seen.add(file);
-                Element root = XmlUtil.getRoot(file, getClass());
+                Element root = MyXmlUtil.getRoot(file, getClass());
                 if (root == null) {
                     System.out.println(
                         "MetadataManager: no root element found in:" + file);
@@ -1500,7 +1500,7 @@ public class MetadataManager extends RepositoryManager {
     public void processMetadataXml(Request request,Entry entry, Element entryChild,
 				   Hashtable<String, String> idMap,Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
-        String          type    = XmlUtil.getAttribute(entryChild, ATTR_TYPE);
+        String          type    = MyXmlUtil.getAttribute(entryChild, ATTR_TYPE);
         MetadataHandler handler = findMetadataHandler(type);
         handler.processMetadataXml(request,entry, entryChild, idMap,filesMap, isInternal);
     }

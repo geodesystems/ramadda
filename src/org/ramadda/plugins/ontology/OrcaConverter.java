@@ -14,7 +14,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -156,7 +156,7 @@ public class OrcaConverter extends ImportHandler {
         }
         String xml = processFile(root);
 
-        return XmlUtil.getRoot(xml);
+        return MyXmlUtil.getRoot(xml);
     }
 
 
@@ -170,7 +170,7 @@ public class OrcaConverter extends ImportHandler {
      * @throws Exception _more_
      */
     public String processFile(String file) throws Exception {
-        Element root = XmlUtil.getRoot(file, OrcaConverter.class);
+        Element root = MyXmlUtil.getRoot(file, OrcaConverter.class);
 
         return processFile(root);
     }
@@ -198,8 +198,8 @@ public class OrcaConverter extends ImportHandler {
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
 
-        NodeList                  children        = XmlUtil.getElements(root);
-        StringBuffer              xml = new StringBuffer(XmlUtil.XML_HEADER);
+        NodeList                  children        = MyXmlUtil.getElements(root);
+        StringBuffer              xml = new StringBuffer(MyXmlUtil.XML_HEADER);
         xml.append("<entries>\n");
         for (int i = 0; i < children.getLength(); i++) {
             Element repositoryObject = (Element) children.item(i);
@@ -209,14 +209,14 @@ public class OrcaConverter extends ImportHandler {
 
                 continue;
             }
-            String  key = XmlUtil.getGrandChildText(repositoryObject,
+            String  key = MyXmlUtil.getGrandChildText(repositoryObject,
                               TAG_KEY);
             Element mainElement = null;
             String  partName    = "";
             String  entryType   = "";
             for (int j = 0; j < subTags.length; j++) {
                 String subTag = subTags[j];
-                mainElement = (Element) XmlUtil.findChild(repositoryObject,
+                mainElement = (Element) MyXmlUtil.findChild(repositoryObject,
                         subTag);
                 if (mainElement != null) {
                     partName  = subTagNames[j];
@@ -227,18 +227,18 @@ public class OrcaConverter extends ImportHandler {
             }
             if (mainElement == null) {
                 System.err.println("Unknown tag: "
-                                   + XmlUtil.toString(repositoryObject));
+                                   + MyXmlUtil.toString(repositoryObject));
 
                 continue;
             }
-            String groupName = XmlUtil.getAttribute(repositoryObject,
+            String groupName = MyXmlUtil.getAttribute(repositoryObject,
                                    ATTR_GROUP, "");
             Group group = groups.get(groupName);
             if (group == null) {
                 group = new Group(groupName);
                 groups.put(groupName, group);
-                xml.append(XmlUtil.tag("entry",
-                                       XmlUtil.attrs("type", "group", "name",
+                xml.append(MyXmlUtil.tag("entry",
+                                       MyXmlUtil.attrs("type", "group", "name",
                                            group.name, "id", group.id)));
             }
             String part   = mainElement.getTagName();
@@ -246,27 +246,27 @@ public class OrcaConverter extends ImportHandler {
             if (partId == null) {
                 partId = "id_" + (idcnt++);
                 group.addPart(part, partId);
-                xml.append(XmlUtil.tag("entry",
-                                       XmlUtil.attrs("name", partName,
+                xml.append(MyXmlUtil.tag("entry",
+                                       MyXmlUtil.attrs("name", partName,
                                            "parent", group.id, "id",
-                                           partId) + XmlUtil.attrs("type",
+                                           partId) + MyXmlUtil.attrs("type",
                                                "group")));
             }
 
             String   name  = "";
-            NodeList names = XmlUtil.getElements(mainElement, TAG_NAME);
+            NodeList names = MyXmlUtil.getElements(mainElement, TAG_NAME);
             if (names.getLength() > 0) {
                 Element nameElement = (Element) names.item(names.getLength()
                                           - 1);
-                NodeList nameParts = XmlUtil.getElements(nameElement,
+                NodeList nameParts = MyXmlUtil.getElements(nameElement,
                                          TAG_NAMEPART);
                 for (int j = nameParts.getLength() - 1; j >= 0; j--) {
                     name = name + " "
-                           + XmlUtil.getChildText(
+                           + MyXmlUtil.getChildText(
                                (Element) nameParts.item(j));
                 }
             } else {
-                //                System.err.println ("no name: " + XmlUtil.toString(mainElement));
+                //                System.err.println ("no name: " + MyXmlUtil.toString(mainElement));
             }
             name = name.trim();
 
@@ -274,7 +274,7 @@ public class OrcaConverter extends ImportHandler {
 
             StringBuffer childTags = new StringBuffer();
 
-            List descriptions = XmlUtil.findChildren(mainElement,
+            List descriptions = MyXmlUtil.findChildren(mainElement,
                                     TAG_DESCRIPTION);
             StringBuffer desc = new StringBuffer();
             for (int j = 0; j < descriptions.size(); j++) {
@@ -282,25 +282,25 @@ public class OrcaConverter extends ImportHandler {
                 if (desc.length() > 0) {
                     desc.append("<br>----<br>");
                 }
-                String text = XmlUtil.getChildText(descriptionNode).trim();
+                String text = MyXmlUtil.getChildText(descriptionNode).trim();
                 text = text.replace("\n", "<br>");
                 desc.append(text);
             }
             if (desc.length() > 0) {
                 childTags.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         "description", "",
-                        XmlUtil.getCdata(desc.toString())));
+                        MyXmlUtil.getCdata(desc.toString())));
             }
 
-            List subjects = XmlUtil.findChildren(mainElement, TAG_SUBJECT);
+            List subjects = MyXmlUtil.findChildren(mainElement, TAG_SUBJECT);
             for (int j = 0; j < subjects.size(); j++) {
                 Element subject = (Element) subjects.get(j);
-                String  type    = XmlUtil.getAttribute(subject, ATTR_TYPE);
+                String  type    = MyXmlUtil.getAttribute(subject, ATTR_TYPE);
                 if ( !type.equals("local")) {
                     continue;
                 }
-                String value = XmlUtil.getChildText(subject).trim();
+                String value = MyXmlUtil.getChildText(subject).trim();
                 if (value.indexOf("|") >= 0) {
                     value = StringUtil.join(">",
                                             StringUtil.split(value, "|",
@@ -310,22 +310,22 @@ public class OrcaConverter extends ImportHandler {
                                             StringUtil.split(value, "-",
                                                 true, true));
                 }
-                childTags.append(XmlUtil.tag("metadata",
-                                             XmlUtil.attrs("type",
+                childTags.append(MyXmlUtil.tag("metadata",
+                                             MyXmlUtil.attrs("type",
                                                  "enum_tag", "attr1",
                                                      value)));
             }
 
 
             StringBuffer entryAttrs = new StringBuffer();
-            entryAttrs.append(XmlUtil.attrs("name", name, "parent", partId,
+            entryAttrs.append(MyXmlUtil.attrs("name", name, "parent", partId,
                                             "id", key, "type", entryType));
 
 
 
 
             processLocations(mainElement, childTags, entryAttrs);
-            xml.append(XmlUtil.tag("entry", entryAttrs.toString(),
+            xml.append(MyXmlUtil.tag("entry", entryAttrs.toString(),
                                    childTags.toString()));
             Object o = new Object(mainElement, key, name, group);
             keyMap.put(key, o);
@@ -335,29 +335,29 @@ public class OrcaConverter extends ImportHandler {
 
         HashSet<String> seenAssociation = new HashSet<String>();
         for (Object obj : registryObjects) {
-            NodeList related = XmlUtil.getElements(obj.element,
+            NodeList related = MyXmlUtil.getElements(obj.element,
                                    TAG_RELATEDOBJECT);
             for (int j = 0; j < related.getLength(); j++) {
                 Element relatedObject = (Element) related.item(j);
-                String relatedKey = XmlUtil.getGrandChildText(relatedObject,
+                String relatedKey = MyXmlUtil.getGrandChildText(relatedObject,
                                         TAG_KEY);
                 Object relatedTo = keyMap.get(relatedKey);
                 if (relatedTo == null) {
                     continue;
                 }
                 String type = "";
-                Element relation = XmlUtil.findChild(relatedObject,
+                Element relation = MyXmlUtil.findChild(relatedObject,
                                        TAG_RELATION);
                 if (relation != null) {
-                    type = XmlUtil.getAttribute(relation, ATTR_TYPE, type);
+                    type = MyXmlUtil.getAttribute(relation, ATTR_TYPE, type);
                 }
                 //        <relation type="isMemberOf">
                 String key1 = obj.key + "->" + type + "->" + relatedTo.key;
                 String key2 = relatedTo.key + "->" + type + "->" + obj.key;
                 if ( !seenAssociation.contains(key1)
                         && !seenAssociation.contains(key2)) {
-                    xml.append(XmlUtil.tag("association",
-                                           XmlUtil.attrs("from", obj.key,
+                    xml.append(MyXmlUtil.tag("association",
+                                           MyXmlUtil.attrs("from", obj.key,
                                                "to", relatedTo.key, "type",
                                                    type)));
                     seenAssociation.add(key1);
@@ -389,26 +389,26 @@ public class OrcaConverter extends ImportHandler {
         if (address == null) {
             return;
         }
-        NodeList addresses = XmlUtil.getElements(address);
+        NodeList addresses = MyXmlUtil.getElements(address);
         for (int j = 0; j < addresses.getLength(); j++) {
             Element node = (Element) addresses.item(j);
             String  tag  = node.getTagName();
             if (tag.equals(TAG_ELECTRONIC)) {
-                String type = XmlUtil.getAttribute(node, ATTR_TYPE);
-                String value = XmlUtil.getGrandChildText(node,
+                String type = MyXmlUtil.getAttribute(node, ATTR_TYPE);
+                String value = MyXmlUtil.getGrandChildText(node,
                                    TAG_VALUE).trim();
                 if (type.equals("url")) {
                     if ( !didUrl[0]) {
-                        entryAttrs.append(XmlUtil.attr("url", value));
+                        entryAttrs.append(MyXmlUtil.attr("url", value));
                         didUrl[0] = true;
                     } else {
-                        childTags.append(XmlUtil.tag("metadata",
-                                XmlUtil.attrs("type", "thredds.link",
+                        childTags.append(MyXmlUtil.tag("metadata",
+                                MyXmlUtil.attrs("type", "thredds.link",
                                     "attr1", value, "attr2", value)));
                     }
                 } else {
-                    childTags.append(XmlUtil.tag("metadata",
-                            XmlUtil.attrs("type", "misc.contact", "attr1",
+                    childTags.append(MyXmlUtil.tag("metadata",
+                            MyXmlUtil.attrs("type", "misc.contact", "attr1",
                                           type, "attr2", value)));
                 }
             } else if (tag.equals(TAG_PHYSICAL)) {
@@ -431,19 +431,19 @@ public class OrcaConverter extends ImportHandler {
                                         StringBuffer childTags,
                                         StringBuffer entryAttrs) {
 
-        List locations = XmlUtil.findChildren(mainElement, TAG_LOCATION);
+        List locations = MyXmlUtil.findChildren(mainElement, TAG_LOCATION);
         boolean[]       didUrl    = { false };
         boolean[]       didBounds = { false };
         HashSet<String> seenLoc   = new HashSet<String>();
         for (int i = 0; i < locations.size(); i++) {
             Element location = (Element) locations.get(i);
-            processAddress((Element) XmlUtil.findChild(location,
+            processAddress((Element) MyXmlUtil.findChild(location,
                     TAG_ADDRESS), childTags, entryAttrs, didUrl);
-            Element spatial = (Element) XmlUtil.findChild(location,
+            Element spatial = (Element) MyXmlUtil.findChild(location,
                                   TAG_SPATIAL);
             if (spatial != null) {
-                String type = XmlUtil.getAttribute(spatial, ATTR_TYPE, "");
-                String text = XmlUtil.getChildText(spatial).trim();
+                String type = MyXmlUtil.getAttribute(spatial, ATTR_TYPE, "");
+                String text = MyXmlUtil.getChildText(spatial).trim();
                 if (type.equals("iso19139dcmiBox")) {
                     // <spatial type="iso19139dcmiBox">northlimit=7.4; southlimit=7.2; westlimit=134.3; eastlimit=134.6; projection=WGS84</spatial>
                     List<String> toks = StringUtil.split(text, ";", true,
@@ -473,22 +473,22 @@ public class OrcaConverter extends ImportHandler {
                         if ((attribute != null)
                                 && !seenLoc.contains(attribute)) {
                             seenLoc.add(attribute);
-                            entryAttrs.append(XmlUtil.attrs(attribute, loc));
+                            entryAttrs.append(MyXmlUtil.attrs(attribute, loc));
                         }
                     }
 
                 } else if (type.equals("iso31662")) {
-                    childTags.append(XmlUtil.tag("metadata",
-                            XmlUtil.attrs("type", "spatial.region", "attr1",
+                    childTags.append(MyXmlUtil.tag("metadata",
+                            MyXmlUtil.attrs("type", "spatial.region", "attr1",
                                           text)));
                     //                    <spatial type="iso31662" xml:lang="en">AU-QLD</spatial>
                 } else if (type.equals("kmlPolyCoords")) {
-                    childTags.append(XmlUtil.tag("metadata",
-                            XmlUtil.attrs("type", "spatial.kmlpolycoords",
+                    childTags.append(MyXmlUtil.tag("metadata",
+                            MyXmlUtil.attrs("type", "spatial.kmlpolycoords",
                                           "attr1", text)));
                 } else if (type.equals("text")) {
-                    childTags.append(XmlUtil.tag("metadata",
-                            XmlUtil.attrs("type", "spatial.region", "attr1",
+                    childTags.append(MyXmlUtil.tag("metadata",
+                            MyXmlUtil.attrs("type", "spatial.region", "attr1",
                                           text)));
                 }
             }

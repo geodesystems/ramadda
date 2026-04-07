@@ -18,7 +18,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 import org.json.*;
@@ -43,7 +43,7 @@ public class CoreBaseTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, node);
 	String service = "<service link=\"gdal_tiff2coreimage\"  target=\"attachment\"/>";
-	Element root = XmlUtil.getRoot(service);
+	Element root = MyXmlUtil.getRoot(service);
 	tiffService = new Service(repository, root);
     }
 

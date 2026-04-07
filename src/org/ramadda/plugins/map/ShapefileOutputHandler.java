@@ -18,6 +18,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
@@ -38,7 +39,7 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -388,10 +389,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         Element      root = toKml(fc, forMap, mapRequest.bounds, fieldValues);
         long         t2   = System.currentTimeMillis();
-        StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer sb   = new StringBuffer(MyXmlUtil.XML_HEADER);
 	FileOutputStream fos = new FileOutputStream(mapRequest.cacheFile);
 	OutputStreamWriter osw = new OutputStreamWriter(fos);
-        XmlUtil.toString(root, osw);
+        MyXmlUtil.toString(root, osw);
 	osw.flush();
 	osw.close();
 	fos.close();
@@ -1287,7 +1288,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     attrs[i + 1] = attrs[i + 1].toLowerCase();
                 }
             }
-            XmlUtil.setAttributes(simple, attrs);
+            MyXmlUtil.setAttributes(simple, attrs);
             KmlUtil.makeText(simple, KmlUtil.TAG_DISPLAYNAME,
                              "&lt;b&gt;" + Utils.makeLabel(entry.getKey())
                              + "&lt;/b&gt;");

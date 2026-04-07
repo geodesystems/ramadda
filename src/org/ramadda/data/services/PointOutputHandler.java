@@ -51,7 +51,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
@@ -674,8 +674,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 memoryCheck("POINT: memory after visit:");
             }
             if (request.responseAsXml()) {
-                return new Result(XmlUtil.tag(TAG_RESPONSE,
-					      XmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
+                return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+					      MyXmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
             }
 
             return getDummyResult();
@@ -1917,7 +1917,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             request.getHttpServletResponse().setContentType(
 							    "application/vnd.google-earth.kmz");
             zos.putNextEntry(new ZipEntry("points.kml"));
-            String xml   = XmlUtil.toString(root);
+            String xml   = MyXmlUtil.toString(root);
             byte[] bytes = xml.getBytes();
             zos.write(bytes, 0, bytes.length);
             zos.closeEntry();
@@ -2128,7 +2128,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         PrintWriter pw = getPrintWriter(request, jobId, mainEntry, ".kml");
-        XmlUtil.toString(root, pw);
+        MyXmlUtil.toString(root, pw);
         pw.close();
 
         return getDummyResult();

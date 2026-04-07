@@ -7,11 +7,12 @@ package org.ramadda.geodata.point.czo;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 
@@ -208,9 +209,9 @@ public class CzoHeader {
         if (datafile != null) {
             extra = " file=\"" + datafile + "\" ";
         }
-        sb.append(XmlUtil.openTag("entry",
+        sb.append(MyXmlUtil.openTag("entry",
                                   extra
-                                  + XmlUtil.attrs("type", "type_point_czo",
+                                  + MyXmlUtil.attrs("type", "type_point_czo",
                                       "name", name)));
         StringBuffer pointProps = new StringBuffer();
         StringBuffer fields     = new StringBuffer();
@@ -296,10 +297,10 @@ public class CzoHeader {
 
 
 
-        sb.append(XmlUtil.tag("properties", "",
-                              XmlUtil.getCdata(pointProps.toString())));
-        sb.append(XmlUtil.tag("description", "",
-                              XmlUtil.getCdata(StringUtil.join("\n",
+        sb.append(MyXmlUtil.tag("properties", "",
+                              MyXmlUtil.getCdata(pointProps.toString())));
+        sb.append(MyXmlUtil.tag("description", "",
+                              MyXmlUtil.getCdata(StringUtil.join("\n",
                                   description))));
 
         addMetadata(sb, investigators, "project_person");
@@ -307,7 +308,7 @@ public class CzoHeader {
         addMetadata(sb, keywords, "content.keyword");
         addMetadata(sb, citations, "content.acknowledgement");
         addMetadata(sb, publications, "content.acknowledgement");
-        sb.append(XmlUtil.closeTag("entry"));
+        sb.append(MyXmlUtil.closeTag("entry"));
 
     }
 
@@ -352,10 +353,10 @@ public class CzoHeader {
                              String type) {
         for (String v : values) {
             v = Utils.removeNonAscii(v);
-            xml.append(XmlUtil.tag("metadata", XmlUtil.attrs("type", type),
-                                   XmlUtil.tag("attr",
+            xml.append(MyXmlUtil.tag("metadata", MyXmlUtil.attrs("type", type),
+                                   MyXmlUtil.tag("attr",
                                        "encoded=\"false\" index=\"1\"",
-                                       XmlUtil.getCdata(v))));
+                                       MyXmlUtil.getCdata(v))));
         }
     }
 

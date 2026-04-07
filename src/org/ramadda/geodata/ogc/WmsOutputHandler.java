@@ -17,7 +17,7 @@ import org.w3c.dom.*;
 import ucar.unidata.data.GeoLocationInfo;
 import ucar.unidata.data.gis.WmsSelection;
 import ucar.unidata.util.WmsUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class WmsOutputHandler extends OutputHandler {
         String  wmsUrl = entry.getResource().getPath();
         Element root   = wmsCache.get(wmsUrl);
         if (root == null) {
-            root = XmlUtil.getRoot(wmsUrl, getClass());
+            root = MyXmlUtil.getRoot(wmsUrl, getClass());
             if (wmsCache.size() > 10) {
                 wmsCache = new Hashtable<String, Element>();
             }
@@ -139,32 +139,32 @@ public class WmsOutputHandler extends OutputHandler {
         Element root = getWmsRoot(entry);
 
         //Find the capability node
-        Element capabilityNode = XmlUtil.findDescendant(root,
+        Element capabilityNode = MyXmlUtil.findDescendant(root,
                                      WmsUtil.TAG_CAPABILITY);
 
         //Get the top level layer node
-        Element topLevelLayer = XmlUtil.findDescendant(capabilityNode,
+        Element topLevelLayer = MyXmlUtil.findDescendant(capabilityNode,
                                     WmsUtil.TAG_LAYER);
         if (topLevelLayer == null) {
             sb.append("No top level layer found");
 
             return new Result("", sb);
         }
-        String title = XmlUtil.getGrandChildText(topLevelLayer,
+        String title = MyXmlUtil.getGrandChildText(topLevelLayer,
                            WmsUtil.TAG_TITLE);
         sb.append(header(title));
 
 
         //Find the sub layers
         List<Element> layerNodes =
-            (List<Element>) XmlUtil.findChildren(topLevelLayer,
+            (List<Element>) MyXmlUtil.findChildren(topLevelLayer,
                 WmsUtil.TAG_LAYER);
 
         //Go through each layer, find its styles and then use the WmsUtil method to extract out the
         //urls and other information from the DOM
         for (Element layerNode : layerNodes) {
             String[] message = new String[] { null };
-            List<Element> styles = XmlUtil.findChildren(layerNode,
+            List<Element> styles = MyXmlUtil.findChildren(layerNode,
                                        WmsUtil.TAG_STYLE);
 
             //Throw in the parent layer node so we get its title, etc.

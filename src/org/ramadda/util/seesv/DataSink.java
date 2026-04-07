@@ -10,7 +10,7 @@ import org.ramadda.util.IO;
 import ucar.unidata.util.IOUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;

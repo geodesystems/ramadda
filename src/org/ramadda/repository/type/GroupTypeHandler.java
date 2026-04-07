@@ -21,7 +21,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 
 import ucar.unidata.util.WrapperException;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.sql.PreparedStatement;
 

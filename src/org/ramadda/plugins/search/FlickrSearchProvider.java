@@ -28,7 +28,7 @@ import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -172,8 +172,8 @@ public class FlickrSearchProvider extends SearchProvider {
         String      xml = IOUtil.readContents(is);
         //        System.out.println("xml:" + xml);
 
-        Element root   = XmlUtil.getRoot(xml);
-        Element photos = XmlUtil.findChild(root, "photos");
+        Element root   = MyXmlUtil.getRoot(xml);
+        Element photos = MyXmlUtil.findChild(root, "photos");
         if (photos == null) {
             return entries;
         }
@@ -181,17 +181,17 @@ public class FlickrSearchProvider extends SearchProvider {
         Entry       parent      = getSynthTopLevelEntry();
         TypeHandler typeHandler =
             getRepository().getTypeHandler("type_image");
-        NodeList children = XmlUtil.getElements(photos, "photo");
+        NodeList children = MyXmlUtil.getElements(photos, "photo");
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item   = (Element) children.item(childIdx);
-            String  name   = XmlUtil.getAttribute(item, "title", "");
-            String  id     = XmlUtil.getAttribute(item, "id", "");
-            String  owner  = XmlUtil.getAttribute(item, "owner", "");
-            String  server = XmlUtil.getAttribute(item, "server", "");
-            String  farm   = XmlUtil.getAttribute(item, "farm", "");
-            String  secret = XmlUtil.getAttribute(item, "secret", "");
+            String  name   = MyXmlUtil.getAttribute(item, "title", "");
+            String  id     = MyXmlUtil.getAttribute(item, "id", "");
+            String  owner  = MyXmlUtil.getAttribute(item, "owner", "");
+            String  server = MyXmlUtil.getAttribute(item, "server", "");
+            String  farm   = MyXmlUtil.getAttribute(item, "farm", "");
+            String  secret = MyXmlUtil.getAttribute(item, "secret", "");
             Date    dttm   = null;
-            String date = XmlUtil.getAttribute(item, "datetaken",
+            String date = MyXmlUtil.getAttribute(item, "datetaken",
                               (String) null);
             if (date != null) {
                 dttm = Utils.parseDate(date);
@@ -199,9 +199,9 @@ public class FlickrSearchProvider extends SearchProvider {
             if (dttm == null) {
                 dttm = new Date();
             }
-            double latitude = XmlUtil.getAttribute(item, "latitude",
+            double latitude = MyXmlUtil.getAttribute(item, "latitude",
                                   Double.NaN);
-            double longitude = XmlUtil.getAttribute(item, "longitude",
+            double longitude = MyXmlUtil.getAttribute(item, "longitude",
                                    Double.NaN);
 
             Date fromDate = dttm,
@@ -220,7 +220,7 @@ public class FlickrSearchProvider extends SearchProvider {
 
             String desc = "Photo courtesy of "
                           + HtmlUtils.href(pageUrl, "Flickr");
-            String desc2 = XmlUtil.getGrandChildText(item, "description", "");
+            String desc2 = MyXmlUtil.getGrandChildText(item, "description", "");
             if (desc2.length() > 0) {
                 desc = desc + "<br>" + desc2;
             }

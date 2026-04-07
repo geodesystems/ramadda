@@ -24,7 +24,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -152,12 +152,12 @@ public class DifImporter extends ImportHandler {
                           getRepository().getGUID());
         Object[] values  = entry.getTypeHandler().getEntryValues(entry);
 
-        Element  root    = XmlUtil.getRoot(xml);
+        Element  root    = MyXmlUtil.getRoot(xml);
         Element  difRoot = null;
         if (root.getTagName().equals(DifUtil.TAG_DIF)) {
             difRoot = root;
         } else {
-            List difs = XmlUtil.findDescendants(root, DifUtil.TAG_DIF);
+            List difs = MyXmlUtil.findDescendants(root, DifUtil.TAG_DIF);
             if (difs.size() == 0) {
                 throw new IllegalArgumentException("Could not find DIF tag");
             }
@@ -165,9 +165,9 @@ public class DifImporter extends ImportHandler {
             difRoot = (Element) difs.get(0);
         }
 
-        String title = XmlUtil.getGrandChildText(difRoot,
+        String title = MyXmlUtil.getGrandChildText(difRoot,
                            DifUtil.TAG_Entry_Title, "no name");
-        String id = XmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Entry_ID,
+        String id = MyXmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Entry_ID,
                         "");
         values[0] = id;
 
@@ -207,27 +207,27 @@ public class DifImporter extends ImportHandler {
 
 
 
-        Element spatialNode = XmlUtil.findChild(difRoot,
+        Element spatialNode = MyXmlUtil.findChild(difRoot,
                                   DifUtil.TAG_Spatial_Coverage);
         if (spatialNode != null) {
             String tmp;
 
-            tmp = XmlUtil.getGrandChildText(
+            tmp = MyXmlUtil.getGrandChildText(
                 spatialNode, DifUtil.TAG_Northernmost_Latitude, null);
             if (tmp != null) {
                 entry.setNorth(Double.parseDouble(tmp));
             }
-            tmp = XmlUtil.getGrandChildText(
+            tmp = MyXmlUtil.getGrandChildText(
                 spatialNode, DifUtil.TAG_Westernmost_Longitude, null);
             if (tmp != null) {
                 entry.setWest(Double.parseDouble(tmp));
             }
-            tmp = XmlUtil.getGrandChildText(
+            tmp = MyXmlUtil.getGrandChildText(
                 spatialNode, DifUtil.TAG_Southernmost_Latitude, null);
             if (tmp != null) {
                 entry.setSouth(Double.parseDouble(tmp));
             }
-            tmp = XmlUtil.getGrandChildText(
+            tmp = MyXmlUtil.getGrandChildText(
                 spatialNode, DifUtil.TAG_Easternmost_Longitude, null);
             if (tmp != null) {
                 entry.setEast(Double.parseDouble(tmp));
@@ -235,17 +235,17 @@ public class DifImporter extends ImportHandler {
         }
 
 
-        Element temporalNode = XmlUtil.findChild(difRoot,
+        Element temporalNode = MyXmlUtil.findChild(difRoot,
                                    DifUtil.TAG_Temporal_Coverage);
         if (temporalNode != null) {
             Date dttm = null;
-            String startDate = XmlUtil.getGrandChildText(temporalNode,
+            String startDate = MyXmlUtil.getGrandChildText(temporalNode,
                                    DifUtil.TAG_Start_Date, null);
             if (startDate != null) {
                 dttm = Utils.parseDate(startDate);
                 entry.setStartDate(dttm.getTime());
             }
-            String stopDate = XmlUtil.getGrandChildText(temporalNode,
+            String stopDate = MyXmlUtil.getGrandChildText(temporalNode,
                                   DifUtil.TAG_Stop_Date, null);
             if (stopDate != null) {
                 dttm = Utils.parseDate(stopDate);
@@ -270,14 +270,14 @@ public class DifImporter extends ImportHandler {
         */
 
         for (Element node :
-                (List<Element>) XmlUtil.findChildren(difRoot,
+                (List<Element>) MyXmlUtil.findChildren(difRoot,
                     DifUtil.TAG_Personnel)) {
             List roles = new ArrayList();
             int  cnt   = 1;
             for (Element roleNode :
-                    (List<Element>) XmlUtil.findChildren(node,
+                    (List<Element>) MyXmlUtil.findChildren(node,
                         DifUtil.TAG_Role)) {
-                String    role = XmlUtil.getChildText(roleNode);
+                String    role = MyXmlUtil.getChildText(roleNode);
                 Hashtable ht   = new Hashtable();
                 ht.put(Integer.valueOf(cnt), role);
                 roles.add(ht);
@@ -290,21 +290,21 @@ public class DifImporter extends ImportHandler {
                 new Metadata(getRepository().getGUID(), entry.getId(),
                              getMetadataManager().findType(DifMetadataHandler.TYPE_PERSONNEL),
                              DFLT_INHERITED, roleXml,
-                             XmlUtil.getGrandChildText(node,
+                             MyXmlUtil.getGrandChildText(node,
                                  DifUtil.TAG_First_Name,
-                                 ""), XmlUtil.getGrandChildText(node,
+                                 ""), MyXmlUtil.getGrandChildText(node,
                                      DifUtil.TAG_Middle_Name,
-                                     ""), XmlUtil.getGrandChildText(node,
+                                     ""), MyXmlUtil.getGrandChildText(node,
                                          DifUtil.TAG_Last_Name,
                                          ""), Metadata.DFLT_EXTRA);
-            metadata.setAttr(5, XmlUtil.getGrandChildText(node,
+            metadata.setAttr(5, MyXmlUtil.getGrandChildText(node,
                     DifUtil.TAG_Email, ""));
             getMetadataManager().addMetadata(request,entry, metadata);
 
         }
 
 
-        entry.setDescription(XmlUtil.getGrandChildText(difRoot,
+        entry.setDescription(MyXmlUtil.getGrandChildText(difRoot,
                 DifUtil.TAG_Summary, ""));
         entry.setName(title);
         entry.setParentEntryId(parentEntry.getId());
@@ -327,8 +327,8 @@ public class DifImporter extends ImportHandler {
                              String metadataId)
             throws Exception {
         for (Element node :
-                (List<Element>) XmlUtil.findChildren(difRoot, tag)) {
-            String value = XmlUtil.getChildText(node);
+                (List<Element>) MyXmlUtil.findChildren(difRoot, tag)) {
+            String value = MyXmlUtil.getChildText(node);
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(), getMetadataManager().findType(metadataId),
                                              DFLT_INHERITED, value,
@@ -357,10 +357,10 @@ public class DifImporter extends ImportHandler {
                              String metadataId, String[] subTags)
             throws Exception {
         for (Element node :
-                (List<Element>) XmlUtil.findChildren(difRoot, tag)) {
+                (List<Element>) MyXmlUtil.findChildren(difRoot, tag)) {
             String[] values = new String[subTags.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = XmlUtil.getGrandChildText(node, subTags[i], "");
+                values[i] = MyXmlUtil.getGrandChildText(node, subTags[i], "");
             }
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(), getMetadataManager().findType(metadataId),

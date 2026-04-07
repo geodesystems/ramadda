@@ -41,7 +41,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -104,42 +104,42 @@ public class ApiManager extends RepositoryManager {
                               Hashtable handlers, String defaultHandler)
             throws Exception {
 
-        String request    = XmlUtil.getAttribute(node,
+        String request    = MyXmlUtil.getAttribute(node,
                                 ApiMethod.ATTR_REQUEST);
 
-        String methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
-        boolean needsSsl = XmlUtil.getAttributeFromTree(node,
+        String methodName = MyXmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
+        boolean needsSsl = MyXmlUtil.getAttributeFromTree(node,
                                ApiMethod.ATTR_NEEDS_SSL, false);
-        boolean checkAuthMethod = XmlUtil.getAttributeFromTree(node,
+        boolean checkAuthMethod = MyXmlUtil.getAttributeFromTree(node,
                                       ApiMethod.ATTR_CHECKAUTHMETHOD, false);
-        boolean checkIsHuman = XmlUtil.getAttributeFromTree(node,
+        boolean checkIsHuman = MyXmlUtil.getAttributeFromTree(node,
                                       "checkishuman", false);	
 
-        String authMethod = XmlUtil.getAttributeFromTree(node,
+        String authMethod = MyXmlUtil.getAttributeFromTree(node,
                                 ApiMethod.ATTR_AUTHMETHOD, "");
 
-        boolean admin = XmlUtil.getAttributeFromTree(node,
+        boolean admin = MyXmlUtil.getAttributeFromTree(node,
                             ApiMethod.ATTR_ADMIN,
                             Misc.getProperty(props, ApiMethod.ATTR_ADMIN,
                                              true));
 
-        boolean mustBeUser = XmlUtil.getAttributeFromTree(node,
+        boolean mustBeUser = MyXmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_ISUSER,
                                  Misc.getProperty(props,
                                      ApiMethod.ATTR_ISUSER, false));
 
-        boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
+        boolean requiresAuthToken = MyXmlUtil.getAttributeFromTree(node,
                                         ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                         Misc.getProperty(props,
                                             ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                             false));
 
-        String handlerName = XmlUtil.getAttributeFromTree(node,
+        String handlerName = MyXmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
                                  Misc.getProperty(props,
                                      ApiMethod.ATTR_HANDLER, defaultHandler));
 
-        String handlerId = XmlUtil.getAttributeFromTree(node,
+        String handlerId = MyXmlUtil.getAttributeFromTree(node,
                                ApiMethod.ATTR_ID, handlerName);
         RequestHandler handler = (RequestHandler) handlers.get(handlerId);
 
@@ -249,26 +249,26 @@ public class ApiManager extends RepositoryManager {
                     + handler.getClass().getName());
         }
 
-        String icon = XmlUtil.getAttribute(node, ApiMethod.ATTR_ICON,
+        String icon = MyXmlUtil.getAttribute(node, ApiMethod.ATTR_ICON,
                                            (String) null);
         ApiMethod apiMethod =
             new ApiMethod(getRepository(), handler, request,
-                          XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
+                          MyXmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
                               request), method, admin, mustBeUser,
                                         requiresAuthToken, needsSsl,
                                         authMethod, checkAuthMethod,
 			  checkIsHuman,
-			  XmlUtil.getAttribute(node,
+			  MyXmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL,
                                             false), icon);
-        List actions = Utils.split(XmlUtil.getAttribute(node,
+        List actions = Utils.split(MyXmlUtil.getAttribute(node,
                            ApiMethod.ATTR_ACTIONS, BLANK), ",", true, true);
         if ( !Permission.isValidActions(actions)) {
             throw new IllegalArgumentException("Bad actions:" + actions
                     + " for api method:" + apiMethod.getName());
         }
         apiMethod.setActions(actions);
-        if (XmlUtil.getAttribute(node, ApiMethod.ATTR_ISHOME, false)) {
+        if (MyXmlUtil.getAttribute(node, ApiMethod.ATTR_ISHOME, false)) {
             homeApi = apiMethod;
         }
         requestMap.put(url, apiMethod);
@@ -299,7 +299,7 @@ public class ApiManager extends RepositoryManager {
             if (getPluginManager().haveSeen(file)) {
                 continue;
             }
-            Element   apiRoot = XmlUtil.getRoot(file, getClass());
+            Element   apiRoot = MyXmlUtil.getRoot(file, getClass());
             Hashtable props   = new Hashtable();
             try {
                 processApiNode(apiRoot, apiHandlers, props, "repository");
@@ -332,18 +332,18 @@ public class ApiManager extends RepositoryManager {
         if (apiRoot == null) {
             return;
         }
-        NodeList children = XmlUtil.getElements(apiRoot);
+        NodeList children = MyXmlUtil.getElements(apiRoot);
         for (int i = 0; i < children.getLength(); i++) {
             Element node = (Element) children.item(i);
             String  tag  = node.getTagName();
             if (tag.equals(ApiMethod.TAG_PROPERTY)) {
-                props.put(XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME),
-                          XmlUtil.getAttribute(node, ApiMethod.ATTR_VALUE));
+                props.put(MyXmlUtil.getAttribute(node, ApiMethod.ATTR_NAME),
+                          MyXmlUtil.getAttribute(node, ApiMethod.ATTR_VALUE));
             } else if (tag.equals(ApiMethod.TAG_API)) {
                 addRequest(node, props, handlers, defaultHandler);
             } else if (tag.equals(ApiMethod.TAG_GROUP)) {
                 processApiNode(node, handlers, props,
-                               XmlUtil.getAttribute(node,
+                               MyXmlUtil.getAttribute(node,
                                    ApiMethod.ATTR_HANDLER, defaultHandler));
             } else {
                 throw new IllegalArgumentException("Unknown api.xml tag:"

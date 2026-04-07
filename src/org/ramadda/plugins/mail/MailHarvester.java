@@ -23,8 +23,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -159,15 +159,15 @@ public class MailHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        imapUrl = XmlUtil.getAttribute(element, ATTR_IMAP_URL, imapUrl);
-        folder  = XmlUtil.getAttribute(element, ATTR_FOLDER, folder);
-        from    = XmlUtil.getAttribute(element, ATTR_FROM, from);
-        action  = XmlUtil.getAttribute(element, ATTR_ACTION, action);
-        delete = XmlUtil.getAttribute(element, ATTR_DELETEEMAIL,
+        imapUrl = MyXmlUtil.getAttribute(element, ATTR_IMAP_URL, imapUrl);
+        folder  = MyXmlUtil.getAttribute(element, ATTR_FOLDER, folder);
+        from    = MyXmlUtil.getAttribute(element, ATTR_FROM, from);
+        action  = MyXmlUtil.getAttribute(element, ATTR_ACTION, action);
+        delete = MyXmlUtil.getAttribute(element, ATTR_DELETEEMAIL,
                                       "false").equals("true");
-        subject  = XmlUtil.getAttribute(element, ATTR_SUBJECT, subject);
-        body     = XmlUtil.getAttribute(element, ATTR_BODY, body);
-        response = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
+        subject  = MyXmlUtil.getAttribute(element, ATTR_SUBJECT, subject);
+        body     = MyXmlUtil.getAttribute(element, ATTR_BODY, body);
+        response = MyXmlUtil.getAttribute(element, ATTR_RESPONSE, response);
     }
 
 

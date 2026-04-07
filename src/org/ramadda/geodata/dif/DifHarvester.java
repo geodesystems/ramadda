@@ -28,7 +28,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 
@@ -383,11 +383,11 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
      */
     public static List<Metadata> ingestDif(String url) throws Exception {
         List<Metadata> results = new ArrayList<Metadata>();
-        Element        root    = XmlUtil.getRoot(url, DifHarvester.class);
+        Element        root    = MyXmlUtil.getRoot(url, DifHarvester.class);
         if (root == null) {
             throw new IllegalArgumentException("Could not parse xml:" + url);
         }
-        NodeList children = XmlUtil.getElements(root);
+        NodeList children = MyXmlUtil.getElements(root);
         for (int i = 0; i < children.getLength(); i++) {
             Element  node     = (Element) children.item(i);
             Metadata metadata = makeMetadata(node);

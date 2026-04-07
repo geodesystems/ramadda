@@ -15,7 +15,7 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -1172,14 +1172,14 @@ public class Utils extends IO {
 
     public static String getAttributeOrTag(Element node, String attrOrTag, String dflt, boolean checkParent)
 	throws Exception {	
-        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+        String attrValue = MyXmlUtil.getAttribute(node, attrOrTag,
 						(String) null);
         if (attrValue == null) {
-            Node child = XmlUtil.findChild(node, attrOrTag);
+            Node child = MyXmlUtil.findChild(node, attrOrTag);
             if (child != null) {
-                attrValue = XmlUtil.getChildText(child);
+                attrValue = MyXmlUtil.getChildText(child);
                 if (attrValue != null) {
-                    if (XmlUtil.getAttribute(child, "encoded", false)) {
+                    if (MyXmlUtil.getAttribute(child, "encoded", false)) {
                         attrValue = new String(Utils.decodeBase64(attrValue));
                     }
                 }
@@ -1201,14 +1201,14 @@ public class Utils extends IO {
     public static String getAttributeOrTagUpTree(Node node, String attrOrTag,
 						 String dflt)
 	throws Exception {
-        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+        String attrValue = MyXmlUtil.getAttribute(node, attrOrTag,
 						(String) null);
         if (attrValue == null) {
-            Node child = XmlUtil.findChild(node, attrOrTag);
+            Node child = MyXmlUtil.findChild(node, attrOrTag);
             if (child != null) {
-                attrValue = XmlUtil.getChildText(child);
+                attrValue = MyXmlUtil.getChildText(child);
                 if (attrValue != null) {
-                    if (XmlUtil.getAttribute(child, "encoded", false)) {
+                    if (MyXmlUtil.getAttribute(child, "encoded", false)) {
                         attrValue = new String(Utils.decodeBase64(attrValue));
                     }
                 }
@@ -4086,14 +4086,14 @@ public class Utils extends IO {
 					       int tagIdx, List results, String tab) {
         String  tag     = (String) tags.get(tagIdx);
         boolean lastTag = (tagIdx == tags.size() - 1);
-        //      System.err.println (tab+XmlUtil.getLocalName(parent) + " looking for:" + tag + " idx:" + tagIdx+ " lastTag:" + lastTag);
-        NodeList elements = XmlUtil.getElements(parent);
+        //      System.err.println (tab+MyXmlUtil.getLocalName(parent) + " looking for:" + tag + " idx:" + tagIdx+ " lastTag:" + lastTag);
+        NodeList elements = MyXmlUtil.getElements(parent);
         tab = tab + "\t";
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
-            //      System.err.println (tab+">child:" + XmlUtil.getLocalName(child));
-            if (tag.equals(XmlUtil.TAG_WILDCARD)
-		|| XmlUtil.isTag(child, tag)) {
+            //      System.err.println (tab+">child:" + MyXmlUtil.getLocalName(child));
+            if (tag.equals(MyXmlUtil.TAG_WILDCARD)
+		|| MyXmlUtil.isTag(child, tag)) {
                 if (lastTag) {
                     results.add(child);
                 } else {

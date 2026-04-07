@@ -25,7 +25,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.view.geoloc.NavigatedDisplay;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import ucar.visad.Util;
 import ucar.visad.display.Animation;
@@ -294,7 +294,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         checkAndAdd(attrs, ATTR_EAST, eastFld);
         checkAndAdd(attrs, ATTR_WEST, westFld);
         //Create the entry node
-        Element node = XmlUtil.create(TAG_ENTRY, root, attrs);
+        Element node = MyXmlUtil.create(TAG_ENTRY, root, attrs);
         repositoryClient.addTags(node, tags);
 
 
@@ -660,9 +660,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     int      cnt      = 0;
 
 
-                    Document doc      = XmlUtil.makeDocument();
+                    Document doc      = MyXmlUtil.makeDocument();
                     //Create the top level node
-                    Element root = XmlUtil.create(doc, TAG_ENTRIES);
+                    Element root = MyXmlUtil.create(doc, TAG_ENTRIES);
                     List tags = StringUtil.split(tagFld.getText().trim(),
                                     ",", true, true);
 
@@ -805,7 +805,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                                         formatDate(dttm), ATTR_TODATE,
                                         formatDate(dttm)));
                             }
-                            node = XmlUtil.create(TAG_ENTRY, root, attrs);
+                            node = MyXmlUtil.create(TAG_ENTRY, root, attrs);
                         }
                     }
 
@@ -818,7 +818,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     }
 
 
-                    String xml = XmlUtil.toString(root);
+                    String xml = MyXmlUtil.toString(root);
                     //                System.out.println(xml);
 
                     zos.putNextEntry(new ZipEntry("entries.xml"));
@@ -850,15 +850,15 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 }
 
                 //                System.out.println("results:" + result[1]);
-                Element response = XmlUtil.getRoot(result[1]);
+                Element response = MyXmlUtil.getRoot(result[1]);
 
                 if (repositoryClient.responseOk(response)) {
                     String url = "";
-                    Element firstResult = XmlUtil.findChild(response,
+                    Element firstResult = MyXmlUtil.findChild(response,
                                               TAG_ENTRY);
                     String entryId = null;
                     if (firstResult != null) {
-                        entryId = XmlUtil.getAttribute(firstResult, ATTR_ID);
+                        entryId = MyXmlUtil.getAttribute(firstResult, ATTR_ID);
                         url = repositoryClient.absoluteUrl(
                             repositoryClient.getUrlBase()
                             + "/entry/show?entryid=" + entryId);
@@ -873,7 +873,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
                     return url;
                 }
-                String body = XmlUtil.getChildText(response).trim();
+                String body = MyXmlUtil.getChildText(response).trim();
                 LogUtil.userErrorMessage("Error publishing:" + body);
             }
         } catch (Exception exc) {

@@ -8,7 +8,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import org.w3c.dom.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,22 +64,22 @@ public class TemplateOutputHandler extends OutputHandler {
     }
 
     private void init(Element element) throws Exception {
-        embed = XmlUtil.getAttribute(element, ATTR_EMBED, false);
-        String id = XmlUtil.getAttribute(element, ATTR_ID);
-        String wikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI,"no wiki");
+        embed = MyXmlUtil.getAttribute(element, ATTR_EMBED, false);
+        String id = MyXmlUtil.getAttribute(element, ATTR_ID);
+        String wikiTemplate = MyXmlUtil.getGrandChildText(element, TAG_WIKI,"no wiki");
 
-        folderWikiTemplate = XmlUtil.getGrandChildText(element,
+        folderWikiTemplate = MyXmlUtil.getGrandChildText(element,
                 TAG_WIKI_FOLDER, wikiTemplate);
-        fileWikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI_FILE,
+        fileWikiTemplate = MyXmlUtil.getGrandChildText(element, TAG_WIKI_FILE,
                 wikiTemplate);
-        types = Utils.split(XmlUtil.getAttribute(element, ATTR_TYPES,
+        types = Utils.split(MyXmlUtil.getAttribute(element, ATTR_TYPES,
                 "file,folder"), ",", true, true);
 
         forGroups = types.contains("folder");
         forFiles  = types.contains("file");
-        outputType = new OutputType(XmlUtil.getAttribute(element, ATTR_NAME,
+        outputType = new OutputType(MyXmlUtil.getAttribute(element, ATTR_NAME,
                 id), id, OutputType.TYPE_VIEW, "",
-                     XmlUtil.getAttribute(element, ATTR_ICON, "/icons/file.gif"));
+                     MyXmlUtil.getAttribute(element, ATTR_ICON, "/icons/file.gif"));
         addType(outputType);
     }
 

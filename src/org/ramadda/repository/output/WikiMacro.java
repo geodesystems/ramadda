@@ -9,7 +9,7 @@ import  org.ramadda.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Element;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 public class WikiMacro {
     private String name;
@@ -21,14 +21,14 @@ public class WikiMacro {
     private boolean isOutput=false;
     private boolean forEditMenu = true;
     public WikiMacro(Element node) {
-	name = XmlUtil.getAttribute(node,"name","name");
-	tags  =Utils.split(XmlUtil.getAttribute(node,"tags",""),",",true,true);
-	icon = XmlUtil.getAttribute(node,"icon",(String)null);
-	label = XmlUtil.getAttribute(node,"label",name);
-	isOutput = XmlUtil.getAttribute(node,"isoutput",false);
-	forEditMenu = XmlUtil.getAttribute(node,"foreditmenu",true);	
-	properties = XmlUtil.getAttribute(node,"properties","");
-	wikiText = XmlUtil.getChildText(node);
+	name = MyXmlUtil.getAttribute(node,"name","name");
+	tags  =Utils.split(MyXmlUtil.getAttribute(node,"tags",""),",",true,true);
+	icon = MyXmlUtil.getAttribute(node,"icon",(String)null);
+	label = MyXmlUtil.getAttribute(node,"label",name);
+	isOutput = MyXmlUtil.getAttribute(node,"isoutput",false);
+	forEditMenu = MyXmlUtil.getAttribute(node,"foreditmenu",true);	
+	properties = MyXmlUtil.getAttribute(node,"properties","");
+	wikiText = MyXmlUtil.getChildText(node);
 	if(wikiText!=null) wikiText = wikiText.trim();
     }
 

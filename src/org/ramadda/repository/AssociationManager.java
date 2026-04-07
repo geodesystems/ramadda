@@ -22,7 +22,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -182,8 +182,8 @@ public class AssociationManager extends RepositoryManager {
                                         Hashtable entries, Hashtable files)
             throws Exception {
 
-        String fromId    = XmlUtil.getAttribute(node, ATTR_FROM);
-        String toId      = XmlUtil.getAttribute(node, ATTR_TO);
+        String fromId    = MyXmlUtil.getAttribute(node, ATTR_FROM);
+        String toId      = MyXmlUtil.getAttribute(node, ATTR_TO);
         Entry  fromEntry = (Entry) entries.get(fromId);
         Entry  toEntry   = (Entry) entries.get(toId);
         if (fromEntry == null) {
@@ -203,8 +203,8 @@ public class AssociationManager extends RepositoryManager {
         }
 
         return addAssociation(request, fromEntry, toEntry,
-                              XmlUtil.getAttribute(node, ATTR_NAME, ""),
-                              XmlUtil.getAttribute(node, ATTR_TYPE, ""));
+                              MyXmlUtil.getAttribute(node, ATTR_NAME, ""),
+                              MyXmlUtil.getAttribute(node, ATTR_TYPE, ""));
     }
 
     /**

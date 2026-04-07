@@ -23,7 +23,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -208,11 +208,11 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         Element         root = call(Fred.URL_CATEGORY_CHILDREN, args);
-        NodeList children    = XmlUtil.getElements(root, Fred.TAG_CATEGORY);
+        NodeList children    = MyXmlUtil.getElements(root, Fred.TAG_CATEGORY);
         HashSet<String> seen = new HashSet<String>();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String  id   = XmlUtil.getAttribute(item, ATTR_ID);
+            String  id   = MyXmlUtil.getAttribute(item, ATTR_ID);
             if (seen.contains(id)) {
                 continue;
             }
@@ -230,14 +230,14 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
             args.add(categoryId);
         }
         root     = call(Fred.URL_CATEGORY_SERIES, args);
-        children = XmlUtil.getElements(root, Fred.TAG_SERIES);
+        children = MyXmlUtil.getElements(root, Fred.TAG_SERIES);
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             if (childIdx > 4) {
                 break;
             }
             Element item = (Element) children.item(childIdx);
-            String  id   = XmlUtil.getAttribute(item, ATTR_ID);
-            String  name = XmlUtil.getAttribute(item, ATTR_TITLE);
+            String  id   = MyXmlUtil.getAttribute(item, ATTR_ID);
+            String  name = MyXmlUtil.getAttribute(item, ATTR_TITLE);
             //            System.err.println("series child id:" + id);
             Entry entry = createSeriesEntry(request,mainEntry, parentEntry, id, name);
             seriesEntries.add(entry);
@@ -290,7 +290,7 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         String xml = IOUtil.readContents(new URL(url));
         long   t2  = System.currentTimeMillis();
         //        System.err.println("\ttime:" + (t2 - t1));
-        Element root = XmlUtil.getRoot(xml);
+        Element root = MyXmlUtil.getRoot(xml);
 
         return root;
     }
@@ -358,10 +358,10 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
 
         String  desc    = "";
         Element root    = call(Fred.URL_CATEGORY, args);
-        Element catNode = XmlUtil.findChild(root, Fred.TAG_CATEGORY);
+        Element catNode = MyXmlUtil.findChild(root, Fred.TAG_CATEGORY);
 
         if (catNode != null) {
-            name = XmlUtil.getAttribute(catNode, ATTR_NAME, categoryId);
+            name = MyXmlUtil.getAttribute(catNode, ATTR_NAME, categoryId);
         }
         entry = new Entry(id, this);
         String fredUrl = "https://research.stlouisfed.org/fred2/categories/"

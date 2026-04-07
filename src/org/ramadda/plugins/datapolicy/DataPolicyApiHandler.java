@@ -19,7 +19,6 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.xml.XmlUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

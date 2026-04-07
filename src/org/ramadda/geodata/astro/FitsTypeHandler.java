@@ -26,7 +26,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.geom.Rectangle2D;
 

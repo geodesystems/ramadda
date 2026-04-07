@@ -29,7 +29,7 @@ import org.ramadda.util.TempDir;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;

@@ -17,7 +17,7 @@ import org.ramadda.util.geo.KmlUtil;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 import java.awt.Color;
@@ -277,8 +277,8 @@ public class KmlOutputHandler extends OutputHandler {
             }
         }
 
-        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.XML_HEADER);
+        sb.append(MyXmlUtil.toString(root));
 
         return new Result(title, sb, MIME_KML);
 

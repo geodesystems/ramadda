@@ -7,7 +7,7 @@ package org.ramadda.util;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -87,8 +87,8 @@ public class OpenSearchUtil {
     public static final String MACRO_TIME_END = "{time:end?}";
 
     public static Element getRoot() throws Exception {
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_OPENSEARCHDESCRIPTION, null,
+        Document doc = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, TAG_OPENSEARCHDESCRIPTION, null,
                                       new String[] {
             ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEO, XMLNS_GEO, ATTR_XMLNS_TIME,
             XMLNS_TIME,
@@ -123,8 +123,8 @@ public class OpenSearchUtil {
             TAG_INPUTENCODING, "UTF-8"
         };
         for (int i = 0; i < tags.length; i += 2) {
-            ((Element) XmlUtil.create(tags[i], root)).appendChild(
-                XmlUtil.makeCDataNode(
+            ((Element) MyXmlUtil.create(tags[i], root)).appendChild(
+                MyXmlUtil.makeCDataNode(
                     root.getOwnerDocument(), tags[i + 1], false));
         }
     }

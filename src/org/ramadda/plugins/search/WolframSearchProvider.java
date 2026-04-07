@@ -18,7 +18,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -273,8 +273,8 @@ public class WolframSearchProvider extends SearchProvider {
         //        System.out.println(xml);
         IOUtil.close(is);
         Entry       parent       = getSynthTopLevelEntry();
-        Element     root         = XmlUtil.getRoot(xml);
-        NodeList    pods         = XmlUtil.getElements(root, TAG_POD);
+        Element     root         = MyXmlUtil.getRoot(xml);
+        NodeList    pods         = MyXmlUtil.getElements(root, TAG_POD);
         TypeHandler typeHandler  = getLinkTypeHandler();
 
         boolean     includeText  = args.contains("-text");
@@ -284,30 +284,30 @@ public class WolframSearchProvider extends SearchProvider {
         for (int childIdx = 0; childIdx < pods.getLength(); childIdx++) {
             Element pod = (Element) pods.item(childIdx);
 
-            String  id  = XmlUtil.getAttribute(pod, "id", "");
+            String  id  = MyXmlUtil.getAttribute(pod, "id", "");
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + TypeHandler.ID_DELIMITER
                                        + id, typeHandler);
             newEntry.setIcon("/search/wolfram.png");
             entries.add(newEntry);
 
-            String        name    = XmlUtil.getAttribute(pod, ATTR_TITLE, "");
+            String        name    = MyXmlUtil.getAttribute(pod, ATTR_TITLE, "");
             StringBuilder desc    = new StringBuilder();
 
-            NodeList      subPods = XmlUtil.getElements(pod, TAG_SUBPOD);
+            NodeList      subPods = MyXmlUtil.getElements(pod, TAG_SUBPOD);
             for (int subPodIdx = 0; subPodIdx < subPods.getLength();
                     subPodIdx++) {
                 Element subPod = (Element) subPods.item(subPodIdx);
-                String plainText = XmlUtil.getGrandChildText(subPod,
+                String plainText = MyXmlUtil.getGrandChildText(subPod,
                                        TAG_PLAINTEXT);
                 if (Utils.stringDefined(plainText)) {
                     if (includeText) {
                         desc.append(HtmlUtils.pre(plainText));
                     }
                 }
-                Element img = XmlUtil.findChild(subPod, TAG_IMG);
+                Element img = MyXmlUtil.findChild(subPod, TAG_IMG);
                 if (img != null) {
-                    String imgUrl = XmlUtil.getAttribute(img, ATTR_SRC, "");
+                    String imgUrl = MyXmlUtil.getAttribute(img, ATTR_SRC, "");
                     Metadata metadata =
                         new Metadata(getRepository().getGUID(),
                                      newEntry.getId(),
@@ -315,16 +315,16 @@ public class WolframSearchProvider extends SearchProvider {
                                      false, imgUrl, "image", null, null,
                                      null);
                     getMetadataManager().addMetadata(request,newEntry, metadata);
-                    desc.append(XmlUtil.toString(img, false));
+                    desc.append(MyXmlUtil.toString(img, false));
                     desc.append(HtmlUtils.br());
                 }
             }
 
             String itemUrl = null;
             for (Element link :
-                    (List<Element>) XmlUtil.findDescendants(pod, TAG_LINK)) {
-                String url  = XmlUtil.getAttribute(link, ATTR_URL, "");
-                String text = XmlUtil.getAttribute(link, ATTR_TEXT, url);
+                    (List<Element>) MyXmlUtil.findDescendants(pod, TAG_LINK)) {
+                String url  = MyXmlUtil.getAttribute(link, ATTR_URL, "");
+                String text = MyXmlUtil.getAttribute(link, ATTR_TEXT, url);
                 if (itemUrl != null) {
                     itemUrl = url;
                 }

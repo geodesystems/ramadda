@@ -21,7 +21,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.StringBufferCollection;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -120,13 +120,13 @@ public class RssOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(XmlUtil.XML_HEADER + "\n");
-        sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
-                                  XmlUtil.attrs(RssUtil.ATTR_VERSION, "2.0",
+        sb.append(MyXmlUtil.XML_HEADER + "\n");
+        sb.append(MyXmlUtil.openTag(RssUtil.TAG_RSS,
+                                  MyXmlUtil.attrs(RssUtil.ATTR_VERSION, "2.0",
                                       RssUtil.ATTR_XMLNS_GEORSS,
                                       RssUtil.VALUE_XMLNS_GEORSS)));
-        sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
-        sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", parentEntry.getName()));
+        sb.append(MyXmlUtil.openTag(RssUtil.TAG_CHANNEL));
+        sb.append(MyXmlUtil.tag(RssUtil.TAG_TITLE, "", parentEntry.getName()));
         StringBufferCollection sbc    = new StringBufferCollection();
         OutputType             output = request.getOutput();
         request.setMakeAbsoluteUrls(true);
@@ -148,18 +148,18 @@ public class RssOutputHandler extends OutputHandler {
                 extra.append(HtmlUtils.img(imageUrl));
             }
 
-            sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_ITEM));
             sb.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     RssUtil.TAG_PUBDATE, "",
                     DateHandler.doFormat(new Date(entry.getStartDate()),rssSdf)));
-            sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
             String url = request.makeUrl(repository.URL_ENTRY_SHOW,
                                          ARG_ENTRYID, entry.getId());
-            sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "", url));
-            sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "", url));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_LINK, "", url));
+            sb.append(MyXmlUtil.tag(RssUtil.TAG_GUID, "", url));
 
-            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
+            sb.append(MyXmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
             String content;
 
             if (output.equals(OUTPUT_RSS_FULL)) {
@@ -177,29 +177,29 @@ public class RssOutputHandler extends OutputHandler {
             } else {
                 content = entry.getTypeHandler().getEntryText(entry) + extra;
             }
-            XmlUtil.appendCdata(sb, content);
+            MyXmlUtil.appendCdata(sb, content);
 
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (entry.hasLocationDefined(request)) {
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "",
+                sb.append(MyXmlUtil.tag(RssUtil.TAG_GEOLAT, "",
                                       "" + entry.getSouth(request)));
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "",
+                sb.append(MyXmlUtil.tag(RssUtil.TAG_GEOLON, "",
                                       "" + entry.getEast(request)));
             } else if (entry.hasAreaDefined(request)) {
                 //For now just include the southeast point
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOBOX, "",
+                sb.append(MyXmlUtil.tag(RssUtil.TAG_GEOBOX, "",
                                       entry.getSouth(request) + " "
                                       + entry.getWest(request) + " "
                                       + entry.getNorth(request) + " "
                                       + entry.getEast(request)));
             }
 
-            sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
+            sb.append(MyXmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
 
         request.put(ARG_OUTPUT, output);
-        sb.append(XmlUtil.closeTag(RssUtil.TAG_CHANNEL));
-        sb.append(XmlUtil.closeTag(RssUtil.TAG_RSS));
+        sb.append(MyXmlUtil.closeTag(RssUtil.TAG_CHANNEL));
+        sb.append(MyXmlUtil.closeTag(RssUtil.TAG_RSS));
         Result result = new Result("Query Results", sb,
                                    getMimeType(OUTPUT_RSS_SUMMARY));
 

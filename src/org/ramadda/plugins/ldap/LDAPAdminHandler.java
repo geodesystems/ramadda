@@ -12,7 +12,7 @@ import org.ramadda.repository.admin.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.List;
 

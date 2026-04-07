@@ -8,6 +8,7 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.type.GenericTypeHandler;
+import org.ramadda.util.MyXmlUtil;
 
 import org.ramadda.util.geo.KmlUtil;
 
@@ -15,7 +16,7 @@ import org.w3c.dom.*;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 import java.util.List;
@@ -51,15 +52,15 @@ public class KmlTypeHandler extends GenericTypeHandler {
         double[] nwse = new double[] { Entry.NONGEO, Entry.NONGEO,
                                        Entry.NONGEO, Entry.NONGEO, };
 
-        List<Element> lats = (List<Element>) XmlUtil.findDescendants(kmlRoot,
+        List<Element> lats = (List<Element>) MyXmlUtil.findDescendants(kmlRoot,
                                  KmlUtil.TAG_LATITUDE);
         for (Element latNode : lats) {
-            setLat(nwse, Double.parseDouble(XmlUtil.getChildText(latNode)));
+            setLat(nwse, Double.parseDouble(MyXmlUtil.getChildText(latNode)));
         }
-        List<Element> lons = (List<Element>) XmlUtil.findDescendants(kmlRoot,
+        List<Element> lons = (List<Element>) MyXmlUtil.findDescendants(kmlRoot,
                                  KmlUtil.TAG_LONGITUDE);
         for (Element lonNode : lons) {
-            setLon(nwse, Double.parseDouble(XmlUtil.getChildText(lonNode)));
+            setLon(nwse, Double.parseDouble(MyXmlUtil.getChildText(lonNode)));
         }
 
         initializeEntry(entry, kmlRoot, nwse);
@@ -91,14 +92,14 @@ public class KmlTypeHandler extends GenericTypeHandler {
                 String name = ze.getName().toLowerCase();
                 if (name.toLowerCase().endsWith(".kml")) {
                     kmlRoot =
-                        XmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
+                        MyXmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
 
                     break;
                 }
             }
             IOUtil.close(zin);
         } else {
-            kmlRoot = XmlUtil.getRoot(
+            kmlRoot = MyXmlUtil.getRoot(
                 repository.getStorageManager().readSystemResource(
                     entry.getFile()));
         }
@@ -135,7 +136,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
         if (tagName.equals(KmlUtil.TAG_FOLDER)
                 || tagName.equals(KmlUtil.TAG_KML)
                 || tagName.equals(KmlUtil.TAG_DOCUMENT)) {
-            NodeList children = XmlUtil.getElements(node);
+            NodeList children = MyXmlUtil.getElements(node);
             for (int i = 0; i < children.getLength(); i++) {
                 Element child = (Element) children.item(i);
                 initializeEntry(entry, child, nwse);
@@ -145,22 +146,22 @@ public class KmlTypeHandler extends GenericTypeHandler {
         }
 
         if (tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
-            Element llbox = XmlUtil.findChild(node, KmlUtil.TAG_LATLONBOX);
+            Element llbox = MyXmlUtil.findChild(node, KmlUtil.TAG_LATLONBOX);
             if (llbox != null) {
                 setNorth(nwse,
-                         convert(XmlUtil.getGrandChildText(llbox,
+                         convert(MyXmlUtil.getGrandChildText(llbox,
                              KmlUtil.TAG_NORTH, null), Entry.NONGEO));
                 setWest(nwse,
-                        convert(XmlUtil.getGrandChildText(llbox,
+                        convert(MyXmlUtil.getGrandChildText(llbox,
                             KmlUtil.TAG_WEST, null), Entry.NONGEO));
                 setSouth(nwse,
-                         convert(XmlUtil.getGrandChildText(llbox,
+                         convert(MyXmlUtil.getGrandChildText(llbox,
                              KmlUtil.TAG_SOUTH, null), Entry.NONGEO));
                 setEast(nwse,
-                        convert(XmlUtil.getGrandChildText(llbox,
+                        convert(MyXmlUtil.getGrandChildText(llbox,
                             KmlUtil.TAG_EAST, null), Entry.NONGEO));
             } else {
-                System.err.println("no  latlonbox:" + XmlUtil.toString(node));
+                System.err.println("no  latlonbox:" + MyXmlUtil.toString(node));
             }
 
             return;
@@ -168,15 +169,15 @@ public class KmlTypeHandler extends GenericTypeHandler {
 
         if (tagName.equals(KmlUtil.TAG_PLACEMARK)) {
             List<Element> coords =
-                (List<Element>) XmlUtil.findDescendants(node,
+                (List<Element>) MyXmlUtil.findDescendants(node,
                     KmlUtil.TAG_COORDINATES);
             for (Element coordNode : coords) {
-                setBounds(nwse, XmlUtil.getChildText(coordNode));
+                setBounds(nwse, MyXmlUtil.getChildText(coordNode));
             }
             if (coords.size() > 0) {
                 return;
             }
-            System.err.println("no  coords:" + XmlUtil.toString(node));
+            System.err.println("no  coords:" + MyXmlUtil.toString(node));
 
             return;
         }

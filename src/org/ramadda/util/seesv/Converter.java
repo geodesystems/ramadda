@@ -15,7 +15,7 @@ import org.ramadda.util.PatternProps;
 import org.ramadda.util.Propper;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -2997,7 +2997,7 @@ public abstract class Converter extends Processor {
 		try {
 		    if(!row.indexOk(idx)) continue;
 		    String v  =row.getString(idx);
-		    row.set(idx,XmlUtil.encodeString(v).replace("\n","\\n"));
+		    row.set(idx,MyXmlUtil.encodeString(v).replace("\n","\\n"));
 		} catch(Exception exc) {
 		    throw new RuntimeException(exc);
 		}

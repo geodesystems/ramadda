@@ -10,6 +10,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.geo.KmlUtil;
@@ -17,7 +18,7 @@ import org.ramadda.util.geo.Point;
 import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import org.json.*;
 import org.w3c.dom.*;
@@ -343,7 +344,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
             }
         }
 
-        String xml = XmlUtil.toString(root, true);
+        String xml = MyXmlUtil.toString(root, true);
         String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";

@@ -16,6 +16,7 @@ import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 
 
 import org.w3c.dom.*;
@@ -23,7 +24,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.net.URL;
 
@@ -68,9 +69,9 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 	if(root==null) return;
 
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {
-	    Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
+	    Element channel = MyXmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
 	    if(channel!=null) {
-		String title = XmlUtil.getGrandChildText(channel, RssUtil.TAG_TITLE,
+		String title = MyXmlUtil.getGrandChildText(channel, RssUtil.TAG_TITLE,
 						     "");
 		entry.setName(title);
 	    }
@@ -167,35 +168,35 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
             new SimpleDateFormat[] {
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"), };
-        Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
+        Element channel = MyXmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
         if (channel == null) {
             throw new IllegalArgumentException("No channel tag");
         }
-        NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
+        NodeList children = MyXmlUtil.getElements(channel, RssUtil.TAG_ITEM);
         HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
+            String title = MyXmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
                                "");
 
-            String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
+            String link = MyXmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
                               "");
 
 
 
-            String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
+            String guid = MyXmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
                               link);
             if (seen.contains(guid)) {
                 continue;
             }
 
             seen.add(guid);
-            String desc = XmlUtil.getGrandChildText(item,
+            String desc = MyXmlUtil.getGrandChildText(item,
                               RssUtil.TAG_DESCRIPTION, "");
 
 
 
-            String pubDate = XmlUtil.getGrandChildText(item,
+            String pubDate = MyXmlUtil.getGrandChildText(item,
                                  RssUtil.TAG_PUBDATE, "").trim();
 
             Entry entry =
@@ -251,38 +252,38 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
             new SimpleDateFormat[] {
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"), };
-        NodeList children = XmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
+        NodeList children = MyXmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
         HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String title = XmlUtil.getGrandChildText(item,
+            String title = MyXmlUtil.getGrandChildText(item,
                                AtomUtil.TAG_TITLE, "");
-            String guid = XmlUtil.getGrandChildText(item, AtomUtil.TAG_ID,
+            String guid = MyXmlUtil.getGrandChildText(item, AtomUtil.TAG_ID,
                               "" + childIdx);
             if (seen.contains(guid)) {
                 continue;
             }
             seen.add(guid);
-            String desc = XmlUtil.getGrandChildText(item,
+            String desc = MyXmlUtil.getGrandChildText(item,
                               AtomUtil.TAG_CONTENT, null);
 
             if (desc == null) {
-                desc = XmlUtil.getGrandChildText(item, AtomUtil.TAG_SUMMARY,
+                desc = MyXmlUtil.getGrandChildText(item, AtomUtil.TAG_SUMMARY,
                         "");
             }
 
-            String pubDate = XmlUtil.getGrandChildText(item,
+            String pubDate = MyXmlUtil.getGrandChildText(item,
                                  AtomUtil.TAG_PUBLISHED, "").trim();
 
             if ( !Utils.stringDefined(pubDate)) {
-                pubDate = XmlUtil.getGrandChildText(item,
+                pubDate = MyXmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_UPDATED, "").trim();
 
             }
 
 
             /**
-             *   NodeList categories = XmlUtil.getElements(item, AtomUtil.TAG_CATEGORY);
+             *   NodeList categories = MyXmlUtil.getElements(item, AtomUtil.TAG_CATEGORY);
              *   for (int childIdx = 0; childIdx < categories.getLength(); childIdx++) {
              *        Element cat= (Element) categories.item(childIdx);
              *   }
@@ -309,14 +310,14 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             setLocation(item, entry);
-            String resourcePath = XmlUtil.getGrandChildText(item,
+            String resourcePath = MyXmlUtil.getGrandChildText(item,
                                       "feedburner:origLink", "");
-            NodeList links = XmlUtil.getElements(item, AtomUtil.TAG_LINK);
+            NodeList links = MyXmlUtil.getElements(item, AtomUtil.TAG_LINK);
             for (int linkIdx = 0; linkIdx < links.getLength(); linkIdx++) {
                 Element link = (Element) links.item(linkIdx);
-                if (XmlUtil.getAttribute(link, AtomUtil.ATTR_TYPE,
+                if (MyXmlUtil.getAttribute(link, AtomUtil.ATTR_TYPE,
                                          "").equals("text/html")) {
-                    resourcePath = XmlUtil.getAttribute(link,
+                    resourcePath = MyXmlUtil.getAttribute(link,
                             AtomUtil.ATTR_HREF, "");
 
                     break;
@@ -345,20 +346,20 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
      */
     private void setLocation(Element item, Entry entry) throws Exception {
 
-        String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
+        String lat = MyXmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
                          "").trim();
         if (lat.length() == 0) {
-            lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
+            lat = MyXmlUtil.getGrandChildText(item, "lat", "").trim();
         }
-        String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
+        String lon = MyXmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
                          "").trim();
         if (lon.length() == 0) {
-            lon = XmlUtil.getGrandChildText(item, "long", "").trim();
+            lon = MyXmlUtil.getGrandChildText(item, "long", "").trim();
         }
 
 
         if ( !Utils.stringDefined(lat)) {
-            String point = XmlUtil.getGrandChildText(item,
+            String point = MyXmlUtil.getGrandChildText(item,
                                RssUtil.TAG_GEORSS_POINT, "").trim();
 
             if (Utils.stringDefined(point)) {
@@ -372,7 +373,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         if ( !Utils.stringDefined(lat)) {
-            String polygon = XmlUtil.getGrandChildText(item,
+            String polygon = MyXmlUtil.getGrandChildText(item,
                                  RssUtil.TAG_GEORSS_POLYGON, "").trim();
             if (Utils.stringDefined(polygon)) {
                 StringBuffer[] sb = new StringBuffer[] { new StringBuffer(),
@@ -423,7 +424,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-        String elev = XmlUtil.getGrandChildText(item,
+        String elev = MyXmlUtil.getGrandChildText(item,
                           RssUtil.TAG_GEORSS_ELEV, "").trim();
 
 
@@ -461,7 +462,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
                 return null;
             }
         }
-	return XmlUtil.getRoot(xml);
+	return MyXmlUtil.getRoot(xml);
     }
 
 

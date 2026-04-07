@@ -22,7 +22,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -156,13 +156,13 @@ public class SocrataTypeHandler extends ExtensibleGroupTypeHandler {
 
         /*
         if (catsNode != null) {
-            NodeList children = XmlUtil.getElements(catsNode, Socrata.TAG_ROW);
+            NodeList children = MyXmlUtil.getElements(catsNode, Socrata.TAG_ROW);
             for (int childIdx = 0; childIdx < children.getLength();
                     childIdx++) {
                 Element item = (Element) children.item(childIdx);
-                String id = XmlUtil.getGrandChildText(item,
+                String id = MyXmlUtil.getGrandChildText(item,
                                 Socrata.TAG_CATEGORY_ID, "");
-                String name = XmlUtil.getGrandChildText(item, Socrata.TAG_NAME,
+                String name = MyXmlUtil.getGrandChildText(item, Socrata.TAG_NAME,
                                   "");
                 Entry entry = createCategoryEntry(mainEntry, parentEntry, id,
                                   name);

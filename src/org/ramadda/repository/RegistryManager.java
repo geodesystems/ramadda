@@ -21,7 +21,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -56,7 +56,6 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class RegistryManager extends RepositoryManager {
 
-    private static final XmlUtil XU=null;
 
     public static final String PROP_REGISTRY_DEFAULTSERVER =
         "ramadda.registry.defaultserver";
@@ -585,7 +584,7 @@ public class RegistryManager extends RepositoryManager {
     }
 
     public String getResponse(Element root) {
-	return  (String)Utils.getNonNull(XmlUtil.getChildText(root),"");
+	return  (String)Utils.getNonNull(MyXmlUtil.getChildText(root),"");
     }    
 
     private Result makeErrorResult(String msg) throws Exception {

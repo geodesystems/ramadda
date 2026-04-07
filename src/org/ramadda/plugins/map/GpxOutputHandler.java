@@ -8,6 +8,7 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 
@@ -15,7 +16,7 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.text.SimpleDateFormat;
 
@@ -111,8 +112,8 @@ public class GpxOutputHandler extends OutputHandler {
     public Result outputGpx(Request request, Entry entry, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(XmlUtil.openTag(GpxUtil.TAG_GPX,
-                                  XmlUtil.attrs(new String[] {
+        sb.append(MyXmlUtil.openTag(GpxUtil.TAG_GPX,
+                                  MyXmlUtil.attrs(new String[] {
                                       GpxUtil.ATTR_VERSION,
                                       "1.1", GpxUtil.ATTR_CREATOR,
                                       "RAMADDA" })));
@@ -123,8 +124,8 @@ public class GpxOutputHandler extends OutputHandler {
             }
             if (child.hasAreaDefined(request)) {}
             else {
-                sb.append(XmlUtil.tag(GpxUtil.TAG_WPT,
-                                      XmlUtil.attrs(new String[] {
+                sb.append(MyXmlUtil.tag(GpxUtil.TAG_WPT,
+                                      MyXmlUtil.attrs(new String[] {
                                           GpxUtil.ATTR_LAT,
                                           "" + child.getLatitude(request),
                                           GpxUtil.ATTR_LON,

@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -113,47 +113,47 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                                              true, true);
         String        type        = toks.get(toks.size() - 1);
         TypeHandler   typeHandler = getRepository().getTypeHandler(type);
-        StringBuilder xml = new StringBuilder(XmlUtil.openTag(TAG_ENTRIES));
+        StringBuilder xml = new StringBuilder(MyXmlUtil.openTag(TAG_ENTRIES));
         xml.append("\n");
         StringBuilder inner = new StringBuilder();
         inner.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 MetametaDictionaryTypeHandler.FIELD_PROPERTIES, "",
-                XmlUtil.getCdata(
+                MyXmlUtil.getCdata(
                     Utils.makeProperties(typeHandler.getProperties()))));
 
 
         inner.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 MetametaDictionaryTypeHandler.FIELD_SHORT_NAME, "",
                 typeHandler.getType()));
 
         inner.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 MetametaDictionaryTypeHandler.FIELD_DICTIONARY_TYPE, "",
                 "entry"));
 
         if (typeHandler.getParent() != null) {
             inner.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     MetametaDictionaryTypeHandler.FIELD_SUPER_TYPE, "",
                     typeHandler.getParent().getType()));
         }
         if (typeHandler.isGroup()) {
             inner.append(
-                XmlUtil.tag(
+                MyXmlUtil.tag(
                     MetametaDictionaryTypeHandler.FIELD_ISGROUP, "", "true"));
         }
         inner.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 MetametaDictionaryTypeHandler.FIELD_HANDLER_CLASS, "",
                 typeHandler.getClass().getName()));
 
 
         xml.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 TAG_ENTRY,
-                XmlUtil.attrs(
+                MyXmlUtil.attrs(
                     ATTR_NAME, "Data Dictionary: " + typeHandler.getLabel(),
                     ATTR_TYPE, MetametaDictionaryTypeHandler.TYPE, ATTR_ID,
                     "dictionary"), inner.toString()));
@@ -168,23 +168,22 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
 
                 LinkedHashMap<String, String> enums = column.getEnumTable();
                 if ((enums != null) && (enums.size() > 0)) {
-                    inner.append(XmlUtil
-                        .tag(MetametaFieldTypeHandler
+                    inner.append(MyXmlUtil.tag(MetametaFieldTypeHandler
                             .FIELD_ENUMERATION_VALUES, "",
-                                XmlUtil.getCdata(Utils
+                                MyXmlUtil.getCdata(Utils
                                     .makeProperties(enums))));
                 }
 
                 inner.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_FIELD_INDEX, "",
                         "" + index));
                 inner.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_FIELD_ID, "",
                         column.getName()));
                 inner.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_DATATYPE, "",
                         column.getType()));
 
@@ -201,28 +200,28 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 props.append(Utils.makeProperties(column.getProperties()));
 
                 inner.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_PROPERTIES, "",
-                        XmlUtil.getCdata(props.toString())));
+                        MyXmlUtil.getCdata(props.toString())));
 
                 inner.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_DATABASE_COLUMN_SIZE,
                         "", "" + column.getSize()));
 
 
-                attrs.append(XmlUtil.attrs(ATTR_NAME, column.getLabel(),
+                attrs.append(MyXmlUtil.attrs(ATTR_NAME, column.getLabel(),
                                            ATTR_TYPE,
                                            MetametaFieldTypeHandler.TYPE,
                                            ATTR_PARENT, "dictionary"));
 
-                xml.append(XmlUtil.tag(TAG_ENTRY, attrs.toString(),
+                xml.append(MyXmlUtil.tag(TAG_ENTRY, attrs.toString(),
                                        inner.toString()));
 
             }
         }
 
-        xml.append(XmlUtil.closeTag(TAG_ENTRIES));
+        xml.append(MyXmlUtil.closeTag(TAG_ENTRIES));
 
         return new Result("Type", xml, "text/xml");
 

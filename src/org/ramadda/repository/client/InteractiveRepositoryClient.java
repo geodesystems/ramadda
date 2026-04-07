@@ -14,7 +14,7 @@ import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.awt.Color;
@@ -393,19 +393,19 @@ public class InteractiveRepositoryClient extends RepositoryClient {
                 removeAllChildren();
                 //                System.err.println ("URL:" + id);
                 //                System.err.println ("XML:" + xml);
-                Element root = XmlUtil.getRoot(xml);
+                Element root = MyXmlUtil.getRoot(xml);
                 for (Element child :
-                        (List<Element>) XmlUtil.findChildren(root,
+                        (List<Element>) MyXmlUtil.findChildren(root,
                             TAG_ENTRY)) {
-                    if (XmlUtil.getAttribute(child, ATTR_TYPE, "").equals(
-                            TYPE_GROUP) || XmlUtil.getAttribute(
+                    if (MyXmlUtil.getAttribute(child, ATTR_TYPE, "").equals(
+                            TYPE_GROUP) || MyXmlUtil.getAttribute(
                             child, ATTR_ISGROUP, false)) {
                         GroupNode childNode =
-                            new GroupNode(XmlUtil.getAttribute(child,
-                                ATTR_NAME), XmlUtil.getAttribute(child,
-                                    ATTR_ID), XmlUtil.getAttribute(child,
+                            new GroupNode(MyXmlUtil.getAttribute(child,
+                                ATTR_NAME), MyXmlUtil.getAttribute(child,
+                                    ATTR_ID), MyXmlUtil.getAttribute(child,
                                         ATTR_CANDONEW,
-                                        false), XmlUtil.getAttribute(child,
+                                        false), MyXmlUtil.getAttribute(child,
                                             ATTR_CANDOUPLOAD, false));
 
                         childNode.add(

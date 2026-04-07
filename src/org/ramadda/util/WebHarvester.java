@@ -13,7 +13,7 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -518,9 +518,9 @@ public class WebHarvester {
             } else {
                 type = "type_image";
             }
-            attrs += XmlUtil.attr("filename", IOUtil.getFileTail(surl));
+            attrs += MyXmlUtil.attr("filename", IOUtil.getFileTail(surl));
             String filename = Utils.makeID(page.url.getPath());
-            attrs += XmlUtil.attr("file", filename);
+            attrs += MyXmlUtil.attr("file", filename);
             File fileDir = new File("imports");
             fileDir.mkdirs();
             File f = new File("imports/" + filename);
@@ -541,11 +541,11 @@ public class WebHarvester {
                 }
             }
         }
-        attrs += XmlUtil.attr("type", type) + XmlUtil.attr("id", page.id)
-	    +XmlUtil.attr("isnew","true") 
+        attrs += MyXmlUtil.attr("type", type) + MyXmlUtil.attr("id", page.id)
+	    +MyXmlUtil.attr("isnew","true") 
                  + ((parent == null)
                     ? ""
-                    : XmlUtil.attr("parent", parent.id));
+                    : MyXmlUtil.attr("parent", parent.id));
         String date = null;
 
         for (String title : new String[] { page.title, page.hrefLabel }) {
@@ -579,16 +579,16 @@ public class WebHarvester {
             }
             //      System.err.println(title+" date:" + date);
             if (date != null) {
-                attrs += XmlUtil.attr("fromdate", date)
-                         + XmlUtil.attr("todate", date);
+                attrs += MyXmlUtil.attr("fromdate", date)
+                         + MyXmlUtil.attr("todate", date);
 
                 break;
             }
         }
-        sb.append(XmlUtil.openTag("entry", attrs));
+        sb.append(MyXmlUtil.openTag("entry", attrs));
         sb.append("\n");
 	//	log("TITLE:" +page.title +" URL:"  + page.url);
-        sb.append(XmlUtil.tag("name", "", XmlUtil.getCdata(page.title)));
+        sb.append(MyXmlUtil.tag("name", "", MyXmlUtil.getCdata(page.title)));
         sb.append("\n");
         if ( !page.isResource) {
             //      String content = HtmlUtils.href(page.url.toString(),"Source") +"<br>" + page.body;
@@ -603,8 +603,8 @@ public class WebHarvester {
             //      if(page.children.size()>0)
             //          content+="\n----\n:heading Links\n{{tree details=false}}";
             //If we are creating something other than a wikipage then set the description
-            //sb.append(XmlUtil.tag("description","", XmlUtil.getCdata(content)));
-            sb.append(XmlUtil.tag("wikitext", "", XmlUtil.getCdata(content)));
+            //sb.append(MyXmlUtil.tag("description","", MyXmlUtil.getCdata(content)));
+            sb.append(MyXmlUtil.tag("wikitext", "", MyXmlUtil.getCdata(content)));
         }
         sb.append("</entry>");
         writer.println(sb);

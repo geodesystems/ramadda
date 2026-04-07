@@ -24,7 +24,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -175,20 +175,20 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         Element root     = call(mainEntry, Eia.URL_CATEGORY, args);
-        Element catNode  = XmlUtil.findChild(root, Eia.TAG_CATEGORY);
-        Element catsNode = XmlUtil.findChild(catNode,
+        Element catNode  = MyXmlUtil.findChild(root, Eia.TAG_CATEGORY);
+        Element catsNode = MyXmlUtil.findChild(catNode,
                                              Eia.TAG_CHILDCATEGORIES);
-        Element seriesNode = XmlUtil.findChild(catNode, Eia.TAG_CHILDSERIES);
+        Element seriesNode = MyXmlUtil.findChild(catNode, Eia.TAG_CHILDSERIES);
         List<Entry> catEntries    = new ArrayList<Entry>();
         List<Entry> seriesEntries = new ArrayList<Entry>();
         if (catsNode != null) {
-            NodeList children = XmlUtil.getElements(catsNode, Eia.TAG_ROW);
+            NodeList children = MyXmlUtil.getElements(catsNode, Eia.TAG_ROW);
             for (int childIdx = 0; childIdx < children.getLength();
                     childIdx++) {
                 Element item = (Element) children.item(childIdx);
-                String id = XmlUtil.getGrandChildText(item,
+                String id = MyXmlUtil.getGrandChildText(item,
                                 Eia.TAG_CATEGORY_ID, "");
-                String name = XmlUtil.getGrandChildText(item, Eia.TAG_NAME,
+                String name = MyXmlUtil.getGrandChildText(item, Eia.TAG_NAME,
                                   "");
                 Entry entry = createCategoryEntry(mainEntry, parentEntry, id,
                                   name);
@@ -197,13 +197,13 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if (seriesNode != null) {
-            NodeList children = XmlUtil.getElements(seriesNode, Eia.TAG_ROW);
+            NodeList children = MyXmlUtil.getElements(seriesNode, Eia.TAG_ROW);
             for (int childIdx = 0; childIdx < children.getLength();
                     childIdx++) {
                 Element item = (Element) children.item(childIdx);
-                String id = XmlUtil.getGrandChildText(item,
+                String id = MyXmlUtil.getGrandChildText(item,
                                 Eia.TAG_SERIES_ID, "");
-                String name = XmlUtil.getGrandChildText(item, Eia.TAG_NAME,
+                String name = MyXmlUtil.getGrandChildText(item, Eia.TAG_NAME,
                                   (String) null);
                 Entry entry = createSeriesEntry(request,mainEntry, parentEntry, id,
                                   name);
@@ -262,7 +262,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
 
         long   t2  = System.currentTimeMillis();
         //        System.err.println("\ttime:" + (t2 - t1));
-        Element root = XmlUtil.getRoot(result.getResult());
+        Element root = MyXmlUtil.getRoot(result.getResult());
 
         return root;
     }

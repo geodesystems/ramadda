@@ -11,7 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

@@ -20,7 +20,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -600,15 +600,15 @@ public class Metadata implements Constants {
             try {
                 //System.err.println("** extra:" + extra + ":");
                 //                System.err.println("");
-                Element root = XmlUtil.getRoot(extra);
+                Element root = MyXmlUtil.getRoot(extra);
                 if (root != null) {
-                    List elements = XmlUtil.findChildren(root, TAG_EXTRA);
+                    List elements = MyXmlUtil.findChildren(root, TAG_EXTRA);
 
                     for (int j = 0; j < elements.size(); j++) {
                         Element extraNode = (Element) elements.get(j);
-                        int index = XmlUtil.getAttribute(extraNode,
+                        int index = MyXmlUtil.getAttribute(extraNode,
 							 ATTR_INDEX, -1);
-                        String text = XmlUtil.getChildText(extraNode);
+                        String text = MyXmlUtil.getChildText(extraNode);
                         if (text == null) {
                             text = "";
                         }
@@ -626,18 +626,18 @@ public class Metadata implements Constants {
 
     public static String mapToExtra(Hashtable<Integer, String> map) {
         try {
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ATTRIBUTES,
+            Document doc = MyXmlUtil.makeDocument();
+            Element root = MyXmlUtil.create(doc, TAG_ATTRIBUTES,
                                           (Element) null);
             for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
                 Integer index = (Integer) keys.nextElement();
                 String  extra = map.get(index);
-                XmlUtil.create(doc, TAG_EXTRA, root, extra,
+                MyXmlUtil.create(doc, TAG_EXTRA, root, extra,
                                new String[] { ATTR_INDEX,
 					      index.toString() });
             }
 
-            return XmlUtil.toString(root, false);
+            return MyXmlUtil.toString(root, false);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

@@ -23,7 +23,7 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -73,28 +73,28 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
         String url = entry.getResource().getPath();
         //        System.err.println("URL:" + url);
         InputStream fis  = getStorageManager().getInputStream(url);
-        Element     root = XmlUtil.getRoot(fis);
+        Element     root = MyXmlUtil.getRoot(fis);
         IOUtil.close(fis);
 
-        String version = XmlUtil.getAttribute(root, WmsUtils.ATTR_VERSION,
+        String version = MyXmlUtil.getAttribute(root, WmsUtils.ATTR_VERSION,
                              "1.3.0");
         String  format     = "image/png";
         String  defaultSrs = "EPSG:4326";
 
-        Element service    = XmlUtil.findChild(root, WmsUtils.TAG_SERVICE);
+        Element service    = MyXmlUtil.findChild(root, WmsUtils.TAG_SERVICE);
         if (service == null) {
             logError("WMS: No service node", null);
 
             return;
         }
-        Element capabilityNode = XmlUtil.findChild(root,
+        Element capabilityNode = MyXmlUtil.findChild(root,
                                      WmsUtils.TAG_CAPABILITY);
         if (capabilityNode == null) {
             logError("WMS: No capability node", null);
 
             return;
         }
-        Element getMap = XmlUtil.findDescendantFromPath(capabilityNode,
+        Element getMap = MyXmlUtil.findDescendantFromPath(capabilityNode,
                              xpath(WmsUtils.TAG_REQUEST,
                                    WmsUtils.TAG_GETMAP));
         if (getMap == null) {
@@ -103,7 +103,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
             return;
         }
 
-        Element onlineResource = XmlUtil.findDescendantFromPath(getMap,
+        Element onlineResource = MyXmlUtil.findDescendantFromPath(getMap,
                                      xpath(WmsUtils.TAG_DCPTYPE,
                                            WmsUtils.TAG_HTTP,
                                            WmsUtils.TAG_GET,
@@ -115,7 +115,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        String entryName = XmlUtil.getGrandChildText(service,
+        String entryName = MyXmlUtil.getGrandChildText(service,
                                WmsUtils.TAG_TITLE, entry.getName());
 
         //A hack for the NRL WMS servers
@@ -139,12 +139,12 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
 
         entry.setName(entryName);
         if (entry.getDescription().length() == 0) {
-            entry.setDescription(XmlUtil.getGrandChildText(service,
+            entry.setDescription(MyXmlUtil.getGrandChildText(service,
                     WmsUtils.TAG_ABSTRACT, entry.getDescription()));
         }
         addMetadata(request,entry, service);
 
-        String getMapUrl = XmlUtil.getAttribute(onlineResource, "xlink:href");
+        String getMapUrl = MyXmlUtil.getAttribute(onlineResource, "xlink:href");
         if (getMapUrl.indexOf("?") < 0) {
             getMapUrl += "?";
         } else {
@@ -159,7 +159,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
         //We'll insert these later
         entry.putProperty("entries", children);
 
-        List layers = XmlUtil.findDescendants(root, WmsUtils.TAG_LAYER);
+        List layers = MyXmlUtil.findDescendants(root, WmsUtils.TAG_LAYER);
         TypeHandler layerTypeHandler =
             getRepository().getTypeHandler("type_wms_layer");
 
@@ -170,15 +170,15 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
 
         for (int i = 0; i < layers.size(); i++) {
             Element layer    = (Element) layers.get(i);
-            Element nameNode = XmlUtil.findChild(layer, WmsUtils.TAG_NAME);
+            Element nameNode = MyXmlUtil.findChild(layer, WmsUtils.TAG_NAME);
             if (nameNode == null) {
                 continue;
             }
 
-            String name = XmlUtil.getChildText(nameNode);
-            String title = XmlUtil.getGrandChildText(layer,
+            String name = MyXmlUtil.getChildText(nameNode);
+            String title = MyXmlUtil.getGrandChildText(layer,
                                WmsUtils.TAG_TITLE, name);
-            String desc = XmlUtil.getGrandChildText(layer,
+            String desc = MyXmlUtil.getGrandChildText(layer,
                               WmsUtils.TAG_ABSTRACT, "");
 
             String srsAttr   = defaultSrs;
@@ -196,22 +196,22 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                     east  = Double.NaN;
 
 
-            Element crs = XmlUtil.findChildRecurseUp(layer, WmsUtils.TAG_CRS);
+            Element crs = MyXmlUtil.findChildRecurseUp(layer, WmsUtils.TAG_CRS);
             if (crs != null) {
                 imageUrl +=
                     "&"
                     + HtmlUtils.arg(WmsUtils.ARG_CRS,
-                                    srsAttr = XmlUtil.getChildText(crs),
+                                    srsAttr = MyXmlUtil.getChildText(crs),
                                     true);
             } else {
-                List srss = XmlUtil.findChildrenRecurseUp(layer,
+                List srss = MyXmlUtil.findChildrenRecurseUp(layer,
                                 WmsUtils.TAG_SRS);
                 Element srs = null;
                 for (Element e : (List<Element>) srss) {
                     if (srs == null) {
                         srs = e;
                     }
-                    if (XmlUtil.getChildText(e).indexOf("4326") >= 0) {
+                    if (MyXmlUtil.getChildText(e).indexOf("4326") >= 0) {
                         srs = e;
 
                         break;
@@ -223,64 +223,64 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                 if (srs != null) {
                     imageUrl += "&"
                                 + HtmlUtils.arg(WmsUtils.ARG_SRS,
-                                    srsAttr = XmlUtil.getChildText(srs),
+                                    srsAttr = MyXmlUtil.getChildText(srs),
                                     true);
                 }
             }
 
 
             //<BoundingBox CRS="EPSG:4326" minx="-180.0" miny="-90" maxx="180.0" maxy="90"/>
-            Element llbbox = XmlUtil.findChildRecurseUp(layer,
+            Element llbbox = MyXmlUtil.findChildRecurseUp(layer,
                                  WmsUtils.TAG_LATLONBOUNDINGBOX);
 
 
-            Element gbbox = XmlUtil.findChildRecurseUp(layer,
+            Element gbbox = MyXmlUtil.findChildRecurseUp(layer,
                                 WmsUtils.TAG_EX_GEOGRAPHICBOUNDINGBOX);
 
             //            System.err.println("layer:" + name + " ll:" + llbbox + " ");
 
             String bboxString = null;
             if (llbbox != null) {
-                north = GeoUtils.decodeLatLon(XmlUtil.getAttribute(llbbox,
+                north = GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(llbbox,
                         WmsUtils.ATTR_MAXY));
-                south = GeoUtils.decodeLatLon(XmlUtil.getAttribute(llbbox,
+                south = GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(llbbox,
                         WmsUtils.ATTR_MINY));
-                west = GeoUtils.decodeLatLon(XmlUtil.getAttribute(llbbox,
+                west = GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(llbbox,
                         WmsUtils.ATTR_MINX));
-                east = GeoUtils.decodeLatLon(XmlUtil.getAttribute(llbbox,
+                east = GeoUtils.decodeLatLon(MyXmlUtil.getAttribute(llbbox,
                         WmsUtils.ATTR_MAXX));
                 bboxString = west + "," + south + "," + east + "," + north;
             } else if (gbbox != null) {
-                north = GeoUtils.decodeLatLon(XmlUtil.getGrandChildText(gbbox,
+                north = GeoUtils.decodeLatLon(MyXmlUtil.getGrandChildText(gbbox,
                         WmsUtils.TAG_NORTHBOUNDLATITUDE, ""));
-                south = GeoUtils.decodeLatLon(XmlUtil.getGrandChildText(gbbox,
+                south = GeoUtils.decodeLatLon(MyXmlUtil.getGrandChildText(gbbox,
                         WmsUtils.TAG_SOUTHBOUNDLATITUDE, ""));
-                east = GeoUtils.decodeLatLon(XmlUtil.getGrandChildText(gbbox,
+                east = GeoUtils.decodeLatLon(MyXmlUtil.getGrandChildText(gbbox,
                         WmsUtils.TAG_EASTBOUNDLONGITUDE, ""));
-                west = GeoUtils.decodeLatLon(XmlUtil.getGrandChildText(gbbox,
+                west = GeoUtils.decodeLatLon(MyXmlUtil.getGrandChildText(gbbox,
                         WmsUtils.TAG_WESTBOUNDLONGITUDE, ""));
                 bboxString = west + "," + south + "," + east + "," + north;
             }
 
 
 
-            Element bbox = XmlUtil.findChildRecurseUp(layer,
+            Element bbox = MyXmlUtil.findChildRecurseUp(layer,
                                WmsUtils.TAG_BOUNDINGBOX);
 
             if (bbox == null) {
                 logError("WMS: No BBOX specified: "
-                         + XmlUtil.toString(layer), null);
+                         + MyXmlUtil.toString(layer), null);
                 System.err.println("WMS: No BBOX specified: "
-                                   + XmlUtil.toString(layer));
+                                   + MyXmlUtil.toString(layer));
 
                 continue;
             }
 
 
-            String minx = XmlUtil.getAttribute(bbox, WmsUtils.ATTR_MINX);
-            String maxx = XmlUtil.getAttribute(bbox, WmsUtils.ATTR_MAXX);
-            String miny = XmlUtil.getAttribute(bbox, WmsUtils.ATTR_MINY);
-            String maxy = XmlUtil.getAttribute(bbox, WmsUtils.ATTR_MAXY);
+            String minx = MyXmlUtil.getAttribute(bbox, WmsUtils.ATTR_MINX);
+            String maxx = MyXmlUtil.getAttribute(bbox, WmsUtils.ATTR_MAXX);
+            String miny = MyXmlUtil.getAttribute(bbox, WmsUtils.ATTR_MINY);
+            String maxy = MyXmlUtil.getAttribute(bbox, WmsUtils.ATTR_MAXY);
 
             if (bboxString == null) {
                 bboxString = minx + "," + miny + "," + maxx + "," + maxy;
@@ -294,12 +294,12 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                         + HtmlUtils.arg(WmsUtils.ARG_HEIGHT, "400");
 
             //<BoundingBox CRS="EPSG:4326" minx="-180.0" miny="-90" maxx="180.0" maxy="90"/>
-            Element style = XmlUtil.findChildRecurseUp(layer,
+            Element style = MyXmlUtil.findChildRecurseUp(layer,
                                 WmsUtils.TAG_STYLE);
             if (style != null) {
                 imageUrl += "&"
                             + HtmlUtils.arg("styles",
-                                            XmlUtil.getGrandChildText(style,
+                                            MyXmlUtil.getGrandChildText(style,
                                                 WmsUtils.TAG_NAME,
                                                     "default"));
             }
@@ -422,9 +422,9 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
      */
     private String getText(Element node, String path, String dflt)
             throws Exception {
-        Element child = XmlUtil.findDescendantFromPath(node, path);
+        Element child = MyXmlUtil.findDescendantFromPath(node, path);
         if (child != null) {
-            return XmlUtil.getChildText(child);
+            return MyXmlUtil.getChildText(child);
         }
 
         return dflt;
@@ -479,13 +479,13 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception on badness
      */
     private void addKeywords(Request request,Entry entry, Element service) throws Exception {
-        Element keyWords = XmlUtil.findChild(service,
+        Element keyWords = MyXmlUtil.findChild(service,
                                              WmsUtils.TAG_KEYWORDLIST);
         if (keyWords != null) {
-            List children = XmlUtil.findChildren(keyWords,
+            List children = MyXmlUtil.findChildren(keyWords,
                                 WmsUtils.TAG_KEYWORD);
             for (int i = 0; i < children.size(); i++) {
-                String text = XmlUtil.getChildText((Element) children.get(i));
+                String text = MyXmlUtil.getChildText((Element) children.get(i));
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(), getMetadataManager().findType("content.keyword"), true,

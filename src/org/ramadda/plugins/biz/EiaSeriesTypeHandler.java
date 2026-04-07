@@ -25,7 +25,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -121,11 +121,11 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
         args.add("1");
         Element root = fcth.call(Eia.URL_SERIES, args);
         Object[] values = getEntryValues(entry);
-        Element  node   = XmlUtil.findChild(root, Eia.TAG_SERIES);
+        Element  node   = MyXmlUtil.findChild(root, Eia.TAG_SERIES);
         if(node == null) return;
-        Element  row   = XmlUtil.findChild(node, Eia.TAG_ROW);
-        entry.setName(XmlUtil.getAttribute(node, Eia.ATTR_NAME, entry.getName()));
-        entry.setDescription(XmlUtil.getAttribute(node, Eia.ATTR_DESCRIPTION, ""));
+        Element  row   = MyXmlUtil.findChild(node, Eia.TAG_ROW);
+        entry.setName(MyXmlUtil.getAttribute(node, Eia.ATTR_NAME, entry.getName()));
+        entry.setDescription(MyXmlUtil.getAttribute(node, Eia.ATTR_DESCRIPTION, ""));
         */
     }
 

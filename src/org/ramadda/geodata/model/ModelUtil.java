@@ -17,7 +17,7 @@ import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.File;
@@ -70,8 +70,8 @@ public class ModelUtil {
 
         NcmlUtil.openNcml(sb);
         sb.append("\n");
-        sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
-                                  XmlUtil.attrs(new String[] {
+        sb.append(MyXmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                  MyXmlUtil.attrs(new String[] {
             NcmlUtil.ATTR_TYPE, NcmlUtil.AGG_JOINEXISTING,
             NcmlUtil.ATTR_DIMNAME, timeCoordinate,
             NcmlUtil.ATTR_TIMEUNITSCHANGE, "true"
@@ -87,8 +87,8 @@ public class ModelUtil {
             //            System.err.println("   file:" + s);
             String s = child.getResource().getPath();
             File   f = new File(s);
-            sb.append(XmlUtil.tag(NcmlUtil.TAG_NETCDF,
-                                  XmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
+            sb.append(MyXmlUtil.tag(NcmlUtil.TAG_NETCDF,
+                                  MyXmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
                                           IOUtil.getURL(s,
                                                   new ModelUtil().getClass())
                                                   .toString(),
@@ -97,8 +97,8 @@ public class ModelUtil {
                                   ""));
         }
 
-        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
-        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
+        sb.append(MyXmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
+        sb.append(MyXmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
         String ncml = sb.toString();
         if (ncml.length() != 0) {
             String ncmlFileName = id + ".ncml";

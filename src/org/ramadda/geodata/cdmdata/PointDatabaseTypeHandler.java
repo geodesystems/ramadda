@@ -63,7 +63,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import visad.FieldImpl;
 
@@ -1356,7 +1356,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             KmlUtil.timestamp(placemark, pointData.date);
         }
 
-        StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.toString(root));
 
         return new Result(msg("Point Data"), sb,
                           getRepository().getMimeTypeFromSuffix(".kml"));
@@ -1893,23 +1893,23 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
         String                  tableName = getTableName(entry);
         List<PointDataMetadata> metadata  = getMetadata(getTableName(entry));
-        Document                doc       = XmlUtil.makeDocument();
+        Document                doc       = MyXmlUtil.makeDocument();
         Element                 root      =
             doc.createElement("pointmetadata");
         StringBuffer            xml       = new StringBuffer();
         for (PointDataMetadata pdm : metadata) {
             String  type    = pdm.varType;
-            Element colNode = XmlUtil.create("column", root);
-            XmlUtil.create(doc, "id", colNode, "" + pdm.getColumnNumber(),
+            Element colNode = MyXmlUtil.create("column", root);
+            MyXmlUtil.create(doc, "id", colNode, "" + pdm.getColumnNumber(),
                            null);
-            XmlUtil.create(doc, "isbasic", colNode, "" + pdm.isBasic(), null);
-            XmlUtil.create(doc, "shortname", colNode, pdm.shortName, null);
-            XmlUtil.create(doc, "longname", colNode, pdm.longName, null);
-            XmlUtil.create(doc, "unit", colNode, pdm.unit, null);
-            XmlUtil.create(doc, "type", colNode, pdm.varType, null);
+            MyXmlUtil.create(doc, "isbasic", colNode, "" + pdm.isBasic(), null);
+            MyXmlUtil.create(doc, "shortname", colNode, pdm.shortName, null);
+            MyXmlUtil.create(doc, "longname", colNode, pdm.longName, null);
+            MyXmlUtil.create(doc, "unit", colNode, pdm.unit, null);
+            MyXmlUtil.create(doc, "type", colNode, pdm.varType, null);
         }
 
-        return new Result("", new StringBuffer(XmlUtil.toString(root)),
+        return new Result("", new StringBuffer(MyXmlUtil.toString(root)),
                           "text/xml");
     }
 

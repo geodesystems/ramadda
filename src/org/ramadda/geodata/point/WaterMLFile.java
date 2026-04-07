@@ -16,7 +16,7 @@ import org.ramadda.util.WaterMLUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -79,9 +79,9 @@ public class WaterMLFile extends PointFile {
             return visitInfo;
         }
         fields = new ArrayList<RecordField>();
-        Element root = XmlUtil.getRoot(getFilename(), getClass());
+        Element root = MyXmlUtil.getRoot(getFilename(), getClass());
 
-        List timeseriesNodes = XmlUtil.findChildren(root,
+        List timeseriesNodes = MyXmlUtil.findChildren(root,
                                    WaterMLUtil.TAG_TIMESERIES);
 
         if (timeseriesNodes.size() == 0) {
@@ -110,28 +110,28 @@ public class WaterMLFile extends PointFile {
 
         for (int i = 0; i < timeseriesNodes.size(); i++) {
             Element timeSeriesNode = (Element) timeseriesNodes.get(i);
-            Element sourceInfo = XmlUtil.findChild(timeSeriesNode,
+            Element sourceInfo = MyXmlUtil.findChild(timeSeriesNode,
                                      WaterMLUtil.TAG_SOURCEINFO);
 
-            elevation = XmlUtil.getGrandChildText(sourceInfo,
+            elevation = MyXmlUtil.getGrandChildText(sourceInfo,
                     WaterMLUtil.TAG_ELEVATION_M, elevation);
 
             if (latitude == null) {
-                Element latitudeNode = XmlUtil.findDescendant(sourceInfo,
+                Element latitudeNode = MyXmlUtil.findDescendant(sourceInfo,
                                            WaterMLUtil.TAG_LATITUDE);
-                Element longitudeNode = XmlUtil.findDescendant(sourceInfo,
+                Element longitudeNode = MyXmlUtil.findDescendant(sourceInfo,
                                             WaterMLUtil.TAG_LONGITUDE);
                 if (latitudeNode != null) {
-                    latitude = XmlUtil.getChildText(latitudeNode);
+                    latitude = MyXmlUtil.getChildText(latitudeNode);
                 }
                 if (longitudeNode != null) {
-                    longitude = XmlUtil.getChildText(longitudeNode);
+                    longitude = MyXmlUtil.getChildText(longitudeNode);
                 }
             }
 
-            Element valuesNode = XmlUtil.findChild(timeSeriesNode,
+            Element valuesNode = MyXmlUtil.findChild(timeSeriesNode,
                                      WaterMLUtil.TAG_VALUES);
-            Element variable = XmlUtil.findChild(timeSeriesNode,
+            Element variable = MyXmlUtil.findChild(timeSeriesNode,
                                    WaterMLUtil.TAG_VARIABLE);
 
             //    <variable>
@@ -139,24 +139,24 @@ public class WaterMLFile extends PointFile {
             //      <variableName>Battery voltage</variableName>
             //      <valueType>Field Observation</valueType>
             //      <dataType>Minimum</dataType>
-            String variableCode = XmlUtil.getGrandChildText(variable,
+            String variableCode = MyXmlUtil.getGrandChildText(variable,
                                       WaterMLUtil.TAG_VARIABLECODE, "");
-            String variableName = XmlUtil.getGrandChildText(variable,
+            String variableName = MyXmlUtil.getGrandChildText(variable,
                                       WaterMLUtil.TAG_VARIABLENAME, "");
-            String valueType = XmlUtil.getGrandChildText(variable,
+            String valueType = MyXmlUtil.getGrandChildText(variable,
                                    WaterMLUtil.TAG_VALUETYPE, "");
-            String dataType = XmlUtil.getGrandChildText(variable,
+            String dataType = MyXmlUtil.getGrandChildText(variable,
                                   WaterMLUtil.TAG_DATATYPE, "");
 
-            List values = XmlUtil.findChildren(valuesNode,
+            List values = MyXmlUtil.findChildren(valuesNode,
                               WaterMLUtil.TAG_VALUE);
 
             listOfValues.add(values);
             //            <siteName>Little Bear River at Mendon Road near Mendon, Utah</siteName>
             //<siteCode network="LBR" siteID="1">USU-LBR-Mendon</siteCode>
-            String siteName = XmlUtil.getGrandChildText(sourceInfo,
+            String siteName = MyXmlUtil.getGrandChildText(sourceInfo,
                                   WaterMLUtil.TAG_SITENAME, "");
-            String siteCode = XmlUtil.getGrandChildText(sourceInfo,
+            String siteCode = MyXmlUtil.getGrandChildText(sourceInfo,
                                   WaterMLUtil.TAG_SITECODE, "");
 
             if (fileMetadata == null) {
@@ -222,11 +222,11 @@ public class WaterMLFile extends PointFile {
                 Element valueNode = (Element) valueNodes.get(valueIdx);
 
                 if (i == 0) {
-                    dates.add(sdf.parse(XmlUtil.getAttribute(valueNode,
+                    dates.add(sdf.parse(MyXmlUtil.getAttribute(valueNode,
                             WaterMLUtil.ATTR_DATETIMEUTC, "")));
                 }
                 double value =
-                    Double.parseDouble(XmlUtil.getChildText(valueNode));
+                    Double.parseDouble(MyXmlUtil.getChildText(valueNode));
                 values[i][valueIdx] = value;
             }
         }

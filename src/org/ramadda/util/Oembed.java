@@ -10,7 +10,7 @@ import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -164,16 +164,16 @@ public class Oembed {
     }
 
     private Response getFromXml(String url, String xml) throws Exception {
-        Element root = XmlUtil.getRoot(xml);
+        Element root = MyXmlUtil.getRoot(xml);
 
         return new Response(
-            url, XmlUtil.getGrandChildText(root, "type", null),
-            XmlUtil.getGrandChildText(root, "title", null),
-            XmlUtil.getGrandChildText(root, "author_name", null),
-            XmlUtil.getGrandChildText(root, "width", null),
-            XmlUtil.getGrandChildText(root, "height", null),
-            XmlUtil.getGrandChildText(root, "url", null),
-            XmlUtil.getGrandChildText(root, "html", null));
+            url, MyXmlUtil.getGrandChildText(root, "type", null),
+            MyXmlUtil.getGrandChildText(root, "title", null),
+            MyXmlUtil.getGrandChildText(root, "author_name", null),
+            MyXmlUtil.getGrandChildText(root, "width", null),
+            MyXmlUtil.getGrandChildText(root, "height", null),
+            MyXmlUtil.getGrandChildText(root, "url", null),
+            MyXmlUtil.getGrandChildText(root, "html", null));
     }
 
     private Response getFromJson(String url, String json) throws Exception {

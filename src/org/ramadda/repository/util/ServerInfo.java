@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.net.URL;
 
@@ -152,12 +152,12 @@ public class ServerInfo implements Constants {
      * @param element _more_
      */
     public ServerInfo(Element element) {
-        //        System.err.println("server:" + XmlUtil.toString(element));
-        this.hostname = clean(XmlUtil.getGrandChildText(element, TAG_INFO_HOSTNAME,""));
-        this.port = Integer.parseInt(XmlUtil.getGrandChildText(element,
+        //        System.err.println("server:" + MyXmlUtil.toString(element));
+        this.hostname = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_HOSTNAME,""));
+        this.port = Integer.parseInt(MyXmlUtil.getGrandChildText(element,
 							       TAG_INFO_PORT, "80"));
 
-        String sslPortString = XmlUtil.getGrandChildText(element,
+        String sslPortString = MyXmlUtil.getGrandChildText(element,
 							 TAG_INFO_SSLPORT, null);
 
         if (sslPortString != null) {
@@ -165,13 +165,13 @@ public class ServerInfo implements Constants {
         } else {
             this.sslPort = -1;
         }
-        this.basePath = clean(XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,"/repository"));
-        this.title = clean(XmlUtil.getGrandChildText(element, TAG_INFO_TITLE, ""));
-        this.slug = clean(XmlUtil.getGrandChildText(element, TAG_INFO_SLUG, ""));	
-	this.searchRoot=clean(XmlUtil.getGrandChildText(element, TAG_INFO_SEARCHROOT, ""));	
-        this.description = clean(XmlUtil.getGrandChildText(element, TAG_INFO_DESCRIPTION, ""));
-        this.email = clean(XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, ""));
-        this.url = clean(XmlUtil.getGrandChildText(element, TAG_INFO_URL, ""));
+        this.basePath = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,"/repository"));
+        this.title = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_TITLE, ""));
+        this.slug = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_SLUG, ""));	
+	this.searchRoot=clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_SEARCHROOT, ""));	
+        this.description = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_DESCRIPTION, ""));
+        this.email = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, ""));
+        this.url = clean(MyXmlUtil.getGrandChildText(element, TAG_INFO_URL, ""));
         this.isRegistry = true;
     }
 
@@ -271,22 +271,22 @@ public class ServerInfo implements Constants {
      */
     public Element toXml(RepositoryBase repository, Document doc)
 	throws Exception {
-        Element info = XmlUtil.create(doc, TAG_INFO_REPOSITORY, null,
+        Element info = MyXmlUtil.create(doc, TAG_INFO_REPOSITORY, null,
                                       new String[] {});
-        XmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
-        XmlUtil.create(doc, TAG_INFO_TITLE, info, title, null);
-        XmlUtil.create(doc, TAG_INFO_URL, info, getUrl());
-        XmlUtil.create(doc, TAG_INFO_SLUG, info, slug!=null?slug:"", null);
-        XmlUtil.create(doc, TAG_INFO_SEARCHROOT, info, searchRoot!=null?searchRoot:"", null);
-        XmlUtil.create(doc, TAG_INFO_HOSTNAME, info, hostname, null);
-        XmlUtil.create(doc, TAG_INFO_BASEPATH, info, basePath, null);
-        XmlUtil.create(doc, TAG_INFO_EMAIL, info,
+        MyXmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
+        MyXmlUtil.create(doc, TAG_INFO_TITLE, info, title, null);
+        MyXmlUtil.create(doc, TAG_INFO_URL, info, getUrl());
+        MyXmlUtil.create(doc, TAG_INFO_SLUG, info, slug!=null?slug:"", null);
+        MyXmlUtil.create(doc, TAG_INFO_SEARCHROOT, info, searchRoot!=null?searchRoot:"", null);
+        MyXmlUtil.create(doc, TAG_INFO_HOSTNAME, info, hostname, null);
+        MyXmlUtil.create(doc, TAG_INFO_BASEPATH, info, basePath, null);
+        MyXmlUtil.create(doc, TAG_INFO_EMAIL, info,
                        repository.getProperty(PROP_ADMIN_EMAIL, ""), null);
-        XmlUtil.create(doc, TAG_INFO_PORT, info, "" + port, null);
+        MyXmlUtil.create(doc, TAG_INFO_PORT, info, "" + port, null);
         if (sslPort > 0) {
-            XmlUtil.create(doc, TAG_INFO_SSLPORT, info, "" + sslPort, null);
+            MyXmlUtil.create(doc, TAG_INFO_SSLPORT, info, "" + sslPort, null);
         }
-        XmlUtil.create(doc, TAG_INFO_ISREGISTRY, info, "" + isRegistry, null);
+        MyXmlUtil.create(doc, TAG_INFO_ISREGISTRY, info, "" + isRegistry, null);
 
         return info;
     }

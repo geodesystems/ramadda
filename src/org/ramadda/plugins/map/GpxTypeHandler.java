@@ -18,6 +18,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 
@@ -37,7 +38,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 
@@ -75,7 +76,7 @@ public class GpxTypeHandler extends PointTypeHandler {
     }
 
     private Element readXml(Entry entry) throws Exception {
-        return XmlUtil.getRoot(
+        return MyXmlUtil.getRoot(
 			       getStorageManager().readSystemResource(entry.getFile()));
     }
 
@@ -169,43 +170,43 @@ public class GpxTypeHandler extends PointTypeHandler {
     }
 
     private static double readElevation(Element trackPoint) {
-	String v = XmlUtil.getGrandChildText(trackPoint, "ele",null);
+	String v = MyXmlUtil.getGrandChildText(trackPoint, "ele",null);
 	if(v==null)
-	    v =  XmlUtil.getAttribute(trackPoint,"ele","0");
+	    v =  MyXmlUtil.getAttribute(trackPoint,"ele","0");
 	return Double.parseDouble(v);
     }
 
     public void extractInfo(Request request, Entry entry, boolean isNew)
 	throws Exception {
         Element root     = readXml(entry);
-        Element metadata = XmlUtil.findChild(root, GpxUtil.TAG_METADATA);
+        Element metadata = MyXmlUtil.findChild(root, GpxUtil.TAG_METADATA);
         Element bounds   = null;
 
         if (metadata != null) {
-            bounds = XmlUtil.findChild(metadata, GpxUtil.TAG_BOUNDS);
+            bounds = MyXmlUtil.findChild(metadata, GpxUtil.TAG_BOUNDS);
         }
 
         if (bounds == null) {
-            bounds = XmlUtil.findChild(root, GpxUtil.TAG_BOUNDS);
+            bounds = MyXmlUtil.findChild(root, GpxUtil.TAG_BOUNDS);
         }
         boolean hasBounds = false;
         if (bounds != null) {
             hasBounds = true;
-            entry.setNorth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
+            entry.setNorth(MyXmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
 						Entry.NONGEO));
-            entry.setSouth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLAT,
+            entry.setSouth(MyXmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLAT,
 						Entry.NONGEO));
-            entry.setWest(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLON,
+            entry.setWest(MyXmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLON,
 					       Entry.NONGEO));
-            entry.setEast(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLON,
+            entry.setEast(MyXmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLON,
 					       Entry.NONGEO));
         }
 
         if (isNew) {
-            String name = XmlUtil.getGrandChildText(root, GpxUtil.TAG_NAME,
+            String name = MyXmlUtil.getGrandChildText(root, GpxUtil.TAG_NAME,
 						    (String) null);
             if ((name == null) && (metadata != null)) {
-                name = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_NAME,
+                name = MyXmlUtil.getGrandChildText(metadata, GpxUtil.TAG_NAME,
 						 entry.getName());
 
             }
@@ -213,10 +214,10 @@ public class GpxTypeHandler extends PointTypeHandler {
                 entry.setName(name);
             }
             if (entry.getDescription().length() == 0) {
-                String desc = XmlUtil.getGrandChildText(root,
+                String desc = MyXmlUtil.getGrandChildText(root,
 							GpxUtil.TAG_DESC, (String) null);
                 if ((desc == null) && (metadata != null)) {
-                    desc = XmlUtil.getGrandChildText(metadata,
+                    desc = MyXmlUtil.getGrandChildText(metadata,
 						     GpxUtil.TAG_DESC, "");
 
                 }
@@ -225,7 +226,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 }
             }
 
-            String keywords = XmlUtil.getGrandChildText(root,
+            String keywords = MyXmlUtil.getGrandChildText(root,
 							GpxUtil.TAG_KEYWORDS, null);
             if (keywords != null) {
                 for (String word :
@@ -238,9 +239,9 @@ public class GpxTypeHandler extends PointTypeHandler {
                 }
             }
 
-            String url = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URL,
+            String url = MyXmlUtil.getGrandChildText(root, GpxUtil.TAG_URL,
 						   null);
-            String urlName = XmlUtil.getGrandChildText(root,
+            String urlName = MyXmlUtil.getGrandChildText(root,
 						       GpxUtil.TAG_URLNAME, "");
             if (url != null) {
                 getMetadataManager().addMetadata(request,entry,
@@ -251,7 +252,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
             }
 
-            String author = XmlUtil.getGrandChildText(root,
+            String author = MyXmlUtil.getGrandChildText(root,
 						      GpxUtil.TAG_AUTHOR, null);
             if (author != null) {
                 getMetadataManager().addMetadata(request,entry,
@@ -262,7 +263,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
             }
 
-            String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
+            String email = MyXmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
 						     null);
             if (email != null) {
                 getMetadataManager().addMetadata(request,entry,
@@ -286,9 +287,9 @@ public class GpxTypeHandler extends PointTypeHandler {
         //        <time>2012-11-24T14:47:34</time>
         //This grabs all of the time nodes in the entire document
         for (Element child :
-		 ((List<Element>) XmlUtil.findDescendants(root,
+		 ((List<Element>) MyXmlUtil.findDescendants(root,
 							  GpxUtil.TAG_TIME))) {
-            String time = XmlUtil.getChildText(child);
+            String time = MyXmlUtil.getChildText(child);
             if (time != null) {
                 Date dttm = sdf.parse(time);
                 minTime = (minTime == -1)
@@ -314,62 +315,62 @@ public class GpxTypeHandler extends PointTypeHandler {
 	  </wpt>
 	*/
         for (Element child :
-		 ((List<Element>) XmlUtil.findChildren(root,
+		 ((List<Element>) MyXmlUtil.findChildren(root,
 						       GpxUtil.TAG_WPT))) {
-            Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
+            Element linkNode = MyXmlUtil.findChild(child, GpxUtil.TAG_LINK);
             if (linkNode != null) {
-                String href = XmlUtil.getAttribute(linkNode,
+                String href = MyXmlUtil.getAttribute(linkNode,
 						   GpxUtil.ATTR_HREF);
-                Element textNode = XmlUtil.findChild(linkNode,
+                Element textNode = MyXmlUtil.findChild(linkNode,
 						     GpxUtil.TAG_TEXT);
-                Element typeNode = XmlUtil.findChild(linkNode,
+                Element typeNode = MyXmlUtil.findChild(linkNode,
 						     GpxUtil.TAG_TYPE);
             }
             maxLat = Math.max(maxLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   maxLat));
             minLat = Math.min(minLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   minLat));
             maxLon = Math.max(maxLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   maxLon));
             minLon = Math.min(minLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   minLon));
         }
 
         for (Element child :
-		 ((List<Element>) XmlUtil.findChildren(root,
+		 ((List<Element>) MyXmlUtil.findChildren(root,
 						       GpxUtil.TAG_RTEPT))) {
             maxLat = Math.max(maxLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   maxLat));
             minLat = Math.min(minLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   minLat));
             maxLon = Math.max(maxLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   maxLon));
             minLon = Math.min(minLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   minLon));
         }
 
         for (Element child :
-		 ((List<Element>) XmlUtil.findDescendants(root,
+		 ((List<Element>) MyXmlUtil.findDescendants(root,
 							  GpxUtil.TAG_TRKPT))) {
             maxLat = Math.max(maxLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   maxLat));
             minLat = Math.min(minLat,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						   minLat));
             maxLon = Math.max(maxLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   maxLon));
             minLon = Math.min(minLon,
-                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                              MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						   minLon));
         }
 
@@ -399,7 +400,7 @@ public class GpxTypeHandler extends PointTypeHandler {
         double  elevationLoss = 0;
         double  movingTime    = 0;
         for (Element track :
-		 ((List<Element>) XmlUtil.findChildren(root,
+		 ((List<Element>) MyXmlUtil.findChildren(root,
 						       GpxUtil.TAG_TRK))) {
             double lastLat       = 0;
             double lastLon       = 0;
@@ -407,17 +408,17 @@ public class GpxTypeHandler extends PointTypeHandler {
             double lastElevation = -9999;
 	    List<Double> elevations = new ArrayList<Double>();
             for (Element trackSeg :
-		     ((List<Element>) XmlUtil.findChildren(track,
+		     ((List<Element>) MyXmlUtil.findChildren(track,
 							   GpxUtil.TAG_TRKSEG))) {
 		double totalMeters=0;
 		double totalMeters2=0;		
 		int cnt=0;
                 for (Element trackPoint :
-			 ((List<Element>) XmlUtil.findChildren(trackSeg,
+			 ((List<Element>) MyXmlUtil.findChildren(trackSeg,
 							       GpxUtil.TAG_TRKPT))) {
-                    double lat = XmlUtil.getAttribute(trackPoint,
+                    double lat = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LAT, 0.0);
-                    double lon = XmlUtil.getAttribute(trackPoint,
+                    double lon = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LON, 0.0);
                     double elevation = readElevation(trackPoint);
 		    elevations.add(elevation);
@@ -440,7 +441,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 		    //                    if (ele != null) {
 		    //                        ele = "" + (Double.parseDouble(ele) * 3.28084);
 		    //                    }
-                    String time = XmlUtil.getGrandChildText(trackPoint,
+                    String time = MyXmlUtil.getGrandChildText(trackPoint,
 							    "time", (String) null);
                     long thisTime = 0;
                     if (time != null) {
@@ -573,32 +574,32 @@ public class GpxTypeHandler extends PointTypeHandler {
         Element folder  = KmlUtil.folder(root, entry.getName(), true);
 
         for (Element child :
-		 ((List<Element>) XmlUtil.findChildren(gpxRoot,
+		 ((List<Element>) MyXmlUtil.findChildren(gpxRoot,
 						       GpxUtil.TAG_WPT))) {
-            String name = XmlUtil.getGrandChildText(child, GpxUtil.TAG_NAME,
+            String name = MyXmlUtil.getGrandChildText(child, GpxUtil.TAG_NAME,
 						    "");
-            String desc = XmlUtil.getGrandChildText(child, GpxUtil.TAG_DESC,
+            String desc = MyXmlUtil.getGrandChildText(child, GpxUtil.TAG_DESC,
 						    "");
-            String sym = XmlUtil.getGrandChildText(child, GpxUtil.TAG_SYM,
+            String sym = MyXmlUtil.getGrandChildText(child, GpxUtil.TAG_SYM,
 						   "");
-            double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT, 0.0);
-            double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON, 0.0);
+            double lat = MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT, 0.0);
+            double lon = MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON, 0.0);
             KmlUtil.placemark(folder, name, desc, lat, lon, 0, null);
         }
 
         for (Element track :
-		 ((List<Element>) XmlUtil.findChildren(gpxRoot,
+		 ((List<Element>) MyXmlUtil.findChildren(gpxRoot,
 						       GpxUtil.TAG_TRK))) {
             for (Element trackSeg :
-		     ((List<Element>) XmlUtil.findChildren(track,
+		     ((List<Element>) MyXmlUtil.findChildren(track,
 							   GpxUtil.TAG_TRKSEG))) {
                 List<double[]> points = new ArrayList<double[]>();
                 for (Element trackPoint :
-			 ((List<Element>) XmlUtil.findChildren(trackSeg,
+			 ((List<Element>) MyXmlUtil.findChildren(trackSeg,
 							       GpxUtil.TAG_TRKPT))) {
-                    double lat = XmlUtil.getAttribute(trackPoint,
+                    double lat = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LAT, 0.0);
-                    double lon = XmlUtil.getAttribute(trackPoint,
+                    double lon = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LON, 0.0);
                     points.add(new double[] { lat, lon });
                 }
@@ -615,15 +616,15 @@ public class GpxTypeHandler extends PointTypeHandler {
         }
 
         for (Element track :
-		 ((List<Element>) XmlUtil.findChildren(gpxRoot,
+		 ((List<Element>) MyXmlUtil.findChildren(gpxRoot,
 						       GpxUtil.TAG_RTE))) {
             List<double[]> points = new ArrayList<double[]>();
             for (Element trackPoint :
-		     ((List<Element>) XmlUtil.findChildren(track,
+		     ((List<Element>) MyXmlUtil.findChildren(track,
 							   GpxUtil.TAG_RTEPT))) {
-                double lat = XmlUtil.getAttribute(trackPoint,
+                double lat = MyXmlUtil.getAttribute(trackPoint,
 						  GpxUtil.ATTR_LAT, 0.0);
-                double lon = XmlUtil.getAttribute(trackPoint,
+                double lon = MyXmlUtil.getAttribute(trackPoint,
 						  GpxUtil.ATTR_LON, 0.0);
                 points.add(new double[] { lat, lon });
             }
@@ -638,8 +639,8 @@ public class GpxTypeHandler extends PointTypeHandler {
                               java.awt.Color.RED, 2);
         }
 
-        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.XML_HEADER);
+        sb.append(MyXmlUtil.toString(root));
 
         Result result =
             new Result("GPX Entry", sb.toString().getBytes(),
@@ -670,31 +671,31 @@ public class GpxTypeHandler extends PointTypeHandler {
 
             int markerCnt = 0;
             for (Element child :
-		     ((List<Element>) XmlUtil.findChildren(root,
+		     ((List<Element>) MyXmlUtil.findChildren(root,
 							   GpxUtil.TAG_WPT))) {
                 if (cnt++ > 500) {
                     break;
                 }
-                Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
+                Element linkNode = MyXmlUtil.findChild(child, GpxUtil.TAG_LINK);
                 if (linkNode != null) {
-                    String href = XmlUtil.getAttribute(linkNode,
+                    String href = MyXmlUtil.getAttribute(linkNode,
 						       GpxUtil.ATTR_HREF);
-                    Element textNode = XmlUtil.findChild(linkNode,
+                    Element textNode = MyXmlUtil.findChild(linkNode,
 							 GpxUtil.TAG_TEXT);
-                    Element typeNode = XmlUtil.findChild(linkNode,
+                    Element typeNode = MyXmlUtil.findChild(linkNode,
 							 GpxUtil.TAG_TYPE);
 
                 }
 
-                String name = XmlUtil.getGrandChildText(child,
+                String name = MyXmlUtil.getGrandChildText(child,
 							GpxUtil.TAG_NAME, "");
-                String desc = XmlUtil.getGrandChildText(child,
+                String desc = MyXmlUtil.getGrandChildText(child,
 							GpxUtil.TAG_DESC, "");
-                String sym = XmlUtil.getGrandChildText(child,
+                String sym = MyXmlUtil.getGrandChildText(child,
 						       GpxUtil.TAG_SYM, "");
-                double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                double lat = MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
 						  0.0);
-                double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                double lon = MyXmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
 						  0.0);
 
                 double elev = readElevation(child);
@@ -754,18 +755,18 @@ public class GpxTypeHandler extends PointTypeHandler {
             }
 
             for (Element track :
-		     ((List<Element>) XmlUtil.findChildren(root,
+		     ((List<Element>) MyXmlUtil.findChildren(root,
 							   GpxUtil.TAG_TRK))) {
                 for (Element trackSeg :
-			 ((List<Element>) XmlUtil.findChildren(track,
+			 ((List<Element>) MyXmlUtil.findChildren(track,
 							       GpxUtil.TAG_TRKSEG))) {
                     List<double[]> points = new ArrayList<double[]>();
                     for (Element trackPoint :
-			     ((List<Element>) XmlUtil.findChildren(trackSeg,
+			     ((List<Element>) MyXmlUtil.findChildren(trackSeg,
 								   GpxUtil.TAG_TRKPT))) {
-                        double lat = XmlUtil.getAttribute(trackPoint,
+                        double lat = MyXmlUtil.getAttribute(trackPoint,
 							  GpxUtil.ATTR_LAT, 0.0);
-                        double lon = XmlUtil.getAttribute(trackPoint,
+                        double lon = MyXmlUtil.getAttribute(trackPoint,
 							  GpxUtil.ATTR_LON, 0.0);
                         points.add(new double[] { lat, lon });
                     }
@@ -776,15 +777,15 @@ public class GpxTypeHandler extends PointTypeHandler {
             }
 
             for (Element track :
-		     ((List<Element>) XmlUtil.findChildren(root,
+		     ((List<Element>) MyXmlUtil.findChildren(root,
 							   GpxUtil.TAG_RTE))) {
                 List<double[]> points = new ArrayList<double[]>();
                 for (Element trackPoint :
-			 ((List<Element>) XmlUtil.findChildren(track,
+			 ((List<Element>) MyXmlUtil.findChildren(track,
 							       GpxUtil.TAG_RTEPT))) {
-                    double lat = XmlUtil.getAttribute(trackPoint,
+                    double lat = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LAT, 0.0);
-                    double lon = XmlUtil.getAttribute(trackPoint,
+                    double lon = MyXmlUtil.getAttribute(trackPoint,
 						      GpxUtil.ATTR_LON, 0.0);
                     points.add(new double[] { lat, lon });
                 }
@@ -832,7 +833,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 	    throws Exception {
 
             InputStream   source   = super.doMakeInputStream(buffered);
-            Element       root     = XmlUtil.getRoot(source);
+            Element       root     = MyXmlUtil.getRoot(source);
             StringBuilder s        = new StringBuilder("#converted stream\n");
             boolean       didTrack = false;
             SimpleDateFormat sdf =
@@ -851,24 +852,24 @@ public class GpxTypeHandler extends PointTypeHandler {
             */
 
             for (Element track :
-		     ((List<Element>) XmlUtil.findChildren(root,
+		     ((List<Element>) MyXmlUtil.findChildren(root,
 							   GpxUtil.TAG_TRK))) {
                 TrackInfo trackInfo = new TrackInfo();
                 for (Element trackSeg :
-			 ((List<Element>) XmlUtil.findChildren(track,
+			 ((List<Element>) MyXmlUtil.findChildren(track,
 							       GpxUtil.TAG_TRKSEG))) {
                     didTrack = true;
                     trackInfo.reset();
                     for (Element pt :
-			     ((List<Element>) XmlUtil.findChildren(trackSeg,
+			     ((List<Element>) MyXmlUtil.findChildren(trackSeg,
 								   GpxUtil.TAG_TRKPT))) {
 			if (extraTags.size() > 0) {
                             extra.clear();
-                            Element extensions = XmlUtil.findChild(pt,
+                            Element extensions = MyXmlUtil.findChild(pt,
 								   "extensions");
                             if (extensions != null) {
                                 NodeList grandchildren =
-                                    XmlUtil.getGrandChildren(extensions);
+                                    MyXmlUtil.getGrandChildren(extensions);
                                 for (String tag : extraTags) {
                                     boolean gotIt = false;
                                     for (int i = 0;
@@ -877,7 +878,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                                         Element ele =
                                             (Element) grandchildren.item(i);
                                         if (tag.equals(ele.getTagName())) {
-                                            extra.add(XmlUtil.getChildText(
+                                            extra.add(MyXmlUtil.getChildText(
 									   ele));
                                             gotIt = true;
 
@@ -895,10 +896,10 @@ public class GpxTypeHandler extends PointTypeHandler {
                                 }
                             }
                         }
-                        double lat = XmlUtil.getAttribute(pt, GpxUtil.ATTR_LAT, 0.0);
-                        double lon = XmlUtil.getAttribute(pt,GpxUtil.ATTR_LON, 0.0);
+                        double lat = MyXmlUtil.getAttribute(pt, GpxUtil.ATTR_LAT, 0.0);
+                        double lon = MyXmlUtil.getAttribute(pt,GpxUtil.ATTR_LON, 0.0);
                         double elevation =readElevation(pt);
-                        String time = XmlUtil.getGrandChildText(pt, "time",(String) null);
+                        String time = MyXmlUtil.getGrandChildText(pt, "time",(String) null);
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
@@ -910,18 +911,18 @@ public class GpxTypeHandler extends PointTypeHandler {
             }
 
             if ( !didTrack) {
-                Element rte = XmlUtil.findChild(root, GpxUtil.TAG_RTE);
+                Element rte = MyXmlUtil.findChild(root, GpxUtil.TAG_RTE);
                 if (rte != null) {
                     TrackInfo trackInfo = new TrackInfo();
                     for (Element pt :
-			     ((List<Element>) XmlUtil.findChildren(rte,
+			     ((List<Element>) MyXmlUtil.findChildren(rte,
 								   GpxUtil.TAG_RTEPT))) {
-                        double lat = XmlUtil.getAttribute(pt,
+                        double lat = MyXmlUtil.getAttribute(pt,
 							  GpxUtil.ATTR_LAT, 0.0);
-                        double lon = XmlUtil.getAttribute(pt,
+                        double lon = MyXmlUtil.getAttribute(pt,
 							  GpxUtil.ATTR_LON, 0.0);
                         double elevation =readElevation(pt);
-                        String time = XmlUtil.getGrandChildText(pt, "time",
+                        String time = MyXmlUtil.getGrandChildText(pt, "time",
 								(String) null);
                         Date dttm = ((time == null)
                                      ? null
@@ -932,17 +933,17 @@ public class GpxTypeHandler extends PointTypeHandler {
                 } else {
                     TrackInfo trackInfo = new TrackInfo();
                     for (Element child :
-			     ((List<Element>) XmlUtil.findChildren(root,
+			     ((List<Element>) MyXmlUtil.findChildren(root,
 								   GpxUtil.TAG_WPT))) {
-                        String name = XmlUtil.getGrandChildText(child,
+                        String name = MyXmlUtil.getGrandChildText(child,
 								GpxUtil.TAG_NAME, "");
-                        String desc = XmlUtil.getGrandChildText(child,
+                        String desc = MyXmlUtil.getGrandChildText(child,
 								GpxUtil.TAG_DESC, "");
-                        String time = XmlUtil.getGrandChildText(child,
+                        String time = MyXmlUtil.getGrandChildText(child,
 								GpxUtil.TAG_TIME, "");
-                        double lat = XmlUtil.getAttribute(child,
+                        double lat = MyXmlUtil.getAttribute(child,
 							  GpxUtil.ATTR_LAT, 0.0);
-                        double lon = XmlUtil.getAttribute(child,
+                        double lon = MyXmlUtil.getAttribute(child,
 							  GpxUtil.ATTR_LON, 0.0);
 
                         double elevation = readElevation(child);
@@ -970,19 +971,19 @@ public class GpxTypeHandler extends PointTypeHandler {
                 extraTagsCache.put(entry.getId(), tags);
                 Element root = typeHandler.readXml(entry);
                 for (Element track :
-			 ((List<Element>) XmlUtil.findChildren(root,
+			 ((List<Element>) MyXmlUtil.findChildren(root,
 							       GpxUtil.TAG_TRK))) {
                     for (Element trackSeg :
-			     ((List<Element>) XmlUtil.findChildren(track,
+			     ((List<Element>) MyXmlUtil.findChildren(track,
 								   GpxUtil.TAG_TRKSEG))) {
                         for (Element pt :
-				 ((List<Element>) XmlUtil.findChildren(
+				 ((List<Element>) MyXmlUtil.findChildren(
 								       trackSeg, GpxUtil.TAG_TRKPT))) {
-                            Element extensions = XmlUtil.findChild(pt,
+                            Element extensions = MyXmlUtil.findChild(pt,
 								   "extensions");
                             if (extensions != null) {
                                 NodeList grandchildren =
-                                    XmlUtil.getGrandChildren(extensions);
+                                    MyXmlUtil.getGrandChildren(extensions);
                                 for (int i = 0; i < grandchildren.getLength();
 				     i++) {
                                     Element ele =

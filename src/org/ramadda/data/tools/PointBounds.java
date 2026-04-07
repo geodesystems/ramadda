@@ -19,7 +19,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.*;
@@ -259,7 +259,7 @@ public class PointBounds extends RecordTool {
                     KmlUtil.placemark(doc, name, name, coords,
                                       java.awt.Color.red, 1);
 
-                    IOUtil.writeFile(kmlFile, XmlUtil.toString(root));
+                    IOUtil.writeFile(kmlFile, MyXmlUtil.toString(root));
                 }
                 int cnt = 0;
                 //                System.out.println("name,latitude,longitude");

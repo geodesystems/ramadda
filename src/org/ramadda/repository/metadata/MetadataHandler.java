@@ -17,7 +17,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -90,25 +90,25 @@ public class MetadataHandler extends RepositoryManager {
     public void processMetadataXml(Request request,Entry entry, Element node,
                                    Hashtable<String, String> idMap,Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
-        forUser = XmlUtil.getAttribute(node, ATTR_FORUSER, true);
+        forUser = MyXmlUtil.getAttribute(node, ATTR_FORUSER, true);
 
-        String type = XmlUtil.getAttribute(node, ATTR_TYPE);
+        String type = MyXmlUtil.getAttribute(node, ATTR_TYPE);
         //TODO: Handle the extra attributes
-        String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
+        String extra = MyXmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
         String id = getRepository().getGUID();
-	idMap.put(XmlUtil.getAttribute(node, "id","NA"),id);
+	idMap.put(MyXmlUtil.getAttribute(node, "id","NA"),id);
 
 
         if (isInternal==EntryManager.INTERNAL.NO) {
-            id = XmlUtil.getAttribute(node, "id", id);
+            id = MyXmlUtil.getAttribute(node, "id", id);
         }
 
 
         Metadata metadata = new Metadata(id, entry.getId(), getMetadataManager().findType(type,true),
-                                         XmlUtil.getAttribute(node,
+                                         MyXmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
-        String access = XmlUtil.getGrandChildText(node, "access", null);
+        String access = MyXmlUtil.getGrandChildText(node, "access", null);
 	if(access!=null) {
 	    metadata.setAccess(access);
 	}
@@ -117,25 +117,25 @@ public class MetadataHandler extends RepositoryManager {
         int attrIndex = Metadata.INDEX_BASE - 1;
         while (true) {
             attrIndex++;
-            if ( !XmlUtil.hasAttribute(node, ATTR_ATTR + attrIndex)) {
+            if ( !MyXmlUtil.hasAttribute(node, ATTR_ATTR + attrIndex)) {
                 break;
             }
 
             metadata.setAttr(attrIndex,
-                             XmlUtil.getAttribute(node,
+                             MyXmlUtil.getAttribute(node,
                                  ATTR_ATTR + attrIndex, ""));
         }
         metadata.setExtra(extra);
 
-        NodeList children = XmlUtil.getElements(node);
+        NodeList children = MyXmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
             if ( !childNode.getTagName().equals(Metadata.TAG_ATTR)) {
                 continue;
             }
-            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX, -1);
-            String text = XmlUtil.getChildText(childNode);
-            if (XmlUtil.getAttribute(childNode, "encoded", true)) {
+            int index = MyXmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX, -1);
+            String text = MyXmlUtil.getChildText(childNode);
+            if (MyXmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
             }
             text = metadata.trimToMaxLength(text);
@@ -304,15 +304,15 @@ public class MetadataHandler extends RepositoryManager {
 	if(!type.getCanView()) return;
 
         Document doc = node.getOwnerDocument();
-        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
+        Element metadataNode = MyXmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] {
             "id", metadata.getId(), ATTR_TYPE, metadata.getType(),
             ATTR_INHERITED, "" + metadata.getInherited()
         });
 	String access=metadata.getAccess();
 	if(stringDefined(access)) {
-            Element accessNode = XmlUtil.create(doc, "access", metadataNode);
-	    accessNode.appendChild(XmlUtil.makeCDataNode(doc, access, false));
+            Element accessNode = MyXmlUtil.create(doc, "access", metadataNode);
+	    accessNode.appendChild(MyXmlUtil.makeCDataNode(doc, access, false));
 	}
 
         for (MetadataElement element : type.getChildren()) {
@@ -321,7 +321,7 @@ public class MetadataHandler extends RepositoryManager {
             if (value == null) {
                 continue;
             }
-            Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR,
+            Element attrNode = MyXmlUtil.create(doc, Metadata.TAG_ATTR,
                                    metadataNode,
 					      encode?
                                    new String[] { Metadata.ATTR_INDEX,
@@ -329,7 +329,7 @@ public class MetadataHandler extends RepositoryManager {
                                    new String[] { Metadata.ATTR_INDEX,
 						  "" + index,"encoded","false"});					      
             //true means to base 64 encode the text
-            attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, encode));
+            attrNode.appendChild(MyXmlUtil.makeCDataNode(doc, value, encode));
             if ((fileWriter != null)
                     && element.getDataType().equals(element.DATATYPE_FILE)) {
                 File f = type.getFile(entry, metadata, element);

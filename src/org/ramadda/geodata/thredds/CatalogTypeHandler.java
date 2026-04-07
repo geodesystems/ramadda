@@ -30,7 +30,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -143,7 +143,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      * @param ids _more_
      */
     private void walkTree(Entry mainEntry, Element parent, Hashtable ids) {
-        NodeList elements = XmlUtil.getElements(parent);
+        NodeList elements = MyXmlUtil.getElements(parent);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             if ( !child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
@@ -164,7 +164,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      * @return _more_
      */
     private String getId(Entry mainEntry, Element node) {
-        String id = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+        String id = MyXmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (id == null) {
             id = getNamePath(node);
         }
@@ -188,7 +188,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
         String parentId = getNamePath(parent);
-        String name     = XmlUtil.getAttribute(node, ATTR_NAME, "");
+        String name     = MyXmlUtil.getAttribute(node, ATTR_NAME, "");
         if (parentId == null) {
             return name;
         }
@@ -220,7 +220,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if (root == null) {
-            root = XmlUtil.getRoot(url, getClass());
+            root = MyXmlUtil.getRoot(url, getClass());
             domCache.put(url, new DomHolder(root));
         }
 
@@ -302,7 +302,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-        Element dataset = (Element) XmlUtil.findChild(root,
+        Element dataset = (Element) MyXmlUtil.findChild(root,
                               CatalogUtil.TAG_DATASET);
         if (dataset != null) {
             root = dataset;
@@ -323,7 +323,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        NodeList elements = XmlUtil.getElements(dataset);
+        NodeList elements = MyXmlUtil.getElements(dataset);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
@@ -335,7 +335,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
                 ids.add(entryId);
             } else if (child.getTagName().equals(
                     CatalogUtil.TAG_CATALOGREF)) {
-                String href = XmlUtil.getAttribute(child,
+                String href = MyXmlUtil.getAttribute(child,
                                   CatalogUtil.ATTR_XLINK_HREF);
                 String catUrl    = new URL(baseUrl, href).toString();
                 String datasetId = getCatalogId(mainEntry, catUrl);
@@ -437,7 +437,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
             throw new IllegalArgumentException("Could not load catalog:"
                     + url);
         }
-        Element child = (Element) XmlUtil.findChild(root,
+        Element child = (Element) MyXmlUtil.findChild(root,
                             CatalogUtil.TAG_DATASET);
 
         if (child != null) {
@@ -450,7 +450,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
             root = (Element) idMap.get(loc[1]);
         }
 
-        String   name = XmlUtil.getAttribute(root, ATTR_NAME, "");
+        String   name = MyXmlUtil.getAttribute(root, ATTR_NAME, "");
         Entry    entry;
         Resource resource;
         if (CatalogUtil.haveChildDatasets(root)
@@ -458,13 +458,13 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
             entry    = new Entry(newId, this, true);
             resource = new Resource("", Resource.TYPE_URL);
         } else {
-            String urlPath = XmlUtil.getAttribute(root,
+            String urlPath = MyXmlUtil.getAttribute(root,
                                  CatalogUtil.ATTR_URLPATH, (String) null);
             if (urlPath == null) {
-                Element accessNode = XmlUtil.findChild(root,
+                Element accessNode = MyXmlUtil.findChild(root,
                                          CatalogUtil.TAG_ACCESS);
                 if (accessNode != null) {
-                    urlPath = XmlUtil.getAttribute(accessNode,
+                    urlPath = MyXmlUtil.getAttribute(accessNode,
                             CatalogUtil.ATTR_URLPATH);
                 }
             }
@@ -473,7 +473,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
                 Element serviceNode =
                     CatalogUtil.findServiceNodeForDataset(root, false, null);
                 if (serviceNode != null) {
-                    String path = XmlUtil.getAttribute(serviceNode, "base");
+                    String path = MyXmlUtil.getAttribute(serviceNode, "base");
                     urlPath = new URL(catalogUrl, path + urlPath).toString();
                 }
             }

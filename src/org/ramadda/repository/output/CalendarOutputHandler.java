@@ -21,7 +21,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -177,32 +177,32 @@ public class CalendarOutputHandler extends OutputHandler {
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         StringBuffer     sb  = new StringBuffer();
-        sb.append(XmlUtil.openTag(TAG_DATA));
+        sb.append(MyXmlUtil.openTag(TAG_DATA));
 
         for (Entry entry : allEntries) {
             String icon = getPageHandler().getIconUrl(request, entry);
-            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE,
+            StringBuffer attrs = new StringBuffer(MyXmlUtil.attrs(ATTR_TITLE,
                                      " " + entry.getName(), ATTR_ICON, icon));
 
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
             if (urls.size() > 0) {
-                attrs.append(XmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
+                attrs.append(MyXmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
             }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-            attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
-            attrs.append(XmlUtil.attrs("eventID", entry.getId()));
+            attrs.append(MyXmlUtil.attrs(ATTR_LINK, entryUrl));
+            attrs.append(MyXmlUtil.attrs("eventID", entry.getId()));
 
             attrs.append(
-                XmlUtil.attrs(
+                MyXmlUtil.attrs(
                     ATTR_START, sdf.format(new Date(entry.getStartDate()))));
             if (entry.getStartDate() != entry.getEndDate()) {
                 attrs.append(
-                    XmlUtil.attrs(
+                    MyXmlUtil.attrs(
                         ATTR_END, sdf.format(new Date(entry.getEndDate()))));
             }
-            sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
+            sb.append(MyXmlUtil.openTag(TAG_EVENT, attrs.toString()));
             if (entry.getDescription().length() > 0) {
                 String infoHtml = getMapManager().cleanupInfo(request,
                                       getMapManager().makeInfoBubble(request,
@@ -211,13 +211,13 @@ public class CalendarOutputHandler extends OutputHandler {
                     infoHtml,
                     HtmlUtils.style(
                         "max-height: 350px;      overflow-y:auto;"));
-                sb.append(XmlUtil.getCdata(infoHtml));
+                sb.append(MyXmlUtil.getCdata(infoHtml));
             }
-            sb.append(XmlUtil.closeTag(TAG_EVENT));
+            sb.append(MyXmlUtil.closeTag(TAG_EVENT));
             sb.append("\n");
         }
 
-        sb.append(XmlUtil.closeTag(TAG_DATA));
+        sb.append(MyXmlUtil.closeTag(TAG_DATA));
 
         //        System.err.println(sb);
         return new Result("", sb, "text/xml");

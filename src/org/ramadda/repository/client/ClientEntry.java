@@ -12,7 +12,7 @@ import org.ramadda.repository.Resource;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class ClientEntry implements Constants {
      * @throws Exception _more_
      */
     public static ClientEntry getEntry(Element node) throws Exception {
-        ClientEntry entry = new ClientEntry(XmlUtil.getAttribute(node,
+        ClientEntry entry = new ClientEntry(MyXmlUtil.getAttribute(node,
                                 ATTR_ID));
         entry.init(node);
 
@@ -131,27 +131,27 @@ public class ClientEntry implements Constants {
      * @throws Exception _more_
      */
     public void init(Element node) throws Exception {
-        setName(XmlUtil.getAttribute(node, ATTR_NAME));
-        setType(XmlUtil.getAttribute(node, ATTR_TYPE, ""));
-        setParentGroupId(XmlUtil.getAttribute(node, ATTR_GROUP, ""));
-        setIsGroup(XmlUtil.getAttribute(node, ATTR_ISGROUP, false));
-        north = XmlUtil.getAttribute(node, ATTR_NORTH, north);
-        south = XmlUtil.getAttribute(node, ATTR_SOUTH, south);
-        east  = XmlUtil.getAttribute(node, ATTR_EAST, east);
-        west  = XmlUtil.getAttribute(node, ATTR_WEST, west);
+        setName(MyXmlUtil.getAttribute(node, ATTR_NAME));
+        setType(MyXmlUtil.getAttribute(node, ATTR_TYPE, ""));
+        setParentGroupId(MyXmlUtil.getAttribute(node, ATTR_GROUP, ""));
+        setIsGroup(MyXmlUtil.getAttribute(node, ATTR_ISGROUP, false));
+        north = MyXmlUtil.getAttribute(node, ATTR_NORTH, north);
+        south = MyXmlUtil.getAttribute(node, ATTR_SOUTH, south);
+        east  = MyXmlUtil.getAttribute(node, ATTR_EAST, east);
+        west  = MyXmlUtil.getAttribute(node, ATTR_WEST, west);
 
 
-        String desc = XmlUtil.getGrandChildText(node, TAG_DESCRIPTION);
+        String desc = MyXmlUtil.getGrandChildText(node, TAG_DESCRIPTION);
         if (desc != null) {
             setDescription(desc);
         }
-        if (XmlUtil.hasAttribute(node, ATTR_RESOURCE)) {
-            setResource(new Resource(XmlUtil.getAttribute(node,
-                    ATTR_RESOURCE), XmlUtil.getAttribute(node,
+        if (MyXmlUtil.hasAttribute(node, ATTR_RESOURCE)) {
+            setResource(new Resource(MyXmlUtil.getAttribute(node,
+                    ATTR_RESOURCE), MyXmlUtil.getAttribute(node,
                         ATTR_RESOURCE_TYPE)));
         }
 
-        NodeList elements = XmlUtil.getElements(node);
+        NodeList elements = MyXmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
             Element childNode = (Element) elements.item(i);
             if (childNode.getTagName().equals(TAG_ENTRY)) {
@@ -160,11 +160,11 @@ public class ClientEntry implements Constants {
             } else if (childNode.getTagName().equals(TAG_SERVICE)) {
                 addService(
                     new ClientEntry.Service(
-                        XmlUtil.getAttribute(childNode, ATTR_TYPE),
-                        XmlUtil.getAttribute(childNode, ATTR_URL)));
+                        MyXmlUtil.getAttribute(childNode, ATTR_TYPE),
+                        MyXmlUtil.getAttribute(childNode, ATTR_URL)));
             } else {
                 System.err.println("Unknown xml tag:"
-                                   + XmlUtil.toString(childNode));
+                                   + MyXmlUtil.toString(childNode));
             }
         }
 

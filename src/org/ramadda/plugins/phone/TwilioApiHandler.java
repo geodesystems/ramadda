@@ -19,6 +19,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 
 import org.w3c.dom.*;
 
@@ -28,7 +29,7 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 
@@ -374,12 +375,12 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                        request.getString(ARG_TO, ""), null);
         //        System.err.println("TwilioApiHandler: request: " + request);
         StringBuffer sb = new StringBuffer(XML_HEADER);
-        sb.append(XmlUtil.openTag(TAG_RESPONSE));
+        sb.append(MyXmlUtil.openTag(TAG_RESPONSE));
         info.setMessage(request.getString(ARG_BODY, ""));
         info.setFromZip(request.getString(ARG_FROMZIP, (String) null));
         boolean handledMessage = false;
         if ( !callOK(request)) {
-            sb.append(XmlUtil.tag(TAG_SMS, "",
+            sb.append(MyXmlUtil.tag(TAG_SMS, "",
                                   "Sorry, bad APPID property defined"));
         } else {
             StringBuffer msg = new StringBuffer();
@@ -398,8 +399,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                     for (String line : lines) {
                         if (buff.length() + line.length() > 159) {
                             if (buff.length() > 0) {
-                                sb.append(XmlUtil.tag(TAG_SMS, "",
-                                        XmlUtil.getCdata(buff.toString())));
+                                sb.append(MyXmlUtil.tag(TAG_SMS, "",
+                                        MyXmlUtil.getCdata(buff.toString())));
                                 if (cnt++ > 4) {
                                     break;
                                 }
@@ -413,8 +414,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         }
                     }
                     if (buff.length() > 0) {
-                        sb.append(XmlUtil.tag(TAG_SMS, "",
-                                XmlUtil.getCdata(buff.toString())));
+                        sb.append(MyXmlUtil.tag(TAG_SMS, "",
+                                MyXmlUtil.getCdata(buff.toString())));
                     }
                     handledMessage = true;
 
@@ -428,13 +429,13 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             if ( !handledMessage) {
                 String response = msg.toString();
                 sb.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         TAG_SMS, "",
                         "Sorry, RAMADDA was not able to process your message.\n"
                         + response));
             }
         }
-        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+        sb.append(MyXmlUtil.closeTag(TAG_RESPONSE));
 
         return new Result("", sb, "text/xml");
     }
@@ -473,15 +474,15 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         System.err.println("processVoice:" + request.getUrlArgs());
         StringBuffer sb = new StringBuffer();
         sb.append(XML_HEADER);
-        sb.append(XmlUtil.openTag(TAG_RESPONSE));
+        sb.append(MyXmlUtil.openTag(TAG_RESPONSE));
         try {
             PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                            request.getString(ARG_FROM, ""),
                                            request.getString(ARG_TO, ""),
                                            null);
             if ( !callOK(request)) {
-                sb.append(XmlUtil.tag(TAG_SAY,
-                                      XmlUtil.attr(ATTR_VOICE, "woman"),
+                sb.append(MyXmlUtil.tag(TAG_SAY,
+                                      MyXmlUtil.attr(ATTR_VOICE, "woman"),
                                       "Sorry, bad application identifier"));
             } else {
                 if (recordingUrl == null) {
@@ -498,27 +499,27 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         }
                     }
                     if (voiceResponse == null) {
-                        sb.append(XmlUtil.tag(TAG_SAY,
-                                XmlUtil.attr(ATTR_VOICE, "woman"),
+                        sb.append(MyXmlUtil.tag(TAG_SAY,
+                                MyXmlUtil.attr(ATTR_VOICE, "woman"),
                                 "Sorry, this ramadda repository does not accept voice messages"));
                     } else if ( !canEdit) {
-                        sb.append(XmlUtil.tag(TAG_SAY,
-                                XmlUtil.attr(ATTR_VOICE, "woman"),
+                        sb.append(MyXmlUtil.tag(TAG_SAY,
+                                MyXmlUtil.attr(ATTR_VOICE, "woman"),
                                 "Sorry, you need to login through a text message first"));
                     } else {
-                        sb.append(XmlUtil.tag(TAG_SAY,
-                                XmlUtil.attr(ATTR_VOICE, "woman"),
+                        sb.append(MyXmlUtil.tag(TAG_SAY,
+                                MyXmlUtil.attr(ATTR_VOICE, "woman"),
                                 voiceResponse));
-                        String recordAttrs = XmlUtil.attrs(new String[] {
+                        String recordAttrs = MyXmlUtil.attrs(new String[] {
                                                  "maxLength",
                                 "30", });
 
                         if (getRepository().getProperty(PROP_TRANSCRIBE,
                                 false)) {
-                            recordAttrs += XmlUtil.attr(ATTR_TRANSCRIBE,
+                            recordAttrs += MyXmlUtil.attr(ATTR_TRANSCRIBE,
                                     "true");
                         }
-                        sb.append(XmlUtil.tag(TAG_RECORD, recordAttrs));
+                        sb.append(MyXmlUtil.tag(TAG_RECORD, recordAttrs));
                     }
                 } else {
                     info.setRecordingUrl(recordingUrl);
@@ -557,14 +558,14 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         } catch (Exception exc) {
             sb = new StringBuffer();
             sb.append(XML_HEADER);
-            sb.append(XmlUtil.openTag(TAG_RESPONSE));
-            sb.append(XmlUtil.tag(TAG_SAY, XmlUtil.attr(ATTR_VOICE, "woman"),
+            sb.append(MyXmlUtil.openTag(TAG_RESPONSE));
+            sb.append(MyXmlUtil.tag(TAG_SAY, MyXmlUtil.attr(ATTR_VOICE, "woman"),
                                   "Sorry, an error occurred"));
             exc.printStackTrace();
             getLogManager().logError("Error handling twilio voice message",
                                      exc);
         }
-        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+        sb.append(MyXmlUtil.closeTag(TAG_RESPONSE));
         System.err.println("voice response:" + sb);
 
         return new Result("", sb, "text/xml");
@@ -684,20 +685,20 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         huc.addRequestProperty("Authorization", "Basic " + encoding);
         String transcription =
             new String(IOUtil.readBytes(huc.getInputStream()));
-        Element root       = XmlUtil.getRoot(transcription);
-        Element statusNode = XmlUtil.findDescendant(root, TAG_STATUS);
+        Element root       = MyXmlUtil.getRoot(transcription);
+        Element statusNode = MyXmlUtil.findDescendant(root, TAG_STATUS);
         if (statusNode == null) {
             return null;
         }
-        if ( !XmlUtil.getChildText(statusNode).equals("completed")) {
+        if ( !MyXmlUtil.getChildText(statusNode).equals("completed")) {
             return null;
 
         }
 
-        Element textNode = XmlUtil.findDescendant(root,
+        Element textNode = MyXmlUtil.findDescendant(root,
                                TAG_TRANSCRIPTIONTEXT);
         if (textNode != null) {
-            return XmlUtil.getChildText(textNode);
+            return MyXmlUtil.getChildText(textNode);
         }
 
         return null;

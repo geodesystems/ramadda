@@ -8,7 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,7 +24,7 @@ import java.util.UUID;
 public class RepositoryBase implements Constants, RepositorySource {
 
     public static final HtmlUtils HU = null;
-    public static final XmlUtil XU = null;    
+    public static final MyXmlUtil XU = null;    
 
     public final RequestUrl URL_HELP = new RequestUrl(this, "/docs");
 

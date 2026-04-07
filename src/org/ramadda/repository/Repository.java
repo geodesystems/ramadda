@@ -56,7 +56,6 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.service.Service;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.XmlUtils;
 import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.IO;
 import org.ramadda.util.S3File;
@@ -93,7 +92,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -1899,7 +1898,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public List<TypeHandler> loadTypeHandlers(Element root, String file, boolean overwrite, boolean debug)
 	throws Exception {
-        List children = XmlUtils.findChildren(root, TypeHandler.TAG_TYPE,TypeHandler.TAG_IMPORT);
+        List children = XU.findChildren(root, TypeHandler.TAG_TYPE,TypeHandler.TAG_IMPORT);
         List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         if ((children.size() == 0)
 	    && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
@@ -1907,7 +1906,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             for (int i = 0; i < children.size(); i++) {
                 Element node = (Element) children.get(i);
-		if (XmlUtil.isTag(node,TypeHandler.TAG_IMPORT)) {
+		if (MyXmlUtil.isTag(node,TypeHandler.TAG_IMPORT)) {
 		    String resource = XU.getAttribute(node,"resource");
 		    if(!resource.startsWith("/")) {
 			resource  = new File(file).getParentFile().toString()+"/"+ resource;

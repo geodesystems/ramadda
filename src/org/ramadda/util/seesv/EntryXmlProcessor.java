@@ -10,7 +10,7 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -153,7 +153,7 @@ public class EntryXmlProcessor extends RowCollector {
             if ( !new File("files/" + file).exists()) {
                 System.err.println("no file:" + file);
             } else {
-                extra.append(XmlUtil.tag("entry", XmlUtil.attrs(new String[] {
+                extra.append(MyXmlUtil.tag("entry", MyXmlUtil.attrs(new String[] {
                     "name", file, "parent", id, "file", file
                 })));
                 extra.append("\n");

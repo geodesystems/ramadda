@@ -23,7 +23,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.awt.Image;
 
@@ -95,32 +95,32 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public void init(Element node) throws Exception {
         super.init(node);
 
-        subName = XmlUtil.getAttribute(node, ATTR_SUBNAME, "");
-        id      = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+        subName = MyXmlUtil.getAttribute(node, ATTR_SUBNAME, "");
+        id      = MyXmlUtil.getAttribute(node, ATTR_ID, (String) null);
 	if(id==null && getName()!=null)
 	    id = Utils.makeID(getName());
-        max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
-        setDataType(XmlUtil.getAttribute(node, ATTR_DATATYPE,
+        max     = MyXmlUtil.getAttribute(node, ATTR_MAX, max);
+        setDataType(MyXmlUtil.getAttribute(node, ATTR_DATATYPE,
                                          MetadataElement.DATATYPE_STRING));
 
-        setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
-        setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, isEnumeration()?20:60));
+        setRows(MyXmlUtil.getAttribute(node, ATTR_ROWS, 1));
+        setColumns(MyXmlUtil.getAttribute(node, ATTR_COLUMNS, isEnumeration()?20:60));
 
-        attachment = XmlUtil.getAttribute(node, ATTR_ATTACHMENT, true);
-        setDefault(XmlUtil.getAttribute(node, ATTR_DEFAULT, ""));
+        attachment = MyXmlUtil.getAttribute(node, ATTR_ATTACHMENT, true);
+        setDefault(MyXmlUtil.getAttribute(node, ATTR_DEFAULT, ""));
 
-        setGroup(XmlUtil.getAttribute(node, ATTR_GROUP, (String) null));
-        setSearchable(XmlUtil.getAttribute(node, ATTR_SEARCHABLE, false));
+        setGroup(MyXmlUtil.getAttribute(node, ATTR_GROUP, (String) null));
+        setSearchable(MyXmlUtil.getAttribute(node, ATTR_SEARCHABLE, false));
 
-        required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
-        embed= XmlUtil.getAttribute(node, "embed", false);
-        setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
+        required = MyXmlUtil.getAttribute(node, ATTR_REQUIRED, false);
+        embed= MyXmlUtil.getAttribute(node, "embed", false);
+        setThumbnail(MyXmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
 
         if (dataType.equals(MetadataElement.DATATYPE_ENUMERATION)
 	    || dataType.equals(
 			       MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
             String delimiter = ":";
-            String values    = XmlUtil.getAttribute(node, ATTR_VALUES, "");
+            String values    = MyXmlUtil.getAttribute(node, ATTR_VALUES, "");
             if (values.length() == 0) {
                 values = getHandler().getEnumerationValues(this);
             }

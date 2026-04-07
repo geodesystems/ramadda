@@ -25,7 +25,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 import java.lang.reflect.*;

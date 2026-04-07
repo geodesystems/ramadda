@@ -29,7 +29,7 @@ import ucar.unidata.util.PluginClassLoader;
 
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 

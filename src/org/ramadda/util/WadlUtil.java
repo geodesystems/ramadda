@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,20 +45,20 @@ public class WadlUtil {
     public static final String ATTR_MEDIATYPE = "mediaType";
 
     public static void openTag(StringBuffer sb) {
-        sb.append(XmlUtil.openTag(TAG_APPLICATION,
-                                  XmlUtil.attrs("xmlns", XMLNS, "xmlns:xsd",
+        sb.append(MyXmlUtil.openTag(TAG_APPLICATION,
+                                  MyXmlUtil.attrs("xmlns", XMLNS, "xmlns:xsd",
                                       XMLNS_XSD, "xmlns:xsi", XMLNS_XSI)));
         sb.append(
-            XmlUtil.openTag(
+            MyXmlUtil.openTag(
                 TAG_RESOURCES,
-                XmlUtil.attrs(
+                MyXmlUtil.attrs(
                     ATTR_BASE,
                     "http://api.search.yahoo.com/NewsSearchService/V1/")));
     }
 
     public static void closeTag(StringBuffer sb) {
-        sb.append(XmlUtil.closeTag(TAG_RESOURCES));
-        sb.append(XmlUtil.closeTag(TAG_APPLICATION));
+        sb.append(MyXmlUtil.closeTag(TAG_RESOURCES));
+        sb.append(MyXmlUtil.closeTag(TAG_APPLICATION));
     }
 
     public static void paramString(StringBuffer sb, String name) {
@@ -67,8 +67,8 @@ public class WadlUtil {
 
     public static void paramString(StringBuffer sb, String name, String type,
                                    String style, boolean required) {
-        sb.append(XmlUtil.tag(TAG_APPLICATION,
-                              XmlUtil.attrs(ATTR_NAME, name, ATTR_TYPE, type,
+        sb.append(MyXmlUtil.tag(TAG_APPLICATION,
+                              MyXmlUtil.attrs(ATTR_NAME, name, ATTR_TYPE, type,
                                             ATTR_STYLE, style, ATTR_REQUIRED,
                                             "" + required)));
     }

@@ -20,7 +20,7 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.util.ArrayList;
@@ -253,17 +253,17 @@ public class LasOutputHandler extends OutputHandler {
             throws Exception {
 
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        Document             doc               = XmlUtil.makeDocument();
+        Document             doc               = MyXmlUtil.makeDocument();
 
         //create the root element
-        Element root = XmlUtil.create(doc, TAG_LASDATA, null,
+        Element root = MyXmlUtil.create(doc, TAG_LASDATA, null,
                                       new String[] {});
 
-        XmlUtil.create(TAG_INSTITUTION, root, new String[] { ATTR_NAME,
+        MyXmlUtil.create(TAG_INSTITUTION, root, new String[] { ATTR_NAME,
                 getRepository().getRepositoryName(), ATTR_URL,
                 request.getAbsoluteUrl("") });
 
-        Element datasetsNode = XmlUtil.create(TAG_DATASETS, root);
+        Element datasetsNode = MyXmlUtil.create(TAG_DATASETS, root);
 
         //Loop on the entries
         for (Entry entry : entries) {
@@ -278,9 +278,9 @@ public class LasOutputHandler extends OutputHandler {
             //for now use the entry id as the tag name
             String tagName = "data_" + getTagName(id);
 
-            XmlUtil.create(tagName, datasetsNode);
+            MyXmlUtil.create(tagName, datasetsNode);
 
-            Element entryNode = XmlUtil.create(tagName, datasetsNode,
+            Element entryNode = MyXmlUtil.create(tagName, datasetsNode,
                                     new String[] {
                 ATTR_NAME, entry.getName(), ATTR_URL,
                 request.getAbsoluteUrl(
@@ -293,7 +293,7 @@ public class LasOutputHandler extends OutputHandler {
                         entry.getId()))
             });
 
-            Element variablesNode = XmlUtil.create(TAG_VARIABLES, entryNode);
+            Element variablesNode = MyXmlUtil.create(TAG_VARIABLES, entryNode);
 
             //Get the netcdf dataset from the dataoutputhandler
             String path = dataOutputHandler.getCdmManager().getPath(entry);
@@ -328,7 +328,7 @@ public class LasOutputHandler extends OutputHandler {
                     if (att != null) {
                         varName = att.getStringValue();
                     }
-                    XmlUtil.create(getTagName(varName), variablesNode,
+                    MyXmlUtil.create(getTagName(varName), variablesNode,
                                    new String[] { ATTR_NAME,
                             var.getFullName(), ATTR_UNITS,
                             var.getUnitsString() });
@@ -341,8 +341,8 @@ public class LasOutputHandler extends OutputHandler {
 
         //Create the xml and return the result
         StringBuffer sb = new StringBuffer();
-        sb.append(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
+        sb.append(MyXmlUtil.XML_HEADER);
+        sb.append(MyXmlUtil.toString(root));
 
         return new Result("dif", sb, "text/xml");
     }

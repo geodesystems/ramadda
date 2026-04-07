@@ -15,7 +15,7 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

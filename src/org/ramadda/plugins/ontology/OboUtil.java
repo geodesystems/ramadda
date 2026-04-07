@@ -9,7 +9,7 @@ package org.ramadda.plugins.ontology;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;

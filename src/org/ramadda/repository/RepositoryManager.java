@@ -21,7 +21,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +35,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     protected Repository repository;
     public static final HtmlUtils HU = null;
     public static final JsonUtil JU = null;    
-    public static final XmlUtil XU = null;    
+    public static final MyXmlUtil XU = null;    
 
     public RepositoryManager(Repository repository) {
         this.repository = repository;

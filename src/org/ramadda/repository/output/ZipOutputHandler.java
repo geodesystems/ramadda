@@ -19,7 +19,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -305,8 +305,8 @@ public class ZipOutputHandler extends OutputHandler {
         Hashtable seen = new Hashtable();
         try {
             if (forExport) {
-                Document doc = XmlUtil.makeDocument();
-                root = XmlUtil.create(doc, TAG_ENTRIES, null,
+                Document doc = MyXmlUtil.makeDocument();
+                root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                       new String[] {});
 
             }
@@ -314,7 +314,7 @@ public class ZipOutputHandler extends OutputHandler {
                        new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>());
 
             if (root != null) {
-                String xml = XmlUtil.toString(root);
+                String xml = MyXmlUtil.toString(root);
                 fileWriter.writeFile("entries.xml", xml.getBytes());
             }
         } finally {
@@ -446,7 +446,7 @@ public class ZipOutputHandler extends OutputHandler {
                     tmpRequest, entry, fileWriter,
                     entriesRoot.getOwnerDocument(), entriesRoot, true,
                     includeParentId);
-                //                System.err.println ("exporting:" + XmlUtil.toString(entryNode));
+                //                System.err.println ("exporting:" + MyXmlUtil.toString(entryNode));
             }
 
 
@@ -560,7 +560,7 @@ public class ZipOutputHandler extends OutputHandler {
                     getStorageManager().getFileInputStream(path);
                 if ((entryNode != null) && forExport) {
                     fileWriter.writeFile(entry.getId(), fis);
-                    XmlUtil.setAttributes(entryNode, new String[] { ATTR_FILE,
+                    MyXmlUtil.setAttributes(entryNode, new String[] { ATTR_FILE,
                             entry.getId(), ATTR_FILENAME, name });
 
                 } else {

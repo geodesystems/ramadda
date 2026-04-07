@@ -8,9 +8,9 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.MyXmlUtil;
 import org.json.*;
 import org.w3c.dom.*;
-import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import java.text.SimpleDateFormat;
@@ -52,10 +52,10 @@ public class NamusConverter {
 	StringBuilder sb = new StringBuilder();
 	String uid = HtmlUtils.getUniqueId("entry");
 	sb.append("<entry ");
-	sb.append(XmlUtil.attr("id",uid));
-	sb.append(XmlUtil.attr("type","type_missing_person"));
-	sb.append(XmlUtil.attr("parent",""));
-	sb.append(XmlUtil.attr("status","missing"));		
+	sb.append(MyXmlUtil.attr("id",uid));
+	sb.append(MyXmlUtil.attr("type","type_missing_person"));
+	sb.append(MyXmlUtil.attr("parent",""));
+	sb.append(MyXmlUtil.attr("status","missing"));		
 	int maxAge = _id.getInt("currentMaxAge");
 	int missingMinAge = _id.getInt("computedMissingMinAge");
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -64,63 +64,63 @@ public class NamusConverter {
 	String sDateMissing = _sighting.getString("date");
 	Date missingDate = sdf.parse(sDateMissing);
 	//new Date(now.getTime()-Utils.yearsToMillis(maxAge-missingMinAge));
-	sb.append(XmlUtil.attr("fromdate",sdf.format(missingDate)));	
-	sb.append(XmlUtil.attr("date_of_birth",sdf.format(bdate)));
-	sb.append(XmlUtil.attr("age_missing",""+missingMinAge));
+	sb.append(MyXmlUtil.attr("fromdate",sdf.format(missingDate)));	
+	sb.append(MyXmlUtil.attr("date_of_birth",sdf.format(bdate)));
+	sb.append(MyXmlUtil.attr("age_missing",""+missingMinAge));
 
 	String firstName = _id.getString("firstName");
 	String middleName = _id.optString("middleName","");	
 	String lastName = _id.getString("lastName");	
 	String nickName = _id.optString("nicknames",null);
-	sb.append(XmlUtil.attr("case_number",root.getString("idFormatted")));
-	sb.append(XmlUtil.attr("first_name",firstName));
-	sb.append(XmlUtil.attr("middle_name",middleName));	
-	sb.append(XmlUtil.attr("last_name",lastName));
+	sb.append(MyXmlUtil.attr("case_number",root.getString("idFormatted")));
+	sb.append(MyXmlUtil.attr("first_name",firstName));
+	sb.append(MyXmlUtil.attr("middle_name",middleName));	
+	sb.append(MyXmlUtil.attr("last_name",lastName));
 	if(nickName!=null)
-	    sb.append(XmlUtil.attr("nickname",nickName));
+	    sb.append(MyXmlUtil.attr("nickname",nickName));
 	String name = firstName +" " + (Utils.stringDefined(middleName)?middleName+" ":"") +lastName;			       
-	sb.append(XmlUtil.attr("name",name));
+	sb.append(MyXmlUtil.attr("name",name));
 
 	if(_tribe.length()>0) {
-	    sb.append(XmlUtil.attr("tribe_association",JU.readValue(_tribe.getJSONObject(0),"tribe.tribeName","")));
+	    sb.append(MyXmlUtil.attr("tribe_association",JU.readValue(_tribe.getJSONObject(0),"tribe.tribeName","")));
 	}
-	sb.append(XmlUtil.attr("missing_from_tribal_land",
+	sb.append(MyXmlUtil.attr("missing_from_tribal_land",
 			       JU.readValue(_sighting,"missingFromTribalLand.name","").toLowerCase()));
 
-	sb.append(XmlUtil.attr("primary_residence_tribal_land",
+	sb.append(MyXmlUtil.attr("primary_residence_tribal_land",
 			       JU.readValue(_sighting,"primaryResidenceOnTribalLand.name","").toLowerCase()));
-	sb.append(XmlUtil.attr("missing_city",_address.optString("city","")));
-	sb.append(XmlUtil.attr("missing_state",JU.readValue(_address,"state.name","")));
-	sb.append(XmlUtil.attr("missing_county",JU.readValue(_address,"county.displayName","")));
+	sb.append(MyXmlUtil.attr("missing_city",_address.optString("city","")));
+	sb.append(MyXmlUtil.attr("missing_state",JU.readValue(_address,"state.name","")));
+	sb.append(MyXmlUtil.attr("missing_county",JU.readValue(_address,"county.displayName","")));
 
 	if(_geolocation!=null) {
 	    JSONObject _coords =_geolocation.getJSONObject("coordinates");
-	    sb.append(XmlUtil.attr("latitude",""+_coords.getDouble("lat")));
-	    sb.append(XmlUtil.attr("longitude",""+_coords.getDouble("lon")));
+	    sb.append(MyXmlUtil.attr("latitude",""+_coords.getDouble("lat")));
+	    sb.append(MyXmlUtil.attr("longitude",""+_coords.getDouble("lon")));
 	}
 	if(_desc.has("heightFrom"))
-	    sb.append(XmlUtil.attr("height",""+_desc.getInt("heightFrom")));
+	    sb.append(MyXmlUtil.attr("height",""+_desc.getInt("heightFrom")));
 	if(_desc.has("weightFrom"))
-	    sb.append(XmlUtil.attr("weight",""+_desc.getInt("weightFrom")));	
+	    sb.append(MyXmlUtil.attr("weight",""+_desc.getInt("weightFrom")));	
 	String sex = JsonUtil.readValue(_desc,"sex.name","unsure");
-	sb.append(XmlUtil.attr("biological_sex",sex.toLowerCase()));
+	sb.append(MyXmlUtil.attr("biological_sex",sex.toLowerCase()));
 	String e = JsonUtil.readValue(_desc,"primaryEthnicity.name","");
 	String _e =  e.toLowerCase();
 
 	String ethnicity = Utils.getProperty(emap,e,Utils.getProperty(emap,_e,"unknown"));
-	sb.append(XmlUtil.attr("race_ethnicity",ethnicity));
+	sb.append(MyXmlUtil.attr("race_ethnicity",ethnicity));
 	sb.append("\n");
-	sb.append(XmlUtil.attr("hair_color",JU.readValue(_phys,"hairColor.name","unknown").toLowerCase()));
+	sb.append(MyXmlUtil.attr("hair_color",JU.readValue(_phys,"hairColor.name","unknown").toLowerCase()));
 	sb.append("\n");
-	sb.append(XmlUtil.attr("left_eye_color",JU.readValue(_phys,"leftEyeColor.name","unknown").toLowerCase()));
+	sb.append(MyXmlUtil.attr("left_eye_color",JU.readValue(_phys,"leftEyeColor.name","unknown").toLowerCase()));
 	sb.append("\n");
-	sb.append(XmlUtil.attr("right_eye_color",JU.readValue(_phys,"rightEyeColor.name","unknown").toLowerCase()));
+	sb.append(MyXmlUtil.attr("right_eye_color",JU.readValue(_phys,"rightEyeColor.name","unknown").toLowerCase()));
 	String headHair = _phys.optString("headHairDescription",null);
 	if(Utils.stringDefined(headHair)) 
-	    sb.append(XmlUtil.attr("head_hair_description",headHair));
+	    sb.append(MyXmlUtil.attr("head_hair_description",headHair));
 	String facialHair = _phys.optString("facialHairDescription",null);
 	if(Utils.stringDefined(facialHair)) 
-	    sb.append(XmlUtil.attr("facial_hair_description",facialHair));	
+	    sb.append(MyXmlUtil.attr("facial_hair_description",facialHair));	
 	sb.append("\n");
 	sb.append(">\n");
 
@@ -132,7 +132,7 @@ public class NamusConverter {
 	}
 	if(tmp.length()>0) {
 	    sb.append("<distinctive_physical_features>");
-	    sb.append(XmlUtil.getCdata(tmp.toString().trim()));
+	    sb.append(MyXmlUtil.getCdata(tmp.toString().trim()));
 	    sb.append("</distinctive_physical_features>\n");
 	}
 
@@ -147,7 +147,7 @@ public class NamusConverter {
 	}
 	if(tmp.length()>0) {
 	    sb.append("<clothing_and_accessories>");
-	    sb.append(XmlUtil.getCdata(tmp.toString().trim()));
+	    sb.append(MyXmlUtil.getCdata(tmp.toString().trim()));
 	    sb.append("</clothing_and_accessories>\n");
 	}
 	String thumb = root.getString("hrefDefaultImageThumbnail");
@@ -155,7 +155,7 @@ public class NamusConverter {
 	String fileId = _thumb;
 	sb.append("<metadata  inherited=\"false\" type=\"content.thumbnail\">");
 	sb.append("<attr fileid=\"" + fileId +"\" index=\"1\" encoded=\"false\">");
-	sb.append(XmlUtil.getCdata("thumbnail.png"));
+	sb.append(MyXmlUtil.getCdata("thumbnail.png"));
 	sb.append("</attr>");
 	sb.append("</metadata>\n");
 
@@ -202,17 +202,17 @@ public class NamusConverter {
 	String circ  = _circ.optString("circumstancesOfDisappearance","");
 	sb.append("\n<description>");
 	circ="+callout-info\nNote: this is an example of RAMADDA's Missing Person entry type. The original data came from the [https://namus.nij.ojp.gov/ National Missing and Unidentified Persons System (NAMUS)]\n-callout\n" +circ;
-	sb.append(XmlUtil.getCdata(circ));
+	sb.append(MyXmlUtil.getCdata(circ));
 	sb.append("\n</description>");
 	sb.append("\n</entry>\n");
 
 	if(_images!=null && _images.length()>0) {
 	    String puid = HtmlUtils.getUniqueId("entry");
 	    sb.append("<entry ");
-	    sb.append(XmlUtil.attr("id",puid));
-	    sb.append(XmlUtil.attr("parent",uid));
-	    sb.append(XmlUtil.attr("type","media_photoalbum"));
-	    sb.append(XmlUtil.attr("name","Photos"));
+	    sb.append(MyXmlUtil.attr("id",puid));
+	    sb.append(MyXmlUtil.attr("parent",uid));
+	    sb.append(MyXmlUtil.attr("type","media_photoalbum"));
+	    sb.append(MyXmlUtil.attr("name","Photos"));
 	    sb.append(">\n</entry>\n");
 	    for(int i=0;i<_images.length();i++) {
 		JSONObject _image = _images.getJSONObject(i);
@@ -228,12 +228,12 @@ public class NamusConverter {
 		}
 		String filename = Utils.makeID(imageEntryName)+"."+ suffix;
 		sb.append("<entry ");
-		sb.append(XmlUtil.attr("parent",puid));
-		sb.append(XmlUtil.attr("type","type_image"));
-		sb.append(XmlUtil.attr("name",imageEntryName));
-		sb.append(XmlUtil.attr("filename",filename));
+		sb.append(MyXmlUtil.attr("parent",puid));
+		sb.append(MyXmlUtil.attr("type","type_image"));
+		sb.append(MyXmlUtil.attr("name",imageEntryName));
+		sb.append(MyXmlUtil.attr("filename",filename));
 		String _file = getFile(url,suffix);
-		sb.append(XmlUtil.attr("file",_file));
+		sb.append(MyXmlUtil.attr("file",_file));
 		sb.append(">\n</entry>\n");
 	    }
 	}		
@@ -268,7 +268,7 @@ public class NamusConverter {
 
     private static void mtd(Appendable sb, int index,Object  contents) throws Exception {
 	sb.append("<attr index=\""+ index+"\" encoded=\"false\">");
-	sb.append(XmlUtil.getCdata(contents.toString()));
+	sb.append(MyXmlUtil.getCdata(contents.toString()));
 	sb.append("</attr>\n");
     }
 

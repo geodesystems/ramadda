@@ -8,6 +8,7 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.IO;
 
 import org.ramadda.util.geo.KmlUtil;
@@ -20,7 +21,7 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -161,9 +162,9 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
             appendName(node, sb, tagName);
         } else if (tagName.equals(KU.TAG_GROUNDOVERLAY)) {
             sb.append("<li> ");
-	    Element iconNode = XmlUtil.findChild(node,KU.TAG_ICON);
+	    Element iconNode = MyXmlUtil.findChild(node,KU.TAG_ICON);
 	    if(iconNode!=null) {
-		String href = XmlUtil.getGrandChildText(iconNode, KU.TAG_HREF,null);
+		String href = MyXmlUtil.getGrandChildText(iconNode, KU.TAG_HREF,null);
 		if(href!=null) {
 		    String name = IOUtil.getFileTail(href);
 		    appendName(node, sb, tagName);
@@ -183,8 +184,8 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 
     private void appendName(Node node, StringBuffer sb, String tagName) {
         sb.append(tagName + ": ");
-        sb.append(XmlUtil.getGrandChildText(node, KU.TAG_NAME, tagName));
-        String desc = XmlUtil.getGrandChildText(node,
+        sb.append(MyXmlUtil.getGrandChildText(node, KU.TAG_NAME, tagName));
+        String desc = MyXmlUtil.getGrandChildText(node,
                           KU.TAG_DESCRIPTION, null);
         if (desc != null) {
             sb.append(HtmlUtils.div(desc,
@@ -195,7 +196,7 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 
     private void walkChildren(Request request, Entry entry, StringBuffer sb,
                               Element node) {
-        NodeList children = XmlUtil.getElements(node);
+        NodeList children = MyXmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element child = (Element) children.item(i);
             walkTree(request, entry, sb, child);

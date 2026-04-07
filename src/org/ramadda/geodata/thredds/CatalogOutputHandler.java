@@ -28,7 +28,7 @@ import ucar.unidata.util.Misc;
 
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.*;
@@ -167,7 +167,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                        List<Metadata> metadataList,
                                        Element node, String tab)
             throws Exception {
-        NodeList elements = XmlUtil.getElements(node);
+        NodeList elements = MyXmlUtil.getElements(node);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
 
@@ -177,16 +177,16 @@ public class CatalogOutputHandler extends OutputHandler {
             String  tag   = child.getTagName();
             //            System.err.println(tab+ "tag:" + tag);
             if (tag.equals(CatalogUtil.TAG_METADATA)) {
-                if ( !XmlUtil.getAttribute(child, "metadataType",
+                if ( !MyXmlUtil.getAttribute(child, "metadataType",
                                            "THREDDS").equals("THREDDS")) {
                     //                    System.err.println("Skipping: "
-                    //                                       + XmlUtil.toString(child));
+                    //                                       + MyXmlUtil.toString(child));
                     continue;
                 }
-                if (XmlUtil.hasAttribute(child, "xlink:href")) {
-                    String url = XmlUtil.getAttribute(child, "xlink:href");
+                if (MyXmlUtil.hasAttribute(child, "xlink:href")) {
+                    String url = MyXmlUtil.getAttribute(child, "xlink:href");
                     try {
-                        Element root = XmlUtil.getRoot(url,
+                        Element root = MyXmlUtil.getRoot(url,
                                            CatalogOutputHandler.class);
                         if (root != null) {
                             collectMetadata(repository, metadataList, root,
@@ -216,7 +216,7 @@ public class CatalogOutputHandler extends OutputHandler {
                     }
                 }
 
-                //                System.err.println ("UNKNOWN:" + tag  + " " + XmlUtil.toString(node).trim());
+                //                System.err.println ("UNKNOWN:" + tag  + " " + MyXmlUtil.toString(node).trim());
                 //                System.err.println("UNKNOWN:" + tag);
                 //                throw new IllegalArgumentException("");
             }
@@ -335,8 +335,8 @@ public class CatalogOutputHandler extends OutputHandler {
         String   title        = (justOneEntry
                                  ? children.get(0).getName()
                                  : group.getName());
-        Document doc          = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
+        Document doc          = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
                                       new String[] {
             "xmlns",
             "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
@@ -345,7 +345,7 @@ public class CatalogOutputHandler extends OutputHandler {
         });
 
 
-        /*        Element service = XmlUtil.create(doc,CatalogUtil.TAG_SERVICE,root,new String[]{
+        /*        Element service = MyXmlUtil.create(doc,CatalogUtil.TAG_SERVICE,root,new String[]{
             CatalogUtil.ATTR_NAME,"all",
             CatalogUtil.ATTR_SERVICETYPE, "Compound",
             CatalogUtil.ATTR_BASE,""});*/
@@ -374,7 +374,7 @@ public class CatalogOutputHandler extends OutputHandler {
             outputEntry(children.get(0), request, catalogInfo, root,
                         doingLatest);
         } else {
-            topDataset = XmlUtil.create(doc, CatalogUtil.TAG_DATASET, root,
+            topDataset = MyXmlUtil.create(doc, CatalogUtil.TAG_DATASET, root,
                                         new String[] { CatalogUtil.ATTR_NAME,
                     title });
             addServices(group, request, catalogInfo, topDataset, doingLatest);
@@ -393,7 +393,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                      OUTPUT_CATALOG.toString(), ARG_SKIP,
                                      "" + (skip + max), ARG_MAX, "" + max);
 
-                    Element ref = XmlUtil.create(catalogInfo.doc,
+                    Element ref = MyXmlUtil.create(catalogInfo.doc,
                                       CatalogUtil.TAG_CATALOGREF, topDataset,
                                       new String[] {
                                           CatalogUtil.ATTR_XLINK_TITLE,
@@ -420,13 +420,13 @@ public class CatalogOutputHandler extends OutputHandler {
                            "Resolver");
 
                 Node firstChild = topDataset.getFirstChild();
-                Element latestDataset = XmlUtil.create(catalogInfo.doc,
+                Element latestDataset = MyXmlUtil.create(catalogInfo.doc,
                                             CatalogUtil.TAG_DATASET, null,
                                             new String[] {
                                                 CatalogUtil.ATTR_NAME,
                         "Latest " + group.getName() });
                 if (includeIcon) {
-                    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                    MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                    latestDataset,
                                    new String[] { CatalogUtil.ATTR_NAME,
                             "icon", CatalogUtil.ATTR_VALUE,
@@ -435,7 +435,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
 
                 topDataset.insertBefore(latestDataset, firstChild);
-                Element service = XmlUtil.create(catalogInfo.doc,
+                Element service = MyXmlUtil.create(catalogInfo.doc,
                                       CatalogUtil.TAG_ACCESS, latestDataset,
                                       new String[] {
                                           CatalogUtil.ATTR_SERVICENAME,
@@ -446,8 +446,8 @@ public class CatalogOutputHandler extends OutputHandler {
         }
 
 
-        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.XML_HEADER);
+        sb.append(MyXmlUtil.toString(root));
 
         return new Result(title, sb, "text/xml");
     }
@@ -499,7 +499,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
 	//	System.err.println("Base:" + base +" attrs:" + attrs);
 	//	System.err.println(org.ramadda.util.Utils.getStack(5));
-        Element serviceNode = XmlUtil.create(catalogInfo.doc,
+        Element serviceNode = MyXmlUtil.create(catalogInfo.doc,
                                              CatalogUtil.TAG_SERVICE,
                                              catalogInfo.root, attrs);
 
@@ -570,16 +570,16 @@ public class CatalogOutputHandler extends OutputHandler {
     private Element createDataset(CatalogInfo catalogInfo, Entry entry,
                                   Element parent, String name)
             throws Exception {
-        Element dataset = XmlUtil.create(catalogInfo.doc,
+        Element dataset = MyXmlUtil.create(catalogInfo.doc,
                                          CatalogUtil.TAG_DATASET, parent,
                                          new String[] { CatalogUtil.ATTR_NAME,
                 name });
 
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "ramadda.id", CatalogUtil.ATTR_VALUE,
                                       entry.getId() });
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "ramadda.host", CatalogUtil.ATTR_VALUE,
                                       getRepository().getHostname() });
@@ -626,13 +626,13 @@ public class CatalogOutputHandler extends OutputHandler {
             Element opendapDataDataset = dataset;
             cnt++;
             if (getCdmManager().isAggregation(entry)) {
-                opendapDataDataset = XmlUtil.create(catalogInfo.doc,
+                opendapDataDataset = MyXmlUtil.create(catalogInfo.doc,
                         CatalogUtil.TAG_DATASET, opendapDataDataset,
                         new String[] { CatalogUtil.ATTR_NAME,
                                        entry.getName() + " Aggregation" });
             }
 
-            Element service = XmlUtil.create(catalogInfo.doc,
+            Element service = MyXmlUtil.create(catalogInfo.doc,
                                              CatalogUtil.TAG_ACCESS,
                                              opendapDataDataset,
                                              new String[] {
@@ -672,7 +672,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                      name);
             addService(catalogInfo, type,
 		       request.getAbsoluteUrl(getRepository().getUrlBase()));
-            Element serviceNode = XmlUtil.create(catalogInfo.doc,
+            Element serviceNode = MyXmlUtil.create(catalogInfo.doc,
                                       CatalogUtil.TAG_ACCESS, subDataset,
                                       new String[] {
                                           CatalogUtil.ATTR_SERVICENAME,
@@ -681,7 +681,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
             if ((icon != null) && (icon.length() > 0)) {
                 if (includeIcon) {
-                    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                    MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                    subDataset,
                                    new String[] { CatalogUtil.ATTR_NAME,
                             "icon", CatalogUtil.ATTR_VALUE, icon });
@@ -704,14 +704,14 @@ public class CatalogOutputHandler extends OutputHandler {
             } else {
                 subDataset = dataset;
             }
-            Element service = XmlUtil.create(catalogInfo.doc,
+            Element service = MyXmlUtil.create(catalogInfo.doc,
                                              CatalogUtil.TAG_ACCESS,
                                              subDataset,
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
             if (includeIcon) {
-                XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                subDataset,
                                new String[] { CatalogUtil.ATTR_NAME,
                         "icon", CatalogUtil.ATTR_VALUE,
@@ -734,7 +734,7 @@ public class CatalogOutputHandler extends OutputHandler {
             if (url.getQuery() != null) {
                 tail = tail + "?" + url.getQuery();
             }
-            XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_ACCESS, dataset,
+            MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_ACCESS, dataset,
                            new String[] { CatalogUtil.ATTR_SERVICENAME,
                                           service, CatalogUtil.ATTR_URLPATH,
                                           tail });
@@ -770,7 +770,7 @@ public class CatalogOutputHandler extends OutputHandler {
             throws Exception {
 
         if (entry.getType().equals("cataloglink")) {
-            Element ref = XmlUtil.create(catalogInfo.doc,
+            Element ref = MyXmlUtil.create(catalogInfo.doc,
                                          CatalogUtil.TAG_CATALOGREF, parent,
                                          new String[] {
                                              CatalogUtil.ATTR_XLINK_TITLE,
@@ -787,7 +787,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                     WmsImageOutputHandler.OUTPUT_WMS_CAPABILITIES.toString());
-            Element ref = XmlUtil.create(catalogInfo.doc,
+            Element ref = MyXmlUtil.create(catalogInfo.doc,
                                          CatalogUtil.TAG_CATALOGREF, parent,
                                          new String[] {
                                              CatalogUtil.ATTR_XLINK_TITLE,
@@ -809,7 +809,7 @@ public class CatalogOutputHandler extends OutputHandler {
             entryName = "Latest " + entry.getParentEntry().getName();
         }
 
-        Element dataset = XmlUtil.create(catalogInfo.doc,
+        Element dataset = MyXmlUtil.create(catalogInfo.doc,
                                          CatalogUtil.TAG_DATASET, parent,
                                          new String[] { CatalogUtil.ATTR_NAME,
                 entryName });
@@ -818,16 +818,16 @@ public class CatalogOutputHandler extends OutputHandler {
             request.getAbsoluteUrl(getPageHandler().getIconUrl(request,
                 entry));
         if (includeIcon) {
-            XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+            MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                            dataset, new String[] { CatalogUtil.ATTR_NAME,
                     "icon", CatalogUtil.ATTR_VALUE, getIconUrl });
         }
 
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "ramadda.id", CatalogUtil.ATTR_VALUE,
                                       entry.getId() });
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "ramadda.host", CatalogUtil.ATTR_VALUE,
                                       getRepository().getHostname() });
@@ -846,7 +846,7 @@ public class CatalogOutputHandler extends OutputHandler {
         if (entry.getCategory() != null) {
             String type = entry.getCategory();
             if (false && (type != null) && (type.length() > 0)) {
-                XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                dataset, new String[] { CatalogUtil.ATTR_NAME,
                         "idv.datatype", CatalogUtil.ATTR_VALUE, type });
             }
@@ -860,24 +860,24 @@ public class CatalogOutputHandler extends OutputHandler {
 
 
         if (entry.getResource().isFile()) {
-            XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATASIZE,
+            MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATASIZE,
                            dataset, "" + entry.getResource().getFileSize(),
                            new String[] { CatalogUtil.ATTR_UNITS,
                                           "bytes" });
 
         }
 
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATE, dataset,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATE, dataset,
                        formatDate(request, new Date(entry.getCreateDate())),
                        new String[] { CatalogUtil.ATTR_TYPE,
                                       "metadataCreated" });
 
-        Element timeCoverage = XmlUtil.create(catalogInfo.doc,
+        Element timeCoverage = MyXmlUtil.create(catalogInfo.doc,
                                    CatalogUtil.TAG_TIMECOVERAGE, dataset);
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_START, timeCoverage,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_START, timeCoverage,
                        "" + formatDate(request,
                                        new Date(entry.getStartDate())));
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_END, timeCoverage,
+        MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_END, timeCoverage,
                        "" + formatDate(request,
                                        new Date(entry.getEndDate())));
 
@@ -926,7 +926,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
         for (Entry group : groups) {
             if (depth > 1) {
-                Element datasetNode = XmlUtil.create(catalogInfo.doc,
+                Element datasetNode = MyXmlUtil.create(catalogInfo.doc,
                                           CatalogUtil.TAG_DATASET, parent,
                                           new String[] {
                                               CatalogUtil.ATTR_NAME,
@@ -941,7 +941,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                     group.getId(), ARG_OUTPUT,
                                     OUTPUT_CATALOG.toString());
 
-                Element ref = XmlUtil.create(catalogInfo.doc,
+                Element ref = MyXmlUtil.create(catalogInfo.doc,
                                              CatalogUtil.TAG_CATALOGREF,
                                              parent,
                                              new String[] {
@@ -978,7 +978,7 @@ public class CatalogOutputHandler extends OutputHandler {
         for (int i = 0; i < parent.keys().size(); i++) {
             Object     key   = parent.keys().get(i);
             EntryGroup group = (EntryGroup) parent.getMap().get(key);
-            /*            Element dataset = XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATASET,
+            /*            Element dataset = MyXmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATASET,
                                              datasetNode,
                                              new String[] { CatalogUtil.ATTR_NAME,
                     group.key.toString() });

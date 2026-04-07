@@ -31,7 +31,6 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 

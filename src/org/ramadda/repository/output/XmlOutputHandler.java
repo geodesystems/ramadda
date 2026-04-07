@@ -17,7 +17,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -84,11 +84,11 @@ public class XmlOutputHandler extends OutputHandler {
     }
 
     public String getEntryXml(Request request, Entry entry) throws Exception {
-        Document doc = XmlUtil.makeDocument();
+        Document doc = MyXmlUtil.makeDocument();
         Element root = getEntryTag(request, entry, null, doc, null, false,
                                    true);
 
-        return XmlUtil.toString(root);
+        return MyXmlUtil.toString(root);
     }
 
     /**
@@ -113,7 +113,7 @@ public class XmlOutputHandler extends OutputHandler {
             return outputEntry(request, outputType, group);
         }
 
-        Document doc  = XmlUtil.makeDocument();
+        Document doc  = MyXmlUtil.makeDocument();
         Element  root;
 	if(doChildren) {
 	    root = getGroupTag(request, getEntryManager().getDummyGroup("parent"), doc, null);
@@ -127,7 +127,7 @@ public class XmlOutputHandler extends OutputHandler {
                 getEntryTag(request, child, null, doc, root, false, true);
             }
         }
-        StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
+        StringBuffer sb = new StringBuffer(MyXmlUtil.toString(root));
 
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
@@ -156,7 +156,7 @@ public class XmlOutputHandler extends OutputHandler {
 
 	boolean encode  = request.get("encode",true);
 	//	System.err.println("xml:" + entry);
-        Element node = XmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
+        Element node = MyXmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
             ATTR_ID, entry.getId(), ATTR_NAME, entry.getName(), ATTR_PARENT,
             (includeParentId
              ? entry.getParentEntryId()
@@ -203,11 +203,11 @@ public class XmlOutputHandler extends OutputHandler {
             Resource resource = entry.getResource();
             if (forExport) {
                 if (resource.isUrl()) {
-                    XmlUtil.setAttributes(node, new String[] { ATTR_URL,
+                    MyXmlUtil.setAttributes(node, new String[] { ATTR_URL,
                             resource.getPath() });
                 }
             } else {
-                XmlUtil.setAttributes(node, new String[] { ATTR_RESOURCE,
+                MyXmlUtil.setAttributes(node, new String[] { ATTR_RESOURCE,
                         resource.getPath(), ATTR_RESOURCE_TYPE,
                         resource.getType() });
                 String md5 = resource.getMd5();
@@ -235,8 +235,8 @@ public class XmlOutputHandler extends OutputHandler {
                         getRepository().getEntryManager().getEntryResourceUrl(
                             request, entry, EntryManager.ARG_INLINE_DFLT,
                             true, EntryManager.ARG_ADDPATH_DFLT);
-                    Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
-                    XmlUtil.setAttributes(serviceNode,
+                    Element serviceNode = MyXmlUtil.create(TAG_SERVICE, node);
+                    MyXmlUtil.setAttributes(serviceNode,
                                           new String[] { ATTR_TYPE,
                             SERVICE_FILE, ATTR_URL, url });
                 }
@@ -244,9 +244,9 @@ public class XmlOutputHandler extends OutputHandler {
         }
 
         if (Utils.stringDefined(entry.getDescription())) {
-            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
+            Element descNode = MyXmlUtil.create(doc, TAG_DESCRIPTION, node);
             descNode.setAttribute("encoded", encode?"true":"false");
-            descNode.appendChild(XmlUtil.makeCDataNode(doc,
+            descNode.appendChild(MyXmlUtil.makeCDataNode(doc,
                     entry.getDescription(), encode));
         }
         getMetadataManager().addXmlMetadata(request, entry, fileWriter, doc,

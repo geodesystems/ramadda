@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 //import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 
 import java.io.ByteArrayOutputStream;
@@ -434,10 +434,10 @@ public class RepositoryClient extends RepositoryBase {
 
         checkSession();
 
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+        Document doc = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                       new String[] {});
-        Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+        Element entryNode = MyXmlUtil.create(doc, TAG_ENTRY, root,
                                            new String[] {});
 
         /*
@@ -448,8 +448,8 @@ public class RepositoryClient extends RepositoryBase {
         /*
          * description
          */
-        Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, entryNode);
-        descNode.appendChild(XmlUtil.makeCDataNode(doc, entryDescription,
+        Element descNode = MyXmlUtil.create(doc, TAG_DESCRIPTION, entryNode);
+        descNode.appendChild(MyXmlUtil.makeCDataNode(doc, entryDescription,
                 false));
         /*
          * parent
@@ -471,7 +471,7 @@ public class RepositoryClient extends RepositoryBase {
         /*
          * write the xml definition into the zip file
          */
-        String xml = XmlUtil.toString(root);
+        String xml = MyXmlUtil.toString(root);
         //        System.out.println(xml);
         zos.putNextEntry(new ZipEntry("entries.xml"));
         byte[] bytes = getXmlBytes(xml);
@@ -504,19 +504,19 @@ public class RepositoryClient extends RepositoryBase {
             throw new EntryErrorException(result[0]);
         }
 
-        Element response = XmlUtil.getRoot(result[1]);
+        Element response = MyXmlUtil.getRoot(result[1]);
         if ( !responseOk(response)) {
-            String body = XmlUtil.getChildText(response);
+            String body = MyXmlUtil.getChildText(response);
 
             throw new EntryErrorException(body);
         }
-        Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
+        Element newEntryNode = MyXmlUtil.findChild(response, TAG_ENTRY);
         if (newEntryNode == null) {
             throw new IllegalStateException("No entry node found in:"
-                                            + XmlUtil.toString(response));
+                                            + MyXmlUtil.toString(response));
         }
 
-        return XmlUtil.getAttribute(newEntryNode, ATTR_ID);
+        return MyXmlUtil.getAttribute(newEntryNode, ATTR_ID);
 
     }
 
@@ -533,11 +533,11 @@ public class RepositoryClient extends RepositoryBase {
     public void uploadFiles(List<EntryFile> files) throws Exception {
         checkSession();
 
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+        Document doc = MyXmlUtil.makeDocument();
+        Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                       new String[] {});
         for (EntryFile f : files) {
-            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+            Element entryNode = MyXmlUtil.create(doc, TAG_ENTRY, root,
                                     new String[] {});
             /*
              * name
@@ -547,9 +547,9 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * description
              */
-            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION,
+            Element descNode = MyXmlUtil.create(doc, TAG_DESCRIPTION,
                                    entryNode);
-            descNode.appendChild(XmlUtil.makeCDataNode(doc,
+            descNode.appendChild(MyXmlUtil.makeCDataNode(doc,
                     f.entryDescription, false));
             /*
              * parent
@@ -579,7 +579,7 @@ public class RepositoryClient extends RepositoryBase {
         /*
          * write the xml definition into the zip file
          */
-        String xml = XmlUtil.toString(root);
+        String xml = MyXmlUtil.toString(root);
         //        System.out.println(xml);
         zos.putNextEntry(new ZipEntry("entries.xml"));
         byte[] bytes = getXmlBytes(xml);
@@ -615,16 +615,16 @@ public class RepositoryClient extends RepositoryBase {
             throw new EntryErrorException(result[0]);
         }
 
-        Element response = XmlUtil.getRoot(result[1]);
+        Element response = MyXmlUtil.getRoot(result[1]);
         if ( !responseOk(response)) {
-            String body = XmlUtil.getChildText(response);
+            String body = MyXmlUtil.getChildText(response);
 
             throw new EntryErrorException(body);
         }
-        Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
+        Element newEntryNode = MyXmlUtil.findChild(response, TAG_ENTRY);
         if (newEntryNode == null) {
             throw new IllegalStateException("No entry node found in:"
-                                            + XmlUtil.toString(response));
+                                            + MyXmlUtil.toString(response));
         }
     }
 
@@ -657,19 +657,19 @@ public class RepositoryClient extends RepositoryBase {
             throw new EntryErrorException(result[0]);
         }
 
-        Element response = XmlUtil.getRoot(result[1]);
+        Element response = MyXmlUtil.getRoot(result[1]);
         if ( !responseOk(response)) {
-            String body = XmlUtil.getChildText(response);
+            String body = MyXmlUtil.getChildText(response);
 
             throw new EntryErrorException(body);
         }
-        Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
+        Element newEntryNode = MyXmlUtil.findChild(response, TAG_ENTRY);
         if (newEntryNode == null) {
             throw new IllegalStateException("No entry node found in:"
-                                            + XmlUtil.toString(response));
+                                            + MyXmlUtil.toString(response));
         }
 
-        return XmlUtil.getAttribute(newEntryNode, ATTR_ID);
+        return MyXmlUtil.getAttribute(newEntryNode, ATTR_ID);
     }
 
 
@@ -688,10 +688,10 @@ public class RepositoryClient extends RepositoryBase {
                            String parent) {
         checkSession();
         try {
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+            Document doc = MyXmlUtil.makeDocument();
+            Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                           new String[] {});
-            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+            Element entryNode = MyXmlUtil.create(doc, TAG_ENTRY, root,
                                     new String[] {});
 
             /*
@@ -702,9 +702,9 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * description
              */
-            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION,
+            Element descNode = MyXmlUtil.create(doc, TAG_DESCRIPTION,
                                    entryNode);
-            descNode.appendChild(XmlUtil.makeCDataNode(doc, entryDescription,
+            descNode.appendChild(MyXmlUtil.makeCDataNode(doc, entryDescription,
                     false));
             /*
              * parent
@@ -719,7 +719,7 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * write the xml definition into the zip file
              */
-            String              xml         = XmlUtil.toString(root);
+            String              xml         = MyXmlUtil.toString(root);
             //        System.out.println(xml);
 
 
@@ -738,13 +738,13 @@ public class RepositoryClient extends RepositoryBase {
 
                 return false;
             }
-            Element response = XmlUtil.getRoot(result[1]);
+            Element response = MyXmlUtil.getRoot(result[1]);
             if (responseOk(response)) {
                 handleMessage("file created");
 
                 return true;
             }
-            String body = XmlUtil.getChildText(response).trim();
+            String body = MyXmlUtil.getChildText(response).trim();
             handleError("Error creating file:" + body, null);
         } catch (Exception exc) {
             handleError("Error creating file", exc);
@@ -788,7 +788,7 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public ClientEntry getEntry(String entryId) throws Exception {
-        Element root = XmlUtil.getRoot(getEntryXml(entryId));
+        Element root = MyXmlUtil.getRoot(getEntryXml(entryId));
 
         return getEntry(root);
     }
@@ -804,7 +804,7 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public ClientEntry getEntry(Element node) throws Exception {
-        ClientEntry entry = new ClientEntry(XmlUtil.getAttribute(node,
+        ClientEntry entry = new ClientEntry(MyXmlUtil.getAttribute(node,
                                 ATTR_ID));
         entry.init(node);
 
@@ -909,7 +909,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addTags(Element node, List<String> tags) throws Exception {
         for (String tag : tags) {
-            XmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
+            MyXmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
                            new String[] { ATTR_TYPE,
                                           "enum_tag", ATTR_ATTR1, tag });
         }
@@ -925,7 +925,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addAttachment(Element node, String filename)
             throws Exception {
-        XmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
+        MyXmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
                        new String[] { ATTR_TYPE,
                                       "content.attachment", ATTR_ATTR1,
                                       filename });
@@ -940,11 +940,11 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public void addThumbnail(Element node, String filename) throws Exception {
-        Element metadataNode = XmlUtil.create(node.getOwnerDocument(),
+        Element metadataNode = MyXmlUtil.create(node.getOwnerDocument(),
                                    TAG_METADATA, node,
                                    new String[] { ATTR_TYPE,
                 "content.thumbnail", ATTR_ATTR1, filename });
-        XmlUtil.create(node.getOwnerDocument(), "attr1", metadataNode,
+        MyXmlUtil.create(node.getOwnerDocument(), "attr1", metadataNode,
                        new String[] { "fileid",
                                       filename });
     }
@@ -979,7 +979,7 @@ public class RepositoryClient extends RepositoryBase {
     public void addAssociation(Element node, String fromId, String toId,
                                String type, String name)
             throws Exception {
-        XmlUtil.create(node.getOwnerDocument(), TAG_ASSOCIATION, node,
+        MyXmlUtil.create(node.getOwnerDocument(), TAG_ASSOCIATION, node,
                        new String[] {
             ATTR_FROM, fromId, ATTR_TO, toId, ATTR_TYPE, type, ATTR_NAME, name
         });
@@ -1065,7 +1065,7 @@ public class RepositoryClient extends RepositoryBase {
         }
         lastId = dummyId;
 
-        return XmlUtil.create(parentNode.getOwnerDocument(), TAG_ENTRY,
+        return MyXmlUtil.create(parentNode.getOwnerDocument(), TAG_ENTRY,
                               parentNode, new String[] {
             ATTR_ID, dummyId, ATTR_TYPE, TYPE_GROUP, ATTR_PARENT, parentId,
             ATTR_NAME, name
@@ -1108,13 +1108,13 @@ public class RepositoryClient extends RepositoryBase {
         lastId = dummyId;
 
         if (parentId != null) {
-            return XmlUtil.create(root.getOwnerDocument(), TAG_ENTRY, root,
+            return MyXmlUtil.create(root.getOwnerDocument(), TAG_ENTRY, root,
                                   new String[] {
                 ATTR_ID, dummyId, ATTR_PARENT, parentId, ATTR_NAME, name
             });
         }
 
-        return XmlUtil.create(root.getOwnerDocument(), TAG_ENTRY, root,
+        return MyXmlUtil.create(root.getOwnerDocument(), TAG_ENTRY, root,
                               new String[] { ATTR_ID,
                                              dummyId, ATTR_NAME, name });
     }
@@ -1150,11 +1150,11 @@ public class RepositoryClient extends RepositoryBase {
             if (name == null) {
                 return false;
             }
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+            Document doc = MyXmlUtil.makeDocument();
+            Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                           new String[] {});
             makeGroupNode(root, parentId, name, dummyid);
-            String xml     = XmlUtil.toString(root);
+            String xml     = MyXmlUtil.toString(root);
             List   entries = new ArrayList();
             addUrlArgs(entries);
             entries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
@@ -1166,13 +1166,13 @@ public class RepositoryClient extends RepositoryBase {
 
                 return false;
             }
-            Element response = XmlUtil.getRoot(result[1]);
+            Element response = MyXmlUtil.getRoot(result[1]);
             if (responseOk(response)) {
                 handleMessage("Folder created");
 
                 return true;
             }
-            String body = XmlUtil.getChildText(response).trim();
+            String body = MyXmlUtil.getChildText(response).trim();
             handleError("Error creating folder:" + body, null);
         } catch (Exception exc) {
             handleError("Error creating folder", exc);
@@ -1288,11 +1288,11 @@ public class RepositoryClient extends RepositoryBase {
             //            System.err.println("isValidSession:" + url);
             String contents = IOUtil.readContents(url, getClass());
             //            System.err.println ("contents:" + contents);
-            Element root = XmlUtil.getRoot(contents);
+            Element root = MyXmlUtil.getRoot(contents);
             if (responseOk(root)) {
                 return true;
             } else {
-                msg[0] = XmlUtil.getChildText(root).trim();
+                msg[0] = MyXmlUtil.getChildText(root).trim();
 
                 return false;
             }
@@ -1322,7 +1322,7 @@ public class RepositoryClient extends RepositoryBase {
      * @return _more_
      */
     public boolean responseOk(Element root) {
-        return XmlUtil.getAttribute(root, ATTR_CODE).equals("ok");
+        return MyXmlUtil.getAttribute(root, ATTR_CODE).equals("ok");
     }
 
 
@@ -1364,8 +1364,8 @@ public class RepositoryClient extends RepositoryBase {
             if (debug) {
                 System.err.println("\tcontents:" + contents);
             }
-            Element root = XmlUtil.getRoot(contents);
-            String  body = XmlUtil.getChildText(root).trim();
+            Element root = MyXmlUtil.getRoot(contents);
+            String  body = MyXmlUtil.getChildText(root).trim();
             if (responseOk(root)) {
                 sessionId = body;
                 if (debug) {
@@ -1438,16 +1438,16 @@ public class RepositoryClient extends RepositoryBase {
         callTimestamp++;
 
         //        System.err.println(contents);
-        Element root = XmlUtil.getRoot(contents);
+        Element root = MyXmlUtil.getRoot(contents);
 
-        String sslPortProp = XmlUtil.getGrandChildText(root,
+        String sslPortProp = MyXmlUtil.getGrandChildText(root,
                                  ServerInfo.TAG_INFO_SSLPORT);
         if ((sslPortProp != null) && (sslPortProp.trim().length() > 0)) {
             sslPort =  Integer.parseInt(sslPortProp.trim());
         }
 
-        title = XmlUtil.getGrandChildText(root, ServerInfo.TAG_INFO_TITLE);
-        description = XmlUtil.getGrandChildText(root,
+        title = MyXmlUtil.getGrandChildText(root, ServerInfo.TAG_INFO_TITLE);
+        description = MyXmlUtil.getGrandChildText(root,
                 ServerInfo.TAG_INFO_DESCRIPTION);
         //        System.err.println (sslPort + "  "+ title +" " + description);
         setHttpsPort(sslPort);
@@ -1717,9 +1717,9 @@ public class RepositoryClient extends RepositoryBase {
         }
 
         System.err.println("result:" + result[1]);
-        Element response = XmlUtil.getRoot(result[1]);
+        Element response = MyXmlUtil.getRoot(result[1]);
 
-        String  body     = XmlUtil.getChildText(response).trim();
+        String  body     = MyXmlUtil.getChildText(response).trim();
         if (responseOk(response)) {
             System.err.println("OK:" + body);
         } else {
@@ -1763,8 +1763,8 @@ public class RepositoryClient extends RepositoryBase {
         }, false);
         System.err.println("url:" + url);
         String  xml  = IOUtil.readContents(url, getClass());
-        Element root = XmlUtil.getRoot(xml);
-        String  body = XmlUtil.getChildText(root).trim();
+        Element root = MyXmlUtil.getRoot(xml);
+        String  body = MyXmlUtil.getChildText(root).trim();
         if (responseOk(root)) {
             System.err.println("OK:" + body);
         } else {
@@ -1842,8 +1842,8 @@ public class RepositoryClient extends RepositoryBase {
         Element    entryNode = null;
         Document   doc       = null;
 
-        doc  = XmlUtil.makeDocument();
-        root = XmlUtil.create(doc, TAG_ENTRIES, null, new String[] {});
+        doc  = MyXmlUtil.makeDocument();
+        root = MyXmlUtil.create(doc, TAG_ENTRIES, null, new String[] {});
 
         int entryCnt = 0;
         for (int i = 3; i < args.length; i++) {
@@ -1918,7 +1918,7 @@ public class RepositoryClient extends RepositoryBase {
             }
 
             if (arg.equals(CMD_DEBUG)) {
-                System.out.println(XmlUtil.toString(root));
+                System.out.println(MyXmlUtil.toString(root));
             } else if (arg.equals(CMD_EXIT)) {
                 return;
             } else if (arg.equals(CMD_FOLDER)) {
@@ -1994,9 +1994,9 @@ public class RepositoryClient extends RepositoryBase {
                     usage("Bad -description argument");
                 }
                 i++;
-                Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION,
+                Element descNode = MyXmlUtil.create(doc, TAG_DESCRIPTION,
                                        entryNode);
-                descNode.appendChild(XmlUtil.makeCDataNode(doc, args[i],
+                descNode.appendChild(MyXmlUtil.makeCDataNode(doc, args[i],
                         false));
 
             } else if (arg.equals("-addmetadata")) {
@@ -2045,7 +2045,7 @@ public class RepositoryClient extends RepositoryBase {
         if (root != null) {
             //Tack on a utf-8 header so Chinese characters can encode properly
             String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-            String xml    = header + "\n" + XmlUtil.toString(root);
+            String xml    = header + "\n" + MyXmlUtil.toString(root);
             //System.out.println(xml);
             zos.putNextEntry(new ZipEntry("entries.xml"));
             byte[] bytes = getXmlBytes(xml);
@@ -2075,9 +2075,9 @@ public class RepositoryClient extends RepositoryBase {
         }
 
         System.err.println("result:" + result[1]);
-        Element response = XmlUtil.getRoot(result[1]);
+        Element response = MyXmlUtil.getRoot(result[1]);
 
-        String  body     = XmlUtil.getChildText(response).trim();
+        String  body     = MyXmlUtil.getChildText(response).trim();
         if (responseOk(response)) {
             System.err.println("OK:" + body);
         } else {
@@ -2136,15 +2136,15 @@ public class RepositoryClient extends RepositoryBase {
                 return false;
             }
             String   dummyid = createId();
-            Document doc     = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+            Document doc     = MyXmlUtil.makeDocument();
+            Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                           new String[] {});
-            Element ele = XmlUtil.create(root.getOwnerDocument(), TAG_ENTRY,
+            Element ele = MyXmlUtil.create(root.getOwnerDocument(), TAG_ENTRY,
                                          root, new String[] {
                 ATTR_ID, dummyid, ATTR_TYPE, ATTR_LOCALFILES, ATTR_PARENT,
                 parentId, ATTR_NAME, name, ATTR_LOCALFILE_PATH, localfilepath
             });
-            String xml     = XmlUtil.toString(root);
+            String xml     = MyXmlUtil.toString(root);
             List   entries = new ArrayList();
             addUrlArgs(entries);
             entries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
@@ -2156,13 +2156,13 @@ public class RepositoryClient extends RepositoryBase {
 
                 return false;
             }
-            Element response = XmlUtil.getRoot(result[1]);
+            Element response = MyXmlUtil.getRoot(result[1]);
             if (responseOk(response)) {
                 handleMessage("Folder created");
 
                 return true;
             }
-            String body = XmlUtil.getChildText(response).trim();
+            String body = MyXmlUtil.getChildText(response).trim();
             handleError("Error creating folder:" + body, null);
         } catch (Exception exc) {
             handleError("Error creating folder", exc);
@@ -2187,10 +2187,10 @@ public class RepositoryClient extends RepositoryBase {
     public boolean newWiki(String entryName, String wikitext, String parent) {
         checkSession();
         try {
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+            Document doc = MyXmlUtil.makeDocument();
+            Element root = MyXmlUtil.create(doc, TAG_ENTRIES, null,
                                           new String[] {});
-            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+            Element entryNode = MyXmlUtil.create(doc, TAG_ENTRY, root,
                                     new String[] {});
 
             /*
@@ -2206,8 +2206,8 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * wikitext
              */
-            Element descNode = XmlUtil.create(doc, TAG_WIKITEXT, entryNode);
-            descNode.appendChild(XmlUtil.makeCDataNode(doc, wikitext, false));
+            Element descNode = MyXmlUtil.create(doc, TAG_WIKITEXT, entryNode);
+            descNode.appendChild(MyXmlUtil.makeCDataNode(doc, wikitext, false));
             /*
              * parent
              */
@@ -2221,7 +2221,7 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * write the xml definition into the zip file
              */
-            String              xml         = XmlUtil.toString(root);
+            String              xml         = MyXmlUtil.toString(root);
             //        System.out.println(xml);
 
 
@@ -2240,13 +2240,13 @@ public class RepositoryClient extends RepositoryBase {
 
                 return false;
             }
-            Element response = XmlUtil.getRoot(result[1]);
+            Element response = MyXmlUtil.getRoot(result[1]);
             if (responseOk(response)) {
                 handleMessage("file created");
 
                 return true;
             }
-            String body = XmlUtil.getChildText(response).trim();
+            String body = MyXmlUtil.getChildText(response).trim();
             handleError("Error creating file:" + body, null);
         } catch (Exception exc) {
             handleError("Error creating file", exc);

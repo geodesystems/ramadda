@@ -35,7 +35,7 @@ import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -98,7 +98,7 @@ public class PointTypeHandler extends RecordTypeHandler {
     }
 
     private void initMetadataMapping(Element node) {
-	String mappingText =  XmlUtil.getGrandChildText(node,"header_metadata",null);
+	String mappingText =  MyXmlUtil.getGrandChildText(node,"header_metadata",null);
 	if(mappingText==null) return;
 
 	for(String line:Utils.split(mappingText,"\n",true,true)) {

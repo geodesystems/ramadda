@@ -14,7 +14,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -158,7 +158,7 @@ public class OboConverter extends ImportHandler {
         }
 
         HashSet<String> processed    = new HashSet<String>();
-        StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer    xml          = new StringBuffer(MyXmlUtil.XML_HEADER);
         StringBuffer    associations = new StringBuffer();
         xml.append("<entries>\n");
 
@@ -196,8 +196,8 @@ public class OboConverter extends ImportHandler {
                                          defaultNamespace);
         String       parentId  = null;
         StringBuffer childTags = new StringBuffer();
-        childTags.append(XmlUtil.tag("description", "",
-                                     XmlUtil.getCdata(term.getDef())));
+        childTags.append(MyXmlUtil.tag("description", "",
+                                     MyXmlUtil.getCdata(term.getDef())));
 
         //relationship: part_of TADS:0000501 ! adult male accessory gland
 
@@ -213,8 +213,8 @@ public class OboConverter extends ImportHandler {
             if (parentId == null) {
                 parentId = otherTerm.id;
             } else {
-                associations.append(XmlUtil.tag("association",
-                        XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                associations.append(MyXmlUtil.tag("association",
+                        MyXmlUtil.attrs("from", term.id, "to", otherTerm.id,
                                       "type", "is_a")));
 
                 System.err.println("Multiple isa:" + term.id);
@@ -239,8 +239,8 @@ public class OboConverter extends ImportHandler {
             if (parentId == null) {
                 parentId = otherTerm.id;
             } else {
-                associations.append(XmlUtil.tag("association",
-                        XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                associations.append(MyXmlUtil.tag("association",
+                        MyXmlUtil.attrs("from", term.id, "to", otherTerm.id,
                                       "type", "part_of")));
 
             }
@@ -257,8 +257,8 @@ public class OboConverter extends ImportHandler {
             }
 
             synonyms.add(value);
-            childTags.append(XmlUtil.tag("metadata",
-                                         XmlUtil.attrs("type", "synonym",
+            childTags.append(MyXmlUtil.tag("metadata",
+                                         MyXmlUtil.attrs("type", "synonym",
                                              "attr1", value)));
             childTags.append("\n");
         }
@@ -286,8 +286,8 @@ public class OboConverter extends ImportHandler {
                 }
                 synonyms.add(value);
             }
-            childTags.append(XmlUtil.tag("metadata",
-                                         XmlUtil.attrs("type", "property",
+            childTags.append(MyXmlUtil.tag("metadata",
+                                         MyXmlUtil.attrs("type", "property",
                                              "attr1", type, "attr2", value)));
             childTags.append("\n");
 
@@ -297,9 +297,9 @@ public class OboConverter extends ImportHandler {
             parentId = "";
         }
         xml.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 "entry",
-                XmlUtil.attrs(
+                MyXmlUtil.attrs(
                     "type", RdfUtil.TYPE_CLASS, "name", term.getName(), "id",
                     term.id, "parent", parentId), childTags.toString()));
 

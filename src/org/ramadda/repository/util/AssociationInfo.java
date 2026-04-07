@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.util;
 
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -63,8 +63,8 @@ public class AssociationInfo {
 
                 continue;
             }
-            xml.append(XmlUtil.tag("association",
-                                   XmlUtil.attrs("from", from, "to", to,
+            xml.append(MyXmlUtil.tag("association",
+                                   MyXmlUtil.attrs("from", from, "to", to,
                                        "type", type)));
             xml.append("\n");
         }

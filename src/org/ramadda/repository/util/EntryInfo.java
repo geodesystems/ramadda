@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.util;
 
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -121,9 +121,9 @@ public class EntryInfo {
         processed.add(entryInfo.getId());
 
         xml.append(
-            XmlUtil.tag(
+            MyXmlUtil.tag(
                 "entry",
-                XmlUtil.attrs(
+                MyXmlUtil.attrs(
                     "type", entryInfo.getType(), "name", entryInfo.getName(),
                     "id", entryInfo.getId(), "parent",
                     entryInfo.getParentId()), entryInfo.getChildXml()));

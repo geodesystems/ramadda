@@ -21,7 +21,6 @@ import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.XmlUtils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -32,7 +31,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -125,8 +124,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public OutputHandler(Repository repository, Element element)
             throws Exception {
         this(repository,
-             XmlUtil.getAttribute(element, ATTR_NAME, (String) null));
-        maxConnections = XmlUtil.getAttribute(element, ATTR_MAXCONNECTIONS,
+             MyXmlUtil.getAttribute(element, ATTR_NAME, (String) null));
+        maxConnections = MyXmlUtil.getAttribute(element, ATTR_MAXCONNECTIONS,
                 maxConnections);
 
     }
@@ -1150,7 +1149,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public Result makeAjaxResult(Request request, String contents)
             throws Exception {
         StringBuilder xml = new StringBuilder("<content>\n");
-        XmlUtils.appendCdata(xml, contents);
+        XU.appendCdata(xml, contents);
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");

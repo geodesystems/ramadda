@@ -20,7 +20,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.File;
 import java.lang.reflect.*;
 import java.sql.ResultSet;
@@ -189,7 +189,7 @@ public class HarvesterManager extends RepositoryManager {
 
         try {
             for (String file : harvesterFiles) {
-                Element root = XmlUtil.getRoot(file, getClass());
+                Element root = MyXmlUtil.getRoot(file, getClass());
                 if (root == null) {
                     continue;
                 }
@@ -242,7 +242,7 @@ public class HarvesterManager extends RepositoryManager {
             String xml = getStorageManager().readSystemResource(file);
             harvestersBeingCreated =
                 Harvester.createHarvesters(getRepository(),
-                                           XmlUtil.getRoot(xml));
+                                           MyXmlUtil.getRoot(xml));
             if (harvestersBeingCreated.size() == 0) {
                 return getAdmin().makeResult(
                     request, msg("New Harvester"),
@@ -344,9 +344,9 @@ public class HarvesterManager extends RepositoryManager {
 
         if (request.get(ARG_HARVESTER_GETXML, false)) {
             String xml = harvester.getContent();
-            xml = XmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
+            xml = MyXmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
             return new Result("",
-                              new StringBuffer(XmlUtil.getHeader() + "\n"
+                              new StringBuffer(MyXmlUtil.getHeader() + "\n"
                                   + xml), "text/xml");
         }
 
@@ -498,8 +498,8 @@ public class HarvesterManager extends RepositoryManager {
             }
 
             if (returnXml) {
-                return new Result(XmlUtil.tag(TAG_RESPONSE,
-                        XmlUtil.attr(ATTR_CODE, returnStatus),
+                return new Result(MyXmlUtil.tag(TAG_RESPONSE,
+                        MyXmlUtil.attr(ATTR_CODE, returnStatus),
                         msg), MIME_XML);
             }
 

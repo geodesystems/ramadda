@@ -22,7 +22,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
+
 
 import java.io.*;
 
@@ -148,8 +149,8 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
             throws Exception {
         sb.append(
             "<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
-        sb.append(XmlUtil.attr("width", width));
-        sb.append(XmlUtil.attr("height", height));
+        sb.append(MyXmlUtil.attr("width", width));
+        sb.append(MyXmlUtil.attr("height", height));
         String playerId = "video_" + (idCnt++);
         String embedUrl = "//www.youtube.com/embed/" + id;
         embedUrl += "?enablejsapi=1";

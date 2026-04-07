@@ -36,7 +36,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -270,16 +270,16 @@ public class CommandHarvester extends Harvester {
     protected void init(Element element) throws Exception {
         super.init(element);
         tokens      = Utils.getAttributeOrTag(element, ATTR_TOKENS, tokens);
-        webHook     = XmlUtil.getAttribute(element, ATTR_WEBHOOK, webHook);
-        allowCreate = XmlUtil.getAttribute(element, ATTR_ALLOW_CREATE, false);
-        apiToken    = XmlUtil.getAttribute(element, ATTR_APITOKEN, apiToken);
+        webHook     = MyXmlUtil.getAttribute(element, ATTR_WEBHOOK, webHook);
+        allowCreate = MyXmlUtil.getAttribute(element, ATTR_ALLOW_CREATE, false);
+        apiToken    = MyXmlUtil.getAttribute(element, ATTR_APITOKEN, apiToken);
     }
 
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         if (tokens != null) {
-            Element node = XmlUtil.create(ATTR_TOKENS, element);
-            node.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
+            Element node = MyXmlUtil.create(ATTR_TOKENS, element);
+            node.appendChild(MyXmlUtil.makeCDataNode(node.getOwnerDocument(),
                     tokens, false));
             //            element.setAttribute(ATTR_TOKENS, tokens);
         }

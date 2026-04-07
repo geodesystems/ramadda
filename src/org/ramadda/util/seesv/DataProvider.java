@@ -24,7 +24,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -887,7 +887,7 @@ public abstract class DataProvider extends SeesvOperator {
 
         public void tokenize(TextReader ctx, String s) throws Exception {
 
-            Element root   = XmlUtil.getRoot(s);
+            Element root   = MyXmlUtil.getRoot(s);
             Row     header = makeRow();
             addRow(header);
             List<Element> nodes =
@@ -899,7 +899,7 @@ public abstract class DataProvider extends SeesvOperator {
                                                     Integer>();
             //            System.err.println("NODES:" + nodes.size());
             for (Element parent : nodes) {
-                NodeList children = XmlUtil.getElements(parent);
+                NodeList children = MyXmlUtil.getElements(parent);
 
                 if (children.getLength() == 0) {
                     //use attrs
@@ -921,7 +921,7 @@ public abstract class DataProvider extends SeesvOperator {
                 }
                 for (int i = 0; i < children.getLength(); i++) {
                     Element  child     = (Element) children.item(i);
-                    NodeList gchildren = XmlUtil.getElements(child);
+                    NodeList gchildren = MyXmlUtil.getElements(child);
                     //go one level down
                     String tag = child.getTagName();
                     if (gchildren.getLength() > 0) {
@@ -945,7 +945,7 @@ public abstract class DataProvider extends SeesvOperator {
             }
 
             for (Element parent : nodes) {
-                NodeList children = XmlUtil.getElements(parent);
+                NodeList children = MyXmlUtil.getElements(parent);
                 Row      row      = makeRow();
                 addRow(row);
                 for (int i = 0; i < colCnt; i++) {
@@ -968,7 +968,7 @@ public abstract class DataProvider extends SeesvOperator {
 
                 for (int i = 0; i < children.getLength(); i++) {
                     Element  child     = (Element) children.item(i);
-                    NodeList gchildren = XmlUtil.getElements(child);
+                    NodeList gchildren = MyXmlUtil.getElements(child);
                     //go one level down
                     String tag = child.getTagName();
                     if (gchildren.getLength() > 0) {
@@ -976,12 +976,12 @@ public abstract class DataProvider extends SeesvOperator {
                             Element gchild = (Element) gchildren.item(gi);
                             String  gtag   = tag + "." + gchild.getTagName();
                             Integer idx    = colMap.get(gtag);
-                            String  text   = XmlUtil.getChildText(gchild);
+                            String  text   = MyXmlUtil.getChildText(gchild);
                             row.set(idx, text);
                         }
                     } else {
                         Integer idx  = colMap.get(child.getTagName());
-                        String  text = XmlUtil.getChildText(child);
+                        String  text = MyXmlUtil.getChildText(child);
                         row.set(idx, text);
                     }
                 }
@@ -1016,7 +1016,7 @@ public abstract class DataProvider extends SeesvOperator {
         private void read(Element root) throws Exception {
             List<Element> placemarks = KmlUtil.findPlacemarks(root);
             List<Element> lookAts =
-                (List<Element>) XmlUtil.findDescendants(root,
+                (List<Element>) MyXmlUtil.findDescendants(root,
                     KmlUtil.TAG_LOOKAT);
             if (lookAts.size() > placemarks.size()) {
                 readLookAts(lookAts);
@@ -1024,7 +1024,7 @@ public abstract class DataProvider extends SeesvOperator {
                 readPlacemarks(placemarks);
             } else {
                 List<Element> nodes =
-                    (List<Element>) XmlUtil.findDescendants(root,
+                    (List<Element>) MyXmlUtil.findDescendants(root,
                         KmlUtil.TAG_GROUNDOVERLAY);
                 if (nodes.size() > 0) {
                     readGroundOverlays(nodes);
@@ -1051,12 +1051,12 @@ public abstract class DataProvider extends SeesvOperator {
             for (Element lookAt : lookAts) {
                 Row row = makeRow();
                 addRow(row);
-                row.add(XmlUtil.getGrandChildText(lookAt, "latitude", "NaN"));
-                row.add(XmlUtil.getGrandChildText(lookAt, "longitude",
+                row.add(MyXmlUtil.getGrandChildText(lookAt, "latitude", "NaN"));
+                row.add(MyXmlUtil.getGrandChildText(lookAt, "longitude",
                         "NaN"));
-                row.add(XmlUtil.getGrandChildText(lookAt, "altitude", "NaN"));
-                row.add(XmlUtil.getGrandChildText(lookAt, "heading", "NaN"));
-                row.add(XmlUtil.getGrandChildText(lookAt, "tilt", "NaN"));
+                row.add(MyXmlUtil.getGrandChildText(lookAt, "altitude", "NaN"));
+                row.add(MyXmlUtil.getGrandChildText(lookAt, "heading", "NaN"));
+                row.add(MyXmlUtil.getGrandChildText(lookAt, "tilt", "NaN"));
             }
         }
 
@@ -1083,29 +1083,29 @@ public abstract class DataProvider extends SeesvOperator {
             for (Element node : nodes) {
                 Row row = makeRow();
                 addRow(row);
-                row.add(XmlUtil.getGrandChildText(node, "name", ""));
-                Element icon = XmlUtil.findChild(node, "Icon");
+                row.add(MyXmlUtil.getGrandChildText(node, "name", ""));
+                Element icon = MyXmlUtil.findChild(node, "Icon");
                 if (icon != null) {
-                    row.add(XmlUtil.getGrandChildText(icon, "href", ""));
+                    row.add(MyXmlUtil.getGrandChildText(icon, "href", ""));
                 } else {
                     row.add("");
                 }
-                Element llbox = XmlUtil.findChild(node, "LatLonBox");
+                Element llbox = MyXmlUtil.findChild(node, "LatLonBox");
                 if (llbox == null) {
                     row.add("NaN", "NaN", "NaN", "NaN", "NaN", "NaN");
                     continue;
                 }
                 double north =
-                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                    Double.parseDouble(MyXmlUtil.getGrandChildText(llbox,
                         "north", "NaN"));
                 double south =
-                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                    Double.parseDouble(MyXmlUtil.getGrandChildText(llbox,
                         "south", "NaN"));
                 double east =
-                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                    Double.parseDouble(MyXmlUtil.getGrandChildText(llbox,
                         "east", "NaN"));
                 double west =
-                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                    Double.parseDouble(MyXmlUtil.getGrandChildText(llbox,
                         "west", "NaN"));
                 double lat = south + (north - south) / 2;
                 double lon = west + (east - west) / 2;
@@ -1127,16 +1127,16 @@ public abstract class DataProvider extends SeesvOperator {
             for (Element placemark : placemarks) {
                 Row row = makeRow();
                 addRow(row);
-                row.add(XmlUtil.getGrandChildText(placemark, "name", ""));
-                row.add(XmlUtil.getGrandChildText(placemark, "description",
+                row.add(MyXmlUtil.getGrandChildText(placemark, "name", ""));
+                row.add(MyXmlUtil.getGrandChildText(placemark, "description",
                         ""));
                 List<Element> coords =
-                    (List<Element>) XmlUtil.findDescendants(placemark,
+                    (List<Element>) MyXmlUtil.findDescendants(placemark,
                         "coordinates");
                 if (coords.size() == 0) {
                     row.add("NaN", "NaN", "NaN");
                 } else {
-                    String coordsText = XmlUtil.getChildText(coords.get(0));
+                    String coordsText = MyXmlUtil.getChildText(coords.get(0));
                     double[][] pts = KmlUtil.parseCoordinates(coordsText, 1);
                     row.add(pts[0][0] + "", pts[1][0] + "", pts[2][0] + "");
                 }

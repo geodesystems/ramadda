@@ -18,7 +18,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -171,9 +171,9 @@ public class PlosSearchProvider extends SearchProvider {
         //        System.out.println(xml);
         IOUtil.close(is);
         Entry       parent      = getSynthTopLevelEntry();
-        Element     root        = XmlUtil.getRoot(xml);
-        Element     result      = XmlUtil.getElement(root, TAG_RESULT);
-        NodeList    docs        = XmlUtil.getElements(result, TAG_DOC);
+        Element     root        = MyXmlUtil.getRoot(xml);
+        Element     result      = MyXmlUtil.getElement(root, TAG_RESULT);
+        NodeList    docs        = MyXmlUtil.getElements(result, TAG_DOC);
         TypeHandler typeHandler = getLinkTypeHandler();
 
 
@@ -211,7 +211,7 @@ public class PlosSearchProvider extends SearchProvider {
 
         for (int childIdx = 0; childIdx < docs.getLength(); childIdx++) {
             Element       doc      = (Element) docs.item(childIdx);
-            NodeList      nodeList = XmlUtil.getElements(doc);
+            NodeList      nodeList = MyXmlUtil.getElements(doc);
             String        id       = getAttr(nodeList, "id", "");
             String        name     = getAttr(nodeList, "title_display", id);
             StringBuilder desc     = new StringBuilder();
@@ -223,10 +223,10 @@ public class PlosSearchProvider extends SearchProvider {
                 }
             }
 
-            Element abs = XmlUtil.findElement(nodeList, ATTR_NAME,
+            Element abs = MyXmlUtil.findElement(nodeList, ATTR_NAME,
                               "abstract");
             if (abs != null) {
-                String str = XmlUtil.getGrandChildText(abs, TAG_STR);
+                String str = MyXmlUtil.getGrandChildText(abs, TAG_STR);
                 str = str.replaceAll("\n", "<br>");
                 desc.append(str);
                 desc.append("<br>");
@@ -256,14 +256,14 @@ public class PlosSearchProvider extends SearchProvider {
             entries.add(newEntry);
 
 
-            Element authors = XmlUtil.findElement(nodeList, ATTR_NAME,
+            Element authors = MyXmlUtil.findElement(nodeList, ATTR_NAME,
                                   "author_display");
 
             if (authors != null) {
-                NodeList strs = XmlUtil.getElements(authors, TAG_STR);
+                NodeList strs = MyXmlUtil.getElements(authors, TAG_STR);
                 for (int i = 0; i < strs.getLength(); i++) {
                     String author =
-                        XmlUtil.getChildText((Element) strs.item(i));
+                        MyXmlUtil.getChildText((Element) strs.item(i));
                     Metadata metadata =
                         new Metadata(getRepository().getGUID(),
                                      newEntry.getId(), getMetadataManager().findType("metadata_author"),
@@ -308,12 +308,12 @@ public class PlosSearchProvider extends SearchProvider {
      */
     private String getAttr(NodeList nodeList, String id, String dflt)
             throws Exception {
-        Element e = XmlUtil.findElement(nodeList, ATTR_NAME, id);
+        Element e = MyXmlUtil.findElement(nodeList, ATTR_NAME, id);
         if (e == null) {
             return dflt;
         }
 
-        return XmlUtil.getChildText(e);
+        return MyXmlUtil.getChildText(e);
     }
 
 

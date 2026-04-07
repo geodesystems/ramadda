@@ -21,7 +21,7 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -227,15 +227,15 @@ public class GraphOutputHandler extends OutputHandler {
             }
 
             if (other != null) {
-                String imageAttr = XmlUtil.attrs("imagepath",
+                String imageAttr = MyXmlUtil.attrs("imagepath",
                                        getPageHandler().getIconUrl(request,
                                            other));
 
                 sb.append(
-                    XmlUtil.tag(
+                    MyXmlUtil.tag(
                         TAG_NODE,
                         imageAttr
-                        + XmlUtil.attrs(
+                        + MyXmlUtil.attrs(
                             ATTR_TYPE, other.getTypeHandler().getNodeType(),
                             ATTR_ID, other.getId(), ATTR_TOOLTIP,
                             getTooltip(other), ATTR_TITLE,
@@ -243,8 +243,8 @@ public class GraphOutputHandler extends OutputHandler {
                 String fromId = association.getFromId();
                 String toId   = association.getToId();
 
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TITLE,
+                sb.append(MyXmlUtil.tag(TAG_EDGE,
+                                      MyXmlUtil.attrs(ATTR_TITLE,
                                           association.getType(), ATTR_TYPE,
                                           "link", ATTR_FROM, fromId, ATTR_TO,
                                           toId)));
@@ -277,7 +277,7 @@ public class GraphOutputHandler extends OutputHandler {
             }
         }
 
-        String imageAttr = XmlUtil.attrs("imagepath",
+        String imageAttr = MyXmlUtil.attrs("imagepath",
                                          getPageHandler().getIconUrl(request,
                                              entry));
 
@@ -286,16 +286,16 @@ public class GraphOutputHandler extends OutputHandler {
             nodeType = "imageentry";
         }
         String attrs = imageAttr
-                       + XmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID,
+                       + MyXmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID,
                                        entry.getId(), ATTR_TOOLTIP,
                                        getTooltip(entry), ATTR_TITLE,
                                        getGraphNodeTitle(entry.getName()));
 
         if (imageUrl != null) {
-            attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
+            attrs = attrs + " " + MyXmlUtil.attr("image", imageUrl);
         }
         //        System.err.println(entry.getName() + " " + attrs);
-        sb.append(XmlUtil.tag(TAG_NODE, attrs));
+        sb.append(MyXmlUtil.tag(TAG_NODE, attrs));
         sb.append("\n");
 
     }
@@ -308,8 +308,8 @@ public class GraphOutputHandler extends OutputHandler {
     private void addEdgeTag(Appendable sb, String from, String to,
                             String type)
             throws Exception {
-        sb.append(XmlUtil.tag(TAG_EDGE,
-                              XmlUtil.attrs(ATTR_TYPE, type, ATTR_FROM, from,
+        sb.append(MyXmlUtil.tag(TAG_EDGE,
+                              MyXmlUtil.attrs(ATTR_TYPE, type, ATTR_FROM, from,
                                             ATTR_TO, to)));
         sb.append("\n");
 

@@ -21,7 +21,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.lang.reflect.*;
 
@@ -60,7 +60,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             return false;
         }
 	//	System.out.println("DbAdminHandler.init - plugin file:" + pluginFile);
-        Element root = XmlUtil.getRoot(pluginFile, getClass());
+        Element root = MyXmlUtil.getRoot(pluginFile, getClass());
         if (root == null) {
             System.err.println(
 			       "DbAdminHandler.init - xml is null for plugin file:"
@@ -68,12 +68,12 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
 
             return false;
         }
-        List children = XmlUtil.findChildren(root, TAG_TABLE);
+        List children = MyXmlUtil.findChildren(root, TAG_TABLE);
         for (int i = 0; i < children.size(); i++) {
             Element tableNode = (Element) children.get(i);
-            String  tableId   = XmlUtil.getAttribute(tableNode, ATTR_ID);
+            String  tableId   = MyXmlUtil.getAttribute(tableNode, ATTR_ID);
             Class handlerClass =
-                Misc.findClass(XmlUtil.getAttribute(tableNode, ATTR_HANDLER,
+                Misc.findClass(MyXmlUtil.getAttribute(tableNode, ATTR_HANDLER,
 						    "org.ramadda.plugins.db.DbTypeHandler"));
             //            System.err.println("class:" + handlerClass);
             Constructor ctor = Utils.findConstructor(handlerClass,
@@ -82,7 +82,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             if (ctor == null) {
                 System.err.println("failed to get ctor:"
                                    + handlerClass.getName() + " "
-                                   + XmlUtil.toString(tableNode));
+                                   + MyXmlUtil.toString(tableNode));
 
                 continue;
             }
@@ -91,7 +91,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
                 (DbTypeHandler) ctor.newInstance(new Object[] {
 			getRepository(),
 			tableId, tableNode,
-			XmlUtil.getAttribute(tableNode, ATTR_NAME) });
+			MyXmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
             TypeHandler baseTypeHandler =
                 getRepository().getTypeHandler("type_db_base");
@@ -99,14 +99,14 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             baseTypeHandler.addChildTypeHandler(typeHandler);
 
             List<Element> columnNodes =
-                (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
-            Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
+                (List<Element>) MyXmlUtil.findChildren(tableNode, TAG_COLUMN);
+            Element idNode = MyXmlUtil.create(TAG_COLUMN, tableNode,
                                             new String[] {
 						"name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX, "true",
 						Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
 						Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
 					    });
-            Element userNode = XmlUtil.create(TAG_COLUMN, tableNode,
+            Element userNode = MyXmlUtil.create(TAG_COLUMN, tableNode,
 					      new String[] {
 						  "name", DbTypeHandler.COL_DBUSER,
 						  //Column.ATTR_ISINDEX, "true",
@@ -114,7 +114,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
 						  Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
 					      });
 
-            Element createDateNode = XmlUtil.create(TAG_COLUMN, tableNode,
+            Element createDateNode = MyXmlUtil.create(TAG_COLUMN, tableNode,
 						    new String[] {
 							"name", DbTypeHandler.COL_DBCREATEDATE,
 							//Column.ATTR_ISINDEX,  "true", 
@@ -122,7 +122,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
 							Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
 						    });
 
-            Element propsNode = XmlUtil.create(TAG_COLUMN, tableNode,
+            Element propsNode = MyXmlUtil.create(TAG_COLUMN, tableNode,
 					       new String[] {
 						   "name", DbTypeHandler.COL_DBPROPS, Column.ATTR_ISINDEX,
 						   "false", Column.ATTR_SIZE, "5000", Column.ATTR_TYPE, "string",
@@ -136,7 +136,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             columnNodes.add(0, idNode);
 
             List<Element> templates =
-                (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
+                (List<Element>) MyXmlUtil.findChildren(tableNode, TAG_TEMPLATE);
             for (Element element : templates) {
                 typeHandler.addTemplate(new DbTemplate(element));
             }
@@ -145,7 +145,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             getRepository().addTypeHandler(tableId, typeHandler, true);
             typeHandler.initDbColumns(columnNodes);
 
-	    Element baseType = XmlUtil.findChild(tableNode,"basetype");	    
+	    Element baseType = MyXmlUtil.findChild(tableNode,"basetype");	    
 	    if(baseType!=null) {
 		baseType.setAttribute("name",tableId);
 		typeHandler.initTypeHandler(baseType);

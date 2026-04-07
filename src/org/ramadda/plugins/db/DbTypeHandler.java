@@ -39,7 +39,6 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.XlsUtil;
-import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -61,7 +60,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -133,10 +132,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         super(repository, tableName, desc);
         this.tableNode = tableNode;
-        String dfltOrderProp = XmlUtil.getAttribute(tableNode,
+        String dfltOrderProp = MyXmlUtil.getAttribute(tableNode,
                                    "defaultOrder", (String) null);
 
-	showSummary = XmlUtil.getAttribute(tableNode,ATTR_SHOWSUMMARY,true);
+	showSummary = MyXmlUtil.getAttribute(tableNode,ATTR_SHOWSUMMARY,true);
         if (dfltOrderProp != null) {
             dfltOrder = new ArrayList<List<String>>();
             for (String tok : Utils.split(dfltOrderProp, ";")) {
@@ -144,30 +143,30 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 dfltOrder.add(toks);
             }
         }
-        String wikiTemplate  = XmlUtil.getGrandChildText(tableNode, "wiki",(String) null);
+        String wikiTemplate  = MyXmlUtil.getGrandChildText(tableNode, "wiki",(String) null);
 	if(wikiTemplate!=null) setWikiTemplate(wikiTemplate);
 
-        htmlHeader  = XmlUtil.getGrandChildText(tableNode, "header",(String) null);
-        searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel",
-                XmlUtil.getGrandChildText(tableNode, "searchForLabel",
+        htmlHeader  = MyXmlUtil.getGrandChildText(tableNode, "header",(String) null);
+        searchForLabel = MyXmlUtil.getAttribute(tableNode, "searchForLabel",
+                MyXmlUtil.getGrandChildText(tableNode, "searchForLabel",
                                           searchForLabel));
-        defaultView = XmlUtil.getAttribute(tableNode, "defaultView",
+        defaultView = MyXmlUtil.getAttribute(tableNode, "defaultView",
                                            VIEW_TABLE);
-        showEntryCreate = XmlUtil.getAttribute(tableNode, "showEntryCreate",
+        showEntryCreate = MyXmlUtil.getAttribute(tableNode, "showEntryCreate",
                 true);
 
-        showFeedView = XmlUtil.getAttribute(tableNode, "showFeedView", true);
-        showDateView = XmlUtil.getAttribute(tableNode, "showDateView", true);
+        showFeedView = MyXmlUtil.getAttribute(tableNode, "showFeedView", true);
+        showDateView = MyXmlUtil.getAttribute(tableNode, "showDateView", true);
 
-        numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",
+        numOrders = MyXmlUtil.getAttribute(tableNode, "numberOrderBy",
                                          numOrders);
 
-        formJS = XmlUtil.getGrandChildText(tableNode, "formjs",
+        formJS = MyXmlUtil.getGrandChildText(tableNode, "formjs",
                                            (String) null);
-        this.tableIcon = XmlUtil.getAttribute(tableNode, "icon",
+        this.tableIcon = MyXmlUtil.getAttribute(tableNode, "icon",
                 "/db/database.png");
 
-        this.labelColumnNames = XmlUtil.getAttribute(tableNode,
+        this.labelColumnNames = MyXmlUtil.getAttribute(tableNode,
                 "labelColumns", "");
         this.addressTemplate = Utils.getAttributeOrTag(tableNode,
                 "addressTemplate", (String) null);
@@ -184,12 +183,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	mapMarkersShow = Utils.getAttributeOrTag(tableNode,"mapMarkersShow",mapMarkersShow);
 	mapPolygonsShow = Utils.getAttributeOrTag(tableNode,"mapPolygonsShow",mapPolygonsShow);		
         //Initialize this type handler with a string blob
-        Element root = XmlUtil.getRoot("<type></type>");
-        XmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
-        XmlUtil.create("action", root, new String[] {"name","dblist","label","DB List","icon","fas fa-list"});	
+        Element root = MyXmlUtil.getRoot("<type></type>");
+        MyXmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
+        MyXmlUtil.create("action", root, new String[] {"name","dblist","label","DB List","icon","fas fa-list"});	
 
         root.setAttribute(ATTR_SUPER, "type_point");
-        Element node = XmlUtil.create("column", root, new String[] {
+        Element node = MyXmlUtil.create("column", root, new String[] {
             "name", "contents", Column.ATTR_TYPE, "clob", Column.ATTR_SIZE,
             "256000", Column.ATTR_SHOWINFORM, "false", Column.ATTR_SHOWINHTML,
             "false"
@@ -202,17 +201,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	//for this db then it breaks things
 	//        super.initColumns(nodes);
         this.setDescription(desc);
-        List props = XmlUtil.findChildren(tableNode, TAG_PROPERTY);
+        List props = MyXmlUtil.findChildren(tableNode, TAG_PROPERTY);
         for (int j = 0; j < props.size(); j++) {
             Element propNode = (Element) props.get(j);
-            setTypeProperty(XmlUtil.getAttribute(propNode, "name"),
-                            XmlUtil.getAttribute(propNode, "value"));
-            //            System.err.println ("db:" +XmlUtil.getAttribute(propNode,"name") +":" + XmlUtil.getAttribute(propNode,"value"));
+            setTypeProperty(MyXmlUtil.getAttribute(propNode, "name"),
+                            MyXmlUtil.getAttribute(propNode, "value"));
+            //            System.err.println ("db:" +MyXmlUtil.getAttribute(propNode,"name") +":" + MyXmlUtil.getAttribute(propNode,"value"));
         }
 
-        setCategory(XmlUtil.getAttributeFromTree(tableNode,
+        setCategory(MyXmlUtil.getAttributeFromTree(tableNode,
                 TypeHandler.ATTR_CATEGORY, "Database"));
-        setSuperCategory(XmlUtil.getAttributeFromTree(tableNode,
+        setSuperCategory(MyXmlUtil.getAttributeFromTree(tableNode,
                 "supercategory", "Basic"));
 
         myEntry = new Entry(this, true);
@@ -316,19 +315,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             viewList.add(new TwoFacedObject("JSON", VIEW_JSON));
         }
 
-        List stmts = XmlUtil.findChildren(tableNode, "macro");
+        List stmts = MyXmlUtil.findChildren(tableNode, "macro");
         for (int j = 0; j < stmts.size(); j++) {
             Element macroNode = (Element) stmts.get(j);
-            String  stmt      = XmlUtil.getChildText(macroNode);
-            String desc = XmlUtil.getGrandChildText(macroNode, "description",
+            String  stmt      = MyXmlUtil.getChildText(macroNode);
+            String desc = MyXmlUtil.getGrandChildText(macroNode, "description",
                               "");
             List<Column> columns = new ArrayList<Column>();
-            String name = XmlUtil.getAttribute(macroNode, "name", "Select");
-            String type = XmlUtil.getAttribute(macroNode, "type",
+            String name = MyXmlUtil.getAttribute(macroNode, "name", "Select");
+            String type = MyXmlUtil.getAttribute(macroNode, "type",
                               MacroStatement.TYPE_NOTIN);
-            String incolumn = XmlUtil.getAttribute(macroNode, "column",
+            String incolumn = MyXmlUtil.getAttribute(macroNode, "column",
                                   (String) null);
-            List<String> cols = Utils.split(XmlUtil.getAttribute(macroNode,
+            List<String> cols = Utils.split(MyXmlUtil.getAttribute(macroNode,
                                     "columns"), ",");
             for (int i = 0; i < cols.size(); i++) {
                 String col   = cols.get(i);
@@ -433,7 +432,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                    null);
         pw.flush();
         zos.closeEntry();
-        Element dbvalues = XmlUtil.create(TAG_DBVALUES, node,
+        Element dbvalues = MyXmlUtil.create(TAG_DBVALUES, node,
                                           entry.getId() + ".dbvalues");
 
     }
@@ -444,7 +443,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                        Hashtable<String, File> files)
             throws Exception {
         super.initializeEntryFromXml(request, entry, node, files);
-        String valuesFile = XmlUtil.getGrandChildText(node, TAG_DBVALUES,
+        String valuesFile = MyXmlUtil.getGrandChildText(node, TAG_DBVALUES,
                                 (String) null);
         if (valuesFile == null) {
             return;
@@ -5465,7 +5464,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         if (asXml) {
             StringBuilder xml = new StringBuilder("<contents>\n");
-            XmlUtils.appendCdata(xml, sb.toString());
+            MyXmlUtil.appendCdata(xml, sb.toString());
             xml.append("</contents>");
             return new Result("", xml, "text/xml");
         }

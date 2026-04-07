@@ -26,7 +26,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -40,7 +40,7 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class CsvImporter extends ImportHandler {
-    public static final XmlUtil XU = null;    
+    public static final MyXmlUtil XU = null;    
     public static final String TYPE_CSV = "CSV";
     public static final String ARG_CSV_TYPE = "csv.type";
 

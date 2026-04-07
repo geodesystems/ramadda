@@ -17,6 +17,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.geo.Place;
 
 
@@ -28,7 +29,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.*;
 
@@ -235,23 +236,23 @@ public class PhoneHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        fromPhone = normalizePhone(XmlUtil.getAttribute(element,
+        fromPhone = normalizePhone(MyXmlUtil.getAttribute(element,
                 ATTR_FROMPHONE, fromPhone));
-        toPhone = normalizePhone(XmlUtil.getAttribute(element, ATTR_TOPHONE,
+        toPhone = normalizePhone(MyXmlUtil.getAttribute(element, ATTR_TOPHONE,
                 toPhone));
-        passwordView = XmlUtil.getAttribute(element, ATTR_PASSWORD_VIEW,
+        passwordView = MyXmlUtil.getAttribute(element, ATTR_PASSWORD_VIEW,
                                             passwordView);
-        passwordEdit = XmlUtil.getAttribute(element, ATTR_PASSWORD_EDIT,
+        passwordEdit = MyXmlUtil.getAttribute(element, ATTR_PASSWORD_EDIT,
                                             passwordEdit);
-        passwordAdd = XmlUtil.getAttribute(element, ATTR_PASSWORD_ADD,
+        passwordAdd = MyXmlUtil.getAttribute(element, ATTR_PASSWORD_ADD,
                                            passwordAdd);
-        response = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
+        response = MyXmlUtil.getAttribute(element, ATTR_RESPONSE, response);
         shortcuts = Utils.getAttributeOrTag(element, ATTR_SHORTCUTS,
                                             shortcuts);
         help = Utils.getAttributeOrTag(element, ATTR_HELP, help);
-        voiceMessage = XmlUtil.getAttribute(element, ATTR_VOICEMESSAGE,
+        voiceMessage = MyXmlUtil.getAttribute(element, ATTR_VOICEMESSAGE,
                                             voiceMessage);
-        type = XmlUtil.getAttribute(element, ATTR_TYPE, type);
+        type = MyXmlUtil.getAttribute(element, ATTR_TYPE, type);
     }
 
     /**
@@ -702,7 +703,7 @@ public class PhoneHarvester extends Harvester {
                     getRepository().getCommentManager().getComments(
                         getRequest(), currentEntry);
                 for (org.ramadda.repository.Comment comment : comments) {
-                    msg.append(XmlUtil.encodeString("Comment:"
+                    msg.append(MyXmlUtil.encodeString("Comment:"
                             + comment.getSubject() + "\n"
                             + comment.getComment() + "\n"));
                 }
@@ -907,7 +908,7 @@ public class PhoneHarvester extends Harvester {
             contents = theName + "\n" + entry.getDescription();
         }
         contents = contents.replaceAll("<br>", "\n").replaceAll("<p>", "\n");
-        msg.append(XmlUtil.encodeString(contents));
+        msg.append(MyXmlUtil.encodeString(contents));
         msg.append("\n");
         msg.append(getEntryUrl(entry));
     }
@@ -1192,11 +1193,11 @@ public class PhoneHarvester extends Harvester {
         element.setAttribute(ATTR_RESPONSE, response);
 
         if (shortcuts != null) {
-            XmlUtil.create(ATTR_SHORTCUTS, element).appendChild(
+            MyXmlUtil.create(ATTR_SHORTCUTS, element).appendChild(
                 element.getOwnerDocument().createTextNode(shortcuts));
         }
         if (help != null) {
-            XmlUtil.create(ATTR_HELP, element).appendChild(
+            MyXmlUtil.create(ATTR_HELP, element).appendChild(
                 element.getOwnerDocument().createTextNode(help));
         }
 

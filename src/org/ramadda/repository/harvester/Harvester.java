@@ -27,7 +27,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 //Use myxmlutil as it fixes how attributes are encoded
-//import ucar.unidata.xml.XmlUtil;
+//import org.ramadda.util.MyXmlUtil;
 import org.ramadda.util.MyXmlUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;

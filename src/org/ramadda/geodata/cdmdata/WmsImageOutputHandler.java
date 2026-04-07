@@ -16,7 +16,7 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -234,10 +234,10 @@ public class WmsImageOutputHandler extends OutputHandler {
                              getRepository().URL_ENTRY_SHOW, entry,
                              ARG_OUTPUT, OUTPUT_WMS_CAPABILITIES.toString()));
         String wms = wmsTemplate;
-        wms = wms.replace("${url}", XmlUtil.encodeString(url));
-        wms = wms.replace("${title}", XmlUtil.encodeString(entry.getName()));
+        wms = wms.replace("${url}", MyXmlUtil.encodeString(url));
+        wms = wms.replace("${title}", MyXmlUtil.encodeString(entry.getName()));
         wms = wms.replace("${abstract}",
-                          XmlUtil.encodeString(entry.getDescription()));
+                          MyXmlUtil.encodeString(entry.getDescription()));
 
         StringBuffer layers = new StringBuffer();
         for (Entry layerEntry : entries) {
@@ -247,7 +247,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             String layer = layerTemplate;
             layer = layer.replace("${name}", layerEntry.getId());
             layer = layer.replace("${title}",
-                                  XmlUtil.encodeString(layerEntry.getName()));
+                                  MyXmlUtil.encodeString(layerEntry.getName()));
 
             layer = layer.replaceAll(
                 "%north%",

@@ -15,7 +15,7 @@ import org.ramadda.repository.RepositoryUtil;
 
 import org.w3c.dom.Element;
 
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.*;
 
@@ -62,24 +62,24 @@ public class FredFile extends CsvFile {
             //                System.err.println("Reading FRED time series");
             StringBuilder sb     = new StringBuilder();
             InputStream   source = super.doMakeInputStream(buffered);
-            Element       root   = XmlUtil.getRoot(source);
+            Element       root   = MyXmlUtil.getRoot(source);
 
-            //            System.err.println("Root:" + XmlUtil.toString(root));
+            //            System.err.println("Root:" + MyXmlUtil.toString(root));
 
             String format = "yyyy-MM-dd";
-            String unit   = XmlUtil.getAttribute(root, Fred.ATTR_UNITS, "");
+            String unit   = MyXmlUtil.getAttribute(root, Fred.ATTR_UNITS, "");
             putFields(new String[] {
                 makeField(FIELD_DATE, attrType("date"), attrFormat(format)),
                 makeField("value", attrUnit(unit), attrLabel("Value"),
                           attrChartable(), attrMissing(-999999.99)), });
 
 
-            List nodes = XmlUtil.findChildren(root, Fred.TAG_OBSERVATION);
+            List nodes = MyXmlUtil.findChildren(root, Fred.TAG_OBSERVATION);
             for (int i = 0; i < nodes.size(); i++) {
                 Element node = (Element) nodes.get(i);
-                String value = XmlUtil.getAttribute(node, Fred.ATTR_VALUE,
+                String value = MyXmlUtil.getAttribute(node, Fred.ATTR_VALUE,
                                    "").trim();
-                String dttm = XmlUtil.getAttribute(node, Fred.ATTR_DATE,
+                String dttm = MyXmlUtil.getAttribute(node, Fred.ATTR_DATE,
                                   (String) null);
                 if (value.equals("") || value.equals(".")) {
                     value = "-999999.99";

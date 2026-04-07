@@ -13,7 +13,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -56,16 +56,16 @@ public class HarvesterEntry {
     }
 
     public HarvesterEntry(Element node) {
-        this.url         = XmlUtil.getAttribute(node, ATTR_URL, "");
-        this.name        = XmlUtil.getAttribute(node, ATTR_NAME, "");
-        this.description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION, "");
-        this.group       = XmlUtil.getAttribute(node, ATTR_GROUP, "");
-        this.baseGroupId = XmlUtil.getAttribute(node,
+        this.url         = MyXmlUtil.getAttribute(node, ATTR_URL, "");
+        this.name        = MyXmlUtil.getAttribute(node, ATTR_NAME, "");
+        this.description = MyXmlUtil.getAttribute(node, ATTR_DESCRIPTION, "");
+        this.group       = MyXmlUtil.getAttribute(node, ATTR_GROUP, "");
+        this.baseGroupId = MyXmlUtil.getAttribute(node,
                 Harvester.ATTR_BASEGROUP, "");
     }
 
     public Element toXml(Element element) throws Exception {
-        Element node = XmlUtil.create(element.getOwnerDocument(),
+        Element node = MyXmlUtil.create(element.getOwnerDocument(),
                                       TAG_URLENTRY, element, new String[] {
             ATTR_URL, url, ATTR_NAME, name, ATTR_DESCRIPTION, description,
             ATTR_GROUP, group, Harvester.ATTR_BASEGROUP, baseGroupId

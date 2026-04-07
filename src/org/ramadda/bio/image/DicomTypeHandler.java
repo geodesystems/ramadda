@@ -25,7 +25,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.File;
 
@@ -140,8 +140,8 @@ public class DicomTypeHandler extends GenericTypeHandler {
             return;
         }
         String xml = IOUtil.readContents(filename, getClass(), "");
-        Element                   root       = root = XmlUtil.getRoot(xml);
-        NodeList children = XmlUtil.getElements(root, TAG_ATTR);
+        Element                   root       = root = MyXmlUtil.getRoot(xml);
+        NodeList children = MyXmlUtil.getElements(root, TAG_ATTR);
         Hashtable<String, String> tagToValue = new Hashtable<String,
                                                    String>();
 
@@ -154,13 +154,13 @@ public class DicomTypeHandler extends GenericTypeHandler {
         //<attr tag="00020000" vr="UL" len="4">194</attr>
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String tagId = XmlUtil.getAttribute(item, ATTR_TAG,
+            String tagId = MyXmlUtil.getAttribute(item, ATTR_TAG,
                                (String) null);
             Tag tag = getTag(tagId);
             if (tag == null) {
                 continue;
             }
-            String value = XmlUtil.getChildText(item);
+            String value = MyXmlUtil.getChildText(item);
             tagToValue.put(tag.id, value);
             tagToValue.put(tag.name, value);
             if (metadataTags.contains(tag.id)

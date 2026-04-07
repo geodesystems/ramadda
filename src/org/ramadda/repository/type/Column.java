@@ -33,7 +33,7 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,7 +58,7 @@ import java.util.regex.Matcher;
 
 @SuppressWarnings("unchecked")
 public class Column implements DataTypes, Constants, Cloneable {
-    public static final XmlUtil XU = null;    
+    public static final MyXmlUtil XU = null;    
 
 
     static int xcnt;

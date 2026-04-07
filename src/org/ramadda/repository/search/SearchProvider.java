@@ -17,7 +17,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.w3c.dom.*;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
