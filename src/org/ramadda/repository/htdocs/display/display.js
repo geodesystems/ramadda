@@ -4,7 +4,6 @@
 */
 
 
-
 var  displayDebug= {
     getProperty:false,
     loadPointJson:false,
@@ -206,7 +205,6 @@ function getGlobalDisplayProperty(name,displayType) {
     }
     return window.globalDisplayProperties[name];
 }
-
 
 
 function addGlobalDisplayType(type, front) {
@@ -505,6 +503,8 @@ function DisplayThing(argId, argProperties) {
     this.ignoreGlobals = argProperties.ignoreGlobals;
 
     this.displayId = null;
+
+//    console.dir(ramaddaCurrentEntry);
 
     displayDefineMembers(this,null, {
         objectId: argId,
@@ -1449,6 +1449,13 @@ function DisplayThing(argId, argProperties) {
         removeProperty: function(key) {
             this.properties[key] = null;
         },
+        setPropertyPersistent: function(key, value) {
+	    let currentValue = this.getProperty(key);
+	    this.setProperty(key,value);
+            if(currentValue!=value) {
+		this.addToDocumentUrl(key, value);
+	    }
+	},
         setProperty: function(key, value) {
 	    //            this[key] = value;
             this.properties[key] = value;
@@ -1528,9 +1535,10 @@ function DisplayThing(argId, argProperties) {
 	    /*Huh? not sure why I was passing in the  2nd dflt arg
 	      let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,  'display'+ this.displayCount+'.' + key);
 	    */
-	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key);
-	    if(Utils.stringDefined(fromUrl)) {
-		//		console.log('from url full key:' + key + ' value:' + fromUrl);
+	    let fullKey = 'd'+this.displayCount+'.'+key;
+	    let fromUrl = HU.getUrlArgument(fullKey);
+	    if(Utils.isDefined(fromUrl)) {
+		//console.log('from url full key:' + key + ' value:' + fromUrl);
 		return fromUrl;
 	    }
 	    if(checkKey) {
@@ -1744,7 +1752,6 @@ function DisplayThing(argId, argProperties) {
    Base class for all displays 
 */
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
@@ -1766,6 +1773,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
+/*
+			if(checkUrl) {
+			    let value = this.getPropertyFromUrl(prop.p);
+			    console.log('from url',prop.p,value);
+			    if(Utils.isDefined(value)) return value;
+			}*/
+
 			let checkCache = prop.canCache && !dflt;
 			if(checkCache) {
 			    if(this.propertiesCache[prop.p])
