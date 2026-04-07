@@ -221,12 +221,15 @@ public class Test {
 	return true;
     }
 
+    public static void usage() {
+	System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -die -randomize -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
+    }
     public static void main(String[] args) throws Exception {
 	startTime = new Date();
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -die -randomize -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
+		usage();
 		Utils.exitTest(0);
 	    }
 
@@ -277,6 +280,12 @@ public class Test {
 		continue;
 	    }	    	    
 
+	    if(args[i].startsWith("-")) {
+		System.err.println("Error: unknown command:" + args[i]);
+		usage();
+		Utils.exitTest(0);
+	    }
+	    
 	    File f = new File(args[i]);
 
 	    if(f.exists()) {
