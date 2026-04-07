@@ -1829,7 +1829,10 @@ public abstract class MyXmlUtil {
                   if (v == null) {
                       break;
                   }
-                  xml.append(encodeString(v));
+		  v  = v.trim();
+		  if(v.length()>0) {
+		      xml.append(encodeString(v));
+		  }
                   break;
               }
 
@@ -1927,9 +1930,9 @@ public abstract class MyXmlUtil {
      *  @return The encoded String.
      */
     public static String encodeString(String v) {
-        return StringUtil.replaceList(v, new String[] { "&", "\"", "<",
-						       ">","\n" }, new String[] { "&amp;",
-					  "&quot;", "&lt;", "&gt;","&#10;" });
+        return StringUtil.replaceList(v,
+				      new String[] { "&", "\"", "<", ">","\n" },
+				      new String[] { "&amp;","&quot;", "&lt;", "&gt;","&#10;" });
     }
 
     /**
@@ -2065,7 +2068,10 @@ public abstract class MyXmlUtil {
 	for(String file: args) {
 	    try {
 		System.err.println("processing:" + file);
-		getDocument(new FileInputStream(file));
+		Element root = getRoot(new FileInputStream(file));
+		System.out.println(toString(root));		
+		//		getDocument(new FileInputStream(file));
+
 	    }catch(Exception exc) {
 		System.err.println("error:" + exc);
 		exc.printStackTrace();
