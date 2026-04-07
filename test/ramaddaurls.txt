@@ -988,7 +988,7 @@ echo: **** HTTP Resources
 
 https://ramadda.org/repository/colortables.js
 https://ramadda.org/repository/display/animation.js
-https://ramadda.org/repository/display/colorby.js
+https://ramadda.org/repository/display/valuemapper.js
 https://ramadda.org/repository/display/control.js
 https://ramadda.org/repository/display/display.css
 https://ramadda.org/repository/display/display.js
@@ -1012,6 +1012,7 @@ https://ramadda.org/repository/display/notebook.js
 https://ramadda.org/repository/display/pointdata.js
 https://ramadda.org/repository/display/widgets.js
 https://ramadda.org/repository/entry.js
+https://ramadda.org/repository/stats.js
 https://ramadda.org/repository/favicon.png
 https://ramadda.org/repository/fixedmapheader.css
 https://ramadda.org/repository/icons/arrow_right_blue.png
