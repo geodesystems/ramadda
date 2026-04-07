@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  6 12:49:20 MDT 2026";
+var build_date="RAMADDA build date: Tue Apr  7 05:05:11 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1432,7 +1432,7 @@ function DisplayAnimation(display, enabled,attrs) {
         dateMax: null,
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyymmdd")),
-        mode: display.getAnimationMode(MODE_CUMULATIVE),
+        mode: display.getPropertyFromUrl('animationMode',MODE_CUMULATIVE),
         startAtBeginning: display.getProperty("animationStartAtBeginning", true),	
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         useIndex: display.getAnimationUseIndex(false),
@@ -1683,10 +1683,14 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
 	setWindow: function() {
-	    let window = this.display.getProperty("animationWindow");
-	    let step = this.display.getProperty("animationStep", window);
+	    let window = this.display.getPropertyFromUrl("animationWindow");
+	    let step = this.display.getPropertyFromUrl("animationStep", window);
 	    if (window) {
-		this.window = DataUtils.timeToMillis(window);
+		if(this.fields) {
+		    this.window = parseFloat(window);
+		} else {
+		    this.window = DataUtils.timeToMillis(window);
+		}
 	    } else if(this.steps>0){
 		if(this.useIndex) {
 		    this.window = 1;
@@ -1695,10 +1699,15 @@ function DisplayAnimation(display, enabled,attrs) {
 		}
 	    }
 	    if (step) {
-		this.step = DataUtils.timeToMillis(step);
+		if(this.fields) {
+		    this.step = parseFloat(step);
+		} else {
+		    this.step = DataUtils.timeToMillis(step);
+		}
 	    } else {
 		this.step = this.window;
 	    }
+
 	},
 	getIndex: function() {
 	    return this.frameIndex;
@@ -1905,89 +1914,99 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let _this  =this;
             this.jq(ID_SETTINGS).button().click(function(){
 		let mode = _this.getMode();
-		let window = _this.display.getAnimationWindow();
-		let step = _this.display.getAnimationStep(window);		
+//		let window = _this.display.getAnimationWindow();
+		let window = _this.display.getPropertyFromUrl("animationWindow");
+		let step = _this.display.getPropertyFromUrl("animationStep",window);		
 		let clazz = HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE);
-		let html = HU.div([ATTR_ID,_this.domId(ID_FASTER),
-				   ATTR_TITLE, "Faster",
-				   ATTR_CLASS,clazz], "Faster") +	
-		    HU.div([ATTR_ID,_this.domId(ID_SLOWER),
-			    ATTR_TITLE, "Slower",
-			    ATTR_CLASS,clazz], "Slower")		+
-		    HU.div([ATTR_ID,_this.domId(ID_RESET),
+		let html = HU.buttons([
+		    HU.span([ATTR_ID,_this.domId(ID_RESET),
 			    ATTR_TITLE, "Reset",
-			    ATTR_CLASS,clazz], "Reset") +
-		    HU.div([ATTR_ID,_this.domId(ID_SHOWALL),
+			     ATTR_CLASS,clazz], "Reset"),
+		    HU.span([ATTR_ID,_this.domId(ID_SHOWALL),
 			    ATTR_TITLE, "Show all",
-			    ATTR_CLASS,clazz], "Show all");
-		html+=HU.thinLine();
-		html+=HU.div([],HU.b('Current mode: ') + _this.mode);
-		if(mode==MODE_SLIDING) {
-		    html+=HU.div([ATTR_TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Window:"+ HU.br() +SPACE2 +
-				 HU.input("",window,[ATTR_ID,_this.domId(ID_WINDOW),
-						     ATTR_SIZE,10]));
-		    html+=HU.div([ATTR_TITLE,
-				  "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"],
-				 "Step:" + HU.br() +SPACE2+
-				 HU.input("",step,[ATTR_ID,_this.domId(ID_STEP),
-						   ATTR_SIZE,10]));
-		}
-
-		[MODE_CUMULATIVE, MODE_FRAME, MODE_SLIDING].forEach(m=>{
-		    if(mode==m) return;
-		    html+=HU.div([ATTR_TITLE, 'Change animation mode',
-				  ATTR_CLASS,clazz+' animation-mode',
-				  'mode',m],
-				 'Set mode to '+ m);
-
-
+			     ATTR_CLASS,clazz], "Show all")]);
+		let divider= HU.vspace('0.5em')+ HU.thinLine() +HU.vspace('0.5em');
+		divider='';
+		html+=divider;
+		html+=HU.formTable();
+		let modes = [MODE_CUMULATIVE, MODE_FRAME, MODE_SLIDING].map(mode=>{
+		    return {value:mode,label:Utils.makeLabel(mode)};
 		});
+		let modeSelect = HU.select('',[ATTR_ID,_this.domId(ID_MODE)],modes,_this.mode);
+		html+=HU.formEntry('Mode:',modeSelect);
+		let windowSuffix='';
+		let windowTitle = "e.g., 1 week, 2 months, 3 days, 2 weeks, etc";
+		if(_this.fields && _this.fields.length) {
+		    windowSuffix=  SPACE+_this.fields[0].getUnitLabel();
+		    windowTitle="";
+		}
+		html+=HU.formEntry('Window:',
+				   HU.input("",window,[ATTR_TITLE,'Press &lt;return&gt; to apply '+windowTitle,
+						       ATTR_ID,_this.domId(ID_WINDOW),
+						       ATTR_SIZE,10]) + windowSuffix);
+		html+=HU.formEntry('Step:',
+				   HU.input("",step,
+					    [ATTR_TITLE,  'Press &lt;return&gt; to apply '+ windowTitle,
+					     ATTR_ID,_this.domId(ID_STEP),
+					     ATTR_SIZE,10]));
+
+		html+=HU.formEntry('Speed:',
+				   HU.span([ATTR_ID,_this.domId(ID_FASTER),
+					    ATTR_TITLE, "Faster",
+					    ATTR_CLASS,clazz], "Faster") +
+				   SPACE+
+				   HU.span([ATTR_ID,_this.domId(ID_SLOWER),
+					    ATTR_TITLE, "Slower",
+					    ATTR_CLASS,clazz], "Slower"));
+
+		html+=HU.formTableClose();
+
+		html+=divider;
+		html+=HU.makeCloseButton();
 		html=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4))], html);
 		_this.dialog = HU.makeDialog({
 		    content:html,
 		    anchor:$(this),
-		    draggable:false,
-		    header:false});
+		    draggable:true,
+		    title:'Animation Settings',
+		    header:true});
+		_this.dialog.find(HU.dotClass(CLASS_BUTTON_CLOSE)).button().click(()=>{
+		    _this.dialog.remove();
+		});
 
 		let key = (e)=>{
 		    if(Utils.isReturnKey(e)) {
-			_this.dialog.hide();
-			_this.display.setProperty("animationWindow",_this.jq(ID_WINDOW).val());
-			_this.display.setProperty("animationStep",_this.jq(ID_STEP).val());			
+			_this.display.setPropertyPersistent("animationWindow",_this.jq(ID_WINDOW).val());
+			_this.display.setPropertyPersistent("animationStep",_this.jq(ID_STEP).val());			
 			_this.setWindow();
 			_this.resetRange();
 			_this.dateRangeChanged();
 		    }
 		};
-		_this.dialog.find('.animation-mode').click(function() {
-		    _this.mode = $(this).attr('mode');
+		_this.jq(ID_MODE).change(function() {
+		    _this.mode = $(this).val();
+		    _this.display.setPropertyPersistent("animationMode",_this.mode);
 		    _this.setWindow();
 		    _this.resetRange();
 		    _this.dateRangeChanged();
-		    _this.dialog.hide();
 		});
 		_this.jq(ID_WINDOW).keyup(key);
 		_this.jq(ID_STEP).keyup(key);
-		_this.jq(ID_FASTER).click(()=>{
-		    _this.dialog.hide();
+		_this.jq(ID_FASTER).button().click(()=>{
 		    _this.speed = _this.speed*0.75;
 		});
-		_this.jq(ID_SLOWER).click(()=>{
-		    _this.dialog.hide();
+		_this.jq(ID_SLOWER).button().click(()=>{
 		    _this.speed = _this.speed*1.5;
 		});
 
-		_this.jq(ID_RESET).click(()=>{
-		    _this.dialog.hide();
+		_this.jq(ID_RESET).button().click(()=>{
 		    _this.speed =  parseInt(_this.display.getProperty("animationSpeed", 500));
 		    _this.resetRange();
 		    _this.inAnimation = false;
 		    _this.stopAnimation();
 		    _this.dateRangeChanged();
 		});		
-		_this.jq(ID_SHOWALL).click(()=>{
-		    _this.dialog.hide();
+		_this.jq(ID_SHOWALL).button().click(()=>{
 		    _this.setBegin(_this.dateMin);
 		    _this.setEnd(_this.dateMax);
 		    _this.inAnimation = false;
@@ -2016,7 +2035,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    let date = this.deltaFrame(0);
 		    this.setBeginEnd(date);
 		} else {
-		    this.setEnd(new Date(this.dateMin.getTime()+this.window));
+		    this.setEnd(new Date(this.dateMin.getTime()+this.step));
 		}
 		this.stopAnimation();
 		this.dateRangeChanged();
@@ -2070,9 +2089,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	    } else if (this.getMode() == MODE_FRAME) {
 		this.setBeginEnd(this.deltaFrame(-1));
 	    } else {
-		this.setEnd(new Date(this.end.getTime()-this.window));
+		this.setEnd(new Date(this.end.getTime()-this.step));
 		if(this.end.getTime()<=this.begin.getTime()) {
-		    this.setEnd(new Date(this.begin.getTime()+this.window));
+		    this.setEnd(new Date(this.begin.getTime()+this.step));
 		}
 	    }
 	    this.dateRangeChanged();
@@ -2112,7 +2131,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		    }
 		}
 	    } else {
-		this.end = this.makeDate(new Date(this.end.getTime()+this.window));
+		this.end = this.makeDate(new Date(this.end.getTime()+this.step));
 		if(this.atEnd()) {
 		    this.end = this.dateMax;
 		    this.inAnimation = false;
@@ -4569,7 +4588,6 @@ Glyph.prototype = {
 */
 
 
-
 var  displayDebug= {
     getProperty:false,
     loadPointJson:false,
@@ -4771,7 +4789,6 @@ function getGlobalDisplayProperty(name,displayType) {
     }
     return window.globalDisplayProperties[name];
 }
-
 
 
 function addGlobalDisplayType(type, front) {
@@ -5070,6 +5087,8 @@ function DisplayThing(argId, argProperties) {
     this.ignoreGlobals = argProperties.ignoreGlobals;
 
     this.displayId = null;
+
+//    console.dir(ramaddaCurrentEntry);
 
     displayDefineMembers(this,null, {
         objectId: argId,
@@ -6014,6 +6033,13 @@ function DisplayThing(argId, argProperties) {
         removeProperty: function(key) {
             this.properties[key] = null;
         },
+        setPropertyPersistent: function(key, value) {
+	    let currentValue = this.getProperty(key);
+	    this.setProperty(key,value);
+            if(currentValue!=value) {
+		this.addToDocumentUrl(key, value);
+	    }
+	},
         setProperty: function(key, value) {
 	    //            this[key] = value;
             this.properties[key] = value;
@@ -6093,9 +6119,10 @@ function DisplayThing(argId, argProperties) {
 	    /*Huh? not sure why I was passing in the  2nd dflt arg
 	      let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,  'display'+ this.displayCount+'.' + key);
 	    */
-	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key);
-	    if(Utils.stringDefined(fromUrl)) {
-		//		console.log('from url full key:' + key + ' value:' + fromUrl);
+	    let fullKey = 'd'+this.displayCount+'.'+key;
+	    let fromUrl = HU.getUrlArgument(fullKey);
+	    if(Utils.isDefined(fromUrl)) {
+		//console.log('from url full key:' + key + ' value:' + fromUrl);
 		return fromUrl;
 	    }
 	    if(checkKey) {
@@ -6309,7 +6336,6 @@ function DisplayThing(argId, argProperties) {
    Base class for all displays 
 */
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
@@ -6331,6 +6357,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
+/*
+			if(checkUrl) {
+			    let value = this.getPropertyFromUrl(prop.p);
+			    console.log('from url',prop.p,value);
+			    if(Utils.isDefined(value)) return value;
+			}*/
+
 			let checkCache = prop.canCache && !dflt;
 			if(checkCache) {
 			    if(this.propertiesCache[prop.p])
