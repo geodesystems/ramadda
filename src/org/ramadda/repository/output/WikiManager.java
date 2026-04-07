@@ -597,7 +597,6 @@ public class WikiManager extends RepositoryManager
     public Result processFindEntryFromId(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	String entryId = request.getString(ARG_ENTRYID,null);
-	System.err.println("processFindEntryFromId:" + entryId);
 	if(entryId==null) {
 	    sb.append("error: no entryId provided");
 	    System.err.println("\t" + sb);
@@ -605,7 +604,10 @@ public class WikiManager extends RepositoryManager
 	}
 	Hashtable props = null;
 	String propsArg = request.getString("props",null);
-	if(propsArg!=null) props = (Hashtable) getRepository().decodeObject(new String(Utils.decodeBase64(propsArg)));
+	if(propsArg!=null) {
+	    //TODO: IMPORANT! this is a remote code exploit. for now don't do this
+	    //	    props = (Hashtable) getRepository().decodeObject(new String(Utils.decodeBase64(propsArg)));
+	}
 	if(props==null) props = new Hashtable();
 	Entry entry = findEntryFromId(request, null, dummyWikiUtil, props, entryId);
 	System.err.println("entry:"  + entryId +" " + entry+ " props:" + props);
@@ -681,11 +683,13 @@ public class WikiManager extends RepositoryManager
 	return new Result("", new StringBuilder(JU.list(json)), JU.MIMETYPE);
     }
 
-    private Entry findEntryFromId(ServerInfo server, Entry entry,
+    private Entry remoteFindEntryFromId(ServerInfo server, Entry entry,
 				  WikiUtil wikiUtil, Hashtable props,
 				  String entryId) throws Exception {
 
 	String url = HtmlUtils.url(server.getUrl() +"/wiki/findentryfromid");
+	//TODO:  IMPORANT!  for security the receiving RAMADDA does not process the props
+	//We need to find a safe way to serialize and deserialize the props
 	String propString = Utils.encodeBase64(getRepository().encodeObject(props==null?new Hashtable():props));
 	//	System.err.println("url:" + url);
 	String xml = IO.doPost(new URL(url),HU.args(new String[]{ARG_ENTRYID,entryId,"props",propString},true));
@@ -856,7 +860,7 @@ public class WikiManager extends RepositoryManager
 
 	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
 	if(serverInfo!=null) {
-	    return findEntryFromId(serverInfo, entry, wikiUtil, props, entryId);
+	    return remoteFindEntryFromId(serverInfo, entry, wikiUtil, props, entryId);
 	}
 
         if (entryId.startsWith(PREFIX_ALIAS)) {
