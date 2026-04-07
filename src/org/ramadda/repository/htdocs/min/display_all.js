@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr  7 12:49:05 MDT 2026";
+var build_date="RAMADDA build date: Tue Apr  7 16:32:57 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -11645,7 +11645,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	makeFilterWidget:function(name,label, widget, title) {
 	    if(!label)
 		return HU.div([ATTR_CLASS,"display-filter-widget"],widget);
-	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
+	    label = label.trim();
+	    label = this.makeFilterLabel(label.length==0?'':Utils.msgLabel(label),title);
 	    if(this.getFilterLabelVertical(this.getProperty(name+'.filterLabelVertical')))
 		label = HU.div([],label)+widget;							       
 	    else
@@ -19120,7 +19121,10 @@ RequestMacro.prototype = {
 					    ATTR_CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';
-	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
+	if(!visible) {return widget;}
+	widget= this.display.makeFilterWidget(this.name,label,widget);
+	widget = HU.span([ATTR_CLASS,'display-filter-container'], widget);
+	return widget;
     },
     isMacro: function(id) {
 	return id == this.name;
