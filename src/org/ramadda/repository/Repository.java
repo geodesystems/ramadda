@@ -5372,8 +5372,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private synchronized Result processProxyInner(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String) null);
+	boolean debug = true;
         if (url != null) {
-            if ( !url.startsWith("http:") && !url.startsWith("https:")) {
+	    URL _url = new URL(url);
+	    String protocol = _url.getProtocol().toLowerCase();
+	    String host = _url.getHost().toLowerCase();
+	    if(debug)
+		System.err.println("processProxy URL:" + url +" protocol:" + protocol+" host:" + host);
+            if ( !protocol.equals("http") && !protocol.equals("https")) {
                 throw new IllegalArgumentException("Bad URL:" + url);
             }
             //Check the whitelist
@@ -5381,21 +5387,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (String pattern :
 		     Utils.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
 				 true, true)) {
-                //            System.err.println("pattern:" + pattern);
+		if(pattern.startsWith("host:")) {
+		    if(host.equals(pattern.substring("host:".length()))) {
+			if(debug)    System.err.println("\tpattern:" + pattern +" is host");
+			ok = true;
+			break;
+		    }
+		    if(debug)    System.err.println("\tpattern:" + pattern +" not host:"+
+						    pattern.substring("host:".length()));
+		    continue;
+		}
                 if (url.matches(pattern)) {
+		    if(debug)	    System.err.println("\t matches:" + pattern);
                     ok = true;
                     break;
                 }
             }
             if ( !ok) {
-		if(url.startsWith("https://ramadda.org")) ok = true;
+		if(host.equals("ramadda.org")) ok = true;
 	    }
 
             if ( !ok) {
                 throw new IllegalArgumentException("URL not in whitelist:"
 						   + url);
             }
-        }
+	}
         if ((url == null) && request.defined(ARG_ENTRYID)) {
             Entry entry = getEntryManager().getEntry(request);
             if (entry == null) {
