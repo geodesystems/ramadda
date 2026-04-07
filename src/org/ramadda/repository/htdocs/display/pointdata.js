@@ -3676,7 +3676,10 @@ RequestMacro.prototype = {
 					    ATTR_CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';
-	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
+	if(!visible) {return widget;}
+	widget= this.display.makeFilterWidget(this.name,label,widget);
+	widget = HU.span([ATTR_CLASS,'display-filter-container'], widget);
+	return widget;
     },
     isMacro: function(id) {
 	return id == this.name;
