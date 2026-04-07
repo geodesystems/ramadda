@@ -18,7 +18,7 @@
  */
 
 /*
-  Copied from ucar.unidata.xml.XmlUtil
+  Copied from ucar.unidata.xml.XmlUtil with some additions
  */
 package org.ramadda.util;
 
@@ -1091,29 +1091,23 @@ public abstract class MyXmlUtil {
 	//from chatgpt
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+	// Prevent XXE
+	dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+	dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+	// Prevent external DTD loading
+	dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        // Best defense: disallow DOCTYPE completely
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
-        // Disable external entities
-        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-
-        // Disable loading external DTDs
-        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-        // Additional hardening
-        dbf.setXIncludeAware(false);
-        dbf.setExpandEntityReferences(false);
-        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-        // JAXP external access restrictions
-        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+	// Optional hardening
+	dbf.setXIncludeAware(false);
+	dbf.setExpandEntityReferences(false);
 
         DocumentBuilder builder = dbf.newDocumentBuilder();
+	/*
         // Extra safety: block any entity resolution
         builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+	*/
+
 	return builder;
     }
 
@@ -2068,6 +2062,16 @@ public abstract class MyXmlUtil {
      */
     public static void main(String[] args) throws Exception {
 
+	for(String file: args) {
+	    try {
+		System.err.println("processing:" + file);
+		getDocument(new FileInputStream(file));
+	    }catch(Exception exc) {
+		System.err.println("error:" + exc);
+		exc.printStackTrace();
+	    }
+	}
+	if(true) return;
         /*
         Trace.startTrace();
         for (int i = 0; i < args.length; i++) {
