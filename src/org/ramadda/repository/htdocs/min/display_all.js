@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr  7 19:33:24 MDT 2026";
+var build_date="RAMADDA build date: Tue Apr  7 20:10:09 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6966,7 +6966,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	wikify:function(wiki,entryId,wikiCallback,wikiError,containerId) {
 	    if(containerId) {
 		wikiCallback = html=>{
-		    this.addWikiHtml(jqid(containerId),html);};
+		    this.addWikiHtml(jqid(containerId),html);
+		};
 		wikiError = html=>{
 		    jqid(containerId).html(html);};
 	    } 
@@ -6977,15 +6978,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    ramaddaDoingWiki++;
 	    let handleResult = (data)=>{
 		data = Utils.convertText(data);
-
-
 		wikiCallback(data);
 		ramaddaDoingWiki--;
 	    }
 	    let handleError = (data)=>{
-		console.log('handle error');
 		ramaddaDoingWiki--;
-		wikiError(data);
+		console.log('error loading url:',url);
+		wikiError(data.responseText);
 	    }	    
 	    $.post(url,{
 		doImports:"false",
@@ -38464,7 +38463,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			myTextGetter = (display, records)=>{
 			    if(records.length>1) return null;
 			    let uid = HU.getUniqueId();
-			    let entryId = records[0].data[8];
+			    //NOTE: hard-coded array index
+			    let entryId = records[0].data[9];
 			    this.wikify(entryType.mapwiki,entryId,null,null,uid);
 			    return HU.div([ATTR_ID,uid],
 					  HU.center(HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
