@@ -1014,17 +1014,24 @@ public class Filter extends Processor {
     public static class ValueFilter extends ColumnFilter {
         private int op;
         private double value;
-
-        public ValueFilter(TextReader ctx, List<String> cols, int op,
-                           double value) {
+	int index=-1;
+	String column;
+        public ValueFilter(TextReader ctx, List<String> cols, int op,String columnOrValue) {
             super(cols);
             this.op    = op;
-            this.value = value;
+	    if(columnOrValue.startsWith("column:")) {
+		column = columnOrValue.substring("column:".length());
+	    } else {
+		this.value = Seesv.parseDouble(columnOrValue);
+	    }
         }
 
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
+		if(column!=null) {
+		    index = getIndex(ctx,column);
+		}
                 return true;
             }
             for (int idx : getIndices(ctx)) {
@@ -1040,7 +1047,12 @@ public class Filter extends Processor {
                     if (Double.isNaN(value)) {
                         return false;
                     }
-		    if(!checkOperator(op, value,this.value)) return false;
+		    double myValue = this.value;
+		    if(column!=null) {
+			if(!row.indexOk(index)) return false;
+			myValue = Seesv.parseDouble(row.getString(index));
+		    }
+		    if(!checkOperator(op, value,myValue)) return false;
                 } catch (Exception exc) {
                     return false;
                 }
@@ -1075,18 +1087,33 @@ public class Filter extends Processor {
         private boolean between;
         private double min;
         private double max;
-
+	String minColumn;
+	String maxColumn;
+	int minIndex=-1;
+	int maxIndex=-1;
         public RangeFilter(TextReader ctx, boolean between,
-                           List<String> cols, double min, double max) {
+                           List<String> cols,
+			   String minColumnOrValue,
+			   String maxColumnOrValue) {
             super(cols);
             this.between = between;
-            this.min     = min;
-            this.max     = max;
+	    if(minColumnOrValue.startsWith("column:")) {
+		minColumn=minColumnOrValue.substring("column:".length());
+	    } else {
+		this.min     = Seesv.parseDouble(minColumnOrValue);
+	    }
+	    if(maxColumnOrValue.startsWith("column:")) {
+		maxColumn=maxColumnOrValue.substring("column:".length());
+	    } else {
+		this.max     = Seesv.parseDouble(maxColumnOrValue);
+	    }
         }
 
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
+		if(minColumn!=null) minIndex=getIndex(ctx,minColumn);
+		if(maxColumn!=null) maxIndex=getIndex(ctx,maxColumn);		
                 return true;
             }
             boolean ok    = true;
@@ -1103,7 +1130,19 @@ public class Filter extends Processor {
                     if (Double.isNaN(value)) {
                         return false;
                     }
-                    boolean inRange = ((value >= min) && (value <= max));
+		    double theMin=min;
+		    double theMax=max;	    
+		    if(minColumn!=null) {
+			if(!row.indexOk(minIndex)) return false;
+			theMin= row.getDouble(minIndex);
+		    }
+		    if(maxColumn!=null) {
+			if(!row.indexOk(maxIndex)) return false;
+			theMax= row.getDouble(maxIndex);
+		    }		    
+
+
+                    boolean inRange = ((value >= theMin) && (value <=theMax));
                     if (inRange && !between) {
                         ok = false;
                     } else if ( !inRange && between) {

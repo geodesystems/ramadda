@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Collections;
 import java.text.SimpleDateFormat;
 import java.util.regex.*;
 
@@ -451,8 +452,18 @@ public class SeesvOperator {
 	if(iv==null) {
 	    if(optional.length>0 && optional[0]) return -1;
 	    if (!Utils.equals("true",ctx.getProperty("goeasy")+"")) {
+		String keys="";
+		List keyList = Utils.getKeys(columnMap);
+		Collections.sort(keyList);
+		for(Object key:keyList) {
+		    String skey = key.toString();
+		    if(!skey.matches("^[0-9]+$")) {
+			keys+="\t" +key+"\n";
+		    }
+		}
+		
 		throw new SeesvException(this, "Could not find column:"
-					 + tok + "\npossible columns: " + Utils.getKeys(columnMap));
+					 + tok + "\npossible columns:\n " + keys);
 	    }
 	}
 

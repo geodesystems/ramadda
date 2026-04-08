@@ -1830,37 +1830,37 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_EQ, "Pass through rows that the column value equals the given value",
 		ARG_LABEL,"Value Equals",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_NE, "Pass through rows that the column value does not equal the given value",
 		ARG_LABEL,"Value Not Equals",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_GT, "Pass through rows that the column value is greater than the given value",
 		ARG_LABEL,"Value &gt;",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_GE, "Pass through rows that the column value is greater than or equals the given value",
 		ARG_LABEL,"Value &gt;=",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_LT, "Pass through rows that the column value is less than the given value",
 		ARG_LABEL,"Value &lt;",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_LE, "Pass through rows that the column value is less than or equals the given value",
 		ARG_LABEL,"Value &lt;=",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("value")),
+		new Arg("value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_BETWEEN, "Extract rows that are within the range",
 		ARG_LABEL,"Value Between",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("min value"),
-		new Arg("max value")),
+		new Arg("min value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("max value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
 	new Cmd(CMD_NOTBETWEEN,"Extract rows that are not within the range",
 		ARG_LABEL,"Not Between",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("min value"),
-		new Arg("max value")),
+		new Arg("min value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("max value","value  or column:colid",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_BETWEENSTRING, "Extract rows that are between the given strings",
 		ARG_LABEL,"Between String",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
@@ -5149,7 +5149,7 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_EQUALS,
-						     parseDouble(args.get(++i))));
+						     args.get(++i)));
 		return i;
 	    });
 
@@ -5157,7 +5157,7 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_NOTEQUALS,
-						     parseDouble(args.get(++i))));
+						     args.get(++i)));
 		return i;
 	    });
 
@@ -5165,22 +5165,23 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
-						     parseDouble(args.get(++i))));
+						     args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_GT, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
-						     getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
-						     parseDouble(args.get(++i))));
+						     getCols(args.get(++i)),
+						     Filter.ValueFilter.OP_GT,
+						     args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_GE, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GE,
-						     parseDouble(args.get(++i))));
+						     args.get(++i)));
 		return i;
 	    });	
 
@@ -5218,8 +5219,8 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,true,
 						     getCols(args.get(++i)), 
-						     parseDouble(args.get(++i)),
-						     parseDouble(args.get(++i))));						     
+						     args.get(++i),
+						     args.get(++i)));						     
 		return i;
 	    });
 
@@ -5227,14 +5228,15 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,false,
 						     getCols(args.get(++i)), 
-						     parseDouble(args.get(++i)),
-						     parseDouble(args.get(++i))));						     
+						     args.get(++i),
+						     args.get(++i)));						     
 		return i;
 	    });
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),Filter.ValueFilter.OP_DEFINED, 0));
+			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
+						     Filter.ValueFilter.OP_DEFINED, "0"));
 		return i;
 	    });
 	defineFunction(CMD_MAXVALUE, 2,(ctx,args,i) -> {
@@ -5903,7 +5905,6 @@ public class Seesv implements SeesvCommands {
 	s = s.replaceAll("\n", " ");
 
 	List<String> toks = Utils.parseCommandLine(s);
-	//	System.err.println("toks:" + toks);
 	Hashtable<String, String> props = new Hashtable<String, String>();
 	for (int j = 0; j < toks.size(); j += 2) {
 	    if (j >= toks.size() - 1) {
@@ -5930,8 +5931,10 @@ public class Seesv implements SeesvCommands {
 		int lastDotIndex = key.lastIndexOf(".");		
 		if(firstDotIndex>=0 && firstDotIndex==lastDotIndex) {
 		    suffix = key.substring(lastDotIndex);
-		    key = key.substring(0,lastDotIndex-2);
+		    key = key.substring(0,lastDotIndex);
+		    //		    System.err.println("KEY:" + key);		    System.err.println("SUFFIX:" + suffix);
 		}
+
 
 		for(String subkey: Utils.split(key,",",true,true)) {
 		    if(suffix!=null) subkey = subkey+suffix;

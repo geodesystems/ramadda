@@ -243,11 +243,8 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Expand extends Processor {
-
         private Seesv seesv;
-
         private List<String> args;
-
         private TextReader applyCtx;
 
         public Expand(Seesv seesv, TextReader ctx, List<String> cols,
@@ -255,36 +252,41 @@ public abstract class Processor extends SeesvOperator {
             super(cols);
             this.seesv = seesv;
             this.args    = args;
+	    //	    System.err.println("COLS:" + cols);
+	    //	    System.err.println("ARGS:" + args);
         }
 
         private void makeCommands(TextReader ctx, Row row) {
             boolean debug = false;
-            //      debug =true;
+	    //	    debug =true;
             if (debug) {
-                System.err.println("Make commands");
+                System.err.println("Make commands:" + row);
             }
             List<String>  cols    = new ArrayList<String>();
             List<Integer> indices = getIndices(ctx);
             for (Integer i : indices) {
 		if(!row.indexOk(i)) continue;
                 String column = row.getString(i);
+		column = makeID(column);
                 cols.add(column);
                 if (debug) {
                     System.err.println("\tcolumn:" + column);
-                }
+		}
 
             }
             applyCtx = new TextReader();
             for (String col : cols) {
                 List<String> cvrtedArgs = new ArrayList<String>();
                 for (String arg : args) {
+
 		    col = col.replace("-","_");
                     String id = Utils.makeID(col, false);
                     arg = arg.replace("${column}", id);
                     arg = arg.replace("${column_name}", col);
                     cvrtedArgs.add(arg);
                 }
-		//		System.err.println("\tcvrted args:" + cvrtedArgs);
+		if(debug)
+		    System.err.println("\tcvrted args:" + cvrtedArgs);
                 for (int j = 0; j < cvrtedArgs.size(); j++) {
                     String                    arg  = cvrtedArgs.get(j);
                     Seesv.CsvFunctionHolder func = seesv.getFunction(arg);
@@ -318,7 +320,6 @@ public abstract class Processor extends SeesvOperator {
             }
             try {
                 row = applyCtx.processRow(seesv, row);
-
                 return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -865,13 +866,9 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Between extends Processor {
-
         private int index = -1;
-
         private String name;
-
         private int start;
-
         private int end;
 
         public Between(String col, String name, String start, String end) {
