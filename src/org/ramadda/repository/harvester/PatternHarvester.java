@@ -22,6 +22,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -1003,6 +1004,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         int     cnt     = 0;
         Request request = getRequest();
         for (Entry newEntry : entries) {
+            currentStatus = "Initialized " + cnt + " of " + entries.size()+ " entries" +
+		"<br>Initializing entry: " + newEntry.getName() +
+		"<br>File: " + newEntry.getFile();
             String originalId =
                 (String) newEntry.getProperty(ATTR_ORIGINALID);
             if ( !canContinueRunning(timestamp)) {
@@ -1031,8 +1035,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		idList.add(new String[] {originalId, newEntry.getId()});
             entriesToAdd.add(newEntry);
             cnt++;
-            currentStatus = "Initialized " + cnt + " of " + entries.size()
-		+ " entries";
         }
         currentStatus = "Done initializing entries";
         if (getAddMetadata() || getAddShortMetadata()) {
