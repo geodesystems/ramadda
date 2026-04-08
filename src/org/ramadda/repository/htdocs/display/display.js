@@ -2382,7 +2382,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	wikify:function(wiki,entryId,wikiCallback,wikiError,containerId) {
 	    if(containerId) {
 		wikiCallback = html=>{
-		    this.addWikiHtml(jqid(containerId),html);};
+		    this.addWikiHtml(jqid(containerId),html);
+		};
 		wikiError = html=>{
 		    jqid(containerId).html(html);};
 	    } 
@@ -2393,15 +2394,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    ramaddaDoingWiki++;
 	    let handleResult = (data)=>{
 		data = Utils.convertText(data);
-
-
 		wikiCallback(data);
 		ramaddaDoingWiki--;
 	    }
 	    let handleError = (data)=>{
-		console.log('handle error');
 		ramaddaDoingWiki--;
-		wikiError(data);
+		console.log('error loading url:',url);
+		wikiError(data.responseText);
 	    }	    
 	    $.post(url,{
 		doImports:"false",
