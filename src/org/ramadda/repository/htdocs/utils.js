@@ -6620,8 +6620,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
 	    if(!option) return;
-//	    let selected=HU.isChecked(cbx);
-//	    option.prop('selected',selected);
+	    if(opts.single) {
+		let selected=HU.isChecked(cbx);
+		option.prop('selected',selected);
+	    }
 	    if(!opts.single) {
 		let selectedOptions = [];
 		let allOption;
