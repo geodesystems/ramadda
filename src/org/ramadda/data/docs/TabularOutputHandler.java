@@ -415,10 +415,9 @@ public class TabularOutputHandler extends OutputHandler {
                         if (operator != null) {
                             System.err.println("operator:" + operator);
                             s = s.replace(operator, "").trim();
-                            double value = Double.parseDouble(s);
                             int op = Filter.ValueFilter.getOperator(operator);
                             textReader.addProcessor(
-						    new Filter.ValueFilter(textReader, cols, op, value));
+						    new Filter.ValueFilter(textReader, cols, op, s));
                             continue;
                         }
                         textReader.addProcessor(
