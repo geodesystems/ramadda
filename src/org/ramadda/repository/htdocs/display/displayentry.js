@@ -3128,7 +3128,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			myTextGetter = (display, records)=>{
 			    if(records.length>1) return null;
 			    let uid = HU.getUniqueId();
-			    let entryId = records[0].data[8];
+			    //NOTE: hard-coded array index
+			    let entryId = records[0].data[9];
 			    this.wikify(entryType.mapwiki,entryId,null,null,uid);
 			    return HU.div([ATTR_ID,uid],
 					  HU.center(HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),
