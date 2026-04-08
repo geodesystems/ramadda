@@ -2409,6 +2409,7 @@ RepositoryMap.prototype = {
             return;
         }
         let feature = layer.feature;
+	if(!feature) return;
 	if(this.featureSelectHandler && this.featureSelectHandler(feature)) {
 	    if(debugPopup) console.log("\thas featureSelectHandler");
 	    return;
