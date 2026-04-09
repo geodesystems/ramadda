@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr  9 07:49:53 MDT 2026";
+var build_date="RAMADDA build date: Thu Apr  9 17:32:52 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -71222,7 +71222,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!window["Globe"]) {
 		if(!ramaddaLoadedThreeGlobe) {
                     ramaddaLoadedThreeGlobe = true;
-		    Utils.importJS("//unpkg.com/globe.gl");
+		    Utils.importJS("//unpkg.com/globe.gl@2.45.2");
 		}
 		setTimeout(()=>{this.updateUI()},100);
 		return
