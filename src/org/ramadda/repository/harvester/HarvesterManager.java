@@ -12,6 +12,7 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -537,10 +539,29 @@ public class HarvesterManager extends RepositoryManager {
 						    "Harvest Log"));
     }
 
+    private List<Harvester> sortHarvesters(List<Harvester> harvesters) {
+	HashSet seen = new HashSet();
+	List<Harvester> sorted = new ArrayList<Harvester>();
+	for(Harvester harvester: harvesters) {
+	    if(harvester.getActive()) {
+		seen.add(harvester.getId());
+		sorted.add(harvester);
+	    }
+	}
+	for(int i=harvesters.size()-1;i>=0;i--) {
+	    Harvester harvester = harvesters.get(i);
+	    if(!seen.contains(harvester.getId())) {
+		seen.add(harvester.getId());
+		sorted.add(harvester);
+	    }
+	}
+	return sorted;
+    }
     private void makeHarvestersList(Request request,
                                     List<Harvester> harvesters,
                                     StringBuffer sb)
             throws Exception {
+	
         sb.append(HtmlUtils.p());
         //        sb.append(HtmlUtils.formTable());
         sb.append("<table cellpadding=4 cellspacing=0>");
@@ -549,7 +570,7 @@ public class HarvesterManager extends RepositoryManager {
                 HtmlUtils.bold(msg("Action")), "", "")));
 
         int cnt = 0;
-        for (Harvester harvester : harvesters) {
+        for (Harvester harvester : sortHarvesters(harvesters)) {
             String removeLink =
                 HtmlUtils.href(request.makeUrl(URL_HARVESTERS_LIST,
                     ARG_ACTION, ACTION_REMOVE, ARG_HARVESTER_ID,
@@ -582,7 +603,20 @@ public class HarvesterManager extends RepositoryManager {
             StringBuffer error = harvester.getError();
             if ((error != null) && (error.length() > 0)) {
                 info.append(HtmlUtils.b(msg("Errors")));
-                info.append("<div class=\"error-list\"><pre>" + error
+		List<String> lines = Utils.split(error.toString(),"\n");
+		/*
+		lines.replaceAll(s -> {
+			if(s.startsWith("***")) {
+			    s = s.substring(3).trim();
+			    if(s.length()==0) return "";
+			    return "<b>" + s+"</b>";
+			}
+			return s;
+		    });
+		*/
+		String errors = Utils.join(lines,"\n");
+		errors = errors.replace("/div>\n","/div>");
+                info.append("<div class=\"error-list\"><pre>" + errors
                             + "</div></pre>");
             }
             info.append(harvester.getExtraInfo());

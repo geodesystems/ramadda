@@ -667,15 +667,27 @@ public abstract class Harvester extends RepositoryManager {
     }
 
     public String getStack(Throwable exc) {
-	return  "Error: " + exc.getMessage()+"<br>"+
-	    HU.makeShowHideBlock("Stack",
-				 LogUtil.getStackTrace(
-						       LogUtil.getInnerException(exc)).trim(), false);
+	return getStack(exc,true);
     }
+    public String getStack(Throwable exc,boolean includeExcMessage) {
+	
+	return (includeExcMessage? "Error: " + exc.getMessage()+"<br>":"") +
+	    makeToggle("Stack",
+		       LogUtil.getStackTrace(
+					     LogUtil.getInnerException(exc)).trim());
+    }
+
+    public String makeToggle(String title,String contents) {
+	String message = HU.makeShowHideBlock(title,     "<MESSAGE>",false);
+	message = message.replace("\n","");
+	message  = message.replace("<MESSAGE>",contents);
+	return message;
+    }
+
 
     public void logHarvesterError(String message, Throwable exc) {
         System.err.println("ERROR:" + getName() + " " + message);
-        exc.printStackTrace();
+	exc.printStackTrace();
         getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
@@ -699,7 +711,7 @@ public abstract class Harvester extends RepositoryManager {
             this.error = new StringBuffer();
         }
         this.error.append(e);
-        this.error.append("<br>");
+        this.error.append("\n");
     }
 
     public String getExtraInfo() throws Exception {
@@ -856,7 +868,7 @@ public abstract class Harvester extends RepositoryManager {
         if (debug || getTestMode()) {
 	    if(debug) System.err.println(msg);
             logHarvesterInfo(msg);
-            msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	    msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             msg = msg.replace("\n", "<br>");
             status.append(msg);
             status.append(HtmlUtils.br());

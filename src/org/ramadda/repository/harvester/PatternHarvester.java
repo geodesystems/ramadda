@@ -52,6 +52,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_LASTGROUPTYPE = "lastgrouptype";    
     public static final String ATTR_DATEFORMAT = "dateformat";
     public static final String ATTR_IGNORE_ERRORS = "ignore_errors";
+    public static final String ATTR_MAKE_FILE_ON_ERROR = "make_file_on_error";    
     public static final String ATTR_FILEPATTERN = "filepattern";
     public static final String ATTR_NOTREE = "notree";
     public static final String ATTR_TOPPATTERN = "toppattern";
@@ -72,6 +73,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private String topPatternString = "";
     private String lastGroupType = "";
     private boolean ignoreErrors = false;
+    private boolean makeFileOnError = false;
     private String unique=EntryManager.UNIQUE_NAME;
     private boolean noTree = false;
     private List<PatternHolder> filePattern;
@@ -92,6 +94,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private int entryCnt = 0;
     private int nonUniqueCnt = 0;    
     private int skipCnt = 0;
+    private int errorCnt = 0;    
     private int newEntryCnt = 0;
     private int totalAddedEntries = 0;    
     private long lastRunTime = 0;
@@ -141,6 +144,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         unique = XU.getAttribute(element, ATTR_UNIQUE,unique);
         ignoreErrors = XU.getAttribute(element, ATTR_IGNORE_ERRORS,     ignoreErrors);
+	makeFileOnError = XU.getAttribute(element,ATTR_MAKE_FILE_ON_ERROR,makeFileOnError);
         noTree = XU.getAttribute(element, ATTR_NOTREE, noTree);
 
         topPatternString = XU.getAttribute(element, ATTR_TOPPATTERN,
@@ -182,6 +186,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_LASTGROUPTYPE, lastGroupType);	
         element.setAttribute(ATTR_UNIQUE, unique);
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
+        element.setAttribute(ATTR_MAKE_FILE_ON_ERROR, "" + makeFileOnError);	
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_SKIPTIMECHECK, skipTimeCheck+"");	
@@ -227,6 +232,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    unique+="," +EntryManager.UNIQUE_GLOBAL;
 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
+        makeFileOnError = request.get(ATTR_MAKE_FILE_ON_ERROR, false);	
         noTree       = request.get(ATTR_NOTREE, false);
 
         skipTimeCheck = request.get(ATTR_SKIPTIMECHECK,false);
@@ -365,10 +371,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         formHelp(sb,"Should the harvest be continued when there are any errors harvesting a file",null);
 
         sb.append(HU.formEntry("",
-			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,
-					   "true",
-						  ignoreErrors,"Ignore errors")));
-
+			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,   "true",
+						  ignoreErrors,"Ignore errors") + HU.space(2) +
+			       HU.labeledCheckbox(ATTR_MAKE_FILE_ON_ERROR, "true",
+						  makeFileOnError,"Make file entry on error")));
+	
         sb.append(HU.colspan(formHeader("Then create an entry with"),2));
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 	String folderHelp =
@@ -549,7 +556,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 timeMsg = ((int) (100 * dt / 60.0)) / 100.0 + " minutes "
 		    + ePerM + " entries/minute";
             }
-	    msg +=  "found " + entryCnt + Utils.plural(entryCnt," potential file") + ".";
+	    msg +=  "Found " + entryCnt + Utils.plural(entryCnt," potential file") + ".";
 	    msg += " " + newEntryCnt + Utils.plural(newEntryCnt," new file")+".";
 	    if(nonUniqueCnt>0) {
 		msg += " " + nonUniqueCnt+" " + Utils.plural(nonUniqueCnt," file") +" already added.";
@@ -558,6 +565,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	if(skipCnt>0) {
 	    msg+=" " + skipCnt+" " + Utils.plural(skipCnt,"file")+" skipped.";
 	}
+	if(errorCnt>0) {
+	    msg+="<br>There were " + errorCnt +" errors";
+	}	
 	if(msg.length()>0) {
             entryMsg.add(msg);
 	}
@@ -610,6 +620,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
 	skipCnt  = 0;
+	errorCnt = 0;
         entryCnt    = 0;
 	nonUniqueCnt  = 0;
         newEntryCnt = 0;
@@ -774,6 +785,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
 	skipCnt = 0;
+	errorCnt=0;
 	nonUniqueCnt = 0;
         newEntryCnt = 0;
 	totalAddedEntries = 0;
@@ -870,8 +882,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 try {
                     entry = processFile(dirInfo, f, entriesMap);
                 } catch (Exception exc) {
-                    appendError("Error processing file:" + f);
-                    logHarvesterError("Error creating entry:" + f, exc);
+		    String msg = ignoreErrors?"Ignoring error processing file:" + f:"Error processing file:" +f;
+		    appendError(msg);
+                    logHarvesterError(msg, exc);
                     if ( !ignoreErrors) {
                         throw (Exception) LogUtil.getInnerException(exc);
                     }
@@ -935,7 +948,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 newEntryCnt += uniqueEntries.size();
                 needToAdd.addAll(uniqueEntries);
                 for (Entry newEntry : uniqueEntries) {
-                    logHarvesterInfo("creating new entry:" + newEntry.getResource());
+                   logHarvesterInfo("creating new entry:" + newEntry.getResource());
                     dirInfo.addFile(newEntry.getResource().getPath());
                 }
                 if (needToAdd.size() > 999) {
@@ -1015,16 +1028,43 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             try {
                 newEntry.getTypeHandler().initializeEntryFromHarvester(
 								       request, newEntry, true);
-            } catch (Exception exc) {
-                appendError("Error processing file:"
-                            + newEntry.getResource().getPath());
-                logHarvesterInfo("Error initializing:"
-                                 + newEntry.getResource().getPath());
-                if ( !ignoreErrors) {
-                    throw (Exception) LogUtil.getInnerException(exc);
-                }
-		appendError(getStack(exc));
-                continue;
+            } catch (Throwable exc) {
+		if(makeFileOnError) {
+		    try {
+			List<String>lines = Utils.split(exc.getMessage(),"\n",true,true);
+			lines.replaceAll(s -> "\t" + s);
+			String message = makeToggle("Details",Utils.join(lines,"\n").trim());		    
+			errorCnt++;
+			String msg =  "* Error occurred, creating file entry instead:"+
+			    HU.href(getEntryManager().getEntryURL(request, newEntry),
+				    newEntry.getName()) +
+			    "\nFile:"    + newEntry.getResource().getPath() +
+			    "\n" + message;
+			logHarvesterError(msg,exc);
+			appendError(getStack(exc,false));
+			newEntry.setTypeHandler(getRepository().getFileTypeHandler());
+			newEntry.getTypeHandler().initializeEntryFromHarvester(
+									       request, newEntry, true);
+			exc = null;
+		    } catch (Throwable exc2) {
+		    }
+		}
+
+		if(exc!=null) {
+		    List<String>lines = Utils.split(exc.getMessage(),"\n",true,true);
+		    lines.replaceAll(s -> "\t" + s);
+		    String message = makeToggle("Details",Utils.join(lines,"\n").trim());		    
+		    errorCnt++;
+		    String msg =(ignoreErrors?"* Ignoring error ":"* Error ") +"processing file:"+ newEntry.getResource().getPath() +
+			"\n" +
+			message;
+		    logHarvesterError(msg.trim(),exc);
+		    if ( !ignoreErrors) {
+			throw (Exception) LogUtil.getInnerException(exc);
+		    }
+		    appendError(getStack(exc,false));
+		    continue;
+		}
             }
             //System.err.println("createEntry:" + newEntry);
             if (originalId != null) {
