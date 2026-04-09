@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr  7 20:17:28 MDT 2026";
+var build_date="RAMADDA build date: Thu Apr  9 07:49:53 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -3184,10 +3184,18 @@ function ColorByInfo(display, fields, records,
 
     let colors = null;
     let colorTabelSteps = null;
+    let typeProperty;
+    if(this.field) {
+	typeProperty= 'type.' + this.field.getType();
+    }
     if(this.valueAttr) {
 	let c = this.display.getProperty(this.valueAttr +".colors");
 	if(c) colors = c.split(",");
     }
+    if(typeProperty) {
+	let c = this.display.getProperty(typeProperty +".colors");
+	if(c) colors = c.split(",");
+    }    
 
     if(defaultColorTable) {
 	this.id = defaultColorTable.id;
@@ -3207,7 +3215,6 @@ function ColorByInfo(display, fields, records,
 						       this.valueAttr +".colorTable",
 						       "colorTable"]);
 	}
-
     }
     if(!colors) {
 	let colorTableObject  = defaultColorTable??
@@ -3234,6 +3241,7 @@ function ColorByInfo(display, fields, records,
 	colors = this.display.getColorTable(true);
     }
     this.colors = colors;
+
 
     if(this.hasField() && !colors) {
 	//	this.index = -1;
@@ -3296,13 +3304,11 @@ function ColorByInfo(display, fields, records,
     }
 
 
-    if(this.field && this.field.isString()) this.isString = true;
-    if(!this.field) {
-//	console.log('no field');
-    } else {
-//	console.log('field',this.field.getLabel(),this.isString);
+    if(this.field) {
+	if(this.field.isString()) this.isString = true;
+//	else if(this.field.isBoolean()) this.isBoolean= true;
+	else if(this.field.isBoolean()) this.isString=true;
     }
-
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0 || this.timeField) {
@@ -3310,6 +3316,7 @@ function ColorByInfo(display, fields, records,
     } else {
 //	console.log('not processing records');
     }
+
 
     if(this.isString && this.uniqueValues.length>0) {
 	this.uniqueValues.sort((a,b)=>{
@@ -3703,6 +3710,15 @@ ColorByInfo.prototype = {
 		}
 		return color;
 	    }
+	    if(this.isBoolean) {
+		if(v===true || v=='yes') v=true;
+		else v=false;
+		if(this.colors.length>=2) {
+		    return this.colors[v?1:0];
+		}
+		if(v) return 'green';
+		return 'red';		
+	    }
             if (this.isString) {
                 color = this.colorByMap[v];
 		if(color) return color;
@@ -3712,7 +3728,6 @@ ColorByInfo.prototype = {
 	    if(isNaN(v)) {
 		return this.nullColor;
 	    }	    
-
 	    percent = this.getValuePercent(v);
         }
 
@@ -12131,10 +12146,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			searchBar+=HU.toggleBlock(group,groupHtml,false);
 			groupHtml=null;
 		    }
-		    if(this.getProperty(filter.getId()+'.filterBreak')) {
+		    if(this.getProperty(filter.getId()+'.filterBreak',
+					this.getProperty(filter.getId()+'.filterBreakBefore'))) {
 			searchBar+='<div class=display-filter-break></div>';
 		    }
 		    searchBar +=widget;
+		    if(this.getProperty(filter.getId()+'.filterBreakAfter')) {
+			searchBar+='<div class=display-filter-break></div>';
+		    }
 		});
 		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
@@ -19877,6 +19896,12 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
 	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup',multi))
+	    let showPopupSize = this.getProperty(this.getId() +".filterShowPopupSize",
+						 this.getProperty('filterShowPopupSize'));
+	    if(showPopupSize!==null && this.enums) {
+		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
+	    }
+
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		if(!Utils.isDefined(multi)) multi=false;
@@ -20174,6 +20199,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValue = this.defaultValue = filterValue?filterValue:
 		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
+		this.enums = enums;
 		let attrs= [ATTR_STYLE,widgetStyle,
 			    ATTR_ID,widgetId,
 			    ATTR_FIELDID,this.getId()];
