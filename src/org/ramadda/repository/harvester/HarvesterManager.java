@@ -604,18 +604,17 @@ public class HarvesterManager extends RepositoryManager {
             if ((error != null) && (error.length() > 0)) {
                 info.append(HtmlUtils.b(msg("Errors")));
 		List<String> lines = Utils.split(error.toString(),"\n");
-		/*
 		lines.replaceAll(s -> {
 			if(s.startsWith("***")) {
 			    s = s.substring(3).trim();
 			    if(s.length()==0) return "";
-			    return "<b>" + s+"</b>";
+			    return "&bull; " + s+"";
 			}
 			return s;
 		    });
-		*/
 		String errors = Utils.join(lines,"\n");
 		errors = errors.replace("/div>\n","/div>");
+		errors = errors.replace("/span>\n","/span>");		
                 info.append("<div class=\"error-list\"><pre>" + errors
                             + "</div></pre>");
             }

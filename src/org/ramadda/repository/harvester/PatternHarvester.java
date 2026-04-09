@@ -1035,16 +1035,18 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			lines.replaceAll(s -> "\t" + s);
 			String message = makeToggle("Details",Utils.join(lines,"\n").trim());		    
 			errorCnt++;
-			String msg =  "* Error occurred, creating file entry instead:"+
+			String msg =  "*** Error occurred, creating file entry instead:"+
 			    HU.href(getEntryManager().getEntryURL(request, newEntry),
 				    newEntry.getName()) +
 			    "\nFile:"    + newEntry.getResource().getPath() +
 			    "\n" + message;
 			logHarvesterError(msg,exc);
 			appendError(getStack(exc,false));
+			TypeHandler oldTypeHandler =newEntry.getTypeHandler();
 			newEntry.setTypeHandler(getRepository().getFileTypeHandler());
 			newEntry.getTypeHandler().initializeEntryFromHarvester(
 									       request, newEntry, true);
+			newEntry.setValue("filetype","Harvest: " + getName()+ " - " + oldTypeHandler.getLabel());
 			exc = null;
 		    } catch (Throwable exc2) {
 		    }
@@ -1055,7 +1057,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    lines.replaceAll(s -> "\t" + s);
 		    String message = makeToggle("Details",Utils.join(lines,"\n").trim());		    
 		    errorCnt++;
-		    String msg =(ignoreErrors?"* Ignoring error ":"* Error ") +"processing file:"+ newEntry.getResource().getPath() +
+		    String msg =(ignoreErrors?"*** Ignoring error ":"*** Error ") +"processing file:"+ newEntry.getResource().getPath() +
 			"\n" +
 			message;
 		    logHarvesterError(msg.trim(),exc);

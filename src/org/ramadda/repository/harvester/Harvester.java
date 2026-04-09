@@ -670,7 +670,6 @@ public abstract class Harvester extends RepositoryManager {
 	return getStack(exc,true);
     }
     public String getStack(Throwable exc,boolean includeExcMessage) {
-	
 	return (includeExcMessage? "Error: " + exc.getMessage()+"<br>":"") +
 	    makeToggle("Stack",
 		       LogUtil.getStackTrace(
@@ -680,8 +679,12 @@ public abstract class Harvester extends RepositoryManager {
     public String makeToggle(String title,String contents) {
 	String message = HU.makeShowHideBlock(title,     "<MESSAGE>",false);
 	message = message.replace("\n","");
+	List<String> lines = Utils.split(contents,"\n");
+	lines.replaceAll(s -> {return s.trim();});
+	contents = Utils.join(lines,"\n");
+	//	message  = message.replace("<MESSAGE>",HU.insetDiv(contents,0,30,0,0));
 	message  = message.replace("<MESSAGE>",contents);
-	return message;
+	return HU.insetDiv(message,0,30,0,0);
     }
 
 
