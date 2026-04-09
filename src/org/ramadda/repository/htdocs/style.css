@@ -5962,7 +5962,10 @@ wiki {
     padding:5px;
 }
 
-
+.error-list a {
+    text-decoration:underline;
+    color:blue;
+}
 .ramadda-user-form-header, .formgroupheader {
     background:var(--highlight-background);
     border-top-left-radius: var(--default-radius);
