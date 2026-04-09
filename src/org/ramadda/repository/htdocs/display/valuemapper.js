@@ -282,10 +282,18 @@ function ColorByInfo(display, fields, records,
 
     let colors = null;
     let colorTabelSteps = null;
+    let typeProperty;
+    if(this.field) {
+	typeProperty= 'type.' + this.field.getType();
+    }
     if(this.valueAttr) {
 	let c = this.display.getProperty(this.valueAttr +".colors");
 	if(c) colors = c.split(",");
     }
+    if(typeProperty) {
+	let c = this.display.getProperty(typeProperty +".colors");
+	if(c) colors = c.split(",");
+    }    
 
     if(defaultColorTable) {
 	this.id = defaultColorTable.id;
@@ -305,7 +313,6 @@ function ColorByInfo(display, fields, records,
 						       this.valueAttr +".colorTable",
 						       "colorTable"]);
 	}
-
     }
     if(!colors) {
 	let colorTableObject  = defaultColorTable??
@@ -332,6 +339,7 @@ function ColorByInfo(display, fields, records,
 	colors = this.display.getColorTable(true);
     }
     this.colors = colors;
+
 
     if(this.hasField() && !colors) {
 	//	this.index = -1;
@@ -394,13 +402,11 @@ function ColorByInfo(display, fields, records,
     }
 
 
-    if(this.field && this.field.isString()) this.isString = true;
-    if(!this.field) {
-//	console.log('no field');
-    } else {
-//	console.log('field',this.field.getLabel(),this.isString);
+    if(this.field) {
+	if(this.field.isString()) this.isString = true;
+//	else if(this.field.isBoolean()) this.isBoolean= true;
+	else if(this.field.isBoolean()) this.isString=true;
     }
-
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0 || this.timeField) {
@@ -408,6 +414,7 @@ function ColorByInfo(display, fields, records,
     } else {
 //	console.log('not processing records');
     }
+
 
     if(this.isString && this.uniqueValues.length>0) {
 	this.uniqueValues.sort((a,b)=>{
@@ -801,6 +808,15 @@ ColorByInfo.prototype = {
 		}
 		return color;
 	    }
+	    if(this.isBoolean) {
+		if(v===true || v=='yes') v=true;
+		else v=false;
+		if(this.colors.length>=2) {
+		    return this.colors[v?1:0];
+		}
+		if(v) return 'green';
+		return 'red';		
+	    }
             if (this.isString) {
                 color = this.colorByMap[v];
 		if(color) return color;
@@ -810,7 +826,6 @@ ColorByInfo.prototype = {
 	    if(isNaN(v)) {
 		return this.nullColor;
 	    }	    
-
 	    percent = this.getValuePercent(v);
         }
 
