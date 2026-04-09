@@ -18,14 +18,15 @@ priority="1"
 
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
-csvcommands1=-encoding,ISO-8859-1,-unitrow,-set,0
-csvcommands2=0,Section,-numcolumns,-1,-insert
-csvcommands3=,top_depth,${entry.column:top_depth},-copy,section_depth
-csvcommands4=scaled_section_depth,-scale,scaled_section_depth,0,0.01
-csvcommands5=0,-operator,top_depth\,scaled_section_depth,depth,+
-csvcommands6=-notcolumns,scaled_section_depth,-columnsafter,section,depth
-csvcommands7=-change,1-50,^$,NaN,-addheader
-csvcommands8=section.type enumeration  surface_depth.unit M
+csvcommands1=-encoding,ISO-8859-1,-start,(?i)depth.*,-rename
+csvcommands2=?sect_depth,section_depth,-unitrow,-set,0
+csvcommands3=0,Section,-numcolumns,-1,-insert
+csvcommands4=,top_depth,${entry.column:top_depth},-copy,section_depth
+csvcommands5=scaled_section_depth,-scale,scaled_section_depth,0,0.01
+csvcommands6=0,-operator,top_depth\,scaled_section_depth,depth,+
+csvcommands7=-notcolumns,scaled_section_depth,-columnsafter,section,depth
+csvcommands8=-change,1-50,^$,NaN,-addheader
+csvcommands9=section.type enumeration  surface_depth.unit M
 
 ]]></property>
 
