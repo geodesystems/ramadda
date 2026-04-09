@@ -148,13 +148,16 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) {
 		List<Integer> indices = getIndices(ctx);
+		/*
+		  I don't think we should just use names if there are no indices
 		if(indices.size()==0) {
 		    row = new Row();
 		    for(int i=0;i<names.size();i++) {
 			row.add(names.get(i));
 		    }
+		    System.err.println("row1:" + row);
 		    return row;
-		}
+		    }*/
 
 		for(int i=0;i<indices.size();i++) {
 		    int index = indices.get(i);
@@ -163,7 +166,6 @@ public abstract class Converter extends Processor {
 			row.set(index,name);
 		    }
 		}
-
 	    }
 	    return row;
 	}
