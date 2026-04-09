@@ -1,0 +1,9 @@
+<type name="file"  description="File"  priority="0"
+      handler="org.ramadda.repository.type.GenericTypeHandler" 
+      help="The entry type is figured out by the file extension"
+      supercategory="General" category="Documents">
+  <property name="icon" value="/icons/page.png"/>
+  <property name="form.description.iswiki" value="true"/>
+  <column  name="filetype"  label="File Type"  type="enumerationplus"  cansearch="true" />
+</type>
+
