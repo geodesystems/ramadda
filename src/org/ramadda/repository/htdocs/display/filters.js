@@ -532,6 +532,12 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
 	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup',multi))
+	    let showPopupSize = this.getProperty(this.getId() +".filterShowPopupSize",
+						 this.getProperty('filterShowPopupSize'));
+	    if(showPopupSize!==null && this.enums) {
+		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
+	    }
+
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		if(!Utils.isDefined(multi)) multi=false;
@@ -829,6 +835,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValue = this.defaultValue = filterValue?filterValue:
 		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
+		this.enums = enums;
 		let attrs= [ATTR_STYLE,widgetStyle,
 			    ATTR_ID,widgetId,
 			    ATTR_FIELDID,this.getId()];
