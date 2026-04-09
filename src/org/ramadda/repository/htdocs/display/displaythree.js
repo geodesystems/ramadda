@@ -218,7 +218,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    if(!window["Globe"]) {
 		if(!ramaddaLoadedThreeGlobe) {
                     ramaddaLoadedThreeGlobe = true;
-		    Utils.importJS("//unpkg.com/globe.gl");
+		    Utils.importJS("//unpkg.com/globe.gl@2.45.2");
 		}
 		setTimeout(()=>{this.updateUI()},100);
 		return
