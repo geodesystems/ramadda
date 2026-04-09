@@ -5019,6 +5019,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
         groupTypeHandler.setHelp("A group of entries");
 	groupTypeHandler.setPriority(0);
+
+	Element root = XU.getRoot("/org/ramadda/repository/resources/filetype.xml", getClass());
+	fileTypeHandler = loadTypeHandler(root,true);
+
+	/**
         TypeHandler typeHandler;
         addTypeHandler(TypeHandler.TYPE_FILE,
                        fileTypeHandler =typeHandler = new TypeHandler(this, "file", "File",
@@ -5028,6 +5033,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         typeHandler.setHelp(
 			    "The entry type is figured out by the file extension");
         typeHandler.putProperty("icon", ICON_FILE);
+	*/
 
         addTypeHandler(ProcessFileTypeHandler.TYPE_PROCESS,
                        processFileTypeHandler = new ProcessFileTypeHandler(this));
