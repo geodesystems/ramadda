@@ -414,13 +414,17 @@ public class CsvFile extends TextFile {
         }
         //      System.err.println("CsvFile.doMakeFields props:" + getProperties());
         if (fieldString == null) {
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit1"));
             doQuickVisit();
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit1-done"));
             fieldString = getProperty(PROP_FIELDS, null);
         } else {
             //Read the header because there are properties
             if (getHeaderLines().size() == 0) {
                 if (getProperty(PROP_HEADER_STANDARD, false)) {
+		    //		    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit2"));
                     doQuickVisit();
+		    //		    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit2-done"));
                 }
             }
         }
@@ -428,7 +432,9 @@ public class CsvFile extends TextFile {
         commentLineStart = getProperty("commentLineStart", null);
         if (fieldString == null) {
             setIsHeaderStandard(true);
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit3"));
             doQuickVisit();
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"CsvFile.doQuickVisit3-done"));
             fieldString = getProperty(PROP_FIELDS, null);
         }
 
@@ -437,6 +443,8 @@ public class CsvFile extends TextFile {
                 if (failureOk) {
                     return new ArrayList<RecordField>();
                 }
+		//This gets set by the XlsToCsv call
+		checkErrorMessage("Error reading file:");
                 System.err.println("Error in CsvFile:" +" no " + PROP_FIELDS
                                    + " properties found for file: "
                                    + getPath());
@@ -463,7 +471,6 @@ public class CsvFile extends TextFile {
         record.setLineWrap(getProperty("lineWrap", false));
         record.setBePickyAboutTokens(getProperty("picky", true));
         record.setMatchUpColumns(getProperty("matchupColumns", false));
-
         return record;
     }
 

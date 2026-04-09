@@ -551,7 +551,7 @@ public abstract class TextFile extends PointFile {
         }
 
         initProperties();
-
+	checkErrorMessage("Error reading file:");
         return visitInfo;
 
     }
