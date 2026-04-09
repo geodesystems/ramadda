@@ -74,7 +74,6 @@ public class ActionManager extends RepositoryManager {
         StringBuffer sb     = new StringBuffer();
         if (action == null) {
             sb.append("No action found");
-
             return makeResult(request, "Status", "noaction", sb, json);
         }
 
@@ -171,7 +170,15 @@ public class ActionManager extends RepositoryManager {
                 getPageHandler().sectionClose(request, sb);
             }
         }
-        Result result = makeResult(request, "Status", status, sb, json);
+	String title = "Status";
+	if(action.cancelled) {
+	    title += " - Cancelled";
+	} else 	if(action.running && action.title!=null) {
+	    title=title+" - " + action.title;
+	} else if(!action.running) {
+	    title += " - Completed";
+	}
+        Result result = makeResult(request, title, status, sb, json);
         if ( !json) {
             if (action.entry != null) {
                 return getEntryManager().addEntryHeader(request,
@@ -200,6 +207,16 @@ public class ActionManager extends RepositoryManager {
         }
 
         return action.getRunning();
+    }
+
+    public void setActionTitleAndMessage(Object id, String msg) {
+        ActionInfo action = getAction(id);
+        if (action == null) {
+            return;
+        }
+        action.setMessage(msg);
+	action.title=msg;
+
     }
 
     public void setActionMessage(Object id, String msg) {
@@ -345,6 +362,7 @@ public class ActionManager extends RepositoryManager {
         private String error = null;
         private String extraHtml;
         private Entry entry;
+	private String title;
 
         public ActionInfo(String name, String continueHtml, Entry entry,Action action) {
             this.name         = name;
