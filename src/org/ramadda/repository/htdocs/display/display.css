@@ -147,7 +147,7 @@ table.dataTable {
 }
 
 .display-filter-input, .display-filter textarea, .display-filter input, .display-filter select  {
-    font-size:80%;
+    font-size:80% !important;
 }
 
 .display-filter-popup-item {
