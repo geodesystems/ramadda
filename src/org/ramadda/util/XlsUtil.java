@@ -277,15 +277,19 @@ public class XlsUtil {
         }
     }
 
-    public static InputStream xlsToCsv(IO.Path path) {
-        return xlsToCsv(path, -1,0);
+    public static InputStream xlsToCsv(IO.Path path,StringBuilder errorMsg) {
+        return xlsToCsv(path, -1,0,errorMsg);
     }
 
-    public static InputStream xlsToCsv(final IO.Path path, final int maxRows,final int sheetNumber) {
+    public static InputStream
+	xlsToCsv(final IO.Path path, final int maxRows,final int sheetNumber,
+		 StringBuilder errorMsg) {
+	//	System.err.println(Utils.ansi(Utils.ANSI_PURPLE,"xlsToCsv maxRows:"+ maxRows));
         try {
             final PipedOutputStream pos = new PipedOutputStream();
             final PipedInputStream  pis = new PipedInputStream(pos);
             final PrintWriter       pw  = new PrintWriter(pos);
+	    //	    System.err.println(Utils.getStack(10));
             ucar.unidata.util.Misc.run(new Runnable() {
                 public void run() {
                     try {
@@ -321,9 +325,15 @@ public class XlsUtil {
                         }
                         pw.flush();
                         pw.close();
-                    } catch (Exception exc) {
-                        System.err.println("Error converting xls:" +path+"\nError:" + exc);
-                        exc.printStackTrace();
+                    } catch (Throwable exc) {
+			String msg = "Error converting xls:" +path+"\nError:" + exc.getMessage();
+			if(errorMsg!=null) {
+			    errorMsg.append(msg);
+			}
+			//TODO			System.err.println(msg);
+                        //TODO exc.printStackTrace();
+                        IO.close(pw);
+			IO.close(pis);
                     }
                 }
             });
