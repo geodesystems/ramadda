@@ -1002,7 +1002,7 @@ public class Seesv implements SeesvCommands {
         for (String file : files) {
 	    try {
 		if (file.toLowerCase().endsWith(".xls")) {
-		    InputStream bais=  XlsUtil.xlsToCsv(new IO.Path(file),-1,sheetNumber);
+		    InputStream bais=  XlsUtil.xlsToCsv(new IO.Path(file),-1,sheetNumber,null);
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
@@ -1118,7 +1118,7 @@ public class Seesv implements SeesvCommands {
 	    checkOkToRead(file.getPath());
         }
         if (file.matchesSuffix(".xls")) {
-            return  XlsUtil.xlsToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
+            return  XlsUtil.xlsToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber,null);
 	} else if (file.matchesSuffix(".xlsx")) {
             return  XlsUtil.xlsxToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".gz",".gzip")) {

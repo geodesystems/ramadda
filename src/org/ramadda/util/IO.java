@@ -1233,7 +1233,7 @@ public class IO {
 	    String file=path.toString();
 	    InputStream inputStream;
 	    if (file.toLowerCase().endsWith(".xls")) {
-		inputStream=  XlsUtil.xlsToCsv(path,-1,sheetNumber);
+		inputStream=  XlsUtil.xlsToCsv(path,-1,sheetNumber,null);
 	    } else if (file.toLowerCase().endsWith(".xlsx")) {
 		inputStream=  XlsUtil.xlsxToCsv(path,-1,sheetNumber);
 	    } else {
