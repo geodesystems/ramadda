@@ -7547,10 +7547,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			searchBar+=HU.toggleBlock(group,groupHtml,false);
 			groupHtml=null;
 		    }
-		    if(this.getProperty(filter.getId()+'.filterBreak')) {
+		    if(this.getProperty(filter.getId()+'.filterBreak',
+					this.getProperty(filter.getId()+'.filterBreakBefore'))) {
 			searchBar+='<div class=display-filter-break></div>';
 		    }
 		    searchBar +=widget;
+		    if(this.getProperty(filter.getId()+'.filterBreakAfter')) {
+			searchBar+='<div class=display-filter-break></div>';
+		    }
 		});
 		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
