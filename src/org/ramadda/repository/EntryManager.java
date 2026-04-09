@@ -4279,15 +4279,15 @@ public class EntryManager extends RepositoryManager {
                 totalDeleteCnt++;
                 if ((actionId != null)
 		    && !getActionManager().getActionOk(actionId)) {
-                    getActionManager().setActionMessage(actionId,
-							"Delete canceled");
+                    getActionManager().setActionTitleAndMessage(actionId,
+								"Delete canceled");
                     connection.rollback();
 
                     return;
                 }
-                getActionManager().setActionMessage(actionId,
-						    "Deleted: " + totalDeleteCnt + "/" + found.size()
-						    + " entries");
+                getActionManager().setActionTitleAndMessage(actionId,
+							    "Deleted: " + totalDeleteCnt + "/" + found.size()
+							    + " entries");
 
                 resourcesToDelete.add(new Resource(new File(descendent.path), descendent.resourceType));
                 batchCnt++;
@@ -5310,9 +5310,9 @@ public class EntryManager extends RepositoryManager {
                 tmp.add(newEntry);
                 insertEntries(request, tmp, true, TypeHandler.NewType.COPY);
                 count++;
-                getActionManager().setActionMessage(actionId,
-						    "Copied " + count + "/" + newEntries.size()
-						    + " entries");
+                getActionManager().setActionTitleAndMessage(actionId,
+							    "Copied " + count + "/" + newEntries.size()
+							    + " entries");
                 links.append(
 			     HU.href(
 				     request.entryUrl(
