@@ -61,6 +61,9 @@ public abstract class RecordFile {
     /** default skip factor */
     private int defaultSkip = -1;
 
+    /** This gets appended to from xlsToCsv */
+    public StringBuilder errorMsg;
+
     /** how many records in the file */
     private long numRecords = 0;
 
@@ -79,6 +82,7 @@ public abstract class RecordFile {
     private List<String[]> unitPatterns;
     private MyDateFormat[] mySdfs;
     private MyDateFormat outputDateFormat;
+    private boolean doingQuickScan=false;
 
     private static MyDateFormat[][] SDFS = {
         { makeDateFormat("yyyy") },
@@ -375,7 +379,11 @@ public abstract class RecordFile {
     }
 
     public InputStream doMakeInputStream(VisitInfo visitInfo,boolean buffered) throws Exception {
-	return doMakeInputStream(buffered);
+	//	System.err.println(Utils.ansi(Utils.ANSI_BLUE,"RecordFile.doMakeInputStream: quick scan:  " + visitInfo.getQuickScan()));
+	doingQuickScan = visitInfo.getQuickScan();
+	InputStream inputStream= doMakeInputStream(buffered);
+	doingQuickScan = false;
+	return inputStream;
     }
 
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
@@ -414,11 +422,14 @@ public abstract class RecordFile {
         }
 
         if (path.getPath().toLowerCase().endsWith(".xls")) {
-	    return XlsUtil.xlsToCsv(path,-1, getProperty("xls.sheet",0));
+	    if(errorMsg==null) errorMsg=new StringBuilder();
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_BLUE,"RecordFile: calling xlsToCsv"));
+	    return XlsUtil.xlsToCsv(path,doingQuickScan?1:-1, getProperty("xls.sheet",0),errorMsg);
         }
 
         if (path.getPath().toLowerCase().endsWith(".xlsx")) {
-	    return XlsUtil.xlsxToCsv(path,-1, getProperty("xls.sheet",0));
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_BLUE,"RecordFile: calling xlsxToCsv"));
+	    return XlsUtil.xlsxToCsv(path,doingQuickScan?1:-1, getProperty("xls.sheet",0));
         }	
 
         if (path.getPath().endsWith(".zip") || getProperty("isZip", false)) {
@@ -628,6 +639,11 @@ public abstract class RecordFile {
             throws Exception {
         visit(visitor, doMakeVisitInfo(), filter);
     }
+    public void checkErrorMessage(String prefix) {
+	if(errorMsg!=null && errorMsg.length()>0) {
+	    throw new IllegalArgumentException(prefix + errorMsg);
+	}
+    }
 
     private int countRecords() throws Exception {
 	int cnt = 0;
@@ -686,7 +702,9 @@ public abstract class RecordFile {
 	    reallySkip = getSkipToLast(last);
 	}
 
+	//	System.err.println(Utils.ansi(Utils.ANSI_GREEN,"RecordFile.visit: calling doMakeInputIO"));
         RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
+	//	System.err.println(Utils.ansi(Utils.ANSI_GREEN,"after call to doMakeInputIO"));
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
         if (visitInfo == null) {
@@ -696,7 +714,9 @@ public abstract class RecordFile {
         visitInfo.setRecordIndex(-1);
         boolean ok = true;
         try {
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"RecordFile.visit: calling makeRecord"));
             BaseRecord record = makeRecord(visitInfo);
+	    //	    System.err.println(Utils.ansi(Utils.ANSI_GREEN,"RecordFile.visit: after calling makeRecord"));
 	    if(reallySkip>0) {
 		record.setSkipProcessing(true);
 	    }
