@@ -271,12 +271,32 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
         StringBuilder all = new StringBuilder();
+        StringBuilder numeric = new StringBuilder();
+        StringBuilder nonnumeric = new StringBuilder();
+        StringBuilder enums = new StringBuilder();			
 
         for (RecordField field : fields) {
             if (all.length() > 0) {
                 all.append(",");
             }
             all.append(field.getName());
+	    if(field.isTypeNumeric()) {
+		if (numeric.length() > 0) {
+		    numeric.append(",");
+		}
+		numeric.append(field.getName());
+	    } else {
+		if (nonnumeric.length() > 0) {
+		    nonnumeric.append(",");
+		}
+		nonnumeric.append(field.getName());
+	    }
+	    if(field.isTypeEnumeration()) {
+		if (enums.length() > 0) {
+		    enums.append(",");
+		}
+		enums.append(field.getName());
+	    }
         }
         sb.append("&nbsp;");
         sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("RamaddaUtils.selectClick",
@@ -285,9 +305,40 @@ public class PointTypeHandler extends RecordTypeHandler {
                                 HtmlUtils.squote(all.toString()),
                                 HtmlUtils.squote(type))), "All Fields"));
         sb.append("<br>");
+	if(numeric.length()>0) {
+	    sb.append("&nbsp;");
+	    sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("RamaddaUtils.selectClick",
+							      HtmlUtils.comma(HtmlUtils.squote(target),
+									      HtmlUtils.squote(entry.getId()),
+									      HtmlUtils.squote(numeric.toString()),
+									      HtmlUtils.squote(type))), "Numeric Fields"));
+	    sb.append("<br>");
+	}
+	if(nonnumeric.length()>0) {
+	    sb.append("&nbsp;");
+	    sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("RamaddaUtils.selectClick",
+							      HtmlUtils.comma(HtmlUtils.squote(target),
+									      HtmlUtils.squote(entry.getId()),
+									      HtmlUtils.squote(nonnumeric.toString()),
+									      HtmlUtils.squote(type))), "Non-numeric Fields"));
+	    sb.append("<br>");
+	}
+	if(enums.length()>0) {
+	    sb.append("&nbsp;");
+	    sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("RamaddaUtils.selectClick",
+							      HtmlUtils.comma(HtmlUtils.squote(target),
+									      HtmlUtils.squote(entry.getId()),
+									      HtmlUtils.squote(enums.toString()),
+									      HtmlUtils.squote(type))), "Enumeration Fields"));
+	    sb.append("<br>");
+	}
+	sb.append("<thin_hr></thin_hr>");
+
 
         for (RecordField field : fields) {
             sb.append("&nbsp;");
+	    String label  = field.getLabel() +
+		" - "  + field.getName() + " [" + field.getType()+"]";
             sb.append(
                 HtmlUtils.mouseClickHref(
                     HtmlUtils.call(
@@ -295,8 +346,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                             HtmlUtils.squote(target), HtmlUtils.squote(
                                 entry.getId()), HtmlUtils.squote(
                                 field.getName()), HtmlUtils.squote(
-                                type))), field.getLabel() + " ("
-                                         + field.getName() + ")"));
+                                type))), label));
             sb.append("<br>");
         }
     }
