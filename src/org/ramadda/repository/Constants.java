@@ -345,6 +345,8 @@ public interface Constants {
     public static final String ARG_SEARCH_URL = "searchurl";
     public static final String ARG_NORTH = "north";
     public static final String ARG_OK = "ok";
+    public static final String ARG_START = "start";
+    public static final String ARG_STOP = "stop";    
     public static final String ARG_ONLYGROUPS = "onlygroups";
     public static final String ARG_ORDERBY = "orderby";
     public static final String ARG_GROUPBY = "group_by";
