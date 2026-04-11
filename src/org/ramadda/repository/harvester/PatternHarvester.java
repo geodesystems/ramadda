@@ -66,18 +66,22 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_UNIQUE = "unique";        
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 30 * 1000;
 
+    private static final String ARG_TMP_DIRECTORIES = "directories";
+    private static final String ARG_TMP_DIRECTORYPATTERN="directory_pattern";
+
+
     private String dateFormat = "yyyyMMdd_HHmm";
     private List<SimpleDateFormat> sdf;
     private List<String> patternNames = new ArrayList<String>();
     private String filePatternString = ".*";
     private String topPatternString = "";
+    private Pattern topPattern;
     private String lastGroupType = "";
     private boolean ignoreErrors = false;
     private boolean makeFileOnError = false;
     private String unique=EntryManager.UNIQUE_NAME;
     private boolean noTree = false;
     private List<PatternHolder> filePattern;
-    private Pattern topPattern;
     private String notfilePatternString = "";
     private boolean skipTimeCheck = false;
     private List<PatternHolder> notfilePattern;
@@ -123,6 +127,30 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         return false;
     }
+
+    @Override
+    public String addToStartUrl(String url) {
+	url = super.addToStartUrl(url);
+	url = HU.url(url,ARG_TMP_DIRECTORIES,"",
+		     ARG_TMP_DIRECTORYPATTERN,"");
+	return url;
+    }
+
+    @Override
+    public void applyApiStart(Request request) {
+	super.applyApiStart(request);
+	String tmp = request.getString(ARG_TMP_DIRECTORYPATTERN,null);
+	if(Utils.stringDefined(tmp)) {
+	    topPatternString = tmp;
+	    topPattern = null;
+	}
+
+	tmp = request.getString(ARG_TMP_DIRECTORIES,null);
+	if(Utils.stringDefined(tmp)) {
+	    createRootDirs(tmp);
+	}
+
+    }    
 
     private void putProcessedFile(String f) {
         //Limit the size to 10000
@@ -386,8 +414,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_GROUPTEMPLATE,
 					groupTemplate, HU.SIZE_60) +HU.space(2) + folderHelp));
 
+	formHelp(sb,"Patterns to match on directories to define entry type.","#heading-type_patterns");
+	getEntryManager().makeTypePatternsInput(request, "Folder type patterns",ATTR_FOLDERPATTERNS,sb,folderPatterns);
+
+
 	formHelp(sb,"The entry type for the entry type that holds the files. e.g., Photo Album",null);
-        sb.append(HU.formEntry(msgLabel("Last Folder Type"),
+        sb.append(HU.formEntry(msgLabel("Last folder type"),
 			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
 							      false, null,true)));
@@ -412,7 +444,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						     getTypeHandler())));
 
 	formHelp(sb,"Patterns to match on files to define entry type.","#heading-type_patterns");
-	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
+	getEntryManager().makeTypePatternsInput(request, "Entry type patterns",ATTR_TYPEPATTERNS,sb,typePatterns);
 
         sb.append(HU.formEntry(msgLabel("Date format"),
 			       HU.input(ATTR_DATEFORMAT,
@@ -500,8 +532,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    notfilePattern = PatternHolder.parseLines(notfilePatternString);
         }
 
-        if ((topPattern == null) && (topPatternString.length() > 0)) {
-            topPattern = Pattern.compile(topPatternString);
+	if(topPattern==null) {
+	    if (Utils.stringDefined(topPatternString.length())) {
+		topPattern = Pattern.compile(topPatternString);
+	    }
         }
 
         if ((filePattern == null) && (filePatternString != null)
@@ -1201,10 +1235,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
 	    name = getName(name,true);
             if (makeGroup && (parentGroup != null)) {
-                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,false,null,null,getGroupInitializer());
+                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,false,
+								  null,null,null,getGroupInitializer());
                 if ((group == null) && (name.indexOf("_") >= 0)) {
                     String blankName = name.replaceAll("_", " ");
-                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName,false,null,null,getGroupInitializer());
+                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName,false,
+								null,null,null,getGroupInitializer());
                     if (group != null) {
                         name = blankName;
                     }
@@ -1212,10 +1248,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
                 if (group == null) {
 		    boolean lastDir = i==dirToks.size()-1;
-                    String groupType = lastDir?getLastGroupType():TypeHandler.TYPE_GROUP;
-		    if(!Utils.stringDefined(groupType))groupType = TypeHandler.TYPE_GROUP;
+		    String theGroupType = null;
+		    TypeHandler groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,name);
+		    if(groupTypeHandler!=null) theGroupType = groupTypeHandler.getType();
+		    if(theGroupType==null) {
+			theGroupType = lastDir?getLastGroupType():TypeHandler.TYPE_GROUP;
+		    }
+		    
+		    if(!Utils.stringDefined(theGroupType))theGroupType = TypeHandler.TYPE_GROUP;
                     if (template != null) {
-                        groupType = template.getType();
+                        theGroupType = template.getType();
                     }
                     final FileWrapper dirFile     = file;
 		    final PatternHarvester theHarvester = this;
@@ -1224,7 +1266,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			    public void initEntry(Entry entry) {
 				theHarvester.initEntry(entry);
 			    }
-
 			    @Override
 			    public File getMetadataFile(Entry entry,
 							String fileArg) {
@@ -1236,7 +1277,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			};
 
                     group = getEntryManager().makeNewGroup(request,parentGroup, name,
-							   getUser(), template, groupType, initializer);
+							   getUser(), template, theGroupType, initializer);
 
                     String originalId = null;
                     if (template != null) {
@@ -1530,7 +1571,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    if(debug)    System.err.println("\tusing base group:" + group);
 	} else {
 	    group= getEntryManager().findEntryFromName(request,baseGroup,
-						       groupName, createIfNeeded, getLastGroupType(),
+						       groupName, createIfNeeded,
+						       folderPatterns,
+						       getLastGroupType(),
 						       dirTemplateEntry,
 						       getGroupInitializer());
 	    if(debug)

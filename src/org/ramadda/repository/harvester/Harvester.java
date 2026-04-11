@@ -58,6 +58,7 @@ public abstract class Harvester extends RepositoryManager {
     public static final String ATTR_ALIASES = "aliases";
     public static final String ATTR_CLEANNAME = "cleanname";
     public static final String ATTR_TYPEPATTERNS = "typepatterns";
+    public static final String ATTR_FOLDERPATTERNS = "folderpatterns";    
     public static final String UNIT_ABSOLUTE = "absolute";
     public static final String UNIT_MINUTE = "minute";
     public static final String UNIT_HOUR = "hour";
@@ -107,6 +108,7 @@ public abstract class Harvester extends RepositoryManager {
     private boolean isEditable = false;
     private TypeHandler typeHandler;
     protected String typePatterns="";
+    protected String folderPatterns="";    
     private String aliases = "";    
     private boolean cleanName = false;    
     private Hashtable<String,String> aliasMap;
@@ -241,10 +243,10 @@ public abstract class Harvester extends RepositoryManager {
         Entry  baseGroup = getBaseGroup();
         String extra     = "";
         if (baseGroup == null) {
-            extra = HtmlUtils.br()
-                    + HtmlUtils.span(
+            extra = HU.br()
+                    + HU.span(
                         msg("Required"),
-                        HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                        HU.cssClass(CSS_CLASS_REQUIRED_LABEL));
         }
 
         getRepository().getPageHandler().addEntrySelect(getRequest(),
@@ -264,6 +266,7 @@ public abstract class Harvester extends RepositoryManager {
                 ATTR_TYPE, TypeHandler.TYPE_ANY));
 
 	this.typePatterns= MyXmlUtil.getAttribute(element,ATTR_TYPEPATTERNS, "");
+	this.folderPatterns= MyXmlUtil.getAttribute(element,ATTR_FOLDERPATTERNS, "");	
         aliases = MyXmlUtil.getAttribute(element, ATTR_ALIASES, aliases);
         cleanName = MyXmlUtil.getAttribute(element, ATTR_CLEANNAME, cleanName);		
 
@@ -323,7 +326,7 @@ public abstract class Harvester extends RepositoryManager {
 
     public String getRunLink(Request request, boolean redirectToEdit) {
         if (getActive()) {
-            return HtmlUtils
+            return HU
                 .href(request
                     .makeUrl(getRepository().getHarvesterManager()
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_STOP,
@@ -331,7 +334,7 @@ public abstract class Harvester extends RepositoryManager {
                             ARG_HARVESTER_REDIRECTTOEDIT,
 			     "" + redirectToEdit), msg("Stop"),HU.cssClass("ramadda-button"));
         } else {
-            return HtmlUtils
+            return HU
                 .href(request
                     .makeUrl(getRepository().getHarvesterManager()
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_START,
@@ -341,9 +344,22 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
+
+
+    public String getStartUrl(Request request) {
+	return request.makeUrl(getRepository().getHarvesterManager()
+			       .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_START,
+			       ARG_HARVESTER_ID, getId());
+    }
+    public String getStopUrl(Request request) {
+	return request.makeUrl(getRepository().getHarvesterManager()
+			       .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_STOP,
+			       ARG_HARVESTER_ID, getId());
+    }    
+
     public void addAliasesEditForm(Request request, Appendable sb) throws Exception {
 	HU.formEntry(sb, msgLabel("Clean name"),
-			       HtmlUtils.labeledCheckbox(ATTR_CLEANNAME, "true",
+			       HU.labeledCheckbox(ATTR_CLEANNAME, "true",
 							 cleanName, "Clean up name from filename, etc"));
 	sb.append(HU.formEntryTop(msgLabel("Aliases"),
 				  HU.hbox(HU.textArea(ATTR_ALIASES,
@@ -382,22 +398,27 @@ public abstract class Harvester extends RepositoryManager {
 	return alias;
     }
 
-    public void applyEditForm(Request request) throws Exception {
-        this.request = null;
-        getEntryManager().clearSeenResources();
+    public void createRootDirs(String dirs) {
         rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
-                Utils.split(request.getUnsafeString(ATTR_ROOTDIR, ""), "\n",
+                Utils.split(dirs, "\n",
                             true, true)) {
 	    FileWrapper fw = FileWrapper.createFileWrapper(dir);
             rootDirs.add(fw);
         }
+    }
+
+    public void applyEditForm(Request request) throws Exception {
+        this.request = null;
+        getEntryManager().clearSeenResources();
+	createRootDirs(request.getUnsafeString(ATTR_ROOTDIR, ""));
 
         name = request.getString(ARG_NAME, name);
 
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
 	typePatterns = request.getString(ATTR_TYPEPATTERNS,typePatterns);
+	folderPatterns = request.getString(ATTR_FOLDERPATTERNS,folderPatterns);	
         aliases = request.getUnsafeString(ATTR_ALIASES,  aliases);
 	aliasMap = null;
         cleanName = request.get(ATTR_CLEANNAME,  cleanName);		
@@ -434,12 +455,42 @@ public abstract class Harvester extends RepositoryManager {
 
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
-                                      HtmlUtils.input(ARG_NAME, name,
-                                          HtmlUtils.SIZE_40)));
+        sb.append(HU.formEntry(msgLabel("Harvester name"),
+                                      HU.input(ARG_NAME, name,
+					       HU.SIZE_40)));
 
         makeRunSettings(request, sb);
+	makeApiInfo(request, sb);
+    }
 
+    public void makeApiInfo(Request request, StringBuffer sb) {
+	StringBuilder info =   new StringBuilder();
+	info.append(HU.bold("ID: ") + getId());
+	info.append("<br>");
+	info.append(HU.bold("Status API: ") +
+		    HU.url(request.getAbsoluteUrl(getRepository().getUrlBase()+"/harvester/api/status"),
+			   ARG_HARVESTER_ID,getId(),
+			   ARG_AUTH_USER,"your_user_id",
+			   ARG_AUTH_PASSWORD,"your_password"));
+
+	info.append("<br>");
+	String startUrl =
+	    HU.url(request.getAbsoluteUrl(getRepository().getUrlBase()+"/harvester/api/start"),
+		   ARG_HARVESTER_ID,getId(),
+		   ARG_AUTH_USER,"your_user_id",
+		   ARG_AUTH_PASSWORD,"your_password");
+	startUrl = addToStartUrl(startUrl);
+	info.append(HU.bold("Start API: ") +startUrl);
+
+	info.append("<br>");
+	sb.append(HU.formEntryTop("", 	HU.makeShowHideBlock(msg("Harvester API"),   info.toString(), false)));
+    }
+
+    public String addToStartUrl(String url) {
+	return url;
+    }
+
+    public void applyApiStart(Request request) {
     }
 
     public void makeRunSettings(Request request, StringBuffer sb) {
@@ -456,11 +507,11 @@ public abstract class Harvester extends RepositoryManager {
         } else if (sleepUnit.equals(UNIT_DAY)) {
             minutes = "" + (sleepMinutes / (60 * 60));
         }
-        String sleepType = HtmlUtils.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
+        String sleepType = HU.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
         String sleepLbl =
-            "<br>" + HtmlUtils.space(3)
+            "<br>" + HU.space(3)
             + "e.g., 30 minutes = on the hour and the half hour<br>"
-            + HtmlUtils.space(3);
+            + HU.space(3);
 
         if (sleepUnit.equals(UNIT_ABSOLUTE)) {
             sleepLbl += msg("Would run in") + " " + sleepMinutes + " "
@@ -476,35 +527,35 @@ public abstract class Harvester extends RepositoryManager {
         StringBuffer runWidgets = new StringBuffer();
         int          widgetCnt  = 0;
         if (showWidget(ATTR_TESTMODE)) {
-            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_TESTMODE, "true",
+            runWidgets.append(HU.labeledCheckbox(ATTR_TESTMODE, "true",
 						 testMode, "Test mode"));
-            runWidgets.append(HtmlUtils.space(3) + msgLabel("Count")
-                              + HtmlUtils.input(ATTR_TESTCOUNT,
-                                  "" + testCount, HtmlUtils.SIZE_5));
-            runWidgets.append(HtmlUtils.br());
+            runWidgets.append(HU.space(3) + msgLabel("Count")
+                              + HU.input(ATTR_TESTCOUNT,
+                                  "" + testCount, HU.SIZE_5));
+            runWidgets.append(HU.br());
             widgetCnt++;
         }
         if (showWidget(ATTR_ACTIVEONSTART)) {
-            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_ACTIVEONSTART, "true",
+            runWidgets.append(HU.labeledCheckbox(ATTR_ACTIVEONSTART, "true",
 							activeOnStart, "Active on startup"));
-            runWidgets.append(HtmlUtils.br());
+            runWidgets.append(HU.br());
             widgetCnt++;
         }
 
         if (showWidget(ATTR_MONITOR)) {
-            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_MONITOR, "true",
+            runWidgets.append(HU.labeledCheckbox(ATTR_MONITOR, "true",
 							monitor, "Run continually"));
 
-            runWidgets.append(HtmlUtils.br() + HtmlUtils.space(5));
-            runWidgets.append(msgLabel("Every") + HtmlUtils.space(1)
-                              + HtmlUtils.input(ATTR_SLEEP, "" + minutes,
-                                  HtmlUtils.SIZE_5) + HtmlUtils.space(1)
+            runWidgets.append(HU.br() + HU.space(5));
+            runWidgets.append(msgLabel("Every") + HU.space(1)
+                              + HU.input(ATTR_SLEEP, "" + minutes,
+                                  HU.SIZE_5) + HU.space(1)
                                       + sleepType + sleepLbl);
-            runWidgets.append(HtmlUtils.br());
+            runWidgets.append(HU.br());
             widgetCnt++;
         }
         if (showWidget(ATTR_GENERATEMD5)) {
-            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_GENERATEMD5, "true",
+            runWidgets.append(HU.labeledCheckbox(ATTR_GENERATEMD5, "true",
 							generateMd5,
 							"Generate MD5 Checksum"));
             widgetCnt++;
@@ -512,10 +563,10 @@ public abstract class Harvester extends RepositoryManager {
 
         String widgetText = runWidgets.toString();
         if (widgetCnt > 2) {
-            widgetText = HtmlUtils.makeShowHideBlock(msg("Run Settings"),
+            widgetText = HU.makeShowHideBlock(msg("Run Settings"),
                     widgetText, false);
         }
-        sb.append(HtmlUtils.formEntryTop("", widgetText));
+        sb.append(HU.formEntryTop("", widgetText));
     }
 
     public boolean showWidget(String arg) {
@@ -543,6 +594,7 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_ADDSHORTMETADATA, addShortMetadata + "");
         element.setAttribute(ATTR_TYPE, getTypeHandler().getType());
         element.setAttribute(ATTR_TYPEPATTERNS, typePatterns);
+        element.setAttribute(ATTR_FOLDERPATTERNS, folderPatterns);	
         element.setAttribute(ATTR_ALIASES, aliases);
         element.setAttribute(ATTR_CLEANNAME, ""+cleanName);		
         element.setAttribute(ATTR_SLEEP, sleepMinutes + "");
@@ -874,7 +926,7 @@ public abstract class Harvester extends RepositoryManager {
 	    msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             msg = msg.replace("\n", "<br>");
             status.append(msg);
-            status.append(HtmlUtils.br());
+            status.append(HU.br());
         }
     }
 

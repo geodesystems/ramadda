@@ -403,7 +403,7 @@ public class WebHarvester extends Harvester {
                        ? getEntryManager().findGroupUnder(getRequest(),
                            baseGroup, groupName, getUser())
                        : getEntryManager().findEntryFromName(getRequest(),null,
-							     groupName,  true,null,null,null));
+							     groupName,  true,null,null,null,null));
         //        System.err.println("Group:" + group.getFullName());
         Entry entry = getTypeHandler().createEntry(repository.getGUID());
         Resource resource = new Resource(newFile.toString(),
