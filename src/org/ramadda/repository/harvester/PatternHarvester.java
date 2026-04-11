@@ -336,6 +336,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         }
 
+        formHelp(sb,"Should the harvest be continued when there are any errors harvesting a file",null);
+
+        sb.append(HU.formEntry("",
+			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,   "true",
+						  ignoreErrors,"Ignore errors") + HU.space(2) +
+			       HU.labeledCheckbox(ATTR_MAKE_FILE_ON_ERROR, "true",
+						  makeFileOnError,"Make file entry on error")));
+
+
+
         sb.append(HU.colspan(formHeader("Look for files"), 2));
 
         StringBuffer inputText = new StringBuffer();
@@ -396,13 +406,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(HU.formEntry(msgLabel("Uniqueness"),
 			       uniqueWidgets));
 
-        formHelp(sb,"Should the harvest be continued when there are any errors harvesting a file",null);
-
-        sb.append(HU.formEntry("",
-			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,   "true",
-						  ignoreErrors,"Ignore errors") + HU.space(2) +
-			       HU.labeledCheckbox(ATTR_MAKE_FILE_ON_ERROR, "true",
-						  makeFileOnError,"Make file entry on error")));
 	
         sb.append(HU.colspan(formHeader("Then create an entry with"),2));
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
@@ -462,6 +465,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						  "true",
 						  deleteWhenFileSizeDiffers,"Delete matching entry and re-add when file size differs")));
 
+
+
+
 	List<String> mtds = new ArrayList<String>();
 	mtds.add(HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full"));
 	mtds.add(HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just spatial/temporal"));
@@ -474,6 +480,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	images.add(HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true",
 				      getExtraAttribute(ARG_DOOCR_CONDITIONAL,false),
 				      "Don't do OCR if there is any text in the document"));	    
+
+        sb.append(HU.colspan(formHeader("Etcetera"),2));
 
 	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
 	HU.formEntry(sb, msgLabel("Images"),  Utils.join(images, HU.space(4)));	

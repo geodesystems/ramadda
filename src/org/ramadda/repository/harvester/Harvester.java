@@ -455,6 +455,8 @@ public abstract class Harvester extends RepositoryManager {
 
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
+        sb.append(HU.colspan(formHeader("Settings"), 2));
+
         sb.append(HU.formEntry(msgLabel("Harvester name"),
                                       HU.input(ARG_NAME, name,
 					       HU.SIZE_40)));

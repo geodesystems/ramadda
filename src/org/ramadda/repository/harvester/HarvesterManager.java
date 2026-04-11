@@ -394,7 +394,7 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(space);
         sb.append(helpLink);
         StringBuffer formSB = new StringBuffer();
-        formSB.append(HU.formTable());
+        formSB.append(HU.formTable("ramadda-harvester-edit"));
         harvester.createEditForm(request, formSB);
         formSB.append(HU.formTableClose());
 
