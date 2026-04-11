@@ -4386,6 +4386,12 @@ label {
     text-indent: -15px;
 }
 
+.ramadda-harvester-edit .formgroupheader {
+    background-color: #e0f2fe;
+    padding-left:0.5em;
+    padding-top:0.25em;
+}
+
 .harvester-row  {
     border-bottom: 1px #efefef solid;
 }
