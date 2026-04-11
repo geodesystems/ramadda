@@ -9384,11 +9384,12 @@ public class EntryManager extends RepositoryManager {
 
     public Entry findEntryFromName(Request request, Entry baseEntry, String name)
 	throws Exception {
-        return findEntryFromName(request, baseEntry, name, false, null,null,null);
+        return findEntryFromName(request, baseEntry, name, false, null,null,null,null);
     }
 
     public Entry findEntryFromName(Request request, Entry baseEntry, String name, 
                                    boolean createIfNeeded,
+				   String folderPatterns,
                                    String lastGroupType, Entry templateEntry,
                                    EntryInitializer initializer)
 	throws Exception {
@@ -9444,6 +9445,7 @@ public class EntryManager extends RepositoryManager {
         }
         String groupType = TypeHandler.TYPE_GROUP;
 
+
         for (int i = 0; i < toks.size(); i++) {
             boolean      lastOne   = (i == toks.size() - 1);
             String       childName = Entry.decodeName(toks.get(i));
@@ -9462,10 +9464,15 @@ public class EntryManager extends RepositoryManager {
                 if ( !createIfNeeded) {
                     return null;
                 }
+		String theGroupType = null;
+		TypeHandler groupTypeHandler=findTypeFromPatterns(folderPatterns,childName);
+		if(groupTypeHandler!=null) theGroupType = groupTypeHandler.getType();
+		if(theGroupType==null) {
+		    theGroupType = (lastOne  ? lastGroupType : groupType);
+		}
+
                 currentEntry = makeNewGroup(request,currentEntry, childName, request.getUser(),
-                                            null, (lastOne
-						   ? lastGroupType
-						   : groupType), initializer);
+                                            null, theGroupType, initializer);
             }
 
             if (currentEntry.getTypeHandler().isSynthType()) {
@@ -10244,7 +10251,7 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    public void makeTypePatternsInput(Request request, String arg, Appendable sb,String typePatterns) 
+    public void makeTypePatternsInput(Request request, String label,String arg, Appendable sb,String typePatterns) 
 	throws Exception {
 	String uid = HU.getUniqueId("select_");
 	String textid = HU.getUniqueId("text_");	
@@ -10256,7 +10263,7 @@ public class EntryManager extends RepositoryManager {
 					     3, 50,HU.id(textid));
 	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
 
-	TypeHandler.addExtra(sb,msgLabel("Type Patterns"),
+	TypeHandler.addExtra(sb,msgLabel(label),
 			     HU.hbox(
 				     textArea,
 				     select+ HU.space(1) + help +
@@ -10289,11 +10296,14 @@ public class EntryManager extends RepositoryManager {
 
     public TypeHandler findTypeFromPatterns(String typePatterns, String filePath) throws Exception {
 	List<PatternType> patterns = getTypePatterns(typePatterns);
+	//	System.err.println("findTypeFromPatterns:" + typePatterns +" pattern list:" + patterns+" file path:" + filePath);
 	if(patterns==null) return null;
 	for(PatternType pattern:patterns) {
 	    if(pattern.pattern.matches(filePath)) {
+		//		System.err.println("\tmatches:" + pattern.pattern +" type:" + pattern.type);
 		return  pattern.type;
 	    }
+	    //	    System.err.println("\tno match:" + pattern.pattern +" type:" + pattern.type);
 	}
 	return null;
     }
