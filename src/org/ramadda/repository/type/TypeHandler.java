@@ -5229,7 +5229,8 @@ public class TypeHandler extends RepositoryManager {
 	}
 
 	HU.formEntry(extras,"",HU.formHelp("Advanced"));
-	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
+	getEntryManager().makeTypePatternsInput(request, "Type Patterns",
+						ARG_TYPEPATTERNS,
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
 	addExtra(extras,msgLabel("Date Format"),dateFormatWidget);	
