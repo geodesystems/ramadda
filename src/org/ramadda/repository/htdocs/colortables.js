@@ -417,7 +417,9 @@ $.extend(Utils,{
         }
         html += HU.close(TAG_DIV);
         html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
-        if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+	//Only show labels if the length is reasonable
+        if (ct.length<50 &&
+	    options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = HU.perc(100 / ct.length);
             html += HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 						       CSS_VERTICAL_ALIGN,ALIGN_TOP,
