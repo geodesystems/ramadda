@@ -324,6 +324,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
 
+	{p:'${&lt;field&gt;.logScale}',tt:'Apply log scale to field'},
 
 	{p:'pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 	{p:'highlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
@@ -508,6 +509,82 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
         },
+	processDataList:function(dataList) {
+	    this.dataListInfo  ={};
+	    if(!dataList || dataList.length==0) return dataList;
+	    let dataFields = dataList[0].fields;
+	    if(!dataFields) return dataList;
+
+	    dataFields.forEach((field,idx)=>{
+		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
+		if(!isLog) return;
+		dataList = this.transformTupleValueLog(dataList,idx);
+		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {logScale:true};
+	    });
+	    return dataList;
+	},
+	isLogScale:function(field) {
+	    if(!this.dataListInfo) return false;
+	    let info = this.dataListInfo[field];
+	    if(!info) return false;
+	    return info.logScale;
+	},
+
+	transformTupleValueLog:function(dataList, tupleIndex, {
+	    logBase = 10,
+	    epsilon = 1e-9
+	} = {}) {
+	    if (tupleIndex == null || tupleIndex < 0) {
+		throw new Error("Invalid tupleIndex");
+	    }
+
+	    let minValue = Infinity;
+
+	    let debug = false;
+	    // Find min for the selected tuple element
+	    dataList.forEach((d,idx) => {
+		if(idx==0) {
+		    return;
+		}
+
+		if (!d.tuple || tupleIndex >= d.tuple.length) return;
+		const value = d.tuple[tupleIndex];
+		if (typeof value === 'number' && isFinite(value) && value < minValue) {
+		    minValue = value;
+		}
+	    });
+
+	    if (minValue === Infinity) {
+		return;
+//		throw new Error("No valid numeric values found");
+	    }
+
+	    const offset = minValue <= 0 ? Math.abs(minValue) + epsilon : 0;
+	    const logFn = v => Math.log(v) / Math.log(logBase);
+	    return dataList.map((d,idx) => {
+		if(idx==0) return d;
+		if (!d.tuple || tupleIndex >= d.tuple.length) {
+		    return { ...d };
+		}
+
+		const tuple = d.tuple.slice();
+		let value = tuple[tupleIndex];
+		if (typeof value === 'number' && isFinite(value)) {
+		    let newValue = logFn(value + offset);
+		    tuple[tupleIndex] = newValue;
+		}
+
+		return {
+		    ...d,
+		    tuple,
+		    _logInfo: {
+			tupleIndex,
+			offset,
+			logBase
+		    }
+		};
+	    });
+	},
         setColor: function() {
             let v = prompt("Enter comma separated list of colors to use", this.colorList.join(","));
             if (v != null) {
@@ -757,6 +834,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
+//	    console.log('chart fields',selectedFields.reduce((accum,field)=>{return accum +' ' + field.getId();},''));
 	    
 	    if(debug)
 		console.log("\tpointData #records:" +records.length);
@@ -869,6 +947,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let t1= new Date();
 	    fieldsToSelect = this.getFieldsToDisplay(fieldsToSelect);
             let dataList = this.getStandardData(fieldsToSelect, props);
+	    dataList = this.processDataList(dataList);
+
 	    let t2= new Date();
 	    if(this.debugTimes)
 		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
@@ -1910,8 +1990,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     min:chartOptions.vAxis.minValue
 		}
 	    }
-
-
 
 
 	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale",this.getProperty("logScale"));
@@ -4556,6 +4634,9 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
+    properties.dataFieldLabel0='H Axis';
+    properties.dataFieldLabel1='V Axis';
+    if(!Utils.isDefined(properties.numberOfDataFields)) properties.numberOfDataFields=2;
     const SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         trendLineEnabled: function() {
@@ -4580,7 +4661,12 @@ function ScatterplotDisplay(displayManager, id, properties) {
 		chartOptions.vAxis.maxValue = x.max;
 	    }
 	},
+
         makeChartOptions: function(dataList, props, selectedFields) {
+
+	    
+
+
             let chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType = null;
             chartOptions.lineWidth = 0;
@@ -4610,7 +4696,6 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if(this.getProperty("vAxisLogScale", false)) 
 		chartOptions.vAxis.logScale = true;
 
-
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
@@ -4639,17 +4724,25 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.title = this.getProperty("vAxisTitle");
 		}
 
+
 		if(!chartOptions.hAxis.title) {
+		    let title = this.getDataValues(dataList[0])[0];
                     $.extend(chartOptions.hAxis, {
-			title: this.getDataValues(dataList[0])[0]
+			title: title
                     });
 		}
+
+
 
 		if(!chartOptions.vAxis.title) {
                     $.extend(chartOptions.vAxis, {
 			title: this.getDataValues(dataList[0])[1]
                     });
 		}
+
+		if(this.isLogScale(0)) chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
+		if(this.isLogScale(1)) chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';		
+
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
 		    //                    chartOptions.hAxis.minValue = this.getVAxisMinValue();

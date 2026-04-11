@@ -114,7 +114,7 @@ var ID_NEXT = "next";
 var ID_PREV = "prev";
 var ID_PREVNEXT_LABEL = 'prevnext_label';
 
-
+var PROP_DATAFIELD='dataField';
 
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";
@@ -456,7 +456,7 @@ function DisplayThing(argId, argProperties) {
 	}
 
 	Utils.split(key,',',true,true).forEach(tok=>{
-	    argProperties[tok+suffix] = value;
+	    tmpProperties[tok+suffix] = value;
 	});
     });
     argProperties = tmpProperties;
@@ -3657,11 +3657,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    if(!this.lastSelectedFields) {
+		this.lastSelectedFields = [];
+	    }
+	
+
+	    for(let i=0;true;i++) {
+		let prop = this.getProperty(PROP_DATAFIELD+i);
+		if(!prop) break;
+		let field = this.getFieldById(prop);
+		if(!field) continue;
+		if(this.lastSelectedFields.length<i) 
+		    this.lastSelectedFields[i].push(field);
+		else
+		    this.lastSelectedFields[i] = field;		
+	    }
+
+//	    console.log('fields',this.lastSelectedFields.reduce((accum,field)=>{return accum +' ' + field.getId();},''));
+
 	    let result =  Utils.cloneList(this.lastSelectedFields??[]);
 	    if(prefixFields) {
 		let p  =this.getFieldsByIds(null, prefixFields);
 		if(p.length) result = [...p,...result];
 	    }
+
 	    return result;
 
         },
@@ -7203,6 +7222,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
 
+	    this.dataFields = [];
+	    let numberOfDataFields = this.getProperty('numberOfDataFields',0);
+	    if(numberOfDataFields) {
+		for(let i=0;i<numberOfDataFields;i++) {
+		    let fields  =  this.getFieldsByIds(null,
+						       this.getProperty("dataFields"+i,
+									this.getProperty("dataFields")));
+		    if(fields.length)
+			this.dataFields.push(fields);
+		}
+	    }
+
             let colorBy = this.getFieldById(null, this.getProperty("colorBy",""));
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
@@ -7317,6 +7348,45 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    if(this.dataFields.length>0) {
+		let didDataFieldMenu = false;
+		this.dataFields.forEach((fields,idx)=>{
+		    let enums = [];
+		    fields.forEach(field=>{
+			if(field.isFieldGeo()) return;
+			enums.push([field.getId(),field.getLabel(this)]);
+		    });
+		    let label = this.makeFilterLabel(this.getProperty("dataFieldLabel"+idx, "Field " + (idx+1))+':');
+		    let selected = this.getProperty(PROP_DATAFIELD + idx);
+		    if(!selected) {
+			if(idx<fields.length) {
+			    selected = fields[idx].getId();
+			}
+			if(selected) this.setProperty(PROP_DATAFIELD + idx,selected);
+		    }
+		    if(!didDataFieldMenu) {
+			didDataFieldMenu = true;
+			if(this.getProperty('dataFieldsBreakBefore')) {
+			    header2+=HU.flexBreak();
+			}
+		    }
+
+		    header2 += HU.span([ATTR_CLASS,filterClass],
+				       label+
+				       HU.select("",[ATTR_ID,this.getDomId(PROP_DATAFIELD + idx)],
+						 enums,selected,20))+SPACE2;
+		    if(this.getProperty('dataFieldsBreakAfter')) {
+			header2+=HU.flexBreak();
+		    }
+		});
+		if(didDataFieldMenu) {
+		    if(this.getProperty('dataFieldsBreakAfter')) {
+			header2+=HU.flexBreak();
+		    }
+		}
+	    }
+
+
 
 	    if(this.colorByFields.length>0) {
 		let enums = [];
@@ -7324,14 +7394,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel(this)]);
 		});
+		if(this.getProperty('colorByBreakBefore')) {
+		    header2+=HU.flexBreak();
+		}
+
 		let selected = colorBy?colorBy.getId():"";
-		let extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-				    ATTR_TITLE,'Color table settings',
-				    ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
+
+		let extra=    HU.span([ATTR_ID,this.domId('colortableextra')]) +
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			     ATTR_TITLE,'Color table settings',
+			     ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
 		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
 						    enums,selected,20))+extra+SPACE2;
+		if(this.getProperty('colorByBreakAfter')) {
+		    header2+=HU.flexBreak();
+		}
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -7549,11 +7628,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    if(this.getProperty(filter.getId()+'.filterBreak',
 					this.getProperty(filter.getId()+'.filterBreakBefore'))) {
-			searchBar+='<div class=display-filter-break></div>';
+			searchBar+=HU.flexBreak();
 		    }
 		    searchBar +=widget;
 		    if(this.getProperty(filter.getId()+'.filterBreakAfter')) {
-			searchBar+='<div class=display-filter-break></div>';
+			searchBar+=HU.flexBreak();
 		    }
 		});
 		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -7914,12 +7993,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
+	    if(this.colorByFields.length>5) {
+		HU.makeSelectTagPopup(this.jq('colorbyselect'),{
+		    single:true,
+		    makeButtons:false,
+		    makeButton:false,
+		    hide:false,after:true,
+		    buttonLabel:HU.getIconImage('fas fa-list-check')});
+	    }		
+
 	    this.jq('colortablesettings').click(function() {
 		_this.showColorTableSettings($(this));
 	    });
             this.jq('colorbyselect').change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
+	    if(this.dataFields.length>0) {
+		this.dataFields.forEach((fields,idx)=>{
+		    this.jq(PROP_DATAFIELD+idx).change(function() {
+			let dataField = $(this).val();
+			_this.setProperty(PROP_DATAFIELD+idx,dataField);
+//			console.log('datafield'+idx,dataField);
+			_this.callUpdateUI();
+
+		    });
+		});
+	    }
+
+
+
 	    this.jq('uniquefields').change(()=>{
 		this.callUpdateUI();
 	    });
@@ -9476,6 +9578,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = tmp;
 	    }
             return dataList;
+	    
         },
         isGoogleLoaded: function() {
             if ((typeof google === 'undefined') || (typeof google.visualization === 'undefined') || (typeof google.visualization.DateFormat === 'undefined')) {
