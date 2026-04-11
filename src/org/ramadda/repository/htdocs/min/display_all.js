@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr  9 17:36:13 MDT 2026";
+var build_date="RAMADDA build date: Sat Apr 11 05:50:23 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -419,7 +419,9 @@ $.extend(Utils,{
         }
         html += HU.close(TAG_DIV);
         html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
-        if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+	//Only show labels if the length is reasonable
+        if (ct.length<50 &&
+	    options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = HU.perc(100 / ct.length);
             html += HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 						       CSS_VERTICAL_ALIGN,ALIGN_TOP,
@@ -4713,7 +4715,7 @@ var ID_NEXT = "next";
 var ID_PREV = "prev";
 var ID_PREVNEXT_LABEL = 'prevnext_label';
 
-
+var PROP_DATAFIELD='dataField';
 
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";
@@ -5055,7 +5057,7 @@ function DisplayThing(argId, argProperties) {
 	}
 
 	Utils.split(key,',',true,true).forEach(tok=>{
-	    argProperties[tok+suffix] = value;
+	    tmpProperties[tok+suffix] = value;
 	});
     });
     argProperties = tmpProperties;
@@ -8256,11 +8258,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    if(!this.lastSelectedFields) {
+		this.lastSelectedFields = [];
+	    }
+	
+
+	    for(let i=0;true;i++) {
+		let prop = this.getProperty(PROP_DATAFIELD+i);
+		if(!prop) break;
+		let field = this.getFieldById(prop);
+		if(!field) continue;
+		if(this.lastSelectedFields.length<i) 
+		    this.lastSelectedFields[i].push(field);
+		else
+		    this.lastSelectedFields[i] = field;		
+	    }
+
+//	    console.log('fields',this.lastSelectedFields.reduce((accum,field)=>{return accum +' ' + field.getId();},''));
+
 	    let result =  Utils.cloneList(this.lastSelectedFields??[]);
 	    if(prefixFields) {
 		let p  =this.getFieldsByIds(null, prefixFields);
 		if(p.length) result = [...p,...result];
 	    }
+
 	    return result;
 
         },
@@ -11802,6 +11823,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
 
+	    this.dataFields = [];
+	    let numberOfDataFields = this.getProperty('numberOfDataFields',0);
+	    if(numberOfDataFields) {
+		for(let i=0;i<numberOfDataFields;i++) {
+		    let fields  =  this.getFieldsByIds(null,
+						       this.getProperty("dataFields"+i,
+									this.getProperty("dataFields")));
+		    if(fields.length)
+			this.dataFields.push(fields);
+		}
+	    }
+
             let colorBy = this.getFieldById(null, this.getProperty("colorBy",""));
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
@@ -11916,6 +11949,45 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    if(this.dataFields.length>0) {
+		let didDataFieldMenu = false;
+		this.dataFields.forEach((fields,idx)=>{
+		    let enums = [];
+		    fields.forEach(field=>{
+			if(field.isFieldGeo()) return;
+			enums.push([field.getId(),field.getLabel(this)]);
+		    });
+		    let label = this.makeFilterLabel(this.getProperty("dataFieldLabel"+idx, "Field " + (idx+1))+':');
+		    let selected = this.getProperty(PROP_DATAFIELD + idx);
+		    if(!selected) {
+			if(idx<fields.length) {
+			    selected = fields[idx].getId();
+			}
+			if(selected) this.setProperty(PROP_DATAFIELD + idx,selected);
+		    }
+		    if(!didDataFieldMenu) {
+			didDataFieldMenu = true;
+			if(this.getProperty('dataFieldsBreakBefore')) {
+			    header2+=HU.flexBreak();
+			}
+		    }
+
+		    header2 += HU.span([ATTR_CLASS,filterClass],
+				       label+
+				       HU.select("",[ATTR_ID,this.getDomId(PROP_DATAFIELD + idx)],
+						 enums,selected,20))+SPACE2;
+		    if(this.getProperty('dataFieldsBreakAfter')) {
+			header2+=HU.flexBreak();
+		    }
+		});
+		if(didDataFieldMenu) {
+		    if(this.getProperty('dataFieldsBreakAfter')) {
+			header2+=HU.flexBreak();
+		    }
+		}
+	    }
+
+
 
 	    if(this.colorByFields.length>0) {
 		let enums = [];
@@ -11923,14 +11995,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel(this)]);
 		});
+		if(this.getProperty('colorByBreakBefore')) {
+		    header2+=HU.flexBreak();
+		}
+
 		let selected = colorBy?colorBy.getId():"";
-		let extra= HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-				    ATTR_TITLE,'Color table settings',
-				    ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
+
+		let extra=    HU.span([ATTR_ID,this.domId('colortableextra')]) +
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			     ATTR_TITLE,'Color table settings',
+			     ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
 		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
 						    enums,selected,20))+extra+SPACE2;
+		if(this.getProperty('colorByBreakAfter')) {
+		    header2+=HU.flexBreak();
+		}
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -12148,11 +12229,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    if(this.getProperty(filter.getId()+'.filterBreak',
 					this.getProperty(filter.getId()+'.filterBreakBefore'))) {
-			searchBar+='<div class=display-filter-break></div>';
+			searchBar+=HU.flexBreak();
 		    }
 		    searchBar +=widget;
 		    if(this.getProperty(filter.getId()+'.filterBreakAfter')) {
-			searchBar+='<div class=display-filter-break></div>';
+			searchBar+=HU.flexBreak();
 		    }
 		});
 		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -12513,12 +12594,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
+	    if(this.colorByFields.length>5) {
+		HU.makeSelectTagPopup(this.jq('colorbyselect'),{
+		    single:true,
+		    makeButtons:false,
+		    makeButton:false,
+		    hide:false,after:true,
+		    buttonLabel:HU.getIconImage('fas fa-list-check')});
+	    }		
+
 	    this.jq('colortablesettings').click(function() {
 		_this.showColorTableSettings($(this));
 	    });
             this.jq('colorbyselect').change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
+	    if(this.dataFields.length>0) {
+		this.dataFields.forEach((fields,idx)=>{
+		    this.jq(PROP_DATAFIELD+idx).change(function() {
+			let dataField = $(this).val();
+			_this.setProperty(PROP_DATAFIELD+idx,dataField);
+//			console.log('datafield'+idx,dataField);
+			_this.callUpdateUI();
+
+		    });
+		});
+	    }
+
+
+
 	    this.jq('uniquefields').change(()=>{
 		this.callUpdateUI();
 	    });
@@ -14075,6 +14179,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = tmp;
 	    }
             return dataList;
+	    
         },
         isGoogleLoaded: function() {
             if ((typeof google === 'undefined') || (typeof google.visualization === 'undefined') || (typeof google.visualization.DateFormat === 'undefined')) {
@@ -21101,6 +21206,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
 
+	{p:'${&lt;field&gt;.logScale}',tt:'Apply log scale to field'},
 
 	{p:'pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 	{p:'highlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
@@ -21285,6 +21391,82 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
         },
+	processDataList:function(dataList) {
+	    this.dataListInfo  ={};
+	    if(!dataList || dataList.length==0) return dataList;
+	    let dataFields = dataList[0].fields;
+	    if(!dataFields) return dataList;
+
+	    dataFields.forEach((field,idx)=>{
+		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
+		if(!isLog) return;
+		dataList = this.transformTupleValueLog(dataList,idx);
+		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {logScale:true};
+	    });
+	    return dataList;
+	},
+	isLogScale:function(field) {
+	    if(!this.dataListInfo) return false;
+	    let info = this.dataListInfo[field];
+	    if(!info) return false;
+	    return info.logScale;
+	},
+
+	transformTupleValueLog:function(dataList, tupleIndex, {
+	    logBase = 10,
+	    epsilon = 1e-9
+	} = {}) {
+	    if (tupleIndex == null || tupleIndex < 0) {
+		throw new Error("Invalid tupleIndex");
+	    }
+
+	    let minValue = Infinity;
+
+	    let debug = false;
+	    // Find min for the selected tuple element
+	    dataList.forEach((d,idx) => {
+		if(idx==0) {
+		    return;
+		}
+
+		if (!d.tuple || tupleIndex >= d.tuple.length) return;
+		const value = d.tuple[tupleIndex];
+		if (typeof value === 'number' && isFinite(value) && value < minValue) {
+		    minValue = value;
+		}
+	    });
+
+	    if (minValue === Infinity) {
+		return;
+//		throw new Error("No valid numeric values found");
+	    }
+
+	    const offset = minValue <= 0 ? Math.abs(minValue) + epsilon : 0;
+	    const logFn = v => Math.log(v) / Math.log(logBase);
+	    return dataList.map((d,idx) => {
+		if(idx==0) return d;
+		if (!d.tuple || tupleIndex >= d.tuple.length) {
+		    return { ...d };
+		}
+
+		const tuple = d.tuple.slice();
+		let value = tuple[tupleIndex];
+		if (typeof value === 'number' && isFinite(value)) {
+		    let newValue = logFn(value + offset);
+		    tuple[tupleIndex] = newValue;
+		}
+
+		return {
+		    ...d,
+		    tuple,
+		    _logInfo: {
+			tupleIndex,
+			offset,
+			logBase
+		    }
+		};
+	    });
+	},
         setColor: function() {
             let v = prompt("Enter comma separated list of colors to use", this.colorList.join(","));
             if (v != null) {
@@ -21534,6 +21716,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
+//	    console.log('chart fields',selectedFields.reduce((accum,field)=>{return accum +' ' + field.getId();},''));
 	    
 	    if(debug)
 		console.log("\tpointData #records:" +records.length);
@@ -21646,6 +21829,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let t1= new Date();
 	    fieldsToSelect = this.getFieldsToDisplay(fieldsToSelect);
             let dataList = this.getStandardData(fieldsToSelect, props);
+	    dataList = this.processDataList(dataList);
+
 	    let t2= new Date();
 	    if(this.debugTimes)
 		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
@@ -22687,8 +22872,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     min:chartOptions.vAxis.minValue
 		}
 	    }
-
-
 
 
 	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale",this.getProperty("logScale"));
@@ -25333,6 +25516,9 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
+    properties.dataFieldLabel0='H Axis';
+    properties.dataFieldLabel1='V Axis';
+    if(!Utils.isDefined(properties.numberOfDataFields)) properties.numberOfDataFields=2;
     const SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         trendLineEnabled: function() {
@@ -25357,7 +25543,12 @@ function ScatterplotDisplay(displayManager, id, properties) {
 		chartOptions.vAxis.maxValue = x.max;
 	    }
 	},
+
         makeChartOptions: function(dataList, props, selectedFields) {
+
+	    
+
+
             let chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType = null;
             chartOptions.lineWidth = 0;
@@ -25387,7 +25578,6 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if(this.getProperty("vAxisLogScale", false)) 
 		chartOptions.vAxis.logScale = true;
 
-
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
@@ -25416,17 +25606,25 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.title = this.getProperty("vAxisTitle");
 		}
 
+
 		if(!chartOptions.hAxis.title) {
+		    let title = this.getDataValues(dataList[0])[0];
                     $.extend(chartOptions.hAxis, {
-			title: this.getDataValues(dataList[0])[0]
+			title: title
                     });
 		}
+
+
 
 		if(!chartOptions.vAxis.title) {
                     $.extend(chartOptions.vAxis, {
 			title: this.getDataValues(dataList[0])[1]
                     });
 		}
+
+		if(this.isLogScale(0)) chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
+		if(this.isLogScale(1)) chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';		
+
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
 		    //                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
