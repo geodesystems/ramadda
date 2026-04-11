@@ -2769,6 +2769,7 @@ public class Utils extends IO {
 	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
 	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
 	"^\\d{6}$", "yyyyMMdd",
+	"^\\d{2}-[A-Za-z]{3}-\\d{4}$","dd-MMM-yyyy",
 	"^\\d{4}-\\d{2}$","yyyy-MM",
 	"^\\d{4}$","yyyy",
 	"^\\d{3}$","yyy"	
@@ -2776,12 +2777,15 @@ public class Utils extends IO {
     };
 
     public static final MyDateFormat findDateFormat(String s) {
+	//	System.err.println("Utils.findDateFormat:" + s);
 	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
 	    String pattern = FIND_DATE_PATTERNS[i];
 	    if(s.matches(pattern)) {
+		//		System.err.println("\tdate format:" +FIND_DATE_PATTERNS[i+1]);
 		return makeDateFormat(FIND_DATE_PATTERNS[i+1]);
 	    }
 	}
+	//	System.err.println("\tnull date format");
 	return  null;
     }
 
