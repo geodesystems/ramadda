@@ -260,6 +260,10 @@
     <api request="/harvester/new"            method="processNew"            admin="true" />
     <api request="/harvester/form/*"           method="processForm"           admin="true" />
     <api request="/harvester/change"           method="processChange"           admin="true" />
+    <api request="/harvester/api/status"
+         method="processApiStatus"           admin="true" />
+    <api request="/harvester/api/start"
+         method="processApiStart"           admin="true" />        
   </group>
 
 
