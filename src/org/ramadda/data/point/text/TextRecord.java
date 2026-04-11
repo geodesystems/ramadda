@@ -420,7 +420,8 @@ public class TextRecord extends DataRecord {
 			date = parseDate(field, tok);
 		    } catch(Exception exc) {
 			if(dateErrorCnt++<10) {
-			    System.err.println("bad date:" + tok +" format:" + getDateFormat(field,tok));
+			    System.err.println("bad date:" + tok +" format:" +
+					       getDateFormat(field,tok)+" file:" + getRecordFile());
 			}
 		    }
                     if (date == null) {
@@ -445,7 +446,7 @@ public class TextRecord extends DataRecord {
                             dValue = textFile.parseValue(this, field, tok);
                         } catch (Exception exc) {
 			    if(doubleErrorCnt++<5) {
-				System.err.println("Error parsing value:" + tok + ": field:" + field);
+				System.err.println("Error parsing value:" + tok + ": field:" + field +" file:" + getRecordFile());
 				//				System.err.println("fields:"+   fields);
 				//				System.err.println("line:" + line);
 			    }
