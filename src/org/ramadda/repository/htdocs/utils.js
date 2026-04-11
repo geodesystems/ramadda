@@ -3221,6 +3221,8 @@ var Utils =  {
         window.location = url;
     },
 
+
+
     searchPopup:function(id,anchor) {
         anchor = id;
 	//      anchor = anchor || id;
@@ -6340,6 +6342,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     isVisible:function(element) {
 	return $(element).is(':visible');
     },    
+    flexBreak:function() {
+	return '<div class=display-filter-break></div>';
+    },
     checkbox: function(id, attrs, checked,label) {
 	attrs = attrs||[];
 	if(!Utils.stringDefined(id)) {
