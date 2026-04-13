@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr 11 05:50:23 MDT 2026";
+var build_date="RAMADDA build date: Sun Apr 12 18:19:07 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -420,22 +420,22 @@ $.extend(Utils,{
         html += HU.close(TAG_DIV);
         html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
 	//Only show labels if the length is reasonable
-        if (ct.length<50 &&
-	    options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+        if (ct.length<30 &&
+	    options.showLabels &&
+	    Object.keys(colorInfo).length &&
+	    options.horizontal &&
+	    !options.showColorTableDots) {
             let tdw = HU.perc(100 / ct.length);
             html += HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 						       CSS_VERTICAL_ALIGN,ALIGN_TOP,
 						       CSS_TEXT_ALIGN,ALIGN_CENTER)]);
             let colCnt =0;
             let bin ={};
-            ct.forEach(color=>{
+            ct.forEach((color,idx)=>{
 		let info = colorInfo[color];
-                let cell = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),
-						     CSS_VERTICAL_ALIGN,'top',
-						     CSS_DISPLAY,'inline-block',
-						     CSS_WIDTH,tdw,
-						     CSS_MAX_WIDTH,tdw,
-						     CSS_OVERFLOW_X,'auto')],info?info.label:'');
+                let cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-label'], info?info.label:'');
+		cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-entry',
+			       ATTR_STYLE,HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw)], cell);
                 html+=cell;
             });
             html+=HU.close(TAG_DIV);
@@ -2913,7 +2913,6 @@ var debugColorBy = false;
 function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
     this.properties = props || {};
     this.display = display;
-//    console.log('***',fieldProperty,propPrefix)
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
     if(Utils.isDefined(this.properties.maxValue)) this.properties.hasMaxValue = true;    
 
@@ -3188,7 +3187,7 @@ function ColorByInfo(display, fields, records,
     let colorTabelSteps = null;
     let typeProperty;
     if(this.field) {
-	typeProperty= 'type.' + this.field.getType();
+	typeProperty= 'type_' + this.field.getType();
     }
     if(this.valueAttr) {
 	let c = this.display.getProperty(this.valueAttr +".colors");
@@ -3214,8 +3213,9 @@ function ColorByInfo(display, fields, records,
 	    }
 	} else {
 	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
-						       this.valueAttr +".colorTable",
-						       "colorTable"]);
+						       this.valueAttr +'.colorTable',
+						       (typeProperty?typeProperty:'skip')+'.colorTable',
+						       'colorTable']);
 	}
     }
     if(!colors) {
@@ -3804,8 +3804,9 @@ ColorByInfo.prototype = {
 }
 
 
-function SizeBy(display,records,fieldProperty) {
+function SizeBy(display,records,fieldProperty,args) {
     let SUPER = new ValueMapper(display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
+    args= args??{};
     $.extend(this, SUPER);
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
@@ -3857,8 +3858,9 @@ function SizeBy(display,records,fieldProperty) {
 	    this.steps.push({value:+value,size:+size});
 	});
     }
-    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", 4));
-    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", 20));
+    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", this.getProperty("radiusMin",Utils.isDefined(args.radiusMin)?args.radiusMin:4)));
+    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", this.getProperty("radiusMax",Utils.isDefined(args.radiusMax)?args.radiusMax:20)));
+//    console.log('sizeby radius:',this.radiusMin,this.radiusMax);
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
     this.maxValue = Math.max(this.minValue,this.maxValue);
@@ -9138,7 +9140,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
-//		debug=true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -12794,6 +12795,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.callUpdateUI();
 	},
 	sizeByFieldChanged:function(field) {
+	    this.setProperty('sizeBy', field.getId?field.getId():field);
 	},
 	someFieldChanged:function(type,field) {
 	},	
@@ -16453,6 +16455,8 @@ function RecordField(props, source) {
                 type="fa-hashtag";
             } else if(this.isFieldEnumeration()) {
                 type="fa-list";
+            } else if(this.isFieldBoolean()) {
+                type="fa-check";		
             }
             let tt = this.getType();
             return  HU.span([ATTR_TITLE,tt,
@@ -19571,6 +19575,7 @@ function RecordFilter(display,filterFieldId, properties) {
     this.getId = function() {
 	return this.id;
     }
+
     let getAttr = (suffix,dflt)=>{
 	let key = this.getId()+"." + suffix;
 	let v = display.getProperty(key);
@@ -19612,6 +19617,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	});
 	this.ops = tmp;
     }
+
 
     $.extend(this, {
 	toString:function() {
@@ -20797,6 +20803,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	}
 	
     });
+
+
+
+    
+
 }
 
 RecordFilter.prototype = {
@@ -21400,8 +21411,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    dataFields.forEach((field,idx)=>{
 		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
 		if(!isLog) return;
-		dataList = this.transformTupleValueLog(dataList,idx);
-		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {logScale:true};
+		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {
+		    logScale:true,
+		    ticks:[]
+		};
+		dataList = this.transformTupleValueLog(dataList,idx,this.dataListInfo[field.getId()]);
 	    });
 	    return dataList;
 	},
@@ -21411,8 +21425,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(!info) return false;
 	    return info.logScale;
 	},
+	getLogTicks:function(field) {
+	    if(!this.dataListInfo) return null;
+	    let info = this.dataListInfo[field];
+	    if(!info) return null;
+	    let sorted = info.ticks.sort((a, b) => a.original - b.original);
+	    let sampled = [];
+	    let count = this.getProperty('tickCount',10);
+	    const min = sorted[0];
+	    const max = sorted[sorted.length - 1];
+	    const anchors = [];
+	    const start = Math.floor(Math.log10(min.original));
+	    const end = Math.ceil(Math.log10(max.original));
+	    //For now just sample evenly across the log range
+	    const step = (max.v - min.v) / (count - 1);
+	    for(let i=0;i<count;i++) {
+		let logValue = min.v+i*step;
+		let original = Math.pow(10,logValue);
+		anchors.push({v:logValue,f:NumberFormatter.formatNumberSmart(original)});
+	    }
+	    return anchors;
+	},
 
-	transformTupleValueLog:function(dataList, tupleIndex, {
+
+	transformTupleValueLog:function(dataList, tupleIndex, info,{
 	    logBase = 10,
 	    epsilon = 1e-9
 	} = {}) {
@@ -21421,7 +21457,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	    let minValue = Infinity;
-
 	    let debug = false;
 	    // Find min for the selected tuple element
 	    dataList.forEach((d,idx) => {
@@ -21452,8 +21487,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		const tuple = d.tuple.slice();
 		let value = tuple[tupleIndex];
 		if (typeof value === 'number' && isFinite(value)) {
-		    let newValue = logFn(value + offset);
-		    tuple[tupleIndex] = newValue;
+		    if(!isNaN(value)) {
+			let newValue = logFn(value + offset);
+			tuple[tupleIndex] = newValue;
+			info.ticks.push({original:value+offset,
+					 v:newValue,f:value.toString()});
+		    }
 		}
 
 		return {
@@ -25622,8 +25661,16 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     });
 		}
 
-		if(this.isLogScale(0)) chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
-		if(this.isLogScale(1)) chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';		
+		
+		if(this.isLogScale(0)) {
+		    chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
+		    chartOptions.hAxis.ticks = this.getLogTicks(0);
+		}
+		if(this.isLogScale(1)) {
+		    chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';
+		    chartOptions.vAxis.ticks = this.getLogTicks(1);
+		}
+
 
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
@@ -44012,8 +44059,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateUI({fieldChanged:true});
 	},
 	sizeByFieldChanged:function(field) {
+	    SUPER.sizeByFieldChanged(this, field);
 	    this.haveCalledUpdateUI = false;
-	    this.setProperty('sizeBy', field);
 	    this.vectorMapApplied  = false;
 	    this.updateUI({fieldChanged:true});
 	},
@@ -45751,7 +45798,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-	    let sizeBy = this.sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let sizeBy = this.sizeBy = new SizeBy(this,
+						  this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
@@ -66730,6 +66778,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     numMissing: 0,
                     numNotMissing: 0,
                     type: field.getType(),
+		    true_count:0,
+		    false_count:0,
                     values: []
                 });
             });
@@ -66737,6 +66787,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 stats.forEach(stat=>{
 		    let field = stat.field;
                     let v = field.getValue(record);
+		    if(field.isFieldBoolean()) {
+			if(v) stat.true_count++
+			else stat.false_count++;
+		    }
+
                     if (v) {
                         if (!Utils.isDefined(stat.uniqueMap[v])) {
                             stat.uniqueMap[v] = 1;
@@ -66907,7 +66962,13 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     if (this.getShowStd(dflt)) 
                         values.push("-");
                     if (this.getShowUnique(dflt)) {
-                        values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+			if(stat.field.isFieldBoolean()) {
+                            values.push('#true:' + stat.true_count,'#false:' + stat.false_count,'');
+			} else {
+                            values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+
+			}
+
 		    }
                     if (this.getShowMissing(dflt)) 
                         values.push(stat.numNotMissing,stat.numMissing);
@@ -71261,6 +71322,9 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     if(!properties.width && properties.globeWidth) {
 	properties.width = properties.globeWidth;
     }
+    if(properties.radiusField && !properties.sizeBy)
+	properties.sizeBy = properties.radiusField;
+
 
     let positions = {
 	"Base":{
@@ -71346,7 +71410,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	{p:'heightField',tt:'field to map height to'},
 	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
 	{p:'heightMax',d:0.5},
-	{p:'radiusField',tt:'field to map radius to'},
+	{p:'sizeBy',tt:'field to map radius to'},
 	{p:'radiusMin',d:1},
 	{p:'radiusMax',d:5},
 	{p:'labelFields',tt:'fields for the label'},
@@ -71379,6 +71443,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 
     const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GLOBE, properties);
+
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -71405,8 +71471,13 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 	},
 
+	sizeByFieldChanged:function(field) {
+	    SUPER.sizeByFieldChanged.call(this, field);
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI({fieldChanged:true});
+	},
+
         updateUI: async function() {
-	    
 	    if(!window["THREE"]) {
 		if(!ramaddaLoadedThree) {
                     ramaddaLoadedThree = true;
@@ -71464,20 +71535,23 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 
 	    let radiusField = this.getFieldById(null, this.getProperty("radiusField"));
-	    let radiuss;
-	    if(radiusField) {
-		radiuss = this.getColumnValues(records, radiusField);
-	    }
+	    
+
 	    let radiusMin = this.getRadiusMin();
 	    let radiusMax = this.getRadiusMax();	    
+	    let sizeBy = new SizeBy(this,
+				    this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,
+				    null,{radiusMin:radiusMin,radiusMax:radiusMax});
+	    
+//	    console.log('property:',			this.getProperty('sizeBy'),			'enabled:',sizeBy.isEnabled());
+
+	    let defaultRadius = this.getPointRadius();
+	    let sizeByEnabled = sizeBy.isEnabled();
 	    let getRadius=record=>{
-		if(!radiuss || !record) return this.getPointRadius();
-		let v = radiusField.getValue(record);
-		let percent = (v-radiuss.min)/(radiuss.max-radiuss.min);
-		let radius = radiusMin+percent*(radiusMax-radiusMin);
+		if(!record || !sizeByEnabled) return defaultRadius;
+                let radius =  sizeBy.getSize(record.getData(), defaultRadius);
 		return radius;
 	    }
-
 
 	    let labels = this.getProperty("labelFields");
 	    if(labels=="{colorby}") labels=this.getProperty('colorBy');
@@ -71648,7 +71722,6 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		return true;
 	    });
 
-
 	    if(haveLatLong && pointData.length>0) {
 		if(this.getShowSpheres()) {
 		    this.globe.customLayerData(pointData)
@@ -71658,7 +71731,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 			))
 			.customThreeObjectUpdate((obj, d) => {
 			    Object.assign(obj.position, this.globe.getCoords(d.lat, d.lng, d.height+0.01));
-			});
+			}
+						);
 		} else if(this.getShowPoints()) {
 		    this.globe.pointsData(pointData)
 			.pointAltitude('height')
