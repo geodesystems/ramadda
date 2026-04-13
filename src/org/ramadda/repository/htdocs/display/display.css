@@ -1403,6 +1403,7 @@ display-text-edit {
       background:#E4E9F4;
       background-color: #efefef;
       font-weight:bold;
+      white-space:nowrap;
 }
 
 .display-table-header {

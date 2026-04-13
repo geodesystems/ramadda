@@ -4537,7 +4537,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
-//		debug=true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -8193,6 +8192,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.callUpdateUI();
 	},
 	sizeByFieldChanged:function(field) {
+	    this.setProperty('sizeBy', field.getId?field.getId():field);
 	},
 	someFieldChanged:function(type,field) {
 	},	

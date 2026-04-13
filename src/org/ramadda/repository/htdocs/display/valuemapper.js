@@ -9,7 +9,6 @@ var debugColorBy = false;
 function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
     this.properties = props || {};
     this.display = display;
-//    console.log('***',fieldProperty,propPrefix)
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
     if(Utils.isDefined(this.properties.maxValue)) this.properties.hasMaxValue = true;    
 
@@ -284,7 +283,7 @@ function ColorByInfo(display, fields, records,
     let colorTabelSteps = null;
     let typeProperty;
     if(this.field) {
-	typeProperty= 'type.' + this.field.getType();
+	typeProperty= 'type_' + this.field.getType();
     }
     if(this.valueAttr) {
 	let c = this.display.getProperty(this.valueAttr +".colors");
@@ -310,8 +309,9 @@ function ColorByInfo(display, fields, records,
 	    }
 	} else {
 	    colors =  this.display.getColorTable(true,[this.properties.colorTableProperty,
-						       this.valueAttr +".colorTable",
-						       "colorTable"]);
+						       this.valueAttr +'.colorTable',
+						       (typeProperty?typeProperty:'skip')+'.colorTable',
+						       'colorTable']);
 	}
     }
     if(!colors) {
@@ -900,8 +900,9 @@ ColorByInfo.prototype = {
 }
 
 
-function SizeBy(display,records,fieldProperty) {
+function SizeBy(display,records,fieldProperty,args) {
     let SUPER = new ValueMapper(display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
+    args= args??{};
     $.extend(this, SUPER);
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
@@ -953,8 +954,9 @@ function SizeBy(display,records,fieldProperty) {
 	    this.steps.push({value:+value,size:+size});
 	});
     }
-    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", 4));
-    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", 20));
+    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", this.getProperty("radiusMin",Utils.isDefined(args.radiusMin)?args.radiusMin:4)));
+    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", this.getProperty("radiusMax",Utils.isDefined(args.radiusMax)?args.radiusMax:20)));
+//    console.log('sizeby radius:',this.radiusMin,this.radiusMax);
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
     this.maxValue = Math.max(this.minValue,this.maxValue);

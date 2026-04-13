@@ -518,8 +518,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    dataFields.forEach((field,idx)=>{
 		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
 		if(!isLog) return;
-		dataList = this.transformTupleValueLog(dataList,idx);
-		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {logScale:true};
+		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {
+		    logScale:true,
+		    ticks:[]
+		};
+		dataList = this.transformTupleValueLog(dataList,idx,this.dataListInfo[field.getId()]);
 	    });
 	    return dataList;
 	},
@@ -529,8 +532,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(!info) return false;
 	    return info.logScale;
 	},
+	getLogTicks:function(field) {
+	    if(!this.dataListInfo) return null;
+	    let info = this.dataListInfo[field];
+	    if(!info) return null;
+	    let sorted = info.ticks.sort((a, b) => a.original - b.original);
+	    let sampled = [];
+	    let count = this.getProperty('tickCount',10);
+	    const min = sorted[0];
+	    const max = sorted[sorted.length - 1];
+	    const anchors = [];
+	    const start = Math.floor(Math.log10(min.original));
+	    const end = Math.ceil(Math.log10(max.original));
+	    //For now just sample evenly across the log range
+	    const step = (max.v - min.v) / (count - 1);
+	    for(let i=0;i<count;i++) {
+		let logValue = min.v+i*step;
+		let original = Math.pow(10,logValue);
+		anchors.push({v:logValue,f:NumberFormatter.formatNumberSmart(original)});
+	    }
+	    return anchors;
+	},
 
-	transformTupleValueLog:function(dataList, tupleIndex, {
+
+	transformTupleValueLog:function(dataList, tupleIndex, info,{
 	    logBase = 10,
 	    epsilon = 1e-9
 	} = {}) {
@@ -539,7 +564,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	    let minValue = Infinity;
-
 	    let debug = false;
 	    // Find min for the selected tuple element
 	    dataList.forEach((d,idx) => {
@@ -570,8 +594,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		const tuple = d.tuple.slice();
 		let value = tuple[tupleIndex];
 		if (typeof value === 'number' && isFinite(value)) {
-		    let newValue = logFn(value + offset);
-		    tuple[tupleIndex] = newValue;
+		    if(!isNaN(value)) {
+			let newValue = logFn(value + offset);
+			tuple[tupleIndex] = newValue;
+			info.ticks.push({original:value+offset,
+					 v:newValue,f:value.toString()});
+		    }
 		}
 
 		return {
@@ -4740,8 +4768,16 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     });
 		}
 
-		if(this.isLogScale(0)) chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
-		if(this.isLogScale(1)) chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';		
+		
+		if(this.isLogScale(0)) {
+		    chartOptions.hAxis.title = chartOptions.hAxis.title+' (Log)';
+		    chartOptions.hAxis.ticks = this.getLogTicks(0);
+		}
+		if(this.isLogScale(1)) {
+		    chartOptions.vAxis.title = chartOptions.vAxis.title+' (Log)';
+		    chartOptions.vAxis.ticks = this.getLogTicks(1);
+		}
+
 
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {

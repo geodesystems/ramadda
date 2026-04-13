@@ -3778,6 +3778,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     numMissing: 0,
                     numNotMissing: 0,
                     type: field.getType(),
+		    true_count:0,
+		    false_count:0,
                     values: []
                 });
             });
@@ -3785,6 +3787,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 stats.forEach(stat=>{
 		    let field = stat.field;
                     let v = field.getValue(record);
+		    if(field.isFieldBoolean()) {
+			if(v) stat.true_count++
+			else stat.false_count++;
+		    }
+
                     if (v) {
                         if (!Utils.isDefined(stat.uniqueMap[v])) {
                             stat.uniqueMap[v] = 1;
@@ -3955,7 +3962,13 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     if (this.getShowStd(dflt)) 
                         values.push("-");
                     if (this.getShowUnique(dflt)) {
-                        values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+			if(stat.field.isFieldBoolean()) {
+                            values.push('#true:' + stat.true_count,'#false:' + stat.false_count,'');
+			} else {
+                            values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+
+			}
+
 		    }
                     if (this.getShowMissing(dflt)) 
                         values.push(stat.numNotMissing,stat.numMissing);

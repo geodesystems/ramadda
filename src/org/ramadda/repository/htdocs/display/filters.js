@@ -102,6 +102,7 @@ function RecordFilter(display,filterFieldId, properties) {
     this.getId = function() {
 	return this.id;
     }
+
     let getAttr = (suffix,dflt)=>{
 	let key = this.getId()+"." + suffix;
 	let v = display.getProperty(key);
@@ -143,6 +144,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	});
 	this.ops = tmp;
     }
+
 
     $.extend(this, {
 	toString:function() {
@@ -1328,6 +1330,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	}
 	
     });
+
+
+
+    
+
 }
 
 RecordFilter.prototype = {

@@ -59,6 +59,9 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     if(!properties.width && properties.globeWidth) {
 	properties.width = properties.globeWidth;
     }
+    if(properties.radiusField && !properties.sizeBy)
+	properties.sizeBy = properties.radiusField;
+
 
     let positions = {
 	"Base":{
@@ -144,7 +147,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	{p:'heightField',tt:'field to map height to'},
 	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
 	{p:'heightMax',d:0.5},
-	{p:'radiusField',tt:'field to map radius to'},
+	{p:'sizeBy',tt:'field to map radius to'},
 	{p:'radiusMin',d:1},
 	{p:'radiusMax',d:5},
 	{p:'labelFields',tt:'fields for the label'},
@@ -177,6 +180,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 
     const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GLOBE, properties);
+
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -203,8 +208,13 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 	},
 
+	sizeByFieldChanged:function(field) {
+	    SUPER.sizeByFieldChanged.call(this, field);
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI({fieldChanged:true});
+	},
+
         updateUI: async function() {
-	    
 	    if(!window["THREE"]) {
 		if(!ramaddaLoadedThree) {
                     ramaddaLoadedThree = true;
@@ -262,20 +272,23 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 
 
 	    let radiusField = this.getFieldById(null, this.getProperty("radiusField"));
-	    let radiuss;
-	    if(radiusField) {
-		radiuss = this.getColumnValues(records, radiusField);
-	    }
+	    
+
 	    let radiusMin = this.getRadiusMin();
 	    let radiusMax = this.getRadiusMax();	    
+	    let sizeBy = new SizeBy(this,
+				    this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,
+				    null,{radiusMin:radiusMin,radiusMax:radiusMax});
+	    
+//	    console.log('property:',			this.getProperty('sizeBy'),			'enabled:',sizeBy.isEnabled());
+
+	    let defaultRadius = this.getPointRadius();
+	    let sizeByEnabled = sizeBy.isEnabled();
 	    let getRadius=record=>{
-		if(!radiuss || !record) return this.getPointRadius();
-		let v = radiusField.getValue(record);
-		let percent = (v-radiuss.min)/(radiuss.max-radiuss.min);
-		let radius = radiusMin+percent*(radiusMax-radiusMin);
+		if(!record || !sizeByEnabled) return defaultRadius;
+                let radius =  sizeBy.getSize(record.getData(), defaultRadius);
 		return radius;
 	    }
-
 
 	    let labels = this.getProperty("labelFields");
 	    if(labels=="{colorby}") labels=this.getProperty('colorBy');
@@ -446,7 +459,6 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		return true;
 	    });
 
-
 	    if(haveLatLong && pointData.length>0) {
 		if(this.getShowSpheres()) {
 		    this.globe.customLayerData(pointData)
@@ -456,7 +468,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 			))
 			.customThreeObjectUpdate((obj, d) => {
 			    Object.assign(obj.position, this.globe.getCoords(d.lat, d.lng, d.height+0.01));
-			});
+			}
+						);
 		} else if(this.getShowPoints()) {
 		    this.globe.pointsData(pointData)
 			.pointAltitude('height')

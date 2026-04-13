@@ -885,6 +885,8 @@ function RecordField(props, source) {
                 type="fa-hashtag";
             } else if(this.isFieldEnumeration()) {
                 type="fa-list";
+            } else if(this.isFieldBoolean()) {
+                type="fa-check";		
             }
             let tt = this.getType();
             return  HU.span([ATTR_TITLE,tt,
