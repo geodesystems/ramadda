@@ -497,6 +497,27 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
 }
 
+
+.ramadda-colortable-legend-entry {
+    margin:0px;
+    padding-left:0px;
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    height: 100px;
+}
+
+.ramadda-colortable-legend-label {
+    font-size:80%;
+    position: absolute;
+    top: 2px;
+    left: 10px;
+    white-space: nowrap;
+    transform: rotate(45deg);
+    transform-origin: top left;
+}
+
+
 .fancybox-image {
     background:#fff;
 }
