@@ -2240,6 +2240,15 @@ WikiEditor.prototype = {
 
 	button.click(() =>{
 	    let init = ()=>{
+		let links = jqid("wiki-display-popup").find(HU.dotClass('display-link'));
+		links.tooltip({
+		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		    content: function () {
+			return $(this).prop(ATTR_TITLE);
+		    },
+		    show: { effect: 'slide', delay: 500, duration: 400 },
+		    position: { my: POS_LEFT_TOP, at: POS_RIGHT_TOP }		
+		});
 		let tt  =    jqid("wiki-display-popup").tooltip({
 		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		    content: function () {
@@ -2279,7 +2288,8 @@ WikiEditor.prototype = {
 							      CSS_BORDER_SPACING, HU.px(4))]);
 			inner+=HU.open(TAG_TR,[ATTR_VALIGN,ALIGN_TOP]);
 			let cnt = 0;
-			$(this).find(HU.dotClass('display-link')).each(function() {
+			let links = $(this).find(HU.dotClass('display-link'));
+			links.each(function() {
 			    let click = $(this).attr('onclick');
 			    cnt++;
 			    if(cnt>3) {
