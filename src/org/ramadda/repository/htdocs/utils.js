@@ -2561,6 +2561,15 @@ var Utils =  {
             toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));                    
         }
     },
+
+
+
+
+
+
+
+
+
     formatNumberComma: function(number,decimals,debug) {
         if(!Utils.isDefined(number)) {
             return "NA";
@@ -7550,6 +7559,52 @@ function jqname(name) {
     return $('[name="' + name+'"]')
 }
 
+
+
+const NumberFormatter = {
+
+  formatNumberSmart: function(v) {
+    if (v === 0) return "0";
+    if (!isFinite(v)) return "";
+
+    const abs = Math.abs(v);
+
+    // --- Large numbers (K / M / B) ---
+    if (abs >= 1e9) return this.formatWithSuffix(v, 1e9, "B");
+    if (abs >= 1e6) return this.formatWithSuffix(v, 1e6, "M");
+    if (abs >= 1e3) return this.formatWithSuffix(v, 1e3, "K");
+
+    // --- Medium numbers ---
+    if (abs >= 100) return this.formatWithCommas(v, 0);   // 👈 no decimals
+    if (abs >= 10)  return this.formatWithCommas(v, 1);
+    if (abs >= 1)   return this.formatWithCommas(v, 2);
+
+    // --- Small numbers ---
+    if (abs >= 0.01) return this.formatWithCommas(v, 3);
+
+    // Very small
+    return v.toExponential(1);
+  },
+
+  formatWithSuffix: function(v, divisor, suffix) {
+    const value = v / divisor;
+    const abs = Math.abs(value);
+
+    let decimals;
+    if (abs >= 100) decimals = 0;
+    else if (abs >= 10) decimals = 1;
+    else decimals = 2;
+
+    return this.formatWithCommas(value, decimals) + suffix;
+  },
+
+  formatWithCommas: function(v, decimals) {
+    return Number(v).toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: decimals
+    });
+  }
+};
 
 
 
