@@ -418,22 +418,22 @@ $.extend(Utils,{
         html += HU.close(TAG_DIV);
         html += HU.open(TAG_DIV, [ATTR_CLASS, "display-colortable-extra"]);
 	//Only show labels if the length is reasonable
-        if (ct.length<50 &&
-	    options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+        if (ct.length<30 &&
+	    options.showLabels &&
+	    Object.keys(colorInfo).length &&
+	    options.horizontal &&
+	    !options.showColorTableDots) {
             let tdw = HU.perc(100 / ct.length);
             html += HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
 						       CSS_VERTICAL_ALIGN,ALIGN_TOP,
 						       CSS_TEXT_ALIGN,ALIGN_CENTER)]);
             let colCnt =0;
             let bin ={};
-            ct.forEach(color=>{
+            ct.forEach((color,idx)=>{
 		let info = colorInfo[color];
-                let cell = HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(2),
-						     CSS_VERTICAL_ALIGN,'top',
-						     CSS_DISPLAY,'inline-block',
-						     CSS_WIDTH,tdw,
-						     CSS_MAX_WIDTH,tdw,
-						     CSS_OVERFLOW_X,'auto')],info?info.label:'');
+                let cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-label'], info?info.label:'');
+		cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-entry',
+			       ATTR_STYLE,HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw)], cell);
                 html+=cell;
             });
             html+=HU.close(TAG_DIV);
