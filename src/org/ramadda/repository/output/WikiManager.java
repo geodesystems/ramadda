@@ -3882,6 +3882,7 @@ public class WikiManager extends RepositoryManager
             int           columns        = -1;
             int           width          = -1;	    
             List<String>  headers        = null;
+	    boolean makeLabel = getProperty(wikiUtil,props,"_makeLabel",false);
             String        headerProp     = null;
             String        footerProp     = null;
             String        headerTemplate = null;
@@ -4046,6 +4047,7 @@ public class WikiManager extends RepositoryManager
 		    ? headers.get(i)
 		    : null;
                 if (header != null) {
+		    if(makeLabel) header = Utils.makeLabel(header);
                     if (headerTemplate != null) {
                         header = headerTemplate.replace("${header}", header);
                     }
