@@ -259,7 +259,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else  if(this.isFieldNumeric()) {
 		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
 		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
-		if(minField.val()===null || !maxField.val()===null) {
+		if(!Utils.isDefined(minField.val()) || !!Utils.isDefined(maxField.val())) {
 		    return;
 		}
 		let minValue = parseFloat(minField.val().trim());
@@ -423,6 +423,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let tags =  this.display.getShowFilterTags();
 	    return tags;
 	},
+	getGroup:function() {
+	    return this.getProperty(this.getId()+".filterGroup");
+	},
+	getGroupOpen:function() {
+	    return this.getProperty(this.getId()+".filterGroupOpen",
+				    this.getProperty("filterGroupOpen",false));
+	},	
 	doTagsColor:function() {
 	    if(!this.getProperty(this.getId()+".colorFilterTags",true)) return false;
 	    let tags =  this.getProperty(this.getId()+".colorFilterTags", true) || this.getProperty("colorFilterTags");
@@ -532,8 +539,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 
-	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
-	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup',multi))
+	    let multi = this.getProperty(this.getId() +".filterMultiple",
+					 this.getProperty('filterMultiple',false));
+	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",
+						   this.getProperty('filterShowPopup',multi))
 	    let showPopupSize = this.getProperty(this.getId() +".filterShowPopupSize",
 						 this.getProperty('filterShowPopupSize'));
 	    if(showPopupSize!==null && this.enums) {
@@ -550,6 +559,7 @@ function RecordFilter(display,filterFieldId, properties) {
 						    CSS_MARGIN_BOTTOM,HU.px(0))],
 				 '${widget}'),
 		    single:!multi,
+		    location:this.display.getDomId("filterby_" + this.getId()+"_labelafter"),
 		    makeButtons:multi,
 		    makeButton:false,
 		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
@@ -777,8 +787,12 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    let labelVertical =
-		this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
+		this.getProperty(this.getId()+".filterLabelVertical",
+				 this.getProperty("filterLabelVertical",vertical));
 	    this.records = records;
+	    let widgetId = this.widgetId = this.getFilterId(this.getId());
+	    let existingWidget = jqid(widgetId);
+
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
 	    if(!this.isEnabled()) {
@@ -788,13 +802,29 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetStyle = "";
 	    if(this.hideFilterWidget)
 		widgetStyle = HU.css(CSS_DISPLAY,DISPLAY_NONE);
+	    let widgetWidth = this.getProperty(this.getId() +'.filterMinWidth',
+					       this.getProperty('type_'+ this.getField().getType()+'.filterMinWidth',
+								this.getProperty('filterMinWidth')));
+
+
+	    //Keep track of the initial widget width so if it changes later we can set it and 
+	    //not have the width shift around
+	    if(!widgetWidth &&
+	       existingWidget.length && this.isFieldEnumeration()) {
+		if(!this.originalWidgetWidth) {
+		    this.originalWidgetWidth = 	 existingWidget.outerWidth();
+		}
+		widgetWidth = Math.ceil(this.originalWidgetWidth);
+	    }
+    
+	    if(widgetWidth) widgetStyle+=HU.css(CSS_MIN_WIDTH,HU.getDimension(widgetWidth));
+
 	    fieldMap[this.getId()] = {
 		field: this.fields[0],
 		values:[],
 	    };
 	    let showLabel = true;
             let widget;
-	    let widgetId = this.widgetId = this.getFilterId(this.getId());
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
 	    let includeAll = this.getIncludeAll();
 
@@ -809,8 +839,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [ATTR_STYLE,widgetStyle,
-			    ATTR_ID,widgetId,
+			    ATTR_ID,widgetId,	
 			    ATTR_FIELDID,this.getId()];
+
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(this.isFieldBoolean()) {
 		let attrs= [ATTR_STYLE,widgetStyle,
@@ -841,7 +872,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		let attrs= [ATTR_STYLE,widgetStyle,
 			    ATTR_ID,widgetId,
 			    ATTR_FIELDID,this.getId()];
-		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
+		if(this.getProperty(this.getId() +".filterMultiple",
+				    this.getProperty('filterMultiple'))) {
 		    attrs.push(ATTR_MULTIPLE,'');
 		    attrs.push(ATTR_SIZE);
 		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize",
@@ -1026,6 +1058,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(count) label = label +(showCount?" (" + count+")":"");
 			tmp.push({value:v,label:label});
 		    }); 
+
                     widget = HU.select("",attrs,tmp,dfltValue);
 		}
 	    } else if(this.isFieldNumeric()) {
@@ -1117,7 +1150,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(labelVertical)
 			widget += select;
 		    else
-			widget=HU.span([],widget)+HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],select);
+			widget=HU.span([],widget)+
+			HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],select);
 		}
 
             } else {
@@ -1164,10 +1198,17 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(!Utils.stringDefined(widgetLabel)) widgetLabel = "";
 		    else widgetLabel = widgetLabel+": ";
 		}
+		if(labelVertical && this.isFieldEnumeration()) {
+		    widgetLabel+= HU.span([ATTR_ID,
+					   this.display.getDomId("filterby_" + this.getId()+"_labelafter")],'');
+		}
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
+
+
 		if(vertical) {
 		    widget = HU.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
+
 		    widget = HU.div([ATTR_CLASS,'display-filter-widget '+(labelVertical?'display-filter-widget-vertical':''),
 //				     ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)
 				    ],

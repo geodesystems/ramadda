@@ -6,7 +6,8 @@
 var debugColorBy = false;
 
 
-function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
+function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
+    this.myType = myType;
     this.properties = props || {};
     this.display = display;
     if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
@@ -36,6 +37,7 @@ function ValueMapper(display,fieldProperty,propPrefix,theField,props) {
 	propPrefix.push(fieldProperty);
     }
     
+
     $.extend(this, {
         id: valueAttr,
 	valueAttr:valueAttr,
@@ -168,7 +170,7 @@ function ColorByInfo(display, fields, records,
 		     fieldProperty,colorByMapProp, defaultColorTable,
 		     propPrefix, theField, props,lastColorBy) {
 
-    let SUPER = new ValueMapper(display,fieldProperty??'colorBy', propPrefix,theField,props);
+    let SUPER = new ValueMapper('ColorBy',display,fieldProperty??'colorBy', propPrefix,theField,props);
     $.extend(this, SUPER);
     $.extend(this, {
 	colorHistory:{},
@@ -901,7 +903,7 @@ ColorByInfo.prototype = {
 
 
 function SizeBy(display,records,fieldProperty,args) {
-    let SUPER = new ValueMapper(display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
+    let SUPER = new ValueMapper('SizeBy',display,fieldProperty??'sizeBy');//, propPrefix,theField,props);
     args= args??{};
     $.extend(this, SUPER);
     if(!records) records = display.filterData();
@@ -917,7 +919,7 @@ function SizeBy(display,records,fieldProperty,args) {
     });
 
 
-    let sizeByMap = this.getProperty("sizeByMap");
+    let sizeByMap = this.getProperty('sizeByMap');
     if (sizeByMap) {
         let toks = sizeByMap.split(",");
         for (let i = 0; i < toks.length; i++) {
@@ -928,6 +930,7 @@ function SizeBy(display,records,fieldProperty,args) {
         }
     }
 
+
     for (let i = 0; i < fields.length; i++) {
         let field = fields[i];
         if (field.getId() == this.id || ("#" + (i + 1)) == this.id) {
@@ -937,6 +940,7 @@ function SizeBy(display,records,fieldProperty,args) {
     }
 
     this.index = this.field != null ? this.field.getIndex() : -1;
+
     if (this.field) {
 	this.processRecords(records);
 	if(Utils.isDefined(this.getProperty("sizeByMin"))) {

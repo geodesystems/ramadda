@@ -415,7 +415,7 @@ table.dataTable {
 }
 
 .display-header0, .display-header1, .display-header2, .display-header3 {
-  text-align:center;
+    /*text-align:center;*/
   font-size:90% !important;
 }
 
@@ -428,11 +428,15 @@ table.dataTable {
 .display-header-span {
     display:inline-block;
     line-height:1.75em;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    align-content: flex-start;
-    justify-content: center;
+    xdisplay: flex;
+    xflex-wrap: wrap;
+    xalign-items: flex-start;
+    xalign-content: flex-start;
+    /*justify-content: center;*/
+}
+
+.display-header-span  i {
+    color:black;
 }
 
 .display-filter-break {

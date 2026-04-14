@@ -983,7 +983,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
-            if (dataList.length == 0 && !this.userHasSelectedAField) {
+            if (dataList && dataList.length == 0 && !this.userHasSelectedAField) {
                 let pointData = this.dataCollection.getList()[0];
                 let chartableFields = this.getFieldsToSelect(pointData);
                 for (let i = 0; i < chartableFields.length; i++) {
@@ -997,7 +997,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            if (dataList.length == 0) {
+            if (!dataList || dataList.length == 0) {
 		this.setContents(this.getMessage(this.getNoDataMessage()));
 		//                this.setDisplayMessage(this.getNoDataMessage());
                 return;

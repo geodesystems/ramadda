@@ -797,6 +797,7 @@ function RecordField(props, source) {
 	});
     }
     RamaddaUtil.defineMembers(this, {
+	isField:true,
 	clone: function() {
 	    let newField = {};
 	    $.extend(newField,this);

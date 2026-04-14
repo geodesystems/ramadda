@@ -2991,7 +2991,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateUI({fieldChanged:true});
 	},
 	sizeByFieldChanged:function(field) {
-	    SUPER.sizeByFieldChanged(this, field);
+	    SUPER.sizeByFieldChanged.call(this, field);
 	    this.haveCalledUpdateUI = false;
 	    this.vectorMapApplied  = false;
 	    this.updateUI({fieldChanged:true});
@@ -4732,6 +4732,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let sizeBy = this.sizeBy = new SizeBy(this,
 						  this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];

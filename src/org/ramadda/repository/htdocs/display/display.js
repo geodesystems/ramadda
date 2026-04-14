@@ -1970,7 +1970,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
 	{p:'&lt;field&gt;.type',ex:'enumeration|string|boolean'},
 	{p:'&lt;field&gt;.filterShow',ex:'false'},
-	{p:'&lt;field&gt;.filterBreak',ex:true,tt:'add a break before the filter widget'},
+	{p:'&lt;field&gt;.filterGroup',ex:'Some group or none',tt:'Group the filters'},
+	{p:'&lt;field&gt;.filterGroupOpen',ex:true},
+	{p:'&lt;field&gt;.filterBreakBefore',ex:true,tt:'add a break before the filter widget'},
+	{p:'&lt;field&gt;.filterBreakAfter',ex:true,tt:'add a break after the filter widget'},	
 	{p:'&lt;field&gt;.filterLabel'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
@@ -7599,7 +7602,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let searchBar = "";
 		let bottom = [""];
 		group = null;
-		groupHtml = null;
+		let groupHtml = null;
+		let groupOpen=false;
 		this.filters.forEach(filter=>{
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
@@ -7609,32 +7613,39 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					  ATTR_ID,this.domId("filtercontainer_" + filter.id)],
 					 widget);
 		    }
-		    if(filter.group!=null) {
-			if(filter.group!=group && groupHtml!=null) {
-			    searchBar+=HU.toggleBlock(group,groupHtml,false);
+		    if(this.getProperty(filter.getId()+'.filterBreakBefore',
+					this.getProperty('filterBreakBefore'))) {
+			widget = HU.flexBreak() + widget;
+		    }
+		    if(this.getProperty(filter.getId()+'.filterBreakAfter'),
+		       this.getProperty('filterBreakAfter')) {
+			widget = widget+HU.flexBreak();
+		    }
+		    let filterGroup = filter.getGroup();
+		    if(filterGroup) {
+			if(filterGroup!=group && groupHtml!=null) {
+			    searchBar+=HU.toggleBlock(group,HU.flexBreak()+groupHtml,groupOpen);
 			    groupHtml = null;
 			}
-			group = filter.group;
-			if(groupHtml==null) {
-			    groupHtml= "";
+			group = filterGroup;
+			if(filterGroup=='none') {
+			    groupHtml = null;
+			} else {
+			    if(groupHtml==null) {
+				groupHtml= "";
+				groupOpen =filter.getGroupOpen();
+			    }
+			    groupHtml+=widget;
+			    return;
 			}
-			groupHtml+=widget;
-			return;
 		    }
 		    if(groupHtml!=null) {
-			searchBar+=HU.toggleBlock(group,groupHtml,false);
-			groupHtml=null;
-		    }
-		    if(this.getProperty(filter.getId()+'.filterBreak',
-					this.getProperty(filter.getId()+'.filterBreakBefore'))) {
-			searchBar+=HU.flexBreak();
-		    }
-		    searchBar +=widget;
-		    if(this.getProperty(filter.getId()+'.filterBreakAfter')) {
-			searchBar+=HU.flexBreak();
+			groupHtml+=widget;
+		    } else {
+			searchBar +=widget;
 		    }
 		});
-		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
+		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,HU.flexBreak()+groupHtml,groupOpen);
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		if(this.getProperty("showFilterTotal",false)) {
 		    searchBar+= HU.span([ATTR_CLASS,"display-filter-label",
@@ -8192,7 +8203,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.callUpdateUI();
 	},
 	sizeByFieldChanged:function(field) {
-	    this.setProperty('sizeBy', field.getId?field.getId():field);
+	    this.setProperty('sizeBy', field.isField?field.getId():field);
 	},
 	someFieldChanged:function(type,field) {
 	},	
