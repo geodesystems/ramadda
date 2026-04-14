@@ -701,7 +701,6 @@ var Utils =  {
 
 
 
-
     splitFirst: function(s,delim) {
 	let idx = s.indexOf(delim);
 	if(idx<0) return [s];
@@ -5802,6 +5801,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     scrollToAnchor:function(aid,offset,containerId) {
         if(!Utils.isDefined(offset)) offset=-50;
         let aTag = $("a[name='"+ aid +"']");
+	if(aTag.length==0) return;
         if(!offset) offset=0;
         offset = +offset;
         //Offset a bit
@@ -5812,7 +5812,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    // Or you can animate the scrolling:
 	    container.animate({
 		scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
-	    },1000);
+	    },750);
 	} else {
             $('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
             location.hash = aid;
@@ -6619,10 +6619,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
 	btn = opts.wrap.replace('${widget}',btn);
 	let selectContainer = select.attr('select-container');
+	let location;
+	if(opts.location) {
+	    if (opts.location instanceof jQuery) {
+		location = opts.location;
+	    } else {
+		location=jqid(opts.location);
+	    }
+	    if(location && location.length==0) location=null;
+	}
 	if(selectContainer) {
 	    jqid(selectContainer).after(btn);
-	} else if(opts.location) {
-	    jqid(opts.location).after(btn);
+	} else if(location) {
+	    location.after(btn);
 	} else {
 	    if(opts.after)
 		select.after(' ' +btn);
