@@ -97,6 +97,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "#wikify","true",
 					    "#convertTags","true"),
 				new WikiTag(WIKI_TAG_EMBEDMS, "Embed ppt/doc/xls","entry","entry id"),
+				new WikiTag(WIKI_TAG_IMPORTPROPERTY,"Import wiki properties"),
 				new WikiTag(WIKI_TAG_TAGS)),
 	    new WikiTagCategory("Layout", 
 				new WikiTag(WIKI_TAG_TABLETREE, "Entry table/tree",

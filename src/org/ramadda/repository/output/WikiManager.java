@@ -3134,6 +3134,23 @@ public class WikiManager extends RepositoryManager
 		name = HU.span(name,attrs);
 	    }
             return name;
+	} else if(theTag.equals(WIKI_TAG_IMPORTPROPERTY)) {
+	    String id = getProperty(wikiUtil, props,"id",null);
+	    List<Metadata> mtdList = 
+		getMetadataManager().findMetadata(request, entry,
+						  new String[]{"content.wikiimport"}, true);
+	    if(mtdList!=null) {
+		for(Metadata mtd: mtdList) {
+		    if(id!=null) {
+			if(!Misc.equals(id,mtd.getAttr2())) continue;
+		    }
+		    String wikiText =mtd.getAttr3();
+		    if(stringDefined(wikiText)) {
+			sb.append(wikiUtil.wikify(wikiText, this));
+		    }
+		}
+	    }
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_EMBEDMS)) {
 	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	    url =HU.url(url,"timestamp",""+entry.getChangeDate());

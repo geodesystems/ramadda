@@ -210,6 +210,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_ENTRIES_TEMPLATE = "entries_template";    
     public static final String WIKI_TAG_ENTRYID = "entryid";
     public static final String WIKI_TAG_ENTRYLINK = "entrylink";
+    public static final String WIKI_TAG_IMPORTPROPERTY = "import_property";    
     public static final String WIKI_TAG_FA = "fa";    
     public static final String WIKI_TAG_FIELD = "field";
     public static final String WIKI_TAG_FLIPCARDS = "flipcards";
