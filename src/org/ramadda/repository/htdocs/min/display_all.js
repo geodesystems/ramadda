@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 14 06:02:50 MDT 2026";
+var build_date="RAMADDA build date: Thu Apr 16 03:40:50 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -434,8 +434,13 @@ $.extend(Utils,{
             ct.forEach((color,idx)=>{
 		let info = colorInfo[color];
                 let cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-label'], info?info.label:'');
-		cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-entry',
-			       ATTR_STYLE,HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw)], cell);
+		let clazz = 'ramadda-colortable-legend-entry';
+		let style = HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw);
+		if(ct.length<8) {
+		    style+=HU.css(CSS_FONT_SIZE,"150%");
+		}
+		cell = HU.div([ATTR_CLASS,clazz,
+			       ATTR_STYLE,style], cell);
                 html+=cell;
             });
             html+=HU.close(TAG_DIV);
@@ -2633,6 +2638,7 @@ class Stats {
 }
 
 var MAPPER_METHOD = {
+    RAW:"raw",
     LINEAR: "linear",
     LOG: "log",
     PERCENTILE: "percentile",
@@ -3314,7 +3320,7 @@ function ColorByInfo(display, fields, records,
 	else if(this.field.isBoolean()) this.isString=true;
     }
     this.index = this.field != null ? this.field.getIndex() : -1;
-    this.stringMap = this.display.getColorByMap(colorByMapProp);
+    this.stringMap = colorByMapProp?this.display.getColorByMap(colorByMapProp):Utils.parseMap(this.getProperty("Map"));
     if(this.index>=0 || this.timeField) {
 	this.processRecords(records);
     } else {
@@ -7407,9 +7413,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,props,lastColorBy);
 	},
 	getColorByMap: function(prop) {
-	    prop = this.getProperty(prop||'colorByMap');
-	    this.debugGetProperty=false;
-	    return Utils.parseMap(prop);
+	    let value = this.getProperty(prop||'colorByMap');
+	    return Utils.parseMap(value);
         },
         toString: function() {
             return  this.type + ' - ' + this.getId();
@@ -69837,6 +69842,12 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let x = this.getColumnValues(records, this.xField);
             let y = this.getColumnValues(records, this.yField);
             let z = this.getColumnValues(records, this.zField);
+	    let mapperX = new Mapper(new Stats(x.values));
+	    let mapperY = new Mapper(new Stats(y.values));
+	    let mapperZ = new Mapper(new Stats(z.values));	    	    
+
+
+
 	    let marker =  {
                 size: +this.getMarkerSize(),
 		color:COLOR_WHITE,
@@ -69978,7 +69989,11 @@ function Ramadda3dmeshDisplay(displayManager, id, properties) {
 
 function Ramadda3dscatterDisplay(displayManager, id, properties) {
     let SUPER;
+    if(!Utils.isDefined(properties.numberOfDataFields)) properties.numberOfDataFields=3;
     if(!Utils.isDefined(properties.width)) properties.width=HU.perc(100);
+    properties.dataFieldLabel0='X Axis';
+    properties.dataFieldLabel1='Y Axis';    
+    properties.dataFieldLabel2='Z Axis';
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
