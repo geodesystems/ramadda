@@ -432,8 +432,13 @@ $.extend(Utils,{
             ct.forEach((color,idx)=>{
 		let info = colorInfo[color];
                 let cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-label'], info?info.label:'');
-		cell = HU.div([ATTR_CLASS,'ramadda-colortable-legend-entry',
-			       ATTR_STYLE,HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw)], cell);
+		let clazz = 'ramadda-colortable-legend-entry';
+		let style = HU.css(CSS_WIDTH,tdw, CSS_MAX_WIDTH,tdw);
+		if(ct.length<8) {
+		    style+=HU.css(CSS_FONT_SIZE,"150%");
+		}
+		cell = HU.div([ATTR_CLASS,clazz,
+			       ATTR_STYLE,style], cell);
                 html+=cell;
             });
             html+=HU.close(TAG_DIV);
