@@ -2800,9 +2800,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,props,lastColorBy);
 	},
 	getColorByMap: function(prop) {
-	    prop = this.getProperty(prop||'colorByMap');
-	    this.debugGetProperty=false;
-	    return Utils.parseMap(prop);
+	    let value = this.getProperty(prop||'colorByMap');
+	    return Utils.parseMap(value);
         },
         toString: function() {
             return  this.type + ' - ' + this.getId();
