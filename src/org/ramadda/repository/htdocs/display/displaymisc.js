@@ -3353,10 +3353,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		
 	    }
             this.initTooltip();
+	    /*
             this.displayManager.propagateEventRecordSelection(this,
 							      this.dataCollection.getList()[0], {
-								  index: 0
+							      index: 0
 							      });
+							      */
         },
 	getCellLabel(row,col) {
 	    return   this.getProperty('label.' + row.getId() +'.' +
