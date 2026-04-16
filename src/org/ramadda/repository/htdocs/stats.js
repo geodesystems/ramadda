@@ -226,6 +226,7 @@ class Stats {
 }
 
 var MAPPER_METHOD = {
+    RAW:"raw",
     LINEAR: "linear",
     LOG: "log",
     PERCENTILE: "percentile",
