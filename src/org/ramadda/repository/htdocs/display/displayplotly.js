@@ -488,6 +488,12 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let x = this.getColumnValues(records, this.xField);
             let y = this.getColumnValues(records, this.yField);
             let z = this.getColumnValues(records, this.zField);
+	    let mapperX = new Mapper(new Stats(x.values));
+	    let mapperY = new Mapper(new Stats(y.values));
+	    let mapperZ = new Mapper(new Stats(z.values));	    	    
+
+
+
 	    let marker =  {
                 size: +this.getMarkerSize(),
 		color:COLOR_WHITE,
@@ -629,7 +635,11 @@ function Ramadda3dmeshDisplay(displayManager, id, properties) {
 
 function Ramadda3dscatterDisplay(displayManager, id, properties) {
     let SUPER;
+    if(!Utils.isDefined(properties.numberOfDataFields)) properties.numberOfDataFields=3;
     if(!Utils.isDefined(properties.width)) properties.width=HU.perc(100);
+    properties.dataFieldLabel0='X Axis';
+    properties.dataFieldLabel1='Y Axis';    
+    properties.dataFieldLabel2='Z Axis';
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
