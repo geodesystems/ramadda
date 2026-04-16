@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr 16 03:40:50 MDT 2026";
+var build_date="RAMADDA build date: Thu Apr 16 10:29:46 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -4796,13 +4796,17 @@ displayDefineEvent("filteredDataChanged",false);
 var globalDisplayCount = 0;
 var DISPLAY_COUNT=0;
 function addGlobalDisplayProperty(name, value,displayType) {
+
+
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
     }
-    if(value==="true") value = true;
-    else if(value==="false") value=false;
-    if(displayType) name=displayType+'.' + name;
-    window.globalDisplayProperties[name] = value;
+    let tmp = RamaddaDisplayUtils.processProperties({[name]:value});
+    Object.keys(tmp).forEach(name=>{
+	let value = tmp[name];
+	if(displayType) name=displayType+'.' + name;
+	window.globalDisplayProperties[name] = value;
+    });
 }
 
 function getGlobalDisplayProperty(name,displayType) {
@@ -4845,6 +4849,33 @@ function addGlobalDisplayType(type, front) {
 
 
 var RamaddaDisplayUtils = {
+    processProperties:function(argProperties) {
+	let tmpProperties = {};
+	Object.keys(argProperties).forEach(key=>{
+	    let value = argProperties[key];
+	    if(value==="true") value = true;
+	    else if(value==="false") value=false;
+	    if(key.indexOf(',')<0) {
+		tmpProperties[key]  =value;
+		return;
+	    }
+	    
+	    //look for prop1,prop2.suffix
+	    let dotIndex = key.indexOf('.');
+	    let suffix = '';
+	    if(dotIndex>=0) {
+		suffix = key.substring(dotIndex);
+		key = key.substring(0,dotIndex);
+	    }
+	    
+	    Utils.split(key,',',true,true).forEach(tok=>{
+		tmpProperties[tok+suffix] = value;
+	    });
+	});
+	return tmpProperties;
+    },
+
+
     sparklineProps:  [
 	{label:'Sparkline'},
 	{p:'showDate',ex:'true'},
@@ -5072,7 +5103,8 @@ function DisplayThing(argId, argProperties) {
 	    tmpProperties[tok+suffix] = value;
 	});
     });
-    argProperties = tmpProperties;
+
+    argProperties = RamaddaDisplayUtils.processProperties(argProperties);
 
 
     //check for booleans as strings
@@ -66416,10 +66448,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		
 	    }
             this.initTooltip();
+	    /*
             this.displayManager.propagateEventRecordSelection(this,
 							      this.dataCollection.getList()[0], {
-								  index: 0
+							      index: 0
 							      });
+							      */
         },
 	getCellLabel(row,col) {
 	    return   this.getProperty('label.' + row.getId() +'.' +
