@@ -410,7 +410,7 @@ function ColorByInfo(display, fields, records,
 	else if(this.field.isBoolean()) this.isString=true;
     }
     this.index = this.field != null ? this.field.getIndex() : -1;
-    this.stringMap = this.display.getColorByMap(colorByMapProp);
+    this.stringMap = colorByMapProp?this.display.getColorByMap(colorByMapProp):Utils.parseMap(this.getProperty("Map"));
     if(this.index>=0 || this.timeField) {
 	this.processRecords(records);
     } else {
