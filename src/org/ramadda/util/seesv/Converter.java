@@ -1944,12 +1944,75 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class RangePercent extends Converter {
+        private double value1;
+        private double value2;	
+	String name;
+	String column;
+	ColumnOrValue column1;
+	ColumnOrValue column2;	
+	int index;
+	String sourceName;
+
+        public RangePercent(String name,String col,String value1,String value2) {
+            super(col);
+	    if(!Utils.stringDefined(name)) name = null;
+	    this.name = name;
+	    column1 = new ColumnOrValue(value1);
+	    column2 = new ColumnOrValue(value2);	    
+        }
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		index = getIndex(ctx);
+		sourceName = row.getString(index);
+		column1.init(this,ctx,row);
+		column2.init(this,ctx,row);		
+		if(name!=null) {
+		    row.add(name);
+		}
+                return row;
+            }
+
+	    if(!row.indexOk(index)) return row;
+	    double value = row.getDouble(index);
+	    double percent = Double.NaN;
+	    double value1 = column1.getValue(this,ctx,row);
+	    double value2 = column2.getValue(this,ctx,row);	    
+	    if(Double.isNaN(value) || Double.isNaN(value1) || Double.isNaN(value2)) {
+		percent = Double.NaN;
+	    }  else {
+		if(value<=value1) percent=0;
+		else if(value>=value2) percent=1;
+		else {
+		    double range = value2-value1;
+		    if(range==0) {
+			percent = Double.NaN;
+		    } else {
+			percent= (value-value1)/range;
+		    }
+		}
+	    }
+	    //	    if(percent!=1 && percent!=0 && !Double.isNaN(percent))
+		System.out.println(sourceName +":"  +value1 +" - " + value2 +" " + value  +" percent:" + percent);
+
+	    if(name!=null) {
+		row.add(percent);
+	    } else {
+		row.set(index,percent);
+	    }
+
+	    return row;
+	}
+
+    }
+
+
     public static class Ranges extends Converter {
-
         String name;
-
         double start;
-
         double size;
 
         public Ranges(TextReader ctx, String col, String name, double start,
@@ -2178,11 +2241,8 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnFunc extends Converter {
-
         String code;
-
         List<String> names;
-
         Row headerRow;
 
         org.mozilla.javascript.Context cx =
@@ -3826,23 +3886,35 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnCopier extends Converter {
-        private String name;
+	private Row headerRow;
+        private List<String> names;
 
-        public ColumnCopier(String col, String name) {
-            super(col);
-            this.name = name;
+        public ColumnCopier(List<String> cols, String name) {
+            super(cols);
+            this.names = Utils.split(name,",");
         }
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            int index = getIndex(ctx);
-            if ((index < 0) || (index >= row.size())) {
-                return row;
+            List<Integer> indices = getIndices(ctx);
+	    boolean first = rowCnt++==0;
+	    if(first) {
+		headerRow = row;
             }
-            if (rowCnt++ == 0) {
-                row.insert(index + 1, name);
-            } else {
-                row.insert(index + 1, row.getValues().get(index));
+
+	    for(int index: indices) {
+		int targetIndex = index+1;
+		Object value="";
+		if(first) {
+		    String columnName = headerRow.getString(index);
+		    String template = index>=names.size()?names.get(0):names.get(index);
+		    value = template.replace("${column}",columnName);
+		} else {
+		    if(row.indexOk(index)) {
+			value = row.getValues().get(index);
+		    }
+		}
+		row.add(value);
             }
 
             return row;

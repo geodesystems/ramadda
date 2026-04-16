@@ -791,6 +791,35 @@ public class SeesvOperator {
         return rowMap;
     }
 
+    public static class ColumnOrValue {
+	double value=Double.NaN;
+	String column;
+	int index=-1;
+	public ColumnOrValue(String c) {
+	    if(c.startsWith("column:")) {
+		column = c.substring("column:".length());
+	    } else  if(c.startsWith("col:")) {
+		column = c.substring("col:".length());		
+	    } else {
+		this.value = Seesv.parseDouble(c);
+	    }
+	}
+	public void init(SeesvOperator op, TextReader ctx, Row row) {
+	    if(column!=null) {
+		index = op.getIndex(ctx,column);
+	    }
+	}
+	public double getValue(SeesvOperator op, TextReader ctx, Row row) {
+	    if(index<0) {
+		return value;
+	    }
+	    if(!row.indexOk(index)) return Double.NaN;
+
+	    return Seesv.parseDouble(row.getString(index));
+	}
+
+    }
+
     public static class Tuple {
 
 	int count = 0;

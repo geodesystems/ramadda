@@ -1972,8 +1972,8 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_PATTERN, "Pattern")),
         new Cmd(CMD_COPY, "Copy column",
 		ARG_LABEL,"Copy Column",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), 
-		new Arg(ARG_NAME)),
+                new Arg(ARG_COLUMNS, "columns to copy", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg(ARG_NAME,"use ${column} for template")),
         new Cmd(CMD_ADD,"Add new columns",
 		ARG_LABEL,"Add Columns",
 		new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),		
@@ -2570,6 +2570,12 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PERCENT, "Add columns together. Replace with their percentage", 
 		ARG_LABEL,"Calculate Percent",
 		new Arg(ARG_COLUMNS,"Columns to add",ATTR_TYPE,"columns")),
+        new Cmd(CMD_RANGEPERCENT, "Percentage between", 
+		ARG_LABEL,"Percentage Between",
+		new Arg(ARG_NAME, "New column name - blank to replace"),		
+		new Arg(ARG_COLUMN,"The value column",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("value1","value 1 or column:colid",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("value2","value 2 or column:colid",ATTR_TYPE,TYPE_COLUMN)),	
         new Cmd(CMD_INCREASE, "Calculate percent increase",
 		ARG_LABEL,"% Increase",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), 
@@ -3936,6 +3942,15 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_RANGEPERCENT,  4,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.RangePercent(
+						     args.get(++i),
+						     args.get(++i),
+						     args.get(++i),
+						     args.get(++i)));
+		return i;
+	    });
+	
 	defineFunction(CMD_AVERAGE,3,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
 		int          period = parseInt(args.get(++i));
@@ -4773,7 +4788,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_COPY, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnCopier(args.get(++i), args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnCopier(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
