@@ -292,6 +292,26 @@ Override the page template
     </type>
 
     <type
+       name="Wiki Import"
+       tag="internal"
+       showinhtml="false"       
+       
+       id="content.wikiimport">
+      <help>
+<![CDATA[
+Shared wiki text that can be imported with the import_property tag
+]]>
+</help>
+<element name="label" label="Label" />
+<element name="id" label="ID" help="Optional ID"/>
+<element name="wikitext" label="Wiki Text" datatype="wiki" rows="20"/>
+    </type>
+
+
+
+
+
+    <type
 	tag="internal"
 	showinhtml="false"       
        name="Logo"
