@@ -1033,6 +1033,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconSize',ex:16},
 	{p:'hideMissingColor',
 	 ex:true,tt:'hide points when no color by value'},
+	{p:'missingFillColor',d:'transparent'},
+	{p:'missingFillOpacity'},
+	{p:'missingStrokeColor',d:'#000'},
+	{p:'missingStrokeWidth',d:0.5},
+
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
@@ -4521,8 +4526,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];
 	    let linesToAdd = [];	    	    
-	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
-	    let hideMissingColor = this.getHideMissingColor();
+
+
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    let hideNaN = this.getHideNaN();
 	    this.lastColorBy = colorBy;
@@ -4538,6 +4543,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
 	    let unhighlightRadius = this.getUnhighlightRadius();
 	    let strokeOpacity = this.getStrokeOpacity();
+	    let fillColor = this.getFillColor();
+	    let fillOpacity =  this.getFillOpacity();
+            let strokeWidth = +this.getPropertyStrokeWidth();
+            let strokeColor = this.getPropertyStrokeColor();
+
+	    let hideMissingColor = this.getHideMissingColor();
+	    let missingFillColor  = this.getMissingFillColor();
+	    let missingFillOpacity  = this.getMissingFillOpacity(fillOpacity);
+	    let missingStrokeColor  = this.getMissingStrokeColor();
+	    let missingStrokeWidth  = this.getMissingStrokeWidth();
+	    
+
 	    this.markers = {};
 
 	    //change the order of the records if we are highlighting
@@ -4598,8 +4615,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    radius = Math.min(radius, this.getMaxRadius());
-            let strokeWidth = +this.getPropertyStrokeWidth();
-            let strokeColor = this.getPropertyStrokeColor();
+
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
 		let tpoints = points.map(p=>{
@@ -4813,8 +4829,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeWidth: this.getPathWidth()
 	    };
 
-	    let fillColor = this.getFillColor();
-	    let fillOpacity =  this.getFillOpacity();
+
 	    let isPath = this.getIsPath();
 	    if(this.getIsPathThreshold()>records.length) isPath=true;
 	    if(isPath)
@@ -5233,15 +5248,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    return;
 			}
 			colorByValue = value;
-			theColor =  colorBy.getColorFromRecord(record, theColor,false);
+			theColor =  props.fillColor  = colorBy.getColorFromRecord(record, null,false);
 		    }
                 }
 
 
+		let hadMissingColor=false;
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
+		} else {
+		    hadMissingColor = true;
 		}
 		
 
@@ -5252,6 +5270,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(unhighlightRadius>0)
 			props.pointRadius = unhighlightRadius;
 		}
+
 
 
 		if(polygonField) {
@@ -5380,6 +5399,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 
+
+
 		if(glyphs.length>0) {
 		    let cid = HU.getUniqueId("canvas_");
 		    let c = HU.tag(TAG_CANVAS,[ATTR_CLASS,"",
@@ -5424,7 +5445,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(rotateField) {
 			props.rotation = rotateScale*record.getValue(rotateField.getIndex());
 		    }
-		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
+		    //Don't do this here as we did this already above
+//		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
 		    if(props.fillColor==null) {
 			if(hideMissingColor)
 			    return
@@ -5434,6 +5456,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    props.cursor = CURSOR_POINTER;
 			}
 			let propsToUse = props;
+			if(hadMissingColor) {
+			    props.fillColor  = missingFillColor?? props.fillColor;
+			    props.fillOpacity  = missingFillOpacity?? props.fillOpacity;
+			    props.strokeColor  = missingStrokeColor??props.strokeColor;
+			    props.strokeWidth  = missingStrokeWidth;
+			}
 			mapPoint = this.map.createPoint("pt-" + featureCnt, point, propsToUse, null);
 			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
