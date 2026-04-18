@@ -6235,22 +6235,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             expandIt();
         }
     },
-    makeDraggable:function(selector) {
+    makeDraggable:function(selector,anchor) {
+	let start = (element) =>{
+            //Make the draggable be absolute
+            if(!element.attr("started")) {
+                element.attr("started",true);
+		let anchorElement;
+		if(anchor && jqid(anchor).length>0) {
+		    anchorElement =jqid(anchor);
+		} else {
+		    anchorElement =element;
+		}
+                let o = anchorElement.offset();
+                o = anchorElement.position();               		
+//                element.css(CSS_POSITION,POSITION_ABSOLUTE).css(CSS_LEFT,HU.px(o.left)).css(CSS_TOP,HU.px(o.top));
+                element.css(CSS_POSITION,POSITION_ABSOLUTE);
+            }
+	}
         $(selector).draggable({
             zIndex:1000,
-            drag: function( event, ui ) {
+            xdrag: function( event, ui ) {
             },
             start: function( event, ui ) {
-                //Make the draggable be absolute
-                if(!$(this).attr("started")) {
-                    $(this).attr("started",true);
-                    let o = $(this).offset();               
-                    $(this).attr("oleft",o.left);
-                    $(this).attr("otop",o.top);             
-                    $(this).css(CSS_POSITION,POSITION_ABSOLUTE).css(CSS_LEFT,HU.px(o.left)).css(CSS_TOP,HU.px(o.top));
-                }
+		start($(this));
             },
         });
+	if(anchor && jqid(anchor).length>0) {
+	    $(document).ready(function() {
+		start($(selector));
+	    });
+	}
     },
     idAttr: function(s) {
         return this.attr(ATTR_ID, s);

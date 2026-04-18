@@ -2167,6 +2167,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (style == null) {
                         style = "";
                     }
+                    if(Utils.getProperty(props,  "trigger",false)) {
+			HU.div(buff, "",
+			       HU.attrs(ATTR_ID,dragId+"_anchor"));
+		    }
+
                     HU.open(buff, TAG_DIV, ATTR_STYLE,"position:relative;");
                     HU.open(buff, TAG_DIV, "id", dragId, ATTR_STYLE,
                             "display:inline-block;z-index:500;" + style);
@@ -2197,7 +2202,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                         HU.close(buff, TAG_DIV);
                         //              HU.script(buff, "$('#" + dragId +"').draggable();\n");
                         HU.script(buff,
-                                  "HU.makeDraggable('#" + dragId + "');\n");
+				  HU.call("HU.makeDraggable",
+					  HU.squote("#" + dragId),
+					  HU.squote(dragId+"_anchor")));
                     }
 
                     continue;

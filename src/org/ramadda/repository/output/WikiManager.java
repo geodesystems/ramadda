@@ -8621,7 +8621,7 @@ public class WikiManager extends RepositoryManager
 			l2.call("Full screen", "Allow a section to be expanded to full screen",
 				plus("fullscreen"), minus("fullscreen")),
 			l2.call("Draggable", "A draggable section\nimg:draggable.png",
-				plus("draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote_"),
+				plus("draggable framed=true trigger=false header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote_"),
 				minus("draggable")));
 
 
