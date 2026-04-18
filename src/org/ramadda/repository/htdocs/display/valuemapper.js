@@ -34,6 +34,7 @@ function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
 	this.field = theField;
 	valueAttr =theField.getId();
 	propPrefix.unshift(theField.getId()+'.'+ fieldProperty);
+	propPrefix.unshift(theField.getId()+'.'); 
 	propPrefix.push(fieldProperty);
     }
     
@@ -126,15 +127,16 @@ ValueMapper.prototype = {
     },
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
-	if(this.debug) console.log("getProperty:" + prop);
+	debug = debug ?? this.debug;
+	if(debug) console.log("getProperty:" + prop);
 	for(let i=0;i<this.propPrefix.length;i++) {
 	    this.display.debugGetProperty = debug;
-	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
+	    if(debug) console.log("\tpropPrefix:" + this.propPrefix[i],"prop:",prop);
 	    let v = this.display.getProperty(this.propPrefix[i]+prop);
 	    this.display.debugGetProperty = false;
 	    if(Utils.isDefined(v)) return v;
 	}
-	return dflt;
+	return  this.display.getProperty(prop,dflt);
     },
     getDoCount:function() {
 	return this.doCount;
@@ -156,7 +158,6 @@ ValueMapper.prototype = {
 	if(!this.mapper) {
 	    console.log('No mapper defined',this.field);
 	    return 0.5;
-
 	}
 
 	let percent = this.mapper.map(value);
@@ -683,6 +684,7 @@ ColorByInfo.prototype = {
 	return  total;
     },    
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
+	if(debug)	console.log('getColorFromRecord');
 	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
@@ -717,10 +719,7 @@ ColorByInfo.prototype = {
 	    value = this.getDoCount()?records.length:value;
 	    record.setDisplayProperty(this.display.getId(),'colorByValue',value);
 	    this.lastValue = value;
-	    if(isNaN(value)) {
-		if(this.nullColor) return this.nullColor;
-	    }
-	    let color =   this.getColor(value, record,checkHistory);
+	    let color =   this.getColor(value, record,checkHistory,debug);
 	    if(debugColorBy)	console.log(value,color)
 	    return color;
 	} else if(this.timeField) {
@@ -732,13 +731,13 @@ ColorByInfo.prototype = {
 	    }
 	    this.lastValue = value;
 	    //	    console.log(value);
-	    return  this.getColor(value, records[0],checkHistory);
+	    return  this.getColor(value, records[0],checkHistory,debug);
 	} 
 	if(this.fieldValue == "year") {
 	    if(records[0].getDate()) {
 		let value = records[0].getDate().getUTCFullYear();
 		this.lastValue = value;
-		return this.getColor(value, records[0]);
+		return this.getColor(value, records[0],false,debug);
 	    }
 	}
 	return dflt;
@@ -746,7 +745,10 @@ ColorByInfo.prototype = {
     hasField: function() {
 	return this.index>=0;
     },
-    getColor: function(value, pointRecord, checkHistory) {
+    getColor: function(value, pointRecord, checkHistory,debug) {
+	if(debug)
+	    console.log('getColor');
+
 	if(this.literal) {
 	    value = String(value);
 	    if(value.indexOf('(')) {
@@ -757,7 +759,9 @@ ColorByInfo.prototype = {
 	if(this.colorScaleInterval)
 	    return this.colorScaleInterval(value);
 	let c = this.getColorInner(value, pointRecord);
-	if(c==null) c=this.nullColor;
+	if(c==null) {
+	    c=this.nullColor;
+	}
 	return c;
     },
 
@@ -958,8 +962,10 @@ function SizeBy(display,records,fieldProperty,args) {
 	    this.steps.push({value:+value,size:+size});
 	});
     }
-    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", this.getProperty("radiusMin",Utils.isDefined(args.radiusMin)?args.radiusMin:4)));
-    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", this.getProperty("radiusMax",Utils.isDefined(args.radiusMax)?args.radiusMax:20)));
+    this.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin",
+						 this.getProperty("radiusMin",Utils.isDefined(args.radiusMin)?args.radiusMin:4)));
+    this.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax",
+						 this.getProperty("radiusMax",Utils.isDefined(args.radiusMax)?args.radiusMax:20)));
 //    console.log('sizeby radius:',this.radiusMin,this.radiusMax);
     this.origMinValue =   this.minValue;
     this.origMaxValue =   this.maxValue; 
