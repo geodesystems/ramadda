@@ -1042,6 +1042,22 @@ public class HtmlOutputHandler extends OutputHandler {
                 suffix.append(HtmlUtils.sectionClose());
             }
         }
+	List<Metadata> mtdList = 
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[]{"content.wikiimport"}, true);
+	if(mtdList!=null) {
+	    for(Metadata mtd: mtdList) {
+		String wikiText =mtd.getAttr3();
+		if(stringDefined(wikiText)) {
+		    suffix.append(HtmlUtils.sectionOpen("Wiki Property - " + mtd.getAttr1(), false));
+		    entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
+								 suffix, wikiText);
+		    suffix.append(HtmlUtils.sectionClose());
+		}
+	    }
+	}
+
+
 	List<WikiMacro> macros = entry.getTypeHandler().getWikiMacros();
 	if(macros!=null){
 	    suffix.append(HtmlUtils.sectionOpen("Wiki Macros", false));
