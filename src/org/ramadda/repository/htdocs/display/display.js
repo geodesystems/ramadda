@@ -113,6 +113,7 @@ var ID_ENTRIES_NEXT = "entries_next";
 var ID_NEXT = "next";
 var ID_PREV = "prev";
 var ID_PREVNEXT_LABEL = 'prevnext_label';
+var ID_SHOWMISSINGTOGGLE="showMissingToggle";
 
 var PROP_DATAFIELD='dataField';
 
@@ -7437,7 +7438,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			     ATTR_TITLE,'Color table settings',
 			     ATTR_ID,this.domId('colortablesettings')],HU.getIconImage('fas fa-cog'));
-		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
+		
+
+		let label='';
+		if(this.getProperty('showHideMissingColorToggle')) {
+		    let dflt = this.getProperty('hideMissingColor');
+		    label += HU.checkbox(this.domId(ID_SHOWMISSINGTOGGLE),
+					 [ATTR_ID,this.domId(ID_SHOWMISSINGTOGGLE)],!dflt,
+					 "Show Missing") +SPACE2;
+		    label+=SPACE;
+		}	    
+
+		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
 						    enums,selected,20))+extra+SPACE2;
@@ -8045,6 +8057,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    this.jq('colortablesettings').click(function() {
 		_this.showColorTableSettings($(this));
+	    });
+	    this.jq(ID_SHOWMISSINGTOGGLE).change(function() {
+		_this.setProperty('hideMissingColor',!HU.isChecked($(this)));
+		_this.forceUpdateUI();
 	    });
             this.jq('colorbyselect').change(function(){
 		_this.colorByFieldChanged($(this).val());

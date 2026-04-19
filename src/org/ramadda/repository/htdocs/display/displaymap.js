@@ -1033,6 +1033,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconSize',ex:16},
 	{p:'hideMissingColor',
 	 ex:true,tt:'hide points when no color by value'},
+	{p:'showHideMissingColorToggle',
+	 ex:true,tt:'show the toggle'},	
 	{p:'missingFillColor',d:'transparent'},
 	{p:'missingFillOpacity'},
 	{p:'missingStrokeColor',d:'#000'},
