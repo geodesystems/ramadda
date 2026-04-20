@@ -2677,9 +2677,6 @@ MapGlyph.prototype = {
 	    item(distances?.label,true,true);
 	}
 	this.updateLineLabels(distances);
-
-
-
 	if(this.isMultiEntry()) {
 	    //	    item(HU.div([ATTR_ID,this.domId('multientry')]));
 	}
@@ -2761,92 +2758,96 @@ MapGlyph.prototype = {
 	if(!distance) return;
 	if(!distance.feet) return;
 	this.removeLineLabels();
+	this.lineLabels=[];
 	if(!this.isLineLike()) {
 //	    return;
 	}
 
-	if(!this.getProperty('linelabels.show',false)) {
+	if(!this.getProperty('lineLabels.show',false)) {
 	    return;
 	}
 
 	let points = this.getPoints({});
 	if(points==null || points.length<2) return;
-
-	let template = this.getProperty('linelabels.template','${distance}');
+	let template = this.getProperty('lineLabels.template','${distance}');
 	template = template.replace(/\\n/g,'\n');
-	let latitude  = points[0];
-	let longitude  = points[1];	
-	let labelLocation = this.getProperty('linelabels.location','last');
-	if(labelLocation=='last') {
-	    latitude  = points[points.length-2];
-	    longitude  = points[points.length-1];	    
-	} else 	if(labelLocation=='middle') {
-	    if(points.length==4) {
-		let latitude2  = points[points.length-2];
-		let longitude2  = points[points.length-1];	    
-		latitude=latitude+(latitude2-latitude)/2;
-		longitude=longitude+(longitude2-longitude)/2;		
-	    }  else {
-		let index = parseInt(points.length/2);
-		if (index % 2 !== 0) {
-		    index--;
+
+	Utils.split(this.getProperty('lineLabels.locations','last'),',',true,true).forEach(labelLocation=>{
+	    let latitude  = points[0];
+	    let longitude  = points[1];	
+	    if(labelLocation=='last') {
+		latitude  = points[points.length-2];
+		longitude  = points[points.length-1];	    
+	    } else 	if(labelLocation=='middle') {
+		if(points.length==4) {
+		    let latitude2  = points[points.length-2];
+		    let longitude2  = points[points.length-1];	    
+		    latitude=latitude+(latitude2-latitude)/2;
+		    longitude=longitude+(longitude2-longitude)/2;		
+		}  else {
+		    let index = parseInt(points.length/2);
+		    if (index % 2 !== 0) {
+			index--;
+		    }
+		    if(index<0) index=0;
+		    latitude  = points[index];
+		    longitude  = points[index+1];
 		}
-		if(index<0) index=0;
-		latitude  = points[index];
-		longitude  = points[index+1];
+	    } else if(labelLocation=='center') {
+		let centroid = this.getGeometry()?.getCentroid(true);
+		let lonlat = this.getMap().transformProjPoint(centroid)
+		latitude=lonlat.y;
+		longitude=lonlat.x;
 	    }
-	} else if(labelLocation=='center') {
-	    let centroid = this.getGeometry()?.getCentroid(true);
-	    let lonlat = this.getMap().transformProjPoint(centroid)
-	    latitude=lonlat.y;
-	    longitude=lonlat.x;
-	}
-	template = template.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
-	template = template.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
+	    let label = template;
+	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
+	    label = label.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
 
-	template = template.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
-	template = template.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
-	template = template.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
-	template = template.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
-	template = template.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
-
-	if(distance) {
-	    let value = distance.feet;
-	    template = template.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
-	    template = template.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
-	    template = template.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
-	    template = template.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
-	    let unit = UNIT_FT;
-	    if(value) {
-		unit = UNIT_MILES;
-		value = value/5280;
+	    if(distance) {
+		label = label.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
+		label = label.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+		label = label.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
+		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+		label = label.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
+		let value = distance.feet;
+		label = label.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
+		label = label.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+		label = label.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
+		label = label.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
+		let unit = UNIT_FT;
+		if(value) {
+		    unit = UNIT_MILES;
+		    value = value/5280;
+		}
+		value =  Utils.formatNumberComma(value,1) + ' ' + unit;
+		label = label.replace('${distance}',value);
 	    }
-	    value =  Utils.formatNumberComma(value,1) + ' ' + unit;
-	    template = template.replace('${distance}',value);
-	}
-	let pt = MapUtils.createPoint(longitude,latitude);
-	pt = this.display.getMap().transformLLPoint(pt);
-	let style = {
-	    label:template,
-	    labelSelect:true,
-	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
+	    let pt = MapUtils.createPoint(longitude,latitude);
+	    pt = this.display.getMap().transformLLPoint(pt);
+	    let style = {
+		label:label,
+		labelSelect:true,
+		fontSize: this.getProperty('lineLabels.fontSize','8pt'),
+		fontWeight: this.getProperty('lineLabels.fontWeight',null),
+		fontStyle: this.getProperty('lineLabels.fontStyle',null),	    	    
+		fontColor:this.getProperty('lineLabels.fontColor','#000'),
+		fontFamily:this.getProperty('lineLabels.fontFamily',null),
+		textBackgroundStrokeColor:this.getProperty('lineLabels.strokeColor','#888'),
+		textBackgroundStrokeWidth:this.getProperty('lineLabels.strokeWidth',1),
+		textBackgroundFillColor:this.getProperty('lineLabels.fillColor','#ffd700'),
+		textBackgroundFillOpacity:this.getProperty('lineLabels.opacity',0.75),
+		textBackgroundPadding:this.getProperty('lineLabels.padding',4),
+		textBackgroundRadius:this.getProperty('lineLabels.radius',4),
+		textBackgroundShape:'rectangle',
 
-	    fontWeight: this.getProperty('linelabels.fontweight',null),
-	    fontStyle: this.getProperty('linelabels.fontstyle',null),	    	    
-	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
-	    fontFamily:this.getProperty('linelabels.fontfamily',null),
-	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
-	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
-	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
-	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
-	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
-	    textBackgroundRadius:this.getProperty('linelabels.radius',4),
-	    textBackgroundShape:'rectangle',
+	    };
 
-	};
-	let dot = MapUtils.createVector(pt,null,style);
-	dot.mapGlyph=this;
-	this.lineLabels=[dot];
+	    let dot = MapUtils.createVector(pt,null,style);
+	    dot.mapGlyph=this;
+	    this.lineLabels.push(dot);
+
+	});
+
 	setTimeout(()=>{
 	    this.display.addFeatures(this.lineLabels);
 	},1);
