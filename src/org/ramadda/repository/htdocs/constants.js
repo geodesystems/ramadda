@@ -96,9 +96,12 @@ var icon_menu = ramaddaCdn + '/icons/menu.png';
 var icon_trash =  'fas fa-trash-alt';
 
 var UNIT_FT='ft';
+var UNIT_FEET='feet';
 var UNIT_MILES='mi';
+var UNIT_MILES_FULL='miles';
 var UNIT_KM='km';
 var UNIT_M='m';
+var UNIT_M_FULL='meters';
 var UNIT_NM='nm';
 
 var CLASS_ENTRY_FORM_SELECT='entry-form-select';
