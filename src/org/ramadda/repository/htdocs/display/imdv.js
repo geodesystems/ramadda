@@ -105,20 +105,20 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showButtons=false',
 			  'showMeasures=false',
 			  PROP_SHOW_TEXT_SEARCH+'=true',
-			  'linelabels.show=true',
-			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
-			  'linelabels.location=first|last|middle|center',
-			  'linelabels.fontcolor=white',
-			  'linelabels.fontweight=bold',
-			  'linelabels.fontstyle=italic',
-			  'linelabels.fontfamily','Helvetica',
-			  'linelabels.fontsize=8pt',
-			  'linelabels.strokecolor=#888',
-			  'linelabels.strokewidth=1',
-			  'linelabels.fillcolor=#ffd700',
-			  'linelabels.opacity=0.75',
-			  'linelabels.radius=4',
-			  'linelabels.padding=4',			  
+			  'lineLabels.show=true',
+			  'lineLabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
+			  'lineLabels.locations=first|last|middle|center',
+			  'lineLabels.fontColor=white',
+			  'lineLabels.fontWeight=bold',
+			  'lineLabels.fontStyle=italic',
+			  'lineLabels.fontFamily','Helvetica',
+			  'lineLabels.fontSize=8pt',
+			  'lineLabels.strokeColor=#888',
+			  'lineLabels.strokeWidth=1',
+			  'lineLabels.fillColor=#ffd700',
+			  'lineLabels.opacity=0.75',
+			  'lineLabels.radius=4',
+			  'lineLabels.padding=4',			  
 			 ];
 
 
@@ -6112,7 +6112,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)]);
 	    this.jq(ID_RIGHT).html(legendRight);	    
 
-	    this.jq(ID_HEADER0).append(HU.div([ATTR_ID,this.domId('topwikitext')]));
+	    this.jq(ID_HEADER1).append(HU.div([ATTR_ID,this.domId('topwikitext')]));
 	    this.jq(ID_BOTTOM).append(HU.div([ATTR_ID,this.domId('bottomwikitext')]));	    
 	    let message2 = HU.div([ATTR_ID,this.domId(ID_MESSAGE2),
 				   ATTR_CLASS,'ramadda-imdv-message2'],'');
@@ -6315,7 +6315,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	appendHeader:function(html) {
-	    this.jq(ID_HEADER0).append(html);
+	    this.jq(ID_HEADER1).append(html);
 	},
 	makeMenuBar:function() {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
