@@ -52,6 +52,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	    String player =  getMediaPlayer(request, entry, props,  sb,
 					    new ArrayList<String>(),
 					    "", mediaType,mediaUrl);
+
 	    return player;
 	}
 
@@ -155,18 +156,23 @@ public class MediaTypeHandler extends GenericTypeHandler {
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 	player =  getMediaPlayer(request, entry, props,  sb,
 				 attrs, embed, mediaType,mediaUrl);
+
+
         if (player == null) {
             return sb.toString();
         }
-        js.append("new RamaddaMediaTranscript(" + JU.map(attrs) + ");\n");
-        String searchDiv = HU.div("", HU.attrs("style", "vertical-align:top;",
+	js.append("new RamaddaMediaTranscript(" + JU.map(attrs) + ");\n");
+	String searchDiv = HU.div("", HU.attrs("style", "vertical-align:top;",
 					       "id", searchId));
-
-        String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
+	
+	String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
 	String bottom = HU.div(searchDiv + pointsDiv,
 			       HU.style("margin-top","5px",
 					"width",HU.makeDim(width,"px")));
-	boolean showAnnotations = entry.getBooleanValue(request,"show_annotations",true);
+
+	boolean showAnnotations = Utils.getProperty(props,"showAnnotations",
+						    entry.getBooleanValue(request,"show_annotations",true));
+
 	String style = "width:" + HU.makeDim(width,"px")+";";
 	style="";
 	if(vertical) {
