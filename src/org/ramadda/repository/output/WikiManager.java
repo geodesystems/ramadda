@@ -7964,6 +7964,7 @@ public class WikiManager extends RepositoryManager
                                        false);
 	boolean showPlaceholderImage = getProperty(wikiUtil,props,"showPlaceholderImage",true);
 	boolean showNonImages = getProperty(wikiUtil,props,"showNonImages",false);
+	boolean embedMedia = getProperty(wikiUtil,props,"embedMedia",false);	
         if (popup) {
             addImagePopupJS(request, wikiUtil, sb, props);
         }
@@ -8005,59 +8006,66 @@ public class WikiManager extends RepositoryManager
 		buff= colsSB[colCnt];
 	    }
             colCnt++;
-            String url = null;
 
-            if (thumbnail) {
-                List<String> urls = new ArrayList<String>();
-                getMetadataManager().getThumbnailUrls(request, child, urls,false);
-                if (urls.size() > 0) {
-                    url = urls.get(0);
-                }
-            }
-
-            if (url == null) {
-		if(child.isImage()) {
-		    url = child.getTypeHandler().getEntryResourceUrl(request,
-								     child);
-		}
-            }
-
-            if (!thumbnail && url==null) {
-		String[]tuple = getMetadataManager().getThumbnailUrl(request, child);
-		if(tuple!=null) url = tuple[0];
+	    String contents=null;
+	    if(!child.isImage() && embedMedia && child.isType("type_media")) {
+		contents = wikifyEntry(request, child,"{{annotated_media showAnnotations=false}}",false);
 	    }
 
-	    if(url==null) {
-		if(!showNonImages) continue;
-	    }
-
-	    if(url==null && showPlaceholderImage) {
-		url = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
-	    }
-
-
-            if (url!=null && serverImageWidth > 0) {
-                url = HU.url(url,ARG_IMAGEWIDTH,""+serverImageWidth);
-            }
-
-            String extra = "";
-	    if(stringDefined(height)) {
-		extra = HU.attr(HU.ATTR_HEIGHT,HU.makeDim(height));
-	    } else {
-		if(width.startsWith("-")) {
-		    extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (width.substring(1)) + "%");
-		} else {
-		    extra = extra + HU.attr(HU.ATTR_WIDTH, "" + width);
-		}
-	    }
-            String name       = getEntryDisplayName(child);
+	    String name       = getEntryDisplayName(child);
 	    String theCaption = applyMacros(request, child,macros,num);
-            if ((name != null) && !name.isEmpty()) {
-                extra = extra + HU.attr(HU.ATTR_ALT, name);
-            }
-            extra = extra + HU.attr("id", idPrefix + "img" + num) +
-		HU.attrs("loading","lazy","style",imageStyle);
-            String img = url==null?"":HU.img(url, "", extra);
+	    String url = null;
+	    if(contents==null) {
+		if (thumbnail) {
+		    List<String> urls = new ArrayList<String>();
+		    getMetadataManager().getThumbnailUrls(request, child, urls,false);
+		    if (urls.size() > 0) {
+			url = urls.get(0);
+		    }
+		}
+
+		if (url == null) {
+		    if(child.isImage()) {
+			url = child.getTypeHandler().getEntryResourceUrl(request,
+									 child);
+		    }
+		}
+
+		if (!thumbnail && url==null) {
+		    String[]tuple = getMetadataManager().getThumbnailUrl(request, child);
+		    if(tuple!=null) url = tuple[0];
+		}
+
+		if(url==null) {
+		    if(!showNonImages) continue;
+		}
+
+		if(url==null && showPlaceholderImage) {
+		    url = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
+		}
+
+		if (url!=null && serverImageWidth > 0) {
+		    url = HU.url(url,ARG_IMAGEWIDTH,""+serverImageWidth);
+		}
+
+		String extra = "";
+		if(stringDefined(height)) {
+		    extra = HU.attr(HU.ATTR_HEIGHT,HU.makeDim(height));
+		} else {
+		    if(width.startsWith("-")) {
+			extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (width.substring(1)) + "%");
+		    } else {
+			extra = extra + HU.attr(HU.ATTR_WIDTH, "" + width);
+		    }
+		}
+		if ((name != null) && !name.isEmpty()) {
+		    extra = extra + HU.attr(HU.ATTR_ALT, name);
+		}
+		extra = extra + HU.attr("id", idPrefix + "img" + num) +
+		    HU.attrs("loading","lazy","style",imageStyle);
+		String img = url==null?"":HU.img(url, "", extra);
+		contents= img;
+	    }
 	    //	    if(imageStyle!=null) {img = HU.div(img,HU.attrs("style",imageStyle)); }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
@@ -8084,11 +8092,11 @@ public class WikiManager extends RepositoryManager
                 buff.append(
 			    HU.href(
 				    popupUrl, HU.div(
-						     img,
+						     contents,
 						     HU.attr(
 							     "id", idPrefix + "div" + num)), popupExtras));
             } else {
-                buff.append(img);
+                buff.append(contents);
             }
 	    if(decorate) {
 		buff.append("</div>");
