@@ -4572,6 +4572,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
+//		debug = true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -4581,15 +4582,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    if(_debug) this.logMsg('filter not enabled');
 			    return;
 			}
-			let filterOk = filter.isRecordOk(record, _debug);
-			if(_debug) this.logMsg('Filter ok:' + filterOk);
+			let filterOk = filter.isRecordOk(record,_debug);
+//			let filterOk = filter.isRecordOk(record,true);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
 		    });
+		    
 		    let ok = logic=="and"?allOk:anyOk;
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
+		    if(_debug) this.logMsg('** Filter allOk:'+allOk+' anyOk:'+anyOk+' record OK:'+ok);
 		    //		    this.logMsg("\trow:" + rowIdx+" ok:" + ok);
 		    if(highlight) {
 			newData.push(record);
@@ -7443,10 +7446,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let label='';
 		if(this.getProperty('showHideMissingColorToggle')) {
 		    let dflt = this.getProperty('hideMissingColor');
+		    label+=SPACE;
 		    label += HU.checkbox(this.domId(ID_SHOWMISSINGTOGGLE),
 					 [ATTR_ID,this.domId(ID_SHOWMISSINGTOGGLE)],!dflt,
 					 "Show Missing") +SPACE2;
-		    label+=SPACE;
 		}	    
 
 		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
@@ -9694,6 +9697,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
         applyFilters: function(record, values) {
+
 	    this.filters.forEach(filter=>{
                 if (!filter.isRecordOk(record)) {
                     return false;
