@@ -163,7 +163,8 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	getValue: function(record) {
 	    if(this.fields.length==1) {
-		return record.getValue(this.fields[0].getIndex());
+		let v =  record.getValue(this.fields[0].getIndex());
+		return v;
 	    } else {
 		let v = this.fields.reduce((acc,field)=>{
 		    return acc+=" " + record.getValue(field.getIndex());
@@ -238,7 +239,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.filterIDependOn) {
 		this.checkDependency();
 	    }
-
 	    if(!this.isEnabled()) {
 		return;
 	    }
@@ -259,17 +259,26 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else  if(this.isFieldNumeric()) {
 		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
 		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
-		if(!Utils.isDefined(minField.val()) || !!Utils.isDefined(maxField.val())) {
+		let minValue = minField.val();
+		let maxValue = maxField.val();		
+		if(!Utils.isDefined(minValue) || !Utils.isDefined(maxValue)) {
+/*
+		    console.log('prepareToFilter.isNumeric',
+				'no min/max FieldValue',
+				minValue,'min selector:', minField.length,
+				maxValue,'max selector:', maxField.length);
+				*/
 		    return;
 		}
-		let minValue = parseFloat(minField.val().trim());
-		let maxValue = parseFloat(maxField.val().trim());
+
+		minValue = parseFloat(minValue.trim());
+		maxValue = parseFloat(maxValue.trim());		
+		if(isNaN(minValue) || isNaN(maxValue)) {
+//		    console.log('prepareToFilter.isNumeric','min/max is NaN',minValue,maxValue);
+		    return;
+		}
 		let dfltMinValue = parseFloat(minField.attr(ATTR_DATA_MIN));
 		let dfltMaxValue = parseFloat(maxField.attr(ATTR_DATA_MAX));
-		if(isNaN(minValue) && isNaN(maxValue)) {
-		    return
-
-		}
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
@@ -363,10 +372,28 @@ function RecordFilter(display,filterFieldId, properties) {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
 	    } else if(this.isFieldNumeric()) {
-		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) return ok;
-		if(isNaN(rowValue) || rowValue=="")  ok =false;
-		else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
-		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
+
+		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) {
+		    if(debug) console.log('filter.isRecordOk',this.getId(),'numeric is nan',
+					  this.mySearch.value);
+		    return ok;
+		}
+
+
+		if(isNaN(rowValue) || rowValue=="")  {
+		    if(debug) console.log('filter.isRecordOk',this.getId(),'rowValue is null',
+					  rowValue);
+		    ok =false;
+		} else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) {
+		    if(debug) console.log('filter.isRecordOk','NOT OK:',rowValue,this.mySearch.value)
+		    ok = false;
+		} else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) {
+		    if(debug) console.log('filter.isRecordOk','NOT OK:',rowValue,this.mySearch.value)
+		    ok = false;
+		} else  {
+		    if(debug) console.log('filter.isRecordOk',this.getField().getId(),
+					  'OK:',rowValue,this.mySearch.value)
+		}
 	    } else if(this.isFieldDate()){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
 		    if(rowValue == null) {
