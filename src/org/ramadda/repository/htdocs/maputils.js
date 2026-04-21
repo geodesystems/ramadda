@@ -318,6 +318,9 @@ var MapUtils =  {
     metersToFeet:function(m) {
 	return 3.28084*m;
     },
+    milesToFeet:function(m) {
+	return 5280*m;
+    },    
     feetToMiles:function(f) {
 	return f/5280;
     },    
