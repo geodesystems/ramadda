@@ -237,6 +237,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "#width", "300px",
 					    "#height","400px",
 					    "#showNonImages","true",
+					    "#embedMedia","true",
 					    "#showPlaceholderImage","true",
 					    "#columns","0 - for flow layout",
 					    "#"+ATTR_POPUP, "true",
