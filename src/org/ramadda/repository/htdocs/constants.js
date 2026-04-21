@@ -97,6 +97,7 @@ var icon_trash =  'fas fa-trash-alt';
 
 var UNIT_FT='ft';
 var UNIT_FEET='feet';
+var UNIT_MILE='mile';
 var UNIT_MILES='mi';
 var UNIT_MILES_FULL='miles';
 var UNIT_KM='km';
