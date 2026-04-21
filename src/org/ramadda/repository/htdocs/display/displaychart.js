@@ -514,8 +514,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(!dataList || dataList.length==0) return dataList;
 	    let dataFields = dataList[0].fields;
 	    if(!dataFields) return dataList;
-
 	    dataFields.forEach((field,idx)=>{
+		if(!this.okToDoLog()) return;
 		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
 		if(!isLog) return;
 		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {
@@ -525,6 +525,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataList = this.transformTupleValueLog(dataList,idx,this.dataListInfo[field.getId()]);
 	    });
 	    return dataList;
+	},
+	okToDoLog:function() {
+	    return true;
 	},
 	isLogScale:function(field) {
 	    if(!this.dataListInfo) return false;
@@ -3583,6 +3586,9 @@ function TableDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	getRequiredPackages: function() {
 	    return ['table'];
+	},
+	okToDoLog:function() {
+	    return false;
 	},
         canDoGroupBy: function() {
             return true;
