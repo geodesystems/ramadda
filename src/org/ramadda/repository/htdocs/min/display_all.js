@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Apr 19 08:21:52 EDT 2026";
+var build_date="RAMADDA build date: Tue Apr 21 09:19:22 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -9191,6 +9191,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
+//		debug = true;
 		records.forEach((record,rowIdx)=>{
 		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
@@ -9200,15 +9201,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    if(_debug) this.logMsg('filter not enabled');
 			    return;
 			}
-			let filterOk = filter.isRecordOk(record, _debug);
-			if(_debug) this.logMsg('Filter ok:' + filterOk);
+			let filterOk = filter.isRecordOk(record,_debug);
+//			let filterOk = filter.isRecordOk(record,true);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
 		    });
+		    
 		    let ok = logic=="and"?allOk:anyOk;
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
+		    if(_debug) this.logMsg('** Filter allOk:'+allOk+' anyOk:'+anyOk+' record OK:'+ok);
 		    //		    this.logMsg("\trow:" + rowIdx+" ok:" + ok);
 		    if(highlight) {
 			newData.push(record);
@@ -12062,10 +12065,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let label='';
 		if(this.getProperty('showHideMissingColorToggle')) {
 		    let dflt = this.getProperty('hideMissingColor');
+		    label+=SPACE;
 		    label += HU.checkbox(this.domId(ID_SHOWMISSINGTOGGLE),
 					 [ATTR_ID,this.domId(ID_SHOWMISSINGTOGGLE)],!dflt,
 					 "Show Missing") +SPACE2;
-		    label+=SPACE;
 		}	    
 
 		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
@@ -14313,6 +14316,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
         applyFilters: function(record, values) {
+
 	    this.filters.forEach(filter=>{
                 if (!filter.isRecordOk(record)) {
                     return false;
@@ -19711,7 +19715,8 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	getValue: function(record) {
 	    if(this.fields.length==1) {
-		return record.getValue(this.fields[0].getIndex());
+		let v =  record.getValue(this.fields[0].getIndex());
+		return v;
 	    } else {
 		let v = this.fields.reduce((acc,field)=>{
 		    return acc+=" " + record.getValue(field.getIndex());
@@ -19786,7 +19791,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.filterIDependOn) {
 		this.checkDependency();
 	    }
-
 	    if(!this.isEnabled()) {
 		return;
 	    }
@@ -19807,17 +19811,26 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else  if(this.isFieldNumeric()) {
 		let minField = jqid(this.display.getDomId("filterby_" + this.getId()+"_min"));
 		let maxField = jqid(this.display.getDomId("filterby_" + this.getId()+"_max"));
-		if(!Utils.isDefined(minField.val()) || !!Utils.isDefined(maxField.val())) {
+		let minValue = minField.val();
+		let maxValue = maxField.val();		
+		if(!Utils.isDefined(minValue) || !Utils.isDefined(maxValue)) {
+/*
+		    console.log('prepareToFilter.isNumeric',
+				'no min/max FieldValue',
+				minValue,'min selector:', minField.length,
+				maxValue,'max selector:', maxField.length);
+				*/
 		    return;
 		}
-		let minValue = parseFloat(minField.val().trim());
-		let maxValue = parseFloat(maxField.val().trim());
+
+		minValue = parseFloat(minValue.trim());
+		maxValue = parseFloat(maxValue.trim());		
+		if(isNaN(minValue) || isNaN(maxValue)) {
+//		    console.log('prepareToFilter.isNumeric','min/max is NaN',minValue,maxValue);
+		    return;
+		}
 		let dfltMinValue = parseFloat(minField.attr(ATTR_DATA_MIN));
 		let dfltMaxValue = parseFloat(maxField.attr(ATTR_DATA_MAX));
-		if(isNaN(minValue) && isNaN(maxValue)) {
-		    return
-
-		}
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
@@ -19911,10 +19924,28 @@ function RecordFilter(display,filterFieldId, properties) {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
 	    } else if(this.isFieldNumeric()) {
-		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) return ok;
-		if(isNaN(rowValue) || rowValue=="")  ok =false;
-		else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
-		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
+
+		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) {
+		    if(debug) console.log('filter.isRecordOk',this.getId(),'numeric is nan',
+					  this.mySearch.value);
+		    return ok;
+		}
+
+
+		if(isNaN(rowValue) || rowValue=="")  {
+		    if(debug) console.log('filter.isRecordOk',this.getId(),'rowValue is null',
+					  rowValue);
+		    ok =false;
+		} else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) {
+		    if(debug) console.log('filter.isRecordOk','NOT OK:',rowValue,this.mySearch.value)
+		    ok = false;
+		} else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) {
+		    if(debug) console.log('filter.isRecordOk','NOT OK:',rowValue,this.mySearch.value)
+		    ok = false;
+		} else  {
+		    if(debug) console.log('filter.isRecordOk',this.getField().getId(),
+					  'OK:',rowValue,this.mySearch.value)
+		}
 	    } else if(this.isFieldDate()){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
 		    if(rowValue == null) {
@@ -21523,8 +21554,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(!dataList || dataList.length==0) return dataList;
 	    let dataFields = dataList[0].fields;
 	    if(!dataFields) return dataList;
-
 	    dataFields.forEach((field,idx)=>{
+		if(!this.okToDoLog()) return;
 		let isLog = this.getProperty(field.getId()+'.logScale',this.getProperty('logScale',false));
 		if(!isLog) return;
 		this.dataListInfo[field.getId()] = this.dataListInfo[idx] = {
@@ -21534,6 +21565,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataList = this.transformTupleValueLog(dataList,idx,this.dataListInfo[field.getId()]);
 	    });
 	    return dataList;
+	},
+	okToDoLog:function() {
+	    return true;
 	},
 	isLogScale:function(field) {
 	    if(!this.dataListInfo) return false;
@@ -24592,6 +24626,9 @@ function TableDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	getRequiredPackages: function() {
 	    return ['table'];
+	},
+	okToDoLog:function() {
+	    return false;
 	},
         canDoGroupBy: function() {
             return true;
@@ -48899,20 +48936,20 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showButtons=false',
 			  'showMeasures=false',
 			  PROP_SHOW_TEXT_SEARCH+'=true',
-			  'linelabels.show=true',
-			  'linelabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
-			  'linelabels.location=first|last|middle|center',
-			  'linelabels.fontcolor=white',
-			  'linelabels.fontweight=bold',
-			  'linelabels.fontstyle=italic',
-			  'linelabels.fontfamily','Helvetica',
-			  'linelabels.fontsize=8pt',
-			  'linelabels.strokecolor=#888',
-			  'linelabels.strokewidth=1',
-			  'linelabels.fillcolor=#ffd700',
-			  'linelabels.opacity=0.75',
-			  'linelabels.radius=4',
-			  'linelabels.padding=4',			  
+			  'lineLabels.show=true',
+			  'lineLabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
+			  'lineLabels.locations=first|last|middle|center|every:1km|every:2miles|count:5',
+			  'lineLabels.fontColor=white',
+			  'lineLabels.fontWeight=bold',
+			  'lineLabels.fontStyle=italic',
+			  'lineLabels.fontFamily','Helvetica',
+			  'lineLabels.fontSize=8pt',
+			  'lineLabels.strokeColor=#888',
+			  'lineLabels.strokeWidth=1',
+			  'lineLabels.fillColor=#ffd700',
+			  'lineLabels.opacity=0.75',
+			  'lineLabels.radius=4',
+			  'lineLabels.padding=4',			  
 			 ];
 
 
@@ -54906,7 +54943,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)]);
 	    this.jq(ID_RIGHT).html(legendRight);	    
 
-	    this.jq(ID_HEADER0).append(HU.div([ATTR_ID,this.domId('topwikitext')]));
+	    this.jq(ID_HEADER1).append(HU.div([ATTR_ID,this.domId('topwikitext')]));
 	    this.jq(ID_BOTTOM).append(HU.div([ATTR_ID,this.domId('bottomwikitext')]));	    
 	    let message2 = HU.div([ATTR_ID,this.domId(ID_MESSAGE2),
 				   ATTR_CLASS,'ramadda-imdv-message2'],'');
@@ -55109,7 +55146,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	appendHeader:function(html) {
-	    this.jq(ID_HEADER0).append(html);
+	    this.jq(ID_HEADER1).append(html);
 	},
 	makeMenuBar:function() {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
@@ -58648,9 +58685,6 @@ MapGlyph.prototype = {
 	    item(distances?.label,true,true);
 	}
 	this.updateLineLabels(distances);
-
-
-
 	if(this.isMultiEntry()) {
 	    //	    item(HU.div([ATTR_ID,this.domId('multientry')]));
 	}
@@ -58732,92 +58766,180 @@ MapGlyph.prototype = {
 	if(!distance) return;
 	if(!distance.feet) return;
 	this.removeLineLabels();
+	this.lineLabels=[];
 	if(!this.isLineLike()) {
 //	    return;
 	}
 
-	if(!this.getProperty('linelabels.show',false)) {
+	if(!this.getPropertyCheckParent('lineLabels.show',false)) {
 	    return;
 	}
 
 	let points = this.getPoints({});
 	if(points==null || points.length<2) return;
-
-	let template = this.getProperty('linelabels.template','${distance}');
+	let template = this.getPropertyCheckParent('lineLabels.template','${distance}');
 	template = template.replace(/\\n/g,'\n');
-	let latitude  = points[0];
-	let longitude  = points[1];	
-	let labelLocation = this.getProperty('linelabels.location','last');
-	if(labelLocation=='last') {
-	    latitude  = points[points.length-2];
-	    longitude  = points[points.length-1];	    
-	} else 	if(labelLocation=='middle') {
-	    if(points.length==4) {
-		let latitude2  = points[points.length-2];
-		let longitude2  = points[points.length-1];	    
-		latitude=latitude+(latitude2-latitude)/2;
-		longitude=longitude+(longitude2-longitude)/2;		
-	    }  else {
-		let index = parseInt(points.length/2);
-		if (index % 2 !== 0) {
-		    index--;
+
+	let addLabel = (latitude,longitude,distance) =>{
+	    let label = template;
+	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
+	    label = label.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
+
+	    if(distance) {
+		label = label.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
+		label = label.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+		label = label.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
+		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+		label = label.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
+		label = label.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
+		label = label.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+		label = label.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
+		label = label.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
+		let unit = UNIT_FT;
+		let value = distance.feet;
+		if(value) {
+		    unit = UNIT_MILES;
+		    value = value/5280;
 		}
-		if(index<0) index=0;
-		latitude  = points[index];
-		longitude  = points[index+1];
+		value =  Utils.formatNumberComma(value,1) + ' ' + unit;
+		label = label.replace('${distance}',value);
 	    }
-	} else if(labelLocation=='center') {
-	    let centroid = this.getGeometry()?.getCentroid(true);
-	    let lonlat = this.getMap().transformProjPoint(centroid)
-	    latitude=lonlat.y;
-	    longitude=lonlat.x;
-	}
-	template = template.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
-	template = template.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
+	    let pt = MapUtils.createPoint(longitude,latitude);
+	    pt = this.display.getMap().transformLLPoint(pt);
+	    let style = {
+		label:label,
+		pointRadius:4,
+		fillColor:'blue',
+		strokeWidth:0,
+		labelSelect:true,
+		//	{p:'labelAlign',ex:'l|c|r t|m|b'},
+		labelAlign: "lt",
+		labelXOffset: 10,
+		labelYOffset: 0,
+		fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
+		fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight',null),
+		fontStyle: this.getPropertyCheckParent('lineLabels.fontStyle',null),	    	    
+		fontColor:this.getPropertyCheckParent('lineLabels.fontColor','#000'),
+		fontFamily:this.getPropertyCheckParent('lineLabels.fontFamily',null),
+		textBackgroundStrokeColor:this.getPropertyCheckParent('lineLabels.strokeColor','#888'),
+		textBackgroundStrokeWidth:this.getPropertyCheckParent('lineLabels.strokeWidth',1),
+		textBackgroundFillColor:this.getPropertyCheckParent('lineLabels.fillColor','#ffd700'),
+		textBackgroundFillOpacity:this.getPropertyCheckParent('lineLabels.opacity',0.75),
+		textBackgroundPadding:this.getPropertyCheckParent('lineLabels.padding',4),
+		textBackgroundRadius:this.getPropertyCheckParent('lineLabels.radius',4),
+		textBackgroundShape:'rectangle',
+	    };
 
-	template = template.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
-	template = template.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
-	template = template.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
-	template = template.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
-	template = template.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
-
-	if(distance) {
-	    let value = distance.feet;
-	    template = template.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
-	    template = template.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
-	    template = template.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
-	    template = template.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
-	    let unit = UNIT_FT;
-	    if(value) {
-		unit = UNIT_MILES;
-		value = value/5280;
-	    }
-	    value =  Utils.formatNumberComma(value,1) + ' ' + unit;
-	    template = template.replace('${distance}',value);
-	}
-	let pt = MapUtils.createPoint(longitude,latitude);
-	pt = this.display.getMap().transformLLPoint(pt);
-	let style = {
-	    label:template,
-	    labelSelect:true,
-	    fontSize: this.getProperty('linelabels.fontsize','8pt'),
-
-	    fontWeight: this.getProperty('linelabels.fontweight',null),
-	    fontStyle: this.getProperty('linelabels.fontstyle',null),	    	    
-	    fontColor:this.getProperty('linelabels.fontcolor','#000'),
-	    fontFamily:this.getProperty('linelabels.fontfamily',null),
-	    textBackgroundStrokeColor:this.getProperty('linelabels.strokecolor','#888'),
-	    textBackgroundStrokeWidth:this.getProperty('linelabels.strokewidth',1),
-	    textBackgroundFillColor:this.getProperty('linelabels.fillcolor','#ffd700'),
-	    textBackgroundFillOpacity:this.getProperty('linelabels.opacity',0.75),
-	    textBackgroundPadding:this.getProperty('linelabels.padding',4),
-	    textBackgroundRadius:this.getProperty('linelabels.radius',4),
-	    textBackgroundShape:'rectangle',
-
+	    let dot = MapUtils.createVector(pt,null,style);
+	    dot.mapGlyph=this;
+	    this.lineLabels.push(dot);
 	};
-	let dot = MapUtils.createVector(pt,null,style);
-	dot.mapGlyph=this;
-	this.lineLabels=[dot];
+
+
+	Utils.split(this.getPropertyCheckParent('lineLabels.locations','last'),',',true,true).forEach(labelLocation=>{
+	    let latitude  = points[0];
+	    let longitude  = points[1];	
+	    let match1 = labelLocation.match('count: *([0-9]+) *$');
+	    if(match1) {
+		let count = parseInt(match1[1]);
+		let spacingFeet = distance.feet/count;
+		labelLocation='every:' + spacingFeet+'feet';
+	    }
+
+	    if(labelLocation.startsWith('every')) {
+		//miles
+		let spacingFeet = 5280;
+		let match = labelLocation.match('every:([0-9\.]+) *(.*) *$');
+		if(match) {
+		    let value = match[1].trim();
+		    let unit = match[2].trim();		    
+		    if(unit==UNIT_M|| unit==UNIT_M_FULL) value = MapUtils.metersToFeet(value);
+		    else if(unit==UNIT_KM) value = MapUtils.metersToFeet(value*1000);
+		    else if(unit==UNIT_MILES || unit==UNIT_MILES_FULL) value = MapUtils.milesToFeet(value);
+		    else if(unit==UNIT_FEET || unit==UNIT_FT) {}
+		    else {
+			console.log('unknown unit',unit);
+			return true;
+		    }
+		    spacingFeet = parseFloat(value);
+		}
+		let accumulatedFeet = 0;
+		let totalFeet=0;
+		let fmt = feet=>{
+		    return Utils.trimDecimals(MapUtils.feetToMiles(feet),2);
+		}
+		let debug = false;
+		if(debug)
+		    console.log('spacing',fmt(spacingFeet));
+		let numPoints=0;
+		for(let i=2;i<points.length;i+=2) {
+		    let lat1=points[i-2];
+		    let lon1=points[i-1];		    
+		    let lat2=points[i];
+		    let lon2 = points[i+1];
+		    while(true) {
+			//sanity check
+			if(numPoints>1000) break;
+			let segmentLength =  MapUtils.distance(lat1, lon1, lat2,lon2);
+			if(accumulatedFeet+segmentLength<spacingFeet) {
+			    if(debug)
+				console.log('next segment',
+					    'accumulated',fmt(accumulatedFeet),
+					    'segmentLength',fmt(segmentLength));
+			    accumulatedFeet+=segmentLength;
+			    totalFeet+=segmentLength;
+			    break;
+			}
+			let delta=spacingFeet-accumulatedFeet;
+			totalFeet+=delta;
+			if(debug)
+			    console.log('accumulated',fmt(accumulatedFeet),
+					'segmentLength',fmt(segmentLength),
+					'delta',fmt(delta));
+			let percent = delta/segmentLength;
+			lat1 = lat1+percent*(lat2-lat1);
+			lon1 = lon1+percent*(lon2-lon1);			
+			numPoints++;
+			addLabel(lat1,lon1,{feet:totalFeet,
+					    miles:MapUtils.feetToMiles(totalFeet)});
+			accumulatedFeet=0;
+		    }
+		}
+		if(accumulatedFeet>0) {
+//		    totalFeet+=accumulatedFeet;
+		    addLabel(points[points.length-2],points[points.length-1],
+			     {feet:totalFeet,
+			      miles:MapUtils.feetToMiles(totalFeet)});
+		}
+		return;
+	    }
+	    if(labelLocation=='last') {
+		latitude  = points[points.length-2];
+		longitude  = points[points.length-1];	    
+	    } else 	if(labelLocation=='middle') {
+		if(points.length==4) {
+		    let latitude2  = points[points.length-2];
+		    let longitude2  = points[points.length-1];	    
+		    latitude=latitude+(latitude2-latitude)/2;
+		    longitude=longitude+(longitude2-longitude)/2;		
+		}  else {
+		    let index = parseInt(points.length/2);
+		    if (index % 2 !== 0) {
+			index--;
+		    }
+		    if(index<0) index=0;
+		    latitude  = points[index];
+		    longitude  = points[index+1];
+		}
+	    } else if(labelLocation=='center') {
+		let centroid = this.getGeometry()?.getCentroid(true);
+		let lonlat = this.getMap().transformProjPoint(centroid)
+		latitude=lonlat.y;
+		longitude=lonlat.x;
+	    }
+	    addLabel(latitude,longitude,distance);
+	});
+
 	setTimeout(()=>{
 	    this.display.addFeatures(this.lineLabels);
 	},1);
@@ -60682,6 +60804,9 @@ MapGlyph.prototype = {
 	}
 	this.parsedProperties=null;
 	this.display.featureChanged(true);	    
+    },
+    getPropertyCheckParent:function(key,dflt) {
+	return this.getProperty(key,dflt,true);
     },
     getProperty:function(key,dflt,checkParent) {
 	let debug = false;
