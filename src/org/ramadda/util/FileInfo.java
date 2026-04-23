@@ -42,6 +42,14 @@ public class FileInfo {
 	return file.getLevel();
     }
 
+    public boolean isDirectory() {
+	return isDir;
+    }
+
+    public long lastModified() {
+	return file.lastModified();
+    }
+
     private void doInit() {
         time = file.lastModified();
         if ( !isDir) {
