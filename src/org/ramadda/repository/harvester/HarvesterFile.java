@@ -35,6 +35,11 @@ public class HarvesterFile extends FileInfo {
         super(f);
     }
 
+    public HarvesterFile(FileWrapper f,FileWrapper rootDir) {
+        super(f);
+	this.rootDir = rootDir;
+    }    
+
     public HarvesterFile(File f, File rootDir, boolean isDir) {
         this(new FileWrapper.File(f), new FileWrapper.File(rootDir), isDir);
     }
@@ -47,6 +52,12 @@ public class HarvesterFile extends FileInfo {
         addedFiles = null;
     }
 
+    public String getRelativeFilePath() {
+	String path = getFile().toString();
+	String root = rootDir.toString();
+	path = path.replace(root,"");
+	return path;
+    }
     public void addFile(Object f) {
         if (addedFiles == null) {
             addedFiles = new ArrayList();

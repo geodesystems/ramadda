@@ -347,9 +347,12 @@ public class HarvesterManager extends RepositoryManager {
         if (request.get(ARG_HARVESTER_GETXML, false)) {
             String xml = harvester.getContent();
             xml = MyXmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
-            return new Result("",
-                              new StringBuffer(MyXmlUtil.getHeader() + "\n"
-                                  + xml), "text/xml");
+            Result result= new Result("",
+				      new StringBuffer(MyXmlUtil.getHeader() + "\n"
+						       + xml), MIME_XML);
+	    result.setShouldDecorate(false);
+	    result.setReturnFilename(Utils.makeID(harvester.getName()) +"_export.xml");
+	    return result;
         }
 
         if ( !harvester.getIsEditable()) {
@@ -575,7 +578,7 @@ public class HarvesterManager extends RepositoryManager {
 	    if (request.hasMessage()) {
 		sb.append(messageNote(request.getMessage()));
 	    }
-	    sb.append(HU.center(getLogLink()));
+	    sb.append(HU.center(getLogLink(request)));
 	    makeHarvestersList(request, harvesters, sb);
 	}
         sb.append(HU.sectionClose());
@@ -583,9 +586,9 @@ public class HarvesterManager extends RepositoryManager {
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
     }
 
-    public String getLogLink() {
-	return  HU.href(
-			getAdmin().URL_ADMIN_LOG
+
+    public String getLogLink(Request request) {
+	return  HU.href(request.makeUrl(getAdmin().URL_ADMIN_LOG)
 			+ "?log=harvester.log", msg(
 						    "Harvest Log"));
     }
@@ -667,8 +670,8 @@ public class HarvesterManager extends RepositoryManager {
 		String errors = Utils.join(lines,"\n");
 		errors = errors.replace("/div>\n","/div>");
 		errors = errors.replace("/span>\n","/span>");		
-                info.append("<div class=\"error-list\"><pre>" + errors
-                            + "</div></pre>");
+                info.append("<pre class=error-list>" + errors
+                            + "</pre>");
             }
             info.append(harvester.getExtraInfo());
             sb.append(HU.tag(HU.TAG_TR, rowAttributes,
