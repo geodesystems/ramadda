@@ -80,8 +80,13 @@ will be added as entries to the repository.
 
 
 :h4 Top directory pattern
-You can specify a <a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression pattern</a> to match what files or directores under the directory list should be checked.
-
+You can specify a top-level directory name to limit the harvest to with this field.
+Note: This field is used to create the relative file name used in the File Patterns check. So, it needs to be just
+the name of a directory or, if you want to harvester multiple top-level directories it needs to be  a pattern of the form:
+<pre>
+(name1|name2|name3|...)
+</pre>
+  
 
 :h4 File Patterns
 You can specify one or more
