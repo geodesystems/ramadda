@@ -32,6 +32,8 @@ public class PatternHolder {
     public static List<PatternHolder> parseLines(String lines) {
 	List<PatternHolder> patterns = new ArrayList<PatternHolder>();
 	for(String line: Utils.split(lines,"\n",true,true)) {
+	    if(line.startsWith("#")) continue;
+	    if(line.equals("quit")) break;
 	    patterns.add(new PatternHolder(line,true));
 	}
 	return patterns;
