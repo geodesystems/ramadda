@@ -470,10 +470,11 @@ public abstract class Harvester extends RepositoryManager {
 	info.append(HU.bold("ID: ") + getId());
 	info.append("<br>");
 	info.append(HU.bold("Status API: ") +
-		    HU.url(request.getAbsoluteUrl(getRepository().getUrlBase()+"/harvester/api/status"),
-			   ARG_HARVESTER_ID,getId(),
-			   ARG_AUTH_USER,"your_user_id",
-			   ARG_AUTH_PASSWORD,"your_password"));
+		    HU.span(
+			    HU.url(request.getAbsoluteUrl(getRepository().getUrlBase()+"/harvester/api/status"),
+				   ARG_HARVESTER_ID,getId(),
+				   ARG_AUTH_USER,"your_user_id",
+				   ARG_AUTH_PASSWORD,"your_password"),"class=harvester-api"));
 
 	info.append("<br>");
 	String startUrl =
@@ -482,10 +483,11 @@ public abstract class Harvester extends RepositoryManager {
 		   ARG_AUTH_USER,"your_user_id",
 		   ARG_AUTH_PASSWORD,"your_password");
 	startUrl = addToStartUrl(startUrl);
-	info.append(HU.bold("Start API: ") +startUrl);
+	info.append(HU.bold("Start API: ") +HU.span(startUrl,"class=harvester-api"));
 
 	info.append("<br>");
 	sb.append(HU.formEntryTop("", 	HU.makeShowHideBlock(msg("Harvester API"),   info.toString(), false)));
+	sb.append(HU.script("Utils.initCopyable('.harvester-api',{});"));
     }
 
     public String addToStartUrl(String url) {

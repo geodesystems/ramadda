@@ -453,11 +453,15 @@ public class HarvesterManager extends RepositoryManager {
         Harvester harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
         if (harvester == null) {
-            throw new IllegalArgumentException("Could not find harvester");
+	    StringBuilder sb   = new StringBuilder();
+	    sb.append(getPageHandler().showDialogError("Could not find harvester:"+ request.getString(ARG_HARVESTER_ID)));
+	    return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
         }
         getAuthManager().ensureAuthToken(request);
         if ( !harvester.getIsEditable()) {
-            throw new IllegalArgumentException("Cannot edit harvester");
+	    StringBuilder sb   = new StringBuilder();
+	    sb.append(getPageHandler().showDialogError("Cannot edit  find harvester:"+ request.getString(ARG_HARVESTER_ID)));
+	    return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
         }
         if (request.exists(ARG_CANCEL)) {
             return new Result(request.makeUrl(URL_HARVESTERS_LIST));
