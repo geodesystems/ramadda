@@ -462,6 +462,7 @@ MapGlyph.prototype = {
     getPoints:function(obj) {
 	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
+
 	if(!geom) return null;
 	obj.geometryType=geom.CLASS_NAME;
 	let points = obj.points=[];
@@ -1915,7 +1916,24 @@ MapGlyph.prototype = {
     },
     getGeometry: function() {
 	if(this.features.length>0) return this.features[0].geometry;
-	else return null;
+	if(this.mapLayer!=null) {
+	    //get the feature with the longest geometry
+	    let geom;
+	    let max=-1;
+	    this.mapLayer.features.every(f=>{
+		if(f?.geometry?.components) {
+		    if(f.geometry.components.length>max) {
+			max = f.geometry.components.length;
+			geom = f.geometry;
+		    }
+		    
+		    return false;
+		}
+		return true;
+	    });
+	    return geom;
+	}
+	return null;
     },
     getName: function() {
 	return this.attrs.name||this.name;
@@ -2755,8 +2773,8 @@ MapGlyph.prototype = {
 					  false,false,true);
     },
     updateLineLabels:function(distance) {
-	if(!distance) return;
-	if(!distance.feet) return;
+	if(!distance) distance={feet:0};
+	if(!distance||!Utils.isDefined(distance.feet)) return;
 	this.removeLineLabels();
 	this.lineLabels=[];
 	if(!this.isLineLike()) {
@@ -2837,7 +2855,27 @@ MapGlyph.prototype = {
 		let spacingFeet = distance.feet/count;
 		labelLocation='every:' + spacingFeet+'feet';
 	    }
+	    let fmt = feet=>{
+		return Utils.trimDecimals(MapUtils.feetToMiles(feet),2);
+	    }
 
+
+	    if(labelLocation.startsWith('points')) {
+		let numPoints=0;
+		let totalFeet=0;
+		for(let i=2;i<points.length;i+=2) {
+		    if(numPoints++>1000) break;
+		    let lat1=points[i-2];
+		    let lon1=points[i-1];		    
+		    let lat2=points[i];
+		    let lon2 = points[i+1];
+		    let segmentLength =  MapUtils.distance(lat1, lon1, lat2,lon2);
+		    totalFeet+=segmentLength;
+		    addLabel(lat2,lon2,{feet:totalFeet,
+					miles:MapUtils.feetToMiles(totalFeet)});
+		}
+		return;
+	    }
 	    if(labelLocation.startsWith('every')) {
 		//miles
 		let spacingFeet = 5280;
@@ -2934,6 +2972,11 @@ MapGlyph.prototype = {
 
 	setTimeout(()=>{
 	    this.display.addFeatures(this.lineLabels);
+	    if(!this.isVisible()) {
+		Utils.forEach(this.lineLabels,f=>{
+		    MapUtils.setFeatureVisible(f,false);
+		});
+	    }
 	},1);
     },
     canDrop: function() {
@@ -6340,6 +6383,9 @@ MapGlyph.prototype = {
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
+
+
+
 
 	Utils.forEach(this.lineLabels,f=>{
 	    MapUtils.setFeatureVisible(f,visible);
