@@ -2786,7 +2786,7 @@ MapGlyph.prototype = {
 	}
 
 	let points = this.getPoints({});
-	if(points==null || points.length<2) return;
+	if(points==null || points.length<=2) return;
 	let template = this.getPropertyCheckParent('lineLabels.template','${distance}');
 	template = template.replace(/\\n/g,'\n');
 
