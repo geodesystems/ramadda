@@ -371,7 +371,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					HU.SIZE_60)));
 
 
-	String patternHelp = "<br>No case use: &lt;NOCASE&gt;<br>To match all use &lt;ALL&gt;<br>To match on any file use the shorthand &lt;FILES&GT; which is [^/]+$<br>To match any number of directories use &lt;DIRS&gt; which is (?:[^/]+/)*<br>";
+	String patternHelp = "<br>No case: &lt;NOCASE&gt;Match all: &lt;ALL&gt; which is <i>.*</i><br>Match on any file use the shorthand &lt;FILES&GT; which is <i>[^/]+$</i><br>Match any number of directories use &lt;DIRS&gt;  which is <i>(?:[^/]+/)*</i><br>";
 	formHelp(sb,"Only harvest the descendent files that match one or more of these patterns."+ patternHelp,"#heading-file_patterns");
 	int rows = 3;
 	int cols = 80;
