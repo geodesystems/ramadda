@@ -1193,15 +1193,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(pts==null) return null;
 	    //            let garea = MapUtils.squareMetersToSquareFeet(geometry.getGeodesicArea(this.map.getMap().getProjectionObject()));
             let garea = MapUtils.squareMetersToSquareFeet(geometry.getArea());
-	    let area = -1;
+	    let sqft = -1;
 	    let acres;
 
 	    if(!glyphType) return '';
 	    let distancePrefix = 'Distance: ';
 
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYGON || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND_CLOSED || glyphType==GLYPH_IMAGE) {
-		area = MapUtils.calculateArea(pts);
-		acres = area/43560;
+		sqft = MapUtils.calculateArea(pts);
+		acres = sqft/43560;
 	    }
 
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX ||  glyphType == GLYPH_TRIANGLE  || glyphType==GLYPH_IMAGE) {
@@ -1252,13 +1252,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(!justDistance&&area>0) {
+	    if(!justDistance&&sqft>0) {
 		unit=UNIT_FT;
-		if(area>MapUtils.squareFeetInASquareMile) {
+		if(sqft>MapUtils.squareFeetInASquareMile) {
 		    unit = UNIT_MILES;
-		    area = area/MapUtils.squareFeetInASquareMile;
+		    let sqmiles  = sqft/MapUtils.squareFeetInASquareMile;
 		    msg+=   HU.br() +
-			'Area: ' + Utils.formatNumber(area) +' sq ' + unit;
+			'Area: ' + Utils.formatNumber(sqmiles) +' sq ' + unit;
 		    if(forceAcres) {
 			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
 		    }
@@ -1273,9 +1273,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return {
 		    label:msg,
 		    feet:feet,
-		    miles:feet/5280,
-		    sqfeet:area,
-		    sqmiles:area/MapUtils.squareFeetInASquareMile,
+		    miles:MapUtils.feetToMiles(feet),
+		    sqfeet:sqft,
+		    sqmiles:sqft/MapUtils.squareFeetInASquareMile,
 		    acres:acres
 
 		}

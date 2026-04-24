@@ -315,18 +315,28 @@ var MapUtils =  {
 	const d = R * c; // in metres
 	return MapUtils.metersToFeet(d);
     },
+    squareFeetToSquareMeters:function(sqfeet) {
+	return sqfeet*0.09290304;
+    },
+    acresToHectares:function(acres) {
+	return acres*0.40468564224;
+    },
     metersToFeet:function(m) {
 	return 3.28084*m;
     },
     milesToFeet:function(m) {
 	return 5280*m;
     },    
+    feetToMeters:function(feet) {
+	return feet*0.3048
+    },
     feetToMiles:function(f) {
 	return f/5280;
     },    
     squareMetersToSquareFeet:function(m) {
 	return 10.7639*m;
     } ,
+    //return square feet
     calculateArea: function(pts) {
 	let area = 0;
 	let ConvertToRadian = (input)=>{

@@ -2797,12 +2797,12 @@ MapGlyph.prototype = {
 
 	    if(distance) {
 		label = label.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
-		label = label.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+		label = label.replace(/\${hectares}/g,Utils.formatNumber(MapUtils.acresToHectares(distance.acres)));
 		label = label.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
-		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(MapUtils.squareFeetToSquareMeters(distance.sqfeet)));	
 		label = label.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
-		label = label.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
-		label = label.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+		label = label.replace(/\${meters}/g,Utils.formatNumberComma(MapUtils.feetToMeters(distance.feet)));
+		label = label.replace(/\${km}/g,Utils.formatNumberComma(MapUtils.feetToMeters(distance.feet)/1000));	    
 		label = label.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
 		label = label.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
 		let unit = UNIT_FT;
