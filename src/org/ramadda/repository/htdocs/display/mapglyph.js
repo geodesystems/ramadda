@@ -1915,7 +1915,9 @@ MapGlyph.prototype = {
 	}
     },
     getGeometry: function() {
-	if(this.features.length>0) return this.features[0].geometry;
+	if(this?.features.length>0) {
+	    return this.features[0].geometry;
+	}
 	if(this.mapLayer!=null) {
 	    //get the feature with the longest geometry
 	    let geom;
@@ -1926,8 +1928,6 @@ MapGlyph.prototype = {
 			max = f.geometry.components.length;
 			geom = f.geometry;
 		    }
-		    
-		    return false;
 		}
 		return true;
 	    });
