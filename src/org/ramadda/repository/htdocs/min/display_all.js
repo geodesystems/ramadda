@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 24 04:50:01 EDT 2026";
+var build_date="RAMADDA build date: Fri Apr 24 05:12:38 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -50033,15 +50033,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(pts==null) return null;
 	    //            let garea = MapUtils.squareMetersToSquareFeet(geometry.getGeodesicArea(this.map.getMap().getProjectionObject()));
             let garea = MapUtils.squareMetersToSquareFeet(geometry.getArea());
-	    let area = -1;
+	    let sqft = -1;
 	    let acres;
 
 	    if(!glyphType) return '';
 	    let distancePrefix = 'Distance: ';
 
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYGON || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND_CLOSED || glyphType==GLYPH_IMAGE) {
-		area = MapUtils.calculateArea(pts);
-		acres = area/43560;
+		sqft = MapUtils.calculateArea(pts);
+		acres = sqft/43560;
 	    }
 
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX ||  glyphType == GLYPH_TRIANGLE  || glyphType==GLYPH_IMAGE) {
@@ -50092,13 +50092,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(!justDistance&&area>0) {
+	    if(!justDistance&&sqft>0) {
 		unit=UNIT_FT;
-		if(area>MapUtils.squareFeetInASquareMile) {
+		if(sqft>MapUtils.squareFeetInASquareMile) {
 		    unit = UNIT_MILES;
-		    area = area/MapUtils.squareFeetInASquareMile;
+		    let sqmiles  = sqft/MapUtils.squareFeetInASquareMile;
 		    msg+=   HU.br() +
-			'Area: ' + Utils.formatNumber(area) +' sq ' + unit;
+			'Area: ' + Utils.formatNumber(sqmiles) +' sq ' + unit;
 		    if(forceAcres) {
 			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
 		    }
@@ -50113,9 +50113,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return {
 		    label:msg,
 		    feet:feet,
-		    miles:feet/5280,
-		    sqfeet:area,
-		    sqmiles:area/MapUtils.squareFeetInASquareMile,
+		    miles:MapUtils.feetToMiles(feet),
+		    sqfeet:sqft,
+		    sqmiles:sqft/MapUtils.squareFeetInASquareMile,
 		    acres:acres
 
 		}
@@ -58814,12 +58814,12 @@ MapGlyph.prototype = {
 
 	    if(distance) {
 		label = label.replace(/\${acres}/g,Utils.formatNumber(distance.acres));
-		label = label.replace(/\${hectares}/g,Utils.formatNumber(distance.acres*0.40468564224));
+		label = label.replace(/\${hectares}/g,Utils.formatNumber(MapUtils.acresToHectares(distance.acres)));
 		label = label.replace(/\${sqfeet}/g,Utils.formatNumber(distance.sqfeet));
-		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(distance.sqfeet*0.09290304));	
+		label = label.replace(/\${sqmeters}/g,Utils.formatNumber(MapUtils.squareFeetToSquareMeters(distance.sqfeet)));	
 		label = label.replace(/\${sqmiles}/g,Utils.formatNumber(distance.sqmiles));
-		label = label.replace(/\${meters}/g,Utils.formatNumberComma(distance.feet*0.3048));
-		label = label.replace(/\${km}/g,Utils.formatNumberComma(distance.feet*0.3048/1000));	    
+		label = label.replace(/\${meters}/g,Utils.formatNumberComma(MapUtils.feetToMeters(distance.feet)));
+		label = label.replace(/\${km}/g,Utils.formatNumberComma(MapUtils.feetToMeters(distance.feet)/1000));	    
 		label = label.replace(/\${feet}/g,Utils.formatNumberComma(distance.feet));
 		label = label.replace(/\${miles}/g,Utils.formatNumberComma(distance.miles));	    
 		let unit = UNIT_FT;
