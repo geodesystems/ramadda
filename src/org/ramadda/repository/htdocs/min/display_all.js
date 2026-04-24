@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 24 05:12:38 EDT 2026";
+var build_date="RAMADDA build date: Fri Apr 24 08:14:09 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -58987,13 +58987,16 @@ MapGlyph.prototype = {
 	    addLabel(latitude,longitude,distance);
 	});
 
+	//hide them if needed
+	if(!this.isVisible()) {
+	    Utils.forEach(this.lineLabels,f=>{
+		MapUtils.setFeatureVisible(f,false);
+	    });
+	}
+
+	//Not sure why but do this in a bit (maybe for z level?)
 	setTimeout(()=>{
 	    this.display.addFeatures(this.lineLabels);
-	    if(!this.isVisible()) {
-		Utils.forEach(this.lineLabels,f=>{
-		    MapUtils.setFeatureVisible(f,false);
-		});
-	    }
 	},1);
     },
     canDrop: function() {
