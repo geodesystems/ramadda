@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 24 04:40:49 EDT 2026";
+var build_date="RAMADDA build date: Fri Apr 24 04:50:01 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -58803,7 +58803,7 @@ MapGlyph.prototype = {
 	}
 
 	let points = this.getPoints({});
-	if(points==null || points.length<2) return;
+	if(points==null || points.length<=2) return;
 	let template = this.getPropertyCheckParent('lineLabels.template','${distance}');
 	template = template.replace(/\\n/g,'\n');
 
