@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 24 08:16:58 EDT 2026";
+var build_date="RAMADDA build date: Fri Apr 24 08:34:32 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -57932,7 +57932,9 @@ MapGlyph.prototype = {
 	}
     },
     getGeometry: function() {
-	if(this.features.length>0) return this.features[0].geometry;
+	if(this?.features.length>0) {
+	    return this.features[0].geometry;
+	}
 	if(this.mapLayer!=null) {
 	    //get the feature with the longest geometry
 	    let geom;
@@ -57943,8 +57945,6 @@ MapGlyph.prototype = {
 			max = f.geometry.components.length;
 			geom = f.geometry;
 		    }
-		    
-		    return false;
 		}
 		return true;
 	    });
