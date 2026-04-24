@@ -30,10 +30,16 @@ public class PatternHolder {
     }
 
     public static List<PatternHolder> parseLines(String lines) {
+	String prefix=null;
 	List<PatternHolder> patterns = new ArrayList<PatternHolder>();
 	for(String line: Utils.split(lines,"\n",true,true)) {
 	    if(line.startsWith("#")) continue;
 	    if(line.equals("quit")) break;
+	    if(line.startsWith("prefix:")) {
+		prefix = line.substring("prefix:".length()).trim();
+		continue;
+	    }
+	    if(prefix!=null) line = prefix+line;
 	    patterns.add(new PatternHolder(line,true));
 	}
 	return patterns;
