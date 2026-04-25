@@ -106,8 +106,8 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showMeasures=false',
 			  PROP_SHOW_TEXT_SEARCH+'=true',
 			  'lineLabels.show=true',
-			  'lineLabels.template=${distance} ${feet} ${meters} ${miles} ${acres} ${sqfeet}',
-			  'lineLabels.locations=first|last|middle|center|points|every:1km|every:2miles|count:5',
+			  'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',
+			  'lineLabels.locations=first,last,middle,center,n,w,s,e,points:skip,every:1km,every:2miles,count:5',
 			  'lineLabels.fontColor=white',
 			  'lineLabels.fontWeight=bold',
 			  'lineLabels.fontStyle=italic',
@@ -953,12 +953,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},	
 
 	handleNewFeature:function(feature,style,mapOptions,zoomTo) {
+
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
 	    delete style.mapOptions;
 	    if(feature?.style?.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
+	    this.lastCreatedGlyph = mapGlyph;
 	    let selected=this.getSelected();
 	    if(selected.length>0 && selected[0].isGroup()) {
 		selected[0].addChildGlyph(mapGlyph);
@@ -2391,6 +2393,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().closePopup();
 	    this.clearMessage2();
 	    this.getMap().clearAllProgress();
+	    this.lastCreatedGlyph = null;
 	    //	    this.unselectAll();
 	    HU.hidePopupObject();
 	    this.showCommandMessage('');
@@ -6141,6 +6144,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_COMMANDS).html(cmds);
 	    this.jq(ID_MAP).keydown(function(event){
 		if(!event.ctrlKey) return;
+		//undo
+		if(event.key=='z') {
+		    if(_this.lastCreatedGlyph !=null) {
+			_this.removeMapGlyphs([_this.lastCreatedGlyph]);
+			_this.lastCreatedGlyph = null;
+		    }
+		    
+		}
+
 		_this.getSelected().forEach(glyph=>{
 		    glyph.handleKeyDown(event);
 		});

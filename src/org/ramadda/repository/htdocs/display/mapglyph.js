@@ -460,9 +460,9 @@ MapGlyph.prototype = {
 	});
     },
     getPoints:function(obj) {
+	obj = obj??{};
 	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
-
 	if(!geom) return null;
 	obj.geometryType=geom.CLASS_NAME;
 	let points = obj.points=[];
@@ -2787,8 +2787,37 @@ MapGlyph.prototype = {
 
 	let points = this.getPoints({});
 	if(points==null || points.length<=2) return;
+	let tmp=[];
+	for(let i=0;i<points.length;i+=2) {
+	    tmp.push({lat:points[i],lon:points[i+1]});
+	}
+	points=tmp;
+
 	let template = this.getPropertyCheckParent('lineLabels.template','${distance}');
 	template = template.replace(/\\n/g,'\n');
+	let baseStyle = {
+	    pointRadius:4,
+	    fillColor:'blue',
+	    strokeWidth:0,
+	    labelSelect:true,
+	    //	{p:'labelAlign',ex:'l|c|r t|m|b'},
+	    labelAlign: "lt",
+	    labelXOffset: 10,
+	    labelYOffset: 0,
+	    fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
+	    fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight',null),
+	    fontStyle: this.getPropertyCheckParent('lineLabels.fontStyle',null),	    	    
+	    fontColor:this.getPropertyCheckParent('lineLabels.fontColor','#000'),
+	    fontFamily:this.getPropertyCheckParent('lineLabels.fontFamily',null),
+	    textBackgroundStrokeColor:this.getPropertyCheckParent('lineLabels.strokeColor','#888'),
+	    textBackgroundStrokeWidth:this.getPropertyCheckParent('lineLabels.strokeWidth',1),
+	    textBackgroundFillColor:this.getPropertyCheckParent('lineLabels.fillColor','#ffd700'),
+	    textBackgroundFillOpacity:this.getPropertyCheckParent('lineLabels.opacity',0.75),
+	    textBackgroundPadding:this.getPropertyCheckParent('lineLabels.padding',4),
+	    textBackgroundRadius:this.getPropertyCheckParent('lineLabels.radius',4),
+	    textBackgroundShape:'rectangle',
+	};
+
 
 	let addLabel = (latitude,longitude,distance) =>{
 	    let label = template;
@@ -2816,30 +2845,7 @@ MapGlyph.prototype = {
 	    }
 	    let pt = MapUtils.createPoint(longitude,latitude);
 	    pt = this.display.getMap().transformLLPoint(pt);
-	    let style = {
-		label:label,
-		pointRadius:4,
-		fillColor:'blue',
-		strokeWidth:0,
-		labelSelect:true,
-		//	{p:'labelAlign',ex:'l|c|r t|m|b'},
-		labelAlign: "lt",
-		labelXOffset: 10,
-		labelYOffset: 0,
-		fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
-		fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight',null),
-		fontStyle: this.getPropertyCheckParent('lineLabels.fontStyle',null),	    	    
-		fontColor:this.getPropertyCheckParent('lineLabels.fontColor','#000'),
-		fontFamily:this.getPropertyCheckParent('lineLabels.fontFamily',null),
-		textBackgroundStrokeColor:this.getPropertyCheckParent('lineLabels.strokeColor','#888'),
-		textBackgroundStrokeWidth:this.getPropertyCheckParent('lineLabels.strokeWidth',1),
-		textBackgroundFillColor:this.getPropertyCheckParent('lineLabels.fillColor','#ffd700'),
-		textBackgroundFillOpacity:this.getPropertyCheckParent('lineLabels.opacity',0.75),
-		textBackgroundPadding:this.getPropertyCheckParent('lineLabels.padding',4),
-		textBackgroundRadius:this.getPropertyCheckParent('lineLabels.radius',4),
-		textBackgroundShape:'rectangle',
-	    };
-
+	    let style = $.extend({label:label},baseStyle);
 	    let dot = MapUtils.createVector(pt,null,style);
 	    dot.mapGlyph=this;
 	    this.lineLabels.push(dot);
@@ -2847,8 +2853,13 @@ MapGlyph.prototype = {
 
 
 	Utils.split(this.getPropertyCheckParent('lineLabels.locations','last'),',',true,true).forEach(labelLocation=>{
-	    let latitude  = points[0];
-	    let longitude  = points[1];	
+	    $.extend(baseStyle,{labelAlign: "lt",
+				labelXOffset: 10,
+				labelYOffset: 0});
+
+
+	    let latitude  = points[0].lat
+	    let longitude  = points[0].lon;	
 	    let match1 = labelLocation.match('count: *([0-9]+) *$');
 	    if(match1) {
 		let count = parseInt(match1[1]);
@@ -2863,14 +2874,23 @@ MapGlyph.prototype = {
 	    if(labelLocation.startsWith('points')) {
 		let numPoints=0;
 		let totalFeet=0;
-		for(let i=2;i<points.length;i+=2) {
-		    if(numPoints++>1000) break;
-		    let lat1=points[i-2];
-		    let lon1=points[i-1];		    
-		    let lat2=points[i];
-		    let lon2 = points[i+1];
+		let skip=0;
+		let match = labelLocation.match('points:(.*)');
+		if(match) skip = parseInt(match[1]);
+		let count=0;
+		for(let i=1;i<points.length;i++) {
+		    let lat1 = points[i-1].lat
+		    let lon1 = points[i-1].lon;		    
+		    let lat2 = points[i].lat;
+		    let lon2 = points[i].lon;
 		    let segmentLength =  MapUtils.distance(lat1, lon1, lat2,lon2);
 		    totalFeet+=segmentLength;
+		    if(skip>0) {
+			count++;
+			if(count<skip) continue;
+			count=0;
+		    }
+		    if(numPoints++>500) break;
 		    addLabel(lat2,lon2,{feet:totalFeet,
 					miles:MapUtils.feetToMiles(totalFeet)});
 		}
@@ -2902,11 +2922,11 @@ MapGlyph.prototype = {
 		if(debug)
 		    console.log('spacing',fmt(spacingFeet));
 		let numPoints=0;
-		for(let i=2;i<points.length;i+=2) {
-		    let lat1=points[i-2];
-		    let lon1=points[i-1];		    
-		    let lat2=points[i];
-		    let lon2 = points[i+1];
+		for(let i=1;i<points.length;i++) {
+		    let lat1=points[i-1].lat;
+		    let lon1=points[i-1].lon;		    
+		    let lat2=points[i].lat;
+		    let lon2 = points[i].lon;
 		    while(true) {
 			//sanity check
 			if(numPoints>1000) break;
@@ -2937,31 +2957,62 @@ MapGlyph.prototype = {
 		}
 		if(accumulatedFeet>0) {
 //		    totalFeet+=accumulatedFeet;
-		    addLabel(points[points.length-2],points[points.length-1],
+		    addLabel(points[points.length-1].lat,points[points.length-1].lon,
 			     {feet:totalFeet,
 			      miles:MapUtils.feetToMiles(totalFeet)});
 		}
 		return;
 	    }
 	    if(labelLocation=='last') {
-		latitude  = points[points.length-2];
-		longitude  = points[points.length-1];	    
+		latitude  = points[points.length-1].lat;
+		longitude  = points[points.length-1].lon;	    
+	    } else 	if(labelLocation=='n' || labelLocation=='w' || labelLocation=='s' || labelLocation=='e') {
+		let b = this.getBounds();
+		if(b) {
+		    b= this.getMap().transformProjBounds(b);
+		    if(labelLocation=='n') {
+			latitude=b.top;
+			longitude=b.left+(b.right-b.left)/2;
+			//	{p:'labelAlign',ex:'l|c|r t|m|b'},
+			baseStyle.labelAlign='cm';
+			baseStyle.labelXOffset= 0;
+			baseStyle.labelYOffset= 15;
+		    } else  if(labelLocation=='w') {
+			latitude=b.bottom+(b.top-b.bottom)/2;
+			longitude=b.left;
+			baseStyle.labelAlign='rm';
+			baseStyle.labelXOffset= -10;
+			baseStyle.labelYOffset= 0;
+		    } else  if(labelLocation=='s') {
+			latitude=b.bottom;
+			longitude=b.left+(b.right-b.left)/2;
+			//	{p:'labelAlign',ex:'l|c|r t|m|b'},
+			baseStyle.labelAlign='cm';
+			baseStyle.labelXOffset= 0;
+			baseStyle.labelYOffset= -15;
+		    } else  if(labelLocation=='e') {
+			latitude=b.bottom+(b.top-b.bottom)/2;
+			longitude=b.right;
+			baseStyle.labelAlign='lm';
+			baseStyle.labelXOffset= 10;
+			baseStyle.labelYOffset= 0;
+		    } 
+		}
 	    } else 	if(labelLocation=='middle') {
-		if(points.length==4) {
-		    let latitude2  = points[points.length-2];
-		    let longitude2  = points[points.length-1];	    
+		if(points.length==2) {
+		    let latitude2  = points[points.length-1].lat;
+		    let longitude2  = points[points.length-1].lon;	    
 		    latitude=latitude+(latitude2-latitude)/2;
 		    longitude=longitude+(longitude2-longitude)/2;		
 		}  else {
 		    let index = parseInt(points.length/2);
-		    if (index % 2 !== 0) {
-			index--;
-		    }
-		    if(index<0) index=0;
-		    latitude  = points[index];
-		    longitude  = points[index+1];
+		    latitude  = points[index].lat;
+		    longitude  = points[index].lon;
 		}
 	    } else if(labelLocation=='center') {
+		baseStyle.labelAlign='cm';
+		baseStyle.labelXOffset= 0;
+		baseStyle.labelYOffset= 0;
 		let centroid = this.getGeometry()?.getCentroid(true);
 		let lonlat = this.getMap().transformProjPoint(centroid)
 		latitude=lonlat.y;
