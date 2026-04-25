@@ -2781,12 +2781,16 @@ MapGlyph.prototype = {
 //	    return;
 	}
 
+
+
+
 	if(!this.getPropertyCheckParent('lineLabels.show',false)) {
 	    return;
 	}
 
 	let points = this.getPoints({});
 	if(points==null || points.length<=2) return;
+
 	let tmp=[];
 	for(let i=0;i<points.length;i+=2) {
 	    tmp.push({lat:points[i],lon:points[i+1]});
@@ -2819,7 +2823,12 @@ MapGlyph.prototype = {
 	};
 
 
+
+	let labelCnt=0;
 	let addLabel = (latitude,longitude,distance) =>{
+	    labelCnt++;
+	    //cap it at 500
+	    if(labelCnt>500) return;
 	    let label = template;
 	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
 	    label = label.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
@@ -2864,8 +2873,11 @@ MapGlyph.prototype = {
 	    if(match1) {
 		let count = parseInt(match1[1]);
 		let spacingFeet = distance.feet/count;
-		labelLocation='every:' + spacingFeet+'feet';
+		if(spacingFeet!=0) {
+		    labelLocation='every:' + spacingFeet+'feet';
+		}
 	    }
+
 	    let fmt = feet=>{
 		return Utils.trimDecimals(MapUtils.feetToMiles(feet),2);
 	    }
@@ -3020,6 +3032,8 @@ MapGlyph.prototype = {
 	    }
 	    addLabel(latitude,longitude,distance);
 	});
+
+
 
 	//hide them if needed
 	if(!this.isVisible()) {
