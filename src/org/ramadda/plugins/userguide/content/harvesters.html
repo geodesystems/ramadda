@@ -92,6 +92,33 @@ the name of a directory or, if you want to harvester multiple top-level director
 You can specify one or more
 <a target=_regexp href=https://www.w3schools.com/java/java_regex.asp>regular expression patterns</a>
 that are used to match on the descendent files.
+There following macros are available:
+<nowiki>
+<table>
+<tr><td><b>Macro</b></td><td><b>Regexp</b></td><td></td></tr>
+<tr><td>&lt;NOCASE&gt;</td><td>(?i)</td><td>No case</td></tr>
+<tr><td>&lt;ROOT&gt;</td><td>^.'</td><td>Root dir</td></tr>
+<tr><td>&lt;ALL&gt;</td><td>.*</td><td>Match all</td></tr>
+<tr><td>&lt;FILES&GT;</td><td>\[^/\]+$</td><td>Match on any file</td></tr>
+<tr><td>&lt;DIRS&gt;</td><td>(?:\[^/\]+/)*</td><td>Match any number of directories</td></tr>
+<tr><td>prefix:&lt;some prefix&gt;</td><td></td><td>Prepend to all patterns</td></tr>
+<tr><td># comment</td><td></td><td>comment line</td></tr>
+</table>
+e.g.:
+<pre>
+#prepend no case and the file root
+prefix:&lt;NOCASE&gt;&lt;ROOT&gt; 
+#Data: Corelyzer subdirectory: include all files and subdirectories     
+/Data/Corelyzer/&lt;ALL&gt;     
+#Sampling subdir: include Excel files only     
+/Data/Sampling/.*\.xlsx?$       
+#XRF: include all top-level files, ignore subdirectories      
+1/Data/XRF/&lt;FILES&gt;       
+#ICD: Include all top-level files      
+/ICD/&lt;FILES&gt;        
+</pre>
+</nowiki>
+:p
 The regular expressions used are extended in that you can specify subsets of the regular expression
 and use the result text for metadata and other information when creating the entry in the repository.
 For example, a very common case is to have a date/time embedded in the filename. So, you could have in your regular 
