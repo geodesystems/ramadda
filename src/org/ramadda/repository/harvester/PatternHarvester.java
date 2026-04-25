@@ -371,7 +371,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					HU.SIZE_60)));
 
 
-	String patternHelp = "<br>No case: &lt;NOCASE&gt; Top dir:&lt;TOP&gt; which is ^.  Match all: &lt;ALL&gt; which is <i>.*</i><br>Match on any file use the shorthand &lt;FILES&GT; which is <i>[^/]+$</i><br>Match any number of directories use &lt;DIRS&gt;  which is <i>(?:[^/]+/)*</i><br>";
+	String patternHelp = "<br>Macros: <span class=ramadda-hoverable title='regexp: (?i)'>No case: &lt;NOCASE&gt;</span> <span class=ramadda-hoverable title='regexp: ^.'>Root dir:&lt;ROOT&gt;</span>.  <span class=ramadda-hoverable title='regexp: .*'>Match all: &lt;ALL&gt;</span><br><span class=ramadda-hoverable title='regexp: [^/]+$'>Match on any file: &lt;FILES&GT;</span> <span class=ramadda-hoverable title='regexp: (?:[^/]+/)*'>Match any number of directories: &lt;DIRS&gt;</span><br>prefix:&lt;prefix for all patterns&gt;<br># comment<br>";
 	formHelp(sb,"Only harvest the descendent files that match one or more of these patterns."+ patternHelp,"#heading-file_patterns");
 	int rows = 3;
 	int cols = 80;
@@ -550,7 +550,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private String convertPattern(String pattern) {
 	pattern = pattern.replace("<ALL>",".*");
 	pattern = pattern.replace("<NOCASE>","(?i)");	
-	pattern = pattern.replace("<TOP>","^");	
+	pattern = pattern.replace("<TOP>","^");
+	pattern = pattern.replace("<ROOT>","^");		
 	pattern = pattern.replace("<FILES>","[^/]+$");	
 	pattern = pattern.replace("<DIRS>","(?:[^/]+/)*");
 	return pattern;
