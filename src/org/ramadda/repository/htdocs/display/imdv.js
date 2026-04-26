@@ -1458,6 +1458,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
 		    mapGlyph.checkMapServer();
+		    this.lastCreatedGlyph=mapGlyph;
 		    this.addGlyph(mapGlyph);
 		    this.clearMessage2(1000);
 		    dialog.remove();
