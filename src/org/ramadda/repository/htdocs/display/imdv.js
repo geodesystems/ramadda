@@ -4344,7 +4344,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		 label:'Graticule style'},
 		...IMDV_PROPERTY_HINTS,
 ];
-	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
+	    let help = HU.b('Add property: ') +
+		HU.span([ATTR_ID,this.domId('propsearch')]) +
 		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Flags',
 			  contents:
@@ -6372,11 +6373,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
 	    let _this = this;
 	    let menuBar=  '';
-	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New'],[ID_MENU_VIEW,'View']].forEach(t=>{
-		menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
-				    ATTR_CLASS,'ramadda-menubar-button'],t[1])});
+	    [[ID_MENU_FILE,'File'],
+	     [ID_MENU_EDIT,'Edit'],
+	     [ID_MENU_NEW,'New'],
+	     [ID_MENU_VIEW,'View']].forEach(t=>{
+		 menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
+				     ATTR_CLASS,'ramadda-menubar-button'],t[1])});
 	    menuBar = HU.div([ATTR_CLASS,CLASS_MENUBAR], menuBar);
-
 	    let address =
 		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)], 
 			HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),

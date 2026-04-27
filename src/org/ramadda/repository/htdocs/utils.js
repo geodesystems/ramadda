@@ -4184,7 +4184,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 	    }
 	    if(Utils.stringDefined(v)) hasValue=true;
-	    return {value:v,pre:pre,post:post};
+	    return {
+		value:Utils.split(v,',',true,true),
+		pre:pre,post:post};
 	});
 	
 	if(hideAll) {
@@ -4196,8 +4198,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 
 	let search=(v,element) =>{
-	    value = v.value;
-	    if(!Utils.stringDefined(value)) return true;
+	    let values = v.value;
+//	    if(!Utils.stringDefined(value)) return true;
+	    if(values.length==0) return true;
 	    let textOk = false;
 	    let html = element.html();
 	    let extra='';
@@ -4229,9 +4232,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    }
 		}
 	    }
-	    if(html.indexOf(value)>=0) {
-		textOk=true;
-	    } 
+
+	    values.every(value=>{
+		if(html.indexOf(value)<0) {
+		    textOk=false;
+		    return false;
+		}
+		textOk = true;
+		return true;
+	    });
 	    return textOk;
 	};
 	let totalCount=0;
