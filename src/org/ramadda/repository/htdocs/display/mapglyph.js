@@ -643,6 +643,14 @@ MapGlyph.prototype = {
 			 ATTR_ROWS,4,
 			 ATTR_COLS, 40]);
 	
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    html+=HU.div([],
+			 HU.checkbox(this.domId('deleteroute'),
+				     [ATTR_ID,this.domId('deleteroute')],false,
+				     'Delete Route Instructions'));
+	}
+
+
 	html+=HU.div([],HU.boldLabel('ID') +
 		     HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
@@ -827,6 +835,12 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry()) {
 	    this.attrs['excludes']  = this.jq('excludes').val();
 	}	    
+
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    if(HU.isChecked(this.jq('deleteroute'))) {
+		this.attrs.instructions=null;
+	    }
+	}
 
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
@@ -2724,26 +2738,24 @@ MapGlyph.prototype = {
 	}
 
 
-	if(this.isRoute()) {
-	    if(this.attrs.instructions && this.attrs.instructions.length>0) {
-		let instr = '';
-		this.attrs.instructions.forEach(step=>{
-		    let title = '';
-		    let attrs = [];
-		    if(step.lat) {
-			attrs.push(ATTR_TITLE,'Click to view',
-				   ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
-				   ATTR_LATITUDE,step.lat,
-				   ATTR_LONGITUDE,step.lon);
-		    } else {
-			attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
-		    }
-		    instr+=HU.div(attrs, step.instr);
-		});
-		body+=HU.center(HU.b('Directions')) +
-		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-					      CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
-	    }
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    let instr = '';
+	    this.attrs.instructions.forEach(step=>{
+		let title = '';
+		let attrs = [];
+		if(step.lat) {
+		    attrs.push(ATTR_TITLE,'Click to view',
+			       ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
+			       ATTR_LATITUDE,step.lat,
+			       ATTR_LONGITUDE,step.lon);
+		} else {
+		    attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
+		}
+		instr+=HU.div(attrs, step.instr);
+	    });
+	    body+=HU.center(HU.b('Directions')) +
+		HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+					  CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
 	}
 	
 
@@ -2828,7 +2840,7 @@ MapGlyph.prototype = {
 	let addLabel = (latitude,longitude,distance) =>{
 	    labelCnt++;
 	    //cap it at 500
-	    if(labelCnt>500) return;
+	    if(labelCnt>100) return;
 	    let label = template;
 	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
 	    label = label.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	

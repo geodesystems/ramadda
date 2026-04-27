@@ -79,47 +79,54 @@ var ATTR_SLIDER_ID='slider-id';
 var ATTR_COLOR='color';
 var ATTR_BASEID='baseid';
 
-var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
-			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false',
-			  'filter.sortOnCount=true',
-			  'filter.showRawValues=true',
-			  'filters.height=400px',
-			  'filter.toggle.show=false',
-			  'legendTooltip=',
-			  'showLabelInMap=true',
-			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
-			  'showLabelInMapWhenVisible=true',
-			  'showViewInLegend=true',
-			  PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
-			  'inMapLabel=',			  			  
-			  'showLegendInMap=true',			  
-			  PROP_DONT_SHOW_IN_LEGEND +'=true',
-			  'showDisplayHeader=false',
-			  'showInHeader=true',			  
-			  'showIconInHeader=true',
-			  'mapLegendHeight=300px',
-			  'showLegendBox=true',
-			  'showOpacitySlider=true',
-			  'showRotationSlider=true',			  			  
-			  'showButtons=false',
-			  'showMeasures=false',
-			  PROP_SHOW_TEXT_SEARCH+'=true',
-			  'lineLabels.show=true',
-			  'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',
-			  'lineLabels.locations=first,last,middle,center,n,w,s,e,points:skip,every:1km,every:2miles,count:5',
-			  'lineLabels.fontColor=white',
-			  'lineLabels.fontWeight=bold',
-			  'lineLabels.fontStyle=italic',
-			  'lineLabels.fontFamily','Helvetica',
-			  'lineLabels.fontSize=8pt',
-			  'lineLabels.strokeColor=#888',
-			  'lineLabels.strokeWidth=1',
-			  'lineLabels.fillColor=#ffd700',
-			  'lineLabels.opacity=0.75',
-			  'lineLabels.radius=4',
-			  'lineLabels.padding=4',			  
-			 ];
+var IMDV_PROPERTY_HINTS= [
+    {category:'Glyph Filters'},
+    {value:'filter.live=true',label:'Filters live'},
+    {value:'filter.show=false',label:'Show filters'},
+    {value:'filter.zoomonchange.show=false',label:'Show zoom on change'},
+    {value:'filter.toggle.show=false',label:'Show toggle'},
+    {value:'filter.sortOnCount=true',label:'Sort on count'},
+    {value:'filter.showRawValues=true',label:'Show raw values'},
+    {value:'filters.height=400px',label:'Filters height'},
+    {category:'Glyph Misc'},    
+    'legendTooltip=',
+    'showLabelInMap=true',
+    PROP_MOVE_TO_LATEST_LOCATION+'=true',
+    'showLabelInMapWhenVisible=true',
+    'showViewInLegend=true',
+    PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
+    'inMapLabel=',			  			  
+    'showLegendInMap=true',			  
+    PROP_DONT_SHOW_IN_LEGEND +'=true',
+    'showDisplayHeader=false',
+    'showInHeader=true',			  
+    'showIconInHeader=true',
+    'mapLegendHeight=300px',
+    'showLegendBox=true',
+    'showOpacitySlider=true',
+    'showRotationSlider=true',			  			  
+    'showButtons=false',
+    'showMeasures=false',
+    PROP_SHOW_TEXT_SEARCH+'=true',
+    {category:'Line Labels'},
+    {value:'lineLabels.show=true',label:'Show line labels'},
+    {value:'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',label:'Line label template'},
+    {value:'lineLabels.locations=every:1km,every:2miles',label:'Spacing every'},
+    {value:'lineLabels.locations=count:5',label:'Spacing count'},
+    {value:'lineLabels.locations=points:skip',label:'Spacing points'},
+    {value:'lineLabels.locations=first,last,middle,center,n,w,s,e',label:'Locations'},
+    {value:'lineLabels.fontSize=8pt',label:'Font size'},
+    {value:'lineLabels.fontColor=white',label:'Font color'},
+    {value:'lineLabels.fontWeight=bold',label:'Font weight'},
+    {value:'lineLabels.fontStyle=italic',label:'Font style'},
+    {value:'lineLabels.fontFamily=Helvetica',label:'Font family'},
+    {value:'lineLabels.strokeColor=#888',label:'Stroke color'},
+    {value:'lineLabels.strokeWidth=1',label:'Stroke width'},
+    {value:'lineLabels.fillColor=#ffd700',label:'Fill color'},
+    {value:'lineLabels.opacity=0.75',label:'Opacity'},
+    {value:'lineLabels.radius=4',label:'Point radius'},
+    {value:'lineLabels.padding=4',label:'Padding'},			  
+];
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [
@@ -2823,10 +2830,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.prefix) props.prefix='';
 	    if(!props.suffix) props.suffix='';	    
 	    let help = '';
+	    let category = null;
 	    lines.forEach((line)=>{
 		if(line=='<hr>') {
 		    help+=HU.thinLine();
 		    return
+		}
+		if(line.category) {
+		    if(category) {
+			help+=HU.close(TAG_DIV);
+		    }
+		    help+=HU.b(category=line.category);
+		    help+=HU.open('div',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))]);
+		    return;
 		}
 		if(line.info) {
 		    help+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_IMDV_PROPERTY_POPUP),
@@ -2847,9 +2863,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    help+=HU.div([],line);
 		    return;
 		}
-		attrs.push(ATTR_VALUE,props.prefix + line + props.suffix);
-		help+=HU.div(attrs,line);
+		let text =line;
+		if(line.label) text = line.label;
+		let value =line;
+		if(line.value) value=line.value;
+		if(typeof text !='string') text = value;
+		attrs.push(ATTR_VALUE,props.prefix + value + props.suffix);
+		attrs.push(ATTR_DATA_CORPUS,category??'');
+		help+=HU.div(attrs,text);
 	    });
+	    if(category) {
+		help+=HU.close(TAG_DIV);
+	    }
 	    help = HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP,
 			   ATTR_STYLE,props.style??''], help);
 	    return help;
@@ -4299,16 +4324,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
-	    let lines = ['legendLabel=Some label',
-			 'showViewInLegend=true',
-			 ...IMDV_PROPERTY_HINTS,
-			 'dragPanEnabled=false',
-			 'zoomPanEnabled=false',			 
-			 PROP_CURRENTLOCATION_ADD+'=true',
-			 'centerOnCurrentLocation=true',
-			 PROP_CURRENTLOCATION_UPDATETIME+'=seconds',
-			 'showAddress=true',
-			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
+	    let lines = [
+		{category:'Map Misc'},
+		{value:'legendLabel=Some label',
+		 label:'Legend label'},
+		{value:'showViewInLegend=true',
+		 label:'Show view in legend'},
+		{value:'dragPanEnabled=false',
+		 label:'Enable drag/pan'},
+		{value:'zoomPanEnabled=false',
+		 label:'Enable zoom/pan'},	 
+		PROP_CURRENTLOCATION_ADD+'=true',
+		{value:'centerOnCurrentLocation=true',
+		 label:'Center on current location'},
+		PROP_CURRENTLOCATION_UPDATETIME+'=seconds',
+		{value:'showAddress=true',
+		 label:'Show address search'},
+		{value:'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot',
+		 label:'Graticule style'},
+		...IMDV_PROPERTY_HINTS,
+];
 	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
 		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Flags',
@@ -4556,6 +4591,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		ImdvUtils.scheduleRedraw(this.myLayer);
 	    });
 	    this.jq(ID_CLEAR).click(()=>{
+		this.showCommandMessage('');
 		clear();
 		this.unselectAll();
 	    });	    
@@ -5628,17 +5664,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMessage(msg,-1);
 	},
 	showMessage:function(msg,clearTime)  {
-	    if(msg!='')
+	    if(Utils.stringDefined(msg)) {
 		msg = HU.div([ATTR_CLASS,'imdv-message-inner'],msg);
-	    else if(this.messageIsTimed) return;
+	    }  else if(this.messageErase) {
+		return;
+	    }
+
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
 	    this.messageErase = null;
 	    if(clearTime>0 || !Utils.isDefined(clearTime)) {
-		this.messageIsTimed = true;
 		this.messageErase = setTimeout(()=>{
-		    this.messageIsTimed = false;
+		    this.messageErase = null;		    
 		    this.jq(ID_MESSAGE).hide();
 		    this.jq(ID_MESSAGE).html('');
 		},clearTime??3000);
