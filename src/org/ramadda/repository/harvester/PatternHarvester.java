@@ -53,10 +53,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_DATEFORMAT = "dateformat";
     public static final String ATTR_IGNORE_ERRORS = "ignore_errors";
     public static final String ATTR_MAKE_FILE_ON_ERROR = "make_file_on_error";    
-    public static final String ATTR_FILEPATTERN = "filepattern";
     public static final String ATTR_NOTREE = "notree";
     public static final String ATTR_TOPPATTERN = "toppattern";
+
+    public static final String ATTR_FILEPATTERN = "filepattern";
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
+    public static final String ATTR_DIRPATTERN = "dirattern";
+    public static final String ATTR_NOTDIRPATTERN = "notdirpattern";    
+
     public static final String ATTR_SKIPTIMECHECK = "skiptimecheck";    
     public static final String ATTR_SIZELIMIT = "sizelimit";
     public static final String ATTR_MAXLEVEL = "maxlevel";
@@ -73,7 +77,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private String dateFormat = "yyyyMMdd_HHmm";
     private List<SimpleDateFormat> sdf;
     private List<String> patternNames = new ArrayList<String>();
-    private String filePatternString = ".*";
     private String topPatternString = "";
     private Pattern topPattern;
     private String lastGroupType = "";
@@ -81,10 +84,18 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private boolean makeFileOnError = false;
     private String unique=EntryManager.UNIQUE_NAME;
     private boolean noTree = false;
+
+    private String filePatternString = ".*";
     private List<PatternHolder> filePattern;
     private String notfilePatternString = "";
-    private boolean skipTimeCheck = false;
     private List<PatternHolder> notfilePattern;
+
+    private String dirPatternString="";
+    private List<PatternHolder> dirPattern;
+    private String notdirPatternString = "";
+    private List<PatternHolder> notdirPattern;    
+
+    private boolean skipTimeCheck = false;
     private double sizeLimit = -1;
     private int maxLevel = -1;
     private boolean pushGeo = false;
@@ -99,6 +110,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private int nonUniqueCnt = 0;    
     private int skipCnt = 0;
     private StringBuilder skipBuff=new StringBuilder();
+    private StringBuilder skipDirBuff=new StringBuilder();    
     private int errorCnt = 0;    
     private int newEntryCnt = 0;
     private int totalAddedEntries = 0;    
@@ -168,8 +180,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         deleteWhenFileSizeDiffers = XU.getAttribute(element, ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
 							 false);
 
-        filePatternString = XU.getAttribute(element, ATTR_FILEPATTERN,
-						 filePatternString);
+        filePatternString = XU.getAttribute(element, ATTR_FILEPATTERN,	 filePatternString);
+        notfilePatternString = XU.getAttribute(element,   ATTR_NOTFILEPATTERN, notfilePatternString);
+
+        dirPatternString = XU.getAttribute(element, ATTR_DIRPATTERN,	 dirPatternString);
+        notdirPatternString = XU.getAttribute(element,   ATTR_NOTDIRPATTERN, notdirPatternString);	
+
 
         unique = XU.getAttribute(element, ATTR_UNIQUE,unique);
         ignoreErrors = XU.getAttribute(element, ATTR_IGNORE_ERRORS,     ignoreErrors);
@@ -181,8 +197,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         lastGroupType = XU.getAttribute(element, ATTR_LASTGROUPTYPE,
 					     lastGroupType);	
 
-        notfilePatternString = XU.getAttribute(element,
-						    ATTR_NOTFILEPATTERN, notfilePatternString);
+
         skipTimeCheck = XU.getAttribute(element,
 					     ATTR_SKIPTIMECHECK, skipTimeCheck);	
         sizeLimit = XU.getAttribute(element,
@@ -193,9 +208,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					 ATTR_MAKETHUMBNAILS, makeThumbnails);		
 	maxLevel = XU.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
-        filePattern    = null;
         topPattern     = null;
+        filePattern    = null;
         notfilePattern = null;
+        dirPattern    = null;
+        notdirPattern = null;	
+
         sdf            = null;
         init();
         dateFormat = XU.getAttribute(element, ATTR_DATEFORMAT,
@@ -211,13 +229,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
+        element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
+
+        element.setAttribute(ATTR_DIRPATTERN, dirPatternString);
+        element.setAttribute(ATTR_NOTDIRPATTERN, notdirPatternString);	
+
         element.setAttribute(ATTR_TOPPATTERN, topPatternString);
         element.setAttribute(ATTR_LASTGROUPTYPE, lastGroupType);	
         element.setAttribute(ATTR_UNIQUE, unique);
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_MAKE_FILE_ON_ERROR, "" + makeFileOnError);	
         element.setAttribute(ATTR_NOTREE, "" + noTree);
-        element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_SKIPTIMECHECK, skipTimeCheck+"");	
         element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
         element.setAttribute(ATTR_PUSHGEO, pushGeo+"");
@@ -245,8 +267,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         seenFiles   = new HashSet();
 
         lastRunTime = 0;
+
         filePatternString = request.getUnsafeString(ATTR_FILEPATTERN, filePatternString);
         filePattern = null;
+        notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,  notfilePatternString).trim();
+        notfilePattern = null;
+        dirPatternString = request.getUnsafeString(ATTR_DIRPATTERN, dirPatternString);
+        dirPattern = null;
+        notdirPatternString = request.getUnsafeString(ATTR_NOTDIRPATTERN,  notdirPatternString).trim();
+        notdirPattern = null;	
+
 
         topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,  topPatternString);
         topPattern   = null;
@@ -265,9 +295,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         noTree       = request.get(ATTR_NOTREE, false);
 
         skipTimeCheck = request.get(ATTR_SKIPTIMECHECK,false);
-        notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
-						       notfilePatternString).trim();
-        notfilePattern = null;
+
 
         sizeLimit = request.get(ATTR_SIZELIMIT, sizeLimit);
 	maxLevel = request.get(ATTR_MAXLEVEL, maxLevel);	
@@ -372,9 +400,31 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
 	String patternHelp = "<br>Macros: <span class=ramadda-hoverable title='regexp: (?i)'>No case: &lt;NOCASE&gt;</span> <span class=ramadda-hoverable title='regexp: ^.'>Root dir:&lt;ROOT&gt;</span>.  <span class=ramadda-hoverable title='regexp: .*'>Match all: &lt;ALL&gt;</span><br><span class=ramadda-hoverable title='regexp: [^/]+$'>Match on any file: &lt;FILES&GT;</span> <span class=ramadda-hoverable title='regexp: (?:[^/]+/)*'>Match any number of directories: &lt;DIRS&gt;</span><br>prefix:&lt;prefix for all patterns&gt;<br># comment<br>";
-	formHelp(sb,"Only harvest the descendent files that match one or more of these patterns."+ patternHelp,"#heading-file_patterns");
 	int rows = 3;
 	int cols = 80;
+
+	formHelp(sb,"Only harvest the directories that match one or more of these patterns.",null);
+	if(stringDefined(dirPatternString)) {
+	    rows  = Math.min(20,Math.max(rows,Utils.split(dirPatternString,"\n").size()));
+	}
+        sb.append(HU.formEntryTop(msgLabel("Directory Patterns"),
+				  HU.textArea(ATTR_DIRPATTERN,
+					      dirPatternString,
+					      rows,cols)));
+
+	rows = 3;
+	if(stringDefined(notdirPatternString)) {
+	    rows  = Math.min(20,Math.max(rows,Utils.split(notdirPatternString,"\n").size()));
+	}
+        formHelp(sb,"Skip any directories that match any of these patterns.",null); 
+        sb.append(HU.formEntryTop(msgLabel("Exclude directories that match"),
+				  HU.textArea(ATTR_NOTDIRPATTERN,
+					      notdirPatternString,
+					      rows,cols)));
+
+
+
+	formHelp(sb,"Only harvest the descendent files that match one or more of these patterns."+ patternHelp,"#heading-file_patterns");
 	if(stringDefined(filePatternString)) {
 	    rows  = Math.min(20,Math.max(rows,Utils.split(filePatternString,"\n").size()));
 	}
@@ -558,17 +608,26 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     }
 
     private void init() {
-
-        if (stringDefined(notfilePatternString)) {
-	    notfilePattern = PatternHolder.parseLines(convertPattern(notfilePatternString));
-        }
-
 	if(topPattern==null) {
 	    if (stringDefined(topPatternString)) {
 		//This needs to be the name of a directory or (name1|name2|...)
 		topPattern = Pattern.compile("^" + topPatternString+"$");
 	    }
         }
+
+
+
+        if (stringDefined(notfilePatternString)) {
+	    notfilePattern = PatternHolder.parseLines(convertPattern(notfilePatternString));
+        }
+
+        if (stringDefined(notdirPatternString)) {
+	    notdirPattern = PatternHolder.parseLines(convertPattern(notdirPatternString));
+        }
+        if (stringDefined(dirPatternString)) {
+	    dirPattern = PatternHolder.parseLines(convertPattern(dirPatternString));
+        }		
+
 
         if ((filePattern == null) && stringDefined(filePatternString)) {
             patternNames = new ArrayList<String>();
@@ -629,6 +688,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	if(errorCnt>0) {
 	    msg+="<br>There were " + errorCnt +" errors";
 	}	
+
+	if(skipDirBuff.length()>0) {
+	    msg+= HU.div(HU.makeShowHideBlock("Directories skipped",
+					      "<pre class=error-list>" + skipDirBuff + "</pre>",false));
+
+	}
+
+
 
 	if(skipCnt>0) {
 	    //	    msg+=" " + skipCnt+" " + Utils.plural(skipCnt,"file")+" skipped.";
@@ -691,6 +758,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 	skipCnt  = 0;
 	skipBuff=new StringBuilder();
+	skipDirBuff=new StringBuilder();	
 	errorCnt = 0;
         entryCnt    = 0;
 	nonUniqueCnt  = 0;
@@ -779,6 +847,25 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    if (!f.isDirectory()) {
 			return DO_CONTINUE;
 		    }			
+
+		    if(!okToRecurse(f)) {
+			return DO_DONTRECURSE;
+		    }
+
+		    if (Utils.listNotEmpty(dirPattern)) {
+			if(!PatternHolder.checkPatterns(dirPattern,f.toString())) {
+			    skipDirBuff.append("dir not in include list:" + f+"\n");
+			    return DO_DONTRECURSE;
+			}
+		    }
+
+		    if (Utils.listNotEmpty(notdirPattern)) {
+			if(PatternHolder.checkPatterns(notdirPattern,f.toString())) {
+			    skipDirBuff.append("dir is in exclude list:" + f+"\n");
+			    return DO_DONTRECURSE;
+			}
+		    }
+
 		    //		    System.err.println("\tlevel:" + level +" file:" + f);
 
 		    if(hasLevel && level>=thisHarvester.maxLevel)   {
