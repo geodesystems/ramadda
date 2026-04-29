@@ -66,7 +66,9 @@ function RepositoryMap(mapId, params) {
 	selectStrokeWidth:null,
 	selectFillOpacity:0.4,	
 	selectPointRadius:6,
-
+	
+	wrapDateLine:false,
+	fractionalZoom:false,
 	maxZoom:18,
 	singlePointZoom:7,
         scrollToZoom: true,
@@ -128,6 +130,7 @@ function RepositoryMap(mapId, params) {
 
     $.extend(dflt, params);
     params = this.params = dflt;
+
 
     this.getProperty = (key,dflt)=>{
 	if(Utils.isDefined(this.params[key])) return this.params[key];
@@ -239,8 +242,10 @@ function RepositoryMap(mapId, params) {
         controls: [],
         maxResolution: 156543.0339,
         maxExtent: MapUtils.defaults.maxExtent,
+	fractionalZoom:this.params.fractionalZoom,
         div: this.mapDivId,
 	zoom:this.params.initialZoom,
+//	minZoomLevel:4,
         eventListeners: {
             featureover: function(e) {
 		if(_this.featureOverHandler) {
@@ -888,6 +893,7 @@ RepositoryMap.prototype = {
 	jqid(getId("themap")).append(HU.div([ATTR_ID,getId("toolbar"),
 					     ATTR_STYLE,"z-index:1000;position:absolute;top:10px;left:50%;transform: translateX(-50%);"],""));
 
+
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
 
         //register the location listeners later since the map triggers a number of
@@ -930,6 +936,11 @@ RepositoryMap.prototype = {
 	}
 
         this.addBaseLayers();
+	if(this.map.baseLayer) {
+	    if(this.map.baseLayer.backgroundColor) {
+		this.setBackgroundColor(this.map.baseLayer.backgroundColor);
+	    }
+	}
 
         if (this.kmlLayer) {
             var url = HU.getUrl(RamaddaUtil.getUrl(URL_ENTRY_SHOW),
@@ -981,6 +992,8 @@ RepositoryMap.prototype = {
 	}
 
 
+	this.setBackgroundColor('#AAD3DF');
+
 
 	setTimeout(()=>{
 	    let mapDiv = document.querySelector("#"+this.mapDivId+"_themap");
@@ -1014,6 +1027,7 @@ RepositoryMap.prototype = {
 	return  this.transformProjBounds(this.getMap().getExtent());
     },
     zoomChanged: function() {
+//	console.trace();
 	this.checkDeclutter();
     },
     receiveShareState:function(source, state) {
@@ -1091,6 +1105,9 @@ RepositoryMap.prototype = {
     baseLayerChanged: function() {
         let baseLayer = this.getMap().baseLayer;
         if (!baseLayer) return;
+	if(baseLayer.backgroundColor) {
+	    this.setBackgroundColor(baseLayer.backgroundColor);
+	}
         baseLayer = baseLayer.ramaddaId;
 	HU.addToDocumentUrl("defaultMapLayer",baseLayer);
 	ramaddaMapShareState(this,"baseLayer");
@@ -1832,7 +1849,8 @@ RepositoryMap.prototype = {
     addWMSLayer: function(name, url, layer, isBaseLayer, nonSelectable,args) {
 	if(!args) args = {};
 	let attrs = {
-            wrapDateLine: MapUtils.defaults.wrapDateline,
+            wrapDateLine: this.getWrapDateLine(),
+	    fractionalZoom:true
         };
 	if(args.opacity) attrs.opacity=args.opacity;
         var layer = MapUtils.createLayerWMS(name, url, {
@@ -1856,6 +1874,10 @@ RepositoryMap.prototype = {
         this.addLayer(layer,nonSelectable);
 	return layer;
     },
+    setBaseLayer:function(layer) {
+	this.map.setBaseLayer(layer);
+	this.setBackgroundColor(layer.backgroundColor??MapUtils.defaults.backgroundColor);
+    },
     addMapLayer: function(name, url, layer, isBaseLayer, isDefault) {
         var layer;
         if (/\/tile\//.exec(url)) {
@@ -1863,14 +1885,14 @@ RepositoryMap.prototype = {
                 name, url, {
                     sphericalMercator: MapUtils.defaults.doSphericalMercator,
                     numZoomLevels: MapUtils.defaults.zoomLevels,
-                    wrapDateLine: MapUtils.defaults.wrapDateline
+                    wrapDateLine: this.getWrapDateLine()
                 });
         } else {
             layer = MapUtils.createLayerWMS(name, url, {
                 layers: layer,
                 format: "image/png"
             }, {
-                wrapDateLine: MapUtils.defaults.wrapDateline
+                wrapDateLine: this.getWrapDateLine()
             });
         }
         if (isBaseLayer)
@@ -1886,6 +1908,9 @@ RepositoryMap.prototype = {
             this.haveAddedDefaultLayer = true;
             this.getMap().setLayerIndex(layer, 0);
             this.getMap().setBaseLayer(layer);
+	    if(layer.backgroundColor) {
+		this.setBackgroundColor(layer.backgroundColor);
+	    }
         }
     },
 
@@ -2026,6 +2051,20 @@ RepositoryMap.prototype = {
         return map;
     },
 
+    setBackgroundColor:function(color) {
+	jqid(this.mapDivId+"_themap").css(CSS_BACKGROUND,color);
+    },
+    getWrapDateLine:function() {
+	return this.params.wrapDateLine;
+    },
+    setWrapDateLine:function(value) {
+	this.params.wrapDateLine = value; 
+	this.getMap().wrapDateLine = this.params.wrapDateLine;
+	this.getMap().layers.forEach(l=>{
+	    l.wrapDateLine = value;
+	});
+
+    },
     getFeatureName: function(feature,dontCheckLabel) {
         let p = feature.attributes;
 	let featureLabelProperty = this.params.featureLabelProperty;
@@ -2932,15 +2971,17 @@ RepositoryMap.prototype = {
 	}
     },
 
-    createXYZLayer:  function(name, url, attribution,notBaseLayer,visible,addLayer) {
+    createXYZLayer:  function(name, url, attribution,notBaseLayer,visible,addLayer,opts) {
+	opts = opts??{};
 	if(typeof url=='string') {
 	    url = url.replace(/\$\{timestamp\}/,new Date().getTime());
 	}
 	visible=  Utils.getBoolean(visible);
         let options = {
             sphericalMercator: MapUtils.defaults.doSphericalMercator,
-            numZoomLevels: MapUtils.defaults.zoomLevels,
-            wrapDateLine: MapUtils.defaults.wrapDateline,
+            numZoomLevels:Utils.getDefined(opts.zoomLevels, MapUtils.defaults.zoomLevels),
+	    resolutions:opts.resolutions,
+	    wrapDateLine: Utils.getDefined(opts.wrapDateLine,this.getWrapDateLine()),
 	    isBaseLayer: !notBaseLayer,
 	    visibility: visible
         };
@@ -3049,7 +3090,6 @@ RepositoryMap.prototype = {
 	if(layer) {
 	    let l= layer.createMapLayer(this);
 	    l.layerCategory=layer.getCategory();
-	    
 
 	    if(layer.opts.alias) {
 		this.baseLayers[layer.opts.alias] = l;
@@ -3071,7 +3111,7 @@ RepositoryMap.prototype = {
                 "ESRI China Map", layerURL, {
                     sphericalMercator: MapUtils.defaults.doSphericalMercator,
                     numZoomLevels: MapUtils.defaults.zoomLevels,
-                    wrapDateLine: MapUtils.defaults.wrapDateline
+                    wrapDateLine: this.getWrapDateLine()
                 });
         } else {
             let match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
@@ -4997,7 +5037,7 @@ RepositoryMap.prototype = {
     addBox:  function(box) {
         if (!this.boxes) {
             this.boxes = MapUtils.createLayerBoxes("Boxes", {
-                wrapDateLine: MapUtils.defaults.wrapDateline,
+                wrapDateLine: this.getWrapDateLine(),
             });
             if (!this.getMap()) {
                 this.initialBoxes = this.boxes;
