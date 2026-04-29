@@ -492,6 +492,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
         initMapParams: function(params) {
 	    params.maxBounds = this.getMaxBounds();
+	    params.wrapDateLine=this.getProperty('wrapDateLine',true);
 	    if(this.getProperty('canMove',false)) {
 		params.canMove=true;
 	    }

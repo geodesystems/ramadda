@@ -4334,6 +4334,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		 label:'Enable drag/pan'},
 		{value:'zoomPanEnabled=false',
 		 label:'Enable zoom/pan'},	 
+		{value:'wrapDateLine=false',
+		 label:"Don't wrap date line"},
 		PROP_CURRENTLOCATION_ADD+'=true',
 		{value:'centerOnCurrentLocation=true',
 		 label:'Center on current location'},
@@ -4455,6 +4457,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    gratStyle;
 		}
 	    }
+	    this.getMap().setWrapDateLine(this.getMapProperty('wrapDateLine',true));
 	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'),gratStyle);
 	    this.getMap().setShowOverviewMap(this.getMapProperty('showOverviewMap'));
 	    if(this.getMapProperty('showMousePosition'))
@@ -5254,7 +5257,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(json.baseLayer) {
 			    let base = _this.map.baseLayers[json.baseLayer];
 			    if(base) {
-				_this.map.getMap().setBaseLayer(base);
+				_this.map.setBaseLayer(base);
 			    }
 
 
