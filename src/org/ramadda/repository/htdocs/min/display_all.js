@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr 25 08:25:00 EDT 2026";
+var build_date="RAMADDA build date: Wed Apr 29 03:48:00 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -41722,6 +41722,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
         initMapParams: function(params) {
 	    params.maxBounds = this.getMaxBounds();
+	    params.wrapDateLine=this.getProperty('wrapDateLine',true);
 	    if(this.getProperty('canMove',false)) {
 		params.canMove=true;
 	    }
@@ -48919,47 +48920,54 @@ var ATTR_SLIDER_ID='slider-id';
 var ATTR_COLOR='color';
 var ATTR_BASEID='baseid';
 
-var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
-			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false',
-			  'filter.sortOnCount=true',
-			  'filter.showRawValues=true',
-			  'filters.height=400px',
-			  'filter.toggle.show=false',
-			  'legendTooltip=',
-			  'showLabelInMap=true',
-			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
-			  'showLabelInMapWhenVisible=true',
-			  'showViewInLegend=true',
-			  PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
-			  'inMapLabel=',			  			  
-			  'showLegendInMap=true',			  
-			  PROP_DONT_SHOW_IN_LEGEND +'=true',
-			  'showDisplayHeader=false',
-			  'showInHeader=true',			  
-			  'showIconInHeader=true',
-			  'mapLegendHeight=300px',
-			  'showLegendBox=true',
-			  'showOpacitySlider=true',
-			  'showRotationSlider=true',			  			  
-			  'showButtons=false',
-			  'showMeasures=false',
-			  PROP_SHOW_TEXT_SEARCH+'=true',
-			  'lineLabels.show=true',
-			  'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',
-			  'lineLabels.locations=first,last,middle,center,n,w,s,e,points:skip,every:1km,every:2miles,count:5',
-			  'lineLabels.fontColor=white',
-			  'lineLabels.fontWeight=bold',
-			  'lineLabels.fontStyle=italic',
-			  'lineLabels.fontFamily','Helvetica',
-			  'lineLabels.fontSize=8pt',
-			  'lineLabels.strokeColor=#888',
-			  'lineLabels.strokeWidth=1',
-			  'lineLabels.fillColor=#ffd700',
-			  'lineLabels.opacity=0.75',
-			  'lineLabels.radius=4',
-			  'lineLabels.padding=4',			  
-			 ];
+var IMDV_PROPERTY_HINTS= [
+    {category:'Glyph Filters'},
+    {value:'filter.live=true',label:'Filters live'},
+    {value:'filter.show=false',label:'Show filters'},
+    {value:'filter.zoomonchange.show=false',label:'Show zoom on change'},
+    {value:'filter.toggle.show=false',label:'Show toggle'},
+    {value:'filter.sortOnCount=true',label:'Sort on count'},
+    {value:'filter.showRawValues=true',label:'Show raw values'},
+    {value:'filters.height=400px',label:'Filters height'},
+    {category:'Glyph Misc'},    
+    'legendTooltip=',
+    'showLabelInMap=true',
+    PROP_MOVE_TO_LATEST_LOCATION+'=true',
+    'showLabelInMapWhenVisible=true',
+    'showViewInLegend=true',
+    PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
+    'inMapLabel=',			  			  
+    'showLegendInMap=true',			  
+    PROP_DONT_SHOW_IN_LEGEND +'=true',
+    'showDisplayHeader=false',
+    'showInHeader=true',			  
+    'showIconInHeader=true',
+    'mapLegendHeight=300px',
+    'showLegendBox=true',
+    'showOpacitySlider=true',
+    'showRotationSlider=true',			  			  
+    'showButtons=false',
+    'showMeasures=false',
+    PROP_SHOW_TEXT_SEARCH+'=true',
+    {category:'Line Labels'},
+    {value:'lineLabels.show=true',label:'Show line labels'},
+    {value:'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',label:'Line label template'},
+    {value:'lineLabels.locations=every:1km,every:2miles',label:'Spacing every'},
+    {value:'lineLabels.locations=count:5',label:'Spacing count'},
+    {value:'lineLabels.locations=points:skip',label:'Spacing points'},
+    {value:'lineLabels.locations=first,last,middle,center,n,w,s,e',label:'Locations'},
+    {value:'lineLabels.fontSize=8pt',label:'Font size'},
+    {value:'lineLabels.fontColor=white',label:'Font color'},
+    {value:'lineLabels.fontWeight=bold',label:'Font weight'},
+    {value:'lineLabels.fontStyle=italic',label:'Font style'},
+    {value:'lineLabels.fontFamily=Helvetica',label:'Font family'},
+    {value:'lineLabels.strokeColor=#888',label:'Stroke color'},
+    {value:'lineLabels.strokeWidth=1',label:'Stroke width'},
+    {value:'lineLabels.fillColor=#ffd700',label:'Fill color'},
+    {value:'lineLabels.opacity=0.75',label:'Opacity'},
+    {value:'lineLabels.radius=4',label:'Point radius'},
+    {value:'lineLabels.padding=4',label:'Padding'},			  
+];
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [
@@ -50298,6 +50306,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
 		    mapGlyph.checkMapServer();
+		    this.lastCreatedGlyph=mapGlyph;
 		    this.addGlyph(mapGlyph);
 		    this.clearMessage2(1000);
 		    dialog.remove();
@@ -51662,10 +51671,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.prefix) props.prefix='';
 	    if(!props.suffix) props.suffix='';	    
 	    let help = '';
+	    let category = null;
 	    lines.forEach((line)=>{
 		if(line=='<hr>') {
 		    help+=HU.thinLine();
 		    return
+		}
+		if(line.category) {
+		    if(category) {
+			help+=HU.close(TAG_DIV);
+		    }
+		    help+=HU.b(category=line.category);
+		    help+=HU.open('div',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10))]);
+		    return;
 		}
 		if(line.info) {
 		    help+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_IMDV_PROPERTY_POPUP),
@@ -51686,9 +51704,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    help+=HU.div([],line);
 		    return;
 		}
-		attrs.push(ATTR_VALUE,props.prefix + line + props.suffix);
-		help+=HU.div(attrs,line);
+		let text =line;
+		if(line.label) text = line.label;
+		let value =line;
+		if(line.value) value=line.value;
+		if(typeof text !='string') text = value;
+		attrs.push(ATTR_VALUE,props.prefix + value + props.suffix);
+		attrs.push(ATTR_DATA_CORPUS,category??'');
+		help+=HU.div(attrs,text);
 	    });
+	    if(category) {
+		help+=HU.close(TAG_DIV);
+	    }
 	    help = HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP,
 			   ATTR_STYLE,props.style??''], help);
 	    return help;
@@ -53138,17 +53165,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
-	    let lines = ['legendLabel=Some label',
-			 'showViewInLegend=true',
-			 ...IMDV_PROPERTY_HINTS,
-			 'dragPanEnabled=false',
-			 'zoomPanEnabled=false',			 
-			 PROP_CURRENTLOCATION_ADD+'=true',
-			 'centerOnCurrentLocation=true',
-			 PROP_CURRENTLOCATION_UPDATETIME+'=seconds',
-			 'showAddress=true',
-			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
-	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
+	    let lines = [
+		{category:'Map Misc'},
+		{value:'legendLabel=Some label',
+		 label:'Legend label'},
+		{value:'showViewInLegend=true',
+		 label:'Show view in legend'},
+		{value:'dragPanEnabled=false',
+		 label:'Enable drag/pan'},
+		{value:'zoomPanEnabled=false',
+		 label:'Enable zoom/pan'},	 
+		{value:'wrapDateLine=false',
+		 label:"Don't wrap date line"},
+		PROP_CURRENTLOCATION_ADD+'=true',
+		{value:'centerOnCurrentLocation=true',
+		 label:'Center on current location'},
+		PROP_CURRENTLOCATION_UPDATETIME+'=seconds',
+		{value:'showAddress=true',
+		 label:'Show address search'},
+		{value:'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot',
+		 label:'Graticule style'},
+		...IMDV_PROPERTY_HINTS,
+];
+	    let help = HU.b('Add property: ') +
+		HU.span([ATTR_ID,this.domId('propsearch')]) +
 		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Flags',
 			  contents:
@@ -53258,6 +53298,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    gratStyle;
 		}
 	    }
+	    this.getMap().setWrapDateLine(this.getMapProperty('wrapDateLine',true));
 	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'),gratStyle);
 	    this.getMap().setShowOverviewMap(this.getMapProperty('showOverviewMap'));
 	    if(this.getMapProperty('showMousePosition'))
@@ -53395,6 +53436,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		ImdvUtils.scheduleRedraw(this.myLayer);
 	    });
 	    this.jq(ID_CLEAR).click(()=>{
+		this.showCommandMessage('');
 		clear();
 		this.unselectAll();
 	    });	    
@@ -54056,7 +54098,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(json.baseLayer) {
 			    let base = _this.map.baseLayers[json.baseLayer];
 			    if(base) {
-				_this.map.getMap().setBaseLayer(base);
+				_this.map.setBaseLayer(base);
 			    }
 
 
@@ -54467,17 +54509,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMessage(msg,-1);
 	},
 	showMessage:function(msg,clearTime)  {
-	    if(msg!='')
+	    if(Utils.stringDefined(msg)) {
 		msg = HU.div([ATTR_CLASS,'imdv-message-inner'],msg);
-	    else if(this.messageIsTimed) return;
+	    }  else if(this.messageErase) {
+		return;
+	    }
+
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
 	    this.messageErase = null;
 	    if(clearTime>0 || !Utils.isDefined(clearTime)) {
-		this.messageIsTimed = true;
 		this.messageErase = setTimeout(()=>{
-		    this.messageIsTimed = false;
+		    this.messageErase = null;		    
 		    this.jq(ID_MESSAGE).hide();
 		    this.jq(ID_MESSAGE).html('');
 		},clearTime??3000);
@@ -55173,11 +55217,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
 	    let _this = this;
 	    let menuBar=  '';
-	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New'],[ID_MENU_VIEW,'View']].forEach(t=>{
-		menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
-				    ATTR_CLASS,'ramadda-menubar-button'],t[1])});
+	    [[ID_MENU_FILE,'File'],
+	     [ID_MENU_EDIT,'Edit'],
+	     [ID_MENU_NEW,'New'],
+	     [ID_MENU_VIEW,'View']].forEach(t=>{
+		 menuBar+=   HU.div([ATTR_ID,this.domId(t[0]),
+				     ATTR_CLASS,'ramadda-menubar-button'],t[1])});
 	    menuBar = HU.div([ATTR_CLASS,CLASS_MENUBAR], menuBar);
-
 	    let address =
 		HU.span([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)], 
 			HU.div([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
@@ -56672,6 +56718,14 @@ MapGlyph.prototype = {
 			 ATTR_ROWS,4,
 			 ATTR_COLS, 40]);
 	
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    html+=HU.div([],
+			 HU.checkbox(this.domId('deleteroute'),
+				     [ATTR_ID,this.domId('deleteroute')],false,
+				     'Delete Route Instructions'));
+	}
+
+
 	html+=HU.div([],HU.boldLabel('ID') +
 		     HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
@@ -56856,6 +56910,12 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry()) {
 	    this.attrs['excludes']  = this.jq('excludes').val();
 	}	    
+
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    if(HU.isChecked(this.jq('deleteroute'))) {
+		this.attrs.instructions=null;
+	    }
+	}
 
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
@@ -58753,26 +58813,24 @@ MapGlyph.prototype = {
 	}
 
 
-	if(this.isRoute()) {
-	    if(this.attrs.instructions && this.attrs.instructions.length>0) {
-		let instr = '';
-		this.attrs.instructions.forEach(step=>{
-		    let title = '';
-		    let attrs = [];
-		    if(step.lat) {
-			attrs.push(ATTR_TITLE,'Click to view',
-				   ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
-				   ATTR_LATITUDE,step.lat,
-				   ATTR_LONGITUDE,step.lon);
-		    } else {
-			attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
-		    }
-		    instr+=HU.div(attrs, step.instr);
-		});
-		body+=HU.center(HU.b('Directions')) +
-		    HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
-					      CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
-	    }
+	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
+	    let instr = '';
+	    this.attrs.instructions.forEach(step=>{
+		let title = '';
+		let attrs = [];
+		if(step.lat) {
+		    attrs.push(ATTR_TITLE,'Click to view',
+			       ATTR_CLASS,HU.classes(CLASS_IMDV_ROUTE_STEP,CLASS_HOVERABLE,CLASS_CLICKABLE),
+			       ATTR_LATITUDE,step.lat,
+			       ATTR_LONGITUDE,step.lon);
+		} else {
+		    attrs.push(ATTR_CLASS,CLASS_IMDV_ROUTE_STEP);
+		}
+		instr+=HU.div(attrs, step.instr);
+	    });
+	    body+=HU.center(HU.b('Directions')) +
+		HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(200),
+					  CSS_OVERFLOW_Y,OVERFLOW_AUTO)],instr);
 	}
 	
 
@@ -58857,7 +58915,7 @@ MapGlyph.prototype = {
 	let addLabel = (latitude,longitude,distance) =>{
 	    labelCnt++;
 	    //cap it at 500
-	    if(labelCnt>500) return;
+	    if(labelCnt>100) return;
 	    let label = template;
 	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
 	    label = label.replace(/\${longitude}/g,Utils.trimDecimals(longitude,1));	
