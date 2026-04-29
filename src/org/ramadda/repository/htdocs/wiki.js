@@ -2532,6 +2532,7 @@ WikiEditor.prototype = {
 	     ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},	     
 	    {p:'overlays',tt:'Comma separated list of map overlays. Look in the map layer list for ids'},	    
 	    {p:'detailed',ex:'true',tt:'Add map layers, etc'},
+	    {p:'wrapDateLine',ex:false,tt:'Default is to wrap the date line'},
 	    {p:'displayDiv',tt:'ID of div to show popup in'},
 	    {p:'displayColumns',ex:2,tt:'For multiple feature popups'},	    
 	    {p:'displayDivSticky',ex:true,tt:'Keep the popup display in the div'},	    
