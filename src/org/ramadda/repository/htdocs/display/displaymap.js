@@ -15,6 +15,7 @@ var ID_REGION_SELECTOR = "regionselector";
 var ID_LEGENDID="legendid";
 var ID_SHOWMARKERSTOGGLE="showMarkersToggle";
 var ID_SHOWLABELSTOGGLE="showLabelsToggle";
+var ID_SHOWDATELINETOGGLE="showDateLineToggle";
 var ID_BASELAYERS='baselayers';
 
 var debugit = false;
@@ -492,7 +493,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
         initMapParams: function(params) {
 	    params.maxBounds = this.getMaxBounds();
-	    params.wrapDateLine=this.getProperty('wrapDateLine',true);
+	    params.wrapDateLine=this.getWrapDateLine();
 	    if(this.getProperty('canMove',false)) {
 		params.canMove=true;
 	    }
@@ -1051,6 +1052,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'zoomTimeout',ex:500,tt:'initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom'},
 
 
+	{p:'wrapDateLine',d:true,
+	 ex:false,tt:"Don't wrap the dateline. Enable full zoom"},
+	{p:'showWrapDateLineToggle',ex:true},
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:'Link location with other maps'},
 	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
@@ -3056,19 +3060,46 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
+	    let shows = [];
 	    if(this.getProperty("showMarkersToggle")) {
 		let dflt = this.getProperty("markersVisibility", true);
-		html += HU.checkbox(this.domId(ID_SHOWMARKERSTOGGLE),
-				    [ATTR_ID,this.domId(ID_SHOWMARKERSTOGGLE)],dflt,
-				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
+		shows.push(HU.checkbox(this.domId(ID_SHOWMARKERSTOGGLE),
+				       [ATTR_ID,this.domId(ID_SHOWMARKERSTOGGLE)],dflt,
+				       this.getProperty("showMarkersToggleLabel","Show Markers")));
 	    }
+
+	    if(this.getShowWrapDateLineToggle(true)) {
+		let dflt = this.getWrapDateLine();
+		shows.push(HU.checkbox(this.domId(ID_SHOWDATELINETOGGLE),
+				       [ATTR_ID,this.domId(ID_SHOWDATELINETOGGLE)],dflt,
+				       "Wrap dateline"));
+	    }	    
+
 
 	    if(this.getShowLabelsToggle()) {
 		let dflt = this.getLabelsVisibility();
-		html += HU.checkbox(this.domId(ID_SHOWLABELSTOGGLE),
-				    [ATTR_ID,this.domId(ID_SHOWLABELSTOGGLE)],dflt,
-				    "Show Labels") +SPACE2;
+		shows.push(HU.checkbox(this.domId(ID_SHOWLABELSTOGGLE),
+				       [ATTR_ID,this.domId(ID_SHOWLABELSTOGGLE)],dflt,
+				       "Show Labels"));
 	    }	    
+
+	    if(this.getProperty('showHideMissingColorToggle')) {
+		let dflt = this.getProperty('hideMissingColor');
+		shows.push(HU.checkbox(this.domId(ID_SHOWMISSINGTOGGLE),
+				     [ATTR_ID,this.domId(ID_SHOWMISSINGTOGGLE)],!dflt,
+				       "Show Missing"));
+	    }	    
+
+
+
+	    if(shows.length>1) {
+		let inner=Utils.wrap(shows,'<div class=ramadda-menu-item>','</div>');
+		html+=HU.div([ATTR_ID,this.domId('showmenubutton_contents'),
+			      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],inner);
+		html+=HU.span([ATTR_ID,this.domId('showmenubutton'),ATTR_CLASS,CLASS_BUTTON],'Toggle...')+SPACE2;
+	    } else    if(shows.length>0) {
+		html+=Utils.wrap(shows,SPACE,SPACE2);
+	    }
 
 	    if(this.getShowBaseLayersSelect()) {
 		html+=this.getBaseLayersSelect();
@@ -3215,6 +3246,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    }
 
+	    this.jq('showmenubutton').button().click(function() {
+		HU.makeDialog({anchor:$(this),
+			       inPlace:true,
+			       contentId:_this.domId('showmenubutton_contents')});
+	    });
 	    this.getProperty("locations","").split(",").forEach(url=>{
 		url  =url.trim();
 		if(url.length==0) return;
@@ -3248,6 +3284,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		Utils.doFetch(url, success,fail,null);	    
 	    });
 
+
+	    this.jq(ID_SHOWDATELINETOGGLE).change(function() {
+		let value = HU.isChecked($(this));
+		_this.setProperty('wrapDateLine',value);
+		_this.getMap().setWrapDateLine(value);
+	    });
 
 	    this.jq(ID_SHOWMARKERSTOGGLE).change(function() {
 		let visible = HU.isChecked($(this));

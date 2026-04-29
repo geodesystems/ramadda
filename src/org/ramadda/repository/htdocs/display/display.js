@@ -7453,13 +7453,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		
 
 		let label='';
+/*
 		if(this.getProperty('showHideMissingColorToggle')) {
 		    let dflt = this.getProperty('hideMissingColor');
 		    label+=SPACE;
 		    label += HU.checkbox(this.domId(ID_SHOWMISSINGTOGGLE),
 					 [ATTR_ID,this.domId(ID_SHOWMISSINGTOGGLE)],!dflt,
 					 "Show Missing") +SPACE2;
-		}	    
+		}	    */
 
 		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
 		header2 += HU.span([ATTR_CLASS,filterClass],
