@@ -69,6 +69,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'centerOnNA',ex:true},
 	{p:'initBoundsUseAllRecords',ex:true},
 	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
+	{p:'wrapDateLine',d:true,
+	 ex:false,tt:"Don't wrap the dateline. Enable full zoom"},
+	{p:'showWrapDateLineToggle',ex:true},
+
 	{p:'zoomTimeout',ex:500,
 	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'popupWidth',d:400},
@@ -1052,9 +1056,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'zoomTimeout',ex:500,tt:'initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom'},
 
 
-	{p:'wrapDateLine',d:true,
-	 ex:false,tt:"Don't wrap the dateline. Enable full zoom"},
-	{p:'showWrapDateLineToggle',ex:true},
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:'Link location with other maps'},
 	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
