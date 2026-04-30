@@ -4870,6 +4870,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    const ul = bc.find('ul');
 	    const items = ul.find("li");
 	    let cnt = 0;
+	    const total = items.length;
+	    if (total <= keepStart + keepEnd) return;
+	    const start = items.slice(0, keepStart);
+	    const end = items.slice(total - keepEnd);
+	    const middle = items.slice(keepStart, -keepEnd);
+	    const hidden = total-(start.length+end.length);
+	    let html = '';
+	    middle.each(function() {
+		html+=HU.div([ATTR_CLASS,'ramadda-menu-item'],
+			     $(this).html());
+	    });
+	    html = HU.div([ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(400),
+					     CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+			  html);
+
+
 	    //clip the text manually
 	    items.each(function() {
 		cnt++;
@@ -4885,12 +4901,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    href.html(text);
 		}
 	    });
-	    const total = items.length;
-	    if (total <= keepStart + keepEnd) return;
-	    const start = items.slice(0, keepStart);
-	    const end = items.slice(total - keepEnd);
-	    const ellipsis = $('<li class="breadcrumb-ellipsis">…</li>');
+	    
+
+	    let ellipsisId=Utils.getUniqueId('ellipsis');
+	    const ellipsis = $(HU.tag(TAG_LI,[ATTR_ID,ellipsisId,
+					      ATTR_CLASS,CLASS_CLICKABLE+' breadcrumb-ellipsis',
+					      ATTR_TITLE,hidden +' items hidden'],
+				      '...'));
 	    ul.empty().append(start).append(ellipsis).append(end);
+	    jqid(ellipsisId).click(function() {
+		let anchor = $(this);
+		HU.makeDialog({anchor:anchor,content:html});
+	    });
 	}
         let bc = jqid(id);
         let num = bc.find("li").length
