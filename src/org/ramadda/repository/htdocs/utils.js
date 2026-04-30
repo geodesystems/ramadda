@@ -4866,20 +4866,50 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
+	function collapseBreadcrumb(bc, keepStart, keepEnd) {
+	    const ul = bc.find('ul');
+	    const items = ul.find("li");
+	    let cnt = 0;
+	    //clip the text manually
+	    items.each(function() {
+		cnt++;
+		let href=$(this).find('a');
+		let text = href.html();
+		href.attr(ATTR_TITLE,text);
+		if(cnt==0 || cnt==items.length) return;
+		if(href.length>0) {
+		    let max = 20;
+		    if(text.length>max) {
+			text = text.substring(0,max)+'...';
+		    }
+		    href.html(text);
+		}
+	    });
+	    const total = items.length;
+	    if (total <= keepStart + keepEnd) return;
+	    const start = items.slice(0, keepStart);
+	    const end = items.slice(total - keepEnd);
+	    const ellipsis = $('<li class="breadcrumb-ellipsis">…</li>');
+	    ul.empty().append(start).append(ellipsis).append(end);
+	}
         let bc = jqid(id);
         let num = bc.find("li").length
         let begin = 0;
+	begin=2;
         let end = 4;
-        let w = 0;
+        let previewWidth = 0;
+	collapseBreadcrumb(bc, 5, 5);
+	previewWidth=0;
         if(num>5) {
-            end=0;
+            end=1;
+	    end=2;
         }
         bc.jBreadCrumb({
-            previewWidth: w,
-	    //          maxFinalElementLength:400,
-	    //          minFinalElementLength:10,
-            easing:'easeOutQuad',
-	    //            easing: 'swing',
+            previewWidth: previewWidth,
+	    maxFinalElementLength:30,
+	    minFinalElementLength:20,
+//            easing:'easeOutQuad',
+	    easing:'swing',
             //(sic)
             beginingElementsToLeaveOpen: begin,
             endElementsToLeaveOpen:end
