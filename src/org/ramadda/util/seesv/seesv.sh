@@ -21,5 +21,8 @@ if [ -z "$JAVA" ]; then
     JAVA=java
 fi
 
+## add the following for maxing out the memory
+## -Xms16g -Xmx16g
+
 ${JAVA} -Djava.awt.headless=true -jar  ${MYDIR}/lib/seesv.jar "$@"
 

@@ -85,7 +85,9 @@ public class Seesv implements SeesvCommands {
     private String delimiter;
     private List<String> changeTo = new ArrayList<String>();
     private boolean doingScript = false;
-
+    private boolean hadHeader = false;
+    private Row headerRow;
+    
     private StringBuilder js = new StringBuilder();
     private Dater inDater = new Dater();    
     private Dater outDater = new Dater();
@@ -461,7 +463,6 @@ public class Seesv implements SeesvCommands {
     }
 
     private void runInner(List<IO.Path> files) throws Exception {
-
         if (files == null) {
             files = new ArrayList<IO.Path>();
         }
@@ -508,6 +509,16 @@ public class Seesv implements SeesvCommands {
 		continue;
 	    }	    
 	}
+
+	for (int i = 0; i < args.size(); i++) {
+	    String arg = args.get(i);
+	    if(arg.equals(CMD_SCRIPT)) {
+		doingScript = true;
+		break;
+	    }
+	}
+
+
 
 	//	System.err.println("args:" + args);
         for (int i = 0; i < args.size(); i++) {
@@ -628,6 +639,12 @@ public class Seesv implements SeesvCommands {
 
             if (arg.equals(CMD_MULTIFILES)) {
 		multiFiles = true;
+		if(i==args.size()-1) {
+		    usage("Bad argument count for -multifiles:",
+			  false,CMD_MULTIFILES);
+		    
+		    break;
+		}
 		multiFileTemplate = args.get(++i);
 		continue;
 	    }
@@ -655,6 +672,7 @@ public class Seesv implements SeesvCommands {
             }
 
             if (arg.equals(CMD_HEADER)) {
+		hadHeader = true;
 		List<String> names =new ArrayList<String>();
 		for(String name:Utils.split(args.get(++i), ",")) {
 		    String[]matches=Utils.findPatterns(name,"\\[(\\d+)\\s*-\\s*(\\d+)\\]");
@@ -666,8 +684,9 @@ public class Seesv implements SeesvCommands {
 			names.add(name.trim());
 		    }
 		}
-                myTextReader.setFirstRow(new Row(names));
-                continue;
+                myTextReader.setFirstRow(headerRow = new Row(names));
+		if(!doingScript)
+		    continue;
             }
 
             if (arg.startsWith("-iter")) {
@@ -745,6 +764,12 @@ public class Seesv implements SeesvCommands {
 	    return;
 	}
 
+	if(doingScript) {
+	    outputScript(args, myTextReader);
+	    return;
+	}
+
+
         if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
             return;
@@ -805,6 +830,9 @@ public class Seesv implements SeesvCommands {
 		if(files.size()==0 && inputStream!=null) {
 		    for (DataProvider provider : providers) {
 			myTextReader.resetProcessors(doMulti);
+			if(headerRow!=null) {
+			    myTextReader.setFirstRow(headerRow);
+			}
 			myTextReader.setInput(inputStream);
 			process(myTextReader, provider,0);
 			//			if(!multiFiles) {
@@ -827,6 +855,7 @@ public class Seesv implements SeesvCommands {
 			    sheetNumber = startSheet+fileCnt;
 			}
 			InputStream inputStream  = makeInputStream(file);
+			if(debugFiles) System.err.println("*** processing file:" + file);
 			if(inputStream==null) break;
 			NamedInputStream input = new NamedInputStream(file.getPath(), wrapInputStream(inputStream));
 			//new NamedInputStream(file.getPath(), wrapInputStream(makeInputStream(file)));
@@ -849,6 +878,9 @@ public class Seesv implements SeesvCommands {
 			    myTextReader.setOutputFile(newFile);
 			}
 			myTextReader.resetProcessors(doMulti);
+			if(headerRow!=null) {
+			    myTextReader.setFirstRow(headerRow);
+			}
 			myTextReader.setInput(input);
 			process(myTextReader, provider,doMulti?0:fileCnt);
 			if(!multiFiles) {
@@ -922,10 +954,13 @@ public class Seesv implements SeesvCommands {
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
-
 	    if(row==null) break;
-	    if(rowCnt++==0 && fileCnt>0) {
-		continue;
+	    rowCnt++;
+	    if(rowCnt==1 && fileCnt>0) {
+		if(!hadHeader) {
+		    System.err.println("skipping first row of secondary file");
+		    continue;
+		}
 	    }
             if (rowCnt <= ctx.getSkipRows()) {
                 continue;
@@ -947,6 +982,7 @@ public class Seesv implements SeesvCommands {
         ctx.initRow(row);
         if ((ctx.getMaxRows() >= 0)
 	    && (ctx.getVisitedRows() > ctx.getMaxRows())) {
+	    //	    System.err.println("past row limit");
             return false;
         }
 	row        = ctx.processRow(this,row);
@@ -5578,6 +5614,9 @@ public class Seesv implements SeesvCommands {
 	boolean            doArgs2       = false;
 	int                doArgsCnt     = 0;
 	int                doArgsIndex   = 1;
+
+
+
 	if (delimiter != null) {
 	    ctx.setDelimiter(delimiter);
 	}
@@ -5589,13 +5628,6 @@ public class Seesv implements SeesvCommands {
 	List<String> filePatterns = new ArrayList<String>();
 	List<String> filePatternNames = new ArrayList<String>();	
 	List<String> newArgs = new ArrayList<String>();
-	for (int i = 0; i < args.size(); i++) {
-	    String arg = args.get(i);
-	    if(arg.equals(CMD_SCRIPT)) {
-		doingScript = true;
-		break;
-	    }
-	}
 
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
@@ -5756,6 +5788,7 @@ public class Seesv implements SeesvCommands {
 		    continue;
 		}
 
+
 		if (arg.equals(CMD_ARGS)) {
 		    doArgs = true;
 		    continue;
@@ -5774,6 +5807,7 @@ public class Seesv implements SeesvCommands {
 		}
 
 		if (arg.equals("-debug")) {
+		    debugFiles = true;
 		    ctx.setDebug(true);
 		    ctx.printDebug("arguments: ");
 		    int argCnt = 0;
@@ -5832,6 +5866,7 @@ public class Seesv implements SeesvCommands {
     }
 
     private void outputScript(List<String> args, TextReader ctx) throws Exception {
+
 	PrintWriter pw        = new PrintWriter(getOutputStream());
 	pw.println("#!/bin/sh");
 	pw.println("#the SEESV environment variable needs to be set to seesv.sh script from RAMADDA's SeeSV  release");

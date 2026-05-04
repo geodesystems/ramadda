@@ -164,6 +164,7 @@ public class TextReader implements Cloneable {
     }
 
     public void resetProcessors(boolean force) {
+	visitedRows =0;
 	seenStartPattern = false;
 	seenStartAfter = false;
         if (firstProcessor != null) {
