@@ -9,6 +9,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 
@@ -400,7 +401,7 @@ public abstract class TextFile extends PointFile {
 		    boolean      didDate = false;
 		    for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
 			String tok    = toks.get(tokIdx);
-			String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
+			String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx):"";
 			tok = tok.replaceAll("\"", "");
 			StringBuilder attrs = new StringBuilder();
 			//Assume it is name(unit)
@@ -463,7 +464,12 @@ public abstract class TextFile extends PointFile {
 				    } else if (id.equals("time")) {
 					format = "yyyy-MM-dd'T'HH:mm:ss";
 				    } else {
-					format = "yyyy-MM-dd";
+					MyDateFormat sdf = Utils.findDateFormat(sample);
+					if(sdf!=null) {
+					    format = sdf.getFormat();
+					} else {
+					    format = "yyyy-MM-dd";
+					}
 				    }
 				} else {
 				    if(format.trim().equals("iso8601")) format="yyyy-MM-dd'T'HH:mm:ss";
