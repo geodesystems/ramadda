@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr 30 05:38:42 EDT 2026";
+var build_date="RAMADDA build date: Tue May  5 03:38:30 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -44300,7 +44300,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				       this.getProperty("showMarkersToggleLabel","Show Markers")));
 	    }
 
-	    if(this.getShowWrapDateLineToggle(true)) {
+	    if(this.getShowWrapDateLineToggle()) {
 		let dflt = this.getWrapDateLine();
 		shows.push(HU.checkbox(this.domId(ID_SHOWDATELINETOGGLE),
 				       [ATTR_ID,this.domId(ID_SHOWDATELINETOGGLE)],dflt,
@@ -46536,7 +46536,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		} else {
-		    hadMissingColor = true;
+		    if(colorBy.isEnabled()) {
+			hadMissingColor = true;
+		    }
 		}
 		
 
@@ -59100,9 +59102,9 @@ MapGlyph.prototype = {
 		}
 		if(accumulatedFeet>0) {
 //		    totalFeet+=accumulatedFeet;
-		    addLabel(points[points.length-1].lat,points[points.length-1].lon,
+/*		    addLabel(points[points.length-1].lat,points[points.length-1].lon,
 			     {feet:totalFeet,
-			      miles:MapUtils.feetToMiles(totalFeet)});
+			      miles:MapUtils.feetToMiles(totalFeet)});*/
 		}
 		return;
 	    }
