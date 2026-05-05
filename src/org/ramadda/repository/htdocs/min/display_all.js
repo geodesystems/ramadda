@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  5 03:38:30 EDT 2026";
+var build_date="RAMADDA build date: Tue May  5 03:41:50 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -20132,9 +20132,10 @@ function RecordFilter(display,filterFieldId, properties) {
 					 this.getProperty('filterMultiple',false));
 	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",
 						   this.getProperty('filterShowPopup',multi))
+
 	    let showPopupSize = this.getProperty(this.getId() +".filterShowPopupSize",
 						 this.getProperty('filterShowPopupSize'));
-	    if(showPopupSize!==null && this.enums) {
+	    if(Utils.isDefined(showPopupSize) && this.enums) {
 		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
 	    }
 
