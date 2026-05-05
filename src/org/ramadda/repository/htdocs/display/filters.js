@@ -570,9 +570,10 @@ function RecordFilter(display,filterFieldId, properties) {
 					 this.getProperty('filterMultiple',false));
 	    let showPopupSelect = this.getProperty(this.getId() +".filterShowPopup",
 						   this.getProperty('filterShowPopup',multi))
+
 	    let showPopupSize = this.getProperty(this.getId() +".filterShowPopupSize",
 						 this.getProperty('filterShowPopupSize'));
-	    if(showPopupSize!==null && this.enums) {
+	    if(Utils.isDefined(showPopupSize) && this.enums) {
 		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
 	    }
 
