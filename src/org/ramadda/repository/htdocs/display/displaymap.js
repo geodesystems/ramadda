@@ -3069,7 +3069,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				       this.getProperty("showMarkersToggleLabel","Show Markers")));
 	    }
 
-	    if(this.getShowWrapDateLineToggle(true)) {
+	    if(this.getShowWrapDateLineToggle()) {
 		let dflt = this.getWrapDateLine();
 		shows.push(HU.checkbox(this.domId(ID_SHOWDATELINETOGGLE),
 				       [ATTR_ID,this.domId(ID_SHOWDATELINETOGGLE)],dflt,
@@ -5305,7 +5305,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		} else {
-		    hadMissingColor = true;
+		    if(colorBy.isEnabled()) {
+			hadMissingColor = true;
+		    }
 		}
 		
 
