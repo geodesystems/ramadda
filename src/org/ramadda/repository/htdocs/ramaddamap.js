@@ -1849,17 +1849,17 @@ RepositoryMap.prototype = {
     addWMSLayer: function(name, url, layer, isBaseLayer, nonSelectable,args) {
 	if(!args) args = {};
 	let attrs = {
-            wrapDateLine: this.getWrapDateLine(),
-	    fractionalZoom:true
-        };
-	if(args.opacity) attrs.opacity=args.opacity;
-        var layer = MapUtils.createLayerWMS(name, url, {
             layers: layer,
             format: "image/png",
             isBaseLayer: false,
             srs: "epse:4326",
-            transparent: true
-        }, attrs);
+            transparent: true,
+            wrapDateLine: this.getWrapDateLine(),
+	    resolutions:MapUtils.defaults.resolutions,
+	    fractionalZoom:true
+        };
+	if(args.opacity) attrs.opacity=args.opacity;
+        var layer = MapUtils.createLayerWMS(name, url,  attrs);
         if (isBaseLayer) {
             layer.isBaseLayer = true;
             layer.visibility = false;
@@ -1867,6 +1867,7 @@ RepositoryMap.prototype = {
             layer.isBaseLayer = false;
             layer.visibility = args.visible;
         }
+
 
         //If we have this here we get this error: 
         //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html

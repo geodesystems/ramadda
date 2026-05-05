@@ -284,7 +284,11 @@ var MapUtils =  {
 	    size,attrs);
     },
     createLayerWMS:function(name,url,attrs) {
-        return new OpenLayers.Layer.WMS(name, url, attrs);
+        let layer = new OpenLayers.Layer.WMS(name, url, attrs);
+	if(attrs && attrs.resolutions) {
+	    layer.resolutions = attrs.resolutions;
+	}
+	return layer;
     },
     createLayerXYZ:function(name,url,attrs) {
         return new OpenLayers.Layer.XYZ(name, url, attrs);
@@ -780,7 +784,8 @@ MapLayer.prototype = {
 	this.layer = this.createMapLayerInner(map);
 	if(this.layer) {
 	    this.layer.backgroundColor = this.opts.backgroundColor;
-	    this.layer.resolutions=this.opts.resolutions;
+	    if(this.opts.resolutions)
+		this.layer.resolutions=this.opts.resolutions;
 	}
 	return this.layer;
     },
@@ -1045,6 +1050,7 @@ new MapLayer('blue','','',{type:'simple'});
 new MapLayer('white','','',{type:'simple'});
 new MapLayer('black','','',{type:'simple'});
 new MapLayer('gray','','',{type:'simple'});
+
 
 
 
