@@ -2981,9 +2981,9 @@ MapGlyph.prototype = {
 		}
 		if(accumulatedFeet>0) {
 //		    totalFeet+=accumulatedFeet;
-		    addLabel(points[points.length-1].lat,points[points.length-1].lon,
+/*		    addLabel(points[points.length-1].lat,points[points.length-1].lon,
 			     {feet:totalFeet,
-			      miles:MapUtils.feetToMiles(totalFeet)});
+			      miles:MapUtils.feetToMiles(totalFeet)});*/
 		}
 		return;
 	    }
