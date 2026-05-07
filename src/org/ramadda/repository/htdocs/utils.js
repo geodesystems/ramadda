@@ -1848,9 +1848,22 @@ var Utils =  {
 	if(v===null) return false;
 	return (String(v)=='true');
     },
+    anyDefined: function(v) {
+        let ok = false;
+        Array.from(arguments).every(v=>{
+	    if(Utils.isDefined(v)) {
+                ok =true;
+		return false;
+            }
+            return true;
+        });
+        return ok;
+
+	
+    },
     isDefined: function(v) {
         let ok = true;
-        let a = Array.from(arguments).every(v=>{
+        Array.from(arguments).every(v=>{
             if(v===null || typeof v === 'undefined') {
                 ok =false;
             }
