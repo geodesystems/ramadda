@@ -304,6 +304,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
 	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
 
+	{p:'recordHighlightRadius',ex:'10',
+	 tt:'Radius to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',d:'red',tt:'Color to use to show other displays highlighted record'},
+	 {p:'recordHighlightFillColor',d:'red',tt:'Color to use to show other displays highlighted record'},	
+
 
 	{p:'seriesType',d:null,ex:'line|area|bars',canCache:true},
 	{p:'highlight.seriesType',d:null,ex:'line|area|bars',canCache:true},
@@ -1141,21 +1146,65 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
 	    this.charts = [];
         },
+	clearHighlightedElements:function() {
+	    if(this.highlightedElements) {
+		this.highlightedElements.forEach(clone=> {
+		    clone.remove();
+		});
+	    }
+	},
         setChartSelection: function(index) {
 	    if(!Array.isArray(index)) {
 		index=[index];
 	    }
+	    let selected={};
 	    let selection=index.map(i=>{
+		selected[i] = true;
 		return {
                     row: i,
 		    column:null
 		}
 	    });
 	    this.mapCharts(chart=>{
-                if (chart.setSelection) {
-		    chart.setSelection(selection);
-		}});
-	    
+                if (!chart.setSelection) return;
+		let _this=this;
+		chart.setSelection(selection);
+		let radius = this.getRecordHighlightRadius();
+		let stroke = this.getRecordHighlightStrokeColor();
+		let fill = this.getRecordHighlightFillColor();				
+		if(!Utils.anyDefined(radius,stroke,fill)) return;
+		//Total hack to find the svg circle that has a different radius
+		//really only works for scatter plot
+		this.clearHighlightedElements();
+
+		this.highlightedElements=[];
+		let circles = this.jq(ID_CHART).find('circle');
+		let min = 10000;
+		let haveSelected = false;
+		let radiuses = {};
+		circles.each(function(idx) {
+		    let r = parseInt($(this).attr('r'));
+		    radiuses[r] = true;
+		    if(r<min) {
+			min=r;
+		    }
+		});
+		if(Object.keys(radiuses).length<=1) return;
+		circles.each(function(idx) {
+		    let $circle = $(this);
+		    let r = parseInt($circle.attr('r'));
+		    if (r<=min || r==radius)  return;
+		    let $clone = $circle.clone();
+		    $clone.appendTo($circle.closest("svg"));
+		    _this.highlightedElements.push($clone);
+		    if(radius)
+ 			$clone.attr('r', radius);
+		    if(stroke)
+			$clone.attr('stroke', stroke);
+		    if(fill)
+			$clone.attr('fill', fill);		    
+		});
+	    });
         },
         tableHeaderMouseover: function(i, tooltip) {},
 	doAddTooltip: function() {
@@ -2621,6 +2670,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
+		_this.clearHighlightedElements();
                 _this.mapCharts(chart=>{
 		    //		    chart.setSelection([]);
 		    if (chart.getSelection) {
