@@ -11,6 +11,9 @@ into some types.xml file
  category="Core Data" 
 metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
 >
+
+<!-- Columns-->
+<column  name="showmap"  label="Show Map"  type="boolean"   showinhtml="false" default="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/project.png" />
@@ -22,16 +25,22 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-<wiki>
 +section title={{name}}
 :navtop
 {{description wikify=true}}
++skip
+{{tabletree  entries="this,grandchildren" }}
+-skip
 +row 
 +col-8
-:heading Sites
-{{map listentries="true" entry="child:type:type_map_folder" orderby=entryorder_up,name_up}}
++if property=showmap
+{{map listentries="true" message="" prefix=":nonavheading Project Locations" hideIfNoLocations=true 
+entries="this,children,grandchildren"
+orderby=entryorder_up,name_up}}
+-if
+
 :heading Contents
-{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false
+{{tabletree  message="No project contents"  simple="false"  #maxHeight="500px"  showSize=false
 orderby=entryorder_up ascending=true}} 
 -col
 +col-4
@@ -61,6 +70,7 @@ includeNonImages=false
 
 :heading Project Information
 {{information showDetails="true"  showTitle="false" details="true"}} 
+
 -section]]></wiki>
 </type>
 </types>
