@@ -181,6 +181,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "listEntries","true",
 					    "#entryIcon","",
 					    "#skipEntries","true",
+					    "#inheritGeoLocation","true",
 					    "#marker1",
 					    "latitude:40,longitude:-105,color:red,radius:4,text:Some text",
 					    "#entriesListInMap","true",
