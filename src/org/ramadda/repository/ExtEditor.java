@@ -102,9 +102,11 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_SETPARENTID = "extedit_setparentid";
     public static final String ARG_EXTEDIT_NEWTYPE = "extedit_newtype";
     public static final String ARG_EXTEDIT_NEWTYPE_PATTERN = "extedit_newtype_pattern";
+    public static final String ARG_EXTEDIT_NEWTYPE_TOPLEVEL = "extedit_newtype_toplevel";    
     public static final String ARG_EXTEDIT_OLDTYPE = "extedit_oldtype";
     public static final String ARG_EXTEDIT_RECURSE = "extedit_recurse";
     public static final String ARG_EXTEDIT_CHANGETYPE = "extedit_changetype";
+
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE = "extedit_changetype_recurse";
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM = "extedit_changetype_recurse_confirm";
     public static final String ARG_EXTEDIT_ADDALIAS = "extedit_addalias";
@@ -440,11 +442,12 @@ public class ExtEditor extends RepositoryManager {
             final String oldType = request.getString(ARG_EXTEDIT_OLDTYPE, "");
             final String pattern =
                 request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN, (String) null);
+	    final boolean topLevel = request.get(ARG_EXTEDIT_NEWTYPE_TOPLEVEL,false);
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(final Object actionId) throws Exception {
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
-							       true) {
+							       true,topLevel?1:-1) {
 				@Override
 				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
@@ -890,6 +893,12 @@ public class ExtEditor extends RepositoryManager {
 		HU.formEntry(buff[0], msgLabel("Regexp Pattern"),
 			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN,"")) + " "
 			     + msg("Only change type for entries that match this pattern"));
+
+		HU.formEntry(buff[0], "",
+			     HU.labeledCheckbox(ARG_EXTEDIT_NEWTYPE_TOPLEVEL, "true",
+						request.get(ARG_EXTEDIT_NEWTYPE_TOPLEVEL,false),
+						"Only top-level entries"));
+
 
 		HU.formEntry(buff[0], msgLabel("New type"),
 			     HU.select(ARG_EXTEDIT_NEWTYPE,
