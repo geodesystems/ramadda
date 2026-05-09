@@ -12,10 +12,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="O0tuyujLt18OFtKXmLnRgfsxQ7Qpl1JVvTu1ermJurc">
     <link rel="icon" href="https://cse.umn.edu/sites/cse.umn.edu/files/favicon.ico" type="image/vnd.microsoft.icon">
-    <title>Core Processing | CSD Facility • Continental Scientific Drilling | College of Science and Engineering</title>
+    <title>CSD - ${title}</title>
     <link rel="stylesheet" media="all" href="/csd/csd1.css">
     <link rel="stylesheet" media="all" href="/csd/csd2.css">
 <style type='text/css'>
+  footer {
+  color: #333333;
+  font-size: 1.333em;
+  font-weight: normal;
+  }
   .ramadda-navbar a {
       color:#fff;
   }
@@ -156,12 +161,19 @@ ${content}
             <li><a href="https://www.myu.umn.edu/">MyU <span></span></a></li>
 	  </ul>
 	</nav>
+<div style="text-align:center;">
+${footer}
+${footer.acknowledgement}
+</div>
+
+
 	<small>© <span id="cdate">2026</span> Regents of the <a href="https://system.umn.edu/">University of Minnesota</a>. All rights reserved. The University of Minnesota is an equal opportunity educator and employer. <a href="https://privacy.umn.edu/">Privacy Statement</a></small>
 	<small><a href="https://z.umn.edu/report-accessibility-issue">Report Web Accessibility Issues</a></small>
 	<!-- Optional last updated link-->
 	<!-- add time tag w datetime attr -->
       </div>
       <!-- End UMN Footer -->
+      ${bottom}
     </footer>
   </body>
 </html>

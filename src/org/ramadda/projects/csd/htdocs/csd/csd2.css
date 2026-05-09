@@ -1,5 +1,16 @@
 /* @license GPL-2.0-or-later https://www.drupal.org/licensing/faq */
 
+/* Note: this has been changed by jeff mcwhirter.
+This file was originally one of the hard to deal with css_AozTZ3mad4HV8nripCMmOq07mf9T6VP_vBn6aX0UMvw.css files
+I removed lots and lots of CSS that conflicted with RAMADDA's
+And I changed of the absolute path resource references
+/themes/custom/folwell/images/branding/wordmarks/umnhf-campus-tc-no-dtd-gold.svg
+to relative, e.g.:
+    background:transparent url(umnhf-campus-tc-no-dtd-gold.svg) 0 0 no-repeat;
+*/
+
+
+
 .cse-header .cse-header-button .fw-btn-small::after,.cse-header .cse-header-button .callout .fw-btn-small::after {
     color:#fff;
 }
