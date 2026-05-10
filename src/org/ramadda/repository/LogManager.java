@@ -48,6 +48,15 @@ public class LogManager extends RepositoryManager {
 
     public static final String ARG_MATCH="match";
 
+    public static final String ARG_IPADDRRESS="ipaddress";
+    public static final String ARG_EXCLUDEIPADDRRESS="excludeipaddress";    
+    public static final String ARG_USERTYPE = "usertype";
+    public static final String USER_ALL = "all";
+    public static final String USER_LOGGEDIN = "loggedin";
+    public static final String USER_ANONYMOUS = "anonymous";
+
+
+
     public final RequestUrl URL_LOG = new RequestUrl(this, "/admin/log");
     public final RequestUrl URL_REPORT = new RequestUrl(this, "/admin/log/report");    
 
@@ -176,9 +185,6 @@ public class LogManager extends RepositoryManager {
             referer = "-";
         }
         String message = LOG_TEMPLATE;
-
-	
-
         message = message.replace(LOG_MACRO_IP, ip);
         message = message.replace(LOG_MACRO_TIME, time);
         message = message.replace(LOG_MACRO_METHOD, method);
@@ -360,6 +366,14 @@ public class LogManager extends RepositoryManager {
         cols.add(entry.getName());
         cols.add(activity);
         cols.add(sdf.format(new Date()));
+	User user = request.getUser();
+	if(user==null) {
+	    cols.add(UserManager.USER_ANONYMOUS);
+	} else {
+	    cols.add(user.getId());
+	}
+
+
         String message = Utils.columnsToString(cols, ",", false);
         if (logger != null) {
             logger.info(message);
@@ -640,79 +654,119 @@ public class LogManager extends RepositoryManager {
 
     public Result adminLogReport(Request request) throws Exception {
         StringBuilder sb       = new StringBuilder();
-	getPageHandler().sectionOpen(request,sb,"Entry Activity Report",false);
-	sb.append(request.formPost(URL_REPORT));
 	StringBuilder form = new StringBuilder();
-
+	getPageHandler().sectionOpen(request,sb,"Entry Activity Report",false);
+	form.append(request.formPost(URL_REPORT));
 	form.append(HU.submit("Generate Access Report", "report"));
 	form.append(HU.formTable());
 	addDateRange(request,form,true);
 
+        File         logDir        = getLogDir();
+        File[]       logFiles = IOUtil.sortFilesOnAge(logDir.listFiles(),true);
+	int cnt =0;
+	List files = request.get("file",new ArrayList<String>());
+	StringBuilder filesSB = new StringBuilder();
+	filesSB.append("<div style='max-height:250px;overflow-y:auto;'>");
+	for(File f: logFiles) {
+	    String name = f.getName();
+	    if(!name.startsWith("entryactivity")) continue;
+	    cnt++;
+	    String label  =name;
+	    label = label.replaceAll("\\.log.*","");
+	    label = label.replaceAll("-\\d\\d$","");		
+	    label  =label.replace("entryactivity-","");
+	    if(label.equals("entryactivity")) label = "Latest entry activity";
+	    filesSB.append(HU.labeledCheckbox("file",f.getName(),files.contains(f.getName()),label));
+	    filesSB.append(HU.br());
+	}
+	filesSB.append("</div>");
+
 	List initItems = new ArrayList();
 	initItems.add(new TwoFacedObject("None",""));
-	HU.formEntry(form,"",HU.labeledCheckbox("csv","true",request.get("csv",false),"As CSV"));
+	HU.formEntry(form,"",HU.formHelp("Select one or more log files to generate a report"));
+	HU.formEntry(form, "",filesSB.toString());
+	HU.formEntry(form,"",HU.formHelp("Note: only in effect for logging after May 15 2026"));
+	List userTypes = new ArrayList();
+	userTypes.add(new TwoFacedObject("All users",USER_ALL));
+	userTypes.add(new TwoFacedObject("Logged in users",USER_LOGGEDIN));
+	userTypes.add(new TwoFacedObject("Anonymous users",USER_ANONYMOUS));		
+	HU.formEntry(form,"User Type:",
+		     HU.select(ARG_USERTYPE,userTypes,
+			       request.getString(ARG_USERTYPE,"all")));
+
+
+	HU.formEntry(form,"",HU.formHelp("Only match on these IP addresses"));
+	HU.formEntry(form,"Match IP:",HU.textArea(ARG_IPADDRRESS,
+						   request.getString(ARG_IPADDRRESS,""),
+						   2,40) +HU.space(1) +
+		     "e.g., IP prefix - 123.456.789");
+		     
+	HU.formEntry(form,"",HU.formHelp("Exclude these IP addresses"));
+	HU.formEntry(form,"Exclude IP:",HU.textArea(ARG_EXCLUDEIPADDRRESS,
+						   request.getString(ARG_EXCLUDEIPADDRRESS,""),
+						   2,40) +HU.space(1) +
+		     "e.g., IP prefix - 123.456.789");	
 
 	HU.formEntry(form,"",HU.labeledCheckbox("robots","true",request.get("robots",false),"Exclude Bots"));
 
-	HU.formEntry(form,msgLabel("Aggregate at Type"),
+	HU.formEntry(form,"",HU.formHelp("Aggregate at Type"));
+	HU.formEntry(form,"",
 		     getRepository().makeTypeSelect(initItems,
 						    request, ARG_TYPE, null,
 						    false,request.getString(ARG_TYPE,null),false,null,true));
 
-	form.append(HU.formTableClose());
-	form.append(HU.div("Select one or more log files to generate a report"));
-	boolean doReport = request.exists("report");
-        File         logDir        = getLogDir();
-        File[]       logFiles = IOUtil.sortFilesOnAge(logDir.listFiles(),true);
-	int cnt =0;
-	form.append("<div style='max-height:250px;overflow-y:auto;'>");
-	List files = request.get("file",new ArrayList<String>());
-	for(File f: logFiles) {
-	    if(!f.getName().startsWith("entryactivity")) continue;
-	    cnt++;
-	    String label  =f.getName();
-	    label = label.replaceAll("\\.log.*","");
-	    label = label.replaceAll("-\\d\\d$","");		
-	    label  =label.replace("entryactivity-","");
-	    form.append(HU.labeledCheckbox("file",f.getName(),files.contains(f.getName()),label));
-	    form.append(HU.br());
-	}
-	form.append("</div>");
-	if(doReport) {
-	    sb.append(HU.makeShowHideBlock("Form",form.toString(),false));
-	} else {
-	    sb.append(form);
-	}
-	if(cnt==0) {
-	    sb.append(HU.div("No entry activity files are available"));
-	}
-        sb.append(HU.formClose());
+	HU.formEntry(form,"",HU.formHelp("Format"));
+	HU.formEntry(form,"",HU.labeledCheckbox("csv","true",request.get("csv",false),"As CSV"));
 
+	boolean doReport = request.exists("report");
+	StringBuilder reportSB = new StringBuilder();
+	StringBuilder errorSB = new StringBuilder();
 	if(doReport) {
-	    StringBuilder csv =processAdminLogReport(request,sb);
+	    StringBuilder csv =processAdminLogReport(request,reportSB,errorSB);
 	    if(csv!=null) {
 		return new Result("", csv,"text/csv");
 	    }
 	}
+	
 
+
+	form.append(HU.formTableClose());
+        form.append(HU.formClose());
+	sb.append(errorSB);
+	sb.append(HU.makeShowHideBlock("Form",form.toString(),!doReport || reportSB.length()==0));
+	if(cnt==0) {
+	    sb.append(getPageHandler().showDialogWarning("No entry activity files are available"));
+	}
+	sb.append(reportSB);
 	getPageHandler().sectionClose(request,sb);
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
-    public StringBuilder processAdminLogReport(final Request request,StringBuilder sb) throws Exception {
+    public StringBuilder processAdminLogReport(final Request request,StringBuilder sb,StringBuilder errorSB) throws Exception {
 	List<IO.Path> files = new ArrayList<IO.Path>();
 	for(Object f:request.get("file",new ArrayList<String>())) {
 	    String      file = getLogDir() + "/" + f;
 	    files.add(new IO.Path(file));
 	}
 	if(files.size()==0) {
-	    sb.append("No files selected");
+	    errorSB.append(getPageHandler().showDialogWarning("No files selected"));
 	    return null;
 	}
 	String _type = request.getString(ARG_TYPE,null);
 	if(!stringDefined(_type)) _type=null;
 	boolean asCsv = request.get("csv",false);
 	final boolean bots = request.get("robots",false);
+	String tmp = request.getString(ARG_IPADDRRESS);
+	final List<String> matchIP = stringDefined(tmp)?Utils.split(tmp,"\n",true,true):null;
+	tmp = request.getString(ARG_EXCLUDEIPADDRRESS);
+	final List<String> excludeIP = stringDefined(tmp)?Utils.split(tmp,"\n",true,true):null;	
+
+	String userType = request.getString(ARG_USERTYPE,USER_ALL);
+	final boolean loggedInUsers = userType.equals(USER_ALL) || userType.equals(USER_LOGGEDIN);
+	final boolean anonymousUsers = userType.equals(USER_ALL) || userType.equals(USER_ANONYMOUS);	
+
+	final int[] notMatch = {0};
+	final int[] excluded = {0};	
 	final String type = _type;
 	final Date fromDate = request.getDate(ARG_FROMDATE,null);
 	final Date toDate = request.getDate(ARG_TODATE,null);	
@@ -729,14 +783,48 @@ public class LogManager extends RepositoryManager {
 	suffix.add(new Processor() {
 		public Row processRow(TextReader ctx, Row row) throws Exception {
 		    String ip=row.getString(0);
+		    if(matchIP!=null) {
+			boolean ok = false;
+			for(String m: matchIP) {
+			    if(ip.startsWith(m)) {
+				ok =true;
+				break;
+			    }
+			}
+			if(!ok) {
+			    notMatch[0]++;
+			    return row;
+			}
+		    }
+		    if(excludeIP!=null) {
+			for(String m: excludeIP) {
+			    if(ip.startsWith(m)) {
+				excluded[0]++;
+				return row;
+
+			    }
+			}
+		    }
+
 		    String client=row.getString(1);		    
 		    String id=row.getString(2);
 		    String name=row.getString(3);
 		    String action=row.getString(4);		    
 		    String date=row.getString(5);
+		    String user=row.indexOk(6)?row.getString(6):"";
+		    if(user.equals("") || user.equals(UserManager.USER_ANONYMOUS)) {
+			if(!anonymousUsers) {
+			    //			    System.err.println("skip anonymous user:" + user);
+			    return row;
+			}
+		    } else {
+			if(!loggedInUsers) {
+			    //			    System.err.println("skip logged in user:" + user);
+			    return row;
+			}
+		    }
 		    if(!action.equals("view") || id.equals("entryid")) return row;
 		    if(bots && request.checkForRobot(client)) {
-			System.err.println("bot:" + client);
 			return row;
 		    }
 		    Date dttm = sdf.parse(date);
@@ -791,9 +879,12 @@ public class LogManager extends RepositoryManager {
 	seesv.run(files);
 	long t2 = System.currentTimeMillis();
 
-	String header="# requests: " + cnt[0] +"  #entries:" + ecnt[0];
+	String header=HU.div("# Requests: " + cnt[0]);
+	header+=HU.div("# Entries:" + ecnt[0]);
+	if(notMatch[0]>0) header += HU.div(notMatch[0] +" did not match IP");	
+	if(excluded[0]>0) header += HU.div(excluded[0] +" were excluded");
 	if(dateRange[0]!=null) {
-	    header+=" date range: " + sdf2.format(dateRange[0]) +" - " +sdf2.format(dateRange[1]);
+	    header+=HU.div("Date range: " + sdf2.format(dateRange[0]) +" - " +sdf2.format(dateRange[1]));
 	}
 	sb.append(HU.div(header));
 
