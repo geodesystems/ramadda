@@ -1,0 +1,54 @@
+/** Some tweaks to get the display and layout as close as possible */
+:root {
+    --csd-color:rgb(144, 0, 33);
+}
+#umnhf-h-wm  {
+    width: min(40vw, 367px) !important;
+}
+
+footer {
+    color: #333333;
+    font-size: 1.333em;
+    font-weight: normal;
+}
+footer a {
+    color:var(--csd-color);
+}
+footer h2 {
+    margin-top:0px;
+}
+.footer-right {
+    text-align:right;
+}
+.social {
+    display: inline-block;
+}
+.footer-links-column {
+    display: inline-block;
+}  
+@media (min-width: 768px) {
+    .footer-container-outer .footer-left {
+	float: left;
+	flex: 1 1 40%;
+	max-width: 100%;
+    }
+}
+
+.ramadda-breadcrumbs {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.ramadda-navbar a {
+    color:#fff;
+}
+.header-container-inner {
+    background:#014555;
+}
+
+#umnhf-h-ql {
+    font-size:17.5px;
+}
+
+.cse-header .header-dept-info {
+    margin-bottom: 0px;
+}

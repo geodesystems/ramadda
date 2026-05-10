@@ -1216,8 +1216,8 @@ footer {
 }
 
 .cse-header .header-container-inner {
-    padding-top:2px;
-    padding-bottom:2px;
+    padding-top:0.333em;
+    padding-bottom:0.333em;
 }
 
 
