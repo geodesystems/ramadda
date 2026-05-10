@@ -205,6 +205,7 @@ function RepositoryMap(mapId, params) {
         this.onSelect = null;
     }
 
+
     if (params.initialLocation) {
 	if(!Array.isArray(params.initialLocation)) {
             this.defaultLocation =
@@ -484,7 +485,10 @@ RepositoryMap.prototype = {
     },
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
 	if(!force) {
-	    if(this.hadInitialZoom) return;	
+	    if(this.hadInitialZoom) {
+		//TODO: I really have to figure out the initial zoom and location
+		//		return;
+	    }
 	}
 
 	if(this.hadDefaultPosition) {
