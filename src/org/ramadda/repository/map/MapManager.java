@@ -1413,11 +1413,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      * @throws Exception  problem creating map
      */
     public MapInfo getMap(Request request, Entry mainEntry,
-                          List<Entry> entriesToUse, Appendable sb,
+                          List<MapEntry> entriesToUse, Appendable sb,
                           String width, String height, Hashtable mapProps,
                           Hashtable props)
 	throws Exception {
-
         boolean doCategories = Utils.getProperty(props, "doCategories",
 						 false);
         boolean details = request.get("mapdetails",
@@ -1578,6 +1577,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             map.getMapProps().put(skey, v);
         }
 
+
+
         if ((entriesToUse.size() == 1)
 	    && !entriesToUse.get(0).hasAreaDefined(request)) {
 	    String zoomLevel=  mapProps==null?"14":
@@ -1598,8 +1599,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             theProps.putAll(props);
         }
 
-
-
         addToMap(request, mainEntry, map, entriesToUse, theProps);
 
         Rectangle2D.Double bounds = null;
@@ -1616,7 +1615,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         }
         if (bounds == null) {
-            bounds = getEntryUtil().getBounds(request,entriesToUse);
+            bounds = getEntryUtil().getMapBounds(request,entriesToUse);
         }
 
 
@@ -1666,7 +1665,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    entryIcon = getPageHandler().getIconUrl(entryIcon);
 	}
 
-        for (Entry entry : entriesToUse) {
+        for (MapEntry mapEntry : entriesToUse) {
+	    Entry entry = mapEntry.getEntry();
 	    addMapMarkerMetadata(request, entry, markers);
             if ( !(entry.hasLocationDefined(request) || entry.hasAreaDefined(request))) {
                 continue;
@@ -1805,8 +1805,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
     public void addToMap(Request request, Entry mainEntry, MapInfo map,
-                         List<Entry> entriesToUse, Hashtable props)
+                         List<MapEntry> entriesToUse, Hashtable props)
 	throws Exception {
+        boolean inheritGeoLocation = Utils.getProperty(props, "inheritGeoLocation",false);	
         boolean detailed    = Misc.getProperty(props, PROP_DETAILED, false);
         boolean showBounds  = Utils.getProperty(props, "showBounds", true);
         boolean showMarkers = Utils.getProperty(props, "showMarkers", true);
@@ -1839,12 +1840,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    }
 	}
 
-	addMapMetadata(request,  map,"map_displaymap",mainEntry,entriesToUse.size()>0?entriesToUse.get(0):null);
+	addMapMetadata(request,  map,"map_displaymap",mainEntry,entriesToUse.size()>0?entriesToUse.get(0).getEntry():null);
         screenBigRects = false;
 	List<Metadata> metadataList =null;
         int cnt = 0;
         if (showLines) {
-            for (Entry entry : entriesToUse) {
+            for (MapEntry mapEntry : entriesToUse) {
+		Entry entry = mapEntry.getEntry();
                 metadataList =
                     getMetadataManager().findMetadata(request, entry,
 						      MetadataHandler.TYPE_SPATIAL_POLYGON, true);
@@ -1857,8 +1859,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        for (Entry entry : entriesToUse) {
-            if (entry.hasAreaDefined(request)) {
+        for (MapEntry mapEntry : entriesToUse) {
+            if (mapEntry.hasAreaDefined(request)) {
                 cnt++;
             }
         }
@@ -1880,7 +1882,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    showCircles = true;
 	    props.put("radius","4");
 	}
-        for (Entry entry : entriesToUse) {
+
+        for (MapEntry mapEntry : entriesToUse) {
+	    Entry entry = mapEntry.getEntry();
+	    Entry geoEntry = mapEntry.getGeolocatedEntry();
             boolean addMarker = true;
             metadataList =   getMetadataManager().getMetadata(request,entry);
             boolean rectOK = true;
@@ -1906,12 +1911,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
 
 
-            if (entry.hasAreaDefined(request) || entry.hasLocationDefined(request)) {
+            if (mapEntry.hasAreaDefined(request) || mapEntry.hasLocationDefined(request)) {
                 double[] location;
                 if (makeRectangles || !entry.hasAreaDefined(request)) {
-                    location = entry.getLocation(request);
+                    location = geoEntry.getLocation(request);
                 } else {
-                    location = entry.getCenter(request);
+                    location = geoEntry.getCenter(request);
                 }
 
                 if (showCameraDirection) {
@@ -1940,9 +1945,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
                 if (addMarker && showMarkers) {
                     if (showCircles || entry.getTypeHandler().getTypeProperty("map.circle", false)) {
-                        map.addCircle(request, entry,props);
+                        map.addCircle(request, mapEntry,props);
                     } else {
-                        map.addMarker(request, entry, entryIcon,useThumbnail);
+                        map.addMarker(request, mapEntry, entryIcon,useThumbnail);
                     }
                 }
             }
@@ -2158,5 +2163,65 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
     }
+
+    public static class MapEntry {
+	Entry entry;
+	Entry geoLocatedEntry;
+	public MapEntry(Entry entry,Entry geoLocatedEntry) {
+	    this.entry = entry;
+	    this.geoLocatedEntry = geoLocatedEntry;
+	}
+	public boolean hasAreaDefined(Request request) {
+	    if(geoLocatedEntry==null) return false;
+	    return true;
+	}
+	public boolean hasLocationDefined(Request request) {
+	    if(geoLocatedEntry==null) return false;
+	    return true;
+	}	
+	public Entry getEntry() {
+	    return entry;
+	}
+	public Entry getGeolocatedEntry() {
+	    return geoLocatedEntry;
+	}	
+    }
+
+    public static MapEntry makeMapEntry(Request request,Entry entry) throws Exception {
+	return makeMapEntry(request,false, entry);
+    }
+
+
+    public static MapEntry makeMapEntry(Request request,boolean inheritGeoLocation,Entry entry) throws Exception {
+	Entry geoLocatedEntry=entry;
+	if(!entry.isGeoreferenced(request)) {
+	    if(!inheritGeoLocation) return null;
+	    geoLocatedEntry = null;
+	    Entry parent = entry.getParentEntry();
+	    while(parent!=null) {
+		if (parent.hasLocationDefined(request) || parent.hasAreaDefined(request)) {
+		    geoLocatedEntry=parent;
+		    break;
+		}
+		parent = parent.getParentEntry();
+	    }
+	}
+	if(geoLocatedEntry==null) return null;
+	return new MapEntry(entry,geoLocatedEntry);
+    }
+
+    public static List<MapEntry> makeMapEntries(Request request,boolean inheritGeoLocation,List<Entry>entries)
+	throws Exception {
+	List<MapEntry> mapEntries = new ArrayList<MapEntry>();
+	if(entries==null) return mapEntries;
+	for(Entry entry: entries) {
+	    MapEntry mapEntry = makeMapEntry(request,inheritGeoLocation,entry);
+	    if(mapEntry==null) continue;
+	    mapEntries.add(mapEntry);
+	}
+	return mapEntries;
+    }
+
+
 }
 

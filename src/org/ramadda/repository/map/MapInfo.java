@@ -1257,8 +1257,8 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry, String...icon) throws Exception {
-        addMarker(request, entry, icon.length>0?icon[0]:null,false);
+    public void addMarker(Request request, MapManager.MapEntry mapEntry, String...icon) throws Exception {
+        addMarker(request, mapEntry, icon.length>0?icon[0]:null,false);
     }
 
     /**
@@ -1270,8 +1270,11 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry, String icon,boolean useThumbnail)
+    public void addMarker(Request request, MapManager.MapEntry mapEntry, String icon,boolean useThumbnail)
 	throws Exception {
+	Entry geoEntry = mapEntry.getGeolocatedEntry();
+	Entry entry = mapEntry.getEntry();
+
 	String newIcon = null;
 	boolean addImageLayer = Utils.getProperty(this.tagProps,"addImageLayer",false);
 	if(!Utils.stringDefined(icon)) 
@@ -1290,7 +1293,7 @@ public class MapInfo {
 	}
 	if(newIcon!=null) icon = newIcon;
 
-        double[] location = entry.getCenter(request);
+        double[] location = geoEntry.getCenter(request);
         String   id       = MapManager.mapEntryId(entry);
         String info = repository.getMapManager().makeInfoBubble(request,
 								entry, this,true);
@@ -1324,10 +1327,10 @@ public class MapInfo {
 				   HU.squote(""),
 				   HU.squote(icon),
 				   "true",
-				   ""+entry.getNorth(request),
-				   ""+entry.getWest(request),
-				   ""+entry.getSouth(request),
-				   ""+entry.getEast(request),
+				   ""+geoEntry.getNorth(request),
+				   ""+geoEntry.getWest(request),
+				   ""+geoEntry.getSouth(request),
+				   ""+geoEntry.getEast(request),
 				   "null","null",args));
 	} else {	    
 	    getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(Utils.makeID(id)) + ","
@@ -1356,8 +1359,10 @@ public class MapInfo {
 					     th.getTypeProperty(prop, dflt));
     }
 
-    public void addCircle(Request request, Entry entry,Hashtable props) throws Exception {
-        double[]    location = entry.getCenter(request);
+    public void addCircle(Request request, MapManager.MapEntry mapEntry,Hashtable props) throws Exception {
+	Entry geoEntry = mapEntry.getGeolocatedEntry();
+	Entry entry = mapEntry.getEntry();
+        double[]    location = geoEntry.getCenter(request);
         TypeHandler th       = entry.getTypeHandler();
         int         radius   = getValue(entry, "map.circle.radius", Utils.getProperty(props,"radius",8));
         int strokeWidth      = getValue(entry, "map.circle.stroke.width", Utils.getProperty(props,"strokeWidth",0));
