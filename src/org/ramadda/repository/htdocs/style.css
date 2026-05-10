@@ -4706,6 +4706,8 @@ label {
 .ramadda-breadcrumbs-menu-button {
     display:block;
     padding:3px;
+    padding-left: 0px;
+    padding-right: 0px;
     margin:0px;
     border-radius: 3px;
     border: 1px #ccc solid;
