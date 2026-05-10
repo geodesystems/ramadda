@@ -109,6 +109,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	    throw new IllegalStateException("No OpenAQ API key is defined");
 	}
 
+	id = id.trim();
 	String url = HU.url("https://api.openaq.org/v3/locations/" + id,"limit","100","page","1","offset","0");
 	IO.Path path  =new IO.Path(url);
 	path.setRequestArgs(new String[]{"X-API-Key",key});

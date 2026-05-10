@@ -6323,6 +6323,8 @@ public class WikiManager extends RepositoryManager
         boolean addMapLayerFromProperty = getProperty(wikiUtil, props, "addMapLayerFromProperty",
 						      false);	
         boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",false);
+        boolean inheritGeoLocation = getProperty(wikiUtil, props, "inheritGeoLocation",false);	
+
         List<Entry> children;
 	if(skipEntries) {
             children = new ArrayList<Entry>();
@@ -6338,18 +6340,16 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
         }
+	
+	List<MapManager.MapEntry> mapEntries = MapManager.makeMapEntries(request,inheritGeoLocation,children);
 
 	if(hideIfNoLocations) {
-	    boolean ok  = false;
-	    for(Entry child: children) {
-		ok = child.isGeoreferenced(request);
-		if(ok) break;
-	    }
-	    if(!ok) {
+	    if(mapEntries.size()==0) {
 		sb.append(getProperty(wikiUtil, props, ATTR_MESSAGE,""));
 		return  null;
 	    }
 	}
+
 
         if (children == null || children.size() == 0) {
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
@@ -6359,14 +6359,7 @@ public class WikiManager extends RepositoryManager
                 return null;
             }
         } else {
-            boolean anyHaveLatLon = false;
-            for (Entry child : children) {
-                if (child.hasLocationDefined(request) || child.hasAreaDefined(request)) {
-                    anyHaveLatLon = true;
-                    break;
-                }
-            }
-            if (!anyHaveLatLon) {
+            if (mapEntries.size()==0) {
 		if (hideIfNoLocations) {
 		    String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
 						 (String) null);
@@ -6448,7 +6441,8 @@ public class WikiManager extends RepositoryManager
 		mapProps.put(msets.get(i), JU.quote(msets.get(i + 1)));
 	    }
 	}
-	MapInfo map = getMapManager().getMap(newRequest, entry, children,
+
+	MapInfo map = getMapManager().getMap(newRequest, entry, mapEntries,
 					     sb, width, height, mapProps, props);
 
 	if (icon != null) {
@@ -7777,10 +7771,12 @@ public class WikiManager extends RepositoryManager
                 continue;
             }
 
+
 	    if((select = matches.call(entryId,ID_GRANDCHILDREN,PREFIX_GRANDCHILDREN))!=null ||
 	       (select = matches.call(entryId,ID_GREATGRANDCHILDREN,PREFIX_GREATGRANDCHILDREN))!=null) {
                 List<Entry> children = getEntryManager().getChildren(initRequest,
 								     select.getEntry());
+
                 List<Entry> grandChildren = new ArrayList<Entry>();
                 for (Entry child : children) {
                     //Include the children non folders

@@ -355,7 +355,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                                         null);
         if (stops != null) {
             for (Gtfs.StopTime stopTime : stops) {
-                map.addMarker(request, stopTime.entry);
+                map.addMarker(request, MapManager.makeMapEntry(request,stopTime.entry));
             }
         }
 

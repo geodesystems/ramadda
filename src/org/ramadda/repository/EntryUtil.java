@@ -8,6 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.IO;
@@ -968,6 +969,17 @@ public class EntryUtil extends RepositoryManager {
 
         return rect;
     }
+
+    public Rectangle2D.Double getMapBounds(Request request, List<MapManager.MapEntry> children) {
+        Rectangle2D.Double rect = null;
+
+        for (MapManager.MapEntry child : children) {
+	    rect = child.getEntry().getTypeHandler().getBounds(request,child.getEntry(),rect);
+        }
+
+        return rect;
+    }
+
 
     public static List<SelectionRectangle> getSelectionRectangles(
 								  SelectionRectangle bbox) {

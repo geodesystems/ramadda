@@ -109,7 +109,8 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 	    props.put("canMove","true");
 	}
 
-        MapInfo map = getMapManager().getMap(request, entry, entriesToUse,
+        MapInfo map = getMapManager().getMap(request, entry,
+					     MapManager.makeMapEntries(request, false, entriesToUse),
                                              sb, "700", "500", null, props);
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -166,7 +167,8 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 	    props.put("canMove","true");
 	}
 
-        MapInfo map = getMapManager().getMap(request, group, children, sb,
+        MapInfo map = getMapManager().getMap(request, group,
+					     MapManager.makeMapEntries(request, false, children), sb,
                                              "100%", "500", null, props);
 
         if (prefix == null) {

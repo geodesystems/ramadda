@@ -241,7 +241,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (stops != null) {
             for (Gtfs.StopTime stopTime : stops) {
-                map.addMarker(request, stopTime.entry);
+                map.addMarker(request, MapManager.makeMapEntry(request, stopTime.entry));
             }
         }
         List<Entry> vehicles = Gtfs.getVehiclesForRoute(request, agency,
