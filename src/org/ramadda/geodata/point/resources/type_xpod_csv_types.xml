@@ -1,0 +1,56 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<types>
+<type  name="type_xpod_csv" 
+ description="XPOD Air Quality CSV" 
+ handler="org.ramadda.data.services.PointTypeHandler" 
+ super="type_point" 
+ supercategory="Geoscience" 
+ category="Point Data" 
+pattern="(?i).*xpod.*csv"
+>
+<property name="record.properties">
+xls.sheet=5
+</property>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/lucide/wind.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-header,Date\,InputVoltage\,Fig2600\,Fig2602\,Fig3\,Fig3_Heat\,Fig4\,Fig4_Heat\,PID\,e2vO3\,CO_Aux\,CO_Main\,CO2\,temperature\,pressure\,humidity\,QSCO_Aux\,QSCO_Main\,NO_Aux\,NO_Main\,NO2_Aux\,NO2_Main\,O3_Aux\,O3_Main\,Wind_Spd\,Wind_Dir\,MQ\,PT_PM10ENV\,PT_PM25ENV\,PT_PM100ENV\,PT_PM03um\,PT_PM05um\,PT_PM10um\,PT_PM25um\,PT_PM50um\,PT_100um\,OPC_SampPer\,OPC_FlowRate\,OPC_PM10\,OPC_PM25\,OPC_PM10,-columns,0-35
+
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{property max=20000}}
+{{group linechart.showMenu=true}}
++row
++col-9
+{{display_download }}
+{{display_linechart fields=temperature,pressure}}
+{{display_linechart fields=o3_main}}
+{{display_linechart fields=no2_main}}
+-col
++col-3
++center
+{{resource  title="Download File"  showIcon="true"  simple="true"  }} 
+{{image inherited="true"  align=center message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}} 
+{{mapentry zoomLevel=12 inheritGeoLocation=true hideIfNoLocations=true }}
+-center
+-col
+-row
+:heading Correlation
+{{display_correlation }}
+
+:heading Information
+{{information  showBase="true"  showDetails="true" }} 
+-section]]></wiki>
+</type>
+</types>
