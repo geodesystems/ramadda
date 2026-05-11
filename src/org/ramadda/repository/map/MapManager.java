@@ -1443,7 +1443,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					      selectBounds);
 
 
-
 	if(Utils.getProperty(mapProps,"zoomLevel")!=null) {
 	    forceBounds = false;
 	}
@@ -1583,9 +1582,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    && !entriesToUse.get(0).hasAreaDefined(request)) {
 	    String zoomLevel=  mapProps==null?"14":
 		Utils.getProperty(mapProps, "zoomLevel", "14");		
-	    if(zoomLevel!=null && !zoomLevel.equals("default")) 
+	    if(zoomLevel!=null && !zoomLevel.equals("default"))  {
 		map.getMapProps().put("zoomLevel",zoomLevel);
-
+	    }
         }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
@@ -2185,6 +2184,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	public Entry getGeolocatedEntry() {
 	    return geoLocatedEntry;
 	}	
+	public String toString() {
+	    return entry.toString();
+	}
     }
 
     public static MapEntry makeMapEntry(Request request,Entry entry) throws Exception {
