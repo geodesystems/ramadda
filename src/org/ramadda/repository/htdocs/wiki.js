@@ -2877,8 +2877,8 @@ WikiEditor.prototype = {
 	    ],
 
 
-	    map: mapProperties,
-	    mapentry:mapProperties,
+	    map: Utils.mergeLists(mapProperties,this.groupAttributes),
+	    mapentry:Utils.mergeLists(mapProperties,this.groupAttributes),
 	    name:[
 		{label:'Name Properties'},
 		{p:'link',ex:'true',tt:'Link to the entry'}],
