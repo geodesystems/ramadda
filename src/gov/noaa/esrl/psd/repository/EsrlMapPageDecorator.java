@@ -8,6 +8,7 @@ package gov.noaa.esrl.psd.repository;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapLayer;
@@ -88,7 +89,10 @@ public class EsrlMapPageDecorator extends PageDecorator implements WikiConstants
             Hashtable argProps  = new Hashtable();
             argProps.put(ATTR_DETAILS,"true");
             argProps.put(ATTR_LISTENTRIES, Misc.getProperty(props, ATTR_LISTENTRIES, "true"));
-            MapInfo map = getMapManager().getMap(request, entry, children, sb,
+
+            MapInfo map = getMapManager().getMap(request, entry,
+						 MapManager.makeMapEntries(request, false, children),
+						 sb,
                                                  ""+width, ""+height, mapProps, argProps);
 
             sb.append(HtmlUtils.importJS(getHtdocsUrl("/noaa/psdstations.js")));
