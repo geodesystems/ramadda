@@ -1830,10 +1830,19 @@ public class EntryManager extends RepositoryManager {
 	    }
 	}
 
-	if(request.getString(ARG_ORDERBY,"").equals(ORDERBY_NUMBER)) {
-	    List<Entry> tmp = getEntryUtil().sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
-	    children.clear();
-	    children.addAll(tmp);
+	String orderBy = request.getString(ARG_ORDERBY,null);
+	
+	if(orderBy!=null) {
+	    if(orderBy.equals(ORDERBY_NUMBER)) {
+		List<Entry> tmp = getEntryUtil().sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
+		children.clear();
+		children.addAll(tmp);
+	    } else {
+		List<Entry> tmp = getEntryUtil().sortEntriesOn(children,orderBy,
+							       !request.get(ARG_ASCENDING,true));
+		children.clear();
+		children.addAll(tmp);
+	    }
 	}
 
     }
