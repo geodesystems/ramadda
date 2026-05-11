@@ -1005,6 +1005,9 @@ WikiEditor.prototype = {
 
     doTidy:function() {
 	if(!confirm('This will remove blank links and trim each line. Continue?')) return;
+	this.doTidyInner();
+    },
+    doTidyInner:function() {
 	let text = this.getValue();
 	let tmp = '';
 	let append=(line,notTrim)=>{
@@ -1054,6 +1057,10 @@ WikiEditor.prototype = {
 		return;
 	    }
 
+	    let _line = line.trim();
+	    if(_line.length==0) {
+		return;
+	    }
 	    if(line.length<lineLength) {
 		append(line);
 		return;
@@ -1062,7 +1069,7 @@ WikiEditor.prototype = {
 		append(line);
 		return;
 	    }
-	    line = line.trim();
+	    line = _line;
 	    while(line.length>lineLength) {
 		let prefix  = line.substring(0,lineLength);
 		let suffix = line.substring(lineLength);		
