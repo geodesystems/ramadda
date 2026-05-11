@@ -2654,8 +2654,12 @@ public class ExtEditor extends RepositoryManager {
 	    if(request.isAdmin() && request.exists(ARG_INSTALL)) {
 		getEntryManager().clearCache();
 		root.setAttribute("ignoreerrors","false");
+		Element typeNode  =XU.findChild(root,TAG_TYPE);
+		if(typeNode==null) typeNode = root;
 		try {
-		    TypeHandler typeHandler = getRepository().loadTypeHandler(root,true);
+		    //		    TypeHandler.debugInit = true;
+		    TypeHandler typeHandler = getRepository().loadTypeHandler(typeNode,true);
+		    //		    TypeHandler.debugInit = false;
 		} catch(Exception exc) {
 		    Throwable thr = LogUtil.getInnerException(exc);
 		    String msg = thr.toString();
@@ -2688,17 +2692,6 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	String theMessage ="";
-	/*
-	  if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
-	  try {
-	  getRepository().loadTypeHandler(root,true);
-	  theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be downloaded and installed in the RAMADDA plugins directory.");
-	  }  catch(Exception exc) {
-	  return  outputCreateType(request, entry,
-	  getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
-	  }		
-	  }*/
-
 	TypeHandler typeHandler =getRepository().getTypeHandler(id);
 	if(typeHandler!=null && columnCnt>0) {
 	    String tableName = typeHandler.getTableName();
