@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon May 11 03:18:10 MDT 2026";
+var build_date="RAMADDA build date: Mon May 11 05:10:40 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -27748,8 +27748,6 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 	    this.setContents(html);
 
-	    HU.initPageSearch('.display-fields-field','#'+ htmlId,
-			      'Search fields',false,{target:'#'+ this.domId(ID_SEARCH)}); 
 
 	    this.jq(ID_CLEARALL).button().click(()=>{
 		this.toggleAll(false);
@@ -28499,6 +28497,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{p:'menuLabel',ex:''},
 	{p:'showArrows',d:false,ex:true},
 	{p:'showButtons',d:false,ex:true},
+	{p:'showPageSearch',d:false,ex:true},	
 	{p:'maxPerRow',tt:'When showing buttons how many buttons per row',ex:6},	
 	{p:'buttonStyle',d:''},
 	{p:'buttonStyleOn',d:''},
@@ -28566,15 +28565,19 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    this.recordToIdx = {};
 	    let showButtons = this.getShowButtons();
 	    if(showButtons) {
+		let showPageSearch = this.records.length>5 && this.getShowPageSearch();
 		let buttonStyle = this.getButtonStyle();
-		let buttonStyleOn = this.getButtonStyleOn();		
+		let buttonStyleOn = this.getButtonStyleOn(HU.css(CSS_BACKGROUND,'var(--highlight-background)'));
 		let tabs = [];
 		this.idToRecord = {};
 		let count = 0;
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
 		let html = '';
+		if(showPageSearch) {
+		    html+=HU.div([ATTR_ID,this.domId('pagesearch')]);
+		}
 		if(maxPerRow>=0) {
-		    html=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)]);
+		    html+=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)]);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
@@ -28601,6 +28604,13 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    html+=HU.close(TAG_DIV);
 		}
 		this.setContents(html);
+		if(showPageSearch) {
+		    //'display-menu-button-item'
+		    HU.initPageSearch('.display-menu-button-item',
+				      '#'+this.domId(ID_DISPLAY_CONTENTS),
+				      'Search',false,{target:'#'+ this.domId('pagesearch')}); 
+
+		}
 		let items = this.getContents().find('.display-menu-button-item');
 		items.click(function() {
 		    if($(this).hasClass('display-menu-button-item-on')) return;
