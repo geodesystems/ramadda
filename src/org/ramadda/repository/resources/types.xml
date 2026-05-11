@@ -443,15 +443,29 @@ showHeading=true
   <property name="form.datatype.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.altitude.show" value="false"/>
+  <column name="show_menu" type="boolean"
+	  label="Show Menu"  showinhtml="false" default="true"/>
   <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
 {{group}}
++if property=show_menu
 +center
 {{display_menu shareSelectedEntry=true  doEntries=true showArrows=true  }} 
-{{display_entrytitle entry="child:"   acceptShareSelectedEntry=true  }}
+{{display_entrytitle message="" entry="child:"   acceptShareSelectedEntry=true  }}
 -center
-{{display_entrywiki  acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}}
+{{display_entrywiki  message="" acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}}
+-if
++if property=!show_menu
++row
++col-2
+{{display_menu shareSelectedEntry=true   maxPerRow=1 showButtons=true doEntries=true showArrows=true  }}  
+-col
++col-10
+{{display_entrywiki  message="" acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}} 
+-col
+-row
+-if
 
 ----
 
