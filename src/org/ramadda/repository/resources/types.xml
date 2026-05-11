@@ -448,6 +448,7 @@ showHeading=true
   <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
+{{property orderby=date_up}}
 {{group}}
 +if property=show_menu
 +center
@@ -459,7 +460,7 @@ showHeading=true
 +if property=!show_menu
 +row
 +col-2
-{{display_menu shareSelectedEntry=true   maxPerRow=1 showButtons=true doEntries=true showArrows=true  }}  
+{{display_menu shareSelectedEntry=true   maxPerRow=1 showButtons=true showPageSearch=true doEntries=true showArrows=true  }}  
 -col
 +col-10
 {{display_entrywiki  message="" acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}} 
