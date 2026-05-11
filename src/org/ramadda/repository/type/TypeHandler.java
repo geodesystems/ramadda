@@ -112,6 +112,7 @@ public class TypeHandler extends RepositoryManager {
     }    
 
     public static boolean debug = false;
+    public static boolean debugInit = false;
 
 
     public static final int COPY_LIMIT = 5000;
@@ -450,6 +451,10 @@ public class TypeHandler extends RepositoryManager {
 					    ? ""
 					    : type));
 
+	    if(debugInit) {
+		System.err.println("initTypeHandler:" + getType());
+		System.err.println(XU.toString(node));
+	    }
 	    /*
 	      If there is supposed to be a parent type and we can't  find it then mark this TypeHandler
 	      as in need of initialization. The Repository checks all of the type handlers after the initial load
