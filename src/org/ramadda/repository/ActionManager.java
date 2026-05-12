@@ -138,7 +138,7 @@ public class ActionManager extends RepositoryManager {
                 String msg = JobManager.getManager().getDialogLabel2(id);
                 if ( !json) {
 		    sb.append("<meta http-equiv=\"refresh\" content=\"1\">");
-		    HU.div(messageSB, "In progess");
+		    HU.div(messageSB, "In progress");
                     buttonsSB.append(HU.button(HU.href(request.makeUrl(URL_STATUS,
 								       ARG_ACTION_ID, id), "Reload")));
                 }
