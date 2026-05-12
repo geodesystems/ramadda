@@ -6549,10 +6549,11 @@ public class WikiManager extends RepositoryManager
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
 	    if(showIcon) {
 		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE +
-		    (showType?"("+entry.getTypeHandler().getDescription()+")" +HU.SPACE:"") +
+		    (showType?"(<span class=ramadda-fulltree-type>"+entry.getTypeHandler().getDescription()+"</span>)" +HU.SPACE:"") +
 		    label;
 	    }
-            String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label, HU.attrs("class","ramadda-tree-link"));
+            String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label,
+					  HU.attrs("class","ramadda-tree-link"));
 	    if(addPrefix) link = prefix +" " + link;
 	    if(asMenu) link = HU.div(link);
 

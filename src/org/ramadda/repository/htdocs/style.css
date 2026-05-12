@@ -1652,6 +1652,10 @@ a.ramadda-menubar-button:hover {
 
 
 
+.ramadda-fulltree-type  {
+    font-weight:bold;
+}
+
 .ramadda-expandable-header {
     padding:4px;
     padding-right:8px;    
