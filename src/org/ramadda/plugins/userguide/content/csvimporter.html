@@ -99,6 +99,36 @@ by adding a "description:&lt;....&gt;", e.g.:
 
 
 
+:heading Dates
+The entry date or date range can be specified in a number of ways.
+The input file can have a single "date" column:
+e.g.:
+<table class=ex>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>date</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>2020</td></tr>
+<tr><td>type_archive_collection</td><td>collection 2</td><td>1991</td></tr>
+</table>
+
+The input file can have  "from date" and "to date" columns.
+e.g.:
+<table class=ex>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>from date</td><td class=hdr>to date</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>2020</td><td>2025</td></tr>
+<tr><td>type_archive_collection</td><td>collection 2</td><td>1991</td><td>2001</td></tr>
+</table>
+
+
+The file can also have a "dates" or "date range" column. This can either be a single date
+or two dates separated by a "-", e.g.:
+
+<table class=ex>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>dates</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>2020</td></tr>
+<tr><td>type_archive_collection</td><td>collection 2</td><td>1991-2001</td></tr>
+</table>
+
+
+
 :heading Entry Columns
 Entries may have fixed columns.
 For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.
