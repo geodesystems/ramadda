@@ -204,10 +204,27 @@ public class CsvImporter extends ImportHandler {
 			    makeError("No type defined",headerRow);
 			}
 			String attrs = "";
+			String entryName  =null;
+
 			if(row.indexOk(nameIdx)) {
-			    String name = row.getString(nameIdx,"");
-			    attrs += XU.attrs("name",name, "type",currentType);
+			    entryName = row.getString(nameIdx,"");
+			    attrs += XU.attrs("name",entryName, "type",currentType);
 			}
+			//if name is blank then check if all of the columns are blank
+			if(!stringDefined(entryName)) {
+			    boolean ok = false;
+			    for(int i=0;i<row.size();i++) {
+				String s = row.getString(i);
+				if(stringDefined(s)) {
+				    ok = true;
+				    break;
+				}
+			    }
+			    if(!ok) {
+				return row;
+			    }
+			}
+
 			entryCnt++;
 			String id = null;
 			if(idIdx>=0 && row.indexOk(idIdx)) {
