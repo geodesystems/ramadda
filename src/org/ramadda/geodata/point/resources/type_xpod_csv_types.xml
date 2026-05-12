@@ -47,7 +47,10 @@ csvcommands1=-header,Date\,InputVoltage\,Fig2600\,Fig2602\,Fig3\,Fig3_Heat\,Fig4
 -col
 -row
 :heading Correlation
-{{display_correlation }}
++div style="max-width:90vw;overflow-x:auto;"
+{{display_correlation fields="inputvoltage,fig2600,fig2602,fig3,fig3_heat,fig4,fig4_heat,pid,e2vo3,co_aux,co_main,co2,temperature,pressure,humidity,qsco_aux,qsco_main,no_aux,no_main,no2_aux,no2_main,o3_aux,o3_main,wind_spd,wind_dir,mq"
+}}
+-div
 
 :heading Information
 {{information  showBase="true"  showDetails="true" }} 
