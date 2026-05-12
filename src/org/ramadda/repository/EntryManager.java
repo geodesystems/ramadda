@@ -5766,6 +5766,11 @@ public class EntryManager extends RepositoryManager {
         }
 
         StringBuilder        sb          = new StringBuilder();
+	addImportForm(request, group,sb);
+        return makeEntryEditResult(request, group, "Entry Import", sb);
+    }
+
+    private void addImportForm(Request request, Entry group, StringBuilder sb,String...msgs) throws Exception{
         StringBuilder        extraForm   = new StringBuilder();
         List<TwoFacedObject> importTypes = new ArrayList<TwoFacedObject>();
         for (ImportHandler importHandler :
@@ -5773,6 +5778,7 @@ public class EntryManager extends RepositoryManager {
             importHandler.addImportTypes(importTypes, extraForm);
         }
         getPageHandler().entrySectionOpen(request, group, sb,  msg("Import Entries"));
+	for(String msg: msgs) sb.append(msg);
 
         request.uploadFormWithAuthToken(sb,
                                         getRepository().URL_ENTRY_XMLCREATE,
@@ -5815,14 +5821,11 @@ public class EntryManager extends RepositoryManager {
         sb.append(HU.formEntry("", HU.submit("Submit")));
 
         sb.append(extraForm);
-
         HU.formTableClose(sb);
         sb.append(HU.formClose());
-
         getPageHandler().entrySectionClose(request, group, sb);
-
-        return makeEntryEditResult(request, group, "Entry Import", sb);
     }
+
 
     private Result processEntryXmlCreateInner(Request request)
 	throws Exception {
@@ -5923,6 +5926,7 @@ public class EntryManager extends RepositoryManager {
 
     public  Result processEntryImportInner(Request request, Entry parent, String file, InputStream fis) throws Exception {	
 
+	String error = null;
 	StringBuilder msg = new StringBuilder();
         String entriesXml = null;
         Hashtable<String, File> origFileToStorage = new Hashtable<String,
@@ -5975,13 +5979,18 @@ public class EntryManager extends RepositoryManager {
                 //Check the import handlers
                 for (ImportHandler importHandler :
 			 getRepository().getImportHandlers()) {
-                    InputStream newStream = importHandler.getStream(request,
-								    parent, file, entriesStream,msg);
-                    if ((newStream != null) && (newStream != entriesStream)) {
-                        entriesStream = newStream;
-
-                        break;
-                    }
+		    try {
+			InputStream newStream = importHandler.getStream(request,
+									parent, file, entriesStream,msg);
+			if ((newStream != null) && (newStream != entriesStream)) {
+			    entriesStream = newStream;
+			    break;
+			}
+		    } catch(Exception exc) {
+			Throwable     inner     = LogUtil.getInnerException(exc);			
+			error = getPageHandler().showDialogError("An error occurred:<br>" +inner.getMessage());
+			break;
+		    }			
                 }
                 entriesXml = IOUtil.readInputStream(entriesStream);
             }
@@ -5989,13 +5998,20 @@ public class EntryManager extends RepositoryManager {
             IO.close(fis);
         }
 
+	if(error!=null) {
+	    StringBuilder        sb          = new StringBuilder();
+	    addImportForm(request, parent,sb,error);
+	    return makeEntryEditResult(request, parent, "Entry Import", sb);
+	}
+
+
+
         Element root = MyXmlUtil.getRoot(entriesXml);
         for (ImportHandler importHandler :
 		 getRepository().getImportHandlers()) {
             Element newRoot = importHandler.getDOM(request, root);
             if ((newRoot != null) && (newRoot != root)) {
                 root = newRoot;
-
                 break;
             }
         }
