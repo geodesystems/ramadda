@@ -151,6 +151,7 @@ public interface SeesvCommands {
     public static final String CMD_ADD="-add";
     public static final String CMD_INSERT="-insert";
     public static final String CMD_CONCAT="-concat";
+    public static final String CMD_TACK="-tack";    
     public static final String CMD_CONCATROWS="-concatrows";
     public static final String CMD_COMBINE="-combine";
     public static final String CMD_COMBINEINPLACE="-combineinplace";

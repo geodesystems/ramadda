@@ -3960,6 +3960,45 @@ public abstract class Converter extends Processor {
         }
     }
 
+    public static class Tacker extends Converter {
+	private String column;
+	private int index=-1;
+        private String firstDelimiter;
+	private String valuesDelimiter;
+        public Tacker(String column, 
+		      String delimiter1,
+		      String delimiter2,
+			   List<String> indices) {
+            super(indices);
+            this.firstDelimiter = delimiter1.replaceAll("_nl_","\n");
+            this.valuesDelimiter = delimiter2.replaceAll("_nl_","\n");	    
+            this.column     = column;
+        }
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		index = getIndex(ctx,column);
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+	    if(!row.indexOk(index)) return row;
+	    List<String> values = new ArrayList<String>();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(row.getString(index));
+	    sb.append(firstDelimiter);
+	    int cnt =0;
+	    for(int i:indices) {
+		if(cnt++>0) sb.append(valuesDelimiter);
+		if(row.indexOk(i)) {
+		    sb.append(row.getString(i));
+		}
+	    }
+	    row.set(index,sb.toString());
+            return row;
+        }
+    }
+    
     public static class RowConcat extends Converter {
         private int num;
 	private List<Row> rows = new ArrayList<Row>();

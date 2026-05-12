@@ -2028,6 +2028,11 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("delimiter"),
 		new Arg(ARG_NAME,"Name of new column")),
+	new Cmd(CMD_TACK, "Tack on other column values to the specified column",
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
+		new Arg("first delimiter"),
+		new Arg("values delimiter"),		
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_CONCATROWS, "Concatenate multiple rows into a single row",
                 new Arg("num_rows", "Number of rows", ATTR_TYPE, TYPE_NUMBER)), 
         new Cmd(CMD_COMBINE,
@@ -4832,6 +4837,16 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ColumnNewer(getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
+
+	defineFunction(CMD_TACK, 4,(ctx,args,i) -> {
+		ctx.addProcessor(
+				 new Converter.Tacker(
+						      args.get(++i),
+						      args.get(++i),
+						      args.get(++i),						      
+						      getCols(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction(CMD_CONCATROWS, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowConcat(parseInt(args.get(++i))));
