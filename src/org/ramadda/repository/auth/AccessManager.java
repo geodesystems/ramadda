@@ -1464,7 +1464,7 @@ public class AccessManager extends RepositoryManager {
         sb.append(HU.cols(HU.bold(msg("Action"))));
         sb.append("<td colspan=2>");
         sb.append(HU.bold("Role")
-                  + ". One per line. Prefix with \"!\" for negation");
+                  + ". One per line. Prefix with \"!\" for negation.<br>Don't forget to add a <i>none</i> at the end of the list if you want to ban other users from accessing the entries");
         sb.append("</td>");
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
