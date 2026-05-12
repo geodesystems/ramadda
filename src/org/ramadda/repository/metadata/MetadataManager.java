@@ -543,7 +543,7 @@ public class MetadataManager extends RepositoryManager {
                 ids.add(md.getAttr2());
             } else if (type.equals("metadata_author")) {
                 List<String> ctor = new ArrayList<String>();
-		ctor.add(JU.quote("@type"));
+		ctor.add("@type");
 		ctor.add(JU.quote(md.getAttr1()));
                 top.add("author");
                 top.add(JU.map(ctor));
