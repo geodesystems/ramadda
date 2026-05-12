@@ -148,6 +148,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
       super="type_archive_base"
       handler="org.ramadda.plugins.archive.ArchiveTypeHandler">
   <property name="icon" value="/archive/collection.png"/>
+  <property name="form.time.show" value="false"/>    
   <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_description,archive_category"/>
   <wikimacro name="archive_finding_aid" label="Archive Finding Aid" isoutput="true" icon="/icons/magnifier.png">
 <![CDATA[+section 
