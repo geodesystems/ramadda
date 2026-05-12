@@ -49,6 +49,12 @@ public class CsvImporter extends ImportHandler {
     }
 
 
+    private void makeError(String msg,Row headerRow) {
+	String errorMsg = msg+ (headerRow!=null?"<br>header:"+headerRow:"");
+	throw new IllegalArgumentException(errorMsg);
+    }
+
+
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -62,7 +68,8 @@ public class CsvImporter extends ImportHandler {
 	if(!isMine && !Utils.stringDefined(request.getString(ARG_IMPORT_TYPE, ""))) {
 	    String fileName = request.getString(ARG_FILE,"");
 	    isMine = fileName.toLowerCase().endsWith(".csv") ||
-		fileName.toLowerCase().endsWith(".xlsx");
+		fileName.toLowerCase().endsWith(".xlsx") ||
+		fileName.toLowerCase().endsWith(".xls");
 	    
 	}
 	return isMine;
@@ -76,6 +83,7 @@ public class CsvImporter extends ImportHandler {
         if (!isMine(request)) {
             return null;
         }
+
 
 	Request lookupRequest = new Request(getRepository(),request.getUser());
 	HashSet seenMessage=new HashSet();
@@ -94,6 +102,7 @@ public class CsvImporter extends ImportHandler {
 		int parentIdx=-1;
 		int dateIdx=-1;
 		int dateIdxFrom=-1;
+		int dateRangeIdx=-1;
 		int dateIdxTo=-1;		
 		int latitudeIdx=-1;
 		int longitudeIdx=-1;		
@@ -125,7 +134,7 @@ public class CsvImporter extends ImportHandler {
 				_field = _field.replace("_semicolon_",":");
 				_field = _field.replace("_dot_",".");				
 
-				if(_field.equals("name")) {
+				if(_field.equals("name") || _field.equals("entry_name")) {
 				    nameIdx=i;
 				} else if(_field.equals("type")) {
 				    typeIdx=i;
@@ -135,6 +144,8 @@ public class CsvImporter extends ImportHandler {
 				    dateIdxFrom = i;
 				} else if(_field.matches("^(to_?date|end_?date)$")) {
 				    dateIdxTo = i;
+				} else if(_field.matches("^(dates|date_?range)$")) {
+				    dateRangeIdx = i;				    
 				} else if(_field.equals("latitude")) {
 				    latitudeIdx = i;
 				} else if(_field.equals("longitude")) {
@@ -167,8 +178,8 @@ public class CsvImporter extends ImportHandler {
 
 				}
 			    }
-			    if(typeIdx==-1) throw new IllegalArgumentException("input data must have a \"type\" column");
-			    if(nameIdx==-1) throw new IllegalArgumentException("input data must have a \"name\" column");			    
+			    if(typeIdx==-1) makeError("Input data must have a \"type\" column",headerRow);
+			    if(nameIdx==-1) makeError("Input data must have a \"name\" column",headerRow);
 			    return row;
 			}	
 
@@ -190,7 +201,7 @@ public class CsvImporter extends ImportHandler {
 			    currentTypeHandler = getRepository().getTypeHandler(currentType);
 			}
 			if(!Utils.stringDefined(currentType)) {
-			    throw new IllegalArgumentException("No type defined");
+			    makeError("No type defined",headerRow);
 			}
 			String attrs = "";
 			if(row.indexOk(nameIdx)) {
@@ -214,27 +225,56 @@ public class CsvImporter extends ImportHandler {
 				attrs+=XU.attrs("todate",v);
 			    }
 			}
+			if(dateRangeIdx>=0) {
+			    String v = row.getString(dateRangeIdx,"");
+			    if(stringDefined(v)) {
+				List<String> toks = StringUtil.splitUpTo(v,"-",2);
+				String from=null;
+				String to = null;
+				if(toks.size()==1) {
+				    from = toks.get(0);
+				    to = toks.get(0);
+				} else if(toks.size()==2) {
+				    from = toks.get(0);
+				    to = toks.get(1);
+				}
+				if(stringDefined(from)) {
+				    attrs+=XU.attrs("fromdate",from);
+				}
+				if(stringDefined(to)) {
+				    attrs+=XU.attrs("todate",to);
+				}				
+			    }
+			}
 			if(dateIdxFrom>=0) {
 			    String v = row.getString(dateIdxFrom,"");
-			    attrs+=XU.attrs("fromdate",v);
+			    if(stringDefined(v)) {
+				attrs+=XU.attrs("fromdate",v);
+			    }
 			}
 			if(dateIdxTo>=0) {
 			    String v = row.getString(dateIdxTo,"");
-			    attrs+=XU.attrs("todate",v);
+			    if(stringDefined(v)) {
+				attrs+=XU.attrs("todate",v);
+			    }
 			}						
 
 
 			if(latitudeIdx>=0) {
 			    String v = row.getString(latitudeIdx,"");
-			    attrs+=XU.attrs("latitude",v);
+			    if(stringDefined(v)) {
+				attrs+=XU.attrs("latitude",v);
+			    }
 			}
 			if(longitudeIdx>=0) {
 			    String v = row.getString(longitudeIdx,"");
-			    attrs+=XU.attrs("longitude",v);
+			    if(stringDefined(v)) {
+				attrs+=XU.attrs("longitude",v);
+			    }
 			}			
 
 
-			
+		
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
 			    if(Utils.stringDefined(parent)) {
