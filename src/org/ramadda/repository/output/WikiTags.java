@@ -117,8 +117,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 				new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree",ATTR_TT,
 					    "Show a tree of entries",
 					    "depth","5",
-					    "addprefix","false",
+					    "addPrefix","false",
+
 					    "showroot","true",
+					    "#showType","true",
+
 					    "#showSize","true",
 					    "#showTrue","true",					    
 					    "#labelWidth","40",
