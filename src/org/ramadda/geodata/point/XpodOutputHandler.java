@@ -3,7 +3,7 @@ Copyright (c) 2008-2026 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.geodata.geo;
+package org.ramadda.geodata.point;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.Utils;
