@@ -400,6 +400,15 @@ public class Seesv implements SeesvCommands {
 	return tmpFile;
     }
 
+    public static File applySeesv(File dir, String[]commands) throws Exception {
+	File   tmpFile = new File(IOUtil.joinDir(dir, "file" + (uniqueCnt++)+".csv"));
+	FileOutputStream fos = new FileOutputStream(tmpFile);
+	Seesv seesv = new Seesv(commands,
+				new BufferedOutputStream(fos), null);
+	seesv.run(null);
+	return tmpFile;
+    }
+
     public static String makeCsvCommands(List<String> args) {
 	StringBuilder argsBuff = null;
 	int                doArgsCnt     = 0;
