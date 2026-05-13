@@ -92,6 +92,7 @@ public class CsvImporter extends ImportHandler {
         final StringBuffer sb = new StringBuffer("<entries>\n");
 	Processor myProcessor = new Processor() {
 		boolean hadBadType = false;
+		boolean inheritParentId =false;
 		int entryCnt=0;
 		Row headerRow;
 		int typeIdx=-1;
@@ -111,6 +112,7 @@ public class CsvImporter extends ImportHandler {
 		Hashtable<String,Integer> newIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
 		String currentType="";
+		String currentParent = "";
 		TypeHandler  currentTypeHandler=null;
 		int cnt=0;
 		@Override
@@ -121,6 +123,11 @@ public class CsvImporter extends ImportHandler {
 			if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
 			if(row.size()==0) return row;
 			cnt++;
+			if(row.getString(0).startsWith("config:" )) {
+			    String config =row.getString(0).substring ("config:".length()).trim();
+			    if(config.toLowerCase().equals("inheritparentid")) inheritParentId=true;
+			    return row;
+			}
 			//get the indices
 			if(headerRow==null) {
 			    headerRow = row;
@@ -294,8 +301,13 @@ public class CsvImporter extends ImportHandler {
 		
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
-			    if(Utils.stringDefined(parent)) {
+			    if(inheritParentId && !Utils.stringDefined(parent)) {
+				parent = currentParent;
+			    }
+
+			    if(Utils.stringDefined(parent) && !parent.trim().equals("none")) {
 				attrs+=XU.attrs("parent",parent);
+				currentParent = parent;
 			    }
 			}			
 
