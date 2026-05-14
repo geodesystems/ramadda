@@ -137,10 +137,8 @@ if {$::output==""} {
     set ::output [open results.html w]
 }
 
-set ::maxCount 10
-runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4 
-finish
-exit
+
+
 
 
 if {$groupID!=""} {
