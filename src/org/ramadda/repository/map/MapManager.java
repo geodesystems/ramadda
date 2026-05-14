@@ -1364,12 +1364,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 									 WikiConstants.WIKI_TAG_EARTH));
             info.append(wiki);
         } else {
-            HU.sectionHeader(
-				    info,
-				    getPageHandler().getEntryHref(
-								  request, entry,
-								  HU.getIconImage("fas fa-link","style","font-size:10pt;")+" "+
-								  entry.getTypeHandler().getEntryName(entry)));
+            HU.sectionHeader(info,
+			     getPageHandler().getEntryHref(
+							   request, entry,
+							   HU.getIconImage("fas fa-link","style","font-size:10pt;")+" "+
+							   entry.getTypeHandler().getEntryName(entry)));
 
 	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
 	    if(stringDefined(snippet)) {
@@ -1708,7 +1707,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    String entryUrl = getEntryManager().getEntryURL(request, entry);
 	    String link = HU.href(entryUrl,HU.getIconImage("fas fa-link",
 							   "title","View entry",
-							   "style","font-size:8pt;margin-right:2px;"));
+							   "style","font-size:8pt;margin-right:4px;"));
 
 	    line.append(link);
 	    String name = getEntryDisplayName(entry);
