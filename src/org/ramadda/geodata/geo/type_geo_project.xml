@@ -35,7 +35,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 +col-8
 +if property=showmap
 {{map listentries="true" message="" prefix=":nonavheading Project Locations" hideIfNoLocations=true 
-entries="this,children" 
+entries="children,childrenof:type:type_map_folder" 
 orderby=entryorder_up,name_up
  showBounds=false 
 }}
