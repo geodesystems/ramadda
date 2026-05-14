@@ -5,47 +5,25 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.util;
 
-
 import org.ramadda.util.MyXmlUtil;
 
 import java.util.HashSet;
 import java.util.List;
 
-
 /**
  * Holds information for generating associations in entries.xml
  */
 public class AssociationInfo {
-
-    /** _more_ */
     private String fromId;
-
-    /** _more_ */
     private String toId;
-
-    /** _more_ */
     private String type;
 
-    /**
-     * ctor
-     *
-     * @param fromId _more_
-     * @param toId _more_
-     * @param type _more_
-     */
     public AssociationInfo(String fromId, String toId, String type) {
         this.fromId = fromId;
         this.toId   = toId;
         this.type   = type;
     }
 
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     * @param links _more_
-     * @param entryMap _more_
-     */
     public static void appendAssociations(StringBuffer xml,
                                           List<AssociationInfo> links,
                                           HashSet<String> entryMap) {
@@ -71,60 +49,28 @@ public class AssociationInfo {
 
     }
 
-
-    /**
-     *  Set the FromId property.
-     *
-     *  @param value The new value for FromId
-     */
     public void setFromId(String value) {
         fromId = value;
     }
 
-    /**
-     *  Get the FromId property.
-     *
-     *  @return The FromId
-     */
     public String getFromId() {
         return fromId;
     }
 
-    /**
-     *  Set the ToId property.
-     *
-     *  @param value The new value for ToId
-     */
     public void setToId(String value) {
         toId = value;
     }
 
-    /**
-     *  Get the ToId property.
-     *
-     *  @return The ToId
-     */
     public String getToId() {
         return toId;
     }
 
-    /**
-     *  Set the Type property.
-     *
-     *  @param value The new value for Type
-     */
     public void setType(String value) {
         type = value;
     }
 
-    /**
-     *  Get the Type property.
-     *
-     *  @return The Type
-     */
     public String getType() {
         return type;
     }
-
 
 }
