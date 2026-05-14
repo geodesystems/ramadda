@@ -28,7 +28,7 @@ proc runGroup {group id {groupLimit 10000}} {
     }
     set suffix ""
     write "</div>\n"
-    write "<h2>$group</h2><div class=ramadda-grid>"
+    write "<h2>$group</h2><div xclass=ramadda-grid>"
     if {[regexp http $group]} {
 	set url $group
     } else {
@@ -55,7 +55,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	foreach     {name id} [split $line2 ,] break
 	set url "$::root/entry/show?entryid=$id$suffix#fortest"
 	writeUrl $url $name
-	capture $_group $name $url 0 $::sleep
+	capture $_group $id $name $url 0 $::sleep
 	incr ::total 1
 	if {$::total>=$::maxCount} {
 	    break;
@@ -137,6 +137,12 @@ if {$::output==""} {
     set ::output [open results.html w]
 }
 
+set ::maxCount 10
+runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4 
+finish
+exit
+
+
 if {$groupID!=""} {
     runGroup "Group" $groupID
 } elseif {[llength $urls]} {
@@ -150,7 +156,7 @@ if {$groupID!=""} {
 	    exec sleep $pause
 	    continue
 	}
-	capture ""  "Page $cnt" $url 0 $::sleep
+	capture ""  "" "Page $cnt" $url 0 $::sleep
 	incr ::total 1
 	if {$::total>=$::maxCount} {
 	    break;

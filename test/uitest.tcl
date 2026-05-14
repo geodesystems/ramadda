@@ -84,13 +84,16 @@ proc convertUrl {url} {
 
 
 proc logout {} {
-    capture "" "" https://ramadda.org/repository/user/logout 0 0 1
+    capture logout "" "" https://ramadda.org/repository/user/logout 0 0 1
 }
 
-proc capture {_group name url {doDisplays 1} {sleep 3} {justCall 0} } {
+proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
+    if {$id==""} {
+	set id $name
+    }
     set url [convertUrl $url]
     initTest
-    regsub -all {[/ .'\",]+} $name _ clean
+    regsub -all {[/ .'\",]+} $id _ clean
     regsub -all {\?} $clean _ clean    
     set image image_${clean}.png
     set thumb thumb_${_group}_${clean}.png
@@ -184,6 +187,9 @@ proc capture {_group name url {doDisplays 1} {sleep 3} {justCall 0} } {
 	    if {[regexp {Cannot load.*.map} $line]} {
 		continue;
 	    }
+	    if {[regexp {minimal-ui} $line]} {
+		continue;
+	    }	    
 
 	    if {[regexp {Source Map loading errors} $line]} {
 		continue;
@@ -284,7 +290,13 @@ proc capture {_group name url {doDisplays 1} {sleep 3} {justCall 0} } {
 	    set extraError "<pre style='font-size:10pt;padding:4px;margin:10px;margin-top:2px;margin-bottom:10px;max-height:200px;overflow-y:auto;border:1px solid #ccc;'>$lines</pre>"
 	}
     }
-    set line  "<a name='$name'></a><div class='test-gridbox ' style='width:400px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
+    set line  "<a name='$name'></a><div class='test-gridbox ' style='width:600px;display:inline-block;'>\n"
+    set img "<img width=100% border=0 src=${thumb}>\n"
+    if {[file exists [file join orig $thumb]]} {
+	set img "<table width=100%><tr valign=top><td width=50%>$img</td><td width=50%><img width=100% border=0 src=orig/${thumb}></td></tr></table>";
+    }
+    append line "<a href=\"$url\">#$::pageCnt $name\n$img</a>$extra"
+    append line "</div>";
     write $line
     if {$inError} {
 	set line  "<a href=\"$url\">#$::pageCnt $name </a>$extraError";

@@ -76,10 +76,10 @@ var ramaddaLanguagesEnabled = true;</script>
       flex-grow:1;
       vertical-align:top;
       max-width:400px;
-      margin:5px;
-      padding:10px;
-      padding-bottom:6px;
-      padding-top:6px;
+      margin:0px;
+      padding:0px;
+      padding-bottom:2px;
+      padding-top:0px;
       text-align:left;
   }
   .test-bigger, .test-smaller {
@@ -103,11 +103,11 @@ var ramaddaLanguagesEnabled = true;</script>
 	  $('.test-gridbox').css('max-width',HU.px(w));	  
       }
       $('.test-bigger').click(()=>{
-	  w+=100;
+	  w+=200;
 	  apply();
       });
       $('.test-smaller').click(()=>{
-	  w-=100;
+	  w-=200;
 	  if(w<100) w=100;
 	  apply();
       });      
