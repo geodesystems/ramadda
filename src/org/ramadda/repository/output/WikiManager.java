@@ -1415,7 +1415,9 @@ public class WikiManager extends RepositoryManager
 	String msg = getMessage(wikiUtil, props,  null);
 	if(msg!=null) return msg;
 	if(dfltMsg==null) dfltMsg = "Could not process tag:" + tag;
-	return HU.span(dfltMsg,HU.cssClass("ramadda-wiki-error"));
+	String js ="";
+	//	String js =	    HtmlUtils.script(HU.call("console.log",HU.quote(dfltMsg)));
+	return HU.span(dfltMsg,HU.cssClass("ramadda-wiki-error"))+js;
     }
 
     /**
@@ -1462,9 +1464,8 @@ public class WikiManager extends RepositoryManager
 
         if (result == null) {
 	    System.err.println("WikiManager:error processing tag:" + tag +" entry:" + entry);
-	    System.err.println("WIKI ERROR:" + Utils.getStack(20));
-            result = getMessage(wikiUtil, props,
-                                HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
+	    String js =	    HtmlUtils.script(HU.call("console.log",HU.quote("Could not process tag:" + tag)));
+	    result = getMessage(wikiUtil, props,  HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")))+js;
         }
         String destDiv = getProperty(wikiUtil, props, "destDiv", null);
         if (destDiv != null) {
