@@ -2104,7 +2104,7 @@ public class ExtEditor extends RepositoryManager {
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	String callout = "";
 	if(request.isAdmin()) {
-	    callout+="+note\nIf you are installing the entry type it is best to do this on a development server as the database schema is changed, etc.";
+	    callout+="+note\nIf you are installing the entry type it is best to do this on a development server as the database schema is changed, etc. ";
 	}
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
 	callout+="\n-note";
