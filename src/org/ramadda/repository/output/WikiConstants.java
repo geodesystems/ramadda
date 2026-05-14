@@ -146,7 +146,8 @@ public interface WikiConstants {
     public static final String PREFIX_ANCESTORS= ID_ANCESTORS+":";
     public static final String PREFIX_ASCENDING = "ascending:";
     public static final String PREFIX_CHILD= ID_CHILD+":";
-    public static final String PREFIX_CHILDREN= ID_CHILDREN+":";    
+    public static final String PREFIX_CHILDREN= ID_CHILDREN+":";
+    public static final String PREFIX_CHILDRENOF= "childrenof:";
     public static final String PREFIX_DESCENDENT = "descendent:";
     public static final String PREFIX_GRANDCHILD= ID_GRANDCHILD+":";
     public static final String PREFIX_GRANDCHILDREN= ID_GRANDCHILDREN+":";    

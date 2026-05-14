@@ -96,7 +96,6 @@ public class WikiManager extends RepositoryManager
 
     private static boolean debugGetEntries = false;
     private boolean debug1 = false;
-
     private boolean debugSelect= false;
 
     
@@ -711,6 +710,7 @@ public class WikiManager extends RepositoryManager
 	Request myRequest = request.cloneMe();
 
 	List<String> toks = Utils.split(string,";",true,true);
+
 	if(debugSelect) System.err.println("getSelectFromString: string:" + string+" toks:" +toks);
 	String orderBy = getProperty(wikiUtil,props,ARG_ORDERBY,
 				     getProperty(wikiUtil,props,"sortby",null));
@@ -733,8 +733,9 @@ public class WikiManager extends RepositoryManager
 		if(pair.size()>0) {
 		    //check for the case of, e.g. children:entryid
 		    String id = pair.get(0);
-		    if(debugSelect) System.err.println("\tId:" + id);
+		    if(true || debugSelect) System.err.println("\tId:" + id);
 		    Entry newEntry = findEntryFromId(request,  entry, wikiUtil, props, id);
+		    
 		    if(newEntry!=null) {
 			if(debugSelect) System.err.println("\tgot entry:" + newEntry);
 			entry=newEntry;
@@ -7689,18 +7690,23 @@ public class WikiManager extends RepositoryManager
                 List<Entry> children = getEntryManager().getChildren(select.getRequest(),
 								     select.getEntry(),select);
 
-		/*
-		  if(children.toString().indexOf("Test3")>=0) {
-		  System.err.println("BEFORE WIKI:");
-		  for(Entry child: children)	System.err.println("\t"+ child.getName());
-		  }
-		*/
-		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter))
 
-		    ;
-
+		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter));
                 continue;
             }
+
+	    if((select = matches.call(entryId,null,PREFIX_CHILDRENOF))!=null) { 
+                List<Entry> children = getEntryManager().getChildren(select.getRequest(),
+								     select.getEntry(),select);
+		List<Entry> childrenOf = new ArrayList<Entry>();
+		for(Entry child: children) {
+		    List<Entry> tmp  =getEntryManager().getChildren(initRequest,child,(SelectInfo)null);
+		    childrenOf.addAll(tmp);
+		}
+		entries.addAll(getEntryManager().applyFilter(select.getRequest(), childrenOf,filter));
+                continue;
+            }
+
 
 	    if((select = matches.call(entryId,ID_GRANDPARENT,PREFIX_GRANDPARENT))!=null) { 
                 Entry parent = getEntryManager().getEntry(initRequest,
