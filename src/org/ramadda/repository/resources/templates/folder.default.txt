@@ -6,6 +6,7 @@ ${innercontent}
 +col-md-3
 :vspace 1em
 <div class="entry-page-info">
+{{image useThumbnail="true"  width="100%" }}
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 {{tools includeicon="true" title="Links" message=""}}
 :vspace 0.5em
