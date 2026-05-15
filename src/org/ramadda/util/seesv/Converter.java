@@ -2316,13 +2316,16 @@ public abstract class Converter extends Processor {
                     }
                     Object o   = row.get(i);
                     String var = hdr.get(i).toString();
-                    var = Utils.makeID(var.toLowerCase());
+		    //                    var = Utils.makeID(makeID(var.toLowerCase()));
+                    var = makeID(var);
                     if (ctx.getDebug()) {
                         ctx.printDebug("\tvar:" + var);
                     }
+		    //		    System.err.println("var:_" +var+":");
                     put("_" + var, o);
                     put("_" + var + "_idx", i);
                     put("_col" + i, o);
+
                     if (vars != null) {
                         vars.add("_" + var);
                     }

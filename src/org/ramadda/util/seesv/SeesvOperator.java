@@ -136,14 +136,18 @@ public class SeesvOperator {
         return null;
     }
 
-    public String makeID(Object obj) {
+    public static void main(String[]args) throws Exception {
+	System.err.println(makeID("Twomile Canyon/GooseCreek"));
+    }
+
+
+    public static String makeID(Object obj) {
         String colId = Utils.makeLabel(obj.toString());
         colId = colId.toLowerCase().replaceAll(" ",
 					       "_").replaceAll("[^a-z0-9]", "_");
         colId = colId.replaceAll("_+_", "_");
         colId = colId.replaceAll("#", "");	
         colId = colId.replaceAll("_$", "");
-
         return colId;
     }
 
