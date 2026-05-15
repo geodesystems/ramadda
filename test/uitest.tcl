@@ -44,7 +44,7 @@ proc getTop { {title {Test Results}} {inError 0}} {
     if {$inError} {
 	append top "<h2>Errors</h2>"
     }
-    append top "<center><div id=header></div></center>\n<div id=header2></div><div xclass=test-grid>\n"
+    append top "<div id=header></div><div id=header1></div><div id=buttonheader></div>\n<div id=header2></div><div xclass=test-grid>\n"
     set top
 }
 
@@ -88,6 +88,7 @@ proc logout {} {
 }
 
 proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
+    regsub -all {'} $name ""  name
     if {$id==""} {
 	set id $name
     }
@@ -183,52 +184,42 @@ proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
 	    set line [string trim $line]
 	    if {$line==""} continue;
 	    if {$debug} {puts stderr "Line: $line"}
-
-	    if {[regexp {Cannot load.*.map} $line]} {
-		continue;
-	    }
-	    if {[regexp {minimal-ui} $line]} {
-		continue;
-	    }	    
-
-	    if {[regexp {Source Map loading errors} $line]} {
-		continue;
-	    }
-
-
-	    if {[regexp {The input spec uses.*} $line]} {
-		continue;
-	    }		
-
-	    if {[regexp {Failed to load resource: the server responded with a status of 404.*} $line]} {
-		continue;
-	    }
-
-	    if {[regexp {Failed to load resource.*.map} $line]} {
-		continue;
-	    }
-	    
 	    set skip 0
-	    foreach pattern { {GeolocationPositionError}  {A server with the specified hostname could not be found} {Unrecognized Content-Security-Policy directive} {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
-		if {[regexp ".*$pattern.*" $line]} {
+	    regsub -all {\n} $line { } _line
+	    foreach pattern {
+		{widgetapi}
+		{postMessage}		
+		{bad hash param}
+		{GeolocationPositionError}
+		{A server with the specified hostname could not be found}
+		{Unrecognized Content-Security-Policy directive}
+		{googleads\.g\.doubleclick\.net}
+		{Robert_Downey}
+		{\[Warning\] *THREE.*}
+		{Version}
+		{\[Warning\]}
+		{\[Log\]}
+		{minimal-ui}
+		{Cannot load.*.map}
+		{Unable to post message}
+		{The input spec uses.*}
+		{.*\.map due to access control checks.*}
+		{Source Map loading errors}
+		{Failed to load resource.*.map} 
+		{.*Not allowed to request resource.*}
+		{\.js\.map.*}
+		{Failed to load resource: the server responded with a status of 404.*}
+		{Tom_Hanks}
+		{The input spec uses Vega} } {
+		if {[regexp ".*$pattern.*" $_line]} {
+		    #puts "*skip: $line"
 		    set skip 1
+		    break;
 		}
 	    }
-	    if $skip continue;
-
-	    if {[regexp {\[Warning\] *THREE.*} $line]} {
+	    if {$skip} {
 		continue;
 	    }
-	    if {[regexp {.*\.map due to access control checks.*} $line]} {
-		continue;
-	    }
-
-	    if {[regexp {.*Not allowed to request resource.*} $line]} {
-		continue;
-	    }
-	    if {[regexp {\.js\.map.*} $line]} {
-		continue;
-	    }	    
 
 	    if {[regexp {Failed to load resource} $line]} {
 		if {![regexp {Insurrection} $line]} {
@@ -277,15 +268,35 @@ proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
 	    if {[regexp -nocase {\[Log\].*load point data} $line]} {
 		continue;
 	    }	    
+
 	    regsub -all {<} $line {\&lt;} line
 	    regsub -all {>} $line {\&gt;} line	
 	    append lines "$line\n"
 	}
+
+	regsub -all {\n} $lines { } _lines
+	set skip 0
+	foreach pattern {
+	    {forEach.*parseHash}
+	    {variable:.*ViewPreview}
+	    {aframe\.min\.js.*forEach}	    
+	} {
+	    if {[regexp ".*$pattern.*" $_lines]} {
+		#puts "*skip: $line"
+		set skip 1
+		break;
+	    }
+	}
+	if {$skip} {
+	    set lines ""
+	}
+
+
 	if {$lines!=""} {
 	    set inError 1
 	    if {$debug} {puts stderr "Lines:$lines"}
 	    incr ::consoleCnt
-	    set extra "<br><pre style='font-size:10pt;padding:2px;margin:0px;max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</pre>"
+	    set extra "<br><pre class=test-error name='$name' url='$url' style=''>$lines</pre>"
 	    append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
 	    set extraError "<pre style='font-size:10pt;padding:4px;margin:10px;margin-top:2px;margin-bottom:10px;max-height:200px;overflow-y:auto;border:1px solid #ccc;'>$lines</pre>"
 	}
@@ -293,7 +304,7 @@ proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
     set line  "<a name='$name'></a><div class='test-gridbox ' style='width:600px;display:inline-block;'>\n"
     set img "<img width=100% border=0 src=${thumb}>\n"
     if {[file exists [file join orig $thumb]]} {
-	set img "<table width=100%><tr valign=top><td width=50%>$img</td><td width=50%><img width=100% border=0 src=orig/${thumb}></td></tr></table>";
+	set img "<table width=100%><tr valign=top><td width=50%>$img</td><td class=original-image width=50%><img width=100% border=0 src=orig/${thumb}></td></tr></table>";
     }
     append line "<a href=\"$url\">#$::pageCnt $name\n$img</a>$extra"
     append line "</div>";

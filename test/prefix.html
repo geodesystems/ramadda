@@ -26,6 +26,9 @@ var ramaddaLanguagesEnabled = true;</script>
 	type="text/JavaScript"></script>
 <link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/style.css"
       rel="stylesheet"  type="text/css" />
+<link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/fontawesome-7.2.0/css/all.min.css"  rel="stylesheet"  type="text/css" />
+
+
 <link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/jquery/jquery-ui-1.13.2/jquery-ui.min.css"
       rel="stylesheet"  type="text/css" />
 <link href="file:///Users/jeffmc/source/ramadda/src/org/ramadda/repository/htdocs/lib/fancybox-3/jquery.fancybox.min.css"
@@ -36,6 +39,7 @@ var ramaddaLanguagesEnabled = true;</script>
 <script  type='text/JavaScript'>
   var errorCnt = 0;
   function doError(name,prefix) {
+      return
       name = "<a href='#" + name+"'>" + name +"</a>";
       var ele = document.getElementById('header');
       if (errorCnt>0) 
@@ -59,6 +63,13 @@ var ramaddaLanguagesEnabled = true;</script>
       margin: 0px;
       margin-left:10px;
       padding: 0px;
+  }
+  .test-error, .test-error2 {
+      font-size:10pt;padding:2px;margin:0px;max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;
+  }
+  .test-error2 {
+      margin-left:20px;
+      max-width: 600px;
   }
   html, body {
       height: 100%;
@@ -92,6 +103,30 @@ var ramaddaLanguagesEnabled = true;</script>
 
 <script  type="text/JavaScript"  >
   $(document).ready(function() {
+      let origShown  = true;
+      let errors = '';
+      let cnt =0;
+      $('.test-error').each(function() {
+	  let name = $(this).attr('name');
+	  let c = HU.href('#'+ name,name);
+	  let url = $(this).attr('url');
+	  c+='  - ' +HU.href(url,'link');
+	  c+=HU.tag(TAG_PRE,[ATTR_CLASS,'test-error2'], $(this).html());
+	  errors+=c;
+	  cnt++;
+      });
+      if(cnt) {
+	  jqid('header1').append(HU.toggleBlock(cnt+' errors',errors,true));
+	  $('.entry-toggleblock-label').button();
+      }
+      jqid('buttonheader').append('Toggle Original').button().click(()=>{
+	  origShown=!origShown;
+	  if(origShown) {
+	      $('.original-image').show();
+	  } else {
+	      $('.original-image').hide();
+	  }
+      });
       let html = SPACE;
       let w = 400;
       html+=HU.span([ATTR_CLASS,HU.classes('test-smaller',CLASS_CLICKABLE)],'Smaller');

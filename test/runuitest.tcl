@@ -39,7 +39,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false$suffix"
     }
     set url [convertUrl $url]
-    puts stderr "group: $group $url"
+    puts stderr "group: $group"
     writeUrl $url CSV
     set rc [catch {
 	set csv [getUrl $url]
@@ -166,6 +166,10 @@ if {$groupID!=""} {
 #    logout
     runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
+
+#finish
+#exit
+
     runGroup "Asset Reports" 78ac9b04-b151-49d1-b682-e99d155ef70a
     runGroup "Asset Examples" 34be31f1-357c-46bf-b8a2-7c43dbfac1cc
     runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
