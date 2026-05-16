@@ -243,7 +243,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	    />
     <column name="item_count" type="int"  label="Item Count"
 	    cansearch="false" />
-    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"
+	    cansearch="true"/>
 </type>
 
 <type name="type_archive_item"  description="Archive Item" super="type_archive_root"
@@ -334,7 +335,8 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
     <column name="publication_place" type="list"  size="2000" label="Place of Publication"
 	    columns="30"/>    
-    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"
+	    cansearch="true"/>
 
     <column name="condition" type="enumerationplus"  label="Condition"
 	    values="New,Like New,Good,Fair,Poor,Damaged"
