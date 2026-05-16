@@ -64,6 +64,10 @@ var ramaddaLanguagesEnabled = true;</script>
       margin-left:10px;
       padding: 0px;
   }
+.ui-tooltip {
+    box-shadow: none !important;
+    border-radius: 0;
+}
   .test-error, .test-error2 {
       font-size:10pt;padding:2px;margin:0px;max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;
   }
@@ -102,10 +106,46 @@ var ramaddaLanguagesEnabled = true;</script>
 
 
 <script  type="text/JavaScript"  >
+
+
+
   $(document).ready(function() {
-      let origShown  = true;
-      let errors = '';
-      let cnt =0;
+
+      let changeSize = () =>{
+	  $('.test-gridbox').css('width',HU.px(w));
+	  $('.test-gridbox').css('max-width',HU.px(w));	  
+      }
+  
+  let bigger = () =>{
+	  w+=200;
+  changeSize();
+  }
+  let smaller = () =>{
+	  w-=200;
+	  if(w<100) w=100;
+  changeSize();
+  }
+
+
+
+  let origShown  = true;
+  let errors = '';
+  let cnt =0;
+  $('.test-image').tooltip({
+  position: {
+  my: "left top",
+  at: "right top"
+  },
+  content: function () {
+  let orig=$(this).attr('origimage');
+  if(orig) {
+  let width= $(this).width();
+  return HU.b('Original')+HU.br() +
+  HU.image(orig,[ATTR_WIDTH,width]);
+  }
+  return '';
+  }
+  });
       $('.test-error').each(function() {
 	  let name = $(this).attr('name');
 	  let c = HU.href('#'+ name,name);
@@ -119,32 +159,42 @@ var ramaddaLanguagesEnabled = true;</script>
 	  jqid('header1').append(HU.toggleBlock(cnt+' errors',errors,true));
 	  $('.entry-toggleblock-label').button();
       }
-      jqid('buttonheader').append('Toggle Original').button().click(()=>{
+      let toggleOrig = ()=>{
 	  origShown=!origShown;
 	  if(origShown) {
 	      $('.original-image').show();
 	  } else {
 	      $('.original-image').hide();
 	  }
-      });
+      };
+
+  $(document).on('keydown', function(event) {
+    if (event.key === 'b') {
+    bigger();
+    }
+    if (event.key === 's') {
+    smaller();
+    }    
+
+
+      if (event.key === 'o' || event.key === 'O') {
+	  toggleOrig();
+      }
+  });
+
+      jqid('buttonheader').append('Toggle Original').button().click(toggleOrig);
       let html = SPACE;
       let w = 400;
       html+=HU.span([ATTR_CLASS,HU.classes('test-smaller',CLASS_CLICKABLE)],'Smaller');
       html+=SPACE1;
       html+=HU.span([ATTR_CLASS,HU.classes('test-bigger',CLASS_CLICKABLE)],'Bigger');
       $('h2').append(html);
-      let apply = () =>{
-	  $('.test-gridbox').css('width',HU.px(w));
-	  $('.test-gridbox').css('max-width',HU.px(w));	  
-      }
       $('.test-bigger').click(()=>{
-	  w+=200;
-	  apply();
+    bigger();
       });
       $('.test-smaller').click(()=>{
-	  w-=200;
-	  if(w<100) w=100;
-	  apply();
+    smaller();
+
       });      
   });
 </script>

@@ -302,9 +302,15 @@ proc capture {_group id name url {doDisplays 1} {sleep 3} {justCall 0} } {
 	}
     }
     set line  "<a name='$name'></a><div class='test-gridbox ' style='width:600px;display:inline-block;'>\n"
-    set img "<img width=100% border=0 src=${thumb}>\n"
+    set origUrl ""
+    set imageExtra ""
     if {[file exists [file join orig $thumb]]} {
-	set img "<table width=100%><tr valign=top><td width=50%>$img</td><td class=original-image width=50%><img width=100% border=0 src=orig/${thumb}></td></tr></table>";
+	set origUrl "orig/${thumb}"
+	set imageExtra "\norigimage='$origUrl' "
+    }
+    set img "<img  $imageExtra title='xx' class='test-image' width='100%' border='0' src='${thumb}'>\n"
+    if {$origUrl!=""} {
+	set img "<table width=100%><tr valign=top><td width=50%>\n$img\n</td>\n<td class=original-image width=50%>\n<img width=100% border=0 src='$origUrl'></td></tr></table>";
     }
     append line "<a href=\"$url\">#$::pageCnt $name\n$img</a>$extra"
     append line "</div>";
