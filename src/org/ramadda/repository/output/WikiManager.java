@@ -5042,8 +5042,9 @@ public class WikiManager extends RepositoryManager
             int depth = Math.min(ENTRY_TREE_MAX_DEPTH,getProperty(wikiUtil, props, "depth", 4));
             boolean addPrefix = getProperty(wikiUtil, props, "addPrefix",
                                             false);
-            boolean showRoot = getProperty(wikiUtil, props, "showroot",
-                                           false);
+            boolean showRoot = getProperty(wikiUtil, props, "showRoot",
+					   getProperty(wikiUtil, props, "showroot",
+						       false));
             boolean showSize = getProperty(wikiUtil, props, "showSize",
                                            false);
             boolean showType = getProperty(wikiUtil, props, "showType",
@@ -6549,10 +6550,14 @@ public class WikiManager extends RepositoryManager
 	    String corpus = entry.getTypeHandler().getType();
 	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
-	    if(showIcon) {
-		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE +
-		    (showType?"(<span class=ramadda-fulltree-type>"+entry.getTypeHandler().getDescription()+"</span>)" +HU.SPACE:"") +
+	    if(showType) {
+		label = "(<span class=ramadda-fulltree-type>"+entry.getTypeHandler().getDescription()+"</span>)" +HU.SPACE +
 		    label;
+	    }
+
+	    if(showIcon) {
+		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE +label;
+		    
 	    }
             String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label,
 					  HU.attrs("class","ramadda-tree-link"));
