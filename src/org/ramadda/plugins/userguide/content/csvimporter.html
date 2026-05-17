@@ -74,6 +74,24 @@ The parent of the "file 2" entry is the series "s2".
 <tr><td></td><td>file 2</td><td></td><td>s2</td></tr>
 </table>
 
+
+By default one has to explicitly specify a parent ID for every entry.
+You can configure the CSV import to inherit the last set parent ID. This
+way you can leave the parent column blank and only specify one as needed.
+Simply add "config:inheritparentid" to the first column of a row.
+e.g.
+
+<table class=ex>
+<tr><td class=hdr>type</td><td  class=hdr>name</td><td class=hdr>id</td><td class=hdr>parent</td></tr>
+<tr><td>config:inheritparentid</td><td></td><td></td><td></td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>c1</td><td></td></tr>
+<tr><td>type_archive_series</td><td>series 1</td><td>s1</td><td>c1</td></tr>
+<tr><td>type_archive_file</td><td>file 1</td><td></td><td>s1</td></tr>
+<tr><td>type_archive_file</td><td>file 2</td><td></td><td></td></tr>
+<tr><td>type_archive_file</td><td>file 3</td><td></td><td></td></tr>
+</table>
+
+
 :heading Adding Children
 You can add one or more children entries to the given row entry by having a column with a header of the form:
 <pre>
