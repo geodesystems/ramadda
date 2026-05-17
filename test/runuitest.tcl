@@ -7,6 +7,7 @@ set ::total 0
 set groupID ""
 set urls [list]
 set ::sleep 5
+set ::sicangu 0
 
 source $::mydir/uitest.tcl
 
@@ -22,10 +23,11 @@ proc writeUrl {url {desc ""}} {
 
 
 
-proc runGroup {group id {groupLimit 10000}} {
+proc runGroup {group id {root {}}} {
     if {$::total>=$::maxCount} {
 	return;
     }
+    if {$root==""} {set root $::root}
     set suffix ""
     write "</div>\n"
     write "<h2>$group</h2><div xclass=ramadda-grid>"
@@ -36,7 +38,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	    regsub -all auth: $id {} id
 	    set suffix "&auth.user={ARG_USER}&auth.password={ARG_PASSWORD}"
 	} 
-	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false$suffix"
+	set url "$root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false$suffix"
     }
     set url [convertUrl $url]
     puts stderr "group: $group"
@@ -53,7 +55,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	set line2 [string trim $line2]
 	if {$line2==""} continue;
 	foreach     {name id} [split $line2 ,] break
-	set url "$::root/entry/show?entryid=$id$suffix#fortest"
+	set url "$root/entry/show?entryid=$id$suffix#fortest"
 	writeUrl $url $name
 	capture $_group $id $name $url 0 $::sleep
 	incr ::total 1
@@ -98,6 +100,11 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
     if {$arg == "-max"} {
 	incr i
 	set ::maxCount  [lindex $argv $i]
+	continue;
+    }
+
+    if {$arg == "-sicangu"} {
+	set ::sicangu 1
 	continue;
     }
 
@@ -164,6 +171,18 @@ if {$groupID!=""} {
 #Run with the default ramadda.org entries
 #    runGroup "Private" auth:f66f4537-bae3-4b7a-82cd-4b8a033d29bc
 #    logout
+
+    if {$::sicangu} {
+	runGroup "Sicangu Community Data" community_data https://sicangudata.org/repository
+	runGroup "Sicangu Data" dashboards https://sicangudata.org/repository
+	runGroup "Sicangu Weather" sicangu_weather_collection https://sicangudata.org/repository
+	runGroup "Sicangu Climate" climate_conditions https://sicangudata.org/repository
+	runGroup "Sicangu Maps" sicangu_maps https://sicangudata.org/repository            
+	finish
+	exit
+    }
+
+
     runGroup "Test Suite" ce064b0c-ad96-49ac-b7b2-6bc8ce86aac4
     runGroup "Natural Science" 3e14c357-9989-453e-ba3a-1837e79e9712
 
