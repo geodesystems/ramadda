@@ -2348,8 +2348,16 @@ public abstract class Converter extends Processor {
                 if (o == null) {
                     return null;
                 }
-
-                row.add(org.mozilla.javascript.Context.toString(o));
+		String sValue = org.mozilla.javascript.Context.toString(o);
+		if(o instanceof org.mozilla.javascript.NativeArray) {
+		    //TODO: access the NativeArray methods
+		    org.mozilla.javascript.NativeArray na = (org.mozilla.javascript.NativeArray) o;
+		    for(String s: Utils.split(sValue, ",")) {
+			row.add(s);
+		    }
+		} else {
+		    row.add(sValue);
+		}
 
                 //              System.err.println("func row:" + row);
                 return row;

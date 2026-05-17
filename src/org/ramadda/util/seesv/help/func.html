@@ -1,0 +1,23 @@
+Each row is processed and two Javascript variables are set of each column value -
+_&lt;column&gt; and  _&lt;col#&gt;. For example if you have a table with:
+<data>
+x,y
+0,1
+2,3
+4,5
+</data>
+Then each row would have the Javascript variables:
+<pre>
+_x _col0 _y  _col1
+</pre>
+
+So for the Javascript you could do:
+<pre>
+Math.round(_x/_y*100)
+</pre>
+
+
+You can create multiple columns, e.g.:
++pre
+seesv -func "a,b" "return [1,2]"
+-pre  

@@ -593,7 +593,7 @@ public class Seesv implements SeesvCommands {
                     System.out.print(arg + " ");
                 }
             }
-            if (arg.equals("-genhelp")) {
+            if (arg.equals("-genhelp") || arg.equals("-makehelp")) {
                 genHelp();
                 return;
             }
