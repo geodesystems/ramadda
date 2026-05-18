@@ -14,6 +14,8 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 
 <!-- Columns-->
 <column  name="showmap"  label="Show Map"  type="boolean"   showinhtml="false" default="true" />
+<column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />
+<column  name="show_search"  label="Show Search"  type="boolean"   showinhtml="false" default="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/project.png" />
@@ -57,6 +59,15 @@ message="" width="80%"  useThumbnail="true" }}
 -col
 -row
 :vspace 1em
++if property=show_type_summary
+----
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount   doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+-if
++if property=show_search
 ----
 :vspace 1em
 :heading Search Project
@@ -68,8 +79,9 @@ orderByTypes="name,relevant,createdate,date,size"
 displayTypes="list,images,map,display" 
 includeNonImages=false
 }} 
-
-
+-if
+----
+:vspace 1em
 :heading Project Information
 {{information showDetails="true"  showTitle="false" details="true"}} 
 
