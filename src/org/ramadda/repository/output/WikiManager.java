@@ -2050,7 +2050,6 @@ public class WikiManager extends RepositoryManager
 	    String prefix = getProperty(wikiUtil,props,"typecountPrefix",null);
 	    String suffix = getProperty(wikiUtil,props,"typecountSuffix",null);	    
 	    final int[]cnt={0};
-
 	    String[] colors = {
 		"#E6F4EA", // Soft Mint
 		"#DCEEFF", // Powder Blue
@@ -2069,10 +2068,12 @@ public class WikiManager extends RepositoryManager
 
 	    final String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
 	    final String style = getProperty(wikiUtil,props,"style","");
-	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",false);
+	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",true);
 	    final boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
 	    final boolean addAncestor = getProperty(wikiUtil,props,"addAncestorToSearchLink",
 						    getProperty(wikiUtil,props,"addAncestor",false));		    
+	    final boolean animated=getProperty(wikiUtil,props,"animated",true);
+	    final int[] totalCount = {0};
 	    Request countRequest = null;
 	    boolean doNewWay = false;
 	    String _ancestor = getProperty(wikiUtil,props,"ancestor",null);
@@ -2106,7 +2107,7 @@ public class WikiManager extends RepositoryManager
 		    if(typeCount>1) label="Count";	
 		    label = getProperty(wikiUtil,props,"label",label);
 		    String scount  =""+count;
-		    if(getProperty(wikiUtil,props,"animated",true))  {
+		    if(animated) {
 			scount = wikiUtil.getHandler("odometer").handle(wikiUtil, "odometer","count="+scount);
 		    }
 		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
@@ -2127,6 +2128,7 @@ public class WikiManager extends RepositoryManager
 		    if(cnt[0]>= colors.length) cnt[0]=0;
 		    if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
 		    cnt[0]++;
+		    totalCount[0]++;
 		    html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
 		    if(typeCount == 1 && addSearch && lastCount!=null) {
 			String url= getRepository().getUrlBase()
@@ -2188,6 +2190,11 @@ public class WikiManager extends RepositoryManager
 		List<EntryUtil.EntryCount>tmp = new ArrayList<EntryUtil.EntryCount>();
 		tmp.add(entryCount);
 		sb.append(apply.apply(tmp));
+	    }
+
+	    if(totalCount[0]==0) {
+		String message = getProperty(wikiUtil, props, ATTR_MESSAGE,"");
+		sb.append(message);
 	    }
 	    if(sort.size()>0 && suffix!=null) {
 		sb.append(wikify(request,suffix.replace("\\n","\n")));
