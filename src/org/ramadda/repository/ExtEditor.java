@@ -859,12 +859,15 @@ public class ExtEditor extends RepositoryManager {
 		    closer.accept(ARG_EXTEDIT_ADDALIAS,"Test aliases");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
 		opener.accept("Change Entry Type");
-		buff[0].append(msgLabel("New type"));
 		buff[0].append(HU.space(1));
 		String id = HU.getUniqueId("select");
-		buff[0].append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos,
-					 request.getString(ARG_EXTEDIT_NEWTYPE,""),
-					 HU.attrs("id",id)));
+		buff[0].append(HU.formTable());
+		HU.formEntry(buff[0],msgLabel("Current type"),entry.getTypeHandler().getLabel());
+		HU.formEntry(buff[0],msgLabel("New type"),
+			     HU.select(ARG_EXTEDIT_NEWTYPE, tfos,
+				       request.getString(ARG_EXTEDIT_NEWTYPE,""),
+				       HU.attrs("id",id)));
+		buff[0].append(HU.formTableClose());
 		buff[0].append(HU.p());
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if ((columns != null) && (columns.size() > 0)) {
@@ -1337,7 +1340,6 @@ public class ExtEditor extends RepositoryManager {
                                         newTypeHandler.getType() });
         getEntryManager().removeFromCache(entry);
         entry = newTypeHandler.changeType(request, entry);
-
 	if(extraDesc!=null) {
 	    //This case shows up when converting a wiki page to something else
 	    //The wiki page has its main text in another field, not the description
