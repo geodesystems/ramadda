@@ -451,6 +451,7 @@ public class ExtEditor extends RepositoryManager {
 				@Override
 				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
+				    if(entry.equals(finalEntry)) return true;
 				    if (!oldType.equals("") &&
 					!oldType.equals(TypeHandler.TYPE_ANY) &&
 					!entry.getTypeHandler().isType(oldType)) {
