@@ -281,6 +281,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return PageHandler.msg(msg);
     }
 
+    public static String msg(String msg,Entry entry) {
+	String  m = PageHandler.msg(msg);
+	if(entry!=null) m = m+" - " + entry.getName();
+	return m;
+    }    
+
     public static String noMsg(String msg) {
         return PageHandler.noMsg(msg);
     }    

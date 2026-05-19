@@ -152,6 +152,11 @@ public class Result {
         this("", content);
     }
 
+    public Result(String title, Entry entry,Appendable content) {
+        this(title+(entry==null?"":" - " + entry.getName()), content);
+    }
+
+
     /**
      * Create a Result with the title and content
      *

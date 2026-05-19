@@ -2132,7 +2132,7 @@ public class MetadataManager extends RepositoryManager {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return getEntryManager().makeEntryEditResult(request, entry,
-                msg("Edit Properties"), sb);
+						     msg("Edit Properties",entry), sb);
 
     }
 

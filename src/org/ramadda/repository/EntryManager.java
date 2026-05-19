@@ -1961,7 +1961,7 @@ public class EntryManager extends RepositoryManager {
 		getPageHandler().entrySectionClose(request, entry, sb);
 	    }
             return addEntryHeader(request, group,
-                                  new Result("Add Entry", sb));
+                                  new Result("Add Entry", group,sb));
         }
 
 	if ( !getAccessManager().canDoEdit(request, entry)) {
@@ -2578,7 +2578,7 @@ public class EntryManager extends RepositoryManager {
             }
 	    if(theEntry!=null)
 		getPageHandler().entrySectionClose(request, theEntry, sb);
-            Result result = new Result("Error", sb);
+            Result result = new Result("Error", theEntry, sb);
 	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
 	    return result;
 	}
@@ -4151,8 +4151,7 @@ public class EntryManager extends RepositoryManager {
     public Result makeEntryEditResult(Request request, Entry entry,
                                       String title, Appendable sb)
 	throws Exception {
-        Result result = new Result(title, sb);
-
+        Result result = new Result(title+" - "+ entry.getName(), sb);
         return addEntryHeader(request, entry, result);
     }
 
