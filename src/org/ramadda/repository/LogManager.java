@@ -1076,13 +1076,14 @@ public class LogManager extends RepositoryManager {
 
             long length = logFile.length();
             long offset = length - numBytes;
+	    System.err.println("URL:" + getAdmin().URL_ADMIN_LOG.toString());
             if (numBytes < length) {
                 sb.append(
-                    HtmlUtils.href(
-                        HtmlUtils.url(
-                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
-                            log, ARG_MATCH,match,ARG_BYTES,
-                            "" + (numBytes + 10000)), "More..."));
+			  HU.href(
+				  HU.url(getAdmin().URL_ADMIN_LOG.toString(),
+					 ARG_LOG,
+					 log, ARG_MATCH,match,ARG_BYTES,
+					 "" + (numBytes + 10000)), "More..."));
             }
             sb.append(HtmlUtils.space(2));
             sb.append(
