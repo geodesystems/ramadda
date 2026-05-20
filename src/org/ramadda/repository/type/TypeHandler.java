@@ -4216,13 +4216,7 @@ public class TypeHandler extends RepositoryManager {
 		       getPageHandler().showDialogError(
 							"An error has occurred:" + exc));
 
-            if ((request.getUser() != null) && request.getUser().getAdmin()) {
-                Throwable inner = LogUtil.getInnerException(exc);
-                tmp.append(
-			   HU.pre(
-				  HU.entityEncode(LogUtil.getStackTrace(exc)),
-				  "style='max-height:300px;overflow-y:auto;'"));
-            }
+	    tmp.append(displayException(request, exc));
             sb.append(HU.formEntry("", tmp.toString()));
         }
 
@@ -4764,6 +4758,7 @@ public class TypeHandler extends RepositoryManager {
 			if(isTextWiki) {
 			    desc = desc.replaceAll("^"+WIKI_PREFIX+"\n*","");
 			}
+
 			String cbx = HU.labeledCheckbox(ARG_ISWIKI,
 							"true", isTextWiki,
 							HU.id(cbxId), "Override default display");
