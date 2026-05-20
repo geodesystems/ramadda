@@ -1079,7 +1079,8 @@ public class LogManager extends RepositoryManager {
             if (numBytes < length) {
                 sb.append(
 			  HU.href(
-				  HU.url(getAdmin().URL_ADMIN_LOG.toString(),
+				  HU.url(
+					 request.makeUrl(getAdmin().URL_ADMIN_LOG),
 					 ARG_LOG,
 					 log, ARG_MATCH,match,ARG_BYTES,
 					 "" + (numBytes + 10000)), "More..."));
@@ -1088,9 +1089,9 @@ public class LogManager extends RepositoryManager {
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, log,
-			ARG_MATCH,match,
-                        ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
+				  request.makeUrl(getAdmin().URL_ADMIN_LOG),
+				  ARG_LOG, log,	ARG_MATCH,match,
+				  ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
 
 	    int maxLines=  -1;
 	    if(!showSummary && !stringDefined(match) && fromDate==null && toDate==null) {
