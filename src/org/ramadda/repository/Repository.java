@@ -3489,8 +3489,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
 
-            if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
-                sb.append(HU.pre(HU.strictSanitizeString(LogUtil.getStackTrace(inner))));
+            if (!request.responseAsJson()) {
+                sb.append(RepositoryManager.displayException(request, inner));
             }
 
             result = new Result(msg("Error"), sb);
@@ -3655,9 +3655,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             result.setShouldDecorate(false);
         } else {
 	    StringBuilder tmp = new StringBuilder();
-	    getPageHandler().sectionOpen(request, tmp,"Error",false);
+	    //	    getPageHandler().sectionOpen(request, tmp,"Error",false);
 	    tmp.append(sb);
-	    getPageHandler().sectionClose(request, tmp);
+	    //	    getPageHandler().sectionClose(request, tmp);
             result = new Result(msg("Error"), tmp);
         }
 	result.setResponseCode(Result.RESPONSE_INTERNALERROR);
@@ -3689,7 +3689,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    public String makeErrorResponse(Request request, String msg,boolean ...sanitize) {
+    public String makeErrorResponse(Request request, String msg,boolean ...sanitize)  {
 	if(sanitize.length==0 || sanitize[0])
 	    msg = HU.strictSanitizeString(msg);
         if (request.responseAsJson()) {
@@ -3701,9 +3701,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return msg;
         } else {
             StringBuilder sb = new StringBuilder();
+	    Entry currentEntry = request.getCurrentEntry();
+	    try {
+		if(currentEntry!=null) {
+		    getPageHandler().entrySectionOpen(request, currentEntry, sb, "Error");		    
+		} else {
+		    getPageHandler().sectionOpen(request, sb, "Error",false);		    
+		}
+	    } catch(Exception ignore) {}
             sb.append(getPageHandler().showDialogError("An error has occurred") 
 		      + HU.br() + msg);
-
+	    
+	    try {
+		if(currentEntry!=null) {
+		    getPageHandler().entrySectionClose(request, currentEntry, sb);		    
+		} else {
+		    getPageHandler().sectionClose(request, sb);		    
+		}
+	    } catch(Exception ignore) {}
             return sb.toString();
         }
     }

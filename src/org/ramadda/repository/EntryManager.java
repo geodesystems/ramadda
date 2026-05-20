@@ -697,7 +697,8 @@ public class EntryManager extends RepositoryManager {
                 entry = request.getRootEntry();
             }
         }
-	if(entry!=null) {
+	//Only set the current entry the first time
+	if(entry!=null && request.getCurrentEntry()==null) {
 	    request.setCurrentEntry(entry);
 	}
         return entry;
@@ -5022,9 +5023,11 @@ public class EntryManager extends RepositoryManager {
         } else {
             action = request.getString(ARG_ACTION, "move");
         }
+
         boolean isMove = Misc.equals(action, "move");
         boolean isCopy = Misc.equals(action, "copy");
         boolean isLink = Misc.equals(action, "link");
+
 
         String  label  = delimit("Move")+"/"+delimit("Copy")+"/"+delimit("Link");
         if (force != null) {
@@ -5173,12 +5176,14 @@ public class EntryManager extends RepositoryManager {
                                   new Result("Entry Move/Copy", sb));
         }
 
+
         if (toEntry == null) {
             throw new RepositoryUtil.MissingEntryException(
 							   "Could not find entry: " + ((toId == null)
 										       ? toName
 										       : toId));
         }
+	request.setCurrentEntry(toEntry);
         boolean isGroup = toEntry.isGroup();
 
         if (isLink) {
@@ -7319,6 +7324,15 @@ public class EntryManager extends RepositoryManager {
     public Entry getEntry(Request request, String entryId, boolean andFilter,
                           boolean abbreviated)
 	throws Exception {
+	Entry entry = getEntryInner(request, entryId, andFilter, abbreviated);
+	if(entry!=null && request.getCurrentEntry()==null) request.setCurrentEntry(entry);
+	return entry;
+    }
+    
+    private Entry getEntryInner(Request request, String entryId, boolean andFilter,
+			   boolean abbreviated)
+	throws Exception {
+
 
         if (entryId == null) {
             debug("getEntry: id is null ");
