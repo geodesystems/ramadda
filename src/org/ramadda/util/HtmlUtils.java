@@ -2765,11 +2765,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     public static int blockCnt = 10000;
+    private static Object MUTEX_ID = new Object();
 
     public static String getUniqueId(String prefix) {
-	blockCnt++;
-	if(blockCnt<0) blockCnt=10000;
-        return prefix + blockCnt;
+	synchronized(MUTEX_ID) {
+	    blockCnt++;
+	    if(blockCnt<0) blockCnt=10000;
+	    return prefix + blockCnt;
+	}
     }
 
     public static String makeShowHideBlock(String label, String content,
