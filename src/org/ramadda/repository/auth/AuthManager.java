@@ -127,7 +127,7 @@ public class AuthManager extends RepositoryManager {
 	if(doPassword || forcePassword) {
 	    String password = request.getString(ARG_EXTRA_PASSWORD,"");
 	    request.remove(ARG_EXTRA_PASSWORD);
-            if ( !getUserManager().isPasswordValid(request.getUser(), password)) {
+            if ( !getUserManager().isPasswordValid(request,request.getUser(), password)) {
 		sb.append(HU.center(getPageHandler().showDialogError(msg("Incorrect verification password")+"<br>"+msg("Please enter your password"))));
 		return false;
 	    }

@@ -2512,9 +2512,9 @@ public class UserManager extends RepositoryManager {
 	sb.append("</center>");
     }
 
-    public boolean isPasswordValid(User user, String rawPassword)
+    public boolean isPasswordValid(Request request,User user, String rawPassword)
 	throws Exception {
-        return isPasswordValid(user.getId(), rawPassword);
+        return isPasswordValid(request, user.getId(), rawPassword);
     }
 
     /**
@@ -2527,9 +2527,9 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public boolean isPasswordValid(String userId, String rawPassword)
+    public boolean isPasswordValid(Request request,String userId, String rawPassword)
 	throws Exception {
-        User user = authenticateUser(null, userId, rawPassword,
+        User user = authenticateUser(request, userId, rawPassword,
                                      new StringBuffer());
         if (user == null) {
             return false;
@@ -2966,6 +2966,7 @@ public class UserManager extends RepositoryManager {
 					       + count + ") for user " + user
 					       + " has exceeded the maximum allowed");
         }
+
 	addActivity(request, user, ACTIVITY_FAILED_LOGIN, "");
         //If the login failed then sleep for 1 second. This will keep bots 
         //from repeatedly trying passwords though maybe not needed with the above checks
@@ -3247,7 +3248,8 @@ public class UserManager extends RepositoryManager {
 	try {
 	    getDatabaseManager().executeInsert(Tables.USER_ACTIVITY.INSERT,
 					       new Object[] { user,
-						   new Date(), what, extra, request.getOriginalIp() });
+						   new Date(), what, extra,
+						   getOriginalIp(request) });
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}

@@ -647,7 +647,7 @@ public class SessionManager extends RepositoryManager {
             if (user == null) {
 		throwRequestError(request,"Unknown user:" + userArg);
             }
-            if ( !getUserManager().isPasswordValid(user, passwordArg)) {
+            if ( !getUserManager().isPasswordValid(request,user, passwordArg)) {
 		throwRequestError(request,"Incorrect password");
             }
 
@@ -683,7 +683,7 @@ public class SessionManager extends RepositoryManager {
                     if (toks.length == 2) {
                         user = getUserManager().findUser(toks[0], false);
                         if (user == null) {}
-                        else if ( !getUserManager().isPasswordValid(user,
+                        else if ( !getUserManager().isPasswordValid(request,user,
                                 toks[1])) {
                             user = null;
                         } else {}
