@@ -4,28 +4,17 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
+import org.ramadda.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class RequestUrl {
-
     private RepositorySource repositorySource;
-
     private String path = "foo";
-
     private String basePath;
-
     private String label = null;
-
     private boolean haveInitialized = false;
-
     private boolean needsSsl = false;
 
     public RequestUrl(RepositorySource repositorySource, String path) {
@@ -108,12 +97,11 @@ public class RequestUrl {
         return getHttpsUrl("");
     }
 
-    public String getUrlPath() {
+    public String getUrlPath(Request request) {
         checkInit();
         if (needsSsl) {
             return getHttpsUrl();
         }
-
         return getRepositoryBase().getUrlBase() + path;
     }
 
@@ -129,7 +117,7 @@ public class RequestUrl {
     public String toString() {
         if (myString == null) {
             checkInit();
-            myString = getUrlPath();
+            myString = getUrlPath(null);
         }
 
         return myString;
@@ -160,20 +148,11 @@ public class RequestUrl {
         return this.path.equals(that.path);
     }
 
-    /**
-     * Set the NeedsSsl property.
-     *
-     * @param value The new value for NeedsSsl
-     */
+
     public void setNeedsSsl(boolean value) {
         this.needsSsl = value;
     }
 
-    /**
-     * Get the NeedsSsl property.
-     *
-     * @return The NeedsSsl
-     */
     public boolean getNeedsSsl() {
         return this.needsSsl;
     }

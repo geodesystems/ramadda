@@ -281,6 +281,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getHttpsUrl(String url) {
         String hostname = getHostname();
         int    port     = getHttpsPort();
+	System.err.println("RepositoryBase.getHttpsUrl:" + url);
+	System.err.println(Utils.getStack(10));
+
         if (port < 0) {
             return getHttpProtocol() + "://" + hostname + ":" + getPort()
                    + url;
