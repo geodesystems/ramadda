@@ -150,6 +150,7 @@ public class Request implements Constants, Cloneable {
             that.pageStyle          = null;
             that.canStreamResult    = false;
             that.printWriter        = this.printWriter;
+	    that.currentEntry       = this.currentEntry;
             that.parameters         = (this.parameters != null)
 		? new Hashtable(this.parameters)
 		: new Hashtable();
@@ -2130,6 +2131,7 @@ public class Request implements Constants, Cloneable {
 		break;
 	    }
 	}	    
+
     }
 
     public Entry getCurrentEntry() {
