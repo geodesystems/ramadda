@@ -14,6 +14,7 @@ import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.SearchManager;
 
+import ucar.unidata.util.LogUtil;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.HtmlUtilsConstants;
@@ -483,6 +484,19 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
     public void adminSettingsChanged() {}
+
+    public static String displayException(Request request, Throwable exc) {
+	if ((request.getUser() != null) && request.getUser().getAdmin()) {
+	    Throwable inner = LogUtil.getInnerException(exc);
+	    String stackId = HU.getUniqueId("stack_");
+	    
+	    return     "<pre     style='max-height:300px;overflow-y:auto;' download-file=stack.txt add-copy=true add-download=true id=" + stackId+">" +
+		HU.entityEncode(LogUtil.getStackTrace(exc)) + "</pre>\n" +
+		HU.script(HU.call("Utils.addCopyLink",HU.squote(stackId)));
+	}
+	return "";
+    }
+
 
     private static int dialogCnt = 0;
 
