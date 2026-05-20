@@ -552,7 +552,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			    java.net.InetAddress.getLocalHost();
 			//                      System.err.println("after getLocalHost:" +localMachine.getHostName() +" " +
 			//                                         localMachine.getHostAddress());                         
-			setHostname(localMachine.getHostName());
+			
+			String hostname = getProperty("ramadda.hostname",null);
+			if(Utils.stringDefined(hostname)) {
+			    setHostname(hostname);
+			} else {
+			    setHostname(localMachine.getHostName());
+			}
 			setIpAddress(localMachine.getHostAddress());
 		    } catch (Exception exc) {
 			System.err.println(

@@ -1076,7 +1076,6 @@ public class LogManager extends RepositoryManager {
 
             long length = logFile.length();
             long offset = length - numBytes;
-	    System.err.println("URL:" + getAdmin().URL_ADMIN_LOG.toString());
             if (numBytes < length) {
                 sb.append(
 			  HU.href(
