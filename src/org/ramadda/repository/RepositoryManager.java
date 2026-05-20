@@ -63,6 +63,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return Utils.makeMap(args);
     }
 
+    public String getOriginalIp(Request request) {
+	if(request!=null) return request.getOriginalIp();
+	return "NA";
+    }
+
+
     public Repository getRepository() {
         return repository;
     }
