@@ -1842,9 +1842,12 @@ public class Admin extends RepositoryManager {
         sb.append(HU.formEntry("Up Time:", formatUptime(uptime)));
 
         sb.append(HU.formTableClose());
+	Object stack =  LogUtil.getStackDump(false);
+	String stackId = HU.getUniqueId("stack_");
         sb.append(HU.makeShowHideBlock(msg("Stack"),
-				       "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
+				       "<pre download-file=stack.txt add-copy=true add-download=true id=" + stackId+">" +stack + "</pre>", false));
 
+	HU.script(sb,HU.call("Utils.addCopyLink",HU.squote(stackId)));
         return makeResult(request, msg("RAMADDA-Admin-Stack Trace"), sb);
     }
 
