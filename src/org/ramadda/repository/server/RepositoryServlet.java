@@ -289,6 +289,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 if (repositoryResult.getRedirectUrl() != null) {
                     try {
+			System.err.println("Sending redirect:" +
+					   repositoryResult.getRedirectUrl());
                         response.sendRedirect(
                             repositoryResult.getRedirectUrl());
                     } catch (Exception e) {
