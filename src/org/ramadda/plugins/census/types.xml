@@ -62,8 +62,9 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group  layoutType="columns"  layoutColumns="2" showMenu="true" tooltip="${default}" }}
-{{display  type="bartable"  column="0" layoutHere="false" height="400" showTitle="false" }}
-{{display_map tooltip="${default}" column="1" width="500" height="400"   layoutHere="false" includeData="false"   showTitle="false" }}
+{{display_bartable  column="0" layoutHere="false" height="400" showTitle="false" }}
+{{display_map tooltip="${default}" column="1" width="500" height="400"   layoutHere="false"
+#includeData="false"   showTitle="false" }}
 {{display  type="text"  column="1" layoutHere="false" showTitle="true" title="Readout"}}
 -section
 +section label="Information" #
