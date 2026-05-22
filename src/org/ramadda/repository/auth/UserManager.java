@@ -542,7 +542,11 @@ public class UserManager extends RepositoryManager {
 	return sb.toString();
     }
 
-    public void  makeLoginForm(StringBuilder sb, Request request, String extra,boolean includeForget,String user) {
+    public void  makeLoginForm(StringBuilder sb,
+			       Request request,
+			       String extra,
+			       boolean includeForget,
+			       String user) {
         if ( !canDoLogin(request)) {
             sb.append(messageWarning("Login is not allowed"));
             return;
@@ -586,7 +590,6 @@ public class UserManager extends RepositoryManager {
 							       false),userAgree)));
         }
         sb.append(extra);
-
         sb.append(formEntry(request, "", HU.submit(LABEL_LOGIN)));
         sb.append(HU.formClose());
 

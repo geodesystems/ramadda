@@ -1773,12 +1773,18 @@ public class Request implements Constants, Cloneable {
 
     public String getServerName() {
         String serverName = null;
-        if ( !repository.useFixedHostnameForAbsoluteUrls()) {
+        if (repository.useFixedHostnameForAbsoluteUrls()) {
+            serverName = repository.getHostname();
+	    //	    System.err.println("using fixed hostname:" + serverName);
+	}
+        if (!Utils.stringDefined(serverName)) {
             serverName = getRequestHostname();
+	    //	    System.err.println("using getRequestHostname:" + serverName);
         }
-        if ( !Utils.stringDefined(serverName)) {
-            serverName = repository.getHostname().trim();
-        }
+        if (!Utils.stringDefined(serverName)) {
+	    serverName = "unknown";
+	}
+
 
         return serverName;
     }

@@ -15,21 +15,13 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.UUID;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class RepositoryBase implements Constants, RepositorySource {
 
     public static final HtmlUtils HU = null;
     public static final MyXmlUtil XU = null;    
 
     public final RequestUrl URL_HELP = new RequestUrl(this, "/docs");
-
     public final RequestUrl URL_PING = new RequestUrl(this, "/ping");
-
     public final RequestUrl URL_CLEARSTATE = new RequestUrl(this,
                                                  "/clearstate");
 
@@ -213,22 +205,13 @@ public class RepositoryBase implements Constants, RepositorySource {
         new GregorianCalendar(TIMEZONE_UTC);
 
     private String urlBase = "/repository";
-
-    /**  */
     protected boolean alwaysHttps = false;
-
     private boolean isMinified;
-
     private String hostname = "";
-
     private String ipAddress = "";
-
     private int httpPort = 80;
-
     private int httpsPort = -1;
-
     private boolean clientMode = false;
-
     public RepositoryBase() {}
 
     public RepositoryBase(int port) throws Exception {
@@ -278,12 +261,10 @@ public class RepositoryBase implements Constants, RepositorySource {
         httpsPort = port;
     }
 
+
     public String getHttpsUrl(String url) {
         String hostname = getHostname();
         int    port     = getHttpsPort();
-	System.err.println("RepositoryBase.getHttpsUrl:" + url);
-	System.err.println(Utils.getStack(10));
-
         if (port < 0) {
             return getHttpProtocol() + "://" + hostname + ":" + getPort()
                    + url;
@@ -296,6 +277,7 @@ public class RepositoryBase implements Constants, RepositorySource {
         }
     }
 
+    
     public String getProperty(String name, String dflt) {
         return dflt;
     }
@@ -316,14 +298,14 @@ public class RepositoryBase implements Constants, RepositorySource {
         return this;
     }
 
-    /**
-     * Set the Hostname property.
-     *
-     * @param value The new value for Hostname
-     */
     public void setHostname(String value) {
         hostname = value;
     }
+
+    public String getHostname() {
+        return hostname;
+    }
+
 
     public void setIpAddress(String ip) {
         ipAddress = ip;
@@ -333,29 +315,12 @@ public class RepositoryBase implements Constants, RepositorySource {
         return ipAddress;
     }
 
-    /**
-     * Get the Hostname property.
-     *
-     * @return The Hostname
-     */
-    public String getHostname() {
-        return hostname;
-    }
 
-    /**
-     * Set the Port property.
-     *
-     * @param value The new value for Port
-     */
+
     public void setPort(int value) {
         httpPort = value;
     }
 
-    /**
-     * Get the Port property.
-     *
-     * @return The Port
-     */
     public int getPort() {
         return httpPort;
     }

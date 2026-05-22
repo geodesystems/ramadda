@@ -547,23 +547,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Misc.run(new Runnable() {
 		public void run() {
 		    try {
-			//                      System.err.println("calling getLocalHost");
-			java.net.InetAddress localMachine =
-			    java.net.InetAddress.getLocalHost();
-			//                      System.err.println("after getLocalHost:" +localMachine.getHostName() +" " +
-			//                                         localMachine.getHostAddress());                         
-			
-			String hostname = getProperty("ramadda.hostname",null);
-			if(Utils.stringDefined(hostname)) {
-			    setHostname(hostname);
-			} else {
+			InetAddress localMachine =InetAddress.getLocalHost();
+			//only set the hostname  if it isn't defined yet
+			String hostname = getHostname();
+			if(!Utils.stringDefined(hostname)) {
 			    setHostname(localMachine.getHostName());
 			}
 			setIpAddress(localMachine.getHostAddress());
 		    } catch (Exception exc) {
-			System.err.println(
-					   "Got exception accessing local hostname");
-			//            exc.printStackTrace();
+			System.err.println("Got exception accessing local hostname");
+			exc.printStackTrace();
 			setHostname("unknown");
 			setIpAddress("unknown");
 		    }
@@ -700,13 +693,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return repositoryManagers;
     }
 
+    @Override
     public String getHostname() {
         String hostname = getProperty(PROP_HOSTNAME, (String) null);
         if (Utils.stringDefined(hostname)) {
             if (hostname.equals("ipaddress")) {
                 return getIpAddress();
             }
-
             return hostname;
         }
 
@@ -716,6 +709,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean useFixedHostnameForAbsoluteUrls() {
         return useFixedHostName;
     }
+
 
     /**
      *  Are cross origin requests OK
@@ -1011,10 +1005,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
 	statusMsg.append(getDatabaseManager().getStatusMessage());
 	statusMsg.append("\n");
-        statusMsg.append("RAMADDA: running on port:" + getPort() + " "
+        statusMsg.append("RAMADDA: running on: ");
+	statusMsg.append("hostname:" + getHostname()+" ");
+	statusMsg.append("port:" + getPort() + " "
                          + (isSSLEnabled(null)
                             ? "SSL port:" + getHttpsPort()
-                            : " SSL not enabled"));
+                            : " SSL not enabled")+" ");
+
+
 
 	if(!getAdmin().getInstallationComplete()) {
 	    statusMsg.append("\n");
@@ -1300,7 +1298,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(sslPort<=0) {
 	    String ssls = getPropertyValue(PROP_SSL_PORT,
 					   (String) null, false);
-	    if ((ssls != null) && (ssls.trim().length() > 0)) {
+	    if (Utils.stringDefined(ssls)) {
 		sslPort = Integer.parseInt(ssls.trim());
 	    }
 	    if(sslPort>0) setHttpsPort(sslPort);
@@ -2646,6 +2644,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
+    public String getUrlPath(Request request, RequestUrl requestUrl) {
+        if (requestUrl.getNeedsSsl()) {
+	    if(request.getSecure()) {
+		return getUrlBase() + requestUrl.getPath();
+	    }
+            return getHttpsUrl(request, getUrlBase() + requestUrl.getPath());
+        }
+
+        return getUrlBase() + requestUrl.getPath();
+    }
+
+    public String getUrlPath(String path) {
+        return getUrlBase() + path;
+    }
+
+
     @Override
     public String getHttpsUrl(String url) {
         return getHttpsUrl(null, url);
@@ -2659,8 +2673,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (port < 0) {
             return getHttpProtocol() + "://" + hostname + ":" + getPort()
 		+ url;
-            //            return url;
-            //            throw new IllegalStateException("Do not have ssl port defined");
         }
         if (port == 0) {
             return "https://" + hostname + url;
@@ -2669,37 +2681,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    //    @Override
-    public String getUrlPath(Request request, RequestUrl requestUrl) {
-        if (requestUrl.getNeedsSsl()) {
-	    if(request.getSecure()) {
-		return getUrlBase() + requestUrl.getPath();
-	    }
-            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
-        }
 
-        return getUrlBase() + requestUrl.getPath();
-    }
-
-    public String getUrlPath(String path) {
-        return getUrlBase() + path;
-    }
-
-    public String httpsUrl(Request request, String url) {
-        String hostname = (request != null)
-	    ? request.getServerName()
-	    : getHostname();
-        int    port     = getHttpsPort();
-        if (port < 0) {
-            return getHttpProtocol() + "://" + hostname + ":"
-		+ request.getServerPort() + url;
-        }
-        if (port == 0) {
-            return "https://" + hostname + url;
-        } else {
-            return "https://" + hostname + ":" + port + url;
-        }
-    }
 
     public void addOutputType(OutputType type) {
         outputTypeMap.put(type.getId(), type);
@@ -3851,7 +3833,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     System.err.println("\tredirecting 1");
                 }
 
-                return new Result(httpsUrl(request, request.getUrl()));
+                return new Result(getHttpsUrl(request, request.getUrl()));
             }
         }
 
@@ -3863,7 +3845,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         System.err.println("\tredirecting 2");
                     }
 
-                    return new Result(httpsUrl(request, request.getUrl()));
+                    return new Result(getHttpsUrl(request, request.getUrl()));
 
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
@@ -4228,8 +4210,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         minifiedOk            = getProperty(PROP_MINIFIED, true);
         acceptRobots          = !getProperty(PROP_ACCESS_NOBOTS, false);
         acceptGoogleBot       = !getProperty(PROP_ACCESS_NOGOOGLEBOT, false);	
-        commentsEnabled       =  getProperty("ramadda.enable_comments", false);
-	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
+        commentsEnabled       =  getProperty("ramadda.enable_comments", commentsEnabled);
+
+	//If there is a hostname set in the properties then also set useFixedHostName=true;
+	String hostname = getProperty(PROP_HOSTNAME,null);
+	if(Utils.stringDefined(hostname)) {
+	    setHostname(hostname);
+	    useFixedHostName=true;
+	}
+	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, useFixedHostName);
         corsOk                = getProperty(PROP_CORS_OK, false);
 	streamOutput          =  getProperty("ramadda.streamoutput",false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,   false);
