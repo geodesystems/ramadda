@@ -1589,33 +1589,27 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         getPageHandler().makeLinksHeader2(request, sb, sqlUrls, "");	
 
-	sb.append(HU.div("QUERY:" + query));
         if (!stringDefined(query)) {
-	    sb.append(HU.div("NO QUERY"));
 	    sb.append(formSB);
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
         }
 
 	StringBuilder vsb = new StringBuilder();
 	if(!getAuthManager().verify(request,vsb,true)) {
-	    sb.append(HU.div("NO VERIFY"));
 	    sb.append(vsb);
 	    sb.append(formSB);
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
 	}
 
-	System.err.println("BEFORE");
+
 	sb.append(formSB);
         long t1 = System.currentTimeMillis();
         if ((query.indexOf(";") > 0) || bulkLoad) {
-	    sb.append(HU.div("loading sql"));
-	    System.err.println("LOADING");
             getDatabaseManager().loadSql(query, false, true);
             return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer("Executed SQL" + HU.vspace() +
 					       HU.space(1) + sb.toString()));
         } else {
-	    System.err.println("doing query");
             Statement statement = null;
             try {
                 statement = getDatabaseManager().execute(query, -1, 10000);
@@ -1711,14 +1705,9 @@ public class Admin extends RepositoryManager {
                 //                    table.append(HU.row("..."));
                 //                    break;
                 //                }
-		System.err.println("after doing query:" + cnt);
             }
-	    System.err.println("AFTER:" + cnt);
+
             table.append("</tbody></table>");
-
-	    sb.append(HU.div("COUNT:" + cnt));
-
-
             if (raw != null) {
                 resultsSB.append(HU.pre(raw.toString()));
             } else {
