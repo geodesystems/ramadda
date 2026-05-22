@@ -128,7 +128,6 @@ public class Result {
      */
     public Result(String redirectUrl) {
         this.redirectUrl    = redirectUrl;
-	System.err.println("redirect:" + redirectUrl);
         this.shouldDecorate = false;
     }
 
@@ -473,7 +472,6 @@ public class Result {
      */
     public void setRedirectUrl(String value) {
         redirectUrl = value;
-	System.err.println("set redirect:" + redirectUrl);
     }
 
     /**
