@@ -38,6 +38,11 @@ public class GeoJson extends JsonUtil {
         return  new JSONObject(new JSONTokener(new FileInputStream(f)));
     }
 
+    public static JSONObject read(InputStream f) throws Exception {
+        return  new JSONObject(new JSONTokener(f));
+    }
+
+
     public static void reduce(String file) throws Exception {
         String contents = IOUtil.readContents(file, JsonUtil.class);
 	contents = contents.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+",
@@ -127,7 +132,7 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void toCsv(InputStream json, PrintStream pw,
-                                    String colString, boolean addPolygons)
+			     String colString, boolean addPolygons)
 	throws Exception {
         Iterator     iterator = makeIterator(json, colString, addPolygons);
 	toCsv(iterator,pw);
@@ -657,13 +662,13 @@ public class GeoJson extends JsonUtil {
 	    JSONObject o = features.getJSONObject(idx1);
 	    JSONObject            properties = o.optJSONObject("properties");	
 	    /*
-	    if(properties!=null) {
-		double area = properties.getDouble("area");
-		if(area==455050000.) {
-		    debug=true;
-		    System.err.println("props:" + properties);
-		}
-		}*/
+	      if(properties!=null) {
+	      double area = properties.getDouble("area");
+	      if(area==455050000.) {
+	      debug=true;
+	      System.err.println("props:" + properties);
+	      }
+	      }*/
 
             Bounds b = getFeatureBounds(o, null, null);
 	    if(debug) System.err.println("bounds:\n\t" + b+"\n\t" + bounds);
@@ -834,6 +839,14 @@ public class GeoJson extends JsonUtil {
     }
 
     public static void main(String[] args) throws Exception {
+	JSONObject geojson = read(args[0]);
+	System.err.println(contains(geojson, 43,-102));
+	if(true) return;
+
+
+
+
+
 	List<Command> commands = new ArrayList<Command>();
 	for(int i=0;i<args.length;i++) {
 	    String arg  =args[i];
@@ -1049,4 +1062,99 @@ public class GeoJson extends JsonUtil {
 
     }
 
+
+
+    public static boolean contains(JSONObject geojson, double lat, double lon) {
+        String type = geojson.getString("type");
+
+        if ("FeatureCollection".equals(type)) {
+            JSONArray features = geojson.getJSONArray("features");
+            for (int i = 0; i < features.length(); i++) {
+                JSONObject geom = features.getJSONObject(i).optJSONObject("geometry");
+                if (geom != null && geometryContains(geom, lat, lon)) {
+                    return true;
+                }
+            }
+        } else if ("Feature".equals(type)) {
+            JSONObject geom = geojson.optJSONObject("geometry");
+            return geom != null && geometryContains(geom, lat, lon);
+        } else {
+            return geometryContains(geojson, lat, lon);
+        }
+
+        return false;
+    }
+
+    private static boolean geometryContains(JSONObject geom, double lat, double lon) {
+        String type = geom.getString("type");
+        JSONArray coords = geom.getJSONArray("coordinates");
+
+        if ("Polygon".equals(type)) {
+            return polygonContains(coords, lat, lon);
+        }
+
+        if ("MultiPolygon".equals(type)) {
+            for (int i = 0; i < coords.length(); i++) {
+                if (polygonContains(coords.getJSONArray(i), lat, lon)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean polygonContains(JSONArray polygon, double lat, double lon) {
+        // GeoJSON Polygon = [ outerRing, hole1, hole2, ... ]
+
+        JSONArray outerRing = polygon.getJSONArray(0);
+
+        if (!ringContains(outerRing, lat, lon)) {
+            return false;
+        }
+
+        // If point is inside a hole, it is not inside the polygon
+        for (int i = 1; i < polygon.length(); i++) {
+            if (ringContains(polygon.getJSONArray(i), lat, lon)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean ringContains(JSONArray ring, double lat, double lon) {
+        boolean inside = false;
+
+        // GeoJSON coordinate order is [longitude, latitude]
+        double x = lon;
+        double y = lat;
+
+        int n = ring.length();
+
+        for (int i = 0, j = n - 1; i < n; j = i++) {
+            JSONArray pi = ring.getJSONArray(i);
+            JSONArray pj = ring.getJSONArray(j);
+
+            double xi = pi.getDouble(0);
+            double yi = pi.getDouble(1);
+            double xj = pj.getDouble(0);
+            double yj = pj.getDouble(1);
+
+            boolean intersects =
+                ((yi > y) != (yj > y)) &&
+                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+
+            if (intersects) {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
 }
+
+
+
+
+
