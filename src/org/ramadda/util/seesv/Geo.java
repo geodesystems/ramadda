@@ -1,12 +1,13 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
 
 import org.json.*;
 import org.ramadda.util.IO;
+import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Address;
 import org.ramadda.util.geo.Feature;
@@ -96,14 +97,14 @@ public abstract class Geo extends Processor {
         }
 
         private Hashtable<String, double[]> makeMap(String filename)
-                throws Exception {
+	    throws Exception {
             Hashtable<String, double[]> map = new Hashtable<String,
-                                                  double[]>();
+		double[]>();
             long t1 = System.currentTimeMillis();
             //            System.err.println("Reading file:" + filename);
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(filename)));
+						   new InputStreamReader(
+									 getInputStream(filename)));
             //            System.err.println("Done Reading file:" + filename);
             String line;
             while ((line = br.readLine()) != null) {
@@ -156,7 +157,7 @@ public abstract class Geo extends Processor {
                 if (Utils.stringDefined(slat) && Utils.stringDefined(slon)) {
                     try {
                         if ( !Double.isNaN(Double.parseDouble(slat))
-                                && !Double.isNaN(Double.parseDouble(slat))) {
+			     && !Double.isNaN(Double.parseDouble(slat))) {
                             //                      System.err.println("not needed:"+ slat +" " + slon);
                             return row;
                         }
@@ -193,7 +194,7 @@ public abstract class Geo extends Processor {
                 Place place = null;
                 if (doAddress) {
                     place = GeoUtils.getLocationFromAddress(key.toString(),
-                            ctx.getBounds());
+							    ctx.getBounds());
                 } else {
                     String   tok    = key.toString();
                     double[] bounds = map.get(tok);
@@ -217,7 +218,7 @@ public abstract class Geo extends Processor {
                             badCnt++;
                             if ( !seen.contains(key)) {
                                 System.err.println("No bounds:" + key + " "
-                                        + badCnt);
+						   + badCnt);
                                 seen.add(key);
                             }
                         }
@@ -351,7 +352,7 @@ public abstract class Geo extends Processor {
 		    + "&units=feet&output=xml";
 		String result =IO.readUrl(new URL(url));
                 String elev = StringUtil.findPattern(result,
-                                  "<Elevation>([^<]+)</Elevation>");
+						     "<Elevation>([^<]+)</Elevation>");
                 if (elev != null) {
                     row.add(elev);
                 } else {
@@ -543,12 +544,12 @@ public abstract class Geo extends Processor {
                     }
                 } else {
                     String label = where.equals("counties")
-                                   ? "County"
-                                   : where.equals("states")
-                                     ? "State"
-                                     : where.equals("timezones")
-                                       ? "Timezone"
-                                       : where;
+			? "County"
+			: where.equals("states")
+			? "State"
+			: where.equals("timezones")
+			? "Timezone"
+			: where;
                     row.add(label);
                 }
 
@@ -568,7 +569,7 @@ public abstract class Geo extends Processor {
                 double lonValue = Double.parseDouble(slon);
 
                 List<Object> vs = GeoUtils.findFeatureFields(where, fields,
-                                      latValue, lonValue);
+							     latValue, lonValue);
                 if (vs == null) {
                     for (String f : fields) {
                         row.add("");
@@ -693,7 +694,7 @@ public abstract class Geo extends Processor {
                 double latValue = Double.parseDouble(slat);
                 double lonValue = Double.parseDouble(slon);
                 Address address = GeoUtils.getAddress(latValue,
-                                      lonValue);
+						      lonValue);
                 if (address != null) {
                     int idx = 0;
                     row.add(address.getAddress(), address.getCity(),
@@ -754,7 +755,7 @@ public abstract class Geo extends Processor {
                 didOne = true;
                 //A hack for US
                 if (value.equals("US")
-                        || value.toString().startsWith("United States")) {
+		    || value.toString().startsWith("United States")) {
                     add(ctx, row,  Integer.valueOf(327000000));
 
                     return row;
@@ -768,7 +769,7 @@ public abstract class Geo extends Processor {
             }
 
             Place place = GeoUtils.getLocationFromAddress(key.toString(),
-                              null);
+							  null);
             if (place != null) {
                 add(ctx, row, Integer.valueOf(place.getPopulation()));
             } else {
@@ -825,6 +826,43 @@ public abstract class Geo extends Processor {
 
     }
 
+    public static class InMap extends Filter {
+	JSONObject geojson;
+	String latCol;
+	String lonCol;
+	int latIdx;
+	int lonIdx;
+        public InMap(String filename,String slat, String slon)  {
+            super();
+	    try {
+		geojson=GeoJson.read(getInputStream(filename));
+	    } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+	    this.latCol=slat;
+	    this.lonCol=slon;
+	    if(!Utils.stringDefined(slat)) this.latCol = "latitude";
+	    if(!Utils.stringDefined(slon)) this.lonCol = "longitude";	       
+
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+		latIdx = getIndex(ctx,latCol);
+		lonIdx = getIndex(ctx,lonCol);		    
+                return true;
+            }
+	    if(!row.indexOk(latIdx) ||  !row.indexOk(lonIdx)) return false;
+	    double lat= Seesv.parseDouble(row.getString(latIdx));
+	    double lon= Seesv.parseDouble(row.getString(lonIdx));	    
+	    if(Double.isNaN(lat) || Double.isNaN(lon)) return false;
+	    return GeoJson.contains(geojson, lat,lon);
+        }
+
+    }
+
+
     public static class Regionator extends Geo {
         private boolean doneHeader = false;
         private Properties props;
@@ -835,8 +873,8 @@ public abstract class Geo extends Processor {
             try {
                 InputStream inputStream =
                     Utils.getInputStream(
-                        "/org/ramadda/util/seesvstate_regions.properties",
-                        getClass());
+					 "/org/ramadda/util/seesvstate_regions.properties",
+					 getClass());
                 props.load(inputStream);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);

@@ -1134,10 +1134,11 @@ public class Seesv implements SeesvCommands {
     /*
       Throw an error if we're not allows to read the file
     */
-    public void checkOkToRead(String file) {
+    public String checkOkToRead(String file) {
 	if(!IO.okToReadFrom(externalAccess, file)) {
 	    throw new IllegalArgumentException("Cannot read file:"   + file);
 	}
+	return file;
     }
 
     public String readFile(String file) throws Exception {
@@ -1712,10 +1713,10 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HARVEST, "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
 		new Arg(ARG_PATTERN,"regexp to match")),	
 	/*
-        new Cmd(CMD_SCRAPE, "For each URL in a column scrape the web page",
-                new Arg(ARG_COLUMN, "Column name", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("column_names","comma separated new column names",ATTR_TYPE,TYPE_LIST),
-		new Arg("pattern", "pattern - use (..) to extract values", ATTR_TYPE, TYPE_PATTERN)),
+	  new Cmd(CMD_SCRAPE, "For each URL in a column scrape the web page",
+	  new Arg(ARG_COLUMN, "Column name", ATTR_TYPE, TYPE_COLUMN),
+	  new Arg("column_names","comma separated new column names",ATTR_TYPE,TYPE_LIST),
+	  new Arg("pattern", "pattern - use (..) to extract values", ATTR_TYPE, TYPE_PATTERN)),
 	*/
         new Cmd(CMD_TEXT, "Extract rows from the text",
 		ARG_LABEL,"Read text",
@@ -1974,9 +1975,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 	/*
-        new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
-		ARG_LABEL,"Not Columns",
-                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+	  new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
+	  ARG_LABEL,"Not Columns",
+	  new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 	*/
         new Cmd(CMD_DROP, "Don't include given columns",
 		ARG_LABEL,"Drop Columns",
@@ -2706,6 +2707,13 @@ public class Seesv implements SeesvCommands {
 		new Arg("south","South",ATTR_TYPE,TYPE_NUMBER),				
 		new Arg("east","East",ATTR_TYPE,TYPE_NUMBER)),		
 
+
+        new Cmd(CMD_INMAP, "Filter on geojson map contains",
+                new Arg("file", "The geojson file"),
+                new Arg(ARG_LATITUDE, "latitude column",ATTR_TYPE,TYPE_COLUMN),
+                new Arg(ARG_LONGITUDE, "longitude column",ATTR_TYPE,TYPE_COLUMN)),
+
+
         new Cmd(CMD_DECODELATLON, 
 		"Decode latlon", 
 		ARG_LABEL,"Deocde Lat/Lon",
@@ -2941,7 +2949,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("type_label","Type Label - human readable label"),
 		new Arg("database_columns","List of database columns, one per line<br>e.g:id,label,type,prop,value1,prop2,value1<br>Types can be:<br>string,int,double,enumeration,enumerationplus<br>list,latlon,latlonbox,url,date,datetime<br>If enumeration then define values with escaped commas - \\,:<pre>fruit,Fruit,enumeration,values,banana\\,apple\\,orange</pre>",
 			ATTR_SIZE,"40",ATTR_TYPE,"list",ATTR_ROWS, "6","delimiter",";"))
-	    };
+    };
 
     private String getValue(String s) {
         for (Enumeration keys = macros.keys(); keys.hasMoreElements(); ) {
@@ -3084,11 +3092,11 @@ public class Seesv implements SeesvCommands {
                         argList = JsonUtil.list(tmp);
                     }
                     pw.println(JsonUtil.map(Utils.makeListFromValues(
-							   "command", JsonUtil.quote(c.cmd),
-							   "label", (c.label != null)
-							   ? JsonUtil.quote(c.label)
-							   : "null", "args", argList, "description",
-							   JsonUtil.quote(c.desc))));
+								     "command", JsonUtil.quote(c.cmd),
+								     "label", (c.label != null)
+								     ? JsonUtil.quote(c.label)
+								     : "null", "args", argList, "description",
+								     JsonUtil.quote(c.desc))));
                 }
             } else {
                 if (c.category) {
@@ -3574,13 +3582,13 @@ public class Seesv implements SeesvCommands {
 	defineFunction(CMD_DB,1,(ctx,args,i) -> {
 		Dictionary<String, String> props =  parseProps(args.get(++i));
 		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-db.install"),"true") || Utils.equals(props.get("db.install"),
-														"true")));
+														   "true")));
 		ctx.putProperty("db.droptable", ""+(Utils.equals(props.get("-db.droptable"), "true")
-					      || Utils.equals(props.get("db.droptable"),
-							      "true")));
+						    || Utils.equals(props.get("db.droptable"),
+								    "true")));
 		ctx.putProperty("db.yesreallydroptable", ""+(Utils.equals(props.get("-db.yesreallydroptable"), "true")
-					      || Utils.equals(props.get("db.yesreallydroptable"),
-							      "true")));		
+							     || Utils.equals(props.get("db.yesreallydroptable"),
+									     "true")));		
 		ctx.addProcessor(dbXml =  new Processor.DbXml(ctx,props));
 		ctx.setMaxRows(30);
 		return i;
@@ -3994,10 +4002,10 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_RANGEPERCENT,  4,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RangePercent(
-						     args.get(++i),
-						     args.get(++i),
-						     args.get(++i),
-						     args.get(++i)));
+							    args.get(++i),
+							    args.get(++i),
+							    args.get(++i),
+							    args.get(++i)));
 		return i;
 	    });
 	
@@ -4189,6 +4197,13 @@ public class Seesv implements SeesvCommands {
 						  parseInt(args.get(++i)), false));
 		return i;
 	    });
+
+	defineFunction(CMD_INMAP,3,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.InMap(checkOkToRead(args.get(++i)),
+					       args.get(++i), args.get(++i)));
+		return i;
+	    });
+
 
 	defineFunction(CMD_GEOCODEADDRESSDB,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(), true));
@@ -5193,13 +5208,13 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.FuzzyFilter(ctx,parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+			     new Filter.FuzzyFilter(ctx,parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction(CMD_LENGTHGREATER, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), 
-			      new Filter.Length(ctx,true,getCols(args.get(++i)),parseInt(args.get(++i))));
+			     new Filter.Length(ctx,true,getCols(args.get(++i)),parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -5222,48 +5237,48 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
-						     Filter.ValueFilter.OP_EQUALS,
-						     args.get(++i)));
+			     new Filter.ValueFilter(ctx,getCols(args.get(++i)),
+						    Filter.ValueFilter.OP_EQUALS,
+						    args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_NE, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
-						     Filter.ValueFilter.OP_NOTEQUALS,
-						     args.get(++i)));
+			     new Filter.ValueFilter(ctx,getCols(args.get(++i)),
+						    Filter.ValueFilter.OP_NOTEQUALS,
+						    args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_LT, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,
-						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
-						     args.get(++i)));
+			     new Filter.ValueFilter(ctx,
+						    getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
+						    args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_GT, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,
-						     getCols(args.get(++i)),
-						     Filter.ValueFilter.OP_GT,
-						     args.get(++i)));
+			     new Filter.ValueFilter(ctx,
+						    getCols(args.get(++i)),
+						    Filter.ValueFilter.OP_GT,
+						    args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_GE, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,
-						     getCols(args.get(++i)), Filter.ValueFilter.OP_GE,
-						     args.get(++i)));
+			     new Filter.ValueFilter(ctx,
+						    getCols(args.get(++i)), Filter.ValueFilter.OP_GE,
+						    args.get(++i)));
 		return i;
 	    });	
 
 	defineFunction(CMD_HAS, 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.Has(ctx,
-					     getCols(args.get(++i))));
+			     new Filter.Has(ctx,
+					    getCols(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_IFNUMCOLUMNS, 2,(ctx,args,i) -> {
@@ -5274,44 +5289,44 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_BETWEENSTRING, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.BetweenString(ctx,false,
-						       args.get(++i), 
-						       args.get(++i),
-						       args.get(++i)));
+			     new Filter.BetweenString(ctx,false,
+						      args.get(++i), 
+						      args.get(++i),
+						      args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_NOTBETWEENSTRING, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.BetweenString(ctx,true,
-						       args.get(++i), 
-						       args.get(++i),
-						       args.get(++i)));
+			     new Filter.BetweenString(ctx,true,
+						      args.get(++i), 
+						      args.get(++i),
+						      args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_BETWEEN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.RangeFilter(ctx,true,
-						     getCols(args.get(++i)), 
-						     args.get(++i),
-						     args.get(++i)));						     
+			     new Filter.RangeFilter(ctx,true,
+						    getCols(args.get(++i)), 
+						    args.get(++i),
+						    args.get(++i)));						     
 		return i;
 	    });
 
 	defineFunction(CMD_NOTBETWEEN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.RangeFilter(ctx,false,
-						     getCols(args.get(++i)), 
-						     args.get(++i),
-						     args.get(++i)));						     
+			     new Filter.RangeFilter(ctx,false,
+						    getCols(args.get(++i)), 
+						    args.get(++i),
+						    args.get(++i)));						     
 		return i;
 	    });
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
-						     Filter.ValueFilter.OP_DEFINED, "0"));
+			     new Filter.ValueFilter(ctx,getCols(args.get(++i)),
+						    Filter.ValueFilter.OP_DEFINED, "0"));
 		return i;
 	    });
 	defineFunction(CMD_MAXVALUE, 2,(ctx,args,i) -> {
@@ -5559,7 +5574,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_SUBD,3,(ctx,args,i) -> {	
-	ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
+		ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
 						    args.get(++i), args.get(++i)));
 		return i;
 	    });
@@ -5598,8 +5613,8 @@ public class Seesv implements SeesvCommands {
 	    });
 	defineFunction(new String[]{"-bg",CMD_BACKGROUND},2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Backgrounder(
-							   getCols(args.get(++i)),
-							   args.get(++i)));
+							    getCols(args.get(++i)),
+							    args.get(++i)));
 		return i;
 	    });	
 
@@ -5930,8 +5945,8 @@ public class Seesv implements SeesvCommands {
     }
 
     private void handleFilter(TextReader ctx,
-			       Filter.FilterGroup filterToAddTo,
-			       Filter converter) {
+			      Filter.FilterGroup filterToAddTo,
+			      Filter converter) {
 	if (filterToAddTo != null) {
 	    filterToAddTo.addFilter(converter);
 	} else {
