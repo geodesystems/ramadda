@@ -5,13 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.client;
 
-
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
-
 
 import org.ramadda.util.HttpFormEntry;
 import org.ramadda.util.Utils;
@@ -24,7 +22,6 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import org.ramadda.util.MyXmlUtil;
-
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,145 +36,49 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
-
-/**
- *
- *
- * @author RAMADDA Development Team
- */
 @SuppressWarnings("unchecked")
 public class RepositoryClient extends RepositoryBase {
-
-    /** _more_ */
     public static final String PROP_REPOSITORY = "RAMADDA_CLIENT_REPOSITORY";
-
-    /** _more_ */
     public static final String PROP_USER = "RAMADDA_CLIENT_USER";
-
-    /** _more_ */
     public static final String PROP_PASSWORD = "RAMADDA_CLIENT_PASSWORD";
-
-
-    /** _more_ */
     public static final String CMD_URL = "-url";
-
-
-
-    /** _more_ */
     public static final String CMD_FETCH = "-fetch";
-
-    /** _more_ */
     public static final String CMD_SEARCH = "-search";
-
-    /** _more_ */
     public static final String CMD_PRINT = "-print";
-
-    /** _more_ */
     public static final String CMD_TIMEOUT = "-timeout";
-
-    /** _more_ */
     public static final String CMD_PRINTXML = "-printxml";
-
-    /** _more_ */
     public static final String CMD_IMPORT = "-import";
-
-    /** _more_ */
     public static final String CMD_DEBUG = "-debug";
-
-    /** _more_ */
     public static final String CMD_EXIT = "-exit";
-
-    /** _more_ */
     public static final String CMD_FOLDER = "-folder";
-
-    /** _more_ */
     public static final String CMD_FILE = "-file";
-
-    /** _more_ */
     public static final String CMD_FILES = "-files";
-    //    public static final String CMD_ = ;
-
-    /** _more_ */
     private static String ATTR_LOCALFILES = "localfiles";
-
-    /** _more_ */
     private static String ATTR_LOCALFILE_PATH = "localfilepath";
-
-
     //Note: This is also defined in SessionManager
-
-    /** _more_ */
     public static final String COOKIE_NAME = "repositorysession";
-
-    /** _more_ */
     private static final String ID_PREVIOUS = "previous";
-
-    /** _more_ */
     private String sessionId;
-
-    /** _more_ */
     private String user = "";
-
-    /** _more_ */
     private String password = "";
-
-    /** _more_ */
     private String name = "RAMADDA Client";
-
-
-    /** _more_ */
     private String defaultGroupId;
-
-    /** _more_ */
     private String defaultGroupName;
-
-    /** _more_ */
     private int sslPort;
-
-    /** _more_ */
     private String title;
-
-    /** _more_ */
     private String description;
-
-
-    /** _more_ */
     private String lastId = "";
-
-    /** _more_ */
     private File importFile;
-
-    /** _more_ */
     private String importParentId;
-
-    /** _more_ */
     private boolean doingSearch = false;
-
-    /** _more_ */
     private List<String[]> searchArgs = new ArrayList<String[]>();
-
-    /** _more_ */
     private int timeout = 0;
-
-    /** _more_ */
     private int callTimestamp = 0;
 
-    /**
-     * _more_
-     */
     public RepositoryClient() {
         initCertificates();
     }
 
-    /**
-     * _more_
-     *
-     * @param serverUrl _more_
-     * @param user _more_
-     * @param password _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryClient(URL serverUrl, String user, String password)
             throws Exception {
         int port = serverUrl.getPort();
@@ -195,34 +96,11 @@ public class RepositoryClient extends RepositoryBase {
         initCertificates();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param hostname _more_
-     * @param port _more_
-     * @param base _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryClient(String hostname, int port, String base)
             throws Exception {
         this(hostname, port, base, "", "");
     }
 
-    /**
-     * _more_
-     *
-     * @param hostname _more_
-     * @param port _more_
-     * @param base _more_
-     * @param user _more_
-     * @param password _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryClient(String hostname, int port, String base,
                             String user, String password)
             throws Exception {
@@ -234,7 +112,6 @@ public class RepositoryClient extends RepositoryBase {
         initCertificates();
     }
 
-
     /**
      * If there is no trustStore property defined then always trust self-signed certificates
      */
@@ -244,30 +121,14 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getHttpsPort() {
         return sslPort;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean useSsl() {
         return sslPort > 0;
     }
 
-    /**
-     * _more_
-     *
-     * @param port _more_
-     */
     public void setHttpsPort(int port) {
         sslPort = port;
         boolean useSsl = sslPort > 0;
@@ -281,34 +142,11 @@ public class RepositoryClient extends RepositoryBase {
         URL_USER_HOME.setNeedsSsl(useSsl);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] doPost(RequestUrl url, List<HttpFormEntry> entries)
             throws Exception {
         return doPost(url.getFullUrl(), entries);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] doPost(String url, List<HttpFormEntry> entries)
             throws Exception {
         String[] result = HttpFormEntry.doPost(entries, url);
@@ -317,10 +155,6 @@ public class RepositoryClient extends RepositoryBase {
         return result;
     }
 
-
-    /**
-     * _more_
-     */
     private void doTimeout() {
         if (timeout == 0) {
             return;
@@ -339,22 +173,6 @@ public class RepositoryClient extends RepositoryBase {
         });
     }
 
-    /**
-     * _more_
-     *
-     * @param host _more_
-     * @param port _more_
-     * @param base _more_
-     * @param user _more_
-     * @param passwd _more_
-     * @param entryName _more_
-     * @param entryDescription _more_
-     * @param parent _more_
-     * @param filePath _more_
-     *
-     * @return The id of the uploaded entry
-     * @throws Exception _more_
-     */
     public static String uploadFileToRamadda(String host, int port,
                                              String base, String user,
                                              String passwd, String entryName,
@@ -367,22 +185,6 @@ public class RepositoryClient extends RepositoryBase {
                                                    filePath);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param host _more_
-     * @param user _more_
-     * @param passwd _more_
-     * @param entryName _more_
-     * @param entryDescription _more_
-     * @param parent _more_
-     * @param filePath _more_
-     *
-     * @return The id of the uploaded entry
-     * @throws Exception _more_
-     */
     public static String uploadFileToRamadda(URL host, String user,
                                              String passwd, String entryName,
                                              String entryDescription,
@@ -415,19 +217,6 @@ public class RepositoryClient extends RepositoryBase {
         return client.publishToRamadda(parent, pathTemplate, filePath);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryName _more_
-     * @param entryDescription _more_
-     * @param parent _more_
-     * @param filePath _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String uploadFile(String entryName, String entryDescription,
                              String parent, String filePath)
             throws Exception {
@@ -520,16 +309,6 @@ public class RepositoryClient extends RepositoryBase {
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     public void uploadFiles(List<EntryFile> files) throws Exception {
         checkSession();
 
@@ -558,7 +337,6 @@ public class RepositoryClient extends RepositoryBase {
             /*
              * file
              */
-
 
             entryNode.setAttribute(ATTR_FILE, IO.getFileTail(f.filePath));
 
@@ -628,7 +406,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
     /**
      *
      * @param parent _more_
@@ -648,7 +425,6 @@ public class RepositoryClient extends RepositoryBase {
         postEntries.add(HttpFormEntry.hidden(ARG_PATHTEMPLATE, pathTemplate));	
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, filePath, (byte[]) null));
-
 
         RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
                                              "/entry/xmlcreate", useSsl());
@@ -672,18 +448,6 @@ public class RepositoryClient extends RepositoryBase {
         return MyXmlUtil.getAttribute(newEntryNode, ATTR_ID);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entryName _more_
-     * @param entryDescription _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     */
     public boolean newFile(String entryName, String entryDescription,
                            String parent) {
         checkSession();
@@ -722,11 +486,9 @@ public class RepositoryClient extends RepositoryBase {
             String              xml         = MyXmlUtil.toString(root);
             //        System.out.println(xml);
 
-
             List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
 
             addUrlArgs(postEntries);
-
 
             postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
                     getXmlBytes(xml)));
@@ -753,18 +515,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryXml(String entryId) throws Exception {
         checkSession();
         String[] args = new String[] {
@@ -777,32 +527,12 @@ public class RepositoryClient extends RepositoryBase {
         return xml;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ClientEntry getEntry(String entryId) throws Exception {
         Element root = MyXmlUtil.getRoot(getEntryXml(entryId));
 
         return getEntry(root);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ClientEntry getEntry(Element node) throws Exception {
         ClientEntry entry = new ClientEntry(MyXmlUtil.getAttribute(node,
                                 ATTR_ID));
@@ -810,10 +540,7 @@ public class RepositoryClient extends RepositoryBase {
 
         return entry;
 
-
-
     }
-
 
     /**
      * This gets a input stream to the file download for the given entry
@@ -833,8 +560,6 @@ public class RepositoryClient extends RepositoryBase {
 
         return IOUtil.getInputStream(url, getClass());
     }
-
-
 
     /**
      * Download the resource for the given entry and write it to the given file. If the
@@ -871,42 +596,15 @@ public class RepositoryClient extends RepositoryBase {
         return toFileOrDirectory;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @throws Exception _more_
-     */
     public void printEntry(String entryId) throws Exception {
         ClientEntry entry = getEntry(entryId);
         System.out.println(entry.toString());
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @throws Exception _more_
-     */
     public void printEntryXml(String entryId) throws Exception {
         System.out.println(getEntryXml(entryId));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param tags _more_
-     *
-     * @throws Exception _more_
-     */
     public void addTags(Element node, List<String> tags) throws Exception {
         for (String tag : tags) {
             MyXmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
@@ -915,14 +613,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param filename _more_
-     *
-     * @throws Exception _more_
-     */
     public void addAttachment(Element node, String filename)
             throws Exception {
         MyXmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
@@ -931,14 +621,6 @@ public class RepositoryClient extends RepositoryBase {
                                       filename });
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param filename _more_
-     *
-     * @throws Exception _more_
-     */
     public void addThumbnail(Element node, String filename) throws Exception {
         Element metadataNode = MyXmlUtil.create(node.getOwnerDocument(),
                                    TAG_METADATA, node,
@@ -949,33 +631,12 @@ public class RepositoryClient extends RepositoryBase {
                                       filename });
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param fromId _more_
-     * @param toId _more_
-     * @param type _more_
-     *
-     * @throws Exception _more_
-     */
     public void addAssociation(Element node, String fromId, String toId,
                                String type)
             throws Exception {
         addAssociation(node, fromId, toId, type, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param fromId _more_
-     * @param toId _more_
-     * @param type _more_
-     * @param name _more_
-     *
-     * @throws Exception _more_
-     */
     public void addAssociation(Element node, String fromId, String toId,
                                String type, String name)
             throws Exception {
@@ -985,16 +646,6 @@ public class RepositoryClient extends RepositoryBase {
         });
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param error _more_
-     * @param exc _more_
-     */
     public void handleError(String error, Exception exc) {
         System.err.println(error);
         if (exc != null) {
@@ -1002,61 +653,22 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
     public void handleMessage(String message) {
         System.err.println(message);
     }
 
-
-    /** _more_ */
     public int idCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String createId() {
         return "dummyid_" + Math.random() + "_" + idCnt++;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parentNode _more_
-     * @param parentId _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Element makeGroupNode(Element parentNode, String parentId,
                                  String name)
             throws Exception {
         return makeGroupNode(parentNode, parentId, name, createId());
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param parentNode _more_
-     * @param parentId _more_
-     * @param name _more_
-     * @param dummyId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Element makeGroupNode(Element parentNode, String parentId,
                                  String name, String dummyId)
             throws Exception {
@@ -1072,33 +684,10 @@ public class RepositoryClient extends RepositoryBase {
         });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param root _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Element makeEntryNode(Element root, String name) throws Exception {
         return makeEntryNode(root, name, null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param root _more_
-     * @param name _more_
-     * @param parentId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Element makeEntryNode(Element root, String name, String parentId)
             throws Exception {
         String dummyId = createId();
@@ -1119,32 +708,10 @@ public class RepositoryClient extends RepositoryBase {
                                              dummyId, ATTR_NAME, name });
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param parentId _more_
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public boolean newGroup(String parentId, String name) {
         return newGroup(parentId, name, createId());
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param parentId _more_
-     * @param name _more_
-     * @param dummyid _more_
-     *
-     * @return _more_
-     */
     public boolean newGroup(String parentId, String name, String dummyid) {
         try {
             if (name == null) {
@@ -1181,17 +748,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
 	//	String authToken = RepositoryUtil.hashString(getSessionId());
@@ -1202,14 +758,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSessionId() {
         if (isAnonymous()) {
             return "";
@@ -1218,15 +766,6 @@ public class RepositoryClient extends RepositoryBase {
         return sessionId;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @throws InvalidSession _more_
-     */
     public void checkSession() throws InvalidSession {
         String[] msg = { "" };
         if ( !isValidSession(true, msg)) {
@@ -1234,16 +773,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param doLogin _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
     public boolean isValidSession(boolean doLogin, String[] msg) {
         if ( !isValidSession(msg)) {
             if (isAnonymous()) {
@@ -1259,15 +788,6 @@ public class RepositoryClient extends RepositoryBase {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param msg _more_
-     * @return _more_
-     *
-     */
     public boolean isValidSession(String[] msg) {
         try {
             String url;
@@ -1304,37 +824,14 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasSession() {
         return sessionId != null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param root _more_
-     *
-     * @return _more_
-     */
     public boolean responseOk(Element root) {
         return MyXmlUtil.getAttribute(root, ATTR_CODE).equals("ok");
     }
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param msg _more_
-     * @return _more_
-     *
-     */
     public boolean doLogin(String[] msg) {
         boolean debug = false;
         if (isAnonymous()) {
@@ -1397,13 +894,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean login() {
         try {
             String[] msg = { "login ok!", "login fail!" };
@@ -1417,13 +907,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void getInfo() throws Exception {
         boolean debug = false;
         String url = HtmlUtils.url(URL_INFO.getFullUrl(),
@@ -1453,7 +936,6 @@ public class RepositoryClient extends RepositoryBase {
         setHttpsPort(sslPort);
     }
 
-
     /**
      *  Method for encoding to xml the password. This simply obfuscates what is saved to disk
      *
@@ -1466,7 +948,6 @@ public class RepositoryClient extends RepositoryBase {
             password = new String(Utils.decodeBase64(new String(value)));
         }
     }
-
 
     /**
      *  Method for encoding to xml the password. This simply obfuscates what is saved to disk
@@ -1499,7 +980,6 @@ public class RepositoryClient extends RepositoryBase {
         return user;
     }
 
-
     /**
      * Set the Name property.
      *
@@ -1518,21 +998,10 @@ public class RepositoryClient extends RepositoryBase {
         return name;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected String getPassword() {
         return password;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     */
     protected void setPassword(String s) {
         password = s;
     }
@@ -1546,7 +1015,6 @@ public class RepositoryClient extends RepositoryBase {
         return (user != null)
                && ((user.trim().length() == 0) || user.equals("anonymous"));
     }
-
 
     /**
      *  Set the DefaultGroup property.
@@ -1584,23 +1052,11 @@ public class RepositoryClient extends RepositoryBase {
         return defaultGroupName;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
 
         //        if (rc.login()) {
         //            rc.uploadFile("testImg.jpg", "", "69dff72c-c0ea-479e-a4dd-22cd4dc5bba6", "d:/test1.jpg");
         //        }
-
-
 
         if (args.length < 3) {
             usage("Incorrect number of arguments");
@@ -1630,25 +1086,10 @@ public class RepositoryClient extends RepositoryBase {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param desc _more_
-     *
-     * @return _more_
-     */
     public static String argLine(String arg, String desc) {
         return "\t" + arg + " " + desc + "\n";
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public static void usage(String msg) {
         System.err.println(msg);
         System.err.println(
@@ -1681,7 +1122,6 @@ public class RepositoryClient extends RepositoryBase {
                 + "\t-debug (print out the generated xml)\n"
                 + "\t-exit (exit without adding anything to the repository\n");
 
-
         System.err.println(
             "Note: the  <parent folder id> can be an identifier from a existing folder in the repository or it can be \"previous\" which will use the id of the previously specified folder\n"
             + "For example you could do:\n"
@@ -1690,17 +1130,6 @@ public class RepositoryClient extends RepositoryBase {
         System.exit(1);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param parent _more_
-     *
-     * @throws Exception _more_
-     */
     private void importFile(File file, String parent) throws Exception {
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
         addUrlArgs(postEntries);
@@ -1726,19 +1155,8 @@ public class RepositoryClient extends RepositoryBase {
             System.err.println("Error:" + body);
         }
 
-
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param i _more_
-     * @param length _more_
-     * @param howMany _more_
-     */
     private void assertArgs(String arg, int i, int length, int howMany) {
         //        System.err.println(i + " " + length + " " + howMany);
         if (i >= length - howMany) {
@@ -1746,15 +1164,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @throws Exception _more_
-     */
     private void hitUrl(String url) throws Exception {
         checkSession();
         url = HtmlUtils.url(url, new String[] {
@@ -1773,12 +1182,6 @@ public class RepositoryClient extends RepositoryBase {
         //        System.out.println(xml);
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void xxxdoSearch() throws Exception {
         RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this, "/search/do",
                                           useSsl());
@@ -1804,14 +1207,6 @@ public class RepositoryClient extends RepositoryBase {
         System.out.println(xml);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public void preProcessArgs(String[] args) throws Exception {
         for (int i = 3; i < args.length; i++) {
             String arg = args[i];
@@ -1826,14 +1221,6 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public void processCommandLine(String[] args) throws Exception {
 
         String     xmlFile   = null;
@@ -2033,7 +1420,6 @@ public class RepositoryClient extends RepositoryBase {
             return;
         }
 
-
         if (entryCnt == 0) {
             usage("");
         }
@@ -2086,21 +1472,12 @@ public class RepositoryClient extends RepositoryBase {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryNode _more_
-     * @param arg _more_
-     */
     private void checkEntryNode(Element entryNode, String arg) {
         if (entryNode == null) {
             usage("You need to create an entry first (either with -folder or -file) when using the argument:"
                   + arg);
         }
     }
-
-
 
     /**
      * Class InvalidSession _more_
@@ -2110,25 +1487,11 @@ public class RepositoryClient extends RepositoryBase {
      */
     public static class InvalidSession extends RuntimeException {
 
-        /**
-         * _more_
-         *
-         * @param message _more_
-         */
         public InvalidSession(String message) {
             super(message);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param parentId _more_
-     * @param name _more_
-     * @param localfilepath _more_
-     *
-     * @return _more_
-     */
     public boolean newLocalfiles(String parentId, String name,
                                  String localfilepath) {
         try {
@@ -2171,19 +1534,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param entryName _more_
-     * @param wikitext _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     */
     public boolean newWiki(String entryName, String wikitext, String parent) {
         checkSession();
         try {
@@ -2224,11 +1574,9 @@ public class RepositoryClient extends RepositoryBase {
             String              xml         = MyXmlUtil.toString(root);
             //        System.out.println(xml);
 
-
             List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
 
             addUrlArgs(postEntries);
-
 
             postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
                     getXmlBytes(xml)));
@@ -2255,7 +1603,6 @@ public class RepositoryClient extends RepositoryBase {
         return false;
     }
 
-
     /**
      *  encode the text as utf-8
      *
@@ -2269,7 +1616,6 @@ public class RepositoryClient extends RepositoryBase {
         return xml.getBytes("UTF-8");
     }
 
-
     /**
      * Class EntryErrorException _more_
      *
@@ -2278,15 +1624,9 @@ public class RepositoryClient extends RepositoryBase {
      */
     public static class EntryErrorException extends RuntimeException {
 
-        /**
-         * _more_
-         *
-         * @param message _more_
-         */
         public EntryErrorException(String message) {
             super(message);
         }
     }
-
 
 }
