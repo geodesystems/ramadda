@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 20 03:23:32 EDT 2026";
+var build_date="RAMADDA build date: Fri May 22 03:33:37 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -28163,8 +28163,14 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             let selectedFields = this.getSelectedFields();
 	    if(selectedFields) {
 		this.fieldOn = {};
-		this.getData().getRecordFields().forEach(f=>{
-		    this.fieldOn[f.getId()] = false;
+		let fields = this.getData().getRecordFields()??[];
+
+		fields.forEach(f=>{
+		    let id = f.getId();
+		    let value = false;
+		    //special handling of lat/lon
+		    if(id=='latitude' || id=='longitude')  value=true;
+		    this.fieldOn[id] = value;
 		});
 		selectedFields.forEach(f=>{
 		    this.fieldOn[f.getId()] = true;
@@ -28207,6 +28213,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +HU.br();
 	    this.getData().getRecordFields().forEach((f,idx)=>{
 		let on = this.fieldOn[f.getId()];
+//		console.log(f.getId(),on);
 		if(!Utils.isDefined(on)) {
 		    on = true;
 		}
