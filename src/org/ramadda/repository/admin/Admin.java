@@ -1589,6 +1589,7 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         getPageHandler().makeLinksHeader2(request, sb, sqlUrls, "");	
 
+	sb.append(HU.div("QUERY:" + query));
         if (!stringDefined(query)) {
 	    sb.append(formSB);
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
@@ -1604,6 +1605,7 @@ public class Admin extends RepositoryManager {
 	sb.append(formSB);
         long t1 = System.currentTimeMillis();
         if ((query.indexOf(";") > 0) || bulkLoad) {
+	    sb.append(HU.div("loading sql"));
             getDatabaseManager().loadSql(query, false, true);
             return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer("Executed SQL" + HU.vspace() +
@@ -1706,6 +1708,10 @@ public class Admin extends RepositoryManager {
                 //                }
             }
             table.append("</tbody></table>");
+
+	    sb.append(HU.div("COUNT:" + cnt));
+
+
             if (raw != null) {
                 resultsSB.append(HU.pre(raw.toString()));
             } else {
