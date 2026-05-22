@@ -131,9 +131,11 @@ public class AuthManager extends RepositoryManager {
 		sb.append(HU.center(getPageHandler().showDialogError(msg("Incorrect verification password")+"<br>"+msg("Please enter your password"))));
 		return false;
 	    }
+	    if(forcePassword) return true;
 	}
 
 	if(doCaptcha && !checkRecaptcha(request, sb)) {
+	    sb.append(HU.center(getPageHandler().showDialogError(msg("The recaptcha failed"))));
 	    return false;
 	}
 
