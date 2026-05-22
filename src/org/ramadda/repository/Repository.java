@@ -3822,6 +3822,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
+	debug=true;
         if (debug) {
             System.err.println("checkForSslRedirect allSsl:" + allSsl
                                + " request secure:" + request.getSecure() +
@@ -4197,6 +4198,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	checkHuman            = getProperty(PROP_ISHUMAN_CHECK,false);
 	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
+	System.err.println("all ssl:" + allSsl);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
 	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);
