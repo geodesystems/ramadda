@@ -611,5 +611,9 @@ public class Result {
     public Date getLastModified() {
         return this.lastModified;
     }
+    public String toString() {
+	return "redirect:" + redirectUrl +" code:" + responseCode;
+    }
+
 
 }

@@ -3176,6 +3176,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result handleRequest(Request request) throws Exception {
+	System.err.println("request:" +  request.getHttpServletRequest());
+
+	Result result = handleRequestInner2(request);
+	System.err.println("result: " + result);
+	return result;
+    }
+
+    public Result handleRequestInner2(Request request) throws Exception {
+
 	//Add in any default http headers
 	for(String[]pair: httpHeaders) {
 	    request.setHeader(pair[0],pair[1]);
