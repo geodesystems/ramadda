@@ -457,7 +457,7 @@ Once you have your keystore.jks file generated copy it to the RAMADDA home direc
 then specify the below configuration options 
 in the install.properties file in your  RAMADDA home directory.
 
-<pre>
++pre addCopy=true
 ramadda.ssl.password=&lt;the password&gt;
 ramadda.ssl.keypassword=&lt;the keystore password&gt;
 ramadda.ssl.port=443
@@ -468,10 +468,19 @@ ramadda.ssl.port=443
 
 #If you want to disable ssl set this to true
 #ramadda.ssl.ignore=true
+-pre
 
-</pre>
+<a name="proxy"></a>
+:heading Using a proxy
+When using a proxy server that has HTTPS specify the SSL port number in a .properties file:
++pre addCopy=true
+ramadda.ssl.port=443
+-pre
+To allow RAMADDA to create absolute URLs set the hostname to the external host, e.g.:
 
-
++pre addCopy=true
+ramadda.hostname=mydomain.org
+-pre
 
 
 
