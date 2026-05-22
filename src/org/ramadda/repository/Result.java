@@ -46,7 +46,6 @@ public class Result {
     /** the redirect URL */
     private String redirectUrl;
 
-    /**  */
     public static final String TYPE_JS = "application/x-javascript";
 
     /** XML mime type */
@@ -129,6 +128,7 @@ public class Result {
      */
     public Result(String redirectUrl) {
         this.redirectUrl    = redirectUrl;
+	System.err.println("redirect:" + redirectUrl);
         this.shouldDecorate = false;
     }
 
@@ -473,6 +473,7 @@ public class Result {
      */
     public void setRedirectUrl(String value) {
         redirectUrl = value;
+	System.err.println("set redirect:" + redirectUrl);
     }
 
     /**

@@ -3822,7 +3822,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
-	debug=true;
+	//	debug=true;
         if (debug) {
             System.err.println("checkForSslRedirect allSsl:" + allSsl
                                + " request secure:" + request.getSecure() +
