@@ -1556,8 +1556,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    getDatabaseManager().executeAndClose(sql);
 	}
 
-	if(Repository.debugInit)   System.err.println("Repository.init-1");
-        initDefaultTypeHandlers();
+
 	if(Repository.debugInit)   System.err.println("Repository.init-2");
         boolean loadedRdb = false;
         boolean doDrop    = getProperty("db.load.drop", true);
@@ -1576,6 +1575,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 	if(Repository.debugInit)   System.err.println("Repository.init-4");
         readDatabaseProperties();
+
+	if(Repository.debugInit)   System.err.println("Repository:initDefaultTypeHandlers");
+        initDefaultTypeHandlers();	
+
+
         checkVersion();
         MyTrace.call1("Repository.loadResources");
 	if(Repository.debugInit)   System.err.println("Repository.init-5");
