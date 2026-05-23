@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May 22 05:01:21 EDT 2026";
+var build_date="RAMADDA build date: Sat May 23 08:34:51 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36418,6 +36418,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
     ];
 
+
     const SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties);
     this.currentTime = new Date();
     defineDisplay(this, SUPER, myProps, {
@@ -37048,6 +37049,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(okOutputs) {
 		okOutputs = Utils.split(okOutputs,',',true,true);
 	    }
+
 	    let check = output=>{
 		if(!showOutputs) return false;
 		let id = output.id??output;
@@ -37065,8 +37067,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra = Utils.mergeLists(extra,Utils.split(this.getProperty('searchOutputs'),',',true,true));
 	    }
 	    if(!Utils.isAnonymous()) {
+		if(check('copymove'))
+		    extra.push('repository.copymovelink;Move/Copy');		
 		if(check('extedit'))
 		    extra.push('repository.extedit;Extended Edit');
+
 	    }
 
 
@@ -38346,6 +38351,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			  col.getType()==COLUMN_TYPE_LIST) {
                     field = HU.input('', savedValue??this.getSearchValue(col.getName()),
 				     [ATTR_PLACEHOLDER,col.getSearchLabel(),
+				      ATTR_TITLE, '\'_\' for blank',
 				      ATTR_CLASS, HU.classes(CLASS_INPUT,CLASS_SIMPLESEARCH_INPUT),
 				      ATTR_SIZE, this.getTextInputSize(),
 				      ATTR_ID, id]);
