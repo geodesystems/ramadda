@@ -1467,7 +1467,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
 	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getOriginalIp() +" user:" + request.getUserAgent());
-	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false));
+	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false,false));
 	    return null;
 	}
 
@@ -3576,10 +3576,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    public String makeCookie(Request request, String path,String id, boolean strict) {
+    public String makeCookie(Request request, String path,String id, boolean strict,boolean...flags) {
+	boolean doStrict  = flags.length>0?flags[0]:true;
 	String cookie =  id + "; path=" + path + "; expires="
 	    + cookieExpirationDate
-	    + (isSSLEnabled(request)
+	    + (doStrict && isSSLEnabled(request)
 	       ? "; secure"
 	       : "");
 	if(strict) cookie+= "; HttpOnly;SameSite=Strict";
