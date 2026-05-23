@@ -345,6 +345,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 	    group="Internal Information"
 	    adminonly="true"/>
     <column name="copyright_date" type="date"  label="Copyright date"  
+	    cansearch="true"
 	    default="none"
 	    adminonly="true"/>
     <column name="cost" type="double"  label="Cost"	    adminonly="true"/>
