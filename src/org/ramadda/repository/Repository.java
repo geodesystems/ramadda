@@ -3176,10 +3176,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result handleRequest(Request request) throws Exception {
-	System.err.println("request:" +  request.getHttpServletRequest());
-
 	Result result = handleRequestInner2(request);
-	System.err.println("result: " + result);
 	return result;
     }
 
