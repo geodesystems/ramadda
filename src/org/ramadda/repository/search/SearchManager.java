@@ -118,6 +118,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static final String PROP_INDEX_ACTION = "indexaction";
 
+    public static final String VALUE_BLANK = "_blank_";
+
     public static boolean debugCorpus = false;
     public static boolean debugIndex = false;
     public static boolean debugSearch = false;
@@ -622,6 +624,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String s = v.toString();
 			//Columns can be cansearch=false && getIncludeInSearchIndex=true
 			//e.g. wiki text
+			String _s = s.trim();
+			if(_s.trim().length()==0) s = VALUE_BLANK;
 			if(column.getCanSearch()) {
 			    if(column.getTokenizeSearch() && !column.isClob()) {
 				doc.add(new TextField(field+SUFFIX_EXACT, s,Field.Store.NO));
@@ -1700,6 +1704,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			} else {
 			    String s = request.getUnsafeString(searchArg,null);
 			    if(!Utils.stringDefined(s)||s.equals(TypeHandler.ALL)) continue;
+			    String _s = s.trim();
+			    if(_s.equals("_blank_") || _s.equals("_")) s=VALUE_BLANK;
 			    String v = s.toLowerCase();
 			    List<Query> ors = new ArrayList<Query>();
 			    if(column.getTokenizeSearch()) {
@@ -1713,13 +1719,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				}
 				ors.add(phraseBuilder.build());
 			    } else {
-				ors.add(new WildcardQuery(makeTerm(field, v)));
+				WildcardQuery query = new WildcardQuery(makeTerm(field, v));
+				ors.add(query);
 			    }
 			    if(ors.size()==1) 
 				term = ors.get(0);
 			    else if(ors.size()>1)
 				term =  makeOr(ors);
 			}
+
 			cnt++;
 			if(term!=null) {
 			    builder.add(term, BooleanClause.Occur.MUST);
