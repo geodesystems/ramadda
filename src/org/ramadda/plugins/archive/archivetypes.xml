@@ -311,6 +311,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="search.area.show" value="false"/>
     <property name="form.area.show" value="false"/>    
     <property name="form.date.label" value="Publication Date"/>
+    <property name="form.date.show" value="false"/>
     <property name="form.todate.show" value="false"/>
     <property name="form.time.show" value="false"/>    
     <property name="date.format" value="yyyy"/>
