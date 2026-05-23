@@ -71,10 +71,10 @@ html {
   margin: 0 auto;
 }
 .font-narrow-bold h4, .font-narrow-bold .acm-features.style-1 .features-item h4 {
-  font-family: Helvetica,Arial,sans-serif;
+  xxx-font-family: Helvetica,Arial,sans-serif;
   font-weight: 800;
   transform: scaleX(0.9);
-  font-family: 'Oswald',Georgia,sans-serif;
+  xxx-font-family: 'Oswald',Georgia,sans-serif;
   font-style: normal;
   font-weight: 500;
 }
@@ -1009,7 +1009,7 @@ padding-right: 20px;
 -------------------------------------*/
 .sitenames, .sitenames h1, .sitenames h2 {
 	margin: 35px 0 0 45px;*/
-  font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
   font-weight: 700;
 }
 
@@ -1072,7 +1072,7 @@ p.name-primary, p.name-secondary {
 }
 
 .metismenu.mod-menu.sas-main-menu {
-  	font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  	xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
   	font-style: normal;
   	font-weight: bold;
 	color: black;
@@ -1240,11 +1240,11 @@ ul.metismenu.mod-menu.sas-footer-menu {
     font-size: 4rem;
     line-height: 1.125;
     color: #fff;
-    font-family: 'PT Serif', Georgia,serif;
+    xxx-font-family: 'PT Serif', Georgia,serif;
     font-style: normal;
     font-weight: bold;
     color: #fff;
-    font-family: 'PT Serif', Georgia,serif;
+    xxx-font-family: 'PT Serif', Georgia,serif;
     font-style: normal;
     font-weight: bold;
     text-align: left;
@@ -1305,7 +1305,7 @@ ul.list-horizontal li::after {
   color: white;
   box-shadow: none;
   border-bottom: none;
-  font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
   font-size: 0.875rem;
   line-height: 1.4286;
   margin-top: 1.5rem;
@@ -1415,7 +1415,7 @@ ul.list-horizontal li::after {
 }
 
 .acm-features.style-1 .features-item h4 {
-  font-family: 'Oswald',Georgia,sans-serif;
+  xxx-font-family: 'Oswald',Georgia,sans-serif;
   font-size: 3.5rem;
   font-weight: 500;
 }
@@ -1423,7 +1423,7 @@ ul.list-horizontal li::after {
 .acm-features.style-1 .features-item .sub-title {
     line-height: 1.4;
     color: #000;
-    font-family: 'PT Serif',Georgia,serif;
+    xxx-font-family: 'PT Serif',Georgia,serif;
     font-size: 1.25rem;
     font-style: normal;
     font-weight: 700;
@@ -1448,7 +1448,7 @@ ul.list-horizontal li::after {
 --------------------*/
 
 h1, h2, h3, h4, h5, h6 {   
-	font-family: 'PT Serif',Georgia,serif;
+	xxx-font-family: 'PT Serif',Georgia,serif;
 }
 
 h1 {
@@ -1459,7 +1459,7 @@ h1 {
 --------------------*/
 
 body {
-	font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+	xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
 	font-size: 1rem;
 	font-style: normal;
     	font-weight: 400;
@@ -1498,7 +1498,7 @@ blockquote {
 
 .red-phrase {
     color: #cc0033;
-    font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+    xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
     font-style: italic;
     font-weight: bold;
     font-size: 18px;
@@ -1921,7 +1921,7 @@ a.no-hover:hover {
 }
 
 .title-sas {
-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif; 
+xxx-font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif; 
 color: #000; 
 font-style: normal; 
 font-weight: 500; 
@@ -1932,7 +1932,7 @@ font-weight: 500;
 }
 
 .title-unit {
-font-family: pt serif; 
+xxx-font-family: pt serif; 
 font-weight: bold; 
 font-size: 150%; 
   max-width:90VW;
@@ -1950,7 +1950,7 @@ font-size: 100%;
 }
 
 .title-sub-unit {
-font-family: pt serif; 
+xxx-font-family: pt serif; 
 font-weight: bold; 
 font-size: 130%; 
 }
@@ -2429,7 +2429,7 @@ dd.createdby {
 		padding: 26px ;
 		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
 		color: #777;
-		font-family: Georgia, Times, Palatino, serif;
+		xxx-font-family: Georgia, Times, Palatino, serif;
 		font-size: 26px;
 		line-height: 1.1;
 		font-style: italic;
@@ -2442,7 +2442,7 @@ dd.createdby {
 		padding: 26px ;
 		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
 		color: #777;
-		font-family: Georgia, Times, Palatino, serif;
+		xxx-font-family: Georgia, Times, Palatino, serif;
 		font-size: 26px;
 		line-height: 1.1;
 		font-style: italic;
@@ -2454,7 +2454,7 @@ dd.createdby {
 		padding: 26px ;
 		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
 		color: #777;
-		font-family: Georgia, Times, Palatino, serif;
+		xxx-font-family: Georgia, Times, Palatino, serif;
 		font-size: 26px;
 		line-height: 1.1;
 		font-style: italic;
@@ -3410,7 +3410,7 @@ h2.footer-title {
     color: white;
     box-shadow: none;
     border-bottom: none;
-    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    xxx-font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     font-size: 0.875rem;
     line-height: 1.4286;
     margin-top: 1.5rem;
