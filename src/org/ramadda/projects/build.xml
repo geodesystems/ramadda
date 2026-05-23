@@ -13,7 +13,8 @@
       <ant antfile="${src_dir}/org/ramadda/projects/fec/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/assets/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/missing/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/projects/kbocc/build.xml" inheritAll="false"/>      
+      <ant antfile="${src_dir}/org/ramadda/projects/kbocc/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/rutgers/build.xml" inheritAll="false"/>            
     </target>
     
 </project>

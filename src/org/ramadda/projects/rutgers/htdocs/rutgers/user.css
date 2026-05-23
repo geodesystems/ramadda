@@ -1,0 +1,3578 @@
+@charset "UTF-8";
+/*-------------------------------------
+
+Author:		
+Date:		2025
+Web Site:	
+File: 		user.css
+
+----
+
+Table of Contents
+
+. 	Framework Overrides
+. 	Logo/Signature/Name
+. 	Sections
+. 	SAS-alerts
+. 	Below Top
+. 	Header
+. 	Banner
+. 	Sidebar
+. 	Footer
+.   SAS-extension
+.   SAS-copyright
+-------------------------------------*/
+
+/* JA Landscape - Supplemetary CSS (temp) */
+/* @import url("user_jalandscape.css"); */
+
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap");
+/* 2022-11-1 LG: this line is dupplicated from above */
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Source+Sans+Pro:wght@600&display=swap");
+
+/* add new line to import additional weight options */
+
+@import url("https://fonts.googleapis.com/css?family=Oswald:400,500,600,700|PT+Serif:400,400i,700,700i|Source+Sans+Pro:400,400i,600,600i,700,700i&display=swap");
+
+* {
+  --cassiopeia-color-primary: #444;
+  --cassiopeia-color-hover: #cc0033;
+  --cassiopeia-color-link: #000;
+  --primary-color: #444;
+  --hover-color: #cc0033;
+  --link-color: #000;
+}
+
+/* LG 2024-09-13 -- fix HTML Header Scroll for anchor Tags */
+
+html {
+    scroll-padding-top: 380px; /* change to the height of the header */
+    overflow: auto;
+}
+
+/* Add different code for Safari */
+
+@supports (-webkit-appearance: none) {
+
+html {
+    scroll-padding-top: 320px; /* change to the height of the header */
+    overflow: auto;
+}
+
+}
+
+/* Framework Overrides
+-------------------------------------*/
+.mod-center-heading .card-header {
+  text-align: center;
+  max-width: 65%;
+  margin: 0 auto;
+}
+.font-narrow-bold h4, .font-narrow-bold .acm-features.style-1 .features-item h4 {
+  font-family: Helvetica,Arial,sans-serif;
+  font-weight: 800;
+  transform: scaleX(0.9);
+  font-family: 'Oswald',Georgia,sans-serif;
+  font-style: normal;
+  font-weight: 500;
+}
+.font-narrow-bold .acm-features.style-1 .features-item {
+    padding: 30px 10px;
+}
+.signature-header {
+  width: 260px;
+  height: auto;
+  margin-top: 20px;
+}
+.container-bottom-a, .container-bottom-b, .container-top-a, .container-top-b, .container-bottom-c, .container-bottom-d {
+  padding: 0rem 0 2rem 0;
+}
+
+/* 2022-19-09 LG */
+/* site grid to add additional modules */
+
+@supports (display: grid) {
+  
+  .container-bottom-c { grid-area: bot-c;}
+   .container-bottom-d { grid-area: bot-d;}
+  .site-grid {
+    display: grid;
+    grid-template-areas: ". banner banner banner banner ." ". top-a top-a top-a top-a ." ". top-b top-b top-b top-b ." ". comp comp comp comp ." ". side-r side-r side-r side-r ." ". side-l side-l side-l side-l ." ". bot-a bot-a bot-a bot-a ." ". bot-b bot-b bot-b bot-b ." ". bot-c bot-c bot-c bot-c ." ". bot-d bot-d bot-d bot-d .";
+    grid-template-columns: [full-start] minmax(0, 1fr) [main-start] repeat(4, minmax(0, 19.875rem)) [main-end] minmax(0, 1fr) [full-end];
+    grid-gap: 0 1em;
+  }
+  .site-grid > [class^=container-],
+.site-grid > [class*=" container-"] {
+    width: 100%;
+    max-width: none;
+    -webkit-column-gap: 1em;
+       -moz-column-gap: 1em;
+            column-gap: 1em;
+  }
+  .site-grid > .full-width {
+    grid-column: full-start/full-end;
+  }
+  @media (min-width: 992px) {
+    .site-grid {
+      grid-template-areas: ". banner banner banner banner ." ". top-a top-a top-a top-a ." ". top-b top-b top-b top-b ." ". side-l comp comp side-r ." ". bot-a bot-a bot-a bot-a ." ". bot-b bot-b bot-b bot-b ." ". bot-c bot-c bot-c bot-c ." ". bot-d bot-d bot-d bot-d .";
+    }
+  }
+}
+
+
+.container-top-a,
+.container-top-b,
+.container-bottom-c,
+.container-bottom-d {
+  position: relative;
+}
+.container-top-a > *,
+.container-top-b > *,
+.container-bottom-c > *,
+.container-bottom-d > * {
+  flex: 1;
+  margin: 0.5em 0;
+}
+@media (max-width: 991.98px) {
+  .container-top-a,
+.container-top-b,
+.container-bottom-c,
+.container-bottom-d {
+    flex-direction: column;
+  }
+  .container-top-a > *,
+.container-top-b > *,
+.container-bottom-c > *,
+.container-bottom-d > * {
+    flex: 0 1 auto;
+  }
+}
+
+
+/* =Joomla! Custom Fields
+-----------------------------*/
+/*  Remove bullets from list of custom fields  */
+.fields-container {
+	list-style: none;
+}
+
+/* =Joomla! Custom Fields - optional styles
+-----------------------------*/
+.field-label, 
+.field-entry .field-label {
+	font-weight: bold;
+}
+li.field-entry.no-left-margin {
+    margin-left: -25px;
+}
+.field-full-width {
+ 	width: 100%;
+ 	display:inline-block;
+ }
+.field-border-bottom {	
+	border-bottom: solid 1px #ccc;
+	padding-bottom: 5px;
+	margin-bottom: 8px !important;
+} 
+
+
+/* =intro images
+--------------------------- */
+.intro-image-top-150,
+.item .field-value img.intro-image-top-150,
+.item-page .field-value img.intro-image-top-150,
+.blogPost  .field-value img.intro-image-top-150 {
+    float: left;
+    margin: 0 8px 0 0;
+    width: 150px;
+    height: auto;
+}
+
+.intro-image-top-200 {
+	float: left;
+	margin: 0 10px 10px 0;
+	width: 200px;
+	height: auto;
+}
+
+.intro-image-top-300 {
+	float: left;
+	margin: 0 10px 10px 0;
+	width: 300px;
+	height: auto;
+}
+
+@media screen and (max-width: 768px) {
+	.intro-image-top-300 {
+  		float: none;
+  		margin: 0 0 10px 0;
+  	}
+}
+
+@media screen and (max-width: 500px) {
+	.intro-image-top-150,
+	.intro-image-top-200 {
+  		float: none;
+  		margin: 0 0 10px 0;
+  	}
+}
+
+@media screen and (max-width: 300px) {
+	.intro-image-top-300,
+	.field-entry.intro-image-top-300,
+	.blogPost .field-value img.intro-image-top-300 {
+  		width: 100%;
+  	}
+}
+
+/* END intro images
+--------------------------- */
+
+
+/* 2022-10-13 LG - Add float left for fields */
+body.fields-float-left .fields-container {float: left!important}
+
+
+/* Prevent float on small screens.
+--------------------------- */
+@media screen and (max-width: 768px) {
+	.float-none-mobile {
+		float: none;
+	}
+}
+
+/* begin css styles for Facing Stalingrad */
+
+.two-column-text {
+  max-width: 90%;          /* Total width for both columns */
+  margin: 0 auto;          /* centers the columns and creates wide margins on left/right */
+  column-count: 2;         /* Number of columns */
+  column-gap: 70px;        /* Space between columns */
+  font-size: 22px;
+  display: block;
+  letter-spacing: -0.05em; /* Reduces spacing by 0.05em */
+}
+
+.container-lightgray {       /* used to display text and photo in 2 columns */
+  display: flex;
+  align-items: flex-start;    /* aligns both items at the top */
+  gap: 10px;               /* space between the image and text */
+  background-color: #f2f2f2;  /* light gray background */
+  padding: 20px;
+}
+
+.container-white {       /* used to display text and photo in 2 columns */
+  display: flex;
+  align-items: flex-start;    /* aligns both items at the top */
+  gap: 10px;               /* space between the image and text */
+  padding: 20px;
+}
+
+.column-text {       /* used in conjunction with above containers to display the text column */
+  flex: 1;
+  margin-right: 20px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.column-photo img {       /* used in conjunction with above containers to display the photo column */
+  width: 400px;  /* adjust as needed */
+  height: auto;
+  border-radius: 8px; /* optional rounded corners */
+  display: block;
+}
+
+.column-photo-small img {       /* used in conjunction with above containers to display the photo column */
+  width: 150px;  /* adjust as needed */
+  height: auto;
+  border-radius: 8px; /* optional rounded corners */
+  display: block;
+}
+
+.single-column-text {
+  max-width: 550px;    /* controls the column width */
+  margin: 0 auto;      /* centers the column and creates wide margins on left/right */
+  /* padding: 20px;        optional inner spacing */
+  line-height: 1.6;
+  font-size: 20px;
+}
+
+.full-width-lightgray-bg {
+  background-color: #f2f2f2; /* light gray background */
+  width: 100%;
+  padding: 40px 0; /* top & bottom spacing */
+}
+
+.quote-container {
+  display: flex;
+  align-items: flex-start;  /* Align to the top */
+  gap: 5px;               /* space between the image and text */
+  max-width: 600px;    /* controls the column width */
+  margin: 0 auto;      /* centers the column and creates wide margins on left/right */
+}
+
+.quote-icon {
+  width: 100px;             /* adjust as needed */
+  height: auto;
+}
+
+.quote-icon-small {
+  width: 40px;             /* adjust as needed */
+  height: auto;
+}
+
+.quote-text {
+  margin: 0;
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* end css styles for Facing Stalingrad */
+
+/* HTML Style Overrides
+/*  2022-12-14 LG: Added more padding 40px to all of the color backgrounds */
+
+-------------------------------------*/
+.container-banner {
+    margin: 0 0 0;
+}
+
+.sas-extension {
+    padding: 40px;
+}
+
+.blackBackground {
+    background-color: #000000;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.blackBackground h1 {
+    line-height: 1.25;
+}
+
+.blueBackground {
+    background-color: #007FAC;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.darkgrayBackground {
+    background-color: #5f6172;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.goldBackground {
+    background-color: #EBB600;
+    color: black;
+    text-align: center;
+    padding: 10px;
+}
+
+.lightGrayBackground {
+    background-color: #f8f8f8;
+    color: #444;
+    text-align: center;
+    padding: 10px;
+}
+
+.scarletBackground {
+    background-color: #C03;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.scarletBackground h1 {
+    line-height: 1.25;
+}
+
+.tealBackground {
+    background-color: #00626d;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+/*
+:link
+*/
+
+.blackBackground a:link {
+color: white;
+}
+
+.scarletBackground a:link {
+color: white;
+}
+
+.blueBackground a:link {
+color: white;
+}
+
+.tealBackground a:link {
+color: white;
+}
+
+.lightGrayBackground a:link {
+color: #444;
+}
+
+.darkgrayBackground a:link {
+color: white;
+}
+
+.goldBackground a:link {
+color: black;
+}
+
+/*
+:visited
+*/
+
+.blackBackground a:visited {
+color: white;
+}
+
+.scarletBackground a:visited {
+color: white;
+}
+
+.blueBackground a:visited {
+color: white;
+}
+
+.tealBackground a:visited {
+color: white;
+}
+
+.lightGrayBackground a:visited {
+color: #444;
+}
+
+.darkgrayBackground a:visited {
+color: white;
+}
+
+.goldBackground a:visited {
+color: black;
+}
+
+/*
+:hover
+*/
+
+.blackBackground a:hover {
+color: white;
+}
+
+.scarletBackground a:hover {
+color: white;
+}
+
+.blueBackground a:hover {
+color: white;
+}
+
+.tealBackground a:hover {
+color: white;
+}
+
+/* LG & SB: 8/26/2025 Updated to white on hover */
+
+.lightGrayBackground a:hover {
+?
+/* color: white; */
+}
+
+.darkgrayBackground a:hover {
+color: white;
+}
+
+.goldBackground a:hover {
+color: black;
+}
+
+/*
+:active
+*/
+
+.blackBackground a:active {
+color: white;
+}
+
+.scarletBackground a:active {
+color: white;
+}
+
+.blueBackground a:active {
+color: white;
+}
+
+.tealBackground a:active {
+color: white;
+}
+
+.lightGrayBackground a:active {
+color: #444;
+}
+
+.darkgrayBackground a:active {
+color: white;
+}
+
+.goldBackground a:active {
+color: black;
+}
+
+
+.welcomeText {
+	line-height: 1.7778;
+	font-size: 1.5rem;
+}
+
+.welcomeText p {
+	vertical-align: middle;
+}
+
+.readMoreText {
+	line-height: 5;
+}
+
+.h3Black {
+	color: black;
+}
+
+/* start --> sas_red.css on 10-4-2022 */
+
+.sidebar-teal-button{
+	text-align: center;
+	background-color: #00626D;
+	display: block;
+  	margin-top: 1rem;
+  	text-transform: none;
+	padding: 3px 10px;
+	border: 0.125rem solid #00626D;
+}
+
+.sidebar-teal-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.sidebar-teal-button:hover, .sidebar-teal-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+	border: 0.125rem solid #000000;
+}
+
+.sidebar-gray-button {
+	text-align: center;
+	background-color: #505050;
+	display: block;
+  	margin-top: 1rem;
+  	text-transform: none;
+	padding: 3px 10px;
+	border: 0.125rem solid #505050;
+}
+
+.sidebar-gray-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.sidebar-gray-button:hover, .sidebar-gray-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+	border: 0.125rem solid #000000;
+}
+
+.sidebar-cream-button {
+	text-align: center;
+	background-color: #dfd2b3;
+	display: block;
+  	margin-top: 1rem;
+  	text-transform: none;
+	padding: 3px 10px;
+	border: 0.125rem solid #dfd2b3;
+}
+
+.sidebar-cream-button a {
+	padding: 42px 5%;
+	color: #000000;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.sidebar-cream-button:hover, .sidebar-cream-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+	border: 0.125rem solid #000000;
+}
+
+.sidebar-scarlet-button {
+	text-align: center;
+	background-color: #cc0033;
+	display: block;
+  	margin-top: 1rem;
+  	text-transform: none;
+	padding: 3px 10px;
+	border: 0.125rem solid #cc0033;
+}
+
+.sidebar-scarlet-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.sidebar-scarlet-button:hover, .sidebar-scarlet-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+	border: 0.125rem solid #000000;
+}
+
+.content-bottom-button {
+	text-align: center;
+	background-color: #CC0033;
+	display: block;
+	min-height: 150px; 
+}
+
+.content-bottom-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.content-bottom-button:hover, .content-bottom-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+}
+
+.content-bottom-teal-button {
+	text-align: center;
+	background-color: #00626D;
+	display: block;
+	min-height: 150px; 	
+}
+
+.content-bottom-teal-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.content-bottom-teal-button:hover, .content-bottom-teal-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+}
+
+.content-bottom-gray-button {
+	text-align: center;
+	background-color: #505050;
+	display: block;
+	min-height: 150px; 	
+}
+
+.content-bottom-gray-button a {
+	padding: 42px 5%;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.content-bottom-gray-button:hover, .content-bottom-gray-button a:hover  {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+}
+
+.content-bottom-cream-button {
+	text-align: center;
+	background-color: #dfd2b3;
+	display: block;
+	min-height: 150px; 	
+}
+
+.content-bottom-cream-button a {
+	padding: 42px 5%;
+	color: #363636;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+
+.content-bottom-cream-button:hover, .content-bottom-cream-button a:hover {
+	color: #ffffff;
+	background-color: #000000;
+	display: block;
+}
+
+/* end --> sas_red.css on 10-4-2022 */
+
+
+/* Buttons
+-------------------------------------*/
+
+.framed-link {
+	color: #000;
+  	font-size: 1rem;
+	font-weight: bolder;
+	position: relative;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	height: 3.75rem;
+	border-radius: 0.25rem;
+	white-space: normal;
+  	border: 0.125rem solid #C03;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+/* 2023-08-02 added color for link hover */
+
+.framed-link:hover {
+	background-color: #C03;
+}
+
+a.framed-link:hover {
+  	color: #FFFFFF;
+}
+
+/* 2022-10-04 Create Framed Link Button White */ 
+
+.framed-link-white {
+	color: #000;
+  	font-size: 1rem;
+	font-weight: bolder;
+	position: relative;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	height: 3.75rem;
+	border-radius: 0.25rem;
+	white-space: normal;
+  	border: 0.125rem solid #fff;
+	padding-left: 30px;
+	padding-right: 30px;
+  text-decoration: none;
+}
+
+.framed-link-white:hover {
+  	background-color: #595959;
+}
+
+
+.link-in-the-frame {
+	text-decoration: none;
+}
+
+
+.back-to-top-link {
+  bottom: 30px;      
+  margin-right: 5px; 
+  
+  /* visual styling */
+  width: 45px;
+  background: #EBB600;
+  color: black;
+  border-color: black;
+}
+
+.back-to-top-link:focus, .back-to-top-link:hover {
+  /* visual styling */
+  width: 45px;
+  background: #EBB600;
+  color: black;
+  border-color: black;
+}
+
+
+/* Template (Cassiopeia) Overrides
+-------------------------------------*/
+.card {
+	border: 0px solid #dfe3e7;
+}
+.card-header {
+	background-color: white;
+	border-bottom: 0px solid #dfe3e7;
+        margin-top: 20px;
+	padding: 0.5rem 1rem 0.5rem 0px;
+}
+.card-body {
+	padding: 0.1rem;
+}
+
+.sidebar-right card, .card-header {
+	background-color: #d8d8d8;
+	padding-left: 5px;
+}
+
+.sidebar-left card, .card-header {
+	background-color: #d8d8d8;
+	padding-left: 5px;
+}
+
+/*
+.sidebar-right card, .card-body ul {
+	background-color: #d8d8d8;
+	padding-left: 5px;
+}
+*/
+
+
+
+/* SK 4/18/2023 - make headers smaller */
+
+.h1, h1 {
+  font-size: 2.25rem;
+}
+
+.h2, h2 {
+  font-size: 1.75rem;
+}
+
+.h3, h3 {
+  font-size: 1.5rem;
+}
+
+.h4, h4 {
+  font-size: 1.25rem;
+}
+
+
+
+/* Framework Overrides
+-------------------------------------*/
+.container-lg, .container-md, .container-sm, .container {
+    /*max-width: 1200px;*/
+}
+
+.container-topbar, .container-below-top {
+    color: #222;
+}
+
+.container-topbar {
+	font-size: .75rem;
+	background-color: #000;
+	font-weight: bold;
+	line-height: 2;
+}
+
+.container-topbar nav {
+    margin-top: 0;
+}
+
+.container-topbar .navbar a {
+	padding: 0 .8em;
+	border-right: thin solid white;
+	font-weight: bold;
+}
+
+.container-topbar .navbar ul {
+	margin: 0 40px 0;
+	justify-content: flex-end;
+}
+
+.container-topbar .mod-menu > li + li {
+	margin-left: 0em;
+}
+
+.container-topbar .navbar-toggler {
+    border: 0px solid white;
+}
+
+/* 2022-09-19 LG: Add Flex class for sas branding container */
+
+.container-sas-branding  {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* 2025-08-14 SK: rutgers-menu position */
+
+.container-rutgers-menu  {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+/* Module Classes for center title module */
+/* 2022-12-14 LG: Add more padding to the center title */
+
+.center-title h3 {
+   text-align: center;
+	font-size: 2.5rem;
+	padding-top: 25px;
+	padding-bottom: 25px;
+} 
+
+
+/* SK 4/14/2023 */
+
+.center-title h2 {
+   text-align: center;
+	font-size: 3.0rem;
+	padding-top: 25px;
+	padding-bottom: 25px;
+} 
+
+
+/* SAS CUSTOM FEATURES
+-------------------------------------*/
+.card-header:first-child { 
+padding-top: 0px !important; 
+}
+
+.card-header {
+background-color: white;
+border-bottom: 1px solid #E1E1E1;
+margin-top: 20px;
+padding: 0.5rem 1rem 0.5rem 0px;
+margin-bottom: 10px;
+}
+
+.page-header {
+padding-bottom: 20px;
+padding-top: 20px;
+}
+
+.grid-child.container-sidebar-right {
+padding-left: 30px;
+}
+
+.grid-child.container-sidebar-left {
+padding-left: 10px;
+padding-right: 20px;
+}
+
+
+/* SAS GRID -  Alerts - Operating Status - may not be needed.
+-------------------------------------*/
+.sas-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.sas-grid-container > div {
+  padding: 20px 0;
+}
+
+.sas-item-two-thirds {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+/* SAS Titles/Headings
+-------------------------------------*/
+.sas-news h3, .sas-news h5 {
+  font-size: 1.5rem;
+  font-style: normal;
+  line-height: 1.3334;
+  margin-top: 10px;
+}
+
+
+/* Logo/Signature/Name
+-------------------------------------*/
+.sitenames, .sitenames h1, .sitenames h2 {
+	margin: 35px 0 0 45px;*/
+  font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  font-weight: 700;
+}
+
+.sitenames a {
+	color: #000;
+}
+
+.sitenames a:hover {
+	font-weight: 700;
+}
+
+.name-primary {
+	font-size: 1.8rem;
+	line-height: 2rem;
+}
+
+.name-secondary {
+	font-size: 1.3rem;
+	line-height: 1.8rem;
+}
+
+p.name-primary, p.name-secondary {
+	margin-bottom: .5rem;
+}
+
+.ru-signature {
+	padding: 20px 20px 0 0;
+	max-width: 350px;
+}
+
+ 
+/* Sections: Header
+-------------------------------------*/
+.container-header {
+    box-shadow: none;
+    background-color: #fff;
+    background-image: none;
+} 
+
+.container-header .navbar-brand {
+	display: none;
+}
+
+.container-header .grid-child { 
+    padding: 0.1em;
+}
+
+/** ramadda - comment out sticky */
+.header {
+/*    position: sticky;*/
+    top: 0;
+}
+
+
+/* Menu - Main
+-------------------------------------*/
+
+.container-header nav {
+	float: right;
+}
+
+.metismenu.mod-menu.sas-main-menu {
+  	font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  	font-style: normal;
+  	font-weight: bold;
+	color: black;
+}
+
+ul.metismenu.mod-menu.sas-main-menu {
+  margin-left: auto;
+  margin-right: 20px;
+  order: 2;
+}
+
+.metismenu.mod-menu.sas-main-menu .metismenu-item li {
+  line-height: 1.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.metismenu.mod-menu.sas-main-menu .metismenu-item.active > a, .metismenu.mod-menu .metismenu-item > button:hover {
+  text-decoration: none;
+  outline: 0px dotted #ced4da;
+	border-bottom: 4px solid #cc0033;
+}
+
+
+.metismenu.mod-menu.sas-main-menu .metismenu-item.active > a, .metismenu.mod-menu .metismenu-item > button:hover, .metismenu.mod-menu .metismenu-item > a:hover {
+  text-decoration: none;
+  outline: 0px dotted #ced4da;
+}
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-main-menu a:hover {
+  font-weight: bolder;
+  text-decoration: none;
+}
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-main-menu li:hover > ul {
+  display: block;
+}
+
+/* Footer Menu */
+
+ul.metismenu.mod-menu.sas-footer-menu {
+  order: 2;
+	flex-direction: row;
+	display: inline-flex;
+}
+
+.metismenu.mod-menu.sas-footer-menu .metismenu-item li {
+	margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.metismenu.mod-menu.sas-footer-menu .metismenu-item.active > a, .metismenu.mod-menu .metismenu-item > button:hover {
+  text-decoration: none;
+  outline: 0px dotted #ced4da;
+	border-bottom: 4px solid #cc0033;
+}
+
+.metismenu.mod-menu.sas-footer-menu .metismenu-item.active > a, .metismenu.mod-menu .metismenu-item > button:hover, .metismenu.mod-menu .metismenu-item > a:hover {
+  text-decoration: none;
+  outline: 0px dotted #ced4da;
+}
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-footer-menu a:hover {
+  font-weight: bolder;
+  text-decoration: none;
+  border-bottom: 4px solid #fff;
+}
+
+/* 2022-11-08 LG Bottom white border for menu items without 'children' */
+.metismenu.mod-menu .metismenu-item>a, .metismenu.mod-menu .metismenu-item>button, .metismenu.mod-menu .metismenu-item>span {
+    border-bottom: 4px solid #fff;
+}
+
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-footer-menu li:hover > ul {
+  display: block;
+}
+
+
+/* Menu - RU
+-------------------------------------*/
+.container-header .mod-menu.navbar-sas-ru {
+    color: #000;
+}
+
+.container-header .mod-menu.navbar-sas-ru #content-mobile {
+    display: none;
+}
+
+.container-header ul.mod-menu.navbar-sas-ru {
+    float: right;
+    padding-right: 35px;
+    padding-top: 5px;
+}
+
+.container-header ul.mod-menu.navbar-sas-ru li a {
+    font-size: 0.8125rem;
+    line-height: .2308;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    font-weight: bold;
+  }
+
+.container-header ul.mod-menu.navbar-sas-ru li a:hover {
+    text-decoration: underline;
+  }
+
+.container-header ul.mod-menu.navbar-sas-ru:first-child {
+    border-right: thin solid #FFF;
+  }
+
+
+/* Section: Banner (used because dropdowns are not working in menu position at this time.)
+-------------------------------------*/
+.container-banner .sas-footer-menu a {
+    color: #444;
+}
+
+.container-banner .navbar .mod-menu.sas-footer-menu li {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.container-banner .navbar .mod-menu.sas-footer-menu > li > a {
+    color: #444;
+    line-height: 1.375;
+}
+
+.container-banner .navbar.sas-footer-menu ul li button::after {
+    color: #cc0033;
+}
+
+.container-banner .mod-menu.sas-footer-menu > li > a.fas fa-search::after {
+    display: none;
+}  
+  
+/* Section: Banner
+-------------------------------------*/
+.container-banner .navbar-toggler {
+    color: #cc0033;
+}
+
+.container-banner .banner-overlay, .homepage.nofix .custom.banner-overlay {
+  height: 75vh;
+  height: 600px;
+  background-attachment: initial;
+}
+
+.container-banner .banner-overlay.custom .overlay {
+    background-color: transparent;
+    padding-left: 2.5rem;
+    position: relative;
+    top: 80%;
+    left: 45%;
+    transform: translate(-55%, -45%);
+    width: 75%;
+}
+
+.container-banner .banner-overlay.custom .overlay h1 {
+    border-left: 0.625rem solid #C03;
+    padding-left: 2.1rem;
+    font-size: 4rem;
+    line-height: 1.125;
+    color: #fff;
+    font-family: 'PT Serif', Georgia,serif;
+    font-style: normal;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'PT Serif', Georgia,serif;
+    font-style: normal;
+    font-weight: bold;
+    text-align: left;
+}
+
+
+/* =list-horizontal
+-----------------------------*/
+ul.list-horizontal {
+  list-style-type: none;
+}
+
+.list-horizontal li {
+  display: inline;
+  
+}
+
+ul.list-horizontal li::after {
+    padding-right: 1.125rem;
+    padding-left: 1.125rem;
+    display: inline-block;
+    color: #666;
+    content: '|';
+}
+
+
+/* =Footer V2 (Cassiopeia)
+-----------------------------*/
+
+.sas-footer-identity, .wrapper-sas-footer-identity {
+  background-color: #000;
+  border-bottom: none;
+}
+.sas-footer-identity, .sas-footer-identity a {
+  color: white;
+}
+
+.sas-footer-menu, .wrapper-sas-footer-menu {
+  background-color: #000;
+}
+.sas-footer-menu, .sas-footer-menu a {
+  color: white;
+}
+
+.footer {
+    color: white;
+    background-color: #000;
+    background-image: none;
+    font-size: 0.8rem;
+    margin-top: 0em;
+}
+
+.footer .grid-child {
+    align-items: inherit;
+}
+
+.footer h3.title {
+  color: white;
+  box-shadow: none;
+  border-bottom: none;
+  font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.4286;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem; /* 1.875rem; */
+  text-shadow: none;
+}
+
+.footer ul {
+    padding-left: 0;
+}
+
+.footer ul li {
+    list-style: none;
+	margin-bottom: 13px;
+}
+
+.footer a:not([class]) {
+  text-decoration: none;
+  color: #fff;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* =SAS-Alerts
+-----------------------------*/
+.container-sas-alerts.grid-child {
+	max-width: 100%;
+}
+
+.container-sas-alerts.grid-child, .container-sas-alerts.grid-child .card {
+	background-color: #ebb600;
+}
+
+.container-sas-alerts.grid-child .card {
+	max-width: 90%;
+}
+
+/* =SAS-SocialMedia
+-----------------------------*/
+.container-sas-socialmedia .wrapper-socialmedia {
+  	background-color: #000;
+}
+
+.container-sas-socialmedia table {
+  margin: 0;
+}
+
+
+/* =SAS-Footer
+-----------------------------*/
+.container-sas-footer .wrapper-footer {
+  	background-color: #000;
+}
+
+.container-sas-footer table {
+  margin: 0;
+}
+
+
+/* =SAS-Copyright
+-----------------------------*/
+.sas-copyright {
+    background-color: #000;
+    padding-top: 9px;
+    padding-right: var(--gutter-x, 0.9em);
+    padding-left: var(--gutter-x, 1.9em);
+}
+
+/* =SAS-Copyright & SAS-SocialMedia
+-----------------------------*/
+.sas-copyright, .sas-socialmedia {
+  color: white;
+  background-image: none;
+  font-size: 0.8rem;
+
+}
+
+.sas-copyright a, .sas-socialmedia a {
+  color: white;
+}
+
+.sas-copyright a:hover, .sas-socialmedia a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+	div.sas-copyright {
+		margin: 0;
+		position: relative;
+		right: 0;
+		float: none;
+		text-align: center;
+	}
+}
+
+/* =Joomlart ACM 
+-----------------------------*/
+.acm-features.style-1 .features-item {
+    border: none;
+}
+
+.acm-features.style-1 .features-item {
+  text-align: center;
+}
+
+.acm-features.style-1 .features-item h4 {
+  font-family: 'Oswald',Georgia,sans-serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+}
+
+.acm-features.style-1 .features-item .sub-title {
+    line-height: 1.4;
+    color: #000;
+    font-family: 'PT Serif',Georgia,serif;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+}
+
+
+/* =Joomlart ACM - By the Numbers
+-----------------------------*/
+.headings-blue .acm-features.style-1 h4  { 
+  	color: #007FAC !important;
+}
+
+/*
+	** Name: Editor Styles
+	** File: styles.css
+	** Author: Hugo M.
+	** Date: 9/10/2015
+*/
+
+
+/* =Headings reset
+--------------------*/
+
+h1, h2, h3, h4, h5, h6 {   
+	font-family: 'PT Serif',Georgia,serif;
+}
+
+h1 {
+	line-height: 40px;
+}
+
+/* Body
+--------------------*/
+
+body {
+	font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+	font-size: 1rem;
+	font-style: normal;
+    	font-weight: 400;
+    	line-height: 1.75;
+	/* color: #444; */
+}
+
+
+/* =Blockquote
+--------------------*/
+blockquote {
+	color: #666666;
+ }
+
+/* =Highlight Article
+--------------------*/
+.highlight_article {
+	background: #ffffff none repeat scroll 0 0;
+    border-bottom: 1px solid #bbb;
+    border-top: 1px solid #bbb;
+    color: #555;
+    display: block;
+    font-weight: bold;
+    line-height: 20px;
+    margin: 8px;
+    padding: 8px;
+    text-align: justify;
+    vertical-align: middle;
+}
+
+/* =Red Text
+--------------------*/
+.red-text {
+	color: #cc0033 !important;
+}
+
+.red-phrase {
+    color: #cc0033;
+    font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* =Small Text
+--------------------*/
+.small_text{
+	line-height: 105%;
+	font-size: 93%;
+}
+
+/* =Large Text
+--------------------*/
+.large-text {
+	/* Define Large Text */
+    font-size: 130%;
+    line-height: 1.3em; 
+}
+
+/* =button link
+--------------------*/
+
+.button {
+	background-color: #cc0033;
+  	border: 0.125rem solid #cc0033;
+  	color: #fff;
+  	font-size: 1.125rem;
+  	margin-top: 1rem;
+  	text-transform: none;
+	text-decoration: none;
+	padding: 5px 10px;
+	font-weight: bold;
+}
+
+a.button:link {
+color: #fff;
+text-decoration: none;
+}
+
+a.button:visited {
+color: #fff;
+text-decoration: none;
+}
+
+a.button:hover {
+color: #fff;
+text-decoration: none;
+}
+
+a.button:active {
+color: #fff;
+text-decoration: none;
+}
+
+.sidebar-button {
+  background-color: #000;
+}
+
+.sidebar-button a {
+	padding: 42px;
+	color: #ffffff;
+	display: block;
+	font-size: 24px;
+	line-height: 110%;
+}
+.sidebar-button:hover, .sidebar-button a:hover  {
+	color: #FFFFFF !important;
+	background-color: #000000;
+}
+
+.button-yellow {
+	background-color: #ffc910; 
+	color: #222; 
+	padding: 18px 19px 13px 19px ; 
+	margin: 10px 3px; 
+	line-height: 4;
+	font-size: 95%;
+}
+.button-wide {
+	padding: 18px 19px 13px 19px ; 
+	margin: 10px 3px; 
+	font-size: 95%;
+	text-transform: uppercase;
+}
+
+
+/* =button-lg
+--------------------*/
+/* For use with need for large buttons, uses the bootstrap button styling */
+.button-lg.button {
+}
+
+/* =All Caps
+--------------------*/
+.all_caps {
+	text-transform: uppercase;
+	font-size: 95%;
+	background-color: #F1F1F1;
+}
+
+/* format definition list to look like table - this entry adds class to editor
+--------------------*/
+.tbl-def-list {}
+
+
+/* =Pull Quotes
+--------------------*/
+
+/* =Lists and Tables
+-----------------------------*/
+.striped-list {
+	list-style-position: inside;
+	line-height: 23px;
+}
+
+#rt-mainbody .striped-list ul li,
+#rt-mainbody  ul.striped-list li {
+	padding: 8px;
+	margin-bottom: 0px;
+}
+
+#rt-mainbody .striped-list ul li p,
+#rt-mainbody  ul.striped-list li p {
+	padding: 8px;
+}
+
+.striped-list li:nth-child(odd) {
+	background-color: #FFFFFF;
+}
+
+.striped-list li:nth-child(even) {
+	background-color: #e8e8e8;
+}
+
+#rt-mainbody .striped-list-no-color ul li,
+#rt-mainbody  ul.striped-list-no-color li {
+}
+
+#rt-mainbody ul.striped-list-no-color li:nth-child(odd) {
+	list-style-type: none;
+}
+
+#rt-mainbody ul.striped-list-no-color li:nth-child(even) {
+	list-style-type: none;
+}
+
+/* =list-fix Striped List
+--------------------*/
+#rt-mainbody .sas-list-striped ul li {
+    line-height: 1.5em;
+    padding: 8px;
+}
+
+#rt-mainbody .sas-list-striped li:nth-child(2n+1) {
+    background-color: #f9f9f9;
+}
+
+#rt-mainbody .sas-list-striped  ul li ul li{
+    background-color: none;
+    margin-bottom: 0px;
+    padding: 0 8px;
+}
+
+/* Bootstrap override - 01/21/2016 HM */
+.table-striped tbody tr:nth-child(even) td, 
+.table-striped tbody tr:nth-child(even) th {
+    background-color: #ededed;
+}
+/* =END Lists and Tables
+-----------------------------*/
+
+
+/* Bootstrap span
+--------------------*/
+.span3 {
+	list-style-position: inside;
+}
+.span5 {
+	list-style-position: inside;
+}
+
+/* gray-bg
+--------------------*/
+.gray-bg {
+  	/* Define Gray box background with interior white outline */
+    outline: solid #757575 5px;
+    background: #757575;
+    color: #fff;
+    height: 80%;
+    padding: 8px;
+    font-size: 15px;
+    border: 3px #fff solid;
+}
+
+
+/*Custom CSS to make tables responsive 
+---------------------------*/ 
+/* Max width before this PARTICULAR table gets nasty This query will take effect for any screen smaller than 760px and also iPads specifically.*/ 
+
+/* Generic Styling, for Desktops/Laptops */
+table.sas-responsive-tbl  { 
+	width: 100% !important; 
+	border-collapse: collapse !important; 
+} 
+
+.sas-responsive-tbl td, .sas-responsive-tbl th { 
+	padding: 6px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+} 
+
+/* 2025-10-23 LG - Adjust background for TH to be darker for Accessibility */
+.sas-responsive-tbl.table-striped tbody tr:nth-child(2n+1) th { 
+	background: #595959; 	
+	color: white; 
+	font-weight: bold; 
+} 
+.sas-responsive-tbl thead {
+		background-color: #595959;
+		color: white;
+		font-weight: bold;
+}
+.sas-responsive-tbl thead a{
+		color: white;
+}
+
+@media only screen and (min-width: 1024px) {
+	/* Add break after data label for long lines of text. */
+	.sas-responsive-tbl br.hide-desktop { 
+		display: none; 
+	} 
+}
+/* Force table to not be like tables anymore */ 
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+	table.sas-responsive-tbl, 
+	.sas-responsive-tbl thead, 
+	.sas-responsive-tbl tbody, 
+	.sas-responsive-tbl th, 
+	.sas-responsive-tbl td, 
+	.sas-responsive-tbl tr { 
+		display: block; 
+	} 
+	/* Hide table headers (but not display: none;, for accessibility) */ 
+	.sas-responsive-tbl thead tr { 
+		position: absolute; 
+		top: -9999px; 
+		left: -9999px; 
+	} 
+	.sas-responsive-tbl tr { 
+		border: 1px solid #ccc; 
+	}
+	/* Behave like a "row" */ 
+	.sas-responsive-tbl  td { 
+		border: none; 
+		border-bottom: 1px solid #eee; 
+		position: relative; 
+		padding-left: 5%; 
+		/*width: 90% !important;*/
+	} 
+	/* Now like a table header / position: absolute; / Top/left values mimic padding */ 
+	.sas-responsive-tbl td:before { 
+		top: 6px; 
+		left: 6px; 
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap; 
+	}
+	/* Add data label to table in responsive format */
+	.sas-responsive-tbl td:before { 
+		content: attr(data-label);
+		float: left;
+		font-weight: bold;
+	}
+}
+/*END - Custom CSS to make tables responsive 
+---------------------------*/
+
+/* Define no border for responsive table 
+---------------------------*/
+/* added 2/14/2017 */
+/* SB - 4/23/2026 fixing no-border selectors */
+table.sas-responsive-tbl.no-border,
+table.sas-responsive-tbl.no-border th,
+table.sas-responsive-tbl.no-border td,
+table.sas-responsive-tbl.no-border tr  {
+    border: 0px !important;
+}
+
+/* Styling for condensed paragraphs
+---------------------------*/
+.tight-line-height {
+	line-height: 1.4;
+}
+
+
+/* JOOMLA CUSTOM FIELDS - custom styles (additional css for these fields is in sas_red.css)
+--------------------------- */
+.regular-bold {
+	font-weight: bold;
+	line-height: 1.3;
+	margin: 3px 0px 10px 0px;
+}
+.med-normal {
+	font-size:  150%;
+	font-weight: normal;
+	line-height: 1.3;
+	margin: 3px 0px 5px 0px;
+}
+.med-bold {
+	font-size:  140%;
+	font-weight: bold;
+	line-height: 1.3;
+	margin: 3px 0px 5px 0px;
+}
+.large-bold {
+	font-size:  170%;
+	line-height: 1.3;
+	font-weight: bold;
+}
+.large-normal {
+	font-size: 23px;
+	line-height: 1.2;
+	margin: 2px 0 5px 0;
+}
+.caps-gray-sm {
+	color: #545454;
+	font-size: 14px;
+	margin: 0px 0 5px 0;
+	text-transform: uppercase;
+
+}
+.caps-gray-med {
+	color: #545454;
+	font-size:  115%;
+	line-height: 1.3;
+	margin: 8px 0 0  0;
+	text-transform: uppercase;
+}
+.paragraph-spaced {
+	margin-left: 9px;
+	margin-top: 5px;
+	margin-bottom: 9px;
+}
+
+/* =images
+--------------------------- */
+.full-width {
+       width: 100%;
+       display: inline-block;
+}
+
+.full-width-v2 {
+       width: 100%;
+       display: contents;
+}
+
+.border-bottom {
+       border-bottom: solid 1px #ccc;
+       padding-bottom: 5px;
+       margin-bottom: 8px !important;
+}
+
+
+/* Prevent float on small screens.
+--------------------------- */
+.float-none-mobile {
+	float: left;
+}
+
+/* Helps with lists that wrap around images.
+--------------------------- */
+.list-inside {
+    list-style-position: inside;
+}
+
+
+/* SAS LOGO SETTINGS
+2022-09-27 LG
+-------------------------------------*/
+
+@media (max-width: 576px) {
+	.container-logo {
+    		margin-top: 2.0rem;
+    		margin-left: 1.5rem;
+    		max-width: 1000px;
+	}
+}
+
+/* 2025-07-11 Remove this section so the top right Rutgers menu to stay on top in laptop view */
+/*@media (min-width: 576px) {
+	.container-logo {
+    		margin-top: 2.0rem;
+    		margin-left: 1.5rem;
+    		min-width: 900px;
+    		max-width: 1000px;
+	}
+}
+*/
+
+/* 2025-07-11 Add ustify for metis mod menu for display */
+
+.metismenu.mod-menu {
+     align-items: flex-start;
+     justify-content: center;
+}
+}
+
+.container-unit {
+    margin-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+a.no-underline {
+    text-decoration: none;
+}
+
+a.no-hover:hover {
+  color: #000;
+}
+
+.title-sas {
+font-family: 'Source Sans Pro',Helvetica,Arial,sans-serif; 
+color: #000; 
+font-style: normal; 
+font-weight: 500; 
+  margin-top: 1rem;
+  font-size: 1.25rem;
+    line-height: 1.3158;
+    max-width: 17.25rem;
+}
+
+.title-unit {
+font-family: pt serif; 
+font-weight: bold; 
+font-size: 150%; 
+  max-width:90VW;
+}
+
+/** ramadda - change font size add text-decoration */
+.title-unit {
+font-size: 100%; 
+}
+
+.title-unit a:hover {
+
+
+    text-decoration:underline;
+}
+
+.title-sub-unit {
+font-family: pt serif; 
+font-weight: bold; 
+font-size: 130%; 
+}
+
+/* 10/18/2022 - add menu bar line LG */
+
+.menu-bar {
+  border-bottom: 1px solid #dddddd;
+}
+
+/* 10/20/22 - Left side menu active item - LG */
+
+/* Level 1 side menu item general settings - line border */
+.left-side-menu .mod-list {
+    width: 100%;
+}
+
+.left-side-menu li {
+    	padding-left: -20px;
+  	border-bottom: 1px solid #ddd;
+   	padding-bottom: 10px;
+}
+
+.left-side-menu li li{
+   border-bottom: 1px solid #fff;
+}
+
+/* Set background for active left side menu */
+.left-side-menu .current.active.deeper.parent {
+    background: #fdfdfd;
+}
+
+ .left-side-menu .current.active {
+    background: #fdfdfd;
+}
+
+.left-side-menu .active.deeper.parent {
+  background: #fdfdfd;
+}
+
+/* Level 1 side menu anchor settings left border */
+
+.left-side-menu li.active>a {
+    margin-left: -20px;
+    padding-left: 20px;
+    border-left: 4px solid #cc0033;
+    font-weight: bold;
+    text-decoration: none;
+    color:  #cc0033;
+}
+
+.left-side-menu li >a:hover {
+    font-weight: bold;
+    text-decoration: none;
+    color:  #cc0033;
+}
+
+/* Interior sub menu item on left */
+.left-side-menu li.active li.active>a {
+    margin-left: -20px;
+    padding-left: 20px;
+    border-left: 4px solid #fff; */
+    font-weight: bold;
+    text-decoration: none;
+    color: #cc0033;
+}
+
+/* LG 2023-01-25 add additional padding requirements */
+
+
+
+.grid-child.container-bottom-a {
+    padding-bottom: 50px;
+}
+
+.grid-child.container-bottom-b {
+    padding-bottom: 50px;
+}
+
+.grid-child.container-bottom-c {
+    padding-bottom: 50px;
+}
+
+main {
+    padding-bottom: 50px;
+}
+
+.sas-footer-identity, .wrapper-sas-footer-identity {
+    padding-top: 20px;
+}
+
+/* Off Canvas Menu 4/4/2023 LG */
+.metismenu.mod-menu { align-items: flex-start } 
+
+.offcanvas-body {
+    background: #fff
+}
+
+ul.mod-menu.mod-menu_dropdown-metismenu.metismenu.mod-list.navbar.navbar-nav.dropdown.sas-main-menu {
+    color: #000
+}
+
+
+.metismenu.mod-menu .metismenu-item>a, .metismenu.mod-menu .metismenu-item>button, .metismenu.mod-menu .metismenu-item>span {
+border-bottom: none;
+}
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-footer-menu a:hover {
+border-bottom: none;
+}
+
+.metismenu.mod-menu .metismenu-item > button, .metismenu.mod-menu .metismenu-item.active > button, .metismenu.mod-menu.sas-footer-menu a:hover {
+    font-weight: bolder;
+    text-decoration: none;
+border-bottom: none;
+}
+
+.metismenu.mod-menu.sas-footer-menu .metismenu-item.active > a, .metismenu.mod-menu .metismenu-item > button:hover {
+border-bottom: none;
+}
+
+.offcanvas.show {
+  background-color: #fff;
+  background-image: none;
+}
+
+.offcanvas-body .container-header .mod-menu {
+       color: #000;
+}
+
+
+@media (min-width: 992px) {
+  .offcanvas-start {
+    width: 100%;
+  }
+}
+@media (max-width: 991.98px) {
+  .offcanvas .metismenu.mod-menu .metismenu-item > ul {
+    position: relative;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .offcanvas .metismenu.mod-menu .mm-collapse {
+    background-color: transparent;
+  }
+  .offcanvas .metismenu.mod-menu .metismenu-item > a {
+    color: #000;
+  }
+}
+.offcanvas-header > *:only-child {
+  margin-left: auto;
+}
+
+/* Settings for dropfiles */
+.dropfiles-foldertree-table.dropfiles-foldertree { flex-basis: unset!important; border-right: none !important; }
+.dropfiles-content-table .dropfiles-container-table.with_foldertree { flex: unset !important; width: 100%!important; } 
+.dropfiles-content-table.dropfiles-content .table td.file_title a.title { font-size: 16px; }
+
+/*
+	** Name: Editor Styles - Custom
+	** File: templates/styles.css
+	** Author: Rutgers School of Arts & Sciences
+	** Date: 2019
+*/
+
+figure {
+    border: 1px solid #dcdcdc;
+    margin-left: 10px; 
+    background-color: #fff;
+    margin-right: 15px !important;
+}
+	
+/* 2023-10-09 Adjust figcaption for accessiblity contrast */
+
+figcaption {
+    background-color: #efefef; 
+    padding: 5px; 
+    line-height: 1.5;
+    font-size: 93%;
+    color:#000;
+}
+
+.figcaption_with_url {
+    background-color: #efefef;
+      color:#000;
+}
+
+/* Rejoinder Styling
+--------------------------- */
+
+.rejoinder-gallery {
+	margin-right: -30px;
+	margin-left: -50px;
+}
+
+.rejoinder-image {
+    background-color: #ffffff;
+    padding: 5px; 
+    max-width: 98%;
+}
+
+.rejoinder-menu {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.rejoinder-menu grid-child.container-component {
+	padding-left: 0px;
+}
+
+p.journal_body {
+    text-indent: 12px;
+}
+
+.journal_quote {
+    margin-left: 30px;
+} 
+ 
+.journal_references {
+    margin-left: 12px;
+    text-indent: -12px;
+}
+
+.journal_signature {
+    margin-left: 12px;
+}
+
+/* Settings for off canvas menu dropdown arrow */
+@media (max-width: 991px){
+.metismenu.mod-menu .mm-toggler::after {
+  -webkit-margin-start: .5em;
+  border-left: .5em solid transparent;
+  border-right: .5em solid transparent;
+  border-top: .5em solid;
+  content: "";
+  height: 0;
+  margin-inline-start: .5em;
+  -webkit-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  width: 0;
+  display: inline-block;
+}
+
+.metismenu.mod-menu .mm-toggler {
+  color: currentColor;
+}
+
+}
+
+/*2023-07-21 LG Create Down pointing Triangle*/
+
+/*Down pointing triangle*/
+
+
+.triangle-bottom {
+  background-image:url("../images/red_triangle_wide.svg");
+  background-repeat:no-repeat;
+  background-size: cover;
+  background-position: bottom;
+}
+
+ div.triangle-bottom {
+   Padding-bottom:100px;
+   background-color: #C03;
+}
+
+/* Center display of Titles for Modules */
+
+h3.card-header.justify-content-center {
+    text-align: center !important;
+    border-bottom: none;
+}
+
+h3.justify-content-center {
+    text-align: center;
+}
+
+/* Fixed SAS NB Backgroud */
+
+.SASImageBackground {
+  background-image: url("../images/sas-rutgers-nb-background.jpg");
+  min-height: 400px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #fff;
+}
+
+.SASImageBackground a:link {
+  color: white;
+}
+
+.SASImageBackground a:visited {
+  color: white;
+}
+
+.SASImageBackground a:hover {
+  color: white;
+}
+
+.SASImageBackground a:active {
+  color: white;
+}
+
+/* Section for main-bottom-a */
+.main-bottom-a.card {
+    padding-right: 10px;
+}
+
+.main-bottom-b.card {
+    padding-right: 10px;
+}
+
+/* Buttons for List Values - Fancy list 2023-08-04 LG*/
+
+ul.fancylist.field-value {
+    padding-left: 0px;
+    margin-left: 0px;
+}
+
+ul.detail_data.fancylist {
+    padding: 0px;
+    margin: 0px;
+}
+
+li.fancy-list-button  {
+    margin-bottom: 5px;
+    margin-left: 5px;
+    min-width: 230px;
+    list-style: none;
+    display: inline-block;
+    margin-right: 10px;
+    color: #000;
+    font-weight: bold;
+}
+
+.fancy-list-icon  {
+  color: #fff !important;
+  text-align: center;
+  margin-right: 10px;
+  width: 32px;
+}
+
+
+li.teal-button {
+     border: 1px solid #2c6870;
+    background-color: #a4dfe7;
+}
+
+.teal-icon {
+    background: #2c6870;
+    border: solid 5px #2c6870;
+    color: #fff;
+}
+
+li.blue-button {
+   border: 1px solid #3882a5;
+    background-color: #b7dfec;
+}
+
+.blue-icon {
+    border: solid 5px #3882a5;
+    background:#3882a5;
+      color: #fff;
+}
+
+li.olive-button {
+    border: 1px solid #a5ab2c;
+    background-color:#dde0a7;
+
+}
+
+.olive-icon {
+    border: solid 5px #a5ab2c;
+    background: #a5ab2c;
+    color: #fff;
+}
+
+li.peach-button {
+    border: 1px solid #e89338;
+    background-color:#efcba7;
+}
+
+.peach-icon {
+    background: #e89338;
+    border: solid 5px  #e89338;
+    color: #fff;
+}
+
+/* Add purple option to fancy list, 2024-04-16 LG */
+li.purple-button {
+   border: 1px solid #ccb0ff;
+    background-color: #EDE3FF;
+}
+
+.purple-icon {
+    border: solid 5px #ccb0ff;
+    background:#ccb0ff;
+      color: #000;
+}
+
+/* 2025-07-23 LG - Add Faculty / honors fancy button options */
+
+li.gray-button {
+border: 1px solid #666666;
+background-color: #e4e5e3;
+}
+
+.gray-icon {
+background: #666666;
+border: solid 5px #666666;
+color: #fff;
+}
+
+li.green-button {
+border: 1px solid #90EE90;
+background-color: #DAF7A6;
+}
+
+.green-icon {
+background: #90EE90;
+border: solid 5px #90EE90;
+color: #fff;
+}
+
+/* SAS Specific Styles */
+.news-subheading {
+    color: #cc0033;
+    line-height: 115%;
+    font-size: 150%;
+    font-weight: normal;
+}
+
+/*2023-09-06 LG Create Down pointing Triangle - gold*/
+
+/*Down pointing triangle gold*/
+
+
+.triangle-bottom-gold {
+  background-image:url("../images/gold_triangle_wide.svg");
+  background-repeat:no-repeat;
+  background-size: cover;
+  background-position: bottom;
+}
+
+ div.triangle-bottom-gold {
+   Padding-bottom:100px;
+   background-color: #EBB600;
+}
+
+/* 2023-09-12 Hide Author details in Articles - Main SAS adjustment */
+
+/* Hide the 'details' and icon for author */
+dt.article-info-term {
+    display: none;
+}
+
+span.icon-user.icon-fw {
+    display: none;
+}
+
+dd.createdby {
+    font-size: 110%;
+    color: #000;
+}
+
+/* 2023-09-12 Define pull Quotes - Main SAS adjustment */
+
+	.pquote_left {
+		float: left;
+		width: 300px;
+		margin: 30px 50px 30px 0px;
+		margin: 15px 20px 15px 0;
+		padding: 26px ;
+		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
+		color: #777;
+		font-family: Georgia, Times, Palatino, serif;
+		font-size: 26px;
+		line-height: 1.1;
+		font-style: italic;
+		text-align: right;
+	}
+	.pquote_right {
+		float: right;
+		width: 300px;
+		margin: 30px 0px 30px 50px;
+		padding: 26px ;
+		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
+		color: #777;
+		font-family: Georgia, Times, Palatino, serif;
+		font-size: 26px;
+		line-height: 1.1;
+		font-style: italic;
+		text-align: right;
+	}
+	.pquote_center {
+		width: 100%;
+		margin: 30px auto;
+		padding: 26px ;
+		background: url(../images/openquote.gif) #FBF7EE top left no-repeat;
+		color: #777;
+		font-family: Georgia, Times, Palatino, serif;
+		font-size: 26px;
+		line-height: 1.1;
+		font-style: italic;
+		text-align: center;
+	}
+	@media (max-width: 1200px) {
+		.pquote_left {
+			/* float: none; */
+			margin: 20px auto;
+			text-align: none;
+			font-size: 16px;
+			width: 235px;
+		}
+		.pquote_right {
+			/* float: none; */
+			margin: 20px auto;
+			text-align: none;
+			font-size: 16px;
+			width: 235px;
+		}
+		.pquote_center {
+			/* float: none; */
+			margin: 20px auto;
+			text-align: none;
+			font-size: 16px;
+			width: 235px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.pquote_left {
+			float: none;
+			margin: 20px auto;
+			text-align: none;
+			font-size: 16px;
+			width: 235px;
+		}
+		.pquote_right {
+			float: none;
+			margin: 20px auto;
+			text-align: none;
+			font-size: 16px;
+			width: 235px;
+		}
+	}
+                  
+/* 2023-09-28 */
+      
+/* Set primary button colors:*/
+
+.btn-outline-primary {
+    --btn-color: #cc0033;
+    --btn-border-color: #cc0033;
+    --btn-hover-color: #fff;
+    --btn-hover-bg: #cc0033;
+    --btn-hover-border-color: #cc0033;
+    --btn-focus-shadow-rgb: 1,1,86;
+    --btn-active-color: #fff;
+    --btn-active-bg: #cc0033;
+    --btn-active-border-color: #cc0033;
+    --btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --btn-disabled-color: #cc0033;
+    --btn-disabled-bg: transparent;
+    --btn-disabled-border-color: #cc0033;
+    --gradient: none;
+}
+
+      
+.btn-primary {
+    color: #fff;
+    background-color:  #cc0033;
+    border-color:  #cc0033;
+}
+
+/* fix hover for white button */
+      
+a.btn.no-underline.btn-outline-light.large-normal:hover {
+        background-color:  gray;
+}
+
+/* 2022-07-08 LG 
+/* Add Flex for Books / Articles Linked Display in grid format */
+/* CSS for Linked articles plugin */
+
+.flex_class {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.label_class {}
+
+.flex_grid_class .field-value { display: flex; flex-wrap: wrap }
+
+.portrait_flex_column {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left:10px;
+    align-content: space-around;
+    width: 200px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+/*2023-10-15 LG Adjust hover to display in gray */
+/* fix hover for white button */
+      
+a.btn.no-underline.btn-outline-light.large-normal:hover {
+        background-color:  gray;
+}
+
+/*2023-10-16 LG  add specific padding for text in triangle area */
+
+.triangle-text {
+  padding-right: 20%;
+  padding-left: 20%;
+}
+
+@media screen and (max-width: 767px) {
+.triangle-text {
+  padding-right: 5%;
+  padding-left: 5%;
+}
+}
+
+/* 1/10/2024 added max width for triangle text */
+
+.triangle-text p {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* 10/20/2023 - Styling for JWTS Sliders - Simplistic */
+
+div.jwts_toggleControlContainer a.jwts_toggleControl {
+    font-size: 25px !important;
+    font-weight: bold  !important;
+    padding: 20px  !important;
+}
+
+div.jwts_content {
+    line-height: 30px  !important;
+    font-size: 20px  !important;
+    padding: 15px  !important;
+}
+
+/* 4/2/2024 LG - light gray background */
+
+.lt-gray-bg {
+    outline: solid #d7d7d7 1px;
+    background: #ededed;
+    padding: 8px;
+    border: 3px #fff solid;
+}
+
+/* 4/23/2024 LG - create object fit cover image class */
+
+.intro-image-top-200-sq-fit {
+    float: left;
+    margin: 0 10px 10px 0;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* 5/29/2024 LG - add classes for Collapsible layout to work. */
+/* ----------------------------------------------------------- */
+
+.collapsible {
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom:none;
+  text-align: left;
+  outline: none;
+  font-size: 18px;
+}
+
+.active, .collapsible:hover {
+/*  background-color: #fff; */
+}
+
+.collapsible:before {
+    padding-right: 20px;
+    font-size: 18px;
+    content: '\2212';
+    color: #000;
+    font-weight: bold;
+    float: left;
+}
+
+.collapsed:before {
+  color: #000;
+  content: "\002B";
+      padding-right: 20px;
+    font-size: 18px;
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #fff;
+}
+
+/* ----------------------------------------------------------- */
+
+/* Anchor class needed to prevent sticky header from obscuring anchor link target */
+/* 2024-09-24 LG - Remove Anchor Class */
+/* a.anchor {
+	position: relative;
+	top: -360px;
+	visibility: hidden;
+}*/
+
+/* ----------------------------------------------------------- */
+
+/* 2024-07-31 LG: Add Button Oval Classes */
+
+.oval-button {
+  border-radius: 50px; /* sets the border radius to half of its width to create an oval shape */
+  padding: 10px 20px; /* adjust padding as needed */
+}
+
+a.oval-button:hover {
+    background: #C8C8C8;
+}
+
+/* ----------------------------------------------------------- */
+
+/* 2024-07-31 LG: Background Image cover for SAS Plan */
+
+.SASPlanImageBackground {
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(117,117,129,0.21332282913165268) 99%, rgba(0,212,255,1) 100%), url("../images/SAS-Plan.jpg") no-repeat top center;
+  min-height: 200px;
+  max-height:250px;
+  padding:30px;
+  font-size: xx-large;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #fff;
+  margin-top: 20px;
+    margin-bottom: 20px;
+      display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* ----------------------------------------------------------- */
+
+/* 2024-07-31 LG: Light gray border */
+
+.lt-gray-border {
+    border: solid 1px #ccc;
+    padding: 20px;
+}
+
+/* ----------------------------------------------------------- */
+
+/* 2024-08-12 LG: dark gray background on hover for buttons */
+/* 2024-09-24 - COMMENTED out original code, this was causing an issue for anchor tags */
+/* a.btn-primary:hover {
+    background: #585858;
+    border: #585858;
+    color: #fff;
+} */
+
+/* 2024-09-24 LG - Adjusted oval button code */
+
+a.oval-button:hover {
+  background-color: #585858;
+  border-color: #585858;
+}
+
+/* ----------------------------------------------------------- */
+
+/* 2024-08-19 LG: Heading Sizes (larger heading sizes) */
+
+.heading2 {
+   line-height: 40px;
+   font-size: 2.25rem;
+}
+
+.heading3 {
+   font-size: 1.75rem;
+}
+
+.heading4 {
+   font-size: 1.5rem;
+}
+
+.heading5 {
+   font-size: 1.25rem;
+}
+
+/* ----------------------------------------------------------- */
+/* 2024-09-10 LG: Use white image if dark background */
+/* 2024-09-27 LG: adjusted for max width 300px */
+
+@media (prefers-color-scheme: dark) {
+.theme-image {
+content: url('../images/RNBSAS_H_RED_RGB.png');
+  min-width: 380px; 
+  max-width: 380px;
+}
+}
+
+/** ramadda - change svg reference*/
+@media   (prefers-color-scheme: light) {
+.theme-image {
+content: url('Rutgers-SAS-Logo.svg');
+    min-width: 380px; 
+  max-width: 380px;
+}
+}
+
+/* LG 2025-07-28 Add override for smaller screens */
+/* Override for screens smaller than 420px */
+@media (max-width: 420px) {
+  .theme-image {
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+/* ----------------------------------------------------------- */
+/* 2024-09-30 LG: create for NON SAS Logo */
+
+@media (prefers-color-scheme: dark) {
+.theme-image-RNB {
+content: url('../images/RNB_H_RED_RGB.png');
+  min-width: 380px; 
+  max-width: 380px;
+}
+}
+
+@media   (prefers-color-scheme: light) {
+.theme-image-RNB {
+content: url('../images/RNB_H_RED_BLACK_RGB.svg');
+    min-width: 380px; 
+  max-width: 380px;
+}
+}
+
+/* LG 2025-07-28 Add override for smaller screens */
+/* Override for screens smaller than 420px */
+@media (max-width: 420px) {
+  .theme-image-RNB {
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+/* ----------------------------------------------------------- */
+
+/* 2024-09-10 LG: Create search glass specific size */
+
+.search-glass {
+  max-width:20px;
+  max-height:20px;
+}
+
+/* ---------------------------------------------------- */
+/* 2024-11-18 LG: Fix issue with Accordeon Menu arrows appearing in header on scroll */
+span.toggler_icon {
+    z-index: 9 !important;
+}
+
+/* ---------------------------------------------------- */
+/* 2024-11-19 LG: Add Fixed width options for 350, 250 and 150 */
+/* Can be used for buttons */
+
+.fixed-width-350 {
+    min-width: 350px;
+    max-width: 350px;
+}
+
+.fixed-width-250 {
+    min-width: 250px;
+    max-width: 250px;
+}
+
+.fixed-width-150 {
+    min-width: 150px;
+    max-width: 150px;
+}
+
+
+/* -------------------------------------------------------------- */
+/* 2024-11-20 LG: Fix issue with Caption Colors */
+
+/* caption text */
+.wf_caption span {
+text-align: left; 
+padding: 4px; 
+color: #000 !important; 
+background-color: #EDEDED !important; 
+display: block;
+}
+
+/* -------------------------------------------------------------- */
+/* 2025-01-27 LG: Create classes for footer identity area */
+
+.sas-footer-logo-left {
+    float: left !important;
+}
+
+.sas-footer-menu-right {
+    padding-right: 10px;
+    padding-top: 15px;
+    float: right !important;
+}
+
+/* -------------------------------------*/
+/* 2025-01-31 LG: adjust width for site break point */
+
+@media (width >= 1430px) {
+    .d-xl-block {
+        display: block !important;
+    }
+}
+
+/* -------------------------------------*/
+/* 2025-02-05 LG: Add styles for boxes in Modules */
+
+.box-blue {
+  align-items: center;
+    margin: 20px;
+    background: #007FAC;
+    padding: 20px;
+    border-radius: 0px;
+}
+
+.box-gray {
+  align-items: center;
+    margin: 20px;
+    background: #666666;
+    padding: 20px;
+    border-radius: 0px;
+}
+
+.box-scarlet {
+  align-items: center;
+    margin: 20px;
+    background: #cc0033;
+    padding: 20px;
+    border-radius: 0px;
+}
+
+a.btn-white-transparent.button {
+    border-radius: 5px;
+    color: #000 !important;
+    opacity: 55%;
+    background: #fff;
+  border:solid 1px #fff;
+}
+
+a.btn-white-transparent:hover {
+    background: #fff !important;
+    opacity: 100%;
+}
+
+.white-text {
+  color:#fff !important;
+}
+
+.btn-fixed-width-250 {
+    width: 250px !important;
+    display: inline-block;
+    text-align: center;
+}
+
+/* LG 2025-04-04 Update to grid format for fields */
+
+/* Add grid option for form to display contents of subform field in multiple columns */
+/* this class would be put at the form level, options, value class */
+
+.multiple-columns ul.fields-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* LG 2025/04-04 classes for fixed width buttons */
+
+a.btn-red.button {
+border-radius: 5px;
+color: #fff !important;
+background: #cc0033;
+border: solid 1px #fff;
+}
+
+.btn-fixed-width-350 {
+width: 350px !important;
+display: inline-block;
+text-align: center;
+}
+
+/* EFK 2025-05-07 Increase focus on selectable elements for accessibility */
+
+.metismenu.mod-menu.sas-main-menu .metismenu-item > a:focus {
+  outline: solid 2px #000; 
+  border-radius: 2px; 
+}
+
+.metismenu.mod-menu.sas-footer-menu .metismenu-item > a:focus {
+  outline: solid 2px #fff; 
+  border-radius: 2px; 
+}
+
+.metismenu.mod-menu.sas-footer-menu-right .metismenu-item > a:focus {
+  outline: solid 2px #fff; 
+  border-radius: 2px; 
+}
+
+.nextend-arrow:focus {
+  outline: solid 2px #fff !important;
+  border-radius: 2px !important;
+}
+
+.nextend-autoplay:focus {
+  outline: solid 2px #fff !important;
+  border-radius: 2px !important;
+}
+
+div.n2-ss-slider div.n2-ss-button-container:focus, div.n2-ss-slider div.n2-ss-button-container a.n2-ow:focus {
+   outline: solid 2px #fff !important;
+   border-radius: 2px !important;
+}
+
+.lnep_blog form .newshead .picture {
+  max-height: initial; 
+}
+
+.newshead .picture .innerpicture:has(a) {
+  padding: 5px; /* Give some room for the outline on the inner elements */
+  flex-shrink: inherit !important; /* Remove property that gets in the way in modules */
+}
+
+h3.newstitle {
+    padding: 5px;
+}
+
+h4.newstitle {
+   padding: 5px;
+}
+
+/* EFK 2025-05-07 Visforms accessibility - color contrast fix */
+
+.vis_mandatory {
+  color: #cc0033;
+}
+
+/* EFK 2025-05-08 */
+
+p.link > a:focus, p.linkcenter > a:focus {
+  outline: solid 2px #000; 
+  border-radius: 2px; 
+}
+
+.metismenu.mod-menu.sas-main-menu .metismenu-item > button:focus {
+  outline: solid 2px #000; 
+  border-radius: 2px; 
+}
+
+/* LG 2025-05-08 - Add Circles to use as background */
+/* When using circles can define variables: --cirlce-size, --circle-color, --text-color */
+
+/* Circle styling */
+.circle {
+    width: var(--circle-size);
+    height: var(--circle-size);
+    background-color: var(--circle-color);
+    color: var(--text-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+
+    font-weight: bold;
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+/* Text inside the circle */
+.circle-text {
+    font-size: 1.4rem;
+}
+
+/* ------------------------------------------------------------- */
+/* Accessibility fix */
+/* 2025-05-09 - Give btn class focus border for Accessibility */
+.btn:focus, .btn.focus, .btn:active:focus, .btn.focus:active, .btn.active:focus, .btn.active.focus {
+    border: solid;
+    text-decoration: none;
+}
+
+
+/* 2025-05-16 LG Adjust colors for accordion menu active items */
+
+li.level1.active > span {
+    background: #eaedf0 !important;
+}
+
+ li.accordeonck.level1.active {
+    background: #eaedf0 !important;
+    border-bottom: #eaedf0 !important;
+}
+
+/* 2025-06-04 LG Create large number and plus symbols */
+
+   .large-gray-number {
+      font-size: 10rem;
+      font-weight: 700;
+      color: #999;
+      line-height: .75;
+    }
+    .large-gray-plus {
+    font-size: 7.5rem;
+    font-weight: bold;
+    color: #999;
+    line-height: 1;
+    }
+
+/* 2025-06-04 LG Create red boxes with curved edges */
+
+   .red-button-curved {
+      background-color: #cc0033;
+      color: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+/* 2025-06-05 LG Defining Steps classes and step container */
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .steps-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .steps-container .step:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .steps-container .step:nth-child(4) { grid-column: 2; grid-row: 1; }
+  .steps-container .step:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .steps-container .step:nth-child(5) { grid-column: 2; grid-row: 2; }
+  .steps-container .step:nth-child(3) { grid-column: 1; grid-row: 3; }
+  .steps-container .step:nth-child(6) { grid-column: 2; grid-row: 3; }
+}
+
+/* Main Menu Dropdown Arrows */
+/* 2025-06-03 LG display drop down arrow as chevron */
+.metismenu.mod-menu .mm-toggler::after {
+  content: "";
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+  margin-inline-end: .5em;
+  margin-block-end: 0.1em;
+}
+
+/* Display UP arrow on open of dropdown */
+.mm-active>.metismenu.mod-menu .mm-toggler:after, .metismenu.mod-menu .mm-toggler[aria-expanded=true]::after {
+ transform: rotate(-135deg);
+ -webkit-transform: rotate(-135deg);
+}
+
+.mm-active>.metismenu.mod-menu .mm-toggler:after, .metismenu.mod-menu .mm-toggler:hover::after {
+ transform: rotate(-135deg);
+ -webkit-transform: rotate(-135deg);
+}
+
+.metismenu.mod-menu .mm-collapse > li.parent .mm-toggler {
+  display: inline-flex;
+}
+
+/* 2025-06-03 LG Hide this from lines: 1068 and 1019 */
+/*.metismenu.mod-menu .mm-toggler::after {
+  content: inherit;
+} */
+
+/* 2025-06-24 LG Dropfiles Display Colors */
+.dropfiles-content-table.dropfiles-content .table-striped tbody>tr>td.essential>a.title {
+    font-weight: 700;
+    color: #000 !important;
+    font-size: 16px !important;
+}
+
+/* 2025-07-23 LG Add padding for container logo and container unit */
+
+/* 2025-07-23 LG - Settings for Container logo */
+
+.container-logo {
+    padding-top: 1px !important; /* 40px !important; */
+    padding-left: 30px !important;
+}
+
+@media (max-width: 576px) {
+	.container-logo {
+	padding-left: 20px !important;
+        padding-top: 0px !important;
+	}
+}
+
+/* 2025-07-23 LG - Settings for Container Unit */
+
+/** ramadda - remove padding-top */
+.container-unit {
+/*    padding-top: 15px !important;*/
+    font-size:12pt;
+    padding-left: 30px !important;
+}
+
+@media (max-width: 576px) {
+	.container-unit {
+     padding-left: 40px !important
+	}
+}
+
+/* ------------------------------------------------------- */
+
+/* 2025-08-06 SB / LG - Settings for Grid Buttons */
+
+.grid-button {
+    color: #000;
+    font-size: 2.5rem;
+    font-weight: bolder;
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 300px;
+    border-radius: 0;
+    white-space: normal;
+    padding-top: 150px;
+    padding-bottom: 150px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+    text-decoration: none;
+}
+
+.grid-button:hover {
+    background-color: #C03;
+}
+
+a.grid-button:hover {
+      color: #FFFFFF;
+}
+
+.grid-button-bottom {
+     border-bottom: none;
+}
+
+.grid-button-right {
+     border-right: none;
+}
+
+.five-col-grid {
+
+}
+
+/* Media query to adjust the buttons to work as stacked on cell phones */
+
+@media (max-width: 991px) {
+    .grid-button {
+        height: 100px;
+        border-bottom: 2px solid black;
+        border-right: none;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 1399px) {
+	.five-col-grid {
+		line-height: 1.4em;
+		font-size: 1.6rem;
+	}
+}
+
+/* ------------------------------------------------------- */
+
+/* 2026-04-17 SB New media query for Grid Buttons */
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .grid-button {
+        font-size: 2rem;
+    }
+}
+
+/* ------------------------------------------------------- */
+/* DROPFILES ACCESSIBILITY FIXES */
+
+/* Settings for links in dropfiles Table View */
+/* LG - 2025-09-26 */
+
+a.dropfile-file-link {
+    color: #000 !important;
+}
+
+/* Settings for Buttons in dropfiles for color contrast */
+/* LG - 2025-10-21 */
+#btnReset, #mod_btnReset {
+     color: #303030 !important;
+    font-weight: bold;
+    border-radius: 0px !important;
+}
+
+#btnsearchbelow, #mod_btnsearchbelow {
+    background-color: #cc0033 !important;
+     border-radius: 0px !important;
+    font-weight:bold;
+}
+
+/* Dropfiles Accessibility Fixes */
+/* 2025-10-23 LG */
+
+/* Update Description font color / size	 */
+.mod_file-desc {
+    color: #000 !important;
+    font-size: 120% !important;
+}
+
+/* Fix Category H2 Color */
+.dropfiles-content .dropfiles-categories h2 {
+    color: #000000 !important;
+}
+
+/* 2025-12-01 LG: Fix Category H2 Color on Tree page */
+
+h2.tree-category-title {
+    font-weight: bold !important;
+    color: #585858 !important;
+}
+
+/* Fix details about file Color */
+.dropfiles-content.dropfiles-content-default .dropfiles-container-default .dropfiles_list .file .file-xinfo {
+    color: #000000 !important;
+}
+
+.dropfiles-content .dropfilescategory:not(.backcategory) {
+    color: #000000;
+}
+
+.dropfiles-content.dropfiles-content-default .dropfiles-container-default .dropfiles_list h3 a {
+     color: #000000 !important;
+}
+
+.dropfiles-content .openlink:not(.noLightbox) {
+    color: #000000 !important;
+}
+
+i.zmdi.zmdi-folder.dropfiles-folder {
+    color: #000 !important;
+}
+
+.dropfiles-content .dropfilescategory:hover > span {
+    font-weight: bold;
+    color: #fff;
+}
+
+.dropfiles-content .dropfilescategory:hover i.dropfiles-folder {
+    color: #fff !important;
+}
+
+.dropfiles-content .dropfilescategory:not(.backcategory) > span {
+    color: #000 !important;
+}
+
+.dropfiles-content .breadcrumbs {
+    color: #000 !important;
+}
+
+/* Settings for JEVENTS Accessibility */
+/* LG 2025-10-23 */
+
+.saturday, .sunday {
+    color: #000 !important;
+    /* color: #ADADAD; */
+}
+
+
+/* 2025-10-28 LG - Create Full Width Module Setting */
+/* Module for main bottom Position */
+
+/* ===== Full width module breakout for Cassiopeia (no-card chrome) ===== */
+/* Applies to: <div class="main-bottom no-card blackBackground p-5 fullwidth-mod"> */
+
+.fullwidth-mod {
+  position: relative;
+  box-sizing: border-box;
+  width: 100vw;         /* stretch full viewport width */
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  max-width: 100vw;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Optional inner wrapper for centered content */
+.fullwidth-mod .fullwidth-mod-inner {
+  max-width: 1200px;    /* match your site's normal content width */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Mobile tweak */
+@media (max-width: 576px) {
+  .fullwidth-mod .fullwidth-mod-inner {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/*-----------------------------------------------------*/
+/* 2025-10-29 LG: Footer Title Class for H2 */
+
+h2.footer-title {
+    color: white;
+    box-shadow: none;
+    border-bottom: none;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.4286;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: none;
+}
+
+/* 2025-10-30 LG: Create Header size 3 classes to use when H2 is needed */
+
+h2.header-size-3 {
+  font-size: 1.5rem !important;
+}
+
+/* 2025-11-06 LG: Create red class for search magnifying glass */
+
+span.p-2.fa-solid.fa-magnifying-glass.rutgersRed {
+    color: #cc0033;
+}
+
+
+/* 2025-11-14 LG: Create Large Boarder Container for Links with Borders */
+
+.borderContainer 
+ { padding-bottom: 20px !important; 
+   line-height:120%;
+    font-size: 15px;
+    font-weight: normal;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ccc;
+    background: #fff;
+    padding: 4px;
+    margin-top: -1px;
+}
+
+/*2025-11-14 LG: Make 'click to collapse' in sliders darker for color contrast issue */
+span.jwts_toggleControlNotice {
+    color: #2c2c2c !important;
+}
+
+/* 2025-11-25 Fixes Elements must meet minimum color contrast ratio thresholds (Tabulizer) */
+table.tabtable-rs_yhkl5rg1 tr.tr_ht1 td.tabcol, table.tabtable-rs_yhkl5rg1 tr.tr_ht1:hover td.tabcol, table.tabtable-rs_yhkl5rg1 tr.tr_ht1 td.tabcol:hover {
+    background-color: #514D4D !important;
+}
+
+/* 2025-12-5 Fix JEVENTS LInks */
+#jevents_body a {
+    color: #000  !important;
+    text-decoration: underline !important;
+}
+
+/* 2026-3-16 Fix DropFiles file size text (e.g. Size: 138.44 KB) */
+.mod_dropfiles_latest .mod_file .mod_file-xinfo {
+    color: #000 !important;
+}
+
+/* 2026-04-20 EFK LNE Module Table Layout (for Predictable Course Offerings) */
+
+.layout-table .detail_label { display: none }
+
+:root {
+    --mobile_header_width: 150px;
+}
+
+.layout-table {
+    container-type: inline-size;
+}
+
+.layout-table table thead tr th {
+   font-weight: bold;
+}
+
+@container (max-width: 800px) {
+    .layout-table .table {
+        border: none;
+    }    
+
+    /* Force table to not be like tables anymore */
+    .layout-table table,
+    .layout-table tbody,
+    .layout-table thead,
+    .layout-table th,
+    .layout-table td,
+    .layout-table tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    .layout-table .table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .layout-table .table tr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+    }
+
+    .layout-table .table tr:first-child {
+        margin-top: 0;
+    }
+
+    .layout-table .table td {
+        /* Behave like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: calc(var(--mobile_header_width) + 26px);
+        min-height: 2rem;
+        white-space: normal;
+    }
+
+    .layout-table .table td:before {
+        /* behave like a table header */
+        position: absolute;
+        left: 8px;
+        width: var(--mobile_header_width);
+        margin-right: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: bold;
+        top: 50%;
+        transform: translateY(-50%);
+        line-height: 25px;
+        padding: 0 5px;
+    }
+
+    .layout-table .table td:before {
+        content: attr(data-title);
+    }
+}
+
+/* LG 2026-05-06 Adjust JEVENTS Headers */
+
+#jevents_body .nav-items div.active a, .jev_header2 .active a {
+    color: #fff !important;
+    background-color: #cc0033 !important;
+}
+
+#jevents_body .jev_toprow div.previousmonth a:hover {
+  color: #fff !important;}
+
+#jevents_body .jev_toprow div.previousmonth a {
+    font-size: 12px;
+    font-weight: normal;
+    padding-left: 10px;
+    color: #FFF !important;
+     text-decoration: none;
+}
+
+#jevents_body .jev_toprow div.nextmonth a:hover {
+  color: #fff !important;}
+
+#jevents_body .jev_toprow div.nextmonth a {
+    padding-right: 10px;
+    color: #fff !important;
+    font-size: 12px;
+    font-weight: normal;
+     text-decoration: none;
+}
