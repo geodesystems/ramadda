@@ -47,48 +47,18 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 
-/**
- */
 @SuppressWarnings("unchecked")
 public class AcsFile extends CsvFile {
-
-
-
-
-    /** _more_ */
     private static Hashtable specialNames;
-
-    /** _more_ */
     public byte[] bytes;
-
-    /** _more_ */
     private List<String> labels;
-
-    /** _more_ */
     private boolean includeSpecial = true;
-
-    /**  */
     private String namePattern;
 
-    /**
-     * ctor
-     *
-     *
-     * @throws IOException _more_
-     */
     public AcsFile(IO.Path path) throws IOException {
         super(path);
     }
 
-    /**
-     * _more_
-     *
-     * @param labels _more_
-     * @param includeSpecial _more_
-     * @param pattern _more_
-     *
-     * @throws IOException _more_
-     */
     public AcsFile(IO.Path path, List<String> labels,
                    boolean includeSpecial, String pattern)
             throws IOException {
@@ -183,19 +153,8 @@ public class AcsFile extends CsvFile {
         return var;
     }
 
-    /**
-     * Gets called when first reading the file. Parses the header
-     *
-     * @param visitInfo visit info
-     *
-     * @return the visit info
-     *
-     *
-     * @throws Exception _more_
-     */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-
         if (bytes == null) {
             ByteArrayOutputStream bos  = new ByteArrayOutputStream();
             BufferedOutputStream  bbos = new BufferedOutputStream(bos);
@@ -433,24 +392,13 @@ public class AcsFile extends CsvFile {
 
 
     }
-
-    /**
-     * _more_
-     */
     @Override
     public void doQuickVisit() {
+	super.doQuickVisit();
         //noop
-
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private String cleanUpLabel(String s) {
         s = s.replaceAll(":", " ").replaceAll("--", " ");
         s = s.replaceAll(" + ", " ").trim();
