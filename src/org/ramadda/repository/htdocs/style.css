@@ -90,7 +90,7 @@ form {
     padding: 0px;
 }
 
-textarea, input {
+textarea {
     resize:both !important;
 }
 
