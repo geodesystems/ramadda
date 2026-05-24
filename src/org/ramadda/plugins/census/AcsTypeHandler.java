@@ -172,6 +172,7 @@ public class AcsTypeHandler extends PointTypeHandler {
         for (String id : getFieldLines(request,entry)) {
             int     index = CensusVariable.NULL_INDEX;
 	    String alias=null;
+	    boolean useConceptForLabel=false;
             boolean skip  = false;
             if (id.indexOf(":") >= 0) {
                 List<String> toks = StringUtil.split(id, ":");
@@ -193,6 +194,8 @@ public class AcsTypeHandler extends PointTypeHandler {
 			}
                     } else if (tok.equals("skip")) {
                         skip = true;
+		    } else if(tok.equals("useconcept")) {
+			useConceptForLabel=true;			
                     } else {
 			alias=tok;
 		    }
@@ -205,6 +208,9 @@ public class AcsTypeHandler extends PointTypeHandler {
                 var = var.cloneMe();
 		if(alias!=null) var.setAlias(alias);
                 var.setSkip(skip);
+		if(useConceptForLabel) {
+		    var.setUseConceptForLabel();
+		}
                 if (index != CensusVariable.NULL_INDEX) {
                     var.setDependsIndex(index);
                 }

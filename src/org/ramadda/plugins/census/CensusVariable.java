@@ -23,64 +23,23 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-
-
-
-/**
- *     Class description
- *
- *
- *     @version        $version$, Tue, Oct 27, '15
- *     @author         Enter your name here...
- */
 @SuppressWarnings("unchecked")
 public class CensusVariable implements Comparable, Cloneable {
-
     public static final int NULL_INDEX=-999;
-
-    /** _more_ */
     public static final String PATTERNS =
         ".*(ancestry|margin of error|hispanic|other race|more races|pacific|latin|puerto|indian|occupation|spanish|white|black|africa|asia).*";
-
-    /** _more_ */
     private static Object MUTEX = new Object();
-
-
-    /** _more_ */
     private static Hashtable<String, CensusVariable> variableMap;
-
-    /** _more_ */
     private static List<CensusVariable> variables =
         new ArrayList<CensusVariable>();
-
-    /** _more_ */
     private String id;
-
-    /** _more_ */
     private String label;
-
     private String alias;
-
-
-    /** _more_ */
     private String conceptId;
-
-    /** _more_ */
     private String concept;
-
-    /** _more_ */
     private int dependsIndex = NULL_INDEX;
-
-    /** _more_ */
     private boolean skip = false;
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param label _more_
-     * @param concept _more_
-     */
     public CensusVariable(String id, String label, String concept) {
         List<String> toks = StringUtil.split(id, "_");
         this.conceptId = toks.get(0);
@@ -88,37 +47,23 @@ public class CensusVariable implements Comparable, Cloneable {
         this.id        = id;
         this.label     = label;
     }
+    public void setUseConceptForLabel() {
+	label = concept;
+    }
 
     public String toString() {
-	return "id:" + id+" label:" + label+" depends:" + dependsIndex;
+	return "id:" + id+" label:" + label+" concept:" + concept +
+	    " depends:" + dependsIndex;
     }
-    /**
-     *  @return _more_
-     */
     public String getCorpus() {
         return Utils.concatString(id, "-", label, "-", concept).toLowerCase();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public CensusVariable cloneMe() throws Exception {
         return (CensusVariable) super.clone();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public int compareTo(Object o) {
         if ( !(o instanceof CensusVariable)) {
             return 0;
@@ -128,14 +73,6 @@ public class CensusVariable implements Comparable, Cloneable {
         return this.id.compareTo(that.id);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Hashtable<String, CensusVariable> getVariableMap()
             throws Exception {
         if (variableMap == null) {
