@@ -3,8 +3,8 @@
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/inter/InterVariable.woff2') format('woff2');
-  xfont-weight: 100 900;
-  xfont-display: swap;
+  font-weight: 100 900;
+  font-display: swap;
 }
 
 
@@ -20,7 +20,7 @@
 
     --basic-border:1px #ddd solid;
     --font-size:12pt;
-/*    --font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;*/
+    --font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     --font-family:  Inter,  system-ui,  -apple-system,  BlinkMacSystemFont,  sans-serif;
     --default-radius:6px;
     --line-border:1px #eee solid;
@@ -5194,6 +5194,12 @@ a.ramadda-entries-link {
     margin-right:5px;    
 }
 
+.ramadda-navbar-separator::before {
+    content:"\22C5";
+    content: "\25E6";
+    font-size:9pt;
+    opacity: 0.45;
+}
 
 .ramadda-menuitem {
     padding-left:10px;
@@ -5421,7 +5427,7 @@ snippet-hide {
 }
 
 .ramadda-separator-1 {
-    font-size:140% !important;
+ /*   font-size:140% !important;*/
 }
 
 .ramadda-header-link a  {
@@ -5443,15 +5449,13 @@ snippet-hide {
     display:inline-block;
     font-size:140% !important;
     padding-bottom: 2px;
-    padding-left:0.25em;
-    padding-right:0.25em;
-
-    /*font-weight:450;*/
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
 
 .ramadda-separator-2 {
-    font-size:110% !important;
+/*    font-size:110% !important;*/
 }
 
 .ramadda-header-link-2 {
@@ -5459,16 +5463,17 @@ snippet-hide {
     display:inline-block;
     font-size:110% !important;
     padding-bottom: 2px;
-    padding-left:0.25em;
-    padding-right:0.25em;
     font-weight:400;
+    margin-left:4px;
+    margin-right:4px;
+    
 }
 
 
 .ramadda-header-link-2 a {
     padding:0.2em;
-    padding-left:0.4em;
-    padding-right:0.4em;
+    padding-left:4px;
+    padding-right:4px;
 }
 
 
@@ -5480,8 +5485,8 @@ snippet-hide {
 .ramadda-linksheader-on, .ramadda-linksheader-off  {
     line-height:1.4em;
     padding: 0px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
     display:inline-block;
 }
 
