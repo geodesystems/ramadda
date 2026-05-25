@@ -1,4 +1,13 @@
 @charset "UTF-8";
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+
 :root {
     --theme-background-color: #ffffff;
     --theme-color:#000;
@@ -11,7 +20,8 @@
 
     --basic-border:1px #ddd solid;
     --font-size:12pt;
-    --font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+/*    --font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;*/
+    --font-family:  Inter,  system-ui,  -apple-system,  BlinkMacSystemFont,  sans-serif;
     --default-radius:6px;
     --line-border:1px #eee solid;
     --light-border:1px rgb(239, 243, 244) solid;    
