@@ -848,6 +848,7 @@ public class Admin extends RepositoryManager {
 		    }
 		}
 	    };
+	action.setResultTemplate(makeAdminPage(request, "Reindex Lucene Index","${contents}").toString());
         String href = HU.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
 			      "Continue");
 
@@ -887,14 +888,22 @@ public class Admin extends RepositoryManager {
 
     public Result makeResult(Request request, String title, Appendable sb)
 	throws Exception {
+        StringBuilder headerSB = makeAdminPage(request, title,sb);
+        return new Result(title, headerSB);
+    }
+
+    public StringBuilder makeAdminPage(Request request, String title, Object sb)
+	throws Exception {
         StringBuilder headerSB = new StringBuilder();
         getPageHandler().sectionOpen(request, headerSB, "Admin", false);
         getPageHandler().makeLinksHeader(request, headerSB, adminUrls, "");
-        headerSB.append(sb);
+	if(sb!=null) {
+	    headerSB.append(sb);
+	}
         getPageHandler().sectionClose(request, headerSB);
-
-        return new Result(title, headerSB);
+	return headerSB;
     }
+
 
     public void xaddHeader(Request request, Appendable sb) throws Exception {}
 

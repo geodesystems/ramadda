@@ -287,7 +287,7 @@ public class HtmlImportHandler extends ImportHandler {
 		    }
 		}
 		@Override
-		public Result finishAction(ActionManager.ActionInfo info, StringBuffer messages) throws Exception {
+		public Result finishAction(ActionManager.ActionInfo info, Appendable messages) throws Exception {
 		    StringBuilder sb = new StringBuilder();
 		    getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
 		    if(info.getError()!=null) {

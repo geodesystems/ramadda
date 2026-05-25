@@ -358,10 +358,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(ok[0]) {
 	    commit(indexWriter);
 	}
-	getActionManager().actionComplete(actionId);
+	if(actionId!=null) {
+	    getActionManager().actionComplete(actionId,
+					      "Reindexed " + cnt[0]+ " entries");
+	}
     }
 
-    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter indexWriter,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
+    private Callable<Boolean> makeReindexer(final List<String> ids,
+					    final IndexWriter indexWriter,
+					    final int total,
+					    final int[] cnt,
+					    final Object actionId,
+					    final Object mutex,
+					    final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
             public Boolean call() {
                 try {

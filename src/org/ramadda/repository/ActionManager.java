@@ -53,7 +53,7 @@ public class ActionManager extends RepositoryManager {
     }
 
     public Result makeResult(Request request, String title, String status,
-                             StringBuffer sb, boolean json)
+                             StringBuilder sb, boolean json)
             throws Exception {
         if (json) {
             String result = JsonUtil.map(Utils.makeListFromValues("status",
@@ -71,7 +71,7 @@ public class ActionManager extends RepositoryManager {
         String       status = "";
         String       id     = request.getString(ARG_ACTION_ID, "");
         ActionInfo   action = getAction(id);
-        StringBuffer sb     = new StringBuffer();
+        StringBuilder sb     = new StringBuilder();
         if (action == null) {
             sb.append("No action found");
             return makeResult(request, "Status", "noaction", sb, json);
@@ -110,8 +110,12 @@ public class ActionManager extends RepositoryManager {
                 if ( !json) {
 		    Result actionResult = action.finishAction(sb);
 		    if(actionResult!=null) return actionResult;
-                    sb.append(getPageHandler().showDialogError("Error"
-                            + "<p>" + action.getError()));
+		    String message = "Error running action:" + action.getError();
+		    message = getRepository().handleError(request,
+							  action.getException(),
+							  message);
+
+                    sb.append(message);
                 } else {
                     status = "error";
                     sb.append(action.getError());
@@ -127,6 +131,9 @@ public class ActionManager extends RepositoryManager {
 		    if(actionResult!=null) return actionResult;
 		    StringBuilder message = new StringBuilder();
 		    message.append("Completed");
+		    if(stringDefined(action.completeMessage)) {
+			message.append(HU.div(action.completeMessage));
+		    }
 		    sb.append(
 			      getPageHandler().showDialogNote(
 							      message.toString(), action.getContinueHtml()));
@@ -178,6 +185,11 @@ public class ActionManager extends RepositoryManager {
 	} else if(!action.running) {
 	    title += " - Completed";
 	}
+	if(action.action.resultTemplate!=null) {
+	    sb = new StringBuilder(action.action.resultTemplate.replace("${contents}",sb.toString()));
+	}
+
+
         Result result = makeResult(request, title, status, sb, json);
         if ( !json) {
             if (action.entry != null) {
@@ -228,19 +240,27 @@ public class ActionManager extends RepositoryManager {
     }
 
     public void actionComplete(Object id) {
+	actionComplete(id,null);
+    }
+
+    public void actionComplete(Object id,String message) {
         ActionInfo action = getAction(id);
         if (action == null) {
             return;
         }
         action.setRunning(false);
+	if(message!=null) {
+	    action.completeMessage=message;
+	}
     }
+
 
     public void handleError(Object actionId, Exception exc) {
         ActionInfo action = getAction(actionId);
         if (action == null) {
             return;
         }
-        action.setError("An error has occurred:" + exc);
+        action.setError("",exc);
     }
 
     public void removeAction(Object actionId) {
@@ -310,9 +330,12 @@ public class ActionManager extends RepositoryManager {
     }
 
     public  static class Action {
+	private String resultTemplate;
         boolean returnJson = false;
 	protected Entry entry;
 	protected Future future;
+	
+	
         public Action() {}
 
         public Action(Entry entry) {
@@ -337,6 +360,10 @@ public class ActionManager extends RepositoryManager {
 		}
 	    }
 	}
+	
+	public void setResultTemplate(String template) {
+	    resultTemplate = template;
+	}
 	public void setFuture(Future future) {
 	    this.future = future;
 	}
@@ -345,7 +372,7 @@ public class ActionManager extends RepositoryManager {
 	    return null;
 	}
 
-	public Result finishAction(ActionInfo info,StringBuffer sb) throws Exception  {
+	public Result finishAction(ActionInfo info,Appendable sb) throws Exception  {
 	    return null;
 	}
 
@@ -359,7 +386,9 @@ public class ActionManager extends RepositoryManager {
         private boolean cancelled=false;
         private String message = "";
         private String continueHtml;
+	private String completeMessage="";
         private String error = null;
+	private Exception exception;
         private String extraHtml;
         private Entry entry;
 	private String title;
@@ -376,7 +405,7 @@ public class ActionManager extends RepositoryManager {
 	    this(name, continueHtml, entry,null);
 	}
 
-	public Result finishAction(StringBuffer sb) throws Exception  {
+	public Result finishAction(StringBuilder sb) throws Exception  {
 	    if(action!=null) return action.finishAction(this,sb);
 	    return null;
 	}
@@ -450,13 +479,18 @@ public class ActionManager extends RepositoryManager {
             return entry;
         }
 
-        public void setError(String value) {
+
+        public void setError(String value,Exception exc) {
             error = value;
-        }
+	    exception = exc;
+        }	
 
         public String getError() {
             return error;
         }
+        public Exception getException() {
+            return exception;
+        }	
 
     }
 

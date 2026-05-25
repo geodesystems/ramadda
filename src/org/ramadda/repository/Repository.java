@@ -3591,11 +3591,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String handleError(Request request, Throwable exc,
                               String message) {
         getLogManager().logError("Error:" + exc.getMessage(), exc);
-        Throwable     inner = LogUtil.getInnerException(exc);
         StringBuilder sb    = new StringBuilder();
-        sb.append(getPageHandler().showDialogError(message + "<br>"
-						   + inner.getMessage()));
-        if ((request.getUser() != null) && request.getUser().getAdmin()) {
+	Throwable     inner = null;
+	if(exc!=null) {
+	    inner = LogUtil.getInnerException(exc);
+	    message+= "<br>" + inner.getMessage();
+	}
+        sb.append(getPageHandler().showDialogError(message));
+        if (inner!=null &&
+	    request!=null &&
+	    request.getUser() != null &&
+	    request.getUser().getAdmin()) {
             String stack = HU.pre(
 				  HU.entityEncode(
 						  LogUtil.getStackTrace(inner)));
