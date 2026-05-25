@@ -5224,7 +5224,7 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    if(separator==null)
-		separator = HU.div("&#9679;",HU.clazz("ramadda-navbar-separator"));
+		separator = HU.div("",HU.clazz("ramadda-navbar-separator"));
 	    String image =getProperty(wikiUtil,props,"image","");	    
 	    int cnt = 0;
 	    sb.append(HU.open("div",HU.attrs("style",style,"class","ramadda-navbar")));
