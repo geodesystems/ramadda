@@ -4165,8 +4165,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     classes:function() {
 	return ' ' + Utils.join(Array.from(arguments),' ') +' ';
     },
+    getTextNodes:function(element) {
+	return  element.find("*").addBack().contents().filter(function() {
+	    return this.nodeType === 3 && this.nodeValue.trim() !== "";
+	});
+
+    },
+
     doPageSearch:function(value,select,parentSelect,hideAll,args) {
 	args = args??{}
+//	args.highlight = true;
 	if(args.handler) {
 	    args.handler(value,args);
 	    return
@@ -4181,6 +4189,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let values=value;
 	if(!Array.isArray(value)) values=[value];
+	let origValues = values;
 	let s  = $(select);
 	let hasValue =false;
 	values = values.map(v=>{
@@ -4269,6 +4278,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 		return true;
 	    });
+	    let textNodes;
+	    if(args.highlight) {
+		textNodes = HU.getTextNodes($(this));
+		textNodes.each(function() {
+		    let parent = $(this.parentNode);
+		    let orig = parent.attr('original-text');
+		    if(orig) {
+			console.log('\t','orig',orig)
+			parent.html(orig);
+		    }
+		});
+		textNodes = HU.getTextNodes($(this));
+	    }
+
 	    if(!textOk) {
 		$(this).attr('isvisible','false');
 		$(this).fadeOut();
@@ -4276,6 +4299,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		visibleCount++;
 		$(this).attr('isvisible','true');
 		$(this).show();
+		if(textNodes) {
+		    textNodes.each(function() {
+			let parent = $(this.parentNode);
+			if(!parent.attr('original-text')) {
+			    parent.attr('original-text',this.nodeValue);
+			}
+			origValues.every((v,idx)=>{
+
+			    let highlighted=this.nodeValue.replace(v,
+								   '<span style="background:yellow;">' +
+								   v +'</span>');
+			    $(this).replaceWith(highlighted);
+			});
+		    });
+		}
+
 		if(linksDiv && args.linkSelector) {
 		    let links = $(this).find(args.linkSelector);
 		    if(links.length) {
