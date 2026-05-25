@@ -7325,7 +7325,8 @@ public class EntryManager extends RepositoryManager {
                           boolean abbreviated)
 	throws Exception {
 	Entry entry = getEntryInner(request, entryId, andFilter, abbreviated);
-	if(entry!=null && request.getCurrentEntry()==null) request.setCurrentEntry(entry);
+	if(request!=null &&
+	   entry!=null && request.getCurrentEntry()==null) request.setCurrentEntry(entry);
 	return entry;
     }
     
