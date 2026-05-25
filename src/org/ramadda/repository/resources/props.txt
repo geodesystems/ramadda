@@ -163,7 +163,7 @@ map.chart.minSizeY=500
 cat:Search
 
 #What to show in the search form
-search.tabs=list,images,map,timeline
+search.tabs=list,images,map,display,timeline
 search.label=
 
 #metadata type to add to search form - <a target=_metadata href=/repository/metadata/types.html>View List</a>
