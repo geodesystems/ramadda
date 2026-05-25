@@ -2886,6 +2886,8 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-confirm-list {
+    padding:5px;
+    border : var(--basic-border);
     margin-left:1em;
     max-height: 250px; 
     overflow-y: auto;
