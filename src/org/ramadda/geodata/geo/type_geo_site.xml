@@ -21,6 +21,7 @@ childtypes="type_display_children,type_geo_core_images"
 <property  name="date.nullok"  value="true" />
 <property  name="form.resource.show"  value="false" />
 <property  name="form.time.show"  value="false" />
+<property  name="search.tabs"  value="list,map,display" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
