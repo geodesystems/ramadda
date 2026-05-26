@@ -37,6 +37,7 @@ public class WikiUtil implements HtmlUtilsConstants {
     public static final JsonUtil JU = null;    
 
     public static final String NAVDELIM =  "&#9675;";
+
     public static final String ATTR_OPEN = "open";
     public static final String ATTR_VAR = "var";
     public static final String ATTR_DECORATE = "decorate";
@@ -3505,6 +3506,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 delim = "<br>";
             } else {
 		delim = NAVDELIM;
+		delim = "";
 		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", delim),
 			       HU.cssClass("ramadda-nav-top-delimiter"));
 	    }
