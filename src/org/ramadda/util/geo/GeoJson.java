@@ -833,20 +833,189 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
+
+    public static JSONObject applyMap(JSONObject maskMap, JSONObject targetMap) throws Exception {
+        List<Area> maskAreas = getMapAreas(maskMap);
+        JSONArray targetFeatures = readArray(targetMap, "features");
+        JSONArray results = new JSONArray();
+
+        if (targetFeatures != null) {
+            for (int i = 0; i < targetFeatures.length(); i++) {
+                JSONObject feature = targetFeatures.getJSONObject(i);
+                if (featureIntersectsMap(feature, maskAreas)) {
+                    results.put(feature);
+                }
+            }
+        } else if (featureIntersectsMap(targetMap, maskAreas)) {
+            results.put(targetMap);
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("type", "FeatureCollection");
+        JSONObject crs = readObject(targetMap, "crs");
+        if (crs != null) {
+            result.put("crs", crs);
+        }
+        result.put("features", results);
+        return result;
+    }
+
+    private static boolean featureIntersectsMap(JSONObject feature, List<Area> maskAreas)
+        throws Exception {
+        JSONObject geom = feature.optJSONObject("geometry");
+        if (geom == null) {
+            // The caller may have passed a raw geometry object instead of a Feature.
+            geom = feature;
+        }
+        return geometryIntersectsMap(geom, maskAreas);
+    }
+
+    private static boolean geometryIntersectsMap(JSONObject geom, List<Area> maskAreas)
+        throws Exception {
+        String type = geom.optString("type", "");
+        JSONArray coords = geom.optJSONArray("coordinates");
+        if (coords == null) {
+            return false;
+        }
+
+        if ("Point".equals(type)) {
+            double lon = coords.getDouble(0);
+            double lat = coords.getDouble(1);
+            for (Area maskArea : maskAreas) {
+                if (maskArea.contains(lon, lat)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if ("MultiPoint".equals(type)) {
+            for (int i = 0; i < coords.length(); i++) {
+                JSONArray point = coords.getJSONArray(i);
+                double lon = point.getDouble(0);
+                double lat = point.getDouble(1);
+                for (Area maskArea : maskAreas) {
+                    if (maskArea.contains(lon, lat)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        List<Area> targetAreas = getGeometryAreas(geom);
+        for (Area targetArea : targetAreas) {
+            for (Area maskArea : maskAreas) {
+                if (areasIntersect(targetArea, maskArea)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean areasIntersect(Area area1, Area area2) {
+        if (area1 == null || area2 == null || area1.isEmpty() || area2.isEmpty()) {
+            return false;
+        }
+        if (!area1.getBounds2D().intersects(area2.getBounds2D())
+            && !area1.getBounds2D().contains(area2.getBounds2D())
+            && !area2.getBounds2D().contains(area1.getBounds2D())) {
+            return false;
+        }
+        Area intersection = new Area(area1);
+        intersection.intersect(area2);
+        return !intersection.isEmpty();
+    }
+
+    private static List<Area> getMapAreas(JSONObject map) throws Exception {
+        List<Area> areas = new ArrayList<Area>();
+        String type = map.optString("type", "");
+        if ("FeatureCollection".equals(type)) {
+            JSONArray features = readArray(map, "features");
+            if (features != null) {
+                for (int i = 0; i < features.length(); i++) {
+                    JSONObject geom = features.getJSONObject(i).optJSONObject("geometry");
+                    if (geom != null) {
+                        areas.addAll(getGeometryAreas(geom));
+                    }
+                }
+            }
+        } else if ("Feature".equals(type)) {
+            JSONObject geom = map.optJSONObject("geometry");
+            if (geom != null) {
+                areas.addAll(getGeometryAreas(geom));
+            }
+        } else {
+            areas.addAll(getGeometryAreas(map));
+        }
+        return areas;
+    }
+
+    private static List<Area> getGeometryAreas(JSONObject geom) throws Exception {
+        List<Area> areas = new ArrayList<Area>();
+        String type = geom.optString("type", "");
+        JSONArray coords = geom.optJSONArray("coordinates");
+        if (coords == null) {
+            return areas;
+        }
+        if ("Polygon".equals(type)) {
+            Area area = makeArea(coords);
+            if (!area.isEmpty()) {
+                areas.add(area);
+            }
+        } else if ("MultiPolygon".equals(type)) {
+            for (int i = 0; i < coords.length(); i++) {
+                Area area = makeArea(coords.getJSONArray(i));
+                if (!area.isEmpty()) {
+                    areas.add(area);
+                }
+            }
+        }
+        return areas;
+    }
+
+    private static Area makeArea(JSONArray polygon) throws Exception {
+        Area area = new Area();
+        if (polygon == null || polygon.length() == 0) {
+            return area;
+        }
+
+        Path2D.Double outer = makeRingPath(polygon.getJSONArray(0));
+        area.add(new Area(outer));
+
+        // GeoJSON Polygon = [ outerRing, hole1, hole2, ... ].
+        // Subtract holes so containment and overlap tests honor interior voids.
+        for (int i = 1; i < polygon.length(); i++) {
+            area.subtract(new Area(makeRingPath(polygon.getJSONArray(i))));
+        }
+
+        return area;
+    }
+
+    private static Path2D.Double makeRingPath(JSONArray ring) throws Exception {
+        Path2D.Double path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
+        for (int i = 0; i < ring.length(); i++) {
+            JSONArray point = ring.getJSONArray(i);
+            double lon = point.getDouble(0);
+            double lat = point.getDouble(1);
+            if (i == 0) {
+                path.moveTo(lon, lat);
+            } else {
+                path.lineTo(lon, lat);
+            }
+        }
+        path.closePath();
+        return path;
+    }
+
     public static double parse(String s) {
 	if(s==null || s.trim().length()==0) return Double.NaN;
 	return Double.parseDouble(s);
     }
 
     public static void main(String[] args) throws Exception {
-	JSONObject geojson = read(args[0]);
-	System.err.println(contains(geojson, 43,-102));
-	if(true) return;
-
-
-
-
-
 	List<Command> commands = new ArrayList<Command>();
 	for(int i=0;i<args.length;i++) {
 	    String arg  =args[i];
@@ -874,6 +1043,11 @@ public class GeoJson extends JsonUtil {
 	    }
 	    if(arg.equals("-reduce")) {
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  reduce(obj);}});
+		continue;
+	    }
+	    if(arg.equals("-inmap")) {
+		final JSONObject maskMap = read(args[++i]);
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  applyMap(maskMap,obj);}});
 		continue;
 	    }
 	    if(arg.equals("-stride")) {
@@ -942,7 +1116,7 @@ public class GeoJson extends JsonUtil {
 	    }	    
 
 	    if(arg.startsWith("-")) {
-		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-merge <files>\n\t-print (Print the GeoJson to stdout)\n\t-bounds (print out the bounds)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t\n\t-filter <prop1,value1,prop2,value2>\n\t-keep <prop1,prop2>\n\t-remove <prop1,prop2,...>\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
+		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-merge <files>\n\t-inmap <mask.geojson> <target.geojson> [-print] (keep target features that overlap/contain/are contained by the mask)\n\t-print (Print the GeoJson to stdout)\n\t-bounds (print out the bounds)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t\n\t-filter <prop1,value1,prop2,value2>\n\t-keep <prop1,prop2>\n\t-remove <prop1,prop2,...>\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
 		continue;
 	    }
 
@@ -1064,26 +1238,54 @@ public class GeoJson extends JsonUtil {
 
 
 
-    public static boolean contains(JSONObject geojson, double lat, double lon) {
-        String type = geojson.getString("type");
+    public static List<JSONObject> getGeometryObjects(JSONObject geojson)
+	throws Exception {
 
-        if ("FeatureCollection".equals(type)) {
-            JSONArray features = geojson.getJSONArray("features");
-            for (int i = 0; i < features.length(); i++) {
-                JSONObject geom = features.getJSONObject(i).optJSONObject("geometry");
-                if (geom != null && geometryContains(geom, lat, lon)) {
-                    return true;
-                }
-            }
-        } else if ("Feature".equals(type)) {
-            JSONObject geom = geojson.optJSONObject("geometry");
-            return geom != null && geometryContains(geom, lat, lon);
-        } else {
-            return geometryContains(geojson, lat, lon);
-        }
+	List<JSONObject> geoms = new ArrayList<JSONObject>();
 
-        return false;
+	String type = geojson.optString("type", "");
+
+	if ("FeatureCollection".equals(type)) {
+	    JSONArray features = geojson.getJSONArray("features");
+	    for (int i = 0; i < features.length(); i++) {
+		JSONObject geom =
+		    features.getJSONObject(i).optJSONObject("geometry");
+		if (geom != null) {
+		    geoms.add(geom);
+		}
+	    }
+	} else if ("Feature".equals(type)) {
+	    JSONObject geom = geojson.optJSONObject("geometry");
+	    if (geom != null) {
+		geoms.add(geom);
+	    }
+	} else {
+	    geoms.add(geojson);
+	}
+
+	return geoms;
     }
+
+    public static boolean contains(JSONObject geojson,
+				   double lat,
+				   double lon) throws Exception {
+	return contains(getGeometryObjects(geojson), lat, lon);
+    }
+
+
+    public static boolean contains(List<JSONObject> geometries,
+				   double lat,
+				   double lon) {
+
+	for (JSONObject geom : geometries) {
+	    if (geometryContains(geom, lat, lon)) {
+		return true;
+	    }
+	}
+
+	return false;
+    }
+
 
     private static boolean geometryContains(JSONObject geom, double lat, double lon) {
         String type = geom.getString("type");

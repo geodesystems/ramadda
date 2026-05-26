@@ -12,6 +12,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Address;
 import org.ramadda.util.geo.Feature;
 import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Geometry;
 import org.ramadda.util.geo.Place;
 
 import ucar.unidata.util.Misc;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+
 
 @SuppressWarnings("unchecked")
 public abstract class Geo extends Processor {
@@ -828,6 +830,7 @@ public abstract class Geo extends Processor {
 
     public static class InMap extends Filter {
 	JSONObject geojson;
+	List<JSONObject> geometries;
 	String latCol;
 	String lonCol;
 	int latIdx;
@@ -836,6 +839,7 @@ public abstract class Geo extends Processor {
             super();
 	    try {
 		geojson=GeoJson.read(getInputStream(filename));
+		geometries =GeoJson.getGeometryObjects(geojson);
 	    } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -857,7 +861,7 @@ public abstract class Geo extends Processor {
 	    double lat= Seesv.parseDouble(row.getString(latIdx));
 	    double lon= Seesv.parseDouble(row.getString(lonIdx));	    
 	    if(Double.isNaN(lat) || Double.isNaN(lon)) return false;
-	    return GeoJson.contains(geojson, lat,lon);
+	    return GeoJson.contains(geometries, lat,lon);
         }
 
     }
