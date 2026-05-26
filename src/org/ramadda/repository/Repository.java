@@ -460,6 +460,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean doCache = true;
     private boolean adminOnly = false;
     private boolean requireLogin = false;
+    private boolean proxySsl = false;
     private boolean allSsl = false;
     private boolean sslIgnore = false;
     private boolean checkHuman = false;
@@ -2552,7 +2553,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Properties readDatabaseProperties() {
 	//Clear the stored properties as we now just get these from .property files
         try {
-	    clearGlobals(PROP_ACCESS_ALLSSL,PROP_HOSTNAME,PROP_USE_FIXED_HOSTNAME,PROP_EXTERNAL_PORT,PROP_EXTERNAL_SSLPORT);
+	    clearGlobals(PROP_ACCESS_ALLSSL,PROP_ACCESS_PROXY_SSL,PROP_HOSTNAME,PROP_USE_FIXED_HOSTNAME,PROP_EXTERNAL_PORT,PROP_EXTERNAL_SSLPORT);
 
             Statement statement =
                 getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
@@ -2646,7 +2647,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
-	    if(request.getSecure()) {
+	    if(getSecure(request)) {
 		return getUrlBase() + requestUrl.getPath();
 	    }
             return getHttpsUrl(request, getUrlBase() + requestUrl.getPath());
@@ -3458,7 +3459,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     sb.append(inner.getMessage());
                     //If the authmethod is basic http auth then, if ssl is enabled, we 
                     //want to have the authentication go over ssl. Else we do it clear text
-                    if ( !request.getSecure() && isSSLEnabled(null)) {
+                    if ( !getSecure(request) && isSSLEnabled(null)) {
                         /*
 			  If ssl then we are a little tricky here. We redirect the request to the generic ssl based SSLREDIRCT url
 			  passing the actual request as an argument. The processSslRedirect method checks for authentication. If
@@ -3828,6 +3829,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
+    private boolean getSecure(Request request) {
+	//for SSL proxies
+	if(proxySsl) return true;
+	return request.getSecure();
+    }
+
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
         boolean debug      = false;
         boolean sslEnabled = isSSLEnabled(request);
@@ -3838,22 +3845,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	//	debug=true;
         if (debug) {
             System.err.println("checkForSslRedirect allSsl:" + allSsl
-                               + " request secure:" + request.getSecure() +
+                               + " request secure:" + getSecure(request) +
 			       " port:" + request.getServerPort());
         }
         if (sslEnabled) {
-            if (allSsl && !request.getSecure()) {
+            if (allSsl && !getSecure(request)) {
                 if (debug) {
                     System.err.println("\tredirecting 1");
                 }
-
                 return new Result(getHttpsUrl(request, request.getUrl()));
             }
-        }
-
-        if (sslEnabled) {
             if ( !request.get(ARG_NOREDIRECT, false)) {
-                if (apiMethod.getNeedsSsl() && !request.getSecure()) {
+                if (apiMethod.getNeedsSsl() && !getSecure(request)) {
                     //redirect them to the https request
                     if (debug) {
                         System.err.println("\tredirecting 2");
@@ -3862,23 +3865,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return new Result(getHttpsUrl(request, request.getUrl()));
 
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
-                            && request.getSecure()) {
-                    /*
-                    //we used to redirect the https: request to entry points that don't require https
-                    //back to the http request
-                    String url = request.getUrl();
-                    String redirectUrl;
-                    int    port = getPort();
-                    if (port == 80) {
-		    redirectUrl = getHttpProtocol() + "://"
-		    + request.getServerName() + url;
-                    } else {
-		    redirectUrl = getHttpProtocol() + "://"
-		    + request.getServerName() + ":" + port
-		    + url;
-                    }
-                    return new Result(redirectUrl);
-                    */
+                            && getSecure(request)) {
                     return null;
                 }
             }
@@ -4211,6 +4198,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	checkHuman            = getProperty(PROP_ISHUMAN_CHECK,false);
 	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
+	proxySsl             = getProperty(PROP_ACCESS_PROXY_SSL,false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
 	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);

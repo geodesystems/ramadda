@@ -611,6 +611,7 @@ public interface Constants {
     public static final String PROP_PASSWORD_OLDMD5 =
         "ramadda.password.oldmd5";
     public static final String PROP_ACCESS_ALLSSL = "ramadda.access.allssl";
+    public static final String PROP_ACCESS_PROXY_SSL = "ramadda.access.proxy.ssl";    
     public static final String PROP_ADMIN = "ramadda.admin";
     public static final String PROP_ADMIN_INCLUDESQL =
         "ramadda.admin.includesql";
