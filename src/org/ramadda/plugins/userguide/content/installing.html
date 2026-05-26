@@ -451,7 +451,12 @@ To allow RAMADDA to create absolute URLs set the hostname to the external host, 
 ramadda.hostname=mydomain.org
 -pre
 
-
+If your proxy is always SSL then set the following property. This has RAMADDA not try
+to redirect non-secure connections to secure connections (e.g., when the user goes to the login or
+admin pages)
++pre addCopy=true
+ramadda.access.proxy.ssl
+-pre
 
 
 
