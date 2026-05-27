@@ -241,8 +241,10 @@ public class ZipOutputHandler extends OutputHandler {
         Element      root       = null;
         boolean      ok         = true;
         //First recurse down without a zos to check the size
+        long      sizeLimit = getSizeLimit(request);
         try {
-            processZip(request, entries, recurse, 0, null, prefix, 0,
+            processZip(request, entries, recurse, 
+		       0, sizeLimit,null, prefix, 0,
                        new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>());
         } catch (IllegalArgumentException iae) {
             ok = false;
@@ -252,7 +254,6 @@ public class ZipOutputHandler extends OutputHandler {
 	    if(entries.size()>0)
 		getPageHandler().entrySectionOpen(request, entries.get(0), sb,
 						  "Export");
-	    long      sizeLimit = getSizeLimit(request);
 	    sb.append(getPageHandler().showDialogError("Size of request has exceeded maximum size:" +
 						       formatFileLength(sizeLimit)));
 	    if(entries.size()>0)
@@ -315,7 +316,7 @@ public class ZipOutputHandler extends OutputHandler {
                                       new String[] {});
 
             }
-            processZip(request, entries, recurse, 0, fileWriter, prefix, 0,
+            processZip(request, entries, recurse, 0, sizeLimit,fileWriter, prefix, 0,
                        new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>());
 
             if (root != null) {
@@ -396,11 +397,14 @@ public class ZipOutputHandler extends OutputHandler {
                             request.PROP_ZIPOUTPUT_REGISTERED_MAXSIZEMB,
                             8000);
         }
+	System.err.println("sizeLimit:"+ Utils.formatWithUnderscores(sizeLimit));
 	return sizeLimit;
+
     }
 
     protected long processZip(Request request, List<Entry> entries,
                               boolean recurse, int level,
+			      long sizeLimit,
                               FileWriter fileWriter, String prefix,
                               long sizeSoFar, int[] counter,
                               boolean forExport, boolean thumbnails,
@@ -410,7 +414,6 @@ public class ZipOutputHandler extends OutputHandler {
 
         long      sizeProcessed = 0;
         HashSet seen          = new HashSet();
-        long      sizeLimit = getSizeLimit(request);
 	if(debug)
 	    System.err.println("toZip: recurse:" + recurse +" entries: " + entries);
         for (Entry entry : entries) {
@@ -468,7 +471,7 @@ public class ZipOutputHandler extends OutputHandler {
                     path = prefix + "/" + path;
                 }
                 sizeProcessed += processZip(request, children, recurse,
-                                            level + 1, fileWriter, path,
+                                            level + 1, sizeLimit,fileWriter, path,
                                             sizeProcessed + sizeSoFar,
                                             counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
             }
@@ -502,7 +505,7 @@ public class ZipOutputHandler extends OutputHandler {
 		    }
 		    //Pass in level=0 so the parent ID of these deep entries doesn't get set in the entry.xml
 		    sizeProcessed += processZip(request, deepEntries, recurse,
-						0, fileWriter, path,
+						0, sizeLimit,fileWriter, path,
 						sizeProcessed + sizeSoFar,
 						counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
 		}
