@@ -210,23 +210,42 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return s;
     }
 
+
+
+
     public static String formatFileLength(double bytes) {
-        if (bytes < 0) {
-            return "";
-        }
+	if (Double.isNaN(bytes) || Double.isInfinite(bytes)) {
+	    return "" + bytes;
+	}
 
-        if (bytes < 5000) {
-            return ((int) bytes) + " bytes";
-        }
-        if (bytes < 1000000) {
-            bytes = ((int) ((bytes * 100) / 1000.0)) / 100.0;
+	final String[] units = {
+	    "bytes", "KB", "MB", "GB", "TB", "PB", "EB"
+	};
 
-            return ((int) bytes) + " KB";
-        }
-        bytes = ((int) ((bytes * 100) / 1000000.0)) / 100.0;
+	boolean negative = bytes < 0;
+	bytes = Math.abs(bytes);
 
-        return bytes + " MB";
+	int unitIndex = 0;
+
+	// Decimal/SI units (1000-based)
+	while (bytes >= 1000 && unitIndex < units.length - 1) {
+	    bytes /= 1000.0;
+	    unitIndex++;
+	}
+
+	String value;
+	if (unitIndex == 0) {
+	    value = String.format("%.0f", bytes);
+	} else if (bytes >= 100) {
+	    value = String.format("%.0f", bytes);
+	} else if (bytes >= 10) {
+	    value = String.format("%.1f", bytes);
+	} else {
+	    value = String.format("%.2f", bytes);
+	}
+	return (negative ? "-" : "") + value + " " + units[unitIndex];
     }
+
 
     public String getFileUrl(String url) {
         return getRepository().getFileUrl(url);
