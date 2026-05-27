@@ -248,11 +248,16 @@ public class ZipOutputHandler extends OutputHandler {
             ok = false;
         }
         if ( !ok) {
-            return new Result(
-                "Error",
-                new StringBuffer(
-                    getPageHandler().showDialogError(
-                        "Size of request has exceeded maximum size")));
+	    StringBuilder sb = new StringBuilder();
+	    if(entries.size()>0)
+		getPageHandler().entrySectionOpen(request, entries.get(0), sb,
+						  "Export");
+	    long      sizeLimit = getSizeLimit(request);
+	    sb.append(getPageHandler().showDialogError("Size of request has exceeded maximum size:" +
+						       formatFileLength(sizeLimit)));
+	    if(entries.size()>0)
+		getPageHandler().entrySectionClose(request, entries.get(0), sb);
+            return new Result("Error",sb);
         }
 
         //Now set the return file name
@@ -379,17 +384,7 @@ public class ZipOutputHandler extends OutputHandler {
 	return request.returnStream("corpus.txt", "text/plain",is);
     }
 
-    protected long processZip(Request request, List<Entry> entries,
-                              boolean recurse, int level,
-                              FileWriter fileWriter, String prefix,
-                              long sizeSoFar, int[] counter,
-                              boolean forExport, boolean thumbnails,
-			      Element entriesRoot,boolean deep,
-			      HashSet<String>seenEntry)
-            throws Exception {
-
-        long      sizeProcessed = 0;
-        HashSet seen          = new HashSet();
+    private long getSizeLimit(Request request) {
         long      sizeLimit;
         if (request.isAnonymous()) {
             sizeLimit = MEGA
@@ -401,6 +396,21 @@ public class ZipOutputHandler extends OutputHandler {
                             request.PROP_ZIPOUTPUT_REGISTERED_MAXSIZEMB,
                             8000);
         }
+	return sizeLimit;
+    }
+
+    protected long processZip(Request request, List<Entry> entries,
+                              boolean recurse, int level,
+                              FileWriter fileWriter, String prefix,
+                              long sizeSoFar, int[] counter,
+                              boolean forExport, boolean thumbnails,
+			      Element entriesRoot,boolean deep,
+			      HashSet<String>seenEntry)
+            throws Exception {
+
+        long      sizeProcessed = 0;
+        HashSet seen          = new HashSet();
+        long      sizeLimit = getSizeLimit(request);
 	if(debug)
 	    System.err.println("toZip: recurse:" + recurse +" entries: " + entries);
         for (Entry entry : entries) {
@@ -552,7 +562,7 @@ public class ZipOutputHandler extends OutputHandler {
             //check for size limit
             if (sizeSoFar + sizeProcessed > sizeLimit) {
                 throw new IllegalArgumentException(
-                    "Size of request has exceeded maximum size");
+						   "Size of request has exceeded maximum size:" + formatFileLength(sizeLimit));
             }
 
             if (fileWriter != null) {

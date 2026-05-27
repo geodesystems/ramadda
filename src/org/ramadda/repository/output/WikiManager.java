@@ -6553,6 +6553,7 @@ public class WikiManager extends RepositoryManager
 	    sb.append("\n");
 	}
 
+	String myId="";
 	if ((prefix.length() > 0) || showRoot) {
 	    String corpus = entry.getTypeHandler().getType();
 	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
@@ -6578,7 +6579,10 @@ public class WikiManager extends RepositoryManager
 		if(fileSize>0) {
 		    link = link +HU.space(2) +Utils.formatFileLength((double)fileSize);
 		}
+		myId= HU.getUniqueId("size");
+		link+=HU.space(2) + HU.span("",HU.attrs("id",myId));
 	    }
+
             sb.append(link);
 	    HU.close(sb, "li");
 	    if(top && showRoot) sb.append("<ul>");
@@ -6596,6 +6600,7 @@ public class WikiManager extends RepositoryManager
                                           entry, props);
 
         if (children.size() > 0) {
+	    long[]mySize = {0};
 	    boolean addedUl = false;
             int cnt = 1;
             for (Entry child : children) {
@@ -6626,8 +6631,14 @@ public class WikiManager extends RepositoryManager
                             : "") + (cnt++);
                 count = doFullTree(request,  wikiUtil, originalEntry, child, props,
 				   false, asMenu, null,			   
-				   style, labelWidth, addPrefix, p, showRoot, showIcon, showType,showSize, size,depth, types,
+				   style, labelWidth, addPrefix, p, showRoot, showIcon, showType,showSize, mySize,depth, types,
 				   sb,count);
+	    }
+	    size[0]+=mySize[0];
+	    if(showSize && mySize[0]>0) {
+		HU.script(sb,
+			  "jqid("+
+			  HU.squote(myId)+").html(" + HU.squote(formatFileLength(mySize[0]))+");");
 	    }
 	    if(addedUl) {
 		HU.close(sb,"ul","\n");
