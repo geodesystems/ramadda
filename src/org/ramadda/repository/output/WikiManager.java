@@ -5054,6 +5054,8 @@ public class WikiManager extends RepositoryManager
 						       false));
             boolean showSize = getProperty(wikiUtil, props, "showSize",
                                            false);
+            boolean showEntryCount = getProperty(wikiUtil, props, "showEntryCount",
+						 false);	    
             boolean showType = getProperty(wikiUtil, props, "showType",
                                            false);	    	    
             boolean showIcon = getShowIcon(wikiUtil, props, false);
@@ -5067,9 +5069,15 @@ public class WikiManager extends RepositoryManager
 	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",40);
 	    sb.append(HU.open("span","class","ramadda-menutree"));
 	    long[]size={0};
+	    int[]entryCount={0};	    
 	    int count =
 		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
-			   style, labelWidth, addPrefix, "", showRoot, showIcon, showType, showSize,size,depth, types, sb,0);
+			   style, labelWidth, addPrefix, "", showRoot, showIcon, showType,
+			   showSize,
+			   size,
+			   showEntryCount,
+			   entryCount,
+			   depth, types, sb,0);
 	    sb.append(HU.close("span"));
 	    if(doMenu) {
 		HU.script(sb, "$('#" +menuId+"').menu();\n");
@@ -6544,16 +6552,19 @@ public class WikiManager extends RepositoryManager
 			   boolean showIcon, boolean showType,
 			   boolean showSize,
 			   long[]size,
+			   boolean showEntryCount,
+			   int []entryCount,
 			   int depth, List<String> types,
 			   Appendable sb,int count)
 	throws Exception {
 
+	entryCount[0]++;
 	if(top) {
 	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
 	    sb.append("\n");
 	}
 
-	String myId="";
+	String myId=HU.getUniqueId("size");
 	if ((prefix.length() > 0) || showRoot) {
 	    String corpus = entry.getTypeHandler().getType();
 	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
@@ -6579,10 +6590,8 @@ public class WikiManager extends RepositoryManager
 		if(fileSize>0) {
 		    link = link +HU.space(2) +Utils.formatFileLength((double)fileSize);
 		}
-		myId= HU.getUniqueId("size");
-		link+=HU.space(2) + HU.span("",HU.attrs("id",myId));
 	    }
-
+	    link+=HU.space(2) + HU.span("",HU.attrs("id",myId));
             sb.append(link);
 	    HU.close(sb, "li");
 	    if(top && showRoot) sb.append("<ul>");
@@ -6600,7 +6609,9 @@ public class WikiManager extends RepositoryManager
                                           entry, props);
 
         if (children.size() > 0) {
+	    int []myEntryCount={0};
 	    long[]mySize = {0};
+	    int[]myCnt = {0};	    
 	    boolean addedUl = false;
             int cnt = 1;
             for (Entry child : children) {
@@ -6631,14 +6642,25 @@ public class WikiManager extends RepositoryManager
                             : "") + (cnt++);
                 count = doFullTree(request,  wikiUtil, originalEntry, child, props,
 				   false, asMenu, null,			   
-				   style, labelWidth, addPrefix, p, showRoot, showIcon, showType,showSize, mySize,depth, types,
+				   style, labelWidth, addPrefix, p, showRoot, showIcon, showType,showSize,
+				   mySize,
+				   showEntryCount,
+				   myEntryCount,
+				   depth, types,
 				   sb,count);
 	    }
+	    entryCount[0]+=myEntryCount[0];
 	    size[0]+=mySize[0];
+	    if(showEntryCount && myEntryCount[0]>0){
+		HU.script(sb,
+			  "jqid("+
+			  HU.squote(myId)+").append(" + HU.squote("#" + myEntryCount[0]+"&nbsp;")+");");
+
+	    }
 	    if(showSize && mySize[0]>0) {
 		HU.script(sb,
 			  "jqid("+
-			  HU.squote(myId)+").html(" + HU.squote(formatFileLength(mySize[0]))+");");
+			  HU.squote(myId)+").append(" + HU.squote(formatFileLength(mySize[0]))+");");
 	    }
 	    if(addedUl) {
 		HU.close(sb,"ul","\n");

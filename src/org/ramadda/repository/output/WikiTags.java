@@ -123,6 +123,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "#showType","true",
 
 					    "#showSize","true",
+					    "#showEntryCount","true",
 					    "#showTrue","true",					    
 					    "#labelWidth","40",
 					    ATTR_SHOWICON,"true",
