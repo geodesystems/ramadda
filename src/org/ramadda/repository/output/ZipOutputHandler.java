@@ -254,7 +254,7 @@ public class ZipOutputHandler extends OutputHandler {
 	    if(entries.size()>0)
 		getPageHandler().entrySectionOpen(request, entries.get(0), sb,
 						  "Export");
-	    sb.append(getPageHandler().showDialogError("Size of request has exceeded maximum size:" +
+	    sb.append(getPageHandler().showDialogError("Export size has exceeded the maximum size:" +
 						       formatFileLength(sizeLimit)));
 	    if(entries.size()>0)
 		getPageHandler().entrySectionClose(request, entries.get(0), sb);
@@ -565,7 +565,7 @@ public class ZipOutputHandler extends OutputHandler {
             //check for size limit
             if (sizeSoFar + sizeProcessed > sizeLimit) {
                 throw new IllegalArgumentException(
-						   "Size of request has exceeded maximum size:" + formatFileLength(sizeLimit));
+						   "Export size has exceeded the maximum size:" + formatFileLength(sizeLimit));
             }
 
             if (fileWriter != null) {
