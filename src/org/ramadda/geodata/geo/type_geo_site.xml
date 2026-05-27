@@ -48,7 +48,6 @@ message="" width="80%"  useThumbnail="true" }}
 -center
 -col
 -row
-----
 +if property=show_type_summary
 ----
 :vspace 1em
@@ -70,6 +69,7 @@ displayTypes="list,images,map,display"
 includeNonImages=false
 }} 
 -if
+----
 :heading Information
 {{information details=true}}
 -section]]></wiki>
