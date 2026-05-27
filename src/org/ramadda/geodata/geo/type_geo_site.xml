@@ -11,6 +11,10 @@ into some types.xml file
  category="Core Data" 
 childtypes="type_display_children,type_geo_core_images"
 >
+
+<!-- Columns-->
+<column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />
+<column  name="show_search"  label="Show Search"  type="boolean"   showinhtml="false" default="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/site.png" />
@@ -45,6 +49,27 @@ message="" width="80%"  useThumbnail="true" }}
 -col
 -row
 ----
++if property=show_type_summary
+----
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount   doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+-if
++if property=show_search
+----
+:vspace 1em
+:heading Search Project
+{{display_entrylist   startWithAny=true
+showAncestor=false ancestor=this
+metadataTypes=""
+entryTypes="super:type_core_base,type_geo_site"  
+orderByTypes="name,relevant,createdate,date,size"  
+displayTypes="list,images,map,display" 
+includeNonImages=false
+}} 
+-if
 :heading Information
 {{information details=true}}
 -section]]></wiki>
