@@ -124,7 +124,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 
 					    "#showSize","true",
 					    "#showEntryCount","true",
-					    "#showTrue","true",					    
+					    "#maxCount","2000",
 					    "#labelWidth","40",
 					    ATTR_SHOWICON,"true",
 					    "#types","group,file,...."),

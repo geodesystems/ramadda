@@ -112,7 +112,7 @@ public class WikiManager extends RepositoryManager
     public static final String MEDIA_OTHER = "other";
 
     //max number of entries in fulltree/menutree
-    private static final int ENTRY_TREE_MAX_COUNT = 1000;
+    private static final int ENTRY_TREE_MAX_COUNT = 2000;
     private static final int ENTRY_TREE_MAX_DEPTH = 10;    
 
     private int groupCount = 0;
@@ -5070,6 +5070,7 @@ public class WikiManager extends RepositoryManager
 	    sb.append(HU.open("span","class","ramadda-menutree"));
 	    long[]size={0};
 	    int[]entryCount={0};	    
+	    int maxCount  =getProperty(wikiUtil,props,"maxCount",ENTRY_TREE_MAX_COUNT);
 	    int count =
 		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
 			   style, labelWidth, addPrefix, "", showRoot, showIcon, showType,
@@ -5077,6 +5078,7 @@ public class WikiManager extends RepositoryManager
 			   size,
 			   showEntryCount,
 			   entryCount,
+			   maxCount,
 			   depth, types, sb,0);
 	    sb.append(HU.close("span"));
 	    if(doMenu) {
@@ -6554,6 +6556,7 @@ public class WikiManager extends RepositoryManager
 			   long[]size,
 			   boolean showEntryCount,
 			   int []entryCount,
+			   int maxCount,
 			   int depth, List<String> types,
 			   Appendable sb,int count)
 	throws Exception {
@@ -6629,7 +6632,7 @@ public class WikiManager extends RepositoryManager
                 }
 
 		count++;
-		if(count>ENTRY_TREE_MAX_COUNT) break;
+		if(count>maxCount) break;
 		if(!top) {
 		    if(!addedUl) {
 			HU.open(sb,"ul",HU.attrs("style",style));
@@ -6646,6 +6649,7 @@ public class WikiManager extends RepositoryManager
 				   mySize,
 				   showEntryCount,
 				   myEntryCount,
+				   maxCount,
 				   depth, types,
 				   sb,count);
 	    }
