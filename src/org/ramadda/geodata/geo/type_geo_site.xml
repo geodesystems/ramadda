@@ -59,7 +59,7 @@ message="" width="80%"  useThumbnail="true" }}
 +if property=show_search
 ----
 :vspace 1em
-:heading Search Project
+:heading Search Site
 {{display_entrylist   startWithAny=true
 showAncestor=false ancestor=this
 metadataTypes=""
