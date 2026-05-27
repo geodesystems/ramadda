@@ -258,6 +258,14 @@ public class Utils extends IO {
 	return value*mult;
     }
 
+    public static String formatWithUnderscores(long value) {
+	return String.format("%,d", value).replace(',', '_');
+    }
+
+    public static String formatWithUnderscores(double value) {
+	return String.format("%,d", value).replace(',', '_');
+    }    
+
     public static String format(Date date) {
 	//The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
 	return format(sdf, date)+"Z";
