@@ -397,7 +397,6 @@ public class ZipOutputHandler extends OutputHandler {
                             request.PROP_ZIPOUTPUT_REGISTERED_MAXSIZEMB,
                             8000);
         }
-	System.err.println("sizeLimit:"+ Utils.formatWithUnderscores(sizeLimit));
 	return sizeLimit;
 
     }
