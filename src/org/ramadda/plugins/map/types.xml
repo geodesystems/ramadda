@@ -16,6 +16,10 @@
 	    type="string" showinhtml="false" default=""
 	    suffix="e.g.: fillColor:red,radius:4,strokeColor:green,strokeWidth:2"
 	    />    
+    <column  name="show_information"  label="Show Information"  type="boolean"   showinhtml="false" default="true" />
+    <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="false" />
+
+
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
@@ -33,11 +37,24 @@ entriesListHeader=""  }}
 -center
 {{tabletree  message="No entries" orderby=name ascending=true}}
 
++if property=show_type_summary
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount   doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+----
+-if
+
+
++if property=show_information
 :heading Information
 +center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 -center
 {{information details=true}}
+-if
+
 -section
 ]]>
 </wiki>
