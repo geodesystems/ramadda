@@ -2,6 +2,20 @@
 :root {
     --csd-color:rgb(144, 0, 33);
 }
+
+
+/** This is the image in the OpenLayers map for showing the layer selector */
+.maximizeDiv img {
+    width:32px;
+    height:32px;
+    position:absolute !important;
+    right:0px;
+    top:10px;
+}
+
+
+
+
 #umnhf-h-wm  {
     width: min(40vw, 367px) !important;
 }
