@@ -742,14 +742,34 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	html+=HU.open(TAG_DIV,attrs);
 	let formId;
-	let searchId;
+	let pageSearchId;
+	let deepSearchId;	
+	
 	if(props.showForm) {
 	    formId = HU.getUniqueId('form_');
 	    html+=HU.open(TAG_FORM,[ATTR_ID,formId,ATTR_METHOD,'post',
 				    ATTR_ACTION,RamaddaUtil.getUrl('/entry/getentries')]);
-	    let form = HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
+	    let form = '';
+	    /*
+	    form += HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
 				       ATTR_TITLE,'Toggle all',
 				       ATTR_ID,id+'_form_cbx'],false);
+	    */
+	    
+	    let toggle = '';
+	    toggle += HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
+			     ATTR_TITLE,'Toggle all on',
+			     ATTR_CLASS,CLASS_CLICKABLE,
+			     ATTR_ID,id+'_toggle_on'],
+			    HU.getIconImage('fas fa-toggle-on'));
+
+	    toggle+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(6),CSS_MARGIN_RIGHT,HU.px(6)),
+			     ATTR_TITLE,'Toggle all off',
+			     ATTR_CLASS,CLASS_CLICKABLE,
+			     ATTR_ID,id+'_toggle_off'],
+			    HU.getIconImage('fas fa-toggle-off'));	    
+	    form+=toggle;
+
 	    let actions = [['','Apply action']];
 	    props.actions.forEach(action=>{
 		actions.push([action.id,action.label]);
@@ -769,8 +789,18 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_VALUE,'All',
 				     ATTR_CLASS,'submit ui-button ui-corner-all ui-widget',
 				     ATTR_ID,'getall1337','role','button']);
-	    searchId = HU.getUniqueId('find');	
-	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20)), ATTR_ID,searchId]);
+	    pageSearchId = HU.getUniqueId('find');	
+	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20)), ATTR_ID,pageSearchId]);
+	    deepSearchId = HU.getUniqueId('search');	
+/*
+	    form+= HU.input('','',
+			    [ATTR_CLASS,'ramadda-pagesearch-input',
+			     ATTR_PLACEHOLDER,'Search repository',
+			     ATTR_TITLE,'Perform a text search in the repository',
+			     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10)),
+			     ATTR_ID,deepSearchId]);
+			     */
+
 	    html+=HU.div([ATTR_CLASS,HU.classes(/*classPrefix +'-row',*/'entry-table-form-header'),
 			  ATTR_ID,id+'_form',
 			  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE,
@@ -782,10 +812,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+=HU.open(TAG_DIV,tableAttrs);
 	html+=HU.close(TAG_DIV,TAG_TABLE,TAG_DIV);
 	main.html(html);
-	if(searchId) {
+	if(pageSearchId) {
 	    HU.initPageSearch('.search-component,.entry-table-row-data',
 			      null,
-			      'Search table',false,{target:jqid(searchId)});
+			      'Search table',false,{target:jqid(pageSearchId)});
 	}
 	if(formId) {
 	    jqid(formId).submit(( event ) =>{
@@ -825,6 +855,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	//Don't do this as it screws up the width of the menu sometimes
 	//	    HU.initSelect(jqid(id+'_form_action'));
+	jqid(id+'_toggle_on').click(function() {
+	    jqid(id).find(HU.dotClass(CLASS_ENTRY_FORM_SELECT)).prop('checked',true);
+	    _this.highlightEntryTable(main);
+	});
+	jqid(id+'_toggle_off').click(function() {
+	    jqid(id).find(HU.dotClass(CLASS_ENTRY_FORM_SELECT)).prop('checked',false);
+	    _this.highlightEntryTable(main);
+	});	
+
 
 	jqid(id+'_form_cbx').click(function() {
             let on = HU.isChecked($(this));
