@@ -533,8 +533,8 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type name="Wiki Attribute" id="wikiattribute">
       <element name="Attribute Name" />
-      <element name="Attribute Value" />
-      <element name="Tag" suffix="Optional tag"/>
+      <element name="Attribute Value" suffix="Use 'default' to not use any inherited wiki attributes"/>
+      <element name="Tag" suffix="Optional - tag that this is applied to"/>
     </type>    
 
 
