@@ -1,0 +1,47 @@
+[ht::head {Metadata Import}]
+
+<%nochildlist%>
+:navtop
+
++callout-info
+RAMADDA supports importing metadata properties and applying them to an entry.
+-callout
+
+
+:heading Metadata Import Format
+The format is a simple text format of the form.
++pre
+&lt;metadata_type1&gt;:Attr 1
+#Some comment
+&lt;metadata_type2&gt;:Attr 1:Attr 2:Attr 3
+...
+-pre
+
+To flag a metadata property as inherited do:
++pre
+&lt;metadata_type1&gt;:inherited:Attr 1
+...
+-pre
+
+
+The metadata type IDs can be viewed at <a href="{{root}}/metadata/types.html">/metadata/types.html</a>
+
+:heading Example File
++pre
+content.keyword:Keyword 1
+content.keyword:inherited:Keyword 2
+#Some comment
+content.timezone:ET
+archive_note:inherited:Some other note type:Some note
+#etc...
+-pre
+
+:heading Metadata Upload Form
+Go to the entry you want to upload metadata to and select "Add Properties...". You should see a
+"Upload" link which takes you to a file upload form.
+Your file should end with ".txt".
+:p
+The upload process will skip over duplicate metadata so you can upload the same form
+repeatedly if there are any errors or missed metadata in the upload.
+
+[ht::foot]
