@@ -1859,6 +1859,22 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         IndexSearcher searcher = getLuceneSearcher();
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
+	if(false) {
+	    System.err.println("max:"  + max +" skip:"  + skip);
+	    TotalHits totalHits = hits.totalHits;
+	    long value = totalHits.value;
+	    TotalHits.Relation relation = totalHits.relation;
+	    System.err.println("total:" + totalHits +" relation:" + relation +" score docs:" +
+			       hits.scoreDocs.length);
+	}
+	if(false) {
+	    if(hits.scoreDocs.length>0) {
+		ScoreDoc last = hits.scoreDocs[hits.scoreDocs.length - 1];
+		TopDocs nextPage = searcher.searchAfter(last, query, 100, sort);
+	    }
+	}
+
+
         ScoreDoc[]    docs     = hits.scoreDocs;
 	if(debugSearch)
 	    debug("SearchManager: lucene query:" + query +" skip:" + skip +" max:" + max);
