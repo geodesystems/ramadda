@@ -669,6 +669,9 @@ function DisplayThing(argId, argProperties) {
 	canEdit:function() {
 	    return this.getProperty("canEdit");
 	},
+	canExport:function() {
+	    return this.getProperty("canExport");
+	},	
         getShowTitle: function() {
             if (this.getProperty("showTitle")) {
 		return this.getProperty("showTitle");
@@ -743,6 +746,9 @@ function DisplayThing(argId, argProperties) {
         getDomId: function(suffix) {
             return this.getId() + "_" + suffix;
         },
+        getUniqueClass: function(suffix) {
+            return this.getId() + "_" + suffix;
+        },	
 	gid: function(suffix) {
             return this.getId() + "_" + suffix;
         },
