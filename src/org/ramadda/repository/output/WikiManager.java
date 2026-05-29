@@ -373,9 +373,16 @@ public class WikiManager extends RepositoryManager
                 getMetadataManager().findMetadata(request, entry,
 						  new String[]{"wikiattribute"}, true);
             if (metadataAttrs != null) {
+		HashSet skip=new HashSet();
                 for (Metadata metadata : metadataAttrs) {
                     String mName  = metadata.getAttr1();
+		    if(skip.contains(mName)) continue;
                     String mValue = metadata.getAttr2();
+		    if(Misc.equals(mValue,"default")) {
+			skip.add(mName);
+			continue;
+		    }
+		    skip.add(mName);
                     String mTag   = metadata.getAttr3();
                     if ((mTag.length() > 0) && !mTag.equals(tag)) {
                         continue;
