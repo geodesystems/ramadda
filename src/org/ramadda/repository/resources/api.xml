@@ -196,6 +196,7 @@
     <api request="/metadata/form"       method="processMetadataForm"       actions="edit"/>
     <api request="/metadata/addform"    method="processMetadataAddForm"    actions="edit"/>
     <api request="/metadata/add"        method="processMetadataAdd"        actions="edit" requires_auth_token="true" />
+    <api request="/metadata/upload"    method="processMetadataUpload"    actions="edit"/>
     <api request="/metadata/change"     method="processMetadataChange"     actions="edit" requires_auth_token="true" />
   </group>
   
