@@ -337,6 +337,26 @@ that refer to another point data entry for their data then you use the property 
 <pre>{<noop>{property <i>entry="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre>
 
 
+<a name='wikiattribute'></a>
+:lheading Overriding Defaults
+
+You can change arbitrary wiki attributes for a single entry or for a group of entries
+or even for the entire repository through the "Wiki Attribute" entry property.
+For example, by default the table tree for all entries shows the name, date, create date, file size, etc. for
+the displayed entries. If you wanted to not show, for example, the create date, go to the root entry of your repository
+and select "Add Property" and look for the Wiki Attribute property. This allows you to specify an attribute, a value
+and an optional tag to apply the attribute/value to. Entering "showCreateDate" and "false" and checking on
+inherited will add that attribute to all wiki tags throughout the entire repository. This overrides whatever
+attribute value was in place (either a default wiki display for an entry type or a custom wiki display through
+editing the entry).
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiattribute.png?version=986"><img  src="images/wikiattribute.png?version=986"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiattribute.png?version=986" ></a></div></div>
+
+If there is a case that somewhere in your repository you do want to show the create date then do the above for that entry
+(or group of entries) and either set the value to "true" or, if you want to clear the use of the top-level value
+and default to whatever is normally being used then set the value to "default".
+
+
+
 <a name='message'></a>
 :lheading Message attribute
 
@@ -461,7 +481,7 @@ e.g., if we wanted to show the information tabs for an entry we'd do:
 <pre>{<noop>{information}}</pre>
 
 Which gives  us:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=68"><img  src="images/wikiinformation.png?version=68"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=68" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=986"><img  src="images/wikiinformation.png?version=986"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=986" ></a></div></div>
 
 
 
