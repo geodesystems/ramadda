@@ -10130,6 +10130,10 @@ public class WikiManager extends RepositoryManager
             props.put("user", request.getUser().getId());
         }
 
+        if (getAccessManager().canDoExport(request, entry)) {
+            props.put("canExport", "true");
+	}
+
         if (getAccessManager().canDoEdit(request, entry)) {
             props.put("canEdit", "true");
 	    String hereKey = GeoUtils.getHereKey();
