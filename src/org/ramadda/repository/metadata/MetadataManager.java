@@ -27,6 +27,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Misc;
@@ -87,6 +88,9 @@ public class MetadataManager extends RepositoryManager {
     public RequestUrl URL_METADATA_ADDFORM = new RequestUrl(getRepository(),
                                                  "/metadata/addform",
                                                  "Add Property");
+    public RequestUrl URL_METADATA_UPLOAD = new RequestUrl(getRepository(),
+                                                 "/metadata/upload",
+                                                 "Upload Properties");    
 
     public RequestUrl URL_METADATA_ADD = new RequestUrl(getRepository(),
                                              "/metadata/add");
@@ -1118,7 +1122,7 @@ public class MetadataManager extends RepositoryManager {
         boolean changed = false;
         for (Metadata metadata :
                 getInitialMetadata(request, entry, extra, shortForm)) {
-            if (addMetadata(request,entry, metadata, true)) {
+            if (addMetadata(request,entry, metadata, true)!=null) {
                 changed = true;
             }
         }
@@ -1139,49 +1143,50 @@ public class MetadataManager extends RepositoryManager {
 	return null;
     }
 
-    public void addMetadataAlias(Request request,Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS,CHECK_UNIQUE_FALSE, value);
+    public Metadata addMetadataAlias(Request request,Entry entry, String value) throws Exception {
+        return addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS,CHECK_UNIQUE_FALSE, value);
     }
 
-    public void addKeyword(Request request, Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_KEYWORD, CHECK_UNIQUE_TRUE, value);
+    public Metadata addKeyword(Request request, Entry entry, String value) throws Exception {
+        return addMetadata(request,entry, ContentMetadataHandler.TYPE_KEYWORD, CHECK_UNIQUE_TRUE, value);
     }
 
-    public void addMetadataTag(Request request,Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_TAG, CHECK_UNIQUE_FALSE, value);
+    public Metadata addMetadataTag(Request request,Entry entry, String value) throws Exception {
+        return addMetadata(request,entry, ContentMetadataHandler.TYPE_TAG, CHECK_UNIQUE_FALSE, value);
     }
 
-    public void addMetadata(Request request,Entry entry, String type,     boolean checkUnique, String ...values)
+    public Metadata addMetadata(Request request,Entry entry, String type,     boolean checkUnique, String ...values)
             throws Exception {
-	addMetadata(request, entry, type, INHERITED_FALSE,checkUnique,values);
+	return addMetadata(request, entry, type, INHERITED_FALSE,checkUnique,values);
 
     }
-    public void addMetadata(Request request,Entry entry, String type, boolean inherited,boolean checkUnique, String ...values)
+    public Metadata addMetadata(Request request,Entry entry, String type, boolean inherited,boolean checkUnique, String ...values)
             throws Exception {	
+	
+	Metadata mtd = new Metadata(getRepository().getGUID(), entry.getId(),
+				    findType(type), inherited, values[0],
+				    values.length>1 && values[1]!=null?values[1]:Metadata.DFLT_ATTR,
+				    values.length>2 &&values[2]!=null?values[2]:Metadata.DFLT_ATTR,
+				    values.length>3 && values[3]!=null?values[3]:Metadata.DFLT_ATTR,
+				    Metadata.DFLT_EXTRA);
 
-        addMetadata(request,entry,
-                    new Metadata(getRepository().getGUID(), entry.getId(),
-                                 findType(type), inherited, values[0],
-				 values.length>1 && values[1]!=null?values[1]:Metadata.DFLT_ATTR,
-				 values.length>2 &&values[2]!=null?values[2]:Metadata.DFLT_ATTR,
-				 values.length>3 && values[3]!=null?values[3]:Metadata.DFLT_ATTR,
-                                 Metadata.DFLT_EXTRA),checkUnique);
+	return addMetadata(request,entry,mtd   ,checkUnique);
     }
 
-    public boolean addMetadata(Request request,Entry entry, Metadata value) throws Exception {
+    public Metadata addMetadata(Request request,Entry entry, Metadata value) throws Exception {
         return addMetadata(request,entry, value, CHECK_UNIQUE_FALSE);
     }
 
-    public boolean addMetadata(Request request, Entry entry, Metadata value, boolean checkUnique)
+    public Metadata addMetadata(Request request, Entry entry, Metadata value, boolean checkUnique)
             throws Exception {
 	//Pass in result=null so we get the actual list
         List<Metadata> metadata = getMetadata(null,entry);
         if (checkUnique && metadata.contains(value)) {
-            return false;
+            return null;
         }
 	entry.setMetadataChanged(true);
         metadata.add(value);
-        return true;
+        return value;
     }
 
     public void addXmlMetadata(Request request, Entry entry,
@@ -2262,8 +2267,14 @@ public class MetadataManager extends RepositoryManager {
                                         5, 10));
         }
 	String uid =  HU.getUniqueId("types");
-	sb.append("<center>");
+	sb.append("<center style='margin-top:5px;'>");
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-add','.ramadda-metadata-group','Find Property',false,{focus:true})");
+	sb.append(HU.space(2));
+	HU.href(sb, request.entryUrl(URL_METADATA_UPLOAD,
+				     entry),
+		HU.img("fas fa-upload") + " " + msg("Upload"));
+
+
 	sb.append("</center>");
 	sb.append(HU.open("div",HU.attr("id",uid)));
 	for(int i=0;i<titles.size();i++) {
@@ -2305,6 +2316,89 @@ public class MetadataManager extends RepositoryManager {
 
     public void  setMetadataList(Entry entry,List<Metadata> list) throws Exception {
 	entry.setMetadata(list);
+    }
+
+    public Result processMetadataUpload(Request request) throws Exception {
+        StringBuilder sb    = new StringBuilder();
+        Entry         entry = getEntryManager().getEntry(request);
+	getEntryManager().addEntryEditHeader(request, entry,sb, URL_METADATA_UPLOAD);
+
+	sb.append(HU.center(HU.div("Upload Properties",
+				   HU.attrs("class","ramadda-header-link ramadda-header-link1"))));
+        if(!getAccessManager().canDoEdit(request,entry)) {
+	    sb.append(getPageHandler().showDialogError("You do not have permission to upload properties"));
+	} else {
+            String file = request.getUploadedFile(ARG_FILE);
+	    if (file!=null && new File(file).exists()) {
+		try {
+		    processMetadataUpload(request, entry, sb,new File(file));
+		} catch(Exception exc) {
+		    Throwable     inner     = LogUtil.getInnerException(exc);			
+		    sb.append(getPageHandler().showDialogError("An error has occurred:<br>" +inner.getMessage()));
+		    getLogManager().logError("Error in metadata upload",exc);
+		}
+	    }
+	    addMetadataUploadForm(request,entry,sb);
+	}
+        return getEntryManager().makeEntryEditResult(request, entry,
+                msg("Upload Properties"), sb);
+    }
+
+
+    private void processMetadataUpload(Request request, Entry entry, StringBuilder sb,File file)  throws Exception {
+	String _name  =file.getName().toLowerCase();
+	if(_name.endsWith(".txt")) {
+	    InputStream stream  = getStorageManager().getInputStream(file.toString());
+	    String contents = IO.readInputStream(stream);
+	    IO.close(stream);
+	    for(String line:Utils.split(contents,"\n",true,true)) {
+		if(line.startsWith("#")) continue;
+		List<String>toks = Utils.split(line,":",false,false,true);
+		if(toks.size()==0) continue;
+		MetadataType type = findType(toks.get(0),false);
+		if(type==null) {
+		    HU.div(sb,"Unknown metadata type:" + toks.get(0));
+		    continue;
+		}
+		List<String> attrs = new ArrayList<String>();
+		boolean inherited = false;
+		for(int i=1;i<toks.size();i++) {
+		    String tok = toks.get(i);
+		    if(tok.equals("inherited")) {
+			inherited=true;
+			continue;
+		    }
+		    tok = tok.replace("\\n","\n");
+		    attrs.add(tok);
+		}
+		Metadata mtd = addMetadata(request,entry, toks.get(0),inherited,true,Utils.toStringArray(attrs));
+		if(mtd!=null) {
+		    HU.div(sb,"Added metadata: " + type.getLabel() +" " +mtd.getAttr1());
+		} else {
+		    HU.div(sb,"Duplicate metadata: " + type.getLabel() +" " + Utils.join(toks,":"));
+		}
+	    }
+	    entry.setMetadataChanged(true);
+	    getEntryManager().updateEntry(request, entry);
+	} else  if(_name.endsWith(".xml")) {
+	} else {
+	    throw new IllegalArgumentException("Unknown upload file type:" +file.getName());
+	}
+  }
+
+    public void addMetadataUploadForm(Request request,Entry entry,
+				      StringBuilder sb) throws Exception {
+	request.uploadFormWithAuthToken(sb, URL_METADATA_UPLOAD);
+        sb.append(HU.formTable());
+	
+        sb.append(HU.formEntry(msgLabel("File"),
+			       HU.fileInput(ARG_FILE,   HU.SIZE_70)));
+
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	HU.formEntry(sb,"",HU.submit("Upload"));
+        sb.append(HU.formTableClose());
+	sb.append(HU.formClose());
+
     }
 
     public void  metadataHasChanged(Entry entry) throws Exception {
