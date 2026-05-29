@@ -3077,6 +3077,20 @@ var Utils =  {
     searchLastInput:"",
     searchAscending:false,
     searchCnt:0,
+    initSearchSuggest:function(id,resultsId,dialog,focus) {
+        let input =jqid('popup_search_input');
+        input.mousedown(function(evt) {
+            evt.stopPropagation();
+        });
+	input.keydown(function(event) {
+	    if(dialog && event.key=='Escape') dialog.remove();
+	});
+        Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
+	if(focus) {
+            input.focus();
+	}
+    },
+
     searchSuggestInit:function(id, hereId, type, icon, resultsId) {
         let input = jqid(id);
         let here = jqid(hereId);      
@@ -3302,15 +3316,8 @@ var Utils =  {
 			   header:true,
 			   inPlace:false});
 	this.dialog.find(HU.dotClass(CLASS_BUTTON_SMALL)).button();
-        let input =jqid('popup_search_input');
-        input.mousedown(function(evt) {
-            evt.stopPropagation();
-        });
-	input.keydown(function(event) {
-	    if(event.key=='Escape') dialog.remove();
-	});
-        Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
-        input.focus();
+	Utils.initSearchSuggest('popup_search_input',resultsId,dialog,true);
+
     },
     handleKeyPress:function(event) {
         HU.getTooltip().hide();
