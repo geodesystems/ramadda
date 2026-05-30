@@ -183,11 +183,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final String PROP_CACHE_HTDOCS = "ramadda.cachehtdocs";    
 
 
-    public static final String PROP_ISHUMAN_COOKIE_VALUE = "ramadda.ishuman.cookie";
-    public static final String PROP_ISHUMAN_CHECK = "ramadda.ishuman.check";    
-    public static final String PROP_ISHUMAN_MESSAGE = "ramadda.ishuman.message";
-    public static final String ATTR_ISHUMAN = "ishuman";
-    public static final String COOKIE_ISHUMAN= "ramadda_ishuman";
 
     private static final String[] GOOGLE_DOMAINS = {
         ".googlebot.com",
@@ -463,8 +458,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean proxySsl = false;
     private boolean allSsl = false;
     private boolean sslIgnore = false;
-    private boolean checkHuman = false;
-    private String humanCookie;
     private boolean cacheResources = false;
 
     private String repositoryName = "Repository";
@@ -1406,141 +1399,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return httpClient;
     }
 
-    private String getIsHumanCookieValue() throws Exception {
-	if(humanCookie==null) {
-	    humanCookie = getProperty(PROP_ISHUMAN_COOKIE_VALUE,null);
-	    if(humanCookie==null) {
-		synchronized(this) {
-		    if(humanCookie==null) {
-			humanCookie = getGUID();
-			writeGlobal(PROP_ISHUMAN_COOKIE_VALUE,humanCookie);
-			getLogManager().logInfoAndPrint("Human check:","created cookie value:"  + humanCookie);
-		    }
-		}
-	    }
-	}
-	return humanCookie;
-    }
 
-    public boolean  getCheckIfHuman() {
-	return checkHuman;
-    }
-
-
-    private TTLCache<String, Integer> humanIPs =
-	new TTLCache<String,Integer>(Utils.minutesToMillis(30));
 
 
     public void logSpecial(String msg) {
 	getLogManager().logSpecial(msg);
-    }
-
-    public Result checkForHuman(Request request) throws Exception  {
-	if(request.get("overidehuman",false)) {
-	    return null;
-	}
-
-
-	if(!checkHuman) {
-	    //	    logSpecial("human: not enabled");
-	    return null;
-
-	}
-	if(!request.isAnonymous()) {
-	    //	    logSpecial("human: not anon");
-	    return null;
-	}
-	    
-	List<String> cookies = getSessionManager().getCookies(request,COOKIE_ISHUMAN);
-	if(cookies.size()!=0) {
-	    if(cookies.contains(getIsHumanCookieValue()))  {
-		//		logSpecial("human: has cookie");
-		return null;
-	    }
-	}
-
-	//Special exception for google bot
-	if(acceptGoogleBot() && isGoogleBot(request)) {
-	    //	    logSpecial("human: is google bot");
-	    return null;
-	}
-
-	String isHuman = request.getString(ATTR_ISHUMAN,null);
-	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getOriginalIp() +" user:" + request.getUserAgent());
-	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false,false));
-	    return null;
-	}
-
-	Integer count = null;
-	synchronized(humanIPs) {
-	    String ip = request.getOriginalIp();
-	    count = humanIPs.get(ip);
-	    if(count==null) {
-		count = new Integer(0);
-	    }
-	    count = new Integer(count.intValue()+1);
-	    humanIPs.put(ip,count);
-	}
-	StringBuilder sb = new StringBuilder();
-	boolean barebones = true;
-	if(request.isMobile()) {
-	    barebones=false;
-	}
-
-	if(barebones) {
-	    sb.append("<!DOCTYPE html><html><body>");
-	    HU.cssLink(sb, getPageHandler().getCdnPath("/style.css"));
-	    String logo= getPageHandler().getLogoImage(null);
-	    getPageHandler().sectionOpen(request,sb,getRepositoryName(),false);
-	    if(Utils.stringDefined(logo)) sb.append(HU.center(HU.img(logo,"",HU.attrs("width","120px"))));
-	} else {
-	    getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
-	}
-	String message = getProperty(PROP_ISHUMAN_MESSAGE,"");
-	if(Utils.stringDefined(message)) {
-	    message = message.replace("\\n","<br>");
-	    if(barebones) {
-		sb.append(HU.div(message,HU.attrs("class","human-message")));
-	    } else {
-		sb.append(getPageHandler().showDialogNote(message));
-	    }
-	}
-
-	if(isHuman!=null) {
-	    getLogManager().logInfoAndPrint("Human check:", "failed: " + request.getOriginalIp());
-	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
-	}
-
-	sb.append(HU.form(request.getRequestPath()));
-	sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
-	sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
-	request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
-	sb.append(HU.formClose());
-	sb.append("\n");
-	HU.importJS(sb, getPageHandler().getCdnPath("/human.js"));
-
-	String message2="Note: this will add a &quot;cookie&quot; to your request to show that you are human";
-	sb.append(HU.div(message2,HU.attrs("class","human-message")));
-
-	
-
-
-	getPageHandler().sectionClose(request,sb);
-	if(barebones)
-	    sb.append("</body></html>");
-	String logMessage = "checking:" + " IP:" + request.getOriginalIp() +" count: " +count;
-	String entryId = request.getString(ARG_ENTRYID,null);
-	if(entryId!=null) logMessage+=" entry:" + entryId;
-	getLogManager().logInfoAndPrint("Human check:",logMessage);
-	Result result =  new Result("Prove you are a human",sb);
-	result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
-	if(count>5) {
-	    Misc.sleepSeconds(5);
-	}
-	if(barebones) 
-	    result.setShouldDecorate(false);
-	return result;
     }
 
 
@@ -3204,15 +3067,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public int propcnt = 0;
 
-    private boolean acceptRobots() {
+    public boolean acceptRobots() {
         return acceptRobots;
     }
 
-    private boolean acceptGoogleBot() {
+    public boolean acceptGoogleBot() {
         return  acceptGoogleBot;
     }
 
-    private boolean isGoogleBot(Request request) {
+    public boolean isGoogleBot(Request request) {
 	if(request.getIsGoogleBot()) {
 	    return isVerifiedGoogleBot(request);
 	}
@@ -3783,7 +3646,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 	if(apiMethod.getCheckIsHuman()) {
-	    Result humanResult = checkForHuman(request);
+	    Result humanResult = getAuthManager().checkForHuman(request);
 	    if(humanResult!=null) return humanResult;
 	}
 
@@ -4195,7 +4058,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
 	defaultMaxEntries     = getProperty("ramadda.defaultmaxentries",defaultMaxEntries);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
-	checkHuman            = getProperty(PROP_ISHUMAN_CHECK,false);
 	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
 	proxySsl             = getProperty(PROP_ACCESS_PROXY_SSL,false);

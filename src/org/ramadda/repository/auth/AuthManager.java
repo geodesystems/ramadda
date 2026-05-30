@@ -13,6 +13,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
 import ucar.unidata.util.IOUtil;
 import org.ramadda.util.JsonUtil;
+import ucar.unidata.util.Misc;
 
 import org.ramadda.util.FormInfo;
 
@@ -44,11 +45,26 @@ import javax.imageio.ImageIO;
  */
 @SuppressWarnings("unchecked")
 public class AuthManager extends RepositoryManager {
+    public static final String PROP_ISHUMAN_COOKIE_VALUE = "ramadda.ishuman.cookie";
+    public static final String PROP_ISHUMAN_CHECK = "ramadda.ishuman.check";    
+    public static final String PROP_ISHUMAN_MESSAGE = "ramadda.ishuman.message";
+    public static final String ATTR_ISHUMAN = "ishuman";
+    public static final String COOKIE_ISHUMAN= "ramadda_ishuman";
+
+
+
     public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
     public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
     public static final String TOKEN_NO_SESSION = "nosession";
     private static final String ARG_EXTRA_PASSWORD = "extrapassword";
     private static final String DEFAULT_MESSAGE = "For verification please enter your password";
+
+    private String humanCookie;
+    private boolean checkHuman = false;
+    private TTLCache<String, Integer> humanIPs =
+	new TTLCache<String,Integer>(Utils.minutesToMillis(30));
+
+
 
     private boolean doCaptcha;
     private boolean doPassword;
@@ -64,6 +80,9 @@ public class AuthManager extends RepositoryManager {
 
     private Properties captchaMap;
 
+
+
+
     /**
      * ctor
      *
@@ -78,6 +97,34 @@ public class AuthManager extends RepositoryManager {
     private static final int IMAGE_WIDTH = 140;
     private static final int IMAGE_HEIGHT =70;
     private static final int TEXTSIZE=24;
+
+    public void initAttributes() {
+        super.initAttributes();
+	checkHuman  = getRepository().getProperty(PROP_ISHUMAN_CHECK,false);
+    }
+
+
+
+    public boolean  getCheckIfHuman() {
+	return checkHuman;
+    }
+
+
+    public String getIsHumanCookieValue() throws Exception {
+	if(humanCookie==null) {
+	    humanCookie = getRepository().getProperty(PROP_ISHUMAN_COOKIE_VALUE,null);
+	    if(humanCookie==null) {
+		synchronized(this) {
+		    if(humanCookie==null) {
+			humanCookie = getRepository().getGUID();
+			getRepository().writeGlobal(PROP_ISHUMAN_COOKIE_VALUE,humanCookie);
+			getLogManager().logInfoAndPrint("Human check:","created cookie value:"  + humanCookie);
+		    }
+		}
+	    }
+	}
+	return humanCookie;
+    }
 
     public boolean isRecaptchaEnabled() {
 	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
@@ -142,6 +189,140 @@ public class AuthManager extends RepositoryManager {
 	ensureAuthToken(request);
 	return true;
     }
+
+    public Result checkForHuman(Request request) throws Exception  {
+	if(request.get("overidehuman",false)) {
+	    return null;
+	}
+
+
+	if(!checkHuman) {
+	    //	    logSpecial("human: not enabled");
+	    return null;
+
+	}
+	if(!request.isAnonymous()) {
+	    //	    logSpecial("human: not anon");
+	    return null;
+	}
+	    
+	List<String> cookies = getSessionManager().getCookies(request,COOKIE_ISHUMAN);
+	if(cookies.size()!=0) {
+	    if(cookies.contains(getIsHumanCookieValue()))  {
+		//		logSpecial("human: has cookie");
+		return null;
+	    }
+	}
+
+	//Special exception for google bot
+	if(getRepository().acceptGoogleBot() && getRepository().isGoogleBot(request)) {
+	    //	    logSpecial("human: is google bot");
+	    return null;
+	}
+	StringBuilder sb = new StringBuilder();
+
+	StringBuilder messageSB = new StringBuilder();
+	boolean formSubmitted = request.get("humanform",false);
+	boolean isHuman = false;
+	if(formSubmitted) {
+	    if(getAuthManager().isRecaptchaEnabled()) {
+		isHuman  = getAuthManager().checkRecaptcha(request, messageSB);
+	    } else {
+		String isHumanResponse = request.getString(ATTR_ISHUMAN,null);
+		isHuman = isHumanResponse!=null && isHumanResponse.equals("yes");
+	    }
+	    if(isHuman) {
+		getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getOriginalIp() +" user:" + request.getUserAgent());
+		request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false,false));
+		return null;
+	    }
+	}
+
+	Integer count = null;
+	synchronized(humanIPs) {
+	    String ip = request.getOriginalIp();
+	    count = humanIPs.get(ip);
+	    if(count==null) {
+		count = new Integer(0);
+	    }
+	    count = new Integer(count.intValue()+1);
+	    humanIPs.put(ip,count);
+	}
+	boolean barebones = true;
+	if(request.isMobile()) {
+	    barebones=false;
+	}
+
+	if(barebones) {
+	    sb.append("<!DOCTYPE html><html><body>");
+	    HU.cssLink(sb, getPageHandler().getCdnPath("/style.css"));
+	    String logo= getPageHandler().getLogoImage(null);
+	    getPageHandler().sectionOpen(request,sb,getRepository().getRepositoryName(),false);
+	    if(Utils.stringDefined(logo)) sb.append(HU.center(HU.img(logo,"",HU.attrs("width","120px"))));
+	} else {
+	    getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
+	}
+	//	sb.append(messageSB);
+	String message = getRepository().getProperty(PROP_ISHUMAN_MESSAGE,"");
+	if(Utils.stringDefined(message)) {
+	    message = message.replace("\\n","<br>");
+	    if(barebones) {
+		sb.append(HU.div(message,HU.attrs("class","human-message")));
+	    } else {
+		sb.append(getPageHandler().showDialogNote(message));
+	    }
+	}
+
+	if(formSubmitted) {
+	    getLogManager().logInfoAndPrint("Human check:", "failed: " + request.getOriginalIp());
+	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
+	}
+
+	sb.append(HU.form(request.getRequestPath()));
+	sb.append(HU.hidden("humanform","true"));
+
+	if(getAuthManager().isRecaptchaEnabled()) {
+	    sb.append("<div class=ramadda-verification>");
+	    sb.append("</div>");
+	    sb.append(getAuthManager().getRecaptcha(request));
+	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
+	} else {
+	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
+	    sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
+	    request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
+	    HU.importJS(sb, getPageHandler().getCdnPath("/human.js"));
+	}
+
+
+	sb.append(HU.formClose());
+	sb.append("\n");
+
+
+
+	String message2="Note: this will add a &quot;cookie&quot; to your request to show that you are human";
+	sb.append(HU.div(message2,HU.attrs("class","human-message")));
+
+	
+
+
+	getPageHandler().sectionClose(request,sb);
+	if(barebones)
+	    sb.append("</body></html>");
+	String logMessage = "checking:" + " IP:" + request.getOriginalIp() +" count: " +count;
+	String entryId = request.getString(ARG_ENTRYID,null);
+	if(entryId!=null) logMessage+=" entry:" + entryId;
+	getLogManager().logInfoAndPrint("Human check:",logMessage);
+	Result result =  new Result("Prove you are a human",sb);
+	result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+	if(count>5) {
+	    Misc.sleepSeconds(5);
+	}
+	if(barebones) 
+	    result.setShouldDecorate(false);
+	return result;
+    }
+
+
 
     /**
      *  Convert the sessionId into a authorization token that is used to verify form

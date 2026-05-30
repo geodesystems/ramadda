@@ -1045,11 +1045,11 @@ public class EntryManager extends RepositoryManager {
 	*/
 
 
-	if(getRepository().getCheckIfHuman()) {
+	if(getAuthManager().getCheckIfHuman()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
 	    OutputType outputType = request.getOutput();
 	    if(handler.checkForHuman(request,outputType)) {
-		Result humanResult = getRepository().checkForHuman(request);
+		Result humanResult = getAuthManager().checkForHuman(request);
 		if(humanResult!=null) {
 		    return humanResult;
 		}
