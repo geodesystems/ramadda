@@ -2922,7 +2922,7 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-table-widget {
-    margin-right:6px !important;
+/*    margin-right:3px !important;*/
 }
 
 
@@ -2979,6 +2979,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     overflow: hidden;
     text-overflow: ellipsis;
     position:relative;
+}
+
+.entry-table-cell input {
+    margin-right:0.5em;
 }
 
 .entry-table-simple-row .entry-table-cell {

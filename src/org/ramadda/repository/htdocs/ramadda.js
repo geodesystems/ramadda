@@ -791,7 +791,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_CLASS,'submit ui-button ui-corner-all ui-widget',
 				     ATTR_ID,'getall1337','role','button']);
 	    pageSearchId = HU.getUniqueId('find');	
-	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(20)), ATTR_ID,pageSearchId]);
+//	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(0)), ATTR_ID,pageSearchId]);
+	    form+= SPACE+HU.span([ATTR_ID,pageSearchId]);
 	    deepSearchId = HU.getUniqueId('search');	
 /*
 	    form+= HU.input('','',
@@ -1309,9 +1310,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 						    ATTR_NAME,'selentry',
 						    ATTR_VALUE, entry.getId(),
 						    ATTR_CLASS,HU.classes('entry-table-widget',CLASS_ENTRY_FORM_SELECT),
-						    ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(2),
-								      CSS_DISPLAY,DISPLAY_NONE)],false));
+						    ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],false));
 		    }
+
 
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
