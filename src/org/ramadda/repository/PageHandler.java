@@ -1645,7 +1645,7 @@ public class PageHandler extends RepositoryManager {
 
     private void getUserLoginLinks(Request request, List<Link> _links, StringBuilder prefix,boolean makePopup)  throws Exception  {
 	User user = request.getUser();
-	String space = "";
+	String space = " ";
         if (user.getAnonymous()) {
             if (getUserManager().canDoLogin(request)) {
                 String url;
