@@ -3279,6 +3279,7 @@ var Utils =  {
             right=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			   ATTR_TITLE,Utils.delimMsg("Search under") + ": "+ ramaddaThisEntryName],
 			  HU.checkbox("popup_search_here",[ATTR_NAME,'ancestor', ATTR_VALUE,ramaddaThisEntry],false) +
+			  SPACE+
 			  HU.tag(TAG_LABEL,[ATTR_CLASS,CLASS_CLICKABLE, ATTR_FOR,"popup_search_here"],
 				 HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
 					HU.getIconImage('fas fa-folder-tree'))));

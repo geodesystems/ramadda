@@ -756,18 +756,19 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				       ATTR_ID,id+'_form_cbx'],false);
 	    */
 	    
-	    let toggle = '';
-	    toggle += HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
-			     ATTR_TITLE,'Toggle all on',
-			     ATTR_CLASS,CLASS_CLICKABLE,
-			     ATTR_ID,id+'_toggle_on'],
-			    HU.getIconImage('fas fa-toggle-on'));
 
-	    toggle+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(6),CSS_MARGIN_RIGHT,HU.px(6)),
-			     ATTR_TITLE,'Toggle all off',
-			     ATTR_CLASS,CLASS_CLICKABLE,
-			     ATTR_ID,id+'_toggle_off'],
-			    HU.getIconImage('fas fa-toggle-off'));	    
+	    let allOn  = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3),CSS_MARGIN_RIGHT,HU.px(3)),
+			 ATTR_TITLE,'Toggle all on',
+			 ATTR_CLASS,CLASS_CLICKABLE,
+			 ATTR_ID,id+'_toggle_on'],
+			HU.getIconImage('fas fa-toggle-on'));
+
+	    let allOff = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3),CSS_MARGIN_RIGHT,HU.px(3)),
+				  ATTR_TITLE,'Toggle all off',
+				  ATTR_CLASS,CLASS_CLICKABLE,
+				  ATTR_ID,id+'_toggle_off'],
+				 HU.getIconImage('fas fa-toggle-off'));
+	    let toggle = allOff+ allOn;
 	    form+=toggle;
 
 	    let actions = [['','Apply action']];
