@@ -1907,7 +1907,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-verification {
-    display:inline-block;
+    /*display:inline-block;*/
     margin-left:8px;
     margin-bottom:8px;
     vertical-align:top;

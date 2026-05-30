@@ -135,12 +135,13 @@ public class AuthManager extends RepositoryManager {
 	return false;
     }
 
-    public String getRecaptcha(Request request) {
+    public String getRecaptcha(Request request,String ...extra) {
 	StringBuilder sb = new StringBuilder();
 	if(isRecaptchaEnabled()) {
 	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
 	    String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	    HU.div(sb,"",HU.attrs("class","g-recaptcha ramadda-recaptcha","data-sitekey",siteKey));
+	    HU.div(sb,"",HU.attrs("class","g-recaptcha ramadda-recaptcha","data-sitekey",siteKey)+
+		   HU.attrs(extra));
 	}
 	return sb.toString();
     }
@@ -278,14 +279,18 @@ public class AuthManager extends RepositoryManager {
 	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
 	}
 
-	sb.append(HU.form(request.getRequestPath()));
+	String formID = "checkhumanform";
+	HU.script(sb,"function onHumanCheckSuccess(token) {document.getElementById(" + HU.squote(formID)+").submit();}");
+	sb.append(HU.form(request.getRequestPath(),
+			  HU.attrs("id",formID)));
 	sb.append(HU.hidden("humanform","true"));
 
 	if(getAuthManager().isRecaptchaEnabled()) {
 	    sb.append("<div class=ramadda-verification>");
 	    sb.append("</div>");
-	    sb.append(getAuthManager().getRecaptcha(request));
-	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
+	    sb.append(getAuthManager().getRecaptcha(request,
+						    "data-callback","onHumanCheckSuccess"));
+	    //	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	} else {
 	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	    sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
@@ -293,13 +298,13 @@ public class AuthManager extends RepositoryManager {
 	    HU.importJS(sb, getPageHandler().getCdnPath("/human.js"));
 	}
 
-
 	sb.append(HU.formClose());
 	sb.append("\n");
 
 
 
-	String message2="Note: this will add a &quot;cookie&quot; to your request to show that you are human";
+	String message2 = "This site uses a necessary security cookie to remember that your browser has passed human verification. The cookie is required to protect the site from automated abuse.";
+
 	sb.append(HU.div(message2,HU.attrs("class","human-message")));
 
 	
