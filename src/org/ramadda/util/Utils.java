@@ -1310,6 +1310,11 @@ public class Utils extends IO {
         return sb.toString();
     }
 
+    public static List toList(Object...args) {
+	return arrayToList(args);
+    }
+
+
     public static List arrayToList(Object[] values) {
         List v = new ArrayList();
         for (Object o : values) {
