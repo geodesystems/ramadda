@@ -176,12 +176,13 @@ public class AuthManager extends RepositoryManager {
 	return false;
     }
 
-    public String getTurnstile(Request request) {
+    public String getTurnstile(Request request,String ...extra) {
 	StringBuilder sb = new StringBuilder();
 	if(isTurnstileEnabled()) {
 	    sb.append("<script   src='https://challenges.cloudflare.com/turnstile/v0/api.js'    async defer></script>\n");
 	    HU.div(sb,"",HU.attrs("class","cf-turnstile",
-				  "data-sitekey",turnstileSiteKey));
+				  "data-sitekey",turnstileSiteKey)+
+		   HU.attrs(extra));
 	}
 	return sb.toString();
     }
@@ -332,7 +333,7 @@ public class AuthManager extends RepositoryManager {
 	sb.append(HU.hidden("humanform","true"));
 
 	if(isTurnstileEnabled()) {
-	    sb.append(getTurnstile(request));
+	    sb.append(getTurnstile(request,"data-callback","onHumanCheckSuccess"));
 	} else if(isRecaptchaEnabled()) {
 	    sb.append("<div class=ramadda-verification>");
 	    sb.append("</div>");
