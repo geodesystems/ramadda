@@ -196,9 +196,10 @@ public class AuthManager extends RepositoryManager {
 	    String body = JU.mapAndQuote(Utils.toList("secret",turnstileSecretKey,
 						      "response",turnstileResponse));
 
-	    String json = IO.doPost(new URL(url),body);
+	    System.err.println("TURNSTILE BODY: " + body);
+	    String json = IO.doPost(new URL(url),body,"Content-Type","application/json");
             JSONObject  obj   = new JSONObject(json);
-	    System.err.println(json);
+	    System.err.println("TURNSTILE RESPONSE: " + json);
 	    if(!obj.getBoolean("success")) {
                 response.append(HU.center(messageError("Sorry, you were not verified to be a human")));
 		return false;
