@@ -60,7 +60,14 @@ You can configure your RAMADDA to check if the client is actually a human by set
 ramadda.ishuman.check=true
 -pre
 
-This will show a form that, when submitted and verified, sets a cookie that verifies that the client is a human.
+There are three ways access can be screened -
+* Cloudflare Turnstile (see below)
+* Google Recaptcha (see below)
+* Custom RAMADDA 
+
+If you are not using Cloudflare or Google then a custom facility isused.
+This shows a form that, when submitted and verified, sets a cookie that verifies that the client is a human.
+:p
 The default message shown can be set with the property:
 +pre addCopy=true
 ramadda.ishuman.message=Due to the proliferation of AI crawlers we need to check if you are a real person
@@ -69,6 +76,25 @@ ramadda.ishuman.message=Due to the proliferation of AI crawlers we need to check
 Note: If you have enabled the GoogleBot to scan your site then RAMADDA does a special check to see if
 the request is from the GoogleBot. If it is then the Human check is not applied.
 
+:heading Cloudflare Turnstile
+You can use Cloudflare's Turnstile facility to screen for bots when you have
+set the ramadda.ishuman.check=true property. This requires setting up a Turnstile
+widget with Cloudflare and setting a site key and a secret key in a RAMADDA
+.properties file.
+:p
+<ul>
+<li> Go to the <a href=https://dash.cloudflare.com/sign-up?to=/:account/turnstile>
+    Cloudflare Turnstile dashboard</a>. This requires an account.
+<li> Select "Add Widget"
+<li> Enter your hostname or names
+<li> Once created set the below RAMADDA properties and restart your RAMADDA
+</ul>
++pre addCopy=true
+cloudflare.turnstile.sitekey=&lt;your site key&lt;
+cloudflare.turnstile.secret=&lt;your site key&lt;
+-pre
+
+
 :heading Google Recaptcha
 Google Recaptcha can be used for verifying non-bot access to some services (below).
 To enable Recaptcha you must obtain a sitekey and secret from google. See:
@@ -76,8 +102,8 @@ To enable Recaptcha you must obtain a sitekey and secret from google. See:
 :p
 And set the following properties:
 +pre addCopy=true
-google.recaptcha.sitekey=
-google.recaptcha.secret=
+google.recaptcha.sitekey=&lt;your site key&lt;
+google.recaptcha.secret=&lt;your secret key&lt;
 -pre
 
 
