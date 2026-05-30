@@ -816,7 +816,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(pageSearchId) {
 	    HU.initPageSearch('.search-component,.entry-table-row-data',
 			      null,
-			      'Search table',false,{target:jqid(pageSearchId)});
+			      'Filter table',false,{target:jqid(pageSearchId)});
 	}
 	if(formId) {
 	    jqid(formId).submit(( event ) =>{
