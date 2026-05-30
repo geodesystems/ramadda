@@ -23,11 +23,8 @@
 <import resource="type_core_mscl.xml"/>
 <import resource="type_core_las.xml"/>
 
-<!--Rutgers/Columbia lithology XRF   - need to make the type id rutgers specific -->
-<import resource="type_core_xrf.xml"/>
-
-<!--Rutgers/Columbia lithology CSV -->
-<import resource="type_core_lithology.xml"/>
+<import resource="type_core_rutgers_xrf.xml"/>
+<import resource="type_core_ldeo_lithology.xml"/>
 
 
 

@@ -1,11 +1,11 @@
 <!-- 
 Since this is for import add a:
-<import resource="type_core_xrf.xml"/>
+<import resource="type_core_rutgers_xrf.xml"/>
 into some types.xml file
 -->
 <types>
-<type  name="type_core_xrf" 
- description="Core XRF File" 
+<type  name="type_core_rutgers_xrf" 
+ description="Core Rutgers XRF File" 
  handler="super" 
  super="type_core_record_base" 
  supercategory="" 
