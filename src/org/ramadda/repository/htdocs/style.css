@@ -4951,12 +4951,19 @@ img.ramadda-user-menu-image:hover {
     cursor:pointer;
 }
 
+
+
+
 /*
 .ramadda-text a, .ramadda-text a:visited {
     text-decoration: underline;
     color: black;
 }
 */
+
+.ramadda-user-link i {
+    margin-right:0.5em;
+}
 
 .ramadda-user-link a {
     color: black;

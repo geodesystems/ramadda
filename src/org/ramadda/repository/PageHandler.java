@@ -1645,6 +1645,7 @@ public class PageHandler extends RepositoryManager {
 
     private void getUserLoginLinks(Request request, List<Link> _links, StringBuilder prefix,boolean makePopup)  throws Exception  {
 	User user = request.getUser();
+	String space = "";
         if (user.getAnonymous()) {
             if (getUserManager().canDoLogin(request)) {
                 String url;
@@ -1662,16 +1663,16 @@ public class PageHandler extends RepositoryManager {
                                           ARG_REDIRECT, redirect);
                 }
                 _links.add(new Link(url,  "",
-				    HU.faIcon("fa-sign-in-alt") + " " + msg("Sign in"),"Sign in"));
-		if(getUserManager().isRegistrationEnabled()) {
+				    HU.faIcon("fa-sign-in-alt") + space + msg("Sign in"),"Sign in"));
+		if(getUserManager().isRegistrationEnabled() || true) {
 		    _links.add(new Link(getRepository().getUrlPath("/user/register"),"",
-					/*HU.faIcon("fas fa-user-plus") + " " +*/ msg("Register")));
+					HU.faIcon("fas fa-person-circle-plus") + space + msg("Register")));
 		}
             }
         } else {
 	    _links.add(new Link(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT),
 				"",
-				HU.faIcon("fa-sign-out-alt") + " " + msg("Sign out"),
+				HU.faIcon("fa-sign-out-alt") + space + msg("Sign out"),
 				"Sign out"));
             String label = user.getLabel().replace(" ", "&nbsp;");
 	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25,
