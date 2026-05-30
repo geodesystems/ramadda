@@ -51,10 +51,12 @@ public class AuthManager extends RepositoryManager {
     public static final String ATTR_ISHUMAN = "ishuman";
     public static final String COOKIE_ISHUMAN= "ramadda_ishuman";
 
-
+    public static final String PROP_TURNSTILE_SITEKEY = "cloudflare.turnstile.sitekey";
+    public static final String PROP_TURNSTILE_SECRETKEY = "cloudflare.turnstile.secret";    
 
     public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
     public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
+
     public static final String TOKEN_NO_SESSION = "nosession";
     private static final String ARG_EXTRA_PASSWORD = "extrapassword";
     private static final String DEFAULT_MESSAGE = "For verification please enter your password";
@@ -69,6 +71,13 @@ public class AuthManager extends RepositoryManager {
     private boolean doCaptcha;
     private boolean doPassword;
 
+    private String recaptchaSiteKey;
+    private String recaptchaSecretKey;
+    private String turnstileSiteKey;
+    private String turnstileSecretKey;    
+
+
+
     /** store the number of bad captcha attempts for each user. clear every hour */
     private TTLCache<String,Integer> badCaptchaCount =
 	new TTLCache<String,Integer>(60*60*1000);
@@ -77,30 +86,26 @@ public class AuthManager extends RepositoryManager {
 
     private static String hashStringSalt = null;
     private static Object HASH_MUTEX = new Object();
-
     private Properties captchaMap;
 
-
-
-
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     */
     public AuthManager(Repository repository) {
         super(repository);
 	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",false);	
 	doCaptcha = repository.getLocalProperty("ramadda.auth.dorecaptcha",false);
     }
 
-    private static final int IMAGE_WIDTH = 140;
-    private static final int IMAGE_HEIGHT =70;
-    private static final int TEXTSIZE=24;
+
 
     public void initAttributes() {
         super.initAttributes();
 	checkHuman  = getRepository().getProperty(PROP_ISHUMAN_CHECK,false);
+
+	recaptchaSiteKey =  getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
+	recaptchaSecretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);		
+
+	turnstileSiteKey =  getRepository().getProperty(PROP_TURNSTILE_SITEKEY,null);
+	turnstileSecretKey = getRepository().getProperty(PROP_TURNSTILE_SECRETKEY,null);		
+
     }
 
 
@@ -127,9 +132,7 @@ public class AuthManager extends RepositoryManager {
     }
 
     public boolean isRecaptchaEnabled() {
-	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
-	if(stringDefined(siteKey) && stringDefined(secretKey)) {
+	if(stringDefined(recaptchaSiteKey) && stringDefined(recaptchaSecretKey)) {
 	    return true;
 	}
 	return false;
@@ -139,8 +142,7 @@ public class AuthManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
 	if(isRecaptchaEnabled()) {
 	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
-	    String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	    HU.div(sb,"",HU.attrs("class","g-recaptcha ramadda-recaptcha","data-sitekey",siteKey)+
+	    HU.div(sb,"",HU.attrs("class","g-recaptcha ramadda-recaptcha","data-sitekey",recaptchaSiteKey)+
 		   HU.attrs(extra));
 	}
 	return sb.toString();
@@ -149,11 +151,11 @@ public class AuthManager extends RepositoryManager {
     public boolean checkRecaptcha(Request request, Appendable response)
 	throws Exception {
 	if(isRecaptchaEnabled()) {
-	    String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	    String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
 	    String recaptchaResponse = request.getString("g-recaptcha-response",null);
 	    if(recaptchaResponse==null) return false;
-	    String url = HU.url("https://www.google.com/recaptcha/api/siteverify","secret",secretKey,"response",recaptchaResponse);
+	    String url = HU.url("https://www.google.com/recaptcha/api/siteverify",
+				"secret",recaptchaSecretKey,
+				"response",recaptchaResponse);
 	    String json = IO.readUrl(new URL(url));
             JSONObject  obj   = new JSONObject(json);
 	    if(!obj.getBoolean("success")) {
@@ -166,6 +168,48 @@ public class AuthManager extends RepositoryManager {
         return true;
 
     }
+
+    public boolean isTurnstileEnabled() {
+	if(stringDefined(turnstileSiteKey) && stringDefined(turnstileSecretKey)) {
+	    return true;
+	}
+	return false;
+    }
+
+    public String getTurnstile(Request request) {
+	StringBuilder sb = new StringBuilder();
+	if(isTurnstileEnabled()) {
+	    sb.append("<script   src='https://challenges.cloudflare.com/turnstile/v0/api.js'    async defer></script>\n");
+	    HU.div(sb,"",HU.attrs("class","cf-turnstile",
+				  "data-sitekey",turnstileSiteKey));
+	}
+	return sb.toString();
+    }
+
+    public boolean checkTurnstile(Request request, Appendable response)
+	throws Exception {
+	if(isTurnstileEnabled()) {
+	    String turnstileResponse = request.getString("cf-turnstile-response",null);
+	    if(turnstileResponse==null) return false;
+	    String url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+	    String body = JU.mapAndQuote(Utils.toList("secret",turnstileSecretKey,
+						      "response",turnstileResponse));
+
+	    String json = IO.doPost(new URL(url),body);
+            JSONObject  obj   = new JSONObject(json);
+	    System.err.println(json);
+	    if(!obj.getBoolean("success")) {
+                response.append(HU.center(messageError("Sorry, you were not verified to be a human")));
+		return false;
+	    } else {
+		return true;
+	    }
+	}
+        return true;
+
+    }
+
+
 
     public boolean verify(Request request,Appendable sb) throws Exception {
 	return verify(request, sb, false);
@@ -226,7 +270,9 @@ public class AuthManager extends RepositoryManager {
 	boolean formSubmitted = request.get("humanform",false);
 	boolean isHuman = false;
 	if(formSubmitted) {
-	    if(getAuthManager().isRecaptchaEnabled()) {
+	    if(isTurnstileEnabled()) {
+		isHuman  = checkTurnstile(request, messageSB);
+	    } else     if(getAuthManager().isRecaptchaEnabled()) {
 		isHuman  = getAuthManager().checkRecaptcha(request, messageSB);
 	    } else {
 		String isHumanResponse = request.getString(ATTR_ISHUMAN,null);
@@ -285,7 +331,9 @@ public class AuthManager extends RepositoryManager {
 			  HU.attrs("id",formID)));
 	sb.append(HU.hidden("humanform","true"));
 
-	if(getAuthManager().isRecaptchaEnabled()) {
+	if(isTurnstileEnabled()) {
+	    sb.append(getTurnstile(request));
+	} else if(isRecaptchaEnabled()) {
 	    sb.append("<div class=ramadda-verification>");
 	    sb.append("</div>");
 	    sb.append(getAuthManager().getRecaptcha(request,
