@@ -61,6 +61,8 @@ profileMode="lines" indexField="from_m"  }}
 <table class="formtable">
 {{field name="hole"  row.label="Hole:" }}
 {{field name="depth_level"  row.label="Depth:" }}
+{{field name="top_depth"  row.label="Top Depth:" }}
+{{field name="bottom_depth"  row.label="Bottom Depth:" }}
 {{field name="xrf_current"  row.label="Current:" fieldSuffix=" mA"}}
 {{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix=" kV"}}
 {{field name="scan_rate"  row.label="Scan Rate:"}}
