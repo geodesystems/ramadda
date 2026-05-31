@@ -1292,7 +1292,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    this.recordToIdx = {};
 	    let showButtons = this.getShowButtons();
 	    if(showButtons) {
-		let showPageSearch = this.records.length>5 && this.getShowPageSearch();
+		let showPageSearch = this.records.length>4 && this.getShowPageSearch();
 		let buttonStyle = this.getButtonStyle();
 		let buttonStyleOn = this.getButtonStyleOn(HU.css(CSS_BACKGROUND,'var(--highlight-background)'));
 		let tabs = [];
@@ -1307,7 +1307,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		html+=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,'90vh',CSS_OVERFLOW_Y,'auto') +
 				       this.getProperty('buttonsListStyle','')]);
 		if(maxPerRow>=0) {
-		    html+=HU.open(TAG_DIV,[ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_CENTER)]);
+		    html+=HU.open(TAG_DIV,[]);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
@@ -1324,7 +1324,11 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    tabs.push(HU.span([ATTR_CLASS,
 				       HU.classes('display-menu-button-item',
 						  CLASS_HOVERABLE,
-						  CLASS_CLICKABLE, (idx==0?'display-menu-button-item-on':'')),
+						  CLASS_CLICKABLE, 
+						  (maxPerRow==1?'display-menu-button-vertical':
+						   'display-menu-button-horizontal'),
+						  (idx==0?'display-menu-button-item-on':'')),
+				       ATTR_TITLE,label,
 				       ATTR_STYLE,style,
 				       ATTR_RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;

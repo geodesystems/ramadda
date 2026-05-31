@@ -460,7 +460,9 @@ showHeading=true
 +if property=!show_menu
 +row
 +col-2
++div style="max-width:100%;overflow-x:auto;"
 {{display_menu shareSelectedEntry=true   maxPerRow=1 showButtons=true showPageSearch=true doEntries=true showArrows=true  }}  
+-div
 -col
 +col-10
 {{display_entrywiki  message="" acceptShareSelectedEntry=true wiki="{{import}}" entry="child:"}} 

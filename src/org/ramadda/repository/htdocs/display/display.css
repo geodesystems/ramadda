@@ -3650,6 +3650,11 @@ table.dataTable tfoot td {
 }
 
 
+.display-menu-button-vertical {
+    display:block;
+    max-width:100%;
+}
+
 .display-menu-contents {
     display:inline-block;
     white-space:nowrap;
