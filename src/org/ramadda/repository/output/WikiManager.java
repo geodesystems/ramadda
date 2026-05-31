@@ -2076,6 +2076,7 @@ public class WikiManager extends RepositoryManager
 	    final String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
 	    final String style = getProperty(wikiUtil,props,"style","");
 	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",true);
+	    final boolean addPageSearch = getProperty(wikiUtil,props,"addPageSearch",false);
 	    final boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
 	    final boolean addAncestor = getProperty(wikiUtil,props,"addAncestorToSearchLink",
 						    getProperty(wikiUtil,props,"addAncestor",false));		    
@@ -2189,6 +2190,10 @@ public class WikiManager extends RepositoryManager
 		    }
 		}
 	    }
+	    String containerId= HU.getUniqueId("");
+	    String topId= HU.getUniqueId("");	    
+	    HU.open(sb,"div",HU.attrs("id", containerId));
+	    HU.div(sb,"",HU.attrs("id", topId));
 	    Collections.sort(sort);
 	    int count=0;
 	    for(Utils.ObjectSorter obj: sort) {
@@ -2206,6 +2211,14 @@ public class WikiManager extends RepositoryManager
 	    if(sort.size()>0 && suffix!=null) {
 		sb.append(wikify(request,suffix.replace("\\n","\n")));
 		suffix=null;
+	    }
+	    HU.close(sb,"div");
+	    if(addPageSearch && totalCount[0]>5) {
+		HU.addPageSearch(sb,
+				 "#" + containerId +" .ramadda-typecount-block",
+				 null,
+				 "Find",
+				 Utils.toList("target",HU.squote("#" + topId)));
 	    }
 	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LINK)) {

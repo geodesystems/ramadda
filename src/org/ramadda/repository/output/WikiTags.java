@@ -408,6 +408,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					    "#animated","true",
 					    "#topCount","5",
 					    "#doColor","true",
+					    "#addPageSearch","true",
 					    "#addAncestorToSearchLink","true",
 					    "#addSearchLink","true",
 					    "#iconWidth","32px",
