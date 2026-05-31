@@ -2760,7 +2760,8 @@ WikiEditor.prototype = {
 		 attributes:['style=""']
 		},
 	    pagesearch: {title:'Page Search',
-			 attributes:[{p:'focus=true'},
+			 attributes:[{p:'label='},
+				     {p:'focus=true'},
 				     {p:'selector=""'},
 				     {p:'hideAll=true'}]
 			}
