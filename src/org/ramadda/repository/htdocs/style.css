@@ -443,6 +443,7 @@ ramadda-heading, .ramadda-page-heading {
     white-space:nowrap;
     max-width:500px;
     overflow-x:auto;
+    color:#000 !important;
 }
 
 .seesv-table-cell {
