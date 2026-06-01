@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun May 31 06:15:47 EDT 2026";
+var build_date="RAMADDA build date: Mon Jun  1 07:51:27 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36345,7 +36345,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search Settings'},
 	{p:'orderByTypes',
 	 tt:'Comma separated list to show in the order by menu',
-	 ex:'relevant,name,createdate,date,changedate,size,entryorder',	 
+	 ex:'relevant,createdate,name,date,changedate,size,entryorder',	 
 	 d:'relevant,name,createdate,date,size,entryorder'},
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_',
 	 tt:'Initial sort order'},
