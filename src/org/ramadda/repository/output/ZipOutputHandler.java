@@ -43,6 +43,19 @@ public class ZipOutputHandler extends OutputHandler {
 
     private boolean debug = false;
 
+    public static final boolean RECURSE_TRUE = true;
+    public static final boolean RECURSE_FALSE = false;
+    public static final boolean THUMBNAILS_TRUE = true;
+    public static final boolean THUMBNAILS_FALSE = false;
+    public static final boolean FOREXPORT_TRUE = true;
+    public static final boolean FOREXPORT_FALSE = false;
+    public static final boolean DEEP_TRUE = true;
+    public static final boolean DEEP_FALSE = false;    
+
+
+    public static final double  MAXSIZE_DEFAULT = -1;
+    
+
     private static final boolean isSynthOk = true;
 
     private static final String ARG_WRITETODISK = "writetodisk";
@@ -180,13 +193,21 @@ public class ZipOutputHandler extends OutputHandler {
             return toCorpus(request, entry.getName(), children);
 	}
 
-        return toZip(request, entry.getName(), entries, false, false,false);
+	double maxSize = request.get(ARG_MAXFILESIZE,MAXSIZE_DEFAULT);
+        return toZip(request, entry.getName(), entries,
+		     RECURSE_FALSE,
+		     FOREXPORT_FALSE,
+		     THUMBNAILS_FALSE,
+		     DEEP_FALSE,
+		     maxSize);
     }
 
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
             throws Exception {
+
+	double maxSize = request.get(ARG_MAXFILESIZE,MAXSIZE_DEFAULT);
 
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_CORPUS)) {
@@ -195,21 +216,21 @@ public class ZipOutputHandler extends OutputHandler {
 	}
         if (output.equals(OUTPUT_ZIPTREE)) {
             getLogManager().logInfo("Doing zip tree");
-            return toZip(request, group, children, true, false,false);
+            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
         }
         if (output.equals(OUTPUT_THUMBNAILS)) {
             getLogManager().logInfo("Doing zip thumbnails");
-            return toZip(request, group, children, false, false,true);
+            return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_FALSE,THUMBNAILS_TRUE,DEEP_FALSE,maxSize);
         }	
         if (output.equals(OUTPUT_EXPORT)) {
-            return toZip(request, group, children, true, true,false);
+            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
 	} else  if (output.equals(OUTPUT_EXPORT_SHALLOW)) {
-	    return toZip(request, group, children, false, true,false);
+	    return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
 	} else  if (output.equals(OUTPUT_EXPORT_DEEP)) {
-	    return toZip(request, group, children, false, true,false);	    
-        } else {
-            return toZip(request, group, children, false, false,false);
+	    return toZip(request, group, children, RECURSE_TRUE,FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_TRUE,maxSize);	    
         }
+	return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
+
     }
 
     public String getMimeType(OutputType output) {
@@ -220,21 +241,33 @@ public class ZipOutputHandler extends OutputHandler {
         }
     }
 
+
+    public Result toZip(Request request, String prefix,
+			List<Entry> entries,
+                        boolean recurse, boolean forExport) 
+	throws Exception {
+	double maxSize = request.get(ARG_MAXFILESIZE,MAXSIZE_DEFAULT);
+	return toZip(request, prefix, entries,recurse,forExport,THUMBNAILS_FALSE,   DEEP_FALSE,maxSize);
+    }
+
+
+
     public Result toZip(Request request, Entry group, List<Entry> entries,
-                        boolean recurse, boolean forExport,boolean thumbnails,boolean...deep)
+                        boolean recurse, boolean forExport,boolean thumbnails,
+			boolean deep,double maxSize)
             throws Exception {
 	String prefix = "";
 	if(group!=null && !group.isType(TYPE_DUMMY)) prefix = group.getName();
-	return toZip(request, prefix,entries,recurse,forExport,thumbnails,deep);
+	return toZip(request, prefix,entries,recurse,forExport,thumbnails,deep,maxSize);
     }
 
 
     public Result toZip(Request request, String prefix, List<Entry> entries,
-                        boolean recurse, boolean forExport,boolean thumbnails,boolean...deep)
+                        boolean recurse, boolean forExport,boolean thumbnails,boolean deep,double maxSize)
             throws Exception {
         OutputStream os         = null;
         boolean      doingFile  = false;
-	boolean doDeep = deep.length>0?deep[0]:false;
+	boolean doDeep = deep;
 
         File         tmpFile    = null;
         boolean      isInternal = false;
@@ -245,7 +278,7 @@ public class ZipOutputHandler extends OutputHandler {
         try {
             processZip(request, entries, recurse, 
 		       0, sizeLimit,null, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>());
+                       new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>(),maxSize);
         } catch (IllegalArgumentException iae) {
             ok = false;
         }
@@ -317,7 +350,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             }
             processZip(request, entries, recurse, 0, sizeLimit,fileWriter, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>());
+                       new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>(),maxSize);
 
             if (root != null) {
                 String xml = MyXmlUtil.toString(root);
@@ -408,7 +441,7 @@ public class ZipOutputHandler extends OutputHandler {
                               long sizeSoFar, int[] counter,
                               boolean forExport, boolean thumbnails,
 			      Element entriesRoot,boolean deep,
-			      HashSet<String>seenEntry)
+			      HashSet<String>seenEntry,double maxSize)
             throws Exception {
 
         long      sizeProcessed = 0;
@@ -439,7 +472,7 @@ public class ZipOutputHandler extends OutputHandler {
             counter[0]++;
             //Don't get big files
 
-            if (!thumbnails && request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
+            if (!thumbnails && maxSize!=MAXSIZE_DEFAULT && entry.isFile()) {
 		long length = getStorageManager().getEntryFileLength(entry);
                 if (length   >= request.get(ARG_MAXFILESIZE, 0)) {
                     continue;
@@ -472,7 +505,7 @@ public class ZipOutputHandler extends OutputHandler {
                 sizeProcessed += processZip(request, children, recurse,
                                             level + 1, sizeLimit,fileWriter, path,
                                             sizeProcessed + sizeSoFar,
-                                            counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
+                                            counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize);
             }
 
 	    if(forExport && deep) {
@@ -506,7 +539,7 @@ public class ZipOutputHandler extends OutputHandler {
 		    sizeProcessed += processZip(request, deepEntries, recurse,
 						0, sizeLimit,fileWriter, path,
 						sizeProcessed + sizeSoFar,
-						counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
+						counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize);
 		}
 	    }
 

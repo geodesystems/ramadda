@@ -22,6 +22,7 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.WikiUtil;
 
 import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.Column;
@@ -5737,6 +5738,27 @@ public class EntryManager extends RepositoryManager {
 
     }
 
+    private Result processEntryExportForm(Request request,Entry entry) throws Exception {
+        StringBuilder sb      = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb,  msg("Export"));
+	sb.append(request.form(getRepository().URL_ENTRY_EXPORT));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_DOEXPORT, "true"));
+	sb.append(HU.formTable());
+	HU.formEntry(sb,msgLabel("Max Size"),HU.input(ARG_MAXFILESIZE,"",HU.SIZE_5)+" " + msg("MB"));
+	sb.append(HU.formTableClose());
+	sb.append(HU.p());
+	String buttonStyle= HU.css("margin-bottom","0.5em","width","200px");
+	HU.div(sb,HU.submit("Export", ARG_EXPORT,HU.attrs("style",buttonStyle,"title","Regular export")));
+	HU.div(sb,HU.submit("Export children", ARG_EXPORT_CHILDREN,HU.attrs("style",buttonStyle,"title","Export the children but not this entry")));
+	HU.div(sb,HU.submit("Shallow export", ARG_EXPORT_SHALLOW,HU.attrs("style",buttonStyle,"title","Just export this entry, not the children")));
+	HU.div(sb,HU.submit("Deep export", ARG_EXPORT_DEEP,HU.attrs("style",buttonStyle,"title","Export all entries plus linked entries")));	
+	sb.append(HU.formClose());
+        getPageHandler().entrySectionClose(request, entry, sb);
+	return makeEntryEditResult(request, entry, "Entry Export", sb);
+    }
+
+
     public Result processEntryExport(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -5748,19 +5770,31 @@ public class EntryManager extends RepositoryManager {
             throw new IllegalArgumentException("Cannot export entry");
         }
 
+	if(!request.get(ARG_DOEXPORT,false)) {
+	    return  processEntryExportForm(request,entry);
+	}
+
         List<Entry> entries;
 
-	if(request.get(ARG_EXPORT_CHILDREN,false)) {
+	if(request.exists(ARG_EXPORT_CHILDREN)) {
 	    entries= getChildren(request, entry);
 	} else {
 	    entries = new ArrayList<Entry>();
 	    entries.add(entry);
 	}
+
+	double maxSize=ZipOutputHandler.MAXSIZE_DEFAULT;
+	String sMaxSize= request.getString(ARG_MAXFILESIZE,"");
+	if(stringDefined(sMaxSize)) {
+	    maxSize = MEGA*Double.parseDouble(sMaxSize.trim());
+	}
         return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
 							   entries,
-							   !request.get(ARG_EXPORT_SHALLOW,false),
-							   true,false,
-							   request.get(ARG_EXPORT_DEEP,false));
+							   !request.exists(ARG_EXPORT_SHALLOW),
+							   ZipOutputHandler.FOREXPORT_TRUE,
+							   ZipOutputHandler.THUMBNAILS_FALSE,
+							   request.exists(ARG_EXPORT_DEEP),
+							   maxSize);
     }
 
     public Result processEntryImport(Request request) throws Exception {

@@ -8,6 +8,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.client.RepositoryClient;
+import org.ramadda.repository.output.ZipOutputHandler;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -19,34 +20,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.30 $
- */
+
 public class PublishAction extends MonitorAction {
-
     public static final String ARG_DESTRAMADDA = "destramadda";
-
-    /**  */
     public static final String ARG_USERID = "userid";
-
-    /**  */
     public static final String ARG_PASSWORD = "password";
-
-    /**  */
     public static final String ARG_PARENTENTRYID = "parententryid";
-
     private String destRamadda;
-
-    /**  */
     private String userId;
-
-    /**  */
     private String password;
-
-    /**  */
     private String parentEntryId;
 
     public PublishAction() {}
@@ -151,7 +133,10 @@ public class PublishAction extends MonitorAction {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
             monitor.getRepository().getZipOutputHandler().toZip(request, "",
-								entries, true, true,false);
+								entries,
+								ZipOutputHandler.RECURSE_FALSE,
+								ZipOutputHandler.FOREXPORT_FALSE);								
+
 
             String id =
                 RepositoryClient.publishToRamadda(new URL(destRamadda),

@@ -2925,7 +2925,15 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (getAccessManager().canDoExport(request, entry)) {
-            links.add(makeHRLink(OutputType.TYPE_FILE));
+	    String path = getRepository().URL_ENTRY_EXPORT.toString() + "/form";
+	    Link l;
+	    l = new Link(HU.url(path, new String[] {ARG_ENTRYID, entry.getId() }),
+			 ICON_EXPORT,
+			 "Export", OutputType.TYPE_FILE);
+	    l.setTooltip("Export form");
+	    links.add(l);
+
+	    /*
 	    String path = getRepository().URL_ENTRY_EXPORT.toString() + "/"
 		+ IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip";
 	    Link l;
@@ -2955,6 +2963,7 @@ public class TypeHandler extends RepositoryManager {
 			 "Deep Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Include entries this entry links to");
             links.add(l);	    
+	    */
             links.add(makeHRLink(OutputType.TYPE_FILE));
         }
 

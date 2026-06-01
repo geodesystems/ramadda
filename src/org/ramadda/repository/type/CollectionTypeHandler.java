@@ -671,10 +671,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public Result processDownloadRequest(Request request, Entry entry)
             throws Exception {
         request.setReturnFilename(entry.getName() + ".zip");
-
         return getZipOutputHandler().toZip(request, entry.getName(),
                                            processSearch(request, entry),
-                                           false, false,false);
+                                           ZipOutputHandler.RECURSE_FALSE,
+                                           ZipOutputHandler.FOREXPORT_FALSE);
     }
 
     /**
