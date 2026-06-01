@@ -444,7 +444,7 @@ showHeading=true
   <property name="form.date.show" value="false"/>
   <property name="form.altitude.show" value="false"/>
   <column name="show_menu" type="boolean"
-	  label="Show Menu"  showinhtml="false" default="true"/>
+	  label="Menu on top"  showinhtml="false" default="true"/>
   <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
