@@ -446,6 +446,10 @@ ramadda-heading, .ramadda-page-heading {
     color:#000 !important;
 }
 
+.ramadda-session-message  a {
+    color:#000 !important;
+}
+
 .seesv-table-cell {
     overflow-x:hidden;
 }
