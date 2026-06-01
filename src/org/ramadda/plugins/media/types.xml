@@ -111,9 +111,25 @@
 <type name="type_document_html"  description="HTML File" pattern="(?i)(.*\.html|.*\.htm)"
       priority="1"
       super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
+  <action name="applyllm" label="Apply LLM" canedit="true"
+          icon="fas fa-font" foruser="true" category="edit"/>
      <property name="icon" value="/icons/html.png"/>
      <property name="convertidsinfile" value="true"/>
      <column name="embed_type" type="enumeration" default="frame" values="frame,none,embed"  label="Embed style"  showinhtml="false"/>
+     <column name="show_information" type="boolean"
+	     label="Show Information" default="true"  showinhtml="false"/>
+    <wiki><![CDATA[
++section  title="{{name}}"
+{{description wikify="true"}}
+{{embedhtml}}
++if property=show_information
+:heading Information
+{{information showTitle="false" details="true"}}
+-if
+-section
+]]>
+</wiki>
+
 </type>
 
 

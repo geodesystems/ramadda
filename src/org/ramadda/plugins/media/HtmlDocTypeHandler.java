@@ -12,7 +12,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
-
+import org.ramadda.util.WikiUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -24,11 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.List;
+import java.util.Hashtable;
 
-/**
- *
- *
- */
+
 public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
 
     private static int IDX = 0;
@@ -63,17 +61,21 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry, Entries children)
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
 	throws Exception {
+        if ( !tag.equals("embedhtml")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
         Column c = getColumn("embed_type");
         String style = entry.getStringValue(request,IDX_STYLE, c.getDflt());
         if (style.equals("none")) {
-            return null;
+            return "";
         }
 
 	StringBuffer sb = new StringBuffer();
-	//	sb.append("<br>");
-	getPageHandler().entrySectionOpen(request,  entry,sb, "");
         if (style.equals("frame")) {
             String url = null;
             if (entry.getResource().isUrl()) {
@@ -82,21 +84,20 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
                         entry);
             } else {
-                return null;
+                return "";
             }
-
 	    HU.div(sb, HU.tag(
 			      HU.TAG_IFRAME,
 			      HU.attr(HU.ATTR_SRC, url)
 			      + HU.attr(HU.ATTR_WIDTH, "100%")
 			      + HU.attr(HU.ATTR_HEIGHT, "800px"), "Need frames"),
-		   HU.style("margin:10px;margin-top:0px;border:1px solid #ccc;padding:5px;"));
-	    getPageHandler().entrySectionClose(request, entry, sb);
-	    return  new Result("Embedded HTML Page", sb);
+		   HU.style("margin:0px;margin-top:0px;border:var(--basic-border);padding:5px;"));
+	    return sb.toString();
+
         }
 
         if (entry.getResource().isUrl()) {
-            return null;
+            return "";
         }
 
         if (style.equals("embed") || style.equals("full")) {
@@ -122,14 +123,22 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
                 "(?s)<div *class *= *\"ramadda-page-title\"[^>]*>(.*?)</div>",
                 "<div class=\"ramadda-page-title\">" + title + "</div>");
 	    sb.append(content);
-	    getPageHandler().entrySectionClose(request,  entry, sb);
-            return getEntryManager().addHeaderToAncillaryPage(request,
-							      new Result(BLANK, sb));
+	    return sb.toString();
+
         }
 
-        return null;
+        return "";
+    }
+
+
+
+    /*
+    @Override
+    public Result getHtmlDisplay(Request request, Entry entry, Entries children)
+	throws Exception {
 
     }
+    */
 
     @Override
     public String getInnerWikiContent(Request request, Entry entry,
