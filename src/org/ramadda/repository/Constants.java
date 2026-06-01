@@ -120,6 +120,8 @@ public interface Constants {
     public static final String ARG_DOALIAS = "doalias";
     public static final String ARG_ALIAS = "alias";    
     public static final String ARG_SERVICEID = "serviceid";
+    public static final String ARG_DOEXPORT = "doexport";
+    public static final String ARG_EXPORT = "export";
     public static final String ARG_EXPORT_SHALLOW = "exportshallow";
     public static final String ARG_EXPORT_CHILDREN = "exportchildren";    
     public static final String ARG_EXPORT_DEEP = "exportdeep";    
