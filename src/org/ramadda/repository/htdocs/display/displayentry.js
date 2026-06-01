@@ -494,7 +494,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search Settings'},
 	{p:'orderByTypes',
 	 tt:'Comma separated list to show in the order by menu',
-	 ex:'relevant,name,createdate,date,changedate,size,entryorder',	 
+	 ex:'relevant,createdate,name,date,changedate,size,entryorder',	 
 	 d:'relevant,name,createdate,date,size,entryorder'},
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_',
 	 tt:'Initial sort order'},
