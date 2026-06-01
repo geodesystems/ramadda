@@ -283,8 +283,11 @@ priority="2"       >
 	     label="Tag Types"  showinhtml="false" default="enum_tag,content.keyword"/>     
      <column name="embed_link" type="boolean"
 	     label="Embed Link"  showinhtml="false" default="false"/>     
+     <column name="show_grid" type="boolean"
+	     label="Show Grid"  showinhtml="false" default="true"/>
      <column name="show_map" type="boolean"
 	     label="Show Map"  showinhtml="false" default="false"/>
+
      <column name="show_table" type="boolean"
 	     label="Show List"  showinhtml="false" default="true"/>
      <column name="show_timeline" type="boolean"
@@ -365,6 +368,7 @@ ancestor=this placeholder="Search in documents" }}
 -if
 -center
 +tabs 
++if property=show_grid
 +tab  Grid
 +if property=show_tag_search
 +toggle <i title="Search Keywords" class="fas fa-tags"></i>
@@ -398,6 +402,7 @@ showHeading=true
 }} 
 </div> 
 -tab
+-if
 +if property=show_table
 +tab List
 +inset left=10px
