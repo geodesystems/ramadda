@@ -538,7 +538,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 
+    tableInfoMap:{},
+
     initEntryTable:function(id,opts,json) {
+	let tableInfo = RamaddaUtils.tableInfoMap[id];
+	if(!tableInfo) {
+	    RamaddaUtils.tableInfoMap[id]  = tableInfo = {size:0};
+	}
 	let main = jqid(id);
 	let _this=this;
 	opts = opts??{};
@@ -791,8 +797,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_CLASS,'submit ui-button ui-corner-all ui-widget',
 				     ATTR_ID,'getall1337','role','button']);
 	    pageSearchId = HU.getUniqueId('find');	
+	    tableInfo.sizeSpanId = HU.getUniqueId('size');
 //	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(0)), ATTR_ID,pageSearchId]);
 	    form+= SPACE+HU.span([ATTR_ID,pageSearchId]);
+	    form+=HU.div([ATTR_ID,tableInfo.sizeSpanId,
+			  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+					    CSS_RIGHT,HU.px(5),
+					    CSS_TOP,HU.px(5))],'');
 	    deepSearchId = HU.getUniqueId('search');	
 /*
 	    form+= HU.input('','',
@@ -814,6 +825,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+=HU.open(TAG_DIV,tableAttrs);
 	html+=HU.close(TAG_DIV,TAG_TABLE,TAG_DIV);
 	main.html(html);
+
+
+
 	if(pageSearchId) {
 	    HU.initPageSearch('.search-component,.entry-table-row-data',
 			      null,
@@ -1154,6 +1168,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
     },
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,rowStyle,secondTime) {
+	let tableInfo = RamaddaUtils.tableInfoMap[mainId];
 	let main = jqid(mainId);
 	let _this = this;
 	let html = '';
@@ -1170,6 +1185,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(Utils.join(metadataProps,','));
 	let hasMetadata=false;
 	entries.forEach((entry,entryIdx)=>{
+	    tableInfo.size+=entry.getFilesize();
 	    let line = '';
 	    let rowId = Utils.getUniqueId('row_');
 	    let innerId = Utils.getUniqueId();
@@ -1330,6 +1346,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		line+=HU.div([ATTR_CLASS,cellClass,ATTR_STYLE,col.style],cellValue);
 	    });		
 
+
 	    let title='';
 	    let rowAttrs = [];
 	    if(!props.simple) {
@@ -1361,6 +1378,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    html+=row;
 	});
 	html+=HU.close(TAG_DIV);
+
+	jqid(tableInfo.sizeSpanId).html('Total size: '+ GuiUtils.size_format(tableInfo.size));
 
 	let container = jqid(id);
 	if(!secondTime && props.tableWidth) {
