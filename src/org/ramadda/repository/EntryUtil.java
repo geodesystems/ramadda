@@ -63,6 +63,7 @@ public class EntryUtil extends RepositoryManager {
         return new EntryUtil(repository);
     }
 
+    @Override
     public synchronized void clearCache() {
         if (typeCache != null) {
             typeCache.clearCache();

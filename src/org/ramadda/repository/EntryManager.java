@@ -597,7 +597,7 @@ public class EntryManager extends RepositoryManager {
 	    synthEntryCache.clearCache();
 	if(rootCache!=null)
 	    rootCache.clearCache();
-        getEntryUtil().clearCache();
+	getEntryUtil().clearCache();
     }
 
     public void cacheSynthEntry(Entry entry) {
@@ -1321,8 +1321,10 @@ public class EntryManager extends RepositoryManager {
         for (TypeHandler typeHandler : theTypeHandlers) {
 	    int cnt=-1;
             if (checkCnt) {
-                cnt = getEntryUtil().getEntryCount(request, typeHandler,request.getString(ARG_ANCESTOR,null));
+                cnt = getEntryUtil().getEntryCount(request, typeHandler,
+						   request.getString(ARG_ANCESTOR,null));
 		if(cnt==0) {
+		    //		    System.err.println("SKIP TYPE:" + typeHandler +" count:" + cnt);
 		    //                if (!typeHandler.getIncludeInSearch() && cnt == 0) {
 		    continue;
                 }
@@ -5995,7 +5997,6 @@ public class EntryManager extends RepositoryManager {
 	if(deleteFile) {
 	    getStorageManager().deleteFile(new File(file));
 	}
-
 	return result;
     }
 
@@ -6132,6 +6133,11 @@ public class EntryManager extends RepositoryManager {
         if (parent != null) {
             getPageHandler().entrySectionClose(request, parent, sb);
         }
+
+	//Clear the type count cache
+	getEntryUtil().clearCache();
+
+
 
         if (parent != null) {
             return makeEntryEditResult(request, parent,

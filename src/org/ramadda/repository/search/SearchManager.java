@@ -488,6 +488,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    //	    indexWriter.close();
 	}
+	getEntryUtil().clearCache();
+
     }
 
     int rcnt=0;
