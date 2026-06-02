@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun  1 07:51:27 MDT 2026";
+var build_date="RAMADDA build date: Tue Jun  2 11:21:55 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36045,6 +36045,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         entryList: properties.entryList,
         entryMap: {},
 	writeEntries: function(msg, entries) {
+
 	    this.jq(ID_ENTRIES).html(msg);
 	},
 	writeMessage:function( msg)  {
@@ -36911,7 +36912,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.join(nextPrev, SPACE) + spacer +
                 HU.join(lessMore, SPACE);
 	    results += spacer + range + spacer;
-            return HU.div([],results);
+	    this.sizeSpanId = HU.getUniqueId('size');
+	    
+            return HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
+			  results+
+			  HU.span([ATTR_ID,this.sizeSpanId,
+				   ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(5),CSS_TOP,HU.px(5))]));
         },
 	makeSearchSettings: function() {
 	    let settings = this.getSearchSettings();
@@ -38710,7 +38716,6 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		if(type=='list') {
 		    titles.push('List');
 		    let tree = this.getEntriesTree(entries);
-
 		    if(entries.length>10) {
 			tree= this.addPageSearch(tree);
 		    }
@@ -38885,6 +38890,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                return;
             }
 	    this.writeMessage(this.getResultsHeader(entries));
+
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button('disable');	    
@@ -38904,6 +38910,14 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		});
             }
 
+	    let size = 0;
+	    entries.forEach(entry=>{
+		size+=entry.getFilesize();
+	    });
+	    if(this.sizeSpanId) {
+		jqid(this.sizeSpanId).html(size>0?"Size: " +
+					   Utils.formatFileLength(size):'');
+	    }
             let entriesHtml = this.makeEntriesDisplay(entries);
 	    let html = entriesHtml;
             this.writeEntries(html, entries);
