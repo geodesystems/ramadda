@@ -11,6 +11,7 @@ import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
@@ -104,8 +105,10 @@ public class CnvPointFile extends CsvFile {
                 List<String> toks = StringUtil.splitUpTo(line, "=", 2);
                 //Aug 24 2011  07:55:20
                 if ( !toks.get(1).equals("none")) {
-                    Date date = makeDateFormat("MMM dd yyyy HH:mm:ss").parse(
-                                    toks.get(1));
+		    String tok = toks.get(1);
+		    tok = tok.trim().replaceAll("\\s+", " ");
+                    MyDateFormat mydf= makeDateFormat("MMM dd yyyy HH:mm:ss");
+                    Date date = mydf.parse(tok);
                     time = makeDateFormat(DFLT_DATE_FORMAT).format(date);
                     //                    System.err.println("time:" + time);
                 }
