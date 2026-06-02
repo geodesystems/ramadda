@@ -7,6 +7,7 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.Column;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.auth.*;
@@ -199,37 +200,33 @@ public class ZipOutputHandler extends OutputHandler {
 		     FOREXPORT_FALSE,
 		     THUMBNAILS_FALSE,
 		     DEEP_FALSE,
-		     maxSize);
+		     maxSize,null);
     }
 
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
             throws Exception {
-
 	double maxSize = request.get(ARG_MAXFILESIZE,MAXSIZE_DEFAULT);
-
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_CORPUS)) {
 	    children.add(group);
             return toCorpus(request, group.getName(), children);
 	}
         if (output.equals(OUTPUT_ZIPTREE)) {
-            getLogManager().logInfo("Doing zip tree");
-            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
+            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize,null);
         }
         if (output.equals(OUTPUT_THUMBNAILS)) {
-            getLogManager().logInfo("Doing zip thumbnails");
-            return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_FALSE,THUMBNAILS_TRUE,DEEP_FALSE,maxSize);
+            return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_FALSE,THUMBNAILS_TRUE,DEEP_FALSE,maxSize,null);
         }	
         if (output.equals(OUTPUT_EXPORT)) {
-            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
+            return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize,null);
 	} else  if (output.equals(OUTPUT_EXPORT_SHALLOW)) {
-	    return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
+	    return toZip(request, group, children, RECURSE_FALSE, FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize,null);
 	} else  if (output.equals(OUTPUT_EXPORT_DEEP)) {
-	    return toZip(request, group, children, RECURSE_TRUE,FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_TRUE,maxSize);	    
+	    return toZip(request, group, children, RECURSE_TRUE,FOREXPORT_TRUE,THUMBNAILS_FALSE,DEEP_TRUE,maxSize,null);	    
         }
-	return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize);
+	return toZip(request, group, children, RECURSE_TRUE, FOREXPORT_FALSE,THUMBNAILS_FALSE,DEEP_FALSE,maxSize,null);
 
     }
 
@@ -247,23 +244,24 @@ public class ZipOutputHandler extends OutputHandler {
                         boolean recurse, boolean forExport) 
 	throws Exception {
 	double maxSize = request.get(ARG_MAXFILESIZE,MAXSIZE_DEFAULT);
-	return toZip(request, prefix, entries,recurse,forExport,THUMBNAILS_FALSE,   DEEP_FALSE,maxSize);
+	return toZip(request, prefix, entries,recurse,forExport,THUMBNAILS_FALSE,   DEEP_FALSE,maxSize,null);
     }
 
 
 
     public Result toZip(Request request, Entry group, List<Entry> entries,
                         boolean recurse, boolean forExport,boolean thumbnails,
-			boolean deep,double maxSize)
+			boolean deep,double maxSize,HashSet<TypeHandler>excludes)
             throws Exception {
 	String prefix = "";
 	if(group!=null && !group.isType(TYPE_DUMMY)) prefix = group.getName();
-	return toZip(request, prefix,entries,recurse,forExport,thumbnails,deep,maxSize);
+	return toZip(request, prefix,entries,recurse,forExport,thumbnails,deep,maxSize,excludes);
     }
 
 
     public Result toZip(Request request, String prefix, List<Entry> entries,
-                        boolean recurse, boolean forExport,boolean thumbnails,boolean deep,double maxSize)
+                        boolean recurse, boolean forExport,boolean thumbnails,boolean deep,double maxSize,
+			HashSet<TypeHandler> excludes)
             throws Exception {
         OutputStream os         = null;
         boolean      doingFile  = false;
@@ -278,7 +276,7 @@ public class ZipOutputHandler extends OutputHandler {
         try {
             processZip(request, entries, recurse, 
 		       0, sizeLimit,null, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>(),maxSize);
+                       new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>(),maxSize,excludes);
         } catch (IllegalArgumentException iae) {
             ok = false;
         }
@@ -350,7 +348,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             }
             processZip(request, entries, recurse, 0, sizeLimit,fileWriter, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>(),maxSize);
+                       new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>(),maxSize,excludes);
 
             if (root != null) {
                 String xml = MyXmlUtil.toString(root);
@@ -441,7 +439,8 @@ public class ZipOutputHandler extends OutputHandler {
                               long sizeSoFar, int[] counter,
                               boolean forExport, boolean thumbnails,
 			      Element entriesRoot,boolean deep,
-			      HashSet<String>seenEntry,double maxSize)
+			      HashSet<String>seenEntry,double maxSize,
+			      HashSet<TypeHandler> excludes)
             throws Exception {
 
         long      sizeProcessed = 0;
@@ -469,16 +468,34 @@ public class ZipOutputHandler extends OutputHandler {
 		}
 	    }
 
-            counter[0]++;
-            //Don't get big files
 
+
+            //Don't get big files
             if (!thumbnails && maxSize!=MAXSIZE_DEFAULT && entry.isFile()) {
 		long length = getStorageManager().getEntryFileLength(entry);
-                if (length   >= request.get(ARG_MAXFILESIZE, 0)) {
+                if (length   >= maxSize) {
+		    //		    System.err.println("entry excluded by max size:" + entry);
                     continue;
                 }
             }
 
+	    if(excludes!=null && excludes.size()>0) {
+		boolean ok = true;
+		TypeHandler parent = entry.getTypeHandler();
+		while(parent!=null) {
+		    if(excludes.contains(parent)) {
+			//			System.err.println("Entry:" + entry.getTypeHandler() +" excluded by:" + parent);
+			ok = false;
+			break;
+		    }
+		    parent = parent.getParent();
+		}
+		if(!ok)  {
+		    continue;
+		}
+	    }
+
+            counter[0]++;
 	    //Not sure why we were using the tmp request as this can block reading lat/lon etc
 	    //since it is an anonymous request
 	    //            Request tmpRequest = getRepository().getTmpRequest();
@@ -494,7 +511,6 @@ public class ZipOutputHandler extends OutputHandler {
                 //                System.err.println ("exporting:" + MyXmlUtil.toString(entryNode));
             }
 
-
             if (entry.isGroup() && recurse) {
 		SelectInfo info = new SelectInfo(request, entry,isSynthOk&&!forExport);
                 List<Entry> children = getEntryManager().getChildren(request, entry,info);
@@ -505,7 +521,7 @@ public class ZipOutputHandler extends OutputHandler {
                 sizeProcessed += processZip(request, children, recurse,
                                             level + 1, sizeLimit,fileWriter, path,
                                             sizeProcessed + sizeSoFar,
-                                            counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize);
+                                            counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize,excludes);
             }
 
 	    if(forExport && deep) {
@@ -539,7 +555,7 @@ public class ZipOutputHandler extends OutputHandler {
 		    sizeProcessed += processZip(request, deepEntries, recurse,
 						0, sizeLimit,fileWriter, path,
 						sizeProcessed + sizeSoFar,
-						counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize);
+						counter, forExport, thumbnails,entriesRoot,deep,seenEntry,maxSize,excludes);
 		}
 	    }
 

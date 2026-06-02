@@ -6750,6 +6750,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+			  ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
 			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
 	btn = opts.wrap.replace('${widget}',btn);
@@ -6771,7 +6772,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(opts.after)
 		select.after(' ' +btn);
 	    else
-		select.before(btn+SPACE);
+		select.before(btn);
 	}
 	let optionMap = {};
 	let dialog;

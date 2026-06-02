@@ -6013,9 +6013,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public String makeTypeSelect(List initItems, Request request,
 				 String arg, String attrs,
-                                 boolean includeAny, String selected,
-                                 boolean checkAddOk, HashSet<String> exclude,boolean groupOnly)
+                                 boolean includeAny,
+				 String selected,
+                                 boolean checkAddOk,
+				 HashSet<String> exclude,
+				 boolean groupOnly) throws Exception {
+	return makeTypeSelect(initItems,request,arg,attrs,includeAny,selected,
+			      checkAddOk,exclude,groupOnly,true,false);
+    }
+
+
+    public String makeTypeSelect(List initItems, Request request,
+				 String arg, String attrs,
+                                 boolean includeAny,
+				 String selected,
+                                 boolean checkAddOk,
+				 HashSet<String> exclude,
+				 boolean groupOnly,
+				 boolean checkForUser,
+				 boolean multiple,
+				 Object...popupArgs)
 	throws Exception {
+	HashSet seen = new HashSet();
 	List items =  new ArrayList();
         for (TypeHandler typeHandler : getTypeHandlers()) {
 	    if(groupOnly && !typeHandler.isGroup()) continue;
@@ -6032,7 +6051,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     continue;
                 }
             }
-            if ( !typeHandler.getForUser()) {
+	    if(seen.contains(typeHandler.getType())) continue;
+	    seen.add(typeHandler.getType());
+            if (checkForUser &&  !typeHandler.getForUser()) {
                 continue;
             }
 
@@ -6062,11 +6083,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	String guid = HU.getUniqueId("select_");
 	attrs+=HU.attr("id",guid);
+	if(multiple) attrs+=" multiple ";
+			 
         String select= HU.select(arg, items, selected,attrs);
-	String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:true}";
+	List args = Utils.toList(popupArgs);
+	Utils.add(args,"single",""+(!multiple));
+	if(!args.contains("after")) Utils.add(args,"after","true");
+	if(!args.contains("label")) Utils.add(args,"label",JsonUtil.quote("Select entry type"));
+	if(!args.contains("makeButtons")) Utils.add(args,"makeButtons","false");
+	//"{label:'Select entry type',makeButtons:false,after:true,single:" + !multiple+"}";
 	select+=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 				  HU.quote("#"+guid),
-				  popupArgs));
+				  JsonUtil.map(args)));
 	return select;
 
     }

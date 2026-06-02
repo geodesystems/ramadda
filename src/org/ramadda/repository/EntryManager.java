@@ -5744,15 +5744,45 @@ public class EntryManager extends RepositoryManager {
 	sb.append(request.form(getRepository().URL_ENTRY_EXPORT));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_DOEXPORT, "true"));
+	sb.append("<table><tr valign=top>");
+	sb.append("<td>");
+	String buttonStyle= HU.css("margin-bottom","0.5em","width","200px");
+	HU.div(sb,HU.submit("Regular Export", ARG_EXPORT,HU.attrs("style",buttonStyle,"title","Regular export")));
+	HU.div(sb,HU.submit("Export Children", ARG_EXPORT_CHILDREN,HU.attrs("style",buttonStyle,"title","Export the children but not this entry")));
+	HU.div(sb,HU.submit("Shallow Export", ARG_EXPORT_SHALLOW,HU.attrs("style",buttonStyle,"title","Just export this entry, not the children")));
+	HU.div(sb,HU.submit("Deep Export", ARG_EXPORT_DEEP,HU.attrs("style",buttonStyle,"title","Export all entries plus linked entries")));	
+	sb.append("</td><td>&nbsp;</td>");
+	sb.append("</td><td>");
+	//	sb.append(HU.center(HU.b("Filter Export")));
+
 	sb.append(HU.formTable());
-	HU.formEntry(sb,msgLabel("Max Size"),HU.input(ARG_MAXFILESIZE,"",HU.SIZE_5)+" " + msg("MB"));
+	HU.formEntry(sb,msgLabel("Max Size"),HU.input(ARG_MAXFILESIZE_MB,"",HU.SIZE_5)+" " + msg("MB"));
+	//	    getRepository().makeTypeSelect(initItems,request,arg,attrs,includeAny,selected,
+	//					   checkAddOk,exclude,groupOnly,false);
+	String typeSelect =
+	    getRepository().makeTypeSelect(null,request,ARG_TYPES,
+					   " style='max-width:250px;' ",
+					   false,
+					   null,
+					   false,null,false,
+					   //check for user:
+					   false,
+					   //multiple:
+					   true,
+					   "label",JU.quote("Types to skip"),
+					   "after","false",
+					   "addBreak","true",					   
+					   "buttonLabel",JU.quote("Select types to skip"),
+					   "makeButtons","true");
+
+
+	HU.formEntry(sb,"",  typeSelect);
+
+
 	sb.append(HU.formTableClose());
 	sb.append(HU.p());
-	String buttonStyle= HU.css("margin-bottom","0.5em","width","200px");
-	HU.div(sb,HU.submit("Export", ARG_EXPORT,HU.attrs("style",buttonStyle,"title","Regular export")));
-	HU.div(sb,HU.submit("Export children", ARG_EXPORT_CHILDREN,HU.attrs("style",buttonStyle,"title","Export the children but not this entry")));
-	HU.div(sb,HU.submit("Shallow export", ARG_EXPORT_SHALLOW,HU.attrs("style",buttonStyle,"title","Just export this entry, not the children")));
-	HU.div(sb,HU.submit("Deep export", ARG_EXPORT_DEEP,HU.attrs("style",buttonStyle,"title","Export all entries plus linked entries")));	
+
+	sb.append("</td></tr></table>");
 	sb.append(HU.formClose());
         getPageHandler().entrySectionClose(request, entry, sb);
 	return makeEntryEditResult(request, entry, "Entry Export", sb);
@@ -5784,17 +5814,24 @@ public class EntryManager extends RepositoryManager {
 	}
 
 	double maxSize=ZipOutputHandler.MAXSIZE_DEFAULT;
-	String sMaxSize= request.getString(ARG_MAXFILESIZE,"");
+	String sMaxSize= request.getString(ARG_MAXFILESIZE_MB,"");
 	if(stringDefined(sMaxSize)) {
 	    maxSize = MEGA*Double.parseDouble(sMaxSize.trim());
 	}
+	List<String> types = request.get(ARG_TYPES,new ArrayList<String>());
+	request.remove(ARG_TYPES);
+	HashSet<TypeHandler> excludes=null;
+	if(types.size()>0) {
+	    excludes = (HashSet<TypeHandler>)Utils.makeHashSet(getRepository().getTypes(Utils.join(types,",")));
+	}
+
         return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
 							   entries,
 							   !request.exists(ARG_EXPORT_SHALLOW),
 							   ZipOutputHandler.FOREXPORT_TRUE,
 							   ZipOutputHandler.THUMBNAILS_FALSE,
 							   request.exists(ARG_EXPORT_DEEP),
-							   maxSize);
+							   maxSize,excludes);
     }
 
     public Result processEntryImport(Request request) throws Exception {

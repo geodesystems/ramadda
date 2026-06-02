@@ -247,6 +247,7 @@ public interface Constants {
     public static final String ARG_FILE = "file";
     public static final String ARG_FILESUFFIX = "filesuffix";
     public static final String ARG_MAXFILESIZE = "maxfilesize";
+    public static final String ARG_MAXFILESIZE_MB = "maxfilesize_mb";    
     public static final String ARG_FILE_UNZIP = "file.unzip";
     public static final String ARG_ZIP_PATTERN = "zippattern";    
     public static final String ARG_STRIPEXIF = "stripexif";
