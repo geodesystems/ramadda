@@ -49,7 +49,7 @@ Table of Contents
 
 html {
     scroll-padding-top: 380px; /* change to the height of the header */
-    overflow: auto;
+    xxx-overflow: auto;
 }
 
 /* Add different code for Safari */
@@ -58,7 +58,7 @@ html {
 
 html {
     scroll-padding-top: 320px; /* change to the height of the header */
-    overflow: auto;
+    xxx-overflow: auto;
 }
 
 }
@@ -2665,7 +2665,7 @@ div.jwts_content {
 .content {
   padding: 0 18px;
   max-height: 0;
-  overflow: hidden;
+  xxx-overflow: hidden;
   transition: max-height 0.2s ease-out;
   background-color: #fff;
 }
@@ -3534,7 +3534,7 @@ table.tabtable-rs_yhkl5rg1 tr.tr_ht1 td.tabcol, table.tabtable-rs_yhkl5rg1 tr.tr
         width: var(--mobile_header_width);
         margin-right: 8px;
         white-space: nowrap;
-        overflow: hidden;
+        xxx-overflow: hidden;
         text-overflow: ellipsis;
         font-weight: bold;
         top: 50%;
