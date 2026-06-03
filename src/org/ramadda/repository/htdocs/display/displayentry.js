@@ -1880,8 +1880,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 								  areaWidget.getHtml()),
 						    {toggleClose:this.getAreaToggleClose(true)});
             }
-            extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], '');
-
 	    Utils.split(this.getWidgetOrder(),',').forEach(type=>{
 		let widget = widgetMap[type];
 		if(widget) {
@@ -1893,6 +1891,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra+= widgetMap[type];
 	    });
 
+            extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], '');
 
 
             if (Utils.stringDefined(this.getMetadataTypes())) {
