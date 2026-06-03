@@ -438,7 +438,7 @@ showHeading=true
 </wiki>
 </type>
 
-<type name="type_display_children"  description="Children Display"   isgroup="true"
+<type name="type_display_children"  description="Entry Display"   isgroup="true"
       priority="2">
 
   <property name="xform.description.iswiki" value="true"/>
