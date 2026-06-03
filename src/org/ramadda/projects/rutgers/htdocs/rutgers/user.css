@@ -48,7 +48,7 @@ Table of Contents
 /* LG 2024-09-13 -- fix HTML Header Scroll for anchor Tags */
 
 html {
-    scroll-padding-top: 380px; /* change to the height of the header */
+    xxx-scroll-padding-top: 380px; /* change to the height of the header */
     xxx-overflow: auto;
 }
 
@@ -57,7 +57,7 @@ html {
 @supports (-webkit-appearance: none) {
 
 html {
-    scroll-padding-top: 320px; /* change to the height of the header */
+    xxx-scroll-padding-top: 320px; /* change to the height of the header */
     xxx-overflow: auto;
 }
 
