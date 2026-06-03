@@ -141,6 +141,16 @@ var Utils =  {
 	return true;
     },
 
+    escapeHtml:function(text) {
+	if (text == null) return "";
+	return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    },
+
     getMin:function(a) {
 	let min = NaN;
 	a.forEach(v=>{
@@ -4031,6 +4041,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },
 
+
+
     initPageSearch:function(select,parentSelect,label,hideAll,args) {
 	let opts = {
 	    addToUrl:true,
@@ -4049,9 +4061,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
 	let id = HU.getUniqueId('search_');
-	let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
 	if(opts.width) opts.style+=HU.css(CSS_WIDTH,opts.width);
-	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
+	
+	let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
 					   ATTR_STYLE,opts.style,
 					   ATTR_ID,id,
 					   ATTR_PLACEHOLDER,label??'Search',
@@ -4090,6 +4102,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	} else {
 	    HU.writeHtmlHere(input);
 	}
+	//Note: we set the value directly here  to avoid XSS
+	let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
+	jqid(id).val(initValue);
 	let doSearch = ()=>{
 	    let values =[];
 	    values.push(jqid(id).val());
