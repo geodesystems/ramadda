@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun  3 06:25:06 MDT 2026";
+var build_date="RAMADDA build date: Wed Jun  3 07:06:55 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -56866,6 +56866,7 @@ MapGlyph.prototype = {
 						  ATTR_SIZE,60]));
 	    }
 	}	    
+
 	html+=HU.formTableClose();
 
 
@@ -56907,6 +56908,13 @@ MapGlyph.prototype = {
 				     [ATTR_ID,this.domId('deleteroute')],false,
 				     'Delete Route Instructions'));
 	}
+
+	html+=HU.div([],HU.b( 'Header prefix:') + SPACE+
+		     HU.input('',this.attrs.headerPrefix??'',[ATTR_SIZE,'40',
+								 ATTR_ID,this.domId('headerprefix')]));
+
+
+
 
 
 	html+=HU.div([],HU.boldLabel('ID') +
@@ -57094,6 +57102,7 @@ MapGlyph.prototype = {
 	    this.attrs['excludes']  = this.jq('excludes').val();
 	}	    
 
+	this.attrs.headerPrefix = jqid(this.domId('headerprefix')).val();
 	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
 	    if(HU.isChecked(this.jq('deleteroute'))) {
 		this.attrs.instructions=null;
@@ -61371,11 +61380,23 @@ MapGlyph.prototype = {
 	}
 	if(contents.top.length) {
 	    let label =  this.getLabel({addIcon:this.getProperty('showIconInHeader',false),forLegend:true})[0];
-	    let top = HU.div([], label) +
+	    let top = HU.div([ATTR_ID,this.domId('topheader')], label) +
 		HU.hbox(contents.top.map(c=>{
 		    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(15))], c);
 		}));
-	    this.getTopHeader().html(top).button();
+	    this.getTopHeader().html(top);
+	    this.jq('topheader').button();
+	    //check for header prefix
+	    if(this.headerPrefixId) {
+		jqid(this.headerPrefixId).remove();
+	    }
+	    if(Utils.stringDefined(this.attrs.headerPrefix) && this.topHeaderId) {
+		this.headerPrefixId = HU.getUniqueId('headerprefix');
+		jqid(this.topHeaderId).before(HU.span([ATTR_ID,this.headerPrefixId],
+						      this.attrs.headerPrefix));
+	    }
+
+
 	}
 
 
