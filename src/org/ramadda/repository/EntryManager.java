@@ -5771,10 +5771,10 @@ public class EntryManager extends RepositoryManager {
 					   false,
 					   //multiple:
 					   true,
-					   "label",JU.quote("Types to skip"),
+					   "label",JU.quote("Types to exclude"),
 					   "after","false",
 					   "addBreak","true",					   
-					   "buttonLabel",JU.quote("Select types to skip"),
+					   "buttonLabel",JU.quote("Select types to exclude"),
 					   "makeButtons","true");
 
 
