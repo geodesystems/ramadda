@@ -53,7 +53,7 @@ message="" width="80%"  useThumbnail="true" }}
 :vspace 1em
 :heading Data Type Summary
 +center
-{{typecount   doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+{{typecount    addPageSearch=true doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
 -center
 -if
 +if property=show_search
