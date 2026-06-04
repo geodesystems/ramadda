@@ -2802,13 +2802,11 @@ MapGlyph.prototype = {
 //	    return;
 	}
 
-
-
-
 	if(!this.getPropertyCheckParent('lineLabels.show',false)) {
+
+
 	    return;
 	}
-
 	let points = this.getPoints({});
 	if(points==null || points.length<=2) return;
 
@@ -2938,7 +2936,8 @@ MapGlyph.prototype = {
 		    let unit = match[2].trim();		    
 		    if(unit==UNIT_M|| unit==UNIT_M_FULL) value = MapUtils.metersToFeet(value);
 		    else if(unit==UNIT_KM) value = MapUtils.metersToFeet(value*1000);
-		    else if(unit==UNIT_MILES || unit==UNIT_MILES_FULL) value = MapUtils.milesToFeet(value);
+		    else if(unit==UNIT_MILE ||
+			    unit==UNIT_MILES || unit==UNIT_MILES_FULL) value = MapUtils.milesToFeet(value);
 		    else if(unit==UNIT_FEET || unit==UNIT_FT) {}
 		    else {
 			console.log('unknown unit',unit);
@@ -5577,10 +5576,12 @@ MapGlyph.prototype = {
 	    //	    console.log('prune geometry');
 	    this.mapLayer.removeFeatures(features);
 	    this.originalFeatures.forEach(feature=>{
-		if(!feature.geometry.originalComponents) {
-		    feature.geometry.originalComponents = [...feature.geometry.components];
+		if(feature.geometry.components) {
+		    if(!feature.geometry.originalComponents) {
+			feature.geometry.originalComponents = [...feature.geometry.components];
+		    }
+		    feature.geometry.components.length=1;
 		}
-		feature.geometry.components.length=1;
 	    });
 	    this.mapLayer.addFeatures(features);	    
 	} else if(this.haveChangedGeometry) {
