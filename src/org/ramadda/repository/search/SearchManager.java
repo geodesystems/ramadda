@@ -1160,20 +1160,30 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public Result processEntrySuggest(Request request) throws Exception {
         List<String> names  = new ArrayList<String>();
-	request.put(ARG_MAX,20);
+	if(!request.defined(ARG_MAX)) {
+	    request.put(ARG_MAX,20);
+	}
 	for(Entry entry:  getEntryManager().searchEntries(request)) {
             List<String> urls =  getMetadataManager().getThumbnailUrls(request, entry, null);
-	    String obj = JsonUtil.map(Utils.makeListFromValues("name", JsonUtil.quote(entry.getName()),
-							       "id",  JsonUtil.quote(entry.getId()),
-							       "type",JsonUtil.quote(entry.getTypeHandler().getType()),
-							       "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
+	    String obj = JU.map(Utils.makeListFromValues("name", JU.quote(entry.getName()),
+							       "id",  JU.quote(entry.getId()),
+							       "type",JU.quote(entry.getTypeHandler().getType()),
+							       "typeName",JU.quote(entry.getTypeHandler().getLabel()),
 							       "thumbnail",
 							       Utils.listNotEmpty(urls)?JU.quote(urls.get(0)):"null",
-							       "icon",JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
+							       "icon",JU.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}
-	String json = JsonUtil.map(Utils.makeListFromValues("values", JsonUtil.list(names)));
-	return new Result("", new StringBuilder(json), "text/json");
+	String list = JU.list(names);
+	List jsonList = Utils.add(null,"results",list);
+	SearchInfo info = (SearchInfo)request.getExtraProperty(PROP_SEARCH_INFO);
+	if(info!=null) {
+	    Utils.add(jsonList,"searchInfo",JU.map("totalHits",info.getTotalHits()));
+	}
+
+	String results = JU.map(jsonList);
+	//	"{results:
+	return new Result("", new StringBuilder(results), "text/json");
     }
 
     private Query makeAnd(Query...queries) {
@@ -1861,13 +1871,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         IndexSearcher searcher = getLuceneSearcher();
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
-	if(false) {
-	    System.err.println("max:"  + max +" skip:"  + skip);
+	if(true) {
+	    //	    System.err.println("max:"  + max +" skip:"  + skip);
 	    TotalHits totalHits = hits.totalHits;
 	    long value = totalHits.value;
 	    TotalHits.Relation relation = totalHits.relation;
-	    System.err.println("total:" + totalHits +" relation:" + relation +" score docs:" +
-			       hits.scoreDocs.length);
+	    request.putExtraProperty(PROP_SEARCH_INFO,new SearchInfo(totalHits.value));
+	    //	    System.err.println("total:" + totalHits +" relation:" + relation +" score docs:" +
+	    //			       hits.scoreDocs.length);
 	}
 	if(false) {
 	    if(hits.scoreDocs.length>0) {
@@ -3276,6 +3287,22 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return links;
     }
 
+    public static class SearchInfo {
+	long totalHits;
+	SearchInfo(long totalHits) {
+	    this.totalHits = totalHits;
+
+	}
+	public long getTotalHits() {
+	    return totalHits;
+	}
+	@Override
+	public String toString() {
+	    return ""+totalHits;
+	}
+    }
+    
+    
     public static class MetadataTypeSearchInfo {
 	SearchManager manager;
 	MetadataType type;
