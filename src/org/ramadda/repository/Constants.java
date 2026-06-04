@@ -566,6 +566,8 @@ public interface Constants {
     public static final String DISPLAY_FULL = "full";
     public static final String DISPLAY_SMALL = "small";
 
+    public static final String PROP_SEARCH_INFO = "searchinfo";
+
     public static final String PROP_CURRENT_ENTRY ="entry";
     public static final String PROP_INSTALL_PASSWORD =   "ramadda.install.password";
     public static final String PROP_MAKESNAPSHOT = "makesnapshot";
