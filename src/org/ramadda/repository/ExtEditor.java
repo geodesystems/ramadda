@@ -2172,6 +2172,9 @@ public class ExtEditor extends RepositoryManager {
 
 	String catHelp=HU.href(getRepository().getUrlBase()+"/search/type",
 			       "View all Categories","target=_cats");
+	String iconHelp=HU.href(getRepository().getUrlBase()+"/icons.html",
+				"View Icons","target=_icons");
+
 	
 	String superCategory = request.getString(ARG_SUPERCATEGORY,"");
 	if(!stringDefined(superCategory)) {
@@ -2191,7 +2194,8 @@ public class ExtEditor extends RepositoryManager {
 
         main.append(HU.formEntryTop(msgLabel("Icon"),
 				    HU.input("icon",request.getString("icon",""),
-					     HU.attrs("placeholder","/icons/chart.png","size","40"))));	
+					     HU.attrs("placeholder","/icons/chart.png","size","30"))+   HU.space(1) + iconHelp
+));	
 
         main.append(HU.formTableClose());
 
