@@ -1540,6 +1540,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
                 if (GuiUtils.isJsonError(data)) {
                     return;
                 }
+		if(data.results) data=data.results;
 		let entries = data.map((j,idx)=>{
 		    let entry=  new Entry(j);
 		    entryMap[entry.getId()]= entry;
