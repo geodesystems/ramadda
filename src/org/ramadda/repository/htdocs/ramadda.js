@@ -20,6 +20,58 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	this.entryListeners.push(listener);
     },
 
+    getPageRanges:function(searchInfo) {
+	const { totalHits, offset, max } = searchInfo;
+	const totalPages = Math.ceil(totalHits / max);
+	const currentPage = Math.floor(offset / max); // 0-based
+	const pages = new Set();
+
+	// First two pages
+	pages.add(0);
+	pages.add(1);
+
+	// Current page +/- 2
+	for (let p = currentPage - 2; p <= currentPage + 2; p++) {
+	    if (p >= 0 && p < totalPages) {
+		pages.add(p);
+	    }
+	}
+
+	// Last two pages
+	pages.add(totalPages - 2);
+	pages.add(totalPages - 1);
+
+	const sorted = [...pages]
+	      .filter(p => p >= 0 && p < totalPages)
+	      .sort((a, b) => a - b);
+
+	const result = [];
+	let previous = null;
+
+	for (const page of sorted) {
+	    if (previous !== null && page > previous + 1) {
+		result.push({
+		    type: "ellipsis"
+		});
+	    }
+
+	    const start = page * max + 1;
+	    const end = Math.min((page + 1) * max, totalHits);
+
+	    result.push({
+		type: "page",
+		page,
+		offset: page * max,
+		label: `${start}-${end}`,
+		current: page === currentPage
+	    });
+
+	    previous = page;
+	}
+
+	return result;
+    },
+
     handleEntrySelect:function(entryId,source) {
 	this.entryListeners.forEach(listener=>{
 	    listener(entryId,source);
@@ -541,6 +593,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     tableInfoMap:{},
 
     initEntryTable:function(id,opts,json) {
+	let array=json;
+	if(array.results) array=array.results;
 	let tableInfo = RamaddaUtils.tableInfoMap[id];
 	if(!tableInfo) {
 	    RamaddaUtils.tableInfoMap[id]  = tableInfo = {size:0};
@@ -583,7 +637,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	$.extend(props,opts);
 	this.props=props;
 	let tableWidth=props.tableWidth??props.width??'100%';
-	let entries = json.map((j,idx)=>{
+	let entries = array.map((j,idx)=>{
 	    let entry =  new Entry(j);
 	    entryMap[entry.getId()]= entry;
 	    return entry;
