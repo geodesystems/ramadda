@@ -67,8 +67,11 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String URL_OPENAI_TRANSCRIPTION =
 	"https://api.openai.com/v1/audio/transcriptions";
-	public static final String URL_OPENAI_COMPLETION =
-	    "https://api.openai.com/v1/chat/completions";
+    public static final String URL_OPENAI_COMPLETION =
+	"https://api.openai.com/v1/chat/completions";
+
+    public static final String URL_OPENAI_FILES =
+	"https://api.openai.com/v1/files";
 
     public static final String URL_GEMINI=
 	"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent";
@@ -489,6 +492,32 @@ public class LLMManager extends  AdminHandlerImpl {
 				   String gptText,String[]extraArgs)
 	throws Throwable {
 	if(!isOpenAIEnabled()) return null;
+	String openAIKey = getOpenAIKey();
+
+	String fileId=null;	
+	/*
+	List postArgs = Utils.add(null,
+				  "purpose",
+				  "user_data",
+				  "file",
+				  new File("/Users/jeffmc/test.pdf"));
+
+	IO.Result uploadResult = IO.doMultipartPost(
+						    new URL(URL_OPENAI_FILES),
+						    new String[] {
+							"Content-Type","application/json",
+							"Authorization", "Bearer " + openAIKey
+						    },
+						    postArgs
+						    );
+
+
+	System.err.println(uploadResult.getResult());
+	JSONObject fileObject=new JSONObject(uploadResult.getResult());
+	fileId= fileObject.getString("id");
+	gptText = "tell me about the attached file";
+	*/
+
 	List<String> args =  Utils.makeListFromValues("temperature", "1",
 						      "max_completion_tokens" ,""+ maxReturnTokens,
 						      "top_p", "1.0");
@@ -496,16 +525,29 @@ public class LLMManager extends  AdminHandlerImpl {
 	    args.add(extraArgs[i]);
 	    args.add(extraArgs[i+1]);
 	}
+
 	Utils.add(args,"model",JsonUtil.quote(model.getId()));
+	List contentList=Utils.add(null,JU.map("type",JU.quote("text"),
+					   "text",JU.quote(gptText)));
+	if(fileId!=null) {
+	    contentList=Utils.add(contentList,
+				  JU.map("type",JU.quote("file"),
+					 "file",JU.map("file_id",JU.quote(fileId))));
+				  
+	}
+	String content = JU.list(contentList);
 	Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
 							     "role",JsonUtil.quote("user"),
-							     "content",JsonUtil.quote(gptText))));
+							     "content",content)));
+
+	URL url = new URL(URL_OPENAI_COMPLETION);
 	String body = JsonUtil.map(args);
-	String openAIKey = getOpenAIKey();
-	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
+	//	System.err.println(body);
+	IO.Result result=call(openAIJobManager,url, body,
 			      "Content-Type","application/json",
 			      "Authorization","Bearer " +openAIKey);
 
+	//	System.err.println(result.getResult());
 	//	System.err.println(result.getHeaders());
 	if(result!=null) {
 	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
