@@ -1876,7 +1876,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    TotalHits totalHits = hits.totalHits;
 	    long value = totalHits.value;
 	    TotalHits.Relation relation = totalHits.relation;
-	    request.putExtraProperty(PROP_SEARCH_INFO,new SearchInfo(totalHits.value));
+	    request.putExtraProperty(PROP_SEARCH_INFO,new SearchInfo(totalHits.value,skip,max));
 	    //	    System.err.println("total:" + totalHits +" relation:" + relation +" score docs:" +
 	    //			       hits.scoreDocs.length);
 	}
@@ -3289,13 +3289,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static class SearchInfo {
 	long totalHits;
-	SearchInfo(long totalHits) {
+	int offset;
+	int max;
+	SearchInfo(long totalHits,int offset,int max) {
 	    this.totalHits = totalHits;
+	    this.offset=offset;
+	    this.max=max;
 
 	}
 	public long getTotalHits() {
 	    return totalHits;
 	}
+	public int getOffset() {
+	    return offset;
+	}
+	public int getMax() {
+	    return max;
+	}	
+
 	@Override
 	public String toString() {
 	    return ""+totalHits;
