@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataType;
@@ -331,13 +332,18 @@ public class JsonOutputHandler extends OutputHandler {
 
     public void makeJson(Request request, List<Entry> entries, Appendable sb)
             throws Exception {
-	sb.append(JU.listOpen());
+	List entryJson = new ArrayList();
 	int cnt=0;
         for (Entry entry : entries) {
-	    if(cnt++>=1) sb.append(",");
-	    toJson(request, entry,sb);
+	    entryJson.add(toJson(request, entry));
         }
-	sb.append(JU.listClose());
+	List jsonList = Utils.add(null,"results",JU.list(entryJson));
+	SearchManager.SearchInfo info = (SearchManager.SearchInfo)request.getExtraProperty(PROP_SEARCH_INFO);
+	if(info!=null) {
+	    Utils.add(jsonList,"searchInfo",JU.map("totalHits",info.getTotalHits(),"offset",info.getOffset(),"max",info.getMax()));
+	}
+	String results = JU.map(jsonList);
+	sb.append(results);
     }
 
     private static SimpleDateFormat sdf;
@@ -386,7 +392,8 @@ public class JsonOutputHandler extends OutputHandler {
         }
     }    
 
-    private void toJson(Request request, Entry entry,Appendable sb) throws Exception {
+    private String toJson(Request request, Entry entry) throws Exception {
+	Appendable sb = new StringBuilder();
         List<String> items = new ArrayList<String>();
         JU.quoteAttr(items, "id", entry.getId());
         String entryName = entry.getName();
@@ -727,6 +734,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
         JU.attr(items, "properties", JU.list(attrs, false));
 	sb.append(JU.map(items));
+	return sb.toString();
     }
 
     private String toPointJson(Request request, Entry entry,
