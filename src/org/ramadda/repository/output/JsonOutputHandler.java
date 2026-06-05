@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+@SuppressWarnings("unchecked")
 public class JsonOutputHandler extends OutputHandler {
     public static final String ARG_EXTRACOLUMNS = "extracolumns";
     public static final String ARG_METADATA = "metadata";
