@@ -1698,7 +1698,6 @@ function DisplayThing(argId, argProperties) {
 
 	    for(let i=0;i<keys.length;i++) {
 		let key = keys[i];
-		//		if(key == "colorTable") debug = true;
 		if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
 		if(this.dynamicProperties) {
 		    if(debug)
@@ -1707,7 +1706,13 @@ function DisplayThing(argId, argProperties) {
 			return this.dynamicProperties[key];
 		    }
 		}
-		let value = this.properties[key];
+
+		let value = this.properties['important.'+key];
+		if(value!=null) {
+		    if(debug) console.log("\tgot property using important. prefix:" + value);
+                    return value;
+		}
+		value = this.properties[key];
 		if (value != null) {
 		    if(debug) console.log("\tgot property from this.properties:" + value);
                     return value;

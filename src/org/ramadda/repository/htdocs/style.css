@@ -745,8 +745,12 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-button-small {
     padding:0.5em !important;
-    padding-top:0.1em !important;
-    padding-bottom:0.1em !important;        
+    padding-top:0.2em !important;
+    padding-bottom:0.2em !important;        
+}
+
+.ramadda-button-small img {
+    width:14px;
 }
 
 .ramadda-button-small.ui-widget,
@@ -2816,9 +2820,16 @@ ul {
 }
 
 
+.ramadda-search-popup-paging {
+    border-top:1px solid #ccc;
+/*    margin-top:2px;*/
+    padding-left:4px;
+    padding-right:4px;
+}
+
 .ramadda-search-popup-results {
     background:#fff;
-    display:none;
+/*    display:none;*/
     border-top:1px solid #ccc;
     margin-top:2px;
     width:325px;

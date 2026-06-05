@@ -3181,14 +3181,15 @@ var Utils =  {
                 results.slideDown(400);
             };      
 
-            if (data.values.length == 0) {
+            if (data.results.length == 0) {
                 results.html(HU.div([ATTR_CLASS, "ramadda-search-suggestion "],"No results"))
                 opener();
                 return;
             }
-            let html = "";
+	    let searchInfo = data.searchInfo;
             let even = true;
-            data.values.forEach((value,i) =>{
+	    let resultsHtml = '';
+            data.results.forEach((value,i) =>{
                 let name = value.name;
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
@@ -3215,10 +3216,16 @@ var Utils =  {
 		//Don't show the search link for now
 		searchLink='';
                 let row =  searchLink +  SPACE + entryLink;
-                html += HU.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
-                html +="\n";
+                resultsHtml += HU.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
                 even = !even;
             });
+            let html = "";
+	    if(searchInfo && searchInfo.totalHits && searchInfo.totalHits!=data.results.length) {
+		html+=HU.div([ATTR_CLASS,'ramadda-search-popup-paging'],'Total hits: '+ searchInfo.totalHits);
+	    }
+	    html+=HU.div([ATTR_CLASS,'ramadda-search-popup-results'],
+			 resultsHtml);
+
             results.html(html);
 	    results.find(HU.dotClass(CLASS_HIGHLIGHTABLE)).tooltip({
 		show: {
@@ -3314,7 +3321,7 @@ var Utils =  {
 			     ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_BOTTOM,HU.px(4))],
 			    formLink+HU.space(1)/*+'|'+HU.space(1)*/+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
-        let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
+        let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'xxxramadda-search-popup-results']);
         let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
         let icon = jqid(id);
         let dialog = this.dialog =

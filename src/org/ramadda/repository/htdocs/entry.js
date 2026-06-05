@@ -275,9 +275,11 @@ function RamaddaRepository(repositoryRoot) {
 	
 
         createEntriesFromJson: function(data) {
+	    let array=data;
+	    if(data.results) array=data.results;
             let entries = new Array();
-            for (let i = 0; i < data.length; i++) {
-                let entryData = data[i];
+            for (let i = 0; i < array.length; i++) {
+                let entryData = array[i];
                 entryData.baseUrl = this.getRoot();
                 let entry = new Entry(entryData);
                 this.addEntry(entry);
@@ -467,25 +469,25 @@ function RamaddaRepository(repositoryRoot) {
         },
 
         getSearchUrl: function(settings, output, bar) {
-            let url = this.repositoryRoot + "/search/do?forsearch=true";
-	    if(output) url+="&output=" + output;
+            let url = HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),'forsearch','true');
+	    if(output) url = HU.url(url,'output',output);
             for (let i = 0; i < settings.types.length; i++) {
                 let type = settings.types[i];
 		if(type!=VALUE_ANY_TYPE) {
-                    url += "&type=" + type;
+                    url = HU.url(url,'type',type);
 		}
             }
 
             if (settings.parent != null && settings.parent.length > 0)
-                url += "&group=" + settings.parent;
+                url = HU.url(url,'group',settings.parent);
 	    if(settings.providers) {
 		settings.providers.forEach(provider=>{
-                    url += "&provider=" + provider;
+                    url = HU.url(url,'provider',provider);
 		});
 	    }
 	    let addAttr=(name,value) =>{
 		if(Utils.stringDefined(value))
-		    url += "&" + name+"=" + value;
+		    url = HU.url(url,name,value);
 	    }
 	    addAttr("text", settings.text);
 	    addAttr("name", settings.name);
@@ -899,7 +901,7 @@ function Entry(props) {
 						 ATTR_DATA_FIELD,'entryorder']);
 	    }
 	    if(what==FIELD_CREATOR) {
-		let searchUrl = HU.url(RamaddaUtil.getUrl('/search/do'),
+		let searchUrl = HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
 				       'user_id',this.creator,'search.submit','true');
 		let created = HU.href(searchUrl,
 				      Utils.stringDefined(this.creatorName)?this.creatorName:this.creator,
@@ -1376,6 +1378,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             return this.entries;
         },
         createEntries: function(data, listener, success) {
+	    this.searchInfo = data.searchInfo;
             this.entries = createEntriesFromJson(data, this.getRepository());
             for (let i = 0; i < this.entries.length; i++) {
                 let entry = this.entries[i];

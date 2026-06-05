@@ -91,8 +91,8 @@ function RamaddaReader(id,args,data) {
         url =HU.url(url, ARG_ANCESTOR, _this.args.entryid);
         let jqxhr = $.getJSON(url, function(data) {
 	    tocItems.hide();
-	    if(!data.values) return;
-	    data.values.forEach(d=>{
+	    if(!data.results) return;
+	    data.results.forEach(d=>{
 		let ele = map[d.id];
 		if(ele) {
 		    ele.show();

@@ -3192,7 +3192,7 @@ table.dataTable tfoot td {
    padding-left: 10px;
    padding-right: 10px;
    margin-bottom: 2px;
-   font-style:italic;
+/*   font-style:italic;*/
    height:1.5em;
    min-height:1.0em;
 }
