@@ -78,7 +78,7 @@ message="" width="80%"  useThumbnail="true" }}
 :vspace 1em
 :heading Search Project
 {{display_entrylist   startWithAny=true
-showAncestor=false ancestor=this
+showAncestor=true ancestor=this
 metadataTypes=""
 entryTypes="super:type_core_base,type_geo_site"  
 orderByTypes="name,relevant,createdate,date,size"  
