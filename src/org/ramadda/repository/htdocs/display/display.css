@@ -2260,7 +2260,7 @@ color:#5179D8;
 }
 
 .display-notebook-error  {
- color:red;
+    color:red;
 }
 
 
@@ -3444,14 +3444,43 @@ table.dataTable tfoot td {
 
 
 .imdv-legend-item {
+    position:relative;
     border-top:var(--basic-border);
+    border-bottom:1px solid transparent;    
 }
+
+.imdv-legend-item-label {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.imdv-legend-item-view {
+    position:absolute;
+    right:5px;
+    top:0px;
+    background:#fff;
+/*
+  top: 50%;
+  transform: translateY(-50%);
+*/
+    z-index:100;
+}
+
+.imdv-legend-item-dragging {
+    opacity: 0.4;
+    border:1px solid #aaa;
+    z-index:200;
+}
+
 
 .imdv-legend-item-droppable {
     background:var(--color-mellow-yellow);
-//    background:var(--highlight-background);
-    border-top:2px solid #000;
-    border-bottom:2px solid #000;    
+    background:yellow;
+    border-top:1px solid #000;
+    border-bottom:1px solid #000;    
 }
 
 .imdv-legend-item-last {
@@ -3465,11 +3494,11 @@ table.dataTable tfoot td {
 
 .imdv-legend-body {
     background:var(--theme-background-color);
-    font-size:80%;
+    font-size:10pt;
 }
 
 .imdv-legend-top-body {
-    font-size:90%;
+    font-size:10pt;
 }
 
 

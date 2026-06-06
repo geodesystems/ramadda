@@ -5768,7 +5768,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
 	    label.droppable( {
 		hoverClass: CLASS_LEGEND_ITEM_DROPPABLE,
-		accept:'.' + CLASS_LEGEND_ITEM,
+		accept:HU.dotClass(CLASS_LEGEND_ITEM),
 		tolerance:CURSOR_POINTER,
 		drop: (event,ui)=>{
 		    notify();
@@ -5872,11 +5872,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_ADDRESS).hide();
 	    }
 	    this.checkGlyphLayers();
-	    //xxxxxx
 	    this.inMapLegend='';
 	    if(glyphs.length)
 		html+=HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),
-			      ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.px(1))],'');
+			      ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.px(2))],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
@@ -5972,8 +5971,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.makeSelectTagPopup('#'+this.domId(ID_BASELAYERS),
 				      {location:baseMapPlaceID,icon:true,single:true});
 	    }
-
-
 
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
