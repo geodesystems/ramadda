@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jun  5 17:54:01 MDT 2026";
+var build_date="RAMADDA build date: Sat Jun  6 17:05:19 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -54835,7 +54835,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
 	    label.droppable( {
 		hoverClass: CLASS_LEGEND_ITEM_DROPPABLE,
-		accept:'.' + CLASS_LEGEND_ITEM,
+		accept:HU.dotClass(CLASS_LEGEND_ITEM),
 		tolerance:CURSOR_POINTER,
 		drop: (event,ui)=>{
 		    notify();
@@ -54939,11 +54939,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_ADDRESS).hide();
 	    }
 	    this.checkGlyphLayers();
-	    //xxxxxx
 	    this.inMapLegend='';
 	    if(glyphs.length)
 		html+=HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),
-			      ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.px(1))],'');
+			      ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.px(2))],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
@@ -55039,8 +55038,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.makeSelectTagPopup('#'+this.domId(ID_BASELAYERS),
 				      {location:baseMapPlaceID,icon:true,single:true});
 	    }
-
-
 
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
@@ -58378,6 +58375,7 @@ MapGlyph.prototype = {
 		**/
 	    }
 
+
 	    if(showZoomTo) {
 		right+=SPACE+
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
@@ -58385,6 +58383,8 @@ MapGlyph.prototype = {
 			     ATTR_TITLE,'Click:Move to; Shift-click:Zoom in'],
 			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
+
+
 	    if(args.addIcon) {
 		let showLegendBox=this.getProperty('showLegendBox');
 		if(!Utils.isDefined(showLegendBox) && this.getParentGlyph()) {
@@ -58446,8 +58446,7 @@ MapGlyph.prototype = {
 		HU.div([],typeLabel) +
 		(extra??'') + HU.div([],'Click to toggle visibility') + HU.div([],'Shift-click to select');
 	    label = HU.div([ATTR_TITLE,title,
-			    ATTR_STYLE,HU.css(CSS_OVERFLOW_X,OVERFLOW_HIDDEN,
-					      CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], label);	    
+			    ATTR_CLASS,'imdv-legend-item-label'], label);	    
 	}
 	if(right!='') {
 	    right= HU.span([ATTR_STYLE,HU.css(CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP)], right);
@@ -58456,6 +58455,7 @@ MapGlyph.prototype = {
 	    let clazz = CLASS_LEGEND_LABEL;
 	    label = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, clazz),
 			    ATTR_GLYPH_ID,this.getId()],label);
+
 	    return [label,right];
 	}
 	return label;
@@ -58692,7 +58692,6 @@ MapGlyph.prototype = {
 		     HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(4))],block.header)+
 		     HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(80))], label[0])+
 		     HU.div([],label[1]));
-
 	html+=HU.div([ATTR_CLASS,'imdv-legend-body'],block.body);
 	html+=HU.close(TAG_DIV);
 	return html;
@@ -59456,14 +59455,21 @@ MapGlyph.prototype = {
 		this.getLegendDiv().draggable({
 		    handle:label,
 		    cursor: "crosshair",
-		    start: notify,
+		    start: function(event, ui) {
+			$(this).addClass('imdv-legend-item-dragging');
+			notify();
+		    },
+		    stop: function(event, ui) {
+			$(this).removeClass('imdv-legend-item-dragging');
+			notify();
+		    },
 		    drag: notify,
-		    stop: notify,
 		    containment:this.display.domId(ID_LEGEND),
 		    revert: true
 		});
 	    }
 	    if(this.canDrop()) {
+		label=this.getLegendDiv();
 		this.display.makeLegendDroppable(this,label,notify);
 	    } 
 	    let items = this.jq(ID_LEGEND).find('.' + CLASS_LEGEND_LABEL);
