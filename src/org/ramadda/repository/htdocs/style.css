@@ -4720,19 +4720,19 @@ label {
 
 
 .ramadda-breadcrumbs-menu-button {
-    display:block;
+    display:inline-block;
     padding:3px;
     padding-left: 0px;
     padding-right: 0px;
     margin:0px;
     border-radius: 3px;
-    border: 1px #ccc solid;
+/*    border: 1px #ccc solid;*/
     background-color:#fff;    
     transition: transform .3s ease-in-out;
 }
 
 .ramadda-breadcrumbs-menu-button i {
-    font-size:16pt;
+    font-size:12pt;
     line-height:8px;
     color:#aaa;
 }

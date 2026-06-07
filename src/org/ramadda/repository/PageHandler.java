@@ -2231,10 +2231,8 @@ public class PageHandler extends RepositoryManager {
 		    HU.attrs("title","Display with no template"));
 
         String        menuId = HU.getUniqueId("menulink");
-        String menuLinkImg =      HU.img("fas fa-caret-down");
-	//                   + HU.cssClass(
-	//                       "ramadda-breadcrumbs-menu-button ramadda-clickable"));
-
+	//	String menuLinkImg =      HU.img("fas fa-caret-down");
+	String menuLinkImg =      HU.img("fas fa-bars");	
         String menuLink =
             HU.span(menuLinkImg,
                    HU.attr("id", menuId) + HU.attr("title", "Entry menu")+
