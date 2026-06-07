@@ -5256,7 +5256,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private synchronized Result processProxyInner(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String) null);
-	boolean debug = true;
+	boolean debug = false;
         if (url != null) {
 	    URL _url = new URL(url);
 	    String protocol = _url.getProtocol().toLowerCase();
