@@ -1426,13 +1426,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(showStac) {
 		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
 		    contents.push({label:'STAC',contents: stac});
-
 		    tabs = HU.makeTabs(contents)
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs.contents);
 		} else {
-		    let tabs = HU.div([],HU.b(contents[0].label)) +    contents[0].contents;
+		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +    contents[0].contents;
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs);
