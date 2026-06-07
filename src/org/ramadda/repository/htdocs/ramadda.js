@@ -2596,9 +2596,14 @@ Selector.prototype = {
 	let title = (this.props?this.props.title:'')??'';
 	let extra = (this.props?this.props.extra:'')??'';
 	if(Utils.stringDefined(title)) {
-	    title = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))], title);
+	    title = HU.span([ATTR_STYLE,
+			     HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+				    CSS_LEFT,HU.perc(50),
+				    CSS_TOP,HU.perc(50),
+				    CSS_TRANSFORM,'translate(-50%, -50%)')], title);
 	}
-	let header = HU.div([ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_LEFT),
+	let header = HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE,
+					       CSS_TEXT_ALIGN,ALIGN_LEFT),
 			     ATTR_CLASS,'ramadda-popup-header'],
 			    SPACE+close+SPACE+pin+title);
 
