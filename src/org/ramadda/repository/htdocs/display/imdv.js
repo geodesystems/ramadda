@@ -1718,7 +1718,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load Map: ') +
+		    extra = HU.b('Load map: ') +
 			HU.select('', [ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
@@ -1732,7 +1732,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,geo_pdf,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		props.showTypeSelector=true;
 		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),
@@ -5189,6 +5189,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let h = 1024;
 		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
+	    case 'geo_pdf': 
+		url = opts.thumbnailUrl;
+		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
+						   opts.north, opts.west,opts.south,opts.east, 2048,1024,{},
+						  loadCallback);		
 	    case 'geo_gpx': 
 		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;
@@ -5580,13 +5585,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   tooltip:"Provide a Web Map Service URL",
 			   icon:Ramadda.getCdnUrl("/icons/maps.png")});	
 
-	    new GlyphType(this,GLYPH_ROUTE, "Route",
-			  Utils.clone(lineStyle),						   
-			  MyRoute,{icon:Ramadda.getCdnUrl("/icons/route.png")});
-
-	    new GlyphType(this,GLYPH_ISOLINE, "Isoline",
-			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
-			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
 
 	    let imageStyle =  Utils.clone({},
 					  {imageOpacity:this.getImageOpacity(1)},
@@ -5632,6 +5630,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {isData:true,
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getCdnUrl("/icons/chart.png")});
+	    new GlyphType(this,GLYPH_ROUTE, "Route",
+			  Utils.clone(lineStyle),						   
+			  MyRoute,{icon:Ramadda.getCdnUrl("/icons/route.png")});
+
+	    new GlyphType(this,GLYPH_ISOLINE, "Isoline",
+			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
+			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
+
 	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
 			  {  externalGraphic:Ramadda.getCdnUrl('/icons/binoculars.png'),
 			  },

@@ -1941,7 +1941,7 @@ MapGlyph.prototype = {
 	if(this?.features.length>0) {
 	    return this.features[0].geometry;
 	}
-	if(this.mapLayer!=null) {
+	if(this.mapLayer!=null && this.mapLayer.features) {
 	    //get the feature with the longest geometry
 	    let geom;
 	    let max=-1;
@@ -5369,6 +5369,7 @@ MapGlyph.prototype = {
 	}
     },
     handleMapLoaded: function(map,layer) {
+	
 	//Check if there are any KML ground overlays
 	//TODO: limit the number we add?
 	if(layer?.protocol?.format?.groundOverlays) {
