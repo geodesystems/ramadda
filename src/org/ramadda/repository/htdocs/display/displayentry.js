@@ -25,6 +25,7 @@ var ID_SEARCH_BAR = "searchbar";
 var ID_SEARCH_TAG = "searchtag";
 var ID_SEARCH_TAG_GROUP = "searchtaggroup";
 var ID_SEARCH_FOOTER = ID_FOOTER;
+var ID_SEARCH_RANGE = "searchrange";
 var ID_DOWNLOAD_XLSX='downloadxlsx';
 var ID_ENTRIES = "entries";
 var ID_DETAILS_INNER = "detailsinner";
@@ -589,6 +590,34 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         haveTypes: false,
         metadata: {},
         metadataLoading: {},
+	initSearchRanges:function() {
+	    let _this = this;
+	    if(!this.searchInfo) return;
+	    let ranges = RamaddaUtil.getPageRanges(this.searchInfo);
+	    this.jq(ID_SEARCH_RANGE).button().click(function() {
+		let html = '';
+		ranges.forEach((range,idx)=>{
+		    if(range.type=='ellipsis') {
+			html+=HU.div([],'...');
+		    } else if(range.current) {
+			html+=HU.div([],HU.b(range.label));
+		    } else {
+			html+=HU.div([ATTR_INDEX,idx,ATTR_CLASS,CLASS_CLICKABLE],range.label);
+		    }
+		});
+                html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+		let dialog = HU.makeDialog({content:html,anchor:$(this),
+					    draggable:false,header:false});
+		
+		dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+		    let range = ranges[$(this).attr(ATTR_INDEX)];
+		    dialog.remove();
+		    _this.getSearchSettings().skip = range.offset;
+		    _this.submitSearchForm();
+		});
+	    });
+	},
+
 	getWikiEditorTags: function() {
 	    return  Utils.mergeLists(this.myProps,SUPER.entryProps);
 	},
@@ -1033,10 +1062,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    if(entries.length==0) range = '';
 	    if(range!='') {
-		range= HU.div([ATTR_ID,this.getDomId(this.searchInfo?'searchrange':'dummy'),
+		range= HU.div([ATTR_ID,this.getDomId(this.searchInfo?ID_SEARCH_RANGE:'dummy'),
 			       ATTR_CLASS,(enabled && this.searchInfo?CLASS_CLICKABLE:''),
 			       ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],range);
 	    }
+
             let nextPrev = [];
             let lessMore = [];
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
@@ -2744,6 +2774,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                 _this.providerChanged();
             });
         },
+
         providerChanged: function(initialCall) {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
 	    if(!initialCall && this.jq(ID_ANCESTOR).val) {
@@ -3051,31 +3082,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                return;
             }
 	    this.writeMessage(this.getResultsHeader(entries));
-	    if(this.searchInfo/* && this.searchInfo.totalHits> this.searchInfo.max*/) {
-		let ranges = RamaddaUtil.getPageRanges(this.searchInfo);
-		this.jq('searchrange').button().click(function() {
-		    let html = '';
-		    ranges.forEach((range,idx)=>{
-			if(range.type=='ellipsis') {
-			    html+=HU.div([],'...');
-			} else if(range.current) {
-			    html+=HU.div([],HU.b(range.label));
-			} else {
-			    html+=HU.div([ATTR_INDEX,idx,ATTR_CLASS,CLASS_CLICKABLE],range.label);
-			}
-		    });
-                    html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
-		    let dialog = HU.makeDialog({content:html,anchor:$(this),
-						draggable:false,header:false});
-		    
-		    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
-			let range = ranges[$(this).attr(ATTR_INDEX)];
-			dialog.remove();
-			_this.getSearchSettings().skip = range.offset;
-			_this.submitSearchForm();
-		    });
-		});
-	    }
+	    this.initSearchRanges();
 
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
@@ -3630,7 +3637,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.makeDialog();
 	    if(Utils.stringDefined(msg)) {
 		this.jq(ID_ENTRIES).html(msg);
-		this.writeMessage(this.getResultsHeader(entries,true));
+		this.writeMessage(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], this.getResultsHeader(entries,true)));
+		this.initSearchRanges();
 		if(this.dialog) {
 		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
 		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
@@ -3884,6 +3892,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                 return;
             }
             this.writeMessage(this.getResultsHeader(entries, true));
+	    this.initSearchRanges();
 	    this.initCloser(ID_RESULTS);
 
             let get = this.getGet();
