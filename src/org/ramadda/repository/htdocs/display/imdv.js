@@ -5873,9 +5873,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.checkGlyphLayers();
 	    this.inMapLegend='';
-	    if(glyphs.length)
-		html+=HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),
-			      ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),CSS_HEIGHT,HU.px(2))],'');
+	    if(glyphs.length) {
+		let beginningDiv  =HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),
+					   ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
+							    )],SPACE);
+		this.jq(ID_TOP_LEFT_SPACER).html(beginningDiv);
+	    }
+
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });

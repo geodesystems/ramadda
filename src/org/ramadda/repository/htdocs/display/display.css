@@ -3461,13 +3461,9 @@ table.dataTable tfoot td {
     position:absolute;
     right:5px;
     top:0px;
-    background:#fff;
-/*
-  top: 50%;
-  transform: translateY(-50%);
-*/
     z-index:100;
 }
+
 
 .imdv-legend-item-dragging {
     opacity: 0.4;
@@ -3489,12 +3485,12 @@ table.dataTable tfoot td {
 
 .imdv-legend-inner {
     margin-left:5px;
-    margin-bottom:5px;
+/*    margin-bottom:5px;*/
 }
 
 .imdv-legend-body {
     background:var(--theme-background-color);
-    font-size:10pt;
+/*    font-size:10pt;*/
 }
 
 .imdv-legend-top-body {

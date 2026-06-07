@@ -5732,6 +5732,9 @@ MapGlyph.prototype = {
 		if(debug )   console.dir("\tfeature style:",featureStyle.labelSelect,featureStyle.label);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
+		if(Utils.stringDefined(f?.style?.externalGraphic)) {
+		    f.originalStyle.externalGraphic  = f?.style?.externalGraphic;
+		}
 	    });
 	}
 
