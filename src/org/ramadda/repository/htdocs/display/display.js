@@ -58,6 +58,7 @@ var ID_BOTTOM = "bottom";
 var ID_LEGEND = "legend";
 var ID_FIELDS = "fields";
 var ID_HEADER = "header";
+var ID_TOP_LEFT_SPACER = "top_left_spacer";
 var ID_HEADER0 = "header0";
 var ID_HEADER1 = "header1";
 var ID_HEADER2 = "header2";
@@ -6646,7 +6647,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					       ATTR_CELLPADDING,0,
 					       ATTR_CELLSPACING,0]);
 	    if(this.getShowTopHeader(this.getProperty('showDisplayTop',true))) {
-		table+= HU.tr([],HU.td([ATTR_WIDTH,sideWidth]) +
+		table+= HU.tr([],HU.td([ATTR_WIDTH,sideWidth,
+					ATTR_ID,this.domId(ID_TOP_LEFT_SPACER)]) +
 			      HU.td([ATTR_WIDTH,centerWidth],top) +
 			      HU.td([ATTR_WIDTH,sideWidth]));
 	    }
