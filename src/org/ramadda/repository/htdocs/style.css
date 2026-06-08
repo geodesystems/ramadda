@@ -2890,14 +2890,18 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     margin-bottom:0.5em;
 }
 
-.entry-confirm-list {
+.entry-confirm-block {
     padding:5px;
-    border : var(--basic-border);
     margin-left:1em;
-    max-height: 250px; 
-    overflow-y: auto;
     margin-bottom: 1em;
 }
+
+.entry-confirm-list {
+    border : var(--basic-border);
+    max-height: 250px; 
+    overflow-y: auto;
+}
+
 
 .ramadda-entry-select  {
     margin-right:4px !important;

@@ -5017,7 +5017,7 @@ public class EntryManager extends RepositoryManager {
         }
         String fromDiv =
             HU.div(fromList.toString(),
-		   HU.cssClass("entry-confirm-list"));
+		   HU.cssClass("entry-confirm-block entry-confirm-list"));
 
         String force  = request.getString(ARG_ACTION_FORCE, (String) null);
         String action = null;
@@ -5097,7 +5097,7 @@ public class EntryManager extends RepositoryManager {
                 left.append(
 			    HU.open(
 				    HU.TAG_DIV,
-				    HU.id(radiosId) + HU.cssClass("entry-confirm-list")));
+				    HU.id(radiosId) + HU.cssClass("entry-confirm-block")));
                 left.append(HU.labeledRadio(ARG_ACTION, "move", isMove,
 					    msg("Move")));
                 left.append("&nbsp;&nbsp;");
@@ -5141,7 +5141,7 @@ public class EntryManager extends RepositoryManager {
             right.append(
 			 HU.open(
 				 HU.TAG_DIV,
-				 HU.cssClass("xentry-confirm-list")));
+				 HU.cssClass("xentry-confirm-block")));
             right.append(HU.hidden(ARG_FROM, fromIds));
 
             if (toEntry != null) {
@@ -5162,7 +5162,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(
 		      HU.open(
 			      HU.TAG_DIV,
-			      HU.cssClass("entry-confirm-list")));
+			      HU.cssClass("entry-confirm-block")));
             sb.append(HU.buttons(HU.submit("Yes, do it",
 					   ARG_CONFIRM), HU.submit(LABEL_CANCEL, ARG_CANCEL)));
 
