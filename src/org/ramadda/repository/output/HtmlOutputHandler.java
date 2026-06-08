@@ -960,7 +960,8 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 	if(children.size()>0) {
-	    NamedBuffer childrenSB         = new NamedBuffer(group!=null?group.getName():"Children");
+	    seen=null;
+	    NamedBuffer childrenSB = new NamedBuffer(group!=null?group.getName():"Children");
 	    buffers.add(childrenSB);	    
 	    HU.open(childrenSB, "div", HU.clazz(firstCall?"ramadda-select-block":"ramadda-select-inner"));
 	    for (Entry subGroup : children) {
@@ -970,9 +971,9 @@ public class HtmlOutputHandler extends OutputHandler {
 		if (isImage && !subGroup.isImage() && !subGroup.isGroup()) {
 		    continue;
 		}
-		childrenSB.append(getSelectLink(request, subGroup, seen, target));
+		String link = getSelectLink(request, subGroup, seen, target);
+		childrenSB.append(link);
 	    }
-
 	    HU.close(childrenSB, "div");
 	}
 
