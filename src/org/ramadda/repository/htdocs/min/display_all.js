@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun  7 05:42:37 MDT 2026";
+var build_date="RAMADDA build date: Sun Jun  7 19:25:31 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -35883,6 +35883,7 @@ var ID_SEARCH_BAR = "searchbar";
 var ID_SEARCH_TAG = "searchtag";
 var ID_SEARCH_TAG_GROUP = "searchtaggroup";
 var ID_SEARCH_FOOTER = ID_FOOTER;
+var ID_SEARCH_RANGE = "searchrange";
 var ID_DOWNLOAD_XLSX='downloadxlsx';
 var ID_ENTRIES = "entries";
 var ID_DETAILS_INNER = "detailsinner";
@@ -36447,6 +36448,34 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         haveTypes: false,
         metadata: {},
         metadataLoading: {},
+	initSearchRanges:function() {
+	    let _this = this;
+	    if(!this.searchInfo) return;
+	    let ranges = RamaddaUtil.getPageRanges(this.searchInfo);
+	    this.jq(ID_SEARCH_RANGE).button().click(function() {
+		let html = '';
+		ranges.forEach((range,idx)=>{
+		    if(range.type=='ellipsis') {
+			html+=HU.div([],'...');
+		    } else if(range.current) {
+			html+=HU.div([],HU.b(range.label));
+		    } else {
+			html+=HU.div([ATTR_INDEX,idx,ATTR_CLASS,CLASS_CLICKABLE],range.label);
+		    }
+		});
+                html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+		let dialog = HU.makeDialog({content:html,anchor:$(this),
+					    draggable:false,header:false});
+		
+		dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+		    let range = ranges[$(this).attr(ATTR_INDEX)];
+		    dialog.remove();
+		    _this.getSearchSettings().skip = range.offset;
+		    _this.submitSearchForm();
+		});
+	    });
+	},
+
 	getWikiEditorTags: function() {
 	    return  Utils.mergeLists(this.myProps,SUPER.entryProps);
 	},
@@ -36576,7 +36605,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		});
 		let select = HU.tag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_SEARCH_ORDERBY),
 						 ATTR_CLASS, "display-search-orderby"], options);
-		this.jq(ID_SEARCH_HEADER).append(select);
+		this.sizeSpanId = HU.getUniqueId('size');
+		let sizeSpan = HU.span([ATTR_ID,this.sizeSpanId,
+					ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8))
+				       ]);
+		this.jq(ID_SEARCH_HEADER).append(sizeSpan+select);
 	    }
             this.addExtraForm();
 	},
@@ -36891,10 +36924,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    if(entries.length==0) range = '';
 	    if(range!='') {
-		range= HU.div([ATTR_ID,this.getDomId(this.searchInfo?'searchrange':'dummy'),
+		range= HU.div([ATTR_ID,this.getDomId(this.searchInfo?ID_SEARCH_RANGE:'dummy'),
 			       ATTR_CLASS,(enabled && this.searchInfo?CLASS_CLICKABLE:''),
 			       ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],range);
 	    }
+
             let nextPrev = [];
             let lessMore = [];
             nextPrev.push(HU.tag('button',['onclick',this.getGet() + ".loadPrevUrl();",
@@ -36931,12 +36965,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.join(nextPrev, SPACE) + spacer +
                 HU.join(lessMore, SPACE);
 	    results += spacer + range + spacer;
-	    this.sizeSpanId = HU.getUniqueId('size');
+
 	    
             return HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
-			  results+
-			  HU.span([ATTR_ID,this.sizeSpanId,
-				   ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(5),CSS_BOTTOM,HU.px(0))]));
+			  results);
         },
 	makeSearchSettings: function() {
 	    let settings = this.getSearchSettings();
@@ -38602,6 +38634,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
                 _this.providerChanged();
             });
         },
+
         providerChanged: function(initialCall) {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
 	    if(!initialCall && this.jq(ID_ANCESTOR).val) {
@@ -38897,6 +38930,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                this.getSearchSettings().skip = 0;
                 this.getSearchSettings().setMax(DEFAULT_MAX);
                 let msg = "Nothing found";
+		if(this.sizeSpanId) {
+		    jqid(this.sizeSpanId).html('');
+		}
                 if (this.multiSearch) {
                     if (this.multiSearch.count > 0) {
                         msg = "Nothing found so far. Still searching " + this.multiSearch.count + " repositories";
@@ -38909,31 +38945,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                return;
             }
 	    this.writeMessage(this.getResultsHeader(entries));
-	    if(this.searchInfo/* && this.searchInfo.totalHits> this.searchInfo.max*/) {
-		let ranges = RamaddaUtil.getPageRanges(this.searchInfo);
-		this.jq('searchrange').button().click(function() {
-		    let html = '';
-		    ranges.forEach((range,idx)=>{
-			if(range.type=='ellipsis') {
-			    html+=HU.div([],'...');
-			} else if(range.current) {
-			    html+=HU.div([],HU.b(range.label));
-			} else {
-			    html+=HU.div([ATTR_INDEX,idx,ATTR_CLASS,CLASS_CLICKABLE],range.label);
-			}
-		    });
-                    html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
-		    let dialog = HU.makeDialog({content:html,anchor:$(this),
-						draggable:false,header:false});
-		    
-		    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
-			let range = ranges[$(this).attr(ATTR_INDEX)];
-			dialog.remove();
-			_this.getSearchSettings().skip = range.offset;
-			_this.submitSearchForm();
-		    });
-		});
-	    }
+	    this.initSearchRanges();
 
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
 	    this.jq(ID_RESULTS).find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
@@ -39460,6 +39472,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.writeEntries("",[]);
             this.writeMessage("Nothing found");
             this.getDisplayManager().handleEventEntriesChanged(this, []);
+	    if(this.sizeSpanId) {
+		jqid(this.sizeSpanId).html('');
+	    }
+
 	},
 	writeMessage: function(msg) {
 	    this.makeDialog();
@@ -39488,7 +39504,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.makeDialog();
 	    if(Utils.stringDefined(msg)) {
 		this.jq(ID_ENTRIES).html(msg);
-		this.writeMessage(this.getResultsHeader(entries,true));
+		this.writeMessage(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))], this.getResultsHeader(entries,true)));
+		this.initSearchRanges();
 		if(this.dialog) {
 		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_ENABLED)).button();
 		    this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER_DISABLED)).button();
@@ -39742,6 +39759,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                 return;
             }
             this.writeMessage(this.getResultsHeader(entries, true));
+	    this.initSearchRanges();
 	    this.initCloser(ID_RESULTS);
 
             let get = this.getGet();
@@ -50495,13 +50513,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(showStac) {
 		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
 		    contents.push({label:'STAC',contents: stac});
-
 		    tabs = HU.makeTabs(contents)
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs.contents);
 		} else {
-		    let tabs = HU.div([],HU.b(contents[0].label)) +    contents[0].contents;
+		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +    contents[0].contents;
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs);
@@ -50788,7 +50805,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load Map: ') +
+		    extra = HU.b('Load map: ') +
 			HU.select('', [ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
@@ -50802,7 +50819,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,geo_pdf,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		props.showTypeSelector=true;
 		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),
@@ -54259,6 +54276,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let h = 1024;
 		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
+	    case 'geo_pdf': 
+		url = opts.thumbnailUrl;
+		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
+						   opts.north, opts.west,opts.south,opts.east, 2048,1024,{},
+						  loadCallback);		
 	    case 'geo_gpx': 
 		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;
@@ -54650,13 +54672,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   tooltip:"Provide a Web Map Service URL",
 			   icon:Ramadda.getCdnUrl("/icons/maps.png")});	
 
-	    new GlyphType(this,GLYPH_ROUTE, "Route",
-			  Utils.clone(lineStyle),						   
-			  MyRoute,{icon:Ramadda.getCdnUrl("/icons/route.png")});
-
-	    new GlyphType(this,GLYPH_ISOLINE, "Isoline",
-			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
-			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
 
 	    let imageStyle =  Utils.clone({},
 					  {imageOpacity:this.getImageOpacity(1)},
@@ -54702,6 +54717,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {isData:true,
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getCdnUrl("/icons/chart.png")});
+	    new GlyphType(this,GLYPH_ROUTE, "Route",
+			  Utils.clone(lineStyle),						   
+			  MyRoute,{icon:Ramadda.getCdnUrl("/icons/route.png")});
+
+	    new GlyphType(this,GLYPH_ISOLINE, "Isoline",
+			  Utils.clone({},lineStyle,{fillColor:COLOR_TRANSPARENT,fillOpacity:1}),						   
+			  null,{icon:Ramadda.getCdnUrl("/icons/route.png")});
+
 	    new GlyphType(this,GLYPH_ZOOM,"Viewpoint",
 			  {  externalGraphic:Ramadda.getCdnUrl('/icons/binoculars.png'),
 			  },
@@ -58245,7 +58268,7 @@ MapGlyph.prototype = {
 	if(this?.features.length>0) {
 	    return this.features[0].geometry;
 	}
-	if(this.mapLayer!=null) {
+	if(this.mapLayer!=null && this.mapLayer.features) {
 	    //get the feature with the longest geometry
 	    let geom;
 	    let max=-1;
@@ -61673,6 +61696,7 @@ MapGlyph.prototype = {
 	}
     },
     handleMapLoaded: function(map,layer) {
+	
 	//Check if there are any KML ground overlays
 	//TODO: limit the number we add?
 	if(layer?.protocol?.format?.groundOverlays) {
