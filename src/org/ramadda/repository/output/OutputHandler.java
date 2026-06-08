@@ -1010,10 +1010,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       + HU.SIZE_40 + HU.id(arg)), HU.attr("onClick", event));
     }
 
+    public static boolean debugSelectLink = false;
     public String getSelectLink(Request request, Entry entry, HashSet seen,
                                 String... args)
             throws Exception {
-        if (seen.contains(entry.getId())) {
+        if (seen!=null &&seen.contains(entry.getId())) {
+	    if(debugSelectLink) System.err.println("select link contains:" + entry);
             return "";
         }
 	String entryType = request.getString(ARG_ENTRYTYPE,null);
@@ -1021,7 +1023,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	if(stringDefined(entryType)) {
 	    entryTypes = Utils.split(entryType,",",true,true);
 	}
-        seen.add(entry.getId());
+	if(seen!=null) {
+	    seen.add(entry.getId());
+	}
         String        target     = args[0];
         String        namePrefix = (args.length > 1)
                                    ? args[1]
@@ -1031,7 +1035,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                     ? namePrefix
                                     : "") + getEntryDisplayName(entry);
         StringBuilder sb         = new StringBuilder();
-        HU.open(sb, "span", HU.attrs("class","xxramadda-highlightable","title","Type: " + entry.getTypeHandler().getLabel()));
+        HU.open(sb, "span", HU.attrs("class","","title","Type: " + entry.getTypeHandler().getLabel()));
         String entryId = entry.getId();
         String entryIconImage    = getPageHandler().getEntryIconImage(request, entry);
         String event;
