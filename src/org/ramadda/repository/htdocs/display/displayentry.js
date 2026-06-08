@@ -747,7 +747,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		});
 		let select = HU.tag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_SEARCH_ORDERBY),
 						 ATTR_CLASS, "display-search-orderby"], options);
-		this.jq(ID_SEARCH_HEADER).append(select);
+		this.sizeSpanId = HU.getUniqueId('size');
+		let sizeSpan = HU.span([ATTR_ID,this.sizeSpanId,
+					ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(8))
+				       ]);
+		this.jq(ID_SEARCH_HEADER).append(sizeSpan+select);
 	    }
             this.addExtraForm();
 	},
@@ -1103,12 +1107,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.join(nextPrev, SPACE) + spacer +
                 HU.join(lessMore, SPACE);
 	    results += spacer + range + spacer;
-	    this.sizeSpanId = HU.getUniqueId('size');
+
 	    
             return HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
-			  results+
-			  HU.span([ATTR_ID,this.sizeSpanId,
-				   ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,CSS_RIGHT,HU.px(5),CSS_BOTTOM,HU.px(0))]));
+			  results);
         },
 	makeSearchSettings: function() {
 	    let settings = this.getSearchSettings();
@@ -3070,6 +3072,9 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 		//                this.getSearchSettings().skip = 0;
                 this.getSearchSettings().setMax(DEFAULT_MAX);
                 let msg = "Nothing found";
+		if(this.sizeSpanId) {
+		    jqid(this.sizeSpanId).html('');
+		}
                 if (this.multiSearch) {
                     if (this.multiSearch.count > 0) {
                         msg = "Nothing found so far. Still searching " + this.multiSearch.count + " repositories";
@@ -3609,6 +3614,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.writeEntries("",[]);
             this.writeMessage("Nothing found");
             this.getDisplayManager().handleEventEntriesChanged(this, []);
+	    if(this.sizeSpanId) {
+		jqid(this.sizeSpanId).html('');
+	    }
+
 	},
 	writeMessage: function(msg) {
 	    this.makeDialog();

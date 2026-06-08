@@ -3192,9 +3192,8 @@ table.dataTable tfoot td {
    padding-left: 10px;
    padding-right: 10px;
    margin-bottom: 2px;
-/*   font-style:italic;*/
-   height:1.5em;
-   min-height:1.0em;
+   xheight:1.5em;
+   xmin-height:1.0em;
 }
 
 .display-entries-entries {
