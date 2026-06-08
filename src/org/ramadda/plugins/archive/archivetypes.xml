@@ -118,6 +118,9 @@ metadataDisplay3="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b>
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
 -center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
+{{name message=""  link=true prefix="<b>Collection:</b>" suffix="<br>" entry="ancestor:type:type_archive_collection"}}
+{{name message=""  link=true prefix="<b>Series:</b>" suffix="<br>" entry="ancestor:type:type_archive_series"}}
+{{name message=""  link=true prefix="<b>File:</b>" suffix="<br>" entry="ancestor:type:type_archive_file"}}
 +center
 {{barcode field=barcode message=""}}
 -center
@@ -221,6 +224,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
 </type>
+
+
 
 
 <type name="type_archive_file"  description="Archive File" super="type_archive_root"
