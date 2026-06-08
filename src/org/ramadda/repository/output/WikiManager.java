@@ -914,7 +914,7 @@ public class WikiManager extends RepositoryManager
 	  ancestor:type
 	*/
 	if((select = matches.call(entryId,ID_ANCESTOR,PREFIX_ANCESTOR))!=null) { 
-            Entry  lastEntry = select.getEntry();
+            Entry  lastEntry = null;
             Entry  current   = select.getEntry();
 	    String type = select.getType();
             while (true) {
@@ -922,13 +922,14 @@ public class WikiManager extends RepositoryManager
                 if (parent == null) {
                     break;
                 }
-		if(type!=null) {
+		if(stringDefined(type)) {
 		    if (parent.getTypeHandler().isType(type)) {
 			lastEntry = parent;
 			break;
 		    }
 		} else {
 		    lastEntry = parent;
+		    break;
 		}
                 current = parent;
             }
