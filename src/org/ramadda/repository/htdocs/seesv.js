@@ -1309,6 +1309,8 @@ function  SeesvForm(inputId, entry,params) {
 				html+=HU.center('Note: Have focus in the -addheader command properties');
 				html +=HU.b('type: ') + 
 				    _this.makeHeaderMenu(field+".type","enumeration","enumeration")+ SPACE2+
+				    _this.makeHeaderMenu(field+".type","multienumeration","multienumeration")+ SPACE2+
+			    
 				    _this.makeHeaderMenu(field+".type","string","string")+ SPACE2+	
 				    _this.makeHeaderMenu(field+".type","double","double")+SPACE2+
 				    _this.makeHeaderMenu(field+".type","integer","integer")+SPACE2+
