@@ -125,7 +125,7 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	int period = entry.getIntValue(request,"period",30);
 	if(period==0) period=30;
 	url = HU.url(url,"period","P"+period+"D");
-	System.err.println(url);
+	//	System.err.println(url);
 	return url;
     }
 
