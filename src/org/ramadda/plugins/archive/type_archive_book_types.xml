@@ -1,0 +1,121 @@
+<type name="type_archive_book"  description="Archive Book"
+      handler="org.ramadda.plugins.archive.BookTypeHandler"
+      newfields="isbn,_default"
+      xeditfields="name,description,_default"
+      metadata="archive_subject,archive_term,archive_note,content.thumbnail"     >
+    <property name="form.tabs" value="true"/>    
+    <property name="html.tabs" value="true"/>    
+    <property name="search.metadatatypes" value="archive_term,archive_note"/>
+    <property name="icon" value="/archive/book.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.tags.show" value="false"/>    
+    <property name="search.area.show" value="false"/>
+    <property name="form.area.show" value="false"/>    
+    <property name="form.date.label" value="Publication Date"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.todate.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
+    <property name="date.format" value="yyyy"/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.name.label" value="Title"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.type.show"  value="false" />
+    <property name="html.owner.show" value="false"/>                
+    <property name="html.mainlabel" value="About this Book"/>
+
+    <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true"
+	    group="About this Book"
+	    enumeration_show_checkboxes="true"/>
+    <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
+    <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
+    <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>
+    <column name="isbn" type="list"  label="ISBN" columns="30" rows="3" suffix="One per line"
+	    cansearch="true"/>
+    <column name="lccn" type="list"  size="1000" label="LCCN" columns="30"/>    
+            
+    <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
+    <column name="publication_place" type="list"  size="2000" label="Place of Publication"
+	    columns="30"/>    
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"
+	    cansearch="true"/>
+
+    <column name="condition" type="enumerationplus"  label="Condition"
+	    values="New,Like New,Good,Fair,Poor,Damaged"
+	    cansearch="true"
+	    group="Internal Information"
+	    adminonly="true"/>
+    <column name="copyright_date" type="date"  label="Copyright date"  
+	    cansearch="true"
+	    default="none"
+	    adminonly="true"/>
+    <column name="cost" type="double"  label="Cost"	    adminonly="true"/>
+    <column name="donor" type="string"  size="500" label="Donor"	adminonly="true"/>
+    <column name="edition" type="string"  size="500" label="Edition"	adminonly="true"/>
+    <column name="call_number" type="string"  label="Call Number" columns="30" adminonly="true"/>
+    <column name="accompanying_material" type="string"  size="1000"
+	    label="Accompanying Material" columns="30" adminonly="true"/>    
+    <column name="holdings_note" type="string"  size="3000" rows="4"
+	    label="Holdings Note" columns="30" adminonly="true"/>
+    <column name="notes" type="string"  size="3000" rows="4"
+	    label="Notes" columns="30" adminonly="true"/>    
+    <column name="purchase_date" type="date"  label="Purchase date"
+	    default="none"	    
+
+	    adminonly="true"/>            
+
+
+
+    <property name="search.orderby" value="name,date,createdate"/>
+    <property name="search.args"><![CDATA[
+    tooltip="${display_html}"
+    showAncestor=false
+    orderByLabel_date_descending="Pub. Date - most recent"
+    orderByLabel_date_ascending="Pub. Date - least recent"
+    ]]></property>
+
+
+    <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
+    <wiki><![CDATA[
++section  title="<span>Book</span>: {{name wrap=true}}"
++row
++col-8
+{{description wikify="true" prefix="+callout" suffix="-callout"}}
+{{information  showDetails="true"   showAttachments="false" showMetadata="false"    }} 
+{{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+-col
++col-4
++center
+{{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+-center
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"
+addEditPropertiesLink="true"}}
++center
+{{image  xxxxdefault=/archive/booklarge.png inherited="true" message="" width="150px"
+style="margin-bottom:10px;"  useThumbnail="true" showCaption="true"
+xxxstyle="border:var(--basic-border);"
+}}
+
+<table class="formtable">
+{{field  name="call_number" row.label="Call #:"}}
+</table>
+
++if anonymous=false
+{{barcode field=barcode}}
+-if
+-center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+-section
+]]>
+</wiki>
+
+
+</type>
+
