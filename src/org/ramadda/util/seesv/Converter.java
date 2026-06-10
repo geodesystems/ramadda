@@ -3143,7 +3143,7 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(isHeaderRow(ctx,row)) return row;
+	    if(!rows.contains(rowCnt++)) return row;
             List<Integer> indices = getIndices(ctx);
             for (int index : indices) {
 		if(!row.indexOk(index)) continue;
