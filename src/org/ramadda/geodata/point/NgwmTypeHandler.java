@@ -123,9 +123,7 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	String id = (String)  entry.getValue(request,"site");
 	id = id.replace("USGS:","");
 	String url = URL_DATA.replace("${site}", id);
-	System.err.println("url:" + url);
 	return url;
-	//	return  getUrl("https://cida.usgs.gov/ngwmn_cache/direct/flatXML/waterlevel/${agency}/${site}",id);
     }
 
     private String find(String html,String key) {
@@ -140,9 +138,15 @@ public class NgwmTypeHandler extends PointTypeHandler {
      */
     private String getUrl(String url,String id) {
 	List<String> toks = Utils.split(id,":",true,true);
-	if(toks.size()!=2)
-	    throw new IllegalArgumentException("Incorrect Site ID:" + id +". It must be of the form agency:Site #, e.g. UNLCSD:241551");
-	return url.replace("${agency}",toks.get(0)).replace("${site}",toks.get(1));
+	String agency= "USGS";
+	String siteId;
+	if(toks.size()==2) {
+	    agency=toks.get(0);
+	    siteId = toks.get(1);
+	} else {
+	    siteId = toks.get(0);
+	}
+	return url.replace("${agency}",agency).replace("${site}",siteId);
 
     }
 }
