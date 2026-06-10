@@ -333,9 +333,8 @@ from the USGS site.
   </property>    
   <property name="form.resource.show" value="false"/>
   <property name="record.properties">
-    csvcommands1=-xml,samples.sample
-    csvcommands2=-change,6-9,(?i)unknown,NaN
-    csvcommands3=-addheader, time.type date site.type enumeration
+    csvcommands1=-json,value.timeSeries[0].values[0].value,,-rename,value,depth_to_groundwater
+    csvcommands2=-addheader, datetime.type date datetime.format {yyyy-MM-dd'T'HH:mm:ss.SSSXXX}
   </property>
   <column  name="site"  label="Agency:Site" type="string" cansearch="false"
 	   columns="30"

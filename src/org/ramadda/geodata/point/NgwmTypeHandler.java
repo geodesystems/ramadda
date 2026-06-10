@@ -26,6 +26,10 @@ This class supports accessing data in real-time from the USGS National
 Ground-Water Monitoring Network https://cida.usgs.gov/ngwmn/index.jsp
 */
 public class NgwmTypeHandler extends PointTypeHandler {
+    //    public static final URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteid}";
+    public static final String URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${site}&startDT=2026-03-12&endDT=2026-06-10";	
+
+
     public NgwmTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
@@ -117,7 +121,11 @@ public class NgwmTypeHandler extends PointTypeHandler {
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
 	throws Exception {
 	String id = (String)  entry.getValue(request,"site");
-	return  getUrl("https://cida.usgs.gov/ngwmn_cache/direct/flatXML/waterlevel/${agency}/${site}",id);
+	id = id.replace("USGS:","");
+	String url = URL_DATA.replace("${site}", id);
+	System.err.println("url:" + url);
+	return url;
+	//	return  getUrl("https://cida.usgs.gov/ngwmn_cache/direct/flatXML/waterlevel/${agency}/${site}",id);
     }
 
     private String find(String html,String key) {
