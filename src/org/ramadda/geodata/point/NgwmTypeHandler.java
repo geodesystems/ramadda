@@ -26,9 +26,8 @@ This class supports accessing data in real-time from the USGS National
 Ground-Water Monitoring Network https://cida.usgs.gov/ngwmn/index.jsp
 */
 public class NgwmTypeHandler extends PointTypeHandler {
-    //    public static final URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteid}";
-    public static final String URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${site}&startDT=2026-03-12&endDT=2026-06-10";	
-
+    public static final String URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${site}";
+    //    public static final String URL_DATA = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${site}&startDT=2026-03-12&endDT=2026-06-10";	
 
     public NgwmTypeHandler(Repository repository, Element node)
 	throws Exception {
@@ -123,6 +122,10 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	String id = (String)  entry.getValue(request,"site");
 	id = id.replace("USGS:","");
 	String url = URL_DATA.replace("${site}", id);
+	int period = entry.getIntValue(request,"period",30);
+	if(period==0) period=30;
+	url = HU.url(url,"period","P"+period+"D");
+	System.err.println(url);
 	return url;
     }
 

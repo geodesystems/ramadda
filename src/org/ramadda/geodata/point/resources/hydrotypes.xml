@@ -321,7 +321,7 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 +center
 :b {{name link=true}}
 -center
-{{group}}
+{{group errorMessage="No data available"}}
 {{display_linechart fields="original_value" fields="original_value" vAxisReverse=true}}
  ]]>
   </property>
@@ -333,6 +333,7 @@ from the USGS site.
   </property>    
   <property name="form.resource.show" value="false"/>
   <property name="record.properties">
+    picky=false
     csvcommands1=-json,value.timeSeries[0].values[0].value,,-rename,value,depth_to_groundwater
     csvcommands2=-addheader, datetime.type date datetime.format {yyyy-MM-dd'T'HH:mm:ss.SSSXXX}
   </property>
@@ -344,6 +345,9 @@ from the USGS site.
        <br>There are also state site lists available the  <a target=_other href=https://github.com/geodesystems/ramadda/tree/master/data/ngwmn_sites>RAMADDA Github site</a>
 ]]></suffix>       
   </column>
+  <column  name="period"  label="Period" type="int"  default="30" suffix="Number of days"
+	   help="Number of days prior to the current day"	      />
+
   <column  name="agency"  label="Agency" type="enumerationplus"  cansearch="true"/>
   <column  name="site_type"  label="Site Type" type="enumerationplus"  cansearch="true"/>     
   <column  name="well_depth"  label="Well Depth" type="double"  default="0" />
@@ -358,9 +362,9 @@ from the USGS site.
 :navtop
 {{description wikify=true}}
 {{property max=30000}}
-{{group showMenu=true  targetDiv="${entryid}_group" }}
+{{group showMenu=true  targetDiv="${entryid}_group" errorMessage=""}}
 <div id="{{entryid}}_group"></div> 
-{{display_linechart height=400px vAxisReverse=true showMenu=true fields="original_value"}}
+{{display_linechart errorMessage="No data available" height=400px vAxisReverse=true showMenu=true fields="original_value"}}
 :vspace 0.5em
 :heading Table
 {{display_download showMenu=false}}
