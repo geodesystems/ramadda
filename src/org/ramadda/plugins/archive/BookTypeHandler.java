@@ -255,5 +255,4 @@ public class BookTypeHandler extends GenericTypeHandler  {
 		     HU.labeledCheckbox("initisbn","true", false,
 					"Initialize book from openlibrary.org and Google Books using ISBN"));
     }
-
 }

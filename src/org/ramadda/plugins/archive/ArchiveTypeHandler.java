@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2026 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2026 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.archive;
@@ -19,7 +19,6 @@ import ucar.unidata.util.StringUtil;
 import org.ramadda.util.sql.Clause;
 import org.w3c.dom.*;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
@@ -36,13 +35,13 @@ import java.util.Collections;
 public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 
     public ArchiveTypeHandler(Repository repository, Element entryNode)
-            throws Exception {
+	throws Exception {
         super(repository, entryNode);
     }
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
-            throws Exception {
+	throws Exception {
 	if(!isNew(newType)) return;
 	String field = getNumberField(request, entry);
 	String num = (String) entry.getValue(request,field);
@@ -60,8 +59,6 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 		}
 	    }
 	}
-	//	List<String> values = getDatabaseManager().selectDistinct(entry.getTypeHandler().getTableName(), field,clause);
-
 	Collections.sort(values);
 	//Look for the 001,002, etc
 	String last=null;
@@ -153,7 +150,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         if (tag.equals("archive_finding_aid_link")) {
 	    String url =
 		request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
@@ -211,20 +208,20 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
     private void makeFindingAid(Request request, Entry entry, StringBuilder sb) throws Exception {
-	 List<Entry> entries = getEntryManager().getChildren(request, entry);
-	 if(entries.size()==0) return;
-	 for(Entry child: entries) {
-	     if(!child.getTypeHandler().isType("type_archive_root")) continue;
-	     sb.append("<div class=archive-findingaid-entry>");
-	     String label = getTypeName(request, child) +": "+child.getName();
-	     label = HU.href(getEntryManager().getEntryUrl(request, child),label);
-	     HU.div(sb,label,HU.attrs("class","archive-findingaid-header"));
-	     sb.append(getInfo(request, child));
-	     wikify(request, child,sb,propWiki);
-	     sb.append("</div>\n");
-	     sb.append("<div class=archive-findingaid-block>\n");
-	     makeFindingAid(request, child, sb);
-	     sb.append("</div>\n");
-	 }
+	List<Entry> entries = getEntryManager().getChildren(request, entry);
+	if(entries.size()==0) return;
+	for(Entry child: entries) {
+	    if(!child.getTypeHandler().isType("type_archive_root")) continue;
+	    sb.append("<div class=archive-findingaid-entry>");
+	    String label = getTypeName(request, child) +": "+child.getName();
+	    label = HU.href(getEntryManager().getEntryUrl(request, child),label);
+	    HU.div(sb,label,HU.attrs("class","archive-findingaid-header"));
+	    sb.append(getInfo(request, child));
+	    wikify(request, child,sb,propWiki);
+	    sb.append("</div>\n");
+	    sb.append("<div class=archive-findingaid-block>\n");
+	    makeFindingAid(request, child, sb);
+	    sb.append("</div>\n");
+	}
     }
 }
