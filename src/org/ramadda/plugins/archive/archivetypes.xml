@@ -118,9 +118,17 @@ metadataDisplay3="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b>
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
 -center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
-{{name message=""  link=true prefix="<b>Collection:</b>" suffix="<br>" entry="ancestor:type:type_archive_collection"}}
-{{name message=""  link=true prefix="<b>Series:</b>" suffix="<br>" entry="ancestor:type:type_archive_series"}}
-{{name message=""  link=true prefix="<b>File:</b>" suffix="<br>" entry="ancestor:type:type_archive_file"}}
+<table width=100%>
+{{name message=""  link=true
+prefix="<tr><td align=right><b>Collection:</b></td><td>&nbsp;" suffix="</td></tr>"
+entry="ancestor:type:type_archive_collection"}}
+{{name message=""  link=true
+prefix="<tr><td align=right><b>Series:</b></td><td>&nbsp;"
+suffix="</td></tr>" entry="ancestor:type:type_archive_series"}}
+{{name message=""  link=true
+prefix="<tr><td align=right><b>File:</b></td><td>&nbsp;"
+suffix="</td></tr>" entry="ancestor:type:type_archive_file"}}
+</table>
 +center
 {{barcode field=barcode message=""}}
 -center
