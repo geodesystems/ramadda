@@ -51,7 +51,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	"-runningsum,volume,Total volume",
 	"-runningsum,volume,yearly_total_volume",
 	"-decimals,volume_comma_total_volume,2,-endif,-addheader",
-	"site_no.type string discharge.type double gauge_height.type double total_volume.unit {acre feet} total_volume.type double volume.type double date.format {${format}yyyy-MM-dd}"
+	"datetime.type date site_no.type string discharge.type double gauge_height.type double total_volume.unit {acre feet} total_volume.type double volume.type double date.format {${format}yyyy-MM-dd}"
     };
 
     private static final String OLD_URL_FLOW =
@@ -365,7 +365,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 		}
 	    }
 
-	    wiki.append("{{display_linechart showMenu=true " + args+" fields=\"" + Utils.join(fieldList,",")+"\"}}\n");
+	    wiki.append("{{display_linechart max=30000 showMenu=true " + args+" fields=\"" + Utils.join(fieldList,",")+"\"}}\n");
 	}
 	return getWikiManager().wikifyEntry(request, entry,wiki.toString());
     }

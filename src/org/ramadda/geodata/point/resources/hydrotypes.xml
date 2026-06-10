@@ -116,10 +116,10 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 :b {{name link=true}}
 -center
 {{group}}
-{{display_linechart fields="discharge,gauge_height"}}
+{{display_linechart fields="discharge,gauge_height" max=10000}}
  ]]>
 </property>
-     <property name="form.header.new">
+<property name="form.header.new">
        <![CDATA[+callout-info
 You just need to specify the Site Number. The name and other metadata will be looked up from the USGS site.
 -callout]]>
@@ -183,9 +183,9 @@ picky=false
 <div id="{{entryid}}_group"></div> 
 {{usgs_gauge_charts}}
 +skip
-{{display type=linechart showMenu=true fields=discharge}}
-{{display type=linechart showMenu=true fields=total_volume}}
-{{display type=linechart showMenu=true fields=gauge_height}}
+{{display_linechart showMenu=true fields=discharge }}
+{{display_linechart showMenu=true fields=total_volume}}
+{{display_linechart showMenu=true fields=gauge_height}}
 -skip
 :vspace 0.5em
 :heading Table
