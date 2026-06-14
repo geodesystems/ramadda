@@ -5647,12 +5647,14 @@ public class TypeHandler extends RepositoryManager {
 					 + HU.SIZE_50
 					 + " autocomplete='off' autofocus ") + " "
 				+ extra));
+	    /*
             sb.append("<div id=searchpopup class=ramadda-popup></div>");
             sb.append(
 		      HU.script(
 				"Utils.searchSuggestInit('searchinput'," + ((type == null)
 									    ? "null"
 									    : "'" + type + "'") + ");"));
+	    */
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
