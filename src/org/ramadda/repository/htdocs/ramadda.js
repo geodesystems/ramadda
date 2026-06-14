@@ -20,6 +20,120 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	this.entryListeners.push(listener);
     },
 
+    getSearchResultsHeader: function() {
+	let range= HU.div([ATTR_CLASS,CLASS_SEARCH_RANGE]);
+	let nextPrev = [];
+        let lessMore = [];
+	nextPrev.push(HU.div([ATTR_ACTION,ACTION_SEARCH_PREV,
+			      ATTR_TITLE, "Previous",
+			      ATTR_CLASS, HU.classes(CLASS_SEARCH_ACTION,CLASS_BUTTON_SMALL)],
+			     HU.getIconImage("fa-arrow-left")));
+	nextPrev.push(HU.div([ATTR_ACTION,ACTION_SEARCH_NEXT,
+			      ATTR_TITLE, "Next",
+			      ATTR_CLASS, HU.classes(CLASS_SEARCH_ACTION,CLASS_BUTTON_SMALL)],
+			     HU.getIconImage("fa-arrow-right")));	    
+	lessMore.push(HU.div([ATTR_ACTION,ACTION_SEARCH_LESS,
+			      ATTR_TITLE, "View less",
+			      ATTR_CLASS, HU.classes(CLASS_SEARCH_ACTION,CLASS_BUTTON_SMALL)],
+			     HU.getIconImage("fa-minus")));
+	lessMore.push(HU.div([ATTR_ACTION,ACTION_SEARCH_MORE,
+			      ATTR_TITLE, "View more",
+			      ATTR_CLASS, HU.classes(CLASS_SEARCH_ACTION,CLASS_BUTTON_SMALL)],
+			     HU.getIconImage("fa-plus")));	    
+        let results = "";
+        let spacer = SPACE3;
+        results += 
+            HU.join(nextPrev, SPACE) + spacer +
+            HU.join(lessMore, SPACE);
+	results += spacer + range + spacer;
+        return HU.div([ATTR_STYLE,HU.css(CSS_POSITION,POSITION_RELATIVE)],
+		      results);
+    },
+
+    initSearchResultsHeader:function(searchInfo,callback,container) {
+	let button = container.find(HU.dotClass(CLASS_SEARCH_RANGE));
+	if(!searchInfo) {
+	    searchInfo = {totalHits:0,offset:0,max:DEFAULT_MAX,numberOfResults:0};
+	}
+	if(!Utils.isDefined(searchInfo.offset)) {
+	    searchInfo.offset	=0;
+	}
+	RamaddaUtils.initSearchRanges(searchInfo,
+				      button,
+				      callback);
+
+	var hasPrevious = searchInfo.offset > 0;
+	var hasNext = searchInfo.offset + searchInfo.numberOfResults < searchInfo.totalHits;
+	var canShowMore = searchInfo.max < searchInfo.totalHits;
+	var canShowLess = searchInfo.totalHits>0 && searchInfo.max > 1;
+	container.find(HU.dotClass(CLASS_SEARCH_ACTION)).off('click').button().click(function() {
+	    let action = $(this).attr(ATTR_ACTION);
+	    searchInfo = $.extend({},searchInfo);
+	    if(action==ACTION_SEARCH_NEXT) {
+		searchInfo.offset+=searchInfo.max;
+	    } else if(action==ACTION_SEARCH_PREV) {
+		searchInfo.offset-=searchInfo.max;
+	    } else if(action==ACTION_SEARCH_LESS) {
+		searchInfo.max =  parseInt(0.75 * searchInfo.max);
+	    } else if(action==ACTION_SEARCH_MORE) {
+		searchInfo.max +=  DEFAULT_MAX;
+	    }
+	    if(searchInfo.max<=0) {
+		searchInfo.max=1;
+	    }
+	    if(searchInfo.offset>searchInfo.totalHits)
+		searchInfo.offset= searchInfo.totalHits-searchInfo.max;
+	    if(searchInfo.offset<0) searchInfo.offset=0;
+	    if(callback)
+		callback(searchInfo);
+	});
+	container.find('[' + ATTR_ACTION + '=' + HU.quote(ACTION_SEARCH_PREV) + ']').button('option','disabled',!hasPrevious);
+	container.find('[' + ATTR_ACTION + '=' + HU.quote(ACTION_SEARCH_NEXT) + ']').button('option','disabled',!hasNext);
+	container.find('[' + ATTR_ACTION + '=' + HU.quote(ACTION_SEARCH_LESS) + ']').button('option','disabled',!canShowLess);
+	container.find('[' + ATTR_ACTION + '=' + HU.quote(ACTION_SEARCH_MORE) + ']').button('option','disabled',!canShowMore);
+
+
+    },
+
+    initSearchRanges:function(searchInfo,button,callback) {
+	if(!searchInfo) return;
+	searchInfo = $.extend({},searchInfo);
+	if(!Utils.isDefined(searchInfo.offset))
+	    searchInfo.offset = 0;
+	let _this = this;
+	if(searchInfo.numberOfResults==0) {
+	    button.html('No results').button().prop("disabled", true);
+	} else {
+            let range =  (searchInfo.offset + 1) + "-" +
+		(searchInfo.offset + Math.min(searchInfo.max, searchInfo.numberOfResults));
+	    range = range+' ('+ searchInfo.totalHits+' total)';
+	    let ranges = RamaddaUtil.getPageRanges(searchInfo);
+	    button.html(range).off('click').button().click(function() {
+		let html = '';
+		ranges.forEach((range,idx)=>{
+		    if(range.type=='ellipsis') {
+			html+=HU.div([],'...');
+		    } else if(range.current) {
+			html+=HU.div([],HU.b(range.label));
+		    } else {
+			html+=HU.div([ATTR_INDEX,idx,ATTR_CLASS,CLASS_CLICKABLE],range.label);
+		    }
+		});
+		html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+		let dialog = HU.makeDialog({content:html,anchor:$(this),
+					    draggable:false,header:false});
+		
+		dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
+		    let range = ranges[$(this).attr(ATTR_INDEX)];
+		    dialog.remove();
+		    searchInfo.offset=range.offset;
+		    callback(searchInfo);
+		});
+	    });
+	}
+    },
+
+
     getPageRanges:function(searchInfo) {
 	const { totalHits, offset, max } = searchInfo;
 	const totalPages = Math.ceil(totalHits / max);
@@ -284,10 +398,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    return id+suffix;
 	}
 	let state = this.searchState;
-        let input = HU.input('','',[ATTR_ID,getId('_input'),
-				    ATTR_CLASS,'input',
-				    ATTR_PLACEHOLDER,'Search',
-				    ATTR_STYLE, HU.css(CSS_WIDTH,HU.px(250))]);
+	let resultsButton =HU.span([ATTR_ID,getId('_results_button')]);
+	let nameCbx = HU.checkbox('',[ATTR_ID,getId('_name')],true,'By name');
+	let topLine = HU.div([],nameCbx+SPACE2+resultsButton);
+        let input = topLine+HU.input('','',[ATTR_ID,getId('_input'),
+					    ATTR_CLASS,'input',
+					    ATTR_PLACEHOLDER,'Search',
+					    ATTR_STYLE, HU.css(CSS_WIDTH,HU.px(250))]);
 
 	input+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_TITLE,'Submit search',
@@ -351,8 +468,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
         let inputWidget = jqid(getId('_input'));
+        let nameWidget = jqid(getId('_name'));	
 	let doSearch = ()=>{
             let value =  inputWidget.val()??'';
+	    if(HU.isChecked(nameWidget)) {
+		value = 'name:'+ value;
+	    }
             let searchLink =  HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
 				     [ARG_ORDERBY,'createdate',
 				      ARG_ASCENDING,'false',
@@ -372,6 +493,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             let myCallback = {
                 entryListChanged: function(list) {
                     let entries = list.getEntries();
+		    RamaddaUtils.initSearchRanges(list.getSearchInfo(),
+						  jqid(getId('_results_button')),
+						  searchInfo=>{
+						      this.getSearchSettings().skip = searchInfo.offset;
+						      this.submitSearchForm();
+						  });
+
                     if(entries.length==0) {
                         results.show();
                         results.html('Nothing found');
@@ -402,7 +530,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    if(label.indexOf("${")>=0) {
 				label = entry.getName();
 			    }
-//			    label = label.replace(/\${.*}/,'');
+			    //			    label = label.replace(/\${.*}/,'');
 			}
 
                         html += HU.div([ATTR_INDEX,idx,
@@ -811,17 +939,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				    ATTR_ACTION,RamaddaUtil.getUrl('/entry/getentries')]);
 	    let form = '';
 	    /*
-	    form += HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
-				       ATTR_TITLE,'Toggle all',
-				       ATTR_ID,id+'_form_cbx'],false);
+	      form += HU.checkbox('',[ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3)),
+	      ATTR_TITLE,'Toggle all',
+	      ATTR_ID,id+'_form_cbx'],false);
 	    */
 	    
 
 	    let allOn  = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3),CSS_MARGIN_RIGHT,HU.px(3)),
-			 ATTR_TITLE,'Toggle all on',
-			 ATTR_CLASS,CLASS_CLICKABLE,
-			 ATTR_ID,id+'_toggle_on'],
-			HU.getIconImage('fas fa-toggle-on'));
+				  ATTR_TITLE,'Toggle all on',
+				  ATTR_CLASS,CLASS_CLICKABLE,
+				  ATTR_ID,id+'_toggle_on'],
+				 HU.getIconImage('fas fa-toggle-on'));
 
 	    let allOff = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(3),CSS_MARGIN_RIGHT,HU.px(3)),
 				  ATTR_TITLE,'Toggle all off',
@@ -852,21 +980,21 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				     ATTR_ID,'getall1337','role','button']);
 	    pageSearchId = HU.getUniqueId('find');	
 	    tableInfo.sizeSpanId = HU.getUniqueId('size');
-//	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(0)), ATTR_ID,pageSearchId]);
+	    //	    form+= HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(0)), ATTR_ID,pageSearchId]);
 	    form+= SPACE+HU.span([ATTR_ID,pageSearchId]);
 	    form+=HU.div([ATTR_ID,tableInfo.sizeSpanId,
 			  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 					    CSS_RIGHT,HU.px(5),
 					    CSS_TOP,HU.px(5))],'');
 	    deepSearchId = HU.getUniqueId('search');	
-/*
-	    form+= HU.input('','',
-			    [ATTR_CLASS,'ramadda-pagesearch-input',
-			     ATTR_PLACEHOLDER,'Search repository',
-			     ATTR_TITLE,'Perform a text search in the repository',
-			     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10)),
-			     ATTR_ID,deepSearchId]);
-			     */
+	    /*
+	      form+= HU.input('','',
+	      [ATTR_CLASS,'ramadda-pagesearch-input',
+	      ATTR_PLACEHOLDER,'Search repository',
+	      ATTR_TITLE,'Perform a text search in the repository',
+	      ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10)),
+	      ATTR_ID,deepSearchId]);
+	    */
 
 	    html+=HU.div([ATTR_CLASS,HU.classes(/*classPrefix +'-row',*/'entry-table-form-header'),
 			  ATTR_ID,id+'_form',
@@ -879,9 +1007,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+=HU.open(TAG_DIV,tableAttrs);
 	html+=HU.close(TAG_DIV,TAG_TABLE,TAG_DIV);
 	main.html(html);
-
-
-
 	if(pageSearchId) {
 	    HU.initPageSearch('.search-component,.entry-table-row-data',
 			      null,
@@ -2720,3 +2845,406 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 
+function PageSearch(select,parentSelect,label,hideAll,args) {
+    let opts = {
+	addToUrl:true,
+	focus:false,
+	inputSize:'15',
+	target:null,
+	hideAll:hideAll,
+	linkSelector:null,
+	widgets:[],
+	style:''
+    };
+    if(args) {
+	$.extend(opts,args);
+	if(args.buttons) opts.widgets=args.buttons;
+    }
+
+
+    let id = HU.getUniqueId('search_');
+    if(opts.width) opts.style+=HU.css(CSS_WIDTH,opts.width);
+    
+    let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
+				ATTR_STYLE,opts.style,
+				ATTR_ID,id,
+				ATTR_PLACEHOLDER,label??'Search',
+				ATTR_SIZE,opts.inputSize]);
+    let activeClass='ramadda-button-active';
+    let widgetMap ={};
+    opts.widgets.forEach(widget=>{
+	widget.id = HU.getUniqueId('button');
+	widgetMap[widget.id] =widget;
+	if(widget.clear) {
+	    input+=HU.span([ATTR_ID,widget.id,'clear',true],widget.label);
+	    return
+	}
+
+	if(!widget.value) {
+	    input+=SPACE1;
+	    input+=HU.b(widget.label);
+	    return
+	}
+
+	input+=SPACE1;
+	input+=HU.span([ATTR_ID,widget.id],widget.label);
+    });
+    
+    if(opts.linkSelector) {
+	opts.linksDivId = HU.getUniqueId('links');
+	input+=HU.div([ATTR_ID,opts.linksDivId]);
+    }
+
+    if(opts.target) {
+	if($(opts.target).length==0) {
+	    console.log('initPageSearch: no target div found:' + opts.target);
+	    //		console.trace();
+	}
+	$(opts.target).html(input);
+    } else {
+	HU.writeHtmlHere(input);
+    }
+    //Note: we set the value directly here  to avoid XSS
+    let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
+    jqid(id).val(initValue);
+    let doSearch = ()=>{
+	let values =[];
+	values.push(jqid(id).val());
+	opts.widgets.forEach(widget=>{
+	    if(!widget.element) return;
+	    if(!widget.element.hasClass(activeClass)) return;
+	    if(!widget.clear) {
+		values.push(widget.value);
+	    }
+	});
+
+	HU.doPageSearch(values,select,parentSelect,opts.hideAll,args);
+    };
+    let buttons =[];
+    opts.widgets.forEach(widget=>{
+	widget.element= jqid(widget.id).button();	
+	widget.element.click(function() {
+	    let id = $(this).attr(ATTR_ID);
+	    let widget = widgetMap[id];
+	    if(!widget) return;
+	    if($(this).hasClass(activeClass)) {
+		$(this).removeClass(activeClass);
+	    } else {
+		$(this).addClass(activeClass);
+		if(widget.group) {
+		    opts.widgets.forEach(other=>{
+			if(other.id!=id && other.group==widget.group && other.element) {
+			    other.element.removeClass(activeClass);
+			}
+		    });
+		}
+	    }
+	    if(widget.clear) {
+		opts.widgets.forEach(otherWidget=>{
+		    if(otherWidget.element) {
+			otherWidget.element.removeClass(activeClass);
+		    }
+		});
+		HU.doPageSearch('',select,parentSelect,opts.hideAll,args);
+		return;
+	    }
+	    doSearch();
+	    //		    HU.doPageSearch(button.value,select,parentSelect,opts.hideAll,args);
+	});
+    });
+
+    if(opts.focus) {
+	jqid(id).focus();
+    }
+    jqid(id).keydown(function(event) {
+	if (event.key === "Enter") {
+	    event.preventDefault(); 
+	}
+    });
+
+    jqid(id).keyup(function(){
+	if (event.key === "Enter") {
+	    event.preventDefault(); 
+	    return
+	}
+
+	doSearch();
+	let value = $(this).val();
+	if(opts.addToUrl) {
+	    if(Utils.stringDefined(value)) {
+		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
+	    } else {
+		HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+	    }
+	}
+
+    });
+
+    if(Utils.stringDefined(initValue)) {
+	setTimeout(()=>{
+	    HU.doPageSearch(initValue,select,parentSelect,opts.hideAll,opts);},500);
+    }
+}
+
+
+var ID_SEARCH_SUGGEST_INPUT='popup_search_input';
+var ID_SEARCH_SUGGEST_HERE = 'popup_search_here';
+function SearchPopup(id,anchor) {
+    $.extend(this,{
+	anchor:id,
+	baseId:HU.getUniqueId('searchpopup_'),
+	searchCnt:0,
+	max:DEFAULT_MAX
+    });
+    let value = Utils.searchLastInput||"";
+    let form = HU.open(TAG_FORM,[ATTR_ACTION,RamaddaUtil.getUrl(URL_SEARCH_DO)]);
+    let searchInput = HU.tag(TAG_INPUT,[ATTR_VALUE, value,
+					ATTR_PLACEHOLDER,'Search text',
+					ATTR_AUTOCOMPLETE,'off',
+//					ATTR_AUTOFOCUS,'true',
+					ATTR_ID,this.getDomId(ID_SEARCH_SUGGEST_INPUT),
+					ATTR_CLASS, CLASS_SEARCH_INPUT,
+					ATTR_NAME,'text']);
+    let right = '';
+    if(ramaddaThisEntry) {
+        right=HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
+		       ATTR_TITLE,Utils.delimMsg('Search under') + ': '+ ramaddaThisEntryName],
+		      HU.checkbox(this.getDomId(ID_SEARCH_SUGGEST_HERE),
+				  [ATTR_NAME,'ancestor',
+				   ATTR_VALUE,ramaddaThisEntry],false,
+				  HU.getIconImage('fas fa-folder-tree')));
+    }
+//    form += HU.leftCenterRight(searchInput,'',right);
+    form+=HU.inlineBlock(searchInput)+HU.inlineBlock(right);
+//    form += HU.hbox([searchInput,right]);
+    form += HU.close(TAG_FORM);
+    form += HU.div([ATTR_STYLE,HU.css(CSS_PADDING,HU.px(4),
+				      CSS_BORDER_TOP,CSS_BASIC_BORDER,
+				      CSS_BORDER_BOTTOM,CSS_BASIC_BORDER,				      
+				      CSS_MIN_WIDTH,HU.px(300)),
+		    ATTR_CLASS,CLASS_SEARCH_HEADER])
+    let linksId = HU.getUniqueId();
+    let formLink = 
+	HU.href(RamaddaUtil.getUrl('/search/form'),
+		'Search Form',
+		[ATTR_TITLE, 'Go to search form',
+		 ATTR_CLASS,HU.classes(CLASS_BUTTON_SMALL,CLASS_CLICKABLE)]);
+
+    let typeLink = 
+	HU.href(RamaddaUtil.getUrl('/search/type'),
+		'By Type',
+		[ATTR_TITLE, 'Go to type search form',
+		 ATTR_CLASS,HU.classes(CLASS_BUTTON_SMALL,CLASS_CLICKABLE)]);
+
+    let links =  HU.div([ATTR_ID, linksId,
+			 ATTR_STYLE,HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_BOTTOM,HU.px(4))],
+			formLink+HU.space(1)/*+'|'+HU.space(1)*/+typeLink);
+    let resultsId = this.getDomId('searchresults');
+    let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
+    let html = HU.div([ATTR_CLASS,"ramadda-search-popup"],form+results);
+    let icon = jqid(id);
+    this.dialog =
+	HU.makeDialog({content:html,
+		       my:POS_RIGHT_TOP,
+		       at:POS_RIGHT_BOTTOM,
+		       title:links,
+		       anchor:this.anchor,
+		       draggable:true,
+		       header:true,
+		       inPlace:false});
+    this.dialog.find(HU.dotClass(CLASS_BUTTON_SMALL)).button();
+    this.init(resultsId,true);
+}
+
+SearchPopup.prototype = {
+    getDomId:function(suffix) {
+	return this.baseId+suffix;
+    },
+    jq:function(suffix) {
+	return jqid(this.getDomId(suffix));
+    },    
+    init:function(resultsId,focus) {
+        this.input =this.jq(ID_SEARCH_SUGGEST_INPUT);
+        this.hereCbx = this.jq(ID_SEARCH_SUGGEST_HERE);      
+        this.input.mousedown((evt) => {
+            evt.stopPropagation();
+        });
+	this.input.keydown((event)=> {
+	    if(this.dialog && event.key=='Escape') this.dialog.remove();
+	    if(event.key=='Enter') 
+		event.preventDefault();
+	});
+
+	let icon;
+        if(!Utils.isDefined(icon)) icon = true;
+        let submitForm = false;
+        if(!resultsId) {
+            submitForm = true;
+            resultsId = HU.getUniqueId();
+            let width = this.input.width();
+            let results = HU.div([ATTR_ID,resultsId,
+				  ATTR_STYLE,HU.css(CSS_BORDER,HU.px(0),
+						    CSS_WIDTH,HU.px(width),
+						    CSS_POSITION,POSITION_ABSOLUTE),
+				  ATTR_CLASS,HU.classes(CLASS_POPUP,'ramadda-search-popup')],"");
+            this.input.parent().append(results);
+        }
+
+        this.results = jqid(resultsId);
+        let doSearch = () =>{
+            let newVal = this.input.val()||"";
+            this.searchCnt++;
+            if(this.pendingSearch) {
+                clearTimeout(this.pendingSearch);
+                this.pendingSearch = null;
+            }       
+
+            if(newVal.length==0) {
+		this.closeResults();
+                return;
+            }
+
+            //wait a bit
+            this.pendingSearch = setTimeout(()=> {
+                this.pendingSearch = null;
+                this.doSearchSuggest(this.searchCnt,  submitForm);
+            },200);
+        };
+        if(this.hereCbx.length) {
+            this.hereCbx.change(doSearch);
+        }
+	this.dialog.find(HU.dotClass(CLASS_SEARCH_HEADER)).html(RamaddaUtils.getSearchResultsHeader());
+	RamaddaUtils.initSearchResultsHeader(null,null,this.dialog);
+        Utils.searchLastInput = this.input.val();
+        this.input.keyup(event=> {
+	    if (event.key === "Escape") {
+		this.closeResults();
+		return;
+	    }
+	    if (event.key === "Enter") {
+		event.preventDefault();
+	    }
+            event.stopPropagation();
+            doSearch();
+	    return false;
+        });
+
+
+	if(focus) {
+            this.input.focus();
+	}
+    },
+
+    doSearchSuggest:function(searchCnt,submitForm,searchInfo) {
+        let _this = this;
+        let newVal = this.input.val()||"";
+        Utils.searchLastInput = newVal;
+        let url = HU.url(RamaddaUtil.getUrl("/search/suggest"),ARG_TEXT,newVal);
+	let type;
+        if (type) url = HU.url(url,ARG_TYPE,type);
+        if(this.hereCbx.length>0 && HU.isChecked(this.hereCbx) && ramaddaThisEntry)
+            url = HU.url(url,ARG_ANCESTOR,ramaddaThisEntry);
+        url= HU.url(url,"ascending",Utils.searchAscending,ARG_ORDERBY,"createdate");
+	if(searchInfo) {
+	    this.max = searchInfo.max;
+	    this.offset = searchInfo.offset;
+	    url = HU.url(url,ARG_SKIP,this.offset);	
+	}
+	url = HU.url(url,"max",this.max);
+        let jqxhr = $.getJSON(url, (data) => {
+            if(searchCnt!=_this.searchCnt) {
+                return;
+            }
+
+            if (data.results.length == 0) {
+//                this.results.html(HU.div([ATTR_CLASS, "ramadda-search-suggestion "],"No results"))
+                this.closeResults();
+                return;
+            }
+	    let searchInfo = data.searchInfo;
+            let even = true;
+	    let resultsHtml = '';
+            data.results.forEach((value,i) =>{
+                let name = value.name;
+                let id = value.id;
+                let v = name.replace(/\"/g, "_quote_");
+                let entryLink =  HU.href(HU.url(RamaddaUtil.getUrl(URL_ENTRY_SHOW),ARG_ENTRYID,id),
+					 HU.getIconImage(value.icon??icon_blank16,
+							 [ATTR_WIDTH,ramaddaGlobals.iconWidth]) + SPACE+name,
+					 [ATTR_TITLE,"View entry",
+					  ATTR_DATA_TYPE,value.typeName,
+					  ATTR_DATA_NAME,value.name,
+					  'data-icon',value.icon,
+					  'data-thumbnail',value.thumbnail?value.thumbnail:'',
+					  ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_WIDTH,HU.perc(100)),
+					  ATTR_CLASS,CLASS_HIGHLIGHTABLE]);
+                let searchLink;
+                if(submitForm) {
+                    searchLink =  HU.span([ATTR_CLASS,HU.classes(CLASS_HIGHLIGHTABLE,CLASS_SEARCH_INPUT),
+					   ATTR_INDEX,i,
+					   ATTR_TITLE,"Search for"],HU.getIconImage("fa-search"));
+                } else {
+                    searchLink =  HU.href(HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO), ARG_TEXT,v),
+					  HU.getIconImage("fa-search"),
+					  [ATTR_TITLE,"Search for text: " + value.name]);
+                }
+		//Don't show the search link for now
+		searchLink='';
+                let row =  searchLink +  SPACE + entryLink;
+                resultsHtml += HU.div([ATTR_CLASS, 'ramadda-search-suggestion '], row);                      
+                even = !even;
+            });
+            let html = "";
+	    html+=HU.div([ATTR_CLASS,'xxxramadda-search-popup-results'],
+			 resultsHtml);
+
+            this.results.html(html);
+	    this.results.find(HU.dotClass(CLASS_HIGHLIGHTABLE)).tooltip({
+		show: {
+		    delay: 1000,
+		    duration: 300
+		},
+		content: function() {
+		    let name = $(this).attr(ATTR_DATA_NAME);
+		    let thumb = $(this).attr('data-thumbnail');
+		    let contents =  HU.div([],'Click to view entry')+
+			HU.image($(this).attr('data-icon'),[ATTR_WIDTH,ramaddaGlobals.iconWidth])+' ' +
+			HU.b(name)+
+			HU.div([],Utils.msgLabel('Type') + $(this).attr(ATTR_DATA_TYPE));
+		    if(Utils.stringDefined(thumb)) {
+			contents+=HU.thinLine();
+			contents +=HU.image(thumb,[ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5)),ATTR_WIDTH,240]);
+		    }
+		    return contents;
+		}});
+
+            if(submitForm) {
+                let links = HU.findClass(this.results,CLASS_SEARCH_INPUT);
+                links.css(CSS_CURSOR,CURSOR_POINTER);
+                links.click((e) => {
+                    e.stopPropagation();
+                    let v = data.values[$(this).attr(ATTR_INDEX)].name;
+                    this.input.val(v);
+                    this.input.closest(TAG_FORM).submit();
+
+                });
+            }
+            this.openResults();
+	    let headerCallback =  searchInfo=>{
+		this.searchCnt++;
+                this.doSearchSuggest(this.searchCnt,  submitForm,searchInfo);
+	    };
+	    RamaddaUtils.initSearchResultsHeader(searchInfo,headerCallback,this.dialog);	    
+        }).fail(function(jqxhr, textStatus, error) {
+            console.log("fail:" + textStatus);
+        });
+    },
+    openResults:function() {
+        this.results.slideDown(400);
+    },
+    closeResults:function() {
+        this.results.slideUp(250);
+	RamaddaUtils.initSearchResultsHeader(null,null,this.dialog);	    
+    },
+    
+}
