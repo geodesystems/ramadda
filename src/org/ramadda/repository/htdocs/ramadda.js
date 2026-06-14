@@ -3151,6 +3151,7 @@ SearchPopup.prototype = {
 	    url = HU.url(url,ARG_SKIP,this.offset);	
 	}
 	url = HU.url(url,"max",this.max);
+        this.results.html(HU.inset(HU.getIconImage(icon_wait) + ' Searching...',5,5,5,5));
         let jqxhr = $.getJSON(url, (data) => {
             if(searchCnt!=_this.searchCnt) {
                 return;
@@ -3243,7 +3244,8 @@ SearchPopup.prototype = {
         this.results.slideDown(400);
     },
     closeResults:function() {
-        this.results.slideUp(250);
+//        this.results.slideUp(250);
+	this.results.html('');
 	RamaddaUtils.initSearchResultsHeader(null,null,this.dialog);	    
     },
     
