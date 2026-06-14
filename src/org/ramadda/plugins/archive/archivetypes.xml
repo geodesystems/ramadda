@@ -99,15 +99,6 @@ inherited="false"  }}
 ----
 :vspace 1em
 {{macro id=archive_table}}
-+skip
-{{tabletree  message="" showSize="false" showCreateDate="false" showDate="false"
-headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
-columns=name,date,attachments  showAttachments=true  showThumbnails=false
-metadataDisplay1="archive_keyword:header=Keywords:separator=;"
-metadataDisplay2="archive_subject:header=Subjects:separator=;"
-metadataDisplay3="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
-}} 
--skip
 -col
 +col-4
 +center
@@ -118,21 +109,21 @@ metadataDisplay3="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b>
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
 -center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
-<table width=100%>
-{{name message=""  link=true
-prefix="<tr><td align=right><b>Collection:</b></td><td>&nbsp;" suffix="</td></tr>"
-entry="ancestor:type:type_archive_collection"}}
-{{name message=""  link=true
-prefix="<tr><td align=right><b>Series:</b></td><td>&nbsp;"
-suffix="</td></tr>" entry="ancestor:type:type_archive_series"}}
-{{name message=""  link=true
-prefix="<tr><td align=right><b>File:</b></td><td>&nbsp;"
-suffix="</td></tr>" entry="ancestor:type:type_archive_file"}}
-</table>
 +center
 {{barcode field=barcode message=""}}
 -center
 -if
+<table width=100%>
+{{name message=""  link=true
+prefix="<tr valign=top><td align=right><b>Collection:</b></td><td>&nbsp;" suffix="</td></tr>"
+entry="ancestor:type:type_archive_collection"}}
+{{name message=""  link=true
+prefix="<tr  valign=top><td align=right><b>Series:</b></td><td>&nbsp;"
+suffix="</td></tr>" entry="ancestor:type:type_archive_series"}}
+{{name message=""  link=true
+prefix="<tr  valign=top><td align=right><b>File:</b></td><td>&nbsp;"
+suffix="</td></tr>" entry="ancestor:type:type_archive_file"}}
+</table>
 +center
 {{image  inherited="true" showCaption=true
 message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" showPlaceholderImage=true}}
