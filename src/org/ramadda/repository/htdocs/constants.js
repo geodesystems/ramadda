@@ -43,6 +43,7 @@ var ARG_ANCESTOR='ancestor';
 var ARG_AUTHTOKEN='authtoken';
 var ARG_ASCENDING='ascending';
 var ARG_ORDERBY='orderby';
+var ARG_SKIP='skip';
 var ARG_PAGESEARCH='pagesearch';
 var ARG_FILE='file';
 var ARG_MAPBOUNDS='map_bounds';
@@ -104,6 +105,19 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_M_FULL='meters';
 var UNIT_NM='nm';
+
+var CLASS_SEARCH_HEADER_ENABLED='display-search-header-enabled';
+var CLASS_SEARCH_HEADER_DISABLED='display-search-header-disabled';
+var CLASS_SEARCH_ACTION='display-search-action';
+var CLASS_SEARCH_RANGE='display-search-range';
+var CLASS_SEARCH_HEADER= 'display-search-header';
+var ID_SEARCH_RANGE = "searchrange";
+var ACTION_SEARCH_NEXT='search_next';
+var ACTION_SEARCH_PREV='search_prev';
+var ACTION_SEARCH_MORE='search_more';
+var ACTION_SEARCH_LESS='search_less';
+
+
 
 var CLASS_ENTRY_FORM_SELECT='entry-form-select';
 var CLASS_ENTRY_TABLE_ROW='entry-table-row';
@@ -320,6 +334,7 @@ var ATTR_ONCHANGE  = 'onchange';
 var ATTR_ONCLICK  = 'onclick';
 var ATTR_ONMOUSEDOWN  = 'onmousedown';
 var ATTR_PLACEHOLDER = 'placeholder';
+var ATTR_AUTOCOMPLETE='autocomplete';
 var ATTR_PROPERTY='property';
 var ATTR_POSITION='position';
 var ATTR_READONLY='readonly';

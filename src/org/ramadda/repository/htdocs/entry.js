@@ -1377,9 +1377,13 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
         getEntries: function() {
             return this.entries;
         },
+	getSearchInfo:function() {
+	    return this.searchInfo;
+	},
         createEntries: function(data, listener, success) {
 	    this.searchInfo = data.searchInfo;
             this.entries = createEntriesFromJson(data, this.getRepository());
+	    if(this.searchInfo) this.searchInfo.numberOfResults=this.entries.length;
             for (let i = 0; i < this.entries.length; i++) {
                 let entry = this.entries[i];
                 this.map[entry.getId()] = entry;
@@ -1394,6 +1398,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             }
         },
         doSearch: async function(listener, success, fail) {
+	    this.searchInfo=null;
             if (listener == null) {
                 listener = this.listener;
             }

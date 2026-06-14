@@ -188,10 +188,12 @@ inlineblock {
 }
 
 
-input:focus, textarea:focus, .ramadda-search-input:focus {
+input:focus, textarea:focus {
     border:var(--highlight-border);
     outline:none;
 }
+
+
 
 select {
     padding:3px;
@@ -2816,23 +2818,34 @@ ul {
 
 
 .ramadda-search-popup {
-    width:325px;
+    min-width:400px;
+    max-width:400px;
 }
 
 
+.ramadda-search-input {
+    margin-left:0px;
+    padding:2px;
+    width:350px;
+    border:0px;
+}
+
+.ramadda-search-input:focus {
+    border:0px;
+}
+
 .ramadda-search-popup-paging {
     border-top:1px solid #ccc;
-/*    margin-top:2px;*/
     padding-left:4px;
     padding-right:4px;
 }
 
 .ramadda-search-popup-results {
     background:#fff;
-/*    display:none;*/
-    border-top:1px solid #ccc;
     margin-top:2px;
-    width:325px;
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
     max-height:300px;
     overflow-y:auto;
 }
@@ -6815,18 +6828,12 @@ a.wiki-link-noexist {
     display:inline-block;
 }
 
-
 .ramadda-menutree .ui-menu {
     border  :var(--basic-border);
-    /*width:200px;*/
 }
 
 .ramadda-menutree-noborder .ui-menu {
-//    border:0px;
-    /*width:200px;*/
 }
-
-
 
 .ramadda-menutree .ui-menu-item {
 }
