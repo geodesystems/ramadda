@@ -687,7 +687,7 @@ public class PageHandler extends RepositoryManager {
 
         if (showSearch) {
 	    pageLinks.add(wrapPageLink(
-				       HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');", searchImg, "")+
+				       HU.mouseClickHref("new SearchPopup('searchlink','popupanchor');", searchImg, "")+
 				       HU.span("", HU.attrs("id", "popupanchor", "style", "position:relative;"))));
         }
 
