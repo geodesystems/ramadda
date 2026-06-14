@@ -1163,7 +1163,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(!request.defined(ARG_MAX)) {
 	    request.put(ARG_MAX,20);
 	}
-	for(Entry entry:  getEntryManager().searchEntries(request)) {
+	List<Entry> entries = getEntryManager().searchEntries(request);
+	for(Entry entry:  entries) {
             List<String> urls =  getMetadataManager().getThumbnailUrls(request, entry, null);
 	    String obj = JU.map(Utils.makeListFromValues("name", JU.quote(entry.getName()),
 							       "id",  JU.quote(entry.getId()),
@@ -1178,7 +1179,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	List jsonList = Utils.add(null,"results",list);
 	SearchInfo info = (SearchInfo)request.getExtraProperty(PROP_SEARCH_INFO);
 	if(info!=null) {
-	    Utils.add(jsonList,"searchInfo",JU.map("totalHits",info.getTotalHits()));
+	    Utils.add(jsonList,"searchInfo",JU.map("totalHits",info.getTotalHits(),
+						   "offset",request.getString(ARG_SKIP,"0"),
+						   "numberOfResults",entries.size(),
+						   "max",
+						   request.getString(ARG_MAX,"")));
 	}
 
 	String results = JU.map(jsonList);
@@ -2147,8 +2152,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		     HU.attr("placeholder", "Search text")
 		     + HU.id("searchinput") + HU.SIZE_50
 		     + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>";
-	//	textField+= HU.script("Utils.searchSuggestInit('searchinput');");
-
         return textField;
     }
 
