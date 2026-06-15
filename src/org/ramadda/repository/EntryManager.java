@@ -5743,6 +5743,14 @@ public class EntryManager extends RepositoryManager {
     private Result processEntryExportForm(Request request,Entry entry) throws Exception {
         StringBuilder sb      = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb,  msg("Export"));
+	if(request.get(ARG_ASURL,false)) {
+	    Request newRequest=request.cloneMe();
+	    newRequest.remove(ARG_ASURL);
+	    String url = newRequest.getAbsoluteUrl();
+	    sb.append(HU.href(url,"Export URL"));
+	    sb.append(HU.br());
+	}
+
 	sb.append(request.form(getRepository().URL_ENTRY_EXPORT));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_DOEXPORT, "true"));
@@ -5780,6 +5788,10 @@ public class EntryManager extends RepositoryManager {
 
 	HU.formEntry(sb,"",  typeSelect);
 
+	HU.formEntry(sb,"",
+		     HU.labeledCheckbox(ARG_ASURL,"true",request.get(ARG_ASURL,false),
+					"Show the URL"));
+
 
 	sb.append(HU.formTableClose());
 	sb.append(HU.p());
@@ -5802,7 +5814,7 @@ public class EntryManager extends RepositoryManager {
             throw new IllegalArgumentException("Cannot export entry");
         }
 
-	if(!request.get(ARG_DOEXPORT,false)) {
+	if(!request.get(ARG_DOEXPORT,false) || request.get(ARG_ASURL,false)) {
 	    return  processEntryExportForm(request,entry);
 	}
 

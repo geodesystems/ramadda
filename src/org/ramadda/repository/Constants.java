@@ -115,6 +115,7 @@ public interface Constants {
     public static final String ICON_ZIPTREE = "fas fa-file-archive";
 
 
+    public static final String ARG_ASURL = "asurl";
     public static final String ARG_ICON = "ramadda.icon";
     public static final String ARG_AGREE = "agree";
     public static final String ARG_DOALIAS = "doalias";
