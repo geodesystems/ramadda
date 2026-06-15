@@ -540,7 +540,7 @@ function RamaddaRepository(repositoryRoot) {
         addEntry: function(entry) {
             this.entryCache[entry.getId()] = entry;
         },
-        getEntry: async function(id, callback) {
+        getEntry: async function(id, callback,errorCallback) {
 	    //	    console.log("getEntry");
 	    let debug = false;
 	    if(id == null) {
@@ -572,6 +572,7 @@ function RamaddaRepository(repositoryRoot) {
             await $.getJSON(jsonUrl, function(data) {
                 if (GuiUtils.isJsonError(data)) {
                     if(debug) console.log("\tramadda.getEntry json error:" + data);
+		    if(errorCallback) errorCallback('ramadda.getEntry json error:' + data);
                     return;
                 }
                 let entryList = createEntriesFromJson(data, ramadda);
@@ -582,6 +583,7 @@ function RamaddaRepository(repositoryRoot) {
             })
                 .fail(function(jqxhr, textStatus, error) {
                     let err = textStatus + ", " + error;
+		    if(errorCallback) errorCallback(err);
                     GuiUtils.handleError("Error getting entry information: " + err, jsonUrl, false);
                 });
         }
