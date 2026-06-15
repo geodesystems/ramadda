@@ -989,6 +989,7 @@ RamaddaCoreDisplay.prototype = {
 	    let props = e.props;
 	    let entryId = e.entryId;
 	    if(e.display)  return;
+	    e.inError=false;
 	    this.getEntry(entryId, entry => {
 		$.extend(props, {
 		    "entry":entryId,
@@ -1024,6 +1025,9 @@ RamaddaCoreDisplay.prototype = {
 		props.divid = divId;
 		this.jq(ID_CV_DISPLAYS).append(div);
 		e.display = this.getDisplayManager().createDisplay(props.displayType,props);
+	    },error=>{
+		e.inError=true;
+		this.showMessage('Error loading display:' + entryId +' error:'+ error);
 	    });
 	});
     },
@@ -1651,6 +1655,7 @@ RamaddaCoreDisplay.prototype = {
 	    scale:this.getScale(),
 	    position:this.getPosition()
 	}
+//	console.log(json.stage);
 	json.settings = {
 	};
 
@@ -1666,6 +1671,7 @@ RamaddaCoreDisplay.prototype = {
 	if(this.displayEntries.length) {
 	    json.displayEntries = [];
 	    this.displayEntries.forEach(entry=>{
+		if(entry.inError) return;
 		let props = {};
 		$.extend(props,entry.props);
 		props.theData = null;
@@ -2691,8 +2697,6 @@ RamaddaCoreDisplay.prototype = {
 		
 	    }
 	    let url = HU.url(RamaddaUtils.getUrl('/entry/changefield'),args);
-	    console.dir(args);
-
 	    $.getJSON(url, function(data) {
 		if(data.error) {
 		    alert('An error has occurred: '+data.error);
