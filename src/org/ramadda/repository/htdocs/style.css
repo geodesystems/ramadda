@@ -254,6 +254,11 @@ h6 {
   justify-content: center;       
 }
 
+label {
+    margin-left: 0.5em;
+}
+
+
 
 .ramadda-abs {
     display:inline-block;
@@ -3153,6 +3158,18 @@ a.noline {
     color: var(--hover-color);
 }
 
+.display-search-orderby {
+    font-size:80%;
+    border:var(--basic-border);
+    border-radius:4px;
+    padding:4px;
+}
+
+.display-search-range {
+    min-width:180px;
+}
+
+
 .entry-type-search {
     text-decoration: none;
     color: black;
@@ -3972,22 +3989,57 @@ pre {
     font-weight:bold;
 }
 
-
 .ramadda-select-tag {
-    font-size:80%;
-    display:inline-block;
-    margin:3px;
-    border-radius: 10px;
-    padding:0px;
-    padding-top:3px;
-    padding-left:8px;
-    padding-right:10px;
-    cursor:pointer;
-    background:#E9E9E9;
-    border:1px solid #ccc;
-    color:rgb(51,51,51);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 80%;
+    line-height: 1.4;
+
+    padding: 2px 8px;
+    margin: 5px 6px 5px 0px;
+
+    border-radius: 8px;
+
+    background: #f0f0f0;
+    border: 1px solid #d0d0d0;
+
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
 }
 
+.ramadda-select-tag label {
+    margin-left:0px;
+}
+
+
+.ramadda-select-tag:hover {
+    background: #e8e8e8;
+    border-color: #bcbcbc;
+}
+
+.ramadda-select-tag input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.ramadda-select-tag-selected {
+    background: #e6f1ff;
+    border-color: #7da6e8;
+    color: #1d4f91;
+}
+
+.ramadda-select-tag-selected:hover {
+    background: #dcebff;
+}
 
 
 .bs-inner .metadata-tag {
@@ -4435,12 +4487,6 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
 }
 
 
-label {
-    margin-left: 3px;
-    margin-bottom: 3px;
-    padding-left: 15px;
-    text-indent: -15px;
-}
 
 .ramadda-harvester-edit .formgroupheader {
     background-color: #e0f2fe;

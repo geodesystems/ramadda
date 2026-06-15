@@ -1342,10 +1342,6 @@ svg > g > g:last-child { pointer-events: none }
     color:#666;
 }
 
-.display-search-orderby {
-    font-size:80%;
-    border:var(--basic-border);
-}
 
 .display-cell {
   padding:10px;
@@ -3160,9 +3156,7 @@ table.dataTable tfoot td {
 
 
 .display-simplesearch-entry {
-    max-width:300px;
     white-space:nowrap;
-    overflow-x:hidden;
     margin-left:4px;
     margin-right:4px;
 }
@@ -3192,8 +3186,12 @@ table.dataTable tfoot td {
    padding-left: 10px;
    padding-right: 10px;
    margin-bottom: 2px;
-   xheight:1.5em;
-   xmin-height:1.0em;
+}
+
+.ramadda-popup .display-entries-results {
+    padding-top:4px;
+    padding-bottom:4px;
+    border-bottom:var(--basic-border);
 }
 
 .display-entries-entries {

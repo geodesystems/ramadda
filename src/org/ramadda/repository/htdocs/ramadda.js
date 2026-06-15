@@ -12,6 +12,13 @@ var URL_SEARCH_DO='/search/do';
 var URL_CHANGEFIELD='/entry/changefield';
 var URL_PROXY='/proxy';
 
+var ORDERBY_ENTRYORDER_UP = 'entryorder_up';
+var ORDERBY_ENTRYORDER_DOWN = 'entryorder_down';
+var ORDERBY_CREATEDATE_UP='createdate_up';
+var ORDERBY_CREATEDATE_DOWN='createdate_down';
+var ORDERBY_NAME_UP='name_up';
+var ORDERBY_NAME_DOWN='name_down';
+
 var RamaddaUtils;
 var RamaddaUtil;
 var Ramadda = RamaddaUtils = RamaddaUtil  = {

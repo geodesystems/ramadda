@@ -49,6 +49,7 @@ var ARG_FILE='file';
 var ARG_MAPBOUNDS='map_bounds';
 var ARG_NAME='name';
 var ARG_ENTRYID='entryid';
+var ARG_ENTRIES='entries';
 var ARG_GROUP='group';
 var ARG_METADATAID='metadata_id';
 var ARG_OUTPUT='output';

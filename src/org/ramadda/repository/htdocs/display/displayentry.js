@@ -1528,7 +1528,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		after:false,
 		single:false,
 		hide:false,
-		label:'Select'});
+		label:this.getAncestorsLabel('Select Ancestor')});
 
 
 	    this.jq(ID_SEARCH_ANCESTORS_MENU).change(()=> {
@@ -1536,7 +1536,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	},
         loadAncestors: function(ancestors) {
-	    let url = HU.url(RamaddaUtil.getUrl('/wiki/getentries'),'entries',ancestors);
+	    let url = HU.url(RamaddaUtil.getUrl('/wiki/getentries'),
+			     ARG_ENTRIES,ancestors,
+			     ARG_ORDERBY,ORDERBY_NAME_UP
+			    );
             let entryList = new EntryList(this.getRamadda(), url, this, false);
 	    let success=list=>{
 		this.loadAncestorsList(list.getEntries());

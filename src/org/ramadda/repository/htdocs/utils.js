@@ -6172,7 +6172,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		cbxAttrs.push(ATTR_TITLE);
 		cbxAttrs.push(title);
 	    }
-            cbx += SPACE + HU.tag(TAG_LABEL,cbxAttrs,label);
+            cbx +=  HU.tag(TAG_LABEL,cbxAttrs,label);
         }
         return cbx;
     },
@@ -6508,7 +6508,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 				  Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.px(200)),
-					ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),
+					ATTR_PLACEHOLDER,'Filter: '+label.toLowerCase(),
 					ATTR_ID,inputId]);
 	    if(opts.makeButtons) {
 		let buttons = '';
