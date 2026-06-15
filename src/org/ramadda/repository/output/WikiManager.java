@@ -644,6 +644,9 @@ public class WikiManager extends RepositoryManager
 	    if(seen.contains(entry.getId())) continue;
 	    entries.add(entry);
 	}
+	if(request.defined(ARG_ORDERBY)) {
+	    entries = getEntryUtil().sortEntriesOn(entries, request.getString(ARG_ORDERBY));
+	}
 	getRepository().getJsonOutputHandler().makeJson(request, entries, sb);	
 	return new Result("", sb, JU.MIMETYPE);
     }
