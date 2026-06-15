@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 15 05:07:15 EDT 2026";
+var build_date="RAMADDA build date: Mon Jun 15 10:28:59 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -10623,7 +10623,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return getGlobalRamadda();
         },
-        getEntry: async function(entryId, callback) {
+        getEntry: async function(entryId, callback,errorCallback) {
             if (this.entriesMap && this.entriesMap[entryId]) {
                 return Utils.call(callback, this.entriesMap[entryId]);
             }
@@ -10638,11 +10638,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 await this.entryList.getEntry(entryId, e => entry = e);
             }
             if (entry == null) {
-                await ramadda.getEntry(entryId, e => entry = e);
+                await ramadda.getEntry(entryId, e => entry = e,errorCallback);
             }
 
             if (entry == null) {
-                await this.getRamadda().getEntry(entryId, e => entry = e);
+                await this.getRamadda().getEntry(entryId, e => entry = e,errorCallback);
             }
             return Utils.call(callback, entry);
         },
