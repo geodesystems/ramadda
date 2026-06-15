@@ -714,6 +714,11 @@ public class EntryUtil extends RepositoryManager {
     }
     private static boolean didit = false;
 
+    public  List<Entry> sortEntriesOn(List<Entry> entries, String ons) {
+	return sortEntriesOn(entries,ons,false);
+    }
+
+
     public  List<Entry> sortEntriesOn(List<Entry> entries, String ons,
 				      boolean descending) {
         return sortEntriesOn(entries, Utils.split(ons, ",", true, true),
