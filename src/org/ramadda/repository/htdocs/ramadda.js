@@ -3007,6 +3007,7 @@ function SearchPopup(id,anchor) {
     let form = HU.open(TAG_FORM,[ATTR_ACTION,RamaddaUtil.getUrl(URL_SEARCH_DO)]);
     let searchInput = HU.tag(TAG_INPUT,[ATTR_VALUE, value,
 					ATTR_PLACEHOLDER,'Search text',
+					ATTR_TITLE,'Use name:... to restrict search to entry name',
 					ATTR_AUTOCOMPLETE,'off',
 //					ATTR_AUTOFOCUS,'true',
 					ATTR_ID,this.getDomId(ID_SEARCH_SUGGEST_INPUT),

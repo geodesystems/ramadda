@@ -2831,6 +2831,7 @@ ul {
 .ramadda-search-input {
     margin-left:0px;
     padding:2px;
+    padding-left: 0.5em;
     width:350px;
     border:0px;
 }
