@@ -503,38 +503,57 @@ public class IO {
     }
 
     public static byte[] readBytes(InputStream is, int maxSize)
-	throws IOException {
-        int    totalRead = 0;
-        byte[] content   = new byte[100_000];
-        try {
-            while (true) {
-                int howMany = is.read(content, totalRead,
-                                      content.length - totalRead);
-                if (howMany < 0) {
-                    break;
-                }
-                if (howMany == 0) {
-                    continue;
-                }
-                totalRead += howMany;
-                if (totalRead >= content.length) {
-                    byte[] tmp       = content;
-                    int    newLength = ((content.length < 25000000)
-                                        ? content.length * 2
-                                        : content.length + 5000000);
-                    content = new byte[newLength];
-                    System.arraycopy(tmp, 0, content, 0, totalRead);
-                }
-                if ((maxSize >= 0) && (totalRead >= maxSize)) {
-                    break;
-                }
-            }
-        } finally {
-            close(is);
-        }
-        byte[] results = new byte[totalRead];
-        System.arraycopy(content, 0, results, 0, totalRead);
-        return results;
+        throws IOException {
+	int totalRead = 0;
+	byte[] content = new byte[100_000];
+
+	try {
+	    while (true) {
+		int remaining = content.length - totalRead;
+
+		if (maxSize >= 0) {
+		    remaining = Math.min(remaining, maxSize - totalRead);
+		    if (remaining <= 0) {
+			break;
+		    }
+		}
+
+		int howMany = is.read(content, totalRead, remaining);
+
+		if (howMany < 0) {
+		    break;
+		}
+
+		if (howMany == 0) {
+		    int b = is.read();
+		    if (b < 0) {
+			break;
+		    }
+		    if (totalRead >= content.length) {
+			content = grow(content);
+		    }
+		    content[totalRead++] = (byte) b;
+		    continue;
+		}
+
+		totalRead += howMany;
+
+		if (totalRead >= content.length) {
+		    content = grow(content);
+		}
+	    }
+
+	    return java.util.Arrays.copyOf(content, totalRead);
+	} finally {
+	    close(is);
+	}
+    }
+
+    private static byte[] grow(byte[] content) {
+	int newLength = content.length < 25_000_000
+            ? content.length * 2
+            : content.length + 5_000_000;
+	return java.util.Arrays.copyOf(content, newLength);
     }
 
     public static FTPClient makeFTPClient(URL url) throws Exception {
