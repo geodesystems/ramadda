@@ -1801,6 +1801,23 @@ public class Admin extends RepositoryManager {
 	return sb;
     }
 
+    public Appendable appendMemory() throws Exception {
+	Appendable sb = new StringBuilder();
+        Runtime.getRuntime().gc();
+        DecimalFormat fmt        = new DecimalFormat("#0");
+        double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
+        double        freeMemory = (double) Runtime.getRuntime().freeMemory();
+        double totalMemory       =
+            (double) Runtime.getRuntime().totalMemory();
+        double        usedMemory = (totalMemory - freeMemory);
+        sb.append("Max Memory:"+    fmt.format(maxMemory / 1000000)     + " (MB)  ");
+        sb.append("Total Memory:" +  fmt.format(totalMemory / 1000000)     + " (MB)  ");
+        sb.append("Free Memory:"+  fmt.format(freeMemory / 1000000) + " (MB)  ");
+        sb.append("Used Memory:"+     fmt.format(usedMemory / 1000000)   + " (MB)  ");
+	return sb;
+    }
+
+
     /**
      *
      * @return _more_

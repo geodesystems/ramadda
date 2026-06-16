@@ -51,17 +51,20 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         List<String> commands = new ArrayList<String>();
         Utils.add(commands, "sh", slicer, "-i",
                   entry.getResource().getPath(), "-o", imagesDir.toString());
+	getLogManager().logSpecial("Zoomify: calling: " + Utils.join(commands," "));
         ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
 	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
-	getLogManager().logSpecial("Zoomify: done creating image tiles for:" + entry.getName()+"\n"+	getRepository().getAdmin().appendMemory(null));
+
+
+	getLogManager().logSpecial("Zoomify: done creating image tiles for:" + entry.getName()+"\n"+	getRepository().getAdmin().appendMemory());
 	byte[] bytes = IO.readBytes(is,100_000);
-	getLogManager().logSpecial("Zoomify: after reading bytes\n"+	getRepository().getAdmin().appendMemory(null));
+	getLogManager().logSpecial("Zoomify: after reading bytes\n"+	getRepository().getAdmin().appendMemory());
         String      result  = new String(bytes);
 	getLogManager().logSpecial("Zoomify: after making string\n"+
-				   getRepository().getAdmin().appendMemory(null));
+				   getRepository().getAdmin().appendMemory());
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
             throw new IllegalArgumentException("Error running image slicer:"
 					       + result);
