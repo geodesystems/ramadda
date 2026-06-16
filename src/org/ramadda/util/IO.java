@@ -505,7 +505,7 @@ public class IO {
     public static byte[] readBytes(InputStream is, int maxSize)
 	throws IOException {
         int    totalRead = 0;
-        byte[] content   = new byte[100000];
+        byte[] content   = new byte[100_000];
         try {
             while (true) {
                 int howMany = is.read(content, totalRead,
@@ -534,7 +534,6 @@ public class IO {
         }
         byte[] results = new byte[totalRead];
         System.arraycopy(content, 0, results, 0, totalRead);
-
         return results;
     }
 
