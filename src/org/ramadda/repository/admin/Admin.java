@@ -1776,7 +1776,8 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("RAMADDA-Admin-Scan"), sb);
     }
 
-    private void appendMemory(Appendable sb) throws Exception {
+    public Appendable appendMemory(Appendable sb) throws Exception {
+	if(sb==null) sb = new StringBuilder();
         Runtime.getRuntime().gc();
         DecimalFormat fmt        = new DecimalFormat("#0");
         double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
@@ -1797,6 +1798,7 @@ public class Admin extends RepositoryManager {
 			       fmt.format(usedMemory / 1000000)
 			       + " (MB)"));
 
+	return sb;
     }
 
     /**

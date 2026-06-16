@@ -56,13 +56,17 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
-	getLogManager().logSpecial("Zoomify: done creating image tiles for:" + entry.getName());
-	byte[] bytes = IO.readBytes(is,100000);
+	getLogManager().logSpecial("Zoomify: done creating image tiles for:" + entry.getName()+"\n"+	getRepository().getAdmin().appendMemory(null));
+	byte[] bytes = IO.readBytes(is,100_000);
+	getLogManager().logSpecial("Zoomify: after reading bytes\n"+	getRepository().getAdmin().appendMemory(null));
         String      result  = new String(bytes);
+	getLogManager().logSpecial("Zoomify: after making string\n"+
+				   getRepository().getAdmin().appendMemory(null));
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
             throw new IllegalArgumentException("Error running image slicer:"
 					       + result);
         }
+	getLogManager().logSpecial("Zoomify: OK");
     }
 
     @Override
