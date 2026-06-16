@@ -19,7 +19,7 @@ import org.ramadda.util.WikiUtil;
 import org.w3c.dom.*;
 
 import java.io.*;
-
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -31,7 +31,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     }
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,NewType newType)
+    public synchronized void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
         if ( !entry.isFile()) {
@@ -54,10 +54,14 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 		  "-e", "jpg",
 		  "-w", "512",
 		  "-s", "200",
-		  "-p", "-limit memory 512MiB -limit map 1GiB -limit thread 1 -strip -quality 85"
+		  "-p",
+		  "-limit memory 128MiB -limit map 256MiB -limit disk 4GiB -limit thread 1 -strip -quality 85"
+		  //		  "-limit memory 512MiB -limit map 1GiB -limit thread 1 -strip -quality 85"
 		  );
 
+
 	getLogManager().logSpecial("Zoomify: calling: " + Utils.join(commands," "));
+
 	ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 	pb.redirectErrorStream(true);
 	//	pb.environment().put("MAGICK_TEMPORARY_PATH", "/mnt/ramadda/tmp");
@@ -66,13 +70,27 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	//        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
 	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
-        Process     process = pb.start();
-        InputStream is      = process.getInputStream();
-
-	getLogManager().logSpecial("Zoomify: after process call for:" + entry.getName()+"\n"+	getRepository().getAdmin().appendMemory());
-	byte[] bytes = IO.readBytes(is,100_000);
-	getLogManager().logSpecial("Zoomify: after process completion: "+	getRepository().getAdmin().appendMemory());
-        String      result  = new String(bytes);
+	Process process = pb.start();
+	StringBuilder output = new StringBuilder();
+	try (BufferedReader br = new BufferedReader(
+						    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+	    String line;
+	    while ((line = br.readLine()) != null) {
+		if (output.length() < 100_000) {
+		    output.append(line).append('\n');
+		}
+		if(stringDefined(line)) {
+		    getLogManager().logSpecial("Zoomify slicer: " + line);
+		}
+	    }
+	}
+	
+	int exitCode = process.waitFor();
+	String result = output.toString();
+	if (exitCode != 0) {
+	    throw new IOException("Image slicer failed, exit code=" + exitCode
+				  + "\nOutput:\n" + result);
+	}
 	getLogManager().logSpecial("Zoomify: after reading results: "+
 				   getRepository().getAdmin().appendMemory());
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
