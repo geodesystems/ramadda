@@ -7,9 +7,6 @@ package org.ramadda.plugins.media;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
@@ -49,10 +46,24 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         File imagesDir = new File(entryDir, "images");
         imagesDir.mkdir();
         List<String> commands = new ArrayList<String>();
-        Utils.add(commands, "sh", slicer, "-i",
-                  entry.getResource().getPath(), "-o", imagesDir.toString());
+
+	Utils.add(commands,
+		  "sh", slicer,
+		  "-i", entry.getResource().getPath(),
+		  "-o", imagesDir.toString(),
+		  "-e", "jpg",
+		  "-w", "512",
+		  "-s", "200",
+		  "-p", "-limit memory 512MiB -limit map 1GiB -limit thread 1 -strip -quality 85"
+		  );
+
 	getLogManager().logSpecial("Zoomify: calling: " + Utils.join(commands," "));
-        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
+	ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
+	pb.redirectErrorStream(true);
+	//	pb.environment().put("MAGICK_TEMPORARY_PATH", "/mnt/ramadda/tmp");
+	pb.environment().put("MAGICK_THREAD_LIMIT", "1");
+	//        Utils.add(commands, "sh", slicer, "-i", entry.getResource().getPath(), "-o", imagesDir.toString())
+	//        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
 	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
         Process     process = pb.start();
