@@ -64,6 +64,9 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 
 	ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 	pb.redirectErrorStream(true);
+	String tmpDir = getStorageManager().makeTempDir("imagemagic",false).toString();
+	pb.environment().put("MAGICK_TEMPORARY_PATH", tmpDir);
+	pb.environment().put("TMPDIR", tmpDir);
 	//	pb.environment().put("MAGICK_TEMPORARY_PATH", "/mnt/ramadda/tmp");
 	pb.environment().put("MAGICK_THREAD_LIMIT", "1");
 	//        Utils.add(commands, "sh", slicer, "-i", entry.getResource().getPath(), "-o", imagesDir.toString())
