@@ -2765,7 +2765,7 @@ a.oval-button:hover {
 /* ----------------------------------------------------------- */
 /* 2024-09-10 LG: Use white image if dark background */
 /* 2024-09-27 LG: adjusted for max width 300px */
-
+/** RAMADDA - comment this out
 @media (prefers-color-scheme: dark) {
 .theme-image {
 content: url('../images/RNBSAS_H_RED_RGB.png');
@@ -2774,14 +2774,16 @@ content: url('../images/RNBSAS_H_RED_RGB.png');
 }
 }
 
-/** ramadda - change svg reference*/
-@media   (prefers-color-scheme: light) {
+**/
+
+
+/** ramadda - change svg reference and remove the media ... wrapper */
 .theme-image {
 content: url('Rutgers-SAS-Logo.svg');
-    min-width: 380px; 
-  max-width: 380px;
+min-width: 380px; 
+max-width: 380px;
 }
-}
+
 
 /* LG 2025-07-28 Add override for smaller screens */
 /* Override for screens smaller than 420px */
