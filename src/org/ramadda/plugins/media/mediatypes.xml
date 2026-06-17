@@ -390,7 +390,7 @@ xxx
 -fullscreen
 -inset
 :vspace 1em
-{{information details=true}}
+{{information details=true showImage=false}}
 -section
 ]]>
 </wiki>
