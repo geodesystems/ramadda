@@ -165,6 +165,59 @@ Postgres database (if installed): The /var/lib/... pgsql dir links to here
 
 </pre>
 
+:heading Command Line Utilities
+If you are a Mac or Linux user and are running on AWS here is a useful set of command line
+utilities. First download the defineenv.sh from 
+<a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh">
+https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh
+</a>.
+:p
+Now, let's assume your project is called ramadda (note: this really can be any name).
+In your .bashrc file put:
++pre addCopy=true
+export RAMADDA_PEM=/path/to/the/aws/pemfile/Users/ramadda.pem
+export RAMADDA_IP=&lt;IP address of your server&gt;
+source /path/to/defineenv.sh ramadda ${RAMADDA_IP} -pem ${RAMADDA_PEM}
+-pre
+
+This creates the following aliases:
++pre 
+ssh to the machine:
+<i>goramadda</i>   
+
+copy (with scp) scp &lt;some file&gt; to the machine:
+<i>putramadda &lt;some file&gt;</i>
+
+copy (with scp) scp &lt;some file&gt; to the &lt;some directory&gt; on the machine
+<i>putramadda &lt;some file&gt; &lt;some directory&gt;</i> 
+
+Update to the latest release of RAMADDA and restarts your server:
+<i>updateramadda</i> 
+
+Update to the latest development release of RAMADDA:
+<i>devupdateramadda</i> 
+
+Restart RAMADDA
+<i>startramadda</i> 
+
+-pre      
+
+Note: it is handy to have a symbolic link on your server to the <i>plugins</i> directory.
+From the server command line do:
++pre addCopy=true
+ln -s plugins /mnt/ramadda/ramaddahome/plugins
+-pre
+
+Now, if you need to update a plugin just do:
++pre addCopy=true
+putramadda &lt;the plugin file&gt; plugins
+startramadda
+-pre
+
+
+
+
+
 
 </div>
 <p>
