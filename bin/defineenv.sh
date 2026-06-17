@@ -92,7 +92,11 @@ if [ -n "$PEM" ]; then
     eval "devupdate$ID() {
        echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
        ssh -i ${PEM} ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dev -dir ${RAMADDAINSTALL}\"
-    }"    
+    }"
+    eval "start$ID() {
+       echo \"starting RAMADDA\"
+       ssh -i ${PEM} ${USER}@${IP} \"sudo service ramadda start\"
+    }"        
 else
     alias go$ID="ssh  ${USER}@$IP"
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -user ${USER}"
