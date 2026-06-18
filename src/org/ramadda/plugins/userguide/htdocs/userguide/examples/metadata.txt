@@ -1,0 +1,4 @@
+content.header:Some header
+content.timezone:ET
+content.keyword:inherited:Keyword 1
+archive_note:inherited:Some other note type:Some note
