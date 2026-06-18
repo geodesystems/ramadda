@@ -2057,11 +2057,26 @@ public class WikiManager extends RepositoryManager
 	    final Request theRequest = request;
 	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
 	    final boolean doColor=getProperty(wikiUtil,props,"doColor",false);
+	    //	    final boolean doColor=false;
 	    final String iconWidth = getProperty(wikiUtil,props,"iconWidth",ICON_WIDTH);
 	    String prefix = getProperty(wikiUtil,props,"typecountPrefix",null);
 	    String suffix = getProperty(wikiUtil,props,"typecountSuffix",null);	    
 	    final int[]cnt={0};
 	    String[] colors = {
+"#DDEBF7", // Mist Blue
+"#E6F2E6", // Sage
+"#F7EAD9", // Sand
+"#EDE7F6", // Soft Violet
+"#FBE4E6", // Rose
+"#DFF3F0", // Aqua
+"#F4EBD0", // Linen
+"#E3EEF7", // Ice Blue
+"#E7E5DF", // Stone
+"#E6F0EA", // Moss
+"#F3E6DD", // Clay
+"#E9EEF9"  // Periwinkle
+/*
+
 		"#E6F4EA", // Soft Mint
 		"#DCEEFF", // Powder Blue
 		"#FFEFD6", // Apricot Cream
@@ -2074,6 +2089,7 @@ public class WikiManager extends RepositoryManager
 		"#E7E4FB", // Periwinkle Glaze (soft blue-violet)
 		"#F5EDDD", // Sand Drift (warm beige)
 		"#DFF4F4"  // Frosted Teal (mint-teal blend)
+*/
 	    };
 
 
@@ -2124,6 +2140,7 @@ public class WikiManager extends RepositoryManager
 		    }
 		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
 
+		    scount=HU.span(scount,HU.attrs("class","ramadda-typecount-count"));
 		    String html =  template.replace("${count}",scount).replace("${label}",label);
 		    if(typeCount==1 && lastCount!=null) {
 			String icon = lastCount.getTypeHandler().getIconProperty(null);

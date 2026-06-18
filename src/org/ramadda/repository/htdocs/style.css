@@ -7435,23 +7435,58 @@ a span i:hover, a:hover span i {
 
 .ramadda-hoverable:hover {
     background:var(--highlight-background) !important;
-    /*transition: background-color .3s ease-in;*/
 }
 
+
 .ramadda-typecount-block {
-    border-radius:var(--default-radius);
-    vertical-align:top;
-    margin:5px;
-    min-width:150px;
-    min-height:3em;
-    padding:5px;
-    text-align:center;
-    border:var(--basic-border);
+    border-radius: var(--default-radius);
+    vertical-align: top;
+
+    margin: 8px;
+    padding: 8px 12px;
+
+    min-width: 150px;
+    min-height: 3em;
+
+    text-align: center;
+
+    border: 1px solid #d9dde3;
+    background: linear-gradient(
+        to bottom,
+        #ffffff,
+        #f8f9fb
+    );
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.05),
+        0 2px 6px rgba(0,0,0,0.03);
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .ramadda-typecount-block:hover {
-    border:var(--highlight-border) !important;
+    border-color: #8aa4c0 !important;
+
+    box-shadow:
+        0 2px 4px rgba(0,0,0,0.07),
+        0 4px 10px rgba(0,0,0,0.05);
 }
+
+
+
+.ramadda-typecount-block img {
+    opacity: 0.75;
+}
+
+.ramadda-typecount-count {
+    font-weight: 600;
+    margin-top: 4px;
+    color: #374151;
+}
+
+
 
 
 .ramadda-highlighted {
