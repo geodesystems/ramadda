@@ -81,7 +81,7 @@ message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true ad
 {{display_entrylist   startWithAny=true
 showAncestor=true ancestor=this
 metadataTypes=""
-entryTypes="super:type_core_base,type_geo_site"  
+entryTypes="super:type_core_base,type_geo_site,super:type_document"  
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,images,map,display" 
 includeNonImages=false

@@ -53,7 +53,7 @@ message="" width="80%"  useThumbnail="true" }}
 :vspace 1em
 :heading Data Type Summary
 +center
-{{typecount    addPageSearch=true doColor=true message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+{{typecount    addPageSearch=true doColor=false message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
 -center
 -if
 +if property=show_search
@@ -63,7 +63,7 @@ message="" width="80%"  useThumbnail="true" }}
 {{display_entrylist   startWithAny=true
 showAncestor=false ancestor=this
 metadataTypes=""
-entryTypes="super:type_core_base,type_geo_site"  
+entryTypes="super:type_core_base,type_geo_site,super:type_document"  
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,images,map,display" 
 includeNonImages=false

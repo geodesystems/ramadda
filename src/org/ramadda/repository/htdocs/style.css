@@ -4188,6 +4188,31 @@ img.metadata-tag-selected {
     width:95%;
 }
 
+.select2-container--default .select2-search--inline .select2-search__field {
+    height: 22px !important;
+    margin-right:20px !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    border:var(--basic-border) !important; 
+}
+
+
+.select2-container--default .select2-selection--multiple {
+    padding-right:10px !important;
+}
+
+.select2-selection__clear span {
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__clear {
+    margin-right:0px !important;
+}
+
+
+.select2-container {
+}
+
 .ramadda-layer-category, .select2-results__option--disabled {
     background:#C5E5F5;
     color:#000;
