@@ -1,6 +1,7 @@
 #!/bin/sh
 
-#This script uses https://letsencrypt.org and https://certbot.eff.org/ to create and install a SSL certificate for RAMADDA
+#This script uses https://letsencrypt.org and https://certbot.eff.org/ to create and install a
+#SSL certificate for RAMADDA
 #
 #You need to have the following packages installed:
 #certbot-auto:  https://certbot.eff.org/docs/install.html#certbot-auto
@@ -18,15 +19,18 @@
 
 ######################################################################################################
 ## certbot 
-##This script uses certbot-auto. However, it seems like on some AWS instances certbot-auto doesn't run
-##From this doc:
-##https://serverfault.com/questions/890212/looking-for-a-way-to-get-certbot-running-on-amazon-linux-2
-##To install certbot do:
-##  curl -O http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-##  sudo yum install epel-release-latest-7.noarch.rpm
-##  sudo yum install certbot
-##
-## and run with letsencrypt.sh -certbot /path/to/certbot
+function usageCertbot()
+{
+    printf "This script uses certbot-auto. However, it seems like on some AWS instances certbot-auto doesn't run\n"
+    printf "From this doc:\n"
+    printf "https://serverfault.com/questions/890212/looking-for-a-way-to-get-certbot-running-on-amazon-linux-2\n"
+    printf "To install certbot do:\n"
+    printf "curl -O http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm\n"
+    printf "sudo yum install epel-release-latest-7.noarch.rpm\n"
+    printf "sudo yum install certbot\n"
+    printf "and run with letsencrypt.sh -certbot /path/to/certbot\n"
+}
+
 ######################################################################################################
 
 ##params set from args
@@ -61,7 +65,7 @@ function usage()
     printf "\t-certbot /path/to/certbot\n"
     printf "\t-domain <mydomain.com> (specify the domain)\n"
     printf "\t-other  <www.mydomain.com,someotherdomain.com> (specify other domains)\n"        
-    printf "\t-home /mnt/ramadda/repository (specify RAMADDA home dir)\n"
+    printf "\t-home ${RAMADDA_HOME} (specify RAMADDA home dir)\n"
     printf "\t-webroot <directory to top-level web root> \n"    
     printf "\t-password <password>  (keystore password. needs to be set in RAMADDA home dir)\n"
 
@@ -156,6 +160,7 @@ done
 if [ ! -e "$CERTBOT" ]; then
     echo "Cannot find certbot: $CERTBOT"
     echo "Specify the path with -certbot <path to certbot>"
+    usageCertbot
     usage
     exit
 fi
