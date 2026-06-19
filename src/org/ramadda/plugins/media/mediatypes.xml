@@ -359,6 +359,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 	help="Provides a zoomable interface into large images. Note: for large files this may take a long time to process."
         handler="org.ramadda.plugins.media.ZoomifyTypeHandler" >
     <property name="form.description.iswiki" value="true"/>
+    <property name="mimetype" value="image"/>
     <property name="icon" value="/media/zoomable.png"/>
     <property name="form.area.show" value="false"/>
     <property name="form.date.show" value="false"/>
