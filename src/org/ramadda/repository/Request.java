@@ -87,7 +87,9 @@ public class Request implements Constants, Cloneable {
     private boolean canStreamResult = true;
     private boolean cloned = false;
     private boolean embedded = false;
+    private Result overrideResult;
 
+    
     public Request(Repository repository, User user) {
         this.repository = repository;
         this.user       = user;
@@ -2201,6 +2203,16 @@ public class Request implements Constants, Cloneable {
 	return HU.labeledCheckbox(arg, "true", v,label);
     }
 
+    public void setOverrideResult (Result value) {
+	overrideResult = value;
+    }
+
+
+    public Result getOverrideResult () {
+	return overrideResult;
+    }
+
+
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             args = new String[] { "script", "Script", "src=http",
@@ -2210,5 +2222,8 @@ public class Request implements Constants, Cloneable {
             System.err.println("value:" + s + " cleaned:" + cleanupInput(s));
         }
     }
+
+
+
 
 }
