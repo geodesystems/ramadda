@@ -3307,6 +3307,11 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
+
+	Result override = request.getOverrideResult();
+	if(override!=null) {
+	    return override;
+	}
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
 	    if(!newEntry) {
