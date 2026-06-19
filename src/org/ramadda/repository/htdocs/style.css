@@ -170,6 +170,7 @@ inlineblock {
 .fileinput_label {
     display:inline-block;
     width:400px;
+    overflow-x:auto;
 }
 
 .fileinput_label_empty {

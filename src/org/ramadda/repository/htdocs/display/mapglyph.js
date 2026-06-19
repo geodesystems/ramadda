@@ -3605,7 +3605,15 @@ MapGlyph.prototype = {
 	return date.format('isoDate');
     },
     createMapServer:function() {
-	this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), this.getMapServerUrl());
+	//createXYZLayer:  function(name, url, attribution,notBaseLayer,visible,addLayer,opts) {
+	let attribution = null;
+	let opts = {};
+//	opts.minZoomLevel=5;
+//	opts.maxZoomLevel=10;	
+//	opts.debug=true;
+	this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), this.getMapServerUrl(),
+								    attribution,
+								    false,false,false,opts);
     },
     
     checkMapServer:function(andZoom) {

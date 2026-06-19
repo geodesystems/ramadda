@@ -1493,7 +1493,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    }
 			    loadLayer(args);
 			}).fail((data)=>{
-			    window.alert('Failed to find address');
+			    console.dir(data);
+			    window.alert('An error occurred fetching the tile JSON file');
 			});
 			return;
 		    }
