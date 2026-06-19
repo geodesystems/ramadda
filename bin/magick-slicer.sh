@@ -787,12 +787,14 @@ sliceA(){
             let "zoom = zoomMax - s"
         fi
 
-        infoMsg "    Resizing next file..."
-        debugMsg "    zoomMax=$zoomMax, zoomLevel=$s, wxhInex=$zoom, wxh=${hMod}${scales[$zoom]}"
-        file=`zoomImage $s "${hMod}${scales[$zoom]}"`
-        infoMsg "    File resized: ${file}"
-        infoMsg "    Slicing file..."
+        local targetSize="${hMod}${scales[$zoom]}"
+        infoMsg "PROGRESS resize level=${s} total=${zoomMax} size=${targetSize}"
+        debugMsg "    zoomMax=$zoomMax, zoomLevel=$s, wxhIndex=$zoom, wxh=${targetSize}"
+        file=`zoomImage $s "${targetSize}"`
+        infoMsg "PROGRESS resized level=${s} total=${zoomMax} size=${targetSize} file=${file}"
+        infoMsg "PROGRESS slice level=${s} total=${zoomMax} size=${targetSize}"
         sliceImage $s $file
+        infoMsg "PROGRESS sliced level=${s} total=${zoomMax} size=${targetSize}"
         rm -rf $file
 
         # scalep=`scaleToPercents $scale`
@@ -868,6 +870,7 @@ sliceB(){
     local size=0
     local sizeMax=0
     local zoom=0
+    local file=''
 
     if $horizontal
     then
