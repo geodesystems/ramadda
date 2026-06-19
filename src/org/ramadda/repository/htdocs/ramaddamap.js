@@ -2988,10 +2988,14 @@ RepositoryMap.prototype = {
 	    resolutions:opts.resolutions,
 	    wrapDateLine: Utils.getDefined(opts.wrapDateLine,this.getWrapDateLine()),
 	    isBaseLayer: !notBaseLayer,
-	    visibility: visible
+	    visibility: visible,
         };
+
+	if(Utils.isDefined(opts.minZoomLevel)) options.minZoomLevel=opts.minZoomLevel;
+	if(Utils.isDefined(opts.maxZoomLevel)) options.maxZoomLevel=opts.maxZoomLevel;	
         if (attribution)
             options.attribution = attribution;
+	if(opts.debug) console.dir(opts);
         let layer =  MapUtils.createLayerXYZ(name, url, options);
 	if(addLayer)
 	    this.addLayer(layer,true);
