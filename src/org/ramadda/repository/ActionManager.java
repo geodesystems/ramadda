@@ -42,24 +42,28 @@ public class ActionManager extends RepositoryManager {
         super(repository);
     }
 
-    public void setContinueHtml(Object actionId, String html) {
+    public ActionInfo setContinueHtml(Object actionId, String html) {
         if (actionId == null) {
-            return;
+            return null;
         }
         ActionInfo action = getAction(actionId);
         if (action != null) {
             action.setContinueHtml(html);
         }
+	return action;
     }
 
     public Result makeResult(Request request, String title, String status,
-                             StringBuilder sb, boolean json)
+                             StringBuilder sb, boolean json,String...extra)
             throws Exception {
         if (json) {
-            String result = JsonUtil.map(Utils.makeListFromValues("status",
-                                JsonUtil.quote(status), "message",
-                                JsonUtil.quote(sb.toString())));
-
+	    List l = Utils.makeListFromValues("status",
+					      JsonUtil.quote(status), "message",
+					      JsonUtil.quote(sb.toString()));
+	    for(String e:extra) {
+		l.add(e);
+	    }
+	    String result = JsonUtil.map(l);
             return new Result(result, Result.TYPE_JSON);
         }
 
@@ -190,7 +194,7 @@ public class ActionManager extends RepositoryManager {
 	}
 
 
-        Result result = makeResult(request, title, status, sb, json);
+        Result result = makeResult(request, title, status, sb, json,"heading",JU.quote(action.title!=null?action.title:""));
         if ( !json) {
             if (action.entry != null) {
                 return getEntryManager().addEntryHeader(request,
@@ -232,11 +236,15 @@ public class ActionManager extends RepositoryManager {
     }
 
     public void setActionMessage(Object id, String msg) {
+	setActionMessage(id,null,msg);
+    }
+
+    public void setActionMessage(Object id, String title, String msg) {
         ActionInfo action = getAction(id);
         if (action == null) {
             return;
         }
-        action.setMessage(msg);
+        action.setMessage(title,msg);
     }
 
     public void actionComplete(Object id) {
@@ -329,6 +337,7 @@ public class ActionManager extends RepositoryManager {
         return actionId;
     }
 
+
     public  static class Action {
 	private String resultTemplate;
         boolean returnJson = false;
@@ -377,7 +386,6 @@ public class ActionManager extends RepositoryManager {
 	}
 
     }
-
     public class ActionInfo {
 	private Action action;
         private String id;
@@ -449,6 +457,11 @@ public class ActionManager extends RepositoryManager {
 
         public boolean getRunning() {
             return running;
+        }
+
+        public void setMessage(String title,String value) {
+	    this.title = title;
+            message = value;
         }
 
         public void setMessage(String value) {
