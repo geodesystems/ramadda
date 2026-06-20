@@ -141,10 +141,23 @@ Postgres database (if installed): The /var/lib/... pgsql dir links to here
 
 :heading Command Line Utilities
 If you are a Mac or Linux user and are running on AWS here is a useful set of command line
-utilities. First download the defineenv.sh from 
-<a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh">
+utilities. First download the 3 shell scripts and move them to some directory:
+<ul>
+<li>  <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh">
 https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh
-</a>.
+</a>
+
+<li> <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/put.sh">
+https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/put.sh
+</a>
+
+<li> <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/get.sh">
+https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/get.sh
+</a>
+</ul>
+
+put.sh and get.sh are used to remotely copy files to your server and retrieve them
+
 :p
 Now, let's assume your project is called ramadda (note: this really can be any name).
 In your .bashrc file put:
@@ -162,8 +175,11 @@ ssh to the machine:
 copy (with scp) scp &lt;some file&gt; to the machine:
 <i>putramadda &lt;some file&gt;</i>
 
-copy (with scp) scp &lt;some file&gt; to the &lt;some directory&gt; on the machine
-<i>putramadda &lt;some file&gt; &lt;some directory&gt;</i> 
+copy (with scp)  &lt;some file&gt; to the &lt;some directory&gt; on the machine
+<i>putramadda &lt;some file&gt; &lt;some directory&gt;</i>
+
+copy (with scp)  &lt;some file&gt; from the server
+<i>getramadda &lt;some file&gt; </i>
 
 Update to the latest release of RAMADDA and restarts your server:
 <i>updateramadda</i> 
