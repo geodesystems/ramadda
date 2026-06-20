@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+@SuppressWarnings("unchecked")
 public class ActionManager extends RepositoryManager {
 
     public RequestUrl URL_STATUS = new RequestUrl(this, "/status");
