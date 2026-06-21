@@ -4186,6 +4186,18 @@ public class Utils extends IO {
 	return tmp;
     }
 
+    public static List quoteSpace(List l) {
+	List<String>results = new ArrayList<String>();
+	for(Object o:l) {
+	    String s = o.toString();
+	    if(s.indexOf(" ")>=0) {
+		s = "\"" + s+"\"";
+	    }
+	    results.add(s);
+	}
+	return results;
+    }
+
     public static String join(List l, String delim) {
         return join(l, delim, false);
     }
