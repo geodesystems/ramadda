@@ -78,14 +78,15 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 		  "-i", entry.getResource().getPath(),
 		  "-o", imagesDir.toString(),
 		  "-e", "jpg",
-		  "-w", "512",
+		  "-w", getRepository().getProperty("ramadda.zoomify.width","1024"),
 		  "-s", "200",
 		  "-p",
-		  "-limit memory 128MiB -limit map 256MiB -limit disk 4GiB -limit thread 1 -strip -quality 85"
+		  getRepository().getProperty("ramadda.zoomify.arguments",
+					      "-limit memory 512MiB -limit map 1GiB -limit disk 20GiB -limit thread 1 -strip -quality 85")
 		  );
 
 	long startTime = System.currentTimeMillis();
-	getLogManager().logSpecial("Zoomify: calling: " + Utils.join(commands," "));
+	getLogManager().logSpecial("Zoomify: calling: " + Utils.join(Utils.quoteSpace(commands)," "));
 	ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 	pb.redirectErrorStream(true);
 	String tmpDir = getStorageManager().makeTempDir("imagemagic",false).toString();
@@ -93,19 +94,29 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	pb.environment().put("TMPDIR", tmpDir);
 	pb.environment().put("MAGICK_THREAD_LIMIT", "1");
         pb.redirectErrorStream(true);
-	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
 	Process process = pb.start();
 	StringBuilder output = new StringBuilder();
+	List<String> lines = new ArrayList<String>();
+	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
+	lines.add("Creating image tiles for:" + entry.getName());
+	getActionManager().setActionMessage(actionId,Utils.join(lines,""));
+	String line="";
+	boolean inError = false;
 	try (BufferedReader br = new BufferedReader(
 						    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-	    String line;
-	    List<String> lines = new ArrayList<String>();
 	    while ((line = br.readLine()) != null) {
 		if(!stringDefined(line)) {
 		    continue;
 		}
+		//		System.err.println("line:" + line);
 		line = formatProgress(line);
 		if(line==null) continue;
+		if(line.matches(".*(error/|no images defined|unable to open).*")) {
+		    inError=true;
+		    process.destroy();
+		    break;
+		}
+
 		if(line.indexOf("Finished")>=0 || line.indexOf("sliced")>=0) continue;
 		line = line.replaceAll("/.*/images_files","...images_files");
 		lines.add(line);
@@ -124,7 +135,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 		    heading  += (Utils.decimals(time,1)) +" minutes\n";
 		}		    
 		//for now don't set the time as it only appears on a new line
-		heading = "Results";
+		heading = "Image Tiling Results";
 		String msg = Utils.join(lines,"\n");
 		getActionManager().setActionMessage(actionId,  heading,msg);
 		if (output.length() < 100_000) {
@@ -136,9 +147,11 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	
 	int exitCode = process.waitFor();
 	String result = output.toString();
-	if (exitCode != 0) {
-	    throw new IOException("Image slicer failed, exit code=" + exitCode
-				  + "\nOutput:\n" + result);
+	if (exitCode != 0 || inError) {
+	    getActionManager().setContinueHtml(actionId,
+					       "Error:" + line);
+	    getLogManager().logSpecial("Zoomify: error processing:" + entry+"\n"+line);
+	    return;
 	}
 	getActionManager().setContinueHtml(actionId,
 					   "Finished processing. "+
@@ -148,10 +161,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	getLogManager().logSpecial("Zoomify: after reading results: "+
 				   getRepository().getAdmin().appendMemory());
 	/*
-        if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
-            throw new IllegalArgumentException("Error running image slicer:"
-					       + result);
-        }
+	  if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
+	  throw new IllegalArgumentException("Error running image slicer:"
+	  + result);
+	  }
 	*/
 
     }
@@ -159,39 +172,47 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     private static final Pattern PROGRESS_PATTERN =
 	Pattern.compile("PROGRESS\\s+(\\w+)\\s+level=(\\d+)\\s+total=(\\d+)\\s+size=(\\d+)");
 
-    public static String formatProgress(String line) {
-	Matcher m = PROGRESS_PATTERN.matcher(line);
-	if (!m.find()) {
+    private String formatProgress(String line) {
+	try {
+	    Matcher m = PROGRESS_PATTERN.matcher(line);
+	    if (!m.find()) {
+		if(line.indexOf("PROGRESS")<0) {
+		    return line;
+		}
+		return null;
+	    }
+
+	    String phase = m.group(1);
+	    int level = Integer.parseInt(m.group(2));
+	    int total = Integer.parseInt(m.group(3));
+	    int size = Integer.parseInt(m.group(4));
+
+	    // Convert to 1-based numbering for display
+	    int displayLevel = level + 1;
+
+	    if (phase.equals("resize")) {
+		return String.format(
+				     "Preparing zoom level %d of %d (%d pixels)",
+				     displayLevel, total, size);
+	    }
+
+	    if (phase.equals("slice")) {
+		return String.format(
+				     "Creating tiles for zoom level %d of %d (%d pixels)",
+				     displayLevel, total, size);
+	    }
+
+	    if (phase.equals("sliced")) {
+		return String.format(
+				     "Finished zoom level %d of %d",
+				     displayLevel, total);
+	    }
+
 	    return null;
+	} catch(Exception exc){
+	    getLogManager().logError("processing magickslicer line:" + line,exc);
+	    return line;
 	}
-
-	String phase = m.group(1);
-	int level = Integer.parseInt(m.group(2));
-	int total = Integer.parseInt(m.group(3));
-	int size = Integer.parseInt(m.group(4));
-
-	// Convert to 1-based numbering for display
-	int displayLevel = level + 1;
-
-	if (phase.equals("resize")) {
-	    return String.format(
-				 "Preparing zoom level %d of %d (%d pixels)",
-				 displayLevel, total, size);
-	}
-
-	if (phase.equals("slice")) {
-	    return String.format(
-				 "Creating tiles for zoom level %d of %d (%d pixels)",
-				 displayLevel, total, size);
-	}
-
-	if (phase.equals("sliced")) {
-	    return String.format(
-				 "Finished zoom level %d of %d",
-				 displayLevel, total);
-	}
-
-	return null;
     }
 
 
