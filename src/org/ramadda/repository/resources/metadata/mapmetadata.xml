@@ -3,15 +3,18 @@
   <handler category="Maps">
     <type
 	id="map_layer"
-	name="Map Layer"
-	tag="internal" 	     showinhtml="false">
+	name="Map Layer and Position"
+	tag="internal"
+	showinhtml="false">
 
       <element
           datatype="enumeration"
           id="maplayer"
           name="Map Layer"
-          values="osm:Open Street Map,esri.topo:ESRI Topo,esri.street:ESRI Streets,esri.shaded:ESRI Shaded Relief,esri.lightgray:ESRI Light Gray,esri.darkgray:ESRI Dark Gray,esri.physical:ESRI Physical,esri.terrain:ESRI Terrain,esri.aeronautical:ESRI Aeronautical,opentopo:OpenTopo,usfs:Forest Service,usfswhite:USFS White,usgs.topo:USGS Topo,usgs.imagery:USGS Imagery,naip:NAIP Imagery,shadedrelief:Shaded Relief,historic:Historic,osm.toner:OSM-Toner,osm.toner.lite:OSM-Toner Lite,watercolor:Watercolor"/>
+          values=":None,osm:Open Street Map,esri.topo:ESRI Topo,esri.street:ESRI Streets,esri.shaded:ESRI Shaded Relief,esri.lightgray:ESRI Light Gray,esri.darkgray:ESRI Dark Gray,esri.physical:ESRI Physical,esri.terrain:ESRI Terrain,esri.aeronautical:ESRI Aeronautical,opentopo:OpenTopo,usfs:Forest Service,usfswhite:USFS White,usgs.topo:USGS Topo,usgs.imagery:USGS Imagery,naip:NAIP Imagery,shadedrelief:Shaded Relief,historic:Historic,osm.toner:OSM-Toner,osm.toner.lite:OSM-Toner Lite,watercolor:Watercolor"/>
 
+      <element id="zoomlevel" name="Zoom Level"/>
+      <element id="mapcenter" name="Map Center"/>      
     </type>
 
 
