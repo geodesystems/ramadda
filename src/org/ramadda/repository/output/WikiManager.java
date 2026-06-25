@@ -6429,10 +6429,11 @@ public class WikiManager extends RepositoryManager
 			return null;
 		    }
 		}
-		if(props.get("mapCenter")==null)
-		    props.put("mapCenter","40.17887%2C-100.89844");
-		if(props.get("zoomLevel")==null)
-		    props.put("zoomLevel","3");		
+		if(props.get(MapManager.PROP_MAP_CENTER)==null)
+		    props.put(MapManager.PROP_MAP_CENTER_FALLBACK,
+			      "40.17887%2C-100.89844");
+		if(props.get(MapManager.PROP_ZOOM_LEVEL)==null)
+		    props.put(MapManager.PROP_ZOOM_LEVEL_FALLBACK,"3");		
             }
         }
 
@@ -6459,7 +6460,7 @@ public class WikiManager extends RepositoryManager
 
 	Hashtable mapProps = new Hashtable();
 	String[]  mapArgs  = {
-	    "zoomLevel",
+	    MapManager.PROP_ZOOM_LEVEL,
 	    "mapCenter",
 	    "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
 	    "scrollToZoom", "boxColor", "shareSelected", "doPopup",
