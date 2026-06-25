@@ -28,6 +28,13 @@ function RepositoryMap(mapId, params) {
 	    if(debugBounds)console.log("url arg:"+ prop+"=" + params[prop]);
 	}
     });
+    if(!Utils.isDefined(params[ARG_ZOOMLEVEL])) {
+	params[ARG_ZOOMLEVEL] = params[ARG_ZOOMLEVEL_FALLBACK];
+    }
+    if(!Utils.isDefined(params[ARG_MAPCENTER])) {
+	params[ARG_MAPCENTER] = params[ARG_MAPCENTER_FALLBACK];
+    }    
+
     if(params[ARG_ZOOMLEVEL]) {
 	params.initialZoom = params[ARG_ZOOMLEVEL];
 	if(debugBounds)console.log('initial zoom',params.initialZoom);
@@ -498,6 +505,7 @@ RepositoryMap.prototype = {
 	    }
 	    return;
 	}
+	console.trace();
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
 	}
@@ -791,7 +799,7 @@ RepositoryMap.prototype = {
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
-	    console.log("zoomToExtent:", this.transformProjBounds(bounds));
+	    console.log("zoomToExtent:", bounds,this.transformProjBounds(bounds));
 	}
 	let ok = num=>{
 	    return !isNaN(num) && Utils.isDefined(num);
