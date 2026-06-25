@@ -1,33 +1,18 @@
 #!/bin/bash
-version="0.004"
-date="05/08/2015"
+version="0.005-ramadda-dzi-robust"
+date="06/21/2026"
 
-#jeffmc: note: this was changed to handle files with spaces in them
-#jeffmc: also, with help from chatgpt, reorder the -p convert commands
-#original from https://github.com/VoidVolker/MagickSlicer
+# RAMADDA-safe DZI tile generator based on MagickSlicer CLI conventions.
+# Goals:
+#   - preserve DZI/OpenSeadragon level numbering
+#   - avoid resize-to-0 levels
+#   - normalize EXIF orientation before writing DZI metadata or tiles
+#   - apply -p ImageMagick options to resize and crop operations
+#   - use a configurable ImageMagick temp directory
 
-# ####### Options ####### #
-# resultExt='png'
 resultExt=''
-resizeFilter='' # http://www.imagemagick.org/Usage/filter/
-# resultDir='./sliceResult'
+resizeFilter=''
 resultDir=''
-
-# Selector fo slicer: A or B
-scaleFromImage=true     # Type of scaling: if true - scale calculates from image size to down (slicer A), if false - image scale starts from tile size and grow up (slicer B)
-gravity='NorthWest'     # Image positioning (from this option depends, which tiles sides can be cropped, if it not full size). Choices include: 'NorthWest', 'North', 'NorthEast', 'West', 'Center', 'East', 'SouthWest', 'South', 'SouthEast'. Use -list gravity to get a complete list of -gravity settings available in your ImageMagick installation.
-extent=false            # Extent option (false - tiles be cropped, true - will be added transparent color to get all tiles of full size)
-scale64=false
-zoomReverse=false       # false: maxZoom=100%; true: minZoom=100%
-
-# Options only for slicerB
-scaleover=true            # Maximum zoom: bigger or less then image. False - will not create upscaled image for maximum zoom; true - last zoom be equal or grater, then image.
-horizontal=true         # Type of positioning of image: horizontal or vertical.
-
-# ####### Options end ####### #
-
-# ———————————————————————————————————————————————————————————————————————————————————
-# ####### Variables ####### #
 imageSource=''
 tileW=256
 tileH=256
@@ -37,928 +22,230 @@ imageH=''
 imOptions=''
 dziFormat=true
 verboseLevel=0
-overlap=0   # TODO: Overlap handling.
-# ———————————————————————————————————————————————————————————————————————————————————
-# ####### Verbose functions ####### #
-# (0=none, 1=warnings, 2=warnings+info, 3=warning+info+debug)
+gravity='NorthWest'
+extent=false
 
 warnMsg(){
-    if [ $verboseLevel -ge 1 ]
-    then
-        echo $1
-    fi
+    if [ "$verboseLevel" -ge 1 ]; then echo "$1"; fi
 }
-
 infoMsg(){
-    if [ $verboseLevel -ge 2 ]
-    then
-        echo $1
-    fi
+    if [ "$verboseLevel" -ge 2 ]; then echo "$1"; fi
 }
-
 debugMsg(){
-    if [ $verboseLevel -ge 3 ]
-    then
-        echo $1
-    fi
-}
-
-# ———————————————————————————————————————————————————————————————————————————————————
-# ####### CLI ####### #
-
-qHelp(){
-    echo "    -?, --help [option]"
-    if [ "$1" = true ]
-    then
-        echo "        Show basic help or show help for selected option."
-        echo
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-mHelp(){
-    echo "    -m, --man"
-    if [ "$1" = true ]
-    then
-        echo "        Show full help for all options."
-        echo
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-iHelp(){
-    echo "    [ -i, --in <file_path> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Input file to slice."
-        echo
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-oHelp(){
-    echo "    [ -o, --out <directory_path> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Output directory for result."
-        echo
-        echo "        Default:  same as source"
-        echo "        Type:     str"
-        echo
-    fi
-# sliceResult/<zoom_Level>/<horizontal tiles line (x) (folder)>/<vertical tiles line (y) (file)>"
-}
-
-eHelp(){
-    echo "    [ -e, --extension <file_extesion> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Set result files extension."
-        echo
-        echo "        Default:  same as source"
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-wHelp(){
-    echo "    [ -w, --width <tile_width> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Set tile width."
-        echo
-        echo "        Default:  256 pixels or same as height, if height is present."
-        echo "        Type:     int"
-        echo
-    fi
-}
-
-hHelp(){
-    echo "    [ -h, --height <tile_height> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Set tile height"
-        echo
-        echo "        Default:  256 pixels or same as width, if width is present."
-        echo "        Type:     int"
-        echo
-    fi
-}
-
-sHelp(){
-    echo "    [ -s, --step <zoom_step_value> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Zoom step value. Formula:"
-        echo "          (1) image_size[i+1] = image_size[i] * 100 / step"
-        echo "          200 -> 200% or 2x    -> 100% * 100 / 200 = 50%"
-        echo "          175 -> 175% or 1.75x -> 100% * 100 / 175 = 57.(142857)%"
-        echo "          120 -> 120% or 1.2x  -> 100% * 100 / 120 = 83.(3)%"
-        echo "          300 -> 300% or 3x    -> 100% * 100 / 300 = 33.(3)%"
-        echo "          100 -> 100% or 1x (no resize) -> infinity loop. Don't use it."
-        echo
-        echo "        Default:  200"
-        echo "        Type:     int"
-        echo
-    fi
-}
-
-pHelp(){
-    echo "    [ -p, --options 'imagemagick options string']"
-    if [ "$1" = true ]
-    then
-        echo "        Specifies additional imagemagick options for 'convert'."
-        echo
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-gHelp(){
-    echo "    [ -g, --gravity <type> ]"
-    if [ "$1" = true ]
-    then
-        echo "        Types: NorthWest North NorthEast West Center East SouthWest South SouthEast"
-        echo "        The direction you choose specifies where to position of cuts start on image. Use -list gravity to get a complete list of -gravity settings available in your ImageMagick installation."
-        echo "        http://www.imagemagick.org/script/command-line-options.php#gravity"
-        echo
-        echo "        Default:  NorthWest"
-        echo "        Type:     str"
-        echo
-    fi
-}
-
-xHelp(){
-    echo "    [ -x, --extent ]"
-    if [ "$1" = true ]
-    then
-        echo "        Specifies the edge tiles size: cropped or extent them to full size and fill transparent color."
-        echo
-        echo "        Default:  false"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-dHelp(){
-    echo "    [ -d, --dzi ]"
-    if [ "$1" = true ]
-    then
-        echo "        Specifies output format."
-        echo
-        echo "        Default:  true"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-aHelp(){
-    echo "    [ -a, --slicea ]"
-    if [ "$1" = true ]
-    then
-        echo "        Type of slicing - slice A. Image scale starts from image size to down. Inverts option '--sliceb'."
-        echo
-        echo "        Default:  true"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-bHelp(){
-    echo "    [ -b, --sliceb ]"
-    if [ "$1" = true ]
-    then
-        echo "        Type of slicing - slice B. Image scale starts from tile size and grow up. Inverts option '--slicea'."
-        echo
-        echo "        Default:  false"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-cHelp(){
-    echo "    [ -c, --scaleover ] "
-    if [ "$1" = true ]
-    then
-        echo "        Create upscaled image for maximum zoom (last zoom be equal or grater, then image). zoom[i-1]_size < source_image_size < zoom[i]_size"
-        echo "        Work only in slice B mode. In other cases ignored."
-        echo
-        echo "        Default:  false"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-rHelp(){
-    echo "    [ -r, --horizontal ] "
-    if [ "$1" = true ]
-    then
-        echo "        Tiles divide image on horizontal side without remains. On this side tiles will not be croped."
-        echo "        Work only in slice B mode. In other cases ignored."
-        echo
-        echo "         ___ ___ ___  _ _"
-        echo "        |   |   |   |  ^"
-        echo "        |___|___|___|  Image"
-        echo "        |___|___|___| _v_   <- Not full tiles."
-        echo "        |_._|_._|_._| <-- Transparent color (extent=true) or cropped (extent=false)"
-        echo
-        echo "        Default:  true"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-tHelp(){
-    echo "    [ -t, --vertical ] "
-    if [ "$1" = true ]
-    then
-        echo "        Tiles divide image on vertical side without remains. On this side tiles will not be croped."
-        echo "        Work only in slice B mode. In other cases ignored."
-        echo
-        echo "        |<-image->|"
-        echo "         ___ ___ _ _  _ _"
-        echo "        |   |   | |.|  ^"
-        echo "        |___|___|_|_| _v_Tile"
-        echo "        |   |   | |.|"
-        echo "        |___|___|_|_|"
-        echo "                   ^-- Transparent color (extent=true) or cropped (extent=false)"
-        echo "                 ^--- Not full tiles"
-        echo
-        echo "        Default:  false"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-vHelp(){
-    echo "    [ -v, --verbose <level> ]"
-    if [ "$1" = true ]
-    then
-        echo "        User-selected verbosity levels:"
-        echo "          - 0 = none"
-        echo "          - 1 = warnings"
-        echo "          - 2 = warnings + info"
-        echo "          - 3 = warnings + info + debug"
-        echo
-    fi
-    echo "    [ -v0, -v1, -v2, -v3 ]"
-    if [ "$1" = true ]
-    then
-        echo "        Short commands for each verbosity level."
-        echo
-        echo "        Default:  0"
-        echo "        Type:     logic switch"
-        echo
-    fi
-}
-
-lHelp(){
-    echo "    [ -l, --overlap <pixels> ] "
-    if [ "$1" = true ]
-    then
-        echo "        Tiles overlap in pixels."
-        echo
-        echo "        Default:  1"
-        echo "        Type:     int"
-        echo
-    fi
+    if [ "$verboseLevel" -ge 3 ]; then echo "$1"; fi
 }
 
 uHelp(){
-    echo "    Usage:"
-    echo "        magick-slicer.sh -u|--usage"
-    echo "        magick-slicer.sh -?|--help|-m|--man [option_name]"
-    echo "        magick-slicer.sh [options] [-i] /source/image [[-o] result/dir]"
-    echo "        magick-slicer.sh /source/image [options] [result/dir]"
-    echo "        magick-slicer.sh /source/image [result/dir] [options]"
+    echo "Usage:"
+    echo "  magick-slicer.sh [options] -i source_image -o output_base"
     echo
-    echo "    Use quotes for path or options with spaces. First unknown string interpreting as source image, if it not defined. Second unknown string is interpreting as result path, if it not defined. Also, for source and result you can use options '-i' and '-o'."
-    echo
+    echo "Options:"
+    echo "  -i, --in <file>              Input file"
+    echo "  -o, --out <path>             Output base path. Creates <path>.dzi and <path>_files/"
+    echo "  -e, --extension <ext>        Output tile extension, e.g. jpg"
+    echo "  -w, --width <pixels>         Tile width. Height defaults to same value"
+    echo "  -h, --height <pixels>        Tile height"
+    echo "  -s, --step <value>           Zoom step. 200 means half-size levels. DZI normally uses 200"
+    echo "  -p, --options '<options>'    ImageMagick options, e.g. '-limit memory 512MiB ... -quality 85'"
+    echo "  -x, --extent                 Pad edge tiles to full tile size"
+    echo "  -g, --gravity <type>         Crop gravity; default NorthWest"
+    echo "  -v0|-v1|-v2|-v3              Verbosity"
+    echo "  -?, --help                   Help"
 }
 
 cliHelp(){
-    echo " Map tiles generator. License: MIT."
-    echo " Version: $version"
-    echo " Date: $date"
+    echo "Map tiles generator. License: MIT."
+    echo "Version: $version"
+    echo "Date: $date"
     echo
-
-    case $1 in
-
-        -i|--in)                iHelp true ;;
-        -o|--out)               oHelp true ;;
-        -e|--extension)         eHelp true ;;
-        -w|--width)             wHelp true ;;
-        -h|--height)            hHelp true ;;
-        -s|--step)              sHelp true ;;
-        # -l|--overlap)           lHelp true ;;
-        -p|--options)           pHelp true ;;
-        -g|--gravity)           gHelp true ;;
-        -x|--extent)            xHelp true ;;
-        -d|--dzi)               dHelp true ;;
-        -a|--slicea)            aHelp true ;;
-        -b|--sliceb)            bHelp true ;;
-        -c|--scaleover)         cHelp true ;;
-        -r|--horizontal)        rHelp true ;;
-        -t|--vertical)          tHelp true ;;
-        -v|--verbose)           vHelp true ;;
-        -u|--usage)             uHelp true ;;
-        -\?|--help)             qHelp true ;;
-        -m|--man)               mHelp true ;;
-
-        "")
-            uHelp $2
-            echo " Options list: "
-            qHelp $2
-            mHelp $2
-            vHelp $2
-            iHelp $2
-            oHelp $2
-            eHelp $2
-            wHelp $2
-            hHelp $2
-            sHelp $2
-            # lHelp $2
-            pHelp $2
-            gHelp $2
-            xHelp $2
-            dHelp $2
-            aHelp $2
-            bHelp $2
-            cHelp $2
-            rHelp $2
-            tHelp $2
-        ;;
-
-        *)
-            echo " Unknown option: $1"
-            echo
-        ;;
-    esac
-
-    echo
+    uHelp
     exit 0
 }
 
-# ### CLI parsing ###
-debugMsg "CLI parsing"
+if [ $# -eq 0 ]; then cliHelp; fi
 
-# Test number of arguments
-if [ $# -eq 0 ]
-then
-    cliHelp
-fi
-
-# Temp variables for parser
 WnotDefined=true
 HnotDefined=true
 SourceNotDefined=true
 ResDirNotDefined=true
 ExtNotDefined=true
 
-# Arguments parsing
-while [[ $# > 0 ]] # cmd tools
-do
-    debugMsg "Parsing key: $1"
-    key="$1"    # Get current key
-    case $key in    # Do key work
-
+while [[ $# > 0 ]]; do
+    key="$1"
+    case $key in
         -i|--in)
-            imageSource="$2"
-            SourceNotDefined=false
-            shift # past argument
-        ;;
-
+            imageSource="$2"; SourceNotDefined=false; shift ;;
         -o|--out)
-            resultDir="$2"
-            ResDirNotDefined=false
-            shift # past argument
-        ;;
-
+            resultDir="$2"; ResDirNotDefined=false; shift ;;
         -e|--extension)
-            resultExt="$2"
-            ExtNotDefined=false
-            shift # past argument
-        ;;
-
+            resultExt="$2"; ExtNotDefined=false; shift ;;
         -w|--width)
             tileW="$2"
-            if $HnotDefined
-            then
-                tileH="$2"  # Set h=w by default, if it not defined yet
-            fi
+            if $HnotDefined; then tileH="$2"; fi
             WnotDefined=false
-            shift # past argument
-        ;;
-
+            shift ;;
         -h|--height)
             tileH="$2"
-            if $WnotDefined
-            then
-                tileW="$2"  # Set w=h by default, if it not defined yet
-            fi
+            if $WnotDefined; then tileW="$2"; fi
             HnotDefined=false
-            shift # past argument
-        ;;
-
+            shift ;;
         -s|--step)
-            step="$2"
-            shift # past argument
-        ;;
-
-        -l|--overlap)
-            overlap="$2"
-            shift # past argument
-        ;;
-
+            step="$2"; shift ;;
         -p|--options)
-            imOptions="$2"
-            shift # past argument
-        ;;
-
+            imOptions="$2"; shift ;;
         -g|--gravity)
-            gravity="$2"
-            shift # past argument
-        ;;
-
+            gravity="$2"; shift ;;
         -x|--extent)
-            extent=true
-        ;;
-
-        -d|--dzi)
-            dziFormat=true
-        ;;
-
-        -a|--slicea)
-            scaleFromImage=true
-        ;;
-
-        -b|--sliceb)
-            scaleFromImage=false
-        ;;
-
-        -c|--scaleover)
-            scaleover=false
-        ;;
-
-        -r|--horizontal)
-            horizontal=true
-        ;;
-
-        -t|--vertical)
-            horizontal=false
-        ;;
-
+            extent=true ;;
         -v|--verbose)
-            verboseLevel="$2"
-            shift # past argument
-        ;;
-
+            verboseLevel="$2"; shift ;;
         -v0|--verbose0)
-            verboseLevel=0
-        ;;
-
+            verboseLevel=0 ;;
         -v1|--verbose1)
-            verboseLevel=1
-        ;;
-
-        -v2|--verbose1)
-            verboseLevel=2
-        ;;
-
-        -v3|--verbose1)
-            verboseLevel=3
-        ;;
-
-        -u|--usage)
-            uHelp
-            exit 0
-        ;;
-
-        -\?|--help)
-            cliHelp "$2"
-            shift # past argument
-        ;;
-
-        -m|--man)
-            cliHelp "" true
-        ;;
-
-        # --default)
-        #     DEFAULT=YES
-        # ;;
-
+            verboseLevel=1 ;;
+        -v2|--verbose2)
+            verboseLevel=2 ;;
+        -v3|--verbose3)
+            verboseLevel=3 ;;
+        -u|--usage|-\?|--help|-m|--man)
+            cliHelp ;;
         *)
-            if $SourceNotDefined    # Interpreting first unknown command as source
-            then
-                imageSource="$1"
-                SourceNotDefined=false
+            if $SourceNotDefined; then
+                imageSource="$1"; SourceNotDefined=false
+            elif $ResDirNotDefined; then
+                resultDir="$1"; ResDirNotDefined=false
             else
-                if $ResDirNotDefined    # Interpreting second unknown command as source
-                then
-                    resultDir="$1"
-                    ResDirNotDefined=false
-                else                    # Interpreting third unknown command as unknown command
-                    echo "Unknown option: $1"
-                fi
-            fi
-        ;;
+                echo "Unknown option: $1"
+            fi ;;
     esac
-
-    shift # Get next key
+    shift
 done
 
-# Cheking for installed applications
 command -v convert >/dev/null 2>&1 || { echo >&2 "I require ImageMagick tool 'convert', but it's not installed. Aborting."; exit 1; }
 command -v identify >/dev/null 2>&1 || { echo >&2 "I require ImageMagick tool 'identify', but it's not installed. Aborting."; exit 1; }
 
-# Checking if file was defined
-if $SourceNotDefined
-then
-    echo "No source file present. Canceled."
-    exit 1
-fi
+if $SourceNotDefined; then echo "No source file present. Canceled."; exit 1; fi
+if [ ! -f "$imageSource" ]; then echo "Error! Input file not found: $imageSource"; exit 1; fi
 
-# Cheking if source file not exists
-if [ ! -f "$imageSource" ]
-then
-    echo "Error! Input file 'images source' not found! File path: $imageSource"
-    exit 1
-fi
-
-# Set extension
 fullName=$(basename "$imageSource")
 fileBase="${fullName%.*}"
 fileExt="${fullName##*.}"
+if $ExtNotDefined; then resultExt="$fileExt"; fi
+if $ResDirNotDefined; then resultDir="$fileBase"; fi
 
-if $ExtNotDefined
-then
-    resultExt="$fileExt"
+if [ "$step" -le 100 ]; then
+    echo "You get infinity loop. Minimum step value = 101% (101)"
+    exit 1
 fi
 
-# Set out name
-if $ResDirNotDefined
-then
-    resultDir="$fileBase"
+# Use one ImageMagick thread by default. This reduces memory spikes.
+if [ -z "$MAGICK_THREAD_LIMIT" ]; then
+    export MAGICK_THREAD_LIMIT=1
 fi
 
-# ———————————————————————————————————————————————————————————————————————————————————
-# ####### Functions ####### #
-debugMsg "Section: Functions"
+baseOut="$resultDir"
+dziFileName="${baseOut}.dzi"
+filesDir="${baseOut}_files"
+mkdir -p "$(dirname "$dziFileName")"
+rm -rf "$filesDir"
+mkdir -p "$filesDir"
 
-getImgW(){ # image_file
-    #jeffmc: quote the imageSource arg
-    echo `identify -format "%[fx:w]" "$1"`
-}
+# Use a writable temp directory on the same filesystem as the output unless caller provided one.
+if [ -z "$MAGICK_TEMPORARY_PATH" ]; then
+    export MAGICK_TEMPORARY_PATH="${filesDir}/.magick_tmp"
+fi
+export TMPDIR="$MAGICK_TEMPORARY_PATH"
+mkdir -p "$MAGICK_TEMPORARY_PATH"
 
-getImgH(){ # image_file
-    #jeffmc: quote the imageSource arg
-    echo `identify -format "%[fx:h]" "$1"`
-}
+# Optional hard virtual-memory cap for the shell and convert children.
+# Example: export MAGICK_SLICER_VMEM_KB=1500000
+if [ -n "$MAGICK_SLICER_VMEM_KB" ]; then
+    case "$(uname -s)" in
+        Linux*)
+            ulimit -v "$MAGICK_SLICER_VMEM_KB" 2>/dev/null || true
+            ;;
+        *)
+            # macOS, BSD, etc.
+            ;;
+    esac
+fi
 
-# ———————————————————————————————————————————————————————————————————————————————————
-# ######################## #
-# ####### Slicer A ####### #
-debugMsg "Section: Slicer A"
 
-# Constants
-scaleBase=100                   # Scale in percents - 100% (TODO: add option to use image sizes)
-scaleMult=100000                # Scale multiplier (bash works only with int)
-scaleMult64=100000000000000     # Scale multiplier for x64 bash and x64 convert (if you have very many zoom level and need more accuracy)
-scaleStart=0
-# declare -a scaledW
-# declare -a scaledH
-# scaledW=()
-# scaledH=()
+normSource="${filesDir}/.source_oriented.${resultExt}"
 
-setScale(){
-    if $scale64
-    then
-        local arch=`uname -m`
-        if [ "${arch}" == "x86_64"  ]
-        then
-            scaleMult=$scaleMult64
-        else
-            echo "Your system (${arch}) isn't x86_64"
-            exit 1
-        fi
-    fi
-    scaleStart=$(( $scaleBase * $scaleMult ))
-}
+infoMsg "PROGRESS normalize source"
+# Normalize EXIF orientation before measuring or tiling. This fixes phone photos whose
+# stored pixel dimensions do not match displayed orientation.
+convert $imOptions "$imageSource" -auto-orient "$normSource" || exit $?
 
-getZoomLevels(){ # imgLen(pixels) tileLen(pixels) step(int) # Calculate zoom levels for current step
-    local imgLen=$1
-    local tileLen=$2
-    local zoomStep=$3
-    local r=(0)
-    local cnt=1
+imageW=$(identify -format "%w" "$normSource") || exit $?
+imageH=$(identify -format "%h" "$normSource") || exit $?
 
-    # Drop zooms less tile size
-    # while [ "$imgLen" -gt "$tileLen" ]
-    # do
-    #     r[$cnt]=$imgLen
-    #     let "cnt+=1"
-    #     let "imgLen = imgLen * 100 / zoomStep"
-    # done
+if [ -z "$imageW" ] || [ -z "$imageH" ] || [ "$imageW" -le 0 ] || [ "$imageH" -le 0 ]; then
+    echo "Error! Could not determine normalized image size. imageW='$imageW' imageH='$imageH'"
+    exit 1
+fi
 
-    # Do all zooms down to 1x1 px
-    while [ "$imgLen" -ge 1 ]
-    do
-        r[$cnt]=$imgLen
-        let "cnt+=1"
-        let "imgLen = imgLen * 100 / zoomStep"
+# DZI uses square tiles. Preserve original behavior.
+tileH=$tileW
+
+cat > "$dziFileName" <<DZI
+<?xml version="1.0"?>
+<Image TileSize="${tileW}" Overlap="0" Format="${resultExt}" xmlns="http://schemas.microsoft.com/deepzoom/2008">
+<Size Width="${imageW}" Height="${imageH}"/>
+</Image>
+DZI
+
+maxDim=$imageW
+if [ "$imageH" -gt "$maxDim" ]; then maxDim=$imageH; fi
+
+# DZI level count: level 0 is tiny; highest level is full resolution.
+maxLevel=0
+levelDim=1
+while [ "$levelDim" -lt "$maxDim" ]; do
+    levelDim=$(( levelDim * 2 ))
+    maxLevel=$(( maxLevel + 1 ))
+done
+
+total=$(( maxLevel + 1 ))
+infoMsg "PROGRESS start total=${total} width=${imageW} height=${imageH} tile=${tileW}"
+
+for (( level=0; level<=maxLevel; level++ )); do
+    divisorPower=$(( maxLevel - level ))
+    divisor=1
+    for (( i=0; i<divisorPower; i++ )); do
+        divisor=$(( divisor * 2 ))
     done
 
-    r[$cnt]=$imgLen
-    r[0]=$cnt
-    echo ${r[*]}
-}
+    levelW=$(( (imageW + divisor - 1) / divisor ))
+    levelH=$(( (imageH + divisor - 1) / divisor ))
+    if [ "$levelW" -lt 1 ]; then levelW=1; fi
+    if [ "$levelH" -lt 1 ]; then levelH=1; fi
 
-nextScale(){ # oldScale -> newScale
-    # Calculate image zoom in percents - it need for imagemagick for image resize
-    echo $(( $1 * 100 / $step ))
-}
+    mkdir -p "${filesDir}/${level}"
+    levelFile="${filesDir}/${level}.${resultExt}"
 
-scaleToPercents(){ # scale
-    local s=$1
-    local sInt=0
-    local sFloat=0
-    let "sInt = s / $scaleMult"
-    let "sFloat = s - sInt * $scaleMult"
-    echo "${sInt}.${sFloat}%"
-}
+    infoMsg "PROGRESS resize level=${level} total=${total} width=${levelW} height=${levelH}"
+    convert $imOptions "$normSource" $resizeFilter -resize "${levelW}x${levelH}!" "$levelFile" || exit $?
+    infoMsg "PROGRESS resized level=${level} total=${total} width=${levelW} height=${levelH} file=${levelFile}"
 
-# scaleImage(){ # zoom scale -> file_path
-#     local zoom=$1
-#     local s=$2
-#     local dir="${resultDir}/${zoom}"
-#     local file="${dir}.${resultExt}"
-#     local size=`scaleToPercents $s`
-#     mkdir -p $dir   # Imagemagick can't create directories
-#     convert $imageSource $resizeFilter -resize $size $file
-#     echo $file
-# }
+    xyDelim='_'
+    tilesFormat="%[fx:page.x/${tileW}]${xyDelim}%[fx:page.y/${tileH}]"
+    tilePattern="${filesDir}/${level}/%[filename:tile].${resultExt}"
+    ext=''
+    if $extent; then ext="-background none -extent ${tileW}x${tileH}"; fi
 
-zoomImage(){ # zoom size -> file_path
-    local zoom=$1
-    local size=$2
-    local dir="${resultDir}/${zoom}"
-    local file="${dir}.${resultExt}"
-    # local file="${dir}.png"
-    # local size=`scaleToPercents $s`
-    mkdir -p $dir   # Imagemagick can't create directories
-    convert $imOptions "$imageSource" $resizeFilter -resize "$size" "$file"
-    echo $file
-}
+    infoMsg "PROGRESS slice level=${level} total=${total} width=${levelW} height=${levelH}"
+    convert $imOptions "$levelFile" -gravity "$gravity" -crop "${tileW}x${tileH}" -set filename:tile "$tilesFormat" +repage +adjoin -gravity "$gravity" $ext "$tilePattern" || exit $?
+    infoMsg "PROGRESS sliced level=${level} total=${total} width=${levelW} height=${levelH}"
 
-sliceImage(){ # zoom image
-    local zoom=$1
-    local src=$2
-    local wxh="${tileW}x${tileH}"
+    rm -f "$levelFile"
+done
 
-    local xyDelim='/'
-    if $dziFormat
-    then
-        xyDelim='_'
-    fi
+rm -f "$normSource"
+# Leave MAGICK_TEMPORARY_PATH in place during execution only; clean up our default cache.
+# If caller supplied MAGICK_TEMPORARY_PATH, do not remove it.
+# Note: if the process is killed, this may need manual cleanup.
 
-    local tilesFormat="%[fx:page.x/${tileW}]${xyDelim}%[fx:page.y/${tileH}]" # This very important magic! It allow imagemagick to generate tile names with it position and place it in corect folders (but folders need to generate manually)
-    local file="${resultDir}/${zoom}/%[filename:tile].${resultExt}"
-
-    if [ ! $dziFormat ]
-    then
-        # Creating subdirectories for tiles (one vertical line of tiles is in one folder)
-        local srcSize=`getImgW $src`            # Getting image width
-        local dirNum=$(( $srcSize / $tileW ))   # Calculating number of tiles in line
-        local i=0
-        for(( i=0; i<=$dirNum; i++ ))
-        do
-            mkdir -p "${resultDir}/${zoom}/$i"  # Imagemagick can't create directories
-        done
-        sync
-    fi
-
-    # extent option
-    local ext=''
-    if $extent
-    then
-        ext="-background none -extent ${wxh}"
-    fi
-
-    # Slice image to tiles
-    # convert $src -crop $wxh -set filename:tile $tilesFormat +repage +adjoin -background none -gravity $gravity $ext $file
-    convert $imOptions "$src" -gravity "$gravity" -crop "$wxh" -set filename:tile "$tilesFormat" +repage +adjoin -gravity "$gravity" $ext "$file"
-}
-
-sliceA(){
-    infoMsg " Slicer A is running..."
-    local scalesW=( `getZoomLevels $imageW $tileW $step` )  # Get width  for each zoom level
-    local scalesH=( `getZoomLevels $imageH $tileH $step` )  # Get height for each zoom level
-    local zw=${scalesW[0]}  # Get zoom level for width
-    local zh=${scalesH[0]}  # Get zoom level for height
-    local scales=()         # Creating empty array
-    local zoomMax=0
-    local zoom=0
-    local hMod=''
-    local s=0
-    local file=''
-
-    if [ "$zw" -ge "$zh" ]
-    then
-        zoomMax=$zw
-        scales=( ${scalesW[*]} )
-        hMod=''
-    else
-        zoomMax=$zh
-        scales=( ${scalesH[*]} )
-        hMod='x'
-    fi
-
-    # local scale=$scaleStart
-    # local scalep=''
-    while [ "$s" -lt "$zoomMax" ]
-    do
-        if $zoomReverse
-        then
-            let "zoom = s"
-        else
-            let "zoom = zoomMax - s"
-        fi
-
-        local targetSize="${hMod}${scales[$zoom]}"
-        infoMsg "PROGRESS resize level=${s} total=${zoomMax} size=${targetSize}"
-        debugMsg "    zoomMax=$zoomMax, zoomLevel=$s, wxhIndex=$zoom, wxh=${targetSize}"
-        file=`zoomImage $s "${targetSize}"`
-        infoMsg "PROGRESS resized level=${s} total=${zoomMax} size=${targetSize} file=${file}"
-        infoMsg "PROGRESS slice level=${s} total=${zoomMax} size=${targetSize}"
-        sliceImage $s $file
-        infoMsg "PROGRESS sliced level=${s} total=${zoomMax} size=${targetSize}"
-        rm -rf $file
-
-        # scalep=`scaleToPercents $scale`
-        # s=${scales[zoom-1]}
-        # echo $zoom "$s"
-        # file=`scaleImage $zoom "${hMod}${scales[$zoom]}"`
-        # echo "zoom, scalep, scale: $zoom $scalep $scale $file"
-        # echo ${scaledW[$i]}
-        # echo ${scaledH[$i]}
-        # scale=`nextScale $scale`
-
-        let "s+=1"
-    done
-
-    infoMsg " Slicer A complete"
-
-    # s=`nextScale $scaleStart`
-    # s=`nextScale $s`
-    # scaleToPercents $s
-}
-
-# ———————————————————————————————————————————————————————————————————————————————————
-# ##########################
-# ####### Slicer B ####### #
-debugMsg "Section: Slicer B"
-
-zoomPixels(){ # zoom tileSize
-    local zoom=$1
-    local pixels=$2
-    if [ "$zoom" -ne 0 ]
-    then
-        let "pixels = pixels * 100"
-        for(( i=0; i<zoom; i++ ))
-        do
-            let "pixels = pixels * $step / 100"
-        done
-        let "pixels = pixels / 100"
-    fi
-    echo $pixels
-}
-
-resizeImageH(){ # zoom -> file_path
-    local zoom=$1
-    local dir="${resultDir}/${zoom}"
-    local file="${dir}.${resultExt}"
-    local size=`zoomPixels $zoom $tileW`
-    mkdir -p $dir   # Imagemagick can't create directories
-    convert $imOptions "$imageSource" $resizeFilter -resize "$size" "$file"
-    echo $file
-}
-
-resizeImageV(){ # zoom -> file_path
-    local zoom=$1
-    local dir="${resultDir}/${zoom}"
-    local file="${dir}.${resultExt}"
-    local size=`zoomPixels $zoom $tileH`
-    mkdir -p $dir   # Imagemagick can't create directories
-    convert $imOptions "$imageSource" $resizeFilter -resize "x${size}" "$file"
-    echo $file
-}
-
-resizeImage(){ # zoom -> file_path
-    if $horizontal
-    then
-        echo `resizeImageH $1`
-    else
-        echo `resizeImageV $1`
-    fi
-}
-
-sliceB(){
-    echo "Slicer B is running..."
-    local size=0
-    local sizeMax=0
-    local zoom=0
-    local file=''
-
-    if $horizontal
-    then
-        let "size = $tileW"
-        let "sizeMax = $imageW"
-    else
-        let "size = $tileH"
-        let "sizeMax = $imageH"
-    fi
-
-    if $scaleover
-    then
-        let "sizeMax += $size"
-    fi
-
-    local px=$size
-    while [ "$px" -lt "$sizeMax" ]
-    do
-        echo "    Slicing zoom level \"${zoom}\"; image main size is \"${px}\""
-        sliceImage $zoom `resizeImage $zoom`
-        let "zoom++"
-        px=`zoomPixels $zoom $size`
-    done
-    echo "Slicer B complete"
-}
-
-
-mainScale(){ # min zoom = tile width
-    if $scaleFromImage
-    then
-        sliceA
-    else
-        sliceB
-    fi
-    echo
-}
-
-setDziFormat(){
-    local dziFileName="${resultDir}.dzi"
-    resultDir="${resultDir}_files"
-    tileH=$tileW
-    echo '<?xml version="1.0"?>' > "$dziFileName"
-    echo "<Image TileSize=\"${tileW}\" Overlap=\"0\" Format=\"${resultExt}\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">" >> "$dziFileName"
-    echo "<Size Width=\"${imageW}\" Height=\"${imageH}\"/>" >> "$dziFileName"
-    echo '</Image>' >> "$dziFileName"
-    # <?xml version="1.0"?>
-    #
-    #
-    # </Image>
-}
-
-setFormat(){
-    if $dziFormat
-    then
-        setDziFormat
-    fi
-}
-
-init(){
-    if [ "$step" -le 100 ]
-    then
-        echo "You get infinity loop. Minimum step value = 101% (101)"
-        exit 1
-    fi
-    # Getting image sizes
-    #jeffmc: quote the imageSource arg
-    imageW=`getImgW "$imageSource"`
-    imageH=`getImgH "$imageSource"`
-
-    # Set options for selected format
-    setFormat
-
-    # Set scale
-    setScale
-
-    rm -rf $resultDir   # removing old results
-    mkdir -p $resultDir # creating new results folder
-
-}
-
-# ———————————————————————————————————————————————————————————————————————————————————
-# ###################### #
-# ### Programm start ### #
-debugMsg "Section: Programm"
-
-init
-mainScale
-
-# ### Programm end ##### #
-# ###################### #
-# ———————————————————————————————————————————————————————————————————————————————————
+infoMsg "PROGRESS complete total=${total} width=${imageW} height=${imageH}"
+echo
