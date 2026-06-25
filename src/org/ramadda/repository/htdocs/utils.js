@@ -764,32 +764,6 @@ var Utils =  {
 	t = Utils.convertText(t);
         return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n').replace(/_squote_/g,"'");
     },
-    handleActionResults: function(id,url,args) {
-	args = args??{};
-        setTimeout(() =>{
-            let success=json=>{
-                let msg = "";
-                if(json.message) msg= json.message.replace(/\n/g,HU.br());
-		let display =  jqid(id);
-		display.html(msg);
-		display.scrollTop(display[0].scrollHeight);
-		if(json.heading) {
-		    jqid(id+'_heading').html(json.heading);
-		}
-
-                if(json.status=="running") {
-                    Utils.handleActionResults(id,url);
-                }
-            };
-            let fail=json=>{
-		console.dir('fail',json);
-		let msg = json;
-		if(json.responseText) msg = json.responseText;
-		jqid(id).html("Error: " + msg);
-            };             
-            $.getJSON(url, success).fail(fail);
-        },1000);
-    },
     sumList: function(l) {
         let accum = 0;
         l.forEach(v=>{
