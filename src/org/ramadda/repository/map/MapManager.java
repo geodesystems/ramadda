@@ -88,8 +88,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     /** _more_ */
     public static final String PROP_INITIAL_BOUNDS = "initialBounds";
 
-    /** _more_ */
+
     public static final String PROP_MAPS_GOOGLE_JS = "ramadda.maps.google.js";
+
+    public static final String PROP_ZOOM_LEVEL = "zoomLevel";
+    public static final String PROP_ZOOM_LEVEL_FALLBACK = "zoomLevelFallback";
+    public static final String PROP_MAP_CENTER = "mapCenter";
+    public static final String PROP_MAP_CENTER_FALLBACK = "mapCenterFallback";        
 
 
     /** default height for GE plugin */
@@ -829,16 +834,25 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             List<Metadata> layers =
                 getMetadataManager().findMetadata(request, entry,
 						  "map_layer", true);
+
             if ((layers != null) && (layers.size() > 0)) {
                 mapLayer = layers.get(0).getAttr1();
-            }
+		String zoomLevel = layers.get(0).getAttr2();
+		if(stringDefined(zoomLevel)) {
+		    mapInfo.addProperty(PROP_ZOOM_LEVEL, zoomLevel);
+		}
+ 		String mapCenter = layers.get(0).getAttr3();
+		if(stringDefined(mapCenter)) {
+		    mapInfo.addProperty("mapCenter", JU.quote(mapCenter));
+		}
+	    }
         }
 
 
-        if (mapLayer == null) {
+        if (!stringDefined(mapLayer)) {
             mapLayer = (String) props.get("defaultMapLayer");
         }
-        if (mapLayer == null) {
+        if (!stringDefined(mapLayer)) {
             mapLayer = getDefaultMapLayer();
         }
         mapInfo.addProperty("defaultMapLayer", JsonUtil.quote(mapLayer));
@@ -1442,7 +1456,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					      selectBounds);
 
 
-	if(Utils.getProperty(mapProps,"zoomLevel")!=null) {
+	if(Utils.getProperty(mapProps,PROP_ZOOM_LEVEL)!=null) {
 	    forceBounds = false;
 	}
 
@@ -1545,7 +1559,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    mapProps.put("mapCenter",tmpCenter);
 		}  else {
 		    mapProps.put("mapCenter","41,-94");
-		    mapProps.put("zoomLevel","3");		
+		    if(map.getProperty(PROP_ZOOM_LEVEL) == null) {
+			System.err.println("adding 3:" + map.getMapProps());
+			mapProps.put(PROP_ZOOM_LEVEL,"3");
+		    }
 		}
 	    }
             map.getMapProps().putAll(mapProps);
@@ -1577,9 +1594,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
-        if (entriesToUse.size() == 1 && Utils.getProperty(mapProps,"zoomLevel",null)==null) {
-	    String zoomLevel=  "10";
-	    map.getMapProps().put("zoomLevel",zoomLevel);
+        if (entriesToUse.size() == 1 && map.getProperty(PROP_ZOOM_LEVEL)==null) {
+	    map.getMapProps().put(PROP_ZOOM_LEVEL,"10");
         }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
