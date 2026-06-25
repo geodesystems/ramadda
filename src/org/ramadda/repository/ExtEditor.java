@@ -551,6 +551,7 @@ public class ExtEditor extends RepositoryManager {
 				@Override
 				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
+				    System.err.println("process:" + entry);
 				    if(!doThisOne && entry.getId().equals(finalEntry.getId())) {
 					return true;
 				    }
@@ -564,6 +565,8 @@ public class ExtEditor extends RepositoryManager {
 				    }
 
 				    if(!getActionManager().getActionOk(actionId)) {
+					System.err.println("cancelled");
+					
 					return false;
 				    }
 
@@ -773,13 +776,21 @@ public class ExtEditor extends RepositoryManager {
 	if(actionId!=null) {
 	    String url = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&output=json";
 	    sb.append(HU.b("Results"));
-	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
+	    String cancelUrl =null;
 	    if(canCancel) {
-		//		String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
-		String cancelUrl = HU.url(extEditUrl,ARG_CANCEL,actionId.toString());
-		sb.append(HU.button(HU.href(cancelUrl,LABEL_CANCEL)));
+		cancelUrl = HU.url(extEditUrl,ARG_CANCEL,actionId.toString());
+		sb.append(HU.div("",HU.attrs("id",actionId+"_cancel")));
 	    }
-	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
+	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
+	    sb.append(HU.importJS(getHtdocsUrl("/actions.js")));
+	    HU.script(sb,
+		      HU.call("new RamaddaActionManager",
+			      HU.squote(actionId),
+			      HU.squote(url),
+			      cancelUrl!=null?
+			      JU.map("cancelUrl",JU.quote(cancelUrl)):
+			      JU.map()));
+			      
 	}
 
 	final StringBuilder[] buff={null};
@@ -1064,14 +1075,14 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	/*
-	if(extEntries!=null) {
-	    StringBuilder esb = new StringBuilder();
-	    for(Entry child: extEntries) {
-		esb.append(child.toString());
-		esb.append(HU.br());
-	    }
-	    sb.append(esb);
-	}
+	  if(extEntries!=null) {
+	  StringBuilder esb = new StringBuilder();
+	  for(Entry child: extEntries) {
+	  esb.append(child.toString());
+	  esb.append(HU.br());
+	  }
+	  sb.append(esb);
+	  }
 	*/
 	if(titles.size()==1) {
 	    String label = titles.get(0);
@@ -1151,55 +1162,6 @@ public class ExtEditor extends RepositoryManager {
 
         return tfos;
     }
-
-    /*
-      private void setMD5(Request request, StringBuilder sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
-      if(!getRepository().getActionManager().getActionOk(actionId)) {
-      return;
-      }
-      Statement stmt = getDatabaseManager().select(SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID,
-      Tables.ENTRIES.COL_TYPE,
-      Tables.ENTRIES.COL_MD5,
-      Tables.ENTRIES.COL_RESOURCE}),
-      Tables.ENTRIES.NAME,
-      Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entryId));
-      SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-      ResultSet        results;
-
-      while ((results = iter.getNext()) != null) {
-      totalCnt[0]++;
-      int col = 1;
-      String id = results.getString(col++);
-      String type= results.getString(col++);
-      String md5 = results.getString(col++);
-      String resource = results.getString(col++);
-      if(new File(resource).exists() && !Utils.stringDefined(md5)) {
-      setCnt[0]++;
-      Entry entry = getEntry(request, id);
-      if(!getAccessManager().canDoEdit(request, entry)) {
-      continue;
-      }
-      md5 = ucar.unidata.util.IOUtil.getMd5(resource);
-      getDatabaseManager().update(Tables.ENTRIES.NAME,
-      Tables.ENTRIES.COL_ID,
-      id, new String[]{Tables.ENTRIES.COL_MD5},
-      new String[]{md5});
-      sb.append(getPageHandler().getConfirmBreadCrumbs(request, entry));
-      sb.append(HU.br());
-      }
-      getActionManager().setActionMessage(actionId,
-      "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
-
-      if(recurse) {
-      TypeHandler typeHandler = getRepository().getTypeHandler(type);
-      if(typeHandler.isGroup()) {
-      setMD5(request, actionId,  sb, recurse, id, totalCnt, setCnt);
-      }
-      }
-      }
-      getDatabaseManager().closeStatement(stmt);
-      }
-    */
 
     public Result processEntryTypeChange(Request request) throws Exception {
 
@@ -1638,10 +1600,10 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	/*
-	public void indexEntry() {
-	    changed=true;
-	    request.put(ARG_DOOCR,true);
-	}
+	  public void indexEntry() {
+	  changed=true;
+	  request.put(ARG_DOOCR,true);
+	  }
 	*/
 
 
@@ -2013,6 +1975,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void print(Object ...msgs) throws Exception {
+	    Misc.sleepSeconds(5);
 	    for(Object msg: msgs)
 		visitor.append(getString(msg)+" ");
 	    visitor.append("\n");
@@ -2195,7 +2158,7 @@ public class ExtEditor extends RepositoryManager {
         main.append(HU.formEntryTop(msgLabel("Icon"),
 				    HU.input("icon",request.getString("icon",""),
 					     HU.attrs("placeholder","/icons/chart.png","size","30"))+   HU.space(1) + iconHelp
-));	
+				    ));	
 
         main.append(HU.formTableClose());
 
@@ -2309,7 +2272,7 @@ public class ExtEditor extends RepositoryManager {
 	    admin.append(HU.insetDiv(
 				     HU.labeledCheckbox(ARG_DROPTABLE,"true",false,"Yes, drop the database table")+
 				     HU.div(getAuthManager().getVerificationWithPassword(request,
-									     "To ensure the drop table is OK please enter your password")),0,30,0,0));
+											 "To ensure the drop table is OK please enter your password")),0,30,0,0));
 	}
 
 	String basicLabel = "Basic Configuration";
@@ -2551,14 +2514,14 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	//	if(request.defined(ARG_SUPERCATEGORY)) {
-	    sb.append(XU.attr("supercategory",request.getString(ARG_SUPERCATEGORY,"").trim()));
-	    sb.append("\n");
-	    //	}
+	sb.append(XU.attr("supercategory",request.getString(ARG_SUPERCATEGORY,"").trim()));
+	sb.append("\n");
+	//	}
 
-	    //	if(request.defined(ARG_CATEGORY)) {
-	    sb.append(XU.attr("category",request.getString(ARG_CATEGORY,"").trim()));
-	    sb.append("\n");
-	    //	}
+	//	if(request.defined(ARG_CATEGORY)) {
+	sb.append(XU.attr("category",request.getString(ARG_CATEGORY,"").trim()));
+	sb.append("\n");
+	//	}
 
 	String extraAttributes = request.getString("extraattributes","");
 	if(Utils.stringDefined(extraAttributes)) {

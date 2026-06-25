@@ -94,6 +94,7 @@ public class ActionManager extends RepositoryManager {
 
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
+	    System.err.println("cancelling action");
 	    action.setCancelled(true);
 	    Result result = action.finishAction(sb);
 	    if(result!=null) return result;
@@ -344,7 +345,7 @@ public class ActionManager extends RepositoryManager {
         boolean returnJson = false;
 	protected Entry entry;
 	protected Future future;
-	
+	protected Process process;
 	
         public Action() {}
 
@@ -360,6 +361,16 @@ public class ActionManager extends RepositoryManager {
 	}
 	public void setRunning(boolean running) {
 	    if(!running) {
+		if(process!=null) {
+		    try {
+			System.err.println("destroying process");
+			process.destroy();
+			System.err.println("done destroying process");
+		    } catch(Throwable ignore) {
+		    }
+		    process=null;
+		}
+
 		if(future!=null) {
 		    try {
 			future.cancel(true);
@@ -386,7 +397,25 @@ public class ActionManager extends RepositoryManager {
 	    return null;
 	}
 
+	/**
+	   Set the Process property.
+
+	   @param value The new value for Process
+	**/
+	public void setProcess (Process value) {
+	    process = value;
+	}
+
+	/**
+	   Get the Process property.
+
+	   @return The Process
+	**/
+	public Process getProcess () {
+	    return process;
+	}
     }
+
     public class ActionInfo {
 	private Action action;
         private String id;
