@@ -13,7 +13,9 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 >
 
 <!-- Columns-->
-<column  name="showmap"  label="Show Map"  type="boolean"   showinhtml="false" default="true" />
+<column  name="project_type"  label="Project Type"  type="enumerationplus"   cansearch="true" values="Geologic Project" default="Geologic Project" />
+<column  name="project_status"  label="Project Status"  type="enumerationplus"   cansearch="true" values="Active,Inactive" default="Active" />
+<column  name="showmap"  label="Show Map"  type="boolean"   showinhtml="false" default="true"  group="Display" />
 <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />
 <column  name="show_search"  label="Show Search"  type="boolean"   showinhtml="false" default="true" />
 <!-- Properties-->
@@ -35,6 +37,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 +if property=showmap
 {{map listentries="true" message="" prefix=":nonavheading Project Locations" hideIfNoLocations=true 
 entries="this,children,childrenof:type:type_map_folder" 
+height=450px
 dontList="this" listInMap=true
 orderby=entryorder_up,name_up 
  showBounds=false 
@@ -47,6 +50,10 @@ showCreateDate=false showDate=false
 orderby=entryorder_up ascending=true}} 
 -col
 +col-4
+<table class="formtable"> 
+{{field  name="project_type"  row.label="Project Type:"  }} 
+{{field  name="project_status"  row.label="Project Status:"  }}
+</table>
 +center
 {{image  inherited="false" showCaption=true multiples=true popup=true
 message="" width="80%"  useThumbnail="true" }}
