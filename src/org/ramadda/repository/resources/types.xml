@@ -194,6 +194,21 @@ priority="2"       >
 
 
 
+<type  name="type_data_file" 
+ description="Data File" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ supercategory="General" 
+ category="Data" 
+>
+
+<!-- Columns-->
+<column  name="data_type"  label="Data Type"  type="enumerationplus"   cansearch="true" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/icons/datafile.png" />
+</type>
+
+
  <type name="point_text_csv"  description="CSV Data"  super="type_convertible"
        category="Data"
        priority="2"
