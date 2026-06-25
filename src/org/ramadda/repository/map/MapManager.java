@@ -1171,18 +1171,22 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 			     "id",uid,
 			     "style",HU.css("max-height",height)));
 	    HU.div(tocOuter,link,HU.clazz("ramadda-clickable ramadda-map-toc-header"));
-	    HU.tag(tocOuter,"div",HU.attrs("id",searchId,"style","margin:5px;text-align:center;"),"");
+	    if(numEntries>5) {
+		HU.tag(tocOuter,"div",HU.attrs("id",searchId,"style","margin:5px;text-align:center;"),"");
+	    }
 	    HU.open(tocOuter,"div",HU.attrs("id",innerId,"class","ramadda-map-toc-inner","style",tocStyle));
 	    tocOuter.append(contents);
 	    HU.close(tocOuter,HU.TAG_DIV,HU.TAG_DIV);
 	    sb.append(tocOuter);
 	    HU.script(sb,"$(\"#" + uid+"\").draggable();");
-	    String args = JU.map("target",JU.quote("#"+searchId));
-	    HU.script(sb,HU.call("HtmlUtils.initPageSearch",
-				 HU.squote("#" + innerId+" .ramadda-earth-nav"),
-				 HU.squote("#" + uid),
-				 HU.squote("Search"),
-				 "false",args));
+	    if(numEntries>5) {
+		String args = JU.map("target",JU.quote("#"+searchId));
+		HU.script(sb,HU.call("HtmlUtils.initPageSearch",
+				     HU.squote("#" + innerId+" .ramadda-earth-nav"),
+				     HU.squote("#" + uid),
+				     HU.squote("Search"),
+				     "false",args));
+	    }
 
 
 	}

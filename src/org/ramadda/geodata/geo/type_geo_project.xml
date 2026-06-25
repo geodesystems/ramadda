@@ -30,21 +30,20 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 +section title={{name}}
 :navtop
 {{description wikify=true}}
-+skip
-{{tabletree  entries="this,grandchildren" }}
--skip
 +row 
 +col-8
 +if property=showmap
 {{map listentries="true" message="" prefix=":nonavheading Project Locations" hideIfNoLocations=true 
-entries="children,childrenof:type:type_map_folder" 
-orderby=entryorder_up,name_up
+entries="this,children,childrenof:type:type_map_folder" 
+dontList="this" listInMap=true
+orderby=entryorder_up,name_up 
  showBounds=false 
 }}
 -if
 
 :heading Contents
 {{tabletree  message="No project contents"  simple="false"  #maxHeight="500px"  showSize=false
+showCreateDate=false showDate=false
 orderby=entryorder_up ascending=true}} 
 -col
 +col-4
