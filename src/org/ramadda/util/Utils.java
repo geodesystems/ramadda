@@ -1269,6 +1269,16 @@ public class Utils extends IO {
         return Double.parseDouble(attrValue);
     }
 
+    public static void destroy(Process process) {
+	if(process!=null) {
+	    try {
+		process.destroy();
+	    } catch(Throwable ignore) {
+		System.err.println("Error destroying process:" + ignore);
+	    }
+	}
+    }
+
     public static String makeProperties(Hashtable properties) {
         StringBuffer sb      = new StringBuffer();
         List<String> keyList = new ArrayList<String>();
