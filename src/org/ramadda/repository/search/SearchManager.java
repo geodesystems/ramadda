@@ -1575,7 +1575,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
-	    List<TypeHandler> types  =getRepository().getTypes(request.getUnsafeString(ARG_TYPE));
+	    List<String> tmp = request.get(ARG_TYPE,
+					   new ArrayList<String>());
+	    List<TypeHandler> types  =new ArrayList<TypeHandler>();
+	    for(String type: tmp) {
+		types.addAll(getRepository().getTypes(type));
+	    }
 	    //Check if the ANY type  was passed in. If it was then don't add the type queries
 	    boolean ok = true;
 	    for(TypeHandler typeHandler: types) {
