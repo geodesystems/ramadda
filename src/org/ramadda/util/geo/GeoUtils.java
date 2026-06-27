@@ -281,6 +281,45 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	return m*0.000621371;
     }    
 
+    public static final String UNIT_M  = "m";
+    public static final String UNIT_FT = "ft";
+    public static final String UNIT_CM = "cm";
+    public static final String UNIT_IN = "in";
+    public static final String UNIT_YD = "yd";
+    public static final String UNIT_MI = "mi";
+
+    public static double toMeters(double value, String unit) {
+	if (unit == null) {
+	    return value;
+	}
+
+	switch (unit.toLowerCase()) {
+        case UNIT_M:
+            return value;
+
+        case UNIT_CM:
+            return value * 0.01;
+
+        case UNIT_IN:
+            return value * 0.0254;
+
+        case UNIT_FT:
+            return value * 0.3048;
+
+        case UNIT_YD:
+            return value * 0.9144;
+
+        case UNIT_MI:
+            return value * 1609.344;
+
+        default:
+	    return value;
+	}
+    }
+
+
+
+
     public static double feetToMeters(double feet) {
 	return feet*0.3048;
     }
