@@ -123,6 +123,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    List<String> attrs = new ArrayList<String>();
 	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
 	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
+	    String unit = child.getStringValue(request, "depth_unit","m");
 	    boolean hasDepthField=true;
 	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
 		List<Metadata> mtdList=
@@ -132,6 +133,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			try {
 			    top = Double.parseDouble(mtd.getAttr1());
 			    bottom = Double.parseDouble(mtd.getAttr2());
+			    unit = mtd.getAttr3();
 			    hasDepthField=false;
 			    Utils.add(attrs,"depthMetadataID",JU.quote(mtd.getId()));
 			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
@@ -148,6 +150,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		//		System.err.println("no depth registration for core entry:" + child);
 		continue;
 	    }
+	    top = GeoUtils.toMeters(top, unit);
+	    bottom = GeoUtils.toMeters(bottom, unit);	    
 	    //	    if(!child.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) continue;
 	    String info = getMapManager().makeInfoBubble(request, child);
 	    info =getMapManager().encodeText(info);

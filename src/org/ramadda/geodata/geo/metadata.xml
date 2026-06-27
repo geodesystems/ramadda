@@ -47,6 +47,9 @@
     <type id="geo_depth_range" name="Depth Range"> 
       <element name="Top" datatype="double"/>
       <element name="Bottom" datatype="double"/>
+      <element name="Unit" datatype="enumeration"
+	       values="m:meter,ft:foot,cm:centimeter,in:inch,yd:yard,mi:mile"
+	       default="m"/>      
     </type>    
 
     <type id="geo_core_box" name="Geo Core Box"> 

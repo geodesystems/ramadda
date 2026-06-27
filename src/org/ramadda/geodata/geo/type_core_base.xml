@@ -15,8 +15,9 @@ metadata="geo_stratigraphy,geo_measurement"
 >
 
 <!-- Columns-->
-<column  name="top_depth"  label="Top Depth"  type="double"  group="Core Metadata"  default="NaN" doinlineedit="true"   showinhtml="true" suffix="meters"  htmltemplate="${value unit=meters}   ${value decimals=3 showMissing=false   prefix=( suffix=&quot; feet) &quot; scale=3.28084}"  />
-<column  name="bottom_depth"  label="Bottom Depth"  type="double"  default="NaN" doinlineedit="true"   showinhtml="true" suffix="meters"  htmltemplate="${value unit=meters}   ${value decimals=3 showMissing=false   prefix=( suffix=&quot; feet) &quot; scale=3.28084}"  />
+<column  name="top_depth"  label="Top Depth"  type="double"  group="Core Metadata"  default="NaN" doinlineedit="true"   showinhtml="true" xxxsuffix="meters"  xxxxhtmltemplate="${value unit=meters}   ${value decimals=3 showMissing=false   prefix=( suffix=&quot; feet) &quot; scale=3.28084}"  />
+<column  name="bottom_depth"  label="Bottom Depth"  type="double"  default="NaN" doinlineedit="true"   showinhtml="true" xxxsuffix="meters"  xxxxhtmltemplate="${value unit=meters}   ${value decimals=3 showMissing=false   prefix=( suffix=&quot; feet) &quot; scale=3.28084}"  />
+<column  name="depth_unit"  label="Depth Unit"  type="enumeration"  values="m:meter,ft:foot,cm:centimeter,in:inch,yd:yard,mi:mile" default="m"  />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />

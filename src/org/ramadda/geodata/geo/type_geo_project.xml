@@ -84,7 +84,8 @@ message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true ad
 ----
 :vspace 1em
 :heading Search Project
-{{display_entrylist   startWithAny=true
+{{display_entrylist   startWithAny=true  startWithAny=true  addAnyType=true  addAllTypes=true 
+showEntryType=true
 showAncestor=true ancestor=this
 metadataTypes=""
 entryTypes="super:type_core_base,type_data_file,type_geo_site,super:type_document,group,type_map_folder,type_display_children"  
