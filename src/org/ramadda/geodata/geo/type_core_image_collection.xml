@@ -37,8 +37,7 @@ displayEntries="${property:displays}"
 }}
 -fullscreen
 
-:heading Table
-{{table showDate=false}} 
+{{table showDate=false message="" prefix=":heading Table"}} 
 -section]]></wiki>
 </type>
 <type name="type_geo_borehole_images" 
