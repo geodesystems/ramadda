@@ -141,34 +141,27 @@ Postgres database (if installed): The /var/lib/... pgsql dir links to here
 
 :heading Command Line Utilities
 If you are a Mac or Linux user and are running on AWS here is a useful set of command line
-utilities. First download the 3 shell scripts and move them to some directory:
+utilities. First download this ramadda_aws.sh shell script and move them it to some directory:
 <ul>
-<li>  <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh">
-https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/defineenv.sh
+<li>  <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/ramadda_aws.sh">
+https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/ramadda_aws.sh
 </a>
-
-<li> <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/put.sh">
-https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/put.sh
-</a>
-
-<li> <a href="https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/get.sh">
-https://github.com/geodesystems/ramadda/raw/refs/heads/master/bin/get.sh
-</a>
-</ul>
-
-put.sh and get.sh are used to remotely copy files to your server and retrieve them
-
 :p
 Now, let's assume your project is called ramadda (note: this really can be any name).
 In your .bashrc file put:
 +pre addCopy=true
-export RAMADDA_PEM=/path/to/the/aws/pemfile/Users/ramadda.pem
-export RAMADDA_IP=&lt;IP address of your server&gt;
-source /path/to/defineenv.sh ramadda ${RAMADDA_IP} -pem ${RAMADDA_PEM}
+source /path/to/ramadda_aws.sh ramadda <SOME IP> -pem <PATH TO .PEM FILE>
+-pre
+e.g.
++pre addCopy=true
+source /path/to/ramadda_aws.sh ramadda 123.456.789.123 -pem /path/to/ramadda.pem
 -pre
 
 This creates the following aliases:
 +pre 
+print out the IP address
+<i>ip_goramadda</i>   
+
 ssh to the machine:
 <i>goramadda</i>   
 
