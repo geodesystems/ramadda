@@ -474,8 +474,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'excludeEmptyTypes',ex:'true',tt:'Some types in the type list might have zero entry count'},
         {p:'typesLabel',tt: 'Label to use for the type section'},		
 	{p:'addAllTypes',d:false,ex:'true',tt:'Add the All types to the type list'},
+	{p:'startWithAll',d:true,ex:'true',tt:'Start with the All types'},		
 	{p:'addAnyType',d:true,ex:'true',tt:'Add the Any of these types to the type list'},
-	{p:'startWithAny',d:true,ex:'true',tt:'Start with the Any of these types'},	
+	{p:'startWithAny',d:true,ex:'true',tt:'Start with the Any of these types'},
+
 
 
 	{label:'Search Context'},
@@ -1479,7 +1481,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
 
-
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
 	    if(this.getMainAncestor()) {
 		let main  = this.getMainAncestor();
@@ -2180,17 +2181,31 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    let select = HU.openTag(TAG_SELECT, typeSelectAttributes);
 	    if(this.getAddAllTypes()) {
-		select += HU.tag(TAG_OPTION, [ATTR_TITLE, '',
-					      ATTR_VALUE, VALUE_ANY_TYPE],'Any type');
+		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+                let optionAttrs = [ATTR_TITLE, '',
+				   ATTR_VALUE, VALUE_ANY_TYPE,
+				   ATTR_CLASS, 'display-typelist-type',
+				   'data-icon', icon
+				  ];
+		select += HU.tag(TAG_OPTION, optionAttrs,'Any type');
+		select +='\n';
 	    }
 	    if(this.getAddAnyType() && this.entryTypes.length>1) {
-		select += HU.tag(TAG_OPTION, [ATTR_TITLE, '',
-					      ATTR_VALUE, ''],
+		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+                let optionAttrs = [ATTR_TITLE, '',
+				   ATTR_VALUE, VALUE_ANY_TYPE,
+				   ATTR_CLASS, 'display-typelist-type',
+				   'data-icon', icon
+				  ];
+
+		select += HU.tag(TAG_OPTION, optionAttrs,
 				 this.getEntryTypes()?'Any of these types':'Any type');
+		select +='\n';
 	    }
 	    let hadSelected = false;
 	    let anySelected = false;
 	    let startWithAny=this.getStartWithAny();
+	    let startWithAll=this.getStartWithAll();
 	    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
             this.entryTypes.every(type=>{
                 anySelected = this.getSearchSettings().hasType(type.getId());
@@ -2210,8 +2225,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    excludeMap[t] = true;
 		});
 	    }		
-            for (let i = 0; i < this.entryTypes.length; i++) {
-                let type = this.entryTypes[i];
+            for (let idx = 0; idx < this.entryTypes.length; idx++) {
+                let type = this.entryTypes[idx];
 		if(seen[type.getId()]) continue;
 		seen[type.getId()] = true;
 		if(excludeEmptyTypes && type.getEntryCount()==0) continue;
@@ -2227,7 +2242,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(fromUrl)
 			selected = type.getId()==fromUrl;
 		}
-		if(!selected && !anySelected && i==0 && !startWithAny)  selected=true;
+		if(!selected && !anySelected && idx==0 && !startWithAny)  selected=true;
                 if (selected) {
 		    hadSelected = true;
                     optionAttrs.push('selected');
@@ -2249,9 +2264,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 catMap[type.getCategory()] += option;
             }
             for (let i in cats) {
-		select+=HU.open(TAG_OPTGROUP,[ATTR_LABEL,cats[i]]);
+		select +=HU.open(TAG_OPTGROUP,[ATTR_LABEL,cats[i]]);
                 select += catMap[cats[i]];
 		select += HU.close(TAG_OPTGROUP);
+		select +='\n';
 /*
 			    HU.tag(TAG_OPTION, [ATTR_CATEGORY,'true',
 						ATTR_DISABLED,null,
