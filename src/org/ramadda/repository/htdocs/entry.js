@@ -470,13 +470,16 @@ function RamaddaRepository(repositoryRoot) {
 
         getSearchUrl: function(settings, output, bar) {
             let url = HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),'forsearch','true');
+	    let debug=false;
 	    if(output) url = HU.url(url,'output',output);
-            for (let i = 0; i < settings.types.length; i++) {
-                let type = settings.types[i];
+            for (let idx = 0; idx < settings.types.length; idx++) {
+                let type = settings.types[idx];
 		if(type!=VALUE_ANY_TYPE) {
-                    url = HU.url(url,'type',type);
+		    if(debug) console.log('type:',type);
+                    url = HU.url(url,ARG_TYPE,type);
 		}
             }
+
 
             if (settings.parent != null && settings.parent.length > 0)
                 url = HU.url(url,'group',settings.parent);
@@ -1534,10 +1537,13 @@ function EntrySearchSettings(props) {
             this.addType(type);
             return this;
         },
-        addType: function(type) {
-            if (type == null || type.length == 0) return;
-            if (this.hasType(type)) return;
-            this.types.push(type);
+        addType: function(types) {
+            if (types == null || types.length == 0) return;
+	    if(!Array.isArray(types)) types = [types];
+	    types.forEach(type=>{
+		if (this.hasType(type)) return;
+		this.types.push(type);
+	    });
             return this;
         }
     });
