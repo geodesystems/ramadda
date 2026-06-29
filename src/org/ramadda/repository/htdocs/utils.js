@@ -4831,7 +4831,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let buttons = Utils.wrap(args,
 				 HU.open(TAG_DIV,
 					 [ATTR_STYLE,
-					  HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(6))]),
+					  HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,CSS_MARGIN_RIGHT,HU.px(0))]),
 				 HU.close(TAG_DIV));
 	return HU.div([ATTR_CLASS,clazz??CLASS_BUTTON_BAR,
 		       ATTR_STYLE,style??''], buttons);
