@@ -155,6 +155,7 @@ var CLASS_HOVERABLE = 'ramadda-hoverable';
 var CLASS_INPUT='input';
 var CLASS_LINK = 'ramadda-link';
 var CLASS_MENUBAR = 'ramadda-menubar';
+var CLASS_MENULABEL= 'ramadda-menu-label';
 var CLASS_MENUITEM = 'ramadda-menu-item';
 var CLASS_MENU_DIVIDER= 'ramadda-menu-divider';
 var CLASS_MENU_BUTTON = 'ramadda-menu-button';
