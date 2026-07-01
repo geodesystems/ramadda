@@ -59,7 +59,8 @@ message="" width="80%"  useThumbnail="true" }}
 +if property=show_search
 ----
 :vspace 1em
-:heading Search Site{{display_entrylist   startWithAny=true  startWithAny=true  addAnyType=true  addAllTypes=true 
+:heading Search Site
+{{display_entrylist   startWithAny=true  startWithAny=true  addAnyType=true  addAllTypes=true 
 showEntryType=true
 showAncestor=true ancestor=this
 metadataTypes=""
