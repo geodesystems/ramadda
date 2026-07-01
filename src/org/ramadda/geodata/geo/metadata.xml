@@ -50,6 +50,8 @@
       <element name="Unit" datatype="enumeration"
 	       values="m:meter,ft:foot,cm:centimeter,in:inch,yd:yard,mi:mile"
 	       default="m"/>      
+      <element name="Fill Color" datatype="string" size="10"/>
+      <element name="Stroke Color" datatype="string" size="10"/>      
     </type>    
 
     <type id="geo_core_box" name="Geo Core Box"> 

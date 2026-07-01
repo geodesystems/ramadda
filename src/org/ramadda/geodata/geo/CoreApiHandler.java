@@ -124,6 +124,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
 	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
 	    String unit = child.getStringValue(request, "depth_unit","m");
+	    String fillColor = null;
+	    String strokeColor = null;	    
 	    boolean hasDepthField=true;
 	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
 		List<Metadata> mtdList=
@@ -134,6 +136,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    top = Double.parseDouble(mtd.getAttr1());
 			    bottom = Double.parseDouble(mtd.getAttr2());
 			    unit = mtd.getAttr3();
+			    fillColor = mtd.getAttr4();
+			    strokeColor = mtd.getAttr(5);			    			    
 			    hasDepthField=false;
 			    Utils.add(attrs,"depthMetadataID",JU.quote(mtd.getId()));
 			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
@@ -166,19 +170,32 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		}
 	    }
 	    if(url==null) {
-		url = getPageHandler().makeHtdocsUrl("/geo/placeholder.png");
+		//		url = getPageHandler().makeHtdocsUrl("/geo/placeholder.png");
 	    }
 	    if(url==null) {
-		System.err.println("no image:" + child);
-		continue;
+		//		System.err.println("no image:" + child);
+		//		continue;
 	    }
-	    Utils.add(attrs,"url",JU.quote(url),"label",JU.quote(child.getName()),
+	    if(url!=null) {
+		Utils.add(attrs,    "url",JU.quote(url));
+	    }
+
+	    Utils.add(attrs,
+		      "url",JU.quote(url),
+		      "label",JU.quote(child.getName()),
 		      "entryId",JU.quote(child.getId()),
 		      "topDepth",JU.quote(Double.toString(top)),
 		      "bottomDepth",JU.quote(Double.toString(bottom)),
 		      "doRotation",child.getStringValue(request,"do_rotation","false"),
 		      "text",JU.quote(info),
 		      "hasDepthField",hasDepthField);
+	    
+	    if(stringDefined(fillColor)) {
+		Utils.add(attrs,"fillColor",JU.quote(fillColor));
+	    }
+	    if(stringDefined(strokeColor)) {
+		Utils.add(attrs,"strokeColor",JU.quote(strokeColor));
+	    }	    
 	    List<String>boxes = null;
 	    List<Box> _boxes = getBoxes(request, child);
 
