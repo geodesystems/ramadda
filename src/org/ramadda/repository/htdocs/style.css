@@ -4416,7 +4416,7 @@ a.btn-primary:link, a.btn-primary  {
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
-.ramadda-menu-item {
+.ramadda-menu-item,.ramadda-menu-label  {
     padding-left:8px;
     padding-right:8px;
     cursor:pointer;
@@ -5244,9 +5244,6 @@ a.ramadda-heading-2-link:visited {
     content: "|";
 }
 
-.ramadda-menu-label {
-    border: 1px red solid;
-}
 
 .entry-sidebox {
     border: var(--basic-border);
