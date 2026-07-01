@@ -5319,6 +5319,41 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             console.log("err:" + e);
         }
     },
+    sanitize:function(value) {
+	if(!value) return value;
+	return String(value)
+            .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    },
+    hardSanitize:function(value) {
+	if(!value) return value;
+	return HU.sanitize(value)
+        // normalize weird Unicode forms
+        .normalize("NFKC")
+
+        // remove ASCII control chars
+        .replace(/[\u0000-\u001F\u007F]/g, "")
+
+        // remove HTML tag delimiters and common attribute-breaking chars
+        .replace(/[<>"'`]/g, "")
+
+        // remove javascript/data/vbscript URL schemes
+        .replace(/\b(?:javascript|data|vbscript)\s*:/gi, "")
+
+        // remove common inline event-handler names
+        .replace(/\bon\w+\s*=/gi, "")
+
+        // remove expression() CSS attacks
+        .replace(/\bexpression\s*\(/gi, "");
+    },
+    getSanitizedUrlArgument: function(arg,dflt) {
+	return HU.hardSanitize(HU.getUrlArgument(arg,dflt));
+    },
     getUrlArgument: function(arg,dflt) {
         const urlParams = new URLSearchParams(window.location.search);
         let value =  urlParams.get(arg);
