@@ -1271,6 +1271,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let cols = this.getSearchableColumns();
 	    let searchBar  = this.jq(ID_SEARCH_BAR);
 	    let makeTag=(key,value,label) =>{
+		label =  HU.sanitize(label);
 		return  $(HU.div([ATTR_TITLE,'Click to clear search',
 				  ATTR_CLASS,CLASS_SEARCH_TAG,
 				  key,value],label)).appendTo(searchBar);
@@ -1510,7 +1511,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.areaWidgets.push(areaWidget);
 	},
 	getSearchValue:function(key,dflt) {
-	    let v =  GuiUtils.getUrlArg(this.urlPrefix+key,null);
+	    let v =  HU.getSanitizedUrlArg(this.urlPrefix+key,null);
 	    if(v==null) return dflt;
 	    v = v.replace(/\+/g,' ');
 	    return v;
@@ -1610,7 +1611,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			this.provider = providers[0];
 		    } else {
 			let options = "";
-			let selected = HU.getUrlArgument(ID_PROVIDERS);
+			let selected = HU.getSanitizedUrlArgument(ID_PROVIDERS);
 			let currentCategory = null;
 			let catToBuff = {};
 			let cats = [];
@@ -1698,8 +1699,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    let text  = this.getFormText();
-	    if(!Utils.stringDefined(text)) 
-		text = HU.getUrlArgument(ID_TEXT_FIELD);
+	    if(!Utils.stringDefined(text)) {
+		text = HU.getSanitizedUrlArgument(ID_TEXT_FIELD);
+	    }
 	    let textInputClass = HU.classes(CLASS_SIMPLESEARCH_INPUT,CLASS_SEARCH_TEXTINPUT);
 	    let attrs  = [ATTR_PLACEHOLDER, this.getEgText("Search text"),
 			  ATTR_TITLE,Utils.noMsg("e.g. name:, contents:,path:"),
@@ -1746,8 +1748,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(this.getShowAncestorSelector(this.getProperty('showAncestor',true))) {
-		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty('ancestor');
-		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty('ancestorName');		
+		let ancestor = HU.getSanitizedUrlArgument(ID_ANCESTOR) ?? this.getProperty('ancestor');
+		let name = HU.getSanitizedUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty('ancestorName');		
 		let aid = this.domId(ID_ANCESTOR);
 		let clear = HU.span([ATTR_TITLE,'Clear selection',
 				     ATTR_CLASS,CLASS_CLICKABLE,
@@ -2206,7 +2208,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let anySelected = false;
 	    let startWithAny=this.getStartWithAny();
 	    let startWithAll=this.getStartWithAll();
-	    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
+	    let fromUrl = HU.getSanitizedUrlArgument(ID_TYPE_FIELD);
             this.entryTypes.every(type=>{
                 anySelected = this.getSearchSettings().hasType(type.getId());
 		if(fromUrl)
@@ -3502,7 +3504,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let text  = this.getFormText();
 	    let hadInitText = false;
 	    if(!Utils.stringDefined(text) && this.getDoPageSearch()) {
-		text = HU.getUrlArgument(ARG_PAGESEARCH)??'';
+		text = HU.getSanitizedUrlArgument(ARG_PAGESEARCH)??'';
 		if(Utils.stringDefined(text)) {
 		    hadInitText = true;
 		}

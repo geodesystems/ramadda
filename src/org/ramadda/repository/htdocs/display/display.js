@@ -1576,13 +1576,13 @@ function DisplayThing(argId, argProperties) {
 	      let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,  'display'+ this.displayCount+'.' + key);
 	    */
 	    let fullKey = 'd'+this.displayCount+'.'+key;
-	    let fromUrl = HU.getUrlArgument(fullKey);
+	    let fromUrl = HU.getSanitizedUrlArgument(fullKey);
 	    if(Utils.isDefined(fromUrl)) {
 		//console.log('from url full key:' + key + ' value:' + fromUrl);
 		return fromUrl;
 	    }
 	    if(checkKey) {
-		fromUrl = HU.getUrlArgument(key);
+		fromUrl = HU.getSanitizedUrlArgument(key);
 		if(fromUrl) {
 		    //		    console.log('from url:' + key + ' value:' + fromUrl);
 		    return fromUrl;

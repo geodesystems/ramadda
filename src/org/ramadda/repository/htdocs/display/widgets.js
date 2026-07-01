@@ -262,8 +262,8 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
 	    }
         },
         getHtml: function() {
-	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
-	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
+	    let start = HU.getSanitizedUrlArgument(this.baseId+ID_DATE_START);
+	    let end = HU.getSanitizedUrlArgument(this.baseId+ID_DATE_END);	    
             let html = HU.input(this.baseId +ID_DATE_START, start||"",
 				[ATTR_CLASS, "display-date-input",
 				 ATTR_PLACEHOLDER, " " +startLabel,
