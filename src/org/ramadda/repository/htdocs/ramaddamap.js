@@ -505,7 +505,6 @@ RepositoryMap.prototype = {
 	    }
 	    return;
 	}
-	console.trace();
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
 	}
