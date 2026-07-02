@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  1 10:50:09 MDT 2026";
+var build_date="RAMADDA build date: Thu Jul  2 03:26:11 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -37370,7 +37370,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.areaWidgets.push(areaWidget);
 	},
 	getSearchValue:function(key,dflt) {
-	    let v =  HU.getSanitizedUrlArg(this.urlPrefix+key,null);
+	    let v =  HU.getSanitizedUrlArgument(this.urlPrefix+key,null);
 	    if(v==null) return dflt;
 	    v = v.replace(/\+/g,' ');
 	    return v;
