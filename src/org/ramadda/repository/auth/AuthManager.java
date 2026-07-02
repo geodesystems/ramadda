@@ -325,9 +325,9 @@ public class AuthManager extends RepositoryManager {
 	}
 
 	String formID = "checkhumanform";
-	HU.script(sb,"function onHumanCheckSuccess(token) {alert('ok');return;document.getElementById(" + HU.squote(formID)+").submit();}");
+	HU.script(sb,"function onHumanCheckSuccess(token) {document.getElementById(" + HU.squote(formID)+").submit();}");
 	sb.append(HU.formPost(request.getRequestPath(),
-			  HU.attrs("id",formID)));
+			      HU.attrs("id",formID)));
 	sb.append(HU.hidden("humanform","true"));
 
 	if(isTurnstileEnabled()) {
@@ -337,18 +337,14 @@ public class AuthManager extends RepositoryManager {
 	    sb.append("</div>");
 	    sb.append(getAuthManager().getRecaptcha(request,
 						    "data-callback","onHumanCheckSuccess"));
-	    //	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	} else {
 	    sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	    sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
-	    request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
 	    HU.importJS(sb, getPageHandler().getCdnPath("/human.js"));
 	}
-
+	request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
 	sb.append(HU.formClose());
 	sb.append("\n");
-
-
 
 	String message2 = "This site uses a necessary security cookie to remember that your browser has passed human verification. The cookie is required to protect the site from automated abuse.";
 
