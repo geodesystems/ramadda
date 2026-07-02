@@ -1511,7 +1511,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.areaWidgets.push(areaWidget);
 	},
 	getSearchValue:function(key,dflt) {
-	    let v =  HU.getSanitizedUrlArg(this.urlPrefix+key,null);
+	    let v =  HU.getSanitizedUrlArgument(this.urlPrefix+key,null);
 	    if(v==null) return dflt;
 	    v = v.replace(/\+/g,' ');
 	    return v;
