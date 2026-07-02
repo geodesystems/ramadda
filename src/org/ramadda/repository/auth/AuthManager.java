@@ -325,7 +325,7 @@ public class AuthManager extends RepositoryManager {
 	}
 
 	String formID = "checkhumanform";
-	HU.script(sb,"function onHumanCheckSuccess(token) {document.getElementById(" + HU.squote(formID)+").submit();}");
+	HU.script(sb,"function onHumanCheckSuccess(token) {alert('ok');return;document.getElementById(" + HU.squote(formID)+").submit();}");
 	sb.append(HU.formPost(request.getRequestPath(),
 			  HU.attrs("id",formID)));
 	sb.append(HU.hidden("humanform","true"));
