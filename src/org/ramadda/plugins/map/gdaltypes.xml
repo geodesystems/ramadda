@@ -22,13 +22,13 @@
     <wiki_inner><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
-{{information showTitle="false" details="true"}}
 +if property=show_map
 :vspace 1em
 +center
 {{map  hideIfNoLocations=true  detailed=true width=80% showOpacitySlider=true}}
 -center
 -if
+{{information showTitle="false" details="true"}}
 +skip
 {{geotiffproxy maxSize="50000000" message="" useThumbnail="true"}}
 -skip
