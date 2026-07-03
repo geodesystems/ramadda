@@ -68,7 +68,7 @@ entryTypes="super:type_core_base,type_data_file,type_geo_site,super:type_documen
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,images,map,display" 
 includeNonImages=false
-}} 
+}}
 -if
 ----
 :heading Information
