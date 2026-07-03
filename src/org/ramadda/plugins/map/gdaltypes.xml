@@ -27,6 +27,7 @@
 +center
 {{map  hideIfNoLocations=true  detailed=true width=80% showOpacitySlider=true}}
 -center
+:vspace 1em
 -if
 {{information showTitle="false" details="true"}}
 +skip
