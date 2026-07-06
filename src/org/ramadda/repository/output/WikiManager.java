@@ -8954,6 +8954,7 @@ public class WikiManager extends RepositoryManager
 	return HU.makePopup(null,HU.div(title,HU.cssClass(clazz)),
 			    HU.div(contents, "class='wiki-editor-popup'"),
 			    new NamedValue("title",title),
+			    new NamedValue("tooltipRaw",true),
 			    new NamedValue("inPlace",""+(!showSearch)),
 			    new NamedValue("searchSelector",showSearch?".wiki-editor-popup-link":null),
 			    new NamedValue("closeOnClick","true"),			    

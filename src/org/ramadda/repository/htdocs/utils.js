@@ -5047,7 +5047,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    rightSideTitle:"",
             inPlace:true,
             fit:true,
-	    doTooltip:true
+	    doTooltip:true,
+	    tooltipRaw:false,
         };
 
         if(args) {
@@ -5158,8 +5159,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
 		content: function () {
 		    let title = $(this).prop(ATTR_TITLE);
-		    title = title.replace(/</g,'&lt;');
-		    title = title.replace(/>/g,'&gt;');		    
+		    if(!opts.tooltipRaw) {
+			title = title.replace(/</g,'&lt;');
+			title = title.replace(/>/g,'&gt;');
+		    }
 		    return title;
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
