@@ -509,6 +509,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    return new Result("", new StringBuilder(JsonUtil.map("error",JU.quote("No entry found"))), JU.MIMETYPE);
 	}
 	List<Entry> children;
+	System.err.println("entry:" + entry);
 	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) {
 	    children = new ArrayList<Entry>();
 	    children.add(entry);
@@ -521,9 +522,14 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		} else {
 		    children = new ArrayList<Entry>();
 		    String types =CoreUtil.TYPE_CORE_BASE;
-		    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
+		    //		    String searchUrl = "/search/do?forsearch=true&type=" + types +"&orderby=name&ascending=true&ancestor=" + entry.getId()+"&max=1000";
+		    String searchUrl = HU.url("/search/do",
+					      "forsearch","true",
+					      ARG_ORDERBY,"name",
+					      ARG_ASCENDING,"true",
+					      ARG_GROUP,entry.getId(),
+					      ARG_MAX,"1000");		    
 		    getSearchManager().processSearchUrl(request, children,searchUrl);
-		    //	    children = getEntryManager().getChildren(request, entry);
 		}
 	}
 	sb.append(makeEntriesJson(request, entry,children));
