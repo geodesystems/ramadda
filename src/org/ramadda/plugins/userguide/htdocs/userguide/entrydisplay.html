@@ -97,6 +97,33 @@ in the
 <a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/plugins/media/types.xml>types.xml</a>
 plugin file on Github. Look for the &lt;wiki&gt; tag definition for the PDF entry type.
 
+:heading Entry Icons
+There are two ways to override the icon that is displayed for an entry. The first way is to add
+an "Entry Icon" property to the entry and upload an icon file.
+:p
+The second way is some entries can map an attribute value to a property which specifies
+the icon. This requires administrative access to the server. The property that defines the icon
+is of the form:
++pre
+icon.&lt;entry type id&gt;.&lt;lower case attribute value&gt;=/path/to/icon
+-pre
+
+For example, the Geo Project has a Project Type property. The value of the Project Type
+is used to look up a property (set in a repository.properties file on the server).
+So, if the Project Type was "Mine" then the following property can be set where
+/icons/mine.png is in the htdocs directory in the RAMADDA home directory.
++pre
+icon.type_geo_project.mine=/icons/mine.png
+-pre
+
+If the  attribute value has spaces, etc, then it is normalized. For example, if the
+attribute value was "Some Mine" then the property would be:
++pre
+icon.type_geo_project.some_mine=/icons/mine.png
+-pre
+ 
+
+
 
 </div>
 <p>
