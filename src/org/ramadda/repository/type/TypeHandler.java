@@ -5535,19 +5535,22 @@ public class TypeHandler extends RepositoryManager {
     public String getEntryIconUrl(Request request, Entry entry)
 	throws Exception {
 	//check if the entry has a field for the icon
+	String[] iconTuple = getMetadataManager().getIconMetadata(request, entry);
+	if(iconTuple!=null && stringDefined(iconTuple[1])) {
+	    return iconTuple[1];
+	}
+
+
         String field = getTypeProperty("icon.column",null);
         if (field!=null) {
 	    String value = entry.getStringValue(request, field,null);
 	    if(stringDefined(value)) {
 		value = value.trim();
-		String icon = getRepository().getProperty("icon." + value,   (String) null);
-
-		if(icon==null)
-		    icon = getRepository().getProperty(value,   (String) null);
-
+		String prefix = "icon." + getType() +".";
+		String icon = getRepository().getProperty(prefix+value,   (String) null);
 		if(icon==null) {
-		    value = value.toLowerCase();
-		    icon = getRepository().getProperty("icon." + value,   (String) null);
+		    value = Utils.makeID(value);
+		    icon = getRepository().getProperty(prefix + value,   (String) null);
 		}
 		if(stringDefined(icon)) return icon;
 	    }
@@ -5575,7 +5578,6 @@ public class TypeHandler extends RepositoryManager {
         }
         Resource resource = entry.getResource();
         String   path     = resource.getPath();
-
         return getIconUrlFromPath(path);
     }
 

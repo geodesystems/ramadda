@@ -244,13 +244,11 @@
       <element name="Label" />
     </type>
 
-<!--
     <type
-       name="Icon"
+       name="Entry Icon"
        id="content.icon">
-      <element name="File" datatype="file" thumbnail="false"/>
+      <element name="Icon File" datatype="file" thumbnail="false"/>
     </type>
--->
 
     <type
        name="Page Style"

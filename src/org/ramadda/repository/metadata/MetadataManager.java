@@ -1143,6 +1143,18 @@ public class MetadataManager extends RepositoryManager {
 	return null;
     }
 
+    private String [] iconMetadataType = new String[]{"content.icon"};
+    public String[] getIconMetadata(Request request,Entry entry) throws Exception {
+	if(entry==null) return null;
+	List<Metadata> metadataList =  findMetadata(request, entry,
+						     iconMetadataType, false);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    return  getFileUrl(request, entry, metadataList.get(0));
+	}
+	return null;
+    }
+
+
     public Metadata addMetadataAlias(Request request,Entry entry, String value) throws Exception {
         return addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS,CHECK_UNIQUE_FALSE, value);
     }

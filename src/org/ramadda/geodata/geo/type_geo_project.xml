@@ -26,6 +26,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 <property  name="date.nullok"  value="true" />
 <property  name="form.resource.show"  value="false" />
 <property  name="form.time.show"  value="false" />
+<property  name="icon.column"  value="project_type" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
