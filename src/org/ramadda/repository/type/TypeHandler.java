@@ -3937,8 +3937,11 @@ public class TypeHandler extends RepositoryManager {
                 Entry parent = target.equals(TARGET_CHILD)
 		    ? entry
 		    : entry.getParentEntry();
+		String label = name.replaceAll("_", " ");
+		label = IO.stripExtension(label);
+		label = StringUtil.camelCase(label);
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-								parent, null, name, "", request.getUser(),
+								parent, null, label, "", request.getUser(),
 								typeHandler, null);
 
                 getAuthManager().addAuthToken(request);
