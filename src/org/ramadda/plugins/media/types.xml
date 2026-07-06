@@ -2,11 +2,11 @@
   <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document"
 	handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
     <property name="icon" value="/icons/page.png"/>
-     <property name="form.ark.show" value="true"/>    
-     <action name="applyllm" label="Apply LLM" canedit="true"
-	     icon="fas fa-font" foruser="true" category="edit"/>
-     <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
-     <service link="tika_extractmetadata"/>
+    <property name="form.ark.show" value="true"/>    
+    <action name="applyllm" label="Apply LLM" canedit="true"
+	    icon="fas fa-font" foruser="true" category="edit"/>
+    <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
+    <service link="tika_extractmetadata"/>
     <wiki><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
@@ -101,12 +101,37 @@
 <type name="type_document_ppt"    super="type_document_msfile" description="Powerpoint File" pattern="(?i)(.*\.ppt|.*\.pptx)"
       includeInSearch="true"   priority="10" >
 <!--
-    <service link="media_soffice_thumbnail" target="attachment"/>
+    <service link="media_ppt_thumbnail" target="attachment"/>
     -->
      <property name="icon" value="/icons/ppt.png"/>
      <property name="file.accept" value=".ppt,.pptx"/>
 </type>
 
+<type name="type_document_cdr"
+      isgroup="true"
+      super="type_document_tika"
+      description="CorelDraw"
+      pattern="(?i).*\.cdr"
+      includeInSearch="true"  >
+  <service link="media_soffice_thumbnail" target="attachment"/>
+  <service link="media_soffice_pdf" target="child"/>  
+  <property name="icon" value="/media/corel.png"/>
+  <property name="file.accept" value=".cdr"/>
+    <wiki><![CDATA[
++section  title="{{name}}"
+{{description wikify="true"}}
++center
+{{pdf message="" entry="child:type:type_document_pdf" page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}
+-center
+:heading Information
+{{information showTitle="false" details="true"}}
+{{tabletree message="" }}
+
+-section
+]]>
+</wiki>
+
+</type>
 
 <type name="type_document_html"  description="HTML File" pattern="(?i)(.*\.html|.*\.htm)"
       priority="1"

@@ -3,6 +3,7 @@
 <outputhandler serviceId="media_qttools_info"/>
 <outputhandler serviceId="media_qttools_proofsheet"/>
 <outputhandler serviceId="media_qttools_thumbnail"/>
+<outputhandler serviceId="media_soffice_pdf"/>
 <outputhandler class="org.ramadda.data.docs.ConvertibleOutputHandler"/>
 <outputhandler class="org.ramadda.data.docs.TabularOutputHandler"/>
 <!--
