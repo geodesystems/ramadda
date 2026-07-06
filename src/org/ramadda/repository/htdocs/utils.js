@@ -4334,10 +4334,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     elementScrolled: function(elem) {
-        var docTop = $(window).scrollTop();
-        var docBottom = docTop + $(window).height();
-        var elemTop = $(elem).offset().top;     
-        var elemBottom = elemTop + $(elem).outerHeight(true); 
+        let docTop = $(window).scrollTop();
+        let docBottom = docTop + $(window).height();
+	let offset = $(elem).offset();
+	if(!offset) return;
+        let elemTop = offset.top;     
+        let elemBottom = elemTop + $(elem).outerHeight(true); 
         if((elemTop <= docBottom) && (elemTop >= docTop)) return true;  
         if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
         if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
