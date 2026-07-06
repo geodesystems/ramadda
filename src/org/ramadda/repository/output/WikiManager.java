@@ -8733,6 +8733,7 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Note", "A centered text note\nimg:note.png",
 				 plus("note"), minus("note")),
 			l.call( "Box", plus("box"), minus("box")),
+			l.call( "Snippet Wrapper", plus("snippet"), minus("snippet")),			
                         l2.call( "Callout", "Callout box\nimg:callout.png",
 				 plus("callout"), minus("callout")),
                         l2.call( "Callout info", "Callout box\nimg:calloutinfo.png",
