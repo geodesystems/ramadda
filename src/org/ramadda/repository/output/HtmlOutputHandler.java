@@ -1094,7 +1094,22 @@ public class HtmlOutputHandler extends OutputHandler {
 	if(Utils.getProperty(props,"includeSnippet",false)) {
 	    String snippet = getWikiManager().getSnippet(request, entry, true,"");
 	    if(stringDefined(snippet)) {
+		boolean addAttachment = Utils.getProperty(props,"includeAttachmentInSnippet",false);
 		tabTitles.add("Details");
+		if(addAttachment) {
+		    List<String> urls = new ArrayList<String>();
+		    getMetadataManager().getThumbnailUrls(request, entry, urls);
+		    if (urls.size() > 0) {
+			String entryUrl= request.entryUrl(getRepository().URL_ENTRY_SHOW,
+							  entry);
+			String image = HU.img(urls.get(0), "",
+						 HU.attrs("width","300px",
+							  HU.ATTR_WIDTH, "100",
+							  "loading", "lazy"));
+			snippet = HU.hbox(HU.href(entryUrl,image),
+					  snippet);
+		    }
+		}
 		tabContents.add(snippet);
 	    }
 	}
