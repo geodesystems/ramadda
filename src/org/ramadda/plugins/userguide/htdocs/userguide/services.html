@@ -75,8 +75,6 @@ To find out where GS is located do:
 +pre addCopy=true
 which gs
 -pre
-
-
 </div>
 
 <div class=configitem>
@@ -93,6 +91,26 @@ set the following property
 service.pdfbox=&lt;path&gt;/pdfbox.sh
 -pre
 </div>
+
+
+<a name="soffice"></a>
+<div class=configitem>
+:heading Libre Office
+
+Install the <a href="https://www.libreoffice.org/">Libre Office</a>
+package to automatically generate thumbnail images and PDF previews
+of CorelDraw and Adobe Illustrator files. Then set the property:
+
++pre addCopy=true
+service.soffice=/path/to/libreoffice/soffice
+#On a Mac:
+service.soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
+-pre
+</div>
+
+
+
+
 
 
 
