@@ -5,7 +5,7 @@
 
   <arg value="${entry.file}" type="entry"
        entryType="type_document_tika" primary="true" label="Input Document"
-       entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*|.*\.cdr)"></arg>
+       entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*|.*\.cdr|.*\.ait)"></arg>
   <output type="file" pattern=".*\.txt"/>
 </service>
 
@@ -13,7 +13,7 @@
   <description><![CDATA[Extract metadata from document]]></description>
 
   <arg value="${entry.file}" type="entry"
-       entryType="type_document_tika" primary="true" label="Input Document"  entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*|.*\.cdr)"></arg>
+       entryType="type_document_tika" primary="true" label="Input Document"  entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*|.*\.cdr|.*\.ait)"></arg>
 </service>
 
 <service id="xlsx_extractsheets" label="Extract sheets" command="java:org.ramadda.data.docs.TikaService:extractSheets" >

@@ -8,8 +8,8 @@
     <arg value="png:draw_png_Export"/>
     <arg value="--outdir"/>
     <arg value="${workdir}"/>        
-    <arg value="${entry.file}" type="entry" entryType="type_document_cdr"
-	 matchPattern=".*\.cdr"
+    <arg value="${entry.file}" type="entry" entryType="type_document_tika"
+	 matchPattern="(?i).*\.(cdr|ait)"
 	 primary="true" copy="true" label="Input CDR File"></arg>
     <output type="type_image" pattern=".*\.png"/>
   </service>
@@ -23,8 +23,8 @@
     <arg value="pdf"/>
     <arg value="--outdir"/>
     <arg value="${workdir}"/>        
-    <arg value="${entry.file}" type="entry" entryType="type_document_cdr"
-	 matchPattern=".*\.cdr"
+    <arg value="${entry.file}" type="entry" entryType="type_document_tika"
+	 matchPattern="(?i).*\.(cdr|ait)"
 	 primary="true" copy="true" label="Input CDR File"></arg>
     <output type="type_document_pdf" pattern=".*\.pdf"/>
   </service>
