@@ -3168,6 +3168,17 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 highlightColor:"#436EEE",
 				 blockStyle:this.getProperty("blockStyle",""),
 				 doPopup:this.getProperty("doPopup",true),
+				 'recordSelection.share':false,
+				 labelTemplate:
+				 this.getProperty('map.labelTemplate',
+						  '${name maxLength=15 maxLengthSuffix=...}'),
+				 labelBackground:
+				 this.getProperty('map.labelBackground',
+						  'rgba(200,200,200,0.75)'),
+				 labelStrokeColor:
+				 this.getProperty('map.labelStrokeColor',
+						  '#aaa'),				 
+				 labelYOffset:15,
 				 tooltip:tooltip,
 				 tooltipClick:tooltip,
 				 myTextGetter:myTextGetter,
@@ -4958,7 +4969,12 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 	    let entryId = args.record.getValueFromField(ATTR_ID);	    
 	    if(entryId) {
 		//		this.entryMenu.val(entryId);
-		this.entryMenu.data("selectBox-selectBoxIt").selectOption(entryId);
+		if(this.entryMenu) {
+		    let menu = this.entryMenu.data("selectBox-selectBoxIt");
+		    if(menu) {
+			menu.selectOption(entryId);
+		    }
+		}
 	    }
 	},
 
