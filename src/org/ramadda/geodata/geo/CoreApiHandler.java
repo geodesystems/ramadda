@@ -509,7 +509,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    return new Result("", new StringBuilder(JsonUtil.map("error",JU.quote("No entry found"))), JU.MIMETYPE);
 	}
 	List<Entry> children;
-	System.err.println("entry:" + entry);
 	if(entry.getTypeHandler().isType(CoreUtil.TYPE_CORE_BASE)) {
 	    children = new ArrayList<Entry>();
 	    children.add(entry);

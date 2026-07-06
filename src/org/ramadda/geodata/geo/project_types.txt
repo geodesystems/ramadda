@@ -1,0 +1,25 @@
+geologic_project:Geologic Project
+mining:Mining
+mineral_exploration:Mineral Exploration
+borehole_drilling:Borehole Drilling
+oil_gas_exploration:Oil & Gas Exploration
+oil_gas_production:Oil & Gas Production
+geothermal:Geothermal
+groundwater:Groundwater Investigation
+environmental:Environmental Site Investigation
+geotechnical:Geotechnical Investigation
+ccs:Carbon Capture & Storage (CCS)
+scientific_research:Scientific Research
+geological_mapping:Geological Mapping
+stratigraphy:Stratigraphic Investigation
+paleontology:Paleontology
+volcanology:Volcanology
+seismology:Seismology
+infrastructure:Engineering Construction
+aggregate:Aggregate Resources
+quarry:Quarry
+site_characterization:Site Characterization
+monitoring:Monitoring
+core_repository:Core Repository
+education:Education
+other:Other
