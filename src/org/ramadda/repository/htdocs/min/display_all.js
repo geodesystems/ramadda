@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul  6 17:58:37 EDT 2026";
+var build_date="RAMADDA build date: Tue Jul  7 04:13:14 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -39056,6 +39056,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 displayEntries:false,
 				 imageField:"image",
 				 urlField:"url",
+				 iconField:'iconUrl',
 				 titleField:"name",
 				 labelField:"name",
 				 labelFields:"name",
@@ -44766,6 +44767,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	makeToc:function(records) {
 	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
+	    let iconField  =  this.getFieldById(null,this.getProperty("iconField"));
 	    let fields = this.getFieldsByIds(null,this.getTocFields(this.getProperty("labelField","name")));
 	    if(!fields || fields.length==0) fields = this.getFieldsByType(null,"string");
 	    let template = this.getTocTemplate();
@@ -44778,7 +44780,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    html+=HU.div([ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx], label);
 		});
 	    } else   if(fields && fields.length>0) {
-		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		let doTable=this.getProperty('tocTable',true);
 		if(doTable) {
 		    html+=HU.open(TAG_TABLE,[ATTR_WIDTH,HU.perc(100)]) + HU.open(TAG_TR);
@@ -44800,6 +44801,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let value;
 		    if(doTable) {
 			let width = HU.perc(Math.floor(100/values.length));
+			if(iconField) {
+			    let icon = iconField.getValue(record);
+			    if(Utils.stringDefined(icon)) {
+				icon = HU.image(icon,[ATTR_WIDTH,ramaddaGlobals.iconWidth]);
+				values[0] = icon+SPACE+values[0];
+			    }
+			}
+
 			value = Utils.wrap(values,
 					   HU.open(TAG_TD,[ATTR_CLASS,clazz,
 							   ATTR_RECORD_ID,record.getId(),
