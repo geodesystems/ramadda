@@ -3197,6 +3197,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 displayEntries:false,
 				 imageField:"image",
 				 urlField:"url",
+				 iconField:'iconUrl',
 				 titleField:"name",
 				 labelField:"name",
 				 labelFields:"name",

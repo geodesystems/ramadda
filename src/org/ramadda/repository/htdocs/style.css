@@ -148,18 +148,34 @@ inlineblock {
     padding:2px;
     padding-left:6px;
     padding-right:6px;    
+}
 
+
+
+.fileinput_label {
+    display:inline-block;
+    width:500px;
+    overflow-x:auto;
 }
 
 
 .fileinput_wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    cursor: pointer;
+
     background:#fff;
-    display:inline-block;
     border  :var(--basic-border);
-    padding:2px;
     cursor:pointer;
-    margin-right:10px;
-    vertical-align:top;
+    padding:2px;
+    padding-left:2px;    
+
+}
+
+.fileinput_wrapper i {
+    font-size: 1.1em;
+    line-height: 1;
 }
 
 .fileinput_wrapper:hover {
@@ -167,17 +183,19 @@ inlineblock {
     background:var(--highlight-background);
 }
 
+
 .fileinput_label {
-    display:inline-block;
-    width:400px;
-    overflow-x:auto;
+    display: inline-block;
+    line-height: 1.2;
 }
 
 .fileinput_label_empty {
-    margin-left:4px;
     display:block;
     color:#aaa;
 }
+
+
+
 
 
 .ramadda-hidden {

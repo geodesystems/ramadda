@@ -1960,7 +1960,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			     ATTR_ID,fileInputId+'_filewrapper',
 			     ATTR_CLASS, 'fileinput_wrapper'],
 			    HU.getIconImage('fas fa-file-arrow-up') +
-			    SPACE +HU.div([ATTR_ID,fileInputId+'_filename',
+			    HU.div([ATTR_ID,fileInputId+'_filename',
 					   ATTR_CLASS,'fileinput_label']));
 	input.after(custom);
 	input.hide();
