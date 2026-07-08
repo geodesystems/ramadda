@@ -241,93 +241,65 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    getLogManager().logSpecial("Failed to read USGS station:" + url);
 	    return;
 	}	    
+
 	String html = result.getResult();
-	String title = StringUtil.findPattern(html,"<title>(.*?)</title>");
-	if(title!=null) {
-	    title = title.replaceAll("^USGS ","").replace(id,"").trim();
-	    entry.setName(Utils.nameCase(title));
-	}
-
-	String siteType= StringUtil.findPattern(html,"<h3>(.*?)</h3>");
-	if(siteType!=null) {
-	    siteType=siteType.replace("&nbsp;","").trim();
-	    entry.setValue("site_type",siteType);
-	} 
-
-	String drainageArea = StringUtil.findPattern(html,"(?i)drainage area: *([^ ]+) ");
-	if(drainageArea!=null) {
-	    drainageArea=drainageArea.replace(",","");
-	    try {
-		entry.setValue("drainage_area",new Double(drainageArea));
-	    } catch(Exception exc) {
-		System.err.println("Error parsing drainage area:" + drainageArea);
-	    }
-	}
-
-	drainageArea = StringUtil.findPattern(html,"(?i)contributing drainage area: *([^ ]+) ");
-	if(drainageArea!=null) {
-	    drainageArea=drainageArea.replace(",","");
-	    try {
-		entry.setValue("contributing_drainage_area",new Double(drainageArea));
-	    } catch(Exception exc) {
-		System.err.println("Error parsing contributing drainage area:" + drainageArea);
-	    }
-	}
-	String block = StringUtil.findPattern(html,"(?s)<div +id=\"stationTable\">(.*?)<table");
-	if(block==null) {
-	    System.err.println("Failed to read text block from:" + url);
-	    return;
-	}
-	String ll = StringUtil.findPattern(block,"(?s)<dd>(.*?)</dd");
+	String jsonLD = StringUtil.findPattern(html,"(?s)<script *type=\"application/ld\\+json\">(.*?)</script>");
+	String block = html;
+	String ll = jsonLD;
 	String lat = null;
 	String lon = null;
 	if(ll!=null) {
 	    //Latitude  38&#176;47'50", &nbsp; Longitude 109&#176;11'40" &nbsp; NAD27<br /></dd>
-	    lat = StringUtil.findPattern(ll,"Latitude\\s+([^,]+),");
-	    lon = StringUtil.findPattern(ll,"Longitude\\s+([^, ]+) ");	    
+	    //	    "longitude": -71.4450575337562,
+	    lat = StringUtil.findPattern(ll,"latitude\" *: *([^,]+),");
+	    lon = StringUtil.findPattern(ll,"longitude\" *: *([^,]+),");	    
 	    if(lat!=null && lon!=null) {
-		lat = lat.replace("&#176;",":").replace("'",":").replace("\"","").trim();
-		lon = "-"+lon.replace("&#176;",":").replace("'",":").replace("\"","").trim();		
 		try {
-		    entry.setLatitude(GeoUtils.decodeLatLon(lat));
-		    entry.setLongitude(GeoUtils.decodeLatLon(lon));
+		    System.err.println(lat +" " + lon);
+		    entry.setLatitude(GeoUtils.decodeLatLon(lat.trim()));
+		    entry.setLongitude(GeoUtils.decodeLatLon(lon.trim()));
 		} catch(Exception exc) {
 		    getLogManager().logError("USGS reading lat/lon:" + url, exc);
 		}
 	    }		
 	}
 
-	block = block.replace("\n", " ");
-	String huc = StringUtil.findPattern(block,"(?s)Hydrologic\\s+Unit\\s+([^<]+)(<|\n)");
-	if(huc!=null) entry.setValue("huc",huc.trim());
-	String county = StringUtil.findPattern(block,"(?s)>([^,<>]+)\\s+County");
-	if(county!=null) entry.setValue("county",county.trim());
-	String state = StringUtil.findPattern(block,"(?s)County,([^,&]+)(,|&)");
-	if(state!=null) entry.setValue("state",state.trim());
 	entry.setValue("homepage",url);
-	//	    Datum of gage: 4,168.32 feet above   NAVD88.
-	//<dd>Drainage area: 16,100 square miles</dd><dd>Contributing drainage area: 13,160 square miles,</dd><dd>Datum of gage:  5,115.73 feet above &nbsp; NGVD29.</dd></dl><dl><dt>AVAILABLE DATA:</dt><dd>
 
-	String elev = StringUtil.findPattern(block,"(?s)Datum of gage: +([^ ]+) ");
-	if(elev==null)
-	    elev = StringUtil.findPattern(block,"Land surface altitude:  (.*?) feet");
+	String drainageArea = StringUtil.findPattern(block, "drainage_area\" *: *([^,]+),");	
+	if(drainageArea!=null) entry.setValue("drainage_area",new Double(drainageArea));
+	drainageArea = StringUtil.findPattern(block, "contributing_drainage_area\" *: *([^,]+),");	
+	if(drainageArea!=null) entry.setValue("contributing_drainage_area",new Double(drainageArea));
+	
 
-	String datum = StringUtil.findPattern(block, "(?i)feet above &nbsp; *([^<\\.]+)(\\.|<)");
-	if(datum!=null) entry.setValue("gage_datum", datum);
+	String siteType = StringUtil.findPattern(block, "site_type\" *: *\"([^\"]+)\"");
+	if(siteType!=null) entry.setValue("site_type",siteType.trim());
 
-	if(lat==null || lon == null ||huc==null || county==null || state==null || elev==null) {
-	    //	    System.err.println("huc:" + huc +" county:" + county + " state:" + state +" elev:"+ elev + " lat:" + lat+" lon:" + lon +" site type:" + siteType);
-	}
+	String huc = StringUtil.findPattern(block, "hydrologic_unit_code\" *: *\"([^\"]+)\"");
+	if(huc!=null) entry.setValue("huc",huc.trim());
+	String name = StringUtil.findPattern(block, "monitoring_location_name\" *: *\"([^\"]+)\"");
+	if(name!=null) entry.setName(name.trim());
 
-	if(stringDefined(elev)) {
-	    elev = elev.replace(",","").trim();
+
+
+
+	String county = StringUtil.findPattern(block, "county_name\" *: *\"([^\"]+)\"");
+	if(county!=null) entry.setValue("county",county.trim());
+	String state = StringUtil.findPattern(block, "state_name\" *: *\"([^\"]+)\"");	
+	if(state!=null) entry.setValue("state",state.trim());
+	String altitude = StringUtil.findPattern(block, "altitude\" *: *\"([^\"]+)\"");	
+	if(altitude!=null) entry.setValue("state",state.trim());	
+	if(stringDefined(altitude)) {
+	    altitude = altitude.replace(",","").trim();
 	    try {
-		entry.setAltitude(Double.parseDouble(elev));
+		entry.setAltitude(Double.parseDouble(altitude));
 	    } catch(Exception exc) {
-		getLogManager().logError("USGS reading elevation:" + url, exc);
+		getLogManager().logError("USGS reading altitude:" + url, exc);
 	    }
 	}
 
+	String datum = StringUtil.findPattern(block, "vertical_datum\" *: *\"([^\"]+)\"");	
+	if(datum!=null) entry.setValue("gage_datum",datum.trim());
 	if(request.get(ARG_DOWNLOAD_FILE, false)) {
 	    URL trendUrl = new URL(getPathForEntry(request,  entry, true));
 	    downloadUrlAndSaveAsEntryFile(request, entry, trendUrl,id+"_usgs.dat");
