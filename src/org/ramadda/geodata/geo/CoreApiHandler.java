@@ -126,6 +126,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    String unit = child.getStringValue(request, "depth_unit","m");
 	    String fillColor = null;
 	    String strokeColor = null;	    
+	    String width=null;
 	    boolean hasDepthField=true;
 	    if(Double.isNaN(top) || Double.isNaN(bottom)) {
 		List<Metadata> mtdList=
@@ -136,8 +137,9 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    top = Double.parseDouble(mtd.getAttr1());
 			    bottom = Double.parseDouble(mtd.getAttr2());
 			    unit = mtd.getAttr3();
-			    fillColor = mtd.getAttr4();
-			    strokeColor = mtd.getAttr(5);			    			    
+			    width=mtd.getAttr4();
+			    fillColor = mtd.getAttr(5);
+			    strokeColor = mtd.getAttr(6);			    			    
 			    hasDepthField=false;
 			    Utils.add(attrs,"depthMetadataID",JU.quote(mtd.getId()));
 			    //			    System.err.println("core entry:" + child +" range:" + top +" " + bottom);
@@ -195,6 +197,9 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	    if(stringDefined(strokeColor)) {
 		Utils.add(attrs,"strokeColor",JU.quote(strokeColor));
+	    }	    
+	    if(stringDefined(width)) {
+		Utils.add(attrs,"width",JU.quote(width));
 	    }	    
 	    List<String>boxes = null;
 	    List<Box> _boxes = getBoxes(request, child);
