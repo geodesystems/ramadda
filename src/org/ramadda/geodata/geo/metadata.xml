@@ -50,6 +50,7 @@
       <element name="Unit" datatype="enumeration"
 	       values="m:meter,ft:foot,cm:centimeter,in:inch,yd:yard,mi:mile"
 	       default="m"/>      
+      <element name="Width" datatype="double"/>
       <element name="Fill Color" datatype="string" size="10"/>
       <element name="Stroke Color" datatype="string" size="10"/>      
     </type>    
