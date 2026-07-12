@@ -3,7 +3,6 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-
 var  displayDebug= {
     getProperty:false,
     loadPointJson:false,
@@ -2991,7 +2990,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prop+=f.getId();
 	    });
 
-	    this.setProperty("filterFields",prop);
+	    this.setProperty('filterFields',prop);
 	    this.haveCalledUpdateUI = false;
             this.checkSearchBar();
         },
@@ -7272,8 +7271,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         checkSearchBar: function() {
-            if (!this.hasData()) {
-		return
+	    let pointData = this.getData();
+            if (pointData == null) {
+		return;
+	    }
+            let fields= this.getFields();
+            let records = this.getRecords();
+
+	    if(records==null) {
+		return;
 	    }
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
@@ -7299,10 +7305,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
             this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
 
-	    let pointData = this.getData();
-            if (pointData == null) return;
-            let fields= this.getFields();
-            let records = this.getRecords();
+
+
 	    records = this.sortRecords(records);
 	    let header2="";
 	    //	    header2 +=HU.div([ATTR_ID,this.getDomId("test")],"test");
@@ -7647,8 +7651,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 
 
-            let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
-
+            let filterBy = this.getProperty('filterFields','').split(',').map(tok=>{return tok.trim();}); 
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";

@@ -2301,6 +2301,7 @@ var Utils =  {
                         if(t.attrs["toggle"]) {
                             //value = HU.toggleBlock(t.attrs["label"]||"More", value,false);
                         }
+
                         if(t.attrs["image"]) {
                             if(Utils.stringDefined(value) && t.attrs['urlPrefix']) {
                                 value  = t.attrs['urlPrefix']+value;
@@ -5143,10 +5144,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             html = header + html;
         }
 
-
         if(opts.decorate || opts.header) {
             html = HU.div([ATTR_CLASS,CLASS_POPUP], html);
         }
+
 
         let innerId = HU.getUniqueId("model_inner");
         if(opts.modal || opts.modalStrict) {
@@ -5156,6 +5157,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         let popup=   $(html).appendTo(opts.appendTo??TAG_BODY);
+	if(opts.css) {
+	    popup.attr("style", function(i, oldStyle) {
+		return (oldStyle ? oldStyle + ";" : "") + opts.css;
+	    });
+	}
 	if(opts.doTooltip) {
 	    popup.find('a,div').tooltip({
 		classes: {'ui-tooltip': 'wiki-editor-tooltip'},
