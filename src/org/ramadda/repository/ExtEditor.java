@@ -1489,9 +1489,10 @@ public class ExtEditor extends RepositoryManager {
 	public List<Metadata> getMetadata(String...values) throws Exception {
 	    String type = values.length>0?values[0]:null;
 	    List<Metadata> source =   repository.getMetadataManager().findMetadata(request,  entry,type,false);
-	    System.err.println("type:"  +type +" mtd:" + source);
-
-	    if(values.length<=1) return source;
+	    if(values.length<=1) {
+		if(source!=null && source.size()==0) return null;
+		return source;
+	    }
 	    List<Metadata> dest = new ArrayList<Metadata>();
 	    for(Metadata metadata: source) {
 		boolean ok = true;
@@ -1504,6 +1505,7 @@ public class ExtEditor extends RepositoryManager {
 		}
 		if(ok) dest.add(metadata);
 	    }
+	    if(dest.size()==0) return null;
 	    return dest;
 	}
 
@@ -1630,6 +1632,17 @@ public class ExtEditor extends RepositoryManager {
 		}
 	    }
 	}
+
+	public void setMetadata(Object object,int attr, String value) throws Exception {
+	    List<Metadata> list =  getMetadataList(object);
+	    if(list==null || list.size()==0) return;
+	    for(Metadata mtd:list) {
+		mtd.setAttr(attr,value);
+		entry.setMetadataChanged(true);
+		changed = true;
+	    }
+	}
+
 
 	public void setMetadataPermission(Object object,String to) throws Exception {
 	    List<Metadata> list =  getMetadataList(object);
@@ -1975,7 +1988,6 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void print(Object ...msgs) throws Exception {
-	    Misc.sleepSeconds(5);
 	    for(Object msg: msgs)
 		visitor.append(getString(msg)+" ");
 	    visitor.append("\n");
