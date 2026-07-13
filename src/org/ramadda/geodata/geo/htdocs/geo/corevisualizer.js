@@ -1366,12 +1366,15 @@ RamaddaCoreDisplay.prototype = {
 		      new RecordField({type: "double", index: (index++),
 				       id: "bottom_depth",label: "Bottom Depth"}),
 		      new RecordField({type: "url", index: (index++),
-				       id: "image_url",label: "Image URL"}),				      
+				       id: "image_url",label: "Image URL"}),
+		      new RecordField({type: "string", index: (index++),
+				       id: "color",label: "Color"}),				      		      
 		     ];
 	let records = [];
 	let makeData = (entry,collection)=>{
+//	    console.log(entry.topDepth,entry.bottomDepth);
 	    let tuple = [entry.label,collection.getName(),
-			 entry.topDepth,entry.bottomDepth,entry.url];
+			 entry.topDepth,entry.bottomDepth,entry.url,entry.fillColor];
 	    records.push(new PointRecord(fields, NaN,NaN,NaN,null,tuple,0));
 	};
 	this.applyToEntries(makeData,true);
@@ -1399,6 +1402,7 @@ RamaddaCoreDisplay.prototype = {
 	    labelField:'name',
 	    filterFields:'name,top_depth,bottom_depth',
 	    categoryField:'collection',
+	    colorField:'color',
 	    height:'400px',
 	    width:HU.px(1000),
 	    tooltip:'<div style="padding:5px;width:600px;"><center><b>${name}</b></center><b>Collection:</b> ${collection}<br><b>Depth Range: </b> ${top_depth} - ${bottom_depth}<center>${image_url image=true width=400}</div></div> '
@@ -3240,7 +3244,7 @@ RamaddaCoreCollection.prototype = {
 	    let attrs = {
 		stroke: '#000',
 		fill:'rgba(0,255,0,0.3)',
-		strokeWidth: 1,
+		strokeWidth: 5,
 		width:width,
 		height:200};
 	    if(Utils.stringDefined(entry.fillColor)) {
@@ -3249,7 +3253,6 @@ RamaddaCoreCollection.prototype = {
 	    if(Utils.stringDefined(entry.strokeColor)) {
 		attrs.stroke=entry.strokeColor;
 	    }	    
-
 	    entry.image = new Konva.Rect(attrs);
 	    display.addEntryImage(entry);
 	    display.applyToggle(entry);
