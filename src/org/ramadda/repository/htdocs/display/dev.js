@@ -16,6 +16,7 @@ function RamaddaIntervalDisplay(displayManager, id, properties) {
 	{p:'fields',ex:''},
 	{p:'labelField',ex:''},
 	{p:'categoryField',ex:''},
+	{p:'colorField',ex:''},	
 	{p:'lineColor',d:'rgba(156, 165, 196, 1.0)'},
         {p:"yAxisTitle"},
 	{p:"yAxisType",ex:'log'},
@@ -48,6 +49,7 @@ function RamaddaIntervalDisplay(displayManager, id, properties) {
             if (pointData == null) return;
             let allFields = pointData.getRecordFields();
             let categoryField = this.getFieldById(allFields,this.getCategoryField());
+            let colorField = this.getFieldById(allFields,this.getColorField());	    
             let startField = this.getFieldById(allFields,this.getProperty('startField',''));
             let endField = this.getFieldById(allFields,this.getProperty('endField',''));	    
             let labelField = this.getFieldById(allFields,this.getLabelField());
@@ -107,8 +109,9 @@ function RamaddaIntervalDisplay(displayManager, id, properties) {
 		}
 		yValues.push(pointCnt);
 		recordMap[pointCnt++] = record;
-		values.push(startField.getValue(record));
-		base.push(endField.getValue(record));		
+		let baseValue = startField.getValue(record);
+		base.push(baseValue);
+		values.push(endField.getValue(record)-baseValue);		
 		labels.push(labelField.getValue(record));
 		if(textTemplate) {
 		    text.push(this.getRecordHtml(record,null,textTemplate));
@@ -117,6 +120,14 @@ function RamaddaIntervalDisplay(displayManager, id, properties) {
 		    let value = record.getData()[colorBy.index];
 		    colorValues.push(colorBy.getColor(value, record));
 		} else {
+		    if(colorField) {
+			let c = colorField.getValue(record);
+			if(Utils.stringDefined(c)) {
+			    colorValues.push(c);
+			} else {
+			    colorValues.push(color);
+			}
+		    }
 		    colorValues.push(color);
 		}
 	    });
