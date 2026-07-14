@@ -131,7 +131,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	if (exifIFD0 != null &&  exifIFD0.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
 	    int orientation =
 		exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
-	    System.err.println("orientation:" +orientation);
 	    int rotation = 0;
 	    if (orientation == 6) {
 		image = rotate90(toBufferedImage(image, BufferedImage.TYPE_INT_RGB), false);
