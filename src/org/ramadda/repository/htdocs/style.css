@@ -2038,6 +2038,19 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-status {
+    display:inline-block;
+    white-space:nowrap;
+    margin-left:10px;
+    margin-bottom:2px;
+    background:var(--color-mellow-yellow);
+    padding-left:6px;
+    padding-right:6px;    
+    border: var(--basic-border);
+}
+
+
+
 /** begin colors */
 .ramadda-background-dimgray , .ramadda-block-dimgray , .ramadda-heading-dimgray , .ramadda-box-dimgray , .ramadda-note-dimgray , .ramadda-blurb-dimgray  , .ramadda-section-dimgray  {
     background-color: #696d7d;
