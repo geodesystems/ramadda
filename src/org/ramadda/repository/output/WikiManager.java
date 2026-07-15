@@ -10699,8 +10699,14 @@ public class WikiManager extends RepositoryManager
 	List<String> jsonProps = new ArrayList<String>();
         List<String> tiles     = new ArrayList<String>();
 	String field = (String) props.get("annotationsField");
-	if(field!=null)
+	if(field!=null) {
 	    Utils.add(jsonProps,  "annotationsField",JU.quote(field));
+	} else if(entry.getColumn("annotations_json")!=null) {
+	    Utils.add(jsonProps,  "annotationsField",JU.quote("annotations_json"));
+	} else if(entry.getColumn("annotations_json_base")!=null) {
+	    Utils.add(jsonProps,  "annotationsField",JU.quote("annotations_json_base"));	
+	}
+
 	String singleImage = entry.getStringValue(request,"single_image",null);
 	String enabled = getRepository().getProperty("ramadda.image.slicer",null);
 	if(Utils.get(props,"singleFile",null)==null) {
@@ -10762,6 +10768,9 @@ public class WikiManager extends RepositoryManager
 	Utils.add(jsonProps, "doBookmark", JU.quoteType(doBookmark));
 
         String annotations = (String) entry.getValue(request,"annotations_json");
+	if(!Utils.stringDefined(annotations)) {
+	    annotations = (String) entry.getValue(request,"annotations_json_base");
+	}
 	if(!Utils.stringDefined(annotations)) {
 	    annotations = "[]";
 	}
