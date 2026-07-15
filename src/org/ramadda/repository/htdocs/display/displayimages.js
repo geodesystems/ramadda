@@ -790,6 +790,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		this.setDisplayMessage("No image field in data");
 		return;
 	    }
+
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
             let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
 	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
@@ -848,8 +849,13 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 					      ATTR_WIDTH, thumbWidth,
 					      ATTR_CLASS,"display-imagezoom-thumb"])+HU.br()+"\n";
 	    }
+
             this.setContents(contents);
+
 	    this.jq(ID_THUMBS).html(thumbsHtml);
+	    if(records.length==1) {
+		this.jq(ID_THUMBS).hide();
+	    }
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
