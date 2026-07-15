@@ -147,7 +147,11 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
         StringBuilder sb = new StringBuilder();
-        makeJson(request, allEntries, sb);
+        if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
+            makePointJson(request, entry, allEntries, sb,false);
+	} else {
+	    makeJson(request, allEntries, sb);
+	}
         return new Result("", sb, JU.MIMETYPE);
     }
 
