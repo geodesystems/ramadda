@@ -147,10 +147,14 @@ public class ImageOutputHandler extends OutputHandler {
                                                         OutputType.TYPE_VIEW,
                                                         "", ICON_IMAGES);
 
+    public static final OutputType OUTPUT_INSPECTOR = new OutputType("Image Inspector",
+                                                     "image.inspector",
+                                                     OutputType.TYPE_VIEW,
+                                                     "", ICON_IMAGES);
     public static final OutputType OUTPUT_ZOOM = new OutputType("Image Zoom",
                                                      "image.zoom",
                                                      OutputType.TYPE_VIEW,
-                                                     "", ICON_IMAGES);
+                                                     "", "fa-magnifying-glass");    
 
     public static final OutputType OUTPUT_FLIPCARDS = new OutputType("Flip Cards",
                                                      "image.flipcards",
@@ -175,25 +179,25 @@ public class ImageOutputHandler extends OutputHandler {
 
     public static final OutputType OUTPUT_VIDEO =
         new OutputType("Play Video", "image.video", OutputType.TYPE_VIEW, "",
-                       ICON_IMAGES);
-
+                       "fa-circle-play");
+    
     public static final OutputType OUTPUT_PLAYER =
         new OutputType("Image Player", "image.player", OutputType.TYPE_VIEW,
-                       "", ICON_IMAGES);
+                       "", "fa-circle-play");
 
     public static final OutputType OUTPUT_SLIDESHOW =
         new OutputType("Slideshow", "image.slideshow", OutputType.TYPE_VIEW,
                        "", ICON_IMAGES);
 
     public static final OutputType OUTPUT_EDIT = new OutputType("Edit Image",
-                                                     "image.edit",
-                                                     OutputType.TYPE_VIEW,
-                                                     "", ICON_IMAGES);
+								"image.edit",
+								OutputType.TYPE_VIEW,
+								"", "fa-file-pen");
 
     public static final OutputType OUTPUT_CHANGE = new OutputType("Change Image",
-                                                     "image.change",
-                                                     OutputType.TYPE_EDIT,
-                                                     "", ICON_IMAGES);    
+								  "image.change",
+								  OutputType.TYPE_EDIT,
+								  "", "fa-file-pen");    
 
     public static final OutputType OUTPUT_CAPTION =
         new OutputType("Caption Image", "image.caption",
@@ -209,7 +213,8 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GALLERY);
-        addType(OUTPUT_ZOOM);
+        addType(OUTPUT_INSPECTOR);
+        addType(OUTPUT_ZOOM);	
 	addType(OUTPUT_FLIPCARDS);
         addType(OUTPUT_PLAYER);
         //        addType(OUTPUT_SLIDESHOW);
@@ -251,7 +256,7 @@ public class ImageOutputHandler extends OutputHandler {
 		    links.add(hr);
                     Link link = new Link(repository.getUrlBase()
                                          + "/lib/tui/tui?entryid="
-                                         + entry.getId(), ICON_IMAGES,
+                                         + entry.getId(), "fa-file-pen",
                                              "Edit Image");
                     link.setLinkType(OutputType.TYPE_EDIT);
                     links.add(link);
@@ -287,7 +292,8 @@ public class ImageOutputHandler extends OutputHandler {
 	    Link hr = new Link(true,OutputType.TYPE_VIEW);		    
 	    links.add(hr);
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_INSPECTOR));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_FLIPCARDS));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
@@ -514,6 +520,7 @@ public class ImageOutputHandler extends OutputHandler {
                             "{\"code\":\"error\",\"message\":\"Cannot edit image\"}"), "text/plain", false);
                 }
                 String contents = request.getString("imagecontents", "");
+		boolean createThumbnail = request.get("createthumbnail",false);
                 int    index    = contents.indexOf("base64,");
                 contents = contents.substring(index + 7);
                 byte[] bytes = Utils.decodeBase64(contents);
@@ -542,6 +549,9 @@ public class ImageOutputHandler extends OutputHandler {
 		    getEntryManager().updateEntry(request, entry);
                 }
 
+		if(createThumbnail) {
+		    getMetadataManager().addThumbnail(request,entry,true,getDefaultThumbnailWidth());
+		}		    
                 return new Result(
                     new StringBuilder(
                         "{\"code\":\"ok\",\"message\":\"Image saved\"}"), "text/plain", false);
@@ -571,8 +581,11 @@ public class ImageOutputHandler extends OutputHandler {
         }
         if (getAccessManager().canDoEdit(request, entry)) {
             String save =
-                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorSave();'>Save Image</div>"
-                + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>";
+
+                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorSave();'>Save Image</div>" +
+		HU.space(2) +
+		HU.labeledCheckbox("createthumbnail", "true",false,HU.attrs("id","createthumbnail"),"Create Thumbnail")
+                + HU.space(2) +"<div class='ramadda-status' style='display:inline-block;' id='imageeditor_message'></div>";
             String undo = HtmlUtils.span(((versions > 0)
                                           ? (versions + " version"
                                              + ((versions > 1)
@@ -787,10 +800,12 @@ public class ImageOutputHandler extends OutputHandler {
     }
 
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM)
-	    || output.equals(OUTPUT_FLIPCARDS)
-	    || output.equals(OUTPUT_PLAYER)
-	    || output.equals(OUTPUT_SLIDESHOW)) {
+        if (output.equals(OUTPUT_GALLERY) ||
+	    output.equals(OUTPUT_INSPECTOR) ||
+	    output.equals(OUTPUT_ZOOM)	    ||
+	    output.equals(OUTPUT_FLIPCARDS) ||
+	    output.equals(OUTPUT_PLAYER) ||
+	    output.equals(OUTPUT_SLIDESHOW)) {
             return repository.getMimeTypeFromSuffix(".html");
         }
 
@@ -809,13 +824,24 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Query Results", sb);
         }
 
-        if (output.equals(OUTPUT_ZOOM)) {
+        if (output.equals(OUTPUT_INSPECTOR)) {
             getPageHandler().entrySectionOpen(request, group, sb,
-                    "Image Zoom");
-            String zoomTemplate =
+                    "Image Inspector");
+            String inspectorTemplate =
                 "{{display_imagezoom height=\"300\" doEntries=\"true\" addImages=\"true\" }}";
             sb.append(getWikiManager().wikifyEntry(request, group,
-                    zoomTemplate));
+                    inspectorTemplate));
+            getPageHandler().entrySectionClose(request, group, sb);
+	}        if (output.equals(OUTPUT_ZOOM)) {
+            getPageHandler().entrySectionOpen(request, group, sb,
+                    "Image Zoom");
+	    String annotationsField = "annotations_json";
+	    if(group.getColumn("annotations_json")!=null)  annotationsField = "annotations_json";
+	    else if(group.getColumn("annotations_json_base")!=null)  annotationsField = "annotations_json_base";	    
+            String inspectorTemplate =
+		"{{zoomify singleFile=true annotationsField=\"" + annotationsField +"\" useAttachmentIfNeeded=true}}";
+            sb.append(getWikiManager().wikifyEntry(request, group,
+                    inspectorTemplate));
             getPageHandler().entrySectionClose(request, group, sb);
         } else if (output.equals(OUTPUT_FLIPCARDS)) {
             getPageHandler().entrySectionOpen(request, group, sb,
