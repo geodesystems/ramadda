@@ -59,6 +59,7 @@ RamaddaImageEditor.prototype = {
 	let form = this.getForm();
         let data = new FormData(form[0]);
         data.append("imagecontents", image);
+	data.append("createthumbnail",HU.isChecked(jqid("createthumbnail")));
         console.log("saving image");
         $.ajax({
             type: "POST",
