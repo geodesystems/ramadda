@@ -1681,6 +1681,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(entries.length>0) {
 		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,rowStyle,true);	
 		} else {
+		    if(Utils.isDefined(props.showEmpty) && !props.showEmpty) {
+			return;
+		    }
 		    let table = HU.open(TAG_TABLE,[ATTR_CLASS,'formtable']);
 		    if(entry.getIsUrl()) {
 			table+=HU.formEntryLabel('URL',
