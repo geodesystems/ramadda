@@ -526,6 +526,7 @@ public class ImageOutputHandler extends OutputHandler {
                 byte[] bytes = Utils.decodeBase64(contents);
                 File   f     = entry.getFile();
                 getStorageManager().checkReadFile(f);
+
                 if ((f != null) && f.canWrite()) {
                     File entryDir =
                         getStorageManager().getEntryDir(entry.getId(), true);
@@ -534,7 +535,8 @@ public class ImageOutputHandler extends OutputHandler {
                     File   versionFile = null;
                     String extension   =
                         IO.getFileExtension(f.toString());
-                    while (true) {
+
+		while (true) {
                         File file = new File(entryDir + "/" + "version"
                                              + version + "." + extension);
                         if ( !file.exists()) {
@@ -546,6 +548,7 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                     IOUtil.copyFile(f, versionFile);
                     IOUtil.writeBytes(f, bytes);
+		    //		    System.err.println("image file:" + f);
 		    getEntryManager().updateEntry(request, entry);
                 }
 
@@ -581,8 +584,8 @@ public class ImageOutputHandler extends OutputHandler {
         }
         if (getAccessManager().canDoEdit(request, entry)) {
             String save =
-
-                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorSave();'>Save Image</div>" +
+ 
+               "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditor.imageEditorSave();'>Save Image</div>" +
 		HU.space(2) +
 		HU.labeledCheckbox("createthumbnail", "true",false,HU.attrs("id","createthumbnail"),"Create Thumbnail")
                 + HU.space(2) +"<div class='ramadda-status' style='display:inline-block;' id='imageeditor_message'></div>";
