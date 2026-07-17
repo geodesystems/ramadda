@@ -1023,8 +1023,13 @@ public abstract class MyXmlUtil {
             throws Exception {
         Element child = create(doc, tag, parent, attrs);
         if (text != null) {
-            Text textNode = doc.createTextNode(text);
-            child.appendChild(textNode);
+	    if(text.indexOf(" ")>=0 || text.indexOf("\n")>=0) {
+		CDATASection cdata = makeCDataNode(doc,text,false);
+		child.appendChild(cdata);
+	    } else {
+		Text textNode = doc.createTextNode(text);
+		child.appendChild(textNode);
+	    }
         }
         return child;
     }
