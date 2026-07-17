@@ -195,10 +195,29 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
-	if(!isNew(newType)) {
+        String url = entry.getResource().getPath();
+	String embedId = StringUtil.findPattern(url,"https://www.youtube.com/embed/([^\\?]+)\\??");
+	if(Misc.equals(entry.getName(),"none")) entry.setName("");
+	if(isImport(newType)) {
+	    if(embedId!=null) {
+	    } else {
+		if(stringDefined(entry.getName())) {
+		    return;
+		}
+	    } 
+	} else 	if(!isNew(newType)) {
 	    return;
 	}
-        String url = entry.getResource().getPath();
+
+
+	if(embedId!=null) {
+	    url = "https://www.youtube.com/watch?v=" + embedId;
+	    entry.getResource().setPath(url);
+	    entry.setName("");
+	}
+
+
+
         String id  = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
             id = StringUtil.findPattern(url, "v=([^&]+)");

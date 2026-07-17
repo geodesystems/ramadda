@@ -41,7 +41,7 @@
       super="type_video"
       description="YouTube Video" 
       handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
-      pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
+      pattern="^(http|https)://www.youtube.com/(watch\?v=|v/|embed).*">
 <!--
   <action name="extractannotations" label="Extract Annotations"
 	  canedit="true"
