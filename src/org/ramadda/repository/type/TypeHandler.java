@@ -336,6 +336,10 @@ public class TypeHandler extends RepositoryManager {
 	return newType==NewType.NEW;
     }
 
+    public boolean isImport(NewType newType) {
+	return newType==NewType.IMPORT;
+    }    
+
     public void setParentTypeHandler(TypeHandler parent) {
         this.parent = parent;
     }
