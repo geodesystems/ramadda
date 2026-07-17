@@ -6190,6 +6190,7 @@ public class WikiManager extends RepositoryManager
 				      "changeDateLabel",				      
 				      "showType",
 				      "showIcon",
+				      "showEmpty",
 				      "showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth","changeDateWidth"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
