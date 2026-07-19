@@ -4785,11 +4785,20 @@ public class TypeHandler extends RepositoryManager {
 			if(isTextWiki) {
 			    height= "50em";
 			} else {
-			    int lines =Utils.split(desc!=null?desc:"","\n").size();
-			    lines = (int)(lines*1.5);
-			    lines = Math.max(lines,14);
-			    lines = Math.min(lines,40);				
-			    height=lines+"em";
+			    int rowCnt=0;
+			    for(String line: Utils.split(desc!=null?desc:"","\n")) {
+				rowCnt++;
+				int length = line.length();
+				rowCnt+= (int)(length/60);
+			    }
+
+			    rowCnt*=1.5;
+			    //			    int lines =Utils.split(desc!=null?desc:"","\n").size();
+			    //			    lines = (int)(lines*1.5);
+			    rowCnt = Math.max(rowCnt,14);
+			    rowCnt = Math.min(rowCnt,40);				
+			    //			    System.err.println("I: " +rowCnt);
+			    height=rowCnt+"em";
 			}
                         addWikiEditor(request, entry, editorSB, formInfo,
                                       ARG_DESCRIPTION, desc, "",
