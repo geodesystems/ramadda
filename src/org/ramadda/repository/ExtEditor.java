@@ -551,7 +551,7 @@ public class ExtEditor extends RepositoryManager {
 				@Override
 				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
-				    System.err.println("process:" + entry);
+				    //				    System.err.println("process:" + entry);
 				    if(!doThisOne && entry.getId().equals(finalEntry.getId())) {
 					return true;
 				    }
