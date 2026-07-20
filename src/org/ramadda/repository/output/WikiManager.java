@@ -222,6 +222,9 @@ public class WikiManager extends RepositoryManager
 	if(value.startsWith("property:")){
 	    String id = value.substring("property:".length());
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+
+
+
 	    Object o = null;
 	    if(entry!=null) {
 		o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,id,props);
@@ -743,7 +746,7 @@ public class WikiManager extends RepositoryManager
 		if(pair.size()>0) {
 		    //check for the case of, e.g. children:entryid
 		    String id = pair.get(0);
-		    if(true || debugSelect) System.err.println("\tId:" + id);
+		    if(debugSelect) System.err.println("\tId:" + id);
 		    Entry newEntry = findEntryFromId(request,  entry, wikiUtil, props, id);
 		    
 		    if(newEntry!=null) {
@@ -9513,6 +9516,20 @@ public class WikiManager extends RepositoryManager
 
     public String getSystemContextProperty(String key, String dflt) {
 	return getRepository().getProperty(key,dflt);
+    }
+
+    public List<String> getWikiLinks(WikiUtil wikiUtil, String links) {
+	List<String> results = new ArrayList<String>();
+	try {
+	    Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    Request request  = (Request) wikiUtil.getProperty(ATTR_REQUEST);
+	    for(Entry child:getEntries(request, wikiUtil, entry, entry,links,null)) {
+		results.add(getEntryManager().getEntryLink(request, child,""));
+	    }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+	return results;
     }
 
     /**
