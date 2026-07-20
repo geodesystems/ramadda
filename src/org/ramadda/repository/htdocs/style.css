@@ -2708,6 +2708,7 @@ thin_hr,.ramadda-thin-hr {
 
 .ui-menu .ui-state-active {
     background:#eee;
+    margin:0px;
 }
 
 .ui-menu .ui-widget-header {
@@ -6954,6 +6955,11 @@ a.wiki-link-noexist {
 .ramadda-menutree .ui-menu-item:hover {
 }
 
+.ramadda-menutree .ui-menu-item-wrapper {
+    border: 1px solid transparent;
+}
+  
+
 .ramadda-menutree .ui-menu-item-wrapper:hover {
     border: 1px solid #aaa;
 }
@@ -6965,6 +6971,8 @@ a.wiki-link-noexist {
     cursor:default;
     font-weight: bold;
 }
+
+
 
 .ramadda-menutree .ui-menu-item-wrapper:not([aria-haspopup="true"]) {
     padding-left:6px;
