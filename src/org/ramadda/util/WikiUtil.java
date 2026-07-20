@@ -1182,6 +1182,18 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}
 
+		if (tline.startsWith(":menuitems")) {
+                    List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
+		    if(toks.size()==2) {
+			for(String link: handler.getWikiLinks(this, toks.get(1))) {
+			    HU.open(buff, "li");
+			    buff.append(HU.div(link));
+			    HU.close(buff,"li","\n");
+			}
+		    }
+		    continue;
+		}		
+
 		if (tline.startsWith(":menuitem")) {
                     List<String> toks  = Utils.splitSpacesUpTo(tline, 2);
 		    HU.open(buff, "li");
