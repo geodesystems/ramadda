@@ -7017,14 +7017,12 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         if (url == null) {
             url = getEntryUrl(request, entry);
-            //            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
 
         String elementId  = entry.getId();
         String qid        = HU.squote(elementId);
         String linkId     = HU.getUniqueId("link_");
         String qlinkId    = HU.squote(linkId);
-
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
                              : null);
@@ -7033,7 +7031,9 @@ public class EntryManager extends RepositoryManager {
                              : "");
 
         return HU.href(url, linkText,
-		       HU.id(linkId) + targetAttr);
+		       HU.attrs("title",entry.getName(),
+				"id",linkId,"class","ramadda-entry-link",
+				"entryid",entry.getId()) + targetAttr);
     }
 
     public List<Link> getEntryLinks(Request request, Entry entry)
