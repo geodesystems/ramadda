@@ -66,7 +66,7 @@ function DocumentChat(id,entryId,action,models,args) {
 			  ATTR_STYLE, HU.css(CSS_MARGIN_RIGHT,HU.px(4)),
 			  ATTR_ID, this.domId(ID_LLM_SUBMIT)],
 			 HU.getIconImage('fa-regular fa-share-from-square'));
-    text += submit;
+//    text += submit;
     text += HU.input('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
 			    ATTR_STYLE,
 			    HU.css(CSS_WIDTH,HU.perc(100),CSS_MIN_WIDTH,HU.perc(100),CSS_FONT_SIZE,HU.px(18)),
@@ -85,23 +85,19 @@ function DocumentChat(id,entryId,action,models,args) {
 			HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100))], textArea));
 
     text=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
-				   CSS_DISPLAY,DISPLAY_FLEX,
-				   CSS_ALIGN_ITEMS,'flex-start',
-				   CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
 				   CSS_VERTICAL_ALIGN,ALIGN_TOP)],
 		text+holder);
-    let change = HU.span([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(4),CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+    let change = HU.span([ATTR_STYLE,
+			  HU.css(CSS_MARGIN_LEFT,HU.px(4),CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 			  ATTR_TITLE,'Toggle input',
 			  ATTR_ID,this.domId(ID_LLM_CHANGEINPUT)],
-			 HU.getIconImage('fa-solid fa-angle-right'));
+			 HU.getIconImage('fa-solid fa-angle-right',null,[ATTR_STYLE,HU.css()]));
     this.inputShown = true;
-    text+=change;
-    text = HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100),
-				     CSS_DISPLAY,DISPLAY_FLEX,
-				     CSS_ALIGN_ITEMS,'flex-start',
-				     CSS_WHITE_SPACE,WHITE_SPACE_NOWRAP,
-				     CSS_VERTICAL_ALIGN,ALIGN_TOP)],text);
-    
+    text = HU.table([ATTR_WIDTH,HU.perc(100)],HU.tr([ATTR_VALIGN,ALIGN_TOP],
+						    HU.td([],submit) +
+						    HU.td([ATTR_WIDTH,HU.perc(100)],text) +
+						    HU.td([],change)));
+
     let makeProgress = (id,width,top) => {
 	return HU.div([ATTR_ID,this.domId(id),
 		       ATTR_CLASS,CLASS_CLICKABLE,

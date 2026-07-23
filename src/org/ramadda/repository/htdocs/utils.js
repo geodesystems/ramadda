@@ -5408,6 +5408,26 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     tr: function(attrs, inner) {
         return this.tag(TAG_TR, attrs, inner);
     },
+    td: function(attrs, inner) {
+        return this.tag(TAG_TD, attrs, inner);
+    },
+    tds: function(attrs, cols) {
+	if(!cols) return "";
+	if(!Array.isArray(cols)) cols = [cols];
+        let html = "";
+        for (let i = 0; i < cols.length; i++) {
+            html += this.td(attrs, cols[i]);
+        }
+        return html;
+    },
+    ths: function(attrs, cols) {
+        let html = "";
+        for (let i = 0; i < cols.length; i++) {
+            html += this.th(attrs, cols[i]);
+        }
+        return html;
+    },    
+
     css: function(...attrs) {
         if(attrs.length==1 && Array.isArray(attrs[0])) attrs = attrs[0]
 
@@ -5508,25 +5528,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     p:function(html) {
 	if(html) return html+'<p>';
 	return '<p>';
-    },    
-    td: function(attrs, inner) {
-        return this.tag(TAG_TD, attrs, inner);
-    },
-    tds: function(attrs, cols) {
-	if(!cols) return "";
-	if(!Array.isArray(cols)) cols = [cols];
-        let html = "";
-        for (let i = 0; i < cols.length; i++) {
-            html += this.td(attrs, cols[i]);
-        }
-        return html;
-    },
-    ths: function(attrs, cols) {
-        let html = "";
-        for (let i = 0; i < cols.length; i++) {
-            html += this.th(attrs, cols[i]);
-        }
-        return html;
     },    
     onReturnEvent: function(selector,func) {
         if((typeof selector) == "string") selector = $(selector);
