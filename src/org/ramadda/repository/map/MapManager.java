@@ -935,6 +935,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             HU.importJS(sb,
                                getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
 							   + "/OpenLayers.debug.js"));
+	    /*
+            HU.importJS(sb,
+                               getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
+							   + "/OpenLayers.Layer.MVT.js"));
+	    */
             sb.append("\n");
         }
 
