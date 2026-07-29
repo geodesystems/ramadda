@@ -66,17 +66,17 @@ function DocumentChat(id,entryId,action,models,args) {
 			  ATTR_STYLE, HU.css(CSS_MARGIN_RIGHT,HU.px(4)),
 			  ATTR_ID, this.domId(ID_LLM_SUBMIT)],
 			 HU.getIconImage('fa-regular fa-share-from-square'));
-//    text += submit;
+    let fontSize = HU.px(16);
     text += HU.input('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
 			    ATTR_STYLE,
-			    HU.css(CSS_WIDTH,HU.perc(100),CSS_MIN_WIDTH,HU.perc(100),CSS_FONT_SIZE,HU.px(18)),
+			    HU.css(CSS_FONT_SIZE,fontSize,CSS_WIDTH,HU.perc(100),CSS_MIN_WIDTH,HU.perc(100)),
 			    ATTR_ID,this.domId(ID_LLM_INPUT_FIELD),
 			    ATTR_CLASS,'ramadda-documentchat-input']);    
 
 
     let textArea =  HU.textarea('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
-				       ATTR_ROWS,3,
-				       ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(100)),
+				       ATTR_ROWS,5,
+				       ATTR_STYLE,HU.css(CSS_FONT_SIZE,fontSize,CSS_WIDTH,HU.perc(100)),
 				       ATTR_ID,this.domId(ID_LLM_INPUT_TEXTAREA),
 				       ATTR_CLASS,'ramadda-documentchat-input']);    
     
