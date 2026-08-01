@@ -1,0 +1,59 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<types>
+<type  name="type_cancer_rates" 
+ description="State Cancer Profile" 
+ handler="org.ramadda.data.services.PointTypeHandler" 
+ super="type_point" 
+ supercategory="Miscellaneous" 
+ category="Demographic Data" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/map/man.png" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-start,County,-stop,Notes,-headerids
+csvcommands2=-columns,0-11,-min,10,-copy
+csvcommands3=county,state,-change,state,.*\,
+csvcommands4=,-change,state,\(.*,
+csvcommands5=-columnsbefore,county,state,-rename,age_adjusted_incidence_rate_rate_note_cases_per_100_000
+csvcommands6=incidence_rate,-rename,2023_rural_urban_continuum_codes_rural_urban_note,rural_urban,-rename
+csvcommands7=recent_5_year_trend_trend_note_in_incidence_rates,recent_5_year_trend,-notmatch,state,US
+csvcommands8=-change,3-9\,11-20,_star_,NaN,-change
+csvcommands9=average_annual_count,.*or fewer.*,NaN,-change,incidence_rate\,lower_95_confidence_interval\,upper_95_confidence_interval\,average_annual_count\,recent_5_year_trend
+csvcommands10=.*note.*,NaN,-addheader,county.type string  state.type enumeration fips.type string  rural_urban.type enumeration incidence_rate.unit {per 100000}
+
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
++center
+Data is from the National Cancer Institute's [https://statecancerprofiles.cancer.gov/index.html State Cancer Profiles]
+-center
+{{description wikify=true}}
+{{group  hideFilterWidget=true  filterFields="state,rural_urban"
+
+}}
+{{display_filter}}
+{{display_map zoomLevel=4 mapCenter=45.16655%2C-94.43115
+colorByFields="incidence_rate,lower_95_confidence_interval,upper_95_confidence_interval,average_annual_count,recent_5_year_trend_trend_note_in_incidence_rates,lower_95_confidence_interval,upper_95_confidence_interval"
+ linkFeature=geoid  linkFields="fips" 
+ colorBy=incidence_rate
+colorTable=plotly_bluered
+ colorTableLabel="Colored by ${field}" 
+}} 
+:heading Table
+{{display_download}}
+{{display_htmltable }} 
+
+:heading Information
+{{information}}
+
+
+-section]]></wiki>
+</type>
+</types>

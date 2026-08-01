@@ -1,4 +1,4 @@
-<types supercategory="Miscellaneous" category="Business Data">
+<types supercategory="Miscellaneous" category="Demographic Data">
 
 
   <type name="type_census_acs"  super="type_point"  description="US Census ACS Data" handler="org.ramadda.plugins.census.AcsTypeHandler" >
