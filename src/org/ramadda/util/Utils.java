@@ -2096,6 +2096,8 @@ public class Utils extends IO {
 				 "\\*",delimiter,
 				 "\\.", delimiter,
 				 "(\r|\n)+", delimiter,
+				 "\\[", delimiter,
+				 "\\]", delimiter,				 
 				 "\\(", delimiter,
 				 "\\)", delimiter,
 				 "\\?", delimiter,
@@ -2110,12 +2112,13 @@ public class Utils extends IO {
 				 "[\\{\\}=]+", delimiter,
 				 "_$", "");
 
+	label = Utils.replaceAll(label,"__+", "_");
 	label = Utils.replaceAll(label,"thedelimiter",delimiter);
+
         if (forCode && Pattern.matches("^[0-9]+.*", label)) {
             label = delimiter + label;
         }
-
-	//	System.err.println(label);
+	//	System.err.println("\"" + tmp +"\": "+ label);
         return label;
     }
 
