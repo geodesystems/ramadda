@@ -23,8 +23,9 @@ csvcommands5=-columnsbefore,county,state,-rename,age_adjusted_incidence_rate_rat
 csvcommands6=incidence_rate,-rename,2023_rural_urban_continuum_codes_rural_urban_note,rural_urban,-rename
 csvcommands7=recent_5_year_trend_trend_note_in_incidence_rates,recent_5_year_trend,-notmatch,state,US
 csvcommands8=-change,3-9\,11-20,_star_,NaN,-change
-csvcommands9=average_annual_count,.*or fewer.*,NaN,-change,incidence_rate\,lower_95_confidence_interval\,upper_95_confidence_interval\,average_annual_count\,recent_5_year_trend
-csvcommands10=.*note.*,NaN,-addheader,county.type string  state.type enumeration fips.type string  rural_urban.type enumeration incidence_rate.unit {per 100000}
+csvcommands9=average_annual_count,.*or fewer.*,NaN,-change,recent_trend
+csvcommands10=.*(stable|rising|falling).*,NaN,-change,incidence_rate\,lower_95_confidence_interval\,upper_95_confidence_interval\,average_annual_count\,recent_trend\,recent_5_year_trend,.*note.*
+csvcommands11=NaN,-addheader,county.type string  state.type enumeration fips.type string  rural_urban.type enumeration incidence_rate.unit {per 100000}
 
 ]]></property>
 
