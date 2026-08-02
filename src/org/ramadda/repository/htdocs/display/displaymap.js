@@ -3021,20 +3021,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			       if(this.getShowPoints(true) && records && records.length) {
 				   //If we have our own features then just zoom to that layer and return
 				   if(this.myFeatureLayer?.features?.length) {
-				       this.map.zoomToLayer(this.myFeatureLayer);
+				       this.getMap().zoomToLayer(this.myFeatureLayer);
 				       return
 				   }
-				   this.map.centerOnMarkers(null, false, true);
+				   this.getMap().centerOnMarkers(null, false, true,true);
 				   return;
 			       }
 			       if (this.vectorLayer && this.showVectorLayer) {
-				   this.map.zoomToLayer(this.vectorLayer,1.2);
+				   this.getMap().zoomToLayer(this.vectorLayer,1.2);
 			       } else if(this.lastImageLayer) {
-				   this.map.zoomToLayer(this.lastImageLayer);
+				   this.getMap().zoomToLayer(this.lastImageLayer);
 			       } else {
 				   //true -> Just markers
-				   if(records && records.length)
-				       this.map.centerOnMarkers(null, false, true);
+				   if(records && records.length) {
+				       this.getMap().centerOnMarkers(null, false, true);
+				   }
 			       }
 			   }});
 	},

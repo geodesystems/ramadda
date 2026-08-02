@@ -490,7 +490,7 @@ RepositoryMap.prototype = {
 	if(!b) return false
 	return !isNaN(b.bottom) && !isNaN(b.left) && !isNaN(b.right) && !isNaN(b.top);
     },
-    centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
+    centerOnMarkers: function(dfltBounds, force, justMarkerLayer,clearDefault) {
 	if(!force) {
 	    if(this.hadInitialZoom) {
 		//TODO: I really have to figure out the initial zoom and location
@@ -498,6 +498,9 @@ RepositoryMap.prototype = {
 	    }
 	}
 
+	if(clearDefault) {
+	    this.hadDefaultPosition = false;
+	}
 	if(this.hadDefaultPosition) {
 	    this.hadDefaultPosition = false;
 	    if(debugBounds) {
