@@ -1692,6 +1692,9 @@ function DisplayThing(argId, argProperties) {
         getPropertyInner: function(keys, dflt,skipThis, skipParent,srcDisplay) {	    
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
+	    if(debug) {
+		console.trace();
+	    }
 	    srcDisplay = srcDisplay??this;
 	    if(!Array.isArray(keys)) keys = [keys];
 	    //	    debug = keys.includes('iconSize');
@@ -1729,7 +1732,8 @@ function DisplayThing(argId, argProperties) {
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
 		    //		    debug = key=='showMenu' && this.type=='linechart';
-		    if(debug) console.log(this.type,'looking for:' + key +' has parent:',parent!=null,' has display manager:',displayManager!=null);
+		    if(debug)
+			console.log(this.type,'looking for:' + key +' has parent:',parent!=null,' has display manager:',displayManager!=null);
 		    let fromParent=null;
 		    if (parent != null) {
 			fromParent =  parent.getPropertyInner(typePrefix+key, dflt,skipThis,null, srcDisplay);
@@ -2595,7 +2599,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}		    
 	    });
 	    dialog.find('#colortablemethod').change(function() {
-		_this.setProperty('colorByMethod',$(this).val());
+		let value = $(this).val();
+		_this.setProperty('*.colorByMethod',value);
+		_this.setProperty('colorByMethod',value);
 		_this.forceUpdateUI();
 	    });
 	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
