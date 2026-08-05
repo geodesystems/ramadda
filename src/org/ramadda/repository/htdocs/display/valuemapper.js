@@ -20,6 +20,7 @@ function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
 	propPrefix = [propPrefix];
     }
 
+
     this.propPrefix=propPrefix;
     let valueAttr = this.getProperty(fieldProperty, null);
     if(theField==null) {
@@ -36,6 +37,8 @@ function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
 	propPrefix.unshift(theField.getId()+'.'+ fieldProperty);
 	propPrefix.unshift(theField.getId()+'.'); 
 	propPrefix.push(fieldProperty);
+	//Add the override
+	propPrefix.unshift('*.' + fieldProperty);
     }
     
 
@@ -113,8 +116,9 @@ ValueMapper.prototype = {
 	    clipMax = Stats.quantile(this.stats.sorted, clipMax);
 	}
 
+	let method =this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR));
 	this.mapper = new Mapper(this.stats,
-				 {method: this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR)),
+				 {method: method,
 				  clipMin:clipMin,
 				  clipMax:clipMax,
 				  // boosts low values
@@ -128,13 +132,18 @@ ValueMapper.prototype = {
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
 	debug = debug ?? this.debug;
+//	debug = prop=='Method';
 	if(debug) console.log("getProperty:" + prop);
+
 	for(let i=0;i<this.propPrefix.length;i++) {
-	    this.display.debugGetProperty = debug;
+//	    this.display.debugGetProperty = debug;
 	    if(debug) console.log("\tpropPrefix:" + this.propPrefix[i],"prop:",prop);
 	    let v = this.display.getProperty(this.propPrefix[i]+prop);
 	    this.display.debugGetProperty = false;
-	    if(Utils.isDefined(v)) return v;
+	    if(Utils.isDefined(v)) {
+		if(debug) console.log('\tgot:',v);
+		return v;
+	    }
 	}
 	return  this.display.getProperty(prop,dflt);
     },
