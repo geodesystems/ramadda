@@ -57,6 +57,7 @@ public class GeoUtils {
     public static final String PREFIX_STATE = "state:";
     public static final String PREFIX_COUNTRY = "country:";
     public static final String PREFIX_COUNTY = "county:";
+    public static final String PREFIX_ID = "id:";
     public static final String PREFIX_CITY = "city:";
     public static final String PREFIX_ZIP = "zip:";
     public static final String PREFIX_ZCTA="zcta:";
@@ -845,6 +846,7 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
     }
 
     private static class Locale {
+        boolean doId = false;
         boolean doCountry = false;
         boolean doState = false;
         boolean doCounty = false;
@@ -860,7 +862,7 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	Locale(String a) {
 	    address= a.trim().replaceAll("\\s\\s+"," ");
 	    if (address.startsWith(PREFIX_ANY)) {
-		doCountry = doState =  doCounty = doCity = true;
+		doId = doCountry = doState =  doCounty = doCity = true;
 		address   = address.substring(PREFIX_ANY.length()).trim();
 		doAny = true;
 	    }
@@ -869,6 +871,11 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 		address  = address.substring(5);
 	    } else if (address.startsWith("to:")) {
 		address  = address.substring(3);
+	    }
+
+	    if (address.startsWith(PREFIX_ID)) {
+		address   = address.substring(PREFIX_ID.length()).trim();
+		doId = true;
 	    }
 
 	    if (address.startsWith(PREFIX_COUNTRY)) {
@@ -979,6 +986,21 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
 	place = locale.match();
 	if(place!=null) return place;
 	if (locale.doTract) return null;
+
+
+
+
+        if (locale.doId) {
+	    place = Place.getPlace(locale.address);
+	    //	    String msg = "address: <" + Utils.ansi(Utils.ANSI_CYAN_BACKGROUND, locale.address) +"> Place:" + place;
+	    
+	    //	    System.err.println(msg);
+	    return place;
+	    //	    if(place!=null) return place;
+	}
+	    
+
+
 
         if (locale.doCity) {
             //abbrev to name
@@ -1114,6 +1136,14 @@ public static double[] rotateLatLonDegrees(double lat, double lon,
             }
             locale.doCountry = true;
         }
+
+        if (locale.doId) {
+	    //            place    = locale.match(resource);
+            if (place != null) {
+                return place;
+            }
+	}
+
 
         if (locale.doCountry) {
             resource = GeoResource.RESOURCE_COUNTRIES;

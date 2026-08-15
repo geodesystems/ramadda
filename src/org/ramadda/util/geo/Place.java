@@ -29,6 +29,7 @@ import java.util.List;
 
 public class Place implements Comparable<Place> {
     private static final Object MUTEX = new Object();
+    private static Hashtable<String,Place> idToPlace= new Hashtable<String,Place>();
     private String name;
     private String suffix;
     private String id;
@@ -75,7 +76,9 @@ public class Place implements Comparable<Place> {
         if (popIndex > 0) {
             setPopulation(Integer.parseInt(toks.get(popIndex).trim()));
         }
-        //        System.out.println(fips);
+
+
+
     }
 
     public void setId(String value) {
@@ -105,6 +108,11 @@ public class Place implements Comparable<Place> {
 
     public void setFips(String value) {
         fips = value;
+	if(Utils.stringDefined(value)) {
+	    if(value.equals("23021"))
+		System.err.println("fips:" + name +" " + value);
+	    idToPlace.put(value,this);
+	}
     }
 
     public String getFips() {
@@ -136,7 +144,15 @@ public class Place implements Comparable<Place> {
     }
 
     public static Place getPlace(String id) throws Exception {
-        return GeoResource.getPlaceFromAll(id);
+	Place place =  idToPlace.get(id);
+	if(place!=null) {
+	    //	    System.err.println("gotPlace: " + place);
+	    return place;
+	}
+	if(place==null) {
+	    place =  GeoResource.getPlaceFromAll(id);
+	}
+	return place;
     }
 
     public boolean within(Bounds bounds) {
