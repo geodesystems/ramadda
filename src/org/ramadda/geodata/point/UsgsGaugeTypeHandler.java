@@ -43,6 +43,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	"-changerow,0,0-10,.*date.*,date",
 	"-changerow,0,0-10,.*00065.*,Gauge Height",
 	"-changerow,0,0-10,.*00060.*,Discharge",
+	"-change,0-10,\\*\\*\\*,NaN",
 	"-change,?discharge_comma_?gauge_height,(?i)(^$|dis|ice|ssn|eqp|rat),0,-if",
 	"-has,discharge,-integrate,?discharge,date",
 	"second,volume,-scale,volume,0",
@@ -171,6 +172,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    this.entry = entry;
         }
 
+	@Override
         public boolean isMissingValue(BaseRecord record, RecordField field,
                                       String s) {
 	    s = s.toLowerCase();
@@ -178,6 +180,9 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 		s.equals("ice") || s.equals("ssn") || s.equals("eqp") || s.equals("rat")) {
                 return true;
             }
+	    if(s.equals("***")) {
+		return true;
+	    }
 
             return super.isMissingValue(record, field, s);
         }
