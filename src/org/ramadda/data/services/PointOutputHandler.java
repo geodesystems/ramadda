@@ -516,6 +516,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(recordEntries);
+	//	System.err.println("entries:" + recordEntries);
+	//	System.err.println(Utils.getStack(10));
+
+
+
         //Get the product formats
         HashSet<String> formats = getProductFormats(request);
 
@@ -719,6 +724,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception on badness
      */
+    @Override
     public Result outputEntry(Request request, OutputType outputType,
                               final Entry entry)
 	throws Exception {
@@ -1033,6 +1039,8 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         Result parentResult = super.outputGroup(request, outputType, group,
 						children);
+
+
         if (parentResult != null) {
             return parentResult;
         }
