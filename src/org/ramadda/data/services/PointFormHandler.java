@@ -275,8 +275,6 @@ public class PointFormHandler extends RecordFormHandler {
 
         StringBuffer entrySB = new StringBuffer();
         entrySB.append("<table width=100%>");
-        entrySB.append(
-            "<tr><td><b>File</b></td><td><b># Points</b></td></tr>");
         long totalSize = 0;
 
         for (RecordEntry recordEntry : recordEntries) {
@@ -285,6 +283,7 @@ public class PointFormHandler extends RecordFormHandler {
 
             entrySB.append(HU.checkbox(ARG_RECORDENTRY, entry.getId(),
                     true));
+	    entrySB.append(HU.space(1));
             entrySB.append(getOutputHandler().getEntryLink(request, entry));
             entrySB.append("</td><td align=right>");
             long numRecords = recordEntry.getNumRecords();
@@ -320,9 +319,11 @@ public class PointFormHandler extends RecordFormHandler {
         } else {
             files =
                 "<table width=100%><tr><td width=75%>"
-                + HU.div(entrySB.toString(), HU.style("max-height:100px;  overflow-y: auto; border: 1px #999999 solid;"))
+                + HU.div(entrySB.toString(), HU.style("max-height:200px;min-width:500px;  overflow-y: auto; border: 1px #999999 solid;"))
                 + "</td><td width=25%>&nbsp;</td><tr></table>";
         }
+
+	files = "<table width=100%><tr><td><b>File</b></td><td align=right><b># Points</b></td></tr></table>" + files;
 
         String extra = HU.formEntryTop((recordEntries.size() == 1)
                 ? ""
@@ -493,6 +494,11 @@ public class PointFormHandler extends RecordFormHandler {
     public void addGriddingForm(Request request, Entry entry, Appendable sb,
                                 RecordEntry recordEntry)
             throws Exception {
+
+	if(!request.get("showgridding",true)) {
+	    sb.append(HU.hidden("showgridding","false"));
+	    return;
+	}
 
         //        if (!recordEntry.isCapable(PointFile.ACTION_GRID))  return;
         boolean       showUrl  = request.get(ARG_SHOWURL, false);
