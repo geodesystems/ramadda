@@ -109,8 +109,6 @@ public class Place implements Comparable<Place> {
     public void setFips(String value) {
         fips = value;
 	if(Utils.stringDefined(value)) {
-	    if(value.equals("23021"))
-		System.err.println("fips:" + name +" " + value);
 	    idToPlace.put(value,this);
 	}
     }
