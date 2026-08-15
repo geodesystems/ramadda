@@ -5,6 +5,9 @@
 
 package org.ramadda.geodata.point;
 
+import org.json.*;
+import org.ramadda.util.JsonUtil;
+
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -241,75 +244,46 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	String id = ("" + entry.getValue(request,"station_id")).trim();
 	if(!stringDefined(id)) return;
 	String url = "https://waterdata.usgs.gov/nwis/inventory?site_no="+id;
-	IO.Result result = IO.doGetResult(new URL(url));
+	if(!id.startsWith("USGS-")) id = "USGS-" + id;
+	String metadataUrl = "https://api.waterdata.usgs.gov/ogcapi/v0/collections/monitoring-locations/items?f=json&id=" + id;
+	//	System.err.println(url);
+	IO.Result result = IO.doGetResult(new URL(metadataUrl));
 	if(result.getError()) {
-	    getLogManager().logSpecial("Failed to read USGS station:" + url);
+	    getLogManager().logSpecial("Failed to read USGS station:" + metadataUrl);
 	    return;
 	}	    
 
-	String html = result.getResult();
-	String jsonLD = StringUtil.findPattern(html,"(?s)<script *type=\"application/ld\\+json\">(.*?)</script>");
-	String block = html;
-	String ll = jsonLD;
-	String lat = null;
-	String lon = null;
-	if(ll!=null) {
-	    //Latitude  38&#176;47'50", &nbsp; Longitude 109&#176;11'40" &nbsp; NAD27<br /></dd>
-	    //	    "longitude": -71.4450575337562,
-	    lat = StringUtil.findPattern(ll,"latitude\" *: *([^,]+),");
-	    lon = StringUtil.findPattern(ll,"longitude\" *: *([^,]+),");	    
-	    if(lat!=null && lon!=null) {
-		try {
-		    System.err.println(lat +" " + lon);
-		    entry.setLatitude(GeoUtils.decodeLatLon(lat.trim()));
-		    entry.setLongitude(GeoUtils.decodeLatLon(lon.trim()));
-		} catch(Exception exc) {
-		    getLogManager().logError("USGS reading lat/lon:" + url, exc);
-		}
-	    }		
-	}
-
-	entry.setValue("homepage",url);
-
-	String drainageArea = StringUtil.findPattern(block, "drainage_area\" *: *([^,]+),");	
-	if(drainageArea!=null) entry.setValue("drainage_area",new Double(drainageArea));
-	drainageArea = StringUtil.findPattern(block, "contributing_drainage_area\" *: *([^,]+),");	
-	if(drainageArea!=null) entry.setValue("contributing_drainage_area",new Double(drainageArea));
-	
-
-	String siteType = StringUtil.findPattern(block, "site_type\" *: *\"([^\"]+)\"");
-	if(siteType!=null) entry.setValue("site_type",siteType.trim());
-
-	String huc = StringUtil.findPattern(block, "hydrologic_unit_code\" *: *\"([^\"]+)\"");
-	if(huc!=null) entry.setValue("huc",huc.trim());
-	String name = StringUtil.findPattern(block, "monitoring_location_name\" *: *\"([^\"]+)\"");
-	if(name!=null) entry.setName(name.trim());
-
-
-
-
-	String county = StringUtil.findPattern(block, "county_name\" *: *\"([^\"]+)\"");
-	if(county!=null) entry.setValue("county",county.trim());
-	String state = StringUtil.findPattern(block, "state_name\" *: *\"([^\"]+)\"");	
-	if(state!=null) entry.setValue("state",state.trim());
-	String altitude = StringUtil.findPattern(block, "altitude\" *: *\"([^\"]+)\"");	
-	if(altitude!=null) entry.setValue("state",state.trim());	
-	if(stringDefined(altitude)) {
-	    altitude = altitude.replace(",","").trim();
-	    try {
-		entry.setAltitude(Double.parseDouble(altitude));
-	    } catch(Exception exc) {
-		getLogManager().logError("USGS reading altitude:" + url, exc);
-	    }
-	}
-
-	String datum = StringUtil.findPattern(block, "vertical_datum\" *: *\"([^\"]+)\"");	
-	if(datum!=null) entry.setValue("gage_datum",datum.trim());
 	if(request.get(ARG_DOWNLOAD_FILE, false)) {
 	    URL trendUrl = new URL(getPathForEntry(request,  entry, true));
 	    downloadUrlAndSaveAsEntryFile(request, entry, trendUrl,id+"_usgs.dat");
 	}
 
+	String json = result.getResult();
+	JSONObject root = new JSONObject(json);
+	JSONArray features = root.optJSONArray("features");
+	if(features==null || features.length()==0) {
+	    getLogManager().logSpecial("No features in site metadata:" + metadataUrl);
+	    return;
+	}
+	JSONObject feature = features.getJSONObject(0);
+	JSONObject props = feature.getJSONObject("properties");
+	JSONObject geo = feature.getJSONObject("geometry");		
+	JSONArray coords = geo.optJSONArray("coordinates");
+	if(coords!=null && coords.length()>0) {
+	    entry.setLongitude(coords.getDouble(0));
+	    entry.setLatitude(coords.getDouble(1));	    
+	}
+
+	entry.setValue("homepage",url);
+	entry.setValue("drainage_area",new Double(props.optDouble("drainage_area",Double.NaN)));
+	entry.setValue("contributing_drainage_area",new Double(props.optDouble("contributing_drainage_area",Double.NaN)));	
+	entry.setAltitude(props.optDouble("altitude",Double.NaN));
+	entry.setName(props.optString("monitoring_location_name",""));
+	entry.setValue("site_type",props.optString("site_type",""));
+	entry.setValue("huc",props.optString("hydrologic_unit_code",""));
+	entry.setValue("county",props.optString("county_name",""));
+	entry.setValue("state",props.optString("state_name",""));	
+	entry.setValue("gage_datum",props.optString("vertical_datum",""));	
     }
 
     @Override
