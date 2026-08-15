@@ -1446,6 +1446,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dialog.hide();
 		}
 		if(showStac) {
+
 		    tabs.init();
 		}
 
@@ -3982,11 +3983,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }
+	    let entryId = this.getProperty("entryId");
 	    let json = this.makeJson();
 	    //	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
 	    let formdata = new FormData();
-	    formdata.append(ARG_ENTRYID,this.getProperty("entryId"));
+	    formdata.append(ARG_ENTRYID,entryId);
 	    formdata.append(ARG_AUTHTOKEN,this.getProperty("authToken"));	    
 	    formdata.append(ARG_FILE,json);
 	    let bounds = this.getFullBounds(true);
