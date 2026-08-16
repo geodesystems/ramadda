@@ -199,7 +199,7 @@ picky=false
 {{information  details="true"  showTitle="false"  }} 
 -col
 +col-6
-Data courtesy of [https://waterdata.usgs.gov USGS]
+<a href="{{data_url}}">Source data</a> courtesy of [https://waterdata.usgs.gov USGS]
 {{map}}
 <table class="formtable">
 {{field name="altitude"  row.label="Altitude:"}}
