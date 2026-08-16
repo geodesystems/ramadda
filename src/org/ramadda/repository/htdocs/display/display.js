@@ -7486,13 +7486,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					 "Show Missing") +SPACE2;
 		}	    */
 
-		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
+		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE)
+);
 		header2 += HU.span([ATTR_CLASS,filterClass],
+			   
 				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
 						    enums,selected,20))+extra+SPACE2;
 		if(this.getProperty('colorByBreakAfter')) {
 		    header2+=HU.flexBreak();
 		}
+	    }
+	    if(this.getProperty('showFilterAll')) {
+		header2+=HU.span([ATTR_ID,this.domId('filterall'),
+				  ATTR_TITLE,'Show filters',
+				  ATTR_CLASS,CLASS_CLICKABLE],
+				 HU.getIconImage('fas fa-filter')) +SPACE;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -7914,7 +7922,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		_this.propagateEvent(DisplayEvent.filterChanged, args);
 		_this.settingFilterValue = false;
-            };
+            }; 
+
 
 	    dataFilterIds.forEach(id=>{
 		jqid(id).click(function(e){
@@ -8119,6 +8128,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.callUpdateUI();
 	    });
 
+	    this.jq('filterall').click(function(){
+		_this.showAnalysis($(this));
+	    });
+
             this.jq("sortbyselect").change(function(){
 		let val = $(this).val();
 		if(val.endsWith("_up")) {
@@ -8165,6 +8178,85 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
+	showAnalysis:function(anchor) {
+	    let clear= () =>{
+		if(this.analysisDialog) {
+		    this.analysisDialog.remove();
+		    this.analysisDialog=null;
+		}
+	    }
+	    clear();
+	    let html = '';
+	    let contents = [];
+            let fields= this.getFields();
+	    let records = this.getRecords();
+	    let inits = [];
+	    let baseId =HU.getUniqueId('analysis_');
+	    if(fields && records) {
+		let filters = [];
+		let fieldHtml='';
+		let props = {
+		    baseId:baseId,
+		}
+		fields.forEach(f=>{
+		    let filter = new RecordFilter(this, f.getId(),props);
+		    filters.push(filter);
+		});
+		inits.push(()=>{
+		    //TODO
+ 		    let inputFunc = (input, input2, value) =>{
+		    };
+		    filters.forEach(filter=>{
+			if(filter.initWidget) {
+			    filter.initWidget(inputFunc);
+			}
+		    });
+		});
+
+		let fieldMap={};
+		let vertical = false;
+		let bottom = [""];
+		fieldHtml+=HU.formTable();
+		filters.forEach(filter=>{
+//		    if(!filter.isEnabled()) return;
+//xxxx
+		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
+		    let field = filter.getField();
+		    let label=field?field.getLabel():'';
+		    fieldHtml+=
+			HU.formEntry(label+':',  widget);
+		});
+		fieldHtml+=HU.formTableClose();
+		fieldHtml = HU.div([ATTR_STYLE,
+				    HU.css(CSS_MAX_HEIGHT,
+					   HU.em(10),
+					   CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				   fieldHtml);
+		contents.push({label:'Fields',contents: fieldHtml});
+	    }
+
+	    let tabs = HU.makeTabs(contents);
+	    html+=tabs.contents;
+	    html+=HU.makeOkCancelButtons();
+	    html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);	    
+	    let dialog =
+		this.analysisDialog=
+		HU.makeDialog({content:html,
+			       title:'Filters',
+			       anchor:anchor,
+			       draggable:true,header:true});
+	    tabs.init();
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
+		clear();
+	    });
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
+		clear();
+	    });	    
+	    inits.forEach(init=>{
+		init();
+	    });
+
+	},
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
 	    if(!filteredRecords) filteredRecords = this.getRecords();

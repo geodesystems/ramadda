@@ -100,6 +100,9 @@ function RecordFilter(display,filterFieldId, properties) {
     }
     $.extend(this, new BaseFilter(display, properties));
     this.getId = function() {
+	if(properties && properties.baseId) {
+	    return properties.baseId + this.id;
+	}
 	return this.id;
     }
 
@@ -545,7 +548,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	
 	initWidget: function(inputFunc) {
 	    let _this= this;
-	    if(!this.isEnabled()) return;
+	    if(!this.isEnabled()) {
+		return;
+	    }
 	    this.inputFunc = inputFunc;
 	    this.fakeInput  = {
 		attr:function(key) {
@@ -576,6 +581,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(Utils.isDefined(showPopupSize) && this.enums) {
 		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
 	    }
+
 
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
@@ -706,6 +712,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		});
 	    }
+
 
 	},
 	initDateWidget: function(inputFunc) {
