@@ -988,6 +988,9 @@ function  SeesvForm(inputId, entry,params) {
 
 
 	    let url = this.getUrl(cmds,rawInput);
+	    let arg=(param,value) =>{
+		url = HU.appendArg(url,param,value);
+	    }
 
 	    let filename = "results.txt"
 	    if(isScript) filename = "convert.sh";
@@ -998,22 +1001,16 @@ function  SeesvForm(inputId, entry,params) {
 
 
 	    if(args.process)
-		url += "&process=true";
-	    if(this.save) {
-		url += "&save=true";        
-	    } else {
-		url += "&save=false";        
-	    }
-
-	    if(args.csvoutput) {
-		url += "&csvoutput=" + args.csvoutput;
-	    }
+		arg('process','true');
+	    arg('save',this.save?'true':'false');
+	    if(args.csvoutput) 
+		arg('csvoutput', args.csvoutput);
 	    if(args.clearOutput)
-		url += "&clearoutput=true";
+		arg('clearoutput','true');
 	    if(args.listOutput)
-		url += "&listoutput=true";
+		arg('listoutput','true');
 	    if(this.applyToSiblings) 
-		url += "&applysiblings=true";
+		arg('applysiblings','true');
 
 	    let output = this.jq("output");
 	    let result;
@@ -1274,25 +1271,68 @@ function  SeesvForm(inputId, entry,params) {
 			    let line = toks[0];
 			    line = line.replace("#fields=","");
 			    line = line.replace(/(\] *),/g,"$1\n");
-			    let tmp ="<table><tr><td><b>Field</b></td><td><b>Properties</b></td></tr>";
+			    let tmp ="<table><tr><td><b>Field ID</b></td><td><b>Label</b></td><td><b>Type</b></td><td><b>Properties</b></td></tr>";
 
 			    toks = line.split("\n");
 			    let rows=[];
+			    let dfltType ='x';
+			    let theLine;
+			    let processArg = (name) => {
+				let re = new RegExp(
+				    '\\b' + name + '\\s*=\\s*(?:"([^"]*)"|([^\\s]+))'
+				);
+
+				let match = theLine.match(re);
+				if (!match) return null;
+
+				let value = match[1] !== undefined ? match[1] : match[2];
+
+				theLine = theLine.substring(0, match.index) +
+				    theLine.substring(match.index + match[0].length);
+
+				return value;
+			    };
+
+			    let getMatch = function(s, re,size) {
+				let m = s.match(re);
+				if(!m) {
+				    m = new Array(Utils.isDefined(size)?size:0).fill("");
+				}
+				return m;
+			    }
+
+			    let processLine = line=>{
+				theLine = line;
+				let [all,id, attrs] =getMatch(line,'^(.*)\\[(.*)\\]',2);
+				let row = '';
+				row = HU.td([],HU.span([ATTR_CLASS,'csv_addheader_field','field',id,
+							ATTR_TITLE,'Add to input'],
+						       id)+SPACE);
+				theLine = attrs;
+				let label = processArg('label');
+				let type = processArg('type');
+				row += HU.td([],SPACE+(label??'NONE')+SPACE);
+				row += HU.td([],SPACE+(type??'NONE')+SPACE);				
+//state[label="State"  type="enumeration" searchable="true" ] 
+//				theLine = theLine.replace(/type\s*=\s*"([^"]+)"/,'type="<span style=\'font-weight:bold;\'>$1</span>"');
+//				theLine = theLine.replace(/label\s*=\s*"([^"]+)"/,'<b>$1:</b>');				
+//				theLine = theLine.replace(/=/g,':');
+//label="State"  type="enumeration" searchable="true" 
+
+				row+=HU.td([],theLine);
+				return row;
+				return theLine;
+			    };
 			    for(let i=0;i<toks.length;i++) {
 				let l = toks[i];
-				l = l.replace(/^(.*?)\[/,"<td><span class=csv_addheader_field field='$1' title='Add to input'>$1</span>&nbsp;</td><td>");
-				l = l.replace(/type\s*=\s*"([^"]+)"/,'type="<span style=\'font-weight:bold;\'>$1</span>"');
-//				l = l.replace(/label\s*=\s*"([^"]+)"/,'<b>$1:</b>');				
-//				l = l.replace(/=/g,':');
-				l = l.replace(/\]/,'');
-				l+='</td>';
-				rows.push(l);
+				rows.push(processLine(l));
 			    }
 			    tmp +=Utils.wrap(rows,'<tr>','</tr>');
 			    tmp+=HU.close(TAG_TABLE);
 			    tmp = HU.div([],'Click on a field to set properties') + tmp;
 			    result = tmp; 
 			    output.html(result);
+			    
 			} else {		 	    
 			    writePre(result);
 			}
@@ -1307,24 +1347,23 @@ function  SeesvForm(inputId, entry,params) {
 									      CSS_MARGIN_LEFT,HU.px(5),
 									      CSS_MARGIN_RIGHT,HU.px(5))]);
 				html+=HU.center('Note: Have focus in the -addheader command properties');
-				html +=HU.b('type: ') + 
+				html +=HU.b('Type: ') + 
+				    _this.makeHeaderMenu(field+".type","string","string")+ SPACE2+	
 				    _this.makeHeaderMenu(field+".type","enumeration","enumeration")+ SPACE2+
 				    _this.makeHeaderMenu(field+".type","multienumeration","multienumeration")+ SPACE2+
-			    
-				    _this.makeHeaderMenu(field+".type","string","string")+ SPACE2+	
 				    _this.makeHeaderMenu(field+".type","double","double")+SPACE2+
 				    _this.makeHeaderMenu(field+".type","integer","integer")+SPACE2+
 				    _this.makeHeaderMenu(field+".type","date","date")+ SPACE2 +
 				    _this.makeHeaderMenu(field+".type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu(field+".type","image","image");
 
-				html += HU.br() +
+				html += HU.br() +HU.b('Properties: ') + 
 				    _this.makeHeaderMenu(field+".id",field)+ SPACE2+				    
 				    _this.makeHeaderMenu(field+".label",'{' + field+'}','label')+ SPACE2 +
 				    _this.makeHeaderMenu(field+".unit","unit","unit");
-				html +=HU.br() +
+				html +=SPACE2 +
 				    _this.makeHeaderMenu(field+".format","{yyyy-MM-dd hh:mm:ss}","date format")+ SPACE2;
-				html +=HU.br() +
+				html +=SPACE2 +
 				    _this.makeHeaderMenu(field+".enumeratedValues","{value1:label1;value2:label2}","enum values");
 				
 
@@ -1338,7 +1377,9 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu("default.type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu("default.type","image","image");
 				html+=HU.close(TAG_DIV);
-				let dialog =   HU.makeDialog({header:true,title:'Set properties in -addheader for field: ' + field,
+				html = HU.div([ATTR_CLASS,'ramadda-heading ramadda-heading2'],'Field: '+ field)+html;
+				html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+				let dialog =   HU.makeDialog({header:true,title:'Set properties for field',
 							      sticky:true,
 							      draggable:true,
 							      content:html,anchor:$(this)});
@@ -1348,6 +1389,7 @@ function  SeesvForm(inputId, entry,params) {
 			    });
 			}
 			return;
+
 		    } else if(stats || table) {
 			output.html(result);
 			let toolbar = HU.span([ATTR_TITLE,"Insert all field names",
