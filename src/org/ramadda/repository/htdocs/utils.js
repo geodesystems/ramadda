@@ -1472,6 +1472,7 @@ var Utils =  {
 
     parseMap: function(str,delim1,delim2) {
         if(str==null) return null;
+	str = str.replace(/\\[\r\n]+/g, ' ');
         let toks = str.split(delim1??",");
         let map = {};
         for (var i = 0; i < toks.length; i++) {
