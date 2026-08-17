@@ -2317,7 +2317,55 @@ MapGlyph.prototype = {
 	    this.checkInMapLabel();
 	}
     },
+    getHeaderDiv:function(andCreate) {
+	let myDiv = this.display.getMapHeader().find('[mapglyph="' + this.getId() + '"]');
+	if(myDiv.length==0 && andCreate) {
+	    this.display.getMapHeader().append(HU.div([ATTR_CLASS,'imdv-mapglyph-header ramadda-clickable',
+						      'mapglyph',this.getId()], ''));
+	    myDiv = this.display.getMapHeader().find('[mapglyph="' + this.getId() + '"]');
+	    myDiv.click(()=>{
+		this.setVisible(!this.getVisible(),true);
+	    });
+	}
+
+	if(myDiv.length==0) {
+	    return myDiv;
+	}
+	if(!this.getVisible()) {
+	    myDiv.addClass('imdv-legend-label-invisible');
+//	    myDiv.hide();
+	} else {
+	    myDiv.removeClass('imdv-legend-label-invisible');
+//	    myDiv.show();
+	}
+	return myDiv;
+    },
     makeLegend:function(opts) {
+	let header = this.getProperty('header');
+	if(!header && !this.isGroup()) {
+	    header = this.getProperty('child.header',null,true);
+	}
+	if(Utils.stringDefined(header)) {
+	    if(header.indexOf('${legend')>=0) {
+		let img = '';
+		if(Utils.stringDefined(this?.style.legendUrl)) {
+		    img = HU.image(this.style.legendUrl,[ATTR_TITLE,'',
+							 ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
+									   CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
+									   CSS_WIDTH,
+									   this.getProperty('headerLegendWidth',
+											    HU.px(200)))]);
+		}
+		header = header.replace('${legend}','<br>' +img);
+	    }
+	    header = header.replace('${name}',this.getName());
+	    this.getHeaderDiv(true).html(header);
+	} else {
+	    if(this.getHeaderDiv().length>0) {
+		this.getHeaderDiv().remove();
+	    }
+	}
+
 	if(this.getProperty(PROP_DONT_SHOW_IN_LEGEND)) return '';
 	this.addInMapLabel();
 	opts = opts??{};
@@ -6507,6 +6555,8 @@ MapGlyph.prototype = {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
 
+
+	this.getHeaderDiv();
 
 
 

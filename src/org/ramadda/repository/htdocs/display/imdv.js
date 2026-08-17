@@ -100,6 +100,8 @@ var IMDV_PROPERTY_HINTS= [
     PROP_DONT_SHOW_IN_LEGEND +'=true',
     'showDisplayHeader=false',
     'showInHeader=true',			  
+    'header=${name} ${legend}',
+    'headerLegendWidth=200px',
     'showIconInHeader=true',
     'mapLegendHeight=300px',
     'showLegendBox=true',
@@ -2627,6 +2629,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		entryid:mapOptions.entryId},
 		   callback).fail(error);
 	},
+
+
 
 	parseDisplayAttrs:function(val) {
 	    let displayAttrs = {};
@@ -6371,6 +6375,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.animatingLegendHighlight = false;
 	    });
 	},
+	getMapHeader:function() {
+	    return this.jq(ID_MAP+'_header');
+	},
 	getLegendDiv:function () {
 	    return this.jq(ID_IMDV_LEGEND);
 	},
@@ -6424,7 +6431,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),
 				  ATTR_CLASS,'imdv-message']);
 	    let mapHeader = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10),CSS_MARGIN_LEFT,HU.px(10)),
-				    ATTR_ID,this.domId(ID_MAP+'_header')]);
+				    ATTR_ID,this.domId(ID_MAP+'_header')],'');
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				    ATTR_WIDTH,HU.perc(100)],
@@ -6432,7 +6439,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					 HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					 HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
-						ATTR_WIDTH,HU.perc(50)],mapHeader+address)));
+						ATTR_WIDTH,HU.perc(50)],/*mapHeader+*/address)));
 	    } else {
 		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				   ATTR_WIDTH,HU.perc(100)],
@@ -6440,10 +6447,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 					       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
-					       ATTR_WIDTH,HU.perc(50)],mapHeader+address)));
+					       ATTR_WIDTH,HU.perc(50)],/*mapHeader+*/address)));
 	    }
 
 
+	    this.jq(ID_HEADER0).html(mapHeader);
 	    this.jq(ID_TOP_LEFT).html(menuBar);
             this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
                 if (event.which == 13) {

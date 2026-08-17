@@ -3411,6 +3411,15 @@ table.dataTable tfoot td {
     margin-left:10px;
 }
 
+.imdv-mapglyph-header {
+    border:var(--basic-border);
+    display:inline-block;
+    margin-right:10px;
+    padding:4px;
+}
+
+
+
 .imdv-route-step {
     border:1px solid transparent;
     padding:2px;
