@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug  2 06:35:58 EDT 2026";
+var build_date="RAMADDA build date: Mon Aug 17 06:26:02 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -2930,6 +2930,7 @@ function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
 	propPrefix = [propPrefix];
     }
 
+
     this.propPrefix=propPrefix;
     let valueAttr = this.getProperty(fieldProperty, null);
     if(theField==null) {
@@ -2946,6 +2947,8 @@ function ValueMapper(myType,display,fieldProperty,propPrefix,theField,props) {
 	propPrefix.unshift(theField.getId()+'.'+ fieldProperty);
 	propPrefix.unshift(theField.getId()+'.'); 
 	propPrefix.push(fieldProperty);
+	//Add the override
+	propPrefix.unshift('*.' + fieldProperty);
     }
     
 
@@ -3023,8 +3026,9 @@ ValueMapper.prototype = {
 	    clipMax = Stats.quantile(this.stats.sorted, clipMax);
 	}
 
+	let method =this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR));
 	this.mapper = new Mapper(this.stats,
-				 {method: this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR)),
+				 {method: method,
 				  clipMin:clipMin,
 				  clipMax:clipMax,
 				  // boosts low values
@@ -3038,13 +3042,18 @@ ValueMapper.prototype = {
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
 	debug = debug ?? this.debug;
+//	debug = prop=='Method';
 	if(debug) console.log("getProperty:" + prop);
+
 	for(let i=0;i<this.propPrefix.length;i++) {
-	    this.display.debugGetProperty = debug;
+//	    this.display.debugGetProperty = debug;
 	    if(debug) console.log("\tpropPrefix:" + this.propPrefix[i],"prop:",prop);
 	    let v = this.display.getProperty(this.propPrefix[i]+prop);
 	    this.display.debugGetProperty = false;
-	    if(Utils.isDefined(v)) return v;
+	    if(Utils.isDefined(v)) {
+		if(debug) console.log('\tgot:',v);
+		return v;
+	    }
 	}
 	return  this.display.getProperty(prop,dflt);
     },
@@ -6311,6 +6320,9 @@ function DisplayThing(argId, argProperties) {
         getPropertyInner: function(keys, dflt,skipThis, skipParent,srcDisplay) {	    
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
+	    if(debug) {
+		console.trace();
+	    }
 	    srcDisplay = srcDisplay??this;
 	    if(!Array.isArray(keys)) keys = [keys];
 	    //	    debug = keys.includes('iconSize');
@@ -6348,7 +6360,8 @@ function DisplayThing(argId, argProperties) {
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
 		    //		    debug = key=='showMenu' && this.type=='linechart';
-		    if(debug) console.log(this.type,'looking for:' + key +' has parent:',parent!=null,' has display manager:',displayManager!=null);
+		    if(debug)
+			console.log(this.type,'looking for:' + key +' has parent:',parent!=null,' has display manager:',displayManager!=null);
 		    let fromParent=null;
 		    if (parent != null) {
 			fromParent =  parent.getPropertyInner(typePrefix+key, dflt,skipThis,null, srcDisplay);
@@ -7214,7 +7227,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}		    
 	    });
 	    dialog.find('#colortablemethod').change(function() {
-		_this.setProperty('colorByMethod',$(this).val());
+		let value = $(this).val();
+		_this.setProperty('*.colorByMethod',value);
+		_this.setProperty('colorByMethod',value);
 		_this.forceUpdateUI();
 	    });
 	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).button().click(function() {
@@ -12099,13 +12114,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					 "Show Missing") +SPACE2;
 		}	    */
 
-		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE));
+		label += this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:" + SPACE)
+);
 		header2 += HU.span([ATTR_CLASS,filterClass],
+			   
 				   label+ HU.select("",[ATTR_ID,this.getDomId('colorbyselect')],
 						    enums,selected,20))+extra+SPACE2;
 		if(this.getProperty('colorByBreakAfter')) {
 		    header2+=HU.flexBreak();
 		}
+	    }
+	    if(this.getProperty('showFilterAll')) {
+		header2+=HU.span([ATTR_ID,this.domId('filterall'),
+				  ATTR_TITLE,'Show filters',
+				  ATTR_CLASS,CLASS_CLICKABLE],
+				 HU.getIconImage('fas fa-filter')) +SPACE;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -12527,7 +12550,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		_this.propagateEvent(DisplayEvent.filterChanged, args);
 		_this.settingFilterValue = false;
-            };
+            }; 
+
 
 	    dataFilterIds.forEach(id=>{
 		jqid(id).click(function(e){
@@ -12732,6 +12756,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.callUpdateUI();
 	    });
 
+	    this.jq('filterall').click(function(){
+		_this.showAnalysis($(this));
+	    });
+
             this.jq("sortbyselect").change(function(){
 		let val = $(this).val();
 		if(val.endsWith("_up")) {
@@ -12778,6 +12806,85 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
+	showAnalysis:function(anchor) {
+	    let clear= () =>{
+		if(this.analysisDialog) {
+		    this.analysisDialog.remove();
+		    this.analysisDialog=null;
+		}
+	    }
+	    clear();
+	    let html = '';
+	    let contents = [];
+            let fields= this.getFields();
+	    let records = this.getRecords();
+	    let inits = [];
+	    let baseId =HU.getUniqueId('analysis_');
+	    if(fields && records) {
+		let filters = [];
+		let fieldHtml='';
+		let props = {
+		    baseId:baseId,
+		}
+		fields.forEach(f=>{
+		    let filter = new RecordFilter(this, f.getId(),props);
+		    filters.push(filter);
+		});
+		inits.push(()=>{
+		    //TODO
+ 		    let inputFunc = (input, input2, value) =>{
+		    };
+		    filters.forEach(filter=>{
+			if(filter.initWidget) {
+			    filter.initWidget(inputFunc);
+			}
+		    });
+		});
+
+		let fieldMap={};
+		let vertical = false;
+		let bottom = [""];
+		fieldHtml+=HU.formTable();
+		filters.forEach(filter=>{
+//		    if(!filter.isEnabled()) return;
+//xxxx
+		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
+		    let field = filter.getField();
+		    let label=field?field.getLabel():'';
+		    fieldHtml+=
+			HU.formEntry(label+':',  widget);
+		});
+		fieldHtml+=HU.formTableClose();
+		fieldHtml = HU.div([ATTR_STYLE,
+				    HU.css(CSS_MAX_HEIGHT,
+					   HU.em(10),
+					   CSS_OVERFLOW_Y,OVERFLOW_AUTO)],
+				   fieldHtml);
+		contents.push({label:'Fields',contents: fieldHtml});
+	    }
+
+	    let tabs = HU.makeTabs(contents);
+	    html+=tabs.contents;
+	    html+=HU.makeOkCancelButtons();
+	    html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);	    
+	    let dialog =
+		this.analysisDialog=
+		HU.makeDialog({content:html,
+			       title:'Filters',
+			       anchor:anchor,
+			       draggable:true,header:true});
+	    tabs.init();
+	    dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(()=>{
+		clear();
+	    });
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
+		clear();
+	    });	    
+	    inits.forEach(init=>{
+		init();
+	    });
+
+	},
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
 	    if(!filteredRecords) filteredRecords = this.getRecords();
@@ -19679,6 +19786,9 @@ function RecordFilter(display,filterFieldId, properties) {
     }
     $.extend(this, new BaseFilter(display, properties));
     this.getId = function() {
+	if(properties && properties.baseId) {
+	    return properties.baseId + this.id;
+	}
 	return this.id;
     }
 
@@ -20124,7 +20234,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	
 	initWidget: function(inputFunc) {
 	    let _this= this;
-	    if(!this.isEnabled()) return;
+	    if(!this.isEnabled()) {
+		return;
+	    }
 	    this.inputFunc = inputFunc;
 	    this.fakeInput  = {
 		attr:function(key) {
@@ -20155,6 +20267,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(Utils.isDefined(showPopupSize) && this.enums) {
 		showPopupSelect = this.enums.length >parseFloat(showPopupSize);
 	    }
+
 
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
@@ -20285,6 +20398,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		});
 	    }
+
 
 	},
 	initDateWidget: function(inputFunc) {
@@ -39039,10 +39153,10 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 'recordSelection.share':false,
 				 labelTemplate:
 				 this.getProperty('map.labelTemplate',
-						  '${name maxLength=15 maxLengthSuffix=...}'),
+						  '${name maxLength=20 maxLengthSuffix=...}'),
 				 labelBackground:
 				 this.getProperty('map.labelBackground',
-						  'rgba(200,200,200,0.75)'),
+						  'rgba(250,250,250,0.75)'),
 				 labelStrokeColor:
 				 this.getProperty('map.labelStrokeColor',
 						  '#aaa'),				 
@@ -47160,7 +47274,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		textBackgroundFillColor:this.getLabelBackground(),
 		textBackgroundStrokeColor:this.getLabelStrokeColor(),
 		textBackgroundStrokeWidth:this.getLabelStrokeWidth(),				
-                fontSize: this.getProperty("labelFontSize",HU.pt(10)),
+                fontSize: this.getProperty("labelFontSize",HU.pt(8)),
                 fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
                 fontWeight: this.getProperty("labelFontWeight","plain"),
                 labelAlign: this.getProperty("labelAlign","cc"),
@@ -47281,7 +47395,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return +v;
 	    }
 	    let args ={
-		fontSize: this.getProperty("labelFontSize",HU.pt(10)),
+		fontSize: this.getProperty("labelFontSize",HU.pt(8)),
 		padding: +this.getProperty('labelDeclutterPadding',1),
 		granularity: +this.getProperty('labelDeclutterGranularity',1),		
 		pixelsPerLine:get(this.getProperty('labelDeclutterPixelsPerLine')),
@@ -49136,6 +49250,8 @@ var IMDV_PROPERTY_HINTS= [
     PROP_DONT_SHOW_IN_LEGEND +'=true',
     'showDisplayHeader=false',
     'showInHeader=true',			  
+    'header=${name} ${legend}',
+    'headerLegendWidth=200px',
     'showIconInHeader=true',
     'mapLegendHeight=300px',
     'showLegendBox=true',
@@ -50482,6 +50598,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dialog.hide();
 		}
 		if(showStac) {
+
 		    tabs.init();
 		}
 
@@ -51662,6 +51779,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		entryid:mapOptions.entryId},
 		   callback).fail(error);
 	},
+
+
 
 	parseDisplayAttrs:function(val) {
 	    let displayAttrs = {};
@@ -53018,11 +53137,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }
+	    let entryId = this.getProperty("entryId");
 	    let json = this.makeJson();
 	    //	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
 	    let formdata = new FormData();
-	    formdata.append(ARG_ENTRYID,this.getProperty("entryId"));
+	    formdata.append(ARG_ENTRYID,entryId);
 	    formdata.append(ARG_AUTHTOKEN,this.getProperty("authToken"));	    
 	    formdata.append(ARG_FILE,json);
 	    let bounds = this.getFullBounds(true);
@@ -55405,6 +55525,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.animatingLegendHighlight = false;
 	    });
 	},
+	getMapHeader:function() {
+	    return this.jq(ID_MAP+'_header');
+	},
 	getLegendDiv:function () {
 	    return this.jq(ID_IMDV_LEGEND);
 	},
@@ -55458,7 +55581,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),
 				  ATTR_CLASS,'imdv-message']);
 	    let mapHeader = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(10),CSS_MARGIN_LEFT,HU.px(10)),
-				    ATTR_ID,this.domId(ID_MAP+'_header')]);
+				    ATTR_ID,this.domId(ID_MAP+'_header')],'');
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				    ATTR_WIDTH,HU.perc(100)],
@@ -55466,7 +55589,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					 HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					 HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 						ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
-						ATTR_WIDTH,HU.perc(50)],mapHeader+address)));
+						ATTR_WIDTH,HU.perc(50)],/*mapHeader+*/address)));
 	    } else {
 		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),
 				   ATTR_WIDTH,HU.perc(100)],
@@ -55474,10 +55597,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					HU.td([ATTR_WIDTH,HU.perc(50)], message) +
 					HU.td([ATTR_ALIGN,ALIGN_RIGHT,
 					       ATTR_STYLE,HU.css(CSS_PADDING_RIGHT,HU.px(10)),
-					       ATTR_WIDTH,HU.perc(50)],mapHeader+address)));
+					       ATTR_WIDTH,HU.perc(50)],/*mapHeader+*/address)));
 	    }
 
 
+	    this.jq(ID_HEADER0).html(mapHeader);
 	    this.jq(ID_TOP_LEFT).html(menuBar);
             this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
                 if (event.which == 13) {
@@ -58594,7 +58718,55 @@ MapGlyph.prototype = {
 	    this.checkInMapLabel();
 	}
     },
+    getHeaderDiv:function(andCreate) {
+	let myDiv = this.display.getMapHeader().find('[mapglyph="' + this.getId() + '"]');
+	if(myDiv.length==0 && andCreate) {
+	    this.display.getMapHeader().append(HU.div([ATTR_CLASS,'imdv-mapglyph-header ramadda-clickable',
+						      'mapglyph',this.getId()], ''));
+	    myDiv = this.display.getMapHeader().find('[mapglyph="' + this.getId() + '"]');
+	    myDiv.click(()=>{
+		this.setVisible(!this.getVisible(),true);
+	    });
+	}
+
+	if(myDiv.length==0) {
+	    return myDiv;
+	}
+	if(!this.getVisible()) {
+	    myDiv.addClass('imdv-legend-label-invisible');
+//	    myDiv.hide();
+	} else {
+	    myDiv.removeClass('imdv-legend-label-invisible');
+//	    myDiv.show();
+	}
+	return myDiv;
+    },
     makeLegend:function(opts) {
+	let header = this.getProperty('header');
+	if(!header && !this.isGroup()) {
+	    header = this.getProperty('child.header',null,true);
+	}
+	if(Utils.stringDefined(header)) {
+	    if(header.indexOf('${legend')>=0) {
+		let img = '';
+		if(Utils.stringDefined(this?.style.legendUrl)) {
+		    img = HU.image(this.style.legendUrl,[ATTR_TITLE,'',
+							 ATTR_STYLE,HU.css(CSS_MARGIN_BOTTOM,HU.px(4),
+									   CSS_BORDER,HU.border(1,COLOR_LIGHT_GRAY),
+									   CSS_WIDTH,
+									   this.getProperty('headerLegendWidth',
+											    HU.px(200)))]);
+		}
+		header = header.replace('${legend}','<br>' +img);
+	    }
+	    header = header.replace('${name}',this.getName());
+	    this.getHeaderDiv(true).html(header);
+	} else {
+	    if(this.getHeaderDiv().length>0) {
+		this.getHeaderDiv().remove();
+	    }
+	}
+
 	if(this.getProperty(PROP_DONT_SHOW_IN_LEGEND)) return '';
 	this.addInMapLabel();
 	opts = opts??{};
@@ -62784,6 +62956,8 @@ MapGlyph.prototype = {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
 
+
+	this.getHeaderDiv();
 
 
 
