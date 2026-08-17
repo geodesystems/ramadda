@@ -3171,10 +3171,10 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				 'recordSelection.share':false,
 				 labelTemplate:
 				 this.getProperty('map.labelTemplate',
-						  '${name maxLength=15 maxLengthSuffix=...}'),
+						  '${name maxLength=20 maxLengthSuffix=...}'),
 				 labelBackground:
 				 this.getProperty('map.labelBackground',
-						  'rgba(200,200,200,0.75)'),
+						  'rgba(250,250,250,0.75)'),
 				 labelStrokeColor:
 				 this.getProperty('map.labelStrokeColor',
 						  '#aaa'),				 
