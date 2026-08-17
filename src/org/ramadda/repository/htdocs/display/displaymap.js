@@ -5791,7 +5791,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		textBackgroundFillColor:this.getLabelBackground(),
 		textBackgroundStrokeColor:this.getLabelStrokeColor(),
 		textBackgroundStrokeWidth:this.getLabelStrokeWidth(),				
-                fontSize: this.getProperty("labelFontSize",HU.pt(10)),
+                fontSize: this.getProperty("labelFontSize",HU.pt(8)),
                 fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
                 fontWeight: this.getProperty("labelFontWeight","plain"),
                 labelAlign: this.getProperty("labelAlign","cc"),
@@ -5912,7 +5912,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return +v;
 	    }
 	    let args ={
-		fontSize: this.getProperty("labelFontSize",HU.pt(10)),
+		fontSize: this.getProperty("labelFontSize",HU.pt(8)),
 		padding: +this.getProperty('labelDeclutterPadding',1),
 		granularity: +this.getProperty('labelDeclutterGranularity',1),		
 		pixelsPerLine:get(this.getProperty('labelDeclutterPixelsPerLine')),
