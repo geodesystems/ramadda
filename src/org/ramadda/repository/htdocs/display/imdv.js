@@ -5940,6 +5940,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.inMapLegend = html;
 	    }
 	    this.jq(ID_LEGEND_MAP_WRAPPER).html('');
+
 	    if(this.inMapLegend!='' || inMap) {
 		let inMapLegend=HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP)],this.inMapLegend);
 		let toggleResult = {};
@@ -5979,6 +5980,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		legendContainer.show();
 		legendContainer.html(HU.div([ATTR_ID,this.domId(ID_LEGEND)],''));
 		this.jq(ID_LEGEND).html(html);
+//		this.getLegendDiv().draggable();
+		
 	    }
 
 	    this.initViewMenu('_legend');
