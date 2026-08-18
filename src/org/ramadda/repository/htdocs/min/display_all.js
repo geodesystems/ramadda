@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 17 06:26:02 EDT 2026";
+var build_date="RAMADDA build date: Tue Aug 18 07:42:01 EDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -53139,7 +53139,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let entryId = this.getProperty("entryId");
 	    let json = this.makeJson();
-	    //	    console.log(json);
+	    
+//	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
 	    let formdata = new FormData();
 	    formdata.append(ARG_ENTRYID,entryId);
@@ -55090,6 +55091,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.inMapLegend = html;
 	    }
 	    this.jq(ID_LEGEND_MAP_WRAPPER).html('');
+
 	    if(this.inMapLegend!='' || inMap) {
 		let inMapLegend=HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP)],this.inMapLegend);
 		let toggleResult = {};
@@ -55655,8 +55657,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    this.jq(ID_MAP_CONTAINER).append(inner);
 	    let haveCleared = false;
+	    let offset = inner.offset();
+	    /*
+	    //swap the parent of the legend so we can drag this all over the page
+	    //don't do this for now as it screws up the saved legend position
+	    setTimeout(()=>{
+		inner.appendTo(document.body).css({
+		    position: "absolute",
+		    left: offset.left,
+		    top: offset.top
+		});
+	    },100);*/
+
+
 	    inner.draggable({
-		xcontainment:this.jq(ID_MAP_CONTAINER),
 		//A bit tricky - we clear all the style when we start dragging
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
