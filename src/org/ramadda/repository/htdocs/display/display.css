@@ -3390,7 +3390,7 @@ table.dataTable tfoot td {
     width:200px;
     overflow-y:scroll;
     border-bottom:1px solid #dadada;
-    z-index:1000;
+//    z-index:1000;
     background:#fff;
 }
 

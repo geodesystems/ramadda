@@ -3989,7 +3989,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let entryId = this.getProperty("entryId");
 	    let json = this.makeJson();
-	    //	    console.log(json);
+	    
+//	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
 	    let formdata = new FormData();
 	    formdata.append(ARG_ENTRYID,entryId);
@@ -5980,8 +5981,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		legendContainer.show();
 		legendContainer.html(HU.div([ATTR_ID,this.domId(ID_LEGEND)],''));
 		this.jq(ID_LEGEND).html(html);
-//		this.getLegendDiv().draggable();
-		
 	    }
 
 	    this.initViewMenu('_legend');
@@ -6509,14 +6508,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_MAP_CONTAINER).append(inner);
 	    let haveCleared = false;
 	    let offset = inner.offset();
+	    /*
 	    //swap the parent of the legend so we can drag this all over the page
+	    //don't do this for now as it screws up the saved legend position
 	    setTimeout(()=>{
 		inner.appendTo(document.body).css({
 		    position: "absolute",
 		    left: offset.left,
 		    top: offset.top
 		});
-	    },100);
+	    },100);*/
 
 
 	    inner.draggable({
