@@ -6505,8 +6505,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    this.jq(ID_MAP_CONTAINER).append(inner);
 	    let haveCleared = false;
+	    let offset = inner.offset();
+	    //swap the parent of the legend so we can drag this all over the page
+	    setTimeout(()=>{
+		inner.appendTo(document.body).css({
+		    position: "absolute",
+		    left: offset.left,
+		    top: offset.top
+		});
+	    },100);
+
+
 	    inner.draggable({
-		xcontainment:this.jq(ID_MAP_CONTAINER),
 		//A bit tricky - we clear all the style when we start dragging
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
