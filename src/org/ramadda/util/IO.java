@@ -1246,10 +1246,18 @@ public class IO {
         PrintWriter writer    = new PrintWriter(out);
         String      delimiter = ",";
 	int sheetNumber = 1;
+	int fileCnt = 0;
+	//	System.err.println("files:" + files.size());
         for (int i = 0; i < files.size(); i++) {
 	    IO.Path path = files.get(i);
+	    if(path.getFile().length()==0) {
+		//		System.err.println ("** skipping:" + path);
+		continue;
+	    }
+
 	    String file=path.toString();
 	    InputStream inputStream;
+
 	    if (file.toLowerCase().endsWith(".xls")) {
 		inputStream=  XlsUtil.xlsToCsv(path,-1,sheetNumber,null);
 	    } else if (file.toLowerCase().endsWith(".xlsx")) {
@@ -1257,14 +1265,18 @@ public class IO {
 	    } else {
 		inputStream = new FileInputStream(path.getPath());
 	    } 
+	    fileCnt++;
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             int skip = rowSkip;
+	    int lineCnt = 0;
+	    //	    System.err.println("** count:" + fileCnt +" path:" + path +" skip:" + skip);
             while (true) {
                 String line = br.readLine();
                 if (line == null) {
                     break;
                 }
-                if (i > 0) {
+		//not the first file we check for skipping
+                if (fileCnt> 1) {
                     if (skip-- > 0) {
                         continue;
                     }
