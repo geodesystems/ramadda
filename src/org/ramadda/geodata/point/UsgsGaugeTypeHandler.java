@@ -291,12 +291,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-	if(tag.equals("data_url")) {
-	    return getPathForEntry(request,  entry, true);
-	}
-
-
-
 	if(!tag.equals("usgs_gauge_charts")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
