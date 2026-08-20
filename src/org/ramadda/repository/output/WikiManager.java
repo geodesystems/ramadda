@@ -8834,7 +8834,10 @@ public class WikiManager extends RepositoryManager
 			l2.call("FA icon","Font Awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
+			l2.call("Internal link out", "Link to another entry in a new tab","[[id|&lt;target&gt;link text", "]]"),			
 			l2.call("External link", "Link to an external URL","[http://www.example.com link title", "]"),
+			l2.call("External link out", "Link to an external URL in a new tab",
+				"[&lt;target&gt;http://www.example.com link title", "]"),			
 			l2.call("Embed YT, etc.","Embed content from YouTube, Wikipedia, etc",
 				"@(youtube URL, wikipedia, etc, URL #width=600 #height=800)",""),
 			l.call("Horizontal line", "\\n----\\n", ""),
