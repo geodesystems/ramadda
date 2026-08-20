@@ -7026,6 +7026,23 @@ public class EntryManager extends RepositoryManager {
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
                              : null);
+	if(target==null) {
+	    if(linkText.startsWith("<")) {
+		int idx2 = linkText.indexOf(">");
+		if(idx2>=0) {
+		    target = linkText.substring(1,idx2);
+		    linkText = linkText.substring(idx2+1);
+		} else {
+		    linkText = linkText.substring(1);
+		    target="_blank";
+		}
+	    }
+
+	    if(linkText.startsWith("tab:")) {
+		linkText = linkText.substring("tab:".length());
+		target = "_entry";
+	    }
+	}
         String targetAttr = ((target != null)
                              ? HU.attr(HU.ATTR_TARGET, target)
                              : "");
