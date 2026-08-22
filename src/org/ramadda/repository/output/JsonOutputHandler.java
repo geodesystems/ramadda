@@ -441,6 +441,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         JU.attr(items, "canedit", canEdit + "");
+        JU.attr(items, "isPrivate", getAccessManager().isPrivate(request, entry)+"");
         JU.attr(items, "isImage", ""+entry.isImage());
 	
         TypeHandler type = entry.getTypeHandler();
