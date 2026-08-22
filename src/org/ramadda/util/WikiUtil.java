@@ -3823,6 +3823,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	if(url==null) return label;
 	String attrs = "";
 	if(style!=null) attrs+=HU.attr("style",style);
+        String urlClass = getTitleUrlClass(true);
+	if(urlClass!=null) attrs+=HU.cssClass(urlClass);
 	return makeHref(url,label,attrs);
     }
 
@@ -3842,14 +3844,26 @@ public class WikiUtil implements HtmlUtilsConstants {
 
     }
 
+    public String getTitleUrlClass(boolean andClear) {
+        String titleUrlClass = (String) getProperty("title-url-class");
+        if ((titleUrlClass != null) && andClear) {
+            removeProperty("title-url-class");
+        }
+
+        return titleUrlClass;
+
+    }
+    
     public String getLinkTarget() {
 	String target =   (String) getProperty("linktarget");
 	if(target==null)target =   (String) getWikiProperty("linktarget");
 	return target;
     }    
 
-    public void setTitleUrl(String url,String target) {
+    public void setTitleUrl(String url,String clazz,String target) {
         putProperty("title-url", url);
+	if(clazz!=null)
+	    putProperty("title-url-class",clazz);
 	if(target!=null)
 	    putProperty("linktarget", target);	    
     }
