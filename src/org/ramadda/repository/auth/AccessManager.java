@@ -883,6 +883,9 @@ public class AccessManager extends RepositoryManager {
         return filtered;
     }
 
+
+
+
     public boolean canDoEdit(Request request, Entry entry) throws Exception {
 	if(entry==null) return false;
         //        if(entry.getIsLocalFile()) return false;
@@ -930,6 +933,14 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoComment(Request request, Entry entry)
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_COMMENT);
+    }
+
+    public boolean isPrivate(Request request, Entry entry)  {
+	try {
+	    return !canDoView(getRepository().getAnonymousRequest(),entry);
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     public boolean canDoView(Request request, Entry entry) throws Exception {
