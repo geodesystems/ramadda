@@ -3160,6 +3160,7 @@ public class WikiManager extends RepositoryManager
 		} else if(url==null) {
 		    url = getEntryManager().getEntryUrl(request, entry);
 		}
+
 		String attrs = HU.cssClass("ramadda-clickable")+HU.style(linkStyle);
 		String target = request.getString("linktarget",null);
 		if(target!=null)
@@ -7009,7 +7010,11 @@ public class WikiManager extends RepositoryManager
 	    String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
             if(url==null)
 		url = getEntryManager().getEntryUrl(request, entry);
-            wikiUtil.setTitleUrl(url,request.getString("linktarget",null));
+	    String clazz="";
+	    if(getAccessManager().isPrivate(request, entry)) {
+		clazz="entry-name-private";
+	    }
+            wikiUtil.setTitleUrl(url,clazz, request.getString("linktarget",null));
         }
 
         return wikiUtil;
