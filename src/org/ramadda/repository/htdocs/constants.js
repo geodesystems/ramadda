@@ -128,6 +128,8 @@ var CLASS_ENTRY_TABLE_CELL_FLEX='entry-table-cell-flex';
 var CLASS_ENTRY_TABLE_CELL_FIXED='entry-table-cell-fixed';
 var CLASS_ENTRY_TABLE_ROW_TOGGLE='entry-table-row-toggle';
 var CLASS_ENTRY_TABLE_HEADER_COLUMN = 'entry-table-header-column';
+var CLASS_ENTRY_ROW_PRIVATE = 'entry-row-private';
+var CLASS_ENTRY_NAME_PRIVATE = 'entry-name-private';
 
 var CLASS_THEME_DARK ='ramadda-theme-dark';
 var CLASS_BUTTON = 'ramadda-button';

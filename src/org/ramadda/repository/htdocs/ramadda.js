@@ -1552,9 +1552,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	    let row = '';
 	    row +=  HU.open(TAG_DIV,[ATTR_ENTRYID,entry.getId()]);
+	    let theClass = rowClass;
+	    if(entry.getPrivate()) {
+		theClass=HU.classes(CLASS_ENTRY_ROW_PRIVATE,theClass);
+	    }
 	    rowAttrs= Utils.mergeLists(rowAttrs,[ATTR_ID,rowId,
 						 ATTR_STYLE,rowStyle,
-						 ATTR_CLASS,rowClass,
+						 ATTR_CLASS,theClass,
 						 ATTR_ENTRYID,entry.getId()]);
 	    row+=HU.open(TAG_DIV,rowAttrs);
 	    row+=line;

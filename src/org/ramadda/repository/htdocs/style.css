@@ -17,6 +17,8 @@
     --theme-heading-color:var(--theme-color);
     --theme-heading-weight:400;
     --theme-border:1px #ddd solid;
+    --theme-entry-private-background:#eef5fb;
+
 
     --basic-border:1px #ddd solid;
     --font-size:12pt;
@@ -1108,6 +1110,16 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
 .ramadda-nav-arrow-disabled:hover {
     background:transparent;
 }
+
+
+.entry-row-private  {
+    background:var(--theme-entry-private-background);
+}
+
+.ramadda-page-title a.entry-name-private    {
+    background:var(--theme-entry-private-background);
+}
+
 
 .ramadda-entry-nav-page-outer a {
     text-decoration:none;

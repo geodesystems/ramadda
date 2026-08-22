@@ -1277,6 +1277,9 @@ function Entry(props) {
             //if(this.url) return this.url;
             return this.getRamadda().getEntryUrl(this, extraArgs);
         },
+	getPrivate: function() {
+	    return this.isPrivate;
+	},
         getFilename: function() {
             return this.filename;
         },
