@@ -160,6 +160,30 @@
 
 </type>
 
+<type name="type_document_svg"
+      xisgroup="true"
+      super="type_document"
+      description="SVG"
+      pattern="(?i).*\.svg"
+      includeInSearch="true"  >
+  <service link="media_soffice_thumbnail" target="attachment"/>
+<!--
+    <service link="media_soffice_pdf" target="child"/>
+    -->
+  <property name="icon" value="/media/corel.png"/>
+  <property name="file.accept" value=".svg"/>
+    <wiki><![CDATA[
++section  title="{{name}}"
+{{description wikify="true"}}
+:heading Information
+{{information showTitle="false" details="true"}}
+-section
+]]>
+</wiki>
+
+</type>
+
+
 <type name="type_document_html"  description="HTML File" pattern="(?i)(.*\.html|.*\.htm)"
       priority="1"
       super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
