@@ -790,6 +790,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
 	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
+
         if (html!=null) {
 	    if(makeSearchLink) {
 		html= handler.getSearchLink(request, metadata,html);

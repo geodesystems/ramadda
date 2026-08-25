@@ -2597,9 +2597,16 @@ public class TypeHandler extends RepositoryManager {
 	sb.append("</table>\n");
     }
 
-    public void addEntryProperty(Request request, Appendable sb, String label,String value)
+    public void addEntryProperty(Request request, Appendable sb, String label,String value,
+				 boolean...isPrivate)
 	throws Exception {
+	boolean showAsPrivate = isPrivate.length>0?isPrivate[0]:false;
 	label = msgLabel(label);
+	if(showAsPrivate) {
+	    label = HU.span(label,HU.cssClass("entry-property-label-private"));
+	    value = HU.span(value,HU.cssClass("entry-property-value-private"));	    	    
+	}
+
         if (request.isMobile()) {
 	    sb.append(formEntry(request, label, value));
 	    return;

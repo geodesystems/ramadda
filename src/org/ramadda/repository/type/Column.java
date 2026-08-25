@@ -943,7 +943,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if(isPrivate(request, entry)) {
 	    return request.isAdmin() || request.isOwner(entry);
 	}
-	if(adminOnly) {
+	if(getAdminOnly()) {
 	    return request.isAdmin() || request.isOwner(entry);
 	}
 	if(isGeoAccess || isGeo()) {

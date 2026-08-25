@@ -573,7 +573,7 @@ public class HtmlOutputHandler extends OutputHandler {
             typeRow.put(group, Boolean.valueOf( !even));
             //      even=true;
 
-            String  rowClass = "metadata-row ramadda-text"+
+            String  rowClass = "metadata-row ramadda-text "+
 		(!stripe
 		 ? "metadata-row"
 		 : "metadata-row-" + (even
@@ -583,6 +583,7 @@ public class HtmlOutputHandler extends OutputHandler {
             boolean first    = list.size() == 0;
             String  label    = html[0];
             String  contents = html[1];
+
             if (decorate) {
                 contents = HU.div(contents,
                                   HU.cssClass("metadata-tag")
