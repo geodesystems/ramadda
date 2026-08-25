@@ -9359,6 +9359,22 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
+	    String canDoFile =  Utils.getProperty(props,"candofile",null);
+	    if(canDoFile!=null) {
+		props.remove("candofile");		
+		if(entry==null) {
+		    results.add(false);
+		} else {
+		    boolean doFile = getAccessManager().canDoFile(request, entry);
+		    if(doFile)
+			results.add(canDoFile.equals("true"));
+		    else
+			results.add(canDoFile.equals("false"));
+		}
+	    }
+
+
+
 	    if(entry==null) processIfResults(request,props,results);
 	    String hasLocation = Utils.getProperty(props,"isgeoreferenced",null);
 	    if(hasLocation !=null) {
