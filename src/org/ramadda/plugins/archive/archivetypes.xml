@@ -6,7 +6,7 @@
   <wikimacro name="archive_table" label="Archive Table" >
     <![CDATA[
 {{tabletree  #entry="${entryid}"
-orderby="entryorder_up,field_up:file_number,date_up,name_up"
+orderby="entryorder_up,field_up:file_number,name_up,date_up"
 message="" showSize="false" showCreateDate="false" showDate="false"
 headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"
 toggleStyle="font-size:22px;"
