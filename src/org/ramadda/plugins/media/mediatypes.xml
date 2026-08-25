@@ -5,19 +5,24 @@
 	    type="string" label="Width"  default="100%" showinhtml="false"/>
     <column name="media_height" columns="6"
 	    type="string" label="Height"  default="380" showinhtml="false"/>
-  <column name="show_annotations" type="boolean"
+    <column name="show_annotations" type="boolean"
 	  label="Show Annotations" default="true"  showinhtml="false"/>
-   <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
-	   candisplay="false" editable="false"/>     
-   <embedwiki><![CDATA[{{embedmedia}}]]></embedwiki>
-
-   <wikimacro name="annotated_media" label="Annotated Media">
-   <![CDATA[{{annotated_media vertical=false #entry="${entry}"}}]]></wikimacro>
-     <wiki><![CDATA[
+    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
+	    candisplay="false" editable="false"/>     
+    <embedwiki><![CDATA[{{embedmedia}}]]></embedwiki>
+    <wikimacro name="annotated_media" label="Annotated Media">
+    <![CDATA[{{annotated_media vertical=false #entry="${entry}"}}]]></wikimacro>
+    <wiki><![CDATA[
 +section title="{{name}}" 
 {{description wikify=true}}
 {{tags}}
++if candofile=true
 {{annotated_media}}
+-if
++if candofile=false
++callout-info
+Access to this media file is restricted
+-callout
 :vspace 1em
 ----
 :vspace 1em
@@ -97,7 +102,7 @@
         description="Audio File" 
         handler="org.ramadda.plugins.media.AudioTypeHandler" 
 	super="type_media"
-        pattern="(?i).*(\.wav|\.m4a|\.webm)">
+        pattern="(?i).*(\.wav|\.m4a|\.webm|\.mp3)">
      <property name="icon" value="/media/audio-new.png"/>
      <property name="media.height" value="40"/>
      <wikimacro name="embed_audio" label="Embed Audio">
@@ -106,7 +111,14 @@
 +section title="{{name}}" #
 {{description wikify="true"}}
 :br
++if candofile=true
 {{annotated_media vertical=true}}
+-if
++if candofile=false
++callout-info
+Access to this audio file is restricted
+-callout
+-if
 -section
 ]]>
 </wiki>
