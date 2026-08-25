@@ -2733,6 +2733,7 @@ WikiEditor.prototype = {
 		    {p:'isfile=true',label:'Is a file'},
 		    {p:'candoedit=true',label:'User can edit'},
 		    {p:'candonew=true',label:'User can create new entry'},
+		    {p:'candofile=true',label:'User can access file'},
 		    {p:'admin=true',label:'User is Admin'},
 		    {p:'anonymous=true',label:'User is Anonymous'},
 		    {p:'users=id1,id2',label:'Is certain user'},
