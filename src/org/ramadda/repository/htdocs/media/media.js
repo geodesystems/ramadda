@@ -105,7 +105,7 @@ RamaddaMediaTranscript.prototype = {
 	jqid(this.searchId+"_results").html("");
     },
     doSearch:function() {
-	let val =     jqid(this.searchInputId).val().trim();
+	let val = jqid(this.searchInputId).val().trim();
 	if(val=='') {
 	    this.clearSearch();
 	    return
@@ -131,7 +131,7 @@ RamaddaMediaTranscript.prototype = {
 	if(showCount==0) {
 	    jqid(this.searchId+"_results").html("No results");
 	} else {
-	    jqid(this.searchId+"_results").html(showCount +" matched");
+	    jqid(this.searchId+"_results").html('');
 	}
     },
 
@@ -255,11 +255,13 @@ RamaddaMediaTranscript.prototype = {
 	jqid(this.searchInputId+"_clear").click((e) =>{
 	    this.clearSearch();
 	});
-	jqid(this.searchInputId).keypress((e) => {
-	    if(e.which==13) {
-		this.doSearch();
-	    }
-	});
+	jqid(this.searchInputId).on('input',
+				    (e) => {
+					this.doSearch();
+					if(e.which==13) {
+					    //		this.doSearch();
+					}
+				    });
 	let html = "";
 	html+=table;
 	jqid(this.div).html(html);
