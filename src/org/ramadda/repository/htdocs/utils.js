@@ -673,9 +673,8 @@ var Utils =  {
         var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return {x:nx, y:ny};
     },
-    xMSGCHAR:"\u200B",
+    MSGCHAR:"\u200B",
     NOMSGCHAR:"\u2063",
-    MSGCHAR:"MSG:",
     delimMsg:function(msg) {
 	return Utils.MSGCHAR + msg +Utils.MSGCHAR;
     },
