@@ -8,8 +8,9 @@ var CLASS_LANGUAGE_BLOCK='ramadda-language-block';
 var Translate = {
     initialized:false,
     trackMissing:false,
-    packs:{},
+    highlighted:[],
     missing:{},
+    packs:{},
     language:null,
     
     init: function() {
@@ -22,7 +23,7 @@ var Translate = {
     },
     initButton:function() {
 	let icon =HU.getIconImage('fas fa-language ramadda-header-icon');
-	let switchPrefix = icon +HU.space(1);
+	let switchPrefix = HU.space(1);
 	let menu = HU.span([ATTR_TITLE,'Change language',
 			    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-page-link'),
 			    ATTR_ID,'ramadda_language_menu'],icon);
@@ -40,6 +41,24 @@ var Translate = {
 			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
 			      switchPrefix+lang.label);
 	    });
+	    if(this.shouldShowAdmin()) {
+		html+= HU.div([ATTR_DATA_LANGUAGE,"highlight",
+			       ATTR_TITLE,'Highlight missing',
+			       ATTR_CLASS,
+			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			      switchPrefix+"Highlight missing");
+		html+= HU.div([ATTR_DATA_LANGUAGE,"unhighlight",
+			       ATTR_TITLE,'Clear highlight',
+			       ATTR_CLASS,
+			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			      switchPrefix+"Clear highlight");		
+		html+= HU.div([ATTR_DATA_LANGUAGE,"showmissing",
+			       ATTR_TITLE,'Download missing',
+			       ATTR_CLASS,
+			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			      switchPrefix+"Download missing");
+	    }
+
 	    html = HU.div([],html);
 
 
@@ -60,6 +79,14 @@ var Translate = {
 	    Translate.showMissing();
 	    return;
 	}
+	if(lang=='highlight') {
+	    Translate.showMissing({mode:'highlight'});
+	    return;
+	}
+	if(lang=='unhighlight') {
+	    Translate.showMissing({mode:'unhighlight'});
+	    return;
+	}		
         HU.hidePopupObject();
 	this.setLanguage(lang);
 	//	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
@@ -148,6 +175,9 @@ var Translate = {
 	Translate.addSwitcher(sid,null,false,{callback:callback,skipEnglish:true});
 	Translate.disable();
     },
+   shouldShowAdmin: function() {
+	return Utils.isAdmin();
+    },
     addSwitcher:function(id,langs,addDownload,opts) {
 	if(addDownload) {
 	    this.trackMissing=true;
@@ -185,11 +215,14 @@ var Translate = {
 			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],label);
 
 	});
+
 	if(addDownload) {
 	    Translate.downloadMode= true;
 	    html+= HU.span([ATTR_DATA_LANGUAGE,'showmissing',
+			    ATTR_TITLE,'Download missing phrases',
 			    ATTR_CLASS,
-			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],'Download missing');
+			    HU.classes(CLASS_CLICKABLE,'ramadda-link-bar-item ramadda-language-switch')],
+			   HU.getIconImage('fas fa-download'));
 	}
 
 	html+=HU.close(TAG_DIV);
@@ -418,6 +451,7 @@ var Translate = {
 		    } 
 		}
 		let tagName = a.prop('tagName');
+		tagName=tagName?tagName.toUpperCase():tagName;
 		if(this.trackMissing) {
 		    if(tagName=='A') {
 			if(a.parent().hasClass('ramadda-text')) {
@@ -438,7 +472,10 @@ var Translate = {
 		    trackMissing = !Utils.isNoMsg(origText);
 		}		    
 		if(trackMissing) {
-		    Translate.missing[origText] = true;
+		    if(!Translate.missing[origText])  {
+			Translate.missing[origText] = [];
+		    }
+		    Translate.missing[origText].push({parent:a});
 		} 
 
 	    }
@@ -493,11 +530,52 @@ var Translate = {
 	    }
 	});
     },
-    showMissing: function() {
+    highlight:function(e,key) {
+	if(!e) return;
+	e = $(e);
+	let orig =e.css('background'); 
+	if(e.attr('origbg')) {
+	    return;
+	}
+	$(e).css('background','lightblue');
+	if(orig) {
+	    e.attr('origbg',orig);
+	}
+    },
+    unhighlight:function(e,key) {
+	if(!e) return;
+	let orig = e.attr('origbg');
+	e.attr('origbg',null);
+	$(e).css('background',orig??'none');
+
+    },    
+    showMissing: function(args) {
+	Translate.highlighted=[];
+	let opts = {mode:'download'};
+	if(args) opts = $.extend(opts,args);
 	let missing = '';
 	missing+='#page: ' +  window.location.pathname +' title:' + document.title+'\n';
 	let cnt = 0;
+	let counting=true;
+
+
 	Object.keys(Translate.missing).forEach(key=>{
+	    let stateList = Translate.missing[key];
+	    
+	    if(opts.mode=='highlight') {
+		counting = false;
+		stateList.forEach(state=>{
+		    this.highlight(state.parent,key);
+		});
+		return;
+	    }
+	    if(opts.mode=='unhighlight') {
+		counting = false;
+		stateList.forEach(state=>{
+		    this.unhighlight(state.parent,key);
+		});
+		return;
+	    }	    
 	    if(key.length>100) return;
 	    if(key.match(/^[_\{\}=0-9]+/)) return;
 	    if(key.match(/ [0-9]+$/)) return;	    
@@ -516,6 +594,7 @@ var Translate = {
 	    missing+=(key+'=\n');
 	    cnt++;
 	});
+	if(!counting) return;
 	if(cnt==0) {
 	    alert('No missing phrases');
 	    return
