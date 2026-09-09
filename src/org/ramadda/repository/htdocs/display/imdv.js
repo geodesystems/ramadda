@@ -486,7 +486,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{label:'Editable Map Properties'},
 	{p:'displayOnly',d:false},
 	{p:'strokeColor',d:'blue'},
-	{p:'strokeWidth',d:2},
+	{p:'strokeWidth',d:1},
 	{p:'pointRadius',d:10},
 	{p:'externalGraphic',d:'/map/blue-dot.png'},
 	{p:'fontSize',d:HU.px(12)},
