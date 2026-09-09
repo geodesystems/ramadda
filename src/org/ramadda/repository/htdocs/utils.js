@@ -615,6 +615,9 @@ var Utils =  {
     isAnonymous: function() {
         return ramaddaUser =="anonymous";
     },
+    isAdmin: function() {
+        return ramaddaState.isAdmin;
+    },    
     getIcon: function(icon) {
         return RamaddaUtil.getCdnUrl("/icons/" + icon);
     },
@@ -670,8 +673,9 @@ var Utils =  {
         var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return {x:nx, y:ny};
     },
-    MSGCHAR:"\u200B",
+    xMSGCHAR:"\u200B",
     NOMSGCHAR:"\u2063",
+    MSGCHAR:"MSG:",
     delimMsg:function(msg) {
 	return Utils.MSGCHAR + msg +Utils.MSGCHAR;
     },
