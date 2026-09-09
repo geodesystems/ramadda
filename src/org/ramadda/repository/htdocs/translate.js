@@ -42,6 +42,7 @@ var Translate = {
 			      switchPrefix+lang.label);
 	    });
 	    if(this.shouldShowAdmin()) {
+		html+= HU.div([],HU.center(HU.b('Admin')));
 		html+= HU.div([ATTR_DATA_LANGUAGE,"highlight",
 			       ATTR_TITLE,'Highlight missing',
 			       ATTR_CLASS,
