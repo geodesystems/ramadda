@@ -1946,14 +1946,15 @@ public class WikiUtil implements HtmlUtilsConstants {
 			String lang = toks.get(1);
 			String rest = toks.get(2);
 			List<String> cmds = Utils.parseCommandLine(toks.get(2),false);
-
-			if(cmds==null || cmds.size()!=2) {
+			if(cmds==null || cmds.size()<2) {
 			    wikiError(buff, "Badly formed phrase:" + tline);
 			} else {
+			    String base = cmds.get(0);
+			    cmds=new ArrayList<>(cmds.subList(1, cmds.size()));
 			    HU.script(buff, HU.call("Translate.definePhrase",
 						    HU.squote(lang),
-						    HU.squote(cmds.get(0)),
-						    HU.squote(cmds.get(1))));
+						    HU.squote(base),
+						    HU.squote(Utils.join(cmds," "))));
 			}
 		    } else {
 			wikiError(buff, "Badly formed phrase:" + tline);
@@ -1979,7 +1980,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     List<String> toks = Utils.splitSpacesUpTo(tline, 2);
 		    String guid = HU.getUniqueId("langs");
                     HU.span(buff,"",HU.id(guid));
-                    HU.script(buff, HU.call("Translate.addSwitcher",HU.squote(guid),
+                    HU.script(buff, HU.call("Translate.addSwitcher",
+					    HU.squote(guid),
 					    toks.size()>1?HU.squote(toks.get(1)):"null",
 					    ""+tline.startsWith(":langswitcher-download")));
 
