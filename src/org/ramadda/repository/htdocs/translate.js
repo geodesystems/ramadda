@@ -43,6 +43,13 @@ var Translate = {
 	    });
 	    if(this.shouldShowAdmin()) {
 		html+= HU.div([],HU.center(HU.b('Admin')));
+		if(!this.trackMissing) {
+		    html+= HU.div([ATTR_DATA_LANGUAGE,"trackmissing",
+			       ATTR_TITLE,'Track missing',
+			       ATTR_CLASS,
+			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
+			      switchPrefix+"Track missing");
+		}
 		html+= HU.div([ATTR_DATA_LANGUAGE,"highlight",
 			       ATTR_TITLE,'Highlight missing',
 			       ATTR_CLASS,
@@ -80,6 +87,15 @@ var Translate = {
 	    Translate.showMissing();
 	    return;
 	}
+	if(lang=='trackmissing') {
+	    if(!this.trackMissing) {
+		this.trackMissing=  true;
+		Translate.translate();
+	    }
+	    return;
+	}
+
+
 	if(lang=='highlight') {
 	    Translate.showMissing({mode:'highlight'});
 	    return;
@@ -443,7 +459,6 @@ var Translate = {
 		return pack[text];
 	    }
 
-
 	    if(this.trackMissing) {
 		let trackMissing = true;
 		if(a) {
@@ -558,7 +573,6 @@ var Translate = {
 	missing+='#page: ' +  window.location.pathname +' title:' + document.title+'\n';
 	let cnt = 0;
 	let counting=true;
-
 
 	Object.keys(Translate.missing).forEach(key=>{
 	    let stateList = Translate.missing[key];
