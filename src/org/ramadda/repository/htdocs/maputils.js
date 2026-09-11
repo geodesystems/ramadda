@@ -1066,7 +1066,7 @@ var ARG_ZOOMLEVEL = 'zoomLevel';
 var ARG_MAPCENTER = 'mapCenter';
 var ARG_ZOOMLEVEL_FALLBACK = 'zoomLevelFallback';
 var ARG_MAPCENTER_FALLBACK = 'mapCenterFallback';
-
+var ARG_DEFAULTMAPLAYER = 'defaultMapLayer';
 var ramaddaMapMap = {};
 
 function ramaddaMapAdd(map) {
