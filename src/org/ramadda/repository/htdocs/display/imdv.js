@@ -5268,7 +5268,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let zoomLevel = -1;
 			if(json.baseLayer) {
 			    let base = _this.map.baseLayers[json.baseLayer];
-			    if(base) {
+			    if(base && !HU.getUrlArgument(ARG_DEFAULTMAPLAYER)) {
 				_this.map.setBaseLayer(base);
 			    }
 
