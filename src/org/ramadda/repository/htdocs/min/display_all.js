@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 25 11:52:53 MDT 2026";
+var build_date="RAMADDA build date: Fri Sep 11 04:57:07 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -49640,7 +49640,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{label:'Editable Map Properties'},
 	{p:'displayOnly',d:false},
 	{p:'strokeColor',d:'blue'},
-	{p:'strokeWidth',d:2},
+	{p:'strokeWidth',d:1},
 	{p:'pointRadius',d:10},
 	{p:'externalGraphic',d:'/map/blue-dot.png'},
 	{p:'fontSize',d:HU.px(12)},
