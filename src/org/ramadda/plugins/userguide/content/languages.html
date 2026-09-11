@@ -23,16 +23,17 @@ You can view an interactive page showing the available languages and their phras
 
 
 :heading Language Switcher
-To enable the display of the page language widget 
+To enable the display of the page language popup menu 
 <i class="fas fa-language ramadda-header-icon"></i>
 in the upper right of every page set the following property in
-a repository.properties file or in the Admin-&gt;Settings Properties section
+a repository.properties file or in the Admin-&gt;Settings Properties section.
+This enables the user to switch to a preferred language. 
 +pre addCopy=true
 ramadda.languages.enabled = true
 -pre
 
 
-To show a large language switcher add the wiki text:
+To show a language switcher widget in a page add the wiki text:
 +pre
 <x>:langswitcher en,es,fr
 -pre
@@ -45,7 +46,6 @@ e.g.:
 If you want to add the language switcher to every page 
 add the above langswitcher wiki text to a <a  href=pageconfig.html>Page Header</a>
 property.
-
 
   
 
@@ -139,5 +139,11 @@ Then, for every phrase provide a translation, e.g.:
 Date=Fecha
 -pre
 
+:heading Admin Tools
+If you are logged in as a RAMADDA admin then there are also a number of language admin tools available in the menu.
+These provide support for highlighting and downloading the list of phrases on a given page that don't
+have a translation.  You can then take the downloaded file and edit and merge it with your language pack.txt file.
+
+[ht::screenshot images/langmenu.png]  
 
 [ht::foot]

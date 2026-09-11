@@ -54,16 +54,17 @@ You can view an interactive page showing the available languages and their phras
 
 
 :heading Language Switcher
-To enable the display of the page language widget 
+To enable the display of the page language popup menu 
 <i class="fas fa-language ramadda-header-icon"></i>
 in the upper right of every page set the following property in
-a repository.properties file or in the Admin-&gt;Settings Properties section
+a repository.properties file or in the Admin-&gt;Settings Properties section.
+This enables the user to switch to a preferred language. 
 +pre addCopy=true
 ramadda.languages.enabled = true
 -pre
 
 
-To show a large language switcher add the wiki text:
+To show a language switcher widget in a page add the wiki text:
 +pre
 <x>:langswitcher en,es,fr
 -pre
@@ -76,7 +77,6 @@ e.g.:
 If you want to add the language switcher to every page 
 add the above langswitcher wiki text to a <a  href=pageconfig.html>Page Header</a>
 property.
-
 
   
 
@@ -136,11 +136,11 @@ Another English phrase=&lt;translation&gt;
 
 
 Go to Add Properties of your top-level entry and look for the Add Language Phrases File
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/addlang1.png?version=177"><img  src="images/addlang1.png?version=177"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/addlang1.png?version=177" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/addlang1.png?version=646"><img  src="images/addlang1.png?version=646"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/addlang1.png?version=646" ></a></div></div>
 
 Then specify the language ID (e.g., "lkt") and upload your phrases file.
 Setting the inherited flag to true will enable these phrases to be used  throughout your entires RAMADDA.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/addlang2.png?version=177"><img  src="images/addlang2.png?version=177"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/addlang2.png?version=177" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/addlang2.png?version=646"><img  src="images/addlang2.png?version=646"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/addlang2.png?version=646" ></a></div></div>
 
 :p
 And here are the available languages:
@@ -170,6 +170,12 @@ Then, for every phrase provide a translation, e.g.:
 Date=Fecha
 -pre
 
+:heading Admin Tools
+If you are logged in as a RAMADDA admin then there are also a number of language admin tools available in the menu.
+These provide support for highlighting and downloading the list of phrases on a given page that don't
+have a translation.  You can then take the downloaded file and edit and merge it with your language pack.txt file.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/langmenu.png?version=646"><img  src="images/langmenu.png?version=646"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/langmenu.png?version=646" ></a></div></div>  
 
 
 </div>
