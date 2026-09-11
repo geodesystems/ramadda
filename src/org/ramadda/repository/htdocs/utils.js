@@ -4808,9 +4808,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_BUTTON)], LABEL_CANCEL)]);
 	return buttons;
     },
-    makeCloseButton:function() {
+    makeCloseButton:function(label) {
 	let buttons = HU.buttons([
-	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CLOSE,CLASS_BUTTON)], LABEL_CLOSE)]);
+	    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CLOSE,CLASS_BUTTON)], label??LABEL_CLOSE)]);
 	return buttons;
     },
 
