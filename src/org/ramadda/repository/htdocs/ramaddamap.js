@@ -1123,7 +1123,7 @@ RepositoryMap.prototype = {
 	    this.setBackgroundColor(baseLayer.backgroundColor);
 	}
         baseLayer = baseLayer.ramaddaId;
-	HU.addToDocumentUrl("defaultMapLayer",baseLayer);
+	HU.addToDocumentUrl(ARG_DEFAULTMAPLAYER,baseLayer);
 	ramaddaMapShareState(this,"baseLayer");
     },
     getJq: function(suffix) {
@@ -3020,7 +3020,7 @@ RepositoryMap.prototype = {
 		overlays[l] = true;
 	    });
 	}
-        let dflt = this.params.defaultMapLayer || "osm";
+        let dflt = HU.getUrlArgument(ARG_DEFAULTMAPLAYER) ?? this.params.defaultMapLayer ?? "osm";
         if (!this.haveAddedDefaultLayer && dflt) {
 	    let index = -1;
 	    let dfltLayer = this.mapLayers.find((layer,idx)=>{
