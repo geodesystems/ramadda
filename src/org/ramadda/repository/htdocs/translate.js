@@ -21,6 +21,7 @@ var Translate = {
 	}
 	Translate.translate();
     },
+    
     initButton:function() {
 	let icon =HU.getIconImage('fas fa-language ramadda-header-icon');
 	let switchPrefix = HU.space(1);
@@ -42,29 +43,34 @@ var Translate = {
 			      switchPrefix+lang.label);
 	    });
 	    if(this.shouldShowAdmin()) {
-		html+= HU.div([],HU.center(HU.b('Admin')));
+		html+= HU.div([],HU.center(HU.b(Utils.noMsg('Admin'))));
 		if(!this.trackMissing) {
+		    setTimeout(()=>{
+			this.trackMissing=  true;
+			Translate.translate();
+		    },1);
+/*
+
 		    html+= HU.div([ATTR_DATA_LANGUAGE,"trackmissing",
 			       ATTR_TITLE,'Track missing',
 			       ATTR_CLASS,
 			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
 			      switchPrefix+"Track missing");
+*/
 		}
+		let classes = HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link');
 		html+= HU.div([ATTR_DATA_LANGUAGE,"highlight",
-			       ATTR_TITLE,'Highlight missing',
-			       ATTR_CLASS,
-			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
-			      switchPrefix+"Highlight missing");
+			       ATTR_CLASS, classes],
+			      switchPrefix+Utils.noMsg('Highlight missing'));
 		html+= HU.div([ATTR_DATA_LANGUAGE,"unhighlight",
-			       ATTR_TITLE,'Clear highlight',
-			       ATTR_CLASS,
-			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
-			      switchPrefix+"Clear highlight");		
+			       ATTR_CLASS,classes],
+			      switchPrefix+Utils.noMsg("Clear highlight"));		
+		html+= HU.div([ATTR_DATA_LANGUAGE,"show",
+			       ATTR_CLASS,classes],
+			      switchPrefix+Utils.noMsg('List missing phrases'));		
 		html+= HU.div([ATTR_DATA_LANGUAGE,"showmissing",
-			       ATTR_TITLE,'Download missing',
-			       ATTR_CLASS,
-			       HU.classes(CLASS_CLICKABLE,'ramadda-language-switch ramadda-menu-language-switch ramadda-user-link')],
-			      switchPrefix+"Download missing");
+			       ATTR_CLASS, classes],
+			      switchPrefix+Utils.noMsg('Download missing'));
 	    }
 
 	    html = HU.div([],html);
@@ -103,7 +109,11 @@ var Translate = {
 	if(lang=='unhighlight') {
 	    Translate.showMissing({mode:'unhighlight'});
 	    return;
-	}		
+	}
+	if(lang=='show') {
+	    Translate.showMissing({mode:'show'});
+	    return;
+	}			
         HU.hidePopupObject();
 	this.setLanguage(lang);
 	//	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
@@ -546,24 +556,31 @@ var Translate = {
 	    }
 	});
     },
-    highlight:function(e,key) {
-	if(!e) return;
-	e = $(e);
-	let orig =e.css('background'); 
-	if(e.attr('origbg')) {
-	    return;
-	}
-	$(e).css('background','lightblue');
-	if(orig) {
-	    e.attr('origbg',orig);
-	}
+    highlight:function(list,key) {
+	if(!list) return;
+	if(!Array.isArray(list)) list = [list];
+	list.forEach(item=>{
+	    let e = $(item.parent?item.parent:item);
+	    let orig =e.css('background'); 
+	    if(e.attr('origbg')) {
+		return;
+	    }
+	    $(e).css('background','lightblue');
+	    if(orig) {
+		e.attr('origbg',orig);
+	    }
+	});
     },
-    unhighlight:function(e,key) {
-	if(!e) return;
-	let orig = e.attr('origbg');
-	e.attr('origbg',null);
-	$(e).css('background',orig??'none');
-
+    unhighlight:function(list,key) {
+	if(!list) return;
+	if(!list) return;
+	if(!Array.isArray(list)) list = [list];
+	list.forEach(item=>{
+	    let e = $(item.parent?item.parent:item);
+	    let orig = e.attr('origbg');
+	    e.attr('origbg',null);
+	    $(e).css('background',orig??'none');
+	});
     },    
     showMissing: function(args) {
 	Translate.highlighted=[];
@@ -573,22 +590,72 @@ var Translate = {
 	missing+='#page: ' +  window.location.pathname +' title:' + document.title+'\n';
 	let cnt = 0;
 	let counting=true;
+	if(opts.mode=='show') {
+	    let list=Object.keys(Translate.missing).map(key=>{
+		return HU.div([ATTR_CLASS,CLASS_MENU_ITEM,
+			       ATTR_TITLE,'Click to copy to clipboard. Shift click to highlight',
+			       'key',key],key);
+	    });
+	    let inner = HU.join(list,'');
+	    if(list.length==0) {
+		inner = 'No missing phrases';
+	    }
+	    let buttons = HU.buttons([
+		HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CLOSE,CLASS_BUTTON)], Utils.noMsg(LABEL_CLOSE)),
+		list.length>0?
+		    HU.div([ATTR_CLASS,HU.classes('translate_download',CLASS_BUTTON)], Utils.noMsg('Download')):'']);
+	    let map = Object.fromEntries(ramaddaLanguages.map(item => [item.id, item.label]));
+	    let label = map[this.language];
+	    if(label) {
+		label+=' (' + this.language+')';
+	    } else {
+		label = this.language;
+	    }
+	    let html =	HU.div([ATTR_CLASS,CLASS_DIALOG],
+			       HU.center(HU.b('English to ' +label)) +
+			       HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(4),
+							 CSS_MAX_HEIGHT,HU.px(350),CSS_OVERFLOW_Y,OVERFLOW_AUTO)],inner) +
+			       buttons);
+	    
+	    let dialog = HU.makeDialog({content:html,
+					anchor:$( document ),
+					my:POS_RIGHT_TOP,
+					at: "right-100 top+30"});
+
+	    let _this = this;
+	    dialog.find(HU.dotClass(CLASS_MENU_ITEM)).click(function(event) {
+		let key = $(this).attr('key');
+		if(event.shiftKey) {
+		    _this.highlight(Translate.missing[key],key);
+		    return;
+		}
+		Utils.copyToClipboard(key);
+	    });
+	    dialog.draggable();
+	    dialog.find(HU.dotClass('translate_download')).button().click(()=>{
+		Translate.showMissing();
+	    });
+	    dialog.find(HU.dotClass(CLASS_BUTTON_CLOSE)).button().click(()=>{
+		if(Object.keys(Translate.missing).length>0) {
+		    Translate.showMissing({mode:'unhighlight'});
+		}
+		dialog.remove();
+	    });
+
+	    return;
+	}
+
 
 	Object.keys(Translate.missing).forEach(key=>{
 	    let stateList = Translate.missing[key];
-	    
 	    if(opts.mode=='highlight') {
 		counting = false;
-		stateList.forEach(state=>{
-		    this.highlight(state.parent,key);
-		});
+		this.highlight(stateList);
 		return;
 	    }
 	    if(opts.mode=='unhighlight') {
 		counting = false;
-		stateList.forEach(state=>{
-		    this.unhighlight(state.parent,key);
-		});
+		this.unhighlight(stateList,key);
 		return;
 	    }	    
 	    if(key.length>100) return;
@@ -605,16 +672,16 @@ var Translate = {
 	    if(key.match(/.*yyyy.*/i)) return;
 	    if(key.match(/.*ramadda.*/i)) return;	    	    	    
 	    if(Utils.isNoMsg(key)) return;
-	    console.log(key);
 	    missing+=(key+'=\n');
 	    cnt++;
 	});
+
 	if(!counting) return;
 	if(cnt==0) {
 	    alert('No missing phrases');
 	    return
 	} 
-	Utils.makeDownloadFile('phrases.txt',missing);
+	Utils.makeDownloadFile(this.language+'_phrases.txt',missing);
     }
 };
 
