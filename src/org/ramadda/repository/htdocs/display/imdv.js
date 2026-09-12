@@ -2905,14 +2905,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    id =prop;
 			}
 			if(prop=='labelSelect') return;
-			let v = this.jq(id).val();
+			let element = this.jq(id+'_extra');
+			let value;
+			if(element.length!=0) {
+			    value = element.val();
+			} 
+			if(!Utils.stringDefined(value)) {
+			    element =this.jq(id);
+			    value = element.val();
+			}
+			value = value??'';
+
 			if(prop=='label') {
-			    v = v.replace(/\\n/g,'\n');
+			    value = value.replace(/\\n/g,'\n');
 			}
 			if(prop=='showLabels') {
-			    v = HU.isChecked(this.jq(id));
+			    value = HU.isChecked(this.jq(id));
 			}
-			style[prop] = v;
+			style[prop] = value;
 		    });
 		}
 		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) {
@@ -3139,7 +3149,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget = HU.div([],hdr)+widget;
 			}
 		    } else if(prop=="strokeDashstyle") {
-			widget = HU.select("",[ATTR_ID,domId],['solid','dot','dash','dashdot','longdash','longdashdot'],v);
+			let values=['solid','dot','dash','dashdot','longdash','longdashdot'];
+
+			widget = HU.select("",[ATTR_ID,domId],values,v);
+			widget+=HU.boldLabel('Or custom') +
+			    HU.input("",values.includes(v)?'':v,[ATTR_ID,
+								 this.domId(id+'_extra'),
+								 ATTR_PLACEHOLDER,'line space line space',
+								 ATTR_SIZE,16])+
+			    SPACE+
+			    'e.g. 5 5 20 20';			    
 		    } else if(prop=="strokeLinecap") {
 			widget = HU.select("",[ATTR_ID,domId],['butt','round','square'],v);
 		    } else if(prop=="fontWeight") {
