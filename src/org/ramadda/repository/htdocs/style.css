@@ -4864,12 +4864,13 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
     padding:3px;
     padding-left: 0px;
     padding-right: 0px;
-    margin:0px;
-    border-radius: 3px;
-/*    border: 1px #ccc solid;*/
+    margin-left:0px;
+    margin-right:4px;
+    margin-bottom: 2px;
     background-color:#fff;    
     transition: transform .3s ease-in-out;
 }
+
 
 .ramadda-breadcrumbs-menu-button i {
     font-size:12pt;
