@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 13 05:46:05 MDT 2026";
+var build_date="RAMADDA build date: Sun Sep 13 09:43:36 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -61674,7 +61674,7 @@ MapGlyph.prototype = {
 					     ATTR_ID,this.zoomonchangeid],
 					    this.getZoomOnChange(),
 					    HU.span([ATTR_TITLE,'Zoom on change',
-						     ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(12))],
+						     ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.em(0.5))],
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],
@@ -61689,10 +61689,15 @@ MapGlyph.prototype = {
 					       {separate:true,
 						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 						callback:null});
-		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,
-						    HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
-						   toggle.header+toggle.body));
-		HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
+
+		let filterElement = this.jq(ID_MAPFILTERS);
+		let html = HU.div([ATTR_STYLE,
+					   HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+				  toggle.header+toggle.body);
+		
+		filterElement.html(html);
+		HU.initToggleBlock(this.jq(ID_MAPFILTERS),
+				   (id,visible)=>{this.setFiltersVisible(visible);});
 	    } else  {
 		filtersHeader+=SPACE1+filtersCount;
 		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
