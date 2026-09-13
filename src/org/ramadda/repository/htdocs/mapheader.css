@@ -1,0 +1,27 @@
+:root {
+    --header-height:80px;
+}
+
+.ramadda-header-floating .ramadda-navbar, .ramadda-header .ramadda-navbar {
+    background:var(--theme-background-color);
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    border:1px solid #efefef;
+    margin:0px;
+    margin-top:4px;
+    margin-bottom:4px;    
+    padding:2px;
+    padding-left:6px;
+    padding-right:6px;        
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+.ramadda-header .ramadda-navbar:hover {
+    border  :var(--highlight-border);
+}
+
+
+.ramadda-logo-image {height:55px;}
+.ramadda-header {padding: 1px;padding-left: 6px;padding-right: 6px;height:var(--header-height);}
+.ramadda-breadcrumbs {border-bottom : 0px transparent solid;}

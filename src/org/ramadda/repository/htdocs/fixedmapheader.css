@@ -21,7 +21,10 @@
     background:var(--theme-background-color);
     border-radius:var(--default-radius);
     border:var(--basic-border);
-    margin:4px;
+    border:1px solid #efefef;
+    margin:0px;
+    margin-top:4px;
+    margin-bottom:4px;    
     padding:2px;
     padding-left:6px;
     padding-right:6px;        
