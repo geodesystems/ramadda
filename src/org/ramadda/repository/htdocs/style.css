@@ -4805,9 +4805,8 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
 .breadCrumb ul li.last {
 }
 
-
 .breadcrumb-delimiter, .breadCrumb ul li {
-    background: url(icons/arrow_right_blue.png) no-repeat 100% center;
+    background: url(icons/chevron.png) no-repeat 100% center;    
     margin: 0px 4px 0px 0px;
     padding: 0px 8px 0px 0px;
     font-size: inherit;
@@ -4840,7 +4839,7 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
 
 
 .chevronOverlay {
-    background: url(icons/arrow_right_blue.png) no-repeat 100% center;
+    background: url(icons/chevron.png) no-repeat 100% center;    
 }
 
 .ramadda-breadcrumbs-list {
