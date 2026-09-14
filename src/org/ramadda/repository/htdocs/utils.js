@@ -7018,7 +7018,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return header + body;
     },
     initToggleBlock:function(dom,callback) {
-	dom.find('[toggle-block-id]').click(function() {
+	dom.find('[toggle-block-id]').click(function(event) {
 	    let id = $(this).attr('toggle-block-id');
             let imgid = id + "_img";
             let img1 = "fas fa-caret-down";
@@ -7029,7 +7029,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    jqid(imgid).html(HU.makeToggleImage(visible?img1:img2));
 	    if(visible) jqid(id).show();
 	    else jqid(id).hide();	    
-	    if(callback) callback(id,visible,$(this));
+	    if(callback) callback(id,visible,$(this),event);
 	});
     }
     
