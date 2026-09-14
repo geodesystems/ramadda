@@ -103,7 +103,9 @@ var IMDV_PROPERTY_HINTS= [
     'header=${name} ${legend}',
     'headerLegendWidth=200px',
     'showIconInHeader=true',
+    'legendStyle=height:1000px;width:300px;max-width:300px;',
     'mapLegendHeight=300px',
+
     'showLegendBox=true',
     'showOpacitySlider=true',
     'showRotationSlider=true',			  			  
@@ -520,6 +522,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	getGlyphs: function() {
 	    return this.glyphs;
+	},
+	getSiblings:function(glyph) {
+	    if(glyph.getParentGlyph() && glyph.getParentGlyph().isGroup()) {
+		return glyph.getChildren();
+	    }
+	    return this.getGlyphs();
 	},
 	selected:{},
 	getMap: function() {
@@ -5749,9 +5757,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	setMapProperty:function() {
-	    //	    console.log("setMapProperty");
 	    for(let i=0;i<arguments.length;i+=2) {
-		//		console.log("\t" +arguments[i]+'='+arguments[i+1]);
 		this.mapProperties[arguments[i]]=arguments[i+1];
 	    }
 	},
@@ -5778,7 +5784,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    value = this.getOtherProperties()[name];
-	    if(debug) console.log('\tfrom other properties:', value);
+	    if(debug) {
+		console.log('\tfrom other properties:', value);
+		console.log( this.parsedMapProperties);
+	    }
 	    if(!Utils.isDefined(value)) {
 		value = this.mapProperties[name];
 		if(debug) console.log('\tfrom map properties:', value);
@@ -5945,13 +5954,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(html!="") {
 		let height= this.getProperty('height');
-		let legendHeight= this.getProperty('legendHeight',height);		
+		let legendHeight= this.getMapProperty('legendHeight',height);
+		let legendStyle= this.getMapProperty('legendStyle');
 		let css  = HU.css(CSS_MAX_WIDTH,HU.getDimension(legendWidth),CSS_WIDTH,HU.getDimension(legendWidth));
-		if(height && !inMap && !legendDiv) css+=HU.css(CSS_HEIGHT,legendHeight);
+	
+		if(height && !inMap && !legendDiv) {
+		    css+=HU.css(CSS_HEIGHT,legendHeight);
+		}
 		if(!legendDiv) {
 		    let attrs = [ATTR_CLASS,'imdv-legend',
 				 ATTR_ID,this.domId(ID_IMDV_LEGEND),
-				 ATTR_STYLE,css]
+				 ATTR_STYLE,legendStyle??css]
 		    html  = HU.div(attrs,html);
 		}
 	    }
@@ -6013,9 +6026,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
 
 
-	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
+	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element,event)=>{
 		let mapGlyph = idToGlyph[element.attr('map-glyph-id')];
-		if(mapGlyph) mapGlyph.setLegendVisible(visible);
+		if(mapGlyph) {
+		    mapGlyph.setLegendVisible(visible);
+		    /*
+		      if(event.shiftKey) {
+		      this.getSiblings(mapGlyph).forEach(glyph=>{
+		      if(glyph.getId()!=mapGlyph.getId()) {
+		      glyph.setLegendVisible(visible);
+		      }
+		      });
+		      }
+		    */
+		    }
+
 	    });
 
 
