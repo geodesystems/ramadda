@@ -167,7 +167,8 @@ MapGlyph.prototype = {
 	    let info = _this.getFeatureInfo(id);
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
-	    let items =   ['filter.show=true','filter.rows=5','label=','filter.first=true','type=enum','filter.top=true','filter.showInMap=true']
+	    let items =   ['filter.show=true','filter.rows=5','label=','filter.first=true',
+			   'type=enum|string','filter.top=true','filter.showInMap=true']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -688,7 +689,7 @@ MapGlyph.prototype = {
 						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
 						 suffix:'\n'});
 	let ex = HU.boldLabel('Add property') +
-	    HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
+	    HU.span([ATTR_ID,this.domId('propsearch')]) + HU.div([ATTR_ID,this.domId('propertyflags')],miscHelp);
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
 				     [ATTR_ID,this.domId(ID_MISCPROPERTIES),
@@ -3383,7 +3384,8 @@ MapGlyph.prototype = {
 							header:true,
 							my:POS_LEFT_TOP,at:POS_LEFT_BOTTOM,
 							draggable:true,anchor:$(this)});
-			    HU.initPageSearch('.display-colortable-dot-item',null,'Search',false,{target:'#'+ searchId}); 
+			    HU.initPageSearch(HU.dotClass('display-colortable-dot-item'),
+					      null,'Search',false,{target:'#'+ searchId}); 
 
 			    _this.initColorTableDots(obj, dialog);
 			});
@@ -3984,9 +3986,11 @@ MapGlyph.prototype = {
 
     initPropertiesComponent: function(dialog) {
 	Utils.initColorTablePopup(dialog);
-	HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
+	HU.initPageSearch(this.jq('propertyflags').find(HU.dotClass(CLASS_IMDV_PROPERTY)),
 			  null,null,true,
-			  {target:'#'+this.domId('propsearch')});
+			  {urlparam:'propertysearch',
+			   target:'#'+this.domId('propsearch')});
+
 
 	if (this.isGroup()) {
 	    this.jq('makegeojson').button().click(()=>{
@@ -5239,7 +5243,8 @@ MapGlyph.prototype = {
 						     ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.em(0.5))],
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
-	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],
+	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count'),
+					ATTR_CLASS,'imdv-legend-filters-count'],
 				       Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.span([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
 				   filtersHeader+clearAll);
@@ -5249,7 +5254,7 @@ MapGlyph.prototype = {
 		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,
 					       filtersHeader + widgets,this.getFiltersVisible(),
 					       {separate:true,
-						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
+//						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 						callback:null});
 
 		let filterElement = this.jq(ID_MAPFILTERS);
@@ -5294,17 +5299,33 @@ MapGlyph.prototype = {
 	    });
 	    
 
-	    this.findFilter(CLASS_FILTER_STRING).keypress(function(event) {
-		let keycode = (event.keyCode ? event.keyCode : event.which);
-                if (keycode == 13) {
-		    let key = $(this).attr('filter-property');
-		    let filter = filters[key]??{};
-		    filter.type='string';
-		    filter.stringValue = ($(this).val()??"").trim();
-		    filter.property = key;
-		    update();
-		}
+	    let strings = this.findFilter(CLASS_FILTER_STRING);
+	    let searchString = (input) =>{
+		let key = input.attr('filter-property');
+		let filter = filters[key]??{};
+		filter.type='string';
+		filter.stringValue = (input.val()??"").trim();
+		filter.property = key;
+		update();
+	    };
+
+	    let live  = false;
+	    strings.each(function() {
+		let input = $(this);
+		let key = input.attr('filter-property');
+		let filter = filters[key]??{};
+		if(!filter) return;
+		let featureInfo = _this.getFeatureInfo(filter.property);
+		if(!featureInfo) return;
+		let live =  _this.getProperty('filter.live') ||  _this.getProperty(featureInfo.getId()+'.filter.live');
+		input.keydown(function(event) {
+		    let keycode = (event.keyCode ? event.keyCode : event.which);
+                    if (keycode == 13 || live) {
+			searchString($(this));
+		    }
+		});
 	    });
+
 	    let enums = this.findFilter('.imdv-filter-enum');
 	    HU.makeSelectTagPopup(enums,{icon:true,single:false});
 	    enums.change(function(event) {
@@ -5334,11 +5355,10 @@ MapGlyph.prototype = {
 			    filter.max = ui.value;
 		    }
 		    filter.property=id;
-//		    console.dir(filter);
 		    _this.jq('slider_min_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.min,filter.minValue)));
 		    _this.jq('slider_max_'+ featureInfo.getId()).html(Utils.formatNumber(Utils.getDefined(filter.max,filter.maxValue)));
 		    
-		    if(force ||_this.getProperty('filter.live') ||  _this.getProperty(featureInfo.getId()+'.filter.live')) {
+		    if(force || _this.getProperty('filter.live') ||  _this.getProperty(featureInfo.getId()+'.filter.live')) {
 			update();
 			return
 		    }
@@ -5346,7 +5366,7 @@ MapGlyph.prototype = {
 			_this.sliderThrottle=Utils.throttle(()=>{
 			    update();
 			},500);
-		    _this.sliderThrottle();
+			_this.sliderThrottle();
 		};
 		let min = +$(this).attr(ATTR_SLIDER_MIN);
 		let max = +$(this).attr(ATTR_SLIDER_MAX);
@@ -5574,7 +5594,7 @@ MapGlyph.prototype = {
 	    if($(this).prop('selected')) {
 		let value = $(this).prop(ATTR_TITLE);
 		let dot = dialog.find('.display-colortable-dot-item[label="' +value+'"]');
-		dot.addClass('display-colortable-dot-item-selected');
+		dot.addClass(CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED);
 	    }
 	});
 
@@ -5582,17 +5602,17 @@ MapGlyph.prototype = {
 	    let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
 	    let meta = event.metaKey || event.ctrlKey;
 	    let label = $(this).attr('label');
-	    let selected = $(this).hasClass('display-colortable-dot-item-selected');
+	    let selected = $(this).hasClass(CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED);
 	    let option = select.find('option[value="' +label+'"]');
 	    if(!meta) {
 		select.find('option').prop('selected',null);
-		dots.removeClass('display-colortable-dot-item-selected');
+		dots.removeClass(CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED);
 	    }				
 	    if(!selected) {
-		$(this).addClass('display-colortable-dot-item-selected');
+		$(this).addClass(CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED);
 		option.prop('selected','selected');
 	    } else {
-		$(this).removeClass('display-colortable-dot-item-selected');
+		$(this).removeClass(CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED);
 		option.prop('selected',null);
 	    }
 	    select.trigger('change');

@@ -168,6 +168,7 @@ var CLASS_FILTER_PLAY = 'imdv-filter-play';
 var CLASS_FILTER_STRING = 'imdv-filter-string';
 var CLASS_FILTER_STRINGS = 'imdv-filter-strings';
 
+var CLASS_DISPLAY_COLORTABLE_DOT_ITEM_SELECTED = 'display-colortable-dot-item-selected';
 
 var ROUTE_CAR ='car';
 var ROUTE_BICYCLE ='bicycle';
@@ -1336,13 +1337,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(!glyphType) {
 		    this.showCommandMessage(cmd.message);
 		    cmd.activate();
-		    return false;
+
 		}
 		this.initGlyphCommand(glyphType, cmd,args);
 		return false;
 	    });
 	},
 	initGlyphCommand:function(glyphType, cmd,args) {
+	    if(!glyphType) return;
 	    if(glyphType.isOSM()) {
 		this.initOSMSearch();
 		return;
@@ -1773,6 +1775,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
 			     HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL));
 		
+
 		html+=HU.center(HU.b('Select Icon'));
 		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
 		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
@@ -4446,12 +4449,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    };
 
+
+/*
 	    HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
 			      this.domId('otherproperties_input'),null,true,
 			      {target:'#'+this.domId('propsearch')});
 
-
-	    
+*/
 	    dialog.find(HU.dotClass(CLASS_BUTTON_APPLY)).button().click(()=>{
 		apply();
 	    });
@@ -5891,8 +5895,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //Remove the old one
 	    this.jq(ID_LEGEND).remove();
 	    let showShapes = this.getMapProperty('showShapes',true);
-	    let legendWidth=this.getMapProperty("legendWidth",HU.px(200));
-	    if(!Utils.stringDefined(legendWidth)) legendWidth=HU.px(200);
+	    let legendWidth=this.getMapProperty("legendWidth",HU.px(250));
+	    if(!Utils.stringDefined(legendWidth)) legendWidth=HU.px(250);
 	    let legendLabel= this.getMapProperty("legendLabel","");
 	    let showViewInLegend= this.getMapProperty("showViewInLegend",false);
 	    let idToGlyph={};
@@ -5953,18 +5957,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(html!="") {
-		let height= this.getProperty('height');
-		let legendHeight= this.getMapProperty('legendHeight',height);
-		let legendStyle= this.getMapProperty('legendStyle');
-		let css  = HU.css(CSS_MAX_WIDTH,HU.getDimension(legendWidth),CSS_WIDTH,HU.getDimension(legendWidth));
-	
-		if(height && !inMap && !legendDiv) {
-		    css+=HU.css(CSS_HEIGHT,legendHeight);
-		}
 		if(!legendDiv) {
+		    let height= this.getProperty('height');
+		    let legendHeight= this.getMapProperty('legendHeight',height);
+		    let legendStyle= this.getMapProperty('legendStyle');
+		    let css  = HU.css(CSS_MAX_WIDTH,HU.getDimension(legendWidth),CSS_WIDTH,HU.getDimension(legendWidth));
+		    if(height && !inMap && !legendDiv) {
+			css+=HU.css(CSS_HEIGHT,legendHeight);
+		    }
+		    css = legendStyle??css;
+		    if(inMap) {
+			let mapHeight = this.getMap().getMapDiv().height();
+			if(mapHeight) {
+			    css=HU.css(CSS_MAX_HEIGHT,HU.px(mapHeight-100),
+				       CSS_OVERFLOW_Y,OVERFLOW_AUTO)+ css;
+			}
+
+		    }
 		    let attrs = [ATTR_CLASS,'imdv-legend',
 				 ATTR_ID,this.domId(ID_IMDV_LEGEND),
-				 ATTR_STYLE,legendStyle??css]
+				 ATTR_STYLE,css]
 		    html  = HU.div(attrs,html);
 		}
 	    }
@@ -6604,6 +6616,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    */
 		}
 	    });
+
+
+
+
 	},
 
 

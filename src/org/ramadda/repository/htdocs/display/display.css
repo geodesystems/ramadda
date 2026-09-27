@@ -3410,7 +3410,7 @@ table.dataTable tfoot td {
 
 
 .imdv-legend-offset {
-    margin-left:10px;
+    margin-right:4px;
 }
 
 .imdv-mapglyph-header {
@@ -3439,12 +3439,19 @@ table.dataTable tfoot td {
     max-width:200px;
     position:absolute;
     border:1px solid #aaa;
-    border-radius: 6px;
     border-radius:var(--default-radius);    
     background:#fff;
     z-index:500;
 }
 
+.imdv-legend-map-wrapper .entry-toggleblock-label {
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);    
+}
+
+.imdv-legend-map-wrapper .entry-toggleblock-label:hover {
+    background:var(--highlight-background);
+}    
 
 .imdv-legend-map-wrapper .display-colortable {
     font-size:80%;
@@ -3492,9 +3499,19 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-inner {
-    margin-left:5px;
-/*    margin-bottom:5px;*/
+    margin-left:10px;
 }
+
+.imdv-legend-inner .ramadda-toggleblock-label {
+    position:relative;
+}
+
+.imdv-legend-filters-count {
+    position:absolute;
+    right:4px;
+    
+}    
+
 
 .imdv-legend-body {
     background:var(--theme-background-color);
