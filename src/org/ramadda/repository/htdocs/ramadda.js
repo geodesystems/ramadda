@@ -2860,6 +2860,7 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 function PageSearch(select,parentSelect,label,hideAll,args) {
+    let _this = this;
     let opts = {
 	addToUrl:true,
 	focus:false,
@@ -2868,13 +2869,14 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 	hideAll:hideAll,
 	linkSelector:null,
 	widgets:[],
-	style:''
+	style:'',
+	urlparam:ARG_PAGESEARCH
     };
     if(args) {
 	$.extend(opts,args);
 	if(args.buttons) opts.widgets=args.buttons;
     }
-
+    this.opts =opts;
 
     let id = HU.getUniqueId('search_');
     if(opts.width) opts.style+=HU.css(CSS_WIDTH,opts.width);
@@ -2919,7 +2921,7 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 	HU.writeHtmlHere(input);
     }
     //Note: we set the value directly here  to avoid XSS
-    let initValue = opts.addToUrl?(HU.getUrlArgument(ARG_PAGESEARCH)??''):'';
+    let initValue = opts.addToUrl?(HU.getUrlArgument(opts.urlparam??ARG_PAGESEARCH)??''):'';
     jqid(id).val(initValue);
     let doSearch = ()=>{
 	let values =[];
@@ -2986,9 +2988,9 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 	let value = $(this).val();
 	if(opts.addToUrl) {
 	    if(Utils.stringDefined(value)) {
-		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
+		HU.addToDocumentUrl(_this.opts.urlparam??ARG_PAGESEARCH,value);
 	    } else {
-		HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+		HU.removeFromDocumentUrl(_this.opts.urlparam??ARG_PAGESEARCH);
 	    }
 	}
 
