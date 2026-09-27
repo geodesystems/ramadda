@@ -476,6 +476,12 @@ RepositoryMap.prototype = {
     firstCustomRegion: true,
     CUSTOM_MAP : "CUSTOM",
 
+    getId:function(suffix) {
+	return this.mapDivId + suffix;
+    },
+    getMapDiv:function() {
+	return jqid(this.mapDivId);
+    },
     drawFeature:function(layer,feature,style) {
 	//	if(style=='default' && feature.originalStyle) style=feature.originalStyle;
 	//	console.log('draw',style);
