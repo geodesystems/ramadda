@@ -3800,7 +3800,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },
 
-
     initPageSearch:function(select,parentSelect,label,hideAll,args) {
 	return new PageSearch(select,parentSelect,label,hideAll,args);
     },
@@ -3816,6 +3815,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     doPageSearch:function(value,select,parentSelect,hideAll,args) {
 	args = args??{}
+	if(args.urlparam) args.urlparam='pagesearch';
+
 //	args.highlight = true;
 	if(args.handler) {
 	    args.handler(value,args);
@@ -7004,7 +7005,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let img1 = "fas fa-caret-down";
         let img2 = "fas fa-caret-right";        
         let img = HU.span([ATTR_ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
-	let attrs = ['toggle-block-id',id,'toggle-block-visible',visible,ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass];
+	let attrs = ['toggle-block-id',id,'toggle-block-visible',visible,
+		     ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass];
 	if(opts.extraAttributes) {
 	    attrs = Utils.mergeLists(attrs,opts.extraAttributes);
 	}
