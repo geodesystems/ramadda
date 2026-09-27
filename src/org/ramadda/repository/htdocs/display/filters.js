@@ -12,6 +12,15 @@ var ATTR_FIELDID = 'fieldId';
 //class: BaseFilter
 function BaseFilter(display,properties) {
     this.display = display;
+    this.getId = function() {
+	if(properties && properties.baseId) {
+	    return properties.baseId + this.id;
+	}
+	return this.id;
+    }
+
+
+
     if (properties == null) properties = {};
     RamaddaUtil.defineMembers(this, {
         properties: properties,
@@ -20,9 +29,30 @@ function BaseFilter(display,properties) {
 	},
 	prepareToFilter: function() {
 	},
+	propertyCache:{},
+	getProperty: function(key, dflt,dontCheckCache) {
+	    if(!dontCheckCache) {
+		let value = this.propertyCache[key];
+		if(value) return value.value;
+	    }
+	    let v = this.display.getProperty(key, dflt);
+	    if(!dontCheckCache) {
+		this.propertyCache[key] = {value:v};
+	    }
+	    return v;
+	},
+
         isRecordOk: function(display, record, values) {
             return true;
         },
+	getGroup:function() {
+	    return this.getProperty(this.getId()+".filterGroup");
+	},
+	getGroupOpen:function() {
+	    return this.getProperty(this.getId()+".filterGroupOpen",
+				    this.getProperty("filterGroupOpen",false));
+	},	
+
 	getWidget: function() {return ""},
 	initWidget: function(inputFunc) {}
     });
@@ -99,13 +129,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	}
     }
     $.extend(this, new BaseFilter(display, properties));
-    this.getId = function() {
-	if(properties && properties.baseId) {
-	    return properties.baseId + this.id;
-	}
-	return this.id;
-    }
-
     let getAttr = (suffix,dflt)=>{
 	let key = this.getId()+"." + suffix;
 	let v = display.getProperty(key);
@@ -221,18 +244,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	recordOk: function(display, record, values) {
             return true;
         },
-	propertyCache:{},
-	getProperty: function(key, dflt,dontCheckCache) {
-	    if(!dontCheckCache) {
-		let value = this.propertyCache[key];
-		if(value) return value.value;
-	    }
-	    let v = this.display.getProperty(key, dflt);
-	    if(!dontCheckCache) {
-		this.propertyCache[key] = {value:v};
-	    }
-	    return v;
-	},
 	getPropertyFromUrl: function(key, dflt) {
 	    key = this.getId()+'.'+ key;
 	    return this.display.getPropertyFromUrl(key, dflt,true);
@@ -453,13 +464,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let tags =  this.display.getShowFilterTags();
 	    return tags;
 	},
-	getGroup:function() {
-	    return this.getProperty(this.getId()+".filterGroup");
-	},
-	getGroupOpen:function() {
-	    return this.getProperty(this.getId()+".filterGroupOpen",
-				    this.getProperty("filterGroupOpen",false));
-	},	
 	doTagsColor:function() {
 	    if(!this.getProperty(this.getId()+".colorFilterTags",true)) return false;
 	    let tags =  this.getProperty(this.getId()+".colorFilterTags", true) || this.getProperty("colorFilterTags");
