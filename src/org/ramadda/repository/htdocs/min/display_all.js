@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 27 06:27:01 MDT 2026";
+var build_date="RAMADDA build date: Mon Sep 28 04:44:10 MDT 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -12640,7 +12640,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			html+=HU.div([ATTR_TITLE,item,
 				      ATTR_CLASS,
 				      HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE,'display-filter-popup-item'),
-				      "item",item],label)+"\n";
+				      ATTR_ITEM,item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
@@ -12656,7 +12656,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 			$(".display-filter-popup-item").click(function(){
 			    HU.hidePopupObject();
-			    input.val($(this).attr("item"));
+			    input.val($(this).attr(ATTR_ITEM));
 			    inputFunc(input);
 			});
 		    }
@@ -49241,6 +49241,7 @@ var IMDV_PROPERTY_HINTS= [
     {category:'Glyph Filters'},
     {value:'filter.live=true',label:'Filters live'},
     {value:'filter.show=false',label:'Show filters'},
+    {value:'filter.showInMap=true',label:'Show filters in map'},
     {value:'filter.zoomonchange.show=false',label:'Show zoom on change'},
     {value:'filter.toggle.show=false',label:'Show toggle'},
     {value:'filter.sortOnCount=true',label:'Sort on count'},
@@ -49252,6 +49253,7 @@ var IMDV_PROPERTY_HINTS= [
     PROP_MOVE_TO_LATEST_LOCATION+'=true',
     'showLabelInMapWhenVisible=true',
     'showViewInLegend=true',
+    'showDistance=true',
     PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
     'inMapLabel=',			  			  
     'showLegendInMap=true',			  
@@ -49275,7 +49277,7 @@ var IMDV_PROPERTY_HINTS= [
     {value:'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',label:'Line label template'},
     {value:'lineLabels.locations=every:1km,every:2miles',label:'Spacing every'},
     {value:'lineLabels.locations=count:5',label:'Spacing count'},
-    {value:'lineLabels.locations=points:skip',label:'Spacing points'},
+    {value:'lineLabels.locations=points:skip, e.g. 10',label:'Spacing points'},
     {value:'lineLabels.locations=first,last,middle,center,n,w,s,e',label:'Locations'},
     {value:'lineLabels.fontSize=8pt',label:'Font size'},
     {value:'lineLabels.fontColor=white',label:'Font color'},
@@ -52028,6 +52030,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     ATTR_TARGET,target];
 		if(line.title) {
 		    attrs.push(ATTR_TITLE,line.title);
+		} else {
+		    if(line.label) {
+			attrs.push(ATTR_TITLE,line.value);
+		    }
 		}
 		let skip = line.skip;
 		if(line.line) {
@@ -56651,7 +56657,7 @@ MapGlyph.prototype = {
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
 	    let items =   ['filter.show=true','filter.rows=5','label=','filter.first=true',
-			   'type=enum|string','filter.top=true','filter.showInMap=true']
+			   'type=enum|string','filter.top=true']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -56670,14 +56676,15 @@ MapGlyph.prototype = {
 	    items.forEach(item=>{
 		let label = item.replace('=.*','');
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5)),
-			      ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),'item',item],item);
+			      ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),
+			      ATTR_ITEM,item],item);
 	    });
 
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_RIGHT,HU.px(10))],html);
 	    let dialog =  HU.makeDialog({content:html, anchor:$(this)});
 	    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		dialog.remove();
-		let item = $(this).attr('item');
+		let item = $(this).attr(ATTR_ITEM);
 		let line = info.id+'.' + item+'\n';
 		let textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
@@ -58544,6 +58551,8 @@ MapGlyph.prototype = {
 	    if(this.canHaveChildren()) {
 		if(this.getProperty(PROP_LAYERS_ANIMATION_SHOW)) {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+					  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+							    CSS_RIGHT,HU.px(20)),
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
 					  ATTR_GLYPH_ID,this.getId(),
@@ -59324,8 +59333,17 @@ MapGlyph.prototype = {
 	return body;
     },
     getDistances: function() {
-	return  this.display.getDistances(this.getGeometry(),this.getType(),
-					  false,false,true);
+	if(this.isMapServer() || this.isMap())  {
+	    if(!this.getProperty('showDistance',false)) {
+		return null;
+	    }
+	}
+
+	let distances=
+	    this.display.getDistances(this.getGeometry(),
+				      this.getType(),
+				      false,false,true);
+	return distances;
     },
     updateLineLabels:function(distance) {
 	if(!distance) distance={feet:0};
@@ -59337,8 +59355,6 @@ MapGlyph.prototype = {
 	}
 
 	if(!this.getPropertyCheckParent('lineLabels.show',false)) {
-
-
 	    return;
 	}
 	let points = this.getPoints({});
@@ -59356,13 +59372,13 @@ MapGlyph.prototype = {
 	    pointRadius:4,
 	    fillColor:'blue',
 	    strokeWidth:0,
-	    labelSelect:true,
+//	    labelSelect:true,
 	    //	{p:'labelAlign',ex:'l|c|r t|m|b'},
 	    labelAlign: "lt",
 	    labelXOffset: 10,
 	    labelYOffset: 0,
 	    fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
-	    fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight',null),
+	    fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight','400'),
 	    fontStyle: this.getPropertyCheckParent('lineLabels.fontStyle',null),	    	    
 	    fontColor:this.getPropertyCheckParent('lineLabels.fontColor','#000'),
 	    fontFamily:this.getPropertyCheckParent('lineLabels.fontFamily',null),
@@ -59380,7 +59396,7 @@ MapGlyph.prototype = {
 	let labelCnt=0;
 	let addLabel = (latitude,longitude,distance) =>{
 	    labelCnt++;
-	    //cap it at 500
+	    //cap it at 100
 	    if(labelCnt>100) return;
 	    let label = template;
 	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
@@ -61727,22 +61743,27 @@ MapGlyph.prototype = {
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count'),
-					ATTR_CLASS,'imdv-legend-filters-count'],
+					ATTR_CLASS,'imdv-legend-filters-count',
+					ATTR_TITLE,
+					Utils.isDefined(this.visibleFeatures)?
+					this.visibleFeatures+' features visible':''],
 				       Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.span([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
 				   filtersHeader+clearAll);
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
-		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,
-					       filtersHeader + widgets,this.getFiltersVisible(),
-					       {separate:true,
-//						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-						callback:null});
+		let toggle = HU.toggleBlockNew(
+		    this.getProperty('filter.toggle.label','Filters') + SPACE+ filtersCount,
+		    filtersHeader + widgets,
+		    this.getFiltersVisible(),
+		    {separate:true,
+		     callback:null});
 
 		let filterElement = this.jq(ID_MAPFILTERS);
 		let html = HU.div([ATTR_STYLE,
-					   HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+				   HU.css(CSS_MIN_WIDTH,HU.px(200),
+					  CSS_MARGIN_RIGHT,HU.px(5))],
 				  toggle.header+toggle.body);
 		
 		filterElement.html(html);
@@ -62725,7 +62746,10 @@ MapGlyph.prototype = {
 	    }
 	});
 
-	this.jq('filters_count').html('#' + this.visibleFeatures);
+	this.jq('filters_count').
+	    attr(ATTR_TITLE,this.visibleFeatures+' features visible').
+	    html('#' + this.visibleFeatures);
+
 	if(redraw) {
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}
@@ -62796,7 +62820,7 @@ MapGlyph.prototype = {
 	    if(Utils.isDefined(this.style.opacity)) {
 		this.getMapServerLayer().opacity = +this.style.opacity;
 		this.getMapServerLayer().setVisibility(false);
-		this.getMapServerLayer().setVisibility(true);
+		this.getMapServerLayer().setVisibility(this.isVisible());
 		ImdvUtils.scheduleRedraw(this.getMapServerLayer());
 	    }
 	}
