@@ -187,14 +187,15 @@ MapGlyph.prototype = {
 	    items.forEach(item=>{
 		let label = item.replace('=.*','');
 		html+=HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5)),
-			      ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),'item',item],item);
+			      ATTR_CLASS,HU.classes(CLASS_MENU_ITEM,CLASS_CLICKABLE),
+			      ATTR_ITEM,item],item);
 	    });
 
 	    html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(10),CSS_MARGIN_RIGHT,HU.px(10))],html);
 	    let dialog =  HU.makeDialog({content:html, anchor:$(this)});
 	    dialog.find(HU.dotClass(CLASS_CLICKABLE)).click(function() {
 		dialog.remove();
-		let item = $(this).attr('item');
+		let item = $(this).attr(ATTR_ITEM);
 		let line = info.id+'.' + item+'\n';
 		let textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
@@ -5244,7 +5245,10 @@ MapGlyph.prototype = {
 						    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
 	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count'),
-					ATTR_CLASS,'imdv-legend-filters-count'],
+					ATTR_CLASS,'imdv-legend-filters-count',
+					ATTR_TITLE,
+					Utils.isDefined(this.visibleFeatures)?
+					this.visibleFeatures+' features visible':''],
 				       Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.span([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
 				   filtersHeader+clearAll);
@@ -6242,7 +6246,10 @@ MapGlyph.prototype = {
 	    }
 	});
 
-	this.jq('filters_count').html('#' + this.visibleFeatures);
+	this.jq('filters_count').
+	    attr(ATTR_TITLE,this.visibleFeatures+' features visible').
+	    html('#' + this.visibleFeatures);
+
 	if(redraw) {
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}

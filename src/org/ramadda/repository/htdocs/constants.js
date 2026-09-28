@@ -323,6 +323,7 @@ var ATTR_ID = 'id';
 var ATTR_IDX = 'idx';
 var ATTR_IMGSRC='img-src';
 var ATTR_INDEX = 'index';
+var ATTR_ITEM = 'item';
 var ATTR_LABEL='label';
 var ATTR_LATITUDE='latitude';
 var ATTR_LAYOUT='layout';

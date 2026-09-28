@@ -8012,7 +8012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			html+=HU.div([ATTR_TITLE,item,
 				      ATTR_CLASS,
 				      HU.classes(CLASS_HOVERABLE,CLASS_CLICKABLE,'display-filter-popup-item'),
-				      "item",item],label)+"\n";
+				      ATTR_ITEM,item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
@@ -8028,7 +8028,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 			$(".display-filter-popup-item").click(function(){
 			    HU.hidePopupObject();
-			    input.val($(this).attr("item"));
+			    input.val($(this).attr(ATTR_ITEM));
 			    inputFunc(input);
 			});
 		    }
