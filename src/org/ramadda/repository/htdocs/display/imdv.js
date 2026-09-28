@@ -83,6 +83,7 @@ var IMDV_PROPERTY_HINTS= [
     {category:'Glyph Filters'},
     {value:'filter.live=true',label:'Filters live'},
     {value:'filter.show=false',label:'Show filters'},
+    {value:'filter.showInMap=true',label:'Show filters in map'},
     {value:'filter.zoomonchange.show=false',label:'Show zoom on change'},
     {value:'filter.toggle.show=false',label:'Show toggle'},
     {value:'filter.sortOnCount=true',label:'Sort on count'},
@@ -94,6 +95,7 @@ var IMDV_PROPERTY_HINTS= [
     PROP_MOVE_TO_LATEST_LOCATION+'=true',
     'showLabelInMapWhenVisible=true',
     'showViewInLegend=true',
+    'showDistance=true',
     PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
     'inMapLabel=',			  			  
     'showLegendInMap=true',			  
@@ -117,7 +119,7 @@ var IMDV_PROPERTY_HINTS= [
     {value:'lineLabels.template=${distance} ${miles} ${km} ${feet} ${meters}  ${acres} ${hectares} ${sqfeet} ${sqmeters}',label:'Line label template'},
     {value:'lineLabels.locations=every:1km,every:2miles',label:'Spacing every'},
     {value:'lineLabels.locations=count:5',label:'Spacing count'},
-    {value:'lineLabels.locations=points:skip',label:'Spacing points'},
+    {value:'lineLabels.locations=points:skip, e.g. 10',label:'Spacing points'},
     {value:'lineLabels.locations=first,last,middle,center,n,w,s,e',label:'Locations'},
     {value:'lineLabels.fontSize=8pt',label:'Font size'},
     {value:'lineLabels.fontColor=white',label:'Font color'},
@@ -2870,6 +2872,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     ATTR_TARGET,target];
 		if(line.title) {
 		    attrs.push(ATTR_TITLE,line.title);
+		} else {
+		    if(line.label) {
+			attrs.push(ATTR_TITLE,line.value);
+		    }
 		}
 		let skip = line.skip;
 		if(line.line) {

@@ -168,7 +168,7 @@ MapGlyph.prototype = {
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
 	    let items =   ['filter.show=true','filter.rows=5','label=','filter.first=true',
-			   'type=enum|string','filter.top=true','filter.showInMap=true']
+			   'type=enum|string','filter.top=true']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -2062,6 +2062,8 @@ MapGlyph.prototype = {
 	    if(this.canHaveChildren()) {
 		if(this.getProperty(PROP_LAYERS_ANIMATION_SHOW)) {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+					  ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+							    CSS_RIGHT,HU.px(20)),
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
 					  ATTR_GLYPH_ID,this.getId(),
@@ -2842,8 +2844,17 @@ MapGlyph.prototype = {
 	return body;
     },
     getDistances: function() {
-	return  this.display.getDistances(this.getGeometry(),this.getType(),
-					  false,false,true);
+	if(this.isMapServer() || this.isMap())  {
+	    if(!this.getProperty('showDistance',false)) {
+		return null;
+	    }
+	}
+
+	let distances=
+	    this.display.getDistances(this.getGeometry(),
+				      this.getType(),
+				      false,false,true);
+	return distances;
     },
     updateLineLabels:function(distance) {
 	if(!distance) distance={feet:0};
@@ -2855,8 +2866,6 @@ MapGlyph.prototype = {
 	}
 
 	if(!this.getPropertyCheckParent('lineLabels.show',false)) {
-
-
 	    return;
 	}
 	let points = this.getPoints({});
@@ -2874,13 +2883,13 @@ MapGlyph.prototype = {
 	    pointRadius:4,
 	    fillColor:'blue',
 	    strokeWidth:0,
-	    labelSelect:true,
+//	    labelSelect:true,
 	    //	{p:'labelAlign',ex:'l|c|r t|m|b'},
 	    labelAlign: "lt",
 	    labelXOffset: 10,
 	    labelYOffset: 0,
 	    fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
-	    fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight',null),
+	    fontWeight: this.getPropertyCheckParent('lineLabels.fontWeight','400'),
 	    fontStyle: this.getPropertyCheckParent('lineLabels.fontStyle',null),	    	    
 	    fontColor:this.getPropertyCheckParent('lineLabels.fontColor','#000'),
 	    fontFamily:this.getPropertyCheckParent('lineLabels.fontFamily',null),
@@ -2898,7 +2907,7 @@ MapGlyph.prototype = {
 	let labelCnt=0;
 	let addLabel = (latitude,longitude,distance) =>{
 	    labelCnt++;
-	    //cap it at 500
+	    //cap it at 100
 	    if(labelCnt>100) return;
 	    let label = template;
 	    label = label.replace(/\${latitude}/g,Utils.trimDecimals(latitude,1));
@@ -5255,15 +5264,17 @@ MapGlyph.prototype = {
 
 
 	    if(this.getProperty('filter.toggle.show',true)) {
-		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,
-					       filtersHeader + widgets,this.getFiltersVisible(),
-					       {separate:true,
-//						headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
-						callback:null});
+		let toggle = HU.toggleBlockNew(
+		    this.getProperty('filter.toggle.label','Filters') + SPACE+ filtersCount,
+		    filtersHeader + widgets,
+		    this.getFiltersVisible(),
+		    {separate:true,
+		     callback:null});
 
 		let filterElement = this.jq(ID_MAPFILTERS);
 		let html = HU.div([ATTR_STYLE,
-					   HU.css(CSS_MARGIN_RIGHT,HU.px(5))],
+				   HU.css(CSS_MIN_WIDTH,HU.px(200),
+					  CSS_MARGIN_RIGHT,HU.px(5))],
 				  toggle.header+toggle.body);
 		
 		filterElement.html(html);
@@ -6320,7 +6331,7 @@ MapGlyph.prototype = {
 	    if(Utils.isDefined(this.style.opacity)) {
 		this.getMapServerLayer().opacity = +this.style.opacity;
 		this.getMapServerLayer().setVisibility(false);
-		this.getMapServerLayer().setVisibility(true);
+		this.getMapServerLayer().setVisibility(this.isVisible());
 		ImdvUtils.scheduleRedraw(this.getMapServerLayer());
 	    }
 	}
