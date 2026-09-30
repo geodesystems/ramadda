@@ -350,7 +350,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	return false;
     },
     selectCreate:function(event, selectorId, elementId,
-			  allEntries, selecttype, localeId, entryType, baseUrl,props) {
+			  allEntries, selecttype, localeId,
+			  entryType, baseUrl,props) {
 	let key = selectorId + (baseUrl??'');
 	if (true || !selectors[key]) {
             return selectors[selectorId] = selectors[key] =
@@ -393,6 +394,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     selectorRamaddas:{},
     searchState:{},
     initEntryPopup:function(id,target,entryType,showTypeSelector,props) {
+	let _this = this;
 	let selector = selectors[target];
 	let opts = {};
 	if(selector && selector.props) {
@@ -401,13 +403,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props) {
 	    $.extend(opts,props);
 	}
+	//TODO: handle addMapSelector
+
 	let getId=(suffix) =>{
 	    return id+suffix;
 	}
 	let state = this.searchState;
 	let resultsButton =HU.span([ATTR_ID,getId('_results_button')]);
 	let nameCbx = HU.checkbox('',[ATTR_ID,getId('_name')],true,'By name');
-	let topLine = HU.div([],nameCbx+SPACE2+resultsButton);
+	let topLine = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(8),
+						CSS_MARGIN_BOTTOM,HU.px(8))],nameCbx+SPACE2+resultsButton);
         let input = topLine+HU.input('','',[ATTR_ID,getId('_input'),
 					    ATTR_CLASS,'input',
 					    ATTR_PLACEHOLDER,'Search',
@@ -458,7 +463,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					  ATTR_ID,typeSelectId],options,state.selectedType);
 		select = HU.vspace()+select;
 		jqid(getId('types')).html(select);
-		HU.makeSelectTagPopup('#'+typeSelectId,{after:true,icon:true,single:true,showCategories:true});
+		HU.makeSelectTagPopup('#'+typeSelectId,
+				      {after:true,icon:true,single:true,showCategories:true});
 		HU.initSelect('#'+typeSelectId);
 	    };
 	    let key = entryType??'';
@@ -476,6 +482,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
         let inputWidget = jqid(getId('_input'));
         let nameWidget = jqid(getId('_name'));	
+	let offset = null;
 	let doSearch = ()=>{
             let value =  inputWidget.val()??'';
 	    if(HU.isChecked(nameWidget)) {
@@ -495,6 +502,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 	    }
 	    if(Utils.stringDefined(theType)) searchLink=HU.url(searchLink,[ARG_TYPE,theType]);
+	    if(Utils.isDefined(offset)) {
+		searchLink=HU.url(searchLink,[ARG_SKIP,offset]);
+	    }
             results.html(HU.getIconImage(icon_wait) + ' Searching...');
             results.show();
             let myCallback = {
@@ -503,8 +513,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    RamaddaUtils.initSearchRanges(list.getSearchInfo(),
 						  jqid(getId('_results_button')),
 						  searchInfo=>{
-						      this.getSearchSettings().skip = searchInfo.offset;
-						      this.submitSearchForm();
+						      offset= searchInfo.offset;
+						      doSearch();
+						      offset = null;
 						  });
 
                     if(entries.length==0) {
