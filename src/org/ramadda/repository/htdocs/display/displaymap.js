@@ -907,7 +907,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         addBaseMapLayer: function(url, label,isKml,matchData,style) {
 	    if(!style) style={};
             let _this = this;
-            mapLoadInfo = displayMapUrlToVectorListeners[url];
+            let mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo == null) {
                 mapLoadInfo = {
                     otherMaps: [],
