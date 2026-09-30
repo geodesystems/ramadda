@@ -986,10 +986,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		selected[0].addChildGlyph(mapGlyph);
 		this.makeLegend();
 	    } else {
+		this.unselectAll();
+		mapGlyph.glyphCreated();
 		this.addGlyph(mapGlyph);
 	    }
-
-	    mapGlyph.glyphCreated();
+	    this.selectGlyph(mapGlyph);
 	    this.clearMessage2(1000);
 	    if(zoomTo) {
 		let noBoundsCallback = ()=>{
@@ -1714,7 +1715,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		//Do this a bit later because the dialog doesn't get popped up
 		let initCallback = ()=>{
-		    HU.makeSelectTagPopup('#'+this.domId(ID_MAPRESOURCE),{after:true,icon:true,single:true});
+		    HU.makeSelectTagPopup('#'+this.domId(ID_MAPRESOURCE),
+					  {after:true,icon:true,single:true});
 		    this.jq(ID_MAPRESOURCE).change(()=>{
 			callback('',{},this.jq(ID_MAPRESOURCE).val());
 			if(this.selector) this.selector.cancel();
@@ -1751,9 +1753,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let entryType = glyphType.isImage()?'type_image,geo_pdf,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		props.showTypeSelector=true;
+		props.addMapSelector=true;
 		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),
+
 							  '',false,
-							  'entryid',this.getProperty('entryId'),entryType,null,props);
+							  'entryid',this.getProperty('entryId'),
+							  entryType,null,props);
 		return
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
@@ -5151,7 +5156,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.setClipboard(tmp);
 		this.removeMapGlyphs(tmp);
 	    }
-	    this.clearCommands();
+	    //Don't do this for now	    this.clearCommands();
 	},
 	doCopy: function() {
 	    if(this.getSelected().length==0) return;
