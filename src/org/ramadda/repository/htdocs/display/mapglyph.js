@@ -22,28 +22,7 @@ var LINETYPE_STEPPED='stepped';
 
 var ATTR_COMMAND='command';
 var ATTR_COLORBAR='colorbar';
-var ID_INMAP_LABEL='inmaplabel';
-var ID_MISCPROPERTIES='miscproperties';
-var ID_CANSELECT='canselect';
 var ATTR_IMAGEID='imageid';
-var ID_SEARCHTEXT='searchtext';
-
-var ID_FILLCOLORS = 'fillcolors';
-var ID_STROKECOLORS = 'strokecolors';
-var ID_ADDDOTS = 'adddots';
-var ID_LINETYPE = 'linetype';
-var ID_SHOWDATAICONS = 'showdataicons';
-
-var ID_DATAICON_USEENTRY = 'dataicon_useentry';
-var ID_DATAICON_MARKERS = 'dataicon_markers';
-var ID_DATAICON_LABEL='dataicon_label';
-var ID_DATAICON_FIELDS='dataicon_fields';
-var ID_DATAICON_INIT_FIELD='dataicon_init_field';
-var ID_DATAICON_SELECTED_FIELD='dataicon_selected_field';
-var ID_DATAICON_WIDTH='dataicon_width';
-var ID_DATAICON_HEIGHT='dataicon_height';
-var ID_DATAICON_SIZE='dataicon_size';
-var ID_DATAICON_PROPS='dataicon_props';
 
 
 var CLASS_IMDV_ROUTE_STEP='imdv-route-step';
@@ -583,6 +562,7 @@ MapGlyph.prototype = {
     },
 
     addToPropertiesDialog:function(content,style) {
+	let tabs = [];
 	let html='';
 	let layout = (lbl,widget)=>{
 	    html+=HU.b(lbl)+HU.br()+widget+HU.br();
@@ -597,12 +577,6 @@ MapGlyph.prototype = {
 	html+=HU.formTable();
 	html+=HU.formEntryLabel('Name',nameWidget);
 	if(this.isMap()) {
-	    if(this.attrs.entryId) {
-		html+=HU.formEntryLabel('Entry ID',
-					HU.input('',this.attrs.entryId,
-						 [ATTR_ID,this.domId('entryid'),
-						  ATTR_SIZE,60]));
-	    }
 	    if(this.attrs.resourceUrl) {
 		html+=HU.formEntryLabel('Map URL',
 					HU.input('',this.attrs.resourceUrl,
@@ -615,12 +589,14 @@ MapGlyph.prototype = {
 
 
 	let level = this.getVisibleLevelRange(true)??{};
-	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
+	let visHtml =
+	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
 	if(this.getMapLayer() || this.imageLayers || this.isImage()) {
-	    html+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
+	    visHtml+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
-	html+=HU.br();	
-	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
+	visHtml+=HU.br();	
+	visHtml+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
+	tabs.push({label:'Visibility',contents:visHtml});
 
 	let featureInfo = this.getFeatureInfoList();
 	let 	lines = Utils.mergeLists(['_name','default'],featureInfo.map(info=>{return info.id;}));
@@ -632,19 +608,30 @@ MapGlyph.prototype = {
 	    popupHelp = '';
 	    let h = HU.leftRightTable(HU.b(label),popupHelp);
 
-	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP],propsHelp);
+	    let help = HU.boldLabel('Add macro')+
+		HU.div([ATTR_CLASS,CLASS_IMDV_SIDEHELP],propsHelp);
 	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,
-							ATTR_ROWS,4,
+							ATTR_ROWS,8,
 							ATTR_COLS, 40]),
 			  SPACE2,help]);
 	    return h;
 	}
-	html+=makePopup('popupText','Popup Text:');
-	html+=HU.boldLabel('Legend Text') +HU.br() +
-	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
-			[ATTR_ID,this.domId(ID_LEGEND_TEXT),
-			 ATTR_ROWS,4,
-			 ATTR_COLS, 40]);
+
+	tabs.push({label:'Legend Text',
+		   contents:
+		   HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
+			       [ATTR_ID,this.domId(ID_LEGEND_TEXT),
+				ATTR_ROWS,8,
+				ATTR_COLS, 40])},
+		  {label:'Popup Text',contents:makePopup('popupText','')});
+	this.propsTabs =
+	    HU.makeTabs(tabs.map(a=>{a.contents =
+				     HU.div([ATTR_STYLE,HU.css(CSS_MIN_HEIGHT,HU.px(250))],
+					    a.contents);
+				     return a;}));
+
+
+	html+=this.propsTabs.contents;
 	
 	if(this.isRoute() && this.attrs.instructions && this.attrs.instructions.length>0) {
 	    html+=HU.div([],
@@ -653,17 +640,28 @@ MapGlyph.prototype = {
 				     'Delete Route Instructions'));
 	}
 
-	html+=HU.div([],HU.b( 'Header prefix:') + SPACE+
-		     HU.input('',this.attrs.headerPrefix??'',[ATTR_SIZE,'40',
-								 ATTR_ID,this.domId('headerprefix')]));
+	html+=HU.formTable();
+	if(Utils.stringDefined(this.attrs.headerPrefix)) {
+	    html+=HU.formEntryLabel('Header prefix',
+				    HU.input('',this.attrs.headerPrefix,
+					     [ATTR_SIZE,'40',
+					      ATTR_TITLE,'What to show when displayed in the header',
+					      ATTR_ID,this.domId('headerprefix')]));
+	}
 
 
+	if(this.isMap() && this.attrs.entryId) {
+	    html+=HU.formEntryLabel('Entry ID',
+				    HU.input('',this.attrs.entryId,
+					     [ATTR_ID,this.domId('entryid'),
+					      ATTR_SIZE,60]));
+	}
 
 
+	html+=HU.formEntryLabel('ID',
+				HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
 
-	html+=HU.div([],HU.boldLabel('ID') +
-		     HU.span([ATTR_CLASS,CLASS_COPYABLE],this.getId()));
-
+	html+=HU.formTableClose();
 	content.push({header:'Properties',contents:html});
 
 	html='';
@@ -686,17 +684,21 @@ MapGlyph.prototype = {
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
 
-	let miscHelp =this.display.makeSideHelp(miscLines,this.domId(ID_MISCPROPERTIES),
-						{style:HU.css(CSS_HEIGHT,HU.px(350),CSS_MAX_HEIGHT,HU.px(350)),
-						 suffix:'\n'});
+	let miscHelp =
+	    this.display.makeSideHelp(miscLines,this.domId(ID_MISCPROPERTIES),
+				      {style:HU.css(CSS_HEIGHT,HU.px(350),
+						    CSS_MAX_HEIGHT,HU.px(350)),
+				       suffix:'\n'});
 	let ex = HU.boldLabel('Add property') +
-	    HU.span([ATTR_ID,this.domId('propsearch')]) + HU.div([ATTR_ID,this.domId('propertyflags')],miscHelp);
+	    HU.span([ATTR_ID,this.domId('propsearch')]) +
+	    HU.div([ATTR_ID,this.domId('propertyflags')],miscHelp);
 
-	html += HU.hbox([HU.textarea('',this.attrs.properties??'',
+	html += HU.hbox([ex,HU.space(2),
+			 HU.textarea('',this.attrs.properties??'',
 				     [ATTR_ID,this.domId(ID_MISCPROPERTIES),
 				      ATTR_ROWS,16,
 				      ATTR_COLS, 40]),
-			 HU.space(2),ex]);
+			 HU.space(2)]);
 	content.push({header:'Flags',contents:html});
 
 	if(this.isDataIconCapable()) {
@@ -3995,12 +3997,14 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
+	if(this.propsTabs) {
+	    this.propsTabs.init();
+	}
 	Utils.initColorTablePopup(dialog);
 	HU.initPageSearch(this.jq('propertyflags').find(HU.dotClass(CLASS_IMDV_PROPERTY)),
 			  null,null,true,
 			  {urlparam:'propertysearch',
 			   target:'#'+this.domId('propsearch')});
-
 
 	if (this.isGroup()) {
 	    this.jq('makegeojson').button().click(()=>{
@@ -5210,7 +5214,11 @@ MapGlyph.prototype = {
 	    if(this.headerPrefixId) {
 		jqid(this.headerPrefixId).remove();
 	    }
-	    if(Utils.stringDefined(this.attrs.headerPrefix) && this.topHeaderId) {
+	    let headerPrefix = this.attrs.headerPrefix;
+	    if(!Utils.stringDefined(headerPrefix)) {
+		headerPrefix =  this.getProperty('headerPrefix');
+	    }
+	    if(Utils.stringDefined(headerPrefix) && this.topHeaderId) {
 		this.headerPrefixId = HU.getUniqueId('headerprefix');
 		jqid(this.topHeaderId).before(HU.span([ATTR_ID,this.headerPrefixId],
 						      this.attrs.headerPrefix));

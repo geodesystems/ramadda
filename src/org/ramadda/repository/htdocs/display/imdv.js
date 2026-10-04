@@ -81,12 +81,17 @@ var ATTR_BASEID='baseid';
 
 var IMDV_PROPERTY_HINTS= [
     {category:'Glyph Filters'},
-    {value:'filter.live=true',label:'Filters live'},
+    {value:'filter.live=true',label:'Filters live',
+     tt:'As you type in a text field is the filter applied'},
     {value:'filter.show=false',label:'Show filters'},
-    {value:'filter.showInMap=true',label:'Show filters in map'},
-    {value:'filter.zoomonchange.show=false',label:'Show zoom on change'},
-    {value:'filter.toggle.show=false',label:'Show toggle'},
-    {value:'filter.sortOnCount=true',label:'Sort on count'},
+    {value:'filter.showInMap=true',label:'Show filters in map',
+     tt:'Put the filters in the map'},
+    {value:'filter.zoomonchange.show=false',label:'Show zoom on change',
+     tt:'When the filters are applied should the map be zoomed to the visible features'},
+    {value:'filter.toggle.show=false',label:'Show toggle',
+     tt:'Should the Filters toggle be shown'},
+    {value:'filter.sortOnCount=true',label:'Sort on count',
+     tt:'For enumerated fields sort the field values'},
     {value:'filter.showRawValues=true',label:'Show raw values'},
     {value:'filters.height=400px',label:'Filters height'},
     {category:'Glyph Misc'},    
@@ -104,6 +109,7 @@ var IMDV_PROPERTY_HINTS= [
     'showInHeader=true',			  
     'header=${name} ${legend}',
     'headerLegendWidth=200px',
+    'headerPrefix=',
     'showIconInHeader=true',
     'legendStyle=height:1000px;width:300px;max-width:300px;',
     'mapLegendHeight=300px',
@@ -183,23 +189,42 @@ var ROUTE_PEDESTRIAN ='pedestrian';
 
 var ID_GLYPH_LEGEND = 'glyphlegend';
 var ID_IMDV_LEGEND = 'imdvlegend';
-
 var ID_MAPRESOURCE = 'mapresource';
-
-
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
 var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
 var ID_LEVEL_RANGE_CHANGED = 'level_range_changed';
 var ID_LEVEL_RANGE_MIN = 'level_range_min';
 var ID_LEVEL_RANGE_MAX = 'level_range_max';
-
 var ID_LEVEL_RANGE_SAMPLE_MIN = 'level_range_sample_min';
 var ID_LEVEL_RANGE_SAMPLE_MAX = 'level_range_sample_max';
 var ID_OSM_LABEL = 'osmlabel';
 var ID_OSM_TEXT = 'osmtext';
-
 var ID_STYLE_DIALOG='styledialog';
 var ID_STYLE_DIALOG_ACTIVE='styledialogactive';
+
+var ID_INMAP_LABEL='inmaplabel';
+var ID_MISCPROPERTIES='miscproperties';
+var ID_CANSELECT='canselect';
+var ID_SEARCHTEXT='searchtext';
+
+var ID_FILLCOLORS = 'fillcolors';
+var ID_STROKECOLORS = 'strokecolors';
+var ID_ADDDOTS = 'adddots';
+var ID_LINETYPE = 'linetype';
+var ID_SHOWDATAICONS = 'showdataicons';
+
+var ID_DATAICON_USEENTRY = 'dataicon_useentry';
+var ID_DATAICON_MARKERS = 'dataicon_markers';
+var ID_DATAICON_LABEL='dataicon_label';
+var ID_DATAICON_FIELDS='dataicon_fields';
+var ID_DATAICON_INIT_FIELD='dataicon_init_field';
+var ID_DATAICON_SELECTED_FIELD='dataicon_selected_field';
+var ID_DATAICON_WIDTH='dataicon_width';
+var ID_DATAICON_HEIGHT='dataicon_height';
+var ID_DATAICON_SIZE='dataicon_size';
+var ID_DATAICON_PROPS='dataicon_props';
+
+
 
 let ImdvUtils = {
     getImdv: function(id) {
@@ -1314,7 +1339,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	wrapDialog:function(html) {
-	    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(5))],html);
+	    return HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(8),
+					     CSS_MARGIN_TOP,HU.px(8))],html);
 	},
 
 	setCommand:function(command, args) {
@@ -1461,7 +1487,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dialog.hide();
 		}
 		if(showStac) {
-
 		    tabs.init();
 		}
 
@@ -1729,19 +1754,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		};
 		let extra = null;
 		if(glyphType.isImage()) {
-		    extra = HU.b('Enter Image URL: ') +
+		    extra = HU.boldLabel('Enter Image URL') +
 			HU.input('',this.lastImageUrl??'',[ATTR_ID,this.getDomId('imageurl'),ATTR_SIZE,40]);
 		} else if(glyphType.isMap() && MapUtils.MAP_RESOURCES) {
 		    let ids = MapUtils.MAP_RESOURCES.map((r,idx)=>{
 			return [idx,r.name];
 		    });
-		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load map: ') +
+		    ids = Utils.mergeLists([['','Select Map']],ids);
+		    extra = HU.boldLabel('Load map') +
 			HU.select('', [ATTR_ID,this.domId(ID_MAPRESOURCE)],ids);
 		}			    
 		if(extra!=null) {
-		    extra = this.wrapDialog(extra) + HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_LEFT,HU.px(5))],
-							    HU.boldLabel('Or select entry'));
+		    extra = this.wrapDialog(extra) +
+			this.wrapDialog(HU.boldLabel('Or select entry'));
 		}
 
 		let props = {title:glyphType.isImage()?'Select Image':
@@ -2877,9 +2902,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     ATTR_TARGET,target];
 		if(line.title) {
 		    attrs.push(ATTR_TITLE,line.title);
+		} else if(line.tt) {
+		    attrs.push(ATTR_TITLE,line.tt);		    
 		} else {
 		    if(line.label) {
-			attrs.push(ATTR_TITLE,line.value);
+			attrs.push(ATTR_TITLE,line.tt);
 		    }
 		}
 		let skip = line.skip;
@@ -3333,7 +3360,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    html+=HU.close(TAG_TABLE);
 	    html = HU.div([ATTR_CLASS,'imdv-form',
-			   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(350),
+			   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(450),
 					     CSS_OVERFLOW_Y,"scroll",
 					     CSS_MARGIN_BOTTOM,HU.px(5))], html);
 	    return {props:props,html:html};
@@ -3409,18 +3436,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    style = style ?? mapGlyph?mapGlyph.getStyle():style;
 	    let props;
-	    let buttons = "";
-	    buttons+="<center>";
-	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_APPLY], LABEL_APPLY);
-	    buttons += SPACE2;
-	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_OK], LABEL_OK);
-	    buttons += SPACE2;
+	    let buttonList = [];
+	    buttonList.push(
+		HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_APPLY], LABEL_APPLY),
+		HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_OK], LABEL_OK),
+	    );
 	    if(mapGlyph) {
-		buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_DELETE], LABEL_DELETE);
-		buttons += SPACE2;
+		buttonList.push(HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_DELETE], LABEL_DELETE));
 	    }
-	    buttons +=HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_CANCEL], LABEL_CANCEL);	   
-	    buttons+="</center>";
+	    buttonList.push(HU.div([ATTR_CLASS,CLASS_DISPLAY_BUTTON,ATTR_COMMAND,ID_CANCEL], LABEL_CANCEL));	   
+	    let buttons = HU.buttons(buttonList);
 	    let content =[];
 	    if(mapGlyph) {
 		mapGlyph.addToPropertiesDialog(content,style);
@@ -3479,6 +3504,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph) {
 		mapGlyph.getPropertiesComponent(content);
 	    }
+	    content = content.map(a=>{
+		a.contents =
+		    HU.div([ATTR_STYLE,HU.css(CSS_MIN_HEIGHT,HU.px(500))],a.contents);
+		return a;
+	    });
+
 	    let html = buttons;
 	    let accord;
 	    if(mapGlyph) {
@@ -3503,8 +3534,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph)
 		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
-
-
 	    if(apply==null) {
 		apply = () =>{
 		    let style = {};
@@ -4394,18 +4423,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		 label:'Graticule style'},
 		...IMDV_PROPERTY_HINTS,
 ];
-	    let help = HU.b('Add property: ') +
+	    let help = HU.boldLabel('Add property') +
 		HU.span([ATTR_ID,this.domId('propsearch')]) +
-		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
+		this.makeSideHelp(lines,
+				  this.domId('otherproperties_input'),
+				  {style:HU.css(CSS_HEIGHT,HU.px(350),
+						CSS_MAX_HEIGHT,HU.px(350)),
+				   suffix:'\n'});
 	    accords.push({header:'Flags',
 			  contents:
-			  HU.hbox([
-			      HU.textarea('',props,[ATTR_ID,this.domId('otherproperties_input'),
-						    ATTR_ROWS,8,
-						    ATTR_COLS,40]),HU.space(2),help])
+			  HU.hbox([help,HU.space(2),
+				   HU.textarea('',props,
+					       [ATTR_ID,this.domId('otherproperties_input'),
+						ATTR_ROWS,16,
+						ATTR_COLS,40])])
 			 });
 	    
 
+	    accords = accords.map(a=>{
+		a.contents =
+		    HU.div([ATTR_STYLE,HU.css(CSS_MIN_HEIGHT,HU.px(400))],a.contents);
+		return a;
+	    });
 	    //	    let accord = HU.makeAccordionHtml(accords);
 	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
@@ -4461,12 +4500,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 
-/*
-	    HU.initPageSearch(HU.dotClass(CLASS_IMDV_PROPERTY),
+	    HU.initPageSearch(dialog.find(HU.dotClass(CLASS_IMDV_PROPERTY)),
 			      this.domId('otherproperties_input'),null,true,
 			      {target:'#'+this.domId('propsearch')});
 
-*/
+
 	    dialog.find(HU.dotClass(CLASS_BUTTON_APPLY)).button().click(()=>{
 		apply();
 	    });
