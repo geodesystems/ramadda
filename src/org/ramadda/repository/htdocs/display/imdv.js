@@ -4830,14 +4830,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 						  ATTR_CLASS,CLASS_CLICKABLE]));
 		html+=HU.formEntryLabel('Zoom Level',zoomButton);
 		html+=HU.formTableClose();
-		let buttons =
+		let buttons =HU.buttons([
 		    HU.div([ATTR_CLASS,
-			    HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY) +
-		    SPACE2 +
+			    HU.classes(CLASS_BUTTON_APPLY,CLASS_DISPLAY_BUTTON)], LABEL_APPLY),
 		    HU.div([ATTR_CLASS,
-			    HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) +
-		    SPACE2 +
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
+			    HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
 		html+=HU.center(buttons);
 		html = HU.div([ATTR_CLASS, CLASS_DIALOG],html);
 		let dialog = HU.makeDialog({content:html,anchor:anchor??$(this),draggable:true,

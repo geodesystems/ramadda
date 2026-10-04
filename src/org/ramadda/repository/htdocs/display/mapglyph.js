@@ -38,7 +38,7 @@ var ID_MAPLEGEND = 'maplegend';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
-	console.log("no type given for MapGlyph");
+	console.log('no type given for MapGlyph');
 	console.trace();
 	return
     }
@@ -55,7 +55,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 
     let glyphType = this.getGlyphType();
     if(attrs.routeProvider) {
-	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
+	this.name = 'Route: ' + attrs.routeProvider +' - ' + attrs.routeType;
     } else {
 	this.name = Utils.getStringDefined(attrs.name,style?.label,glyphType.getName(),  type);
     }
@@ -65,13 +65,13 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
     if(mapGlyphs) {
-	//	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
-	this.putTransientProperty("mapglyphs", mapGlyphs);
+	//	mapGlyphs = mapGlyphs.replace(/\\n/g,'\n');
+	this.putTransientProperty('mapglyphs', mapGlyphs);
     }
     this.features = [];
     this.attrs = attrs;
     this.style = style;
-    this.id = attrs.id ?? HU.getUniqueId("glyph_");
+    this.id = attrs.id ?? HU.getUniqueId('glyph_');
     if(this.isEntry()) {
 	if(!Utils.isDefined(this.attrs.useentryname))
 	    this.attrs.useentryname = true;
@@ -234,9 +234,9 @@ MapGlyph.prototype = {
 	for(let i=0;i<points.length;i++) {
 	    if(!ok) break;
 	    let point = points[i];
-	    let url = "https://nationalmap.gov/epqs/pqs.php?x="
-		+ point.x + "&y=" + point.y
-                + "&units=feet&output=json";
+	    let url = 'https://nationalmap.gov/epqs/pqs.php?x='
+		+ point.x + '&y=' + point.y
+                + '&units=feet&output=json';
 	    //	    console.log('url:'+ url);
             await  $.getJSON(url, (data)=> {
 		let elevation = data?.USGS_Elevation_Point_Query_Service?.Elevation_Query?.Elevation;
@@ -244,7 +244,7 @@ MapGlyph.prototype = {
 		count++;
 		if(update)
 		    ok = update(count,points.length);
-		//		console.log("elevation #" + elevations.length+"/" + points.length+": " + elevation);
+		//		console.log('elevation #' + elevations.length+'/' + points.length+': ' + elevation);
 	    }).fail((data)=>{
 		console.log('Failed to find elevation');
 		console.dir(data);
@@ -276,7 +276,7 @@ MapGlyph.prototype = {
 	let attrs = Utils.clone(this.attrs);
 	let cloned =  new MapGlyph(this.display, this.type,attrs,null,style);
 	//give it a new ID
-	cloned.id = HU.getUniqueId("glyph_");
+	cloned.id = HU.getUniqueId('glyph_');
 	//clone the features and their styles
 	let features = this.features.map(f=>{
 	    f = f.clone();
@@ -472,7 +472,7 @@ MapGlyph.prototype = {
     getRadii:function() {
 	if(!this.attrs.radii) {
 	    let level = this.display.getCurrentLevel();
-	    //	    console.log("level:" + level);
+	    //	    console.log('level:' + level);
 	    let r = (size,unit) =>{
 		let s =[];
 		for(let i=1;i<=5;i++) {
@@ -529,14 +529,14 @@ MapGlyph.prototype = {
 	if(this.isMapServer()) {
 	    let url = this.getMapServerUrl();
 	    if(Utils.stringDefined(url)) {
-		let extra = HU.formEntryLabel("Server URL",
+		let extra = HU.formEntryLabel('Server URL',
 					      HU.input('',url,
 						       [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
 							ATTR_ID,this.domId('serverurl'),
 							ATTR_SIZE,60]));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
-		    extra += HU.formEntryLabel("WMS Layer",
+		    extra += HU.formEntryLabel('WMS Layer',
 					       HU.input('',this.attrs.wmsLayer,
 							[ATTR_ID,this.domId('wmslayer'),
 							 ATTR_SIZE,20]));
@@ -830,7 +830,7 @@ MapGlyph.prototype = {
 	this.featureInfo=null;
 
 	//Make sure we do this after we set the above style properties
-	this.setName(this.jq("mapglyphname").val());
+	this.setName(this.jq('mapglyphname').val());
 	if(this.isMap()) {
 	    let newEntryId = this.jq('entryid').val();
 	    if(newEntryId && this.attrs.entryId!=newEntryId) {
@@ -857,9 +857,9 @@ MapGlyph.prototype = {
 
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
-	    this.setUseEntryName(HU.isChecked(this.jq("useentryname")));
-	    this.setUseEntryLabel(HU.isChecked(this.jq("useentrylabel")));
-	    this.setUseEntryLocation(HU.isChecked(this.jq("useentrylocation")));
+	    this.setUseEntryName(HU.isChecked(this.jq('useentryname')));
+	    this.setUseEntryLabel(HU.isChecked(this.jq('useentrylabel')));
+	    this.setUseEntryLocation(HU.isChecked(this.jq('useentrylocation')));
 	}
 	this.setVisible(HU.isChecked(this.jq('visible')),true,null,true);
 	if(this.jq(ID_CANSELECT).length) {
@@ -891,9 +891,9 @@ MapGlyph.prototype = {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
 		url = url.trim();
-		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.png/, "/${z}/${x}/${y}.png");
-		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpg/, "/${z}/${x}/${y}.jpg");
-		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpeg/, "/${z}/${x}/${y}.jpeg");
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.png/, '/${z}/${x}/${y}.png');
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpg/, '/${z}/${x}/${y}.jpg');
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpeg/, '/${z}/${x}/${y}.jpeg');
 		this.attrs.mapServerUrl = url;
 	    }
 	}
@@ -1024,11 +1024,11 @@ MapGlyph.prototype = {
 	}	    
 
 	if(debug) {
-	    console.log("getDataIconProperty:" + this.getName()+' prop='+property);
+	    console.log('getDataIconProperty:' + this.getName()+' prop='+property);
 	}
 	let value = this.getDataIconInfo()[property];
 	if(Utils.stringDefined(value)) {
-	    if(debug) console.log("\tmine:" +value);
+	    if(debug) console.log('\tmine:' +value);
 	    //If it is the field then make sure it is in the FIELDS
 	    if(property==ID_DATAICON_SELECTED_FIELD) {
 		let fields = this.getDataIconInfo()[ID_DATAICON_FIELDS];
@@ -1049,7 +1049,7 @@ MapGlyph.prototype = {
 
 	if(this.getParentGlyph()) {
 	    if(debug)
-		console.log("\tasking parent");
+		console.log('\tasking parent');
 	    return this.getParentGlyph().getDataIconProperty(property,dflt);
 	}
 	return dflt;
@@ -1099,7 +1099,7 @@ MapGlyph.prototype = {
 	    let toks = Utils.split(item,',',true,true);
 	    let map = {};
 	    for(let i=1;i<toks.length;i++) {
-		let toks2 = Utils.split(toks[i],"=",true,true);
+		let toks2 = Utils.split(toks[i],'=',true,true);
 		if(toks2.length>1) map[toks2[0]] = toks2[1];
 	    }
 	    items.push({value:toks[0],label:map.label});
@@ -1198,12 +1198,12 @@ MapGlyph.prototype = {
 	let rawLines = Utils.split(markersString,'\n',true,true);
 	rawLines.forEach(line=>{
 	    line = line.trim();
-	    if(line.startsWith("#") || line == "") return;
+	    if(line.startsWith('#') || line == '') return;
 	    //console.log('\tline:'+line);
 	    markerLines.push(line);
 	});
 	if(markerLines.length==0) {
-	    console.log("\tno markers-2");
+	    console.log('\tno markers-2');
 	    return;
 	}
 	let markers = [];
@@ -1211,7 +1211,7 @@ MapGlyph.prototype = {
 	let props = {};
 	markerLines.forEach(line=>{
 	    line = line.trim();
-	    if(line.startsWith("#")) return;
+	    if(line.startsWith('#')) return;
 	    if(line.startsWith('props:')) {
 		this.parseDataIconProps(props,line.substring('props:'.length));
 		return;
@@ -1221,12 +1221,12 @@ MapGlyph.prototype = {
 	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
 
 	let sampleCount = props.sampleCount??1;
-	let url = HU.url(Ramadda.getUrl("/entry/data"),
-			 "record.last",sampleCount,
-			 "max",sampleCount,
+	let url = HU.url(Ramadda.getUrl('/entry/data'),
+			 'record.last',sampleCount,
+			 'max',sampleCount,
 			 ARG_ENTRYID,opts.entryId);
 	//	console.log('url',url);
-	let pointData = new PointData("",  null,null,url, {entryId:opts.entryId});
+	let pointData = new PointData('',  null,null,url, {entryId:opts.entryId});
 
 
 	let callback = (data)=>{
@@ -1234,9 +1234,9 @@ MapGlyph.prototype = {
 	}
 	let fauxDisplay  = {
 	    display:this.display,
-	    type: "map glyph proxy",
+	    type: 'map glyph proxy',
 	    getId() {
-		return "ID";
+		return 'ID';
 	    },
 	    pointDataLoaded:function(data,url) {
 		callback(data);
@@ -1250,7 +1250,7 @@ MapGlyph.prototype = {
 		this.display.handleLog(err);
 	    },
 	    displayError:function(err) {
-		console.log("Error:" + err);
+		console.log('Error:' + err);
 	    }
 	    
 	}
@@ -1258,7 +1258,7 @@ MapGlyph.prototype = {
     },
     parseDataIconProps:function(props,line) {
 	Utils.split(line??'',',',true,true).forEach(line2=>{
-	    let toks = Utils.split(line2,":",true,true);
+	    let toks = Utils.split(line2,':',true,true);
 	    if(toks.length==2) {
 		props[toks[0]] = toks[1];
 	    }
@@ -1298,7 +1298,7 @@ MapGlyph.prototype = {
 		let toks = Utils.split(item,',',true,true);
 		if(toks[0]!=selectedField) return true;
 		for(let i=1;i<toks.length;i++) {
-		    let toks2 = Utils.split(toks[i],"=",true,true);
+		    let toks2 = Utils.split(toks[i],'=',true,true);
 		    attrs[toks2[0]] = toks2[1]??'';
 		}
 		return false;
@@ -1324,7 +1324,7 @@ MapGlyph.prototype = {
 		    return;
 		}
 		if(key=='label') return;
-		line = line.replaceAll("\${" + key+"}",attrs[key]);
+		line = line.replaceAll('\${' + key+'}',attrs[key]);
 	    });
 
 	    //In case there wasn't a unit
@@ -1358,7 +1358,7 @@ MapGlyph.prototype = {
 
 	$(document.body).append(c);
 	let canvas = document.getElementById(cid);
-	let ctx = canvas.getContext("2d");
+	let ctx = canvas.getContext('2d');
 	if(isShown &&props.fill) {
 	    ctx.fillStyle=props.fill;
 	    ctx.fillRect(0,0,canvasWidth,canvasHeight);
@@ -1426,7 +1426,7 @@ MapGlyph.prototype = {
 	    try {
 		let img = canvas.toDataURL();
 		if(jqid('testimg').length) 
-		    jqid("testimg").html(HU.tag(TAG_IMG,[ATTR_SRC,img]));
+		    jqid('testimg').html(HU.tag(TAG_IMG,[ATTR_SRC,img]));
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
@@ -2146,7 +2146,7 @@ MapGlyph.prototype = {
 	    if(this.entry) {
 		let type = this.entry.getType();
 		if(type) {
-		    typeLabel+=HU.div([],"Type:" + type.name);
+		    typeLabel+=HU.div([],'Type:' + type.name);
 		}
 	    }
 	    
@@ -2219,7 +2219,7 @@ MapGlyph.prototype = {
 	return ImdvUtils.findGlyph(this.getChildren(),id);
     },
     addChildGlyph: function(child) {
-	//	console.log("add child:" + child.getName());
+	//	console.log('add child:' + child.getName());
 	this.getChildren().push(child);
 	child.setParentGlyph(this);
     },
@@ -2246,7 +2246,7 @@ MapGlyph.prototype = {
     convertText:function(text) {
 	text =text.replace(/\n *\*/g,'\n &bull;');
 	text =text.replace(/^ *\*/g,'&bull;');
-	text = text.replace(/\"/g,"\\").replace(/\n/g,HU.br());
+	text = text.replace(/\"/g,'\\').replace(/\n/g,HU.br());
 	return text;
     },
     
@@ -2377,7 +2377,7 @@ MapGlyph.prototype = {
 	opts = opts??{};
 	let html = '';
 	if(!this.display.getShowLegendShapes() && this.isShape()) {
-	    return "";
+	    return '';
 	}
 	let label =  this.getLabel({forLegend:true,addDecorator:true});
 	let body = HU.div([ATTR_CLASS,CLASS_LEGEND_INNER],this.getLegendBody());
@@ -2419,7 +2419,7 @@ MapGlyph.prototype = {
 
 
 
-	    let child="";
+	    let child='';
 	    this.applyChildren(mapGlyph=>{
 		let childHtml = mapGlyph.makeLegend(opts);
 		if(childHtml) child+=childHtml;
@@ -2427,13 +2427,13 @@ MapGlyph.prototype = {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],child);
 	}
 
-	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
+	let block = HU.toggleBlockNew('',body,this.getLegendVisible(),
 				      {separate:true,
 				       headerStyle:HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK),
 				       extraAttributes:['map-glyph-id',this.getId()]});		
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
-	let clazz = "";
+	let clazz = '';
 	if(!this.getVisible()) {
 	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
@@ -2480,9 +2480,9 @@ MapGlyph.prototype = {
 	    lineWidth = style.strokeWidth;
 	if(Utils.stringDefined(style.strokeDashstyle)) {
 	    if(['dot','dashdot'].includes(style.strokeDashstyle)) {
-		lineStyle = "dotted";
-	    } else  if(style.strokeDashstyle.indexOf("dash")>=0) {
-		lineStyle = "dashed";
+		lineStyle = 'dotted';
+	    } else  if(style.strokeDashstyle.indexOf('dash')>=0) {
+		lineStyle = 'dashed';
 	    }
 	}
 	if(lineColor || lineColor||lineWidth) {
@@ -2887,7 +2887,7 @@ MapGlyph.prototype = {
 	    strokeWidth:0,
 //	    labelSelect:true,
 	    //	{p:'labelAlign',ex:'l|c|r t|m|b'},
-	    labelAlign: "lt",
+	    labelAlign: 'lt',
 	    labelXOffset: 10,
 	    labelYOffset: 0,
 	    fontSize: this.getPropertyCheckParent('lineLabels.fontSize','8pt'),
@@ -2944,7 +2944,7 @@ MapGlyph.prototype = {
 
 
 	Utils.split(this.getPropertyCheckParent('lineLabels.locations','last'),',',true,true).forEach(labelLocation=>{
-	    $.extend(baseStyle,{labelAlign: "lt",
+	    $.extend(baseStyle,{labelAlign: 'lt',
 				labelXOffset: 10,
 				labelYOffset: 0});
 
@@ -3170,7 +3170,7 @@ MapGlyph.prototype = {
 	    position: {
 		my: POS_LEFT_TOP,
 		at:POS_RIGHT_TOP,
-		collision: "flipfit"
+		collision: 'flipfit'
 	    },
 	    content: function() {
 		return HU.image($(this).attr(ATTR_SRC),[ATTR_STYLE,
@@ -3217,7 +3217,7 @@ MapGlyph.prototype = {
 	    if(this.canDrag()) {
 		this.getLegendDiv().draggable({
 		    handle:label,
-		    cursor: "crosshair",
+		    cursor: 'crosshair',
 		    start: function(event, ui) {
 			$(this).addClass('imdv-legend-item-dragging');
 			notify();
@@ -3476,14 +3476,14 @@ MapGlyph.prototype = {
 	this.entry = entry;
 	if(!this.isEntry()) return;
 	//the mapglyphs are defined by the type
-	this.putTransientProperty("mapglyphs", entry.mapglyphs);
+	this.putTransientProperty('mapglyphs', entry.mapglyphs);
 	if(this.getUseEntryName()) 
 	    this.setName(entry.getName());
 	if(this.getUseEntryLabel())
 	    this.style.label= entry.getName();
 	if(this.getUseEntryLocation() && entry.hasLocation()) {
 	    this.style.labelSelect=true;
-	    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
+	    let feature = this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point', this.style,
 						   [entry.getLatitude(), entry.getLongitude()]);
 	    MapUtils.setFeatureStyle(feature, this.style);
 	    this.addFeature(feature,true,true);
@@ -3638,7 +3638,7 @@ MapGlyph.prototype = {
 		if(this.mapLoaded) return;
 		let url =HU.url(Ramadda.getUrl(URL_ENTRY_GET),
 				ARG_ENTRYID,this.attrs.entryId,
-				"fileinline",true);
+				'fileinline',true);
 		let finish = (data)=>{
 		    this.mapLoaded = true;
 		    this.makeLegend();
@@ -3653,7 +3653,7 @@ MapGlyph.prototype = {
     getMapServerUrl:function() {
 	let url=this.attrs.mapServerUrl;
 	//Convert malformed TMS url
-	url = url.replace(/\/{/g,"/${");
+	url = url.replace(/\/{/g,'/${');
 	return url;
     },
 
@@ -3686,9 +3686,9 @@ MapGlyph.prototype = {
 	    if(Utils.stringDefined(wmsLayer)) {
 		this.mapServerLayer = MapUtils.createLayerWMS(this.getName(), url, {
 		    layers: wmsLayer,
-		    format: "image/png",
+		    format: 'image/png',
 		    isBaseLayer: false,
-		    srs: "epsg:4326",
+		    srs: 'epsg:4326',
 		    transparent: true
 		}, {
 		    opacity:1.0
@@ -3700,10 +3700,10 @@ MapGlyph.prototype = {
 		if(mapLayer) {
 		    this.mapServerLayer = this.display.getMap().makeMapLayer(this.attrs.predefinedLayer);
 		} else {
-		    console.error("Unknown map layer:" +this.attrs.predefinedLayer);
+		    console.error('Unknown map layer:' +this.attrs.predefinedLayer);
 		}
 	    } else {
-		console.error("No map server url defined");
+		console.error('No map server url defined');
 		return;
 	    }
 
@@ -3852,7 +3852,7 @@ MapGlyph.prototype = {
 	if(isEnum) showRange=false;
 	let ct = Utils.ColorTables[id];
 	if(!ct) {
-	    return "----";
+	    return '----';
 	}
 	let showDots = isEnum&& strings.length<=30;
 	//For now don't show the labels on the colortable
@@ -3865,7 +3865,7 @@ MapGlyph.prototype = {
 	    showColorTableDots:showDots,
 	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
-            height: "20px",
+            height: HU.px(20),
 	    showRange:showRange,
 	    showLabels:showLabels
         });
@@ -3944,12 +3944,12 @@ MapGlyph.prototype = {
 	    });
 	    let name='Polygon';
 	    features.push({
-		type: "Feature",
+		type: 'Feature',
 		properties: {
 		    name: name
 		},
 		geometry: {
-		    type: "Polygon",
+		    type: 'Polygon',
 		    coordinates: [coords]
 		}});
 	} else {
@@ -3963,7 +3963,7 @@ MapGlyph.prototype = {
 		if(d.attributes) properties=d.attributes;
 		else properties={name: name };
 		features.push({
-		    type: "Feature",
+		    type: 'Feature',
 		    properties: properties,
 		    geometry: {
 			type: coords.length==1?'Point':'LineString',
@@ -3974,8 +3974,8 @@ MapGlyph.prototype = {
 
 
 	let json = {
-	    type: "FeatureCollection",
-	    "features": features
+	    type: 'FeatureCollection',
+	    features: features
 	}
 	let file = Utils.makeID(this.name)+'.geojson';
 	Utils.makeDownloadFile(file,JSON.stringify(json));
@@ -4030,7 +4030,7 @@ MapGlyph.prototype = {
 	    let propsLine = '';
 	    let markers='';
 	    Utils.split(this.transientProperties.mapglyphs,'\n',true,true).forEach(line=>{
-		if(line.startsWith("#")) return;
+		if(line.startsWith('#')) return;
 		if(line.startsWith('props:')) {
 		    propsLine+=line.substring('props:'.length);
 		} else {
@@ -4148,24 +4148,24 @@ MapGlyph.prototype = {
 	    let info = _this.featureInfoMap[$(this).val()];
 	    if(!info) return;
 	    let index  = $(this).attr('mapproperty_index');	    
-	    let tt = "";
+	    let tt = '';
 	    let value = jqid('mapvalue_' + index).val();
 	    let extvalue = jqid('mapvalueext_' + index).val();	    
 	    let wrapper = jqid('mapvaluewrapper_' + index);
 	    if(info.isNumeric()) {
-		wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,
+		wrapper.html(HU.input('',value,[ATTR_ID,'mapvalue_' + index,
 						ATTR_SIZE,15]));
-		tt=info.min +" - " + info.max;
+		tt=info.min +' - ' + info.max;
 	    }  else  if(info.samples.length) {
-		tt = Utils.join(info.getSamplesLabels(), ", ");
+		tt = Utils.join(info.getSamplesLabels(), ', ');
 		if(info.isEnumeration()) {
-		    let widget = HU.select("",[ATTR_ID,'mapvalue_' + index],info.samples,value,20);
-		    let extwidget = HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,
+		    let widget = HU.select('',[ATTR_ID,'mapvalue_' + index],info.samples,value,20);
+		    let extwidget = HU.input('',extvalue,[ATTR_ID,'mapvalueext_' + index,
 							  ATTR_SIZE,15,
 							  ATTR_PLACEHOLDER,'pattern']);
 		    wrapper.html(widget+HU.div([],'Or: '+extwidget));
 		} else {
-		    wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,
+		    wrapper.html(HU.input('',value,[ATTR_ID,'mapvalue_' + index,
 						    ATTR_SIZE,15]));
 		}
 	    }
@@ -4389,7 +4389,7 @@ MapGlyph.prototype = {
 
     updateFeaturesTable:function() {
 	if(!this.featuresTableDialog) return;
-	let tableId = HU.getUniqueId("table");
+	let tableId = HU.getUniqueId('table');
 	let table =this.getFeaturesTable(tableId);
 	let html='';
 
@@ -4631,7 +4631,7 @@ MapGlyph.prototype = {
 	    }
 	    if(info?.isEnumeration()) {
 		valueInput = HU.select('',[ATTR_ID,'mapvalue_' + index],info.getSamplesForMenu(),value,20); 
-		valueInput+= HU.div([],HU.input("",extvalue,[ATTR_ID,'mapvalueext_' + index,
+		valueInput+= HU.div([],HU.input('',extvalue,[ATTR_ID,'mapvalueext_' + index,
 							     ATTR_SIZE,15,
 							     ATTR_PLACEHOLDER,'pattern']));
 		
@@ -4709,7 +4709,7 @@ MapGlyph.prototype = {
 	let space =  HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(5))]);
 	let extra = HU.formTable();
 	extra += HU.formEntryLabel('Position',
-				   HU.select("",[ATTR_ID,this.domId('labels_position')],
+				   HU.select('',[ATTR_ID,this.domId('labels_position')],
 					     [['center','Center'],
 					      ['n','North'],
 					      ['nw','Northwest'],
@@ -4849,9 +4849,9 @@ MapGlyph.prototype = {
 	}
 	let sv = String(v);
 	//	if(sv.indexOf('[object')>=0) {console.log('X',v,(typeof v));} else console.log(sv);
-	if(sv.trim()=="") return "";
+	if(sv.trim()=='') return '';
 	if(sv.match(this.numre)) {
-	    sv = sv.replace(/,/g,'').replace(/^0+/,"");
+	    sv = sv.replace(/,/g,'').replace(/^0+/,'');
 	}
 	return sv;
     },
@@ -5018,16 +5018,16 @@ MapGlyph.prototype = {
 	let debug = false;
 	//	debug = key=='showOpacitySlider';
 	if(debug)
-	    console.log("KEY:" + key);
+	    console.log('KEY:' + key);
 	//Check the IMDV display
 	if(this.attrs.properties) {
 	    if(!this.parsedProperties) {
-		this.parsedProperties = Utils.parseMap(this.attrs.properties,"\n","=")??{};
+		this.parsedProperties = Utils.parseMap(this.attrs.properties,'\n','=')??{};
 	    }
 
 	    let v = this.parsedProperties[key];
-	    if(debug) console.log("V:" + v);
-	    if(debug) console.log("PROPS:",this.parsedProperties);	    
+	    if(debug) console.log('V:' + v);
+	    if(debug) console.log('PROPS:',this.parsedProperties);	    
 	    if(Utils.isDefined(v)) {
 		return Utils.getProperty(v);
 	    }
@@ -5083,7 +5083,7 @@ MapGlyph.prototype = {
 	    let id = info.getId();
 	    let label = HU.span([ATTR_TITLE,info.property],HU.b(info.getLabel()));
 	    if(info.isString())  {
-		filter.type="string";
+		filter.type='string';
 		let attrs =['filter-property',info.property,
 			    ATTR_ID,this.domId('string_'+ id),
 			    ATTR_SIZE,20];
@@ -5096,17 +5096,17 @@ MapGlyph.prototype = {
 		    let buttonAttrs = ['textareaid',this.domId('string_'+id),
 				       ATTR_CLASS,CLASS_FILTER_STRINGS];
 		    widget =     HU.div(buttonAttrs,LABEL_SEARCH)+
-			HU.textarea("",filter.stringValue??"",attrs);
+			HU.textarea('',filter.stringValue??'',attrs);
 		} else {
 		    attrs.push(ATTR_CLASS,CLASS_FILTER_STRING);
-		    widget =     HU.input("",filter.stringValue??"",attrs);
+		    widget =     HU.input('',filter.stringValue??'',attrs);
 		}
-		let string=label+":" + HU.br()+ widget + HU.br();
+		let string=label+':' + HU.br()+ widget + HU.br();
 		add(info,'strings',string);
 		return
 	    } 
 	    if(info.isEnumeration())  {
-		filter.type="enum";
+		filter.type='enum';
 		if(info.samples.length>1) {
 		    let sorted;
 		    if(this.getProperty('filter.sortOnCount',false)) {
@@ -5131,8 +5131,8 @@ MapGlyph.prototype = {
 		    let size = info.filterSize();
 		    let selectId = HU.getUniqueId('select');
 		    let line=HU.div([ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90))],
-				    HU.leftRightTable(label+": " +SPACE,HU.span([ATTR_ID,selectId]))) +
-			HU.select("",[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
+				    HU.leftRightTable(label+': ' +SPACE,HU.span([ATTR_ID,selectId]))) +
+			HU.select('',[ATTR_STYLE,HU.css(CSS_WIDTH,HU.perc(90)),
 				      'filter-property',info.property,
 				      'select-container',selectId,
 				      ATTR_CLASS,'imdv-filter-enum',
@@ -5151,7 +5151,7 @@ MapGlyph.prototype = {
 		filter.maxValue = max;
 		//		if(isNaN(filter.min)||filter.min<min) filter.min = min;
 		//		if(isNaN(filter.max) || filter.max>max) filter.max = max;
-		filter.type="range";
+		filter.type='range';
 		let line =
 		    HU.leftRightTable(HU.div([ATTR_ID,this.domId('slider_min_'+ id),
 					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(Utils.getDefined(filter.min,min))),
@@ -5166,7 +5166,7 @@ MapGlyph.prototype = {
 				      'filter-property',info.property,'feature-id',info.id,
 				      ATTR_CLASS,CLASS_FILTER_SLIDER,
 				      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
-							CSS_WIDTH,HU.perc(100))],"");
+							CSS_WIDTH,HU.perc(100))],'');
 		if(info.getProperty('filter.animate',false)) {
 		    line+=HU.table([ATTR_WIDTH,HU.perc(100)],
 				   HU.tr([],
@@ -5244,7 +5244,7 @@ MapGlyph.prototype = {
 				    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-legend-clearall'),
 				    ATTR_TITLE,'Clear Filters'],HU.getIconImage(ICON_ERASER,null,LEGEND_IMAGE_ATTRS));
 
-	    this.zoomonchangeid = HU.getUniqueId("andzoom");
+	    this.zoomonchangeid = HU.getUniqueId('andzoom');
 
 	    let maxHeight=this.getProperty('filters.height');
 	    widgets = HU.div([ATTR_STYLE,
@@ -5315,7 +5315,7 @@ MapGlyph.prototype = {
 		let key = text.attr('filter-property');
 		let filter = filters[key]??{};
 		filter.type='string';
-		filter.stringValue = (text.val()??"").trim();
+		filter.stringValue = (text.val()??'').trim();
 		filter.stringValues = Utils.split(filter.stringValue,'\n',true,true);
 		filter.property = key;
 		update();
@@ -5327,7 +5327,7 @@ MapGlyph.prototype = {
 		let key = input.attr('filter-property');
 		let filter = filters[key]??{};
 		filter.type='string';
-		filter.stringValue = (input.val()??"").trim();
+		filter.stringValue = (input.val()??'').trim();
 		filter.property = key;
 		update();
 	    };
@@ -5393,7 +5393,7 @@ MapGlyph.prototype = {
 		};
 		let min = +$(this).attr(ATTR_SLIDER_MIN);
 		let max = +$(this).attr(ATTR_SLIDER_MAX);
-		let isInt = $(this).attr('slider-isint')=="true";
+		let isInt = $(this).attr('slider-isint')=='true';
 		let step = 1;
 		let range = max-min;
 		if(!isInt) {
@@ -5568,11 +5568,11 @@ MapGlyph.prototype = {
 		if (typeof attributes[attr] == 'object' || typeof attributes[attr] == 'Object') {
                     let o = attributes[attr];
 		    if(o)
-			value = "" + o["value"];
+			value = '' + o['value'];
 		    else
-			value = "";
+			value = '';
 		} else {
-                    value = "" + attributes[attr];
+                    value = '' + attributes[attr];
 		}
 		value = info.format(value);
 		let _attr = attr.toLowerCase();
@@ -5673,7 +5673,7 @@ MapGlyph.prototype = {
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
-	if(debug)   console.log("applyMapStyle:" + this.getName());
+	if(debug)   console.log('applyMapStyle:' + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
 	let features = this.getMapFeatures();
@@ -5765,7 +5765,7 @@ MapGlyph.prototype = {
 	    delete style['externalGraphic_cleared'];	    
 	}
 	let rules = this.getMapStyleRules();
-	//	if(debug) console.dir("\tmapStyleRules",rules);
+	//	if(debug) console.dir('\tmapStyleRules',rules);
 	let useRules = [];
 	if(rules) {
 	    rules = rules.filter(rule=>{
@@ -5818,7 +5818,6 @@ MapGlyph.prototype = {
 				    label+=Utils.join(l,' ')+'\n'
 				});
 			    }
-			    //			    label = "hello there\nhow are you\nI am fine"
 			    featureStyle = Utils.clone(featureStyle,{
 				strokeColor:COLOR_TRANSPARENT,
 				textBackgroundFillColor:featureStyle.fillColor,
@@ -5834,7 +5833,7 @@ MapGlyph.prototype = {
 			}
 		    }
 		}
-		if(debug )   console.dir("\tfeature style:",featureStyle.labelSelect,featureStyle.label);
+		if(debug )   console.dir('\tfeature style:',featureStyle.labelSelect,featureStyle.label);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 		if(Utils.stringDefined(f?.style?.externalGraphic)) {
@@ -5863,7 +5862,7 @@ MapGlyph.prototype = {
 		if(Utils.stringDefined(rule.extvalue)) rule.value  = rule.extvalue;
 		return rule;
 	    });
-	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
+	    if(debug) console.dir('\tadding styleMap unique rules',uniqueRules);
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.fidx=idx;
@@ -5967,7 +5966,7 @@ MapGlyph.prototype = {
 	applyColors(this.attrs.strokeColorBy,'strokeColor',this.strokeStrings);	
 
 	if(useRules.length>0) {
-	    if(debug) console.log("\tuseRules:" + useRules?.length);
+	    if(debug) console.log('\tuseRules:' + useRules?.length);
 	    useRules.forEach(rule=>{
 		let styles = [];
 		let styleMap = {};
@@ -5994,7 +5993,7 @@ MapGlyph.prototype = {
 		    if(!value) return;
 		    styles.forEach(style=>{
 			let v = styleMap[style];
-			v = v.replace("${value}",value);
+			v = v.replace('${value}',value);
 			if(v.startsWith('js:')) {
 			    v = v.substring(3);
 			    try {
@@ -6160,9 +6159,9 @@ MapGlyph.prototype = {
 		continue;
 	    }
 	    if(info && !info.showFilter()) continue;
-	    if(filter.type=="string") {
+	    if(filter.type=='string') {
 		if(Utils.stringDefined(filter.stringValue)) stringFilters.push(filter);
-	    } else if(filter.type=="enum") {
+	    } else if(filter.type=='enum') {
 		if(filter.enumValues && filter.enumValues.length>0) enumFilters.push(filter);
 	    } else {
 		if(Utils.isDefined(filter.min) || Utils.isDefined(filter.max)) {
@@ -6184,7 +6183,7 @@ MapGlyph.prototype = {
 
 	features.forEach((f,idx)=>{
 	    let visible = true;
-	    if(debug && idx<5) console.log("feature check filter:");
+	    if(debug && idx<5) console.log('feature check filter:');
 	    rangeFilters.every(filter=>{
 		let value=this.getFeatureValue(f,filter.property);
 		if(Utils.isDefined(value)) {
@@ -6195,7 +6194,7 @@ MapGlyph.prototype = {
 		    if(visible && Utils.isDefined(filter.max) && value >filter.max) {
 			visible=false;
 		    }
-		    if(debug && idx<5) console.log("\trange:",filter,value,visible);
+		    if(debug && idx<5) console.log('\trange:',filter,value,visible);
 		}
 		return visible;
 	    });
@@ -6217,7 +6216,7 @@ MapGlyph.prototype = {
 			} else {
 			    visible = filter.stringValue=='*' || value.indexOf(filter.stringValue)>=0|| _value.indexOf(filter.stringValue)>=0
 			}
-			if(debug && idx<5) console.log("\tstring:",filter,value,visible);
+			if(debug && idx<5) console.log('\tstring:',filter,value,visible);
 		    }
 		    return visible;
 		});
@@ -6238,7 +6237,7 @@ MapGlyph.prototype = {
 			return true;
 		    })
 		    if(numStrings && !matched) {
-			if(debug && idx<5) console.log("\ttext:",text);
+			if(debug && idx<5) console.log('\ttext:',text);
 			visible=false;
 		    }
 		}
@@ -6249,7 +6248,7 @@ MapGlyph.prototype = {
 		enumFilters.every(filter=>{
 		    let value=this.getFeatureValue(f,filter.property)??'';
 		    visible =filter.enumValues.includes(value);
-		    if(debug && idx<5) console.log("\tenum",filter,value);
+		    if(debug && idx<5) console.log('\tenum',filter,value);
 		    return visible;
 		});
 	    }		
@@ -6280,7 +6279,7 @@ MapGlyph.prototype = {
     
     checkRings:function(points) {
 	if(!this.features[0]){
-	    console.log("range rings has no features");
+	    console.log('range rings has no features');
 	    return
 	}
 
@@ -6428,7 +6427,7 @@ MapGlyph.prototype = {
 	if(!feature) return
 	let points =this.getFeaturePoints(feature);
 	if(!points) {
-	    console.log("MapGlyph.setRotation: no points");
+	    console.log('MapGlyph.setRotation: no points');
 	    return;
 	}
 	let ext = this.image.extent;
@@ -6482,7 +6481,7 @@ MapGlyph.prototype = {
 	    this.image.moveTo(bounds,true,true);
 	} else {
 	    bounds = this.getMap().transformProjBounds(bounds);
-	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
+	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),'',this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
 	    this.image.textGetter = () =>{
 		console.log(0);
 		return '';
@@ -6512,7 +6511,7 @@ MapGlyph.prototype = {
 	    for(let i = 0, len = childNodes.length; i < len; ++i) {
                 let element = childNodes[i].firstChild || childNodes[i];
                 let lastChild = childNodes[i].lastChild;
-                if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+                if (lastChild && lastChild.nodeName.toLowerCase() === 'iframe') {
 		    element = lastChild.parentNode;
                 }
 		if(element.style)
@@ -6521,7 +6520,6 @@ MapGlyph.prototype = {
 		if(this.style.imagecss) {
 		    Utils.split(this.style.imagecss,'\n',true,true).forEach(line=>{
 			let toks = Utils.split(line,'=',true,true);
-			//			console.log(toks[0]+':'+ toks[1]);
 			element.style[toks[0]] = toks[1];
 		    });
 		}
@@ -6678,8 +6676,8 @@ MapGlyph.prototype = {
 	let oldMin = range?.min;
 	let oldMax = range?.max;	
 	if(min===oldMin && max===oldMax) return;
-	if(min=="") min = null;
-	if(max=="") max = null;	
+	if(min=='') min = null;
+	if(max=='') max = null;	
 	this.attrs.visibleLevelRange = {min:min,max:max};
 	this.checkVisible();
     },    
@@ -6707,7 +6705,7 @@ MapGlyph.prototype = {
 	    let bounds = this.display.getMap().getFeaturesBounds(featuresToUse,true);
 	    if(bounds) {
 		let center = MapUtils.getCenter(bounds);
-		this.showMarkerMarker = this.display.getMap().createMarker("", center, this.getIcon(), "",
+		this.showMarkerMarker = this.display.getMap().createMarker('', center, this.getIcon(), '',
 									   null,null,16,null,null,{});
 		this.display.addFeatures([this.showMarkerMarker]);
 		this.showMarkerMarker.mapGlyph = this;
@@ -6823,7 +6821,7 @@ MapGlyph.prototype = {
 	}
 	let t1 = new Date();
 	MapUtils.declutter(this.getMap(), featuresToGrid,this.getDeclutterArgs());
-	//	Utils.displayTimes("gridding #" + features.length,[t1,new Date()],true);
+	//	Utils.displayTimes('gridding #' + features.length,[t1,new Date()],true);
     },
     getDeclutterArgs:function() {
 	let args ={};
@@ -6870,7 +6868,7 @@ MapGlyph.prototype = {
     isShape:function() {
 	if(this.getType()==GLYPH_LABEL) {
 	    if(!Utils.stringDefined(this.style.externalGraphic)) return true;
-	    if(this.style.externalGraphic && this.style.externalGraphic.endsWith("blank.gif")) return true;
+	    if(this.style.externalGraphic && this.style.externalGraphic.endsWith('blank.gif')) return true;
 	    if(this.style.pointRadius==0) return true;
 	}
 	return GLYPH_TYPES_SHAPES.includes(this.getType());
@@ -6883,12 +6881,12 @@ MapGlyph.prototype = {
     },    
     addFixed: function() {
 	let style = this.style;
-	let line = "solid";
+	let line = 'solid';
 	if(style.strokeDashstyle) {
 	    if(['dot','dashdot'].includes(style.strokeDashstyle)) {
-		line = "dotted";
-	    } else  if(style.strokeDashstyle.indexOf("dash")>=0) {
-		line = "dashed";
+		line = 'dotted';
+	    } else  if(style.strokeDashstyle.indexOf('dash')>=0) {
+		line = 'dashed';
 	    }
 	}
 	let css = HU.css(CSS_PADDING,HU.px(5));
@@ -6908,19 +6906,19 @@ MapGlyph.prototype = {
 	});
 	let id = this.getFixedId();
 	jqid(id).remove();
-	let text = this.style.text??"";
+	let text = this.style.text??'';
 	let html = HU.div([ATTR_ID,id,
-			   ATTR_CLASS,"ramadda-imdv-fixed",
-			   ATTR_STYLE,css],"");
+			   ATTR_CLASS,'ramadda-imdv-fixed',
+			   ATTR_STYLE,css],'');
 	this.display.jq(ID_MAP_CONTAINER).append(html);
 	let toggleLabel = null;
-	if(text.startsWith("toggle:")) {
+	if(text.startsWith('toggle:')) {
 	    text = text.trim();
 	    let regexp = /toggle:(.*)\n/;
 	    let match = text.match(regexp);
 	    if(match) {
 		toggleLabel=match[1];
-		text = text.replace(regexp,"").trim();
+		text = text.replace(regexp,'').trim();
 	    }
 	} 
 
@@ -6932,8 +6930,8 @@ MapGlyph.prototype = {
 		start: function (event, ui) {
                     $(this).css({
 			height:HU.px(height+10),
-                        right: "auto",
-                        top: "auto"
+                        right: 'auto',
+                        top: 'auto'
                     });
 		},
 		stop:function() {
@@ -6961,7 +6959,7 @@ MapGlyph.prototype = {
 		revert: false
 	    });
 	}
-	if(text.startsWith("<wiki>")) {
+	if(text.startsWith('<wiki>')) {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
@@ -6986,41 +6984,41 @@ MapGlyph.prototype = {
 	this.attrs.displayAttrs = displayAttrs;
 	let entryId = this.getEntryId();
 	let pointDataUrl = displayAttrs.pointDataUrl ||
-	    HU.url(Ramadda.getUrl("/entry/data"),"max",50000,ARG_ENTRYID,entryId);
+	    HU.url(Ramadda.getUrl('/entry/data'),'max',50000,ARG_ENTRYID,entryId);
 	let pointData = new PointData(this.attrs.name,  null,null,
 				      pointDataUrl,
 				      {entryId:entryId});
 	
-	let divId   = HU.getUniqueId("display_");
-	let outerDivId   = HU.getUniqueId("outerdisplay_");	
-	let bottomDivId   = HU.getUniqueId("displaybottom_");	    
+	let divId   = HU.getUniqueId('display_');
+	let outerDivId   = HU.getUniqueId('outerdisplay_');	
+	let bottomDivId   = HU.getUniqueId('displaybottom_');	    
 	let headerDiv = HU.div([ATTR_ID,outerDivId],HU.div([ATTR_ID,divId]));
 	this.display.jq(ID_HEADER1).append(headerDiv);
 	this.display.jq(ID_BOTTOM).append(HU.div([ATTR_ID,bottomDivId]));	    
-	let attrs = {"externalMap":this.display.getMap(),
-		     "externalDisplay":this,
-		     "isContained":true,
-		     "showRecordSelection":true,
-		     "showInnerContents":false,
-		     "entryIcon":this.attrs.icon,
-		     "title":this.attrs.name,
-		     "max":"5000",
-		     "thisEntryType":this.attrs.entryType,
-		     "entryId":entryId,
-		     "divid":divId,
-		     "acceptRequestChangeEvent":false,
-		     "pointDataCacheOK":false,
-		     "bottomDiv":bottomDivId,			 
-		     "data":pointData,
-		     "fileUrl":HU.url(Ramadda.getUrl(URL_ENTRY_GET),
-				      ARG_ENTRYID,entryId,"fileinline",true)};
+	let attrs = {externalMap:this.display.getMap(),
+		     externalDisplay:this,
+		     isContained:true,
+		     showRecordSelection:true,
+		     showInnerContents:false,
+		     entryIcon:this.attrs.icon,
+		     title:this.attrs.name,
+		     max:5000,
+		     thisEntryType:this.attrs.entryType,
+		     entryId:entryId,
+		     divid:divId,
+		     acceptRequestChangeEvent:false,
+		     pointDataCacheOK:false,
+		     bottomDiv:bottomDivId,			 
+		     data:pointData,
+		     fileUrl:HU.url(Ramadda.getUrl(URL_ENTRY_GET),
+				      ARG_ENTRYID,entryId,'fileinline',true)};
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
-	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	let display = this.display.getDisplayManager().createDisplay('map',attrs);
 	//	this.attrs.name = display.getLogLabel();
 	//Not sure why we do this since we can't integrate charts with map record selection
-	//	display.setProperty("showRecordSelection",false);
+	//	display.setProperty('showRecordSelection',false);
 
 	display.errorMessageHandler = (display,msg) =>{
 	    this.display.setErrorMessage(msg,5000);
@@ -7066,16 +7064,16 @@ MapGlyph.prototype = {
 	let css= [CSS_DISPLAY,DISPLAY_INLINE_BLOCK];
 	let dim = small?HU.px(10):HU.px(25);
 	css.push(CSS_WIDTH,small?HU.px(10):HU.px(50));
-	let line = "solid";
+	let line = 'solid';
 	if(style.strokeWidth>0) {
 	    if(style.strokeDashstyle) {
 		if(['dot','dashdot'].includes(style.strokeDashstyle)) {
-		    line = "dotted";
-		} else  if(style.strokeDashstyle.indexOf("dash")>=0) {
-		    line = "dashed";
+		    line = 'dotted';
+		} else  if(style.strokeDashstyle.indexOf('dash')>=0) {
+		    line = 'dashed';
 		}
 	    }
-	    css.push(CSS_BORDER,(small?Math.min(+style.strokeWidth,1):style.strokeWidth)+"px " + line +" " + style.strokeColor);
+	    css.push(CSS_BORDER,(small?Math.min(+style.strokeWidth,1):style.strokeWidth)+'px ' + line +' ' + style.strokeColor);
 	}
 
 	if(style.imageUrl) {
@@ -7102,7 +7100,7 @@ MapGlyph.prototype = {
 		css.push(CSS_COLOR,style.strokeColor);
 	    }		
 	    css.push(CSS_FONT_SIZE,small?HU.px(16):HU.px(32),CSS_VERTICAL_ALIGN,ALIGN_CENTER);
-	    return HU.span([ATTR_STYLE,HU.css(css)],"&#x2B22;");
+	    return HU.span([ATTR_STYLE,HU.css(css)],'&#x2B22;');
 	} else if(type==GLYPH_CIRCLE || type==GLYPH_POINT) {
 	    if(Utils.stringDefined(style.fillColor)) {
 		css.push(CSS_BACKGROUND,style.fillColor);
@@ -7162,7 +7160,7 @@ MapGlyph.prototype = {
 	    let someNotLocated = false;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) {
-		    console.log("multi entry has no location:" + e.getName());
+		    console.log('multi entry has no location:' + e.getName());
 		    someNotLocated = true;
 		    return;
 		}
@@ -7195,12 +7193,12 @@ MapGlyph.prototype = {
 		} 
 		if(style.showLabels) {
 		    let label  =e.getName();
-		    let toks = Utils.split(label," ",true,true);
+		    let toks = Utils.split(label,' ',true,true);
 		    if(toks.length>1) {
-			label = "";
+			label = '';
 			Utils.splitList(toks,3).forEach(l=>{
-			    label += Utils.join(l," ");
-			    label+="\n";
+			    label += Utils.join(l,' ');
+			    label+='\n';
 			})
 			label = label.trim();
 		    }
