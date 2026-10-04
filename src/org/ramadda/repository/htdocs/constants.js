@@ -47,6 +47,7 @@ var ARG_SKIP='skip';
 var ARG_PAGESEARCH='pagesearch';
 var ARG_FILE='file';
 var ARG_MAPBOUNDS='map_bounds';
+var ARG_DESCRIPTION = 'description';
 var ARG_NAME='name';
 var ARG_ENTRYID='entryid';
 var ARG_ENTRIES='entries';
@@ -59,6 +60,14 @@ var ARG_TITLE='title';
 var ARG_TYPE='type';
 var ARG_URL='url';
 var ARG_TEXT='text';
+var ARG_MAX = 'max';
+
+var ARG_MAXLATITUDE= 'maxlatitude';
+var ARG_MINLATITUDE= 'minlatitude';
+var ARG_MAXLONGITUDE= 'maxlongitude';
+var ARG_MINLONGITUDE= 'minlongitude';
+var ARG_AREAMODE = 'areamode';
+
 
 var ICON_TOGGLE_CLOSED='fas fa-plus-square';
 var ICON_TOGGLE_OPEN='fas fa-minus-square';
