@@ -5489,7 +5489,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return 'translate(' + x +',' + y + ')';
     },
     boldLabel:function(msg) {
-	return HU.b(msg)+': ';
+	return HU.b(msg)+':' + SPACE;
     },    
     dotClass:function(c) {
 	return '.' + c;
